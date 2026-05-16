@@ -1,0 +1,66 @@
+name: coffee_quest
+description: Coffee Quest — Duolingo-style coffee education app.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+  flutter: '>=3.22.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
+
+  # Navigation
+  go_router: ^17.2.3
+
+  # Local persistence
+  isar: ^3.1.0+1
+  isar_flutter_libs: ^3.1.0+1
+  path_provider: ^2.1.5
+
+  # Firebase — added in Phase 8 only (deferred; app is offline-first for MVP)
+  # firebase_core: ^4.8.0
+  # firebase_analytics: ^12.4.0
+  # firebase_crashlytics: ^5.2.1
+  # firebase_remote_config: ^6.5.0
+
+  # Payments (placeholder — not active in MVP)
+  in_app_purchase: ^3.2.3
+
+  # Ads — disabled for MVP; re-enable in Phase 8 (see docs/11-ads.md)
+  # google_mobile_ads: ^8.0.0
+
+  # Utilities
+  freezed_annotation: ^2.4.4
+  json_annotation: ^4.9.0
+  collection: ^1.19.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+
+  # Code generation
+  build_runner: ^2.4.13
+  riverpod_generator: ^2.3.3
+  freezed: ^2.5.2
+  json_serializable: ^6.8.0
+  isar_generator: ^3.1.0+1
+
+  # Linting
+  flutter_lints: ^5.0.0
+  custom_lint: ^0.5.11
+  riverpod_lint: ^2.1.1
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/content/
+    - assets/images/
+    - assets/icons/
