@@ -82,19 +82,21 @@ Before starting, verify:
 
 **Reference:** `docs/06-local-persistence.md`
 
-- [ ] Create `lib/shared/storage/progress_record.dart` (`@collection`)
-- [ ] Create `lib/shared/storage/card_record.dart` (`@collection`)
-- [ ] Create `lib/shared/storage/settings_record.dart` (`@collection`, singleton ID 0)
-- [ ] Create `lib/shared/storage/isar_service.dart`
-- [ ] Create `lib/shared/repositories/progress_repository.dart`
-- [ ] Create `lib/shared/repositories/card_repository.dart`
-- [ ] Create `lib/shared/repositories/settings_repository.dart`
-- [ ] Create `lib/shared/repositories/repository_providers.dart` with Riverpod providers
-- [ ] Update `lib/app/app_bootstrap.dart` to open Isar with `IsarService.schemas`
-- [ ] Run `dart run build_runner build --delete-conflicting-outputs`
-- [ ] Write `test/unit/progress_repository_test.dart` (idempotency, read/write)
-- [ ] Run `flutter test test/unit/progress_repository_test.dart` → passes
+- [x] Create `lib/shared/storage/progress_record.dart` (`@collection`)
+- [x] Create `lib/shared/storage/card_record.dart` (`@collection`)
+- [x] Create `lib/shared/storage/settings_record.dart` (`@collection`, singleton ID 0)
+- [x] Update `lib/shared/storage/isar_service.dart` (already existed as stub; schemas registered)
+- [x] Create `lib/shared/repositories/progress_repository.dart`
+- [x] Create `lib/shared/repositories/card_repository.dart`
+- [x] Create `lib/shared/repositories/settings_repository.dart`
+- [x] Create `lib/shared/repositories/repository_providers.dart` with Riverpod providers
+- [x] `lib/app/app_bootstrap.dart` already opens Isar with `IsarService.schemas` (no change needed)
+- [x] Run `dart run build_runner build --delete-conflicting-outputs`
+- [x] Write `test/unit/progress_repository_test.dart` (9 tests: idempotency, read/write, defaults)
+- [x] Run `flutter test test/unit/progress_repository_test.dart` → 9/9 passed
 - [ ] Run app on Simulator, enable Airplane Mode, verify app still launches
+
+**Note:** `libisar.dylib` must be copied from the pub cache before running `flutter test` on a fresh clone (see `CLAUDE.md`).
 
 **Phase 3 Done when:** Isar opens at startup, persistence tests pass, app works offline.
 

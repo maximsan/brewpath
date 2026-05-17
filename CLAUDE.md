@@ -34,8 +34,9 @@ brewpath/               ← git root, CLAUDE.md lives here
 |---|---|---|
 | 0 | ✅ Done | Prerequisites verified |
 | 1 | ✅ Done | Project scaffold, routing stub, theme |
-| 2 | 🔄 In progress | Content models, JSON assets, ContentRepository |
-| 3–11 | ⏳ Pending | See `docs/16-claude-code-task-plan.md` |
+| 2 | ✅ Done | Content models, JSON assets, ContentRepository |
+| 3 | ✅ Done | Isar persistence, repositories, providers |
+| 4–11 | ⏳ Pending | See `docs/16-claude-code-task-plan.md` |
 
 ## Common Commands (run from `coffee_quest/`)
 
@@ -48,6 +49,14 @@ flutter test test/unit/<file>
 flutter test test/widget/<file>
 flutter run -d "iPhone 16 Pro"
 flutter build ios --release --no-codesign
+```
+
+### One-time setup for Isar tests on macOS
+
+`libisar.dylib` is gitignored. After a fresh clone, copy the native binary before running `flutter test`:
+
+```bash
+cp ~/.pub-cache/hosted/pub.dev/isar_flutter_libs-3.1.0+1/macos/libisar.dylib libisar.dylib
 ```
 
 ## Code Conventions
