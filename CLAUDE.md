@@ -36,7 +36,8 @@ brewpath/               ← git root, CLAUDE.md lives here
 | 1 | ✅ Done | Project scaffold, routing stub, theme |
 | 2 | ✅ Done | Content models, JSON assets, ContentRepository |
 | 3 | ✅ Done | Isar persistence, repositories, providers |
-| 4–11 | ⏳ Pending | See `docs/16-claude-code-task-plan.md` |
+| 4 | ✅ Done | Domain logic: XP/streak/completion services, providers |
+| 5–11 | ⏳ Pending | See `docs/16-claude-code-task-plan.md` |
 
 ## Common Commands (run from `coffee_quest/`)
 

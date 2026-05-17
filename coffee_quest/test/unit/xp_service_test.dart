@@ -1,0 +1,19 @@
+import 'package:flutter_test/flutter_test.dart';
+
+import 'package:coffee_quest/features/progress/domain/xp_service.dart';
+
+void main() {
+  const xp = XpService();
+
+  group('XpService', () {
+    test('calculateLessonXp is 10 per step', () {
+      expect(xp.calculateLessonXp(0), 0);
+      expect(xp.calculateLessonXp(1), 10);
+      expect(xp.calculateLessonXp(2), 20);
+    });
+
+    test('moduleCompletionBonus is 25', () {
+      expect(xp.moduleCompletionBonus, 25);
+    });
+  });
+}

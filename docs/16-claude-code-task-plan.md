@@ -94,7 +94,7 @@ Before starting, verify:
 - [x] Run `dart run build_runner build --delete-conflicting-outputs`
 - [x] Write `test/unit/progress_repository_test.dart` (9 tests: idempotency, read/write, defaults)
 - [x] Run `flutter test test/unit/progress_repository_test.dart` → 9/9 passed
-- [ ] Run app on Simulator, enable Airplane Mode, verify app still launches
+- [x] Run app on Simulator, enable Airplane Mode, verify app still launches
 
 **Note:** `libisar.dylib` must be copied from the pub cache before running `flutter test` on a fresh clone (see `CLAUDE.md`).
 
@@ -106,29 +106,29 @@ Before starting, verify:
 
 **Reference:** `docs/02-architecture.md`, `docs/01-mvp-scope.md`
 
-- [ ] Create `lib/core/constants/xp_values.dart` (XP per step count, module bonus)
-- [ ] Create `lib/core/utils/xp_utils.dart` → `XpService.calculateLessonXp(stepCount)`
-- [ ] Create `lib/core/utils/date_utils.dart` → streak date helpers
-- [ ] Create `lib/features/progress/domain/xp_service.dart`
-- [ ] Create `lib/features/progress/domain/streak_service.dart`
-- [ ] Create `lib/features/lessons/domain/lesson_completion_service.dart`:
+- [x] Create `lib/core/constants/xp_values.dart` (XP per step count, module bonus) — _already existed from earlier scaffold_
+- [x] ~~Create `lib/core/utils/xp_utils.dart`~~ — _merged into `xp_service.dart` (consolidated; constants live in `xp_values.dart`)_
+- [x] Create `lib/core/utils/date_utils.dart` → streak date helpers
+- [x] Create `lib/features/progress/domain/xp_service.dart`
+- [x] Create `lib/features/progress/domain/streak_service.dart`
+- [x] Create `lib/features/lessons/domain/lesson_completion_service.dart`:
   - Calls `ProgressRepository.saveCompletion`
   - Calls `SettingsRepository.addXp`
   - Calls `CardRepository.collectCard` if `lesson.cardId != null`
   - Checks if all lessons in the module are complete → awards module bonus XP
   - Fires analytics events via `AnalyticsService` (injected)
-- [ ] Create `lib/features/progress/domain/progress_providers.dart`:
+- [x] Create `lib/features/progress/domain/progress_providers.dart`:
   - `totalXpProvider` → reads from `SettingsRepository`
   - `streakProvider` → reads from `SettingsRepository`
   - `completedLessonsProvider` → reads from `ProgressRepository`
   - `collectedCardsProvider` → reads from `CardRepository`
-- [ ] Create `lib/features/learn/domain/learn_providers.dart`:
+- [x] Create `lib/features/learn/domain/learn_providers.dart`:
   - `modulesWithProgressProvider` → combines `contentRepository` + `progressRepository`
   - `todayLessonProvider` → first incomplete lesson in current module
-- [ ] Write `test/unit/xp_service_test.dart`
-- [ ] Write `test/unit/streak_service_test.dart`
-- [ ] Write `test/unit/lesson_completion_service_test.dart`
-- [ ] Run `flutter test test/unit/` → all pass
+- [x] Write `test/unit/xp_service_test.dart`
+- [x] Write `test/unit/streak_service_test.dart`
+- [x] Write `test/unit/lesson_completion_service_test.dart`
+- [x] Run `flutter test test/unit/` → all pass
 
 **Phase 4 Done when:** All domain services exist, unit tests pass, providers compile.
 

@@ -297,7 +297,7 @@ dart run build_runner build --delete-conflicting-outputs
 ### 14. Verify Launch on Simulator
 
 ```bash
-flutter run -d "iPhone 16 Pro"
+flutter run -d "iPhone 17"
 ```
 
 - [ ] App launches on iOS Simulator
