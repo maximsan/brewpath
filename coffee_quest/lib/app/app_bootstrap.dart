@@ -5,7 +5,10 @@ import 'package:coffee_quest/shared/storage/isar_service.dart';
 class AppBootstrap {
   static Future<void> initialize() async {
     // Skip Isar open until Phase 3 registers @collection schemas.
-    if (IsarService.schemas.isEmpty) return;
+    if (IsarService.schemas.isEmpty) {
+      return;
+    }
+    
     final dir = await getApplicationDocumentsDirectory();
     final isar = await Isar.open(
       IsarService.schemas,
