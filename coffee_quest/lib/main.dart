@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'app/app_bootstrap.dart';
-import 'app/app.dart';
+import 'package:coffee_quest/app/app_bootstrap.dart';
+import 'package:coffee_quest/app/app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

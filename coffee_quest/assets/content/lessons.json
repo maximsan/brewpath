@@ -1,0 +1,388 @@
+[
+  {
+    "id": "lesson_where_coffee",
+    "moduleId": "module_beans",
+    "title": "Where Coffee Comes From",
+    "summary": "Coffee grows in a region called the Bean Belt, between the Tropics of Cancer and Capricorn. Altitude, climate, and soil all shape how the beans taste.",
+    "xpReward": 10,
+    "cardId": "card_where_coffee",
+    "steps": [
+      {
+        "type": "multiple_choice",
+        "question": "In which region of the world does most coffee grow?",
+        "options": ["The Bean Belt", "Northern Europe", "Canada", "The Arctic"],
+        "correctIndex": 0,
+        "explanation": "The Bean Belt sits between the Tropics of Cancer and Capricorn — the ideal warm, humid climate for coffee plants."
+      }
+    ]
+  },
+  {
+    "id": "lesson_arabica_robusta",
+    "moduleId": "module_beans",
+    "title": "Arabica vs Robusta",
+    "summary": "The two main coffee species taste very different. Arabica is smooth and complex; Robusta is strong and bitter. Most specialty coffee is Arabica.",
+    "xpReward": 20,
+    "cardId": "card_arabica_robusta",
+    "steps": [
+      {
+        "type": "multiple_choice",
+        "question": "Which coffee species is typically used in specialty coffee?",
+        "options": ["Arabica", "Robusta", "Liberica", "Excelsa"],
+        "correctIndex": 0,
+        "explanation": "Arabica accounts for about 60% of global production and is prized for its nuanced flavor and lower caffeine."
+      },
+      {
+        "type": "drag_drop",
+        "instruction": "Match each coffee species to its key characteristic.",
+        "terms": ["Arabica", "Robusta"],
+        "definitions": ["Grown at altitude, smooth and complex flavor", "Grown in lowlands, more caffeine and bitter taste"]
+      }
+    ]
+  },
+  {
+    "id": "lesson_green_coffee",
+    "moduleId": "module_beans",
+    "title": "What Green Coffee Is",
+    "summary": "Before roasting, coffee beans are green. They travel the world in this raw state, preserving their quality for months. Roasting transforms them into the brown beans we brew.",
+    "xpReward": 10,
+    "cardId": "card_green_coffee",
+    "steps": [
+      {
+        "type": "multiple_choice",
+        "question": "Why is coffee exported as green beans rather than roasted?",
+        "options": [
+          "Green beans stay fresh longer during shipping",
+          "Roasted beans are too heavy to ship",
+          "Roasting happens only in farms",
+          "Green beans taste better"
+        ],
+        "correctIndex": 0,
+        "explanation": "Green coffee is stable for months. Roasted coffee goes stale much faster, so roasting happens close to the consumer."
+      }
+    ]
+  },
+  {
+    "id": "lesson_washed",
+    "moduleId": "module_processing",
+    "title": "Washed Processing",
+    "summary": "In washed (wet) processing, the fruit is removed from the coffee seed before drying. This produces clean, bright cups that highlight the bean's origin character.",
+    "xpReward": 10,
+    "cardId": "card_washed",
+    "steps": [
+      {
+        "type": "multiple_choice",
+        "question": "What distinguishes washed processing from natural processing?",
+        "options": [
+          "The fruit is removed before drying",
+          "The beans are washed after roasting",
+          "Water is added during roasting",
+          "The cherry is dried whole"
+        ],
+        "correctIndex": 0,
+        "explanation": "Washed coffees are depulped first — only the seed is dried — resulting in clean flavors with bright acidity."
+      }
+    ]
+  },
+  {
+    "id": "lesson_natural",
+    "moduleId": "module_processing",
+    "title": "Natural Processing",
+    "summary": "Natural (dry) processing dries the whole coffee cherry in the sun for weeks. The fruit's sugars ferment into the bean, creating fruity, wine-like flavors.",
+    "xpReward": 20,
+    "cardId": "card_natural",
+    "steps": [
+      {
+        "type": "multiple_choice",
+        "question": "What flavor profile is natural processing known for?",
+        "options": ["Fruity and wine-like", "Clean and bright", "Smoky and earthy", "Mild and watery"],
+        "correctIndex": 0,
+        "explanation": "Drying the whole cherry lets the fruit's sugars ferment into the bean, producing distinctive fruity and fermented notes."
+      },
+      {
+        "type": "tap_order",
+        "instruction": "Tap the natural processing steps in the correct order.",
+        "items": ["Harvest ripe cherries", "Spread whole cherries to dry in the sun", "Turn cherries daily to prevent mold", "Hull the dried cherries to extract beans", "Sort and bag the green beans"],
+        "explanation": "Natural processing is simple but slow — drying can take 3–6 weeks depending on climate."
+      }
+    ]
+  },
+  {
+    "id": "lesson_honey",
+    "moduleId": "module_processing",
+    "title": "Honey Processing",
+    "summary": "Honey processing is a middle path: some fruit mucilage is left on the bean during drying. The sticky coating earned it the 'honey' name. The result sits between washed clarity and natural fruitiness.",
+    "xpReward": 20,
+    "cardId": "card_honey",
+    "steps": [
+      {
+        "type": "slider",
+        "instruction": "Honey processing leaves some mucilage on the bean. Slide to show how much fruit is removed compared to fully washed (100%) and natural (0%).",
+        "minValue": 0.0,
+        "maxValue": 100.0,
+        "targetMin": 40.0,
+        "targetMax": 80.0,
+        "unit": "% fruit removed",
+        "explanation": "Honey coffees remove 20–60% of the fruit — more than natural, less than washed — giving a balance of sweetness and clarity."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "Why is honey-processed coffee called 'honey'?",
+        "options": [
+          "The sticky mucilage left on the bean resembles honey",
+          "Honey is added during fermentation",
+          "The beans smell like honey after roasting",
+          "It was invented in a region famous for honey"
+        ],
+        "correctIndex": 0,
+        "explanation": "The mucilage (fruit flesh) left on the bean is sticky like honey — the name comes from texture, not flavor."
+      }
+    ]
+  },
+  {
+    "id": "lesson_what_roasting_does",
+    "moduleId": "module_roast",
+    "title": "What Roasting Does",
+    "summary": "Roasting transforms green coffee with heat. Hundreds of chemical reactions produce the aroma, color, and flavor we associate with coffee. The longer and hotter the roast, the darker and more bitter the result.",
+    "xpReward": 10,
+    "cardId": "card_what_roasting_does",
+    "steps": [
+      {
+        "type": "multiple_choice",
+        "question": "What happens to a coffee bean's acidity as roast level increases?",
+        "options": ["Acidity decreases", "Acidity increases", "Acidity stays the same", "Acidity disappears then returns"],
+        "correctIndex": 0,
+        "explanation": "Longer roasting breaks down acidic compounds, making darker roasts taste less bright and more bitter."
+      }
+    ]
+  },
+  {
+    "id": "lesson_light_roast",
+    "moduleId": "module_roast",
+    "title": "Light Roast",
+    "summary": "Light roasts are roasted to the first crack — the point where beans pop from steam pressure. They retain the most origin character: floral, fruity, and tea-like notes with high acidity.",
+    "xpReward": 10,
+    "cardId": "card_light_roast",
+    "steps": [
+      {
+        "type": "multiple_choice",
+        "question": "Which of these flavor notes is most associated with light roast?",
+        "options": ["Floral and fruity", "Smoky and dark chocolate", "Nutty and caramel", "Earthy and heavy"],
+        "correctIndex": 0,
+        "explanation": "Light roasts preserve delicate origin flavors — florals, bright fruits, and tea-like notes — that disappear in darker roasts."
+      }
+    ]
+  },
+  {
+    "id": "lesson_medium_roast",
+    "moduleId": "module_roast",
+    "title": "Medium Roast",
+    "summary": "Medium roasts develop past the first crack and into a balance zone. Origin character blends with roast flavors: caramel, nuts, and milk chocolate. Lower acidity than light, less bitterness than dark.",
+    "xpReward": 10,
+    "cardId": "card_medium_roast",
+    "steps": [
+      {
+        "type": "multiple_choice",
+        "question": "What makes medium roast popular for espresso blends?",
+        "options": [
+          "It balances sweetness, body, and moderate acidity",
+          "It has the highest caffeine content",
+          "It dissolves the fastest in water",
+          "It was the original roast style"
+        ],
+        "correctIndex": 0,
+        "explanation": "Medium roasts offer balance — sweet caramel notes, good body, and enough acidity — making them versatile for many brew methods."
+      }
+    ]
+  },
+  {
+    "id": "lesson_dark_roast",
+    "moduleId": "module_roast",
+    "title": "Dark Roast",
+    "summary": "Dark roasts push past the second crack. Oils surface on the bean. Origin character is largely replaced by roast-driven flavors: dark chocolate, smoke, and bittersweet notes. Low acidity, heavy body.",
+    "xpReward": 20,
+    "cardId": "card_dark_roast",
+    "steps": [
+      {
+        "type": "tap_order",
+        "instruction": "Tap the roast levels from lightest to darkest.",
+        "items": ["Light roast", "Medium roast", "Medium-dark roast", "Dark roast"],
+        "explanation": "Roast level is a spectrum — light preserves origin, dark amplifies roast character. Most beans hit second crack around 230°C."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "What visual sign indicates a dark roast?",
+        "options": [
+          "Oily sheen on the bean surface",
+          "White spots on the bean",
+          "Green tinge remaining",
+          "Cracked seam disappears"
+        ],
+        "correctIndex": 0,
+        "explanation": "Dark roasting pushes oils to the surface, giving beans a glossy, oily appearance — a clear visual marker of roast level."
+      }
+    ]
+  },
+  {
+    "id": "lesson_grind_size",
+    "moduleId": "module_brewing",
+    "title": "Grind Size Matters",
+    "summary": "Grind size controls how fast water flows through coffee and how much flavor it extracts. Too fine = over-extracted and bitter. Too coarse = under-extracted and sour. Match grind to your brew method.",
+    "xpReward": 20,
+    "cardId": "card_grind_size",
+    "steps": [
+      {
+        "type": "multiple_choice",
+        "question": "Which grind size is correct for espresso?",
+        "options": ["Fine", "Coarse", "Medium", "Extra coarse"],
+        "correctIndex": 0,
+        "explanation": "Espresso forces pressurized water through grounds quickly — a fine grind creates the resistance needed for proper extraction."
+      },
+      {
+        "type": "drag_drop",
+        "instruction": "Match each brew method to its correct grind size.",
+        "terms": ["Espresso", "Pour-over", "French press"],
+        "definitions": ["Fine", "Medium", "Coarse"]
+      }
+    ]
+  },
+  {
+    "id": "lesson_water_temp",
+    "moduleId": "module_brewing",
+    "title": "Water Temperature",
+    "summary": "Water that is too hot scorches coffee; too cool and it under-extracts. The ideal range for most filter coffee is 90–96°C. Espresso typically brews at 88–94°C.",
+    "xpReward": 20,
+    "cardId": "card_water_temp",
+    "steps": [
+      {
+        "type": "slider",
+        "instruction": "Set the ideal water temperature for pour-over filter coffee.",
+        "minValue": 60.0,
+        "maxValue": 100.0,
+        "targetMin": 90.0,
+        "targetMax": 96.0,
+        "unit": "°C",
+        "explanation": "90–96°C extracts balanced flavors from most coffees without scalding the grounds."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "What happens if you brew coffee with boiling water (100°C)?",
+        "options": [
+          "Coffee can taste harsh and over-extracted",
+          "Coffee tastes brighter and cleaner",
+          "Nothing changes — temperature doesn't matter",
+          "Coffee becomes under-extracted"
+        ],
+        "correctIndex": 0,
+        "explanation": "Boiling water extracts bitter compounds too aggressively. Dropping to 90–96°C gives a more balanced cup."
+      }
+    ]
+  },
+  {
+    "id": "lesson_brew_ratio",
+    "moduleId": "module_brewing",
+    "title": "Brew Ratio",
+    "summary": "Brew ratio is the weight of coffee to the weight of water. A 1:15 ratio means 1g of coffee per 15g of water. A stronger cup uses less water (e.g., 1:12); a lighter cup uses more (1:17).",
+    "xpReward": 10,
+    "cardId": "card_brew_ratio",
+    "steps": [
+      {
+        "type": "multiple_choice",
+        "question": "If you use 20g of coffee and want a 1:15 ratio, how much water do you need?",
+        "options": ["300g", "200g", "150g", "450g"],
+        "correctIndex": 0,
+        "explanation": "20g × 15 = 300g of water. Ratios scale linearly — the math is always coffee weight × ratio multiplier."
+      }
+    ]
+  },
+  {
+    "id": "lesson_extraction",
+    "moduleId": "module_brewing",
+    "title": "Extraction Explained",
+    "summary": "Extraction is how much of the coffee's soluble compounds dissolve into your water. The sweet spot is 18–22% extraction yield. Under = sour. Over = bitter. Time, grind, temperature, and ratio all affect it.",
+    "xpReward": 20,
+    "cardId": "card_extraction",
+    "steps": [
+      {
+        "type": "multiple_choice",
+        "question": "Your coffee tastes sour and weak. Which extraction problem is most likely?",
+        "options": ["Under-extraction", "Over-extraction", "Correct extraction", "Too much water"],
+        "correctIndex": 0,
+        "explanation": "Sour and hollow flavors signal under-extraction — not enough solubles dissolved. Grind finer or brew longer to fix it."
+      },
+      {
+        "type": "drag_drop",
+        "instruction": "Match each taste symptom to its extraction cause.",
+        "terms": ["Sour and thin", "Bitter and harsh", "Balanced and sweet"],
+        "definitions": ["Under-extracted", "Over-extracted", "Correctly extracted"]
+      }
+    ]
+  },
+  {
+    "id": "lesson_acidity_body",
+    "moduleId": "module_taste",
+    "title": "Acidity, Body, Sweetness",
+    "summary": "Three sensory axes define coffee flavor. Acidity is brightness (like citrus). Body is weight in the mouth (like the difference between skim and whole milk). Sweetness balances both.",
+    "xpReward": 20,
+    "cardId": "card_acidity_body",
+    "steps": [
+      {
+        "type": "drag_drop",
+        "instruction": "Match each sensory term to its best description.",
+        "terms": ["Acidity", "Body", "Sweetness"],
+        "definitions": ["Brightness or tartness in the cup", "Weight and texture on the palate", "Natural sugar notes that balance the cup"]
+      },
+      {
+        "type": "multiple_choice",
+        "question": "A light roast Ethiopian coffee is described as 'tea-like with high acidity'. What does that tell you about its body?",
+        "options": ["Light body", "Heavy body", "Full body", "No body"],
+        "correctIndex": 0,
+        "explanation": "Tea-like describes a light, delicate texture — typical of light roasts and Washed Ethiopian coffees which are known for their bright, thin mouthfeel."
+      }
+    ]
+  },
+  {
+    "id": "lesson_how_to_taste",
+    "moduleId": "module_taste",
+    "title": "How to Taste Coffee",
+    "summary": "Intentional tasting — called cupping in the industry — involves slurping coffee to aerate it across your palate, then noting what you perceive. Temperature matters: flavors shift as coffee cools.",
+    "xpReward": 10,
+    "cardId": "card_how_to_taste",
+    "steps": [
+      {
+        "type": "multiple_choice",
+        "question": "Why do professional tasters slurp coffee loudly when cupping?",
+        "options": [
+          "To spray coffee across the palate for a fuller tasting experience",
+          "It is a sign of respect in coffee culture",
+          "To cool the coffee faster",
+          "Slurping releases hidden flavors through fermentation"
+        ],
+        "correctIndex": 0,
+        "explanation": "Slurping aerates the liquid and sprays it over more taste receptors — the same reason wine tasters 'chew' their sips."
+      }
+    ]
+  },
+  {
+    "id": "lesson_flavor_descriptors",
+    "moduleId": "module_taste",
+    "title": "Common Flavor Descriptors",
+    "summary": "The Specialty Coffee Association's flavor wheel gives tasters a shared vocabulary. Common descriptors include: floral, fruity, nutty, caramel, chocolate, and spice. The same word means the same thing at any cafe worldwide.",
+    "xpReward": 20,
+    "cardId": "card_flavor_descriptors",
+    "steps": [
+      {
+        "type": "tap_order",
+        "instruction": "Tap these flavor families from most delicate to most bold.",
+        "items": ["Floral", "Fruity", "Nutty", "Caramel", "Dark chocolate", "Smoky"],
+        "explanation": "Delicate florals appear in light roasts; bold smoky notes develop in very dark roasts. This progression roughly mirrors roast level."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "A coffee is described as having 'jasmine and peach' notes. What roast level is it most likely?",
+        "options": ["Light roast", "Dark roast", "Very dark roast", "Instant coffee"],
+        "correctIndex": 0,
+        "explanation": "Delicate floral and stone-fruit descriptors survive only at light roast levels — they're among the first to disappear with heat."
+      }
+    ]
+  }
+]

@@ -28,21 +28,21 @@ Before starting, verify:
 
 **Reference:** `docs/03-project-scaffold.md`, `docs/04-folder-structure.md`, `docs/05-dependencies.md`
 
-- [ ] Run `flutter create --org dev.maximsan --project-name coffee_quest --platforms ios coffee_quest`
-- [ ] Set iOS minimum deployment target to 16.0 in `ios/Podfile` and Xcode
-- [ ] Set Bundle ID to `com.yourcompany.coffeequest` in Xcode
-- [ ] Replace `pubspec.yaml` with full version from `docs/05-dependencies.md`
-- [ ] Run `flutter pub get`
-- [ ] Create all directories from `docs/04-folder-structure.md` using the mkdir commands in `docs/03-project-scaffold.md`
-- [ ] Create `assets/content/.gitkeep`, `assets/images/.gitkeep`, `assets/icons/.gitkeep`
-- [ ] Create `lib/main.dart` (content from `docs/03-project-scaffold.md` §7)
-- [ ] Create `lib/app/app_bootstrap.dart` (stub — only Isar; Firebase is Phase 8 only)
-- [ ] Create `lib/app/app.dart` (content from `docs/03-project-scaffold.md` §9)
-- [ ] Create `lib/app/app_theme.dart` (content from `docs/03-project-scaffold.md` §10)
-- [ ] Create `lib/app/app_router.dart` (stub from `docs/03-project-scaffold.md` §11)
-- [ ] Create `analysis_options.yaml` (content from `docs/05-dependencies.md`)
-- [ ] Run `dart run build_runner build --delete-conflicting-outputs`
-- [ ] Run `cd ios && pod install && cd ..`
+- [x] Run `flutter create --org dev.maximsan --project-name coffee_quest --platforms ios coffee_quest`
+- [x] Set iOS minimum deployment target to 16.0 in `ios/Podfile` and Xcode
+- [x] Set Bundle ID to `dev.maximsan.coffeequest` in Xcode
+- [x] Replace `pubspec.yaml` with full version from `docs/05-dependencies.md`
+- [x] Run `flutter pub get`
+- [x] Create all directories from `docs/04-folder-structure.md` using the mkdir commands in `docs/03-project-scaffold.md`
+- [x] Create `assets/content/.gitkeep`, `assets/images/.gitkeep`, `assets/icons/.gitkeep`
+- [x] Create `lib/main.dart`
+- [x] Create `lib/app/app_bootstrap.dart` (Isar only; Firebase deferred to Phase 8)
+- [x] Create `lib/app/app.dart`
+- [x] Create `lib/app/app_theme.dart`
+- [x] Create `lib/app/app_router.dart` (stub routes)
+- [x] Create `analysis_options.yaml`
+- [x] Run `dart run build_runner build --delete-conflicting-outputs`
+- [x] Run `cd ios && pod install && cd ..`
 - [ ] Run `flutter run -d "iPhone 16 Pro"` → verify app launches with stub screens
 
 **Phase 1 Done when:** App launches on iOS Simulator, no crash, stub screens visible, bundle ID is `dev.maximsan.coffeequest`.
@@ -53,26 +53,28 @@ Before starting, verify:
 
 **Reference:** `docs/07-content-model.md`
 
-- [ ] Create `lib/shared/models/module_model.dart` (Freezed + fromJson)
-- [ ] Create `lib/shared/models/lesson_model.dart` (Freezed + fromJson)
-- [ ] Create `lib/shared/models/lesson_step_model.dart` (sealed Freezed union — 4 variants)
-- [ ] Create `lib/shared/models/coffee_card_model.dart` (Freezed + fromJson)
-- [ ] Create `assets/content/modules.json` with all 5 modules (from `docs/07-content-model.md` and `docs/01-mvp-scope.md`)
-- [ ] Create `assets/content/lessons.json` with all 17 lessons:
-  - Each lesson must have: id, moduleId, title, summary, xpReward, optional cardId, and at least 1 step
-  - Step types across all lessons: at minimum 1 lesson uses each of the 4 mini-game types
-- [ ] Create `assets/content/cards.json` with all 17 card definitions
-- [ ] Create `lib/shared/repositories/content_repository.dart`
-- [ ] Add `@riverpod ContentRepository contentRepository(Ref ref)` to a provider file
-- [ ] Run `dart run build_runner build --delete-conflicting-outputs`
-- [ ] Write `test/unit/content_repository_test.dart`:
-  - 5 modules loaded
-  - 17 lessons loaded
-  - 17 cards loaded
-  - all lessons have ≥ 1 step
-- [ ] Run `flutter test test/unit/content_repository_test.dart` → passes
+- [x] Create `lib/shared/models/module_model.dart` (Freezed + fromJson)
+- [x] Create `lib/shared/models/lesson_model.dart` (Freezed + fromJson)
+- [x] Create `lib/shared/models/lesson_step_model.dart` (sealed Freezed union — 4 variants)
+- [x] Create `lib/shared/models/coffee_card_model.dart` (Freezed + fromJson)
+- [x] Create `assets/content/modules.json` with all 5 modules
+- [x] Create `assets/content/lessons.json` with all 17 lessons:
+  - Each lesson has: id, moduleId, title, summary, xpReward, cardId, and at least 1 step
+  - All 4 mini-game step types present across the 17 lessons
+- [x] Create `assets/content/cards.json` with all 17 card definitions
+- [x] Create `lib/shared/repositories/content_repository.dart`
+- [x] Add `@riverpod ContentRepository contentRepository(ContentRepositoryRef ref)` (inline in repository file)
+- [x] Run `dart run build_runner build --delete-conflicting-outputs`
+- [x] Write `test/unit/content_repository_test.dart`:
+  - 5 modules loaded ✓
+  - 17 lessons loaded ✓
+  - 17 cards loaded ✓
+  - all lessons have ≥ 1 step ✓
+  - getLessonById works ✓
+  - all 4 step types present ✓
+- [x] Run `flutter test test/unit/content_repository_test.dart` → 6/6 passed
 
-**Phase 2 Done when:** All content loads from JSON, unit tests pass.
+**Phase 2 Done when:** All content loads from JSON, unit tests pass. ✅
 
 ---
 

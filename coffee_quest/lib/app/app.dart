@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'app_router.dart';
-import 'app_theme.dart';
+import 'package:coffee_quest/app/app_router.dart';
+import 'package:coffee_quest/app/app_theme.dart';
 
 class CoffeeQuestApp extends ConsumerWidget {
   const CoffeeQuestApp({super.key});

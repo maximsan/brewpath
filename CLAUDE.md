@@ -1,0 +1,60 @@
+# Coffee Quest — CLAUDE.md
+
+## Project Layout
+
+```
+brewpath/               ← git root, CLAUDE.md lives here
+├── coffee_quest/       ← Flutter app; run ALL flutter/dart commands from here
+├── docs/               ← Architecture and task-plan docs
+└── .claude/            ← Claude Code project settings
+```
+
+## Architecture
+
+| Concern | Package | Notes |
+|---|---|---|
+| State | flutter_riverpod 2.x + riverpod_generator | `@riverpod` annotation; ref type is `{ProviderName}Ref` |
+| Navigation | go_router 17.x | `StatefulShellRoute` with 4 branches: `/learn`, `/path`, `/cards`, `/profile` |
+| Persistence | Isar 3.x | Offline-first; schemas registered in `shared/storage/isar_service.dart` |
+| Content models | Freezed + json_serializable | Loaded from `assets/content/*.json` at startup |
+| Payments | `NoOpPaymentsService` stub | Real `in_app_purchase` wired in Phase 9 |
+| Ads | `NoOpAdsService` stub | Real AdMob wired in Phase 9 |
+| Analytics / Crash | `NoOpAnalyticsService` stub | Firebase wired in Phase 8 |
+
+## Critical Rules
+
+- **Firebase is Phase 8 only.** Never add `firebase_core` or any Firebase import before Phase 8. `app_bootstrap.dart` opens Isar only.
+- **Package imports within `lib/`.** Use `package:coffee_quest/…` instead of `../…` for all imports inside the `lib/` directory.
+- **Regenerate after model changes.** Run `dart run build_runner build --delete-conflicting-outputs` whenever a Freezed model, Riverpod provider, or Isar collection is added or modified.
+- **No Firebase before Phase 8.** This rule is listed twice intentionally.
+
+## Phase Status (updated 2026-05-17)
+
+| Phase | Status | Description |
+|---|---|---|
+| 0 | ✅ Done | Prerequisites verified |
+| 1 | ✅ Done | Project scaffold, routing stub, theme |
+| 2 | 🔄 In progress | Content models, JSON assets, ContentRepository |
+| 3–11 | ⏳ Pending | See `docs/16-claude-code-task-plan.md` |
+
+## Common Commands (run from `coffee_quest/`)
+
+```bash
+flutter pub get
+dart run build_runner build --delete-conflicting-outputs
+flutter analyze
+flutter test
+flutter test test/unit/<file>
+flutter test test/widget/<file>
+flutter run -d "iPhone 16 Pro"
+flutter build ios --release --no-codesign
+```
+
+## Code Conventions
+
+- **Imports:** always `package:coffee_quest/…` within `lib/`; never relative `../` imports
+- **Comments:** TSDoc only for complex logic or third-party integrations; skip self-evident code
+- **Models:** Freezed for all content DTOs; Isar `@collection` for persisted records
+- **Providers:** function-style `@riverpod` only; class-based `@riverpod` only when state is mutable
+- **Tests:** unit tests in `test/unit/`; widget tests in `test/widget/`; integration tests in `integration_test/`
+- **No print statements** — use `debugPrint` only in development guards; never in production paths

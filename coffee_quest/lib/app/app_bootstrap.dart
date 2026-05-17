@@ -1,6 +1,6 @@
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
-import '../shared/storage/isar_service.dart';
+import 'package:coffee_quest/shared/storage/isar_service.dart';
 
 class AppBootstrap {
   static Future<void> initialize() async {

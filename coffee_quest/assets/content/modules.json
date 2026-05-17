@@ -1,0 +1,42 @@
+[
+  {
+    "id": "module_beans",
+    "title": "Beans",
+    "description": "Where coffee comes from and what makes beans different.",
+    "iconName": "beans",
+    "lessonIds": ["lesson_where_coffee", "lesson_arabica_robusta", "lesson_green_coffee"],
+    "unlockRequirement": null
+  },
+  {
+    "id": "module_processing",
+    "title": "Processing",
+    "description": "How coffee cherries are turned into green beans.",
+    "iconName": "processing",
+    "lessonIds": ["lesson_washed", "lesson_natural", "lesson_honey"],
+    "unlockRequirement": "module_beans"
+  },
+  {
+    "id": "module_roast",
+    "title": "Roast",
+    "description": "What roasting does to coffee and how roast level affects flavor.",
+    "iconName": "roast",
+    "lessonIds": ["lesson_what_roasting_does", "lesson_light_roast", "lesson_medium_roast", "lesson_dark_roast"],
+    "unlockRequirement": "module_processing"
+  },
+  {
+    "id": "module_brewing",
+    "title": "Brewing Basics",
+    "description": "The key variables that control how your coffee tastes.",
+    "iconName": "brewing",
+    "lessonIds": ["lesson_grind_size", "lesson_water_temp", "lesson_brew_ratio", "lesson_extraction"],
+    "unlockRequirement": "module_roast"
+  },
+  {
+    "id": "module_taste",
+    "title": "Taste",
+    "description": "How to understand and describe what you're tasting.",
+    "iconName": "taste",
+    "lessonIds": ["lesson_acidity_body", "lesson_how_to_taste", "lesson_flavor_descriptors"],
+    "unlockRequirement": "module_brewing"
+  }
+]
