@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# The Flutter app lives in coffee_quest/; the repo root holds only docs.
+defaults:
+  run:
+    working-directory: coffee_quest
+
+jobs:
+  test:
+    name: analyze & test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.44.0
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      # Runs every *_test.dart under test/ recursively, including the
+      # Drift schema smoke/UNIQUE tests in test/database/. Generated
+      # helpers are committed, so no codegen step is required here.
+      - name: Test
+        run: flutter test
