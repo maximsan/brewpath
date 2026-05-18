@@ -15,17 +15,26 @@ class ContentRepository {
   List<CoffeeCardModel>? _cards;
 
   Future<List<ModuleModel>> getModules() async {
-    _modules ??= await _load('assets/content/modules.json', ModuleModel.fromJson);
+    _modules ??= await _load(
+      'assets/content/modules.json',
+      ModuleModel.fromJson,
+    );
     return _modules!;
   }
 
   Future<List<LessonModel>> getLessons() async {
-    _lessons ??= await _load('assets/content/lessons.json', LessonModel.fromJson);
+    _lessons ??= await _load(
+      'assets/content/lessons.json',
+      LessonModel.fromJson,
+    );
     return _lessons!;
   }
 
   Future<List<CoffeeCardModel>> getCards() async {
-    _cards ??= await _load('assets/content/cards.json', CoffeeCardModel.fromJson);
+    _cards ??= await _load(
+      'assets/content/cards.json',
+      CoffeeCardModel.fromJson,
+    );
     return _cards!;
   }
 
@@ -45,5 +54,4 @@ class ContentRepository {
 }
 
 @riverpod
-ContentRepository contentRepository(Ref ref) =>
-    ContentRepository();
+ContentRepository contentRepository(Ref ref) => ContentRepository();

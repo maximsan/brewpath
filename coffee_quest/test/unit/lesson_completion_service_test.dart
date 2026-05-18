@@ -45,15 +45,18 @@ void main() {
   });
 
   group('LessonCompletionService', () {
-    test('completing a lesson persists progress, XP, card and streak', () async {
-      final lesson = (await content.getLessonById('lesson_where_coffee'))!;
-      await service.completeLesson(lesson);
+    test(
+      'completing a lesson persists progress, XP, card and streak',
+      () async {
+        final lesson = (await content.getLessonById('lesson_where_coffee'))!;
+        await service.completeLesson(lesson);
 
-      expect(await progress.getByLessonId('lesson_where_coffee'), isNotNull);
-      expect((await settings.getSettings()).totalXp, 10);
-      expect(await cards.isCardCollected('card_where_coffee'), isTrue);
-      expect((await settings.getSettings()).streakDays, 1);
-    });
+        expect(await progress.getByLessonId('lesson_where_coffee'), isNotNull);
+        expect((await settings.getSettings()).totalXp, 10);
+        expect(await cards.isCardCollected('card_where_coffee'), isTrue);
+        expect((await settings.getSettings()).streakDays, 1);
+      },
+    );
 
     test('replaying a completed lesson is idempotent', () async {
       final lesson = (await content.getLessonById('lesson_where_coffee'))!;
@@ -64,17 +67,20 @@ void main() {
       expect((await settings.getSettings()).totalXp, 10);
     });
 
-    test('finishing every lesson in a module awards the module bonus', () async {
-      for (final id in const [
-        'lesson_where_coffee',
-        'lesson_arabica_robusta',
-        'lesson_green_coffee',
-      ]) {
-        await service.completeLesson((await content.getLessonById(id))!);
-      }
+    test(
+      'finishing every lesson in a module awards the module bonus',
+      () async {
+        for (final id in const [
+          'lesson_where_coffee',
+          'lesson_arabica_robusta',
+          'lesson_green_coffee',
+        ]) {
+          await service.completeLesson((await content.getLessonById(id))!);
+        }
 
-      // Lesson XP 10 + 20 + 10 = 40, plus the 25 module-completion bonus.
-      expect((await settings.getSettings()).totalXp, 65);
-    });
+        // Lesson XP 10 + 20 + 10 = 40, plus the 25 module-completion bonus.
+        expect((await settings.getSettings()).totalXp, 65);
+      },
+    );
   });
 }

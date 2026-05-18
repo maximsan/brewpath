@@ -26,20 +26,19 @@ class ModuleWithProgress {
 }
 
 @riverpod
-Future<List<ModuleWithProgress>> modulesWithProgress(
-  Ref ref,
-) async {
+Future<List<ModuleWithProgress>> modulesWithProgress(Ref ref) async {
   final content = ref.watch(contentRepositoryProvider);
   final modules = await content.getModules();
-  final completed = await ref.watch(progressRepositoryProvider).getAllCompleted();
+  final completed = await ref
+      .watch(progressRepositoryProvider)
+      .getAllCompleted();
   final completedIds = completed.map((r) => r.lessonId).toSet();
 
   return modules
       .map(
         (m) => ModuleWithProgress(
           module: m,
-          completedCount:
-              m.lessonIds.where(completedIds.contains).length,
+          completedCount: m.lessonIds.where(completedIds.contains).length,
           totalCount: m.lessonIds.length,
         ),
       )
@@ -50,7 +49,9 @@ Future<List<ModuleWithProgress>> modulesWithProgress(
 Future<LessonModel?> todayLesson(Ref ref) async {
   final content = ref.watch(contentRepositoryProvider);
   final modules = await content.getModules();
-  final completed = await ref.watch(progressRepositoryProvider).getAllCompleted();
+  final completed = await ref
+      .watch(progressRepositoryProvider)
+      .getAllCompleted();
   final completedIds = completed.map((r) => r.lessonId).toSet();
 
   for (final module in modules) {

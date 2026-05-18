@@ -6,9 +6,5 @@ import 'package:coffee_quest/app/app.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AppBootstrap.initialize();
-  runApp(
-    const ProviderScope(
-      child: CoffeeQuestApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: CoffeeQuestApp()));
 }

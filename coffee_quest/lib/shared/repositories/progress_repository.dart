@@ -6,16 +6,16 @@ class ProgressRepository {
   AppDatabase get _db => AppDatabaseService.instance;
 
   Future<List<ProgressRecord>> getAllCompleted() async {
-    final rows = await (_db.select(_db.progressRecords)
-          ..where((t) => t.isCompleted.equals(true)))
-        .get();
+    final rows = await (_db.select(
+      _db.progressRecords,
+    )..where((t) => t.isCompleted.equals(true))).get();
     return rows.map(_toDto).toList();
   }
 
   Future<ProgressRecord?> getByLessonId(String lessonId) async {
-    final row = await (_db.select(_db.progressRecords)
-          ..where((t) => t.lessonId.equals(lessonId)))
-        .getSingleOrNull();
+    final row = await (_db.select(
+      _db.progressRecords,
+    )..where((t) => t.lessonId.equals(lessonId))).getSingleOrNull();
     return row == null ? null : _toDto(row);
   }
 
@@ -25,7 +25,9 @@ class ProgressRepository {
     required String lessonId,
     required int xpEarned,
   }) async {
-    await _db.into(_db.progressRecords).insert(
+    await _db
+        .into(_db.progressRecords)
+        .insert(
           ProgressRecordsCompanion.insert(
             lessonId: lessonId,
             isCompleted: true,
@@ -37,10 +39,10 @@ class ProgressRepository {
   }
 
   ProgressRecord _toDto(ProgressRow r) => ProgressRecord(
-        id: r.id,
-        lessonId: r.lessonId,
-        isCompleted: r.isCompleted,
-        xpEarned: r.xpEarned,
-        completedAt: r.completedAt,
-      );
+    id: r.id,
+    lessonId: r.lessonId,
+    isCompleted: r.isCompleted,
+    xpEarned: r.xpEarned,
+    completedAt: r.completedAt,
+  );
 }

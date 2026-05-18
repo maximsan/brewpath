@@ -42,7 +42,7 @@ class AppDatabase extends _$AppDatabase {
   /// Production opens a platform DB via drift_flutter; tests pass
   /// `NativeDatabase.memory()`.
   AppDatabase([QueryExecutor? executor])
-      : super(executor ?? driftDatabase(name: 'coffee_quest'));
+    : super(executor ?? driftDatabase(name: 'coffee_quest'));
 
   @override
   int get schemaVersion => 1;

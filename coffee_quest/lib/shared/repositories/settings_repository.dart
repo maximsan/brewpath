@@ -11,9 +11,9 @@ class SettingsRepository {
   /// launch (defaults are not persisted until [saveSettings] is called —
   /// matches the prior Isar behavior).
   Future<UserSettingsRecord> getSettings() async {
-    final row = await (_db.select(_db.userSettings)
-          ..where((t) => t.id.equals(settingsId)))
-        .getSingleOrNull();
+    final row = await (_db.select(
+      _db.userSettings,
+    )..where((t) => t.id.equals(settingsId))).getSingleOrNull();
     if (row != null) {
       return UserSettingsRecord(
         id: row.id,
@@ -35,7 +35,9 @@ class SettingsRepository {
   }
 
   Future<void> saveSettings(UserSettingsRecord settings) async {
-    await _db.into(_db.userSettings).insertOnConflictUpdate(
+    await _db
+        .into(_db.userSettings)
+        .insertOnConflictUpdate(
           UserSettingsCompanion.insert(
             id: const Value(settingsId),
             hapticsEnabled: settings.hapticsEnabled,

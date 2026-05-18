@@ -41,10 +41,7 @@ class LessonCompletionService {
     if (existing != null) return;
 
     final xp = xpService.calculateLessonXp(lesson.steps.length);
-    await progressRepository.saveCompletion(
-      lessonId: lesson.id,
-      xpEarned: xp,
-    );
+    await progressRepository.saveCompletion(lessonId: lesson.id, xpEarned: xp);
     await settingsRepository.addXp(xp);
 
     final cardId = lesson.cardId;
@@ -91,9 +88,7 @@ class LessonCompletionService {
 }
 
 @riverpod
-LessonCompletionService lessonCompletionService(
-  Ref ref,
-) =>
+LessonCompletionService lessonCompletionService(Ref ref) =>
     LessonCompletionService(
       progressRepository: ref.watch(progressRepositoryProvider),
       settingsRepository: ref.watch(settingsRepositoryProvider),

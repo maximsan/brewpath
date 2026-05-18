@@ -10,15 +10,17 @@ class CardRepository {
   }
 
   Future<bool> isCardCollected(String cardId) async {
-    final row = await (_db.select(_db.cardRecords)
-          ..where((t) => t.cardId.equals(cardId)))
-        .getSingleOrNull();
+    final row = await (_db.select(
+      _db.cardRecords,
+    )..where((t) => t.cardId.equals(cardId))).getSingleOrNull();
     return row != null;
   }
 
   /// Idempotent — unique `cardId` + insert-or-ignore stores one record.
   Future<void> collectCard(String cardId) async {
-    await _db.into(_db.cardRecords).insert(
+    await _db
+        .into(_db.cardRecords)
+        .insert(
           CardRecordsCompanion.insert(
             cardId: cardId,
             unlockedAt: DateTime.now(),

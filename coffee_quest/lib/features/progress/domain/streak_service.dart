@@ -1,7 +1,10 @@
 import 'package:coffee_quest/core/utils/date_utils.dart';
 
 class StreakResult {
-  const StreakResult({required this.streakDays, required this.lastActivityDate});
+  const StreakResult({
+    required this.streakDays,
+    required this.lastActivityDate,
+  });
 
   final int streakDays;
   final DateTime lastActivityDate;
