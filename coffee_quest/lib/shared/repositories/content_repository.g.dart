@@ -6,21 +6,52 @@ part of 'content_repository.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$contentRepositoryHash() => r'793f1937d2b9bff45f6596c65beb66216212061d';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 
-/// See also [contentRepository].
 @ProviderFor(contentRepository)
-final contentRepositoryProvider =
-    AutoDisposeProvider<ContentRepository>.internal(
-  contentRepository,
-  name: r'contentRepositoryProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$contentRepositoryHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final contentRepositoryProvider = ContentRepositoryProvider._();
 
-typedef ContentRepositoryRef = AutoDisposeProviderRef<ContentRepository>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+final class ContentRepositoryProvider
+    extends
+        $FunctionalProvider<
+          ContentRepository,
+          ContentRepository,
+          ContentRepository
+        >
+    with $Provider<ContentRepository> {
+  ContentRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'contentRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$contentRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<ContentRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  ContentRepository create(Ref ref) {
+    return contentRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ContentRepository value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ContentRepository>(value),
+    );
+  }
+}
+
+String _$contentRepositoryHash() => r'a017eaa702b717aeaa25556f57af76e0a9a96c39';

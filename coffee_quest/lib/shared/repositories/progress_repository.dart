@@ -1,36 +1,46 @@
-import 'package:isar/isar.dart';
-import 'package:coffee_quest/shared/storage/isar_service.dart';
+import 'package:drift/drift.dart';
+import 'package:coffee_quest/shared/storage/app_database.dart';
 import 'package:coffee_quest/shared/storage/progress_record.dart';
 
 class ProgressRepository {
-  Isar get _isar => IsarService.instance;
+  AppDatabase get _db => AppDatabaseService.instance;
 
   Future<List<ProgressRecord>> getAllCompleted() async {
-    return _isar.progressRecords.filter().isCompletedEqualTo(true).findAll();
+    final rows = await (_db.select(_db.progressRecords)
+          ..where((t) => t.isCompleted.equals(true)))
+        .get();
+    return rows.map(_toDto).toList();
   }
 
   Future<ProgressRecord?> getByLessonId(String lessonId) async {
-    return _isar.progressRecords.filter().lessonIdEqualTo(lessonId).findFirst();
+    final row = await (_db.select(_db.progressRecords)
+          ..where((t) => t.lessonId.equals(lessonId)))
+        .getSingleOrNull();
+    return row == null ? null : _toDto(row);
   }
 
-  /// Idempotent — calling twice for the same [lessonId] stores only one record.
+  /// Idempotent — the unique `lessonId` + insert-or-ignore means calling
+  /// twice for the same lesson stores only one record.
   Future<void> saveCompletion({
     required String lessonId,
     required int xpEarned,
   }) async {
-    await _isar.writeTxn(() async {
-      final existing = await _isar.progressRecords
-          .filter()
-          .lessonIdEqualTo(lessonId)
-          .findFirst();
-      if (existing != null) return;
-      await _isar.progressRecords.put(
-        ProgressRecord()
-          ..lessonId = lessonId
-          ..isCompleted = true
-          ..xpEarned = xpEarned
-          ..completedAt = DateTime.now(),
-      );
-    });
+    await _db.into(_db.progressRecords).insert(
+          ProgressRecordsCompanion.insert(
+            lessonId: lessonId,
+            isCompleted: true,
+            xpEarned: xpEarned,
+            completedAt: DateTime.now(),
+          ),
+          mode: InsertMode.insertOrIgnore,
+        );
   }
+
+  ProgressRecord _toDto(ProgressRow r) => ProgressRecord(
+        id: r.id,
+        lessonId: r.lessonId,
+        isCompleted: r.isCompleted,
+        xpEarned: r.xpEarned,
+        completedAt: r.completedAt,
+      );
 }

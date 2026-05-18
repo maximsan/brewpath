@@ -1,32 +1,29 @@
-import 'package:isar/isar.dart';
-import 'package:coffee_quest/shared/storage/card_record.dart';
-import 'package:coffee_quest/shared/storage/isar_service.dart';
+import 'package:drift/drift.dart';
+import 'package:coffee_quest/shared/storage/app_database.dart';
 
 class CardRepository {
-  Isar get _isar => IsarService.instance;
+  AppDatabase get _db => AppDatabaseService.instance;
 
   Future<List<String>> getAllCollectedCardIds() async {
-    final records = await _isar.cardRecords.where().findAll();
-    return records.map((r) => r.cardId).toList();
+    final rows = await _db.select(_db.cardRecords).get();
+    return rows.map((r) => r.cardId).toList();
   }
 
   Future<bool> isCardCollected(String cardId) async {
-    final record =
-        await _isar.cardRecords.filter().cardIdEqualTo(cardId).findFirst();
-    return record != null;
+    final row = await (_db.select(_db.cardRecords)
+          ..where((t) => t.cardId.equals(cardId)))
+        .getSingleOrNull();
+    return row != null;
   }
 
-  /// Idempotent — collecting the same [cardId] twice stores only one record.
+  /// Idempotent — unique `cardId` + insert-or-ignore stores one record.
   Future<void> collectCard(String cardId) async {
-    await _isar.writeTxn(() async {
-      final exists =
-          await _isar.cardRecords.filter().cardIdEqualTo(cardId).findFirst();
-      if (exists != null) return;
-      await _isar.cardRecords.put(
-        CardRecord()
-          ..cardId = cardId
-          ..unlockedAt = DateTime.now(),
-      );
-    });
+    await _db.into(_db.cardRecords).insert(
+          CardRecordsCompanion.insert(
+            cardId: cardId,
+            unlockedAt: DateTime.now(),
+          ),
+          mode: InsertMode.insertOrIgnore,
+        );
   }
 }

@@ -4,7 +4,7 @@ part 'coffee_card_model.freezed.dart';
 part 'coffee_card_model.g.dart';
 
 @freezed
-class CoffeeCardModel with _$CoffeeCardModel {
+abstract class CoffeeCardModel with _$CoffeeCardModel {
   const factory CoffeeCardModel({
     required String id,
     required String title,

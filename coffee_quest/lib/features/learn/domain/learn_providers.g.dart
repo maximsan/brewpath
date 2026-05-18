@@ -6,37 +6,86 @@ part of 'learn_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$modulesWithProgressHash() =>
-    r'f7cad578e0a67e982cd46956dee8334bfca343d7';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 
-/// See also [modulesWithProgress].
 @ProviderFor(modulesWithProgress)
-final modulesWithProgressProvider =
-    AutoDisposeFutureProvider<List<ModuleWithProgress>>.internal(
-  modulesWithProgress,
-  name: r'modulesWithProgressProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$modulesWithProgressHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final modulesWithProgressProvider = ModulesWithProgressProvider._();
 
-typedef ModulesWithProgressRef
-    = AutoDisposeFutureProviderRef<List<ModuleWithProgress>>;
-String _$todayLessonHash() => r'9178334dad44ee4acf210f33641282ac7c23a7e2';
+final class ModulesWithProgressProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<ModuleWithProgress>>,
+          List<ModuleWithProgress>,
+          FutureOr<List<ModuleWithProgress>>
+        >
+    with
+        $FutureModifier<List<ModuleWithProgress>>,
+        $FutureProvider<List<ModuleWithProgress>> {
+  ModulesWithProgressProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'modulesWithProgressProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
-/// See also [todayLesson].
+  @override
+  String debugGetCreateSourceHash() => _$modulesWithProgressHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<ModuleWithProgress>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<ModuleWithProgress>> create(Ref ref) {
+    return modulesWithProgress(ref);
+  }
+}
+
+String _$modulesWithProgressHash() =>
+    r'64682fd622b234541aa059a4ae7885aa303cf002';
+
 @ProviderFor(todayLesson)
-final todayLessonProvider = AutoDisposeFutureProvider<LessonModel?>.internal(
-  todayLesson,
-  name: r'todayLessonProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$todayLessonHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final todayLessonProvider = TodayLessonProvider._();
 
-typedef TodayLessonRef = AutoDisposeFutureProviderRef<LessonModel?>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+final class TodayLessonProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<LessonModel?>,
+          LessonModel?,
+          FutureOr<LessonModel?>
+        >
+    with $FutureModifier<LessonModel?>, $FutureProvider<LessonModel?> {
+  TodayLessonProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'todayLessonProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$todayLessonHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<LessonModel?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<LessonModel?> create(Ref ref) {
+    return todayLesson(ref);
+  }
+}
+
+String _$todayLessonHash() => r'874e4a4903c7e12c16470cd2b56c2772a6d24b81';

@@ -6,54 +6,142 @@ part of 'repository_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$progressRepositoryHash() =>
-    r'3f53bdefa1be41fea0fdfccec555edc31574986c';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 
-/// See also [progressRepository].
 @ProviderFor(progressRepository)
-final progressRepositoryProvider =
-    AutoDisposeProvider<ProgressRepository>.internal(
-  progressRepository,
-  name: r'progressRepositoryProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$progressRepositoryHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final progressRepositoryProvider = ProgressRepositoryProvider._();
 
-typedef ProgressRepositoryRef = AutoDisposeProviderRef<ProgressRepository>;
-String _$cardRepositoryHash() => r'615e50d2a1db2018f04d3df63584887cfc38543f';
+final class ProgressRepositoryProvider
+    extends
+        $FunctionalProvider<
+          ProgressRepository,
+          ProgressRepository,
+          ProgressRepository
+        >
+    with $Provider<ProgressRepository> {
+  ProgressRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'progressRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
-/// See also [cardRepository].
+  @override
+  String debugGetCreateSourceHash() => _$progressRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<ProgressRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  ProgressRepository create(Ref ref) {
+    return progressRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ProgressRepository value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ProgressRepository>(value),
+    );
+  }
+}
+
+String _$progressRepositoryHash() =>
+    r'9a3620daa1db873d4d1a8416e2dc99b3eec569da';
+
 @ProviderFor(cardRepository)
-final cardRepositoryProvider = AutoDisposeProvider<CardRepository>.internal(
-  cardRepository,
-  name: r'cardRepositoryProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$cardRepositoryHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final cardRepositoryProvider = CardRepositoryProvider._();
 
-typedef CardRepositoryRef = AutoDisposeProviderRef<CardRepository>;
-String _$settingsRepositoryHash() =>
-    r'36704406b69a8effddb81b7f34a2f411cb3873ea';
+final class CardRepositoryProvider
+    extends $FunctionalProvider<CardRepository, CardRepository, CardRepository>
+    with $Provider<CardRepository> {
+  CardRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'cardRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
-/// See also [settingsRepository].
+  @override
+  String debugGetCreateSourceHash() => _$cardRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<CardRepository> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  CardRepository create(Ref ref) {
+    return cardRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(CardRepository value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<CardRepository>(value),
+    );
+  }
+}
+
+String _$cardRepositoryHash() => r'3fbc209dd98e2db5e53bf745145d7b2d1b4e8e99';
+
 @ProviderFor(settingsRepository)
-final settingsRepositoryProvider =
-    AutoDisposeProvider<SettingsRepository>.internal(
-  settingsRepository,
-  name: r'settingsRepositoryProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$settingsRepositoryHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final settingsRepositoryProvider = SettingsRepositoryProvider._();
 
-typedef SettingsRepositoryRef = AutoDisposeProviderRef<SettingsRepository>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+final class SettingsRepositoryProvider
+    extends
+        $FunctionalProvider<
+          SettingsRepository,
+          SettingsRepository,
+          SettingsRepository
+        >
+    with $Provider<SettingsRepository> {
+  SettingsRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'settingsRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$settingsRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<SettingsRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  SettingsRepository create(Ref ref) {
+    return settingsRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(SettingsRepository value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<SettingsRepository>(value),
+    );
+  }
+}
+
+String _$settingsRepositoryHash() =>
+    r'c5a39438caec85b55a650dcd24bd66b30ea47e8f';

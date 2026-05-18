@@ -1,5 +1,5 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
@@ -9,276 +9,293 @@ part of 'lesson_model.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
-LessonModel _$LessonModelFromJson(Map<String, dynamic> json) {
-  return _LessonModel.fromJson(json);
-}
 
 /// @nodoc
 mixin _$LessonModel {
-  String get id => throw _privateConstructorUsedError;
-  String get moduleId => throw _privateConstructorUsedError;
-  String get title => throw _privateConstructorUsedError;
-  String get summary => throw _privateConstructorUsedError;
-  int get xpReward => throw _privateConstructorUsedError;
-  String? get cardId => throw _privateConstructorUsedError;
-  List<LessonStepModel> get steps => throw _privateConstructorUsedError;
 
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $LessonModelCopyWith<LessonModel> get copyWith =>
-      throw _privateConstructorUsedError;
+ String get id; String get moduleId; String get title; String get summary; int get xpReward; String? get cardId; List<LessonStepModel> get steps;
+/// Create a copy of LessonModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$LessonModelCopyWith<LessonModel> get copyWith => _$LessonModelCopyWithImpl<LessonModel>(this as LessonModel, _$identity);
+
+  /// Serializes this LessonModel to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LessonModel&&(identical(other.id, id) || other.id == id)&&(identical(other.moduleId, moduleId) || other.moduleId == moduleId)&&(identical(other.title, title) || other.title == title)&&(identical(other.summary, summary) || other.summary == summary)&&(identical(other.xpReward, xpReward) || other.xpReward == xpReward)&&(identical(other.cardId, cardId) || other.cardId == cardId)&&const DeepCollectionEquality().equals(other.steps, steps));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,moduleId,title,summary,xpReward,cardId,const DeepCollectionEquality().hash(steps));
+
+@override
+String toString() {
+  return 'LessonModel(id: $id, moduleId: $moduleId, title: $title, summary: $summary, xpReward: $xpReward, cardId: $cardId, steps: $steps)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $LessonModelCopyWith<$Res> {
-  factory $LessonModelCopyWith(
-          LessonModel value, $Res Function(LessonModel) then) =
-      _$LessonModelCopyWithImpl<$Res, LessonModel>;
-  @useResult
-  $Res call(
-      {String id,
-      String moduleId,
-      String title,
-      String summary,
-      int xpReward,
-      String? cardId,
-      List<LessonStepModel> steps});
-}
+abstract mixin class $LessonModelCopyWith<$Res>  {
+  factory $LessonModelCopyWith(LessonModel value, $Res Function(LessonModel) _then) = _$LessonModelCopyWithImpl;
+@useResult
+$Res call({
+ String id, String moduleId, String title, String summary, int xpReward, String? cardId, List<LessonStepModel> steps
+});
 
+
+
+
+}
 /// @nodoc
-class _$LessonModelCopyWithImpl<$Res, $Val extends LessonModel>
+class _$LessonModelCopyWithImpl<$Res>
     implements $LessonModelCopyWith<$Res> {
-  _$LessonModelCopyWithImpl(this._value, this._then);
+  _$LessonModelCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final LessonModel _self;
+  final $Res Function(LessonModel) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? moduleId = null,
-    Object? title = null,
-    Object? summary = null,
-    Object? xpReward = null,
-    Object? cardId = freezed,
-    Object? steps = null,
-  }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      moduleId: null == moduleId
-          ? _value.moduleId
-          : moduleId // ignore: cast_nullable_to_non_nullable
-              as String,
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as String,
-      summary: null == summary
-          ? _value.summary
-          : summary // ignore: cast_nullable_to_non_nullable
-              as String,
-      xpReward: null == xpReward
-          ? _value.xpReward
-          : xpReward // ignore: cast_nullable_to_non_nullable
-              as int,
-      cardId: freezed == cardId
-          ? _value.cardId
-          : cardId // ignore: cast_nullable_to_non_nullable
-              as String?,
-      steps: null == steps
-          ? _value.steps
-          : steps // ignore: cast_nullable_to_non_nullable
-              as List<LessonStepModel>,
-    ) as $Val);
-  }
+/// Create a copy of LessonModel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? moduleId = null,Object? title = null,Object? summary = null,Object? xpReward = null,Object? cardId = freezed,Object? steps = null,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,moduleId: null == moduleId ? _self.moduleId : moduleId // ignore: cast_nullable_to_non_nullable
+as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,summary: null == summary ? _self.summary : summary // ignore: cast_nullable_to_non_nullable
+as String,xpReward: null == xpReward ? _self.xpReward : xpReward // ignore: cast_nullable_to_non_nullable
+as int,cardId: freezed == cardId ? _self.cardId : cardId // ignore: cast_nullable_to_non_nullable
+as String?,steps: null == steps ? _self.steps : steps // ignore: cast_nullable_to_non_nullable
+as List<LessonStepModel>,
+  ));
 }
 
-/// @nodoc
-abstract class _$$LessonModelImplCopyWith<$Res>
-    implements $LessonModelCopyWith<$Res> {
-  factory _$$LessonModelImplCopyWith(
-          _$LessonModelImpl value, $Res Function(_$LessonModelImpl) then) =
-      __$$LessonModelImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call(
-      {String id,
-      String moduleId,
-      String title,
-      String summary,
-      int xpReward,
-      String? cardId,
-      List<LessonStepModel> steps});
 }
 
-/// @nodoc
-class __$$LessonModelImplCopyWithImpl<$Res>
-    extends _$LessonModelCopyWithImpl<$Res, _$LessonModelImpl>
-    implements _$$LessonModelImplCopyWith<$Res> {
-  __$$LessonModelImplCopyWithImpl(
-      _$LessonModelImpl _value, $Res Function(_$LessonModelImpl) _then)
-      : super(_value, _then);
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? moduleId = null,
-    Object? title = null,
-    Object? summary = null,
-    Object? xpReward = null,
-    Object? cardId = freezed,
-    Object? steps = null,
-  }) {
-    return _then(_$LessonModelImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      moduleId: null == moduleId
-          ? _value.moduleId
-          : moduleId // ignore: cast_nullable_to_non_nullable
-              as String,
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as String,
-      summary: null == summary
-          ? _value.summary
-          : summary // ignore: cast_nullable_to_non_nullable
-              as String,
-      xpReward: null == xpReward
-          ? _value.xpReward
-          : xpReward // ignore: cast_nullable_to_non_nullable
-              as int,
-      cardId: freezed == cardId
-          ? _value.cardId
-          : cardId // ignore: cast_nullable_to_non_nullable
-              as String?,
-      steps: null == steps
-          ? _value._steps
-          : steps // ignore: cast_nullable_to_non_nullable
-              as List<LessonStepModel>,
-    ));
-  }
+/// Adds pattern-matching-related methods to [LessonModel].
+extension LessonModelPatterns on LessonModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _LessonModel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _LessonModel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _LessonModel value)  $default,){
+final _that = this;
+switch (_that) {
+case _LessonModel():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _LessonModel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _LessonModel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String moduleId,  String title,  String summary,  int xpReward,  String? cardId,  List<LessonStepModel> steps)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _LessonModel() when $default != null:
+return $default(_that.id,_that.moduleId,_that.title,_that.summary,_that.xpReward,_that.cardId,_that.steps);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String moduleId,  String title,  String summary,  int xpReward,  String? cardId,  List<LessonStepModel> steps)  $default,) {final _that = this;
+switch (_that) {
+case _LessonModel():
+return $default(_that.id,_that.moduleId,_that.title,_that.summary,_that.xpReward,_that.cardId,_that.steps);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String moduleId,  String title,  String summary,  int xpReward,  String? cardId,  List<LessonStepModel> steps)?  $default,) {final _that = this;
+switch (_that) {
+case _LessonModel() when $default != null:
+return $default(_that.id,_that.moduleId,_that.title,_that.summary,_that.xpReward,_that.cardId,_that.steps);case _:
+  return null;
+
+}
+}
+
 }
 
 /// @nodoc
 @JsonSerializable()
-class _$LessonModelImpl implements _LessonModel {
-  const _$LessonModelImpl(
-      {required this.id,
-      required this.moduleId,
-      required this.title,
-      required this.summary,
-      required this.xpReward,
-      this.cardId,
-      required final List<LessonStepModel> steps})
-      : _steps = steps;
 
-  factory _$LessonModelImpl.fromJson(Map<String, dynamic> json) =>
-      _$$LessonModelImplFromJson(json);
+class _LessonModel implements LessonModel {
+  const _LessonModel({required this.id, required this.moduleId, required this.title, required this.summary, required this.xpReward, this.cardId, required final  List<LessonStepModel> steps}): _steps = steps;
+  factory _LessonModel.fromJson(Map<String, dynamic> json) => _$LessonModelFromJson(json);
 
-  @override
-  final String id;
-  @override
-  final String moduleId;
-  @override
-  final String title;
-  @override
-  final String summary;
-  @override
-  final int xpReward;
-  @override
-  final String? cardId;
-  final List<LessonStepModel> _steps;
-  @override
-  List<LessonStepModel> get steps {
-    if (_steps is EqualUnmodifiableListView) return _steps;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_steps);
-  }
-
-  @override
-  String toString() {
-    return 'LessonModel(id: $id, moduleId: $moduleId, title: $title, summary: $summary, xpReward: $xpReward, cardId: $cardId, steps: $steps)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$LessonModelImpl &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.moduleId, moduleId) ||
-                other.moduleId == moduleId) &&
-            (identical(other.title, title) || other.title == title) &&
-            (identical(other.summary, summary) || other.summary == summary) &&
-            (identical(other.xpReward, xpReward) ||
-                other.xpReward == xpReward) &&
-            (identical(other.cardId, cardId) || other.cardId == cardId) &&
-            const DeepCollectionEquality().equals(other._steps, _steps));
-  }
-
-  @JsonKey(ignore: true)
-  @override
-  int get hashCode => Object.hash(runtimeType, id, moduleId, title, summary,
-      xpReward, cardId, const DeepCollectionEquality().hash(_steps));
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$LessonModelImplCopyWith<_$LessonModelImpl> get copyWith =>
-      __$$LessonModelImplCopyWithImpl<_$LessonModelImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$LessonModelImplToJson(
-      this,
-    );
-  }
+@override final  String id;
+@override final  String moduleId;
+@override final  String title;
+@override final  String summary;
+@override final  int xpReward;
+@override final  String? cardId;
+ final  List<LessonStepModel> _steps;
+@override List<LessonStepModel> get steps {
+  if (_steps is EqualUnmodifiableListView) return _steps;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_steps);
 }
 
-abstract class _LessonModel implements LessonModel {
-  const factory _LessonModel(
-      {required final String id,
-      required final String moduleId,
-      required final String title,
-      required final String summary,
-      required final int xpReward,
-      final String? cardId,
-      required final List<LessonStepModel> steps}) = _$LessonModelImpl;
 
-  factory _LessonModel.fromJson(Map<String, dynamic> json) =
-      _$LessonModelImpl.fromJson;
+/// Create a copy of LessonModel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$LessonModelCopyWith<_LessonModel> get copyWith => __$LessonModelCopyWithImpl<_LessonModel>(this, _$identity);
 
-  @override
-  String get id;
-  @override
-  String get moduleId;
-  @override
-  String get title;
-  @override
-  String get summary;
-  @override
-  int get xpReward;
-  @override
-  String? get cardId;
-  @override
-  List<LessonStepModel> get steps;
-  @override
-  @JsonKey(ignore: true)
-  _$$LessonModelImplCopyWith<_$LessonModelImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+Map<String, dynamic> toJson() {
+  return _$LessonModelToJson(this, );
 }
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LessonModel&&(identical(other.id, id) || other.id == id)&&(identical(other.moduleId, moduleId) || other.moduleId == moduleId)&&(identical(other.title, title) || other.title == title)&&(identical(other.summary, summary) || other.summary == summary)&&(identical(other.xpReward, xpReward) || other.xpReward == xpReward)&&(identical(other.cardId, cardId) || other.cardId == cardId)&&const DeepCollectionEquality().equals(other._steps, _steps));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,moduleId,title,summary,xpReward,cardId,const DeepCollectionEquality().hash(_steps));
+
+@override
+String toString() {
+  return 'LessonModel(id: $id, moduleId: $moduleId, title: $title, summary: $summary, xpReward: $xpReward, cardId: $cardId, steps: $steps)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$LessonModelCopyWith<$Res> implements $LessonModelCopyWith<$Res> {
+  factory _$LessonModelCopyWith(_LessonModel value, $Res Function(_LessonModel) _then) = __$LessonModelCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, String moduleId, String title, String summary, int xpReward, String? cardId, List<LessonStepModel> steps
+});
+
+
+
+
+}
+/// @nodoc
+class __$LessonModelCopyWithImpl<$Res>
+    implements _$LessonModelCopyWith<$Res> {
+  __$LessonModelCopyWithImpl(this._self, this._then);
+
+  final _LessonModel _self;
+  final $Res Function(_LessonModel) _then;
+
+/// Create a copy of LessonModel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? moduleId = null,Object? title = null,Object? summary = null,Object? xpReward = null,Object? cardId = freezed,Object? steps = null,}) {
+  return _then(_LessonModel(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,moduleId: null == moduleId ? _self.moduleId : moduleId // ignore: cast_nullable_to_non_nullable
+as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,summary: null == summary ? _self.summary : summary // ignore: cast_nullable_to_non_nullable
+as String,xpReward: null == xpReward ? _self.xpReward : xpReward // ignore: cast_nullable_to_non_nullable
+as int,cardId: freezed == cardId ? _self.cardId : cardId // ignore: cast_nullable_to_non_nullable
+as String?,steps: null == steps ? _self._steps : steps // ignore: cast_nullable_to_non_nullable
+as List<LessonStepModel>,
+  ));
+}
+
+
+}
+
+// dart format on

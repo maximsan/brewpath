@@ -1,13 +1,12 @@
-import 'package:isar/isar.dart';
-
-part 'card_record.g.dart';
-
-@collection
+/// Mutable DTO for a collected-card row. See [ProgressRecord] for rationale.
 class CardRecord {
-  Id id = Isar.autoIncrement;
+  CardRecord({
+    this.id = 0,
+    required this.cardId,
+    required this.unlockedAt,
+  });
 
-  @Index(unique: true)
-  late String cardId;
-
-  late DateTime unlockedAt;
+  int id;
+  String cardId;
+  DateTime unlockedAt;
 }

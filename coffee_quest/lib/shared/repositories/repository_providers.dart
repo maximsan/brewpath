@@ -6,12 +6,12 @@ import 'package:coffee_quest/shared/repositories/settings_repository.dart';
 part 'repository_providers.g.dart';
 
 @riverpod
-ProgressRepository progressRepository(ProgressRepositoryRef ref) =>
+ProgressRepository progressRepository(Ref ref) =>
     ProgressRepository();
 
 @riverpod
-CardRepository cardRepository(CardRepositoryRef ref) => CardRepository();
+CardRepository cardRepository(Ref ref) => CardRepository();
 
 @riverpod
-SettingsRepository settingsRepository(SettingsRepositoryRef ref) =>
+SettingsRepository settingsRepository(Ref ref) =>
     SettingsRepository();

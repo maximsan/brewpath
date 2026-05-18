@@ -4,7 +4,8 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.3.0 <4.0.0'
+  # Floor raised 3.3.0 → 3.8.0: required by json_serializable 6.13.x.
+  sdk: '>=3.8.0 <4.0.0'
   flutter: '>=3.22.0'
 
 dependencies:
@@ -12,15 +13,19 @@ dependencies:
     sdk: flutter
 
   # State management
-  flutter_riverpod: ^2.6.1
-  riverpod_annotation: ^2.6.1
+  flutter_riverpod: ^3.3.1
+  riverpod_annotation: ^4.0.2
 
   # Navigation
   go_router: ^17.2.3
 
-  # Local persistence
-  isar: ^3.1.0+1
-  isar_flutter_libs: ^3.1.0+1
+  # Local persistence — Drift (SQLite). Replaced abandoned Isar 3.x.
+  # drift_flutter pinned ^0.2.8 (not 0.3.0): 0.3.0 needs sqlite3 ^3, but
+  # drift 2.30.x needs sqlite3 ^2.6. drift pinned <2.32 so drift_dev stays
+  # in the analyzer-9 window shared with Riverpod 3 / Freezed 3.
+  drift: ^2.30.1
+  drift_flutter: ^0.2.8
+  sqlite3_flutter_libs: ^0.5.42
   path_provider: ^2.1.5
 
   # Firebase — added in Phase 8 only (deferred; app is offline-first for MVP)
@@ -36,8 +41,10 @@ dependencies:
   # google_mobile_ads: ^8.0.0
 
   # Utilities
-  freezed_annotation: ^2.4.4
-  json_annotation: ^4.9.0
+  freezed_annotation: ^3.1.0
+  # ^4.11.0 (not plan's ^4.12.0): json_serializable 6.13.x requires
+  # json_annotation <4.12.0. json_serializable ^6.13.0 is a HARD CONSTRAINT.
+  json_annotation: ^4.11.0
   collection: ^1.19.1
 
 dev_dependencies:
@@ -47,16 +54,17 @@ dev_dependencies:
     sdk: flutter
 
   # Code generation
-  build_runner: ^2.4.13
-  riverpod_generator: ^2.3.3
-  freezed: ^2.5.2
-  json_serializable: ^6.8.0
-  isar_generator: ^3.1.0+1
+  build_runner: ^2.15.0
+  riverpod_generator: ^4.0.3
+  freezed: ^3.2.5
+  json_serializable: ^6.13.0
+  drift_dev: ^2.30.1
 
   # Linting
-  flutter_lints: ^5.0.0
-  custom_lint: ^0.5.11
-  riverpod_lint: ^2.1.1
+  flutter_lints: ^6.0.0
+  # TODO(deps): Re-add riverpod_lint + custom_lint when custom_lint
+  # supports analyzer >=9. Ecosystem gap as of May 2026.
+  # Tracking: https://github.com/invertase/dart_custom_lint
 
 flutter:
   uses-material-design: true

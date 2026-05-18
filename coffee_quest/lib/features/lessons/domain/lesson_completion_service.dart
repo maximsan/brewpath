@@ -92,7 +92,7 @@ class LessonCompletionService {
 
 @riverpod
 LessonCompletionService lessonCompletionService(
-  LessonCompletionServiceRef ref,
+  Ref ref,
 ) =>
     LessonCompletionService(
       progressRepository: ref.watch(progressRepositoryProvider),

@@ -1,29 +1,50 @@
-import 'package:isar/isar.dart';
-import 'package:coffee_quest/shared/storage/isar_service.dart';
+import 'package:drift/drift.dart';
+import 'package:coffee_quest/shared/storage/app_database.dart';
 import 'package:coffee_quest/shared/storage/settings_record.dart';
 
 class SettingsRepository {
-  Isar get _isar => IsarService.instance;
+  AppDatabase get _db => AppDatabaseService.instance;
 
-  static const int _settingsId = 0;
+  static const int settingsId = 1;
 
-  /// Returns the singleton settings row, seeding defaults on first launch.
+  /// Returns the singleton settings row, or transient defaults on first
+  /// launch (defaults are not persisted until [saveSettings] is called —
+  /// matches the prior Isar behavior).
   Future<UserSettingsRecord> getSettings() async {
-    final record = await _isar.userSettingsRecords.get(_settingsId);
-    if (record != null) return record;
-    return UserSettingsRecord()
-      ..id = _settingsId
-      ..hapticsEnabled = true
-      ..soundEnabled = true
-      ..totalXp = 0
-      ..streakDays = 0
-      ..lastActivityDate = null;
+    final row = await (_db.select(_db.userSettings)
+          ..where((t) => t.id.equals(settingsId)))
+        .getSingleOrNull();
+    if (row != null) {
+      return UserSettingsRecord(
+        id: row.id,
+        hapticsEnabled: row.hapticsEnabled,
+        soundEnabled: row.soundEnabled,
+        totalXp: row.totalXp,
+        streakDays: row.streakDays,
+        lastActivityDate: row.lastActivityDate,
+      );
+    }
+    return UserSettingsRecord(
+      id: settingsId,
+      hapticsEnabled: true,
+      soundEnabled: true,
+      totalXp: 0,
+      streakDays: 0,
+      lastActivityDate: null,
+    );
   }
 
   Future<void> saveSettings(UserSettingsRecord settings) async {
-    await _isar.writeTxn(() async {
-      await _isar.userSettingsRecords.put(settings);
-    });
+    await _db.into(_db.userSettings).insertOnConflictUpdate(
+          UserSettingsCompanion.insert(
+            id: const Value(settingsId),
+            hapticsEnabled: settings.hapticsEnabled,
+            soundEnabled: settings.soundEnabled,
+            totalXp: settings.totalXp,
+            streakDays: settings.streakDays,
+            lastActivityDate: Value(settings.lastActivityDate),
+          ),
+        );
   }
 
   Future<void> addXp(int xp) async {

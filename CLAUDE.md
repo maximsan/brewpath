@@ -15,7 +15,7 @@ brewpath/               ← git root, CLAUDE.md lives here
 |---|---|---|
 | State | flutter_riverpod 2.x + riverpod_generator | `@riverpod` annotation; ref type is `{ProviderName}Ref` |
 | Navigation | go_router 17.x | `StatefulShellRoute` with 4 branches: `/learn`, `/path`, `/cards`, `/profile` |
-| Persistence | Isar 3.x | Offline-first; schemas registered in `shared/storage/isar_service.dart` |
+| Persistence | Drift (SQLite) 2.31.x | Offline-first; tables + `AppDatabase` in `shared/storage/app_database.dart`. Repos map Drift rows ↔ mutable DTOs in `shared/storage/*_record.dart`. (Replaced abandoned Isar 3.x.) |
 | Content models | Freezed + json_serializable | Loaded from `assets/content/*.json` at startup |
 | Payments | `NoOpPaymentsService` stub | Real `in_app_purchase` wired in Phase 9 |
 | Ads | `NoOpAdsService` stub | Real AdMob wired in Phase 9 |
@@ -23,9 +23,9 @@ brewpath/               ← git root, CLAUDE.md lives here
 
 ## Critical Rules
 
-- **Firebase is Phase 8 only.** Never add `firebase_core` or any Firebase import before Phase 8. `app_bootstrap.dart` opens Isar only.
+- **Firebase is Phase 8 only.** Never add `firebase_core` or any Firebase import before Phase 8. `app_bootstrap.dart` opens the Drift `AppDatabase` only.
 - **Package imports within `lib/`.** Use `package:coffee_quest/…` instead of `../…` for all imports inside the `lib/` directory.
-- **Regenerate after model changes.** Run `dart run build_runner build --delete-conflicting-outputs` whenever a Freezed model, Riverpod provider, or Isar collection is added or modified.
+- **Regenerate after model changes.** Run `dart run build_runner build` whenever a Freezed model, Riverpod provider, or Drift table is added or modified. (build_runner 2.15 auto-resolves conflicts; the old `--delete-conflicting-outputs` flag was removed.)
 - **No Firebase before Phase 8.** This rule is listed twice intentionally.
 
 ## Phase Status (updated 2026-05-17)
@@ -35,7 +35,7 @@ brewpath/               ← git root, CLAUDE.md lives here
 | 0 | ✅ Done | Prerequisites verified |
 | 1 | ✅ Done | Project scaffold, routing stub, theme |
 | 2 | ✅ Done | Content models, JSON assets, ContentRepository |
-| 3 | ✅ Done | Isar persistence, repositories, providers |
+| 3 | ✅ Done | Drift persistence, repositories, providers |
 | 4 | ✅ Done | Domain logic: XP/streak/completion services, providers |
 | 5–11 | ⏳ Pending | See `docs/16-claude-code-task-plan.md` |
 
@@ -52,19 +52,16 @@ flutter run -d "iPhone 16 Pro"
 flutter build ios --release --no-codesign
 ```
 
-### One-time setup for Isar tests on macOS
+### DB tests
 
-`libisar.dylib` is gitignored. After a fresh clone, copy the native binary before running `flutter test`:
-
-```bash
-cp ~/.pub-cache/hosted/pub.dev/isar_flutter_libs-3.1.0+1/macos/libisar.dylib libisar.dylib
-```
+Drift tests use an in-memory database (`AppDatabase(NativeDatabase.memory())`),
+so no native binary copy is needed (the old `libisar.dylib` step is gone).
 
 ## Code Conventions
 
 - **Imports:** always `package:coffee_quest/…` within `lib/`; never relative `../` imports
 - **Comments:** TSDoc only for complex logic or third-party integrations; skip self-evident code
-- **Models:** Freezed for all content DTOs; Isar `@collection` for persisted records
+- **Models:** Freezed for all content DTOs; Drift `Table` classes for persisted records
 - **Providers:** function-style `@riverpod` only; class-based `@riverpod` only when state is mutable
 - **Tests:** unit tests in `test/unit/`; widget tests in `test/widget/`; integration tests in `integration_test/`
 - **No print statements** — use `debugPrint` only in development guards; never in production paths

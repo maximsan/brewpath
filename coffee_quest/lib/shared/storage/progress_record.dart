@@ -1,15 +1,18 @@
-import 'package:isar/isar.dart';
-
-part 'progress_record.g.dart';
-
-@collection
+/// Mutable data-transfer object for a lesson-completion row. Decoupled from
+/// the Drift table so callers can mutate freely; the repository maps to/from
+/// Drift companions.
 class ProgressRecord {
-  Id id = Isar.autoIncrement;
+  ProgressRecord({
+    this.id = 0,
+    required this.lessonId,
+    required this.isCompleted,
+    required this.xpEarned,
+    required this.completedAt,
+  });
 
-  @Index(unique: true)
-  late String lessonId;
-
-  late bool isCompleted;
-  late int xpEarned;
-  late DateTime completedAt;
+  int id;
+  String lessonId;
+  bool isCompleted;
+  int xpEarned;
+  DateTime completedAt;
 }

@@ -6,23 +6,53 @@ part of 'lesson_completion_service.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$lessonCompletionServiceHash() =>
-    r'a73239cca70b1f1728e089f90502e935986e8a0f';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 
-/// See also [lessonCompletionService].
 @ProviderFor(lessonCompletionService)
-final lessonCompletionServiceProvider =
-    AutoDisposeProvider<LessonCompletionService>.internal(
-  lessonCompletionService,
-  name: r'lessonCompletionServiceProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$lessonCompletionServiceHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final lessonCompletionServiceProvider = LessonCompletionServiceProvider._();
 
-typedef LessonCompletionServiceRef
-    = AutoDisposeProviderRef<LessonCompletionService>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+final class LessonCompletionServiceProvider
+    extends
+        $FunctionalProvider<
+          LessonCompletionService,
+          LessonCompletionService,
+          LessonCompletionService
+        >
+    with $Provider<LessonCompletionService> {
+  LessonCompletionServiceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'lessonCompletionServiceProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$lessonCompletionServiceHash();
+
+  @$internal
+  @override
+  $ProviderElement<LessonCompletionService> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  LessonCompletionService create(Ref ref) {
+    return lessonCompletionService(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(LessonCompletionService value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<LessonCompletionService>(value),
+    );
+  }
+}
+
+String _$lessonCompletionServiceHash() =>
+    r'78af768cf18efa17a74f135c64bef6f1ba1ab88b';

@@ -6,65 +6,151 @@ part of 'progress_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$totalXpHash() => r'9d6d9077197941a8ed20af5c7edc3d114b5f8ba7';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 
-/// See also [totalXp].
 @ProviderFor(totalXp)
-final totalXpProvider = AutoDisposeFutureProvider<int>.internal(
-  totalXp,
-  name: r'totalXpProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$totalXpHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final totalXpProvider = TotalXpProvider._();
 
-typedef TotalXpRef = AutoDisposeFutureProviderRef<int>;
-String _$streakHash() => r'092fc3a881de5a602df2da8b5924c5858c410484';
+final class TotalXpProvider
+    extends $FunctionalProvider<AsyncValue<int>, int, FutureOr<int>>
+    with $FutureModifier<int>, $FutureProvider<int> {
+  TotalXpProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'totalXpProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
-/// See also [streak].
+  @override
+  String debugGetCreateSourceHash() => _$totalXpHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<int> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<int> create(Ref ref) {
+    return totalXp(ref);
+  }
+}
+
+String _$totalXpHash() => r'9d152d22babc01660d17d3b49a7aba3eeabc930f';
+
 @ProviderFor(streak)
-final streakProvider = AutoDisposeFutureProvider<int>.internal(
-  streak,
-  name: r'streakProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$streakHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final streakProvider = StreakProvider._();
 
-typedef StreakRef = AutoDisposeFutureProviderRef<int>;
-String _$completedLessonsHash() => r'f1317bb3b61d3f6f8e926b8e065f147d217c3c70';
+final class StreakProvider
+    extends $FunctionalProvider<AsyncValue<int>, int, FutureOr<int>>
+    with $FutureModifier<int>, $FutureProvider<int> {
+  StreakProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'streakProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
-/// See also [completedLessons].
+  @override
+  String debugGetCreateSourceHash() => _$streakHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<int> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<int> create(Ref ref) {
+    return streak(ref);
+  }
+}
+
+String _$streakHash() => r'eb7a2c35c7e2f7624444b1e6ad37e22bf96500bb';
+
 @ProviderFor(completedLessons)
-final completedLessonsProvider =
-    AutoDisposeFutureProvider<List<ProgressRecord>>.internal(
-  completedLessons,
-  name: r'completedLessonsProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$completedLessonsHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final completedLessonsProvider = CompletedLessonsProvider._();
 
-typedef CompletedLessonsRef
-    = AutoDisposeFutureProviderRef<List<ProgressRecord>>;
-String _$collectedCardsHash() => r'5d972986a6153480dae0c9428589d8b32b173436';
+final class CompletedLessonsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<ProgressRecord>>,
+          List<ProgressRecord>,
+          FutureOr<List<ProgressRecord>>
+        >
+    with
+        $FutureModifier<List<ProgressRecord>>,
+        $FutureProvider<List<ProgressRecord>> {
+  CompletedLessonsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'completedLessonsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
-/// See also [collectedCards].
+  @override
+  String debugGetCreateSourceHash() => _$completedLessonsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<ProgressRecord>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<ProgressRecord>> create(Ref ref) {
+    return completedLessons(ref);
+  }
+}
+
+String _$completedLessonsHash() => r'c29c67109f5f475a6482b2f49c6e10eb5a32e746';
+
 @ProviderFor(collectedCards)
-final collectedCardsProvider = AutoDisposeFutureProvider<List<String>>.internal(
-  collectedCards,
-  name: r'collectedCardsProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$collectedCardsHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final collectedCardsProvider = CollectedCardsProvider._();
 
-typedef CollectedCardsRef = AutoDisposeFutureProviderRef<List<String>>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+final class CollectedCardsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<String>>,
+          List<String>,
+          FutureOr<List<String>>
+        >
+    with $FutureModifier<List<String>>, $FutureProvider<List<String>> {
+  CollectedCardsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'collectedCardsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$collectedCardsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<String>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<String>> create(Ref ref) {
+    return collectedCards(ref);
+  }
+}
+
+String _$collectedCardsHash() => r'3af5e2e1b76e38bda84b804b5a114b3cd9874c13';

@@ -1,7 +1,5 @@
-import 'dart:io';
-
+import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:isar/isar.dart';
 
 import 'package:coffee_quest/features/lessons/domain/lesson_completion_service.dart';
 import 'package:coffee_quest/features/progress/domain/streak_service.dart';
@@ -11,16 +9,12 @@ import 'package:coffee_quest/shared/repositories/card_repository.dart';
 import 'package:coffee_quest/shared/repositories/content_repository.dart';
 import 'package:coffee_quest/shared/repositories/progress_repository.dart';
 import 'package:coffee_quest/shared/repositories/settings_repository.dart';
-import 'package:coffee_quest/shared/storage/card_record.dart';
-import 'package:coffee_quest/shared/storage/isar_service.dart';
-import 'package:coffee_quest/shared/storage/progress_record.dart';
-import 'package:coffee_quest/shared/storage/settings_record.dart';
+import 'package:coffee_quest/shared/storage/app_database.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  late Isar isar;
-  late Directory dir;
+  late AppDatabase db;
   late LessonCompletionService service;
   late ContentRepository content;
   late ProgressRepository progress;
@@ -28,12 +22,8 @@ void main() {
   late CardRepository cards;
 
   setUp(() async {
-    dir = await Directory.systemTemp.createTemp('isar_lcs_');
-    isar = await Isar.open(
-      [ProgressRecordSchema, CardRecordSchema, UserSettingsRecordSchema],
-      directory: dir.path,
-    );
-    IsarService.instance = isar;
+    db = AppDatabase(NativeDatabase.memory());
+    AppDatabaseService.instance = db;
 
     content = ContentRepository();
     progress = ProgressRepository();
@@ -51,8 +41,7 @@ void main() {
   });
 
   tearDown(() async {
-    await isar.close(deleteFromDisk: true);
-    if (dir.existsSync()) await dir.delete(recursive: true);
+    await db.close();
   });
 
   group('LessonCompletionService', () {

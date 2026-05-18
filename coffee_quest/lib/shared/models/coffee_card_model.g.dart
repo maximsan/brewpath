@@ -6,9 +6,8 @@ part of 'coffee_card_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$CoffeeCardModelImpl _$$CoffeeCardModelImplFromJson(
-        Map<String, dynamic> json) =>
-    _$CoffeeCardModelImpl(
+_CoffeeCardModel _$CoffeeCardModelFromJson(Map<String, dynamic> json) =>
+    _CoffeeCardModel(
       id: json['id'] as String,
       title: json['title'] as String,
       description: json['description'] as String,
@@ -17,8 +16,7 @@ _$CoffeeCardModelImpl _$$CoffeeCardModelImplFromJson(
       lessonId: json['lessonId'] as String,
     );
 
-Map<String, dynamic> _$$CoffeeCardModelImplToJson(
-        _$CoffeeCardModelImpl instance) =>
+Map<String, dynamic> _$CoffeeCardModelToJson(_CoffeeCardModel instance) =>
     <String, dynamic>{
       'id': instance.id,
       'title': instance.title,

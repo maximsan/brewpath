@@ -6,19 +6,18 @@ part of 'lesson_step_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$MultipleChoiceStepImpl _$$MultipleChoiceStepImplFromJson(
-        Map<String, dynamic> json) =>
-    _$MultipleChoiceStepImpl(
+MultipleChoiceStep _$MultipleChoiceStepFromJson(Map<String, dynamic> json) =>
+    MultipleChoiceStep(
       question: json['question'] as String,
-      options:
-          (json['options'] as List<dynamic>).map((e) => e as String).toList(),
+      options: (json['options'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
       correctIndex: (json['correctIndex'] as num).toInt(),
       explanation: json['explanation'] as String,
       $type: json['type'] as String?,
     );
 
-Map<String, dynamic> _$$MultipleChoiceStepImplToJson(
-        _$MultipleChoiceStepImpl instance) =>
+Map<String, dynamic> _$MultipleChoiceStepToJson(MultipleChoiceStep instance) =>
     <String, dynamic>{
       'question': instance.question,
       'options': instance.options,
@@ -27,17 +26,16 @@ Map<String, dynamic> _$$MultipleChoiceStepImplToJson(
       'type': instance.$type,
     };
 
-_$DragDropStepImpl _$$DragDropStepImplFromJson(Map<String, dynamic> json) =>
-    _$DragDropStepImpl(
-      instruction: json['instruction'] as String,
-      terms: (json['terms'] as List<dynamic>).map((e) => e as String).toList(),
-      definitions: (json['definitions'] as List<dynamic>)
-          .map((e) => e as String)
-          .toList(),
-      $type: json['type'] as String?,
-    );
+DragDropStep _$DragDropStepFromJson(Map<String, dynamic> json) => DragDropStep(
+  instruction: json['instruction'] as String,
+  terms: (json['terms'] as List<dynamic>).map((e) => e as String).toList(),
+  definitions: (json['definitions'] as List<dynamic>)
+      .map((e) => e as String)
+      .toList(),
+  $type: json['type'] as String?,
+);
 
-Map<String, dynamic> _$$DragDropStepImplToJson(_$DragDropStepImpl instance) =>
+Map<String, dynamic> _$DragDropStepToJson(DragDropStep instance) =>
     <String, dynamic>{
       'instruction': instance.instruction,
       'terms': instance.terms,
@@ -45,19 +43,18 @@ Map<String, dynamic> _$$DragDropStepImplToJson(_$DragDropStepImpl instance) =>
       'type': instance.$type,
     };
 
-_$SliderStepImpl _$$SliderStepImplFromJson(Map<String, dynamic> json) =>
-    _$SliderStepImpl(
-      instruction: json['instruction'] as String,
-      minValue: (json['minValue'] as num).toDouble(),
-      maxValue: (json['maxValue'] as num).toDouble(),
-      targetMin: (json['targetMin'] as num).toDouble(),
-      targetMax: (json['targetMax'] as num).toDouble(),
-      unit: json['unit'] as String,
-      explanation: json['explanation'] as String,
-      $type: json['type'] as String?,
-    );
+SliderStep _$SliderStepFromJson(Map<String, dynamic> json) => SliderStep(
+  instruction: json['instruction'] as String,
+  minValue: (json['minValue'] as num).toDouble(),
+  maxValue: (json['maxValue'] as num).toDouble(),
+  targetMin: (json['targetMin'] as num).toDouble(),
+  targetMax: (json['targetMax'] as num).toDouble(),
+  unit: json['unit'] as String,
+  explanation: json['explanation'] as String,
+  $type: json['type'] as String?,
+);
 
-Map<String, dynamic> _$$SliderStepImplToJson(_$SliderStepImpl instance) =>
+Map<String, dynamic> _$SliderStepToJson(SliderStep instance) =>
     <String, dynamic>{
       'instruction': instance.instruction,
       'minValue': instance.minValue,
@@ -69,15 +66,14 @@ Map<String, dynamic> _$$SliderStepImplToJson(_$SliderStepImpl instance) =>
       'type': instance.$type,
     };
 
-_$TapOrderStepImpl _$$TapOrderStepImplFromJson(Map<String, dynamic> json) =>
-    _$TapOrderStepImpl(
-      instruction: json['instruction'] as String,
-      items: (json['items'] as List<dynamic>).map((e) => e as String).toList(),
-      explanation: json['explanation'] as String,
-      $type: json['type'] as String?,
-    );
+TapOrderStep _$TapOrderStepFromJson(Map<String, dynamic> json) => TapOrderStep(
+  instruction: json['instruction'] as String,
+  items: (json['items'] as List<dynamic>).map((e) => e as String).toList(),
+  explanation: json['explanation'] as String,
+  $type: json['type'] as String?,
+);
 
-Map<String, dynamic> _$$TapOrderStepImplToJson(_$TapOrderStepImpl instance) =>
+Map<String, dynamic> _$TapOrderStepToJson(TapOrderStep instance) =>
     <String, dynamic>{
       'instruction': instance.instruction,
       'items': instance.items,

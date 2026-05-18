@@ -1,34 +1,23 @@
-import 'dart:io';
-
+import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:isar/isar.dart';
 
 import 'package:coffee_quest/shared/repositories/card_repository.dart';
 import 'package:coffee_quest/shared/repositories/progress_repository.dart';
 import 'package:coffee_quest/shared/repositories/settings_repository.dart';
-import 'package:coffee_quest/shared/storage/card_record.dart';
-import 'package:coffee_quest/shared/storage/isar_service.dart';
-import 'package:coffee_quest/shared/storage/progress_record.dart';
-import 'package:coffee_quest/shared/storage/settings_record.dart';
+import 'package:coffee_quest/shared/storage/app_database.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  late Isar isar;
-  late Directory dir;
+  late AppDatabase db;
 
-  setUp(() async {
-    dir = await Directory.systemTemp.createTemp('isar_test_');
-    isar = await Isar.open(
-      [ProgressRecordSchema, CardRecordSchema, UserSettingsRecordSchema],
-      directory: dir.path,
-    );
-    IsarService.instance = isar;
+  setUp(() {
+    db = AppDatabase(NativeDatabase.memory());
+    AppDatabaseService.instance = db;
   });
 
   tearDown(() async {
-    await isar.close(deleteFromDisk: true);
-    if (dir.existsSync()) await dir.delete(recursive: true);
+    await db.close();
   });
 
   group('ProgressRepository', () {

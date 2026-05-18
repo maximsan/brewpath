@@ -27,7 +27,7 @@ class ModuleWithProgress {
 
 @riverpod
 Future<List<ModuleWithProgress>> modulesWithProgress(
-  ModulesWithProgressRef ref,
+  Ref ref,
 ) async {
   final content = ref.watch(contentRepositoryProvider);
   final modules = await content.getModules();
@@ -47,7 +47,7 @@ Future<List<ModuleWithProgress>> modulesWithProgress(
 }
 
 @riverpod
-Future<LessonModel?> todayLesson(TodayLessonRef ref) async {
+Future<LessonModel?> todayLesson(Ref ref) async {
   final content = ref.watch(contentRepositoryProvider);
   final modules = await content.getModules();
   final completed = await ref.watch(progressRepositoryProvider).getAllCompleted();

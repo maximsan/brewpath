@@ -45,5 +45,5 @@ class ContentRepository {
 }
 
 @riverpod
-ContentRepository contentRepository(ContentRepositoryRef ref) =>
+ContentRepository contentRepository(Ref ref) =>
     ContentRepository();

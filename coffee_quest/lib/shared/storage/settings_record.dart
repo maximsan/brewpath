@@ -1,15 +1,20 @@
-import 'package:isar/isar.dart';
-
-part 'settings_record.g.dart';
-
-@collection
+/// Mutable DTO for the singleton settings row. Callers (e.g.
+/// LessonCompletionService) mutate fields in place; the repository maps
+/// to/from the Drift companion.
 class UserSettingsRecord {
-  /// Fixed ID 0 makes this a singleton row — only one settings object ever exists.
-  Id id = 0;
+  UserSettingsRecord({
+    this.id = 1,
+    required this.hapticsEnabled,
+    required this.soundEnabled,
+    required this.totalXp,
+    required this.streakDays,
+    required this.lastActivityDate,
+  });
 
-  late bool hapticsEnabled;
-  late bool soundEnabled;
-  late int totalXp;
-  late int streakDays;
-  late DateTime? lastActivityDate;
+  int id;
+  bool hapticsEnabled;
+  bool soundEnabled;
+  int totalXp;
+  int streakDays;
+  DateTime? lastActivityDate;
 }
