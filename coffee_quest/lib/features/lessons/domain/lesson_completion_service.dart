@@ -43,10 +43,18 @@ class LessonCompletionService {
     final xp = xpService.calculateLessonXp(lesson.steps.length);
     await progressRepository.saveCompletion(lessonId: lesson.id, xpEarned: xp);
     await settingsRepository.addXp(xp);
+    await analyticsService.logEvent(
+      'xp_earned',
+      parameters: {'amount': xp, 'source': 'lesson'},
+    );
 
     final cardId = lesson.cardId;
     if (cardId != null) {
       await cardRepository.collectCard(cardId);
+      await analyticsService.logEvent(
+        'card_unlocked',
+        parameters: {'card_id': cardId, 'lesson_id': lesson.id},
+      );
     }
 
     final settings = await settingsRepository.getSettings();
@@ -64,7 +72,11 @@ class LessonCompletionService {
 
     await analyticsService.logEvent(
       'lesson_completed',
-      parameters: {'lessonId': lesson.id, 'xp': xp},
+      parameters: {
+        'lesson_id': lesson.id,
+        'module_id': lesson.moduleId,
+        'xp_earned': xp,
+      },
     );
   }
 
@@ -79,11 +91,20 @@ class LessonCompletionService {
     final allDone = module.lessonIds.every(completedIds.contains);
     if (!allDone) return;
 
-    await settingsRepository.addXp(xpService.moduleCompletionBonus);
+    final bonus = xpService.moduleCompletionBonus;
+    await settingsRepository.addXp(bonus);
     await analyticsService.logEvent(
-      'module_completed',
-      parameters: {'moduleId': module.id},
+      'xp_earned',
+      parameters: {'amount': bonus, 'source': 'module_bonus'},
     );
+
+    // Completing this module unlocks any module gated on it.
+    for (final next in modules.where((m) => m.unlockRequirement == module.id)) {
+      await analyticsService.logEvent(
+        'module_unlocked',
+        parameters: {'module_id': next.id},
+      );
+    }
   }
 }
 

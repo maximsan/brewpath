@@ -23,12 +23,12 @@ brewpath/               ← git root, CLAUDE.md lives here
 
 ## Critical Rules
 
-- **Firebase is Phase 8 only.** Never add `firebase_core` or any Firebase import before Phase 8. `app_bootstrap.dart` opens the Drift `AppDatabase` only.
+- **Firebase is Phase 8+.** Phase 8 added the `firebase_*` deps and service code, but it stays **inactive** behind `kUseFirebase` in `lib/core/config/firebase_flags.dart` (currently `false`). All Firebase access is behind the `AnalyticsService` / `CrashReportingService` / `RemoteConfigService` abstractions — never call `Firebase*.instance` from feature code. Activation (real project, `flutterfire configure`, plist, flip the flag + three provider one-liners) is a manual user step.
 - **Package imports within `lib/`.** Use `package:coffee_quest/…` instead of `../…` for all imports inside the `lib/` directory.
 - **Regenerate after model changes.** Run `dart run build_runner build` whenever a Freezed model, Riverpod provider, or Drift table is added or modified. (build_runner 2.15 auto-resolves conflicts; the old `--delete-conflicting-outputs` flag was removed.)
-- **No Firebase before Phase 8.** This rule is listed twice intentionally.
+- **No Firebase before Phase 8.** This rule is listed twice intentionally. (Phase 8 is now reached; Firebase code exists but is gated off by `kUseFirebase`.)
 
-## Phase Status (updated 2026-05-17)
+## Phase Status (updated 2026-05-19)
 
 | Phase | Status | Description |
 |---|---|---|
@@ -40,7 +40,8 @@ brewpath/               ← git root, CLAUDE.md lives here
 | 5 | ✅ Done | Navigation: StatefulShellRoute app shell, 4 tabs, analytics observer |
 | 6 | ✅ Done | Feature screens: Learn/Path/Cards/Profile + lock/settings/version providers |
 | 7 | ✅ Done | Lesson runner, 4 mini-games, completion screen, immersive lesson route |
-| 8–11 | ⏳ Pending | See `docs/16-claude-code-task-plan.md` |
+| 8 | 🚧 Code complete | Firebase services (Analytics/Crashlytics/Remote Config) behind abstractions; **activation pending user setup** (`kUseFirebase`) |
+| 9–11 | ⏳ Pending | See `docs/16-claude-code-task-plan.md` |
 
 ## Common Commands (run from `coffee_quest/`)
 

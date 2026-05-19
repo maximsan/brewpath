@@ -240,26 +240,26 @@ Before starting, verify:
 
 **Reference:** `docs/09-firebase.md`
 
-- [ ] Complete Firebase iOS setup (GoogleService-Info.plist, firebase_options.dart)
-- [ ] Create `lib/services/analytics/analytics_service.dart`
-- [ ] Create `lib/services/analytics/firebase_analytics_service.dart`
-- [ ] Create `lib/services/analytics/noop_analytics_service.dart`
-- [ ] Create `lib/services/analytics/analytics_provider.dart`
-- [ ] Create `lib/services/crash_reporting/crash_reporting_service.dart`
-- [ ] Create `lib/services/crash_reporting/firebase_crashlytics_service.dart`
-- [ ] Create `lib/services/crash_reporting/crash_reporting_provider.dart`
-- [ ] Create `lib/services/remote_config/remote_config_service.dart`
-- [ ] Create `lib/services/remote_config/remote_config_keys.dart`
-- [ ] Create `lib/services/remote_config/firebase_remote_config_service.dart`
-- [ ] Create `lib/services/remote_config/remote_config_provider.dart`
-- [ ] Update `lib/app/app_bootstrap.dart` to call `Firebase.initializeApp()` and `remoteConfigService.fetchAndActivate()`
-- [ ] Add Flutter/platform error handlers in `lib/main.dart`
-- [ ] Wire analytics events in `LessonCompletionService` (`lesson_started`, `lesson_completed`, `card_unlocked`, `xp_earned`)
-- [ ] Wire screen tracking in router observer
-- [ ] Run `dart run build_runner build --delete-conflicting-outputs`
-- [ ] Override services with `NoOpAnalyticsService` in all widget tests
-- [ ] Run all tests → pass
-- [ ] Verify Firebase Analytics DebugView shows events on Simulator
+- [ ] Complete Firebase iOS setup (GoogleService-Info.plist, firebase_options.dart) _(manual — user; activate via `kUseFirebase`)_
+- [x] Create `lib/services/analytics/analytics_service.dart`
+- [x] Create `lib/services/analytics/firebase_analytics_service.dart`
+- [x] Create `lib/services/analytics/noop_analytics_service.dart`
+- [x] Create `lib/services/analytics/analytics_provider.dart`
+- [x] Create `lib/services/crash_reporting/crash_reporting_service.dart`
+- [x] Create `lib/services/crash_reporting/firebase_crashlytics_service.dart`
+- [x] Create `lib/services/crash_reporting/crash_reporting_provider.dart`
+- [x] Create `lib/services/remote_config/remote_config_service.dart`
+- [x] Create `lib/services/remote_config/remote_config_keys.dart`
+- [x] Create `lib/services/remote_config/firebase_remote_config_service.dart`
+- [x] Create `lib/services/remote_config/remote_config_provider.dart`
+- [x] Update `lib/app/app_bootstrap.dart` to call `Firebase.initializeApp()` and `remoteConfigService.fetchAndActivate()`
+- [x] Add Flutter/platform error handlers in `lib/main.dart`
+- [x] Wire analytics events in `LessonCompletionService` (`lesson_started`, `lesson_completed`, `card_unlocked`, `xp_earned`)
+- [x] Wire screen tracking in router observer
+- [x] Run `dart run build_runner build --delete-conflicting-outputs`
+- [x] Override services with `NoOpAnalyticsService` in all widget tests
+- [x] Run all tests → pass
+- [ ] Verify Firebase Analytics DebugView shows events on Simulator _(manual — user; activate via `kUseFirebase`)_
 
 **Phase 8 Done when:** Firebase initializes without error, analytics events visible in DebugView, all tests pass with no-op service overrides.
 

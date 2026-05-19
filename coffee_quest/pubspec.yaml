@@ -28,11 +28,12 @@ dependencies:
   sqlite3_flutter_libs: ^0.5.42
   path_provider: ^2.1.5
 
-  # Firebase — added in Phase 8 only (deferred; app is offline-first for MVP)
-  # firebase_core: ^4.8.0
-  # firebase_analytics: ^12.4.0
-  # firebase_crashlytics: ^5.2.1
-  # firebase_remote_config: ^6.5.0
+  # Firebase — Phase 8. Code is wired but inactive until `kUseFirebase`
+  # (lib/core/config/firebase_flags.dart) is flipped after flutterfire setup.
+  firebase_core: ^4.8.0
+  firebase_analytics: ^12.4.0
+  firebase_crashlytics: ^5.2.1
+  firebase_remote_config: ^6.5.0
 
   # Payments (placeholder — not active in MVP)
   in_app_purchase: ^3.2.3
