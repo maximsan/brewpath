@@ -206,31 +206,31 @@ Before starting, verify:
 
 **Reference:** `docs/08-mini-games.md`
 
-- [ ] Create `lib/features/mini_games/domain/mini_game_result.dart` (sealed class)
-- [ ] Create `lib/features/mini_games/presentation/lesson_step_runner.dart`
-- [ ] Create `lib/features/mini_games/presentation/multiple_choice_game.dart` (full UI)
-- [ ] Create `lib/features/mini_games/presentation/drag_drop_game.dart` (full UI)
-- [ ] Create `lib/features/mini_games/presentation/slider_game.dart` (full UI)
-- [ ] Create `lib/features/mini_games/presentation/tap_order_game.dart` (full UI)
-- [ ] Create `lib/features/lessons/presentation/lesson_screen.dart`:
+- [x] Create `lib/features/mini_games/domain/mini_game_result.dart` (sealed class)
+- [x] Create `lib/features/mini_games/presentation/lesson_step_runner.dart`
+- [x] Create `lib/features/mini_games/presentation/multiple_choice_game.dart` (full UI)
+- [x] Create `lib/features/mini_games/presentation/drag_drop_game.dart` (full UI)
+- [x] Create `lib/features/mini_games/presentation/slider_game.dart` (full UI)
+- [x] Create `lib/features/mini_games/presentation/tap_order_game.dart` (full UI)
+- [x] Create `lib/features/lessons/presentation/lesson_screen.dart`:
   - Full-screen lesson flow
   - Shows lesson title + summary paragraph
   - Shows step progress indicator (e.g., "Step 1 of 2")
   - Renders `LessonStepRunner` for current step
   - On `MiniGameCorrect`: advance to next step or go to completion screen
   - On `MiniGameIncorrect`: show feedback, allow retry
-- [ ] Create `lib/features/lessons/presentation/lesson_completion_screen.dart`:
+- [x] Create `lib/features/lessons/presentation/lesson_completion_screen.dart`:
   - Shows XP earned
   - Shows Coffee Card (if awarded)
   - "Continue" button → pops back to Learn tab
   - Calls `LessonCompletionService` on first display (once, not on every build)
-- [ ] Wire lesson navigation: `learn_screen.dart` → lesson tapped → push `/learn/lesson/:lessonId`
-- [ ] Write `test/widget/multiple_choice_game_test.dart`
-- [ ] Write `test/widget/slider_game_test.dart`
-- [ ] Write `test/widget/tap_order_game_test.dart`
-- [ ] Write `test/widget/lesson_step_runner_test.dart`
-- [ ] Run `flutter test test/widget/` → all pass
-- [ ] Run on Simulator: complete a full lesson end-to-end, verify XP appears on Profile tab
+- [x] Wire lesson navigation: `learn_screen.dart` → lesson tapped → push `/learn/lesson/:lessonId`
+- [x] Write `test/widget/multiple_choice_game_test.dart`
+- [x] Write `test/widget/slider_game_test.dart`
+- [x] Write `test/widget/tap_order_game_test.dart`
+- [x] Write `test/widget/lesson_step_runner_test.dart`
+- [x] Run `flutter test test/widget/` → all pass
+- [ ] Run on Simulator: complete a full lesson end-to-end, verify XP appears on Profile tab _(manual — left for user)_
 
 **Phase 7 Done when:** A full lesson can be started, completed, and XP is persisted and visible on Profile.
 

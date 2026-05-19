@@ -8,6 +8,8 @@ import 'package:coffee_quest/features/cards/presentation/card_detail_screen.dart
 import 'package:coffee_quest/features/cards/presentation/cards_screen.dart';
 import 'package:coffee_quest/features/learn/presentation/learn_screen.dart';
 import 'package:coffee_quest/features/learn/presentation/module_detail_screen.dart';
+import 'package:coffee_quest/features/lessons/presentation/lesson_completion_screen.dart';
+import 'package:coffee_quest/features/lessons/presentation/lesson_screen.dart';
 import 'package:coffee_quest/features/path/presentation/path_screen.dart';
 import 'package:coffee_quest/features/profile/presentation/profile_screen.dart';
 import 'package:coffee_quest/services/analytics/analytics_provider.dart';
@@ -16,25 +18,6 @@ part 'app_router.g.dart';
 
 final _rootKey = GlobalKey<NavigatorState>();
 
-/// Phase 7 replaces this with the real lesson runner; until then the lesson
-/// route renders a placeholder so navigation from Learn/Module is testable.
-class _PlaceholderScreen extends StatelessWidget {
-  const _PlaceholderScreen(this.title, {this.detail});
-
-  final String title;
-  final String? detail;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: Center(
-        child: Text(detail == null ? '$title — coming soon' : '$title: $detail'),
-      ),
-    );
-  }
-}
-
 @riverpod
 GoRouter appRouter(Ref ref) {
   return GoRouter(
@@ -42,8 +25,13 @@ GoRouter appRouter(Ref ref) {
     initialLocation: '/learn',
     // The shell branches live under /learn, /path, … — there is no '/' route,
     // so funnel the root (platform initial route, error-page "Home") to Learn.
-    redirect: (context, state) =>
-        state.uri.path == '/' ? '/learn' : null,
+    redirect: (context, state) {
+      if (state.uri.path == '/') {
+        return '/learn';
+      }
+
+      return null;
+    },
     observers: [
       AnalyticsNavigatorObserver(ref.watch(analyticsServiceProvider)),
     ],
@@ -64,13 +52,23 @@ GoRouter appRouter(Ref ref) {
                     builder: (context, state) => ModuleDetailScreen(
                       moduleId: state.pathParameters['moduleId']!,
                     ),
+                  ),
+                  // Immersive lesson flow: pushed on the root navigator so it
+                  // covers the bottom-nav shell.
+                  GoRoute(
+                    path: 'lesson/:lessonId',
+                    name: 'lesson',
+                    parentNavigatorKey: _rootKey,
+                    builder: (context, state) => LessonScreen(
+                      lessonId: state.pathParameters['lessonId']!,
+                    ),
                     routes: [
                       GoRoute(
-                        path: 'lesson/:lessonId',
-                        name: 'lesson',
-                        builder: (context, state) => _PlaceholderScreen(
-                          'Lesson',
-                          detail: state.pathParameters['lessonId'],
+                        path: 'complete',
+                        name: 'lessonComplete',
+                        parentNavigatorKey: _rootKey,
+                        builder: (context, state) => LessonCompletionScreen(
+                          lessonId: state.pathParameters['lessonId']!,
                         ),
                       ),
                     ],

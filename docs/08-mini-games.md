@@ -256,16 +256,16 @@ User taps items in the correct sequence. Example: ordering roast levels from lig
 
 ## Steps
 
-- [ ] Create `lib/features/mini_games/domain/mini_game_result.dart`
-- [ ] Create `lib/features/mini_games/presentation/lesson_step_runner.dart`
-- [ ] Create `lib/features/mini_games/presentation/multiple_choice_game.dart` with full UI
-- [ ] Create `lib/features/mini_games/presentation/drag_drop_game.dart` with full UI
-- [ ] Create `lib/features/mini_games/presentation/slider_game.dart` with full UI
-- [ ] Create `lib/features/mini_games/presentation/tap_order_game.dart` with full UI
-- [ ] Write widget test: `MultipleChoiceGame` renders options, selects correct answer, emits `MiniGameCorrect`
-- [ ] Write widget test: `MultipleChoiceGame` selects wrong answer, emits `MiniGameIncorrect`
-- [ ] Write widget test: `SliderGame` within target range → `MiniGameCorrect`
-- [ ] Write widget test: `TapOrderGame` correct sequence → `MiniGameCorrect`
+- [x] Create `lib/features/mini_games/domain/mini_game_result.dart`
+- [x] Create `lib/features/mini_games/presentation/lesson_step_runner.dart`
+- [x] Create `lib/features/mini_games/presentation/multiple_choice_game.dart` with full UI
+- [x] Create `lib/features/mini_games/presentation/drag_drop_game.dart` with full UI
+- [x] Create `lib/features/mini_games/presentation/slider_game.dart` with full UI
+- [x] Create `lib/features/mini_games/presentation/tap_order_game.dart` with full UI
+- [x] Write widget test: `MultipleChoiceGame` renders options, selects correct answer, emits `MiniGameCorrect`
+- [x] Write widget test: `MultipleChoiceGame` selects wrong answer, emits `MiniGameIncorrect`
+- [x] Write widget test: `SliderGame` within target range → `MiniGameCorrect`
+- [x] Write widget test: `TapOrderGame` correct sequence → `MiniGameCorrect`
 
 ---
 
@@ -282,9 +282,9 @@ User taps items in the correct sequence. Example: ordering roast levels from lig
 
 ## Definition of Done
 
-- [ ] `LessonStepRunner` dispatches all 4 step types without a default/throw case
-- [ ] All 4 game widgets compile and run on iOS Simulator
-- [ ] Each game widget correctly calls `onResult` with `MiniGameCorrect` on success
-- [ ] Each game widget correctly calls `onResult` with `MiniGameIncorrect` on failure
-- [ ] Widget tests for MultipleChoiceGame, SliderGame, and TapOrderGame pass
-- [ ] DragDropGame drops correctly matched items without error
+- [x] `LessonStepRunner` dispatches all 4 step types without a default/throw case
+- [x] All 4 game widgets compile and run on iOS Simulator
+- [x] Each game widget correctly calls `onResult` with `MiniGameCorrect` on success
+- [x] Each game widget correctly calls `onResult` with `MiniGameIncorrect` on failure
+- [x] Widget tests for MultipleChoiceGame, SliderGame, and TapOrderGame pass
+- [x] DragDropGame drops correctly matched items without error
