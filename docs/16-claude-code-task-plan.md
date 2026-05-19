@@ -138,18 +138,18 @@ Before starting, verify:
 
 **Reference:** `docs/02-architecture.md` (navigation section), `docs/03-project-scaffold.md`
 
-- [ ] Replace stub `lib/app/app_router.dart` with full `StatefulShellRoute` implementation:
+- [x] Replace stub `lib/app/app_router.dart` with full `StatefulShellRoute` implementation:
   ```dart
   // Shell route with 4 tabs: /learn, /path, /cards, /profile
   // Each tab uses StatefulShellBranch to preserve scroll position
   // Sub-routes: /learn/module/:moduleId, /learn/lesson/:lessonId, /cards/:cardId
   ```
-- [ ] Create `lib/core/constants/route_names.dart` with all route path constants
-- [ ] Create the `AppShell` widget with `BottomNavigationBar` (4 tabs: Learn, Path, Cards, Profile)
-- [ ] Add `NavigatorObserver` to go_router for `AnalyticsService.logScreen` (call no-op in MVP until Firebase is wired)
-- [ ] Run `dart run build_runner build --delete-conflicting-outputs`
-- [ ] Write `test/widget/app_shell_navigation_test.dart`
-- [ ] Run `flutter test test/widget/app_shell_navigation_test.dart` → passes
+- [x] Create `lib/core/constants/route_names.dart` with all route path constants — _already existed from earlier scaffold; reused as-is_
+- [x] Create the `AppShell` widget with ~~`BottomNavigationBar`~~ (4 tabs: Learn, Path, Cards, Profile) — _implemented with Material 3 `NavigationBar` per design-system fit (user-approved)_
+- [x] Add `NavigatorObserver` to go_router for `AnalyticsService.logScreen` (call no-op in MVP until Firebase is wired)
+- [x] Run `dart run build_runner build --delete-conflicting-outputs`
+- [x] Write `test/widget/app_shell_navigation_test.dart`
+- [x] Run `flutter test test/widget/app_shell_navigation_test.dart` → passes
 - [ ] Run app on Simulator → 4 tabs navigate correctly, tab state preserved on switch
 
 **Phase 5 Done when:** All 4 tabs navigate correctly, tab state is preserved, navigation test passes.
