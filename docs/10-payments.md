@@ -209,22 +209,22 @@ lib/services/payments/
 
 ## Steps
 
-- [ ] Create `lib/services/payments/payments_service.dart`
-- [ ] Create `lib/services/payments/store_product.dart`
-- [ ] Create `lib/services/payments/noop_payments_service.dart`
-- [ ] Create `lib/services/payments/in_app_purchase_service.dart`
-- [ ] Create `lib/services/payments/payments_provider.dart`
-- [ ] Run `build_runner` to generate provider file
-- [ ] Verify `NoOpPaymentsService` is active in `payments_provider.dart`
-- [ ] Confirm no feature code calls `in_app_purchase` directly
+- [x] Create `lib/services/payments/payments_service.dart`
+- [x] Create `lib/services/payments/store_product.dart`
+- [x] Create `lib/services/payments/noop_payments_service.dart`
+- [x] Create `lib/services/payments/in_app_purchase_service.dart`
+- [x] Create `lib/services/payments/payments_provider.dart`
+- [x] Run `build_runner` to generate provider file
+- [x] Verify `NoOpPaymentsService` is active in `payments_provider.dart`
+- [x] Confirm no feature code calls `in_app_purchase` directly
 
 ---
 
 ## Definition of Done
 
-- [ ] `PaymentsService` abstract interface exists
-- [ ] `NoOpPaymentsService` is the active provider in MVP
-- [ ] `InAppPurchaseService` stub exists with `UnimplementedError` guards
-- [ ] `payments_provider.dart` compiles and resolves to `NoOpPaymentsService`
-- [ ] No feature screen shows a real purchase button or price in MVP
-- [ ] Future implementation checklist is complete and stored in this doc
+- [x] `PaymentsService` abstract interface exists
+- [x] `NoOpPaymentsService` is the active provider in MVP
+- [x] `InAppPurchaseService` stub exists with `UnimplementedError` guards
+- [x] `payments_provider.dart` compiles and resolves to `NoOpPaymentsService`
+- [x] No feature screen shows a real purchase button or price in MVP
+- [x] Future implementation checklist is complete and stored in this doc

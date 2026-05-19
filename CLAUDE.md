@@ -41,7 +41,8 @@ brewpath/               ← git root, CLAUDE.md lives here
 | 6 | ✅ Done | Feature screens: Learn/Path/Cards/Profile + lock/settings/version providers |
 | 7 | ✅ Done | Lesson runner, 4 mini-games, completion screen, immersive lesson route |
 | 8 | 🚧 Code complete | Firebase services (Analytics/Crashlytics/Remote Config) behind abstractions; **activation pending user setup** (`kUseFirebase`) |
-| 9–11 | ⏳ Pending | See `docs/16-claude-code-task-plan.md` |
+| 9 | ✅ Done | Ads & Payments service stubs (NoOp active; in_app_purchase/AdMob impls deferred) |
+| 10–11 | ⏳ Pending | See `docs/16-claude-code-task-plan.md` |
 
 ## Common Commands (run from `coffee_quest/`)
 

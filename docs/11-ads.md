@@ -247,23 +247,23 @@ lib/core/constants/
 
 ## Steps
 
-- [ ] Create `lib/services/ads/ads_service.dart`
-- [ ] Create `lib/services/ads/noop_ads_service.dart`
-- [ ] Create `lib/services/ads/admob_ads_service.dart`
-- [ ] Create `lib/services/ads/ads_provider.dart`
-- [ ] Create `lib/core/constants/ad_unit_ids.dart` with test IDs
-- [ ] Run `build_runner` to generate provider file
-- [ ] Verify `NoOpAdsService` is active in `ads_provider.dart`
-- [ ] Confirm no ads appear anywhere in the app during MVP testing
+- [x] Create `lib/services/ads/ads_service.dart`
+- [x] Create `lib/services/ads/noop_ads_service.dart`
+- [x] Create `lib/services/ads/admob_ads_service.dart`
+- [x] Create `lib/services/ads/ads_provider.dart`
+- [x] Create `lib/core/constants/ad_unit_ids.dart` with test IDs
+- [x] Run `build_runner` to generate provider file
+- [x] Verify `NoOpAdsService` is active in `ads_provider.dart`
+- [x] Confirm no ads appear anywhere in the app during MVP testing
 
 ---
 
 ## Definition of Done
 
-- [ ] `AdsService` abstract interface exists
-- [ ] `NoOpAdsService` is the active provider in MVP
-- [ ] `AdMobAdsService` stub exists with `UnimplementedError` guards
-- [ ] `ads_provider.dart` compiles and resolves to `NoOpAdsService`
-- [ ] No ad banner, interstitial, or rewarded ad appears anywhere in MVP
-- [ ] Ad unit ID constants file exists with test IDs for future use
-- [ ] Future implementation checklist is complete and stored in this doc
+- [x] `AdsService` abstract interface exists
+- [x] `NoOpAdsService` is the active provider in MVP
+- [x] `AdMobAdsService` stub exists with `UnimplementedError` guards
+- [x] `ads_provider.dart` compiles and resolves to `NoOpAdsService`
+- [x] No ad banner, interstitial, or rewarded ad appears anywhere in MVP
+- [x] Ad unit ID constants file exists with test IDs for future use
+- [x] Future implementation checklist is complete and stored in this doc

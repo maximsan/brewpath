@@ -269,19 +269,19 @@ Before starting, verify:
 
 **Reference:** `docs/10-payments.md`, `docs/11-ads.md`
 
-- [ ] Create `lib/services/payments/payments_service.dart`
-- [ ] Create `lib/services/payments/store_product.dart`
-- [ ] Create `lib/services/payments/noop_payments_service.dart`
-- [ ] Create `lib/services/payments/in_app_purchase_service.dart`
-- [ ] Create `lib/services/payments/payments_provider.dart` (active: NoOpPaymentsService)
-- [ ] Create `lib/services/ads/ads_service.dart`
-- [ ] Create `lib/services/ads/noop_ads_service.dart`
-- [ ] Create `lib/services/ads/admob_ads_service.dart`
-- [ ] Create `lib/services/ads/ads_provider.dart` (active: NoOpAdsService)
-- [ ] Create `lib/core/constants/ad_unit_ids.dart`
-- [ ] Run `dart run build_runner build --delete-conflicting-outputs`
-- [ ] Run `flutter analyze` → no warnings
-- [ ] Confirm no ads or purchase UI appears anywhere in the app
+- [x] Create `lib/services/payments/payments_service.dart`
+- [x] Create `lib/services/payments/store_product.dart`
+- [x] Create `lib/services/payments/noop_payments_service.dart`
+- [x] Create `lib/services/payments/in_app_purchase_service.dart`
+- [x] Create `lib/services/payments/payments_provider.dart` (active: NoOpPaymentsService)
+- [x] Create `lib/services/ads/ads_service.dart`
+- [x] Create `lib/services/ads/noop_ads_service.dart`
+- [x] Create `lib/services/ads/admob_ads_service.dart`
+- [x] Create `lib/services/ads/ads_provider.dart` (active: NoOpAdsService)
+- [x] Create `lib/core/constants/ad_unit_ids.dart`
+- [x] Run `dart run build_runner build --delete-conflicting-outputs`
+- [x] Run `flutter analyze` → no warnings
+- [x] Confirm no ads or purchase UI appears anywhere in the app
 
 **Phase 9 Done when:** Both service stubs compile, providers resolve to no-ops, no purchase or ad UI visible.
 
