@@ -38,7 +38,8 @@ brewpath/               ← git root, CLAUDE.md lives here
 | 3 | ✅ Done | Drift persistence, repositories, providers |
 | 4 | ✅ Done | Domain logic: XP/streak/completion services, providers |
 | 5 | ✅ Done | Navigation: StatefulShellRoute app shell, 4 tabs, analytics observer |
-| 6–11 | ⏳ Pending | See `docs/16-claude-code-task-plan.md` |
+| 6 | ✅ Done | Feature screens: Learn/Path/Cards/Profile + lock/settings/version providers |
+| 7–11 | ⏳ Pending | See `docs/16-claude-code-task-plan.md` |
 
 ## Common Commands (run from `coffee_quest/`)
 

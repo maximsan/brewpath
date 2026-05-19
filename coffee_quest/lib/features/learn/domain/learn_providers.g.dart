@@ -49,7 +49,7 @@ final class ModulesWithProgressProvider
 }
 
 String _$modulesWithProgressHash() =>
-    r'64682fd622b234541aa059a4ae7885aa303cf002';
+    r'4edce864510a70fd09058fc8405de592533acde4';
 
 @ProviderFor(todayLesson)
 final todayLessonProvider = TodayLessonProvider._();

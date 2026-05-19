@@ -14,11 +14,16 @@ class ModuleWithProgress {
     required this.module,
     required this.completedCount,
     required this.totalCount,
+    required this.isLocked,
   });
 
   final ModuleModel module;
   final int completedCount;
   final int totalCount;
+
+  /// Locked until the module named by `unlockRequirement` is fully complete.
+  /// The first module (no `unlockRequirement`) is always unlocked.
+  final bool isLocked;
 
   bool get isComplete => totalCount > 0 && completedCount >= totalCount;
 
@@ -34,15 +39,19 @@ Future<List<ModuleWithProgress>> modulesWithProgress(Ref ref) async {
       .getAllCompleted();
   final completedIds = completed.map((r) => r.lessonId).toSet();
 
-  return modules
-      .map(
-        (m) => ModuleWithProgress(
-          module: m,
-          completedCount: m.lessonIds.where(completedIds.contains).length,
-          totalCount: m.lessonIds.length,
-        ),
-      )
-      .toList();
+  bool moduleComplete(ModuleModel m) =>
+      m.lessonIds.isNotEmpty && m.lessonIds.every(completedIds.contains);
+  final completeById = {for (final m in modules) m.id: moduleComplete(m)};
+
+  return modules.map((m) {
+    final req = m.unlockRequirement;
+    return ModuleWithProgress(
+      module: m,
+      completedCount: m.lessonIds.where(completedIds.contains).length,
+      totalCount: m.lessonIds.length,
+      isLocked: req != null && !(completeById[req] ?? false),
+    );
+  }).toList();
 }
 
 @riverpod

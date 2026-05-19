@@ -161,42 +161,42 @@ Before starting, verify:
 **Reference:** `docs/01-mvp-scope.md`
 
 ### Learn Tab
-- [ ] Create `lib/features/learn/presentation/learn_screen.dart`:
+- [x] Create `lib/features/learn/presentation/learn_screen.dart`:
   - Today's lesson card at top
   - Module list below (use `modulesWithProgressProvider`)
   - Each module card: title, lesson count, progress bar, locked/unlocked state
-- [ ] Create `lib/features/learn/presentation/module_card_widget.dart`
-- [ ] Create `lib/features/learn/presentation/module_detail_screen.dart`:
+- [x] Create `lib/features/learn/presentation/module_card_widget.dart`
+- [x] Create `lib/features/learn/presentation/module_detail_screen.dart`:
   - List of lessons with completion checkmarks
   - Tap unlocked lesson → navigate to `/learn/lesson/:lessonId`
 
 ### Path Tab
-- [ ] Create `lib/features/path/presentation/path_screen.dart`:
+- [x] Create `lib/features/path/presentation/path_screen.dart`:
   - Vertical list of 5 module nodes
   - Each node: title, lesson dots, locked/unlocked icon
   - Locked module tapped → show snackbar "Complete previous module to unlock"
-- [ ] Create `lib/features/path/presentation/path_module_node_widget.dart`
+- [x] Create `lib/features/path/presentation/path_module_node_widget.dart`
 
 ### Cards Tab
-- [ ] Create `lib/features/cards/presentation/cards_screen.dart`:
+- [x] Create `lib/features/cards/presentation/cards_screen.dart`:
   - GridView of all 17 cards
   - Unlocked: show title + tag + icon
   - Locked: show silhouette + "???"
-- [ ] Create `lib/features/cards/presentation/card_grid_item_widget.dart`
-- [ ] Create `lib/features/cards/presentation/card_detail_screen.dart`:
+- [x] Create `lib/features/cards/presentation/card_grid_item_widget.dart`
+- [x] Create `lib/features/cards/presentation/card_detail_screen.dart`:
   - Card title, description, module tag
 
 ### Profile Tab
-- [ ] Create `lib/features/profile/presentation/profile_screen.dart`:
+- [x] Create `lib/features/profile/presentation/profile_screen.dart`:
   - XP display (from `totalXpProvider`)
   - Streak display (from `streakProvider`)
   - Completed lessons count
   - Collected cards count
   - Settings section: Haptics toggle, Sound toggle (both stored in `SettingsRepository`)
-  - App info: version from `packageInfo_plus` or hardcoded string
+  - App info: version from `packageInfo_plus` or hardcoded string — _added `package_info_plus` (user-approved)_
 
-- [ ] Run app on Simulator, navigate all 4 tabs, verify data displays correctly
-- [ ] Verify locked modules show lock icon on both Learn and Path tabs
+- [ ] Run app on Simulator, navigate all 4 tabs, verify data displays correctly _(manual — left for user)_
+- [ ] Verify locked modules show lock icon on both Learn and Path tabs _(covered by widget tests; manual confirm pending)_
 
 **Phase 6 Done when:** All 4 tab screens render with real data from providers. Navigate to all screens without crashes.
 

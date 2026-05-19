@@ -4,14 +4,20 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:coffee_quest/app/analytics_navigator_observer.dart';
 import 'package:coffee_quest/app/app_shell.dart';
+import 'package:coffee_quest/features/cards/presentation/card_detail_screen.dart';
+import 'package:coffee_quest/features/cards/presentation/cards_screen.dart';
+import 'package:coffee_quest/features/learn/presentation/learn_screen.dart';
+import 'package:coffee_quest/features/learn/presentation/module_detail_screen.dart';
+import 'package:coffee_quest/features/path/presentation/path_screen.dart';
+import 'package:coffee_quest/features/profile/presentation/profile_screen.dart';
 import 'package:coffee_quest/services/analytics/analytics_provider.dart';
 
 part 'app_router.g.dart';
 
 final _rootKey = GlobalKey<NavigatorState>();
 
-/// Phase 5 placeholder. Phase 6 replaces these with the real feature screens
-/// under `features/**/presentation`; kept private so it isn't reused.
+/// Phase 7 replaces this with the real lesson runner; until then the lesson
+/// route renders a placeholder so navigation from Learn/Module is testable.
 class _PlaceholderScreen extends StatelessWidget {
   const _PlaceholderScreen(this.title, {this.detail});
 
@@ -46,15 +52,13 @@ GoRouter appRouter(Ref ref) {
               GoRoute(
                 path: '/learn',
                 name: 'learn',
-                builder: (context, state) =>
-                    const _PlaceholderScreen('Learn'),
+                builder: (context, state) => const LearnScreen(),
                 routes: [
                   GoRoute(
                     path: 'module/:moduleId',
                     name: 'moduleDetail',
-                    builder: (context, state) => _PlaceholderScreen(
-                      'Module',
-                      detail: state.pathParameters['moduleId'],
+                    builder: (context, state) => ModuleDetailScreen(
+                      moduleId: state.pathParameters['moduleId']!,
                     ),
                     routes: [
                       GoRoute(
@@ -76,7 +80,7 @@ GoRouter appRouter(Ref ref) {
               GoRoute(
                 path: '/path',
                 name: 'path',
-                builder: (context, state) => const _PlaceholderScreen('Path'),
+                builder: (context, state) => const PathScreen(),
               ),
             ],
           ),
@@ -85,14 +89,13 @@ GoRouter appRouter(Ref ref) {
               GoRoute(
                 path: '/cards',
                 name: 'cards',
-                builder: (context, state) => const _PlaceholderScreen('Cards'),
+                builder: (context, state) => const CardsScreen(),
                 routes: [
                   GoRoute(
                     path: ':cardId',
                     name: 'cardDetail',
-                    builder: (context, state) => _PlaceholderScreen(
-                      'Card',
-                      detail: state.pathParameters['cardId'],
+                    builder: (context, state) => CardDetailScreen(
+                      cardId: state.pathParameters['cardId']!,
                     ),
                   ),
                 ],
@@ -104,8 +107,7 @@ GoRouter appRouter(Ref ref) {
               GoRoute(
                 path: '/profile',
                 name: 'profile',
-                builder: (context, state) =>
-                    const _PlaceholderScreen('Profile'),
+                builder: (context, state) => const ProfileScreen(),
               ),
             ],
           ),

@@ -1,64 +1,55 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:coffee_quest/app/app.dart';
 import 'package:coffee_quest/app/app_router.dart';
 
-Future<ProviderContainer> _pumpApp(WidgetTester tester) async {
-  final container = ProviderContainer();
-  addTearDown(container.dispose);
-  await tester.pumpWidget(
-    UncontrolledProviderScope(
-      container: container,
-      child: const CoffeeQuestApp(),
-    ),
-  );
-  await tester.pumpAndSettle();
-  return container;
-}
+import '../support/widget_harness.dart';
+
+Finder _appBarTitled(String title) =>
+    find.widgetWithText(AppBar, title);
 
 void main() {
+  setUp(useInMemoryDatabase);
+
   testWidgets('starts on the Learn tab', (tester) async {
-    await _pumpApp(tester);
-    expect(find.text('Learn — coming soon'), findsOneWidget);
+    await pumpWithProviders(tester, const CoffeeQuestApp());
+    expect(_appBarTitled('Learn'), findsOneWidget);
   });
 
   testWidgets('each destination switches tabs', (tester) async {
-    await _pumpApp(tester);
+    await pumpWithProviders(tester, const CoffeeQuestApp());
 
     await tester.tap(find.byIcon(Icons.route_outlined));
-    await tester.pumpAndSettle();
-    expect(find.text('Path — coming soon'), findsOneWidget);
+    await settleLoaders(tester);
+    expect(_appBarTitled('Path'), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.style_outlined));
-    await tester.pumpAndSettle();
-    expect(find.text('Cards — coming soon'), findsOneWidget);
+    await settleLoaders(tester);
+    expect(_appBarTitled('Cards'), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.person_outline));
-    await tester.pumpAndSettle();
-    expect(find.text('Profile — coming soon'), findsOneWidget);
+    await settleLoaders(tester);
+    expect(_appBarTitled('Profile'), findsOneWidget);
   });
 
   testWidgets('branch navigator stack is preserved across tab switches', (
     tester,
   ) async {
-    final container = await _pumpApp(tester);
+    final container = await pumpWithProviders(tester, const CoffeeQuestApp());
 
-    // Drill into a Learn sub-route.
     container.read(appRouterProvider).go('/learn/module/module_beans');
-    await tester.pumpAndSettle();
-    expect(find.text('Module: module_beans'), findsOneWidget);
+    await settleLoaders(tester);
+    expect(_appBarTitled('Module'), findsOneWidget);
 
-    // Switch away to Path, then back to Learn.
     await tester.tap(find.byIcon(Icons.route_outlined));
-    await tester.pumpAndSettle();
-    expect(find.text('Path — coming soon'), findsOneWidget);
+    await settleLoaders(tester);
+    expect(_appBarTitled('Path'), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.school_outlined));
-    await tester.pumpAndSettle();
+    await settleLoaders(tester);
 
     // Learn branch retained its stack — still on the module sub-route.
-    expect(find.text('Module: module_beans'), findsOneWidget);
+    expect(_appBarTitled('Module'), findsOneWidget);
   });
 }
