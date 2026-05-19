@@ -40,6 +40,10 @@ GoRouter appRouter(Ref ref) {
   return GoRouter(
     navigatorKey: _rootKey,
     initialLocation: '/learn',
+    // The shell branches live under /learn, /path, … — there is no '/' route,
+    // so funnel the root (platform initial route, error-page "Home") to Learn.
+    redirect: (context, state) =>
+        state.uri.path == '/' ? '/learn' : null,
     observers: [
       AnalyticsNavigatorObserver(ref.watch(analyticsServiceProvider)),
     ],
