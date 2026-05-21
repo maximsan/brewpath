@@ -13,6 +13,29 @@ import 'package:coffee_quest/shared/repositories/settings_repository.dart';
 
 part 'lesson_completion_service.g.dart';
 
+/// Outcome of [LessonCompletionService.completeLesson] — the XP actually
+/// banked, split so the completion screen can show the module-completion bonus
+/// separately from the lesson's own reward.
+class LessonCompletionResult {
+  const LessonCompletionResult({
+    required this.lessonXp,
+    required this.moduleBonusXp,
+  });
+
+  /// XP awarded for finishing the lesson itself.
+  final int lessonXp;
+
+  /// XP awarded for completing the lesson's module, or `0` when the module is
+  /// not yet fully complete.
+  final int moduleBonusXp;
+
+  /// Whether finishing this lesson also completed its module.
+  bool get moduleCompleted => moduleBonusXp > 0;
+
+  /// Total XP banked by this completion.
+  int get totalXp => lessonXp + moduleBonusXp;
+}
+
 /// Orchestrates everything that happens when a lesson finishes: persist progress,
 /// award XP, unlock the lesson's card, advance the streak, and grant the module
 /// bonus once every lesson in the module is done. Idempotent — replaying a
@@ -36,9 +59,16 @@ class LessonCompletionService {
   final XpService xpService;
   final StreakService streakService;
 
-  Future<void> completeLesson(LessonModel lesson) async {
+  Future<LessonCompletionResult> completeLesson(LessonModel lesson) async {
     final existing = await progressRepository.getByLessonId(lesson.id);
-    if (existing != null) return;
+    if (existing != null) {
+      // Replay: nothing is re-awarded. Report the lesson's previously banked
+      // XP so a revisited completion screen still shows a consistent figure.
+      return LessonCompletionResult(
+        lessonXp: existing.xpEarned,
+        moduleBonusXp: 0,
+      );
+    }
 
     final xp = xpService.calculateLessonXp(lesson.steps.length);
     await progressRepository.saveCompletion(lessonId: lesson.id, xpEarned: xp);
@@ -68,7 +98,7 @@ class LessonCompletionService {
       ..lastActivityDate = streak.lastActivityDate;
     await settingsRepository.saveSettings(settings);
 
-    await _maybeAwardModuleBonus(lesson);
+    final moduleBonus = await _maybeAwardModuleBonus(lesson);
 
     await analyticsService.logEvent(
       'lesson_completed',
@@ -78,18 +108,22 @@ class LessonCompletionService {
         'xp_earned': xp,
       },
     );
+
+    return LessonCompletionResult(lessonXp: xp, moduleBonusXp: moduleBonus);
   }
 
-  Future<void> _maybeAwardModuleBonus(LessonModel lesson) async {
+  /// Awards the module-completion bonus when [lesson] was the last unfinished
+  /// lesson of its module. Returns the bonus XP granted, or `0` otherwise.
+  Future<int> _maybeAwardModuleBonus(LessonModel lesson) async {
     final modules = await contentRepository.getModules();
     final matches = modules.where((m) => m.id == lesson.moduleId);
-    if (matches.isEmpty) return;
+    if (matches.isEmpty) return 0;
     final module = matches.first;
 
     final completed = await progressRepository.getAllCompleted();
     final completedIds = completed.map((r) => r.lessonId).toSet();
     final allDone = module.lessonIds.every(completedIds.contains);
-    if (!allDone) return;
+    if (!allDone) return 0;
 
     final bonus = xpService.moduleCompletionBonus;
     await settingsRepository.addXp(bonus);
@@ -105,6 +139,7 @@ class LessonCompletionService {
         parameters: {'module_id': next.id},
       );
     }
+    return bonus;
   }
 }
 

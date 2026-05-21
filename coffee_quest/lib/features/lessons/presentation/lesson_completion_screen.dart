@@ -7,13 +7,13 @@ import 'package:coffee_quest/core/widgets/error_view.dart';
 import 'package:coffee_quest/core/widgets/loading_indicator.dart';
 import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
 import 'package:coffee_quest/features/lessons/domain/lesson_completion_service.dart';
+import 'package:coffee_quest/features/progress/domain/progress_providers.dart';
 import 'package:coffee_quest/shared/models/coffee_card_model.dart';
-import 'package:coffee_quest/shared/models/lesson_model.dart';
 import 'package:coffee_quest/shared/repositories/content_repository.dart';
 
 class _Reward {
-  const _Reward({required this.lesson, this.card});
-  final LessonModel lesson;
+  const _Reward({required this.completion, this.card});
+  final LessonCompletionResult completion;
   final CoffeeCardModel? card;
 }
 
@@ -39,14 +39,22 @@ class _LessonCompletionScreenState
     if (lesson == null) {
       throw StateError('Lesson ${widget.lessonId} not found');
     }
-    await ref.read(lessonCompletionServiceProvider).completeLesson(lesson);
+    final completion = await ref
+        .read(lessonCompletionServiceProvider)
+        .completeLesson(lesson);
 
-    // The Learn screen lives in the indexed-stack shell and stays mounted while
-    // this screen covers it, so its completion-derived providers must be
-    // invalidated explicitly — otherwise "Today's lesson" and module progress
-    // keep showing the just-finished lesson when the user returns.
+    // The Learn, Cards, and Profile screens live in the indexed-stack shell and
+    // stay mounted while this screen covers them, so every completion-derived
+    // provider must be invalidated explicitly — otherwise "Today's lesson" and
+    // module progress keep showing the just-finished lesson, and the profile's
+    // Total XP / streak / lesson & card counts keep showing pre-completion
+    // values, when the user returns.
     ref.invalidate(todayLessonProvider);
     ref.invalidate(modulesWithProgressProvider);
+    ref.invalidate(totalXpProvider);
+    ref.invalidate(streakProvider);
+    ref.invalidate(completedLessonsProvider);
+    ref.invalidate(collectedCardsProvider);
 
     CoffeeCardModel? card;
     final cardId = lesson.cardId;
@@ -54,7 +62,7 @@ class _LessonCompletionScreenState
       final cards = await content.getCards();
       card = cards.where((c) => c.id == cardId).firstOrNull;
     }
-    return _Reward(lesson: lesson, card: card);
+    return _Reward(completion: completion, card: card);
   }
 
   @override
@@ -84,10 +92,18 @@ class _LessonCompletionScreenState
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '+${reward.lesson.xpReward} XP',
+                    '+${reward.completion.lessonXp} XP',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
+                  if (reward.completion.moduleCompleted) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      '+${reward.completion.moduleBonusXp} XP · Module complete!',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ],
                   if (reward.card != null) ...[
                     const SizedBox(height: 24),
                     Card(

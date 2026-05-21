@@ -1,5 +1,6 @@
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -10,6 +11,13 @@ import 'package:coffee_quest/shared/storage/app_database.dart';
 /// [AppDatabaseService] and stubbed package_info, so screens render against
 /// real content assets and an empty user state without platform channels.
 AppDatabase useInMemoryDatabase() {
+  // `rootBundle` caches the `Future` returned by `loadString`, not just its
+  // value. A Future created inside one `testWidgets` test's `FakeAsync` zone
+  // delivers its continuations through that (now-dead) zone, so a later test
+  // that `await`s the cached Future hangs forever. Dropping the cache each
+  // test forces a fresh Future in the live zone.
+  rootBundle.clear();
+
   final db = AppDatabase(NativeDatabase.memory());
   AppDatabaseService.instance = db;
   addTearDown(db.close);

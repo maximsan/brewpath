@@ -49,8 +49,12 @@ void main() {
       'completing a lesson persists progress, XP, card and streak',
       () async {
         final lesson = (await content.getLessonById('lesson_where_coffee'))!;
-        await service.completeLesson(lesson);
+        final result = await service.completeLesson(lesson);
 
+        expect(result.lessonXp, 10);
+        expect(result.moduleBonusXp, 0);
+        expect(result.moduleCompleted, isFalse);
+        expect(result.totalXp, 10);
         expect(await progress.getByLessonId('lesson_where_coffee'), isNotNull);
         expect((await settings.getSettings()).totalXp, 10);
         expect(await cards.isCardCollected('card_where_coffee'), isTrue);
@@ -61,8 +65,11 @@ void main() {
     test('replaying a completed lesson is idempotent', () async {
       final lesson = (await content.getLessonById('lesson_where_coffee'))!;
       await service.completeLesson(lesson);
-      await service.completeLesson(lesson);
+      final replay = await service.completeLesson(lesson);
 
+      // The replay re-awards nothing but still reports the lesson's banked XP.
+      expect(replay.lessonXp, 10);
+      expect(replay.moduleBonusXp, 0);
       expect((await progress.getAllCompleted()).length, 1);
       expect((await settings.getSettings()).totalXp, 10);
     });
@@ -70,14 +77,22 @@ void main() {
     test(
       'finishing every lesson in a module awards the module bonus',
       () async {
+        late LessonCompletionResult last;
         for (final id in const [
           'lesson_where_coffee',
           'lesson_arabica_robusta',
           'lesson_green_coffee',
         ]) {
-          await service.completeLesson((await content.getLessonById(id))!);
+          last = await service.completeLesson(
+            (await content.getLessonById(id))!,
+          );
         }
 
+        // The final lesson reports its own XP (10) plus the 25 module bonus.
+        expect(last.lessonXp, 10);
+        expect(last.moduleBonusXp, 25);
+        expect(last.moduleCompleted, isTrue);
+        expect(last.totalXp, 35);
         // Lesson XP 10 + 20 + 10 = 40, plus the 25 module-completion bonus.
         expect((await settings.getSettings()).totalXp, 65);
       },

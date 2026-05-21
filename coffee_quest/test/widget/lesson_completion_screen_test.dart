@@ -3,7 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
+import 'package:coffee_quest/features/lessons/domain/lesson_completion_service.dart';
 import 'package:coffee_quest/features/lessons/presentation/lesson_completion_screen.dart';
+import 'package:coffee_quest/features/progress/domain/progress_providers.dart';
+import 'package:coffee_quest/shared/repositories/content_repository.dart';
 
 import '../support/widget_harness.dart';
 
@@ -47,4 +50,119 @@ void main() {
       expect(after?.id, isNot('lesson_where_coffee'));
     },
   );
+
+  // The Profile/Cards tabs stay mounted in the indexed-stack shell, so
+  // LessonCompletionScreen must invalidate every completion-derived provider —
+  // otherwise their stats keep showing pre-completion values.
+  testWidgets(
+    'completing a lesson refreshes Total XP, streak, lessons and cards',
+    (tester) async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      // Live listeners keep these auto-dispose providers alive across the
+      // completion, so the test observes the invalidation triggered by
+      // LessonCompletionScreen rather than an unrelated fresh recompute.
+      final subs = [
+        container.listen(totalXpProvider, (_, _) {}),
+        container.listen(streakProvider, (_, _) {}),
+        container.listen(completedLessonsProvider, (_, _) {}),
+        container.listen(collectedCardsProvider, (_, _) {}),
+      ];
+      addTearDown(() {
+        for (final s in subs) {
+          s.close();
+        }
+      });
+
+      final xpBefore = await tester.runAsync(
+        () => container.read(totalXpProvider.future),
+      );
+      final streakBefore = await tester.runAsync(
+        () => container.read(streakProvider.future),
+      );
+      final lessonsBefore = await tester.runAsync(
+        () => container.read(completedLessonsProvider.future),
+      );
+      final cardsBefore = await tester.runAsync(
+        () => container.read(collectedCardsProvider.future),
+      );
+      expect(xpBefore, 0);
+      expect(streakBefore, 0);
+      expect(lessonsBefore, isEmpty);
+      expect(cardsBefore, isEmpty);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: const MaterialApp(
+            home: LessonCompletionScreen(lessonId: 'lesson_where_coffee'),
+          ),
+        ),
+      );
+      await settleLoaders(tester);
+      expect(find.text('Lesson complete!'), findsOneWidget);
+      // First lesson of module_beans — the module bonus is not shown yet.
+      expect(find.text('+10 XP'), findsOneWidget);
+      expect(find.textContaining('Module complete!'), findsNothing);
+
+      // The completion invalidated each provider, so they now resolve to the
+      // post-completion state instead of the stale pre-completion values.
+      final xpAfter = await tester.runAsync(
+        () => container.read(totalXpProvider.future),
+      );
+      final streakAfter = await tester.runAsync(
+        () => container.read(streakProvider.future),
+      );
+      final lessonsAfter = await tester.runAsync(
+        () => container.read(completedLessonsProvider.future),
+      );
+      final cardsAfter = await tester.runAsync(
+        () => container.read(collectedCardsProvider.future),
+      );
+      expect(xpAfter, 10); // lesson_where_coffee has 1 step * 10 XP
+      expect(streakAfter, 1);
+      expect(lessonsAfter, hasLength(1));
+      expect(cardsAfter, contains('card_where_coffee'));
+    },
+  );
+
+  // Finishing the last lesson of a module banks the lesson XP *plus* a 25 XP
+  // module-completion bonus. The completion screen must surface that bonus so
+  // the displayed XP reconciles with the profile total.
+  testWidgets('completion screen shows the module-completion bonus', (
+    tester,
+  ) async {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    // Live listeners keep these auto-dispose providers alive, so the throwaway
+    // container.read calls below don't schedule a Riverpod dispose timer that
+    // would outlive the test.
+    container.listen(contentRepositoryProvider, (_, _) {});
+    container.listen(lessonCompletionServiceProvider, (_, _) {});
+
+    // Finish the first two lessons of module_beans directly via the service so
+    // the screen below completes the *last* lesson and triggers the bonus.
+    final content = container.read(contentRepositoryProvider);
+    final service = container.read(lessonCompletionServiceProvider);
+    for (final id in const ['lesson_where_coffee', 'lesson_arabica_robusta']) {
+      final lesson = await tester.runAsync(() => content.getLessonById(id));
+      await tester.runAsync(() => service.completeLesson(lesson!));
+    }
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const MaterialApp(
+          home: LessonCompletionScreen(lessonId: 'lesson_green_coffee'),
+        ),
+      ),
+    );
+    await settleLoaders(tester);
+
+    expect(find.text('Lesson complete!'), findsOneWidget);
+    expect(find.text('+10 XP'), findsOneWidget); // lesson_green_coffee, 1 step
+    expect(find.text('+25 XP · Module complete!'), findsOneWidget);
+  });
 }
