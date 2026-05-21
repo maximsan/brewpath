@@ -21,10 +21,8 @@ Future<List<CardWithCollection>> cardsWithCollection(Ref ref) async {
   final collected = (await ref.watch(collectedCardsProvider.future)).toSet();
   return cards
       .map(
-        (c) => CardWithCollection(
-          card: c,
-          isCollected: collected.contains(c.id),
-        ),
+        (c) =>
+            CardWithCollection(card: c, isCollected: collected.contains(c.id)),
       )
       .toList();
 }

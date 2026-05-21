@@ -17,9 +17,7 @@ class CardGridItemWidget extends StatelessWidget {
 
     return Card(
       child: InkWell(
-        onTap: collected
-            ? () => context.go('/cards/${item.card.id}')
-            : null,
+        onTap: collected ? () => context.go('/cards/${item.card.id}') : null,
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(

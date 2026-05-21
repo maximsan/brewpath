@@ -303,20 +303,27 @@ Before starting, verify:
 
 ---
 
-## Phase 11: CI Workflow
+## Phase 11: CI Workflow + CocoaPods → SPM Migration
 
 **Reference:** `docs/13-ci-cd.md`
 
-- [x] Create `.github/workflows/ci.yml` (full YAML from `docs/13-ci-cd.md`) — _committed in `c1850fe`_
-- [ ] Add `GOOGLE_SERVICE_INFO_PLIST` secret in GitHub Repository Settings
-- [ ] Push branch to GitHub → verify all 4 CI jobs run
-- [ ] Verify `format` job passes
-- [ ] Verify `analyze` job passes
-- [ ] Verify `test` job passes
-- [ ] Verify `ios-build` job produces `Runner.app` on macOS runner
-- [ ] Enable branch protection on `main` requiring all 4 jobs to pass
+### CocoaPods → Swift Package Manager migration
+- [x] `flutter config --enable-swift-package-manager`
+- [x] `pod deintegrate` — removed CocoaPods from `Runner.xcodeproj`
+- [x] Removed `Pods-Runner` includes from `ios/Flutter/Debug.xcconfig` + `Release.xcconfig`
+- [x] Deleted `ios/Podfile` + `ios/Podfile.lock`
+- [x] Verified `flutter build ios --debug --simulator` — no `pod install`, no migration nag
 
-**Phase 11 Done when:** All CI jobs green on GitHub Actions, branch protection enabled.
+### CI workflow
+- [x] `.github/workflows/ci.yml` — 3 jobs: `format`, `analyze & test`, `iOS build`
+- [x] `format` job — `dart format --set-exit-if-changed` (repo formatted clean)
+- [x] `analyze & test` job — `flutter analyze` + `flutter test` (52 tests)
+- [x] `ios-build` job — `macos-latest`, `flutter build ios --release --no-codesign`
+- [x] ~~Add `GOOGLE_SERVICE_INFO_PLIST` secret~~ — _N/A: iOS build needs no plist while `kUseFirebase == false`_
+- [ ] Push branch to GitHub → verify all 3 CI jobs run green _(manual — user)_
+- [ ] Enable branch protection on `main` requiring the 3 jobs _(manual — user)_
+
+**Phase 11 Done when:** CI jobs green on GitHub Actions, branch protection enabled.
 
 ---
 

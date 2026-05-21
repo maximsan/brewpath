@@ -6,8 +6,7 @@ import 'package:coffee_quest/app/app_router.dart';
 
 import '../support/widget_harness.dart';
 
-Finder _appBarTitled(String title) =>
-    find.widgetWithText(AppBar, title);
+Finder _appBarTitled(String title) => find.widgetWithText(AppBar, title);
 
 void main() {
   setUp(useInMemoryDatabase);

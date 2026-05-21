@@ -57,8 +57,9 @@ class _DragDropGameState extends State<DragDropGame> {
                       child: _placed.containsValue(i)
                           ? Chip(
                               label: Text(terms[i]),
-                              backgroundColor:
-                                  Colors.green.withValues(alpha: 0.3),
+                              backgroundColor: Colors.green.withValues(
+                                alpha: 0.3,
+                              ),
                             )
                           : Draggable<int>(
                               data: i,

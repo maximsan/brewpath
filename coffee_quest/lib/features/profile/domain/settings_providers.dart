@@ -15,9 +15,11 @@ class SettingsController extends _$SettingsController {
   Future<UserSettingsRecord> build() =>
       ref.watch(settingsRepositoryProvider).getSettings();
 
-  Future<void> toggleHaptics() => _update((s) => s.hapticsEnabled = !s.hapticsEnabled);
+  Future<void> toggleHaptics() =>
+      _update((s) => s.hapticsEnabled = !s.hapticsEnabled);
 
-  Future<void> toggleSound() => _update((s) => s.soundEnabled = !s.soundEnabled);
+  Future<void> toggleSound() =>
+      _update((s) => s.soundEnabled = !s.soundEnabled);
 
   Future<void> _update(void Function(UserSettingsRecord) mutate) async {
     final repo = ref.read(settingsRepositoryProvider);

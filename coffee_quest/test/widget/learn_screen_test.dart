@@ -11,13 +11,13 @@ import 'package:coffee_quest/shared/models/lesson_step_model.dart';
 import 'package:coffee_quest/shared/models/module_model.dart';
 
 ModuleModel _module(String id, {String? unlock}) => ModuleModel(
-      id: id,
-      title: 'Title $id',
-      description: 'Desc $id',
-      iconName: 'ic_beans',
-      lessonIds: const ['l1', 'l2'],
-      unlockRequirement: unlock,
-    );
+  id: id,
+  title: 'Title $id',
+  description: 'Desc $id',
+  iconName: 'ic_beans',
+  lessonIds: const ['l1', 'l2'],
+  unlockRequirement: unlock,
+);
 
 /// First module unlocked, the next four locked — mirrors a fresh user.
 final _modules = <ModuleWithProgress>[

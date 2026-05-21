@@ -49,21 +49,23 @@ void main() {
     expect(locked['module_processing'], isTrue);
   });
 
-  test('completing every lesson of the required module unlocks the next',
-      () async {
-    final repo = ProgressRepository();
-    for (final id in const [
-      'lesson_where_coffee',
-      'lesson_arabica_robusta',
-      'lesson_green_coffee',
-    ]) {
-      await repo.saveCompletion(lessonId: id, xpEarned: 10);
-    }
+  test(
+    'completing every lesson of the required module unlocks the next',
+    () async {
+      final repo = ProgressRepository();
+      for (final id in const [
+        'lesson_where_coffee',
+        'lesson_arabica_robusta',
+        'lesson_green_coffee',
+      ]) {
+        await repo.saveCompletion(lessonId: id, xpEarned: 10);
+      }
 
-    final locked = await lockedByModule();
-    expect(locked['module_beans'], isFalse);
-    expect(locked['module_processing'], isFalse);
-    // module_roast stays locked — its requirement (processing) isn't done.
-    expect(locked['module_roast'], isTrue);
-  });
+      final locked = await lockedByModule();
+      expect(locked['module_beans'], isFalse);
+      expect(locked['module_processing'], isFalse);
+      // module_roast stays locked — its requirement (processing) isn't done.
+      expect(locked['module_roast'], isTrue);
+    },
+  );
 }

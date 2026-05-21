@@ -97,10 +97,7 @@ class _StatTile extends StatelessWidget {
     return ListTile(
       leading: Icon(icon),
       title: Text(label),
-      trailing: Text(
-        value,
-        style: Theme.of(context).textTheme.titleMedium,
-      ),
+      trailing: Text(value, style: Theme.of(context).textTheme.titleMedium),
     );
   }
 }

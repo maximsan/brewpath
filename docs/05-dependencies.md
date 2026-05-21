@@ -9,6 +9,12 @@
 > repository interfaces, and folder layout as authoritative; treat the Isar
 > code snippets as historical. Current source of truth: `CLAUDE.md`,
 > `pubspec.yaml`, and `lib/shared/storage/app_database.dart`.
+>
+> **Also (Phase 11):** the iOS project migrated from **CocoaPods to Swift
+> Package Manager**. There is no longer an `ios/Podfile`; the "iOS-Specific
+> Native Setup → Podfile" steps below no longer apply. Firebase deps were added
+> in Phase 8 (gated by `kUseFirebase`) and require an iOS 16.0 deployment
+> target.
 
 ---
 

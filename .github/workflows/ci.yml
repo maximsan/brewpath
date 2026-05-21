@@ -10,8 +10,26 @@ defaults:
   run:
     working-directory: coffee_quest
 
+env:
+  FLUTTER_VERSION: "3.44.0"
+
 jobs:
-  test:
+  format:
+    name: format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      # Scoped to source dirs — `dart format .` would descend into build/
+      # (Firebase plugins copy example apps there with broken includes).
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed lib test integration_test
+
+  analyze-test:
     name: analyze & test
     runs-on: ubuntu-latest
     steps:
@@ -19,7 +37,7 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: 3.44.0
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
           cache: true
 
@@ -34,3 +52,27 @@ jobs:
       # helpers are committed, so no codegen step is required here.
       - name: Test
         run: flutter test
+
+  ios-build:
+    name: iOS build
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      # No CocoaPods (project migrated to Swift Package Manager) and no
+      # GoogleService-Info.plist needed — the build succeeds with Firebase
+      # gated off (kUseFirebase == false).
+      - name: Build iOS (no code signing)
+        run: flutter build ios --release --no-codesign
+
+      - name: Verify build artifact
+        run: ls -la build/ios/iphoneos/Runner.app

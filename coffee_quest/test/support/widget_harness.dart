@@ -38,8 +38,10 @@ Future<void> settleLoaders(WidgetTester tester) async {
       () => Future<void>.delayed(const Duration(milliseconds: 20)),
     );
     await tester.pump();
-    final stillLoading =
-        find.byType(CircularProgressIndicator).evaluate().isNotEmpty;
+    final stillLoading = find
+        .byType(CircularProgressIndicator)
+        .evaluate()
+        .isNotEmpty;
     if (!stillLoading && i >= 2) return;
   }
 }

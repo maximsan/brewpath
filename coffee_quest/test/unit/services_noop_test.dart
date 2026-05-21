@@ -19,10 +19,7 @@ void main() {
       c.read(crashReportingServiceProvider),
       isA<NoOpCrashReportingService>(),
     );
-    expect(
-      c.read(remoteConfigServiceProvider),
-      isA<NoOpRemoteConfigService>(),
-    );
+    expect(c.read(remoteConfigServiceProvider), isA<NoOpRemoteConfigService>());
   });
 
   test('No-Op analytics and crash reporting are inert', () async {

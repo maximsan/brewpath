@@ -35,11 +35,7 @@ void main() {
 
     await pump(
       tester,
-      const DragDropStep(
-        instruction: 'i',
-        terms: ['t1'],
-        definitions: ['d1'],
-      ),
+      const DragDropStep(instruction: 'i', terms: ['t1'], definitions: ['d1']),
     );
     expect(find.byType(DragDropGame), findsOneWidget);
 
@@ -59,11 +55,7 @@ void main() {
 
     await pump(
       tester,
-      const TapOrderStep(
-        instruction: 'i',
-        items: ['x', 'y'],
-        explanation: 'e',
-      ),
+      const TapOrderStep(instruction: 'i', items: ['x', 'y'], explanation: 'e'),
     );
     expect(find.byType(TapOrderGame), findsOneWidget);
   });

@@ -28,7 +28,7 @@ brewpath/               ← git root, CLAUDE.md lives here
 - **Regenerate after model changes.** Run `dart run build_runner build` whenever a Freezed model, Riverpod provider, or Drift table is added or modified. (build_runner 2.15 auto-resolves conflicts; the old `--delete-conflicting-outputs` flag was removed.)
 - **No Firebase before Phase 8.** This rule is listed twice intentionally. (Phase 8 is now reached; Firebase code exists but is gated off by `kUseFirebase`.)
 
-## Phase Status (updated 2026-05-20)
+## Phase Status (updated 2026-05-21)
 
 | Phase | Status | Description |
 |---|---|---|
@@ -43,7 +43,7 @@ brewpath/               ← git root, CLAUDE.md lives here
 | 8 | 🚧 Code complete | Firebase services (Analytics/Crashlytics/Remote Config) behind abstractions; **activation pending user setup** (`kUseFirebase`) |
 | 9 | ✅ Done | Ads & Payments service stubs (NoOp active; in_app_purchase/AdMob impls deferred) |
 | 10 | ✅ Done | Test suite (52 tests) + `integration_test/smoke_test.dart`; on-Simulator smoke run pending user |
-| 11 | ⏳ Pending | CI workflow exists (`ci.yml`); GitHub branch protection / secrets pending |
+| 11 | ✅ Done | CI: 3-job `ci.yml` (format / analyze+test / iOS build); CocoaPods→SPM migration. GitHub branch protection pending user |
 
 ## Common Commands (run from `coffee_quest/`)
 
@@ -62,6 +62,14 @@ flutter build ios --release --no-codesign
 
 Drift tests use an in-memory database (`AppDatabase(NativeDatabase.memory())`),
 so no native binary copy is needed (the old `libisar.dylib` step is gone).
+
+### iOS native build
+
+The iOS project uses **Swift Package Manager**, not CocoaPods — there is no
+`ios/Podfile` and no `pod install` step. Plugins resolve as Swift Packages
+during `flutter build ios`. The iOS deployment target is **16.0** (required by
+the Firebase SPM packages). CI builds the app on a macOS runner via the
+`iOS build` job in `.github/workflows/ci.yml`.
 
 ## Code Conventions
 

@@ -28,10 +28,12 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
     if (_started) return;
     _started = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(analyticsServiceProvider).logEvent(
-        'lesson_started',
-        parameters: {'lesson_id': lesson.id, 'module_id': lesson.moduleId},
-      );
+      ref
+          .read(analyticsServiceProvider)
+          .logEvent(
+            'lesson_started',
+            parameters: {'lesson_id': lesson.id, 'module_id': lesson.moduleId},
+          );
     });
   }
 

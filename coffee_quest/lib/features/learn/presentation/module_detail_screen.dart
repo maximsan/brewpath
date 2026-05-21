@@ -32,9 +32,8 @@ class ModuleDetailScreen extends ConsumerWidget {
           if (module == null) {
             return const ErrorView(message: 'Module not found');
           }
-          final completedIds = completed.asData?.value
-                  .map((r) => r.lessonId)
-                  .toSet() ??
+          final completedIds =
+              completed.asData?.value.map((r) => r.lessonId).toSet() ??
               const <String>{};
           return ListView(
             padding: const EdgeInsets.all(16),
@@ -71,8 +70,7 @@ class ModuleDetailScreen extends ConsumerWidget {
     ContentRepository repo,
   ) async {
     final modules = await repo.getModules();
-    final module =
-        modules.where((m) => m.id == moduleId).firstOrNull;
+    final module = modules.where((m) => m.id == moduleId).firstOrNull;
     if (module == null) return (null, const <LessonModel>[]);
     final all = await repo.getLessons();
     final byId = {for (final l in all) l.id: l};

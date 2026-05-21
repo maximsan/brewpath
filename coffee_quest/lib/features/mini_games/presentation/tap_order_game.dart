@@ -79,10 +79,7 @@ class _TapOrderGameState extends State<TapOrderGame> {
         Wrap(
           spacing: 8,
           runSpacing: 8,
-          children: [
-            for (final item in _selected)
-              Chip(label: Text(item)),
-          ],
+          children: [for (final item in _selected) Chip(label: Text(item))],
         ),
         const Divider(height: 32),
         Wrap(

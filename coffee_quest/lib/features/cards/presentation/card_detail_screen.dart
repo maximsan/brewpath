@@ -19,8 +19,8 @@ class CardDetailScreen extends ConsumerWidget {
       appBar: AppBar(title: const Text('Card')),
       body: FutureBuilder<CoffeeCardModel?>(
         future: repo.getCards().then(
-              (cards) => cards.where((c) => c.id == cardId).firstOrNull,
-            ),
+          (cards) => cards.where((c) => c.id == cardId).firstOrNull,
+        ),
         builder: (context, snap) {
           if (snap.connectionState != ConnectionState.done) {
             return const LoadingIndicator();

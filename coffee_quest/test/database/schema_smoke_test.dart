@@ -28,10 +28,11 @@ void main() {
 
     expect(db.schemaVersion, 1);
     expect(db.allTables.length, 3);
-    expect(
-      db.allTables.map((t) => t.actualTableName).toSet(),
-      {'progress_records', 'card_records', 'user_settings'},
-    );
+    expect(db.allTables.map((t) => t.actualTableName).toSet(), {
+      'progress_records',
+      'card_records',
+      'user_settings',
+    });
 
     await db.close();
   });
@@ -44,15 +45,16 @@ void main() {
     final db = AppDatabase(NativeDatabase.memory());
     addTearDown(db.close);
 
-    Future<void> insertLesson(String lessonId) =>
-        db.into(db.progressRecords).insert(
-              ProgressRecordsCompanion.insert(
-                lessonId: lessonId,
-                isCompleted: true,
-                xpEarned: 10,
-                completedAt: DateTime.now(),
-              ),
-            );
+    Future<void> insertLesson(String lessonId) => db
+        .into(db.progressRecords)
+        .insert(
+          ProgressRecordsCompanion.insert(
+            lessonId: lessonId,
+            isCompleted: true,
+            xpEarned: 10,
+            completedAt: DateTime.now(),
+          ),
+        );
 
     await insertLesson('lesson_a');
 

@@ -53,9 +53,7 @@ class _SliderGameState extends State<SliderGame> {
           value: _value,
           min: widget.step.minValue,
           max: widget.step.maxValue,
-          onChanged: _answered
-              ? null
-              : (v) => setState(() => _value = v),
+          onChanged: _answered ? null : (v) => setState(() => _value = v),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -66,19 +64,14 @@ class _SliderGameState extends State<SliderGame> {
         ),
         const SizedBox(height: 24),
         if (!_answered)
-          FilledButton(
-            onPressed: _onCheck,
-            child: const Text('Check'),
-          )
+          FilledButton(onPressed: _onCheck, child: const Text('Check'))
         else ...[
           Text(
             _inRange
                 ? 'Correct!'
                 : 'Target range: ${widget.step.targetMin.toStringAsFixed(0)}'
-                    '–${widget.step.targetMax.toStringAsFixed(0)} $unit',
-            style: TextStyle(
-              color: _inRange ? Colors.green : Colors.red,
-            ),
+                      '–${widget.step.targetMax.toStringAsFixed(0)} $unit',
+            style: TextStyle(color: _inRange ? Colors.green : Colors.red),
           ),
           const SizedBox(height: 8),
           Text(widget.step.explanation),
@@ -86,9 +79,7 @@ class _SliderGameState extends State<SliderGame> {
           FilledButton(
             onPressed: _onContinue,
             child: Text(
-              _inRange
-                  ? AppStrings.continueLabel
-                  : AppStrings.tryAgainLabel,
+              _inRange ? AppStrings.continueLabel : AppStrings.tryAgainLabel,
             ),
           ),
         ],

@@ -48,8 +48,7 @@ class _MultipleChoiceGameState extends State<MultipleChoiceGame> {
 
   @override
   Widget build(BuildContext context) {
-    final isCorrect =
-        _answered && _selectedIndex == widget.step.correctIndex;
+    final isCorrect = _answered && _selectedIndex == widget.step.correctIndex;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -66,8 +65,8 @@ class _MultipleChoiceGameState extends State<MultipleChoiceGame> {
               onPressed: _answered ? null : () => _onOptionTap(i),
               style: OutlinedButton.styleFrom(
                 side: BorderSide(
-                  color: _borderColor(i) ??
-                      Theme.of(context).colorScheme.outline,
+                  color:
+                      _borderColor(i) ?? Theme.of(context).colorScheme.outline,
                   width: _borderColor(i) != null ? 2 : 1,
                 ),
               ),
@@ -81,9 +80,7 @@ class _MultipleChoiceGameState extends State<MultipleChoiceGame> {
           FilledButton(
             onPressed: _onContinue,
             child: Text(
-              isCorrect
-                  ? AppStrings.continueLabel
-                  : AppStrings.tryAgainLabel,
+              isCorrect ? AppStrings.continueLabel : AppStrings.tryAgainLabel,
             ),
           ),
         ],

@@ -15,8 +15,7 @@ void main() async {
   // Crashlytics global handlers — installed only once Firebase is active so
   // the app keeps Flutter's default error reporting until then.
   if (kUseFirebase) {
-    FlutterError.onError =
-        FirebaseCrashlytics.instance.recordFlutterFatalError;
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
     PlatformDispatcher.instance.onError = (error, stack) {
       FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
       return true;

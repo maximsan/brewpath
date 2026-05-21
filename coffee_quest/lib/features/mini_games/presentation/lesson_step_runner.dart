@@ -23,8 +23,10 @@ class LessonStepRunner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (step) {
-      final MultipleChoiceStep s =>
-        MultipleChoiceGame(step: s, onResult: onResult),
+      final MultipleChoiceStep s => MultipleChoiceGame(
+        step: s,
+        onResult: onResult,
+      ),
       final DragDropStep s => DragDropGame(step: s, onResult: onResult),
       final SliderStep s => SliderGame(step: s, onResult: onResult),
       final TapOrderStep s => TapOrderGame(step: s, onResult: onResult),

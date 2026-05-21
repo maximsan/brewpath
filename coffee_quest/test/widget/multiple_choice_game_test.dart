@@ -17,10 +17,7 @@ Future<MiniGameResult?> _play(WidgetTester tester, String option) async {
   await tester.pumpWidget(
     MaterialApp(
       home: Scaffold(
-        body: MultipleChoiceGame(
-          step: _step,
-          onResult: (r) => result = r,
-        ),
+        body: MultipleChoiceGame(step: _step, onResult: (r) => result = r),
       ),
     ),
   );
