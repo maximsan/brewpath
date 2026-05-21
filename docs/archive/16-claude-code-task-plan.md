@@ -372,7 +372,7 @@ flutter test integration_test/smoke_test.dart -d "iPhone 16 Pro"
 - [ ] All 17 Coffee Cards can be unlocked
 - [ ] All 4 mini-game types are functional
 - [ ] XP, streak, and card progress persists across app restarts
-- [ ] Firebase Analytics receives events (visible in DebugView)
-- [ ] Firebase Crashlytics is initialized (confirm in Firebase Console)
+- [ ] _(optional)_ Firebase Analytics receives events (visible in DebugView) — _gated by `kUseFirebase`; not required for the MVP scaffold_
+- [ ] _(optional)_ Firebase Crashlytics is initialized (confirm in Firebase Console) — _gated by `kUseFirebase`; not required for the MVP scaffold_
 - [ ] No ads or purchase UI visible anywhere
 - [ ] App is ready for TestFlight distribution (see `docs/14-ios-release-checklist.md`)
