@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:coffee_quest/core/constants/app_strings.dart';
 import 'package:coffee_quest/core/widgets/error_view.dart';
 import 'package:coffee_quest/core/widgets/loading_indicator.dart';
+import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
 import 'package:coffee_quest/features/lessons/domain/lesson_completion_service.dart';
 import 'package:coffee_quest/shared/models/coffee_card_model.dart';
 import 'package:coffee_quest/shared/models/lesson_model.dart';
@@ -39,6 +40,13 @@ class _LessonCompletionScreenState
       throw StateError('Lesson ${widget.lessonId} not found');
     }
     await ref.read(lessonCompletionServiceProvider).completeLesson(lesson);
+
+    // The Learn screen lives in the indexed-stack shell and stays mounted while
+    // this screen covers it, so its completion-derived providers must be
+    // invalidated explicitly — otherwise "Today's lesson" and module progress
+    // keep showing the just-finished lesson when the user returns.
+    ref.invalidate(todayLessonProvider);
+    ref.invalidate(modulesWithProgressProvider);
 
     CoffeeCardModel? card;
     final cardId = lesson.cardId;
