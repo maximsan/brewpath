@@ -1,5 +1,14 @@
 # Coffee Quest — Project Scaffold
 
+> **Status (2026-05-20):** This document was written for the original
+> **Isar 3.x** scaffold. The actual Phase 1/3 implementation uses **Drift 2.30.x**
+> (`AppDatabase`, `AppDatabaseService`) instead of `IsarService`. The structural
+> work below — `flutter create`, iOS 16 target, bundle ID, code generation,
+> bootstrap layout — is unchanged and complete; only the database class names
+> differ. Current source of truth: `CLAUDE.md` + `lib/shared/storage/app_database.dart`.
+
+---
+
 ## Prerequisites
 
 - Flutter SDK (stable channel, 3.x or later)
@@ -22,9 +31,9 @@ flutter create \
   coffee_quest
 ```
 
-- [ ] Run the command above
-- [ ] Verify the project directory `coffee_quest/` is created
-- [ ] Verify `ios/` directory is present, `android/` and `web/` are absent (iOS-only for now)
+- [x] Run the command above
+- [x] Verify the project directory `coffee_quest/` is created
+- [x] Verify `ios/` directory is present, `android/` and `web/` are absent (iOS-only for now)
 
 > If you need Android later, run `flutter create --platforms android .` from the project root to add it without losing any existing code.
 
@@ -32,23 +41,23 @@ flutter create \
 
 ### 2. Set iOS Minimum Deployment Target
 
-- [ ] Open `ios/Podfile`
-- [ ] Set the minimum platform version:
+- [x] Open `ios/Podfile`
+- [x] Set the minimum platform version:
 
 ```ruby
 platform :ios, '16.0'
 ```
 
-- [ ] Open `ios/Runner.xcodeproj` in Xcode
-- [ ] Select the `Runner` target → General → Minimum Deployments → set to **iOS 16.0**
-- [ ] Also set in `ios/Flutter/AppFrameworkInfo.plist`: verify `MinimumOSVersion` is `16.0`
+- [x] Open `ios/Runner.xcodeproj` in Xcode
+- [x] Select the `Runner` target → General → Minimum Deployments → set to **iOS 16.0**
+- [x] Also set in `ios/Flutter/AppFrameworkInfo.plist`: verify `MinimumOSVersion` is `16.0`
 
 ---
 
 ### 3. Set Bundle ID
 
-- [ ] In Xcode: Runner target → General → Bundle Identifier: `dev.maximsan.coffeequest`
-- [ ] Verify in `ios/Runner/Info.plist`: `CFBundleIdentifier` matches
+- [x] In Xcode: Runner target → General → Bundle Identifier: `dev.maximsan.coffeequest`
+- [x] Verify in `ios/Runner/Info.plist`: `CFBundleIdentifier` matches
 
 ---
 
@@ -56,9 +65,9 @@ platform :ios, '16.0'
 
 Replace the default `pubspec.yaml` with the full version from `docs/05-dependencies.md`.
 
-- [ ] Copy the `pubspec.yaml` content from `docs/05-dependencies.md`
-- [ ] Paste into `coffee_quest/pubspec.yaml`, replacing all existing content
-- [ ] Run `flutter pub get` — verify no errors
+- [x] Copy the `pubspec.yaml` content from `docs/05-dependencies.md`
+- [x] Paste into `coffee_quest/pubspec.yaml`, replacing all existing content
+- [x] Run `flutter pub get` — verify no errors
 
 ---
 
@@ -86,8 +95,8 @@ mkdir -p integration_test
 mkdir -p .github/workflows
 ```
 
-- [ ] Run the mkdir commands above
-- [ ] Verify the directory tree matches `docs/04-folder-structure.md`
+- [x] Run the mkdir commands above
+- [x] Verify the directory tree matches `docs/04-folder-structure.md`
 
 ---
 
@@ -104,8 +113,8 @@ flutter:
     - assets/icons/
 ```
 
-- [ ] Add the assets block to pubspec.yaml
-- [ ] Create placeholder files to avoid empty directory warnings:
+- [x] Add the assets block to pubspec.yaml
+- [x] Create placeholder files to avoid empty directory warnings:
   - `assets/content/.gitkeep`
   - `assets/images/.gitkeep`
   - `assets/icons/.gitkeep`
@@ -133,7 +142,7 @@ void main() async {
 }
 ```
 
-- [ ] Create `lib/main.dart` with this content
+- [x] Create `lib/main.dart` with this content
 
 ---
 
@@ -158,9 +167,9 @@ class AppBootstrap {
 }
 ```
 
-- [ ] Create `lib/app/app_bootstrap.dart` with this content
-- [ ] Note: `IsarService.schemas` is wired in Phase 3. For Phase 1 the stub can use an empty schema list.
-- [ ] Firebase is NOT initialized here — that is Phase 8 only.
+- [x] Create `lib/app/app_bootstrap.dart` with this content
+- [x] Note: `IsarService.schemas` is wired in Phase 3. For Phase 1 the stub can use an empty schema list.
+- [x] Firebase is NOT initialized here — that is Phase 8 only.
 
 ---
 
@@ -190,7 +199,7 @@ class CoffeeQuestApp extends ConsumerWidget {
 }
 ```
 
-- [ ] Create `lib/app/app.dart` with this content
+- [x] Create `lib/app/app.dart` with this content
 
 ---
 
@@ -217,7 +226,7 @@ class AppTheme {
 }
 ```
 
-- [ ] Create `lib/app/app_theme.dart` with this content
+- [x] Create `lib/app/app_theme.dart` with this content
 
 ---
 
@@ -267,8 +276,8 @@ GoRouter appRouter(Ref ref) {
 }
 ```
 
-- [ ] Create `lib/app/app_router.dart` with this stub
-- [ ] Run `dart run build_runner build` to generate `app_router.g.dart`
+- [x] Create `lib/app/app_router.dart` with this stub
+- [x] Run `dart run build_runner build` to generate `app_router.g.dart`
 
 ---
 
@@ -278,8 +287,8 @@ GoRouter appRouter(Ref ref) {
 cd ios && pod install && cd ..
 ```
 
-- [ ] Run `pod install` from the `ios/` directory
-- [ ] Verify no CocoaPods errors
+- [x] Run `pod install` from the `ios/` directory
+- [x] Verify no CocoaPods errors
 
 ---
 
@@ -289,8 +298,8 @@ cd ios && pod install && cd ..
 dart run build_runner build --delete-conflicting-outputs
 ```
 
-- [ ] Run build_runner to generate all `.g.dart` files
-- [ ] Verify no generation errors
+- [x] Run build_runner to generate all `.g.dart` files
+- [x] Verify no generation errors
 
 ---
 
@@ -300,22 +309,22 @@ dart run build_runner build --delete-conflicting-outputs
 flutter run -d "iPhone 17"
 ```
 
-- [ ] App launches on iOS Simulator
-- [ ] No crash on startup
-- [ ] Isar opens without error (check console logs)
-- [ ] Bottom navigation is not yet wired — stub screens appear
+- [x] App launches on iOS Simulator
+- [x] No crash on startup
+- [x] Isar opens without error (check console logs)
+- [x] Bottom navigation is not yet wired — stub screens appear
 
 ---
 
 ## Definition of Done
 
-- [ ] `flutter create` completed with iOS-only platforms
-- [ ] iOS minimum deployment target is set to 16.0 in Podfile, Xcode target, and Info.plist
-- [ ] Bundle ID is set to `dev.maximsan.coffeequest`
-- [ ] `pubspec.yaml` matches `docs/05-dependencies.md`
-- [ ] All directories from `docs/04-folder-structure.md` exist
-- [ ] `main.dart`, `app_bootstrap.dart`, `app.dart`, `app_theme.dart`, `app_router.dart` are created
-- [ ] Firebase is NOT initialized — `app_bootstrap.dart` only opens Isar
-- [ ] `pod install` succeeds
-- [ ] `build_runner build` succeeds with no errors
-- [ ] App launches on iOS Simulator without crashing
+- [x] `flutter create` completed with iOS-only platforms
+- [x] iOS minimum deployment target is set to 16.0 in Podfile, Xcode target, and Info.plist
+- [x] Bundle ID is set to `dev.maximsan.coffeequest`
+- [x] `pubspec.yaml` matches `docs/05-dependencies.md`
+- [x] All directories from `docs/04-folder-structure.md` exist
+- [x] `main.dart`, `app_bootstrap.dart`, `app.dart`, `app_theme.dart`, `app_router.dart` are created
+- [x] Firebase is NOT initialized — `app_bootstrap.dart` only opens Isar
+- [x] `pod install` succeeds
+- [x] `build_runner build` succeeds with no errors
+- [x] App launches on iOS Simulator without crashing

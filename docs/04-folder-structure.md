@@ -1,5 +1,18 @@
 # Coffee Quest — Folder Structure
 
+> **Status (2026-05-20):** This document describes the original **Isar 3.x**
+> persistence design. In Phase 3 the project migrated to **Drift 2.30.x**
+> (SQLite). The shape of the persistence layer — abstract repositories,
+> `AppDatabaseService.instance` singleton, mutable DTOs in
+> `shared/storage/*_record.dart` — is preserved, but the code examples below
+> reference Isar classes that no longer exist. Treat the JSON content model,
+> repository interfaces, and folder layout as authoritative; treat the Isar
+> code snippets as historical. Current source of truth: `CLAUDE.md`,
+> `pubspec.yaml`, and `lib/shared/storage/app_database.dart`.
+
+---
+
+
 ## Naming Conventions
 
 - Files: `snake_case.dart`
@@ -207,8 +220,8 @@ coffee_quest/
 
 ## Definition of Done
 
-- [ ] All directories from the tree above exist in the project
-- [ ] No feature imports directly from another feature's folder (always via shared/ or domain providers)
-- [ ] No raw Isar access outside `shared/storage/` and `shared/repositories/`
-- [ ] No Firebase SDK calls outside `services/`
-- [ ] All Dart files use snake_case filenames
+- [x] All directories from the tree above exist in the project
+- [x] No feature imports directly from another feature's folder (always via shared/ or domain providers)
+- [x] No raw Isar access outside `shared/storage/` and `shared/repositories/`
+- [x] No Firebase SDK calls outside `services/`
+- [x] All Dart files use snake_case filenames

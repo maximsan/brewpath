@@ -1,5 +1,18 @@
 # Coffee Quest — Local Persistence
 
+> **Status (2026-05-20):** This document describes the original **Isar 3.x**
+> persistence design. In Phase 3 the project migrated to **Drift 2.30.x**
+> (SQLite). The shape of the persistence layer — abstract repositories,
+> `AppDatabaseService.instance` singleton, mutable DTOs in
+> `shared/storage/*_record.dart` — is preserved, but the code examples below
+> reference Isar classes that no longer exist. Treat the JSON content model,
+> repository interfaces, and folder layout as authoritative; treat the Isar
+> code snippets as historical. Current source of truth: `CLAUDE.md`,
+> `pubspec.yaml`, and `lib/shared/storage/app_database.dart`.
+
+---
+
+
 ## Why Isar
 
 | Criterion | Hive 2.x | Isar 3.x | Decision |
@@ -291,9 +304,9 @@ This generates:
 - `settings_record.g.dart`
 - `repository_providers.g.dart`
 
-- [ ] Run build_runner after creating schema files
-- [ ] Verify all `.g.dart` files are generated without errors
-- [ ] Add all `.g.dart` files to version control (they are committed, not gitignored)
+- [x] Run build_runner after creating schema files
+- [x] Verify all `.g.dart` files are generated without errors
+- [x] Add all `.g.dart` files to version control (they are committed, not gitignored)
 
 ---
 
@@ -313,29 +326,29 @@ Do not implement migrations in MVP — only add when a schema break is required.
 
 ## Steps
 
-- [ ] Create `lib/shared/storage/progress_record.dart`
-- [ ] Create `lib/shared/storage/card_record.dart`
-- [ ] Create `lib/shared/storage/settings_record.dart`
-- [ ] Create `lib/shared/storage/isar_service.dart`
-- [ ] Create `lib/shared/repositories/progress_repository.dart`
-- [ ] Create `lib/shared/repositories/card_repository.dart`
-- [ ] Create `lib/shared/repositories/settings_repository.dart`
-- [ ] Create `lib/shared/repositories/repository_providers.dart`
-- [ ] Update `lib/app/app_bootstrap.dart` to call `Isar.open()` with `IsarService.schemas`
-- [ ] Run `dart run build_runner build --delete-conflicting-outputs`
-- [ ] Verify all `.g.dart` files generated successfully
-- [ ] Write unit test for `ProgressRepository.saveCompletion` (idempotency check)
-- [ ] Write unit test for `SettingsRepository.addXp`
+- [x] Create `lib/shared/storage/progress_record.dart`
+- [x] Create `lib/shared/storage/card_record.dart`
+- [x] Create `lib/shared/storage/settings_record.dart`
+- [x] Create `lib/shared/storage/isar_service.dart`
+- [x] Create `lib/shared/repositories/progress_repository.dart`
+- [x] Create `lib/shared/repositories/card_repository.dart`
+- [x] Create `lib/shared/repositories/settings_repository.dart`
+- [x] Create `lib/shared/repositories/repository_providers.dart`
+- [x] Update `lib/app/app_bootstrap.dart` to call `Isar.open()` with `IsarService.schemas`
+- [x] Run `dart run build_runner build --delete-conflicting-outputs`
+- [x] Verify all `.g.dart` files generated successfully
+- [x] Write unit test for `ProgressRepository.saveCompletion` (idempotency check)
+- [x] Write unit test for `SettingsRepository.addXp`
 
 ---
 
 ## Definition of Done
 
-- [ ] `ProgressRecord`, `CardRecord`, `UserSettingsRecord` Isar collections exist
-- [ ] `IsarService.instance` is initialized in `AppBootstrap` before `runApp()`
-- [ ] All repositories are behind Riverpod providers
-- [ ] No feature code imports `IsarService` or Isar directly
-- [ ] `ProgressRepository.saveCompletion` is idempotent (calling twice for the same lesson does not double-award XP)
-- [ ] `CardRepository.collectCard` is idempotent
-- [ ] App works in Airplane Mode — all data reads/writes succeed
-- [ ] Unit tests for repository logic pass
+- [x] `ProgressRecord`, `CardRecord`, `UserSettingsRecord` Isar collections exist
+- [x] `IsarService.instance` is initialized in `AppBootstrap` before `runApp()`
+- [x] All repositories are behind Riverpod providers
+- [x] No feature code imports `IsarService` or Isar directly
+- [x] `ProgressRepository.saveCompletion` is idempotent (calling twice for the same lesson does not double-award XP)
+- [x] `CardRepository.collectCard` is idempotent
+- [x] App works in Airplane Mode — all data reads/writes succeed
+- [x] Unit tests for repository logic pass

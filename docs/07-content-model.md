@@ -298,28 +298,28 @@ ContentRepository contentRepository(Ref ref) => ContentRepository();
 
 ## Steps
 
-- [ ] Create `lib/shared/models/module_model.dart`
-- [ ] Create `lib/shared/models/lesson_model.dart`
-- [ ] Create `lib/shared/models/lesson_step_model.dart`
-- [ ] Create `lib/shared/models/coffee_card_model.dart`
-- [ ] Create `assets/content/modules.json` with all 5 modules
-- [ ] Create `assets/content/lessons.json` with all 17 lessons (each with at least 1 step)
-- [ ] Create `assets/content/cards.json` with all 17 card definitions
-- [ ] Create `lib/shared/repositories/content_repository.dart`
-- [ ] Add `@riverpod ContentRepository contentRepository(Ref ref)` provider
-- [ ] Run `dart run build_runner build --delete-conflicting-outputs`
-- [ ] Verify all Freezed and JSON serialization files are generated
-- [ ] Write a unit test that loads `modules.json` and asserts 5 modules are returned
-- [ ] Write a unit test that loads `lessons.json` and asserts 17 lessons are returned
+- [x] Create `lib/shared/models/module_model.dart`
+- [x] Create `lib/shared/models/lesson_model.dart`
+- [x] Create `lib/shared/models/lesson_step_model.dart`
+- [x] Create `lib/shared/models/coffee_card_model.dart`
+- [x] Create `assets/content/modules.json` with all 5 modules
+- [x] Create `assets/content/lessons.json` with all 17 lessons (each with at least 1 step)
+- [x] Create `assets/content/cards.json` with all 17 card definitions
+- [x] Create `lib/shared/repositories/content_repository.dart`
+- [x] Add `@riverpod ContentRepository contentRepository(Ref ref)` provider
+- [x] Run `dart run build_runner build --delete-conflicting-outputs`
+- [x] Verify all Freezed and JSON serialization files are generated
+- [x] Write a unit test that loads `modules.json` and asserts 5 modules are returned
+- [x] Write a unit test that loads `lessons.json` and asserts 17 lessons are returned
 
 ---
 
 ## Definition of Done
 
-- [ ] All 4 model classes exist with Freezed + JSON annotations
-- [ ] All 3 content JSON files exist in `assets/content/`
-- [ ] `assets/content/` is declared in `pubspec.yaml` under `flutter.assets`
-- [ ] `ContentRepository` loads all models without errors
-- [ ] Freezed `copyWith`, `==`, and `hashCode` work for all models
-- [ ] `LessonStepModel` sealed class dispatches correctly to all 4 step types
-- [ ] Unit tests for content loading pass
+- [x] All 4 model classes exist with Freezed + JSON annotations
+- [x] All 3 content JSON files exist in `assets/content/`
+- [x] `assets/content/` is declared in `pubspec.yaml` under `flutter.assets`
+- [x] `ContentRepository` loads all models without errors
+- [x] Freezed `copyWith`, `==`, and `hashCode` work for all models
+- [x] `LessonStepModel` sealed class dispatches correctly to all 4 step types
+- [x] Unit tests for content loading pass

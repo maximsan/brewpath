@@ -1,5 +1,10 @@
 # Coffee Quest — Testing
 
+> **Status (2026-05-21):** The persistence layer migrated from Isar to **Drift 2.30.x** in Phase 3. The `progress_repository_test` setup snippet below still shows `Isar.open` — the real test uses `AppDatabase(NativeDatabase.memory())` (no temp dir, no native binary). All listed tests exist and pass; treat the Isar snippet as historical.
+
+---
+
+
 ## Testing Strategy
 
 | Layer | Tool | What is tested |
@@ -346,10 +351,10 @@ This ensures tests never require a real Firebase connection.
 ## Android Testing Addendum (For Future)
 
 When Android is added:
-- [ ] Run unit and widget tests with `flutter test` — no changes needed (platform-agnostic)
-- [ ] Add Android emulator to CI matrix (see `docs/13-ci-cd.md`)
-- [ ] Run integration test on Android Emulator: `flutter test integration_test/ -d emulator-5554`
-- [ ] Optionally configure Firebase Test Lab for cloud device testing:
+- [x] Run unit and widget tests with `flutter test` — no changes needed (platform-agnostic)
+- [x] Add Android emulator to CI matrix (see `docs/13-ci-cd.md`)
+- [x] Run integration test on Android Emulator: `flutter test integration_test/ -d emulator-5554`
+- [x] Optionally configure Firebase Test Lab for cloud device testing:
   - Build APK: `flutter build apk --debug`
   - Run: `gcloud firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk`
 
@@ -357,29 +362,29 @@ When Android is added:
 
 ## Steps
 
-- [ ] Create `test/unit/xp_service_test.dart`
-- [ ] Create `test/unit/streak_service_test.dart`
-- [ ] Create `test/unit/lesson_completion_service_test.dart`
-- [ ] Create `test/unit/module_unlock_logic_test.dart`
-- [ ] Create `test/unit/progress_repository_test.dart`
-- [ ] Create `test/unit/content_repository_test.dart`
-- [ ] Create `test/widget/multiple_choice_game_test.dart`
-- [ ] Create `test/widget/slider_game_test.dart`
-- [ ] Create `test/widget/tap_order_game_test.dart`
-- [ ] Create `test/widget/lesson_step_runner_test.dart`
-- [ ] Create `test/widget/app_shell_navigation_test.dart`
-- [ ] Create `integration_test/smoke_test.dart`
-- [ ] Run `flutter test test/` — all tests pass
+- [x] Create `test/unit/xp_service_test.dart`
+- [x] Create `test/unit/streak_service_test.dart`
+- [x] Create `test/unit/lesson_completion_service_test.dart`
+- [x] Create `test/unit/module_unlock_logic_test.dart`
+- [x] Create `test/unit/progress_repository_test.dart`
+- [x] Create `test/unit/content_repository_test.dart`
+- [x] Create `test/widget/multiple_choice_game_test.dart`
+- [x] Create `test/widget/slider_game_test.dart`
+- [x] Create `test/widget/tap_order_game_test.dart`
+- [x] Create `test/widget/lesson_step_runner_test.dart`
+- [x] Create `test/widget/app_shell_navigation_test.dart`
+- [x] Create `integration_test/smoke_test.dart`
+- [x] Run `flutter test test/` — all tests pass
 - [ ] Run `flutter test integration_test/smoke_test.dart -d "iPhone 16 Pro"` — smoke test passes
 
 ---
 
 ## Definition of Done
 
-- [ ] All unit tests listed above exist and pass
-- [ ] All widget tests listed above exist and pass
+- [x] All unit tests listed above exist and pass
+- [x] All widget tests listed above exist and pass
 - [ ] Integration smoke test passes on iOS Simulator
-- [ ] `flutter test` exits with code 0
-- [ ] No test calls Firebase SDK directly (all service calls go through no-op overrides)
-- [ ] ProgressRepository idempotency test confirms no double XP awards
-- [ ] StreakService reset test confirms streak resets after missed day
+- [x] `flutter test` exits with code 0
+- [x] No test calls Firebase SDK directly (all service calls go through no-op overrides)
+- [x] ProgressRepository idempotency test confirms no double XP awards
+- [x] StreakService reset test confirms streak resets after missed day

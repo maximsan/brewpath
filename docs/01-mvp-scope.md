@@ -7,13 +7,13 @@
 **Purpose:** Entry point for daily learning.
 
 **Features:**
-- [ ] Show today's suggested lesson (first incomplete lesson in current module)
-- [ ] Show all modules in Beginner Foundations track
-- [ ] Each module card shows: title, lesson count, completion percentage, locked/unlocked state
-- [ ] Tap a module to see its lesson list
-- [ ] Tap a lesson to start it (if unlocked)
-- [ ] Tap a lesson to resume it (if in progress)
-- [ ] Completed lessons show a checkmark
+- [x] Show today's suggested lesson (first incomplete lesson in current module)
+- [x] Show all modules in Beginner Foundations track
+- [x] Each module card shows: title, lesson count, completion percentage, locked/unlocked state
+- [x] Tap a module to see its lesson list
+- [x] Tap a lesson to start it (if unlocked)
+- [x] Tap a lesson to resume it (if in progress)
+- [x] Completed lessons show a checkmark
 
 **Not in scope for Learn Tab:**
 - Search
@@ -28,11 +28,11 @@
 **Purpose:** Visual map of structured progression.
 
 **Features:**
-- [ ] Show all 5 modules in Beginner Foundations in order
-- [ ] Each module shows: title, locked/unlocked state, lesson dots (complete / incomplete)
-- [ ] Locked modules show a lock icon
-- [ ] Tapping an unlocked module navigates to its lesson list
-- [ ] Tapping a locked module shows a "Complete previous module to unlock" tooltip
+- [x] Show all 5 modules in Beginner Foundations in order
+- [x] Each module shows: title, locked/unlocked state, lesson dots (complete / incomplete)
+- [x] Locked modules show a lock icon
+- [x] Tapping an unlocked module navigates to its lesson list
+- [x] Tapping a locked module shows a "Complete previous module to unlock" tooltip
 
 **Not in scope for Path Tab:**
 - Branching paths
@@ -46,11 +46,11 @@
 **Purpose:** Collectible knowledge cards.
 
 **Features:**
-- [ ] Show all cards in a grid layout
-- [ ] Unlocked cards show: card image (placeholder icon or illustration), card title, card tag
-- [ ] Locked cards show an outline/silhouette with "???" title
-- [ ] Tap an unlocked card to open card detail screen
-- [ ] Card detail shows: title, short description, module it belongs to
+- [x] Show all cards in a grid layout
+- [x] Unlocked cards show: card image (placeholder icon or illustration), card title, card tag
+- [x] Locked cards show an outline/silhouette with "???" title
+- [x] Tap an unlocked card to open card detail screen
+- [x] Card detail shows: title, short description, module it belongs to
 
 **Not in scope for Cards Tab:**
 - Card trading or sharing
@@ -64,14 +64,14 @@
 **Purpose:** Progress summary and settings.
 
 **Features:**
-- [ ] Show total XP
-- [ ] Show current streak (days in a row with at least one completed lesson)
-- [ ] Show total completed lessons count
-- [ ] Show total collected cards count
-- [ ] Settings section: (no account settings in MVP — just app preferences)
-  - [ ] Toggle: Haptic feedback on/off
-  - [ ] Toggle: Sound effects on/off (placeholder, no audio in MVP)
-- [ ] App info section: app version, build number
+- [x] Show total XP
+- [x] Show current streak (days in a row with at least one completed lesson)
+- [x] Show total completed lessons count
+- [x] Show total collected cards count
+- [x] Settings section: (no account settings in MVP — just app preferences)
+  - [x] Toggle: Haptic feedback on/off
+  - [x] Toggle: Sound effects on/off (placeholder, no audio in MVP)
+- [x] App info section: app version, build number
 
 **Not in scope for Profile Tab:**
 - Account or login
@@ -200,13 +200,13 @@ No XP multipliers or streak bonuses in MVP.
 
 ## Definition of Done
 
-- [ ] All 4 tabs implemented and navigable
-- [ ] All 17 lessons implemented with correct step types
-- [ ] All 5 modules unlock sequentially when all lessons in previous module are complete
-- [ ] All 17 Coffee Cards unlock on first lesson completion
-- [ ] XP is correctly calculated and persisted
-- [ ] Streak increments on days with at least one lesson completed and resets after a missed day
-- [ ] All mini-game types (MultipleChoice, DragDrop, Slider, TapOrder) render and function correctly
-- [ ] App works fully offline after first launch
-- [ ] Profile tab shows correct XP, streak, and completion counts
+- [x] All 4 tabs implemented and navigable
+- [x] All 17 lessons implemented with correct step types
+- [x] All 5 modules unlock sequentially when all lessons in previous module are complete
+- [x] All 17 Coffee Cards unlock on first lesson completion
+- [x] XP is correctly calculated and persisted
+- [x] Streak increments on days with at least one lesson completed and resets after a missed day
+- [x] All mini-game types (MultipleChoice, DragDrop, Slider, TapOrder) render and function correctly
+- [x] App works fully offline after first launch
+- [x] Profile tab shows correct XP, streak, and completion counts
 - [ ] App launches and passes smoke test on iOS Simulator

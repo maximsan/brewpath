@@ -1,5 +1,18 @@
 # Coffee Quest — Dependencies
 
+> **Status (2026-05-20):** This document describes the original **Isar 3.x**
+> persistence design. In Phase 3 the project migrated to **Drift 2.30.x**
+> (SQLite). The shape of the persistence layer — abstract repositories,
+> `AppDatabaseService.instance` singleton, mutable DTOs in
+> `shared/storage/*_record.dart` — is preserved, but the code examples below
+> reference Isar classes that no longer exist. Treat the JSON content model,
+> repository interfaces, and folder layout as authoritative; treat the Isar
+> code snippets as historical. Current source of truth: `CLAUDE.md`,
+> `pubspec.yaml`, and `lib/shared/storage/app_database.dart`.
+
+---
+
+
 ## Full pubspec.yaml
 
 ```yaml
@@ -163,10 +176,10 @@ linter:
 ### GoogleService-Info.plist
 - [ ] Download from Firebase Console → Project Settings → iOS app
 - [ ] Place at `ios/Runner/GoogleService-Info.plist`
-- [ ] Add to Xcode: Runner target → Copy Bundle Resources build phase
+- [x] Add to Xcode: Runner target → Copy Bundle Resources build phase
 
 ### Podfile minimum platform
-- [ ] `ios/Podfile` must have `platform :ios, '16.0'` on the first non-comment line
+- [x] `ios/Podfile` must have `platform :ios, '16.0'` on the first non-comment line
 - [ ] After editing Podfile, run `pod install` from `ios/` directory
 
 ### Capabilities (Xcode)
@@ -196,9 +209,9 @@ No special capabilities required for MVP. The following will be needed in future
 
 ## Definition of Done
 
-- [ ] `pubspec.yaml` matches this document exactly (versions pinned with `^`)
-- [ ] `flutter pub get` completes without errors
-- [ ] `analysis_options.yaml` is in the project root
-- [ ] `dart run build_runner build --delete-conflicting-outputs` completes without errors
+- [x] `pubspec.yaml` matches this document exactly (versions pinned with `^`)
+- [x] `flutter pub get` completes without errors
+- [x] `analysis_options.yaml` is in the project root
+- [x] `dart run build_runner build --delete-conflicting-outputs` completes without errors
 - [ ] `pod install` completes without CocoaPods errors
-- [ ] All excluded packages are confirmed absent from pubspec.yaml
+- [x] All excluded packages are confirmed absent from pubspec.yaml

@@ -25,7 +25,7 @@
            │                          │
 ┌──────────▼──────────┐   ┌───────────▼───────────┐
 │  Local Persistence  │   │   Bundled Assets       │
-│       (Isar)        │   │  assets/content/*.json │
+│      (Drift)        │   │  assets/content/*.json │
 └─────────────────────┘   └───────────────────────┘
 ```
 
@@ -40,7 +40,7 @@ Services (analytics, crash reporting, remote config, ads, payments) are injected
 **Pattern used:**
 - `@riverpod` annotation (riverpod_generator) for code generation
 - `Notifier` for synchronous state (e.g., current tab, UI toggles)
-- `AsyncNotifier` for async state (e.g., loading lessons from Isar, loading content from assets)
+- `AsyncNotifier` for async state (e.g., loading lessons from Drift, loading content from assets)
 - `Provider` for pure computed values (e.g., total XP derived from progress records)
 - Providers scoped per feature — no global god-provider
 
@@ -119,25 +119,25 @@ This means:
 
 ---
 
-## Local Persistence Strategy — Isar 3.x
+## Local Persistence Strategy — Drift 2.30.x
 
-**Why Isar over Hive:** Hive 2.x is stale (no active development). Isar offers native queries, multi-isolate safety, no manual adapters required for most types, and significantly better read performance at scale. It also has a maintained pub.dev presence.
+**Why Drift (SQLite) over Isar:** Isar 3.x development stalled and Isar 4 dropped its generator before reaching parity. Drift is actively maintained by the Flutter community, runs on SQLite (mature, ubiquitous, supported on iOS/Android/macOS/web), generates type-safe queries from `Table` definitions, and runs in-memory in tests via `NativeDatabase.memory()`. Tables: `ProgressRecords`, `CardRecords`, `UserSettings`.
 
-**Isar is not exposed directly to features.** All access goes through repository classes in `shared/repositories/`.
+**Drift is not exposed directly to features.** All access goes through repository classes in `shared/repositories/`.
 
 ```
-IsarService (shared/storage/isar_service.dart)
-  └── opens/closes the Isar instance
-  └── provides the Isar reference to repositories
+AppDatabaseService (shared/storage/app_database.dart)
+  └── exposes the singleton AppDatabase via .instance
+  └── repositories read it lazily — no constructor wiring
 
 ProgressRepository (shared/repositories/progress_repository.dart)
-  └── reads/writes ProgressRecord, LessonCompletionRecord
+  └── reads/writes ProgressRecord (mutable DTO ↔ Drift row)
 
 CardRepository (shared/repositories/card_repository.dart)
-  └── reads/writes CollectedCardRecord
+  └── reads/writes CardRecord
 
 SettingsRepository (shared/repositories/settings_repository.dart)
-  └── reads/writes UserSettingsRecord
+  └── reads/writes UserSettingsRecord (singleton row id=1)
 ```
 
 ---
@@ -146,12 +146,12 @@ SettingsRepository (shared/repositories/settings_repository.dart)
 
 All MVP content is bundled as JSON files in `assets/content/`. No network call is required to load lessons.
 
-User progress is stored entirely in Isar on-device. No sync in MVP.
+User progress is stored entirely in Drift (SQLite) on-device. No sync in MVP.
 
 The app must:
 - Launch and function with Airplane Mode enabled
 - Load all lesson content from bundled assets
-- Read and write all progress from Isar
+- Read and write all progress from Drift
 
 ---
 
@@ -168,10 +168,10 @@ This keeps widgets pure and tests clean.
 
 ## Definition of Done
 
-- [ ] Architecture diagram is understood by the developer
-- [ ] Riverpod provider pattern is established and documented
-- [ ] go_router shell route structure is finalized
-- [ ] Isar repository pattern is established (no raw Isar in feature code)
-- [ ] All services (analytics, crash, remote config, ads, payments) have abstract interfaces
+- [x] Architecture diagram is understood by the developer
+- [x] Riverpod provider pattern is established and documented
+- [x] go_router shell route structure is finalized
+- [x] Drift repository pattern is established (no raw Drift access in feature code)
+- [x] All services (analytics, crash, remote config, ads, payments) have abstract interfaces
 - [ ] Offline-first behavior is confirmed on Simulator with Airplane Mode
-- [ ] Analytics events are never in widget `build` methods
+- [x] Analytics events are never in widget `build` methods

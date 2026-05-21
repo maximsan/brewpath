@@ -221,7 +221,7 @@ Option B — Codemagic:
 
 ## Steps
 
-- [ ] Create `.github/workflows/ci.yml` with the full YAML above
+- [x] Create `.github/workflows/ci.yml` with the full YAML above — _committed in `c1850fe`_
 - [ ] Push to GitHub and verify all 4 jobs run (format, analyze, test, ios-build)
 - [ ] Add `GOOGLE_SERVICE_INFO_PLIST` secret in GitHub Repository Settings
 - [ ] Verify the iOS build job passes (requires macOS runner — uses macOS credits)

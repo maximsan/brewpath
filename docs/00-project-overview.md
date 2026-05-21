@@ -46,7 +46,7 @@ The app should feel structured and educational — closer to a well-designed tex
 
 ### Future — Web
 - go_router supports URL strategy natively
-- Isar needs replacement with IndexedDB-compatible persistence for web
+- Drift's web build (`drift/web.dart`) needs wiring for IndexedDB persistence
 - See `15-future-android-web-plan.md`
 
 ## Feature Pillars
@@ -81,8 +81,8 @@ The following are explicitly **out of scope for v1**:
 
 ## Definition of Done
 
-- [ ] Product vision is understood and agreed by the developer
-- [ ] Platform strategy (iOS-first, Android/web later) is documented
-- [ ] MVP boundaries are explicit — no scope creep from this list
-- [ ] All four tabs (Learn, Path, Cards, Profile) are scoped
-- [ ] UX tone ("structured educational, not RPG") is clear to anyone reading this doc
+- [x] Product vision is understood and agreed by the developer
+- [x] Platform strategy (iOS-first, Android/web later) is documented
+- [x] MVP boundaries are explicit — no scope creep from this list
+- [x] All four tabs (Learn, Path, Cards, Profile) are scoped
+- [x] UX tone ("structured educational, not RPG") is clear to anyone reading this doc
