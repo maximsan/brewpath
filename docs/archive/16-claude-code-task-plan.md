@@ -43,7 +43,7 @@ Before starting, verify:
 - [x] Create `analysis_options.yaml`
 - [x] Run `dart run build_runner build --delete-conflicting-outputs`
 - [x] Run `cd ios && pod install && cd ..`
-- [ ] Run `flutter run -d "iPhone 16 Pro"` → verify app launches with stub screens
+- [ ] Run `flutter run -d "iPhone 17"` → verify app launches with stub screens
 
 **Phase 1 Done when:** App launches on iOS Simulator, no crash, stub screens visible, bundle ID is `dev.maximsan.coffeequest`.
 
@@ -161,6 +161,7 @@ Before starting, verify:
 **Reference:** `docs/01-mvp-scope.md`
 
 ### Learn Tab
+
 - [x] Create `lib/features/learn/presentation/learn_screen.dart`:
   - Today's lesson card at top
   - Module list below (use `modulesWithProgressProvider`)
@@ -171,6 +172,7 @@ Before starting, verify:
   - Tap unlocked lesson → navigate to `/learn/lesson/:lessonId`
 
 ### Path Tab
+
 - [x] Create `lib/features/path/presentation/path_screen.dart`:
   - Vertical list of 5 module nodes
   - Each node: title, lesson dots, locked/unlocked icon
@@ -178,6 +180,7 @@ Before starting, verify:
 - [x] Create `lib/features/path/presentation/path_module_node_widget.dart`
 
 ### Cards Tab
+
 - [x] Create `lib/features/cards/presentation/cards_screen.dart`:
   - GridView of all 17 cards
   - Unlocked: show title + tag + icon
@@ -187,6 +190,7 @@ Before starting, verify:
   - Card title, description, module tag
 
 ### Profile Tab
+
 - [x] Create `lib/features/profile/presentation/profile_screen.dart`:
   - XP display (from `totalXpProvider`)
   - Streak display (from `streakProvider`)
@@ -240,7 +244,7 @@ Before starting, verify:
 
 **Reference:** `docs/09-firebase.md`
 
-- [ ] Complete Firebase iOS setup (GoogleService-Info.plist, firebase_options.dart) _(manual — user; activate via `kUseFirebase`)_
+- [ ] Complete Firebase iOS setup (GoogleService-Info.plist, firebase*options.dart) *(manual — user; activate via `kUseFirebase`)\_
 - [x] Create `lib/services/analytics/analytics_service.dart`
 - [x] Create `lib/services/analytics/firebase_analytics_service.dart`
 - [x] Create `lib/services/analytics/noop_analytics_service.dart`
@@ -296,7 +300,7 @@ Before starting, verify:
 - [x] Write any missing tests from `docs/12-testing.md` that weren't written in earlier phases — _added `module_unlock_logic_test.dart`_
 - [x] Create `integration_test/smoke_test.dart` (content from `docs/12-testing.md`)
 - [x] Run `flutter test` → all unit and widget tests pass (exit code 0) — _52 tests green_
-- [ ] Run `flutter test integration_test/smoke_test.dart -d "iPhone 16 Pro"` → smoke test passes _(manual — needs a booted simulator)_
+- [ ] Run `flutter test integration_test/smoke_test.dart -d "iPhone 17"` → smoke test passes _(manual — needs a booted simulator)_
 - [x] Verify coverage with `flutter test --coverage` → `coverage/lcov.info` generated (`genhtml` HTML render optional, needs `lcov` installed)
 
 **Phase 10 Done when:** `flutter test` exits 0, integration smoke test passes on Simulator.
@@ -308,6 +312,7 @@ Before starting, verify:
 **Reference:** `docs/13-ci-cd.md`
 
 ### CocoaPods → Swift Package Manager migration
+
 - [x] `flutter config --enable-swift-package-manager`
 - [x] `pod deintegrate` — removed CocoaPods from `Runner.xcodeproj`
 - [x] Removed `Pods-Runner` includes from `ios/Flutter/Debug.xcconfig` + `Release.xcconfig`
@@ -315,6 +320,7 @@ Before starting, verify:
 - [x] Verified `flutter build ios --debug --simulator` — no `pod install`, no migration nag
 
 ### CI workflow
+
 - [x] `.github/workflows/ci.yml` — 3 jobs: `format`, `analyze & test`, `iOS build`
 - [x] `format` job — `dart format --set-exit-if-changed` (repo formatted clean)
 - [x] `analyze & test` job — `flutter analyze` + `flutter test` (52 tests)
@@ -345,7 +351,7 @@ flutter test
 flutter build ios --release --no-codesign
 
 # 5. Run integration test
-flutter test integration_test/smoke_test.dart -d "iPhone 16 Pro"
+flutter test integration_test/smoke_test.dart -d "iPhone 17"
 ```
 
 - [ ] All 5 commands exit with code 0

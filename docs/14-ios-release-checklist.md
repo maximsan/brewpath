@@ -177,6 +177,7 @@ flutter build ios --release --build-number 1
 Before submitting for App Review:
 
 **App Store Metadata:**
+
 - [ ] App Name: Coffee Quest (max 30 characters)
 - [ ] Subtitle: (optional, max 30 characters, e.g., "Learn Coffee Fundamentals")
 - [ ] Description: (max 4000 characters — describe the app clearly)
@@ -186,31 +187,36 @@ Before submitting for App Review:
 - [ ] Privacy Policy URL: (required for all apps)
 
 **Screenshots:**
-- [ ] At minimum: iPhone 6.9" (iPhone 16 Pro Max) and iPhone 6.5" (iPhone 13 Pro Max)
+
+- [ ] At minimum: iPhone 6.9" (iPhone 17 Max) and iPhone 6.5" (iPhone 13 Pro Max)
 - [ ] Screenshots: 3–10 per device size
 - [ ] Can be from Simulator with `File → Take Screenshot`
 
 **App Review Information:**
+
 - [ ] Notes for App Review: explain the app is a coffee education tool, no login required
 - [ ] Demo account: not applicable (no login in MVP)
 
 **Rating:**
+
 - [ ] Complete the Content Rights and Rating questionnaire (MVP should be 4+)
 
 **App Privacy:**
+
 - [ ] Declare data collected: Coffee Quest MVP collects no user data — select "We do not collect data from this app"
 
 **Pricing:**
+
 - [ ] Free (MVP)
 
 ---
 
 ## 12. Version and Build Number Policy
 
-| Field | Location | MVP Value |
-|---|---|---|
+| Field   | Location                            | MVP Value                            |
+| ------- | ----------------------------------- | ------------------------------------ |
 | Version | `pubspec.yaml` → `version: 1.0.0+1` | `1.0.0` (CFBundleShortVersionString) |
-| Build | `pubspec.yaml` → `version: 1.0.0+1` | `1` (CFBundleVersion) |
+| Build   | `pubspec.yaml` → `version: 1.0.0+1` | `1` (CFBundleVersion)                |
 
 Increment the build number (`+1`, `+2`, etc.) for every upload to App Store Connect. The version string (`1.0.0`) changes only for user-facing releases.
 

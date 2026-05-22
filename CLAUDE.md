@@ -11,15 +11,15 @@ brewpath/               ← git root, CLAUDE.md lives here
 
 ## Architecture
 
-| Concern | Package | Notes |
-|---|---|---|
-| State | flutter_riverpod 2.x + riverpod_generator | `@riverpod` annotation; ref type is `{ProviderName}Ref` |
-| Navigation | go_router 17.x | `StatefulShellRoute` with 4 branches: `/learn`, `/path`, `/cards`, `/profile` |
-| Persistence | Drift (SQLite) 2.31.x | Offline-first; tables + `AppDatabase` in `shared/storage/app_database.dart`. Repos map Drift rows ↔ mutable DTOs in `shared/storage/*_record.dart`. (Replaced abandoned Isar 3.x.) |
-| Content models | Freezed + json_serializable | Loaded from `assets/content/*.json` at startup |
-| Payments | `NoOpPaymentsService` stub | Real `in_app_purchase` wired in Phase 9 |
-| Ads | `NoOpAdsService` stub | Real AdMob wired in Phase 9 |
-| Analytics / Crash | `NoOpAnalyticsService` stub | Firebase wired in Phase 8 |
+| Concern           | Package                                   | Notes                                                                                                                                                                              |
+| ----------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| State             | flutter_riverpod 2.x + riverpod_generator | `@riverpod` annotation; ref type is `{ProviderName}Ref`                                                                                                                            |
+| Navigation        | go_router 17.x                            | `StatefulShellRoute` with 4 branches: `/learn`, `/path`, `/cards`, `/profile`                                                                                                      |
+| Persistence       | Drift (SQLite) 2.31.x                     | Offline-first; tables + `AppDatabase` in `shared/storage/app_database.dart`. Repos map Drift rows ↔ mutable DTOs in `shared/storage/*_record.dart`. (Replaced abandoned Isar 3.x.) |
+| Content models    | Freezed + json_serializable               | Loaded from `assets/content/*.json` at startup                                                                                                                                     |
+| Payments          | `NoOpPaymentsService` stub                | Real `in_app_purchase` wired in Phase 9                                                                                                                                            |
+| Ads               | `NoOpAdsService` stub                     | Real AdMob wired in Phase 9                                                                                                                                                        |
+| Analytics / Crash | `NoOpAnalyticsService` stub               | Firebase wired in Phase 8                                                                                                                                                          |
 
 ## Critical Rules
 
@@ -30,20 +30,20 @@ brewpath/               ← git root, CLAUDE.md lives here
 
 ## Phase Status (updated 2026-05-21)
 
-| Phase | Status | Description |
-|---|---|---|
-| 0 | ✅ Done | Prerequisites verified |
-| 1 | ✅ Done | Project scaffold, routing stub, theme |
-| 2 | ✅ Done | Content models, JSON assets, ContentRepository |
-| 3 | ✅ Done | Drift persistence, repositories, providers |
-| 4 | ✅ Done | Domain logic: XP/streak/completion services, providers |
-| 5 | ✅ Done | Navigation: StatefulShellRoute app shell, 4 tabs, analytics observer |
-| 6 | ✅ Done | Feature screens: Learn/Path/Cards/Profile + lock/settings/version providers |
-| 7 | ✅ Done | Lesson runner, 4 mini-games, completion screen, immersive lesson route |
-| 8 | 🚧 Code complete | Firebase services (Analytics/Crashlytics/Remote Config) behind abstractions; **activation pending user setup** (`kUseFirebase`) |
-| 9 | ✅ Done | Ads & Payments service stubs (NoOp active; in_app_purchase/AdMob impls deferred) |
-| 10 | ✅ Done | Test suite (52 tests) + `integration_test/smoke_test.dart`; on-Simulator smoke run pending user |
-| 11 | ✅ Done | CI: 3-job `ci.yml` (format / analyze+test / iOS build); CocoaPods→SPM migration. GitHub branch protection pending user |
+| Phase | Status           | Description                                                                                                                     |
+| ----- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| 0     | ✅ Done          | Prerequisites verified                                                                                                          |
+| 1     | ✅ Done          | Project scaffold, routing stub, theme                                                                                           |
+| 2     | ✅ Done          | Content models, JSON assets, ContentRepository                                                                                  |
+| 3     | ✅ Done          | Drift persistence, repositories, providers                                                                                      |
+| 4     | ✅ Done          | Domain logic: XP/streak/completion services, providers                                                                          |
+| 5     | ✅ Done          | Navigation: StatefulShellRoute app shell, 4 tabs, analytics observer                                                            |
+| 6     | ✅ Done          | Feature screens: Learn/Path/Cards/Profile + lock/settings/version providers                                                     |
+| 7     | ✅ Done          | Lesson runner, 4 mini-games, completion screen, immersive lesson route                                                          |
+| 8     | 🚧 Code complete | Firebase services (Analytics/Crashlytics/Remote Config) behind abstractions; **activation pending user setup** (`kUseFirebase`) |
+| 9     | ✅ Done          | Ads & Payments service stubs (NoOp active; in_app_purchase/AdMob impls deferred)                                                |
+| 10    | ✅ Done          | Test suite (52 tests) + `integration_test/smoke_test.dart`; on-Simulator smoke run pending user                                 |
+| 11    | ✅ Done          | CI: 3-job `ci.yml` (format / analyze+test / iOS build); CocoaPods→SPM migration. GitHub branch protection pending user          |
 
 ## Common Commands (run from `coffee_quest/`)
 
@@ -54,7 +54,7 @@ flutter analyze
 flutter test
 flutter test test/unit/<file>
 flutter test test/widget/<file>
-flutter run -d "iPhone 16 Pro"
+flutter run -d "iPhone 17"
 flutter build ios --release --no-codesign
 ```
 

@@ -4,14 +4,13 @@
 
 ---
 
-
 ## Testing Strategy
 
-| Layer | Tool | What is tested |
-|---|---|---|
-| Unit | `flutter_test` | Business logic, XP calc, streak logic, card unlock, module unlock, repository read/write |
-| Widget | `flutter_test` | Mini-game widgets, lesson step runner, tab navigation, screen rendering |
-| Integration | `integration_test` (SDK) | Full smoke flow: launch → start lesson → complete → see XP |
+| Layer       | Tool                     | What is tested                                                                           |
+| ----------- | ------------------------ | ---------------------------------------------------------------------------------------- |
+| Unit        | `flutter_test`           | Business logic, XP calc, streak logic, card unlock, module unlock, repository read/write |
+| Widget      | `flutter_test`           | Mini-game widgets, lesson step runner, tab navigation, screen rendering                  |
+| Integration | `integration_test` (SDK) | Full smoke flow: launch → start lesson → complete → see XP                               |
 
 **Mocking strategy:** Use Riverpod `ProviderScope` overrides to inject test doubles. Avoid `mockito` for domain logic — prefer real implementations with Isar opened in a temporary directory.
 
@@ -280,7 +279,7 @@ testWidgets('correct answer emits MiniGameCorrect', (tester) async {
 ### How to Run
 
 ```bash
-flutter test integration_test/smoke_test.dart -d "iPhone 16 Pro"
+flutter test integration_test/smoke_test.dart -d "iPhone 17"
 ```
 
 ### smoke_test.dart
@@ -351,6 +350,7 @@ This ensures tests never require a real Firebase connection.
 ## Android Testing Addendum (For Future)
 
 When Android is added:
+
 - [x] Run unit and widget tests with `flutter test` — no changes needed (platform-agnostic)
 - [x] Add Android emulator to CI matrix (see `docs/13-ci-cd.md`)
 - [x] Run integration test on Android Emulator: `flutter test integration_test/ -d emulator-5554`
@@ -375,7 +375,7 @@ When Android is added:
 - [x] Create `test/widget/app_shell_navigation_test.dart`
 - [x] Create `integration_test/smoke_test.dart`
 - [x] Run `flutter test test/` — all tests pass
-- [ ] Run `flutter test integration_test/smoke_test.dart -d "iPhone 16 Pro"` — smoke test passes
+- [ ] Run `flutter test integration_test/smoke_test.dart -d "iPhone 17"` — smoke test passes
 
 ---
 
