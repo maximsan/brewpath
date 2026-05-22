@@ -30,7 +30,7 @@ class CardDetailScreen extends ConsumerWidget {
           if (card == null) {
             return const ErrorView(message: 'Card not found');
           }
-          return Padding(
+          return SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

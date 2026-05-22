@@ -2,27 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:coffee_quest/core/constants/app_strings.dart';
+import 'package:coffee_quest/core/utils/module_icons.dart';
 import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
-
-/// Maps a module's content-defined `iconName` to a Material icon so each
-/// module reads with its own identity in the list. Falls back to a generic
-/// book icon for unknown names.
-IconData _iconForModule(String iconName) {
-  switch (iconName) {
-    case 'beans':
-      return Icons.eco;
-    case 'processing':
-      return Icons.water_drop;
-    case 'roast':
-      return Icons.local_fire_department;
-    case 'brewing':
-      return Icons.coffee_maker;
-    case 'taste':
-      return Icons.restaurant;
-    default:
-      return Icons.menu_book;
-  }
-}
 
 /// Module summary card for the Learn list: per-module icon, title, lesson
 /// progress, and lock state. Locked taps surface the unlock hint instead of
@@ -62,9 +43,7 @@ class ModuleCardWidget extends StatelessWidget {
           child: Row(
             children: [
               _ModuleBadge(
-                icon: locked
-                    ? Icons.lock_outline
-                    : _iconForModule(module.iconName),
+                icon: locked ? Icons.lock_outline : moduleIcon(module.iconName),
                 locked: locked,
                 complete: complete,
               ),

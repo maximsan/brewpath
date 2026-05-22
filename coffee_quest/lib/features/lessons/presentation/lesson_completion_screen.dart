@@ -104,21 +104,23 @@ class _LessonCompletionScreenState
             }
             if (snap.hasError) return ErrorView(message: '${snap.error}');
             final reward = snap.data!;
-            return Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  ...reward.reviewResult != null
-                      ? _reviewContent(context, reward.reviewResult!)
-                      : _completionContent(context, reward),
-                  const SizedBox(height: 32),
-                  FilledButton(
-                    onPressed: () => context.go('/learn'),
-                    child: const Text(AppStrings.continueLabel),
-                  ),
-                ],
+            return Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ...reward.reviewResult != null
+                        ? _reviewContent(context, reward.reviewResult!)
+                        : _completionContent(context, reward),
+                    const SizedBox(height: 32),
+                    FilledButton(
+                      onPressed: () => context.go('/learn'),
+                      child: const Text(AppStrings.continueLabel),
+                    ),
+                  ],
+                ),
               ),
             );
           },

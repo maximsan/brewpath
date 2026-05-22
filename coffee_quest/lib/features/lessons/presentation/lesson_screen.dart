@@ -11,11 +11,7 @@ import 'package:coffee_quest/shared/models/lesson_model.dart';
 import 'package:coffee_quest/shared/repositories/content_repository.dart';
 
 class LessonScreen extends ConsumerStatefulWidget {
-  const LessonScreen({
-    super.key,
-    required this.lessonId,
-    this.review = false,
-  });
+  const LessonScreen({super.key, required this.lessonId, this.review = false});
 
   final String lessonId;
 
@@ -52,8 +48,8 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
         if (_attempt == 0) _firstTryCorrectCount++;
         if (_stepIndex + 1 >= lesson.steps.length) {
           // Mastery = first-try accuracy as a percentage (0–100).
-          final score =
-              (100 * _firstTryCorrectCount / lesson.steps.length).round();
+          final score = (100 * _firstTryCorrectCount / lesson.steps.length)
+              .round();
           context.go(
             '/learn/lesson/${lesson.id}/complete'
             '?review=${widget.review}&score=$score',

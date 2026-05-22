@@ -61,8 +61,7 @@ GoRouter appRouter(Ref ref) {
                     parentNavigatorKey: _rootKey,
                     builder: (context, state) => LessonScreen(
                       lessonId: state.pathParameters['lessonId']!,
-                      review:
-                          state.uri.queryParameters['review'] == 'true',
+                      review: state.uri.queryParameters['review'] == 'true',
                     ),
                     routes: [
                       GoRoute(
@@ -71,8 +70,7 @@ GoRouter appRouter(Ref ref) {
                         parentNavigatorKey: _rootKey,
                         builder: (context, state) => LessonCompletionScreen(
                           lessonId: state.pathParameters['lessonId']!,
-                          review:
-                              state.uri.queryParameters['review'] == 'true',
+                          review: state.uri.queryParameters['review'] == 'true',
                           score:
                               int.tryParse(
                                 state.uri.queryParameters['score'] ?? '',

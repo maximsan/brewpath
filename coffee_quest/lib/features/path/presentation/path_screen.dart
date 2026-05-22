@@ -19,13 +19,64 @@ class PathScreen extends ConsumerWidget {
       body: modules.when(
         loading: () => const LoadingIndicator(),
         error: (e, _) => ErrorView(message: '$e'),
-        data: (list) => ListView.separated(
+        data: (list) => ListView(
           padding: const EdgeInsets.all(16),
-          itemCount: list.length,
-          separatorBuilder: (context, index) => const Divider(height: 1),
-          itemBuilder: (_, i) => PathModuleNodeWidget(item: list[i]),
+          children: [
+            _PathHeader(modules: list),
+            const SizedBox(height: 20),
+            for (var i = 0; i < list.length; i++)
+              PathModuleNodeWidget(
+                item: list[i],
+                isFirst: i == 0,
+                isLast: i == list.length - 1,
+              ),
+          ],
         ),
       ),
+    );
+  }
+}
+
+/// Journey summary above the trail: how many modules are fully complete,
+/// with an overall progress bar.
+class _PathHeader extends StatelessWidget {
+  const _PathHeader({required this.modules});
+
+  final List<ModuleWithProgress> modules;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final total = modules.length;
+    final done = modules.where((m) => m.isComplete).length;
+    final progress = total == 0 ? 0.0 : done / total;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Your journey',
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          '$done of $total modules complete',
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: colors.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(height: 10),
+        LinearProgressIndicator(
+          value: progress,
+          minHeight: 8,
+          borderRadius: BorderRadius.circular(4),
+          backgroundColor: colors.surfaceContainerHighest,
+          color: colors.primary,
+        ),
+      ],
     );
   }
 }
