@@ -84,6 +84,8 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
           }
           _logStartedOnce(lesson);
           final step = lesson.steps[_stepIndex];
+          final theme = Theme.of(context);
+          final colors = theme.colorScheme;
           return SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Column(
@@ -91,16 +93,25 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
               children: [
                 Text(
                   lesson.title,
-                  style: Theme.of(context).textTheme.headlineSmall,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-                const SizedBox(height: 8),
-                Text(lesson.summary),
-                const SizedBox(height: 8),
+                const SizedBox(height: 4),
                 Text(
-                  'Step ${_stepIndex + 1} of ${lesson.steps.length}',
-                  style: Theme.of(context).textTheme.labelMedium,
+                  lesson.summary,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colors.onSurfaceVariant,
+                  ),
                 ),
-                const Divider(height: 32),
+                const SizedBox(height: 16),
+                _StepProgress(
+                  current: _stepIndex + 1,
+                  total: lesson.steps.length,
+                ),
+                const SizedBox(height: 24),
                 LessonStepRunner(
                   key: ValueKey('${_stepIndex}_$_attempt'),
                   step: step,
@@ -111,6 +122,61 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
           );
         },
       ),
+    );
+  }
+}
+
+/// Compact step indicator above the active mini-game: a pill on the left
+/// (`Step X of Y`), percent on the right, themed progress bar beneath.
+class _StepProgress extends StatelessWidget {
+  const _StepProgress({required this.current, required this.total});
+
+  final int current;
+  final int total;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final progress = total == 0 ? 0.0 : current / total;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: colors.primaryContainer,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                'Step $current of $total',
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: colors.onPrimaryContainer,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            Text(
+              '${(progress * 100).round()}%',
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: colors.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        LinearProgressIndicator(
+          value: progress,
+          minHeight: 6,
+          borderRadius: BorderRadius.circular(3),
+          backgroundColor: colors.surfaceContainerHighest,
+          color: colors.primary,
+        ),
+      ],
     );
   }
 }

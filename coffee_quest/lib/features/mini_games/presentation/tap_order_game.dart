@@ -68,13 +68,12 @@ class _TapOrderGameState extends State<TapOrderGame> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          widget.step.instruction,
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
+        Text(widget.step.instruction, style: theme.textTheme.titleLarge),
         const SizedBox(height: 24),
         Wrap(
           spacing: 8,
@@ -99,7 +98,9 @@ class _TapOrderGameState extends State<TapOrderGame> {
             _correct
                 ? 'Correct!'
                 : 'Correct order: ${widget.step.items.join(' → ')}',
-            style: TextStyle(color: _correct ? Colors.green : Colors.red),
+            style: TextStyle(
+              color: _correct ? Colors.green.shade600 : colors.error,
+            ),
           ),
           const SizedBox(height: 8),
           Text(widget.step.explanation),

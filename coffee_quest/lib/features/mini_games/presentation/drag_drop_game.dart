@@ -34,16 +34,15 @@ class _DragDropGameState extends State<DragDropGame> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final terms = widget.step.terms;
     final definitions = widget.step.definitions;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          widget.step.instruction,
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
+        Text(widget.step.instruction, style: theme.textTheme.titleLarge),
         const SizedBox(height: 24),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,10 +55,13 @@ class _DragDropGameState extends State<DragDropGame> {
                       padding: const EdgeInsets.only(bottom: 12),
                       child: _placed.containsValue(i)
                           ? Chip(
-                              label: Text(terms[i]),
-                              backgroundColor: Colors.green.withValues(
-                                alpha: 0.3,
+                              label: Text(
+                                terms[i],
+                                style: TextStyle(
+                                  color: colors.onPrimaryContainer,
+                                ),
                               ),
+                              backgroundColor: colors.primaryContainer,
                             )
                           : Draggable<int>(
                               data: i,
@@ -92,9 +94,8 @@ class _DragDropGameState extends State<DragDropGame> {
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
                               border: Border.all(
-                                color: done
-                                    ? Colors.green
-                                    : Theme.of(context).colorScheme.outline,
+                                color: done ? colors.primary : colors.outline,
+                                width: done ? 2 : 1,
                               ),
                               borderRadius: BorderRadius.circular(8),
                             ),

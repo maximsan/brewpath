@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:coffee_quest/core/constants/app_strings.dart';
+import 'package:coffee_quest/core/utils/module_icons.dart';
 import 'package:coffee_quest/core/widgets/error_view.dart';
 import 'package:coffee_quest/core/widgets/loading_indicator.dart';
 import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
@@ -130,56 +131,64 @@ class _LessonCompletionScreenState
   }
 
   List<Widget> _completionContent(BuildContext context, _Reward reward) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final completion = reward.completion!;
     return [
-      const Icon(Icons.celebration, size: 72),
-      const SizedBox(height: 16),
+      const _HeroBadge(icon: Icons.celebration),
+      const SizedBox(height: 20),
       Text(
         'Lesson complete!',
         textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.headlineSmall,
+        style: theme.textTheme.headlineSmall?.copyWith(
+          fontWeight: FontWeight.w700,
+        ),
       ),
-      const SizedBox(height: 8),
+      const SizedBox(height: 12),
       Text(
         '+${completion.lessonXp} XP',
         textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.titleLarge,
+        style: theme.textTheme.titleLarge?.copyWith(
+          color: colors.primary,
+          fontWeight: FontWeight.w700,
+        ),
       ),
       if (completion.moduleCompleted) ...[
         const SizedBox(height: 4),
         Text(
           '+${completion.moduleBonusXp} XP · Module complete!',
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.titleMedium,
+          style: theme.textTheme.titleMedium?.copyWith(color: colors.primary),
         ),
       ],
       if (reward.card != null) ...[
         const SizedBox(height: 24),
-        Card(
-          child: ListTile(
-            leading: const Icon(Icons.style),
-            title: Text(reward.card!.title),
-            subtitle: Text(reward.card!.moduleTag),
-          ),
-        ),
+        _RewardCard(card: reward.card!),
       ],
     ];
   }
 
   List<Widget> _reviewContent(BuildContext context, LessonReviewResult review) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     return [
-      const Icon(Icons.replay, size: 72),
-      const SizedBox(height: 16),
+      const _HeroBadge(icon: Icons.replay),
+      const SizedBox(height: 20),
       Text(
         'Review complete!',
         textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.headlineSmall,
+        style: theme.textTheme.headlineSmall?.copyWith(
+          fontWeight: FontWeight.w700,
+        ),
       ),
-      const SizedBox(height: 8),
+      const SizedBox(height: 12),
       Text(
         'Best score: ${review.bestScore}%',
         textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.titleLarge,
+        style: theme.textTheme.titleLarge?.copyWith(
+          color: colors.primary,
+          fontWeight: FontWeight.w700,
+        ),
       ),
       const SizedBox(height: 4),
       Text(
@@ -187,8 +196,87 @@ class _LessonCompletionScreenState
             ? '+2 XP · Practice'
             : 'Practice XP already earned today',
         textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.titleMedium,
+        style: theme.textTheme.titleMedium?.copyWith(
+          color: colors.onSurfaceVariant,
+        ),
       ),
     ];
+  }
+}
+
+/// Round tinted celebration/replay badge shown above the headline.
+class _HeroBadge extends StatelessWidget {
+  const _HeroBadge({required this.icon});
+
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Center(
+      child: Container(
+        width: 96,
+        height: 96,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: colors.primaryContainer,
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, size: 48, color: colors.onPrimaryContainer),
+      ),
+    );
+  }
+}
+
+/// Card-reward row shown when the completed lesson grants a collectible.
+class _RewardCard extends StatelessWidget {
+  const _RewardCard({required this.card});
+
+  final CoffeeCardModel card;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: colors.primaryContainer,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                moduleIcon(card.iconName),
+                color: colors.onPrimaryContainer,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(card.title, style: theme.textTheme.titleSmall),
+                  const SizedBox(height: 2),
+                  Text(
+                    card.moduleTag,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

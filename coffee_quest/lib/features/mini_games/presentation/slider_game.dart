@@ -35,19 +35,18 @@ class _SliderGameState extends State<SliderGame> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final unit = widget.step.unit;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          widget.step.instruction,
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
+        Text(widget.step.instruction, style: theme.textTheme.titleLarge),
         const SizedBox(height: 24),
         Text(
           '${_value.toStringAsFixed(0)} $unit',
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.headlineSmall,
+          style: theme.textTheme.headlineSmall,
         ),
         Slider(
           value: _value,
@@ -71,7 +70,9 @@ class _SliderGameState extends State<SliderGame> {
                 ? 'Correct!'
                 : 'Target range: ${widget.step.targetMin.toStringAsFixed(0)}'
                       '–${widget.step.targetMax.toStringAsFixed(0)} $unit',
-            style: TextStyle(color: _inRange ? Colors.green : Colors.red),
+            style: TextStyle(
+              color: _inRange ? Colors.green.shade600 : colors.error,
+            ),
           ),
           const SizedBox(height: 8),
           Text(widget.step.explanation),
