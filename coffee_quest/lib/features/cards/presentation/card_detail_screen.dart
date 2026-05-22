@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:coffee_quest/core/utils/module_icons.dart';
 import 'package:coffee_quest/core/widgets/error_view.dart';
 import 'package:coffee_quest/core/widgets/loading_indicator.dart';
 import 'package:coffee_quest/shared/models/coffee_card_model.dart';
@@ -30,24 +31,33 @@ class CardDetailScreen extends ConsumerWidget {
           if (card == null) {
             return const ErrorView(message: 'Card not found');
           }
+          final theme = Theme.of(context);
+          final colors = theme.colorScheme;
           return SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.style, size: 64),
-                const SizedBox(height: 16),
-                Text(
-                  card.title,
-                  style: Theme.of(context).textTheme.headlineSmall,
+                Container(
+                  width: 80,
+                  height: 80,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: colors.primaryContainer,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Icon(
+                    moduleIcon(card.iconName),
+                    size: 40,
+                    color: colors.onPrimaryContainer,
+                  ),
                 ),
+                const SizedBox(height: 20),
+                Text(card.title, style: theme.textTheme.headlineSmall),
                 const SizedBox(height: 8),
                 Chip(label: Text(card.moduleTag)),
                 const SizedBox(height: 16),
-                Text(
-                  card.description,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
+                Text(card.description, style: theme.textTheme.bodyLarge),
               ],
             ),
           );

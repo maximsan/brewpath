@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 
-/// Maps a module's content-defined `iconName` to a Material icon so each
-/// module reads with its own identity across the Learn and Path screens.
-/// Falls back to a generic book icon for unknown names.
+/// Maps a content-defined `iconName` to a Material icon so each module —
+/// and each collectible card derived from one — reads with its own identity
+/// across the Learn, Path, and Cards screens. Accepts both the module form
+/// (`beans`) and the card form (`ic_beans`); falls back to a generic book
+/// icon for unknown names.
 IconData moduleIcon(String iconName) {
-  switch (iconName) {
+  final key = iconName.startsWith('ic_') ? iconName.substring(3) : iconName;
+  switch (key) {
     case 'beans':
       return Icons.eco;
     case 'processing':

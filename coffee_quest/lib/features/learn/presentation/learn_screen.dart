@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:coffee_quest/core/constants/app_strings.dart';
 import 'package:coffee_quest/core/widgets/error_view.dart';
 import 'package:coffee_quest/core/widgets/loading_indicator.dart';
+import 'package:coffee_quest/core/widgets/section_header.dart';
 import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
 import 'package:coffee_quest/features/learn/presentation/module_card_widget.dart';
 import 'package:coffee_quest/shared/models/lesson_model.dart';
@@ -27,7 +28,7 @@ class LearnScreen extends ConsumerWidget {
           children: [
             _TodayCard(today: today.asData?.value),
             const SizedBox(height: 24),
-            const _SectionHeader('Modules'),
+            const SectionHeader('Modules'),
             const SizedBox(height: 12),
             for (var i = 0; i < list.length; i++) ...[
               if (i > 0) const SizedBox(height: 8),
@@ -35,24 +36,6 @@ class LearnScreen extends ConsumerWidget {
             ],
           ],
         ),
-      ),
-    );
-  }
-}
-
-/// Small uppercase-weight heading that introduces a list section.
-class _SectionHeader extends StatelessWidget {
-  const _SectionHeader(this.title);
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Text(
-      title,
-      style: theme.textTheme.titleSmall?.copyWith(
-        color: theme.colorScheme.onSurfaceVariant,
       ),
     );
   }
