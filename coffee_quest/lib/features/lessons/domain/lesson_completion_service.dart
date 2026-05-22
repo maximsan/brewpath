@@ -7,6 +7,7 @@ import 'package:coffee_quest/services/analytics/analytics_service.dart';
 import 'package:coffee_quest/shared/models/lesson_model.dart';
 import 'package:coffee_quest/shared/repositories/card_repository.dart';
 import 'package:coffee_quest/shared/repositories/content_repository.dart';
+import 'package:coffee_quest/shared/repositories/module_progress_repository.dart';
 import 'package:coffee_quest/shared/repositories/progress_repository.dart';
 import 'package:coffee_quest/shared/repositories/repository_providers.dart';
 import 'package:coffee_quest/shared/repositories/settings_repository.dart';
@@ -36,6 +37,21 @@ class LessonCompletionResult {
   int get totalXp => lessonXp + moduleBonusXp;
 }
 
+/// Outcome of [LessonCompletionService.reviewLesson] — a review never re-awards
+/// full lesson or module XP; it only updates mastery and may grant practice XP.
+class LessonReviewResult {
+  const LessonReviewResult({
+    required this.bestScore,
+    required this.practiceXpAwarded,
+  });
+
+  /// The lesson's best first-try accuracy after this review (0–100).
+  final int bestScore;
+
+  /// Whether practice XP was granted (false when already practiced today).
+  final bool practiceXpAwarded;
+}
+
 /// Orchestrates everything that happens when a lesson finishes: persist progress,
 /// award XP, unlock the lesson's card, advance the streak, and grant the module
 /// bonus once every lesson in the module is done. Idempotent — replaying a
@@ -46,6 +62,7 @@ class LessonCompletionService {
     required this.settingsRepository,
     required this.cardRepository,
     required this.contentRepository,
+    required this.moduleProgressRepository,
     required this.analyticsService,
     required this.xpService,
     required this.streakService,
@@ -55,11 +72,18 @@ class LessonCompletionService {
   final SettingsRepository settingsRepository;
   final CardRepository cardRepository;
   final ContentRepository contentRepository;
+  final ModuleProgressRepository moduleProgressRepository;
   final AnalyticsService analyticsService;
   final XpService xpService;
   final StreakService streakService;
 
-  Future<LessonCompletionResult> completeLesson(LessonModel lesson) async {
+  /// First completion of [lesson]. [score] is the run's first-try accuracy
+  /// (0–100). Awards full lesson XP, the card, streak, and the module bonus —
+  /// each exactly once.
+  Future<LessonCompletionResult> completeLesson(
+    LessonModel lesson, {
+    required int score,
+  }) async {
     final existing = await progressRepository.getByLessonId(lesson.id);
     if (existing != null) {
       // Replay: nothing is re-awarded. Report the lesson's previously banked
@@ -71,7 +95,11 @@ class LessonCompletionService {
     }
 
     final xp = xpService.calculateLessonXp(lesson.steps.length);
-    await progressRepository.saveCompletion(lessonId: lesson.id, xpEarned: xp);
+    await progressRepository.saveCompletion(
+      lessonId: lesson.id,
+      xpEarned: xp,
+      score: score,
+    );
     await settingsRepository.addXp(xp);
     await analyticsService.logEvent(
       'xp_earned',
@@ -112,9 +140,61 @@ class LessonCompletionService {
     return LessonCompletionResult(lessonXp: xp, moduleBonusXp: moduleBonus);
   }
 
+  /// Re-runs a completed [lesson] for practice. Never re-awards full lesson or
+  /// module XP, never collects cards, never touches completion/streak. Updates
+  /// the stored best score upward only, and grants [XpService.practiceXp] at
+  /// most once per lesson per calendar day. [now] is injectable for tests.
+  Future<LessonReviewResult> reviewLesson(
+    LessonModel lesson, {
+    required int score,
+    DateTime? now,
+  }) async {
+    final record = await progressRepository.getByLessonId(lesson.id);
+    if (record == null) {
+      // Defensive: review is only ever offered for completed lessons.
+      return const LessonReviewResult(bestScore: 0, practiceXpAwarded: false);
+    }
+
+    final today = _dateOnly(now ?? DateTime.now());
+    if (score > record.bestScore) record.bestScore = score;
+
+    var practiceXpAwarded = false;
+    final last = record.lastPracticeXpDate;
+    if (last == null || _dateOnly(last) != today) {
+      practiceXpAwarded = true;
+      record.lastPracticeXpDate = today;
+      await settingsRepository.addXp(xpService.practiceXp);
+      await analyticsService.logEvent(
+        'xp_earned',
+        parameters: {'amount': xpService.practiceXp, 'source': 'practice'},
+      );
+    }
+
+    await progressRepository.saveProgress(record);
+
+    await analyticsService.logEvent(
+      'lesson_reviewed',
+      parameters: {
+        'lesson_id': lesson.id,
+        'module_id': lesson.moduleId,
+        'score': score,
+      },
+    );
+
+    return LessonReviewResult(
+      bestScore: record.bestScore,
+      practiceXpAwarded: practiceXpAwarded,
+    );
+  }
+
   /// Awards the module-completion bonus when [lesson] was the last unfinished
-  /// lesson of its module. Returns the bonus XP granted, or `0` otherwise.
+  /// lesson of its module. Guarded by a persisted per-module ledger so the
+  /// bonus is granted at most once. Returns the bonus XP granted, or `0`.
   Future<int> _maybeAwardModuleBonus(LessonModel lesson) async {
+    if (await moduleProgressRepository.isModuleXpAwarded(lesson.moduleId)) {
+      return 0;
+    }
+
     final modules = await contentRepository.getModules();
     final matches = modules.where((m) => m.id == lesson.moduleId);
     if (matches.isEmpty) return 0;
@@ -127,6 +207,7 @@ class LessonCompletionService {
 
     final bonus = xpService.moduleCompletionBonus;
     await settingsRepository.addXp(bonus);
+    await moduleProgressRepository.markModuleXpAwarded(module.id);
     await analyticsService.logEvent(
       'xp_earned',
       parameters: {'amount': bonus, 'source': 'module_bonus'},
@@ -141,6 +222,9 @@ class LessonCompletionService {
     }
     return bonus;
   }
+
+  /// Strips the time component so practice XP is gated per calendar day.
+  DateTime _dateOnly(DateTime d) => DateTime(d.year, d.month, d.day);
 }
 
 @riverpod
@@ -150,6 +234,7 @@ LessonCompletionService lessonCompletionService(Ref ref) =>
       settingsRepository: ref.watch(settingsRepositoryProvider),
       cardRepository: ref.watch(cardRepositoryProvider),
       contentRepository: ref.watch(contentRepositoryProvider),
+      moduleProgressRepository: ref.watch(moduleProgressRepositoryProvider),
       analyticsService: ref.watch(analyticsServiceProvider),
       xpService: const XpService(),
       streakService: const StreakService(),

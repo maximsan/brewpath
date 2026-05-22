@@ -70,6 +70,44 @@ class $ProgressRecordsTable extends ProgressRecords
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _fullXpAwardedMeta = const VerificationMeta(
+    'fullXpAwarded',
+  );
+  @override
+  late final GeneratedColumn<bool> fullXpAwarded = GeneratedColumn<bool>(
+    'full_xp_awarded',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("full_xp_awarded" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _bestScoreMeta = const VerificationMeta(
+    'bestScore',
+  );
+  @override
+  late final GeneratedColumn<int> bestScore = GeneratedColumn<int>(
+    'best_score',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _lastPracticeXpDateMeta =
+      const VerificationMeta('lastPracticeXpDate');
+  @override
+  late final GeneratedColumn<DateTime> lastPracticeXpDate =
+      GeneratedColumn<DateTime>(
+        'last_practice_xp_date',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -77,6 +115,9 @@ class $ProgressRecordsTable extends ProgressRecords
     isCompleted,
     xpEarned,
     completedAt,
+    fullXpAwarded,
+    bestScore,
+    lastPracticeXpDate,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -131,6 +172,30 @@ class $ProgressRecordsTable extends ProgressRecords
     } else if (isInserting) {
       context.missing(_completedAtMeta);
     }
+    if (data.containsKey('full_xp_awarded')) {
+      context.handle(
+        _fullXpAwardedMeta,
+        fullXpAwarded.isAcceptableOrUnknown(
+          data['full_xp_awarded']!,
+          _fullXpAwardedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('best_score')) {
+      context.handle(
+        _bestScoreMeta,
+        bestScore.isAcceptableOrUnknown(data['best_score']!, _bestScoreMeta),
+      );
+    }
+    if (data.containsKey('last_practice_xp_date')) {
+      context.handle(
+        _lastPracticeXpDateMeta,
+        lastPracticeXpDate.isAcceptableOrUnknown(
+          data['last_practice_xp_date']!,
+          _lastPracticeXpDateMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -160,6 +225,18 @@ class $ProgressRecordsTable extends ProgressRecords
         DriftSqlType.dateTime,
         data['${effectivePrefix}completed_at'],
       )!,
+      fullXpAwarded: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}full_xp_awarded'],
+      )!,
+      bestScore: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}best_score'],
+      )!,
+      lastPracticeXpDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_practice_xp_date'],
+      ),
     );
   }
 
@@ -175,12 +252,26 @@ class ProgressRow extends DataClass implements Insertable<ProgressRow> {
   final bool isCompleted;
   final int xpEarned;
   final DateTime completedAt;
+
+  /// Whether full lesson XP has already been awarded. Defaults to `true` so
+  /// rows migrated from schema v1 (which were created only on first
+  /// completion) keep their already-earned status.
+  final bool fullXpAwarded;
+
+  /// Best first-try accuracy across all runs, as an integer percentage 0–100.
+  final int bestScore;
+
+  /// Calendar day practice XP was last awarded for this lesson during review.
+  final DateTime? lastPracticeXpDate;
   const ProgressRow({
     required this.id,
     required this.lessonId,
     required this.isCompleted,
     required this.xpEarned,
     required this.completedAt,
+    required this.fullXpAwarded,
+    required this.bestScore,
+    this.lastPracticeXpDate,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -190,6 +281,11 @@ class ProgressRow extends DataClass implements Insertable<ProgressRow> {
     map['is_completed'] = Variable<bool>(isCompleted);
     map['xp_earned'] = Variable<int>(xpEarned);
     map['completed_at'] = Variable<DateTime>(completedAt);
+    map['full_xp_awarded'] = Variable<bool>(fullXpAwarded);
+    map['best_score'] = Variable<int>(bestScore);
+    if (!nullToAbsent || lastPracticeXpDate != null) {
+      map['last_practice_xp_date'] = Variable<DateTime>(lastPracticeXpDate);
+    }
     return map;
   }
 
@@ -200,6 +296,11 @@ class ProgressRow extends DataClass implements Insertable<ProgressRow> {
       isCompleted: Value(isCompleted),
       xpEarned: Value(xpEarned),
       completedAt: Value(completedAt),
+      fullXpAwarded: Value(fullXpAwarded),
+      bestScore: Value(bestScore),
+      lastPracticeXpDate: lastPracticeXpDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastPracticeXpDate),
     );
   }
 
@@ -214,6 +315,11 @@ class ProgressRow extends DataClass implements Insertable<ProgressRow> {
       isCompleted: serializer.fromJson<bool>(json['isCompleted']),
       xpEarned: serializer.fromJson<int>(json['xpEarned']),
       completedAt: serializer.fromJson<DateTime>(json['completedAt']),
+      fullXpAwarded: serializer.fromJson<bool>(json['fullXpAwarded']),
+      bestScore: serializer.fromJson<int>(json['bestScore']),
+      lastPracticeXpDate: serializer.fromJson<DateTime?>(
+        json['lastPracticeXpDate'],
+      ),
     );
   }
   @override
@@ -225,6 +331,9 @@ class ProgressRow extends DataClass implements Insertable<ProgressRow> {
       'isCompleted': serializer.toJson<bool>(isCompleted),
       'xpEarned': serializer.toJson<int>(xpEarned),
       'completedAt': serializer.toJson<DateTime>(completedAt),
+      'fullXpAwarded': serializer.toJson<bool>(fullXpAwarded),
+      'bestScore': serializer.toJson<int>(bestScore),
+      'lastPracticeXpDate': serializer.toJson<DateTime?>(lastPracticeXpDate),
     };
   }
 
@@ -234,12 +343,20 @@ class ProgressRow extends DataClass implements Insertable<ProgressRow> {
     bool? isCompleted,
     int? xpEarned,
     DateTime? completedAt,
+    bool? fullXpAwarded,
+    int? bestScore,
+    Value<DateTime?> lastPracticeXpDate = const Value.absent(),
   }) => ProgressRow(
     id: id ?? this.id,
     lessonId: lessonId ?? this.lessonId,
     isCompleted: isCompleted ?? this.isCompleted,
     xpEarned: xpEarned ?? this.xpEarned,
     completedAt: completedAt ?? this.completedAt,
+    fullXpAwarded: fullXpAwarded ?? this.fullXpAwarded,
+    bestScore: bestScore ?? this.bestScore,
+    lastPracticeXpDate: lastPracticeXpDate.present
+        ? lastPracticeXpDate.value
+        : this.lastPracticeXpDate,
   );
   ProgressRow copyWithCompanion(ProgressRecordsCompanion data) {
     return ProgressRow(
@@ -252,6 +369,13 @@ class ProgressRow extends DataClass implements Insertable<ProgressRow> {
       completedAt: data.completedAt.present
           ? data.completedAt.value
           : this.completedAt,
+      fullXpAwarded: data.fullXpAwarded.present
+          ? data.fullXpAwarded.value
+          : this.fullXpAwarded,
+      bestScore: data.bestScore.present ? data.bestScore.value : this.bestScore,
+      lastPracticeXpDate: data.lastPracticeXpDate.present
+          ? data.lastPracticeXpDate.value
+          : this.lastPracticeXpDate,
     );
   }
 
@@ -262,14 +386,25 @@ class ProgressRow extends DataClass implements Insertable<ProgressRow> {
           ..write('lessonId: $lessonId, ')
           ..write('isCompleted: $isCompleted, ')
           ..write('xpEarned: $xpEarned, ')
-          ..write('completedAt: $completedAt')
+          ..write('completedAt: $completedAt, ')
+          ..write('fullXpAwarded: $fullXpAwarded, ')
+          ..write('bestScore: $bestScore, ')
+          ..write('lastPracticeXpDate: $lastPracticeXpDate')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, lessonId, isCompleted, xpEarned, completedAt);
+  int get hashCode => Object.hash(
+    id,
+    lessonId,
+    isCompleted,
+    xpEarned,
+    completedAt,
+    fullXpAwarded,
+    bestScore,
+    lastPracticeXpDate,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -278,7 +413,10 @@ class ProgressRow extends DataClass implements Insertable<ProgressRow> {
           other.lessonId == this.lessonId &&
           other.isCompleted == this.isCompleted &&
           other.xpEarned == this.xpEarned &&
-          other.completedAt == this.completedAt);
+          other.completedAt == this.completedAt &&
+          other.fullXpAwarded == this.fullXpAwarded &&
+          other.bestScore == this.bestScore &&
+          other.lastPracticeXpDate == this.lastPracticeXpDate);
 }
 
 class ProgressRecordsCompanion extends UpdateCompanion<ProgressRow> {
@@ -287,12 +425,18 @@ class ProgressRecordsCompanion extends UpdateCompanion<ProgressRow> {
   final Value<bool> isCompleted;
   final Value<int> xpEarned;
   final Value<DateTime> completedAt;
+  final Value<bool> fullXpAwarded;
+  final Value<int> bestScore;
+  final Value<DateTime?> lastPracticeXpDate;
   const ProgressRecordsCompanion({
     this.id = const Value.absent(),
     this.lessonId = const Value.absent(),
     this.isCompleted = const Value.absent(),
     this.xpEarned = const Value.absent(),
     this.completedAt = const Value.absent(),
+    this.fullXpAwarded = const Value.absent(),
+    this.bestScore = const Value.absent(),
+    this.lastPracticeXpDate = const Value.absent(),
   });
   ProgressRecordsCompanion.insert({
     this.id = const Value.absent(),
@@ -300,6 +444,9 @@ class ProgressRecordsCompanion extends UpdateCompanion<ProgressRow> {
     required bool isCompleted,
     required int xpEarned,
     required DateTime completedAt,
+    this.fullXpAwarded = const Value.absent(),
+    this.bestScore = const Value.absent(),
+    this.lastPracticeXpDate = const Value.absent(),
   }) : lessonId = Value(lessonId),
        isCompleted = Value(isCompleted),
        xpEarned = Value(xpEarned),
@@ -310,6 +457,9 @@ class ProgressRecordsCompanion extends UpdateCompanion<ProgressRow> {
     Expression<bool>? isCompleted,
     Expression<int>? xpEarned,
     Expression<DateTime>? completedAt,
+    Expression<bool>? fullXpAwarded,
+    Expression<int>? bestScore,
+    Expression<DateTime>? lastPracticeXpDate,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -317,6 +467,10 @@ class ProgressRecordsCompanion extends UpdateCompanion<ProgressRow> {
       if (isCompleted != null) 'is_completed': isCompleted,
       if (xpEarned != null) 'xp_earned': xpEarned,
       if (completedAt != null) 'completed_at': completedAt,
+      if (fullXpAwarded != null) 'full_xp_awarded': fullXpAwarded,
+      if (bestScore != null) 'best_score': bestScore,
+      if (lastPracticeXpDate != null)
+        'last_practice_xp_date': lastPracticeXpDate,
     });
   }
 
@@ -326,6 +480,9 @@ class ProgressRecordsCompanion extends UpdateCompanion<ProgressRow> {
     Value<bool>? isCompleted,
     Value<int>? xpEarned,
     Value<DateTime>? completedAt,
+    Value<bool>? fullXpAwarded,
+    Value<int>? bestScore,
+    Value<DateTime?>? lastPracticeXpDate,
   }) {
     return ProgressRecordsCompanion(
       id: id ?? this.id,
@@ -333,6 +490,9 @@ class ProgressRecordsCompanion extends UpdateCompanion<ProgressRow> {
       isCompleted: isCompleted ?? this.isCompleted,
       xpEarned: xpEarned ?? this.xpEarned,
       completedAt: completedAt ?? this.completedAt,
+      fullXpAwarded: fullXpAwarded ?? this.fullXpAwarded,
+      bestScore: bestScore ?? this.bestScore,
+      lastPracticeXpDate: lastPracticeXpDate ?? this.lastPracticeXpDate,
     );
   }
 
@@ -354,6 +514,17 @@ class ProgressRecordsCompanion extends UpdateCompanion<ProgressRow> {
     if (completedAt.present) {
       map['completed_at'] = Variable<DateTime>(completedAt.value);
     }
+    if (fullXpAwarded.present) {
+      map['full_xp_awarded'] = Variable<bool>(fullXpAwarded.value);
+    }
+    if (bestScore.present) {
+      map['best_score'] = Variable<int>(bestScore.value);
+    }
+    if (lastPracticeXpDate.present) {
+      map['last_practice_xp_date'] = Variable<DateTime>(
+        lastPracticeXpDate.value,
+      );
+    }
     return map;
   }
 
@@ -364,7 +535,10 @@ class ProgressRecordsCompanion extends UpdateCompanion<ProgressRow> {
           ..write('lessonId: $lessonId, ')
           ..write('isCompleted: $isCompleted, ')
           ..write('xpEarned: $xpEarned, ')
-          ..write('completedAt: $completedAt')
+          ..write('completedAt: $completedAt, ')
+          ..write('fullXpAwarded: $fullXpAwarded, ')
+          ..write('bestScore: $bestScore, ')
+          ..write('lastPracticeXpDate: $lastPracticeXpDate')
           ..write(')'))
         .toString();
   }
@@ -1052,6 +1226,271 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
   }
 }
 
+class $ModuleProgressRecordsTable extends ModuleProgressRecords
+    with TableInfo<$ModuleProgressRecordsTable, ModuleProgressRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ModuleProgressRecordsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _moduleIdMeta = const VerificationMeta(
+    'moduleId',
+  );
+  @override
+  late final GeneratedColumn<String> moduleId = GeneratedColumn<String>(
+    'module_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  static const VerificationMeta _moduleXpAwardedMeta = const VerificationMeta(
+    'moduleXpAwarded',
+  );
+  @override
+  late final GeneratedColumn<bool> moduleXpAwarded = GeneratedColumn<bool>(
+    'module_xp_awarded',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("module_xp_awarded" IN (0, 1))',
+    ),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, moduleId, moduleXpAwarded];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'module_progress_records';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ModuleProgressRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('module_id')) {
+      context.handle(
+        _moduleIdMeta,
+        moduleId.isAcceptableOrUnknown(data['module_id']!, _moduleIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_moduleIdMeta);
+    }
+    if (data.containsKey('module_xp_awarded')) {
+      context.handle(
+        _moduleXpAwardedMeta,
+        moduleXpAwarded.isAcceptableOrUnknown(
+          data['module_xp_awarded']!,
+          _moduleXpAwardedMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_moduleXpAwardedMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ModuleProgressRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ModuleProgressRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      moduleId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}module_id'],
+      )!,
+      moduleXpAwarded: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}module_xp_awarded'],
+      )!,
+    );
+  }
+
+  @override
+  $ModuleProgressRecordsTable createAlias(String alias) {
+    return $ModuleProgressRecordsTable(attachedDatabase, alias);
+  }
+}
+
+class ModuleProgressRow extends DataClass
+    implements Insertable<ModuleProgressRow> {
+  final int id;
+  final String moduleId;
+  final bool moduleXpAwarded;
+  const ModuleProgressRow({
+    required this.id,
+    required this.moduleId,
+    required this.moduleXpAwarded,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['module_id'] = Variable<String>(moduleId);
+    map['module_xp_awarded'] = Variable<bool>(moduleXpAwarded);
+    return map;
+  }
+
+  ModuleProgressRecordsCompanion toCompanion(bool nullToAbsent) {
+    return ModuleProgressRecordsCompanion(
+      id: Value(id),
+      moduleId: Value(moduleId),
+      moduleXpAwarded: Value(moduleXpAwarded),
+    );
+  }
+
+  factory ModuleProgressRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ModuleProgressRow(
+      id: serializer.fromJson<int>(json['id']),
+      moduleId: serializer.fromJson<String>(json['moduleId']),
+      moduleXpAwarded: serializer.fromJson<bool>(json['moduleXpAwarded']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'moduleId': serializer.toJson<String>(moduleId),
+      'moduleXpAwarded': serializer.toJson<bool>(moduleXpAwarded),
+    };
+  }
+
+  ModuleProgressRow copyWith({
+    int? id,
+    String? moduleId,
+    bool? moduleXpAwarded,
+  }) => ModuleProgressRow(
+    id: id ?? this.id,
+    moduleId: moduleId ?? this.moduleId,
+    moduleXpAwarded: moduleXpAwarded ?? this.moduleXpAwarded,
+  );
+  ModuleProgressRow copyWithCompanion(ModuleProgressRecordsCompanion data) {
+    return ModuleProgressRow(
+      id: data.id.present ? data.id.value : this.id,
+      moduleId: data.moduleId.present ? data.moduleId.value : this.moduleId,
+      moduleXpAwarded: data.moduleXpAwarded.present
+          ? data.moduleXpAwarded.value
+          : this.moduleXpAwarded,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ModuleProgressRow(')
+          ..write('id: $id, ')
+          ..write('moduleId: $moduleId, ')
+          ..write('moduleXpAwarded: $moduleXpAwarded')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, moduleId, moduleXpAwarded);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ModuleProgressRow &&
+          other.id == this.id &&
+          other.moduleId == this.moduleId &&
+          other.moduleXpAwarded == this.moduleXpAwarded);
+}
+
+class ModuleProgressRecordsCompanion
+    extends UpdateCompanion<ModuleProgressRow> {
+  final Value<int> id;
+  final Value<String> moduleId;
+  final Value<bool> moduleXpAwarded;
+  const ModuleProgressRecordsCompanion({
+    this.id = const Value.absent(),
+    this.moduleId = const Value.absent(),
+    this.moduleXpAwarded = const Value.absent(),
+  });
+  ModuleProgressRecordsCompanion.insert({
+    this.id = const Value.absent(),
+    required String moduleId,
+    required bool moduleXpAwarded,
+  }) : moduleId = Value(moduleId),
+       moduleXpAwarded = Value(moduleXpAwarded);
+  static Insertable<ModuleProgressRow> custom({
+    Expression<int>? id,
+    Expression<String>? moduleId,
+    Expression<bool>? moduleXpAwarded,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (moduleId != null) 'module_id': moduleId,
+      if (moduleXpAwarded != null) 'module_xp_awarded': moduleXpAwarded,
+    });
+  }
+
+  ModuleProgressRecordsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? moduleId,
+    Value<bool>? moduleXpAwarded,
+  }) {
+    return ModuleProgressRecordsCompanion(
+      id: id ?? this.id,
+      moduleId: moduleId ?? this.moduleId,
+      moduleXpAwarded: moduleXpAwarded ?? this.moduleXpAwarded,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (moduleId.present) {
+      map['module_id'] = Variable<String>(moduleId.value);
+    }
+    if (moduleXpAwarded.present) {
+      map['module_xp_awarded'] = Variable<bool>(moduleXpAwarded.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ModuleProgressRecordsCompanion(')
+          ..write('id: $id, ')
+          ..write('moduleId: $moduleId, ')
+          ..write('moduleXpAwarded: $moduleXpAwarded')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1060,6 +1499,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   );
   late final $CardRecordsTable cardRecords = $CardRecordsTable(this);
   late final $UserSettingsTable userSettings = $UserSettingsTable(this);
+  late final $ModuleProgressRecordsTable moduleProgressRecords =
+      $ModuleProgressRecordsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1068,6 +1509,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     progressRecords,
     cardRecords,
     userSettings,
+    moduleProgressRecords,
   ];
 }
 
@@ -1078,6 +1520,9 @@ typedef $$ProgressRecordsTableCreateCompanionBuilder =
       required bool isCompleted,
       required int xpEarned,
       required DateTime completedAt,
+      Value<bool> fullXpAwarded,
+      Value<int> bestScore,
+      Value<DateTime?> lastPracticeXpDate,
     });
 typedef $$ProgressRecordsTableUpdateCompanionBuilder =
     ProgressRecordsCompanion Function({
@@ -1086,6 +1531,9 @@ typedef $$ProgressRecordsTableUpdateCompanionBuilder =
       Value<bool> isCompleted,
       Value<int> xpEarned,
       Value<DateTime> completedAt,
+      Value<bool> fullXpAwarded,
+      Value<int> bestScore,
+      Value<DateTime?> lastPracticeXpDate,
     });
 
 class $$ProgressRecordsTableFilterComposer
@@ -1119,6 +1567,21 @@ class $$ProgressRecordsTableFilterComposer
 
   ColumnFilters<DateTime> get completedAt => $composableBuilder(
     column: $table.completedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get fullXpAwarded => $composableBuilder(
+    column: $table.fullXpAwarded,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get bestScore => $composableBuilder(
+    column: $table.bestScore,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastPracticeXpDate => $composableBuilder(
+    column: $table.lastPracticeXpDate,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -1156,6 +1619,21 @@ class $$ProgressRecordsTableOrderingComposer
     column: $table.completedAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get fullXpAwarded => $composableBuilder(
+    column: $table.fullXpAwarded,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get bestScore => $composableBuilder(
+    column: $table.bestScore,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastPracticeXpDate => $composableBuilder(
+    column: $table.lastPracticeXpDate,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$ProgressRecordsTableAnnotationComposer
@@ -1183,6 +1661,19 @@ class $$ProgressRecordsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get completedAt => $composableBuilder(
     column: $table.completedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get fullXpAwarded => $composableBuilder(
+    column: $table.fullXpAwarded,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get bestScore =>
+      $composableBuilder(column: $table.bestScore, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastPracticeXpDate => $composableBuilder(
+    column: $table.lastPracticeXpDate,
     builder: (column) => column,
   );
 }
@@ -1225,12 +1716,18 @@ class $$ProgressRecordsTableTableManager
                 Value<bool> isCompleted = const Value.absent(),
                 Value<int> xpEarned = const Value.absent(),
                 Value<DateTime> completedAt = const Value.absent(),
+                Value<bool> fullXpAwarded = const Value.absent(),
+                Value<int> bestScore = const Value.absent(),
+                Value<DateTime?> lastPracticeXpDate = const Value.absent(),
               }) => ProgressRecordsCompanion(
                 id: id,
                 lessonId: lessonId,
                 isCompleted: isCompleted,
                 xpEarned: xpEarned,
                 completedAt: completedAt,
+                fullXpAwarded: fullXpAwarded,
+                bestScore: bestScore,
+                lastPracticeXpDate: lastPracticeXpDate,
               ),
           createCompanionCallback:
               ({
@@ -1239,12 +1736,18 @@ class $$ProgressRecordsTableTableManager
                 required bool isCompleted,
                 required int xpEarned,
                 required DateTime completedAt,
+                Value<bool> fullXpAwarded = const Value.absent(),
+                Value<int> bestScore = const Value.absent(),
+                Value<DateTime?> lastPracticeXpDate = const Value.absent(),
               }) => ProgressRecordsCompanion.insert(
                 id: id,
                 lessonId: lessonId,
                 isCompleted: isCompleted,
                 xpEarned: xpEarned,
                 completedAt: completedAt,
+                fullXpAwarded: fullXpAwarded,
+                bestScore: bestScore,
+                lastPracticeXpDate: lastPracticeXpDate,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
@@ -1644,6 +2147,183 @@ typedef $$UserSettingsTableProcessedTableManager =
       SettingsRow,
       PrefetchHooks Function()
     >;
+typedef $$ModuleProgressRecordsTableCreateCompanionBuilder =
+    ModuleProgressRecordsCompanion Function({
+      Value<int> id,
+      required String moduleId,
+      required bool moduleXpAwarded,
+    });
+typedef $$ModuleProgressRecordsTableUpdateCompanionBuilder =
+    ModuleProgressRecordsCompanion Function({
+      Value<int> id,
+      Value<String> moduleId,
+      Value<bool> moduleXpAwarded,
+    });
+
+class $$ModuleProgressRecordsTableFilterComposer
+    extends Composer<_$AppDatabase, $ModuleProgressRecordsTable> {
+  $$ModuleProgressRecordsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get moduleId => $composableBuilder(
+    column: $table.moduleId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get moduleXpAwarded => $composableBuilder(
+    column: $table.moduleXpAwarded,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ModuleProgressRecordsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ModuleProgressRecordsTable> {
+  $$ModuleProgressRecordsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get moduleId => $composableBuilder(
+    column: $table.moduleId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get moduleXpAwarded => $composableBuilder(
+    column: $table.moduleXpAwarded,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ModuleProgressRecordsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ModuleProgressRecordsTable> {
+  $$ModuleProgressRecordsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get moduleId =>
+      $composableBuilder(column: $table.moduleId, builder: (column) => column);
+
+  GeneratedColumn<bool> get moduleXpAwarded => $composableBuilder(
+    column: $table.moduleXpAwarded,
+    builder: (column) => column,
+  );
+}
+
+class $$ModuleProgressRecordsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ModuleProgressRecordsTable,
+          ModuleProgressRow,
+          $$ModuleProgressRecordsTableFilterComposer,
+          $$ModuleProgressRecordsTableOrderingComposer,
+          $$ModuleProgressRecordsTableAnnotationComposer,
+          $$ModuleProgressRecordsTableCreateCompanionBuilder,
+          $$ModuleProgressRecordsTableUpdateCompanionBuilder,
+          (
+            ModuleProgressRow,
+            BaseReferences<
+              _$AppDatabase,
+              $ModuleProgressRecordsTable,
+              ModuleProgressRow
+            >,
+          ),
+          ModuleProgressRow,
+          PrefetchHooks Function()
+        > {
+  $$ModuleProgressRecordsTableTableManager(
+    _$AppDatabase db,
+    $ModuleProgressRecordsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ModuleProgressRecordsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$ModuleProgressRecordsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$ModuleProgressRecordsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> moduleId = const Value.absent(),
+                Value<bool> moduleXpAwarded = const Value.absent(),
+              }) => ModuleProgressRecordsCompanion(
+                id: id,
+                moduleId: moduleId,
+                moduleXpAwarded: moduleXpAwarded,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String moduleId,
+                required bool moduleXpAwarded,
+              }) => ModuleProgressRecordsCompanion.insert(
+                id: id,
+                moduleId: moduleId,
+                moduleXpAwarded: moduleXpAwarded,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ModuleProgressRecordsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ModuleProgressRecordsTable,
+      ModuleProgressRow,
+      $$ModuleProgressRecordsTableFilterComposer,
+      $$ModuleProgressRecordsTableOrderingComposer,
+      $$ModuleProgressRecordsTableAnnotationComposer,
+      $$ModuleProgressRecordsTableCreateCompanionBuilder,
+      $$ModuleProgressRecordsTableUpdateCompanionBuilder,
+      (
+        ModuleProgressRow,
+        BaseReferences<
+          _$AppDatabase,
+          $ModuleProgressRecordsTable,
+          ModuleProgressRow
+        >,
+      ),
+      ModuleProgressRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -1654,4 +2334,6 @@ class $AppDatabaseManager {
       $$CardRecordsTableTableManager(_db, _db.cardRecords);
   $$UserSettingsTableTableManager get userSettings =>
       $$UserSettingsTableTableManager(_db, _db.userSettings);
+  $$ModuleProgressRecordsTableTableManager get moduleProgressRecords =>
+      $$ModuleProgressRecordsTableTableManager(_db, _db.moduleProgressRecords);
 }

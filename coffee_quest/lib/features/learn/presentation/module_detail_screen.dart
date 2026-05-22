@@ -46,23 +46,42 @@ class ModuleDetailScreen extends ConsumerWidget {
               Text(module.description),
               const Divider(height: 32),
               for (final lesson in lessons)
-                ListTile(
-                  leading: Icon(
-                    completedIds.contains(lesson.id)
-                        ? Icons.check_circle
-                        : Icons.circle_outlined,
-                    color: completedIds.contains(lesson.id)
-                        ? Colors.green
-                        : null,
-                  ),
-                  title: Text(lesson.title),
-                  subtitle: Text(lesson.summary),
-                  onTap: () => context.go('/learn/lesson/${lesson.id}'),
+                _lessonTile(
+                  context,
+                  lesson,
+                  isCompleted: completedIds.contains(lesson.id),
                 ),
             ],
           );
         },
       ),
+    );
+  }
+
+  /// A lesson row. Completed lessons re-open in review mode and show a
+  /// `Review` action; new lessons start the lesson fresh.
+  Widget _lessonTile(
+    BuildContext context,
+    LessonModel lesson, {
+    required bool isCompleted,
+  }) {
+    final destination = isCompleted
+        ? '/learn/lesson/${lesson.id}?review=true'
+        : '/learn/lesson/${lesson.id}';
+    return ListTile(
+      leading: Icon(
+        isCompleted ? Icons.check_circle : Icons.circle_outlined,
+        color: isCompleted ? Colors.green : null,
+      ),
+      title: Text(lesson.title),
+      subtitle: Text(lesson.summary),
+      trailing: isCompleted
+          ? TextButton(
+              onPressed: () => context.go(destination),
+              child: const Text('Review'),
+            )
+          : null,
+      onTap: () => context.go(destination),
     );
   }
 

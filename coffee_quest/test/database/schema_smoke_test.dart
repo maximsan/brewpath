@@ -5,13 +5,13 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../generated/schema.dart';
 import '../generated/schema_v1.dart';
+import '../generated/schema_v2.dart';
 
-/// Infrastructure smoke test for the Drift schema-migration harness.
+/// Drift schema-migration harness coverage.
 ///
-/// Not a migration test — there is only schema v1 so far. This verifies the
-/// generated [GeneratedHelper] / [SchemaVerifier] pipeline is wired correctly:
-/// an empty database can be created at v1, opens without error, and exposes
-/// the expected tables.
+/// Verifies the generated [GeneratedHelper] / [SchemaVerifier] pipeline: each
+/// historical schema opens cleanly, and the real `AppDatabase` migration
+/// upgrades a v1 database to the v2 schema.
 void main() {
   late SchemaVerifier verifier;
 
@@ -19,15 +19,12 @@ void main() {
     verifier = SchemaVerifier(GeneratedHelper());
   });
 
-  test('schema v1 database opens cleanly with the expected tables', () async {
+  test('schema v1 database opens with the expected tables', () async {
     final connection = await verifier.startAt(1);
     final db = DatabaseAtV1(connection);
-
-    // Force the connection to actually open and execute against the v1 schema.
     await db.customSelect('SELECT 1').get();
 
     expect(db.schemaVersion, 1);
-    expect(db.allTables.length, 3);
     expect(db.allTables.map((t) => t.actualTableName).toSet(), {
       'progress_records',
       'card_records',
@@ -37,10 +34,36 @@ void main() {
     await db.close();
   });
 
-  // Locks in the idempotency invariant that currently lives only in the
-  // schema: `progress_records.lessonId` is UNIQUE, which is what makes
+  test('schema v2 database opens with the module-progress table', () async {
+    final connection = await verifier.startAt(2);
+    final db = DatabaseAtV2(connection);
+    await db.customSelect('SELECT 1').get();
+
+    expect(db.schemaVersion, 2);
+    expect(db.allTables.map((t) => t.actualTableName).toSet(), {
+      'progress_records',
+      'card_records',
+      'user_settings',
+      'module_progress_records',
+    });
+
+    await db.close();
+  });
+
+  test('AppDatabase migrates a v1 database to the v2 schema', () async {
+    final connection = await verifier.startAt(1);
+    final db = AppDatabase(connection);
+
+    // Runs the real onUpgrade and asserts the result matches the v2 schema.
+    await verifier.migrateAndValidate(db, 2);
+
+    await db.close();
+  });
+
+  // Locks in the idempotency invariant that the schema enforces:
+  // `progress_records.lessonId` is UNIQUE, which is what makes
   // `saveCompletion`'s insert-or-ignore safe (replaying a completed lesson
-  // must not double-count XP/streak). Tested on the real production schema.
+  // must not double-count XP/streak). Tested on the real (v2) schema.
   test('progress_records.lessonId UNIQUE rejects duplicate insert', () async {
     final db = AppDatabase(NativeDatabase.memory());
     addTearDown(db.close);

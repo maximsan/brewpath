@@ -42,8 +42,16 @@ void main() {
   test('partially completing the required module keeps it locked', () async {
     final repo = ProgressRepository();
     // module_beans has 3 lessons — complete only 2.
-    await repo.saveCompletion(lessonId: 'lesson_where_coffee', xpEarned: 10);
-    await repo.saveCompletion(lessonId: 'lesson_arabica_robusta', xpEarned: 20);
+    await repo.saveCompletion(
+      lessonId: 'lesson_where_coffee',
+      xpEarned: 10,
+      score: 100,
+    );
+    await repo.saveCompletion(
+      lessonId: 'lesson_arabica_robusta',
+      xpEarned: 20,
+      score: 100,
+    );
 
     final locked = await lockedByModule();
     expect(locked['module_processing'], isTrue);
@@ -58,7 +66,7 @@ void main() {
         'lesson_arabica_robusta',
         'lesson_green_coffee',
       ]) {
-        await repo.saveCompletion(lessonId: id, xpEarned: 10);
+        await repo.saveCompletion(lessonId: id, xpEarned: 10, score: 100);
       }
 
       final locked = await lockedByModule();

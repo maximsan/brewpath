@@ -34,7 +34,10 @@ void main() {
         UncontrolledProviderScope(
           container: container,
           child: const MaterialApp(
-            home: LessonCompletionScreen(lessonId: 'lesson_where_coffee'),
+            home: LessonCompletionScreen(
+              lessonId: 'lesson_where_coffee',
+              score: 100,
+            ),
           ),
         ),
       );
@@ -96,7 +99,10 @@ void main() {
         UncontrolledProviderScope(
           container: container,
           child: const MaterialApp(
-            home: LessonCompletionScreen(lessonId: 'lesson_where_coffee'),
+            home: LessonCompletionScreen(
+              lessonId: 'lesson_where_coffee',
+              score: 100,
+            ),
           ),
         ),
       );
@@ -148,14 +154,17 @@ void main() {
     final service = container.read(lessonCompletionServiceProvider);
     for (final id in const ['lesson_where_coffee', 'lesson_arabica_robusta']) {
       final lesson = await tester.runAsync(() => content.getLessonById(id));
-      await tester.runAsync(() => service.completeLesson(lesson!));
+      await tester.runAsync(() => service.completeLesson(lesson!, score: 100));
     }
 
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
         child: const MaterialApp(
-          home: LessonCompletionScreen(lessonId: 'lesson_green_coffee'),
+          home: LessonCompletionScreen(
+            lessonId: 'lesson_green_coffee',
+            score: 100,
+          ),
         ),
       ),
     );
@@ -164,5 +173,45 @@ void main() {
     expect(find.text('Lesson complete!'), findsOneWidget);
     expect(find.text('+10 XP'), findsOneWidget); // lesson_green_coffee, 1 step
     expect(find.text('+25 XP · Module complete!'), findsOneWidget);
+  });
+
+  // Review mode never re-awards full lesson XP; it shows the best score and
+  // grants practice XP on the first review of the day.
+  testWidgets('review mode shows best score and practice XP', (tester) async {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    // Keep these alive so the throwaway container.read calls don't schedule a
+    // Riverpod dispose timer that would outlive the test.
+    container.listen(contentRepositoryProvider, (_, _) {});
+    container.listen(lessonCompletionServiceProvider, (_, _) {});
+
+    // The lesson must already be completed before it can be reviewed.
+    final content = container.read(contentRepositoryProvider);
+    final service = container.read(lessonCompletionServiceProvider);
+    final lesson = await tester.runAsync(
+      () => content.getLessonById('lesson_where_coffee'),
+    );
+    await tester.runAsync(() => service.completeLesson(lesson!, score: 50));
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const MaterialApp(
+          home: LessonCompletionScreen(
+            lessonId: 'lesson_where_coffee',
+            review: true,
+            score: 80,
+          ),
+        ),
+      ),
+    );
+    await settleLoaders(tester);
+
+    expect(find.text('Review complete!'), findsOneWidget);
+    expect(find.text('Best score: 80%'), findsOneWidget); // max(50, 80)
+    expect(find.text('+2 XP · Practice'), findsOneWidget);
+    // A review must not re-award full lesson XP.
+    expect(find.textContaining('Lesson complete!'), findsNothing);
   });
 }

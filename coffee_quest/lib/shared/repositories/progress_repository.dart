@@ -19,11 +19,13 @@ class ProgressRepository {
     return row == null ? null : _toDto(row);
   }
 
-  /// Idempotent — the unique `lessonId` + insert-or-ignore means calling
-  /// twice for the same lesson stores only one record.
+  /// Records a lesson's first completion. Idempotent — the unique `lessonId` +
+  /// insert-or-ignore means calling twice for the same lesson stores only one
+  /// record. [score] is the run's first-try accuracy (0–100).
   Future<void> saveCompletion({
     required String lessonId,
     required int xpEarned,
+    required int score,
   }) async {
     await _db
         .into(_db.progressRecords)
@@ -33,9 +35,29 @@ class ProgressRepository {
             isCompleted: true,
             xpEarned: xpEarned,
             completedAt: DateTime.now(),
+            fullXpAwarded: const Value(true),
+            bestScore: Value(score),
           ),
           mode: InsertMode.insertOrIgnore,
         );
+  }
+
+  /// Persists a mutated [ProgressRecord] (used by review to update
+  /// `bestScore` / `lastPracticeXpDate`). Keyed by `lessonId`; no-op if the
+  /// lesson has no completion row yet.
+  Future<void> saveProgress(ProgressRecord record) async {
+    await (_db.update(
+      _db.progressRecords,
+    )..where((t) => t.lessonId.equals(record.lessonId))).write(
+      ProgressRecordsCompanion(
+        isCompleted: Value(record.isCompleted),
+        xpEarned: Value(record.xpEarned),
+        completedAt: Value(record.completedAt),
+        fullXpAwarded: Value(record.fullXpAwarded),
+        bestScore: Value(record.bestScore),
+        lastPracticeXpDate: Value(record.lastPracticeXpDate),
+      ),
+    );
   }
 
   ProgressRecord _toDto(ProgressRow r) => ProgressRecord(
@@ -44,5 +66,8 @@ class ProgressRepository {
     isCompleted: r.isCompleted,
     xpEarned: r.xpEarned,
     completedAt: r.completedAt,
+    fullXpAwarded: r.fullXpAwarded,
+    bestScore: r.bestScore,
+    lastPracticeXpDate: r.lastPracticeXpDate,
   );
 }

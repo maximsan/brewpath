@@ -8,6 +8,9 @@ class ProgressRecord {
     required this.isCompleted,
     required this.xpEarned,
     required this.completedAt,
+    this.fullXpAwarded = true,
+    this.bestScore = 0,
+    this.lastPracticeXpDate,
   });
 
   int id;
@@ -15,4 +18,13 @@ class ProgressRecord {
   bool isCompleted;
   int xpEarned;
   DateTime completedAt;
+
+  /// Whether full lesson XP has already been awarded for this lesson.
+  bool fullXpAwarded;
+
+  /// Best first-try accuracy across all runs, as an integer percentage 0–100.
+  int bestScore;
+
+  /// Calendar day practice XP was last awarded during review, or null.
+  DateTime? lastPracticeXpDate;
 }

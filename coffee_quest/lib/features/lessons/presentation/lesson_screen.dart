@@ -11,9 +11,17 @@ import 'package:coffee_quest/shared/models/lesson_model.dart';
 import 'package:coffee_quest/shared/repositories/content_repository.dart';
 
 class LessonScreen extends ConsumerStatefulWidget {
-  const LessonScreen({super.key, required this.lessonId});
+  const LessonScreen({
+    super.key,
+    required this.lessonId,
+    this.review = false,
+  });
 
   final String lessonId;
+
+  /// Whether this run is a review of an already-completed lesson. Carried
+  /// through to the completion screen so it skips re-awarding XP.
+  final bool review;
 
   @override
   ConsumerState<LessonScreen> createState() => _LessonScreenState();
@@ -22,6 +30,7 @@ class LessonScreen extends ConsumerStatefulWidget {
 class _LessonScreenState extends ConsumerState<LessonScreen> {
   int _stepIndex = 0;
   int _attempt = 0; // bumped on a wrong answer to remount the step fresh
+  int _firstTryCorrectCount = 0; // steps cleared on the first attempt
   bool _started = false; // ensures lesson_started fires exactly once
 
   void _logStartedOnce(LessonModel lesson) {
@@ -40,8 +49,15 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
   void _onResult(LessonModel lesson, MiniGameResult result) {
     switch (result) {
       case MiniGameCorrect():
+        if (_attempt == 0) _firstTryCorrectCount++;
         if (_stepIndex + 1 >= lesson.steps.length) {
-          context.go('/learn/lesson/${lesson.id}/complete');
+          // Mastery = first-try accuracy as a percentage (0–100).
+          final score =
+              (100 * _firstTryCorrectCount / lesson.steps.length).round();
+          context.go(
+            '/learn/lesson/${lesson.id}/complete'
+            '?review=${widget.review}&score=$score',
+          );
         } else {
           setState(() {
             _stepIndex++;

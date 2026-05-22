@@ -8,4 +8,6 @@ class XpService {
   int calculateLessonXp(int stepCount) => XpValues.forLesson(stepCount);
 
   int get moduleCompletionBonus => XpValues.moduleCompletionBonus;
+
+  int get practiceXp => XpValues.practiceXp;
 }

@@ -145,3 +145,51 @@ final class SettingsRepositoryProvider
 
 String _$settingsRepositoryHash() =>
     r'c5a39438caec85b55a650dcd24bd66b30ea47e8f';
+
+@ProviderFor(moduleProgressRepository)
+final moduleProgressRepositoryProvider = ModuleProgressRepositoryProvider._();
+
+final class ModuleProgressRepositoryProvider
+    extends
+        $FunctionalProvider<
+          ModuleProgressRepository,
+          ModuleProgressRepository,
+          ModuleProgressRepository
+        >
+    with $Provider<ModuleProgressRepository> {
+  ModuleProgressRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'moduleProgressRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$moduleProgressRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<ModuleProgressRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  ModuleProgressRepository create(Ref ref) {
+    return moduleProgressRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ModuleProgressRepository value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ModuleProgressRepository>(value),
+    );
+  }
+}
+
+String _$moduleProgressRepositoryHash() =>
+    r'eafb9246d02209699e8ab5734d3ca30f3e56914b';
