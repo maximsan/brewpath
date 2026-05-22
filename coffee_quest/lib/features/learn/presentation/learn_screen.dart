@@ -26,8 +26,13 @@ class LearnScreen extends ConsumerWidget {
           padding: const EdgeInsets.all(16),
           children: [
             _TodayCard(today: today.asData?.value),
-            const SizedBox(height: 16),
-            for (final item in list) ModuleCardWidget(item: item),
+            const SizedBox(height: 24),
+            const _SectionHeader('Modules'),
+            const SizedBox(height: 12),
+            for (var i = 0; i < list.length; i++) ...[
+              if (i > 0) const SizedBox(height: 8),
+              ModuleCardWidget(item: list[i]),
+            ],
           ],
         ),
       ),
@@ -35,6 +40,26 @@ class LearnScreen extends ConsumerWidget {
   }
 }
 
+/// Small uppercase-weight heading that introduces a list section.
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader(this.title);
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Text(
+      title,
+      style: theme.textTheme.titleSmall?.copyWith(
+        color: theme.colorScheme.onSurfaceVariant,
+      ),
+    );
+  }
+}
+
+/// Hero card for the day's primary action. Renders the next lesson with a
+/// prominent `Start` CTA, or a friendly caught-up state when nothing is due.
 class _TodayCard extends StatelessWidget {
   const _TodayCard({required this.today});
 
@@ -42,19 +67,149 @@ class _TodayCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final lesson = today;
+
     return Card(
-      color: Theme.of(context).colorScheme.primaryContainer,
-      child: ListTile(
-        leading: const Icon(Icons.local_cafe),
-        title: Text(
-          lesson == null ? "You're all caught up!" : "Today's lesson",
+      margin: EdgeInsets.zero,
+      color: colors.primaryContainer,
+      child: lesson == null
+          ? _buildCaughtUp(theme, colors)
+          : _buildLesson(context, theme, colors, lesson),
+    );
+  }
+
+  Widget _buildLesson(
+    BuildContext context,
+    ThemeData theme,
+    ColorScheme colors,
+    LessonModel lesson,
+  ) {
+    return InkWell(
+      onTap: () => context.go('/learn/lesson/${lesson.id}'),
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.local_cafe,
+                  size: 18,
+                  color: colors.onPrimaryContainer,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  "Today's lesson",
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: colors.onPrimaryContainer,
+                    letterSpacing: 0.6,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              lesson.title,
+              style: theme.textTheme.titleLarge?.copyWith(
+                color: colors.onPrimaryContainer,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              lesson.summary,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colors.onPrimaryContainer.withValues(alpha: 0.8),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                _XpPill(xp: lesson.xpReward),
+                const Spacer(),
+                FilledButton.icon(
+                  onPressed: () => context.go('/learn/lesson/${lesson.id}'),
+                  icon: const Icon(Icons.play_arrow),
+                  label: const Text('Start'),
+                ),
+              ],
+            ),
+          ],
         ),
-        subtitle: Text(lesson?.title ?? 'No lessons left to study.'),
-        trailing: lesson == null ? null : const Icon(Icons.play_arrow),
-        onTap: lesson == null
-            ? null
-            : () => context.go('/learn/lesson/${lesson.id}'),
+      ),
+    );
+  }
+
+  Widget _buildCaughtUp(ThemeData theme, ColorScheme colors) {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Row(
+        children: [
+          Icon(Icons.check_circle, size: 40, color: colors.onPrimaryContainer),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "You're all caught up!",
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: colors.onPrimaryContainer,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'No lessons left to study.',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colors.onPrimaryContainer.withValues(alpha: 0.8),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Compact `+XP` reward chip shown on the hero card.
+class _XpPill extends StatelessWidget {
+  const _XpPill({required this.xp});
+
+  final int xp;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: colors.onPrimaryContainer.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.bolt, size: 16, color: colors.onPrimaryContainer),
+          const SizedBox(width: 4),
+          Text(
+            '+$xp XP',
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: colors.onPrimaryContainer,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }

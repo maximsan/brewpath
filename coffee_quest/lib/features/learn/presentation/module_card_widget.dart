@@ -4,8 +4,29 @@ import 'package:go_router/go_router.dart';
 import 'package:coffee_quest/core/constants/app_strings.dart';
 import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
 
-/// Module summary card for the Learn list: title, lesson count, progress bar,
-/// and lock state. Locked taps surface the unlock hint instead of navigating.
+/// Maps a module's content-defined `iconName` to a Material icon so each
+/// module reads with its own identity in the list. Falls back to a generic
+/// book icon for unknown names.
+IconData _iconForModule(String iconName) {
+  switch (iconName) {
+    case 'beans':
+      return Icons.eco;
+    case 'processing':
+      return Icons.water_drop;
+    case 'roast':
+      return Icons.local_fire_department;
+    case 'brewing':
+      return Icons.coffee_maker;
+    case 'taste':
+      return Icons.restaurant;
+    default:
+      return Icons.menu_book;
+  }
+}
+
+/// Module summary card for the Learn list: per-module icon, title, lesson
+/// progress, and lock state. Locked taps surface the unlock hint instead of
+/// navigating.
 class ModuleCardWidget extends StatelessWidget {
   const ModuleCardWidget({super.key, required this.item});
 
@@ -25,26 +46,141 @@ class ModuleCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final m = item.module;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final module = item.module;
+    final locked = item.isLocked;
+    final complete = item.isComplete;
+
     return Card(
-      child: ListTile(
-        leading: Icon(item.isLocked ? Icons.lock_outline : Icons.menu_book),
-        title: Text(m.title),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 4),
-            Text('${item.completedCount} / ${item.totalCount} lessons'),
-            const SizedBox(height: 6),
-            LinearProgressIndicator(value: item.progress),
-          ],
-        ),
-        trailing: item.isComplete
-            ? const Icon(Icons.check_circle, color: Colors.green)
-            : null,
+      margin: EdgeInsets.zero,
+      child: InkWell(
         onTap: () => _onTap(context),
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              _ModuleBadge(
+                icon: locked
+                    ? Icons.lock_outline
+                    : _iconForModule(module.iconName),
+                locked: locked,
+                complete: complete,
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      module.title,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: locked
+                            ? colors.onSurfaceVariant
+                            : colors.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    _ModuleStatus(item: item),
+                  ],
+                ),
+              ),
+              if (!locked) ...[
+                const SizedBox(width: 8),
+                Icon(
+                  complete ? Icons.check_circle : Icons.chevron_right,
+                  color: complete ? colors.primary : colors.onSurfaceVariant,
+                ),
+              ],
+            ],
+          ),
+        ),
       ),
+    );
+  }
+}
+
+/// Rounded leading badge whose color signals the module state: muted when
+/// locked, filled `primary` when complete, soft `primaryContainer` otherwise.
+class _ModuleBadge extends StatelessWidget {
+  const _ModuleBadge({
+    required this.icon,
+    required this.locked,
+    required this.complete,
+  });
+
+  final IconData icon;
+  final bool locked;
+  final bool complete;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final Color background;
+    final Color foreground;
+    if (locked) {
+      background = colors.surfaceContainerHighest;
+      foreground = colors.onSurfaceVariant;
+    } else if (complete) {
+      background = colors.primary;
+      foreground = colors.onPrimary;
+    } else {
+      background = colors.primaryContainer;
+      foreground = colors.onPrimaryContainer;
+    }
+
+    return Container(
+      width: 48,
+      height: 48,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Icon(icon, color: foreground),
+    );
+  }
+}
+
+/// Secondary line under the module title: a `Locked` hint, a completion line,
+/// or a `done / total` count above a rounded progress bar.
+class _ModuleStatus extends StatelessWidget {
+  const _ModuleStatus({required this.item});
+
+  final ModuleWithProgress item;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final mutedText = theme.textTheme.bodySmall?.copyWith(
+      color: colors.onSurfaceVariant,
+    );
+
+    if (item.isLocked) {
+      return Text('Locked', style: mutedText);
+    }
+
+    final label = item.isComplete
+        ? 'All ${item.totalCount} lessons complete'
+        : '${item.completedCount} / ${item.totalCount} lessons';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(label, style: mutedText),
+        const SizedBox(height: 6),
+        LinearProgressIndicator(
+          value: item.progress,
+          minHeight: 6,
+          borderRadius: BorderRadius.circular(3),
+          backgroundColor: colors.surfaceContainerHighest,
+          color: colors.primary,
+        ),
+      ],
     );
   }
 }
