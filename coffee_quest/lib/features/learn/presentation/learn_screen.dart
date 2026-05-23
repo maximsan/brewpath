@@ -25,6 +25,7 @@ class LearnScreen extends ConsumerWidget {
         error: (e, _) => ErrorView(message: '$e'),
         data: (list) => ListView(
           padding: const EdgeInsets.all(16),
+          physics: const AlwaysScrollableScrollPhysics(),
           children: [
             _TodayCard(today: today.asData?.value),
             const SizedBox(height: 24),
@@ -76,6 +77,7 @@ class _TodayCard extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Row(
               children: [

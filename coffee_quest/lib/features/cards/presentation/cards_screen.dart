@@ -46,6 +46,7 @@ class _CardsBody extends StatelessWidget {
     final groups = _groupByCategory();
 
     return CustomScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
       slivers: [
         SliverPadding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
@@ -72,7 +73,7 @@ class _CardsBody extends StatelessWidget {
             ),
           ),
         ],
-        const SliverPadding(padding: EdgeInsets.only(bottom: 16)),
+        const SliverToBoxAdapter(child: SizedBox(height: 16)),
       ],
     );
   }

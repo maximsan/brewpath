@@ -39,6 +39,7 @@ class ModuleDetailScreen extends ConsumerWidget {
               const <String>{};
           return ListView(
             padding: const EdgeInsets.all(16),
+            physics: const AlwaysScrollableScrollPhysics(),
             children: [
               _ModuleHero(module: module),
               const SizedBox(height: 24),
