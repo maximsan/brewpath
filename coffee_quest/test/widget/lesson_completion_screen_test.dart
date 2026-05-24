@@ -6,9 +6,95 @@ import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
 import 'package:coffee_quest/features/lessons/domain/lesson_completion_service.dart';
 import 'package:coffee_quest/features/lessons/presentation/lesson_completion_screen.dart';
 import 'package:coffee_quest/features/progress/domain/progress_providers.dart';
+import 'package:coffee_quest/shared/models/coffee_card_model.dart';
+import 'package:coffee_quest/shared/models/lesson_model.dart';
+import 'package:coffee_quest/shared/models/lesson_step_model.dart';
+import 'package:coffee_quest/shared/models/module_model.dart';
 import 'package:coffee_quest/shared/repositories/content_repository.dart';
 
 import '../support/widget_harness.dart';
+
+// In-memory content used to override `contentRepositoryProvider` for these
+// tests. Going through `rootBundle.loadString` + a JSON decode of the real
+// `assets/content/lessons.json` inside a `testWidgets` fake-async zone hangs:
+// the live-zone Future returned by `rootBundle` schedules continuations that
+// never get pumped, and `tester.runAsync` waits for them forever. Feeding
+// the providers in-memory data dodges the bundle entirely.
+
+const _emptyStep = LessonStepModel.multipleChoice(
+  question: 'Q',
+  options: ['a', 'b'],
+  correctIndex: 0,
+  explanation: 'E',
+);
+
+LessonModel _lesson(String id, {String? cardId}) => LessonModel(
+  id: id,
+  moduleId: 'module_beans',
+  title: id,
+  summary: '',
+  xpReward: 50,
+  cardId: cardId,
+  steps: const [
+    _emptyStep,
+    _emptyStep,
+    _emptyStep,
+    _emptyStep,
+    _emptyStep,
+  ],
+);
+
+final _testLessons = <LessonModel>[
+  _lesson('lesson_where_coffee', cardId: 'card_where_coffee'),
+  _lesson('lesson_arabica_robusta'),
+  _lesson('lesson_green_coffee'),
+  _lesson('lesson_coffee_plant'),
+  _lesson('lesson_altitude_quality'),
+];
+
+const _testModule = ModuleModel(
+  id: 'module_beans',
+  title: 'Beans',
+  description: '',
+  iconName: 'beans',
+  lessonIds: [
+    'lesson_where_coffee',
+    'lesson_arabica_robusta',
+    'lesson_green_coffee',
+    'lesson_coffee_plant',
+    'lesson_altitude_quality',
+  ],
+);
+
+const _testCard = CoffeeCardModel(
+  id: 'card_where_coffee',
+  title: 'Where Coffee Comes From',
+  description: '',
+  moduleTag: 'Beans',
+  iconName: 'beans',
+  lessonId: 'lesson_where_coffee',
+);
+
+class _FakeContent extends ContentRepository {
+  @override
+  Future<List<ModuleModel>> getModules() async => const [_testModule];
+
+  @override
+  Future<List<LessonModel>> getLessons() async => _testLessons;
+
+  @override
+  Future<List<CoffeeCardModel>> getCards() async => const [_testCard];
+
+  @override
+  Future<LessonModel?> getLessonById(String id) async =>
+      _testLessons.where((l) => l.id == id).firstOrNull;
+}
+
+ProviderContainer _buildContainer() => ProviderContainer(
+  overrides: [
+    contentRepositoryProvider.overrideWith((ref) => _FakeContent()),
+  ],
+);
 
 void main() {
   setUp(useInMemoryDatabase);
@@ -16,7 +102,7 @@ void main() {
   testWidgets(
     'completing a lesson refreshes "Today\'s lesson" to the next lesson',
     (tester) async {
-      final container = ProviderContainer();
+      final container = _buildContainer();
       addTearDown(container.dispose);
 
       // A live listener keeps the auto-dispose provider alive across the
@@ -60,7 +146,7 @@ void main() {
   testWidgets(
     'completing a lesson refreshes Total XP, streak, lessons and cards',
     (tester) async {
-      final container = ProviderContainer();
+      final container = _buildContainer();
       addTearDown(container.dispose);
 
       // Live listeners keep these auto-dispose providers alive across the
@@ -140,7 +226,7 @@ void main() {
   testWidgets('completion screen shows the module-completion bonus', (
     tester,
   ) async {
-    final container = ProviderContainer();
+    final container = _buildContainer();
     addTearDown(container.dispose);
 
     // Live listeners keep these auto-dispose providers alive, so the throwaway
@@ -185,7 +271,7 @@ void main() {
   // Review mode never re-awards full lesson XP; it shows the best score and
   // grants practice XP on the first review of the day.
   testWidgets('review mode shows best score and practice XP', (tester) async {
-    final container = ProviderContainer();
+    final container = _buildContainer();
     addTearDown(container.dispose);
 
     // Keep these alive so the throwaway container.read calls don't schedule a
