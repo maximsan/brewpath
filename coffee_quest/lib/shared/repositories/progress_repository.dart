@@ -60,6 +60,13 @@ class ProgressRepository {
     );
   }
 
+  /// Wipes every completion record. Used by the Profile "Reset Progress"
+  /// action — repository-level operation so no XP/streak/card state leaks
+  /// across a reset.
+  Future<void> deleteAll() async {
+    await _db.delete(_db.progressRecords).go();
+  }
+
   ProgressRecord _toDto(ProgressRow r) => ProgressRecord(
     id: r.id,
     lessonId: r.lessonId,

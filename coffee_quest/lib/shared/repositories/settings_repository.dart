@@ -54,4 +54,16 @@ class SettingsRepository {
     settings.totalXp += xp;
     await saveSettings(settings);
   }
+
+  /// Resets every user-progress field on the singleton settings row while
+  /// preserving the user's haptics and sound preferences. Used by the Profile
+  /// "Reset Progress" action.
+  Future<void> resetProgress() async {
+    final settings = await getSettings();
+    settings
+      ..totalXp = 0
+      ..streakDays = 0
+      ..lastActivityDate = null;
+    await saveSettings(settings);
+  }
 }

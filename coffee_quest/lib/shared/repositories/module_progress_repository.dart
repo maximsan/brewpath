@@ -27,4 +27,10 @@ class ModuleProgressRepository {
           mode: InsertMode.insertOrIgnore,
         );
   }
+
+  /// Wipes the module-XP ledger. Used by the Profile "Reset Progress" action
+  /// so module-completion bonuses can be re-earned after a reset.
+  Future<void> deleteAll() async {
+    await _db.delete(_db.moduleProgressRecords).go();
+  }
 }

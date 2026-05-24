@@ -41,7 +41,7 @@ void main() {
 
   test('partially completing the required module keeps it locked', () async {
     final repo = ProgressRepository();
-    // module_beans has 3 lessons — complete only 2.
+    // module_beans has 5 lessons — complete only 2.
     await repo.saveCompletion(
       lessonId: 'lesson_where_coffee',
       xpEarned: 10,
@@ -65,6 +65,8 @@ void main() {
         'lesson_where_coffee',
         'lesson_arabica_robusta',
         'lesson_green_coffee',
+        'lesson_coffee_plant',
+        'lesson_altitude_quality',
       ]) {
         await repo.saveCompletion(lessonId: id, xpEarned: 10, score: 100);
       }

@@ -108,8 +108,9 @@ void main() {
       );
       await settleLoaders(tester);
       expect(find.text('Lesson complete!'), findsOneWidget);
-      // First lesson of module_beans — the module bonus is not shown yet.
-      expect(find.text('+10 XP'), findsOneWidget);
+      // First lesson of module_beans — 5 steps × 10 XP each. Module bonus
+      // doesn't fire yet because the rest of the module is still uncompleted.
+      expect(find.text('+50 XP'), findsOneWidget);
       expect(find.textContaining('Module complete!'), findsNothing);
 
       // The completion invalidated each provider, so they now resolve to the
@@ -126,7 +127,7 @@ void main() {
       final cardsAfter = await tester.runAsync(
         () => container.read(collectedCardsProvider.future),
       );
-      expect(xpAfter, 10); // lesson_where_coffee has 1 step * 10 XP
+      expect(xpAfter, 50); // lesson_where_coffee has 5 steps × 10 XP
       expect(streakAfter, 1);
       expect(lessonsAfter, hasLength(1));
       expect(cardsAfter, contains('card_where_coffee'));
@@ -148,11 +149,17 @@ void main() {
     container.listen(contentRepositoryProvider, (_, _) {});
     container.listen(lessonCompletionServiceProvider, (_, _) {});
 
-    // Finish the first two lessons of module_beans directly via the service so
-    // the screen below completes the *last* lesson and triggers the bonus.
+    // Finish every other lesson of module_beans directly via the service so
+    // the screen below completes the *last* remaining lesson and triggers the
+    // module bonus.
     final content = container.read(contentRepositoryProvider);
     final service = container.read(lessonCompletionServiceProvider);
-    for (final id in const ['lesson_where_coffee', 'lesson_arabica_robusta']) {
+    for (final id in const [
+      'lesson_where_coffee',
+      'lesson_arabica_robusta',
+      'lesson_coffee_plant',
+      'lesson_altitude_quality',
+    ]) {
       final lesson = await tester.runAsync(() => content.getLessonById(id));
       await tester.runAsync(() => service.completeLesson(lesson!, score: 100));
     }
@@ -171,7 +178,7 @@ void main() {
     await settleLoaders(tester);
 
     expect(find.text('Lesson complete!'), findsOneWidget);
-    expect(find.text('+10 XP'), findsOneWidget); // lesson_green_coffee, 1 step
+    expect(find.text('+50 XP'), findsOneWidget); // lesson_green_coffee, 5 steps
     expect(find.text('+25 XP · Module complete!'), findsOneWidget);
   });
 

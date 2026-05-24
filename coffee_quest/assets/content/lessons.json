@@ -3,7 +3,7 @@
     "id": "lesson_where_coffee",
     "moduleId": "module_beans",
     "title": "Where Coffee Comes From",
-    "summary": "Coffee grows in a region called the Bean Belt, between the Tropics of Cancer and Capricorn. Altitude, climate, and soil all shape how the beans taste.",
+    "summary": "Coffee grows in the Bean Belt, between the Tropics of Cancer and Capricorn. Altitude, climate, and soil all shape how the beans taste.",
     "xpReward": 10,
     "cardId": "card_where_coffee",
     "steps": [
@@ -13,6 +13,52 @@
         "options": ["The Bean Belt", "Northern Europe", "Canada", "The Arctic"],
         "correctIndex": 0,
         "explanation": "The Bean Belt sits between the Tropics of Cancer and Capricorn — the ideal warm, humid climate for coffee plants."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "Which climate do coffee plants thrive in?",
+        "options": [
+          "Warm with rainy and dry seasons",
+          "Cold and dry year-round",
+          "Hot desert",
+          "Snowy mountain peaks"
+        ],
+        "correctIndex": 0,
+        "explanation": "Coffee plants need warmth, regular rain, and a dry season for harvest. Frost will kill the plant."
+      },
+      {
+        "type": "drag_drop",
+        "instruction": "Match each origin region to the flavor it's known for.",
+        "terms": ["Ethiopia", "Colombia", "Brazil"],
+        "definitions": [
+          "Floral and tea-like",
+          "Balanced sweetness",
+          "Chocolate and nutty"
+        ]
+      },
+      {
+        "type": "tap_order",
+        "instruction": "Tap coffee's journey in order, from farm to your cup.",
+        "items": [
+          "Grown on a farm",
+          "Processed into green beans",
+          "Exported worldwide",
+          "Roasted near consumers",
+          "Brewed at home or in a cafe"
+        ],
+        "explanation": "Each step preserves quality and gets coffee closer to its final form — fresh, roasted, and brewed."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "Why does origin affect flavor so much?",
+        "options": [
+          "Climate, altitude, and soil shape how beans develop",
+          "Origin is just marketing",
+          "Soil is identical everywhere",
+          "Altitude has no effect"
+        ],
+        "correctIndex": 0,
+        "explanation": "Together, climate, altitude, and soil — sometimes called terroir — give each origin a distinctive flavor signature."
       }
     ]
   },
@@ -35,7 +81,38 @@
         "type": "drag_drop",
         "instruction": "Match each coffee species to its key characteristic.",
         "terms": ["Arabica", "Robusta"],
-        "definitions": ["Grown at altitude, smooth and complex flavor", "Grown in lowlands, more caffeine and bitter taste"]
+        "definitions": [
+          "Grown at altitude, smooth and complex flavor",
+          "Grown in lowlands, more caffeine and bitter taste"
+        ]
+      },
+      {
+        "type": "multiple_choice",
+        "question": "Which species has roughly twice the caffeine?",
+        "options": ["Robusta", "Arabica", "Both equal", "Neither has caffeine"],
+        "correctIndex": 0,
+        "explanation": "Robusta's higher caffeine acts as a natural pest deterrent — part of why it grows easier at low altitude."
+      },
+      {
+        "type": "slider",
+        "instruction": "Roughly what share of global coffee is Arabica?",
+        "minValue": 0.0,
+        "maxValue": 100.0,
+        "targetMin": 55.0,
+        "targetMax": 70.0,
+        "unit": "% of global production",
+        "explanation": "Arabica makes up about 60% of global coffee — Robusta covers most of the rest."
+      },
+      {
+        "type": "tap_order",
+        "instruction": "Tap from most delicate flavor to most bold.",
+        "items": [
+          "Washed Arabica",
+          "Natural Arabica",
+          "High-quality Robusta",
+          "Commodity Robusta"
+        ],
+        "explanation": "Arabicas tend toward delicate, layered flavors; Robustas push bolder, harsher, and more bitter notes."
       }
     ]
   },
@@ -58,6 +135,170 @@
         ],
         "correctIndex": 0,
         "explanation": "Green coffee is stable for months. Roasted coffee goes stale much faster, so roasting happens close to the consumer."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "What color is unroasted coffee?",
+        "options": ["Green or pale green", "Brown", "Black", "Bright red"],
+        "correctIndex": 0,
+        "explanation": "Unroasted beans are pale green or grey-green — the warm brown we know develops during roasting."
+      },
+      {
+        "type": "drag_drop",
+        "instruction": "Match each form of coffee to its rough freshness window.",
+        "terms": ["Green beans", "Roasted whole beans", "Ground coffee"],
+        "definitions": ["Months to a year", "A few weeks", "Days"]
+      },
+      {
+        "type": "tap_order",
+        "instruction": "Tap the stages of coffee from farm to brew, in order.",
+        "items": [
+          "Cherry on the plant",
+          "Green coffee bean",
+          "Roasted bean",
+          "Ground coffee",
+          "Brewed cup"
+        ],
+        "explanation": "Each transformation changes how quickly the coffee ages — ground coffee stales fastest."
+      },
+      {
+        "type": "slider",
+        "instruction": "Roughly how many months can well-stored green coffee stay fresh?",
+        "minValue": 0.0,
+        "maxValue": 24.0,
+        "targetMin": 6.0,
+        "targetMax": 14.0,
+        "unit": "months",
+        "explanation": "With proper storage, green coffee keeps its quality for 6–12 months. After that, it slowly loses character."
+      }
+    ]
+  },
+  {
+    "id": "lesson_coffee_plant",
+    "moduleId": "module_beans",
+    "title": "The Coffee Plant",
+    "summary": "Coffee starts life on a small tree. White flowers turn into red cherries, and inside each cherry sit the two seeds we know as coffee beans.",
+    "xpReward": 10,
+    "cardId": null,
+    "steps": [
+      {
+        "type": "multiple_choice",
+        "question": "What part of the coffee plant becomes the bean you brew?",
+        "options": [
+          "The seed inside the cherry",
+          "The flower petal",
+          "The leaf",
+          "The bark"
+        ],
+        "correctIndex": 0,
+        "explanation": "Coffee 'beans' are actually the seeds inside the cherry-shaped fruit of the coffee plant."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "How many seeds usually sit inside a coffee cherry?",
+        "options": ["Two", "One", "Four", "Eight"],
+        "correctIndex": 0,
+        "explanation": "Most cherries hold two flat-sided seeds. When one seed develops alone, it forms a rounder 'peaberry'."
+      },
+      {
+        "type": "drag_drop",
+        "instruction": "Match each part of the coffee plant to its role.",
+        "terms": ["Leaves", "Flowers", "Cherries", "Seeds"],
+        "definitions": [
+          "Capture sunlight for the plant",
+          "Get pollinated to start fruit",
+          "Protect and feed the seeds",
+          "Roast into coffee beans"
+        ]
+      },
+      {
+        "type": "tap_order",
+        "instruction": "Tap the life of a coffee cherry in the right order.",
+        "items": [
+          "Seedling sprouts",
+          "Tree grows and flowers",
+          "Green cherries form",
+          "Cherries ripen red",
+          "Cherries are picked"
+        ],
+        "explanation": "From planting to first harvest takes around 3–4 years — coffee farming is a slow craft."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "What is a 'peaberry'?",
+        "options": [
+          "A cherry that grew only one seed instead of two",
+          "A variety of green coffee",
+          "A roasting style",
+          "A type of mug"
+        ],
+        "correctIndex": 0,
+        "explanation": "Peaberries are sometimes sorted out and roasted separately — many drinkers say they taste sweeter."
+      }
+    ]
+  },
+  {
+    "id": "lesson_altitude_quality",
+    "moduleId": "module_beans",
+    "title": "Why Altitude Matters",
+    "summary": "Coffee grown higher up tends to be denser and more complex. Cooler temperatures slow ripening, which lets sugars and acids develop more fully.",
+    "xpReward": 10,
+    "cardId": null,
+    "steps": [
+      {
+        "type": "multiple_choice",
+        "question": "What usually happens to coffee quality as altitude increases?",
+        "options": [
+          "It tends to improve — beans become denser and more complex",
+          "It always gets worse",
+          "It has no effect",
+          "Beans become hollow"
+        ],
+        "correctIndex": 0,
+        "explanation": "Cooler high-altitude temperatures slow cherry maturation, letting flavor compounds build up in the seed."
+      },
+      {
+        "type": "slider",
+        "instruction": "Roughly what altitude range produces most specialty coffee?",
+        "minValue": 500.0,
+        "maxValue": 2500.0,
+        "targetMin": 1200.0,
+        "targetMax": 2200.0,
+        "unit": "meters above sea level",
+        "explanation": "Most specialty coffee is grown between 1,200 and 2,200 meters. Above that, frost becomes a real risk."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "Why does cooler weather help quality?",
+        "options": [
+          "It slows ripening, giving flavor more time to develop",
+          "It speeds up ripening to keep flavors bright",
+          "It kills the plant faster",
+          "It has no effect on flavor"
+        ],
+        "correctIndex": 0,
+        "explanation": "Slow maturation means the cherry's sugars and acids reach a deeper, more layered profile."
+      },
+      {
+        "type": "drag_drop",
+        "instruction": "Match each altitude band to its typical character.",
+        "terms": ["Below 1000 m", "1200–1600 m", "Above 1800 m"],
+        "definitions": [
+          "Soft, neutral flavor",
+          "Balanced sweetness with body",
+          "Bright, complex acidity"
+        ]
+      },
+      {
+        "type": "tap_order",
+        "instruction": "Tap altitude bands from lowest to highest.",
+        "items": [
+          "Sea level lowlands",
+          "Foothills",
+          "Mid-altitude valleys",
+          "High-altitude slopes"
+        ],
+        "explanation": "Origins are often labelled by altitude band — 'SHB' or 'SHG' meaning Strictly Hard Bean / Grown."
       }
     ]
   },
@@ -80,6 +321,45 @@
         ],
         "correctIndex": 0,
         "explanation": "Washed coffees are depulped first — only the seed is dried — resulting in clean flavors with bright acidity."
+      },
+      {
+        "type": "tap_order",
+        "instruction": "Tap the washed processing steps in the correct order.",
+        "items": [
+          "Pick ripe cherries",
+          "Depulp to remove fruit skin",
+          "Ferment in water tanks",
+          "Wash off remaining mucilage",
+          "Dry the clean seeds"
+        ],
+        "explanation": "Fermentation breaks down the sticky mucilage so it can be washed off cleanly."
+      },
+      {
+        "type": "drag_drop",
+        "instruction": "Match each washed-coffee trait to its description.",
+        "terms": ["Clarity", "Acidity", "Body"],
+        "definitions": [
+          "Clean cup with distinct notes",
+          "Bright and sparkling",
+          "Often lighter than naturals"
+        ]
+      },
+      {
+        "type": "slider",
+        "instruction": "Roughly how long does the fermentation step take?",
+        "minValue": 0.0,
+        "maxValue": 96.0,
+        "targetMin": 12.0,
+        "targetMax": 48.0,
+        "unit": "hours",
+        "explanation": "Fermentation usually runs 12–48 hours, depending on climate and the producer's recipe."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "Which processing method uses the most water?",
+        "options": ["Washed", "Natural", "Honey", "All use the same amount"],
+        "correctIndex": 0,
+        "explanation": "Washed processing depends on water for fermentation and cleaning — one reason it's harder to do in dry regions."
       }
     ]
   },
@@ -94,15 +374,58 @@
       {
         "type": "multiple_choice",
         "question": "What flavor profile is natural processing known for?",
-        "options": ["Fruity and wine-like", "Clean and bright", "Smoky and earthy", "Mild and watery"],
+        "options": [
+          "Fruity and wine-like",
+          "Clean and bright",
+          "Smoky and earthy",
+          "Mild and watery"
+        ],
         "correctIndex": 0,
         "explanation": "Drying the whole cherry lets the fruit's sugars ferment into the bean, producing distinctive fruity and fermented notes."
       },
       {
         "type": "tap_order",
         "instruction": "Tap the natural processing steps in the correct order.",
-        "items": ["Harvest ripe cherries", "Spread whole cherries to dry in the sun", "Turn cherries daily to prevent mold", "Hull the dried cherries to extract beans", "Sort and bag the green beans"],
+        "items": [
+          "Harvest ripe cherries",
+          "Spread whole cherries to dry in the sun",
+          "Turn cherries daily to prevent mold",
+          "Hull the dried cherries to extract beans",
+          "Sort and bag the green beans"
+        ],
         "explanation": "Natural processing is simple but slow — drying can take 3–6 weeks depending on climate."
+      },
+      {
+        "type": "drag_drop",
+        "instruction": "Match each natural-coffee trait to its description.",
+        "terms": ["Body", "Sweetness", "Aromatics"],
+        "definitions": [
+          "Heavier and syrupy",
+          "Often jammy and intense",
+          "Berries, stone fruit, fermented notes"
+        ]
+      },
+      {
+        "type": "slider",
+        "instruction": "Roughly how long do cherries dry for natural processing?",
+        "minValue": 0.0,
+        "maxValue": 10.0,
+        "targetMin": 3.0,
+        "targetMax": 6.0,
+        "unit": "weeks",
+        "explanation": "Drying time varies with sun and humidity, but 3–6 weeks is typical."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "What's the biggest risk of natural processing?",
+        "options": [
+          "Mold and over-fermentation during drying",
+          "Beans become too acidic",
+          "The coffee loses caffeine",
+          "Beans crack open"
+        ],
+        "correctIndex": 0,
+        "explanation": "If cherries don't dry evenly, mold and off-flavors can ruin the lot — careful daily turning protects quality."
       }
     ]
   },
@@ -110,19 +433,19 @@
     "id": "lesson_honey",
     "moduleId": "module_processing",
     "title": "Honey Processing",
-    "summary": "Honey processing is a middle path: some fruit mucilage is left on the bean during drying. The sticky coating earned it the 'honey' name. The result sits between washed clarity and natural fruitiness.",
+    "summary": "Honey processing is a middle path: some fruit mucilage stays on the bean while it dries. The sticky coating earned it the 'honey' name. The result sits between washed clarity and natural fruitiness.",
     "xpReward": 20,
     "cardId": "card_honey",
     "steps": [
       {
         "type": "slider",
-        "instruction": "Honey processing leaves some mucilage on the bean. Slide to show how much fruit is removed compared to fully washed (100%) and natural (0%).",
+        "instruction": "Slide to show roughly how much fruit honey processing removes, between fully washed (100%) and natural (0%).",
         "minValue": 0.0,
         "maxValue": 100.0,
         "targetMin": 40.0,
         "targetMax": 80.0,
         "unit": "% fruit removed",
-        "explanation": "Honey coffees remove 20–60% of the fruit — more than natural, less than washed — giving a balance of sweetness and clarity."
+        "explanation": "Honey coffees remove 20–60% of the fruit — more than natural, less than washed — for a balance of sweetness and clarity."
       },
       {
         "type": "multiple_choice",
@@ -135,6 +458,144 @@
         ],
         "correctIndex": 0,
         "explanation": "The mucilage (fruit flesh) left on the bean is sticky like honey — the name comes from texture, not flavor."
+      },
+      {
+        "type": "drag_drop",
+        "instruction": "Match each honey grade to how much mucilage stays on the bean.",
+        "terms": ["White honey", "Yellow honey", "Red honey", "Black honey"],
+        "definitions": ["Very little", "Some", "Most", "All of it"]
+      },
+      {
+        "type": "tap_order",
+        "instruction": "Tap the honey processing steps in order.",
+        "items": [
+          "Pick ripe cherries",
+          "Depulp to remove the outer skin",
+          "Leave mucilage on the bean",
+          "Dry slowly on raised beds",
+          "Hull off the dried mucilage"
+        ],
+        "explanation": "Drying with mucilage attached is delicate — beans must be raked often to avoid sticking and mold."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "Which origin made honey processing famous?",
+        "options": ["Costa Rica", "Yemen", "Vietnam", "Indonesia"],
+        "correctIndex": 0,
+        "explanation": "Costa Rican producers refined honey processing as a middle path between washed and natural styles."
+      }
+    ]
+  },
+  {
+    "id": "lesson_drying",
+    "moduleId": "module_processing",
+    "title": "Drying Coffee",
+    "summary": "Drying brings green coffee down to a stable moisture level so it can travel and rest without spoiling. Even, gentle drying is one of the quietest quality steps.",
+    "xpReward": 10,
+    "cardId": null,
+    "steps": [
+      {
+        "type": "multiple_choice",
+        "question": "What moisture level does green coffee usually dry down to?",
+        "options": ["Around 11%", "Around 30%", "Around 1%", "Around 50%"],
+        "correctIndex": 0,
+        "explanation": "Around 10–12% moisture is the sweet spot — stable enough to ship, moist enough to keep its character."
+      },
+      {
+        "type": "tap_order",
+        "instruction": "Tap the drying workflow in order.",
+        "items": [
+          "Spread beans on a drying surface",
+          "Turn or rake beans daily",
+          "Measure moisture content",
+          "Rest beans in shade",
+          "Bag for storage"
+        ],
+        "explanation": "Drying is slow on purpose — fast drying creates uneven moisture and dull cups."
+      },
+      {
+        "type": "drag_drop",
+        "instruction": "Match each drying method to its main idea.",
+        "terms": ["Raised beds", "Patios", "Mechanical dryers"],
+        "definitions": [
+          "Airflow on all sides for even drying",
+          "Large concrete floors warmed by the sun",
+          "Heated drums for speed and consistency"
+        ]
+      },
+      {
+        "type": "slider",
+        "instruction": "Roughly how many days does sun drying usually take?",
+        "minValue": 0.0,
+        "maxValue": 40.0,
+        "targetMin": 10.0,
+        "targetMax": 25.0,
+        "unit": "days",
+        "explanation": "Most sun drying takes 10–25 days. Naturals run longer than washed because they keep the whole cherry on."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "Why does even drying matter so much?",
+        "options": [
+          "Uneven drying causes off-flavors and mold",
+          "It changes the bean color permanently",
+          "It increases caffeine",
+          "It has no effect on flavor"
+        ],
+        "correctIndex": 0,
+        "explanation": "Pockets of wetter beans ferment further or grow mold, which dulls or ruins the final cup."
+      }
+    ]
+  },
+  {
+    "id": "lesson_processing_compare",
+    "moduleId": "module_processing",
+    "title": "Comparing Processing Methods",
+    "summary": "Washed, natural, and honey each pull the cup in a different direction. Understanding the trade-offs helps you pick coffees you'll enjoy.",
+    "xpReward": 10,
+    "cardId": null,
+    "steps": [
+      {
+        "type": "drag_drop",
+        "instruction": "Match each processing method to the flavor it leans toward.",
+        "terms": ["Washed", "Natural", "Honey"],
+        "definitions": [
+          "Clean and bright",
+          "Fruity and jammy",
+          "Sweet and balanced"
+        ]
+      },
+      {
+        "type": "multiple_choice",
+        "question": "Which method uses the least water?",
+        "options": ["Natural", "Washed", "Honey", "All use the same"],
+        "correctIndex": 0,
+        "explanation": "Natural processing skips the fermentation tanks entirely — cherries dry whole, with little water needed."
+      },
+      {
+        "type": "tap_order",
+        "instruction": "Tap from most fruit removed before drying to least.",
+        "items": ["Washed", "Honey", "Natural"],
+        "explanation": "Washed strips fruit off, natural keeps it all on, honey lands somewhere between."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "Which method usually highlights the most origin character?",
+        "options": [
+          "Washed",
+          "Natural",
+          "Honey",
+          "They all hide origin equally"
+        ],
+        "correctIndex": 0,
+        "explanation": "Without fruit influence, washed cups let the bean's varietal and altitude shine through clearly."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "Which method depends most on dry sunny weather?",
+        "options": ["Natural", "Washed", "Honey", "None depend on weather"],
+        "correctIndex": 0,
+        "explanation": "Drying whole cherries needs lots of sun — wet weather can ruin a natural batch quickly."
       }
     ]
   },
@@ -142,16 +603,66 @@
     "id": "lesson_what_roasting_does",
     "moduleId": "module_roast",
     "title": "What Roasting Does",
-    "summary": "Roasting transforms green coffee with heat. Hundreds of chemical reactions produce the aroma, color, and flavor we associate with coffee. The longer and hotter the roast, the darker and more bitter the result.",
+    "summary": "Roasting transforms green coffee with heat. Hundreds of reactions create aroma, color, and flavor. Longer and hotter roasts trade brightness for body.",
     "xpReward": 10,
     "cardId": "card_what_roasting_does",
     "steps": [
       {
         "type": "multiple_choice",
         "question": "What happens to a coffee bean's acidity as roast level increases?",
-        "options": ["Acidity decreases", "Acidity increases", "Acidity stays the same", "Acidity disappears then returns"],
+        "options": [
+          "Acidity decreases",
+          "Acidity increases",
+          "Acidity stays the same",
+          "Acidity disappears then returns"
+        ],
         "correctIndex": 0,
         "explanation": "Longer roasting breaks down acidic compounds, making darker roasts taste less bright and more bitter."
+      },
+      {
+        "type": "tap_order",
+        "instruction": "Tap the roast stages in the order they happen.",
+        "items": [
+          "Drying phase",
+          "Browning (Maillard) phase",
+          "First crack",
+          "Development phase",
+          "Drop from the roaster"
+        ],
+        "explanation": "Drying removes water, browning builds flavor, first crack marks roasted territory, and development locks it in."
+      },
+      {
+        "type": "drag_drop",
+        "instruction": "Match each roast stage to what you see or hear.",
+        "terms": ["Drying", "Browning", "First crack", "Development"],
+        "definitions": [
+          "Bean turns from green to yellow",
+          "Bean turns light brown",
+          "Sharp popping sound",
+          "Color deepens, smoke rises"
+        ]
+      },
+      {
+        "type": "slider",
+        "instruction": "Around what bean temperature does first crack usually occur?",
+        "minValue": 150.0,
+        "maxValue": 250.0,
+        "targetMin": 190.0,
+        "targetMax": 205.0,
+        "unit": "°C",
+        "explanation": "First crack typically lands around 195–205°C, when steam pressure pops the bean open."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "Which reaction is most responsible for roasted flavors?",
+        "options": [
+          "The Maillard reaction",
+          "Photosynthesis",
+          "Caffeine extraction",
+          "Fermentation"
+        ],
+        "correctIndex": 0,
+        "explanation": "The Maillard reaction between sugars and amino acids produces the deep, savory aromas of roasted coffee."
       }
     ]
   },
@@ -159,16 +670,59 @@
     "id": "lesson_light_roast",
     "moduleId": "module_roast",
     "title": "Light Roast",
-    "summary": "Light roasts are roasted to the first crack — the point where beans pop from steam pressure. They retain the most origin character: floral, fruity, and tea-like notes with high acidity.",
+    "summary": "Light roasts stop close to first crack. They keep the most origin character: floral, fruity, and tea-like notes with high acidity.",
     "xpReward": 10,
     "cardId": "card_light_roast",
     "steps": [
       {
         "type": "multiple_choice",
-        "question": "Which of these flavor notes is most associated with light roast?",
-        "options": ["Floral and fruity", "Smoky and dark chocolate", "Nutty and caramel", "Earthy and heavy"],
+        "question": "Which flavor notes are most associated with light roast?",
+        "options": [
+          "Floral and fruity",
+          "Smoky and dark chocolate",
+          "Nutty and caramel",
+          "Earthy and heavy"
+        ],
         "correctIndex": 0,
         "explanation": "Light roasts preserve delicate origin flavors — florals, bright fruits, and tea-like notes — that disappear in darker roasts."
+      },
+      {
+        "type": "tap_order",
+        "instruction": "Tap these light-end roast names from lightest to slightly darker.",
+        "items": ["Cinnamon roast", "New England roast", "American roast"],
+        "explanation": "Light roasts cover a small range just past first crack — even small changes make a noticeable cup difference."
+      },
+      {
+        "type": "drag_drop",
+        "instruction": "Match each light roast trait to its short description.",
+        "terms": ["Color", "Body", "Acidity"],
+        "definitions": [
+          "Light brown, no surface oils",
+          "Tea-like and delicate",
+          "High and lively"
+        ]
+      },
+      {
+        "type": "slider",
+        "instruction": "Roughly how much weight does a bean lose during a light roast?",
+        "minValue": 5.0,
+        "maxValue": 25.0,
+        "targetMin": 12.0,
+        "targetMax": 15.0,
+        "unit": "% weight loss",
+        "explanation": "Most water evaporates during roasting. Light roasts lose around 12–15% of bean weight."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "Which brew method usually pairs best with light roast?",
+        "options": [
+          "Pour-over or filter",
+          "French press only",
+          "Boiled coffee",
+          "Cold brew only"
+        ],
+        "correctIndex": 0,
+        "explanation": "Clean filter brewing shows off the bright, nuanced flavors light roasts are known for."
       }
     ]
   },
@@ -176,7 +730,7 @@
     "id": "lesson_medium_roast",
     "moduleId": "module_roast",
     "title": "Medium Roast",
-    "summary": "Medium roasts develop past the first crack and into a balance zone. Origin character blends with roast flavors: caramel, nuts, and milk chocolate. Lower acidity than light, less bitterness than dark.",
+    "summary": "Medium roasts develop past the first crack into a balance zone. Origin character blends with roast flavors: caramel, nuts, and milk chocolate.",
     "xpReward": 10,
     "cardId": "card_medium_roast",
     "steps": [
@@ -191,6 +745,40 @@
         ],
         "correctIndex": 0,
         "explanation": "Medium roasts offer balance — sweet caramel notes, good body, and enough acidity — making them versatile for many brew methods."
+      },
+      {
+        "type": "drag_drop",
+        "instruction": "Match each medium roast flavor cue to its family.",
+        "terms": ["Caramel", "Almond", "Milk chocolate"],
+        "definitions": ["Sweetness", "Nutty", "Sweetness with body"]
+      },
+      {
+        "type": "tap_order",
+        "instruction": "Tap these medium roast labels from lighter to darker.",
+        "items": ["City roast", "Full City roast", "Vienna roast"],
+        "explanation": "Medium roasts cluster around the end of first crack and the start of second crack."
+      },
+      {
+        "type": "slider",
+        "instruction": "Roughly how much weight does a medium roast bean lose?",
+        "minValue": 5.0,
+        "maxValue": 25.0,
+        "targetMin": 14.0,
+        "targetMax": 17.0,
+        "unit": "% weight loss",
+        "explanation": "Medium roasts lose a bit more weight than light — around 14–17% — as more moisture and CO₂ escape."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "How does a medium-roast bean usually look?",
+        "options": [
+          "Medium brown, dry surface",
+          "Almost black with heavy oils",
+          "Pale green with no roast color",
+          "Bright red"
+        ],
+        "correctIndex": 0,
+        "explanation": "Medium roasts have a warm brown color and a dry surface — oils only start appearing in darker roasts."
       }
     ]
   },
@@ -198,14 +786,19 @@
     "id": "lesson_dark_roast",
     "moduleId": "module_roast",
     "title": "Dark Roast",
-    "summary": "Dark roasts push past the second crack. Oils surface on the bean. Origin character is largely replaced by roast-driven flavors: dark chocolate, smoke, and bittersweet notes. Low acidity, heavy body.",
+    "summary": "Dark roasts push past the second crack. Oils surface on the bean. Origin character is largely replaced by roast-driven flavors: dark chocolate, smoke, and bittersweet notes.",
     "xpReward": 20,
     "cardId": "card_dark_roast",
     "steps": [
       {
         "type": "tap_order",
         "instruction": "Tap the roast levels from lightest to darkest.",
-        "items": ["Light roast", "Medium roast", "Medium-dark roast", "Dark roast"],
+        "items": [
+          "Light roast",
+          "Medium roast",
+          "Medium-dark roast",
+          "Dark roast"
+        ],
         "explanation": "Roast level is a spectrum — light preserves origin, dark amplifies roast character. Most beans hit second crack around 230°C."
       },
       {
@@ -219,6 +812,93 @@
         ],
         "correctIndex": 0,
         "explanation": "Dark roasting pushes oils to the surface, giving beans a glossy, oily appearance — a clear visual marker of roast level."
+      },
+      {
+        "type": "drag_drop",
+        "instruction": "Match each dark roast trait to its short description.",
+        "terms": ["Body", "Acidity", "Flavor"],
+        "definitions": [
+          "Heavy and syrupy",
+          "Low or muted",
+          "Smoky, bittersweet, dark chocolate"
+        ]
+      },
+      {
+        "type": "slider",
+        "instruction": "Roughly how much weight does a dark roast bean lose?",
+        "minValue": 5.0,
+        "maxValue": 30.0,
+        "targetMin": 18.0,
+        "targetMax": 22.0,
+        "unit": "% weight loss",
+        "explanation": "Dark roasts can shed 18–22% of bean weight as moisture and gases escape during longer roasting."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "Which acidity level do dark roasts usually show?",
+        "options": ["Low", "High", "Sour", "Unchanged from green coffee"],
+        "correctIndex": 0,
+        "explanation": "Heat breaks down acidic compounds, so dark roasts taste smooth and bitter rather than bright."
+      }
+    ]
+  },
+  {
+    "id": "lesson_roast_compare",
+    "moduleId": "module_roast",
+    "title": "Light vs Dark Side by Side",
+    "summary": "Light and dark roasts are not better or worse — they highlight very different parts of the coffee. Knowing which is which helps you choose the right beans.",
+    "xpReward": 10,
+    "cardId": null,
+    "steps": [
+      {
+        "type": "drag_drop",
+        "instruction": "Match each roast level to a flavor family it shows off.",
+        "terms": ["Light roast", "Medium roast", "Dark roast"],
+        "definitions": [
+          "Floral and fruity",
+          "Caramel and nutty",
+          "Smoky and bittersweet"
+        ]
+      },
+      {
+        "type": "tap_order",
+        "instruction": "Tap from shortest roast time to longest.",
+        "items": ["Light roast", "Medium roast", "Dark roast"],
+        "explanation": "Longer time in the roaster pushes the bean further along the roast spectrum."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "Which roast has slightly more caffeine, scoop for scoop?",
+        "options": [
+          "Light roast — beans are denser",
+          "Dark roast — heat boosts caffeine",
+          "They're identical",
+          "Caffeine disappears at high heat"
+        ],
+        "correctIndex": 0,
+        "explanation": "Caffeine is heat stable, but darker beans are less dense — by weight, light roasts edge out slightly."
+      },
+      {
+        "type": "slider",
+        "instruction": "Roughly how long does a typical batch roast take from start to drop?",
+        "minValue": 5.0,
+        "maxValue": 20.0,
+        "targetMin": 8.0,
+        "targetMax": 14.0,
+        "unit": "minutes",
+        "explanation": "Most drum roasts run 8–14 minutes. Faster roasts can taste underdeveloped; slower ones risk going stale-tasting."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "Which roast usually works better for milk-based espresso drinks?",
+        "options": [
+          "Medium-dark — its body cuts through milk",
+          "Very light — citrus flavors shine in milk",
+          "Green coffee — no roast needed",
+          "There's no difference"
+        ],
+        "correctIndex": 0,
+        "explanation": "Roasts with more body and sweetness punch through steamed milk, which is why classic cappuccinos lean darker."
       }
     ]
   },
@@ -226,7 +906,7 @@
     "id": "lesson_grind_size",
     "moduleId": "module_brewing",
     "title": "Grind Size Matters",
-    "summary": "Grind size controls how fast water flows through coffee and how much flavor it extracts. Too fine = over-extracted and bitter. Too coarse = under-extracted and sour. Match grind to your brew method.",
+    "summary": "Grind size controls how fast water flows through coffee and how much flavor it extracts. Too fine = over-extracted and bitter. Too coarse = under-extracted and sour.",
     "xpReward": 20,
     "cardId": "card_grind_size",
     "steps": [
@@ -242,6 +922,40 @@
         "instruction": "Match each brew method to its correct grind size.",
         "terms": ["Espresso", "Pour-over", "French press"],
         "definitions": ["Fine", "Medium", "Coarse"]
+      },
+      {
+        "type": "tap_order",
+        "instruction": "Tap brew methods from coarsest grind to finest.",
+        "items": [
+          "French press",
+          "Drip filter",
+          "Pour-over",
+          "Espresso",
+          "Turkish coffee"
+        ],
+        "explanation": "Shorter brew times need finer particles so water can extract enough flavor before it leaves the coffee."
+      },
+      {
+        "type": "slider",
+        "instruction": "Roughly what particle size suits a typical pour-over?",
+        "minValue": 200.0,
+        "maxValue": 1200.0,
+        "targetMin": 500.0,
+        "targetMax": 900.0,
+        "unit": "microns",
+        "explanation": "Medium pour-over grind sits around 600–800 microns. Espresso is far finer; French press far coarser."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "Your coffee tastes weak and sour. What's the most likely grind issue?",
+        "options": [
+          "The grind is too coarse",
+          "The grind is too fine",
+          "Grind size doesn't matter",
+          "Coffee is too fresh"
+        ],
+        "correctIndex": 0,
+        "explanation": "Coarse grinds let water rush through too quickly to fully extract — leaving sour, hollow flavors."
       }
     ]
   },
@@ -274,6 +988,40 @@
         ],
         "correctIndex": 0,
         "explanation": "Boiling water extracts bitter compounds too aggressively. Dropping to 90–96°C gives a more balanced cup."
+      },
+      {
+        "type": "tap_order",
+        "instruction": "Tap brew methods from coldest water to hottest.",
+        "items": [
+          "Cold brew",
+          "Cold drip",
+          "French press",
+          "Pour-over",
+          "Espresso (under pressure)"
+        ],
+        "explanation": "Cold brew extracts slowly at room or fridge temperatures, while pressurized espresso uses hot water but a very short contact time."
+      },
+      {
+        "type": "drag_drop",
+        "instruction": "Match each brew method to its rough water temperature.",
+        "terms": ["Cold brew", "Pour-over", "Espresso"],
+        "definitions": [
+          "Room temperature",
+          "Around 93°C",
+          "Around 90°C under pressure"
+        ]
+      },
+      {
+        "type": "multiple_choice",
+        "question": "If your kettle has just boiled, what's a simple way to reach ~93°C?",
+        "options": [
+          "Wait about 30 seconds with the lid off",
+          "Put it in the freezer",
+          "Add cold milk to the water",
+          "Boil it twice"
+        ],
+        "correctIndex": 0,
+        "explanation": "Water cools quickly off the boil — about 30 seconds gets a typical kettle into the 92–94°C range."
       }
     ]
   },
@@ -281,7 +1029,7 @@
     "id": "lesson_brew_ratio",
     "moduleId": "module_brewing",
     "title": "Brew Ratio",
-    "summary": "Brew ratio is the weight of coffee to the weight of water. A 1:15 ratio means 1g of coffee per 15g of water. A stronger cup uses less water (e.g., 1:12); a lighter cup uses more (1:17).",
+    "summary": "Brew ratio is the weight of coffee to the weight of water. A 1:15 ratio means 1g of coffee per 15g of water. Stronger cups use less water; lighter cups use more.",
     "xpReward": 10,
     "cardId": "card_brew_ratio",
     "steps": [
@@ -290,7 +1038,41 @@
         "question": "If you use 20g of coffee and want a 1:15 ratio, how much water do you need?",
         "options": ["300g", "200g", "150g", "450g"],
         "correctIndex": 0,
-        "explanation": "20g × 15 = 300g of water. Ratios scale linearly — the math is always coffee weight × ratio multiplier."
+        "explanation": "20g × 15 = 300g of water. Ratios scale linearly — coffee weight times the ratio multiplier."
+      },
+      {
+        "type": "slider",
+        "instruction": "Pick a typical filter brew ratio number (1 : ?).",
+        "minValue": 8.0,
+        "maxValue": 22.0,
+        "targetMin": 14.0,
+        "targetMax": 18.0,
+        "unit": ":1 water to coffee",
+        "explanation": "Most filter recipes hover between 1:14 and 1:18. Lower numbers brew stronger cups."
+      },
+      {
+        "type": "drag_drop",
+        "instruction": "Match each brew style to a typical ratio.",
+        "terms": ["Espresso", "Filter", "Cold brew concentrate"],
+        "definitions": ["About 1:2", "About 1:16", "About 1:8"]
+      },
+      {
+        "type": "tap_order",
+        "instruction": "Tap ratios from strongest cup to weakest.",
+        "items": ["Espresso 1:2", "Filter 1:16", "Diluted cold brew 1:20"],
+        "explanation": "Smaller ratio numbers concentrate more coffee in less water — bigger numbers stretch it out."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "If you double both the coffee and the water, what happens to strength?",
+        "options": [
+          "It stays the same — the ratio didn't change",
+          "It doubles",
+          "It halves",
+          "It becomes saltier"
+        ],
+        "correctIndex": 0,
+        "explanation": "Strength is set by the ratio, not the total volume. Doubling both keeps a cup tasting the same."
       }
     ]
   },
@@ -298,14 +1080,19 @@
     "id": "lesson_extraction",
     "moduleId": "module_brewing",
     "title": "Extraction Explained",
-    "summary": "Extraction is how much of the coffee's soluble compounds dissolve into your water. The sweet spot is 18–22% extraction yield. Under = sour. Over = bitter. Time, grind, temperature, and ratio all affect it.",
+    "summary": "Extraction is how much of the coffee's soluble compounds dissolve into your water. The sweet spot is 18–22% yield. Under = sour. Over = bitter.",
     "xpReward": 20,
     "cardId": "card_extraction",
     "steps": [
       {
         "type": "multiple_choice",
         "question": "Your coffee tastes sour and weak. Which extraction problem is most likely?",
-        "options": ["Under-extraction", "Over-extraction", "Correct extraction", "Too much water"],
+        "options": [
+          "Under-extraction",
+          "Over-extraction",
+          "Correct extraction",
+          "Too much water"
+        ],
         "correctIndex": 0,
         "explanation": "Sour and hollow flavors signal under-extraction — not enough solubles dissolved. Grind finer or brew longer to fix it."
       },
@@ -313,7 +1100,109 @@
         "type": "drag_drop",
         "instruction": "Match each taste symptom to its extraction cause.",
         "terms": ["Sour and thin", "Bitter and harsh", "Balanced and sweet"],
-        "definitions": ["Under-extracted", "Over-extracted", "Correctly extracted"]
+        "definitions": [
+          "Under-extracted",
+          "Over-extracted",
+          "Correctly extracted"
+        ]
+      },
+      {
+        "type": "slider",
+        "instruction": "Pick the target extraction yield (% of coffee dissolved).",
+        "minValue": 10.0,
+        "maxValue": 30.0,
+        "targetMin": 18.0,
+        "targetMax": 22.0,
+        "unit": "% extraction yield",
+        "explanation": "The classic SCA sweet spot is 18–22% — outside that, cups tend to taste sour or bitter."
+      },
+      {
+        "type": "tap_order",
+        "instruction": "Tap extraction levers from biggest impact to subtler tweaks.",
+        "items": [
+          "Grind size",
+          "Brew time",
+          "Water temperature",
+          "Brew ratio"
+        ],
+        "explanation": "Grind size and time are the strongest levers; temperature and ratio fine-tune the result."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "Which flavor family extracts last during a brew?",
+        "options": [
+          "Bitter compounds",
+          "Bright acidity",
+          "Caffeine",
+          "Water itself"
+        ],
+        "correctIndex": 0,
+        "explanation": "Acids dissolve first, sweetness next, and bitter compounds late — over-brewing pulls out too many bitters."
+      }
+    ]
+  },
+  {
+    "id": "lesson_filter_paper",
+    "moduleId": "module_brewing",
+    "title": "Choosing a Filter",
+    "summary": "Filters quietly shape your cup. Paper traps oils for a cleaner taste; metal lets them through for fuller body. Each style has its own use.",
+    "xpReward": 10,
+    "cardId": null,
+    "steps": [
+      {
+        "type": "multiple_choice",
+        "question": "What is a paper filter mainly known for doing to the cup?",
+        "options": [
+          "Removing oils for a cleaner, lighter cup",
+          "Making the coffee saltier",
+          "Adding caffeine",
+          "Turning coffee into espresso"
+        ],
+        "correctIndex": 0,
+        "explanation": "Paper traps coffee oils (and most fines), producing a cleaner-tasting cup that highlights clarity over body."
+      },
+      {
+        "type": "drag_drop",
+        "instruction": "Match each filter type to the body it tends to produce.",
+        "terms": ["Paper filter", "Metal filter", "Cloth filter"],
+        "definitions": [
+          "Clean and light",
+          "Heavy and oily",
+          "Somewhere in between"
+        ]
+      },
+      {
+        "type": "tap_order",
+        "instruction": "Tap the steps for rinsing a paper filter before brewing.",
+        "items": [
+          "Place filter in brewer",
+          "Pour hot water through it",
+          "Discard the rinse water",
+          "Add ground coffee"
+        ],
+        "explanation": "Rinsing removes any papery taste and warms the brewer at the same time."
+      },
+      {
+        "type": "slider",
+        "instruction": "How much rinse water is usually enough for one paper filter?",
+        "minValue": 0.0,
+        "maxValue": 500.0,
+        "targetMin": 50.0,
+        "targetMax": 200.0,
+        "unit": "ml",
+        "explanation": "A short 50–200 ml rinse is plenty — just enough to soak the paper and warm the equipment."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "Why do many brewers prefer paper to metal for delicate light roasts?",
+        "options": [
+          "Paper highlights bright, complex flavors by removing oils and fines",
+          "Paper adds extra acidity",
+          "Metal filters are illegal",
+          "Paper has more caffeine"
+        ],
+        "correctIndex": 0,
+        "explanation": "Subtle flavor notes show through better in a clean cup, so light, complex coffees often shine through paper."
       }
     ]
   },
@@ -321,7 +1210,7 @@
     "id": "lesson_acidity_body",
     "moduleId": "module_taste",
     "title": "Acidity, Body, Sweetness",
-    "summary": "Three sensory axes define coffee flavor. Acidity is brightness (like citrus). Body is weight in the mouth (like the difference between skim and whole milk). Sweetness balances both.",
+    "summary": "Three sensory axes define coffee flavor. Acidity is brightness. Body is weight in the mouth. Sweetness balances both.",
     "xpReward": 20,
     "cardId": "card_acidity_body",
     "steps": [
@@ -329,14 +1218,46 @@
         "type": "drag_drop",
         "instruction": "Match each sensory term to its best description.",
         "terms": ["Acidity", "Body", "Sweetness"],
-        "definitions": ["Brightness or tartness in the cup", "Weight and texture on the palate", "Natural sugar notes that balance the cup"]
+        "definitions": [
+          "Brightness or tartness in the cup",
+          "Weight and texture on the palate",
+          "Natural sugar notes that balance the cup"
+        ]
       },
       {
         "type": "multiple_choice",
-        "question": "A light roast Ethiopian coffee is described as 'tea-like with high acidity'. What does that tell you about its body?",
+        "question": "A light roast Ethiopian coffee is 'tea-like with high acidity'. What does that tell you about its body?",
         "options": ["Light body", "Heavy body", "Full body", "No body"],
         "correctIndex": 0,
-        "explanation": "Tea-like describes a light, delicate texture — typical of light roasts and Washed Ethiopian coffees which are known for their bright, thin mouthfeel."
+        "explanation": "Tea-like describes a light, delicate texture — typical of light roasts and washed Ethiopian coffees."
+      },
+      {
+        "type": "tap_order",
+        "instruction": "Tap drinks from lightest body to fullest body.",
+        "items": ["Black tea", "Drip coffee", "French press coffee", "Espresso"],
+        "explanation": "Filters and grind size both shape body — espresso ends up heaviest because all the solubles stay in the cup."
+      },
+      {
+        "type": "slider",
+        "instruction": "At what temperature do tasters often evaluate acidity?",
+        "minValue": 40.0,
+        "maxValue": 90.0,
+        "targetMin": 55.0,
+        "targetMax": 70.0,
+        "unit": "°C",
+        "explanation": "Acidity becomes easier to read as the coffee cools into a sip-friendly 55–70°C range."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "Which descriptor is most likely paired with high acidity?",
+        "options": [
+          "Citrus or green apple",
+          "Cigar smoke",
+          "Brown sugar",
+          "Cocoa powder"
+        ],
+        "correctIndex": 0,
+        "explanation": "Acidity often shows up as citrusy or crisp-fruit notes — the same brightness you feel in a squeeze of lemon."
       }
     ]
   },
@@ -344,7 +1265,7 @@
     "id": "lesson_how_to_taste",
     "moduleId": "module_taste",
     "title": "How to Taste Coffee",
-    "summary": "Intentional tasting — called cupping in the industry — involves slurping coffee to aerate it across your palate, then noting what you perceive. Temperature matters: flavors shift as coffee cools.",
+    "summary": "Intentional tasting — called cupping in the industry — slurps coffee across the palate, then notes what you perceive. Temperature matters: flavors shift as coffee cools.",
     "xpReward": 10,
     "cardId": "card_how_to_taste",
     "steps": [
@@ -359,6 +1280,51 @@
         ],
         "correctIndex": 0,
         "explanation": "Slurping aerates the liquid and sprays it over more taste receptors — the same reason wine tasters 'chew' their sips."
+      },
+      {
+        "type": "tap_order",
+        "instruction": "Tap the cupping protocol steps in order.",
+        "items": [
+          "Smell dry grounds",
+          "Pour hot water",
+          "Wait 4 minutes",
+          "Break the crust",
+          "Slurp and evaluate"
+        ],
+        "explanation": "Each step reveals a different layer — dry aroma, wet aroma, broken-crust aroma, and finally the taste itself."
+      },
+      {
+        "type": "drag_drop",
+        "instruction": "Match each cupping stage to what tasters focus on.",
+        "terms": ["Dry fragrance", "Break aroma", "First slurp", "Cooling slurp"],
+        "definitions": [
+          "Top-note aromas of the grounds",
+          "Released aromas at the broken crust",
+          "Acidity and body",
+          "Sweetness and finish"
+        ]
+      },
+      {
+        "type": "slider",
+        "instruction": "At what temperature do tasters usually take the first slurp?",
+        "minValue": 30.0,
+        "maxValue": 90.0,
+        "targetMin": 50.0,
+        "targetMax": 65.0,
+        "unit": "°C",
+        "explanation": "Too hot scalds the palate; tasters often wait until coffee dips to around 50–65°C for the first read."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "Why taste a coffee at several temperatures?",
+        "options": [
+          "Flavors shift as coffee cools, revealing different notes",
+          "Cold coffee always tastes the same",
+          "Temperature has no effect",
+          "Tasters need to fill time"
+        ],
+        "correctIndex": 0,
+        "explanation": "Subtle sweetness and aromatic complexity often only show up as the cup approaches room temperature."
       }
     ]
   },
@@ -366,22 +1332,190 @@
     "id": "lesson_flavor_descriptors",
     "moduleId": "module_taste",
     "title": "Common Flavor Descriptors",
-    "summary": "The Specialty Coffee Association's flavor wheel gives tasters a shared vocabulary. Common descriptors include: floral, fruity, nutty, caramel, chocolate, and spice. The same word means the same thing at any cafe worldwide.",
+    "summary": "The Specialty Coffee Association's flavor wheel gives tasters a shared vocabulary. The same word means the same thing at any cafe worldwide.",
     "xpReward": 20,
     "cardId": "card_flavor_descriptors",
     "steps": [
       {
         "type": "tap_order",
         "instruction": "Tap these flavor families from most delicate to most bold.",
-        "items": ["Floral", "Fruity", "Nutty", "Caramel", "Dark chocolate", "Smoky"],
+        "items": [
+          "Floral",
+          "Fruity",
+          "Nutty",
+          "Caramel",
+          "Dark chocolate",
+          "Smoky"
+        ],
         "explanation": "Delicate florals appear in light roasts; bold smoky notes develop in very dark roasts. This progression roughly mirrors roast level."
       },
       {
         "type": "multiple_choice",
-        "question": "A coffee is described as having 'jasmine and peach' notes. What roast level is it most likely?",
-        "options": ["Light roast", "Dark roast", "Very dark roast", "Instant coffee"],
+        "question": "A coffee is described as 'jasmine and peach'. What roast level is it most likely?",
+        "options": [
+          "Light roast",
+          "Dark roast",
+          "Very dark roast",
+          "Instant coffee"
+        ],
         "correctIndex": 0,
         "explanation": "Delicate floral and stone-fruit descriptors survive only at light roast levels — they're among the first to disappear with heat."
+      },
+      {
+        "type": "drag_drop",
+        "instruction": "Match each descriptor to its flavor family.",
+        "terms": ["Jasmine", "Blueberry", "Almond", "Caramel"],
+        "definitions": ["Floral", "Fruity", "Nutty", "Sweet"]
+      },
+      {
+        "type": "slider",
+        "instruction": "Roughly how many primary flavor families does the SCA wheel use?",
+        "minValue": 0.0,
+        "maxValue": 20.0,
+        "targetMin": 8.0,
+        "targetMax": 10.0,
+        "unit": "main families",
+        "explanation": "The SCA flavor wheel groups descriptors into nine primary families — from floral to roasted."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "What's the point of a shared flavor vocabulary?",
+        "options": [
+          "Two tasters anywhere can mean the same thing by the same word",
+          "It makes coffee sound fancy",
+          "Only experts can use it",
+          "It replaces actually tasting the coffee"
+        ],
+        "correctIndex": 0,
+        "explanation": "Shared language lets producers, roasters, and drinkers talk about the same notes consistently across the supply chain."
+      }
+    ]
+  },
+  {
+    "id": "lesson_cupping_basics",
+    "moduleId": "module_taste",
+    "title": "Cupping Basics",
+    "summary": "Cupping is the standard way the coffee world tastes side by side. A simple recipe, a quiet table, and a curious nose.",
+    "xpReward": 10,
+    "cardId": null,
+    "steps": [
+      {
+        "type": "multiple_choice",
+        "question": "What is cupping for?",
+        "options": [
+          "Sensory evaluation and comparison of coffees",
+          "Cleaning the brewer",
+          "Storing beans long-term",
+          "Roasting at home"
+        ],
+        "correctIndex": 0,
+        "explanation": "Cupping is how roasters, buyers, and judges compare coffees on the same playing field."
+      },
+      {
+        "type": "tap_order",
+        "instruction": "Tap the cupping steps in order.",
+        "items": [
+          "Weigh the coffee",
+          "Grind into cupping bowls",
+          "Pour just-off-boil water",
+          "Wait about 4 minutes",
+          "Break the crust and slurp"
+        ],
+        "explanation": "A clean, repeatable order keeps every cup of coffee on the table truly comparable."
+      },
+      {
+        "type": "drag_drop",
+        "instruction": "Match each cupping tool to its purpose.",
+        "terms": ["Spoon", "Score sheet", "Timer", "Kettle"],
+        "definitions": [
+          "Scoop and slurp the cup",
+          "Capture impressions",
+          "Keep timing consistent",
+          "Pour clean hot water"
+        ]
+      },
+      {
+        "type": "slider",
+        "instruction": "Roughly what SCA score must a coffee reach to be called 'specialty'?",
+        "minValue": 50.0,
+        "maxValue": 100.0,
+        "targetMin": 80.0,
+        "targetMax": 100.0,
+        "unit": "SCA points",
+        "explanation": "Coffees scoring 80 or above on the SCA's 100-point scale are considered specialty grade."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "Which ratio is typical for a cupping bowl?",
+        "options": [
+          "About 8.25 g of coffee per 150 ml of water",
+          "1 g of coffee per 1 liter of water",
+          "50 g of coffee per 50 ml of water",
+          "There is no standard"
+        ],
+        "correctIndex": 0,
+        "explanation": "The SCA cupping protocol calls for 8.25 g of coffee in 150 ml of water — close to a 1:18 ratio."
+      }
+    ]
+  },
+  {
+    "id": "lesson_aroma_intro",
+    "moduleId": "module_taste",
+    "title": "Aroma vs Flavor",
+    "summary": "Most of what we call flavor is actually aroma. Smell is doing the heavy lifting whenever you taste a great cup.",
+    "xpReward": 10,
+    "cardId": null,
+    "steps": [
+      {
+        "type": "multiple_choice",
+        "question": "What's the difference between aroma and flavor?",
+        "options": [
+          "Aroma is smell; flavor combines taste and smell",
+          "They mean exactly the same thing",
+          "Aroma is only for cold coffee",
+          "Flavor is only for hot coffee"
+        ],
+        "correctIndex": 0,
+        "explanation": "Your tongue detects basic tastes, but your nose adds the rich complexity we call flavor."
+      },
+      {
+        "type": "tap_order",
+        "instruction": "Tap the aroma stages of a cup in the order tasters evaluate them.",
+        "items": [
+          "Fragrance of dry grounds",
+          "Aroma after pouring water",
+          "Aroma when breaking the crust",
+          "Aroma as the cup cools"
+        ],
+        "explanation": "Each pass reveals a different aromatic layer — dry, wet, broken, and cooled."
+      },
+      {
+        "type": "drag_drop",
+        "instruction": "Match each aroma to its family.",
+        "terms": ["Jasmine", "Vanilla", "Smoke", "Caramel"],
+        "definitions": ["Floral", "Sweet", "Roasted", "Sweet caramelized"]
+      },
+      {
+        "type": "slider",
+        "instruction": "Roughly what share of 'flavor' actually comes from aroma?",
+        "minValue": 0.0,
+        "maxValue": 100.0,
+        "targetMin": 70.0,
+        "targetMax": 90.0,
+        "unit": "% of flavor from smell",
+        "explanation": "Studies suggest 70–90% of what we perceive as flavor comes from aroma. Pinch your nose and a cup goes flat."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "What's the simplest way to preserve coffee's aroma?",
+        "options": [
+          "Grind right before brewing",
+          "Pre-grind for the week",
+          "Leave the bag open",
+          "Store in the freezer overnight"
+        ],
+        "correctIndex": 0,
+        "explanation": "Most of what we taste arrives through the nose."
       }
     ]
   }

@@ -2,6 +2,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:coffee_quest/shared/repositories/card_repository.dart';
+import 'package:coffee_quest/shared/repositories/module_progress_repository.dart';
 import 'package:coffee_quest/shared/repositories/progress_repository.dart';
 import 'package:coffee_quest/shared/repositories/settings_repository.dart';
 import 'package:coffee_quest/shared/storage/app_database.dart';
@@ -68,6 +69,33 @@ void main() {
       expect(updated.xpEarned, 10);
       expect(updated.completedAt, completedAt);
     });
+
+    test('deleteAll wipes every completion record', () async {
+      await repo.saveCompletion(lessonId: 'lesson_a', xpEarned: 10, score: 80);
+      await repo.saveCompletion(lessonId: 'lesson_b', xpEarned: 20, score: 60);
+      expect((await repo.getAllCompleted()).length, 2);
+
+      await repo.deleteAll();
+
+      expect(await repo.getAllCompleted(), isEmpty);
+      expect(await repo.getByLessonId('lesson_a'), isNull);
+    });
+  });
+
+  group('ModuleProgressRepository', () {
+    late ModuleProgressRepository repo;
+    setUp(() => repo = ModuleProgressRepository());
+
+    test('deleteAll wipes the module-XP ledger', () async {
+      await repo.markModuleXpAwarded('module_beans');
+      await repo.markModuleXpAwarded('module_brewing');
+      expect(await repo.isModuleXpAwarded('module_beans'), isTrue);
+
+      await repo.deleteAll();
+
+      expect(await repo.isModuleXpAwarded('module_beans'), isFalse);
+      expect(await repo.isModuleXpAwarded('module_brewing'), isFalse);
+    });
   });
 
   group('CardRepository', () {
@@ -88,6 +116,16 @@ void main() {
 
     test('isCardCollected returns false for unknown card', () async {
       expect(await repo.isCardCollected('card_unknown'), isFalse);
+    });
+
+    test('deleteAll wipes every collected card', () async {
+      await repo.collectCard('card_a');
+      await repo.collectCard('card_b');
+      expect((await repo.getAllCollectedCardIds()).length, 2);
+
+      await repo.deleteAll();
+
+      expect(await repo.getAllCollectedCardIds(), isEmpty);
     });
   });
 
@@ -117,6 +155,27 @@ void main() {
       await repo.saveSettings(settings);
       final updated = await repo.getSettings();
       expect(updated.hapticsEnabled, isFalse);
+    });
+
+    test('resetProgress zeros progress fields and keeps preferences', () async {
+      final settings = await repo.getSettings();
+      settings
+        ..hapticsEnabled = false
+        ..soundEnabled = false
+        ..totalXp = 123
+        ..streakDays = 4
+        ..lastActivityDate = DateTime(2026, 5, 20);
+      await repo.saveSettings(settings);
+
+      await repo.resetProgress();
+
+      final after = await repo.getSettings();
+      expect(after.totalXp, 0);
+      expect(after.streakDays, 0);
+      expect(after.lastActivityDate, isNull);
+      // Preferences are preserved across reset.
+      expect(after.hapticsEnabled, isFalse);
+      expect(after.soundEnabled, isFalse);
     });
   });
 }

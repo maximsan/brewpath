@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -97,6 +99,10 @@ class ProfileScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 24),
+          const SectionHeader('Reset'),
+          const SizedBox(height: 8),
+          _ResetProgressTile(),
+          const SizedBox(height: 24),
           const SectionHeader('About'),
           const SizedBox(height: 8),
           Card(
@@ -110,6 +116,82 @@ class ProfileScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+}
+
+/// Destructive Profile entry that wipes every locally persisted progress
+/// signal after the user explicitly confirms the action in an [AlertDialog].
+/// The first tap only opens the dialog; only the in-dialog **Reset** button
+/// triggers the wipe.
+class _ResetProgressTile extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = Theme.of(context).colorScheme;
+    return Card(
+      margin: EdgeInsets.zero,
+      child: ListTile(
+        leading: Icon(Icons.restart_alt, color: colors.error),
+        title: Text(
+          'Reset Progress',
+          style: TextStyle(color: colors.error, fontWeight: FontWeight.w600),
+        ),
+        subtitle: const Text(
+          'Clear completed lessons, XP, streak, and unlocked cards.',
+        ),
+        trailing: Icon(Icons.chevron_right, color: colors.error),
+        onTap: () => _confirmAndReset(context, ref),
+      ),
+    );
+  }
+
+  Future<void> _confirmAndReset(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: true,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Reset all progress?'),
+        content: const Text(
+          'This will remove your completed lessons, XP, streak, '
+          'unlocked cards, and all local progress. '
+          'This action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(ctx).colorScheme.error,
+            ),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Reset'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+    if (!context.mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    final colors = Theme.of(context).colorScheme;
+    await resetProgress(ref);
+    messenger
+      ..hideCurrentMaterialBanner()
+      ..showMaterialBanner(
+        MaterialBanner(
+          content: const Text('Progress reset.'),
+          leading: Icon(Icons.check_circle, color: colors.primary),
+          backgroundColor: colors.surfaceContainerHigh,
+          actions: [
+            TextButton(
+              onPressed: messenger.hideCurrentMaterialBanner,
+              child: const Text('Dismiss'),
+            ),
+          ],
+        ),
+      );
+    Timer(const Duration(seconds: 2), messenger.hideCurrentMaterialBanner);
   }
 }
 

@@ -28,4 +28,9 @@ class CardRepository {
           mode: InsertMode.insertOrIgnore,
         );
   }
+
+  /// Wipes every collected card. Used by the Profile "Reset Progress" action.
+  Future<void> deleteAll() async {
+    await _db.delete(_db.cardRecords).go();
+  }
 }

@@ -13,7 +13,8 @@ import 'package:coffee_quest/shared/models/coffee_card_model.dart';
 import 'package:coffee_quest/shared/repositories/content_repository.dart';
 
 /// Loaded outcome for the screen. Exactly one of [completion] / [reviewResult]
-/// is set, depending on whether this was a first completion or a review.
+/// is set for first-completion / review runs; both are null for pure
+/// [LessonCompletionScreen.practice] runs (which write nothing).
 class _Reward {
   const _Reward({this.completion, this.reviewResult, this.card});
   final LessonCompletionResult? completion;
@@ -27,6 +28,7 @@ class LessonCompletionScreen extends ConsumerStatefulWidget {
     required this.lessonId,
     required this.score,
     this.review = false,
+    this.practice = false,
   });
 
   final String lessonId;
@@ -36,6 +38,10 @@ class LessonCompletionScreen extends ConsumerStatefulWidget {
 
   /// Whether the run was a review of an already-completed lesson.
   final bool review;
+
+  /// Whether the run was a pure practice repetition (no XP, no DB writes).
+  /// Takes precedence over [review].
+  final bool practice;
 
   @override
   ConsumerState<LessonCompletionScreen> createState() =>
@@ -47,13 +53,20 @@ class _LessonCompletionScreenState
   late final Future<_Reward> _future = _completeAndLoad();
 
   /// Persists the run exactly once. First completion awards full XP/cards;
-  /// review only updates mastery and may grant practice XP. Both paths are
+  /// review only updates mastery and may grant practice XP; practice runs
+  /// from the Learn-tab practice section write nothing at all. Every path is
   /// idempotent, so a rebuild or revisit will not double-award anything.
   Future<_Reward> _completeAndLoad() async {
     final content = ref.read(contentRepositoryProvider);
     final lesson = await content.getLessonById(widget.lessonId);
     if (lesson == null) {
       throw StateError('Lesson ${widget.lessonId} not found');
+    }
+
+    if (widget.practice) {
+      // Pure practice — no service call, no XP, no card, no streak. Just
+      // display a summary using the run's score.
+      return const _Reward();
     }
 
     if (widget.review) {
@@ -112,9 +125,15 @@ class _LessonCompletionScreenState
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    ...reward.reviewResult != null
+                    ...(reward.reviewResult != null
                         ? _reviewContent(context, reward.reviewResult!)
-                        : _completionContent(context, reward),
+                        : reward.completion != null
+                        ? _completionContent(
+                            context,
+                            reward,
+                            reward.completion!,
+                          )
+                        : _practiceContent(context)),
                     const SizedBox(height: 32),
                     FilledButton(
                       onPressed: () => context.go('/learn'),
@@ -130,10 +149,13 @@ class _LessonCompletionScreenState
     );
   }
 
-  List<Widget> _completionContent(BuildContext context, _Reward reward) {
+  List<Widget> _completionContent(
+    BuildContext context,
+    _Reward reward,
+    LessonCompletionResult completion,
+  ) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final completion = reward.completion!;
     return [
       const _HeroBadge(icon: Icons.celebration),
       const SizedBox(height: 20),
@@ -165,6 +187,39 @@ class _LessonCompletionScreenState
         const SizedBox(height: 24),
         _RewardCard(card: reward.card!),
       ],
+    ];
+  }
+
+  List<Widget> _practiceContent(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return [
+      const _HeroBadge(icon: Icons.fitness_center),
+      const SizedBox(height: 20),
+      Text(
+        'Practice complete!',
+        textAlign: TextAlign.center,
+        style: theme.textTheme.headlineSmall?.copyWith(
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+      const SizedBox(height: 12),
+      Text(
+        'Score: ${widget.score}%',
+        textAlign: TextAlign.center,
+        style: theme.textTheme.titleLarge?.copyWith(
+          color: colors.primary,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+      const SizedBox(height: 4),
+      Text(
+        'Practice runs do not change your XP, streak, or progress.',
+        textAlign: TextAlign.center,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: colors.onSurfaceVariant,
+        ),
+      ),
     ];
   }
 

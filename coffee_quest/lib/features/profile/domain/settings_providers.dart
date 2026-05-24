@@ -1,6 +1,9 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
+import 'package:coffee_quest/features/progress/domain/progress_providers.dart';
 import 'package:coffee_quest/shared/repositories/repository_providers.dart';
 import 'package:coffee_quest/shared/storage/settings_record.dart';
 
@@ -34,4 +37,25 @@ class SettingsController extends _$SettingsController {
 Future<String> appVersion(Ref ref) async {
   final info = await PackageInfo.fromPlatform();
   return '${info.version}+${info.buildNumber}';
+}
+
+/// Wipes all locally persisted user progress — completed lessons, module XP
+/// ledger, collected cards, and the XP / streak / lastActivity fields on the
+/// settings singleton — while preserving haptics, sound, and static content.
+/// Takes a [WidgetRef] (not a provider [Ref]) so the caller's lifetime owns
+/// the reads and invalidations across this async work.
+Future<void> resetProgress(WidgetRef ref) async {
+  await ref.read(progressRepositoryProvider).deleteAll();
+  await ref.read(moduleProgressRepositoryProvider).deleteAll();
+  await ref.read(cardRepositoryProvider).deleteAll();
+  await ref.read(settingsRepositoryProvider).resetProgress();
+
+  ref.invalidate(totalXpProvider);
+  ref.invalidate(streakProvider);
+  ref.invalidate(completedLessonsProvider);
+  ref.invalidate(collectedCardsProvider);
+  ref.invalidate(modulesWithProgressProvider);
+  ref.invalidate(todayLessonProvider);
+  ref.invalidate(gameTypePracticeCountsProvider);
+  ref.invalidate(settingsControllerProvider);
 }

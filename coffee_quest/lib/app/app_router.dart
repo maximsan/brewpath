@@ -6,6 +6,7 @@ import 'package:coffee_quest/app/analytics_navigator_observer.dart';
 import 'package:coffee_quest/app/app_shell.dart';
 import 'package:coffee_quest/features/cards/presentation/card_detail_screen.dart';
 import 'package:coffee_quest/features/cards/presentation/cards_screen.dart';
+import 'package:coffee_quest/features/learn/presentation/game_type_practice_screen.dart';
 import 'package:coffee_quest/features/learn/presentation/learn_screen.dart';
 import 'package:coffee_quest/features/learn/presentation/module_detail_screen.dart';
 import 'package:coffee_quest/features/lessons/presentation/lesson_completion_screen.dart';
@@ -62,6 +63,7 @@ GoRouter appRouter(Ref ref) {
                     builder: (context, state) => LessonScreen(
                       lessonId: state.pathParameters['lessonId']!,
                       review: state.uri.queryParameters['review'] == 'true',
+                      practice: state.uri.queryParameters['practice'] == 'true',
                     ),
                     routes: [
                       GoRoute(
@@ -71,6 +73,8 @@ GoRouter appRouter(Ref ref) {
                         builder: (context, state) => LessonCompletionScreen(
                           lessonId: state.pathParameters['lessonId']!,
                           review: state.uri.queryParameters['review'] == 'true',
+                          practice:
+                              state.uri.queryParameters['practice'] == 'true',
                           score:
                               int.tryParse(
                                 state.uri.queryParameters['score'] ?? '',
@@ -79,6 +83,26 @@ GoRouter appRouter(Ref ref) {
                         ),
                       ),
                     ],
+                  ),
+                  // Practice flows live under /learn so the back button
+                  // returns to the Learn tab. Both push on the root navigator
+                  // to cover the bottom-nav shell (same as lessons).
+                  GoRoute(
+                    path: 'practice/lesson/:lessonId',
+                    name: 'practiceLesson',
+                    parentNavigatorKey: _rootKey,
+                    builder: (context, state) => LessonScreen(
+                      lessonId: state.pathParameters['lessonId']!,
+                      practice: true,
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'practice/game-type/:gameType',
+                    name: 'practiceGameType',
+                    parentNavigatorKey: _rootKey,
+                    builder: (context, state) => GameTypePracticeScreen(
+                      gameType: state.pathParameters['gameType']!,
+                    ),
                   ),
                 ],
               ),

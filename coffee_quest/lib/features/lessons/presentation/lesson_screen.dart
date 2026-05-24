@@ -11,13 +11,24 @@ import 'package:coffee_quest/shared/models/lesson_model.dart';
 import 'package:coffee_quest/shared/repositories/content_repository.dart';
 
 class LessonScreen extends ConsumerStatefulWidget {
-  const LessonScreen({super.key, required this.lessonId, this.review = false});
+  const LessonScreen({
+    super.key,
+    required this.lessonId,
+    this.review = false,
+    this.practice = false,
+  });
 
   final String lessonId;
 
   /// Whether this run is a review of an already-completed lesson. Carried
   /// through to the completion screen so it skips re-awarding XP.
   final bool review;
+
+  /// Whether this run is a pure practice repetition launched from the Learn
+  /// tab's "Practice Any Lesson" section. Practice runs never call
+  /// completeLesson or reviewLesson — no XP, no card, no streak, no module
+  /// bonus, no DB writes. Takes precedence over [review].
+  final bool practice;
 
   @override
   ConsumerState<LessonScreen> createState() => _LessonScreenState();
@@ -52,7 +63,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
               .round();
           context.go(
             '/learn/lesson/${lesson.id}/complete'
-            '?review=${widget.review}&score=$score',
+            '?review=${widget.review}&practice=${widget.practice}&score=$score',
           );
         } else {
           setState(() {
