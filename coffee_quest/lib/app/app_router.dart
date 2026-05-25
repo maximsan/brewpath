@@ -13,6 +13,7 @@ import 'package:coffee_quest/features/lessons/presentation/lesson_completion_scr
 import 'package:coffee_quest/features/lessons/presentation/lesson_screen.dart';
 import 'package:coffee_quest/features/path/presentation/path_screen.dart';
 import 'package:coffee_quest/features/profile/presentation/profile_screen.dart';
+import 'package:coffee_quest/features/profile/presentation/settings_screen.dart';
 import 'package:coffee_quest/services/analytics/analytics_provider.dart';
 
 part 'app_router.g.dart';
@@ -141,6 +142,14 @@ GoRouter appRouter(Ref ref) {
                 path: '/profile',
                 name: 'profile',
                 builder: (context, state) => const ProfileScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'settings',
+                    name: 'profileSettings',
+                    parentNavigatorKey: _rootKey,
+                    builder: (context, state) => const SettingsScreen(),
+                  ),
+                ],
               ),
             ],
           ),

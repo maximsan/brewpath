@@ -6,6 +6,7 @@ import 'package:coffee_quest/core/constants/app_strings.dart';
 import 'package:coffee_quest/core/utils/module_icons.dart';
 import 'package:coffee_quest/core/widgets/error_view.dart';
 import 'package:coffee_quest/core/widgets/loading_indicator.dart';
+import 'package:coffee_quest/features/cards/domain/cards_providers.dart';
 import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
 import 'package:coffee_quest/features/lessons/domain/lesson_completion_service.dart';
 import 'package:coffee_quest/features/progress/domain/progress_providers.dart';
@@ -96,6 +97,9 @@ class _LessonCompletionScreenState
     ref.invalidate(streakProvider);
     ref.invalidate(completedLessonsProvider);
     ref.invalidate(collectedCardsProvider);
+    // `cardsWithCollectionProvider` no longer chains through
+    // `collectedCardsProvider`, so invalidate it explicitly.
+    ref.invalidate(cardsWithCollectionProvider);
 
     CoffeeCardModel? card;
     final cardId = lesson.cardId;

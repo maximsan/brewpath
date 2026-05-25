@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import 'package:coffee_quest/features/cards/domain/cards_providers.dart';
 import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
 import 'package:coffee_quest/features/progress/domain/progress_providers.dart';
 import 'package:coffee_quest/shared/repositories/repository_providers.dart';
@@ -54,6 +55,7 @@ Future<void> resetProgress(WidgetRef ref) async {
   ref.invalidate(streakProvider);
   ref.invalidate(completedLessonsProvider);
   ref.invalidate(collectedCardsProvider);
+  ref.invalidate(cardsWithCollectionProvider);
   ref.invalidate(modulesWithProgressProvider);
   ref.invalidate(todayLessonProvider);
   ref.invalidate(gameTypePracticeCountsProvider);

@@ -29,7 +29,9 @@ void main() {
 
     await tester.tap(find.byIcon(Icons.person_outline));
     await settleLoaders(tester);
-    expect(_appBarTitled('Profile'), findsOneWidget);
+    // Profile uses a SliverPersistentHeader rather than an AppBar — the close
+    // icon is unique to the Profile header and proves we landed there.
+    expect(find.byIcon(Icons.close), findsOneWidget);
   });
 
   testWidgets('branch navigator stack is preserved across tab switches', (
