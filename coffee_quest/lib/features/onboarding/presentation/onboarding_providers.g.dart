@@ -9,62 +9,6 @@ part of 'onboarding_providers.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(WelcomeHeroVariantController)
-final welcomeHeroVariantControllerProvider =
-    WelcomeHeroVariantControllerProvider._();
-
-final class WelcomeHeroVariantControllerProvider
-    extends
-        $NotifierProvider<WelcomeHeroVariantController, WelcomeHeroVariant> {
-  WelcomeHeroVariantControllerProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'welcomeHeroVariantControllerProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$welcomeHeroVariantControllerHash();
-
-  @$internal
-  @override
-  WelcomeHeroVariantController create() => WelcomeHeroVariantController();
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(WelcomeHeroVariant value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<WelcomeHeroVariant>(value),
-    );
-  }
-}
-
-String _$welcomeHeroVariantControllerHash() =>
-    r'1522343585a05460d3bebfd9328ada3f8969d98b';
-
-abstract class _$WelcomeHeroVariantController
-    extends $Notifier<WelcomeHeroVariant> {
-  WelcomeHeroVariant build();
-  @$mustCallSuper
-  @override
-  void runBuild() {
-    final ref = this.ref as $Ref<WelcomeHeroVariant, WelcomeHeroVariant>;
-    final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<WelcomeHeroVariant, WelcomeHeroVariant>,
-              WelcomeHeroVariant,
-              Object?,
-              Object?
-            >;
-    element.handleCreate(ref, build);
-  }
-}
-
 @ProviderFor(onboardingRepository)
 final onboardingRepositoryProvider = OnboardingRepositoryProvider._();
 

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:coffee_quest/features/onboarding/presentation/onboarding_providers.dart';
 import 'package:coffee_quest/features/profile/domain/settings_providers.dart';
 
 /// Dedicated Settings screen reached via the gear icon on Profile. Hosts the
@@ -59,6 +60,9 @@ class SettingsScreen extends ConsumerWidget {
               ],
             ),
           ),
+          const SizedBox(height: 24),
+          const _SectionLabel('Onboarding'),
+          const _ResetOnboardingTile(),
           const SizedBox(height: 24),
           const _SectionLabel('Danger zone'),
           const _ResetProgressTile(),
@@ -165,5 +169,54 @@ class _ResetProgressTile extends ConsumerWidget {
         ),
       );
     Timer(const Duration(seconds: 2), messenger.hideCurrentMaterialBanner);
+  }
+}
+
+/// Clears the onboarding gate and returns the user to the Welcome screen so
+/// they can pick a different goal/brewer. Lesson XP, streak, and collected
+/// cards are not affected — use the "Reset Progress" action below for that.
+class _ResetOnboardingTile extends ConsumerWidget {
+  const _ResetOnboardingTile();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ListTile(
+      leading: const Icon(Icons.replay_outlined),
+      title: const Text('Restart onboarding'),
+      subtitle: const Text('Take the Welcome tour again. Your progress stays.'),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () => _confirmAndReset(context, ref),
+    );
+  }
+
+  Future<void> _confirmAndReset(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: true,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Restart onboarding?'),
+        content: const Text(
+          'You\'ll go back through the Welcome screen and pick your goal and '
+          'brewer again. Your XP, streak, and collected cards stay as they '
+          'are.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Restart'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    if (!context.mounted) return;
+    await ref.read(onboardingRepositoryProvider).resetOnboarding();
+    ref.invalidate(onboardingCompletedProvider);
+    if (!context.mounted) return;
+    context.go('/welcome');
   }
 }

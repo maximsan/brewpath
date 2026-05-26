@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:coffee_quest/features/onboarding/presentation/onboarding_providers.dart';
 import 'package:coffee_quest/features/onboarding/presentation/welcome_screen.dart';
 import 'package:coffee_quest/shared/storage/app_database.dart';
 
@@ -34,16 +33,11 @@ void main() {
     );
 
     await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          welcomeHeroVariantControllerProvider.overrideWith(
-            () => _StaticVariant(WelcomeHeroVariant.roastyOnly),
-          ),
-        ],
-        child: MaterialApp.router(routerConfig: router),
-      ),
+      ProviderScope(child: MaterialApp.router(routerConfig: router)),
     );
-    // Roasty's idle animation runs forever; bounded pumps instead of settle.
+    // The video_player platform channel is unavailable in unit tests, so the
+    // hero falls back to a static Roasty. Roasty's idle animation runs
+    // forever; bounded pumps instead of `pumpAndSettle`.
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
 
@@ -58,17 +52,9 @@ void main() {
     await tester.ensureVisible(cta);
     await tester.pump();
     await tester.tap(cta);
-    // Give the router + frame pipeline a few pumps to complete navigation.
     for (var i = 0; i < 5; i++) {
       await tester.pump(const Duration(milliseconds: 50));
     }
     expect(find.text('goal-stub'), findsOneWidget);
   });
-}
-
-class _StaticVariant extends WelcomeHeroVariantController {
-  _StaticVariant(this._value);
-  final WelcomeHeroVariant _value;
-  @override
-  WelcomeHeroVariant build() => _value;
 }

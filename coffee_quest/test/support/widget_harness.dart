@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import 'package:coffee_quest/features/onboarding/presentation/loading_screen.dart';
 import 'package:coffee_quest/shared/repositories/settings_repository.dart';
 import 'package:coffee_quest/shared/storage/app_database.dart';
 
@@ -69,6 +70,20 @@ Future<void> settleLoaders(WidgetTester tester) async {
         .evaluate()
         .isNotEmpty;
     if (!stillLoading && i >= 2) break;
+  }
+  // If the app booted into the onboarding LoadingScreen, tap-skip it so
+  // widget tests don't have to sit through the ~6.5 s wake-up animation.
+  // Use real-time pumps because `_advance` awaits the async gate future,
+  // and `pumpAndSettle` would hang on Roasty's infinite idle animation.
+  if (find.byType(LoadingScreen).evaluate().isNotEmpty) {
+    await tester.tap(find.byType(LoadingScreen));
+    for (var i = 0; i < 30; i++) {
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 20)),
+      );
+      await tester.pump();
+      if (find.byType(LoadingScreen).evaluate().isEmpty) break;
+    }
   }
   // Drain any in-flight page transition (e.g. loading → learn after the
   // onboarding gate resolves). Capped so tests don't hang on infinite

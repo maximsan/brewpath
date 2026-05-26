@@ -82,7 +82,6 @@ flutter:
   assets:
     - assets/content/
     - assets/images/
-    - assets/images/trees/
     - assets/icons/
     - assets/video/
     # Bundled google_fonts files — picked up automatically by the

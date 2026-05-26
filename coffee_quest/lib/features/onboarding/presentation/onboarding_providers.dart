@@ -5,18 +5,6 @@ import 'package:coffee_quest/shared/repositories/repository_providers.dart';
 
 part 'onboarding_providers.g.dart';
 
-/// Hero variants for the Welcome screen. Live behind a `kDebugMode`
-/// segmented switcher until Step 11 picks the winner.
-enum WelcomeHeroVariant { roastyOnly, videoSeedToTree, treeStageCycle }
-
-@riverpod
-class WelcomeHeroVariantController extends _$WelcomeHeroVariantController {
-  @override
-  WelcomeHeroVariant build() => WelcomeHeroVariant.roastyOnly;
-
-  void set(WelcomeHeroVariant value) => state = value;
-}
-
 @riverpod
 OnboardingRepository onboardingRepository(Ref ref) =>
     OnboardingRepository(ref.watch(settingsRepositoryProvider));

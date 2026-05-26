@@ -41,4 +41,16 @@ class OnboardingRepository {
       ..onboardingBrewer = brewer;
     await _settings.saveSettings(s);
   }
+
+  /// Clears the onboarding gate and the saved selections so the next launch
+  /// (or redirect re-evaluation) sends the user back through Welcome.
+  /// Intended for the debug-only "Reset onboarding" action.
+  Future<void> resetOnboarding() async {
+    final s = await _settings.getSettings();
+    s
+      ..onboardingCompleted = false
+      ..onboardingGoal = null
+      ..onboardingBrewer = null;
+    await _settings.saveSettings(s);
+  }
 }

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,8 +6,6 @@ import 'package:video_player/video_player.dart';
 import 'package:coffee_quest/core/widgets/link_button.dart';
 import 'package:coffee_quest/core/widgets/primary_button.dart';
 import 'package:coffee_quest/core/widgets/smallcaps_label.dart';
-import 'package:coffee_quest/features/onboarding/presentation/onboarding_providers.dart';
-import 'package:coffee_quest/features/onboarding/presentation/widgets/coffee_persona.dart';
 import 'package:coffee_quest/features/onboarding/presentation/widgets/roasty.dart';
 import 'package:coffee_quest/features/onboarding/presentation/widgets/roasty_state.dart';
 import 'package:coffee_quest/shared/theme/app_colors.dart';
@@ -20,7 +17,6 @@ class WelcomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final variant = ref.watch(welcomeHeroVariantControllerProvider);
     return Scaffold(
       backgroundColor: AppColors.darkRoastBg,
       body: SafeArea(
@@ -45,7 +41,7 @@ class WelcomeScreen extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(4),
                   ),
                   clipBehavior: Clip.hardEdge,
-                  child: _HeroFrame(variant: variant),
+                  child: const _VideoHero(),
                 ),
               ),
               const SizedBox(height: AppSpacing.lg),
@@ -75,17 +71,6 @@ class WelcomeScreen extends ConsumerWidget {
                   onPressed: () {}, // placeholder per plan
                 ),
               ),
-              if (kDebugMode) ...[
-                const SizedBox(height: AppSpacing.md),
-                _VariantSwitcher(
-                  active: variant,
-                  onChange: (v) {
-                    ref
-                        .read(welcomeHeroVariantControllerProvider.notifier)
-                        .set(v);
-                  },
-                ),
-              ],
             ],
           ),
         ),
@@ -94,36 +79,9 @@ class WelcomeScreen extends ConsumerWidget {
   }
 }
 
-class _HeroFrame extends StatelessWidget {
-  const _HeroFrame({required this.variant});
-
-  final WelcomeHeroVariant variant;
-
-  @override
-  Widget build(BuildContext context) {
-    switch (variant) {
-      case WelcomeHeroVariant.roastyOnly:
-        return const Center(child: Roasty(state: RoastyState.idle, size: 220));
-      case WelcomeHeroVariant.videoSeedToTree:
-        return const _VideoHero();
-      case WelcomeHeroVariant.treeStageCycle:
-        return const Stack(
-          alignment: Alignment.center,
-          children: [
-            CoffeePersona(size: 240),
-            Positioned(
-              right: 8,
-              bottom: 8,
-              child: IgnorePointer(
-                child: Roasty(state: RoastyState.idle, size: 80),
-              ),
-            ),
-          ],
-        );
-    }
-  }
-}
-
+/// Looping seed-to-tree video with Roasty perched bottom-right. Falls back to
+/// a static Roasty if the asset can't initialize (e.g. in unit tests where
+/// the video_player platform channel is unavailable).
 class _VideoHero extends StatefulWidget {
   const _VideoHero();
 
@@ -133,6 +91,7 @@ class _VideoHero extends StatefulWidget {
 
 class _VideoHeroState extends State<_VideoHero> {
   late final VideoPlayerController _controller;
+  bool _initFailed = false;
 
   @override
   void initState() {
@@ -141,12 +100,17 @@ class _VideoHeroState extends State<_VideoHero> {
         VideoPlayerController.asset('assets/video/Flowerpot_seed_to.mp4')
           ..setLooping(true)
           ..setVolume(0)
-          ..initialize().then((_) {
-            if (mounted) {
-              setState(() {});
-              _controller.play();
-            }
-          });
+          ..initialize().then(
+            (_) {
+              if (mounted) {
+                setState(() {});
+                _controller.play();
+              }
+            },
+            onError: (_) {
+              if (mounted) setState(() => _initFailed = true);
+            },
+          );
   }
 
   @override
@@ -157,7 +121,7 @@ class _VideoHeroState extends State<_VideoHero> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_controller.value.isInitialized) {
+    if (_initFailed || !_controller.value.isInitialized) {
       return const Center(child: Roasty(state: RoastyState.idle, size: 220));
     }
     return Stack(
@@ -181,67 +145,6 @@ class _VideoHeroState extends State<_VideoHero> {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _VariantSwitcher extends StatelessWidget {
-  const _VariantSwitcher({required this.active, required this.onChange});
-
-  final WelcomeHeroVariant active;
-  final ValueChanged<WelcomeHeroVariant> onChange;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        for (final v in WelcomeHeroVariant.values) ...[
-          Expanded(
-            child: _segment(
-              label: switch (v) {
-                WelcomeHeroVariant.roastyOnly => 'A · Roasty',
-                WelcomeHeroVariant.videoSeedToTree => 'B · Video',
-                WelcomeHeroVariant.treeStageCycle => 'C · Stages',
-              },
-              selected: v == active,
-              onTap: () => onChange(v),
-            ),
-          ),
-          if (v != WelcomeHeroVariant.values.last) const SizedBox(width: 6),
-        ],
-      ],
-    );
-  }
-
-  Widget _segment({
-    required String label,
-    required bool selected,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-        decoration: BoxDecoration(
-          color: selected ? AppColors.darkRoastAccent : Colors.transparent,
-          border: Border.all(
-            color: selected
-                ? AppColors.darkRoastAccent
-                : AppColors.darkRoastRule,
-          ),
-          borderRadius: BorderRadius.circular(2),
-        ),
-        child: Center(
-          child: Text(
-            label,
-            style: AppTypography.smallcaps(
-              color: selected
-                  ? AppColors.darkRoastAccentInk
-                  : AppColors.darkRoastInk,
-            ),
-          ),
-        ),
-      ),
     );
   }
 }
