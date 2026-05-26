@@ -54,8 +54,11 @@ void main() {
     tester,
   ) async {
     // Seed some progress so we can prove the dialog Cancel path is a true no-op.
-    await ProgressRepository()
-        .saveCompletion(lessonId: 'lesson_a', xpEarned: 30, score: 80);
+    await ProgressRepository().saveCompletion(
+      lessonId: 'lesson_a',
+      xpEarned: 30,
+      score: 80,
+    );
     await CardRepository().collectCard('card_a');
     final settings = await SettingsRepository().getSettings();
     settings.totalXp = 30;
@@ -76,8 +79,11 @@ void main() {
   });
 
   testWidgets('confirming Reset wipes all progress', (tester) async {
-    await ProgressRepository()
-        .saveCompletion(lessonId: 'lesson_a', xpEarned: 30, score: 80);
+    await ProgressRepository().saveCompletion(
+      lessonId: 'lesson_a',
+      xpEarned: 30,
+      score: 80,
+    );
     await CardRepository().collectCard('card_a');
     final settings = await SettingsRepository().getSettings();
     settings

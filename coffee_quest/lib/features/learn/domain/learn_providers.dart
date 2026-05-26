@@ -97,7 +97,9 @@ Future<List<LessonWithModule>> allLessonsWithModule(Ref ref) async {
   for (final module in modules) {
     for (final lessonId in module.lessonIds) {
       final lesson = byId[lessonId];
-      if (lesson != null) out.add(LessonWithModule(lesson: lesson, module: module));
+      if (lesson != null) {
+        out.add(LessonWithModule(lesson: lesson, module: module));
+      }
     }
   }
   return out;

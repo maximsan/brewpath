@@ -11,6 +11,11 @@ import 'package:coffee_quest/features/learn/presentation/learn_screen.dart';
 import 'package:coffee_quest/features/learn/presentation/module_detail_screen.dart';
 import 'package:coffee_quest/features/lessons/presentation/lesson_completion_screen.dart';
 import 'package:coffee_quest/features/lessons/presentation/lesson_screen.dart';
+import 'package:coffee_quest/features/onboarding/presentation/brewer_screen.dart';
+import 'package:coffee_quest/features/onboarding/presentation/goal_screen.dart';
+import 'package:coffee_quest/features/onboarding/presentation/loading_screen.dart';
+import 'package:coffee_quest/features/onboarding/presentation/onboarding_providers.dart';
+import 'package:coffee_quest/features/onboarding/presentation/welcome_screen.dart';
 import 'package:coffee_quest/features/path/presentation/path_screen.dart';
 import 'package:coffee_quest/features/profile/presentation/profile_screen.dart';
 import 'package:coffee_quest/features/profile/presentation/settings_screen.dart';
@@ -22,22 +27,62 @@ final _rootKey = GlobalKey<NavigatorState>();
 
 @riverpod
 GoRouter appRouter(Ref ref) {
+  // Ticks whenever the async onboarding gate resolves; passed to the router
+  // as `refreshListenable` so the redirect re-evaluates without recreating
+  // the router instance.
+  final refresh = ValueNotifier<int>(0);
+  ref.onDispose(refresh.dispose);
+  ref.listen<AsyncValue<bool>>(onboardingCompletedProvider, (prev, next) {
+    refresh.value++;
+  });
   return GoRouter(
     navigatorKey: _rootKey,
-    initialLocation: '/learn',
-    // The shell branches live under /learn, /path, … — there is no '/' route,
-    // so funnel the root (platform initial route, error-page "Home") to Learn.
+    initialLocation: '/loading',
+    refreshListenable: refresh,
+    // Funnels the root (platform initial route, error-page "Home") to Loading
+    // and gates the rest of the app behind the onboarding flow.
     redirect: (context, state) {
-      if (state.uri.path == '/') {
+      final path = state.uri.path;
+      if (path == '/') {
+        return '/loading';
+      }
+      final completed = ref.read(onboardingCompletedProvider).value ?? false;
+      final isOnboardingRoute =
+          path == '/loading' ||
+          path == '/welcome' ||
+          path.startsWith('/onboarding');
+      if (!completed && !isOnboardingRoute) {
+        return '/welcome';
+      }
+      if (completed && (path == '/welcome' || path.startsWith('/onboarding'))) {
         return '/learn';
       }
-
       return null;
     },
     observers: [
       AnalyticsNavigatorObserver(ref.watch(analyticsServiceProvider)),
     ],
     routes: [
+      GoRoute(
+        path: '/loading',
+        name: 'loading',
+        builder: (context, state) => const LoadingScreen(),
+      ),
+      GoRoute(
+        path: '/welcome',
+        name: 'welcome',
+        builder: (context, state) => const WelcomeScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding/goal',
+        name: 'onboardingGoal',
+        builder: (context, state) => const GoalScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding/brewer',
+        name: 'onboardingBrewer',
+        builder: (context, state) => const BrewerScreen(),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) => AppShell(navigationShell),
         branches: [

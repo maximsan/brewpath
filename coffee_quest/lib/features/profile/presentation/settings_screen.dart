@@ -34,17 +34,13 @@ class SettingsScreen extends ConsumerWidget {
               padding: EdgeInsets.all(16),
               child: Center(child: CircularProgressIndicator()),
             ),
-            error: (e, _) => Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text('$e'),
-            ),
+            error: (e, _) =>
+                Padding(padding: const EdgeInsets.all(16), child: Text('$e')),
             data: (s) => Column(
               children: [
                 SwitchListTile(
                   title: const Text('Haptics'),
-                  subtitle: const Text(
-                    'Subtle vibrations on taps and answers',
-                  ),
+                  subtitle: const Text('Subtle vibrations on taps and answers'),
                   value: s.hapticsEnabled,
                   onChanged: (_) => ref
                       .read(settingsControllerProvider.notifier)

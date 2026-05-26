@@ -62,10 +62,7 @@ class PreferenceTile extends StatelessWidget {
               ),
               const Spacer(),
               if (_isToggle)
-                Switch.adaptive(
-                  value: _value!,
-                  onChanged: _onChanged,
-                )
+                Switch.adaptive(value: _value!, onChanged: _onChanged)
               else if (trailingText != null)
                 Container(
                   padding: const EdgeInsets.symmetric(

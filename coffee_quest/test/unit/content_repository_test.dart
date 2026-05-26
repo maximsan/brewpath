@@ -53,8 +53,7 @@ void main() {
       expect(
         lesson.steps.length,
         greaterThanOrEqualTo(5),
-        reason:
-            '${lesson.id} has only ${lesson.steps.length} steps (need ≥5)',
+        reason: '${lesson.id} has only ${lesson.steps.length} steps (need ≥5)',
       );
     }
   });

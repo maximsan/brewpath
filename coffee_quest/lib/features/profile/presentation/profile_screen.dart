@@ -124,11 +124,7 @@ class _StatsGrid extends StatelessWidget {
       crossAxisSpacing: 12,
       childAspectRatio: 1.0,
       children: [
-        StatTile(
-          icon: Icons.bolt,
-          label: 'Total XP',
-          value: '$xp',
-        ),
+        StatTile(icon: Icons.bolt, label: 'Total XP', value: '$xp'),
         StatTile(
           icon: Icons.local_fire_department,
           label: 'Day streak',
@@ -139,11 +135,7 @@ class _StatsGrid extends StatelessWidget {
           label: 'Lessons',
           value: '$lessonsCompleted',
         ),
-        StatTile(
-          icon: Icons.style,
-          label: 'Cards',
-          value: '$cardsCollected',
-        ),
+        StatTile(icon: Icons.style, label: 'Cards', value: '$cardsCollected'),
       ],
     );
   }

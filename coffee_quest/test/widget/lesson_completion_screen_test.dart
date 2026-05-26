@@ -35,13 +35,7 @@ LessonModel _lesson(String id, {String? cardId}) => LessonModel(
   summary: '',
   xpReward: 50,
   cardId: cardId,
-  steps: const [
-    _emptyStep,
-    _emptyStep,
-    _emptyStep,
-    _emptyStep,
-    _emptyStep,
-  ],
+  steps: const [_emptyStep, _emptyStep, _emptyStep, _emptyStep, _emptyStep],
 );
 
 final _testLessons = <LessonModel>[
@@ -91,9 +85,7 @@ class _FakeContent extends ContentRepository {
 }
 
 ProviderContainer _buildContainer() => ProviderContainer(
-  overrides: [
-    contentRepositoryProvider.overrideWith((ref) => _FakeContent()),
-  ],
+  overrides: [contentRepositoryProvider.overrideWith((ref) => _FakeContent())],
 );
 
 void main() {

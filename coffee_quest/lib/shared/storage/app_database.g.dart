@@ -872,6 +872,42 @@ class $UserSettingsTable extends UserSettings
         type: DriftSqlType.dateTime,
         requiredDuringInsert: false,
       );
+  static const VerificationMeta _onboardingCompletedMeta =
+      const VerificationMeta('onboardingCompleted');
+  @override
+  late final GeneratedColumn<bool> onboardingCompleted = GeneratedColumn<bool>(
+    'onboarding_completed',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("onboarding_completed" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _onboardingGoalMeta = const VerificationMeta(
+    'onboardingGoal',
+  );
+  @override
+  late final GeneratedColumn<String> onboardingGoal = GeneratedColumn<String>(
+    'onboarding_goal',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _onboardingBrewerMeta = const VerificationMeta(
+    'onboardingBrewer',
+  );
+  @override
+  late final GeneratedColumn<String> onboardingBrewer = GeneratedColumn<String>(
+    'onboarding_brewer',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -880,6 +916,9 @@ class $UserSettingsTable extends UserSettings
     totalXp,
     streakDays,
     lastActivityDate,
+    onboardingCompleted,
+    onboardingGoal,
+    onboardingBrewer,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -943,6 +982,33 @@ class $UserSettingsTable extends UserSettings
         ),
       );
     }
+    if (data.containsKey('onboarding_completed')) {
+      context.handle(
+        _onboardingCompletedMeta,
+        onboardingCompleted.isAcceptableOrUnknown(
+          data['onboarding_completed']!,
+          _onboardingCompletedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('onboarding_goal')) {
+      context.handle(
+        _onboardingGoalMeta,
+        onboardingGoal.isAcceptableOrUnknown(
+          data['onboarding_goal']!,
+          _onboardingGoalMeta,
+        ),
+      );
+    }
+    if (data.containsKey('onboarding_brewer')) {
+      context.handle(
+        _onboardingBrewerMeta,
+        onboardingBrewer.isAcceptableOrUnknown(
+          data['onboarding_brewer']!,
+          _onboardingBrewerMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -976,6 +1042,18 @@ class $UserSettingsTable extends UserSettings
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_activity_date'],
       ),
+      onboardingCompleted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}onboarding_completed'],
+      )!,
+      onboardingGoal: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}onboarding_goal'],
+      ),
+      onboardingBrewer: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}onboarding_brewer'],
+      ),
     );
   }
 
@@ -992,6 +1070,17 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
   final int totalXp;
   final int streakDays;
   final DateTime? lastActivityDate;
+
+  /// Whether the user has completed the post-install onboarding flow.
+  /// Defaults to `false` so rows migrated from schema v2 force the gate.
+  final bool onboardingCompleted;
+
+  /// User-selected onboarding goal (e.g. "brew_better"). Nullable so an
+  /// in-progress install does not coerce a value.
+  final String? onboardingGoal;
+
+  /// User-selected brewer (e.g. "v60", "aeropress", "not_sure"). Nullable.
+  final String? onboardingBrewer;
   const SettingsRow({
     required this.id,
     required this.hapticsEnabled,
@@ -999,6 +1088,9 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     required this.totalXp,
     required this.streakDays,
     this.lastActivityDate,
+    required this.onboardingCompleted,
+    this.onboardingGoal,
+    this.onboardingBrewer,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1010,6 +1102,13 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     map['streak_days'] = Variable<int>(streakDays);
     if (!nullToAbsent || lastActivityDate != null) {
       map['last_activity_date'] = Variable<DateTime>(lastActivityDate);
+    }
+    map['onboarding_completed'] = Variable<bool>(onboardingCompleted);
+    if (!nullToAbsent || onboardingGoal != null) {
+      map['onboarding_goal'] = Variable<String>(onboardingGoal);
+    }
+    if (!nullToAbsent || onboardingBrewer != null) {
+      map['onboarding_brewer'] = Variable<String>(onboardingBrewer);
     }
     return map;
   }
@@ -1024,6 +1123,13 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
       lastActivityDate: lastActivityDate == null && nullToAbsent
           ? const Value.absent()
           : Value(lastActivityDate),
+      onboardingCompleted: Value(onboardingCompleted),
+      onboardingGoal: onboardingGoal == null && nullToAbsent
+          ? const Value.absent()
+          : Value(onboardingGoal),
+      onboardingBrewer: onboardingBrewer == null && nullToAbsent
+          ? const Value.absent()
+          : Value(onboardingBrewer),
     );
   }
 
@@ -1041,6 +1147,11 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
       lastActivityDate: serializer.fromJson<DateTime?>(
         json['lastActivityDate'],
       ),
+      onboardingCompleted: serializer.fromJson<bool>(
+        json['onboardingCompleted'],
+      ),
+      onboardingGoal: serializer.fromJson<String?>(json['onboardingGoal']),
+      onboardingBrewer: serializer.fromJson<String?>(json['onboardingBrewer']),
     );
   }
   @override
@@ -1053,6 +1164,9 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
       'totalXp': serializer.toJson<int>(totalXp),
       'streakDays': serializer.toJson<int>(streakDays),
       'lastActivityDate': serializer.toJson<DateTime?>(lastActivityDate),
+      'onboardingCompleted': serializer.toJson<bool>(onboardingCompleted),
+      'onboardingGoal': serializer.toJson<String?>(onboardingGoal),
+      'onboardingBrewer': serializer.toJson<String?>(onboardingBrewer),
     };
   }
 
@@ -1063,6 +1177,9 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     int? totalXp,
     int? streakDays,
     Value<DateTime?> lastActivityDate = const Value.absent(),
+    bool? onboardingCompleted,
+    Value<String?> onboardingGoal = const Value.absent(),
+    Value<String?> onboardingBrewer = const Value.absent(),
   }) => SettingsRow(
     id: id ?? this.id,
     hapticsEnabled: hapticsEnabled ?? this.hapticsEnabled,
@@ -1072,6 +1189,13 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     lastActivityDate: lastActivityDate.present
         ? lastActivityDate.value
         : this.lastActivityDate,
+    onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
+    onboardingGoal: onboardingGoal.present
+        ? onboardingGoal.value
+        : this.onboardingGoal,
+    onboardingBrewer: onboardingBrewer.present
+        ? onboardingBrewer.value
+        : this.onboardingBrewer,
   );
   SettingsRow copyWithCompanion(UserSettingsCompanion data) {
     return SettingsRow(
@@ -1089,6 +1213,15 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
       lastActivityDate: data.lastActivityDate.present
           ? data.lastActivityDate.value
           : this.lastActivityDate,
+      onboardingCompleted: data.onboardingCompleted.present
+          ? data.onboardingCompleted.value
+          : this.onboardingCompleted,
+      onboardingGoal: data.onboardingGoal.present
+          ? data.onboardingGoal.value
+          : this.onboardingGoal,
+      onboardingBrewer: data.onboardingBrewer.present
+          ? data.onboardingBrewer.value
+          : this.onboardingBrewer,
     );
   }
 
@@ -1100,7 +1233,10 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
           ..write('soundEnabled: $soundEnabled, ')
           ..write('totalXp: $totalXp, ')
           ..write('streakDays: $streakDays, ')
-          ..write('lastActivityDate: $lastActivityDate')
+          ..write('lastActivityDate: $lastActivityDate, ')
+          ..write('onboardingCompleted: $onboardingCompleted, ')
+          ..write('onboardingGoal: $onboardingGoal, ')
+          ..write('onboardingBrewer: $onboardingBrewer')
           ..write(')'))
         .toString();
   }
@@ -1113,6 +1249,9 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     totalXp,
     streakDays,
     lastActivityDate,
+    onboardingCompleted,
+    onboardingGoal,
+    onboardingBrewer,
   );
   @override
   bool operator ==(Object other) =>
@@ -1123,7 +1262,10 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
           other.soundEnabled == this.soundEnabled &&
           other.totalXp == this.totalXp &&
           other.streakDays == this.streakDays &&
-          other.lastActivityDate == this.lastActivityDate);
+          other.lastActivityDate == this.lastActivityDate &&
+          other.onboardingCompleted == this.onboardingCompleted &&
+          other.onboardingGoal == this.onboardingGoal &&
+          other.onboardingBrewer == this.onboardingBrewer);
 }
 
 class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
@@ -1133,6 +1275,9 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
   final Value<int> totalXp;
   final Value<int> streakDays;
   final Value<DateTime?> lastActivityDate;
+  final Value<bool> onboardingCompleted;
+  final Value<String?> onboardingGoal;
+  final Value<String?> onboardingBrewer;
   const UserSettingsCompanion({
     this.id = const Value.absent(),
     this.hapticsEnabled = const Value.absent(),
@@ -1140,6 +1285,9 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     this.totalXp = const Value.absent(),
     this.streakDays = const Value.absent(),
     this.lastActivityDate = const Value.absent(),
+    this.onboardingCompleted = const Value.absent(),
+    this.onboardingGoal = const Value.absent(),
+    this.onboardingBrewer = const Value.absent(),
   });
   UserSettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -1148,6 +1296,9 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     required int totalXp,
     required int streakDays,
     this.lastActivityDate = const Value.absent(),
+    this.onboardingCompleted = const Value.absent(),
+    this.onboardingGoal = const Value.absent(),
+    this.onboardingBrewer = const Value.absent(),
   }) : hapticsEnabled = Value(hapticsEnabled),
        soundEnabled = Value(soundEnabled),
        totalXp = Value(totalXp),
@@ -1159,6 +1310,9 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     Expression<int>? totalXp,
     Expression<int>? streakDays,
     Expression<DateTime>? lastActivityDate,
+    Expression<bool>? onboardingCompleted,
+    Expression<String>? onboardingGoal,
+    Expression<String>? onboardingBrewer,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1167,6 +1321,10 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
       if (totalXp != null) 'total_xp': totalXp,
       if (streakDays != null) 'streak_days': streakDays,
       if (lastActivityDate != null) 'last_activity_date': lastActivityDate,
+      if (onboardingCompleted != null)
+        'onboarding_completed': onboardingCompleted,
+      if (onboardingGoal != null) 'onboarding_goal': onboardingGoal,
+      if (onboardingBrewer != null) 'onboarding_brewer': onboardingBrewer,
     });
   }
 
@@ -1177,6 +1335,9 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     Value<int>? totalXp,
     Value<int>? streakDays,
     Value<DateTime?>? lastActivityDate,
+    Value<bool>? onboardingCompleted,
+    Value<String?>? onboardingGoal,
+    Value<String?>? onboardingBrewer,
   }) {
     return UserSettingsCompanion(
       id: id ?? this.id,
@@ -1185,6 +1346,9 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
       totalXp: totalXp ?? this.totalXp,
       streakDays: streakDays ?? this.streakDays,
       lastActivityDate: lastActivityDate ?? this.lastActivityDate,
+      onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
+      onboardingGoal: onboardingGoal ?? this.onboardingGoal,
+      onboardingBrewer: onboardingBrewer ?? this.onboardingBrewer,
     );
   }
 
@@ -1209,6 +1373,15 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     if (lastActivityDate.present) {
       map['last_activity_date'] = Variable<DateTime>(lastActivityDate.value);
     }
+    if (onboardingCompleted.present) {
+      map['onboarding_completed'] = Variable<bool>(onboardingCompleted.value);
+    }
+    if (onboardingGoal.present) {
+      map['onboarding_goal'] = Variable<String>(onboardingGoal.value);
+    }
+    if (onboardingBrewer.present) {
+      map['onboarding_brewer'] = Variable<String>(onboardingBrewer.value);
+    }
     return map;
   }
 
@@ -1220,7 +1393,10 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
           ..write('soundEnabled: $soundEnabled, ')
           ..write('totalXp: $totalXp, ')
           ..write('streakDays: $streakDays, ')
-          ..write('lastActivityDate: $lastActivityDate')
+          ..write('lastActivityDate: $lastActivityDate, ')
+          ..write('onboardingCompleted: $onboardingCompleted, ')
+          ..write('onboardingGoal: $onboardingGoal, ')
+          ..write('onboardingBrewer: $onboardingBrewer')
           ..write(')'))
         .toString();
   }
@@ -1934,6 +2110,9 @@ typedef $$UserSettingsTableCreateCompanionBuilder =
       required int totalXp,
       required int streakDays,
       Value<DateTime?> lastActivityDate,
+      Value<bool> onboardingCompleted,
+      Value<String?> onboardingGoal,
+      Value<String?> onboardingBrewer,
     });
 typedef $$UserSettingsTableUpdateCompanionBuilder =
     UserSettingsCompanion Function({
@@ -1943,6 +2122,9 @@ typedef $$UserSettingsTableUpdateCompanionBuilder =
       Value<int> totalXp,
       Value<int> streakDays,
       Value<DateTime?> lastActivityDate,
+      Value<bool> onboardingCompleted,
+      Value<String?> onboardingGoal,
+      Value<String?> onboardingBrewer,
     });
 
 class $$UserSettingsTableFilterComposer
@@ -1981,6 +2163,21 @@ class $$UserSettingsTableFilterComposer
 
   ColumnFilters<DateTime> get lastActivityDate => $composableBuilder(
     column: $table.lastActivityDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get onboardingCompleted => $composableBuilder(
+    column: $table.onboardingCompleted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get onboardingGoal => $composableBuilder(
+    column: $table.onboardingGoal,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get onboardingBrewer => $composableBuilder(
+    column: $table.onboardingBrewer,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -2023,6 +2220,21 @@ class $$UserSettingsTableOrderingComposer
     column: $table.lastActivityDate,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get onboardingCompleted => $composableBuilder(
+    column: $table.onboardingCompleted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get onboardingGoal => $composableBuilder(
+    column: $table.onboardingGoal,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get onboardingBrewer => $composableBuilder(
+    column: $table.onboardingBrewer,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$UserSettingsTableAnnotationComposer
@@ -2057,6 +2269,21 @@ class $$UserSettingsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get lastActivityDate => $composableBuilder(
     column: $table.lastActivityDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get onboardingCompleted => $composableBuilder(
+    column: $table.onboardingCompleted,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get onboardingGoal => $composableBuilder(
+    column: $table.onboardingGoal,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get onboardingBrewer => $composableBuilder(
+    column: $table.onboardingBrewer,
     builder: (column) => column,
   );
 }
@@ -2098,6 +2325,9 @@ class $$UserSettingsTableTableManager
                 Value<int> totalXp = const Value.absent(),
                 Value<int> streakDays = const Value.absent(),
                 Value<DateTime?> lastActivityDate = const Value.absent(),
+                Value<bool> onboardingCompleted = const Value.absent(),
+                Value<String?> onboardingGoal = const Value.absent(),
+                Value<String?> onboardingBrewer = const Value.absent(),
               }) => UserSettingsCompanion(
                 id: id,
                 hapticsEnabled: hapticsEnabled,
@@ -2105,6 +2335,9 @@ class $$UserSettingsTableTableManager
                 totalXp: totalXp,
                 streakDays: streakDays,
                 lastActivityDate: lastActivityDate,
+                onboardingCompleted: onboardingCompleted,
+                onboardingGoal: onboardingGoal,
+                onboardingBrewer: onboardingBrewer,
               ),
           createCompanionCallback:
               ({
@@ -2114,6 +2347,9 @@ class $$UserSettingsTableTableManager
                 required int totalXp,
                 required int streakDays,
                 Value<DateTime?> lastActivityDate = const Value.absent(),
+                Value<bool> onboardingCompleted = const Value.absent(),
+                Value<String?> onboardingGoal = const Value.absent(),
+                Value<String?> onboardingBrewer = const Value.absent(),
               }) => UserSettingsCompanion.insert(
                 id: id,
                 hapticsEnabled: hapticsEnabled,
@@ -2121,6 +2357,9 @@ class $$UserSettingsTableTableManager
                 totalXp: totalXp,
                 streakDays: streakDays,
                 lastActivityDate: lastActivityDate,
+                onboardingCompleted: onboardingCompleted,
+                onboardingGoal: onboardingGoal,
+                onboardingBrewer: onboardingBrewer,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

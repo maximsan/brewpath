@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -5,12 +6,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import 'package:coffee_quest/shared/repositories/settings_repository.dart';
 import 'package:coffee_quest/shared/storage/app_database.dart';
 
 /// Shared widget-test setup: a fresh in-memory Drift DB wired into
 /// [AppDatabaseService] and stubbed package_info, so screens render against
 /// real content assets and an empty user state without platform channels.
-AppDatabase useInMemoryDatabase() {
+Future<AppDatabase> useInMemoryDatabase() async {
   // `rootBundle` caches the `Future` returned by `loadString`, not just its
   // value. A Future created inside one `testWidgets` test's `FakeAsync` zone
   // delivers its continuations through that (now-dead) zone, so a later test
@@ -21,6 +23,22 @@ AppDatabase useInMemoryDatabase() {
   final db = AppDatabase(NativeDatabase.memory());
   AppDatabaseService.instance = db;
   addTearDown(db.close);
+
+  // Pre-mark onboarding as completed so existing widget tests that boot the
+  // full app shell still land on /learn. Onboarding-specific tests build
+  // their own router and do not go through this helper.
+  await db
+      .into(db.userSettings)
+      .insert(
+        UserSettingsCompanion.insert(
+          id: const Value(SettingsRepository.settingsId),
+          hapticsEnabled: true,
+          soundEnabled: true,
+          totalXp: 0,
+          streakDays: 0,
+          onboardingCompleted: const Value(true),
+        ),
+      );
 
   PackageInfo.setMockInitialValues(
     appName: 'Coffee Quest',
@@ -50,8 +68,12 @@ Future<void> settleLoaders(WidgetTester tester) async {
         .byType(CircularProgressIndicator)
         .evaluate()
         .isNotEmpty;
-    if (!stillLoading && i >= 2) return;
+    if (!stillLoading && i >= 2) break;
   }
+  // Drain any in-flight page transition (e.g. loading → learn after the
+  // onboarding gate resolves). Capped so tests don't hang on infinite
+  // animations.
+  await tester.pumpAndSettle(const Duration(milliseconds: 50));
 }
 
 Future<ProviderContainer> pumpWithProviders(

@@ -60,14 +60,10 @@ class ProfileHeaderDelegate extends SliverPersistentHeaderDelegate {
           child: IgnorePointer(
             child: DecoratedBox(
               decoration: BoxDecoration(
-                color: colors.surfaceContainerHigh.withValues(
-                  alpha: tintAlpha,
-                ),
+                color: colors.surfaceContainerHigh.withValues(alpha: tintAlpha),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(
-                      alpha: 0.08 * shadowOpacity,
-                    ),
+                    color: Colors.black.withValues(alpha: 0.08 * shadowOpacity),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),

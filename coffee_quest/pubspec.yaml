@@ -51,6 +51,13 @@ dependencies:
   # App version string on the Profile screen (Phase 6)
   package_info_plus: ^8.1.2
 
+  # Onboarding typography — fetched from Google's CDN and cached on-device.
+  google_fonts: ^6.2.1
+
+  # Welcome-screen hero Variant B (seed-to-tree video). Removed at Step 11 if
+  # this variant is not chosen.
+  video_player: ^2.9.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -75,4 +82,10 @@ flutter:
   assets:
     - assets/content/
     - assets/images/
+    - assets/images/trees/
     - assets/icons/
+    - assets/video/
+    # Bundled google_fonts files — picked up automatically by the
+    # google_fonts package's asset-manifest lookup, so the app works offline
+    # (and tests pass without network).
+    - google_fonts/

@@ -138,7 +138,7 @@ final class AllLessonsWithModuleProvider
 }
 
 String _$allLessonsWithModuleHash() =>
-    r'b3f48f3fcb0e42e05882a125708ad5271804d997';
+    r'139550831d84efbe1ace4a758117f9db8e52c788';
 
 /// How many practiceable steps the user currently has for each game type,
 /// counting only steps that live in lessons the user has completed. Drives

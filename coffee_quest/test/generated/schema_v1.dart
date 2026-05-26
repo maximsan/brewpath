@@ -4,7 +4,8 @@
 //
 import 'package:drift/drift.dart';
 
-class ProgressRecords extends Table with TableInfo {
+class ProgressRecords extends Table
+    with TableInfo<ProgressRecords, ProgressRecordsData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -66,8 +67,30 @@ class ProgressRecords extends Table with TableInfo {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Never map(Map<String, dynamic> data, {String? tablePrefix}) {
-    throw UnsupportedError('TableInfo.map in schema verification code');
+  ProgressRecordsData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ProgressRecordsData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      lessonId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}lesson_id'],
+      )!,
+      isCompleted: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}is_completed'],
+      )!,
+      xpEarned: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}xp_earned'],
+      )!,
+      completedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}completed_at'],
+      )!,
+    );
   }
 
   @override
@@ -79,7 +102,209 @@ class ProgressRecords extends Table with TableInfo {
   bool get dontWriteConstraints => true;
 }
 
-class CardRecords extends Table with TableInfo {
+class ProgressRecordsData extends DataClass
+    implements Insertable<ProgressRecordsData> {
+  final int id;
+  final String lessonId;
+  final int isCompleted;
+  final int xpEarned;
+  final int completedAt;
+  const ProgressRecordsData({
+    required this.id,
+    required this.lessonId,
+    required this.isCompleted,
+    required this.xpEarned,
+    required this.completedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['lesson_id'] = Variable<String>(lessonId);
+    map['is_completed'] = Variable<int>(isCompleted);
+    map['xp_earned'] = Variable<int>(xpEarned);
+    map['completed_at'] = Variable<int>(completedAt);
+    return map;
+  }
+
+  ProgressRecordsCompanion toCompanion(bool nullToAbsent) {
+    return ProgressRecordsCompanion(
+      id: Value(id),
+      lessonId: Value(lessonId),
+      isCompleted: Value(isCompleted),
+      xpEarned: Value(xpEarned),
+      completedAt: Value(completedAt),
+    );
+  }
+
+  factory ProgressRecordsData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ProgressRecordsData(
+      id: serializer.fromJson<int>(json['id']),
+      lessonId: serializer.fromJson<String>(json['lessonId']),
+      isCompleted: serializer.fromJson<int>(json['isCompleted']),
+      xpEarned: serializer.fromJson<int>(json['xpEarned']),
+      completedAt: serializer.fromJson<int>(json['completedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'lessonId': serializer.toJson<String>(lessonId),
+      'isCompleted': serializer.toJson<int>(isCompleted),
+      'xpEarned': serializer.toJson<int>(xpEarned),
+      'completedAt': serializer.toJson<int>(completedAt),
+    };
+  }
+
+  ProgressRecordsData copyWith({
+    int? id,
+    String? lessonId,
+    int? isCompleted,
+    int? xpEarned,
+    int? completedAt,
+  }) => ProgressRecordsData(
+    id: id ?? this.id,
+    lessonId: lessonId ?? this.lessonId,
+    isCompleted: isCompleted ?? this.isCompleted,
+    xpEarned: xpEarned ?? this.xpEarned,
+    completedAt: completedAt ?? this.completedAt,
+  );
+  ProgressRecordsData copyWithCompanion(ProgressRecordsCompanion data) {
+    return ProgressRecordsData(
+      id: data.id.present ? data.id.value : this.id,
+      lessonId: data.lessonId.present ? data.lessonId.value : this.lessonId,
+      isCompleted: data.isCompleted.present
+          ? data.isCompleted.value
+          : this.isCompleted,
+      xpEarned: data.xpEarned.present ? data.xpEarned.value : this.xpEarned,
+      completedAt: data.completedAt.present
+          ? data.completedAt.value
+          : this.completedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProgressRecordsData(')
+          ..write('id: $id, ')
+          ..write('lessonId: $lessonId, ')
+          ..write('isCompleted: $isCompleted, ')
+          ..write('xpEarned: $xpEarned, ')
+          ..write('completedAt: $completedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, lessonId, isCompleted, xpEarned, completedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ProgressRecordsData &&
+          other.id == this.id &&
+          other.lessonId == this.lessonId &&
+          other.isCompleted == this.isCompleted &&
+          other.xpEarned == this.xpEarned &&
+          other.completedAt == this.completedAt);
+}
+
+class ProgressRecordsCompanion extends UpdateCompanion<ProgressRecordsData> {
+  final Value<int> id;
+  final Value<String> lessonId;
+  final Value<int> isCompleted;
+  final Value<int> xpEarned;
+  final Value<int> completedAt;
+  const ProgressRecordsCompanion({
+    this.id = const Value.absent(),
+    this.lessonId = const Value.absent(),
+    this.isCompleted = const Value.absent(),
+    this.xpEarned = const Value.absent(),
+    this.completedAt = const Value.absent(),
+  });
+  ProgressRecordsCompanion.insert({
+    this.id = const Value.absent(),
+    required String lessonId,
+    required int isCompleted,
+    required int xpEarned,
+    required int completedAt,
+  }) : lessonId = Value(lessonId),
+       isCompleted = Value(isCompleted),
+       xpEarned = Value(xpEarned),
+       completedAt = Value(completedAt);
+  static Insertable<ProgressRecordsData> custom({
+    Expression<int>? id,
+    Expression<String>? lessonId,
+    Expression<int>? isCompleted,
+    Expression<int>? xpEarned,
+    Expression<int>? completedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (lessonId != null) 'lesson_id': lessonId,
+      if (isCompleted != null) 'is_completed': isCompleted,
+      if (xpEarned != null) 'xp_earned': xpEarned,
+      if (completedAt != null) 'completed_at': completedAt,
+    });
+  }
+
+  ProgressRecordsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? lessonId,
+    Value<int>? isCompleted,
+    Value<int>? xpEarned,
+    Value<int>? completedAt,
+  }) {
+    return ProgressRecordsCompanion(
+      id: id ?? this.id,
+      lessonId: lessonId ?? this.lessonId,
+      isCompleted: isCompleted ?? this.isCompleted,
+      xpEarned: xpEarned ?? this.xpEarned,
+      completedAt: completedAt ?? this.completedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (lessonId.present) {
+      map['lesson_id'] = Variable<String>(lessonId.value);
+    }
+    if (isCompleted.present) {
+      map['is_completed'] = Variable<int>(isCompleted.value);
+    }
+    if (xpEarned.present) {
+      map['xp_earned'] = Variable<int>(xpEarned.value);
+    }
+    if (completedAt.present) {
+      map['completed_at'] = Variable<int>(completedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProgressRecordsCompanion(')
+          ..write('id: $id, ')
+          ..write('lessonId: $lessonId, ')
+          ..write('isCompleted: $isCompleted, ')
+          ..write('xpEarned: $xpEarned, ')
+          ..write('completedAt: $completedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class CardRecords extends Table with TableInfo<CardRecords, CardRecordsData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -119,8 +344,22 @@ class CardRecords extends Table with TableInfo {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Never map(Map<String, dynamic> data, {String? tablePrefix}) {
-    throw UnsupportedError('TableInfo.map in schema verification code');
+  CardRecordsData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CardRecordsData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      cardId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}card_id'],
+      )!,
+      unlockedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}unlocked_at'],
+      )!,
+    );
   }
 
   @override
@@ -132,7 +371,157 @@ class CardRecords extends Table with TableInfo {
   bool get dontWriteConstraints => true;
 }
 
-class UserSettings extends Table with TableInfo {
+class CardRecordsData extends DataClass implements Insertable<CardRecordsData> {
+  final int id;
+  final String cardId;
+  final int unlockedAt;
+  const CardRecordsData({
+    required this.id,
+    required this.cardId,
+    required this.unlockedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['card_id'] = Variable<String>(cardId);
+    map['unlocked_at'] = Variable<int>(unlockedAt);
+    return map;
+  }
+
+  CardRecordsCompanion toCompanion(bool nullToAbsent) {
+    return CardRecordsCompanion(
+      id: Value(id),
+      cardId: Value(cardId),
+      unlockedAt: Value(unlockedAt),
+    );
+  }
+
+  factory CardRecordsData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CardRecordsData(
+      id: serializer.fromJson<int>(json['id']),
+      cardId: serializer.fromJson<String>(json['cardId']),
+      unlockedAt: serializer.fromJson<int>(json['unlockedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'cardId': serializer.toJson<String>(cardId),
+      'unlockedAt': serializer.toJson<int>(unlockedAt),
+    };
+  }
+
+  CardRecordsData copyWith({int? id, String? cardId, int? unlockedAt}) =>
+      CardRecordsData(
+        id: id ?? this.id,
+        cardId: cardId ?? this.cardId,
+        unlockedAt: unlockedAt ?? this.unlockedAt,
+      );
+  CardRecordsData copyWithCompanion(CardRecordsCompanion data) {
+    return CardRecordsData(
+      id: data.id.present ? data.id.value : this.id,
+      cardId: data.cardId.present ? data.cardId.value : this.cardId,
+      unlockedAt: data.unlockedAt.present
+          ? data.unlockedAt.value
+          : this.unlockedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CardRecordsData(')
+          ..write('id: $id, ')
+          ..write('cardId: $cardId, ')
+          ..write('unlockedAt: $unlockedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, cardId, unlockedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CardRecordsData &&
+          other.id == this.id &&
+          other.cardId == this.cardId &&
+          other.unlockedAt == this.unlockedAt);
+}
+
+class CardRecordsCompanion extends UpdateCompanion<CardRecordsData> {
+  final Value<int> id;
+  final Value<String> cardId;
+  final Value<int> unlockedAt;
+  const CardRecordsCompanion({
+    this.id = const Value.absent(),
+    this.cardId = const Value.absent(),
+    this.unlockedAt = const Value.absent(),
+  });
+  CardRecordsCompanion.insert({
+    this.id = const Value.absent(),
+    required String cardId,
+    required int unlockedAt,
+  }) : cardId = Value(cardId),
+       unlockedAt = Value(unlockedAt);
+  static Insertable<CardRecordsData> custom({
+    Expression<int>? id,
+    Expression<String>? cardId,
+    Expression<int>? unlockedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (cardId != null) 'card_id': cardId,
+      if (unlockedAt != null) 'unlocked_at': unlockedAt,
+    });
+  }
+
+  CardRecordsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? cardId,
+    Value<int>? unlockedAt,
+  }) {
+    return CardRecordsCompanion(
+      id: id ?? this.id,
+      cardId: cardId ?? this.cardId,
+      unlockedAt: unlockedAt ?? this.unlockedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (cardId.present) {
+      map['card_id'] = Variable<String>(cardId.value);
+    }
+    if (unlockedAt.present) {
+      map['unlocked_at'] = Variable<int>(unlockedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CardRecordsCompanion(')
+          ..write('id: $id, ')
+          ..write('cardId: $cardId, ')
+          ..write('unlockedAt: $unlockedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class UserSettings extends Table
+    with TableInfo<UserSettings, UserSettingsData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -202,8 +591,34 @@ class UserSettings extends Table with TableInfo {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Never map(Map<String, dynamic> data, {String? tablePrefix}) {
-    throw UnsupportedError('TableInfo.map in schema verification code');
+  UserSettingsData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return UserSettingsData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      hapticsEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}haptics_enabled'],
+      )!,
+      soundEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sound_enabled'],
+      )!,
+      totalXp: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}total_xp'],
+      )!,
+      streakDays: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}streak_days'],
+      )!,
+      lastActivityDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}last_activity_date'],
+      ),
+    );
   }
 
   @override
@@ -215,6 +630,246 @@ class UserSettings extends Table with TableInfo {
   List<String> get customConstraints => const ['PRIMARY KEY(id)'];
   @override
   bool get dontWriteConstraints => true;
+}
+
+class UserSettingsData extends DataClass
+    implements Insertable<UserSettingsData> {
+  final int id;
+  final int hapticsEnabled;
+  final int soundEnabled;
+  final int totalXp;
+  final int streakDays;
+  final int? lastActivityDate;
+  const UserSettingsData({
+    required this.id,
+    required this.hapticsEnabled,
+    required this.soundEnabled,
+    required this.totalXp,
+    required this.streakDays,
+    this.lastActivityDate,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['haptics_enabled'] = Variable<int>(hapticsEnabled);
+    map['sound_enabled'] = Variable<int>(soundEnabled);
+    map['total_xp'] = Variable<int>(totalXp);
+    map['streak_days'] = Variable<int>(streakDays);
+    if (!nullToAbsent || lastActivityDate != null) {
+      map['last_activity_date'] = Variable<int>(lastActivityDate);
+    }
+    return map;
+  }
+
+  UserSettingsCompanion toCompanion(bool nullToAbsent) {
+    return UserSettingsCompanion(
+      id: Value(id),
+      hapticsEnabled: Value(hapticsEnabled),
+      soundEnabled: Value(soundEnabled),
+      totalXp: Value(totalXp),
+      streakDays: Value(streakDays),
+      lastActivityDate: lastActivityDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastActivityDate),
+    );
+  }
+
+  factory UserSettingsData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return UserSettingsData(
+      id: serializer.fromJson<int>(json['id']),
+      hapticsEnabled: serializer.fromJson<int>(json['hapticsEnabled']),
+      soundEnabled: serializer.fromJson<int>(json['soundEnabled']),
+      totalXp: serializer.fromJson<int>(json['totalXp']),
+      streakDays: serializer.fromJson<int>(json['streakDays']),
+      lastActivityDate: serializer.fromJson<int?>(json['lastActivityDate']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'hapticsEnabled': serializer.toJson<int>(hapticsEnabled),
+      'soundEnabled': serializer.toJson<int>(soundEnabled),
+      'totalXp': serializer.toJson<int>(totalXp),
+      'streakDays': serializer.toJson<int>(streakDays),
+      'lastActivityDate': serializer.toJson<int?>(lastActivityDate),
+    };
+  }
+
+  UserSettingsData copyWith({
+    int? id,
+    int? hapticsEnabled,
+    int? soundEnabled,
+    int? totalXp,
+    int? streakDays,
+    Value<int?> lastActivityDate = const Value.absent(),
+  }) => UserSettingsData(
+    id: id ?? this.id,
+    hapticsEnabled: hapticsEnabled ?? this.hapticsEnabled,
+    soundEnabled: soundEnabled ?? this.soundEnabled,
+    totalXp: totalXp ?? this.totalXp,
+    streakDays: streakDays ?? this.streakDays,
+    lastActivityDate: lastActivityDate.present
+        ? lastActivityDate.value
+        : this.lastActivityDate,
+  );
+  UserSettingsData copyWithCompanion(UserSettingsCompanion data) {
+    return UserSettingsData(
+      id: data.id.present ? data.id.value : this.id,
+      hapticsEnabled: data.hapticsEnabled.present
+          ? data.hapticsEnabled.value
+          : this.hapticsEnabled,
+      soundEnabled: data.soundEnabled.present
+          ? data.soundEnabled.value
+          : this.soundEnabled,
+      totalXp: data.totalXp.present ? data.totalXp.value : this.totalXp,
+      streakDays: data.streakDays.present
+          ? data.streakDays.value
+          : this.streakDays,
+      lastActivityDate: data.lastActivityDate.present
+          ? data.lastActivityDate.value
+          : this.lastActivityDate,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserSettingsData(')
+          ..write('id: $id, ')
+          ..write('hapticsEnabled: $hapticsEnabled, ')
+          ..write('soundEnabled: $soundEnabled, ')
+          ..write('totalXp: $totalXp, ')
+          ..write('streakDays: $streakDays, ')
+          ..write('lastActivityDate: $lastActivityDate')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    hapticsEnabled,
+    soundEnabled,
+    totalXp,
+    streakDays,
+    lastActivityDate,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is UserSettingsData &&
+          other.id == this.id &&
+          other.hapticsEnabled == this.hapticsEnabled &&
+          other.soundEnabled == this.soundEnabled &&
+          other.totalXp == this.totalXp &&
+          other.streakDays == this.streakDays &&
+          other.lastActivityDate == this.lastActivityDate);
+}
+
+class UserSettingsCompanion extends UpdateCompanion<UserSettingsData> {
+  final Value<int> id;
+  final Value<int> hapticsEnabled;
+  final Value<int> soundEnabled;
+  final Value<int> totalXp;
+  final Value<int> streakDays;
+  final Value<int?> lastActivityDate;
+  const UserSettingsCompanion({
+    this.id = const Value.absent(),
+    this.hapticsEnabled = const Value.absent(),
+    this.soundEnabled = const Value.absent(),
+    this.totalXp = const Value.absent(),
+    this.streakDays = const Value.absent(),
+    this.lastActivityDate = const Value.absent(),
+  });
+  UserSettingsCompanion.insert({
+    this.id = const Value.absent(),
+    required int hapticsEnabled,
+    required int soundEnabled,
+    required int totalXp,
+    required int streakDays,
+    this.lastActivityDate = const Value.absent(),
+  }) : hapticsEnabled = Value(hapticsEnabled),
+       soundEnabled = Value(soundEnabled),
+       totalXp = Value(totalXp),
+       streakDays = Value(streakDays);
+  static Insertable<UserSettingsData> custom({
+    Expression<int>? id,
+    Expression<int>? hapticsEnabled,
+    Expression<int>? soundEnabled,
+    Expression<int>? totalXp,
+    Expression<int>? streakDays,
+    Expression<int>? lastActivityDate,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (hapticsEnabled != null) 'haptics_enabled': hapticsEnabled,
+      if (soundEnabled != null) 'sound_enabled': soundEnabled,
+      if (totalXp != null) 'total_xp': totalXp,
+      if (streakDays != null) 'streak_days': streakDays,
+      if (lastActivityDate != null) 'last_activity_date': lastActivityDate,
+    });
+  }
+
+  UserSettingsCompanion copyWith({
+    Value<int>? id,
+    Value<int>? hapticsEnabled,
+    Value<int>? soundEnabled,
+    Value<int>? totalXp,
+    Value<int>? streakDays,
+    Value<int?>? lastActivityDate,
+  }) {
+    return UserSettingsCompanion(
+      id: id ?? this.id,
+      hapticsEnabled: hapticsEnabled ?? this.hapticsEnabled,
+      soundEnabled: soundEnabled ?? this.soundEnabled,
+      totalXp: totalXp ?? this.totalXp,
+      streakDays: streakDays ?? this.streakDays,
+      lastActivityDate: lastActivityDate ?? this.lastActivityDate,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (hapticsEnabled.present) {
+      map['haptics_enabled'] = Variable<int>(hapticsEnabled.value);
+    }
+    if (soundEnabled.present) {
+      map['sound_enabled'] = Variable<int>(soundEnabled.value);
+    }
+    if (totalXp.present) {
+      map['total_xp'] = Variable<int>(totalXp.value);
+    }
+    if (streakDays.present) {
+      map['streak_days'] = Variable<int>(streakDays.value);
+    }
+    if (lastActivityDate.present) {
+      map['last_activity_date'] = Variable<int>(lastActivityDate.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserSettingsCompanion(')
+          ..write('id: $id, ')
+          ..write('hapticsEnabled: $hapticsEnabled, ')
+          ..write('soundEnabled: $soundEnabled, ')
+          ..write('totalXp: $totalXp, ')
+          ..write('streakDays: $streakDays, ')
+          ..write('lastActivityDate: $lastActivityDate')
+          ..write(')'))
+        .toString();
+  }
 }
 
 class DatabaseAtV1 extends GeneratedDatabase {

@@ -25,17 +25,23 @@ void main() {
     late ProgressRepository repo;
     setUp(() => repo = ProgressRepository());
 
-    test('saveCompletion stores a record with score and full-XP flag',
-        () async {
-      await repo.saveCompletion(lessonId: 'lesson_a', xpEarned: 10, score: 80);
-      final record = await repo.getByLessonId('lesson_a');
-      expect(record, isNotNull);
-      expect(record!.isCompleted, isTrue);
-      expect(record.xpEarned, 10);
-      expect(record.fullXpAwarded, isTrue);
-      expect(record.bestScore, 80);
-      expect(record.lastPracticeXpDate, isNull);
-    });
+    test(
+      'saveCompletion stores a record with score and full-XP flag',
+      () async {
+        await repo.saveCompletion(
+          lessonId: 'lesson_a',
+          xpEarned: 10,
+          score: 80,
+        );
+        final record = await repo.getByLessonId('lesson_a');
+        expect(record, isNotNull);
+        expect(record!.isCompleted, isTrue);
+        expect(record.xpEarned, 10);
+        expect(record.fullXpAwarded, isTrue);
+        expect(record.bestScore, 80);
+        expect(record.lastPracticeXpDate, isNull);
+      },
+    );
 
     test('saveCompletion is idempotent', () async {
       await repo.saveCompletion(lessonId: 'lesson_a', xpEarned: 10, score: 80);
@@ -52,23 +58,29 @@ void main() {
       expect(all.every((r) => r.isCompleted), isTrue);
     });
 
-    test('saveProgress updates review fields without touching completion',
-        () async {
-      await repo.saveCompletion(lessonId: 'lesson_a', xpEarned: 10, score: 50);
-      final record = (await repo.getByLessonId('lesson_a'))!;
-      final completedAt = record.completedAt;
+    test(
+      'saveProgress updates review fields without touching completion',
+      () async {
+        await repo.saveCompletion(
+          lessonId: 'lesson_a',
+          xpEarned: 10,
+          score: 50,
+        );
+        final record = (await repo.getByLessonId('lesson_a'))!;
+        final completedAt = record.completedAt;
 
-      record.bestScore = 90;
-      record.lastPracticeXpDate = DateTime(2026, 5, 22);
-      await repo.saveProgress(record);
+        record.bestScore = 90;
+        record.lastPracticeXpDate = DateTime(2026, 5, 22);
+        await repo.saveProgress(record);
 
-      final updated = (await repo.getByLessonId('lesson_a'))!;
-      expect(updated.bestScore, 90);
-      expect(updated.lastPracticeXpDate, DateTime(2026, 5, 22));
-      expect(updated.isCompleted, isTrue);
-      expect(updated.xpEarned, 10);
-      expect(updated.completedAt, completedAt);
-    });
+        final updated = (await repo.getByLessonId('lesson_a'))!;
+        expect(updated.bestScore, 90);
+        expect(updated.lastPracticeXpDate, DateTime(2026, 5, 22));
+        expect(updated.isCompleted, isTrue);
+        expect(updated.xpEarned, 10);
+        expect(updated.completedAt, completedAt);
+      },
+    );
 
     test('deleteAll wipes every completion record', () async {
       await repo.saveCompletion(lessonId: 'lesson_a', xpEarned: 10, score: 80);

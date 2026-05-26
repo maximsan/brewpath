@@ -4,8 +4,9 @@ import 'package:drift_dev/api/migrations_native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../generated/schema.dart';
-import '../generated/schema_v1.dart';
-import '../generated/schema_v2.dart';
+import '../generated/schema_v1.dart' show DatabaseAtV1;
+import '../generated/schema_v2.dart' show DatabaseAtV2;
+import '../generated/schema_v3.dart' show DatabaseAtV3;
 
 /// Drift schema-migration harness coverage.
 ///
@@ -50,12 +51,49 @@ void main() {
     await db.close();
   });
 
-  test('AppDatabase migrates a v1 database to the v2 schema', () async {
+  test('AppDatabase migrates a v1 database to the current schema', () async {
     final connection = await verifier.startAt(1);
     final db = AppDatabase(connection);
 
-    // Runs the real onUpgrade and asserts the result matches the v2 schema.
-    await verifier.migrateAndValidate(db, 2);
+    // AppDatabase.schemaVersion has advanced; the chained onUpgrade brings a
+    // v1 file all the way up to the current version in one open.
+    await verifier.migrateAndValidate(db, 3);
+
+    await db.close();
+  });
+
+  test(
+    'schema v3 database has the onboarding columns on user_settings',
+    () async {
+      final connection = await verifier.startAt(3);
+      final db = DatabaseAtV3(connection);
+      await db.customSelect('SELECT 1').get();
+
+      expect(db.schemaVersion, 3);
+
+      // Confirm the three new columns exist by selecting them.
+      final columns = await db
+          .customSelect('PRAGMA table_info(user_settings)')
+          .get();
+      final names = columns.map((r) => r.read<String>('name')).toSet();
+      expect(
+        names,
+        containsAll(<String>[
+          'onboarding_completed',
+          'onboarding_goal',
+          'onboarding_brewer',
+        ]),
+      );
+
+      await db.close();
+    },
+  );
+
+  test('AppDatabase migrates a v2 database to the v3 schema', () async {
+    final connection = await verifier.startAt(2);
+    final db = AppDatabase(connection);
+
+    await verifier.migrateAndValidate(db, 3);
 
     await db.close();
   });

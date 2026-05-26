@@ -101,10 +101,7 @@ class _GameTypePracticeScreenState
                   ),
                 ),
                 const SizedBox(height: 16),
-                _StepProgress(
-                  current: _stepIndex + 1,
-                  total: steps.length,
-                ),
+                _StepProgress(current: _stepIndex + 1, total: steps.length),
                 const SizedBox(height: 24),
                 LessonStepRunner(
                   key: ValueKey('${_stepIndex}_$_attempt'),

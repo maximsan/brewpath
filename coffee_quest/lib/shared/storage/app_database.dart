@@ -53,6 +53,18 @@ class UserSettings extends Table {
   IntColumn get streakDays => integer()();
   DateTimeColumn get lastActivityDate => dateTime().nullable()();
 
+  /// Whether the user has completed the post-install onboarding flow.
+  /// Defaults to `false` so rows migrated from schema v2 force the gate.
+  BoolColumn get onboardingCompleted =>
+      boolean().withDefault(const Constant(false))();
+
+  /// User-selected onboarding goal (e.g. "brew_better"). Nullable so an
+  /// in-progress install does not coerce a value.
+  TextColumn get onboardingGoal => text().nullable()();
+
+  /// User-selected brewer (e.g. "v60", "aeropress", "not_sure"). Nullable.
+  TextColumn get onboardingBrewer => text().nullable()();
+
   @override
   Set<Column> get primaryKey => {id};
 }
@@ -67,7 +79,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? driftDatabase(name: 'coffee_quest'));
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -79,6 +91,12 @@ class AppDatabase extends _$AppDatabase {
         await m.addColumn(progressRecords, progressRecords.bestScore);
         await m.addColumn(progressRecords, progressRecords.lastPracticeXpDate);
         await m.createTable(moduleProgressRecords);
+      }
+      // v2 → v3: onboarding gate + selection columns on user_settings.
+      if (from < 3) {
+        await m.addColumn(userSettings, userSettings.onboardingCompleted);
+        await m.addColumn(userSettings, userSettings.onboardingGoal);
+        await m.addColumn(userSettings, userSettings.onboardingBrewer);
       }
     },
   );

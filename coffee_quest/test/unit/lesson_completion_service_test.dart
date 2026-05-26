@@ -161,18 +161,25 @@ void main() {
       expect(await totalXp(), afterCompletion + XpValues.practiceXp);
     });
 
-    test('reviewing inside a completed module re-awards no module XP', () async {
-      await completeBeansModule();
-      // 5 lessons × 5 steps × 10 XP = 250, plus the 25 module bonus.
-      expect(await totalXp(), 275);
-      expect(await moduleProgress.isModuleXpAwarded('module_beans'), isTrue);
+    test(
+      'reviewing inside a completed module re-awards no module XP',
+      () async {
+        await completeBeansModule();
+        // 5 lessons × 5 steps × 10 XP = 250, plus the 25 module bonus.
+        expect(await totalXp(), 275);
+        expect(await moduleProgress.isModuleXpAwarded('module_beans'), isTrue);
 
-      final lesson = (await content.getLessonById('lesson_where_coffee'))!;
-      await service.reviewLesson(lesson, score: 100, now: DateTime(2026, 5, 22));
+        final lesson = (await content.getLessonById('lesson_where_coffee'))!;
+        await service.reviewLesson(
+          lesson,
+          score: 100,
+          now: DateTime(2026, 5, 22),
+        );
 
-      // 275 + 2 practice XP — the 25 module bonus is not granted again.
-      expect(await totalXp(), 275 + XpValues.practiceXp);
-    });
+        // 275 + 2 practice XP — the 25 module bonus is not granted again.
+        expect(await totalXp(), 275 + XpValues.practiceXp);
+      },
+    );
 
     test('review improves the stored best score', () async {
       final lesson = (await content.getLessonById('lesson_where_coffee'))!;

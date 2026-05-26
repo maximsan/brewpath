@@ -9,6 +9,9 @@ class UserSettingsRecord {
     required this.totalXp,
     required this.streakDays,
     required this.lastActivityDate,
+    this.onboardingCompleted = false,
+    this.onboardingGoal,
+    this.onboardingBrewer,
   });
 
   int id;
@@ -17,4 +20,7 @@ class UserSettingsRecord {
   int totalXp;
   int streakDays;
   DateTime? lastActivityDate;
+  bool onboardingCompleted;
+  String? onboardingGoal;
+  String? onboardingBrewer;
 }

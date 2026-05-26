@@ -22,6 +22,9 @@ class SettingsRepository {
         totalXp: row.totalXp,
         streakDays: row.streakDays,
         lastActivityDate: row.lastActivityDate,
+        onboardingCompleted: row.onboardingCompleted,
+        onboardingGoal: row.onboardingGoal,
+        onboardingBrewer: row.onboardingBrewer,
       );
     }
     return UserSettingsRecord(
@@ -45,6 +48,9 @@ class SettingsRepository {
             totalXp: settings.totalXp,
             streakDays: settings.streakDays,
             lastActivityDate: Value(settings.lastActivityDate),
+            onboardingCompleted: Value(settings.onboardingCompleted),
+            onboardingGoal: Value(settings.onboardingGoal),
+            onboardingBrewer: Value(settings.onboardingBrewer),
           ),
         );
   }

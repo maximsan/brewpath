@@ -38,7 +38,8 @@ class LearnScreen extends ConsumerWidget {
             const SizedBox(height: 12),
             _PracticeAnyLessonSection(
               lessons: allLessons.asData?.value ?? const [],
-              completedIds: completedLessons.asData?.value
+              completedIds:
+                  completedLessons.asData?.value
                       .map((r) => r.lessonId)
                       .toSet() ??
                   const {},
@@ -260,8 +261,7 @@ class _PracticeAnyLessonSectionState extends State<_PracticeAnyLessonSection> {
       child: Column(
         children: [
           for (var i = 0; i < list.length; i++) ...[
-            if (i > 0)
-              Divider(height: 1, color: colors.outlineVariant),
+            if (i > 0) Divider(height: 1, color: colors.outlineVariant),
             _LessonRow(
               entry: list[i],
               completed: widget.completedIds.contains(list[i].lesson.id),
@@ -336,8 +336,7 @@ class _LessonRow extends StatelessWidget {
         completed ? Icons.check_circle : Icons.fitness_center,
         color: completed ? colors.primary : colors.onSurfaceVariant,
       ),
-      onTap: () =>
-          context.go('/learn/practice/lesson/${entry.lesson.id}'),
+      onTap: () => context.go('/learn/practice/lesson/${entry.lesson.id}'),
     );
   }
 }
@@ -374,9 +373,7 @@ class _PracticeByGameTypeSection extends StatelessWidget {
               label: Text(
                 enabled ? '$label ($count)' : label,
                 style: theme.textTheme.labelLarge?.copyWith(
-                  color: enabled
-                      ? colors.onSurface
-                      : colors.onSurfaceVariant,
+                  color: enabled ? colors.onSurface : colors.onSurfaceVariant,
                 ),
               ),
               onPressed: enabled
