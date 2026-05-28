@@ -49,10 +49,10 @@ dependencies:
   collection: ^1.19.1
 
   # App version string on the Profile screen (Phase 6)
-  package_info_plus: ^8.1.2
+  package_info_plus: ^10.1.0
 
   # Onboarding typography — fetched from Google's CDN and cached on-device.
-  google_fonts: ^6.2.1
+  google_fonts: ^8.1.0
 
   # Welcome-screen hero Variant B (seed-to-tree video). Removed at Step 11 if
   # this variant is not chosen.
