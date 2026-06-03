@@ -26,24 +26,17 @@ brewpath/               ← git root, CLAUDE.md lives here
 - **Firebase is Phase 8+.** Phase 8 added the `firebase_*` deps and service code, but it stays **inactive** behind `kUseFirebase` in `lib/core/config/firebase_flags.dart` (currently `false`). All Firebase access is behind the `AnalyticsService` / `CrashReportingService` / `RemoteConfigService` abstractions — never call `Firebase*.instance` from feature code. Activation (real project, `flutterfire configure`, plist, flip the flag + three provider one-liners) is a manual user step.
 - **Package imports within `lib/`.** Use `package:coffee_quest/…` instead of `../…` for all imports inside the `lib/` directory.
 - **Regenerate after model changes.** Run `dart run build_runner build` whenever a Freezed model, Riverpod provider, or Drift table is added or modified. (build_runner 2.15 auto-resolves conflicts; the old `--delete-conflicting-outputs` flag was removed.)
-- **No Firebase before Phase 8.** This rule is listed twice intentionally. (Phase 8 is now reached; Firebase code exists but is gated off by `kUseFirebase`.)
 
-## Phase Status (updated 2026-05-21)
+## Change History
 
-| Phase | Status           | Description                                                                                                                     |
-| ----- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| 0     | ✅ Done          | Prerequisites verified                                                                                                          |
-| 1     | ✅ Done          | Project scaffold, routing stub, theme                                                                                           |
-| 2     | ✅ Done          | Content models, JSON assets, ContentRepository                                                                                  |
-| 3     | ✅ Done          | Drift persistence, repositories, providers                                                                                      |
-| 4     | ✅ Done          | Domain logic: XP/streak/completion services, providers                                                                          |
-| 5     | ✅ Done          | Navigation: StatefulShellRoute app shell, 4 tabs, analytics observer                                                            |
-| 6     | ✅ Done          | Feature screens: Learn/Path/Cards/Profile + lock/settings/version providers                                                     |
-| 7     | ✅ Done          | Lesson runner, 4 mini-games, completion screen, immersive lesson route                                                          |
-| 8     | 🚧 Code complete | Firebase services (Analytics/Crashlytics/Remote Config) behind abstractions; **activation pending user setup** (`kUseFirebase`) |
-| 9     | ✅ Done          | Ads & Payments service stubs (NoOp active; in_app_purchase/AdMob impls deferred)                                                |
-| 10    | ✅ Done          | Test suite (52 tests) + `integration_test/smoke_test.dart`; on-Simulator smoke run pending user                                 |
-| 11    | ✅ Done          | CI: 3-job `ci.yml` (format / analyze+test / iOS build); CocoaPods→SPM migration. GitHub branch protection pending user          |
+Major app changes and the completed build milestones (Phases 0–11) live in
+[`docs/CHANGELOG.md`](docs/CHANGELOG.md). The workflow is documented at the top
+of that file:
+
+- **After meaningful work:** run the `/changelog` skill — it drafts Unreleased
+  entries from the actual code diffs for review.
+- **At release time:** run `coffee_quest/tool/release.sh` — it stamps the
+  version + date, bumps `pubspec.yaml`, and tags the release.
 
 ## Common Commands (run from `coffee_quest/`)
 

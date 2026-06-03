@@ -12,7 +12,7 @@
 | Widget      | `flutter_test`           | Mini-game widgets, lesson step runner, tab navigation, screen rendering                  |
 | Integration | `integration_test` (SDK) | Full smoke flow: launch → start lesson → complete → see XP                               |
 
-**Mocking strategy:** Use Riverpod `ProviderScope` overrides to inject test doubles. Avoid `mockito` for domain logic — prefer real implementations with Isar opened in a temporary directory.
+**Mocking strategy:** Use Riverpod `ProviderScope` overrides to inject test doubles. Avoid `mockito` for domain logic — prefer real implementations with `AppDatabase(NativeDatabase.memory())` (an in-memory Drift database).
 
 ---
 

@@ -1,0 +1,107 @@
+# Changelog
+
+All notable changes to Coffee Quest are recorded here.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+This is the single place to track **major app changes** over time — when you
+finish a meaningful piece of work, add a line under **Unreleased** before you
+commit. When you ship a build to TestFlight/App Store, move the Unreleased items
+under a new dated version heading.
+
+> **How to use this file (quick guide):**
+>
+> - Group each change under **Added**, **Changed**, **Fixed**, or **Removed**.
+> - Write one short line per change, in plain language — describe the user- or
+>   developer-visible effect, not the implementation detail.
+> - You don't need to log every commit. Log things you'd want to _remember later_.
+> - The **Build Milestones** table at the bottom is the frozen history of the
+>   initial 0–11 build phases. Don't edit it; add new work above instead.
+
+### Workflow — when and how to update this file
+
+Two helpers keep this near-zero effort:
+
+| When | Do this | What it does |
+| --- | --- | --- |
+| You finished something worth remembering | Run **`/changelog`** in Claude Code | Reads your recent code changes (not commit messages), proposes Added/Changed/Fixed bullets, and — once you approve — writes them into **[Unreleased]** below. |
+| You're shipping a build to TestFlight / App Store | Run **`coffee_quest/tool/release.sh`** | Renames **[Unreleased]** to a dated version heading, opens a fresh empty [Unreleased], bumps the version in `pubspec.yaml`, and (with `--commit`) tags the release. |
+
+`release.sh` usage (run from `coffee_quest/`):
+
+```bash
+tool/release.sh                  # 1.0.0+1 → 1.0.0+2   (build number only)
+tool/release.sh minor            # → 1.1.0+2
+tool/release.sh 1.2.0            # → 1.2.0+2  (explicit version)
+tool/release.sh minor --commit   # also commits + tags v1.1.0+2
+tool/release.sh --dry-run        # preview only, writes nothing
+```
+
+You can always edit this file by hand instead — the helpers just save effort.
+
+---
+
+## [Unreleased]
+
+### Added
+
+### Changed
+
+### Fixed
+
+---
+
+## [1.0.0+2] — 2026-06-03
+
+### Added
+
+- Loading screen with a cycled "coffee bean cracking in two" animation, shown
+  until the app finishes loading.
+- Welcome hero screen for first launch.
+- `coffee_quest/tool/reset_ios_spm.sh` — helper to reset the iOS Swift Package
+  Manager state when native builds get stuck.
+- `coffee_quest/tool/release.sh` — release helper that bumps the version + build
+  number in `pubspec.yaml`, stamps the Unreleased section with the new version
+  and date, and (with `--commit`) commits and tags the release.
+- Changelog tracking workflow — this `docs/CHANGELOG.md` plus a `/changelog`
+  helper that drafts Unreleased entries from real code diffs rather than commit
+  messages.
+
+### Changed
+
+- Redesigned the UI/UX of all four tabs — Learn, Path, Cards, Profile — plus the
+  Settings screen.
+- Reworked scrolling behavior across screens.
+- Reworked XP: corrected total-XP accumulation, adjusted XP-per-lesson
+  calculation, and fixed "today's lesson" selection logic.
+- Consolidated the welcome flow down to a single welcome screen variant.
+- Migrated the iOS native build from CocoaPods to Swift Package Manager
+  (no more `Podfile` / `pod install`).
+
+### Fixed
+
+- Repaired a broken test after the XP logic changes.
+
+---
+
+## Build Milestones
+
+The initial product was built in numbered phases (0–11). All are complete except
+Phase 8, whose Firebase code is written but gated off behind `kUseFirebase`
+(activation is a manual user step). This table is the historical record of that
+build; see `docs/archive/16-claude-code-task-plan.md` for the original
+phase-by-phase plan.
+
+| Phase | Status           | Description                                                                                                       |
+| ----- | ---------------- | ----------------------------------------------------------------------------------------------------------------- |
+| 0     | ✅ Done          | Prerequisites verified                                                                                            |
+| 1     | ✅ Done          | Project scaffold, routing stub, theme                                                                             |
+| 2     | ✅ Done          | Content models, JSON assets, ContentRepository                                                                    |
+| 3     | ✅ Done          | Drift persistence, repositories, providers (replaced abandoned Isar)                                              |
+| 4     | ✅ Done          | Domain logic: XP / streak / completion services, providers                                                        |
+| 5     | ✅ Done          | Navigation: StatefulShellRoute app shell, 4 tabs, analytics observer                                              |
+| 6     | ✅ Done          | Feature screens: Learn / Path / Cards / Profile + lock / settings / version providers                             |
+| 7     | ✅ Done          | Lesson runner, 4 mini-games, completion screen, immersive lesson route                                            |
+| 8     | 🚧 Code complete | Firebase services (Analytics / Crashlytics / Remote Config) behind abstractions; activation pending (`kUseFirebase`) |
+| 9     | ✅ Done          | Ads & Payments service stubs (NoOp active; in_app_purchase / AdMob impls deferred)                                |
+| 10    | ✅ Done          | Test suite (52 tests) + `integration_test/smoke_test.dart`; on-Simulator smoke run pending user                  |
+| 11    | ✅ Done          | CI: 3-job `ci.yml` (format / analyze+test / iOS build); CocoaPods → SPM migration                                |

@@ -1,1 +1,1 @@
-Review /brew-path-path folder and make a plan to implement the loading screens and onboarding flow screens based on the data in it. Use Roasty mascot as an animated persona of the application that guides, support and encourage application user.
+Add loading screen with animation. The animation is the coffee bean that cracks in 2 peaces, the animation is cycled. User sees it until the application is finally loaded

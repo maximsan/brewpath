@@ -48,6 +48,4 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-/brew-path-app
-
 .DS_Store
