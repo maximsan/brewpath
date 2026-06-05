@@ -36,11 +36,10 @@ class PickCard extends StatelessWidget {
             vertical: AppSpacing.md,
           ),
           decoration: BoxDecoration(
-            border: Border.all(color: borderColor, width: 1),
+            border: Border.all(color: borderColor),
             borderRadius: BorderRadius.circular(2),
           ),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
                 child: Column(
@@ -76,7 +75,6 @@ class _PickIndicator extends StatelessWidget {
         shape: BoxShape.circle,
         border: Border.all(
           color: selected ? AppColors.darkRoastAccent : AppColors.darkRoastRule,
-          width: 1,
         ),
       ),
       child: selected

@@ -10,7 +10,7 @@ abstract class AppColors {
   static const locked = Color(0xFFBDBDBD);
 
   // ── Dark-roast palette (onboarding + mascot screens) ───────────
-  // Pulled 1:1 from the design bundle CSS:
+  // Sourced 1:1 from the design bundle CSS at
   // coffee_quest/brew-path-app/project/index.html [data-mood="dark-roast"].
   static const darkRoastBg = Color(0xFF1A130E);
   static const darkRoastSurface = Color(0xFF251B14);
@@ -24,4 +24,8 @@ abstract class AppColors {
   static const darkRoastWarn = Color(0xFFE6A35C);
   static const darkRoastBerry = Color(0xFFC75450);
   static const darkRoastCreamTint = Color(0xFFF0DCB8);
+
+  // Water-drop accent used by the loading-screen brew animation.
+  static const darkRoastWaterDrop = Color(0xFF6FA3C8);
+  static const darkRoastWaterDropHi = Color(0xFFA9CFE3);
 }
