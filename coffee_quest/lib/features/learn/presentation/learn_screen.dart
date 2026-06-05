@@ -1,7 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-
 import 'package:coffee_quest/core/constants/app_strings.dart';
 import 'package:coffee_quest/core/utils/module_icons.dart';
 import 'package:coffee_quest/core/widgets/error_view.dart';
@@ -11,6 +7,9 @@ import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
 import 'package:coffee_quest/features/learn/presentation/module_card_widget.dart';
 import 'package:coffee_quest/features/progress/domain/progress_providers.dart';
 import 'package:coffee_quest/shared/models/lesson_model.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class LearnScreen extends ConsumerWidget {
   const LearnScreen({super.key});

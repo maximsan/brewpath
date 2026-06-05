@@ -1,9 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-
 import 'package:coffee_quest/app/app.dart';
 import 'package:coffee_quest/features/profile/presentation/widgets/premium_card.dart';
 import 'package:coffee_quest/features/profile/presentation/widgets/stat_tile.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 import '../support/widget_harness.dart';
 

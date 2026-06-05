@@ -1,5 +1,5 @@
-import 'package:drift/drift.dart';
 import 'package:coffee_quest/shared/storage/app_database.dart';
+import 'package:drift/drift.dart';
 
 class CardRepository {
   AppDatabase get _db => AppDatabaseService.instance;

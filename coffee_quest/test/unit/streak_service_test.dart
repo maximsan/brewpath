@@ -1,6 +1,5 @@
-import 'package:flutter_test/flutter_test.dart';
-
 import 'package:coffee_quest/features/progress/domain/streak_service.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   const service = StreakService();

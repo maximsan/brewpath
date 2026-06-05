@@ -1,7 +1,6 @@
+import 'package:coffee_quest/shared/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-import 'package:coffee_quest/shared/theme/app_colors.dart';
 
 /// Single source of truth for onboarding + mascot typography. Mirrors the
 /// design-bundle stack (`Fraunces` display, `IBM Plex Sans` UI body,

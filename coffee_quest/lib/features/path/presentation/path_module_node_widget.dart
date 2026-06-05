@@ -1,9 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-
 import 'package:coffee_quest/core/constants/app_strings.dart';
 import 'package:coffee_quest/core/utils/module_icons.dart';
 import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 /// A single node in the vertical learning path: a state-colored circle on the
 /// connecting rail plus a content card with the module icon, title, and

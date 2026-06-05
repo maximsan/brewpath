@@ -1,12 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:coffee_quest/core/constants/app_strings.dart';
 import 'package:coffee_quest/core/widgets/error_view.dart';
 import 'package:coffee_quest/core/widgets/loading_indicator.dart';
 import 'package:coffee_quest/core/widgets/section_header.dart';
 import 'package:coffee_quest/features/cards/domain/cards_providers.dart';
 import 'package:coffee_quest/features/cards/presentation/card_grid_item_widget.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CardsScreen extends ConsumerWidget {
   const CardsScreen({super.key});

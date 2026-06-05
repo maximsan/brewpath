@@ -1,10 +1,9 @@
-import 'package:drift/native.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_test/flutter_test.dart';
-
 import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
 import 'package:coffee_quest/shared/repositories/progress_repository.dart';
 import 'package:coffee_quest/shared/storage/app_database.dart';
+import 'package:drift/native.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 /// Module unlock logic lives in `modulesWithProgressProvider`: a module is
 /// locked when its `unlockRequirement` module is not fully complete.

@@ -1,7 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-
 import 'package:coffee_quest/core/widgets/error_view.dart';
 import 'package:coffee_quest/core/widgets/loading_indicator.dart';
 import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
@@ -10,6 +6,9 @@ import 'package:coffee_quest/features/mini_games/presentation/lesson_step_runner
 import 'package:coffee_quest/features/progress/domain/progress_providers.dart';
 import 'package:coffee_quest/shared/models/lesson_step_model.dart';
 import 'package:coffee_quest/shared/repositories/content_repository.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 /// Cross-lesson practice drill for a single game type. Pulls every step of
 /// the chosen type out of the user's completed lessons and runs them through

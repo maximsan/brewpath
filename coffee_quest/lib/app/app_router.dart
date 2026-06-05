@@ -1,7 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-
 import 'package:coffee_quest/app/analytics_navigator_observer.dart';
 import 'package:coffee_quest/app/app_shell.dart';
 import 'package:coffee_quest/features/cards/presentation/card_detail_screen.dart';
@@ -20,6 +16,9 @@ import 'package:coffee_quest/features/path/presentation/path_screen.dart';
 import 'package:coffee_quest/features/profile/presentation/profile_screen.dart';
 import 'package:coffee_quest/features/profile/presentation/settings_screen.dart';
 import 'package:coffee_quest/services/analytics/analytics_provider.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app_router.g.dart';
 

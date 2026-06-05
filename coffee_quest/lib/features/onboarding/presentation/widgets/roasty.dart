@@ -1,7 +1,7 @@
 import 'dart:math' as math;
-import 'package:flutter/material.dart';
 
 import 'package:coffee_quest/features/onboarding/presentation/widgets/roasty_state.dart';
+import 'package:flutter/material.dart';
 
 /// Animated Roasty mascot. Reproduces the geometry + per-state animations
 /// from the design bundle (`coffee_quest/brew-path-app/project/roasty.jsx`)

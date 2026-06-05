@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-
 import 'package:coffee_quest/core/utils/module_icons.dart';
 import 'package:coffee_quest/features/cards/domain/cards_providers.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 /// One tile in the Cards grid. Collected → category icon badge, title, and
 /// tag, tappable; locked → muted silhouette with "???" and inert.

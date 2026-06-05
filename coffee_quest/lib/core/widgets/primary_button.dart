@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
-
 import 'package:coffee_quest/shared/theme/app_colors.dart';
 import 'package:coffee_quest/shared/theme/app_typography.dart';
+import 'package:flutter/material.dart';
 
 /// Full-width, square-corner primary CTA used across onboarding. Mirrors the
 /// `.btn-primary` style from the design bundle (2px corner radius, accent

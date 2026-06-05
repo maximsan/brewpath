@@ -2,10 +2,10 @@ include: package:flutter_lints/flutter.yaml
 
 analyzer:
   exclude:
-    - '**/*.g.dart'
-    - '**/*.freezed.dart'
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
     # Build artifacts — SwiftPM/CocoaPods copies plugin example apps here.
-    - 'build/**'
+    - "build/**"
   errors:
     invalid_annotation_target: ignore
 
@@ -27,3 +27,8 @@ linter:
     - prefer_is_not_empty
     - unnecessary_lambdas
     - avoid_relative_lib_imports
+    - require_trailing_commas
+    - always_declare_return_types
+    - prefer_const_constructors_in_immutables
+    - avoid_redundant_argument_values
+    - unawaited_futures

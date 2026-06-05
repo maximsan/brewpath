@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-
 import 'package:coffee_quest/app/app.dart';
 import 'package:coffee_quest/shared/repositories/progress_repository.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 import '../support/widget_harness.dart';
 

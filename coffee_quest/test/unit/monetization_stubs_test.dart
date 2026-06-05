@@ -1,6 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_test/flutter_test.dart';
-
 import 'package:coffee_quest/services/ads/ads_provider.dart';
 import 'package:coffee_quest/services/ads/ads_service.dart';
 import 'package:coffee_quest/services/ads/noop_ads_service.dart';
@@ -8,6 +5,8 @@ import 'package:coffee_quest/services/payments/noop_payments_service.dart';
 import 'package:coffee_quest/services/payments/payments_provider.dart';
 import 'package:coffee_quest/services/payments/payments_service.dart';
 import 'package:coffee_quest/services/payments/store_product.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('payments & ads providers resolve to the No-Op implementations', () {

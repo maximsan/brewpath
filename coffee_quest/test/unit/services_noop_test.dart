@@ -1,6 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_test/flutter_test.dart';
-
 import 'package:coffee_quest/services/analytics/analytics_provider.dart';
 import 'package:coffee_quest/services/analytics/noop_analytics_service.dart';
 import 'package:coffee_quest/services/crash_reporting/crash_reporting_provider.dart';
@@ -8,6 +5,8 @@ import 'package:coffee_quest/services/crash_reporting/noop_crash_reporting_servi
 import 'package:coffee_quest/services/remote_config/noop_remote_config_service.dart';
 import 'package:coffee_quest/services/remote_config/remote_config_keys.dart';
 import 'package:coffee_quest/services/remote_config/remote_config_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('service providers default to the No-Op implementations', () {

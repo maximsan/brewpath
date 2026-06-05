@@ -1,7 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-
 import 'package:coffee_quest/core/constants/app_strings.dart';
 import 'package:coffee_quest/core/utils/module_icons.dart';
 import 'package:coffee_quest/core/widgets/error_view.dart';
@@ -12,6 +8,9 @@ import 'package:coffee_quest/features/lessons/domain/lesson_completion_service.d
 import 'package:coffee_quest/features/progress/domain/progress_providers.dart';
 import 'package:coffee_quest/shared/models/coffee_card_model.dart';
 import 'package:coffee_quest/shared/repositories/content_repository.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 /// Loaded outcome for the screen. Exactly one of [completion] / [reviewResult]
 /// is set for first-completion / review runs; both are null for pure

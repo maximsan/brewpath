@@ -1,6 +1,5 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
-
 import 'package:coffee_quest/services/analytics/analytics_service.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 /// Firebase-backed analytics. Wired in `analytics_provider.dart` once
 /// `kUseFirebase` is enabled.

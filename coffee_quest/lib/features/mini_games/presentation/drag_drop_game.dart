@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
-
 import 'package:coffee_quest/features/mini_games/domain/mini_game_result.dart';
 import 'package:coffee_quest/shared/models/lesson_step_model.dart';
+import 'package:flutter/material.dart';
 
 /// Match terms[i] ↔ definitions[i] by dragging. A drop is only accepted when
 /// the term index equals the definition index; wrong drops bounce back with no

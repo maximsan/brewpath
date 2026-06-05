@@ -1,3 +1,6 @@
+import 'package:coffee_quest/features/onboarding/presentation/loading_screen.dart';
+import 'package:coffee_quest/shared/repositories/settings_repository.dart';
+import 'package:coffee_quest/shared/storage/app_database.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
@@ -5,10 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-
-import 'package:coffee_quest/features/onboarding/presentation/loading_screen.dart';
-import 'package:coffee_quest/shared/repositories/settings_repository.dart';
-import 'package:coffee_quest/shared/storage/app_database.dart';
 
 /// Shared widget-test setup: a fresh in-memory Drift DB wired into
 /// [AppDatabaseService] and stubbed package_info, so screens render against

@@ -1,6 +1,3 @@
-import 'package:drift/native.dart';
-import 'package:flutter_test/flutter_test.dart';
-
 import 'package:coffee_quest/core/constants/xp_values.dart';
 import 'package:coffee_quest/features/lessons/domain/lesson_completion_service.dart';
 import 'package:coffee_quest/features/progress/domain/streak_service.dart';
@@ -12,6 +9,8 @@ import 'package:coffee_quest/shared/repositories/module_progress_repository.dart
 import 'package:coffee_quest/shared/repositories/progress_repository.dart';
 import 'package:coffee_quest/shared/repositories/settings_repository.dart';
 import 'package:coffee_quest/shared/storage/app_database.dart';
+import 'package:drift/native.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

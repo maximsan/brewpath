@@ -1,9 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-
 import 'package:coffee_quest/features/mini_games/domain/mini_game_result.dart';
 import 'package:coffee_quest/features/mini_games/presentation/slider_game.dart';
 import 'package:coffee_quest/shared/models/lesson_step_model.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 // Midpoint = 90, which falls inside the 85–96 target range.
 const _step = SliderStep(

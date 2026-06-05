@@ -1,5 +1,3 @@
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-
 import 'package:coffee_quest/features/progress/domain/streak_service.dart';
 import 'package:coffee_quest/features/progress/domain/xp_service.dart';
 import 'package:coffee_quest/services/analytics/analytics_provider.dart';
@@ -11,6 +9,7 @@ import 'package:coffee_quest/shared/repositories/module_progress_repository.dart
 import 'package:coffee_quest/shared/repositories/progress_repository.dart';
 import 'package:coffee_quest/shared/repositories/repository_providers.dart';
 import 'package:coffee_quest/shared/repositories/settings_repository.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'lesson_completion_service.g.dart';
 

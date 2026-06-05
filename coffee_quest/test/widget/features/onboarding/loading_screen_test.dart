@@ -1,11 +1,10 @@
+import 'package:coffee_quest/features/onboarding/presentation/loading_screen.dart';
+import 'package:coffee_quest/shared/storage/app_database.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-
-import 'package:coffee_quest/features/onboarding/presentation/loading_screen.dart';
-import 'package:coffee_quest/shared/storage/app_database.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -24,13 +23,19 @@ void main() {
     final router = GoRouter(
       initialLocation: '/loading',
       routes: [
-        GoRoute(path: '/loading', builder: (_, _) => const LoadingScreen()),
+        GoRoute(
+          path: '/loading',
+          name: 'loading',
+          builder: (_, _) => const LoadingScreen(),
+        ),
         GoRoute(
           path: '/welcome',
+          name: 'welcome',
           builder: (_, _) => const Scaffold(body: Text('welcome-stub')),
         ),
         GoRoute(
           path: '/learn',
+          name: 'learn',
           builder: (_, _) => const Scaffold(body: Text('learn-stub')),
         ),
       ],

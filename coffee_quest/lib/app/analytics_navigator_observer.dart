@@ -1,6 +1,5 @@
-import 'package:flutter/widgets.dart';
-
 import 'package:coffee_quest/services/analytics/analytics_service.dart';
+import 'package:flutter/widgets.dart';
 
 /// Reports route changes to [AnalyticsService.logScreen]. Wired into go_router
 /// via `observers`. The injected service is the NoOp impl until Firebase lands

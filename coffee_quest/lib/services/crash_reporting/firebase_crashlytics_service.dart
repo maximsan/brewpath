@@ -1,6 +1,5 @@
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-
 import 'package:coffee_quest/services/crash_reporting/crash_reporting_service.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 /// Firebase Crashlytics-backed implementation. Wired in
 /// `crash_reporting_provider.dart` once `kUseFirebase` is enabled.

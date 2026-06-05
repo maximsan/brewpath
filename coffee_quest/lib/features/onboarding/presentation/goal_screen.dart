@@ -1,7 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-
 import 'package:coffee_quest/core/widgets/pick_card.dart';
 import 'package:coffee_quest/core/widgets/primary_button.dart';
 import 'package:coffee_quest/core/widgets/smallcaps_label.dart';
@@ -9,6 +5,9 @@ import 'package:coffee_quest/features/onboarding/presentation/onboarding_provide
 import 'package:coffee_quest/shared/theme/app_colors.dart';
 import 'package:coffee_quest/shared/theme/app_spacing.dart';
 import 'package:coffee_quest/shared/theme/app_typography.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class _GoalOption {
   const _GoalOption(this.key, this.title, this.description);

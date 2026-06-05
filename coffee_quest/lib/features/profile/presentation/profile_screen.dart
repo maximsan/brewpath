@@ -122,7 +122,6 @@ class _StatsGrid extends StatelessWidget {
       crossAxisCount: 2,
       mainAxisSpacing: 12,
       crossAxisSpacing: 12,
-      childAspectRatio: 1.0,
       children: [
         StatTile(icon: Icons.bolt, label: 'Total XP', value: '$xp'),
         StatTile(
@@ -164,7 +163,6 @@ class _CustomizeGrid extends StatelessWidget {
       crossAxisCount: 2,
       mainAxisSpacing: 12,
       crossAxisSpacing: 12,
-      childAspectRatio: 1.0,
       children: [
         PreferenceTile.toggle(
           icon: Icons.volume_up_outlined,

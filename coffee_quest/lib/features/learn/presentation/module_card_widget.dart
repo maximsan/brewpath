@@ -1,9 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-
 import 'package:coffee_quest/core/constants/app_strings.dart';
 import 'package:coffee_quest/core/utils/module_icons.dart';
 import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 /// Module summary card for the Learn list: per-module icon, title, lesson
 /// progress, and lock state. Locked taps surface the unlock hint instead of

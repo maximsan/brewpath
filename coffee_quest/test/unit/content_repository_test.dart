@@ -1,6 +1,6 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:coffee_quest/shared/models/lesson_step_model.dart';
 import 'package:coffee_quest/shared/repositories/content_repository.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

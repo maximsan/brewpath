@@ -1,7 +1,6 @@
+import 'package:coffee_quest/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
-import 'package:coffee_quest/core/constants/app_strings.dart';
 
 /// Bottom-nav scaffold wrapping the four `StatefulShellRoute` branches. Each
 /// branch keeps its own navigator stack, so tab state and scroll position

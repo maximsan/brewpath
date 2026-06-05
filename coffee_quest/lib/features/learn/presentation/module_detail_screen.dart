@@ -160,7 +160,6 @@ class _LessonCard extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               _LessonBadge(index: index, isCompleted: isCompleted),
               const SizedBox(width: 12),

@@ -1,5 +1,5 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:coffee_quest/shared/models/lesson_step_model.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'lesson_model.freezed.dart';
 part 'lesson_model.g.dart';

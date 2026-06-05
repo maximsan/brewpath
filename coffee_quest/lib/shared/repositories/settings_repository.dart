@@ -28,7 +28,6 @@ class SettingsRepository {
       );
     }
     return UserSettingsRecord(
-      id: settingsId,
       hapticsEnabled: true,
       soundEnabled: true,
       totalXp: 0,

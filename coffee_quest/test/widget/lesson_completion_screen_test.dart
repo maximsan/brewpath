@@ -1,7 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_test/flutter_test.dart';
-
 import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
 import 'package:coffee_quest/features/lessons/domain/lesson_completion_service.dart';
 import 'package:coffee_quest/features/lessons/presentation/lesson_completion_screen.dart';
@@ -11,6 +7,9 @@ import 'package:coffee_quest/shared/models/lesson_model.dart';
 import 'package:coffee_quest/shared/models/lesson_step_model.dart';
 import 'package:coffee_quest/shared/models/module_model.dart';
 import 'package:coffee_quest/shared/repositories/content_repository.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 import '../support/widget_harness.dart';
 

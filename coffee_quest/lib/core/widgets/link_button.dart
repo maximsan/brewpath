@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
-
 import 'package:coffee_quest/shared/theme/app_colors.dart';
 import 'package:coffee_quest/shared/theme/app_typography.dart';
+import 'package:flutter/material.dart';
 
 /// Text-only accent button (e.g. "Already have progress? Restore"). Mirrors
 /// the `.btn-link` style from the design bundle.

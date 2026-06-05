@@ -72,3 +72,31 @@ the Firebase SPM packages). CI builds the app on a macOS runner via the
 - **Providers:** function-style `@riverpod` only; class-based `@riverpod` only when state is mutable
 - **Tests:** unit tests in `test/unit/`; widget tests in `test/widget/`; integration tests in `integration_test/`
 - **No print statements** — use `debugPrint` only in development guards; never in production paths
+
+## Code Quality Rules
+
+These are not all lint-enforceable (the stock Dart linter has no rule for magic
+numbers, identifier length, or file/class size, and `custom_lint`-based tooling
+is blocked here — see the `pubspec.yaml` lint TODO). Follow them on every new or
+modified file:
+
+- **No magic numbers.** Extract meaningful or repeated literals to named
+  `static const` or theme tokens (`AppSpacing`, `AppColors`, `AppTypography`).
+  Only `0`/`1` may appear inline. Animation/layout constants get intent names
+  (`_stageSize`, `_captionGap`), not bare numbers in the widget tree.
+- **Descriptive names.** No single-letter identifiers except trivial loop
+  indices (`i`). Animation/controller values are `progress`, not `t`; phase
+  fractions get real names (`normalizedPhase`, not `p`).
+- **Small files & classes.** Soft cap ≈ 250 lines/file. When a file grows
+  multiple `State`/widget classes or mixes UI with logic, split it. Keep
+  `build()` declarative — push math and derivations into named helpers.
+- **Extract pure helpers.** Animation math, mapping, and derivations live in a
+  sibling pure-Dart file (e.g. `*_animation.dart`) as named top-level functions,
+  so they are unit-testable without pumping widgets.
+- **Navigation policy lives in the router.** Screens don't duplicate
+  gate→destination decisions; the `appRouter` redirect owns them. Navigate by
+  route `name` (`context.goNamed('welcome')`), never by hardcoded path strings.
+- **Debug toggles via `bool.fromEnvironment`,** never a hand-flipped `const`, so
+  release builds are safe by construction.
+- **Loading/empty/error states** get `Semantics` labels and respect
+  `MediaQuery.disableAnimations` (reduced motion).

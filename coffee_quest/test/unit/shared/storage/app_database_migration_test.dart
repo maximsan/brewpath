@@ -1,8 +1,7 @@
-import 'package:drift/native.dart';
-import 'package:flutter_test/flutter_test.dart';
-
 import 'package:coffee_quest/shared/repositories/settings_repository.dart';
 import 'package:coffee_quest/shared/storage/app_database.dart';
+import 'package:drift/native.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 /// Smoke-tests the on-create + on-upgrade story for the v3 onboarding
 /// columns on `user_settings`. The full historical migration chain has its

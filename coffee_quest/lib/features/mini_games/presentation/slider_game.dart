@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
-
 import 'package:coffee_quest/core/constants/app_strings.dart';
 import 'package:coffee_quest/features/mini_games/domain/mini_game_result.dart';
 import 'package:coffee_quest/shared/models/lesson_step_model.dart';
+import 'package:flutter/material.dart';
 
 class SliderGame extends StatefulWidget {
   const SliderGame({super.key, required this.step, required this.onResult});

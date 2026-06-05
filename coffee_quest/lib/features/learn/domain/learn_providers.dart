@@ -1,11 +1,10 @@
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-
 import 'package:coffee_quest/features/progress/domain/progress_providers.dart';
 import 'package:coffee_quest/shared/models/lesson_model.dart';
 import 'package:coffee_quest/shared/models/lesson_step_model.dart';
 import 'package:coffee_quest/shared/models/module_model.dart';
 import 'package:coffee_quest/shared/repositories/content_repository.dart';
 import 'package:coffee_quest/shared/repositories/repository_providers.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'learn_providers.g.dart';
 

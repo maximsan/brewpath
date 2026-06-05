@@ -1,11 +1,10 @@
-import 'package:flutter/material.dart';
-
 import 'package:coffee_quest/features/mini_games/domain/mini_game_result.dart';
 import 'package:coffee_quest/features/mini_games/presentation/drag_drop_game.dart';
 import 'package:coffee_quest/features/mini_games/presentation/multiple_choice_game.dart';
 import 'package:coffee_quest/features/mini_games/presentation/slider_game.dart';
 import 'package:coffee_quest/features/mini_games/presentation/tap_order_game.dart';
 import 'package:coffee_quest/shared/models/lesson_step_model.dart';
+import 'package:flutter/material.dart';
 
 /// Dispatches a [LessonStepModel] variant to its mini-game widget. The sealed
 /// union makes the switch exhaustive — adding a variant is a compile error

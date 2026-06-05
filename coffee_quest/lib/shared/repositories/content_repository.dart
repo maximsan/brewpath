@@ -1,11 +1,10 @@
 import 'dart:convert';
 
-import 'package:flutter/services.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-
 import 'package:coffee_quest/shared/models/coffee_card_model.dart';
 import 'package:coffee_quest/shared/models/lesson_model.dart';
 import 'package:coffee_quest/shared/models/module_model.dart';
+import 'package:flutter/services.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'content_repository.g.dart';
 

@@ -124,7 +124,6 @@ class _ResetProgressTile extends ConsumerWidget {
   Future<void> _confirmAndReset(BuildContext context, WidgetRef ref) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      barrierDismissible: true,
       builder: (ctx) => AlertDialog(
         title: const Text('Reset all progress?'),
         content: const Text(
@@ -192,7 +191,6 @@ class _ResetOnboardingTile extends ConsumerWidget {
   Future<void> _confirmAndReset(BuildContext context, WidgetRef ref) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      barrierDismissible: true,
       builder: (ctx) => AlertDialog(
         title: const Text('Restart onboarding?'),
         content: const Text(
