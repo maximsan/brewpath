@@ -15,10 +15,10 @@ void main() {
       expect(phase, WakePhase.sleeping, reason: 'hold wraps back to sleeping');
     });
 
-    test('caption is hidden until idleBob, then visible', () {
+    test('caption is hidden until brewing, then visible', () {
       expect(WakePhase.sleeping.showsCaption, isFalse);
       expect(WakePhase.sproutGrows.showsCaption, isFalse);
-      expect(WakePhase.idleBob.showsCaption, isTrue);
+      expect(WakePhase.brewing.showsCaption, isTrue);
       expect(WakePhase.hold.showsCaption, isTrue);
     });
 
@@ -33,7 +33,7 @@ void main() {
       expect(WakePhase.dropFalling.roastyState, RoastyState.sleep);
       expect(WakePhase.awake.roastyState, RoastyState.awake);
       expect(WakePhase.sproutGrows.roastyState, RoastyState.awake);
-      expect(WakePhase.idleBob.roastyState, RoastyState.idle);
+      expect(WakePhase.brewing.roastyState, RoastyState.idle);
       expect(WakePhase.hold.roastyState, RoastyState.idle);
     });
   });

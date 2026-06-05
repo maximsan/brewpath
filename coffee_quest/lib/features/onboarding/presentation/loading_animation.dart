@@ -9,7 +9,7 @@ enum WakePhase {
   dropFalling(Duration(milliseconds: 800)),
   awake(Duration(milliseconds: 600)),
   sproutGrows(Duration(milliseconds: 700)),
-  idleBob(Duration(milliseconds: 1800)),
+  brewing(Duration(milliseconds: 1800)),
   hold(Duration(milliseconds: 1400));
 
   const WakePhase(this.duration);
@@ -20,7 +20,7 @@ enum WakePhase {
   WakePhase get next => this == values.last ? values.first : values[index + 1];
 
   /// Whether the "Brewing your lesson" caption is visible in this phase.
-  bool get showsCaption => index >= idleBob.index;
+  bool get showsCaption => index >= brewing.index;
 
   /// Whether the falling water-drop overlay plays in this phase.
   bool get showsDrop => this == dropFalling;
@@ -29,7 +29,7 @@ enum WakePhase {
   RoastyState get roastyState => switch (this) {
     sleeping || dropFalling => RoastyState.sleep,
     awake || sproutGrows => RoastyState.awake,
-    idleBob || hold => RoastyState.idle,
+    brewing || hold => RoastyState.idle,
   };
 }
 

@@ -64,6 +64,9 @@ dev_dependencies:
   integration_test:
     sdk: flutter
 
+  # Deterministic timer control for unit tests
+  fake_async: ^1.3.3
+
   # Code generation
   build_runner: ^2.15.0
   riverpod_generator: ^4.0.3
