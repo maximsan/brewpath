@@ -1,25 +1,19 @@
-import 'package:coffee_quest/features/onboarding/presentation/loading_screen.dart';
-import 'package:coffee_quest/shared/storage/app_database.dart';
-import 'package:drift/native.dart';
+import 'package:coffee_quest/features/onboarding/presentation/loading/loading_screen.dart';
+import 'package:coffee_quest/features/onboarding/presentation/onboarding_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../support/fake_onboarding_repository.dart';
+
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-
-  setUp(() {
-    AppDatabaseService.instance = AppDatabase(NativeDatabase.memory());
-  });
-
-  tearDown(() async {
-    await AppDatabaseService.instance.close();
-  });
-
   testWidgets('shows brand mark and runs through the 6-step state machine', (
     tester,
   ) async {
+    // Fake gate resolves to "incomplete"; the screen auto-advances to /welcome
+    // once the first wake-up cycle finishes.
+    final fake = FakeOnboardingRepository();
     final router = GoRouter(
       initialLocation: '/loading',
       routes: [
@@ -42,21 +36,23 @@ void main() {
     );
 
     await tester.pumpWidget(
-      ProviderScope(child: MaterialApp.router(routerConfig: router)),
+      ProviderScope(
+        overrides: [onboardingRepositoryProvider.overrideWithValue(fake)],
+        child: MaterialApp.router(routerConfig: router),
+      ),
     );
 
     // Pump initial frame; brand mark should be on screen.
     await tester.pump();
     expect(find.text('COFFEE QUEST'), findsOneWidget);
 
-    // Step through ~5 seconds to cover the full first cycle.
+    // Step through ~6 seconds to cover the full first cycle.
     for (var i = 0; i < 6; i++) {
       await tester.pump(const Duration(seconds: 1));
     }
 
-    // We should either be on the loading screen still (second cycle) or
-    // have already auto-advanced to /welcome (since the in-memory DB
-    // reports incomplete).
+    // Either still mid-animation (second cycle) or already auto-advanced to
+    // /welcome once the gate resolved.
     final advanced = find.text('welcome-stub').evaluate().isNotEmpty;
     final stillLoading = find.byType(LoadingScreen).evaluate().isNotEmpty;
     expect(advanced || stillLoading, isTrue);

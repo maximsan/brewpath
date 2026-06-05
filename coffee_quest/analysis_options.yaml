@@ -4,8 +4,12 @@ analyzer:
   exclude:
     - "**/*.g.dart"
     - "**/*.freezed.dart"
-    # Build artifacts — SwiftPM/CocoaPods copies plugin example apps here.
+    # Build artifacts — SwiftPM/CocoaPods copy plugin sources into build dirs
+    # at the package root (build/) and under platform dirs (e.g. ios/build/).
+    # Both globs are needed: "build/**" only matches the root, "**/build/**"
+    # only matches nested copies.
     - "build/**"
+    - "**/build/**"
   errors:
     invalid_annotation_target: ignore
 

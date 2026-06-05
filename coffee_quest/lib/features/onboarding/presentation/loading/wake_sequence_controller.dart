@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:coffee_quest/features/onboarding/presentation/loading_animation.dart';
+import 'package:coffee_quest/features/onboarding/presentation/loading/loading_animation.dart';
 import 'package:flutter/foundation.dart';
 
 /// Drives the Roasty wake-up sequence independently of the widget tree so the

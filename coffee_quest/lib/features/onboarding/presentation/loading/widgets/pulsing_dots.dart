@@ -1,4 +1,4 @@
-import 'package:coffee_quest/features/onboarding/presentation/loading_animation.dart';
+import 'package:coffee_quest/features/onboarding/presentation/loading/loading_animation.dart';
 import 'package:coffee_quest/shared/theme/app_colors.dart';
 import 'package:coffee_quest/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';

@@ -1,6 +1,7 @@
 import 'package:coffee_quest/core/widgets/pick_card.dart';
 import 'package:coffee_quest/core/widgets/primary_button.dart';
 import 'package:coffee_quest/core/widgets/smallcaps_label.dart';
+import 'package:coffee_quest/features/onboarding/presentation/brewer/brewer_controller.dart';
 import 'package:coffee_quest/features/onboarding/presentation/onboarding_providers.dart';
 import 'package:coffee_quest/shared/theme/app_colors.dart';
 import 'package:coffee_quest/shared/theme/app_spacing.dart';
@@ -9,40 +10,61 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class _GoalOption {
-  const _GoalOption(this.key, this.title, this.description);
+class _BrewerOption {
+  const _BrewerOption(this.key, this.title, this.description);
   final String key;
   final String title;
   final String description;
 }
 
-const _options = <_GoalOption>[
-  _GoalOption(
-    'brew_better',
-    'Brew better at home',
-    'Hands-on guidance for V60, AeroPress, and friends.',
+const _options = <_BrewerOption>[
+  _BrewerOption('v60', 'V60', 'Pour-over. Clean, light, articulate.'),
+  _BrewerOption(
+    'aeropress',
+    'AeroPress',
+    'Forgiving and fast. A good first brewer.',
   ),
-  _GoalOption(
-    'understand_tasting',
-    'Understand what I’m tasting',
-    'Build a vocabulary for the cup in front of you.',
-  ),
-  _GoalOption(
-    'just_curious',
-    'Just curious about coffee',
-    'A quiet field guide. No pressure.',
+  _BrewerOption(
+    'not_sure',
+    'Not sure yet',
+    'We’ll teach what you need, when you need it.',
   ),
 ];
 
-class GoalScreen extends ConsumerStatefulWidget {
-  const GoalScreen({super.key});
+class BrewerScreen extends ConsumerStatefulWidget {
+  const BrewerScreen({super.key});
 
   @override
-  ConsumerState<GoalScreen> createState() => _GoalScreenState();
+  ConsumerState<BrewerScreen> createState() => _BrewerScreenState();
 }
 
-class _GoalScreenState extends ConsumerState<GoalScreen> {
-  int? _picked;
+class _BrewerScreenState extends ConsumerState<BrewerScreen> {
+  late final BrewerController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = BrewerController(
+      onSubmit: (index) async {
+        final draft = ref.read(onboardingDraftProvider.notifier);
+        draft.setBrewer(_options[index].key);
+        await draft.complete();
+      },
+      onFinished: () {
+        if (mounted) context.go('/learn');
+      },
+    )..addListener(_onControllerChanged);
+  }
+
+  void _onControllerChanged() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,9 +81,9 @@ class _GoalScreenState extends ConsumerState<GoalScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SmallcapsLabel('ONBOARDING · 1 OF 2'),
+              const SmallcapsLabel('ONBOARDING · 2 OF 2'),
               const SizedBox(height: AppSpacing.base),
-              Text('What brings you here?', style: AppTypography.displayMD()),
+              Text('What do you brew with?', style: AppTypography.displayMD()),
               const SizedBox(height: AppSpacing.lg + 4),
               Expanded(
                 child: ListView.separated(
@@ -73,23 +95,16 @@ class _GoalScreenState extends ConsumerState<GoalScreen> {
                     return PickCard(
                       title: opt.title,
                       description: opt.description,
-                      selected: _picked == i,
-                      onTap: () => setState(() => _picked = i),
+                      selected: _controller.selectedIndex == i,
+                      onTap: () => _controller.pick(i),
                     );
                   },
                 ),
               ),
               const SizedBox(height: AppSpacing.lg),
               PrimaryButton(
-                label: 'Continue',
-                onPressed: _picked == null
-                    ? null
-                    : () {
-                        ref
-                            .read(onboardingDraftProvider.notifier)
-                            .setGoal(_options[_picked!].key);
-                        context.go('/onboarding/brewer');
-                      },
+                label: _controller.submitting ? 'Saving…' : 'Continue',
+                onPressed: _controller.canSubmit ? _controller.submit : null,
               ),
             ],
           ),

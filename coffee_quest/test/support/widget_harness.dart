@@ -1,4 +1,4 @@
-import 'package:coffee_quest/features/onboarding/presentation/loading_screen.dart';
+import 'package:coffee_quest/features/onboarding/presentation/loading/loading_screen.dart';
 import 'package:coffee_quest/shared/repositories/settings_repository.dart';
 import 'package:coffee_quest/shared/storage/app_database.dart';
 import 'package:drift/drift.dart' show Value;
