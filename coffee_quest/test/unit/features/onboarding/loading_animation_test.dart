@@ -36,6 +36,20 @@ void main() {
       expect(WakePhase.brewing.roastyState, RoastyState.idle);
       expect(WakePhase.hold.roastyState, RoastyState.idle);
     });
+
+    test('growsSprout is true only during sproutGrows', () {
+      for (final phase in WakePhase.values) {
+        expect(phase.growsSprout, phase == WakePhase.sproutGrows);
+      }
+    });
+
+    test('hasFullSprout holds from brewing onward', () {
+      expect(WakePhase.sleeping.hasFullSprout, isFalse);
+      expect(WakePhase.awake.hasFullSprout, isFalse);
+      expect(WakePhase.sproutGrows.hasFullSprout, isFalse);
+      expect(WakePhase.brewing.hasFullSprout, isTrue);
+      expect(WakePhase.hold.hasFullSprout, isTrue);
+    });
   });
 
   group('wakeDropFrame', () {
@@ -74,6 +88,35 @@ void main() {
         final o = wakeDropFrame(t).opacity;
         expect(o, inInclusiveRange(0, 1));
       }
+    });
+  });
+
+  group('wakeSproutScale', () {
+    test('starts fully hidden so no sprout nub shows while sleeping', () {
+      expect(wakeSproutScale(0), closeTo(0, 1e-9));
+    });
+
+    test('overshoots to 1.18 at 60% before settling to 1', () {
+      expect(wakeSproutScale(0.6), closeTo(1.18, 1e-9));
+      expect(wakeSproutScale(1), closeTo(1, 1e-9));
+    });
+
+    test('grows monotonically up to the overshoot peak', () {
+      var previous = wakeSproutScale(0);
+      for (var t = 0.05; t <= 0.6; t += 0.05) {
+        final current = wakeSproutScale(t);
+        expect(current, greaterThanOrEqualTo(previous));
+        previous = current;
+      }
+    });
+
+    test('peak exceeds the resting scale (the overshoot is real)', () {
+      expect(wakeSproutScale(0.6), greaterThan(wakeSproutScale(1)));
+    });
+
+    test('clamps input so out-of-range progress is well defined', () {
+      expect(wakeSproutScale(-0.5), closeTo(0, 1e-9));
+      expect(wakeSproutScale(1.5), closeTo(1, 1e-9));
     });
   });
 

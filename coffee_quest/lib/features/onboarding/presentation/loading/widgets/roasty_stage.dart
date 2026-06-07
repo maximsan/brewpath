@@ -16,24 +16,34 @@ class RoastyStage extends StatefulWidget {
 }
 
 class _RoastyStageState extends State<RoastyStage>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   static const Size _stageSize = Size(200, 280);
   static const Duration _dropDuration = Duration(milliseconds: 700);
+  static const Duration _sproutGrowDuration = Duration(milliseconds: 700);
   static const Size _dropSize = Size(14, 20);
 
   late final AnimationController _dropController;
+  late final AnimationController _growController;
 
   @override
   void initState() {
     super.initState();
     _dropController = AnimationController(vsync: this, duration: _dropDuration);
+    _growController = AnimationController(
+      vsync: this,
+      duration: _sproutGrowDuration,
+    );
     _maybeRunDrop();
+    _maybeGrowSprout();
   }
 
   @override
   void didUpdateWidget(covariant RoastyStage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.phase != widget.phase) _maybeRunDrop();
+    if (oldWidget.phase != widget.phase) {
+      _maybeRunDrop();
+      _maybeGrowSprout();
+    }
   }
 
   void _maybeRunDrop() {
@@ -44,9 +54,25 @@ class _RoastyStageState extends State<RoastyStage>
     }
   }
 
+  void _maybeGrowSprout() {
+    if (widget.phase.growsSprout) {
+      _growController
+        ..reset()
+        ..forward();
+    }
+  }
+
+  /// Sprout scale for the current phase: hidden before the grow, the overshoot
+  /// curve while [WakePhase.sproutGrows] plays, then held full once brewed.
+  double _sproutScale() {
+    if (widget.phase.growsSprout) return wakeSproutScale(_growController.value);
+    return widget.phase.hasFullSprout ? 1.0 : 0.0;
+  }
+
   @override
   void dispose() {
     _dropController.dispose();
+    _growController.dispose();
     super.dispose();
   }
 
@@ -58,7 +84,14 @@ class _RoastyStageState extends State<RoastyStage>
       child: Stack(
         alignment: Alignment.center,
         children: [
-          Roasty(state: widget.phase.roastyState, size: widget.mascotSize),
+          AnimatedBuilder(
+            animation: _growController,
+            builder: (context, _) => Roasty(
+              state: widget.phase.roastyState,
+              size: widget.mascotSize,
+              sproutScale: _sproutScale(),
+            ),
+          ),
           if (widget.phase.showsDrop)
             AnimatedBuilder(
               animation: _dropController,

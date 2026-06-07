@@ -25,6 +25,12 @@ enum WakePhase {
   /// Whether the falling water-drop overlay plays in this phase.
   bool get showsDrop => this == dropFalling;
 
+  /// Whether the sprout is actively growing out of Roasty's head this phase.
+  bool get growsSprout => this == sproutGrows;
+
+  /// Whether the sprout has reached and should hold its full size this phase.
+  bool get hasFullSprout => index >= brewing.index;
+
   /// The mascot pose for this phase.
   RoastyState get roastyState => switch (this) {
     sleeping || dropFalling => RoastyState.sleep,
@@ -80,6 +86,22 @@ DropFrame wakeDropFrame(double progress) {
     scaleX: scaleX,
     scaleY: scaleY,
   );
+}
+
+const _sproutGrowPeak = 1.18; // overshoot scale before settling to 1
+const _sproutGrowPeakAt = 0.6; // progress fraction where the overshoot peaks
+
+/// Pure grow curve for the waking sprout, mirroring the `loading-sprout-grow`
+/// CSS keyframes (scale 0 → 1.18 at 60% → 1). The sprout is hidden at
+/// [progress] 0 and overshoots before settling, so it pops out of Roasty's
+/// head. [progress] is the controller value in 0–1.
+double wakeSproutScale(double progress) {
+  final clamped = progress.clamp(0.0, 1.0);
+  if (clamped < _sproutGrowPeakAt) {
+    return _sproutGrowPeak * clamped / _sproutGrowPeakAt;
+  }
+  final settle = (clamped - _sproutGrowPeakAt) / (1 - _sproutGrowPeakAt);
+  return _sproutGrowPeak - (_sproutGrowPeak - 1) * settle;
 }
 
 const _dotRestOpacity = 0.22; // opacity at the trough of the pulse

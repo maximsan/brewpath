@@ -14,12 +14,18 @@ class Roasty extends StatefulWidget {
     required this.state,
     this.size = 160,
     this.replayKey,
+    this.sproutScale,
     super.key,
   });
 
   final RoastyState state;
   final double size;
   final Object? replayKey;
+
+  /// Overrides the sprout's scale when non-null, letting a host (e.g. the
+  /// loading screen) drive the wake-up grow. When null the sprout follows the
+  /// state-based default (shrunk while sleeping, full otherwise).
+  final double? sproutScale;
 
   @override
   State<Roasty> createState() => _RoastyState();
@@ -111,7 +117,11 @@ class _RoastyState extends State<Roasty> with SingleTickerProviderStateMixin {
         child: AnimatedBuilder(
           animation: _controller,
           builder: (context, _) => CustomPaint(
-            painter: _RoastyPainter(state: widget.state, t: _controller.value),
+            painter: _RoastyPainter(
+              state: widget.state,
+              t: _controller.value,
+              sproutScale: widget.sproutScale,
+            ),
           ),
         ),
       ),
@@ -123,13 +133,23 @@ class _RoastyState extends State<Roasty> with SingleTickerProviderStateMixin {
 /// particle layer onto a 200x280 logical canvas (matches the prototype's
 /// SVG viewBox so geometry copies 1:1 from roasty.jsx).
 class _RoastyPainter extends CustomPainter {
-  _RoastyPainter({required this.state, required this.t});
+  _RoastyPainter({required this.state, required this.t, this.sproutScale});
 
   final RoastyState state;
   final double t;
 
+  /// When non-null, overrides the state-derived sprout scale (used by the
+  /// loading screen to grow the sprout out of Roasty's head during wake-up).
+  final double? sproutScale;
+
   static const double _vbW = 200;
   static const double _vbH = 280;
+
+  /// Scale origin while the host drives the grow: the stem base sits at the
+  /// bean's top edge, so the sprout emerges from the head rather than scaling
+  /// in mid-air. The default sleeping shrink keeps its original (100, 75) pivot.
+  static const Offset _sproutGrowAnchor = Offset(100, 88);
+  static const Offset _sproutDefaultAnchor = Offset(100, 75);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -269,11 +289,13 @@ class _RoastyPainter extends CustomPainter {
 
   // ── Sprout ───────────────────────────────────────────────────────────
   void _paintSprout(Canvas canvas) {
-    canvas.save();
     final sleeping = state == RoastyState.sleep || state == RoastyState.awake;
-    final scale = sleeping ? 0.15 : 1.0;
-    // anchor near base of stem (x=100, y=88)
-    canvas.translate(100, 75);
+    final usingGrow = sproutScale != null;
+    final scale = sproutScale ?? (sleeping ? 0.15 : 1.0);
+    if (scale <= 0) return; // fully hidden; also skips a degenerate matrix
+    canvas.save();
+    final anchor = usingGrow ? _sproutGrowAnchor : _sproutDefaultAnchor;
+    canvas.translate(anchor.dx, anchor.dy);
 
     // leaf sway: gentle ±2° rotation on most states
     if (!sleeping) {
@@ -282,7 +304,7 @@ class _RoastyPainter extends CustomPainter {
     }
 
     canvas.scale(scale);
-    canvas.translate(-100, -75);
+    canvas.translate(-anchor.dx, -anchor.dy);
 
     final stem = Paint()
       ..color = const Color(0xFF5E7148)
@@ -820,5 +842,5 @@ class _RoastyPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _RoastyPainter old) =>
-      old.state != state || old.t != t;
+      old.state != state || old.t != t || old.sproutScale != sproutScale;
 }
