@@ -25,8 +25,8 @@ class LoadingScreen extends ConsumerStatefulWidget {
 
 class _LoadingScreenState extends ConsumerState<LoadingScreen> {
   /// Debug-only: loops the animation forever and disables auto-advance / skip.
-  /// Compile-time and off by default, so release builds are safe by
-  /// construction — enable with `flutter run --dart-define=LOOP_LOADING=true`.
+  /// Off by default, so release builds are safe by construction. See the README
+  /// "Run-time flags" section to enable it.
   static const bool _loopForever = bool.fromEnvironment('LOOP_LOADING');
 
   static const double _mascotSize = 170;
@@ -43,7 +43,8 @@ class _LoadingScreenState extends ConsumerState<LoadingScreen> {
     super.didChangeDependencies();
     if (_started) return;
     _started = true;
-    final reduceMotion = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+    final reduceMotion =
+        MediaQuery.maybeOf(context)?.disableAnimations ?? false;
     _controller = WakeSequenceController(
       reduceMotion: reduceMotion,
       loopForever: _loopForever,

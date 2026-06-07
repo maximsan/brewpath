@@ -38,31 +38,11 @@ of that file:
 - **At release time:** run `coffee_quest/tool/release.sh` — it stamps the
   version + date, bumps `pubspec.yaml`, and tags the release.
 
-## Common Commands (run from `coffee_quest/`)
+## Development commands
 
-```bash
-flutter pub get
-dart run build_runner build --delete-conflicting-outputs
-flutter analyze
-flutter test
-flutter test test/unit/<file>
-flutter test test/widget/<file>
-flutter run -d "iPhone 17"
-flutter build ios --release --no-codesign
-```
-
-### DB tests
-
-Drift tests use an in-memory database (`AppDatabase(NativeDatabase.memory())`),
-so no native binary copy is needed (the old `libisar.dylib` step is gone).
-
-### iOS native build
-
-The iOS project uses **Swift Package Manager**, not CocoaPods — there is no
-`ios/Podfile` and no `pod install` step. Plugins resolve as Swift Packages
-during `flutter build ios`. The iOS deployment target is **16.0** (required by
-the Firebase SPM packages). CI builds the app on a macOS runner via the
-`iOS build` job in `.github/workflows/ci.yml`.
+Run all flutter/dart commands from `coffee_quest/`. The full command list with
+explanations — plus test and iOS/SPM build notes — lives in
+[`coffee_quest/README.md`](coffee_quest/README.md).
 
 ## Code Conventions
 
@@ -97,6 +77,7 @@ modified file:
   gate→destination decisions; the `appRouter` redirect owns them. Navigate by
   route `name` (`context.goNamed('welcome')`), never by hardcoded path strings.
 - **Debug toggles via `bool.fromEnvironment`,** never a hand-flipped `const`, so
-  release builds are safe by construction.
+  release builds are safe by construction. Catalogue each in the README
+  _Run-time flags_ table.
 - **Loading/empty/error states** get `Semantics` labels and respect
   `MediaQuery.disableAnimations` (reduced motion).

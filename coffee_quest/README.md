@@ -1,20 +1,63 @@
-# coffee_quest
+# Coffee Quest
 
-A new Flutter project.
+A Duolingo-style mobile app for learning coffee — short lessons and mini-games
+that grow your knowledge (and Roasty, your coffee-bean companion) one cup at a
+time. Flutter, offline-first.
 
-## Getting Started
+**Stack:** Flutter · Riverpod (state) · go_router (navigation) · Drift/SQLite
+(offline persistence) · Freezed + json_serializable (content models).
 
-This project is a starting point for a Flutter application.
+Architecture and conventions live in [`../CLAUDE.md`](../CLAUDE.md); deeper
+design and milestone docs are in [`../docs/`](../docs/).
 
-A few resources to get you started if this is your first Flutter project:
+## Development commands
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+Run all Flutter/Dart commands from `coffee_quest/`.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+| Command | What it does |
+| --- | --- |
+| `flutter pub get` | Fetch/refresh dependencies (after editing `pubspec.yaml`). |
+| `dart run build_runner build` | Regenerate code after changing a Freezed model, Riverpod provider, or Drift table. build_runner 2.15 auto-resolves conflicts — the old `--delete-conflicting-outputs` flag is gone. |
+| `dart format lib test integration_test` | Format code. CI fails on unformatted files (`--set-exit-if-changed`). |
+| `flutter analyze` | Static analysis / lints — keep clean before pushing. |
+| `flutter test` | Run the full test suite. |
+| `flutter test test/unit/<file>` | Run a single unit test. |
+| `flutter test test/widget/<file>` | Run a single widget test. |
+| `flutter run -d "iPhone 17"` | Launch on the iOS simulator. |
+| `flutter build ios --release --no-codesign` | Release iOS build without signing (mirrors CI). |
+
+### Tests
+
+Drift tests use an in-memory database (`AppDatabase(NativeDatabase.memory())`),
+so no native binary copy is needed. Unit tests live in `test/unit/`, widget tests
+in `test/widget/`, integration tests in `integration_test/`.
+
+### iOS build (Swift Package Manager)
+
+The iOS project uses **Swift Package Manager**, not CocoaPods — there is no
+`ios/Podfile` and no `pod install` step. Plugins resolve as Swift Packages during
+`flutter build ios`. The deployment target is **16.0** (required by the Firebase
+SPM packages). CI builds on a macOS runner via the `iOS build` job in
+`.github/workflows/ci.yml`.
+
+Troubleshooting:
+
+- Target Integrity / "minimum platform version" build errors → run
+  `tool/reset_ios_spm.sh` (see below).
+- `flutter test` crashing with `PathExistsException` on
+  `ios/Flutter/ephemeral/.../Packages` → `rm -rf ios/Flutter/ephemeral`, then retry.
+
+## Run-time flags (`--dart-define`)
+
+Debug toggles compiled in via `bool.fromEnvironment`. All default to off, so
+release builds are unaffected.
+
+| Flag           | Effect                                                              | Run with                                                    |
+| -------------- | ------------------------------------------------------------------ | ----------------------------------------------------------- |
+| `LOOP_LOADING` | Loops the Roasty wake-up forever; disables auto-advance + tap-skip | `flutter run -d "iPhone 17" --dart-define=LOOP_LOADING=true` |
+
+> With **Reduce Motion** enabled, `LOOP_LOADING` holds a static "brewing" frame
+> instead of animating the loop.
 
 ## Tooling scripts (`tool/`)
 
