@@ -101,7 +101,7 @@ Apple requires a Privacy Manifest for apps accessing certain APIs.
 <dict>
   <key>NSPrivacyAccessedAPITypes</key>
   <array>
-    <!-- File timestamp APIs — used by Isar for database file management -->
+    <!-- File timestamp APIs — used by Drift/SQLite (sqlite3) for database file management -->
     <dict>
       <key>NSPrivacyAccessedAPIType</key>
       <string>NSPrivacyAccessedAPICategoryFileTimestamp</string>

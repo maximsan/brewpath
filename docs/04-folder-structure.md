@@ -1,7 +1,7 @@
 # Coffee Quest — Folder Structure
 
 > **Status (2026-05-20):** This document describes the original **Isar 3.x**
-> persistence design. In Phase 3 the project migrated to **Drift 2.30.x**
+> persistence design. In Phase 3 the project migrated to **Drift 2.33.x**
 > (SQLite). The shape of the persistence layer — abstract repositories,
 > `AppDatabaseService.instance` singleton, mutable DTOs in
 > `shared/storage/*_record.dart` — is preserved, but the code examples below

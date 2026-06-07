@@ -28,38 +28,44 @@ void main() {
       controller.dispose();
     });
 
-    test('submit persists the selected index then finishes, in order', () async {
-      final calls = <String>[];
-      final controller = BrewerController(
-        onSubmit: (index) async => calls.add('submit:$index'),
-        onFinished: () => calls.add('finished'),
-      )..pick(2);
+    test(
+      'submit persists the selected index then finishes, in order',
+      () async {
+        final calls = <String>[];
+        final controller = BrewerController(
+          onSubmit: (index) async => calls.add('submit:$index'),
+          onFinished: () => calls.add('finished'),
+        )..pick(2);
 
-      await controller.submit();
+        await controller.submit();
 
-      expect(calls, ['submit:2', 'finished']);
-      controller.dispose();
-    });
+        expect(calls, ['submit:2', 'finished']);
+        controller.dispose();
+      },
+    );
 
-    test('submitting is true and canSubmit false while onSubmit runs', () async {
-      late final BrewerController controller;
-      bool? submittingInFlight;
-      bool? canSubmitInFlight;
-      controller = BrewerController(
-        onSubmit: (_) async {
-          submittingInFlight = controller.submitting;
-          canSubmitInFlight = controller.canSubmit;
-        },
-        onFinished: () {},
-      )..pick(0);
+    test(
+      'submitting is true and canSubmit false while onSubmit runs',
+      () async {
+        late final BrewerController controller;
+        bool? submittingInFlight;
+        bool? canSubmitInFlight;
+        controller = BrewerController(
+          onSubmit: (_) async {
+            submittingInFlight = controller.submitting;
+            canSubmitInFlight = controller.canSubmit;
+          },
+          onFinished: () {},
+        )..pick(0);
 
-      await controller.submit();
+        await controller.submit();
 
-      expect(submittingInFlight, isTrue);
-      expect(canSubmitInFlight, isFalse, reason: 'guarded while in flight');
-      expect(controller.submitting, isTrue);
-      controller.dispose();
-    });
+        expect(submittingInFlight, isTrue);
+        expect(canSubmitInFlight, isFalse, reason: 'guarded while in flight');
+        expect(controller.submitting, isTrue);
+        controller.dispose();
+      },
+    );
 
     test('submit is a no-op with no selection', () async {
       var submitted = false;

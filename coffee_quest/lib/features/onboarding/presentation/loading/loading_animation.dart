@@ -65,7 +65,8 @@ const _dropSquashAmount = 0.6; // peak squash/stretch on impact
 /// `loading-drop-fall` CSS keyframes (top 14% → 41%, fade in over 0–30%,
 /// squash from 75% on impact). [progress] is the controller value in 0–1.
 DropFrame wakeDropFrame(double progress) {
-  final top = _dropStartTop +
+  final top =
+      _dropStartTop +
       (_dropImpactTop - _dropStartTop) *
           progress.clamp(0.0, _dropImpactStart) /
           _dropImpactStart;
@@ -75,10 +76,12 @@ DropFrame wakeDropFrame(double progress) {
             ? (1 - progress) / _dropFadeOutSpan
             : 1.0);
   final scaleX = progress > _dropImpactStart
-      ? 1.0 + (progress - _dropImpactStart) / _dropSquashSpan * _dropSquashAmount
+      ? 1.0 +
+            (progress - _dropImpactStart) / _dropSquashSpan * _dropSquashAmount
       : 1.0;
   final scaleY = progress > _dropImpactStart
-      ? 1.0 - (progress - _dropImpactStart) / _dropSquashSpan * _dropSquashAmount
+      ? 1.0 -
+            (progress - _dropImpactStart) / _dropSquashSpan * _dropSquashAmount
       : 1.0;
   return (
     top: top,
@@ -112,6 +115,9 @@ const _dotPeakPhase = 0.5; // peak occurs at the half-period
 double pulsingDotOpacity(double progress, double delay) {
   final phase = (progress - delay) % 1.0;
   final normalizedPhase = phase < 0 ? phase + 1 : phase;
-  final wave = (1 - (normalizedPhase - _dotPeakPhase).abs() * 2).clamp(0.0, 1.0);
+  final wave = (1 - (normalizedPhase - _dotPeakPhase).abs() * 2).clamp(
+    0.0,
+    1.0,
+  );
   return _dotRestOpacity + (1 - _dotRestOpacity) * wave;
 }

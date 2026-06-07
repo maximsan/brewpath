@@ -25,10 +25,10 @@ void main() {
       notifier.setGoal('brew_better');
       notifier.setBrewer('v60');
 
-      expect(
-        container.read(onboardingDraftProvider),
-        (goal: 'brew_better', brewer: 'v60'),
-      );
+      expect(container.read(onboardingDraftProvider), (
+        goal: 'brew_better',
+        brewer: 'v60',
+      ));
     });
 
     test('complete persists both selections then clears the draft', () async {
@@ -42,7 +42,10 @@ void main() {
       expect(fake.completeCalls, [
         (goal: 'understand_tasting', brewer: 'aeropress'),
       ]);
-      expect(container.read(onboardingDraftProvider), (goal: null, brewer: null));
+      expect(container.read(onboardingDraftProvider), (
+        goal: null,
+        brewer: null,
+      ));
     });
 
     test('complete refreshes the onboardingCompleted gate', () async {
@@ -58,16 +61,18 @@ void main() {
       expect(await container.read(onboardingCompletedProvider.future), isTrue);
     });
 
-    test('complete throws and persists nothing if a selection is missing',
-        () async {
-      final container = makeContainer();
-      container.read(onboardingDraftProvider.notifier).setGoal('brew_better');
+    test(
+      'complete throws and persists nothing if a selection is missing',
+      () async {
+        final container = makeContainer();
+        container.read(onboardingDraftProvider.notifier).setGoal('brew_better');
 
-      await expectLater(
-        container.read(onboardingDraftProvider.notifier).complete(),
-        throwsStateError,
-      );
-      expect(fake.completeCalls, isEmpty);
-    });
+        await expectLater(
+          container.read(onboardingDraftProvider.notifier).complete(),
+          throwsStateError,
+        );
+        expect(fake.completeCalls, isEmpty);
+      },
+    );
   });
 }

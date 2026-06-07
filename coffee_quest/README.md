@@ -4,8 +4,12 @@ A Duolingo-style mobile app for learning coffee — short lessons and mini-games
 that grow your knowledge (and Roasty, your coffee-bean companion) one cup at a
 time. Flutter, offline-first.
 
-**Stack:** Flutter · Riverpod (state) · go_router (navigation) · Drift/SQLite
-(offline persistence) · Freezed + json_serializable (content models).
+**Stack:** Flutter · Riverpod 3 (state) · go_router 17 (navigation) · Drift 2.33 /
+SQLite (offline persistence) · Freezed 3 + json_serializable (content models).
+
+**Toolchain:** analyzer 12 · `riverpod_lint` enabled via the `plugins:` block in
+`analysis_options.yaml` (native analysis_server_plugin — not a dependency, no
+`custom_lint`).
 
 Architecture and conventions live in [`../CLAUDE.md`](../CLAUDE.md); deeper
 design and milestone docs are in [`../docs/`](../docs/).
@@ -58,6 +62,36 @@ release builds are unaffected.
 
 > With **Reduce Motion** enabled, `LOOP_LOADING` holds a static "brewing" frame
 > instead of animating the loop.
+
+## Versioning
+
+`pubspec.yaml` uses Flutter's `version: X.Y.Z+B` format — two independent
+counters joined by `+`:
+
+- **`X.Y.Z`** — the semantic version: the user-facing "marketing" version shown
+  in the App Store / Play Store (iOS `CFBundleShortVersionString`, Android
+  `versionName`). Bump per [semver](https://semver.org) — patch for fixes, minor
+  for features, major for breaking changes.
+- **`+B`** — the **build number** (iOS `CFBundleVersion`, Android `versionCode`).
+  The stores reject any upload whose build number isn't higher than the last, so
+  it must increase on **every** binary — independent of `X.Y.Z`.
+
+Unlike an npm package (one semver string), a mobile app carries two numbers: one
+for humans, one for the store.
+
+`tool/release.sh` (below) **always increments `+B`**, and changes `X.Y.Z` only
+when you pass an argument:
+
+| Command | From `1.0.0+3` → | What changed |
+| --- | --- | --- |
+| `release.sh` | `1.0.0+4` | build number only |
+| `release.sh patch` | `1.0.1+4` | patch + build |
+| `release.sh minor` | `1.1.0+4` | minor (patch reset to 0) + build |
+| `release.sh major` | `2.0.0+4` | major (minor/patch reset to 0) + build |
+| `release.sh 2.3.1` | `2.3.1+4` | explicit version + build |
+
+Pre-launch it's normal to stay on `1.0.0` and bump only the build number across
+TestFlight builds; start moving `X.Y.Z` once you ship user-facing updates.
 
 ## Tooling scripts (`tool/`)
 

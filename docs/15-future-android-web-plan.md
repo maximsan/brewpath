@@ -39,10 +39,10 @@ The following components require **no changes** to run on Android or Web:
 - [ ] Apply Google Services Gradle plugin in `android/build.gradle` and `android/app/build.gradle`
 - [ ] Verify Crashlytics and Analytics initialize on Android
 
-### Local Persistence — Isar
+### Local Persistence — Drift
 
-- [ ] Add `isar_flutter_libs` to `pubspec.yaml` — it already includes Android native binaries
-- [ ] Verify `Isar.open()` works on Android Emulator — no code changes required
+- [ ] `sqlite3_flutter_libs` (already a dependency) ships the Android native binaries — no extra package needed
+- [ ] Verify `AppDatabase` opens on the Android Emulator — no code changes required
 - [ ] Run `flutter test integration_test/ -d emulator-5554` and confirm smoke test passes
 
 ### App Signing — Android
@@ -117,28 +117,20 @@ android-build:
 - [ ] Add web platform: `flutter create --platforms web .` from project root
 - [ ] Test build: `flutter build web --release`
 
-### Local Persistence — Isar → Web Problem
+### Local Persistence — Drift on Web
 
-**Isar does not support Flutter Web.** The persistence layer must be replaced or conditional for web.
+The app already uses **Drift (SQLite)**, which **supports Flutter Web** via Drift's
+WASM backend — so the persistence layer does **not** need replacing for web. (This
+was the main blocker under the old Isar design; the Phase 3 move to Drift resolved
+it.) The repository interfaces (`ProgressRepository`, `CardRepository`,
+`SettingsRepository`) stay unchanged.
 
-Options:
-
-| Option | Notes |
-|---|---|
-| `drift` with `drift_wasm` | SQL-based; works on web via WASM; requires rewriting Isar schemas as drift tables |
-| `hive_ce` (community edition Hive) | Simpler than drift; works on web via a JS adapter |
-| Conditional platform import | Keep Isar for mobile, use a different impl for web via `dart:html` / WASM |
-
-**Recommended approach for web:** Abstract persistence behind repository interfaces (already done!) and swap Isar implementation for a web-compatible one when adding web support. The repository interfaces (`ProgressRepository`, `CardRepository`, `SettingsRepository`) are the swap point — no feature code changes required.
-
-- [ ] Create `ProgressRepositoryWeb`, `CardRepositoryWeb`, `SettingsRepositoryWeb` using drift or hive_ce
-- [ ] Use conditional imports in `repository_providers.dart`:
-  ```dart
-  // Use kIsWeb from package:flutter/foundation.dart
-  @riverpod
-  ProgressRepository progressRepository(Ref ref) =>
-      kIsWeb ? ProgressRepositoryWeb() : ProgressRepository();
-  ```
+- [ ] Bundle the web assets (`sqlite3.wasm` + `drift_worker.js` under `web/`) per
+      the Drift "Web" docs
+- [ ] Give `AppDatabase` a web `DatabaseConnection` (`WasmDatabase`) via a
+      conditional import; mobile keeps `NativeDatabase`
+- [ ] Verify reads/writes + the integration smoke test pass under
+      `flutter run -d chrome`
 
 ### go_router Web URL Strategy
 
@@ -174,7 +166,7 @@ These decisions were made in the iOS MVP specifically to avoid platform lock-in:
 |---|---|
 | Riverpod for all state | Works on all Flutter platforms |
 | go_router for navigation | Designed for multi-platform; built-in URL support |
-| Repository pattern over Isar | Persistence impl can be swapped without touching features |
+| Repository pattern over Drift | Persistence impl can be swapped without touching features |
 | Service abstraction for Firebase | Web Firebase SDK is injected; mobile native SDK is injected — same interface |
 | Dart Freezed models | Pure Dart, no platform dependencies |
 | Assets for content (no native DB) | `rootBundle` works everywhere |
@@ -189,7 +181,7 @@ Complete these when Android sprint begins:
 - [ ] Run `flutter create --platforms android .`
 - [ ] Set `minSdkVersion = 21` in build.gradle
 - [ ] Register Android app in Firebase Console and add `google-services.json`
-- [ ] Verify Isar opens on Android Emulator
+- [ ] Verify `AppDatabase` (Drift) opens on Android Emulator
 - [ ] Verify Firebase Analytics events appear in DebugView on Android
 - [ ] Create keystore and configure signing
 - [ ] Build AAB: `flutter build appbundle --release`
@@ -205,9 +197,7 @@ Complete these when Android sprint begins:
 Complete these when web sprint begins:
 
 - [ ] Run `flutter create --platforms web .`
-- [ ] Decide on persistence strategy for web (drift WASM recommended)
-- [ ] Implement web-compatible repository implementations
-- [ ] Update `repository_providers.dart` with conditional platform imports
+- [ ] Wire Drift's WASM backend for web (bundle `sqlite3.wasm` + `drift_worker.js`; conditional `AppDatabase` connection — no repository changes needed)
 - [ ] Register web app in Firebase Console
 - [ ] Run `flutterfire configure --platforms ios,android,web` to update `firebase_options.dart`
 - [ ] Test `flutter build web --release` locally
@@ -224,7 +214,7 @@ Complete these when web sprint begins:
 - [ ] App launches on Android Emulator without errors
 - [ ] All mini-game types function correctly on Android
 - [ ] Firebase Analytics and Crashlytics work on Android
-- [ ] Isar persistence works on Android
+- [ ] Drift persistence works on Android
 - [ ] App is published to Google Play Internal Testing track
 - [ ] Android CI job passes in GitHub Actions
 

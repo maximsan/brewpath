@@ -4,10 +4,8 @@ import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Total duration of one full wake-up cycle (all phases back-to-back).
-Duration get _fullCycle => WakePhase.values.fold(
-  Duration.zero,
-  (sum, phase) => sum + phase.duration,
-);
+Duration get _fullCycle =>
+    WakePhase.values.fold(Duration.zero, (sum, phase) => sum + phase.duration);
 
 void main() {
   group('WakeSequenceController (animated)', () {

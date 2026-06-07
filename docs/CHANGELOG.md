@@ -44,9 +44,35 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- `riverpod_lint` static analysis, enabled via the native analyzer `plugins:`
+  block in `analysis_options.yaml` (analysis_server_plugin — no `custom_lint`).
+  Previously deferred by the custom_lint/analyzer-9 gap.
+
 ### Changed
 
+- Moved the code-gen toolchain onto analyzer 12: `riverpod_generator` + `freezed`
+  to their analyzer-12 `-dev` releases, `drift`/`drift_dev` 2.30 → 2.33 (+
+  `drift_flutter` 0.3, `sqlite3_flutter_libs` 0.6), `json_serializable` 6.13 →
+  6.14 (`json_annotation` 4.12). Drops the pins that had held the project in the
+  analyzer-9 window. CI Flutter 3.44.0 → 3.44.1.
+- Loading wake-up animation now grows Roasty's sprout out of its head during the
+  grow phase (new host-driven `sproutScale`).
+- Onboarding screens reorganized into per-screen folders with their orchestration
+  pulled into extracted controllers (`GoalController`, `BrewerController`,
+  `WakeSequenceController`), each unit-tested.
+- Stricter analyzer linting — added `require_trailing_commas`,
+  `always_declare_return_types`, `prefer_const_constructors_in_immutables`,
+  `avoid_redundant_argument_values`, and `unawaited_futures` (codebase reformatted
+  to match).
+- Developer docs reorganized — common dev commands and run-time flags (e.g.
+  `LOOP_LOADING`) now live in `coffee_quest/README.md`; `CLAUDE.md`/`AGENTS.md`
+  slimmed to point there.
+
 ### Fixed
+
+- `flutter analyze` no longer reports errors from the vendored Firebase Swift
+  Package sources under `ios/build/` (analyzer now excludes nested `build/`
+  directories).
 
 ---
 

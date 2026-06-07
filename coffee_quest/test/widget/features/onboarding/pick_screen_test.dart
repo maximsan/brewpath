@@ -18,6 +18,7 @@ void main() {
   setUp(() => fake = FakeOnboardingRepository());
 
   Widget wrap(GoRouter router) => ProviderScope(
+    // ignore: scoped_providers_should_specify_dependencies — test-only root override
     overrides: [onboardingRepositoryProvider.overrideWithValue(fake)],
     child: MaterialApp.router(routerConfig: router),
   );
@@ -28,7 +29,10 @@ void main() {
     final router = GoRouter(
       initialLocation: '/onboarding/goal',
       routes: [
-        GoRoute(path: '/onboarding/goal', builder: (_, _) => const GoalScreen()),
+        GoRoute(
+          path: '/onboarding/goal',
+          builder: (_, _) => const GoalScreen(),
+        ),
         GoRoute(
           path: '/onboarding/brewer',
           builder: (_, _) => const _Stub('brewer'),
@@ -48,7 +52,9 @@ void main() {
     expect(tester.widget<FilledButton>(continueButton).onPressed, isNotNull);
   });
 
-  testWidgets('Brewer: tapping different cards swaps selection', (tester) async {
+  testWidgets('Brewer: tapping different cards swaps selection', (
+    tester,
+  ) async {
     final router = GoRouter(
       initialLocation: '/onboarding/brewer',
       routes: [

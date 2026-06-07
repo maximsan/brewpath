@@ -13,19 +13,29 @@ brewpath/               ← git root, CLAUDE.md lives here
 
 | Concern           | Package                                   | Notes                                                                                                                                                                              |
 | ----------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| State             | flutter_riverpod 2.x + riverpod_generator | `@riverpod` annotation; ref type is `{ProviderName}Ref`                                                                                                                            |
+| State             | flutter_riverpod 3.x + riverpod_generator | `@riverpod` annotation; ref type is `Ref`                                                                                                                                          |
 | Navigation        | go_router 17.x                            | `StatefulShellRoute` with 4 branches: `/learn`, `/path`, `/cards`, `/profile`                                                                                                      |
-| Persistence       | Drift (SQLite) 2.31.x                     | Offline-first; tables + `AppDatabase` in `shared/storage/app_database.dart`. Repos map Drift rows ↔ mutable DTOs in `shared/storage/*_record.dart`. (Replaced abandoned Isar 3.x.) |
+| Persistence       | Drift (SQLite) 2.33.x                     | Offline-first; tables + `AppDatabase` in `shared/storage/app_database.dart`. Repos map Drift rows ↔ mutable DTOs in `shared/storage/*_record.dart`. (Replaced abandoned Isar 3.x.) |
 | Content models    | Freezed + json_serializable               | Loaded from `assets/content/*.json` at startup                                                                                                                                     |
-| Payments          | `NoOpPaymentsService` stub                | Real `in_app_purchase` wired in Phase 9                                                                                                                                            |
-| Ads               | `NoOpAdsService` stub                     | Real AdMob wired in Phase 9                                                                                                                                                        |
-| Analytics / Crash | `NoOpAnalyticsService` stub               | Firebase wired in Phase 8                                                                                                                                                          |
+| Payments          | `NoOpPaymentsService` stub                | Real `in_app_purchase` deferred                                                                                                                                                   |
+| Ads               | `NoOpAdsService` stub                     | Real AdMob deferred                                                                                                                                                               |
+| Analytics / Crash | Firebase behind abstractions (gated off)  | Inactive until `kUseFirebase` is flipped                                                                                                                                          |
 
 ## Critical Rules
 
-- **Firebase is Phase 8+.** Phase 8 added the `firebase_*` deps and service code, but it stays **inactive** behind `kUseFirebase` in `lib/core/config/firebase_flags.dart` (currently `false`). All Firebase access is behind the `AnalyticsService` / `CrashReportingService` / `RemoteConfigService` abstractions — never call `Firebase*.instance` from feature code. Activation (real project, `flutterfire configure`, plist, flip the flag + three provider one-liners) is a manual user step.
-- **Package imports within `lib/`.** Use `package:coffee_quest/…` instead of `../…` for all imports inside the `lib/` directory.
-- **Regenerate after model changes.** Run `dart run build_runner build` whenever a Freezed model, Riverpod provider, or Drift table is added or modified. (build_runner 2.15 auto-resolves conflicts; the old `--delete-conflicting-outputs` flag was removed.)
+- **Firebase is gated off.** The `firebase_*` deps and service code exist, but
+  stay **inactive** behind `kUseFirebase` in `lib/core/config/firebase_flags.dart`
+  (currently `false`). All Firebase access is behind the `AnalyticsService` /
+  `CrashReportingService` / `RemoteConfigService` abstractions — never call
+  `Firebase*.instance` from feature code. Activation (real project,
+  `flutterfire configure`, plist, flip the flag + three provider one-liners) is a
+  manual user step.
+- **Package imports within `lib/`.** Use `package:coffee_quest/…` instead of
+  `../…` for all imports inside the `lib/` directory.
+- **Regenerate after model changes.** Run `dart run build_runner build` whenever
+  a Freezed model, Riverpod provider, or Drift table is added or modified.
+  (build_runner 2.15 auto-resolves conflicts; the old
+  `--delete-conflicting-outputs` flag was removed.)
 
 ## Change History
 
@@ -52,13 +62,16 @@ explanations — plus test and iOS/SPM build notes — lives in
 - **Providers:** function-style `@riverpod` only; class-based `@riverpod` only when state is mutable
 - **Tests:** unit tests in `test/unit/`; widget tests in `test/widget/`; integration tests in `integration_test/`
 - **No print statements** — use `debugPrint` only in development guards; never in production paths
+- **Lints:** `riverpod_lint` is active via the `plugins:` block in `analysis_options.yaml` (native analysis_server_plugin — not a dependency, not `custom_lint`)
 
 ## Code Quality Rules
 
-These are not all lint-enforceable (the stock Dart linter has no rule for magic
-numbers, identifier length, or file/class size, and `custom_lint`-based tooling
-is blocked here — see the `pubspec.yaml` lint TODO). Follow them on every new or
-modified file:
+These are not all lint-enforceable. `riverpod_lint` 3.x **is** active (native
+`analysis_server_plugin`, enabled via the `plugins:` block in
+`analysis_options.yaml` — no `custom_lint`). But the stock linter still has no
+rule for magic numbers, identifier length, or file/class size, and
+`custom_lint`-based packs remain blocked (analyzer-8 cap). So the rules below
+stay conventions — follow them on every new or modified file:
 
 - **No magic numbers.** Extract meaningful or repeated literals to named
   `static const` or theme tokens (`AppSpacing`, `AppColors`, `AppTypography`).

@@ -42,6 +42,7 @@ class OnboardingDraft extends _$OnboardingDraft {
         'OnboardingDraft.complete() called before both selections were made.',
       );
     }
+    // ignore: only_use_keep_alive_inside_keep_alive — one-shot read in an action method doesn't subscribe, so keepAlive is unaffected
     final repo = ref.read(onboardingRepositoryProvider);
     await repo.markOnboardingComplete(goal: goal, brewer: brewer);
     state = (goal: null, brewer: null);

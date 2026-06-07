@@ -13,9 +13,9 @@ brewpath/               ← git root, AGENTS.md lives here
 
 | Concern           | Package                                   | Notes                                                                                                                                                                              |
 | ----------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| State             | flutter_riverpod 2.x + riverpod_generator | `@riverpod` annotation; ref type is `{ProviderName}Ref`                                                                                                                            |
+| State             | flutter_riverpod 3.x + riverpod_generator | `@riverpod` annotation; ref type is `Ref`                                                                                                                                          |
 | Navigation        | go_router 17.x                            | `StatefulShellRoute` with 4 branches: `/learn`, `/path`, `/cards`, `/profile`                                                                                                      |
-| Persistence       | Drift (SQLite) 2.31.x                     | Offline-first; tables + `AppDatabase` in `shared/storage/app_database.dart`. Repos map Drift rows ↔ mutable DTOs in `shared/storage/*_record.dart`. (Replaced abandoned Isar 3.x.) |
+| Persistence       | Drift (SQLite) 2.33.x                     | Offline-first; tables + `AppDatabase` in `shared/storage/app_database.dart`. Repos map Drift rows ↔ mutable DTOs in `shared/storage/*_record.dart`. (Replaced abandoned Isar 3.x.) |
 | Content models    | Freezed + json_serializable               | Loaded from `assets/content/*.json` at startup                                                                                                                                     |
 | Payments          | `NoOpPaymentsService` stub                | Real `in_app_purchase` deferred                                                                                                                                                   |
 | Ads               | `NoOpAdsService` stub                     | Real AdMob deferred                                                                                                                                                               |
@@ -62,3 +62,35 @@ explanations — plus test and iOS/SPM build notes — lives in
 - **Providers:** function-style `@riverpod` only; class-based `@riverpod` only when state is mutable
 - **Tests:** unit tests in `test/unit/`; widget tests in `test/widget/`; integration tests in `integration_test/`
 - **No print statements** — use `debugPrint` only in development guards; never in production paths
+- **Lints:** `riverpod_lint` is active via the `plugins:` block in `analysis_options.yaml` (native analysis_server_plugin — not a dependency, not `custom_lint`)
+
+## Code Quality Rules
+
+These are not all lint-enforceable. `riverpod_lint` 3.x **is** active (native
+`analysis_server_plugin`, enabled via the `plugins:` block in
+`analysis_options.yaml` — no `custom_lint`). But the stock linter still has no
+rule for magic numbers, identifier length, or file/class size, and
+`custom_lint`-based packs remain blocked (analyzer-8 cap). So the rules below
+stay conventions — follow them on every new or modified file:
+
+- **No magic numbers.** Extract meaningful or repeated literals to named
+  `static const` or theme tokens (`AppSpacing`, `AppColors`, `AppTypography`).
+  Only `0`/`1` may appear inline. Animation/layout constants get intent names
+  (`_stageSize`, `_captionGap`), not bare numbers in the widget tree.
+- **Descriptive names.** No single-letter identifiers except trivial loop
+  indices (`i`). Animation/controller values are `progress`, not `t`; phase
+  fractions get real names (`normalizedPhase`, not `p`).
+- **Small files & classes.** Soft cap ≈ 250 lines/file. When a file grows
+  multiple `State`/widget classes or mixes UI with logic, split it. Keep
+  `build()` declarative — push math and derivations into named helpers.
+- **Extract pure helpers.** Animation math, mapping, and derivations live in a
+  sibling pure-Dart file (e.g. `*_animation.dart`) as named top-level functions,
+  so they are unit-testable without pumping widgets.
+- **Navigation policy lives in the router.** Screens don't duplicate
+  gate→destination decisions; the `appRouter` redirect owns them. Navigate by
+  route `name` (`context.goNamed('welcome')`), never by hardcoded path strings.
+- **Debug toggles via `bool.fromEnvironment`,** never a hand-flipped `const`, so
+  release builds are safe by construction. Catalogue each in the README
+  _Run-time flags_ table.
+- **Loading/empty/error states** get `Semantics` labels and respect
+  `MediaQuery.disableAnimations` (reduced motion).

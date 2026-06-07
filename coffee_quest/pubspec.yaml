@@ -20,12 +20,9 @@ dependencies:
   go_router: ^17.2.3
 
   # Local persistence — Drift (SQLite). Replaced abandoned Isar 3.x.
-  # drift_flutter pinned ^0.2.8 (not 0.3.0): 0.3.0 needs sqlite3 ^3, but
-  # drift 2.30.x needs sqlite3 ^2.6. drift pinned <2.32 so drift_dev stays
-  # in the analyzer-9 window shared with Riverpod 3 / Freezed 3.
-  drift: ^2.30.1
-  drift_flutter: ^0.2.8
-  sqlite3_flutter_libs: ^0.5.42
+  drift: ^2.33.0
+  drift_flutter: ^0.3.0
+  sqlite3_flutter_libs: ^0.6.0
   path_provider: ^2.1.5
 
   # Firebase — Phase 8. Code is wired but inactive until `kUseFirebase`
@@ -43,9 +40,7 @@ dependencies:
 
   # Utilities
   freezed_annotation: ^3.1.0
-  # ^4.11.0 (not plan's ^4.12.0): json_serializable 6.13.x requires
-  # json_annotation <4.12.0. json_serializable ^6.13.0 is a HARD CONSTRAINT.
-  json_annotation: ^4.11.0
+  json_annotation: ^4.12.0
   collection: ^1.19.1
 
   # App version string on the Profile screen (Phase 6)
@@ -69,16 +64,17 @@ dev_dependencies:
 
   # Code generation
   build_runner: ^2.15.0
-  riverpod_generator: ^4.0.3
-  freezed: ^3.2.5
-  json_serializable: ^6.13.0
-  drift_dev: ^2.30.1
+  # riverpod_generator / freezed: analyzer-12 support ships on the -dev line
+  # (stable is still analyzer ^9 / <11).
+  riverpod_generator: ^4.0.4-dev.1
+  freezed: ^3.2.6-dev.1
+  json_serializable: ^6.14.0
+  drift_dev: ^2.33.0
 
   # Linting
   flutter_lints: ^6.0.0
-  # TODO(deps): Re-add riverpod_lint + custom_lint when custom_lint
-  # supports analyzer >=9. Ecosystem gap as of May 2026.
-  # Tracking: https://github.com/invertase/dart_custom_lint
+  # riverpod_lint enabled via the `plugins:` block in analysis_options.yaml
+  # (not a dependency).
 
 flutter:
   uses-material-design: true

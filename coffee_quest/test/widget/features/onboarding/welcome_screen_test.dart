@@ -32,7 +32,10 @@ void main() {
 
     expect(find.text('COFFEE QUEST'), findsOneWidget);
     expect(find.textContaining('Plant your tree.'), findsOneWidget);
-    expect(find.widgetWithText(FilledButton, 'Plant your seed'), findsOneWidget);
+    expect(
+      find.widgetWithText(FilledButton, 'Plant your seed'),
+      findsOneWidget,
+    );
 
     final cta = find.widgetWithText(FilledButton, 'Plant your seed');
     await tester.ensureVisible(cta);
