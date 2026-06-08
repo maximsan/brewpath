@@ -79,16 +79,16 @@ counters joined by `+`:
 Unlike an npm package (one semver string), a mobile app carries two numbers: one
 for humans, one for the store.
 
-`tool/release.sh` (below) **always increments `+B`**, and changes `X.Y.Z` only
-when you pass an argument:
+`tool/release.js` (below, run with `node`) **always increments `+B`**, and changes
+`X.Y.Z` only when you pass an argument:
 
 | Command | From `1.0.0+3` → | What changed |
 | --- | --- | --- |
-| `release.sh` | `1.0.0+4` | build number only |
-| `release.sh patch` | `1.0.1+4` | patch + build |
-| `release.sh minor` | `1.1.0+4` | minor (patch reset to 0) + build |
-| `release.sh major` | `2.0.0+4` | major (minor/patch reset to 0) + build |
-| `release.sh 2.3.1` | `2.3.1+4` | explicit version + build |
+| `release.js` | `1.0.0+4` | build number only |
+| `release.js patch` | `1.0.1+4` | patch + build |
+| `release.js minor` | `1.1.0+4` | minor (patch reset to 0) + build |
+| `release.js major` | `2.0.0+4` | major (minor/patch reset to 0) + build |
+| `release.js 2.3.1` | `2.3.1+4` | explicit version + build |
 
 Pre-launch it's normal to stay on `1.0.0` and bump only the build number across
 TestFlight builds; start moving `X.Y.Z` once you ship user-facing updates.
@@ -110,19 +110,20 @@ cd coffee_quest
 ./tool/reset_ios_spm.sh --build   # clean, then flutter build ios
 ```
 
-### `tool/release.sh` — cut a release
+### `tool/release.js` — cut a release
 
-Run when shipping a build to TestFlight / the App Store. Bumps the version in
-`pubspec.yaml`, stamps `../docs/CHANGELOG.md` with the version + date, and (with
-`--commit`) tags the release. Draft the changelog first with the `/changelog`
-skill.
+Node script (no dependencies). Run when shipping a build to TestFlight / the App
+Store. Bumps the version in `pubspec.yaml`, stamps `../docs/CHANGELOG.md` with the
+version + date, and (with `--commit`) tags the release. Draft the changelog first
+with the `/changelog` skill. Refuses to run when `[Unreleased]` is empty — pass
+`--allow-empty` for a build-only rebuild.
 
 ```bash
 cd coffee_quest
-./tool/release.sh                  # build number only: 1.0.0+1 → 1.0.0+2
-./tool/release.sh minor            # → 1.1.0+2
-./tool/release.sh minor --commit   # also commits + tags
-./tool/release.sh --dry-run        # preview, writes nothing
+node tool/release.js                  # build number only: 1.0.0+1 → 1.0.0+2
+node tool/release.js minor            # → 1.1.0+2
+node tool/release.js minor --commit   # also commits + tags
+node tool/release.js --dry-run        # preview, writes nothing
 ```
 
 ## Database schema migrations

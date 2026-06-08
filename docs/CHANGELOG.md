@@ -24,16 +24,16 @@ Two helpers keep this near-zero effort:
 | When | Do this | What it does |
 | --- | --- | --- |
 | You finished something worth remembering | Run **`/changelog`** in Claude Code | Reads your recent code changes (not commit messages), proposes Added/Changed/Fixed bullets, and — once you approve — writes them into **[Unreleased]** below. |
-| You're shipping a build to TestFlight / App Store | Run **`coffee_quest/tool/release.sh`** | Renames **[Unreleased]** to a dated version heading, opens a fresh empty [Unreleased], bumps the version in `pubspec.yaml`, and (with `--commit`) tags the release. |
+| You're shipping a build to TestFlight / App Store | Run **`node coffee_quest/tool/release.js`** | Renames **[Unreleased]** to a dated version heading, opens a fresh empty [Unreleased], bumps the version in `pubspec.yaml`, and (with `--commit`) tags the release. |
 
-`release.sh` usage (run from `coffee_quest/`):
+`release.js` usage (run from `coffee_quest/`):
 
 ```bash
-tool/release.sh                  # 1.0.0+1 → 1.0.0+2   (build number only)
-tool/release.sh minor            # → 1.1.0+2
-tool/release.sh 1.2.0            # → 1.2.0+2  (explicit version)
-tool/release.sh minor --commit   # also commits + tags v1.1.0+2
-tool/release.sh --dry-run        # preview only, writes nothing
+node tool/release.js                  # 1.0.0+1 → 1.0.0+2   (build number only)
+node tool/release.js minor            # → 1.1.0+2
+node tool/release.js 1.2.0            # → 1.2.0+2  (explicit version)
+node tool/release.js minor --commit   # also commits + tags v1.1.0+2
+node tool/release.js --dry-run        # preview only, writes nothing
 ```
 
 You can always edit this file by hand instead — the helpers just save effort.

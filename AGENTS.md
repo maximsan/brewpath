@@ -45,7 +45,7 @@ of that file:
 
 - **After meaningful work:** run the `/changelog` skill — it drafts Unreleased
   entries from the actual code diffs for review.
-- **At release time:** run `coffee_quest/tool/release.sh` — it stamps the
+- **At release time:** run `node coffee_quest/tool/release.js` — it stamps the
   version + date, bumps `pubspec.yaml`, and tags the release.
 
 ## Development commands

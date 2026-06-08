@@ -30,4 +30,4 @@ vague, e.g. "update other tabs").
 
 - Keep the Keep a Changelog format already in the file.
 - If the range has nothing log-worthy, say so plainly instead of inventing entries.
-- To cut a release (stamp Unreleased with a version + date, bump pubspec, tag), point the user to `coffee_quest/tool/release.sh` — that's a separate step, not this skill's job.
+- To cut a release (stamp Unreleased with a version + date, bump pubspec, tag), point the user to `node coffee_quest/tool/release.js` — that's a separate step, not this skill's job.
