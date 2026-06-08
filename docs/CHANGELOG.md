@@ -44,6 +44,16 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+### Changed
+
+### Fixed
+
+---
+
+## [1.0.0+3] — 2026-06-08
+
+### Added
+
 - `riverpod_lint` static analysis, enabled via the native analyzer `plugins:`
   block in `analysis_options.yaml` (analysis_server_plugin — no `custom_lint`).
   Previously deferred by the custom_lint/analyzer-9 gap.

@@ -1,7 +1,7 @@
 name: coffee_quest
 description: Coffee Quest — Duolingo-style coffee education app.
 publish_to: 'none'
-version: 1.0.0+2
+version: 1.0.0+3
 
 environment:
   # Floor raised 3.3.0 → 3.8.0: required by json_serializable 6.13.x.
