@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 /// One tile in the Cards grid. Collected → category icon badge, title, and
 /// tag, tappable; locked → muted silhouette with "???" and inert.
 class CardGridItemWidget extends StatelessWidget {
-  const CardGridItemWidget({super.key, required this.item});
+  const CardGridItemWidget({required this.item, super.key});
 
   final CardWithCollection item;
 

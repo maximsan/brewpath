@@ -4,7 +4,7 @@ import 'package:coffee_quest/shared/models/lesson_step_model.dart';
 import 'package:flutter/material.dart';
 
 class SliderGame extends StatefulWidget {
-  const SliderGame({super.key, required this.step, required this.onResult});
+  const SliderGame({required this.step, required this.onResult, super.key});
 
   final SliderStep step;
   final void Function(MiniGameResult) onResult;

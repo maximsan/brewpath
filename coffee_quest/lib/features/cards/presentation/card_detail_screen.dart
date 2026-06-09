@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CardDetailScreen extends ConsumerWidget {
-  const CardDetailScreen({super.key, required this.cardId});
+  const CardDetailScreen({required this.cardId, super.key});
 
   final String cardId;
 

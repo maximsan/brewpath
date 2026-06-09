@@ -38,7 +38,7 @@ void main() {
       // ActionChip with onPressed: null reports `isEnabled == false`.
       final chips = tester.widgetList<ActionChip>(find.byType(ActionChip));
       expect(chips, isNotEmpty);
-      expect(chips.every((c) => c.isEnabled == false), isTrue);
+      expect(chips.every((c) => !c.isEnabled), isTrue);
     },
   );
 

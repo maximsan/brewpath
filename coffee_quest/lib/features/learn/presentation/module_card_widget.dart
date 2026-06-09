@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 /// progress, and lock state. Locked taps surface the unlock hint instead of
 /// navigating.
 class ModuleCardWidget extends StatelessWidget {
-  const ModuleCardWidget({super.key, required this.item});
+  const ModuleCardWidget({required this.item, super.key});
 
   final ModuleWithProgress item;
 

@@ -1,13 +1,12 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-
 import 'package:coffee_quest/features/profile/domain/settings_providers.dart';
 import 'package:coffee_quest/features/profile/presentation/widgets/preference_tile.dart';
 import 'package:coffee_quest/features/profile/presentation/widgets/premium_card.dart';
 import 'package:coffee_quest/features/profile/presentation/widgets/profile_header.dart';
 import 'package:coffee_quest/features/profile/presentation/widgets/stat_tile.dart';
 import 'package:coffee_quest/features/progress/domain/progress_providers.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});

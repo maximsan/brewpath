@@ -11,9 +11,7 @@ import 'package:flutter/material.dart';
 /// until a case is added here.
 class LessonStepRunner extends StatelessWidget {
   const LessonStepRunner({
-    super.key,
-    required this.step,
-    required this.onResult,
+    required this.step, required this.onResult, super.key,
   });
 
   final LessonStepModel step;

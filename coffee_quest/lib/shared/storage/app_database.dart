@@ -1,3 +1,4 @@
+import 'package:coffee_quest/shared/repositories/settings_repository.dart' show SettingsRepository;
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 

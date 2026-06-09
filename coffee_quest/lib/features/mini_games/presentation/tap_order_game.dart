@@ -5,7 +5,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
 class TapOrderGame extends StatefulWidget {
-  const TapOrderGame({super.key, required this.step, required this.onResult});
+  const TapOrderGame({required this.step, required this.onResult, super.key});
 
   final TapOrderStep step;
   final void Function(MiniGameResult) onResult;

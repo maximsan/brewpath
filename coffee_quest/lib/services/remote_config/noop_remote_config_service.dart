@@ -24,7 +24,7 @@ class NoOpRemoteConfigService implements RemoteConfigService {
   @override
   bool getBool(String key) {
     final v = _defaults[key];
-    return v is bool ? v : false;
+    return v is bool && v;
   }
 
   @override

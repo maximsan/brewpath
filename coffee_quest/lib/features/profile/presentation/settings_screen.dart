@@ -1,11 +1,10 @@
 import 'dart:async';
 
+import 'package:coffee_quest/features/onboarding/presentation/onboarding_providers.dart';
+import 'package:coffee_quest/features/profile/domain/settings_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-import 'package:coffee_quest/features/onboarding/presentation/onboarding_providers.dart';
-import 'package:coffee_quest/features/profile/domain/settings_providers.dart';
 
 /// Dedicated Settings screen reached via the gear icon on Profile. Hosts the
 /// app-wide preferences (haptics, sound), the destructive reset action, and
@@ -194,7 +193,7 @@ class _ResetOnboardingTile extends ConsumerWidget {
       builder: (ctx) => AlertDialog(
         title: const Text('Restart onboarding?'),
         content: const Text(
-          'You\'ll go back through the Welcome screen and pick your goal and '
+          "You'll go back through the Welcome screen and pick your goal and "
           'brewer again. Your XP, streak, and collected cards stay as they '
           'are.',
         ),

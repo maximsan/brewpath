@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
-
 import 'package:coffee_quest/shared/theme/app_colors.dart';
-import 'package:coffee_quest/shared/theme/app_typography.dart';
 import 'package:coffee_quest/shared/theme/app_spacing.dart';
+import 'package:coffee_quest/shared/theme/app_typography.dart';
+import 'package:flutter/material.dart';
 
 /// Bordered selectable tile used on the onboarding goal + brewer screens.
 /// Mirrors the `.pick-card` pattern from the design bundle: title + desc on

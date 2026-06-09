@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 /// the term index equals the definition index; wrong drops bounce back with no
 /// penalty. Auto-completes when every term is correctly placed.
 class DragDropGame extends StatefulWidget {
-  const DragDropGame({super.key, required this.step, required this.onResult});
+  const DragDropGame({required this.step, required this.onResult, super.key});
 
   final DragDropStep step;
   final void Function(MiniGameResult) onResult;

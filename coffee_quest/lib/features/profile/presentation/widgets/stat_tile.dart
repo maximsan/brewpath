@@ -4,10 +4,7 @@ import 'package:flutter/material.dart';
 /// floats above a large value and a small caption.
 class StatTile extends StatelessWidget {
   const StatTile({
-    super.key,
-    required this.icon,
-    required this.label,
-    required this.value,
+    required this.icon, required this.label, required this.value, super.key,
   });
 
   final IconData icon;

@@ -70,7 +70,7 @@ void main() {
     expect(find.text("Today's lesson"), findsOneWidget);
   });
 
-  testWidgets('play today\'s lesson, complete, see XP on Profile', (
+  testWidgets("play today's lesson, complete, see XP on Profile", (
     tester,
   ) async {
     // Open today's lesson from the card (its subtitle is the lesson title).

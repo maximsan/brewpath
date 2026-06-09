@@ -24,9 +24,7 @@ class _Reward {
 
 class LessonCompletionScreen extends ConsumerStatefulWidget {
   const LessonCompletionScreen({
-    super.key,
-    required this.lessonId,
-    required this.score,
+    required this.lessonId, required this.score, super.key,
     this.review = false,
     this.practice = false,
   });

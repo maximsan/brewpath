@@ -5,9 +5,7 @@ import 'package:flutter/material.dart';
 
 class MultipleChoiceGame extends StatefulWidget {
   const MultipleChoiceGame({
-    super.key,
-    required this.step,
-    required this.onResult,
+    required this.step, required this.onResult, super.key,
   });
 
   final MultipleChoiceStep step;

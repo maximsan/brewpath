@@ -12,8 +12,7 @@ abstract class LessonModel with _$LessonModel {
     required String title,
     required String summary,
     required int xpReward,
-    String? cardId,
-    required List<LessonStepModel> steps,
+    required List<LessonStepModel> steps, String? cardId,
   }) = _LessonModel;
 
   factory LessonModel.fromJson(Map<String, dynamic> json) =>
