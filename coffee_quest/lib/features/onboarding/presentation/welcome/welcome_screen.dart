@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coffee_quest/core/widgets/link_button.dart';
 import 'package:coffee_quest/core/widgets/primary_button.dart';
 import 'package:coffee_quest/core/widgets/smallcaps_label.dart';
@@ -13,6 +15,8 @@ import 'package:video_player/video_player.dart';
 
 class WelcomeScreen extends ConsumerWidget {
   const WelcomeScreen({super.key});
+
+  static const double _heroFrameRadius = 4;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -37,7 +41,7 @@ class WelcomeScreen extends ConsumerWidget {
                   decoration: BoxDecoration(
                     color: AppColors.darkRoastSurface,
                     border: Border.all(color: AppColors.darkRoastRule),
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(_heroFrameRadius),
                   ),
                   clipBehavior: Clip.hardEdge,
                   child: const _VideoHero(),
@@ -95,26 +99,29 @@ class _VideoHeroState extends State<_VideoHero> {
   @override
   void initState() {
     super.initState();
-    _controller =
-        VideoPlayerController.asset('assets/video/Flowerpot_seed_to.mp4')
-          ..setLooping(true)
-          ..setVolume(0)
-          ..initialize().then(
-            (_) {
-              if (mounted) {
-                setState(() {});
-                _controller.play();
-              }
-            },
-            onError: (_) {
-              if (mounted) setState(() => _initFailed = true);
-            },
-          );
+    _controller = VideoPlayerController.asset(
+      'assets/video/Flowerpot_seed_to.mp4',
+    );
+    unawaited(_controller.setLooping(true));
+    unawaited(_controller.setVolume(0));
+    unawaited(
+      _controller.initialize().then(
+        (_) {
+          if (mounted) {
+            setState(() {});
+            unawaited(_controller.play());
+          }
+        },
+        onError: (_) {
+          if (mounted) setState(() => _initFailed = true);
+        },
+      ),
+    );
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    unawaited(_controller.dispose());
     super.dispose();
   }
 

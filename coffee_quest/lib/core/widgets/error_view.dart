@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 
+/// Centered error message with an optional retry button.
 class ErrorView extends StatelessWidget {
+  /// Creates an [ErrorView].
   const ErrorView({required this.message, super.key, this.onRetry});
 
+  /// The error message to display.
   final String message;
+
+  /// Optional retry handler; when non-null a "Retry" button is shown.
   final VoidCallback? onRetry;
 
   @override

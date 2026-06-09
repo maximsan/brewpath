@@ -5,9 +5,13 @@ import 'package:flutter/material.dart';
 /// Text-only accent button (e.g. "Already have progress? Restore"). Mirrors
 /// the `.btn-link` style from the design bundle.
 class LinkButton extends StatelessWidget {
+  /// Creates a [LinkButton].
   const LinkButton({required this.label, required this.onPressed, super.key});
 
+  /// Text shown on the button.
   final String label;
+
+  /// Tap handler; `null` disables the button.
   final VoidCallback? onPressed;
 
   @override

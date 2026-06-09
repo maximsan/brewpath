@@ -1,3 +1,6 @@
+// Self-describing tokens / DTOs / storage infra; no per-member docs.
+// ignore_for_file: public_member_api_docs
+
 /// AdMob ad unit IDs. Use the test IDs during development; fill in the
 /// production IDs from the AdMob console before release.
 ///

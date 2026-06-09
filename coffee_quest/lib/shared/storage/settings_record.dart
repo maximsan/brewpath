@@ -1,3 +1,6 @@
+// Mutable DTO — fields are self-describing.
+// ignore_for_file: public_member_api_docs
+
 /// Mutable DTO for the singleton settings row. Callers (e.g.
 /// LessonCompletionService) mutate fields in place; the repository maps
 /// to/from the Drift companion.

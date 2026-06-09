@@ -209,7 +209,7 @@ class _RoastyPainter extends CustomPainter {
     switch (state) {
       case RoastyState.module:
         // grow: 1 → 1.12 → 1.05
-        if (t < 0.4) return 1 + (0.12) * (t / 0.4);
+        if (t < 0.4) return 1 + 0.12 * (t / 0.4);
         return 1.12 - 0.07 * ((t - 0.4) / 0.6);
       case RoastyState.awake:
         // blink-pop: 0.94 → 1.04 → 1
@@ -220,7 +220,7 @@ class _RoastyPainter extends CustomPainter {
         final v = math.sin(t * math.pi * 2);
         return 1.0 + 0.005 * v;
       default:
-        return 1.0;
+        return 1;
     }
   }
 
@@ -271,7 +271,7 @@ class _RoastyPainter extends CustomPainter {
   }
 
   void _paintCardGlow(Canvas canvas) {
-    final pulse = (math.sin(t * math.pi * 2) * 0.5 + 0.5);
+    final pulse = math.sin(t * math.pi * 2) * 0.5 + 0.5;
     final gradient = RadialGradient(
       colors: [
         const Color(0xFFE6C68A).withValues(alpha: 0.6 * pulse),
@@ -426,29 +426,21 @@ class _RoastyPainter extends CustomPainter {
     switch (state) {
       case RoastyState.idle:
         _paintIdleFace(canvas);
-        break;
       case RoastyState.correct:
       case RoastyState.lesson:
         _paintHappyFace(canvas);
-        break;
       case RoastyState.wrong:
         _paintWrongFace(canvas);
-        break;
       case RoastyState.module:
         _paintModuleFace(canvas);
-        break;
       case RoastyState.xp:
         _paintXpFace(canvas);
-        break;
       case RoastyState.card:
         _paintCardFace(canvas);
-        break;
       case RoastyState.sleep:
         _paintSleepFace(canvas);
-        break;
       case RoastyState.awake:
         _paintAwakeFace(canvas);
-        break;
     }
 
     canvas.restore();
@@ -459,20 +451,15 @@ class _RoastyPainter extends CustomPainter {
     switch (state) {
       case RoastyState.correct:
         _paintSparkles(canvas);
-        break;
       case RoastyState.lesson:
       case RoastyState.module:
         _paintConfetti(canvas);
-        break;
       case RoastyState.xp:
         _paintXpBurst(canvas);
-        break;
       case RoastyState.wrong:
         _paintWrongBadge(canvas);
-        break;
       case RoastyState.sleep:
         _paintSleepZzz(canvas);
-        break;
       default:
         break;
     }

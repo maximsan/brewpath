@@ -8,13 +8,19 @@ import 'package:flutter/material.dart';
 /// the affordance is still clearly visible against the dark-roast
 /// background — the prototype's 35% opacity fade is invisible on screen.
 class PrimaryButton extends StatelessWidget {
+  /// Creates a [PrimaryButton].
   const PrimaryButton({
     required this.label,
     required this.onPressed,
     super.key,
   });
 
+  static const double _height = 52;
+
+  /// Text shown on the button.
   final String label;
+
+  /// Tap handler; `null` disables the button.
   final VoidCallback? onPressed;
 
   @override
@@ -28,7 +34,7 @@ class PrimaryButton extends StatelessWidget {
         : AppColors.darkRoastInkMute;
     return SizedBox(
       width: double.infinity,
-      height: 52,
+      height: _height,
       child: FilledButton(
         onPressed: onPressed,
         style: FilledButton.styleFrom(

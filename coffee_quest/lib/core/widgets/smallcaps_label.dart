@@ -6,9 +6,13 @@ import 'package:flutter/material.dart';
 /// dividers throughout onboarding. Matches the `.smallcaps` style in the
 /// design bundle.
 class SmallcapsLabel extends StatelessWidget {
+  /// Creates a [SmallcapsLabel].
   const SmallcapsLabel(this.text, {this.color, super.key});
 
+  /// The label text (rendered uppercase).
   final String text;
+
+  /// Optional text color; defaults to muted dark-roast ink.
   final Color? color;
 
   @override

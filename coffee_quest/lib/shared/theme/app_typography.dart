@@ -1,3 +1,6 @@
+// Self-describing tokens / DTOs / storage infra; no per-member docs.
+// ignore_for_file: public_member_api_docs
+
 import 'package:coffee_quest/shared/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';

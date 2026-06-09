@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 /// Mirrors the `.pick-card` pattern from the design bundle: title + desc on
 /// the left, a circular indicator on the right that fills when selected.
 class PickCard extends StatelessWidget {
+  /// Creates a [PickCard].
   const PickCard({
     required this.title,
     required this.description,
@@ -15,9 +16,16 @@ class PickCard extends StatelessWidget {
     super.key,
   });
 
+  /// Card title (the option name).
   final String title;
+
+  /// Supporting description shown under the title.
   final String description;
+
+  /// Whether this card is the current selection.
   final bool selected;
+
+  /// Called when the card is tapped.
   final VoidCallback onTap;
 
   @override
@@ -63,13 +71,16 @@ class PickCard extends StatelessWidget {
 class _PickIndicator extends StatelessWidget {
   const _PickIndicator({required this.selected});
 
+  static const double _size = 28;
+  static const double _innerDotSize = 14;
+
   final bool selected;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 28,
-      height: 28,
+      width: _size,
+      height: _size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(
@@ -79,8 +90,8 @@ class _PickIndicator extends StatelessWidget {
       child: selected
           ? Center(
               child: Container(
-                width: 14,
-                height: 14,
+                width: _innerDotSize,
+                height: _innerDotSize,
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                   color: AppColors.darkRoastAccent,
