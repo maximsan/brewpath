@@ -13,7 +13,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:video_player/video_player.dart';
 
+/// Welcome / onboarding intro: hero video, Roasty, and the "plant your seed" CTA.
 class WelcomeScreen extends ConsumerWidget {
+  /// Creates a [WelcomeScreen].
   /// Creates a [WelcomeScreen].
   const WelcomeScreen({super.key});
 

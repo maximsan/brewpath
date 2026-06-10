@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coffee_quest/core/widgets/error_view.dart';
 import 'package:coffee_quest/core/widgets/loading_indicator.dart';
 import 'package:coffee_quest/features/mini_games/domain/mini_game_result.dart';
@@ -9,7 +11,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+const double _pillRadius = 20;
+const int _percentScale = 100;
+const double _progressBarHeight = 6;
+const double _progressBarRadius = 3;
+
+/// Immersive single-lesson flow: plays each step, then routes to completion.
 class LessonScreen extends ConsumerStatefulWidget {
+  /// Creates a [LessonScreen].
   const LessonScreen({
     required this.lessonId,
     super.key,
@@ -17,6 +26,7 @@ class LessonScreen extends ConsumerStatefulWidget {
     this.practice = false,
   });
 
+  /// Id of the lesson to play.
   final String lessonId;
 
   /// Whether this run is a review of an already-completed lesson. Carried
@@ -43,12 +53,17 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
     if (_started) return;
     _started = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref
-          .read(analyticsServiceProvider)
-          .logEvent(
-            'lesson_started',
-            parameters: {'lesson_id': lesson.id, 'module_id': lesson.moduleId},
-          );
+      unawaited(
+        ref
+            .read(analyticsServiceProvider)
+            .logEvent(
+              'lesson_started',
+              parameters: {
+                'lesson_id': lesson.id,
+                'module_id': lesson.moduleId,
+              },
+            ),
+      );
     });
   }
 
@@ -160,7 +175,7 @@ class _StepProgress extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
                 color: colors.primaryContainer,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(_pillRadius),
               ),
               child: Text(
                 'Step $current of $total',
@@ -171,7 +186,7 @@ class _StepProgress extends StatelessWidget {
               ),
             ),
             Text(
-              '${(progress * 100).round()}%',
+              '${(progress * _percentScale).round()}%',
               style: theme.textTheme.labelMedium?.copyWith(
                 color: colors.onSurfaceVariant,
               ),
@@ -181,8 +196,8 @@ class _StepProgress extends StatelessWidget {
         const SizedBox(height: 8),
         LinearProgressIndicator(
           value: progress,
-          minHeight: 6,
-          borderRadius: BorderRadius.circular(3),
+          minHeight: _progressBarHeight,
+          borderRadius: BorderRadius.circular(_progressBarRadius),
           backgroundColor: colors.surfaceContainerHighest,
           color: colors.primary,
         ),

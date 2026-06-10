@@ -53,8 +53,8 @@ class LessonReviewResult {
   final bool practiceXpAwarded;
 }
 
-/// Orchestrates everything that happens when a lesson finishes: persist progress,
-/// award XP, unlock the lesson's card, advance the streak, and grant the module
+/// Orchestrates everything that happens when a lesson finishes: persist
+/// progress, award XP, unlock the lesson's card, advance the streak, and grant
 /// bonus once every lesson in the module is done. Idempotent — replaying a
 /// completed lesson is a no-op so XP and cards are never double-counted.
 class LessonCompletionService {

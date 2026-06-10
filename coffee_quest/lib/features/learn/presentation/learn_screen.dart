@@ -11,7 +11,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+const double _heroRadius = 12;
+const double _pillRadius = 20;
+const double _rowBadgeSize = 36;
+const double _rowBadgeRadius = 10;
+const double _iconSm = 18;
+const double _iconMd = 16;
+const double _iconLg = 40;
+const double _chipGap = 8;
+const double _mutedAlpha = 0.8;
+const double _pillAlpha = 0.12;
+const double _heroLetterSpacing = 0.6;
+
+/// Learn tab: today's lesson, the module list, and practice sections.
 class LearnScreen extends ConsumerWidget {
+  /// Creates a [LearnScreen].
   const LearnScreen({super.key});
 
   @override
@@ -93,7 +107,7 @@ class _TodayCard extends StatelessWidget {
   ) {
     return InkWell(
       onTap: () => context.go('/learn/lesson/${lesson.id}'),
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(_heroRadius),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -104,7 +118,7 @@ class _TodayCard extends StatelessWidget {
               children: [
                 Icon(
                   Icons.local_cafe,
-                  size: 18,
+                  size: _iconSm,
                   color: colors.onPrimaryContainer,
                 ),
                 const SizedBox(width: 8),
@@ -112,7 +126,7 @@ class _TodayCard extends StatelessWidget {
                   "Today's lesson",
                   style: theme.textTheme.labelMedium?.copyWith(
                     color: colors.onPrimaryContainer,
-                    letterSpacing: 0.6,
+                    letterSpacing: _heroLetterSpacing,
                   ),
                 ),
               ],
@@ -131,7 +145,7 @@ class _TodayCard extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: colors.onPrimaryContainer.withValues(alpha: 0.8),
+                color: colors.onPrimaryContainer.withValues(alpha: _mutedAlpha),
               ),
             ),
             const SizedBox(height: 16),
@@ -157,7 +171,7 @@ class _TodayCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       child: Row(
         children: [
-          Icon(Icons.check_circle, size: 40, color: colors.onPrimaryContainer),
+          Icon(Icons.check_circle, size: _iconLg, color: colors.onPrimaryContainer),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -175,7 +189,7 @@ class _TodayCard extends StatelessWidget {
                 Text(
                   'No lessons left to study.',
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colors.onPrimaryContainer.withValues(alpha: 0.8),
+                    color: colors.onPrimaryContainer.withValues(alpha: _mutedAlpha),
                   ),
                 ),
               ],
@@ -200,13 +214,13 @@ class _XpPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: colors.onPrimaryContainer.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(20),
+        color: colors.onPrimaryContainer.withValues(alpha: _pillAlpha),
+        borderRadius: BorderRadius.circular(_pillRadius),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.bolt, size: 16, color: colors.onPrimaryContainer),
+          Icon(Icons.bolt, size: _iconMd, color: colors.onPrimaryContainer),
           const SizedBox(width: 4),
           Text(
             '+$xp XP',
@@ -276,7 +290,7 @@ class _PracticeAnyLessonSectionState extends State<_PracticeAnyLessonSection> {
                   children: [
                     Icon(
                       _expanded ? Icons.expand_less : Icons.expand_more,
-                      size: 18,
+                      size: _iconSm,
                       color: colors.primary,
                     ),
                     const SizedBox(width: 4),
@@ -311,16 +325,16 @@ class _LessonRow extends StatelessWidget {
     final colors = theme.colorScheme;
     return ListTile(
       leading: Container(
-        width: 36,
-        height: 36,
+        width: _rowBadgeSize,
+        height: _rowBadgeSize,
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: colors.primaryContainer,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(_rowBadgeRadius),
         ),
         child: Icon(
           moduleIcon(entry.module.iconName),
-          size: 18,
+          size: _iconSm,
           color: colors.onPrimaryContainer,
         ),
       ),
@@ -354,8 +368,8 @@ class _PracticeByGameTypeSection extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     return Wrap(
-      spacing: 8,
-      runSpacing: 8,
+      spacing: _chipGap,
+      runSpacing: _chipGap,
       children: [
         for (final entry in gameTypeLabels)
           () {
@@ -366,7 +380,7 @@ class _PracticeByGameTypeSection extends StatelessWidget {
             return ActionChip(
               avatar: Icon(
                 _iconFor(key),
-                size: 18,
+                size: _iconSm,
                 color: enabled ? colors.primary : colors.onSurfaceVariant,
               ),
               label: Text(

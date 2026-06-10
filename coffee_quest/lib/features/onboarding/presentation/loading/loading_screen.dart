@@ -17,6 +17,7 @@ import 'package:go_router/go_router.dart';
 /// returning users on to /learn). When the platform requests reduced motion,
 /// the looping animation is replaced by a static idle frame.
 class LoadingScreen extends ConsumerStatefulWidget {
+  /// Creates a [LoadingScreen].
   const LoadingScreen({super.key});
 
   @override
@@ -67,7 +68,7 @@ class _LoadingScreenState extends ConsumerState<LoadingScreen> {
   }
 
   /// Leaves the loading screen for `/welcome`. The router redirect
-  /// ([appRouter]) owns the gate→destination policy and bounces returning
+  /// (`appRouter`) owns the gate→destination policy and bounces returning
   /// users on to `/learn`, so this screen does not duplicate that decision.
   void _advance() {
     if (!mounted) return;

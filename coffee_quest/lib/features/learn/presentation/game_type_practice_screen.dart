@@ -14,6 +14,7 @@ import 'package:go_router/go_router.dart';
 /// the chosen type out of the user's completed lessons and runs them through
 /// the standard [LessonStepRunner]. No DB writes, no XP, no card unlocks.
 class GameTypePracticeScreen extends ConsumerStatefulWidget {
+  /// Creates a [GameTypePracticeScreen].
   const GameTypePracticeScreen({required this.gameType, super.key});
 
   /// JSON discriminator: `multiple_choice` | `drag_drop` | `slider` |

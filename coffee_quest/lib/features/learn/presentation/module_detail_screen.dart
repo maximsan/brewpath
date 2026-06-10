@@ -10,9 +10,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+const double _headerBadgeSize = 56;
+const double _headerBadgeRadius = 14;
+const double _headerIconSize = 28;
+const double _cardRadius = 12;
+const double _stepBadgeSize = 36;
+const double _checkIconSize = 20;
+const double _xpIconSize = 14;
+
+/// Module detail: lists the module's lessons with progress and a start CTA.
 class ModuleDetailScreen extends ConsumerWidget {
+  /// Creates a [ModuleDetailScreen].
   const ModuleDetailScreen({required this.moduleId, super.key});
 
+  /// Id of the module to display.
   final String moduleId;
 
   @override
@@ -90,16 +101,16 @@ class _ModuleHero extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          width: 56,
-          height: 56,
+          width: _headerBadgeSize,
+          height: _headerBadgeSize,
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: colors.primaryContainer,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(_headerBadgeRadius),
           ),
           child: Icon(
             moduleIcon(module.iconName),
-            size: 28,
+            size: _headerIconSize,
             color: colors.onPrimaryContainer,
           ),
         ),
@@ -155,7 +166,7 @@ class _LessonCard extends StatelessWidget {
       margin: EdgeInsets.zero,
       child: InkWell(
         onTap: () => context.go(destination),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(_cardRadius),
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Row(
@@ -215,12 +226,12 @@ class _LessonBadge extends StatelessWidget {
         : colors.onPrimaryContainer;
 
     return Container(
-      width: 36,
-      height: 36,
+      width: _stepBadgeSize,
+      height: _stepBadgeSize,
       alignment: Alignment.center,
       decoration: BoxDecoration(color: background, shape: BoxShape.circle),
       child: isCompleted
-          ? Icon(Icons.check, size: 20, color: foreground)
+          ? Icon(Icons.check, size: _checkIconSize, color: foreground)
           : Text(
               '$index',
               style: theme.textTheme.titleSmall?.copyWith(
@@ -245,7 +256,7 @@ class _XpInline extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(Icons.bolt, size: 14, color: colors.onSurfaceVariant),
+        Icon(Icons.bolt, size: _xpIconSize, color: colors.onSurfaceVariant),
         const SizedBox(width: 2),
         Text(
           '+$xp XP',

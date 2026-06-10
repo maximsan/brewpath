@@ -22,7 +22,13 @@ class _Reward {
   final CoffeeCardModel? card;
 }
 
+const double _heroBadgeSize = 96;
+const double _badgeSize = 48;
+const double _cardRadius = 12;
+
+/// Post-lesson screen: shows earned XP and any unlocked card, then routes back.
 class LessonCompletionScreen extends ConsumerStatefulWidget {
+  /// Creates a [LessonCompletionScreen].
   const LessonCompletionScreen({
     required this.lessonId,
     required this.score,
@@ -31,6 +37,7 @@ class LessonCompletionScreen extends ConsumerStatefulWidget {
     this.practice = false,
   });
 
+  /// Id of the completed lesson.
   final String lessonId;
 
   /// First-try accuracy of the run that reached this screen (0–100).
@@ -273,14 +280,14 @@ class _HeroBadge extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     return Center(
       child: Container(
-        width: 96,
-        height: 96,
+        width: _heroBadgeSize,
+        height: _heroBadgeSize,
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: colors.primaryContainer,
           shape: BoxShape.circle,
         ),
-        child: Icon(icon, size: 48, color: colors.onPrimaryContainer),
+        child: Icon(icon, size: _badgeSize, color: colors.onPrimaryContainer),
       ),
     );
   }
@@ -303,12 +310,12 @@ class _RewardCard extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              width: 48,
-              height: 48,
+              width: _badgeSize,
+              height: _badgeSize,
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: colors.primaryContainer,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(_cardRadius),
               ),
               child: Icon(
                 moduleIcon(card.iconName),

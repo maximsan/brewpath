@@ -1,5 +1,6 @@
 import 'package:coffee_quest/features/mini_games/domain/mini_game_result.dart';
 import 'package:coffee_quest/shared/models/lesson_step_model.dart';
+import 'package:coffee_quest/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 
 /// Match `terms[i]` ↔ `definitions[i]` by dragging. A drop is only accepted
@@ -20,6 +21,8 @@ class DragDropGame extends StatefulWidget {
 }
 
 class _DragDropGameState extends State<DragDropGame> {
+  static const double _draggingOpacity = 0.3;
+
   /// definitionIndex -> matched termIndex (absent until correctly placed).
   final Map<int, int> _placed = {};
 
@@ -73,7 +76,7 @@ class _DragDropGameState extends State<DragDropGame> {
                                 child: Chip(label: Text(terms[i])),
                               ),
                               childWhenDragging: Opacity(
-                                opacity: 0.3,
+                                opacity: _draggingOpacity,
                                 child: Chip(label: Text(terms[i])),
                               ),
                               child: Chip(label: Text(terms[i])),
@@ -100,7 +103,7 @@ class _DragDropGameState extends State<DragDropGame> {
                                 color: done ? colors.primary : colors.outline,
                                 width: done ? 2 : 1,
                               ),
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(AppSpacing.xs),
                             ),
                             child: Text(definitions[j]),
                           );

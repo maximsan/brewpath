@@ -39,6 +39,8 @@ dart_code_linter:
     - integration_test/**
     # CustomPainter with many small _paintX helpers — method count is by design.
     - lib/features/onboarding/presentation/widgets/roasty.dart
+    # Declarative GoRouter route table — long by nature, low logic complexity.
+    - lib/app/app_router.dart
   rules:
     - no-magic-number:
         severity: warning

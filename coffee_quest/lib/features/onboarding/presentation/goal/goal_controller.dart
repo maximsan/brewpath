@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 
-/// Holds the goal pick state for `GoalScreen`. The sibling of `BrewerController`
-/// but synchronous — selecting a goal and advancing has no async/persistence
-/// gap, so there is no `submitting` state.
+/// Holds the goal pick state for `GoalScreen`. The sibling of
+/// `BrewerController` but synchronous — selecting a goal and advancing has no
+/// async/persistence gap, so there is no `submitting` state.
 ///
 /// `onSubmit` receives the chosen option index; the screen maps it to a key,
 /// records it on `OnboardingDraft`, and navigates to the brewer step.

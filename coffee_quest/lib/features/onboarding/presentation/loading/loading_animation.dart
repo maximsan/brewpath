@@ -25,6 +25,7 @@ enum WakePhase {
 
   const WakePhase(this.duration);
 
+  /// How long this phase stays on screen.
   final Duration duration;
 
   /// The next phase, looping back to [sleeping] after [hold].

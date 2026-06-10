@@ -83,8 +83,10 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor])
     : super(executor ?? driftDatabase(name: 'coffee_quest'));
 
+  static const int _schemaVersion = 3;
+
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => _schemaVersion;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -98,7 +100,7 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(moduleProgressRecords);
       }
       // v2 → v3: onboarding gate + selection columns on user_settings.
-      if (from < 3) {
+      if (from < _schemaVersion) {
         await m.addColumn(userSettings, userSettings.onboardingCompleted);
         await m.addColumn(userSettings, userSettings.onboardingGoal);
         await m.addColumn(userSettings, userSettings.onboardingBrewer);

@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 /// app-wide preferences (haptics, sound), the destructive reset action, and
 /// the version footer.
 class SettingsScreen extends ConsumerWidget {
+  /// Creates a [SettingsScreen].
   const SettingsScreen({super.key});
 
   @override

@@ -1,13 +1,19 @@
 import 'package:coffee_quest/core/constants/app_strings.dart';
 import 'package:coffee_quest/features/mini_games/domain/mini_game_result.dart';
 import 'package:coffee_quest/shared/models/lesson_step_model.dart';
+import 'package:coffee_quest/shared/theme/app_spacing.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
+/// Tap-order mini-game: tap items into the correct sequence.
 class TapOrderGame extends StatefulWidget {
+  /// Creates a [TapOrderGame].
   const TapOrderGame({required this.step, required this.onResult, super.key});
 
+  /// The tap-order step's content/config.
   final TapOrderStep step;
+
+  /// Called with the [MiniGameResult] when answered.
   final void Function(MiniGameResult) onResult;
 
   @override
@@ -75,14 +81,14 @@ class _TapOrderGameState extends State<TapOrderGame> {
         Text(widget.step.instruction, style: theme.textTheme.titleLarge),
         const SizedBox(height: 24),
         Wrap(
-          spacing: 8,
-          runSpacing: 8,
+          spacing: AppSpacing.xs,
+          runSpacing: AppSpacing.xs,
           children: [for (final item in _selected) Chip(label: Text(item))],
         ),
         const Divider(height: 32),
         Wrap(
-          spacing: 8,
-          runSpacing: 8,
+          spacing: AppSpacing.xs,
+          runSpacing: AppSpacing.xs,
           children: [
             for (final item in _pool)
               ActionChip(

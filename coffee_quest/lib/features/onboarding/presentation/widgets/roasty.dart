@@ -163,7 +163,8 @@ class _RoastyPainter extends CustomPainter {
 
   /// Scale origin while the host drives the grow: the stem base sits at the
   /// bean's top edge, so the sprout emerges from the head rather than scaling
-  /// in mid-air. The default sleeping shrink keeps its original (100, 75) pivot.
+  /// in mid-air. The default sleeping shrink keeps its original (100, 75)
+  /// pivot.
   static const Offset _sproutGrowAnchor = Offset(100, 88);
   static const Offset _sproutDefaultAnchor = Offset(100, 75);
 

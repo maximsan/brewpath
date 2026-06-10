@@ -39,6 +39,7 @@ class ModuleWithProgress {
   double get progress => totalCount == 0 ? 0 : completedCount / totalCount;
 }
 
+/// All modules paired with their derived completion/lock state.
 @riverpod
 Future<List<ModuleWithProgress>> modulesWithProgress(Ref ref) async {
   final content = ref.watch(contentRepositoryProvider);

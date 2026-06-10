@@ -4,10 +4,22 @@ import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+const double _railWidth = 32;
+const double _connectorWidth = 3;
+const double _cardBottomGap = 12;
+const double _cardRadius = 12;
+const double _nodeIconSize = 18;
+const double _cardBadgeSize = 40;
+const double _cardBadgeRadius = 10;
+const double _cardIconSize = 22;
+const double _progressBarHeight = 5;
+const double _progressBarRadius = 3;
+
 /// A single node in the vertical learning path: a state-colored circle on the
 /// connecting rail plus a content card with the module icon, title, and
 /// progress. Locked taps surface the unlock hint instead of navigating.
 class PathModuleNodeWidget extends StatelessWidget {
+  /// Creates a [PathModuleNodeWidget].
   const PathModuleNodeWidget({
     required this.item,
     required this.isFirst,
@@ -15,10 +27,13 @@ class PathModuleNodeWidget extends StatelessWidget {
     super.key,
   });
 
+  /// The module paired with its progress.
   final ModuleWithProgress item;
 
-  /// Whether this is the first/last node — the rail trims its connector there.
+  /// Whether this is the first node (the rail trims its top connector).
   final bool isFirst;
+
+  /// Whether this is the last node (the rail trims its bottom connector).
   final bool isLast;
 
   void _onTap(BuildContext context) {
@@ -43,7 +58,7 @@ class PathModuleNodeWidget extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Padding(
-              padding: EdgeInsets.only(bottom: isLast ? 0 : 12),
+              padding: EdgeInsets.only(bottom: isLast ? 0 : _cardBottomGap),
               child: _NodeCard(item: item, onTap: () => _onTap(context)),
             ),
           ),
@@ -75,7 +90,7 @@ class _NodeRail extends StatelessWidget {
     final reached = !item.isLocked;
 
     return SizedBox(
-      width: 32,
+      width: _railWidth,
       child: Column(
         children: [
           Expanded(
@@ -105,7 +120,7 @@ class _Connector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: Container(width: 3, color: color));
+    return Center(child: Container(width: _connectorWidth, color: color));
   }
 }
 
@@ -156,7 +171,7 @@ class _NodeCircle extends StatelessWidget {
         shape: BoxShape.circle,
         border: border,
       ),
-      child: Icon(icon, size: 18, color: foreground),
+      child: Icon(icon, size: _nodeIconSize, color: foreground),
     );
   }
 }
@@ -179,24 +194,24 @@ class _NodeCard extends StatelessWidget {
       margin: EdgeInsets.zero,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(_cardRadius),
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Row(
             children: [
               Container(
-                width: 40,
-                height: 40,
+                width: _cardBadgeSize,
+                height: _cardBadgeSize,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: locked
                       ? colors.surfaceContainerHighest
                       : colors.primaryContainer,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(_cardBadgeRadius),
                 ),
                 child: Icon(
                   locked ? Icons.lock_outline : moduleIcon(module.iconName),
-                  size: 22,
+                  size: _cardIconSize,
                   color: locked
                       ? colors.onSurfaceVariant
                       : colors.onPrimaryContainer,
@@ -271,8 +286,8 @@ class _NodeStatus extends StatelessWidget {
         const SizedBox(height: 6),
         LinearProgressIndicator(
           value: item.progress,
-          minHeight: 5,
-          borderRadius: BorderRadius.circular(3),
+          minHeight: _progressBarHeight,
+          borderRadius: BorderRadius.circular(_progressBarRadius),
           backgroundColor: colors.surfaceContainerHighest,
           color: colors.primary,
         ),

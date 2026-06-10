@@ -4,11 +4,14 @@ import 'package:coffee_quest/features/profile/presentation/widgets/premium_card.
 import 'package:coffee_quest/features/profile/presentation/widgets/profile_header.dart';
 import 'package:coffee_quest/features/profile/presentation/widgets/stat_tile.dart';
 import 'package:coffee_quest/features/progress/domain/progress_providers.dart';
+import 'package:coffee_quest/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+/// Profile tab: progress stats, the premium CTA, and preferences.
 class ProfileScreen extends ConsumerWidget {
+  /// Creates a [ProfileScreen].
   const ProfileScreen({super.key});
 
   @override
@@ -119,8 +122,8 @@ class _StatsGrid extends StatelessWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       crossAxisCount: 2,
-      mainAxisSpacing: 12,
-      crossAxisSpacing: 12,
+      mainAxisSpacing: AppSpacing.sm,
+      crossAxisSpacing: AppSpacing.sm,
       children: [
         StatTile(icon: Icons.bolt, label: 'Total XP', value: '$xp'),
         StatTile(
@@ -160,8 +163,8 @@ class _CustomizeGrid extends StatelessWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       crossAxisCount: 2,
-      mainAxisSpacing: 12,
-      crossAxisSpacing: 12,
+      mainAxisSpacing: AppSpacing.sm,
+      crossAxisSpacing: AppSpacing.sm,
       children: [
         PreferenceTile.toggle(
           icon: Icons.volume_up_outlined,
