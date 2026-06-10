@@ -12,6 +12,7 @@
 import 'package:coffee_quest/services/payments/payments_service.dart';
 import 'package:coffee_quest/services/payments/store_product.dart';
 
+/// Real [PaymentsService] backed by `in_app_purchase` (stubbed for now).
 class InAppPurchaseService implements PaymentsService {
   @override
   Future<bool> hasActiveEntitlement() =>

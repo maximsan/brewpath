@@ -6,7 +6,11 @@
 /// Drift companions.
 class ProgressRecord {
   ProgressRecord({
-    required this.lessonId, required this.isCompleted, required this.xpEarned, required this.completedAt, this.id = 0,
+    required this.lessonId,
+    required this.isCompleted,
+    required this.xpEarned,
+    required this.completedAt,
+    this.id = 0,
     this.fullXpAwarded = true,
     this.bestScore = 0,
     this.lastPracticeXpDate,

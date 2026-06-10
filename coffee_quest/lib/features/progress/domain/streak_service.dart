@@ -1,12 +1,17 @@
 import 'package:coffee_quest/core/utils/date_utils.dart';
 
+/// Result of a streak update.
 class StreakResult {
+  /// Creates a [StreakResult].
   const StreakResult({
     required this.streakDays,
     required this.lastActivityDate,
   });
 
+  /// Consecutive-day streak count.
   final int streakDays;
+
+  /// Calendar day of the most recent activity.
   final DateTime lastActivityDate;
 }
 
@@ -14,8 +19,10 @@ class StreakResult {
 /// calendar days with at least one completed lesson and resets after any missed
 /// day. No multipliers or bonuses in the MVP.
 class StreakService {
+  /// Creates a [StreakService].
   const StreakService();
 
+  /// Computes the new streak after a lesson completes at [now].
   StreakResult onLessonCompleted({
     required int currentStreak,
     required DateTime? lastActivityDate,

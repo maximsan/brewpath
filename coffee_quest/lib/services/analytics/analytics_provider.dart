@@ -8,6 +8,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'analytics_provider.g.dart';
 
+/// Provides the active [AnalyticsService] — No-Op until Firebase is enabled.
 @riverpod
 AnalyticsService analyticsService(Ref ref) => const NoOpAnalyticsService();
 // To activate Firebase: => FirebaseAnalyticsService();

@@ -2,6 +2,7 @@ import 'package:coffee_quest/services/crash_reporting/crash_reporting_service.da
 
 /// Inert crash reporting — the default until Firebase is activated.
 class NoOpCrashReportingService implements CrashReportingService {
+  /// Creates a [NoOpCrashReportingService].
   const NoOpCrashReportingService();
 
   @override

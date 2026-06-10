@@ -5,6 +5,7 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 /// Firebase Remote Config-backed implementation. Wired in
 /// `remote_config_provider.dart` once `kUseFirebase` is enabled.
 class FirebaseRemoteConfigService implements RemoteConfigService {
+  /// Creates a [FirebaseRemoteConfigService] (optional custom [config]).
   FirebaseRemoteConfigService([FirebaseRemoteConfig? config])
     : _config = config ?? FirebaseRemoteConfig.instance;
 

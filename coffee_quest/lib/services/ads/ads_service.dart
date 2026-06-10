@@ -1,4 +1,14 @@
-enum AdLoadStatus { loaded, failed, notAvailable }
+/// Result of an ad load attempt.
+enum AdLoadStatus {
+  /// The ad loaded successfully.
+  loaded,
+
+  /// The ad failed to load.
+  failed,
+
+  /// Ads are unavailable (e.g. the No-Op implementation).
+  notAvailable,
+}
 
 /// Abstract ads layer. No feature code touches `google_mobile_ads` directly —
 /// only this interface. NoOp is active in the MVP; ads never appear in

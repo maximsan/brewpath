@@ -4,6 +4,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 /// Firebase-backed analytics. Wired in `analytics_provider.dart` once
 /// `kUseFirebase` is enabled.
 class FirebaseAnalyticsService implements AnalyticsService {
+  /// Creates a [FirebaseAnalyticsService] (optional custom [analytics]).
   FirebaseAnalyticsService([FirebaseAnalytics? analytics])
     : _analytics = analytics ?? FirebaseAnalytics.instance;
 
