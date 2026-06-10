@@ -10,6 +10,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+const double _emptyIconSize = 56;
+const double _summaryBadgeSize = 96;
+const double _summaryIconSize = 48;
+const double _pillRadius = 20;
+const double _progressBarHeight = 6;
+const double _progressBarRadius = 3;
+const double _percentScale = 100;
+
 /// Cross-lesson practice drill for a single game type. Pulls every step of
 /// the chosen type out of the user's completed lessons and runs them through
 /// the standard [LessonStepRunner]. No DB writes, no XP, no card unlocks.
@@ -131,7 +139,7 @@ class _EmptyState extends StatelessWidget {
           children: [
             Icon(
               Icons.school_outlined,
-              size: 56,
+              size: _emptyIconSize,
               color: theme.colorScheme.onSurfaceVariant,
             ),
             const SizedBox(height: 16),
@@ -177,8 +185,8 @@ class _Summary extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 96,
-              height: 96,
+              width: _summaryBadgeSize,
+              height: _summaryBadgeSize,
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: colors.primaryContainer,
@@ -186,7 +194,7 @@ class _Summary extends StatelessWidget {
               ),
               child: Icon(
                 Icons.fitness_center,
-                size: 48,
+                size: _summaryIconSize,
                 color: colors.onPrimaryContainer,
               ),
             ),
@@ -247,7 +255,7 @@ class _StepProgress extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
                 color: colors.primaryContainer,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(_pillRadius),
               ),
               child: Text(
                 'Step $current of $total',
@@ -258,7 +266,7 @@ class _StepProgress extends StatelessWidget {
               ),
             ),
             Text(
-              '${(progress * 100).round()}%',
+              '${(progress * _percentScale).round()}%',
               style: theme.textTheme.labelMedium?.copyWith(
                 color: colors.onSurfaceVariant,
               ),
@@ -268,8 +276,8 @@ class _StepProgress extends StatelessWidget {
         const SizedBox(height: 8),
         LinearProgressIndicator(
           value: progress,
-          minHeight: 6,
-          borderRadius: BorderRadius.circular(3),
+          minHeight: _progressBarHeight,
+          borderRadius: BorderRadius.circular(_progressBarRadius),
           backgroundColor: colors.surfaceContainerHighest,
           color: colors.primary,
         ),

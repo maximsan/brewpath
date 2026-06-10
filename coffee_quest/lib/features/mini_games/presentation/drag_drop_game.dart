@@ -103,7 +103,9 @@ class _DragDropGameState extends State<DragDropGame> {
                                 color: done ? colors.primary : colors.outline,
                                 width: done ? 2 : 1,
                               ),
-                              borderRadius: BorderRadius.circular(AppSpacing.xs),
+                              borderRadius: BorderRadius.circular(
+                                AppSpacing.xs,
+                              ),
                             ),
                             child: Text(definitions[j]),
                           );

@@ -22,7 +22,7 @@ class PremiumCard extends StatelessWidget {
 
     return Material(
       color: colors.primaryContainer,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(_cornerRadius),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () => _showComingSoon(context),

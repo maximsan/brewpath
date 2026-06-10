@@ -82,6 +82,8 @@ class SettingsScreen extends ConsumerWidget {
 class _SectionLabel extends StatelessWidget {
   const _SectionLabel(this.text);
 
+  static const double _letterSpacing = 1.2;
+
   final String text;
 
   @override
@@ -93,7 +95,7 @@ class _SectionLabel extends StatelessWidget {
         text.toUpperCase(),
         style: theme.textTheme.labelSmall?.copyWith(
           color: theme.colorScheme.onSurfaceVariant,
-          letterSpacing: 1.2,
+          letterSpacing: _letterSpacing,
           fontWeight: FontWeight.w700,
         ),
       ),

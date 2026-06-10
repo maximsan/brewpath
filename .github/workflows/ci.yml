@@ -47,6 +47,15 @@ jobs:
       - name: Analyze
         run: flutter analyze
 
+      # dart_code_linter's per-function metrics (source-lines-of-code,
+      # cyclomatic-complexity, nesting, parameter/method counts) aren't surfaced
+      # by `flutter analyze` — run the CLI gate so metric breaches fail CI.
+      # no-magic-number is a plugin rule, already enforced by Analyze above.
+      - name: Metrics (dart_code_linter)
+        run: >
+          dart run dart_code_linter:metrics analyze lib
+          --set-exit-on-violation-level=warning
+
       # Runs every *_test.dart under test/ recursively, including the
       # Drift schema smoke/UNIQUE tests in test/database/. Generated
       # helpers are committed, so no codegen step is required here.

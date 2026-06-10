@@ -120,7 +120,9 @@ class _Connector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: Container(width: _connectorWidth, color: color));
+    return Center(
+      child: Container(width: _connectorWidth, color: color),
+    );
   }
 }
 

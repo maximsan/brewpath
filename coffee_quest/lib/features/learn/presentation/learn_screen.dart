@@ -171,7 +171,11 @@ class _TodayCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       child: Row(
         children: [
-          Icon(Icons.check_circle, size: _iconLg, color: colors.onPrimaryContainer),
+          Icon(
+            Icons.check_circle,
+            size: _iconLg,
+            color: colors.onPrimaryContainer,
+          ),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -189,7 +193,9 @@ class _TodayCard extends StatelessWidget {
                 Text(
                   'No lessons left to study.',
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colors.onPrimaryContainer.withValues(alpha: _mutedAlpha),
+                    color: colors.onPrimaryContainer.withValues(
+                      alpha: _mutedAlpha,
+                    ),
                   ),
                 ),
               ],

@@ -17,6 +17,7 @@ class FakeOnboardingRepository implements OnboardingRepository {
 
   /// Overrides the state returned by [getState] (e.g. to simulate a returning,
   /// already-onboarded user).
+  // ignore: use_setters_to_change_properties — imperative test-arrange helper
   void setState(OnboardingState state) => _state = state;
 
   @override

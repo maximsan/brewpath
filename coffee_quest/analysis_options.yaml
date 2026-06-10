@@ -21,6 +21,9 @@ linter:
     # very_good_analysis re-enables cascade_invocations; keep it off — it fights
     # the CustomPainter draw sequences (roasty.dart) and isn't auto-fixable.
     cascade_invocations: false
+    # pubspec deps are grouped by concern with explanatory comments (State / Nav
+    # / Persistence / Firebase …); alphabetical sorting would scatter the groups.
+    sort_pub_dependencies: false
 
 # dart_code_linter — magic-number + per-function/class size & complexity that the
 # stock linter can't enforce. CustomPainter / animation-geometry and theme-token
@@ -30,9 +33,11 @@ dart_code_linter:
     cyclomatic-complexity: 20
     maximum-nesting-level: 5
     number-of-parameters: 5
-    # 75 (not DCM's default 50): Flutter widget `build` methods legitimately run
-    # 50–60 lines of declarative tree. cyclomatic-complexity guards real logic.
-    source-lines-of-code: 75
+    # 90 (not DCM's default 50): measured declarative `build` methods here — the
+    # collapsing profile header, preference/stat tiles — legitimately run 75–90
+    # lines of widget tree with no branching. cyclomatic-complexity (20) and
+    # maximum-nesting-level (5) stay strict; they guard real logic, SLOC doesn't.
+    source-lines-of-code: 90
     number-of-methods: 12
   metrics-exclude:
     - test/**

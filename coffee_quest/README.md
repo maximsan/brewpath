@@ -7,9 +7,12 @@ time. Flutter, offline-first.
 **Stack:** Flutter · Riverpod 3 (state) · go_router 17 (navigation) · Drift 2.33 /
 SQLite (offline persistence) · Freezed 3 + json_serializable (content models).
 
-**Toolchain:** analyzer 12 · `riverpod_lint` enabled via the `plugins:` block in
-`analysis_options.yaml` (native analysis_server_plugin — not a dependency, no
-`custom_lint`).
+**Toolchain:** analyzer 12 · `very_good_analysis` (strict lint baseline) ·
+`riverpod_lint` + `dart_code_linter` enabled via the `plugins:` block in
+`analysis_options.yaml` (native analysis_server_plugins — not dependencies, no
+`custom_lint`). `dart_code_linter` adds `no-magic-number` plus a CI metrics gate
+(`dart run dart_code_linter:metrics analyze lib`) for per-function size &
+complexity.
 
 Architecture and conventions live in [`../CLAUDE.md`](../CLAUDE.md); deeper
 design and milestone docs are in [`../docs/`](../docs/).
