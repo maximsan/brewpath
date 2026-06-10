@@ -2,9 +2,11 @@ import 'package:coffee_quest/shared/storage/app_database.dart';
 import 'package:coffee_quest/shared/storage/settings_record.dart';
 import 'package:drift/drift.dart';
 
+/// Reads/writes the singleton user-settings row via Drift.
 class SettingsRepository {
   AppDatabase get _db => AppDatabaseService.instance;
 
+  /// Primary-key id of the singleton settings row.
   static const int settingsId = 1;
 
   /// Returns the singleton settings row, or transient defaults on first
@@ -36,6 +38,7 @@ class SettingsRepository {
     );
   }
 
+  /// Upserts the singleton settings row.
   Future<void> saveSettings(UserSettingsRecord settings) async {
     await _db
         .into(_db.userSettings)
@@ -54,6 +57,7 @@ class SettingsRepository {
         );
   }
 
+  /// Adds [xp] to the user's running total and persists it.
   Future<void> addXp(int xp) async {
     final settings = await getSettings();
     settings.totalXp += xp;

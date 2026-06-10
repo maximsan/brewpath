@@ -3,7 +3,9 @@ import 'package:coffee_quest/services/remote_config/firebase_remote_config_servi
 import 'package:coffee_quest/shared/storage/app_database.dart';
 import 'package:firebase_core/firebase_core.dart';
 
+/// One-time app initialization (database, and Firebase when enabled).
 class AppBootstrap {
+  /// Initializes the database and, when [kUseFirebase] is set, Firebase.
   static Future<void> initialize() async {
     AppDatabaseService.instance = AppDatabase();
 

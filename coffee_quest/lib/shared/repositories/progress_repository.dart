@@ -2,20 +2,25 @@ import 'package:coffee_quest/shared/storage/app_database.dart';
 import 'package:coffee_quest/shared/storage/progress_record.dart';
 import 'package:drift/drift.dart';
 
+/// Reads/writes lesson-completion records via Drift.
 class ProgressRepository {
   AppDatabase get _db => AppDatabaseService.instance;
 
+  /// Returns all completed-lesson records.
   Future<List<ProgressRecord>> getAllCompleted() async {
     final rows = await (_db.select(
       _db.progressRecords,
     )..where((t) => t.isCompleted.equals(true))).get();
+
     return rows.map(_toDto).toList();
   }
 
+  /// Returns the completion record for [lessonId], or null if none.
   Future<ProgressRecord?> getByLessonId(String lessonId) async {
     final row = await (_db.select(
       _db.progressRecords,
     )..where((t) => t.lessonId.equals(lessonId))).getSingleOrNull();
+
     return row == null ? null : _toDto(row);
   }
 

@@ -7,14 +7,23 @@ import 'package:flutter/material.dart';
 ///   hints at the action (e.g. "Coming soon").
 class PreferenceTile extends StatelessWidget {
   const PreferenceTile.toggle({
-    required this.icon, required this.title, required this.subtitle, required bool value, required ValueChanged<bool> onChanged, super.key,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required bool value,
+    required ValueChanged<bool> onChanged,
+    super.key,
   }) : _value = value,
        _onChanged = onChanged,
        onTap = null,
        trailingText = null;
 
   const PreferenceTile.action({
-    required this.icon, required this.title, required this.subtitle, required this.onTap, super.key,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+    super.key,
     this.trailingText,
   }) : _value = null,
        _onChanged = null;

@@ -3,10 +3,11 @@ import 'package:flutter/foundation.dart';
 /// Holds the brewer pick + submission state for `BrewerScreen`, keeping the
 /// orchestration out of the widget so it can be unit-tested without pumping.
 ///
-/// Persistence and navigation are injected: [onSubmit] receives the chosen
+/// Persistence and navigation are injected: `onSubmit` receives the chosen
 /// option index (the screen maps it to a key and writes through
-/// `OnboardingDraft`), and [onFinished] runs once submission completes.
+/// `OnboardingDraft`), and `onFinished` runs once submission completes.
 class BrewerController extends ChangeNotifier {
+  /// Creates a [BrewerController].
   BrewerController({
     required Future<void> Function(int selectedIndex) onSubmit,
     required VoidCallback onFinished,
@@ -19,8 +20,13 @@ class BrewerController extends ChangeNotifier {
   int? _selectedIndex;
   bool _submitting = false;
 
+  /// The currently selected option index, or null if none.
   int? get selectedIndex => _selectedIndex;
+
+  /// Whether a submission is currently in flight.
   bool get submitting => _submitting;
+
+  /// Whether a selection exists and no submission is in flight.
   bool get canSubmit => _selectedIndex != null && !_submitting;
 
   /// Selects an option. Ignored once submission is in flight.
@@ -30,7 +36,7 @@ class BrewerController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Persists the selection via [onSubmit], then invokes [onFinished]. Guards
+  /// Persists the selection via `onSubmit`, then invokes `onFinished`. Guards
   /// against re-entry and submitting with no selection.
   Future<void> submit() async {
     if (!canSubmit) return;

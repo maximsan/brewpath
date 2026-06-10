@@ -8,9 +8,13 @@ part 'cards_providers.g.dart';
 /// A content card paired with whether the user has collected it. Derived
 /// read-side value — not persisted or serialized.
 class CardWithCollection {
+  /// Creates a [CardWithCollection].
   const CardWithCollection({required this.card, required this.isCollected});
 
+  /// The content card.
   final CoffeeCardModel card;
+
+  /// Whether the user has collected [card].
   final bool isCollected;
 }
 

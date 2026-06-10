@@ -1,7 +1,8 @@
 // Self-describing tokens / DTOs / storage infra; no per-member docs.
 // ignore_for_file: public_member_api_docs
 
-import 'package:coffee_quest/shared/repositories/settings_repository.dart' show SettingsRepository;
+import 'package:coffee_quest/shared/repositories/settings_repository.dart'
+    show SettingsRepository;
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 

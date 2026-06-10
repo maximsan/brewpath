@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coffee_quest/services/analytics/analytics_service.dart';
 import 'package:flutter/widgets.dart';
 
@@ -5,13 +7,16 @@ import 'package:flutter/widgets.dart';
 /// via `observers`. The injected service is the NoOp impl until Firebase lands
 /// in Phase 8, so this is currently inert but exercises the call path.
 class AnalyticsNavigatorObserver extends NavigatorObserver {
+  /// Creates an [AnalyticsNavigatorObserver] over an [AnalyticsService].
   AnalyticsNavigatorObserver(this._analytics);
 
   final AnalyticsService _analytics;
 
   void _log(Route<dynamic>? route) {
     final name = route?.settings.name;
-    if (name != null) _analytics.logScreen(name);
+    if (name != null) {
+      unawaited(_analytics.logScreen(name));
+    }
   }
 
   @override

@@ -8,9 +8,13 @@ import 'package:go_router/go_router.dart';
 /// progress, and lock state. Locked taps surface the unlock hint instead of
 /// navigating.
 class ModuleCardWidget extends StatelessWidget {
+  /// Creates a [ModuleCardWidget].
   const ModuleCardWidget({required this.item, super.key});
 
+  /// The module paired with its derived progress state.
   final ModuleWithProgress item;
+
+  static const double _cornerRadius = 12;
 
   void _onTap(BuildContext context) {
     if (item.isLocked) {
@@ -36,7 +40,7 @@ class ModuleCardWidget extends StatelessWidget {
       margin: EdgeInsets.zero,
       child: InkWell(
         onTap: () => _onTap(context),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(_cornerRadius),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -93,6 +97,9 @@ class _ModuleBadge extends StatelessWidget {
   final bool locked;
   final bool complete;
 
+  static const double _size = 48;
+  static const double _radius = 12;
+
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
@@ -110,12 +117,12 @@ class _ModuleBadge extends StatelessWidget {
     }
 
     return Container(
-      width: 48,
-      height: 48,
+      width: _size,
+      height: _size,
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: background,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(_radius),
       ),
       child: Icon(icon, color: foreground),
     );
@@ -128,6 +135,9 @@ class _ModuleStatus extends StatelessWidget {
   const _ModuleStatus({required this.item});
 
   final ModuleWithProgress item;
+
+  static const double _barHeight = 6;
+  static const double _barRadius = 3;
 
   @override
   Widget build(BuildContext context) {
@@ -153,8 +163,8 @@ class _ModuleStatus extends StatelessWidget {
         const SizedBox(height: 6),
         LinearProgressIndicator(
           value: item.progress,
-          minHeight: 6,
-          borderRadius: BorderRadius.circular(3),
+          minHeight: _barHeight,
+          borderRadius: BorderRadius.circular(_barRadius),
           backgroundColor: colors.surfaceContainerHighest,
           color: colors.primary,
         ),

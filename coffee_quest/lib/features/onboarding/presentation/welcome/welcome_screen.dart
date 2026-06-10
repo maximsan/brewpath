@@ -14,6 +14,7 @@ import 'package:go_router/go_router.dart';
 import 'package:video_player/video_player.dart';
 
 class WelcomeScreen extends ConsumerWidget {
+  /// Creates a [WelcomeScreen].
   const WelcomeScreen({super.key});
 
   static const double _heroFrameRadius = 4;

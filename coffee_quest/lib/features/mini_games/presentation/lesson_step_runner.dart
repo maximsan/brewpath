@@ -10,11 +10,17 @@ import 'package:flutter/material.dart';
 /// union makes the switch exhaustive — adding a variant is a compile error
 /// until a case is added here.
 class LessonStepRunner extends StatelessWidget {
+  /// Creates a [LessonStepRunner].
   const LessonStepRunner({
-    required this.step, required this.onResult, super.key,
+    required this.step,
+    required this.onResult,
+    super.key,
   });
 
+  /// The lesson step to render.
   final LessonStepModel step;
+
+  /// Called with the [MiniGameResult] when the step is answered.
   final void Function(MiniGameResult result) onResult;
 
   @override

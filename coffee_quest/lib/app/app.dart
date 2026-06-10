@@ -3,7 +3,9 @@ import 'package:coffee_quest/app/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+/// Root application widget — wires the router and theme into MaterialApp.
 class CoffeeQuestApp extends ConsumerWidget {
+  /// Creates a [CoffeeQuestApp].
   const CoffeeQuestApp({super.key});
 
   @override

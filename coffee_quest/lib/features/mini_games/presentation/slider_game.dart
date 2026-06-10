@@ -3,10 +3,15 @@ import 'package:coffee_quest/features/mini_games/domain/mini_game_result.dart';
 import 'package:coffee_quest/shared/models/lesson_step_model.dart';
 import 'package:flutter/material.dart';
 
+/// Slider mini-game: the user drags a value into the target range.
 class SliderGame extends StatefulWidget {
+  /// Creates a [SliderGame].
   const SliderGame({required this.step, required this.onResult, super.key});
 
+  /// The slider step's content/config.
   final SliderStep step;
+
+  /// Called with the [MiniGameResult] when the user answers.
   final void Function(MiniGameResult) onResult;
 
   @override

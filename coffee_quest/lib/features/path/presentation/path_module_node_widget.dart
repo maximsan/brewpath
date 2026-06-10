@@ -9,7 +9,10 @@ import 'package:go_router/go_router.dart';
 /// progress. Locked taps surface the unlock hint instead of navigating.
 class PathModuleNodeWidget extends StatelessWidget {
   const PathModuleNodeWidget({
-    required this.item, required this.isFirst, required this.isLast, super.key,
+    required this.item,
+    required this.isFirst,
+    required this.isLast,
+    super.key,
   });
 
   final ModuleWithProgress item;

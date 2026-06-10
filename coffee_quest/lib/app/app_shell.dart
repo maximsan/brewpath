@@ -6,8 +6,10 @@ import 'package:go_router/go_router.dart';
 /// branch keeps its own navigator stack, so tab state and scroll position
 /// survive switching tabs.
 class AppShell extends StatelessWidget {
+  /// Creates an [AppShell] around [navigationShell].
   const AppShell(this.navigationShell, {super.key});
 
+  /// The shell that manages the four bottom-nav branches.
   final StatefulNavigationShell navigationShell;
 
   void _onDestinationSelected(int index) {

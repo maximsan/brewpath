@@ -11,6 +11,7 @@ part 'learn_providers.g.dart';
 /// A module paired with its derived completion state. Not persisted or
 /// serialized — purely a read-side view value for the Learn screen.
 class ModuleWithProgress {
+  /// Creates a [ModuleWithProgress].
   const ModuleWithProgress({
     required this.module,
     required this.completedCount,
@@ -18,16 +19,23 @@ class ModuleWithProgress {
     required this.isLocked,
   });
 
+  /// The underlying module.
   final ModuleModel module;
+
+  /// Number of completed lessons in the module.
   final int completedCount;
+
+  /// Total number of lessons in the module.
   final int totalCount;
 
   /// Locked until the module named by `unlockRequirement` is fully complete.
   /// The first module (no `unlockRequirement`) is always unlocked.
   final bool isLocked;
 
+  /// Whether every lesson in the module is complete.
   bool get isComplete => totalCount > 0 && completedCount >= totalCount;
 
+  /// Completion fraction in the range 0..1.
   double get progress => totalCount == 0 ? 0 : completedCount / totalCount;
 }
 
@@ -55,6 +63,7 @@ Future<List<ModuleWithProgress>> modulesWithProgress(Ref ref) async {
   }).toList();
 }
 
+/// The next uncompleted lesson in order, or null if all are complete.
 @riverpod
 Future<LessonModel?> todayLesson(Ref ref) async {
   final content = ref.watch(contentRepositoryProvider);
@@ -71,15 +80,20 @@ Future<LessonModel?> todayLesson(Ref ref) async {
       }
     }
   }
+
   return null;
 }
 
 /// One row per lesson plus its owning module — used by the Learn screen's
 /// "Practice Any Lesson" section to render a grouped, all-lessons list.
 class LessonWithModule {
+  /// Creates a [LessonWithModule].
   const LessonWithModule({required this.lesson, required this.module});
 
+  /// The lesson.
   final LessonModel lesson;
+
+  /// The lesson's owning module.
   final ModuleModel module;
 }
 
@@ -101,6 +115,7 @@ Future<List<LessonWithModule>> allLessonsWithModule(Ref ref) async {
       }
     }
   }
+
   return out;
 }
 
@@ -146,5 +161,6 @@ const gameTypeLabels = <(String, String)>[
   ('slider', 'Slider'),
 ];
 
+/// Returns the user-facing label for a game-type [key].
 String gameTypeDisplayName(String key) =>
     gameTypeLabels.firstWhere((e) => e.$1 == key, orElse: () => (key, key)).$2;

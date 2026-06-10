@@ -6,15 +6,19 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'repository_providers.g.dart';
 
+/// Provides the [ProgressRepository].
 @riverpod
 ProgressRepository progressRepository(Ref ref) => ProgressRepository();
 
+/// Provides the [CardRepository].
 @riverpod
 CardRepository cardRepository(Ref ref) => CardRepository();
 
+/// Provides the [SettingsRepository].
 @riverpod
 SettingsRepository settingsRepository(Ref ref) => SettingsRepository();
 
+/// Provides the [ModuleProgressRepository].
 @riverpod
 ModuleProgressRepository moduleProgressRepository(Ref ref) =>
     ModuleProgressRepository();

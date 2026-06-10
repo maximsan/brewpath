@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 /// Hero CTA at the top of the Profile screen. The real in-app purchase flow
 /// lands with the AdMob/IAP integration; for now this opens a coming-soon
 /// dialog so the visual hierarchy is in place ahead of monetization.
 class PremiumCard extends StatelessWidget {
+  /// Creates a [PremiumCard].
   const PremiumCard({super.key});
 
   @override
@@ -69,7 +72,8 @@ class PremiumCard extends StatelessWidget {
   }
 
   void _showComingSoon(BuildContext context) {
-    showDialog<void>(
+    unawaited(
+      showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Premium is brewing'),
@@ -84,6 +88,8 @@ class PremiumCard extends StatelessWidget {
           ),
         ],
       ),
+      ),
     );
   }
 }
+

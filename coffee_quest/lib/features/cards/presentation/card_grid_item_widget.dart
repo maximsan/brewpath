@@ -6,9 +6,16 @@ import 'package:go_router/go_router.dart';
 /// One tile in the Cards grid. Collected → category icon badge, title, and
 /// tag, tappable; locked → muted silhouette with "???" and inert.
 class CardGridItemWidget extends StatelessWidget {
+  /// Creates a [CardGridItemWidget].
   const CardGridItemWidget({required this.item, super.key});
 
+  /// The card paired with its collected state.
   final CardWithCollection item;
+
+  static const double _cornerRadius = 12;
+  static const double _badgeSize = 56;
+  static const double _badgeRadius = 14;
+  static const double _iconSize = 28;
 
   @override
   Widget build(BuildContext context) {
@@ -20,27 +27,27 @@ class CardGridItemWidget extends StatelessWidget {
       margin: EdgeInsets.zero,
       child: InkWell(
         onTap: collected ? () => context.go('/cards/${item.card.id}') : null,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(_cornerRadius),
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: 56,
-                height: 56,
+                width: _badgeSize,
+                height: _badgeSize,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: collected
                       ? colors.primaryContainer
                       : colors.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(_badgeRadius),
                 ),
                 child: Icon(
                   collected
                       ? moduleIcon(item.card.iconName)
                       : Icons.help_outline,
-                  size: 28,
+                  size: _iconSize,
                   color: collected
                       ? colors.onPrimaryContainer
                       : colors.onSurfaceVariant,

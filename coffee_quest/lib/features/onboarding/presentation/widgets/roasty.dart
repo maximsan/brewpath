@@ -1,7 +1,12 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:coffee_quest/features/onboarding/presentation/widgets/roasty_state.dart';
 import 'package:flutter/material.dart';
+
+// Animation switches handle the states with special motion and default the
+// rest; enumerating every no-op state would bloat these mascot switches.
+// ignore_for_file: no_default_cases
 
 /// Animated Roasty mascot. Reproduces the geometry + per-state animations
 /// from the design bundle (`coffee_quest/brew-path-app/project/roasty.jsx`)
@@ -10,6 +15,7 @@ import 'package:flutter/material.dart';
 /// prototype's `key={state + ':' + replayKey}` so one-shot animations
 /// restart on demand.
 class Roasty extends StatefulWidget {
+  /// Creates a [Roasty].
   const Roasty({
     required this.state,
     this.size = 160,
@@ -18,8 +24,13 @@ class Roasty extends StatefulWidget {
     super.key,
   });
 
+  /// The mascot's current visual state.
   final RoastyState state;
+
+  /// Rendered width/height in logical pixels.
   final double size;
+
+  /// Changing this restarts one-shot animations (mirrors the prototype key).
   final Object? replayKey;
 
   /// Overrides the sprout's scale when non-null, letting a host (e.g. the
@@ -41,7 +52,7 @@ class _RoastyState extends State<Roasty> with SingleTickerProviderStateMixin {
         AnimationController(vsync: this, duration: _durationFor(widget.state))
           ..addStatusListener((status) {
             if (status == AnimationStatus.completed && _loops(widget.state)) {
-              _controller.repeat();
+              unawaited(_controller.repeat());
             }
           });
     _startForState(widget.state);
@@ -62,9 +73,9 @@ class _RoastyState extends State<Roasty> with SingleTickerProviderStateMixin {
   void _startForState(RoastyState state) {
     _controller.reset();
     if (_loops(state)) {
-      _controller.repeat();
+      unawaited(_controller.repeat());
     } else {
-      _controller.forward();
+      unawaited(_controller.forward());
     }
   }
 
@@ -97,7 +108,12 @@ class _RoastyState extends State<Roasty> with SingleTickerProviderStateMixin {
       case RoastyState.card:
       case RoastyState.sleep:
         return true;
-      default:
+      case RoastyState.correct:
+      case RoastyState.wrong:
+      case RoastyState.lesson:
+      case RoastyState.module:
+      case RoastyState.xp:
+      case RoastyState.awake:
         return false;
     }
   }

@@ -1,7 +1,8 @@
 // Self-describing tokens / DTOs / storage infra; no per-member docs.
 // ignore_for_file: public_member_api_docs
 
-import 'package:coffee_quest/shared/storage/progress_record.dart' show ProgressRecord;
+import 'package:coffee_quest/shared/storage/progress_record.dart'
+    show ProgressRecord;
 
 /// Mutable DTO for a collected-card row. See [ProgressRecord] for rationale.
 class CardRecord {

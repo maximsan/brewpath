@@ -2,7 +2,9 @@ import 'package:coffee_quest/shared/theme/app_colors.dart';
 import 'package:coffee_quest/shared/theme/app_typography.dart';
 import 'package:flutter/material.dart';
 
+/// App-wide Material 3 theme (dark-roast palette).
 abstract class AppTheme {
+  /// The app's theme data.
   static ThemeData get lightTheme => ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,

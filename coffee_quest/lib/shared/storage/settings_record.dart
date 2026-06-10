@@ -6,7 +6,12 @@
 /// to/from the Drift companion.
 class UserSettingsRecord {
   UserSettingsRecord({
-    required this.hapticsEnabled, required this.soundEnabled, required this.totalXp, required this.streakDays, required this.lastActivityDate, this.id = 1,
+    required this.hapticsEnabled,
+    required this.soundEnabled,
+    required this.totalXp,
+    required this.streakDays,
+    required this.lastActivityDate,
+    this.id = 1,
     this.onboardingCompleted = false,
     this.onboardingGoal,
     this.onboardingBrewer,

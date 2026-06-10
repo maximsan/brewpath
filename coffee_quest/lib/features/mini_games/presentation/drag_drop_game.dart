@@ -2,13 +2,17 @@ import 'package:coffee_quest/features/mini_games/domain/mini_game_result.dart';
 import 'package:coffee_quest/shared/models/lesson_step_model.dart';
 import 'package:flutter/material.dart';
 
-/// Match terms[i] ↔ definitions[i] by dragging. A drop is only accepted when
-/// the term index equals the definition index; wrong drops bounce back with no
-/// penalty. Auto-completes when every term is correctly placed.
+/// Match `terms[i]` ↔ `definitions[i]` by dragging. A drop is only accepted
+/// when the term index equals the definition index; wrong drops bounce back
+/// with no penalty. Auto-completes when every term is correctly placed.
 class DragDropGame extends StatefulWidget {
+  /// Creates a [DragDropGame].
   const DragDropGame({required this.step, required this.onResult, super.key});
 
+  /// The drag-drop step's content/config.
   final DragDropStep step;
+
+  /// Called with the [MiniGameResult] when the user answers.
   final void Function(MiniGameResult) onResult;
 
   @override

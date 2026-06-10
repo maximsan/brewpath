@@ -17,6 +17,7 @@ part 'lesson_completion_service.g.dart';
 /// banked, split so the completion screen can show the module-completion bonus
 /// separately from the lesson's own reward.
 class LessonCompletionResult {
+  /// Creates a [LessonCompletionResult].
   const LessonCompletionResult({
     required this.lessonXp,
     required this.moduleBonusXp,
@@ -39,6 +40,7 @@ class LessonCompletionResult {
 /// Outcome of [LessonCompletionService.reviewLesson] — a review never re-awards
 /// full lesson or module XP; it only updates mastery and may grant practice XP.
 class LessonReviewResult {
+  /// Creates a [LessonReviewResult].
   const LessonReviewResult({
     required this.bestScore,
     required this.practiceXpAwarded,
@@ -56,6 +58,7 @@ class LessonReviewResult {
 /// bonus once every lesson in the module is done. Idempotent — replaying a
 /// completed lesson is a no-op so XP and cards are never double-counted.
 class LessonCompletionService {
+  /// Creates a [LessonCompletionService].
   const LessonCompletionService({
     required this.progressRepository,
     required this.settingsRepository,
@@ -67,13 +70,28 @@ class LessonCompletionService {
     required this.streakService,
   });
 
+  /// Lesson-completion records.
   final ProgressRepository progressRepository;
+
+  /// User settings (XP, streak, preferences).
   final SettingsRepository settingsRepository;
+
+  /// Collected coffee cards.
   final CardRepository cardRepository;
+
+  /// Content (modules and lessons).
   final ContentRepository contentRepository;
+
+  /// Per-module "bonus awarded" ledger.
   final ModuleProgressRepository moduleProgressRepository;
+
+  /// Analytics sink.
   final AnalyticsService analyticsService;
+
+  /// XP calculations.
   final XpService xpService;
+
+  /// Streak calculations.
   final StreakService streakService;
 
   /// First completion of [lesson]. [score] is the run's first-try accuracy
@@ -226,6 +244,7 @@ class LessonCompletionService {
   DateTime _dateOnly(DateTime d) => DateTime(d.year, d.month, d.day);
 }
 
+/// Provides the [LessonCompletionService] with its dependencies wired in.
 @riverpod
 LessonCompletionService lessonCompletionService(Ref ref) =>
     LessonCompletionService(

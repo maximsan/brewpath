@@ -11,7 +11,8 @@ import 'package:go_router/go_router.dart';
 
 class LessonScreen extends ConsumerStatefulWidget {
   const LessonScreen({
-    required this.lessonId, super.key,
+    required this.lessonId,
+    super.key,
     this.review = false,
     this.practice = false,
   });
