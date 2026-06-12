@@ -8,14 +8,18 @@ part of 'payments_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// Provides the active [PaymentsService] — No-Op until payments go live.
 
 @ProviderFor(paymentsService)
 final paymentsServiceProvider = PaymentsServiceProvider._();
+
+/// Provides the active [PaymentsService] — No-Op until payments go live.
 
 final class PaymentsServiceProvider
     extends
         $FunctionalProvider<PaymentsService, PaymentsService, PaymentsService>
     with $Provider<PaymentsService> {
+  /// Provides the active [PaymentsService] — No-Op until payments go live.
   PaymentsServiceProvider._()
     : super(
         from: null,

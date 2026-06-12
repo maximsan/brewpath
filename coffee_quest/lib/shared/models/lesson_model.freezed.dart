@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$LessonModel {
 
- String get id; String get moduleId; String get title; String get summary; int get xpReward; String? get cardId; List<LessonStepModel> get steps;
+ String get id; String get moduleId; String get title; String get summary; int get xpReward; List<LessonStepModel> get steps; String? get cardId;
 /// Create a copy of LessonModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $LessonModelCopyWith<LessonModel> get copyWith => _$LessonModelCopyWithImpl<Less
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LessonModel&&(identical(other.id, id) || other.id == id)&&(identical(other.moduleId, moduleId) || other.moduleId == moduleId)&&(identical(other.title, title) || other.title == title)&&(identical(other.summary, summary) || other.summary == summary)&&(identical(other.xpReward, xpReward) || other.xpReward == xpReward)&&(identical(other.cardId, cardId) || other.cardId == cardId)&&const DeepCollectionEquality().equals(other.steps, steps));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LessonModel&&(identical(other.id, id) || other.id == id)&&(identical(other.moduleId, moduleId) || other.moduleId == moduleId)&&(identical(other.title, title) || other.title == title)&&(identical(other.summary, summary) || other.summary == summary)&&(identical(other.xpReward, xpReward) || other.xpReward == xpReward)&&const DeepCollectionEquality().equals(other.steps, steps)&&(identical(other.cardId, cardId) || other.cardId == cardId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,moduleId,title,summary,xpReward,cardId,const DeepCollectionEquality().hash(steps));
+int get hashCode => Object.hash(runtimeType,id,moduleId,title,summary,xpReward,const DeepCollectionEquality().hash(steps),cardId);
 
 @override
 String toString() {
-  return 'LessonModel(id: $id, moduleId: $moduleId, title: $title, summary: $summary, xpReward: $xpReward, cardId: $cardId, steps: $steps)';
+  return 'LessonModel(id: $id, moduleId: $moduleId, title: $title, summary: $summary, xpReward: $xpReward, steps: $steps, cardId: $cardId)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $LessonModelCopyWith<$Res>  {
   factory $LessonModelCopyWith(LessonModel value, $Res Function(LessonModel) _then) = _$LessonModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String moduleId, String title, String summary, int xpReward, String? cardId, List<LessonStepModel> steps
+ String id, String moduleId, String title, String summary, int xpReward, List<LessonStepModel> steps, String? cardId
 });
 
 
@@ -65,16 +65,16 @@ class _$LessonModelCopyWithImpl<$Res>
 
 /// Create a copy of LessonModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? moduleId = null,Object? title = null,Object? summary = null,Object? xpReward = null,Object? cardId = freezed,Object? steps = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? moduleId = null,Object? title = null,Object? summary = null,Object? xpReward = null,Object? steps = null,Object? cardId = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,moduleId: null == moduleId ? _self.moduleId : moduleId // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,summary: null == summary ? _self.summary : summary // ignore: cast_nullable_to_non_nullable
 as String,xpReward: null == xpReward ? _self.xpReward : xpReward // ignore: cast_nullable_to_non_nullable
-as int,cardId: freezed == cardId ? _self.cardId : cardId // ignore: cast_nullable_to_non_nullable
-as String?,steps: null == steps ? _self.steps : steps // ignore: cast_nullable_to_non_nullable
-as List<LessonStepModel>,
+as int,steps: null == steps ? _self.steps : steps // ignore: cast_nullable_to_non_nullable
+as List<LessonStepModel>,cardId: freezed == cardId ? _self.cardId : cardId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -159,10 +159,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String moduleId,  String title,  String summary,  int xpReward,  String? cardId,  List<LessonStepModel> steps)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String moduleId,  String title,  String summary,  int xpReward,  List<LessonStepModel> steps,  String? cardId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _LessonModel() when $default != null:
-return $default(_that.id,_that.moduleId,_that.title,_that.summary,_that.xpReward,_that.cardId,_that.steps);case _:
+return $default(_that.id,_that.moduleId,_that.title,_that.summary,_that.xpReward,_that.steps,_that.cardId);case _:
   return orElse();
 
 }
@@ -180,10 +180,10 @@ return $default(_that.id,_that.moduleId,_that.title,_that.summary,_that.xpReward
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String moduleId,  String title,  String summary,  int xpReward,  String? cardId,  List<LessonStepModel> steps)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String moduleId,  String title,  String summary,  int xpReward,  List<LessonStepModel> steps,  String? cardId)  $default,) {final _that = this;
 switch (_that) {
 case _LessonModel():
-return $default(_that.id,_that.moduleId,_that.title,_that.summary,_that.xpReward,_that.cardId,_that.steps);case _:
+return $default(_that.id,_that.moduleId,_that.title,_that.summary,_that.xpReward,_that.steps,_that.cardId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -200,10 +200,10 @@ return $default(_that.id,_that.moduleId,_that.title,_that.summary,_that.xpReward
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String moduleId,  String title,  String summary,  int xpReward,  String? cardId,  List<LessonStepModel> steps)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String moduleId,  String title,  String summary,  int xpReward,  List<LessonStepModel> steps,  String? cardId)?  $default,) {final _that = this;
 switch (_that) {
 case _LessonModel() when $default != null:
-return $default(_that.id,_that.moduleId,_that.title,_that.summary,_that.xpReward,_that.cardId,_that.steps);case _:
+return $default(_that.id,_that.moduleId,_that.title,_that.summary,_that.xpReward,_that.steps,_that.cardId);case _:
   return null;
 
 }
@@ -215,7 +215,7 @@ return $default(_that.id,_that.moduleId,_that.title,_that.summary,_that.xpReward
 @JsonSerializable()
 
 class _LessonModel implements LessonModel {
-  const _LessonModel({required this.id, required this.moduleId, required this.title, required this.summary, required this.xpReward, this.cardId, required final  List<LessonStepModel> steps}): _steps = steps;
+  const _LessonModel({required this.id, required this.moduleId, required this.title, required this.summary, required this.xpReward, required final  List<LessonStepModel> steps, this.cardId}): _steps = steps;
   factory _LessonModel.fromJson(Map<String, dynamic> json) => _$LessonModelFromJson(json);
 
 @override final  String id;
@@ -223,7 +223,6 @@ class _LessonModel implements LessonModel {
 @override final  String title;
 @override final  String summary;
 @override final  int xpReward;
-@override final  String? cardId;
  final  List<LessonStepModel> _steps;
 @override List<LessonStepModel> get steps {
   if (_steps is EqualUnmodifiableListView) return _steps;
@@ -231,6 +230,7 @@ class _LessonModel implements LessonModel {
   return EqualUnmodifiableListView(_steps);
 }
 
+@override final  String? cardId;
 
 /// Create a copy of LessonModel
 /// with the given fields replaced by the non-null parameter values.
@@ -245,16 +245,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LessonModel&&(identical(other.id, id) || other.id == id)&&(identical(other.moduleId, moduleId) || other.moduleId == moduleId)&&(identical(other.title, title) || other.title == title)&&(identical(other.summary, summary) || other.summary == summary)&&(identical(other.xpReward, xpReward) || other.xpReward == xpReward)&&(identical(other.cardId, cardId) || other.cardId == cardId)&&const DeepCollectionEquality().equals(other._steps, _steps));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LessonModel&&(identical(other.id, id) || other.id == id)&&(identical(other.moduleId, moduleId) || other.moduleId == moduleId)&&(identical(other.title, title) || other.title == title)&&(identical(other.summary, summary) || other.summary == summary)&&(identical(other.xpReward, xpReward) || other.xpReward == xpReward)&&const DeepCollectionEquality().equals(other._steps, _steps)&&(identical(other.cardId, cardId) || other.cardId == cardId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,moduleId,title,summary,xpReward,cardId,const DeepCollectionEquality().hash(_steps));
+int get hashCode => Object.hash(runtimeType,id,moduleId,title,summary,xpReward,const DeepCollectionEquality().hash(_steps),cardId);
 
 @override
 String toString() {
-  return 'LessonModel(id: $id, moduleId: $moduleId, title: $title, summary: $summary, xpReward: $xpReward, cardId: $cardId, steps: $steps)';
+  return 'LessonModel(id: $id, moduleId: $moduleId, title: $title, summary: $summary, xpReward: $xpReward, steps: $steps, cardId: $cardId)';
 }
 
 
@@ -265,7 +265,7 @@ abstract mixin class _$LessonModelCopyWith<$Res> implements $LessonModelCopyWith
   factory _$LessonModelCopyWith(_LessonModel value, $Res Function(_LessonModel) _then) = __$LessonModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String moduleId, String title, String summary, int xpReward, String? cardId, List<LessonStepModel> steps
+ String id, String moduleId, String title, String summary, int xpReward, List<LessonStepModel> steps, String? cardId
 });
 
 
@@ -282,16 +282,16 @@ class __$LessonModelCopyWithImpl<$Res>
 
 /// Create a copy of LessonModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? moduleId = null,Object? title = null,Object? summary = null,Object? xpReward = null,Object? cardId = freezed,Object? steps = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? moduleId = null,Object? title = null,Object? summary = null,Object? xpReward = null,Object? steps = null,Object? cardId = freezed,}) {
   return _then(_LessonModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,moduleId: null == moduleId ? _self.moduleId : moduleId // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,summary: null == summary ? _self.summary : summary // ignore: cast_nullable_to_non_nullable
 as String,xpReward: null == xpReward ? _self.xpReward : xpReward // ignore: cast_nullable_to_non_nullable
-as int,cardId: freezed == cardId ? _self.cardId : cardId // ignore: cast_nullable_to_non_nullable
-as String?,steps: null == steps ? _self._steps : steps // ignore: cast_nullable_to_non_nullable
-as List<LessonStepModel>,
+as int,steps: null == steps ? _self._steps : steps // ignore: cast_nullable_to_non_nullable
+as List<LessonStepModel>,cardId: freezed == cardId ? _self.cardId : cardId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

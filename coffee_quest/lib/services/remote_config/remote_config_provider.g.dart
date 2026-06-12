@@ -8,9 +8,12 @@ part of 'remote_config_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// Provides the active [RemoteConfigService] — No-Op until Firebase is on.
 
 @ProviderFor(remoteConfigService)
 final remoteConfigServiceProvider = RemoteConfigServiceProvider._();
+
+/// Provides the active [RemoteConfigService] — No-Op until Firebase is on.
 
 final class RemoteConfigServiceProvider
     extends
@@ -20,6 +23,7 @@ final class RemoteConfigServiceProvider
           RemoteConfigService
         >
     with $Provider<RemoteConfigService> {
+  /// Provides the active [RemoteConfigService] — No-Op until Firebase is on.
   RemoteConfigServiceProvider._()
     : super(
         from: null,

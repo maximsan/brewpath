@@ -8,9 +8,12 @@ part of 'learn_providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// All modules paired with their derived completion/lock state.
 
 @ProviderFor(modulesWithProgress)
 final modulesWithProgressProvider = ModulesWithProgressProvider._();
+
+/// All modules paired with their derived completion/lock state.
 
 final class ModulesWithProgressProvider
     extends
@@ -22,6 +25,7 @@ final class ModulesWithProgressProvider
     with
         $FutureModifier<List<ModuleWithProgress>>,
         $FutureProvider<List<ModuleWithProgress>> {
+  /// All modules paired with their derived completion/lock state.
   ModulesWithProgressProvider._()
     : super(
         from: null,
@@ -51,8 +55,12 @@ final class ModulesWithProgressProvider
 String _$modulesWithProgressHash() =>
     r'4edce864510a70fd09058fc8405de592533acde4';
 
+/// The next uncompleted lesson in order, or null if all are complete.
+
 @ProviderFor(todayLesson)
 final todayLessonProvider = TodayLessonProvider._();
+
+/// The next uncompleted lesson in order, or null if all are complete.
 
 final class TodayLessonProvider
     extends
@@ -62,6 +70,7 @@ final class TodayLessonProvider
           FutureOr<LessonModel?>
         >
     with $FutureModifier<LessonModel?>, $FutureProvider<LessonModel?> {
+  /// The next uncompleted lesson in order, or null if all are complete.
   TodayLessonProvider._()
     : super(
         from: null,

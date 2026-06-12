@@ -44,6 +44,9 @@ dart_code_linter:
     - integration_test/**
     # CustomPainter with many small _paintX helpers — method count is by design.
     - lib/features/onboarding/presentation/widgets/roasty.dart
+    - lib/features/onboarding/presentation/widgets/roasty_body.dart
+    - lib/features/onboarding/presentation/widgets/roasty_faces.dart
+    - lib/features/onboarding/presentation/widgets/roasty_particles.dart
     # Declarative GoRouter route table — long by nature, low logic complexity.
     - lib/app/app_router.dart
   rules:
@@ -52,6 +55,10 @@ dart_code_linter:
         allowed: [0, 1, 2]
         exclude:
           - lib/features/onboarding/presentation/widgets/roasty.dart
+          - lib/features/onboarding/presentation/widgets/roasty_animation.dart
+          - lib/features/onboarding/presentation/widgets/roasty_body.dart
+          - lib/features/onboarding/presentation/widgets/roasty_faces.dart
+          - lib/features/onboarding/presentation/widgets/roasty_particles.dart
           - lib/features/onboarding/presentation/loading/widgets/roasty_stage.dart
           - lib/features/onboarding/presentation/loading/loading_animation.dart
           - lib/shared/theme/app_spacing.dart
