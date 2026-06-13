@@ -8,18 +8,30 @@ import 'package:flutter/material.dart';
 /// near-opaque tinted surface plus a soft drop shadow build up behind the
 /// bar — so it reads as a distinct floating header over the content.
 class ProfileHeaderDelegate extends SliverPersistentHeaderDelegate {
+  /// Creates a [ProfileHeaderDelegate].
   ProfileHeaderDelegate({
     required this.title,
     required this.onClose,
     required this.onSettings,
   });
 
+  /// The header title text.
   final String title;
+
+  /// Called when the close (X) button is tapped.
   final VoidCallback onClose;
+
+  /// Called when the settings (gear) button is tapped.
   final VoidCallback onSettings;
 
   static const double _expanded = 136;
   static const double _collapsed = 64;
+  static const double _hInset = 16;
+  static const double _topInset = 8;
+  static const double _bottomInset = 8;
+  static const double _shadowMaxAlpha = 0.08;
+  static const double _shadowBlur = 12;
+  static const double _shadowOffsetY = 4;
 
   @override
   double get maxExtent => _expanded;
@@ -63,9 +75,11 @@ class ProfileHeaderDelegate extends SliverPersistentHeaderDelegate {
                 color: colors.surfaceContainerHigh.withValues(alpha: tintAlpha),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.08 * shadowOpacity),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
+                    color: Colors.black.withValues(
+                      alpha: _shadowMaxAlpha * shadowOpacity,
+                    ),
+                    blurRadius: _shadowBlur,
+                    offset: const Offset(0, _shadowOffsetY),
                   ),
                 ],
               ),
@@ -73,9 +87,9 @@ class ProfileHeaderDelegate extends SliverPersistentHeaderDelegate {
           ),
         ),
         Positioned(
-          left: 16,
-          right: 16,
-          top: 8,
+          left: _hInset,
+          right: _hInset,
+          top: _topInset,
           child: Row(
             children: [
               _CircleIconButton(
@@ -106,9 +120,9 @@ class ProfileHeaderDelegate extends SliverPersistentHeaderDelegate {
           ),
         ),
         Positioned(
-          left: 16,
-          right: 16,
-          bottom: 8,
+          left: _hInset,
+          right: _hInset,
+          bottom: _bottomInset,
           child: Opacity(
             opacity: largeTitleOpacity,
             child: Align(
@@ -150,6 +164,9 @@ class _CircleIconButton extends StatelessWidget {
   final VoidCallback onPressed;
   final String tooltip;
 
+  static const double _size = 48;
+  static const double _iconSize = 26;
+
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
@@ -163,9 +180,9 @@ class _CircleIconButton extends StatelessWidget {
           onTap: onPressed,
           customBorder: const CircleBorder(),
           child: SizedBox(
-            width: 48,
-            height: 48,
-            child: Icon(icon, size: 26, color: colors.onSurface),
+            width: _size,
+            height: _size,
+            child: Icon(icon, size: _iconSize, color: colors.onSurface),
           ),
         ),
       ),

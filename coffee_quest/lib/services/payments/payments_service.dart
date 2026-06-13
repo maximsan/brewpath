@@ -1,6 +1,22 @@
 import 'package:coffee_quest/services/payments/store_product.dart';
 
-enum PurchaseStatus { purchased, pending, restored, cancelled, error }
+/// Outcome of a purchase or restore flow.
+enum PurchaseStatus {
+  /// The purchase completed and the entitlement is active.
+  purchased,
+
+  /// The purchase is awaiting external action (e.g. parental approval).
+  pending,
+
+  /// A prior purchase was restored.
+  restored,
+
+  /// The user cancelled the flow.
+  cancelled,
+
+  /// The purchase failed.
+  error,
+}
 
 /// Abstract store layer. No feature code calls StoreKit / `in_app_purchase`
 /// directly — only this interface. NoOp is active in the MVP.

@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'onboarding_providers.g.dart';
 
+/// Provides the [OnboardingRepository].
 @riverpod
 OnboardingRepository onboardingRepository(Ref ref) =>
     OnboardingRepository(ref.watch(settingsRepositoryProvider));
@@ -26,14 +27,17 @@ class OnboardingDraft extends _$OnboardingDraft {
   @override
   ({String? goal, String? brewer}) build() => (goal: null, brewer: null);
 
+  /// Sets the chosen goal key.
   void setGoal(String value) {
     state = (goal: value, brewer: state.brewer);
   }
 
+  /// Sets the chosen brewer key.
   void setBrewer(String value) {
     state = (goal: state.goal, brewer: value);
   }
 
+  /// Persists the goal + brewer selections, then resets the draft.
   Future<void> complete() async {
     final goal = state.goal;
     final brewer = state.brewer;

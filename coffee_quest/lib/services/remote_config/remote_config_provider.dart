@@ -8,6 +8,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'remote_config_provider.g.dart';
 
+/// Provides the active [RemoteConfigService] — No-Op until Firebase is on.
 @riverpod
 RemoteConfigService remoteConfigService(Ref ref) =>
     const NoOpRemoteConfigService();

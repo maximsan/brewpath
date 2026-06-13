@@ -35,7 +35,9 @@ const _options = <_GoalOption>[
   ),
 ];
 
+/// Onboarding step: pick your learning goal.
 class GoalScreen extends ConsumerStatefulWidget {
+  /// Creates a [GoalScreen].
   const GoalScreen({super.key});
 
   @override

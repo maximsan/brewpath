@@ -9,14 +9,16 @@ import 'package:flutter/foundation.dart';
 /// Two modes, selected at construction:
 ///  - **Animated:** loops the [WakePhase] state machine on a per-phase timer,
 ///    notifying listeners on each step. Once the first full cycle has played
-///    *and* the bootstrap gate has resolved, it fires [onAdvance] once and
+///    *and* the bootstrap gate has resolved, it fires `onAdvance` once and
 ///    stops — guaranteeing the user sees a full wake-up even on a fast boot.
-///  - **Reduced motion:** runs no timer; [phase] is a static [WakePhase.brewing]
-///    frame and advancement is driven solely by [notifyGateResolved].
+///  - **Reduced motion:** runs no timer; [phase] is a static
+///    [WakePhase.brewing] frame and advancement is driven solely by
+///    [notifyGateResolved].
 ///
 /// In both modes [loopForever] (a debug toggle) suppresses advancement so the
 /// animation can be inspected indefinitely.
 class WakeSequenceController extends ChangeNotifier {
+  /// Creates a [WakeSequenceController].
   WakeSequenceController({
     required this.reduceMotion,
     required this.loopForever,
@@ -25,7 +27,10 @@ class WakeSequenceController extends ChangeNotifier {
   }) : _isGateResolved = isGateResolved,
        _onAdvance = onAdvance;
 
+  /// Whether reduced-motion mode is active (static frame, no looping timer).
   final bool reduceMotion;
+
+  /// Debug toggle: when set, advancement is suppressed indefinitely.
   final bool loopForever;
   final bool Function() _isGateResolved;
   final VoidCallback _onAdvance;

@@ -8,6 +8,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'payments_provider.g.dart';
 
+/// Provides the active [PaymentsService] — No-Op until payments go live.
 @riverpod
 PaymentsService paymentsService(Ref ref) => const NoOpPaymentsService();
 // To go live: => InAppPurchaseService();

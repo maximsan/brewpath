@@ -31,7 +31,9 @@ const _options = <_BrewerOption>[
   ),
 ];
 
+/// Onboarding step: pick your usual brewing method.
 class BrewerScreen extends ConsumerStatefulWidget {
+  /// Creates a [BrewerScreen].
   const BrewerScreen({super.key});
 
   @override

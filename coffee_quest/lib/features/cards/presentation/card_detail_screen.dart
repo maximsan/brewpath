@@ -6,10 +6,17 @@ import 'package:coffee_quest/shared/repositories/content_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+/// Detail screen for a single collected coffee card.
 class CardDetailScreen extends ConsumerWidget {
-  const CardDetailScreen({super.key, required this.cardId});
+  /// Creates a [CardDetailScreen].
+  const CardDetailScreen({required this.cardId, super.key});
 
+  /// Id of the card to display.
   final String cardId;
+
+  static const double _badgeSize = 80;
+  static const double _badgeRadius = 20;
+  static const double _iconSize = 40;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -38,16 +45,16 @@ class CardDetailScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 80,
-                  height: 80,
+                  width: _badgeSize,
+                  height: _badgeSize,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: colors.primaryContainer,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(_badgeRadius),
                   ),
                   child: Icon(
                     moduleIcon(card.iconName),
-                    size: 40,
+                    size: _iconSize,
                     color: colors.onPrimaryContainer,
                   ),
                 ),

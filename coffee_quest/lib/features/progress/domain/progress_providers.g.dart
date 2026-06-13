@@ -8,13 +8,17 @@ part of 'progress_providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// The user's total XP.
 
 @ProviderFor(totalXp)
 final totalXpProvider = TotalXpProvider._();
 
+/// The user's total XP.
+
 final class TotalXpProvider
     extends $FunctionalProvider<AsyncValue<int>, int, FutureOr<int>>
     with $FutureModifier<int>, $FutureProvider<int> {
+  /// The user's total XP.
   TotalXpProvider._()
     : super(
         from: null,
@@ -42,12 +46,17 @@ final class TotalXpProvider
 
 String _$totalXpHash() => r'9d152d22babc01660d17d3b49a7aba3eeabc930f';
 
+/// The user's current streak in days.
+
 @ProviderFor(streak)
 final streakProvider = StreakProvider._();
+
+/// The user's current streak in days.
 
 final class StreakProvider
     extends $FunctionalProvider<AsyncValue<int>, int, FutureOr<int>>
     with $FutureModifier<int>, $FutureProvider<int> {
+  /// The user's current streak in days.
   StreakProvider._()
     : super(
         from: null,
@@ -75,8 +84,12 @@ final class StreakProvider
 
 String _$streakHash() => r'eb7a2c35c7e2f7624444b1e6ad37e22bf96500bb';
 
+/// All of the user's completed-lesson records.
+
 @ProviderFor(completedLessons)
 final completedLessonsProvider = CompletedLessonsProvider._();
+
+/// All of the user's completed-lesson records.
 
 final class CompletedLessonsProvider
     extends
@@ -88,6 +101,7 @@ final class CompletedLessonsProvider
     with
         $FutureModifier<List<ProgressRecord>>,
         $FutureProvider<List<ProgressRecord>> {
+  /// All of the user's completed-lesson records.
   CompletedLessonsProvider._()
     : super(
         from: null,
@@ -116,8 +130,12 @@ final class CompletedLessonsProvider
 
 String _$completedLessonsHash() => r'c29c67109f5f475a6482b2f49c6e10eb5a32e746';
 
+/// The ids of all cards the user has collected.
+
 @ProviderFor(collectedCards)
 final collectedCardsProvider = CollectedCardsProvider._();
+
+/// The ids of all cards the user has collected.
 
 final class CollectedCardsProvider
     extends
@@ -127,6 +145,7 @@ final class CollectedCardsProvider
           FutureOr<List<String>>
         >
     with $FutureModifier<List<String>>, $FutureProvider<List<String>> {
+  /// The ids of all cards the user has collected.
   CollectedCardsProvider._()
     : super(
         from: null,

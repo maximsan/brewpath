@@ -4,10 +4,13 @@ import 'package:coffee_quest/core/widgets/loading_indicator.dart';
 import 'package:coffee_quest/core/widgets/section_header.dart';
 import 'package:coffee_quest/features/cards/domain/cards_providers.dart';
 import 'package:coffee_quest/features/cards/presentation/card_grid_item_widget.dart';
+import 'package:coffee_quest/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+/// Cards tab: a grid of collectible coffee cards (locked until earned).
 class CardsScreen extends ConsumerWidget {
+  /// Creates a [CardsScreen].
   const CardsScreen({super.key});
 
   @override
@@ -111,8 +114,8 @@ class _CollectionHeader extends StatelessWidget {
         const SizedBox(height: 10),
         LinearProgressIndicator(
           value: progress,
-          minHeight: 8,
-          borderRadius: BorderRadius.circular(4),
+          minHeight: AppSpacing.xs,
+          borderRadius: BorderRadius.circular(AppSpacing.xxs),
           backgroundColor: colors.surfaceContainerHighest,
           color: colors.primary,
         ),

@@ -8,9 +8,12 @@ part of 'repository_providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// Provides the [ProgressRepository].
 
 @ProviderFor(progressRepository)
 final progressRepositoryProvider = ProgressRepositoryProvider._();
+
+/// Provides the [ProgressRepository].
 
 final class ProgressRepositoryProvider
     extends
@@ -20,6 +23,7 @@ final class ProgressRepositoryProvider
           ProgressRepository
         >
     with $Provider<ProgressRepository> {
+  /// Provides the [ProgressRepository].
   ProgressRepositoryProvider._()
     : super(
         from: null,
@@ -57,12 +61,17 @@ final class ProgressRepositoryProvider
 String _$progressRepositoryHash() =>
     r'9a3620daa1db873d4d1a8416e2dc99b3eec569da';
 
+/// Provides the [CardRepository].
+
 @ProviderFor(cardRepository)
 final cardRepositoryProvider = CardRepositoryProvider._();
+
+/// Provides the [CardRepository].
 
 final class CardRepositoryProvider
     extends $FunctionalProvider<CardRepository, CardRepository, CardRepository>
     with $Provider<CardRepository> {
+  /// Provides the [CardRepository].
   CardRepositoryProvider._()
     : super(
         from: null,
@@ -98,8 +107,12 @@ final class CardRepositoryProvider
 
 String _$cardRepositoryHash() => r'3fbc209dd98e2db5e53bf745145d7b2d1b4e8e99';
 
+/// Provides the [SettingsRepository].
+
 @ProviderFor(settingsRepository)
 final settingsRepositoryProvider = SettingsRepositoryProvider._();
+
+/// Provides the [SettingsRepository].
 
 final class SettingsRepositoryProvider
     extends
@@ -109,6 +122,7 @@ final class SettingsRepositoryProvider
           SettingsRepository
         >
     with $Provider<SettingsRepository> {
+  /// Provides the [SettingsRepository].
   SettingsRepositoryProvider._()
     : super(
         from: null,
@@ -146,8 +160,12 @@ final class SettingsRepositoryProvider
 String _$settingsRepositoryHash() =>
     r'c5a39438caec85b55a650dcd24bd66b30ea47e8f';
 
+/// Provides the [ModuleProgressRepository].
+
 @ProviderFor(moduleProgressRepository)
 final moduleProgressRepositoryProvider = ModuleProgressRepositoryProvider._();
+
+/// Provides the [ModuleProgressRepository].
 
 final class ModuleProgressRepositoryProvider
     extends
@@ -157,6 +175,7 @@ final class ModuleProgressRepositoryProvider
           ModuleProgressRepository
         >
     with $Provider<ModuleProgressRepository> {
+  /// Provides the [ModuleProgressRepository].
   ModuleProgressRepositoryProvider._()
     : super(
         from: null,

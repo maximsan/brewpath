@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 ///
 /// Shared across screens to keep section labels visually consistent.
 class SectionHeader extends StatelessWidget {
+  /// Creates a [SectionHeader].
   const SectionHeader(this.title, {super.key});
 
+  /// The section heading text.
   final String title;
 
   @override

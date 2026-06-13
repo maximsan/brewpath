@@ -8,9 +8,12 @@ part of 'content_repository.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// Provides the singleton [ContentRepository].
 
 @ProviderFor(contentRepository)
 final contentRepositoryProvider = ContentRepositoryProvider._();
+
+/// Provides the singleton [ContentRepository].
 
 final class ContentRepositoryProvider
     extends
@@ -20,6 +23,7 @@ final class ContentRepositoryProvider
           ContentRepository
         >
     with $Provider<ContentRepository> {
+  /// Provides the singleton [ContentRepository].
   ContentRepositoryProvider._()
     : super(
         from: null,

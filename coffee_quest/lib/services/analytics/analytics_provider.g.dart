@@ -8,9 +8,12 @@ part of 'analytics_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// Provides the active [AnalyticsService] — No-Op until Firebase is enabled.
 
 @ProviderFor(analyticsService)
 final analyticsServiceProvider = AnalyticsServiceProvider._();
+
+/// Provides the active [AnalyticsService] — No-Op until Firebase is enabled.
 
 final class AnalyticsServiceProvider
     extends
@@ -20,6 +23,7 @@ final class AnalyticsServiceProvider
           AnalyticsService
         >
     with $Provider<AnalyticsService> {
+  /// Provides the active [AnalyticsService] — No-Op until Firebase is enabled.
   AnalyticsServiceProvider._()
     : super(
         from: null,

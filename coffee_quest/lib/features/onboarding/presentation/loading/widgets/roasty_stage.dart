@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coffee_quest/features/onboarding/presentation/loading/loading_animation.dart';
 import 'package:coffee_quest/features/onboarding/presentation/widgets/roasty.dart';
 import 'package:coffee_quest/shared/theme/app_colors.dart';
@@ -6,9 +8,13 @@ import 'package:flutter/material.dart';
 /// Hosts Roasty plus the falling water-drop overlay (visible only during
 /// [WakePhase.dropFalling]). The drop animates top → 41% via a 700ms tween.
 class RoastyStage extends StatefulWidget {
+  /// Creates a [RoastyStage].
   const RoastyStage({required this.phase, required this.mascotSize, super.key});
 
+  /// The current wake-up phase to render.
   final WakePhase phase;
+
+  /// Rendered size of the Roasty mascot.
   final double mascotSize;
 
   @override
@@ -48,17 +54,15 @@ class _RoastyStageState extends State<RoastyStage>
 
   void _maybeRunDrop() {
     if (widget.phase.showsDrop) {
-      _dropController
-        ..reset()
-        ..forward();
+      _dropController.reset();
+      unawaited(_dropController.forward());
     }
   }
 
   void _maybeGrowSprout() {
     if (widget.phase.growsSprout) {
-      _growController
-        ..reset()
-        ..forward();
+      _growController.reset();
+      unawaited(_growController.forward());
     }
   }
 

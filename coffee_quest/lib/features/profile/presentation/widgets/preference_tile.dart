@@ -6,32 +6,43 @@ import 'package:flutter/material.dart';
 /// * [PreferenceTile.action] — taps run [onTap]; an optional [trailingText]
 ///   hints at the action (e.g. "Coming soon").
 class PreferenceTile extends StatelessWidget {
+  /// Creates a toggle [PreferenceTile] backed by a [Switch].
   const PreferenceTile.toggle({
-    super.key,
     required this.icon,
     required this.title,
     required this.subtitle,
     required bool value,
     required ValueChanged<bool> onChanged,
+    super.key,
   }) : _value = value,
        _onChanged = onChanged,
        onTap = null,
        trailingText = null;
 
+  /// Creates an action [PreferenceTile] that runs [onTap] when tapped.
   const PreferenceTile.action({
-    super.key,
     required this.icon,
     required this.title,
     required this.subtitle,
     required this.onTap,
+    super.key,
     this.trailingText,
   }) : _value = null,
        _onChanged = null;
 
+  /// Leading icon.
   final IconData icon;
+
+  /// Tile title.
   final String title;
+
+  /// Supporting subtitle.
   final String subtitle;
+
+  /// Tap handler (action flavor).
   final VoidCallback? onTap;
+
+  /// Optional trailing hint text (action flavor).
   final String? trailingText;
   final bool? _value;
   final ValueChanged<bool>? _onChanged;

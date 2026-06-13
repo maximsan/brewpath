@@ -3,6 +3,7 @@ import 'package:coffee_quest/services/payments/store_product.dart';
 
 /// Active payments implementation for the MVP — no store, no entitlements.
 class NoOpPaymentsService implements PaymentsService {
+  /// Creates a [NoOpPaymentsService].
   const NoOpPaymentsService();
 
   @override

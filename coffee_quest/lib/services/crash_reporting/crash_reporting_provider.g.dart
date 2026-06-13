@@ -8,9 +8,12 @@ part of 'crash_reporting_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// Provides the active [CrashReportingService] — No-Op until Firebase is on.
 
 @ProviderFor(crashReportingService)
 final crashReportingServiceProvider = CrashReportingServiceProvider._();
+
+/// Provides the active [CrashReportingService] — No-Op until Firebase is on.
 
 final class CrashReportingServiceProvider
     extends
@@ -20,6 +23,7 @@ final class CrashReportingServiceProvider
           CrashReportingService
         >
     with $Provider<CrashReportingService> {
+  /// Provides the active [CrashReportingService] — No-Op until Firebase is on.
   CrashReportingServiceProvider._()
     : super(
         from: null,

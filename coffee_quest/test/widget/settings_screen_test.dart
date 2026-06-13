@@ -52,7 +52,7 @@ void main() {
   testWidgets('Reset Progress is gated behind a confirmation dialog', (
     tester,
   ) async {
-    // Seed some progress so we can prove the dialog Cancel path is a true no-op.
+    // Seed progress so we can prove the dialog Cancel path is a true no-op.
     await ProgressRepository().saveCompletion(
       lessonId: 'lesson_a',
       xpEarned: 30,

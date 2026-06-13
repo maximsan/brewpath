@@ -68,12 +68,17 @@ abstract class _$SettingsController extends $AsyncNotifier<UserSettingsRecord> {
   }
 }
 
+/// The current app version string, formatted as `x.y.z+build`.
+
 @ProviderFor(appVersion)
 final appVersionProvider = AppVersionProvider._();
+
+/// The current app version string, formatted as `x.y.z+build`.
 
 final class AppVersionProvider
     extends $FunctionalProvider<AsyncValue<String>, String, FutureOr<String>>
     with $FutureModifier<String>, $FutureProvider<String> {
+  /// The current app version string, formatted as `x.y.z+build`.
   AppVersionProvider._()
     : super(
         from: null,

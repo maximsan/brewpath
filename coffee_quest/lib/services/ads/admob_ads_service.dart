@@ -12,6 +12,7 @@
 
 import 'package:coffee_quest/services/ads/ads_service.dart';
 
+/// Real [AdsService] backed by AdMob (stubbed for now; see docs/11-ads.md).
 class AdMobAdsService implements AdsService {
   @override
   Future<void> initialize() =>

@@ -8,9 +8,12 @@ part of 'onboarding_providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// Provides the [OnboardingRepository].
 
 @ProviderFor(onboardingRepository)
 final onboardingRepositoryProvider = OnboardingRepositoryProvider._();
+
+/// Provides the [OnboardingRepository].
 
 final class OnboardingRepositoryProvider
     extends
@@ -20,6 +23,7 @@ final class OnboardingRepositoryProvider
           OnboardingRepository
         >
     with $Provider<OnboardingRepository> {
+  /// Provides the [OnboardingRepository].
   OnboardingRepositoryProvider._()
     : super(
         from: null,

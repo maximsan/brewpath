@@ -3,14 +3,19 @@ import 'package:coffee_quest/features/mini_games/domain/mini_game_result.dart';
 import 'package:coffee_quest/shared/models/lesson_step_model.dart';
 import 'package:flutter/material.dart';
 
+/// Multiple-choice mini-game: pick the correct option.
 class MultipleChoiceGame extends StatefulWidget {
+  /// Creates a [MultipleChoiceGame].
   const MultipleChoiceGame({
-    super.key,
     required this.step,
     required this.onResult,
+    super.key,
   });
 
+  /// The multiple-choice step's content/config.
   final MultipleChoiceStep step;
+
+  /// Called with the [MiniGameResult] when answered.
   final void Function(MiniGameResult) onResult;
 
   @override

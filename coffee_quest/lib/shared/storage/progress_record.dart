@@ -1,13 +1,16 @@
+// Mutable DTO — fields are self-describing.
+// ignore_for_file: public_member_api_docs
+
 /// Mutable data-transfer object for a lesson-completion row. Decoupled from
 /// the Drift table so callers can mutate freely; the repository maps to/from
 /// Drift companions.
 class ProgressRecord {
   ProgressRecord({
-    this.id = 0,
     required this.lessonId,
     required this.isCompleted,
     required this.xpEarned,
     required this.completedAt,
+    this.id = 0,
     this.fullXpAwarded = true,
     this.bestScore = 0,
     this.lastPracticeXpDate,

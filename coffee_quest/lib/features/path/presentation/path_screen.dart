@@ -3,10 +3,13 @@ import 'package:coffee_quest/core/widgets/error_view.dart';
 import 'package:coffee_quest/core/widgets/loading_indicator.dart';
 import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
 import 'package:coffee_quest/features/path/presentation/path_module_node_widget.dart';
+import 'package:coffee_quest/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+/// Path tab: the vertical learning journey of module nodes.
 class PathScreen extends ConsumerWidget {
+  /// Creates a [PathScreen].
   const PathScreen({super.key});
 
   @override
@@ -70,8 +73,8 @@ class _PathHeader extends StatelessWidget {
         const SizedBox(height: 10),
         LinearProgressIndicator(
           value: progress,
-          minHeight: 8,
-          borderRadius: BorderRadius.circular(4),
+          minHeight: AppSpacing.xs,
+          borderRadius: BorderRadius.circular(AppSpacing.xxs),
           backgroundColor: colors.surfaceContainerHighest,
           color: colors.primary,
         ),

@@ -8,11 +8,13 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'content_repository.g.dart';
 
+/// Loads content models (modules, lessons, cards) from bundled JSON assets.
 class ContentRepository {
   List<ModuleModel>? _modules;
   List<LessonModel>? _lessons;
   List<CoffeeCardModel>? _cards;
 
+  /// Loads and caches all modules from bundled JSON.
   Future<List<ModuleModel>> getModules() async {
     _modules ??= await _load(
       'assets/content/modules.json',
@@ -21,6 +23,7 @@ class ContentRepository {
     return _modules!;
   }
 
+  /// Loads and caches all lessons from bundled JSON.
   Future<List<LessonModel>> getLessons() async {
     _lessons ??= await _load(
       'assets/content/lessons.json',
@@ -29,6 +32,7 @@ class ContentRepository {
     return _lessons!;
   }
 
+  /// Loads and caches all coffee cards from bundled JSON.
   Future<List<CoffeeCardModel>> getCards() async {
     _cards ??= await _load(
       'assets/content/cards.json',
@@ -37,6 +41,7 @@ class ContentRepository {
     return _cards!;
   }
 
+  /// Returns the lesson with [id], or null if none exists.
   Future<LessonModel?> getLessonById(String id) async {
     final lessons = await getLessons();
     return lessons.where((l) => l.id == id).firstOrNull;
@@ -52,5 +57,6 @@ class ContentRepository {
   }
 }
 
+/// Provides the singleton [ContentRepository].
 @riverpod
 ContentRepository contentRepository(Ref ref) => ContentRepository();

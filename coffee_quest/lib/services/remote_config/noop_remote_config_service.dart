@@ -4,6 +4,7 @@ import 'package:coffee_quest/services/remote_config/remote_config_service.dart';
 /// Returns the MVP defaults — the default until Firebase is activated, and the
 /// impl used by tests. Mirrors the defaults the Firebase impl seeds.
 class NoOpRemoteConfigService implements RemoteConfigService {
+  /// Creates a [NoOpRemoteConfigService].
   const NoOpRemoteConfigService();
 
   static const Map<String, Object> _defaults = {
@@ -24,7 +25,7 @@ class NoOpRemoteConfigService implements RemoteConfigService {
   @override
   bool getBool(String key) {
     final v = _defaults[key];
-    return v is bool ? v : false;
+    return v is bool && v;
   }
 
   @override

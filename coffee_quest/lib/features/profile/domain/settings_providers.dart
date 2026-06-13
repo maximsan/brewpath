@@ -18,9 +18,11 @@ class SettingsController extends _$SettingsController {
   Future<UserSettingsRecord> build() =>
       ref.watch(settingsRepositoryProvider).getSettings();
 
+  /// Toggles the haptics preference and persists it.
   Future<void> toggleHaptics() =>
       _update((s) => s.hapticsEnabled = !s.hapticsEnabled);
 
+  /// Toggles the sound preference and persists it.
   Future<void> toggleSound() =>
       _update((s) => s.soundEnabled = !s.soundEnabled);
 
@@ -33,6 +35,7 @@ class SettingsController extends _$SettingsController {
   }
 }
 
+/// The current app version string, formatted as `x.y.z+build`.
 @riverpod
 Future<String> appVersion(Ref ref) async {
   final info = await PackageInfo.fromPlatform();

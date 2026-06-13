@@ -5,15 +5,27 @@ import 'package:coffee_quest/features/onboarding/presentation/widgets/roasty_sta
 /// derives every piece of UI state (caption, drop
 /// overlay, mascot pose) so adding or reordering a step can't desync them.
 enum WakePhase {
+  /// Roasty is asleep (before the drop falls).
   sleeping(Duration(milliseconds: 1200)),
+
+  /// A water drop falls toward Roasty.
   dropFalling(Duration(milliseconds: 800)),
+
+  /// Roasty wakes — eyes open.
   awake(Duration(milliseconds: 600)),
+
+  /// The sprout grows out of Roasty's head.
   sproutGrows(Duration(milliseconds: 700)),
+
+  /// Idle "brewing" bob with the caption visible.
   brewing(Duration(milliseconds: 1800)),
+
+  /// Final hold before the sequence loops.
   hold(Duration(milliseconds: 1400));
 
   const WakePhase(this.duration);
 
+  /// How long this phase stays on screen.
   final Duration duration;
 
   /// The next phase, looping back to [sleeping] after [hold].
@@ -40,8 +52,8 @@ enum WakePhase {
 }
 
 /// One frame of the falling-drop animation, expressed in normalized units:
-/// [top] is a 0–1 fraction of the stage height; [opacity] is 0–1; [scaleX]/
-/// [scaleY] apply the impact squash.
+/// `top` is a 0–1 fraction of the stage height; `opacity` is 0–1; `scaleX`/
+/// `scaleY` apply the impact squash.
 typedef DropFrame = ({
   double top,
   double opacity,

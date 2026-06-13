@@ -21,7 +21,8 @@ void main() {
         module.lessonIds.length,
         greaterThanOrEqualTo(5),
         reason:
-            '${module.id} has only ${module.lessonIds.length} lessons (need ≥5)',
+            '${module.id} has only ${module.lessonIds.length} lessons '
+            '(need ≥5)',
       );
     }
   });

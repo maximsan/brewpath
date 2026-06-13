@@ -8,13 +8,17 @@ part of 'app_router.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// Provides the app's [GoRouter] (rebuilds on onboarding-gate changes).
 
 @ProviderFor(appRouter)
 final appRouterProvider = AppRouterProvider._();
 
+/// Provides the app's [GoRouter] (rebuilds on onboarding-gate changes).
+
 final class AppRouterProvider
     extends $FunctionalProvider<GoRouter, GoRouter, GoRouter>
     with $Provider<GoRouter> {
+  /// Provides the app's [GoRouter] (rebuilds on onboarding-gate changes).
   AppRouterProvider._()
     : super(
         from: null,

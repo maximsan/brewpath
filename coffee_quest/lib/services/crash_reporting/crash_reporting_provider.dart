@@ -8,6 +8,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'crash_reporting_provider.g.dart';
 
+/// Provides the active [CrashReportingService] — No-Op until Firebase is on.
 @riverpod
 CrashReportingService crashReportingService(Ref ref) =>
     const NoOpCrashReportingService();

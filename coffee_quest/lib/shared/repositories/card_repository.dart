@@ -1,14 +1,17 @@
 import 'package:coffee_quest/shared/storage/app_database.dart';
 import 'package:drift/drift.dart';
 
+/// Reads/writes collected coffee cards via Drift.
 class CardRepository {
   AppDatabase get _db => AppDatabaseService.instance;
 
+  /// Returns the ids of all collected cards.
   Future<List<String>> getAllCollectedCardIds() async {
     final rows = await _db.select(_db.cardRecords).get();
     return rows.map((r) => r.cardId).toList();
   }
 
+  /// Whether the card with [cardId] has been collected.
   Future<bool> isCardCollected(String cardId) async {
     final row = await (_db.select(
       _db.cardRecords,

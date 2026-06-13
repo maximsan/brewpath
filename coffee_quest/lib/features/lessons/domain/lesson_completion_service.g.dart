@@ -8,9 +8,12 @@ part of 'lesson_completion_service.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// Provides the [LessonCompletionService] with its dependencies wired in.
 
 @ProviderFor(lessonCompletionService)
 final lessonCompletionServiceProvider = LessonCompletionServiceProvider._();
+
+/// Provides the [LessonCompletionService] with its dependencies wired in.
 
 final class LessonCompletionServiceProvider
     extends
@@ -20,6 +23,7 @@ final class LessonCompletionServiceProvider
           LessonCompletionService
         >
     with $Provider<LessonCompletionService> {
+  /// Provides the [LessonCompletionService] with its dependencies wired in.
   LessonCompletionServiceProvider._()
     : super(
         from: null,

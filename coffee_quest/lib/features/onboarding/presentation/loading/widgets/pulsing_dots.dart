@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coffee_quest/features/onboarding/presentation/loading/loading_animation.dart';
 import 'package:coffee_quest/shared/theme/app_colors.dart';
 import 'package:coffee_quest/shared/theme/app_spacing.dart';
@@ -6,6 +8,7 @@ import 'package:flutter/material.dart';
 /// Three accent dots that pulse in a staggered loop beneath the loading
 /// caption. Opacity is derived by the pure [pulsingDotOpacity] helper.
 class PulsingDots extends StatefulWidget {
+  /// Creates a [PulsingDots].
   const PulsingDots({super.key});
 
   @override
@@ -27,7 +30,8 @@ class _PulsingDotsState extends State<PulsingDots>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: _period)..repeat();
+    _controller = AnimationController(vsync: this, duration: _period);
+    unawaited(_controller.repeat());
   }
 
   @override

@@ -12,10 +12,10 @@ _LessonModel _$LessonModelFromJson(Map<String, dynamic> json) => _LessonModel(
   title: json['title'] as String,
   summary: json['summary'] as String,
   xpReward: (json['xpReward'] as num).toInt(),
-  cardId: json['cardId'] as String?,
   steps: (json['steps'] as List<dynamic>)
       .map((e) => LessonStepModel.fromJson(e as Map<String, dynamic>))
       .toList(),
+  cardId: json['cardId'] as String?,
 );
 
 Map<String, dynamic> _$LessonModelToJson(_LessonModel instance) =>
@@ -25,6 +25,6 @@ Map<String, dynamic> _$LessonModelToJson(_LessonModel instance) =>
       'title': instance.title,
       'summary': instance.summary,
       'xpReward': instance.xpReward,
-      'cardId': instance.cardId,
       'steps': instance.steps,
+      'cardId': instance.cardId,
     };

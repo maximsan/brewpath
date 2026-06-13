@@ -1,10 +1,19 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 /// Hero CTA at the top of the Profile screen. The real in-app purchase flow
 /// lands with the AdMob/IAP integration; for now this opens a coming-soon
 /// dialog so the visual hierarchy is in place ahead of monetization.
 class PremiumCard extends StatelessWidget {
+  /// Creates a [PremiumCard].
   const PremiumCard({super.key});
+
+  static const double _cornerRadius = 20;
+  static const double _subtitleAlpha = 0.85;
+  static const double _iconBadgeSize = 72;
+  static const double _iconBadgeAlpha = 0.12;
+  static const double _iconSize = 40;
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +22,7 @@ class PremiumCard extends StatelessWidget {
 
     return Material(
       color: colors.primaryContainer,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(_cornerRadius),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () => _showComingSoon(context),
@@ -39,7 +48,7 @@ class PremiumCard extends StatelessWidget {
                       'safe with a Coffee Quest subscription.',
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: colors.onPrimaryContainer.withValues(
-                          alpha: 0.85,
+                          alpha: _subtitleAlpha,
                         ),
                       ),
                     ),
@@ -48,16 +57,18 @@ class PremiumCard extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               Container(
-                width: 72,
-                height: 72,
+                width: _iconBadgeSize,
+                height: _iconBadgeSize,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: colors.onPrimaryContainer.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(20),
+                  color: colors.onPrimaryContainer.withValues(
+                    alpha: _iconBadgeAlpha,
+                  ),
+                  borderRadius: BorderRadius.circular(_cornerRadius),
                 ),
                 child: Icon(
                   Icons.workspace_premium,
-                  size: 40,
+                  size: _iconSize,
                   color: colors.onPrimaryContainer,
                 ),
               ),
@@ -69,20 +80,22 @@ class PremiumCard extends StatelessWidget {
   }
 
   void _showComingSoon(BuildContext context) {
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Premium is brewing'),
-        content: const Text(
-          'In-app purchases are wired up in a later release. Hold tight — '
-          'your streak counts either way.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('OK'),
+    unawaited(
+      showDialog<void>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Premium is brewing'),
+          content: const Text(
+            'In-app purchases are wired up in a later release. Hold tight — '
+            'your streak counts either way.',
           ),
-        ],
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
       ),
     );
   }

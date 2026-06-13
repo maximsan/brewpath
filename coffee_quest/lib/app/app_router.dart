@@ -24,6 +24,7 @@ part 'app_router.g.dart';
 
 final _rootKey = GlobalKey<NavigatorState>();
 
+/// Provides the app's [GoRouter] (rebuilds on onboarding-gate changes).
 @riverpod
 GoRouter appRouter(Ref ref) {
   // Ticks whenever the async onboarding gate resolves; passed to the router

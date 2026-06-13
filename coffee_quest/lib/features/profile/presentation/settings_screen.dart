@@ -1,16 +1,16 @@
 import 'dart:async';
 
+import 'package:coffee_quest/features/onboarding/presentation/onboarding_providers.dart';
+import 'package:coffee_quest/features/profile/domain/settings_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-import 'package:coffee_quest/features/onboarding/presentation/onboarding_providers.dart';
-import 'package:coffee_quest/features/profile/domain/settings_providers.dart';
 
 /// Dedicated Settings screen reached via the gear icon on Profile. Hosts the
 /// app-wide preferences (haptics, sound), the destructive reset action, and
 /// the version footer.
 class SettingsScreen extends ConsumerWidget {
+  /// Creates a [SettingsScreen].
   const SettingsScreen({super.key});
 
   @override
@@ -82,6 +82,8 @@ class SettingsScreen extends ConsumerWidget {
 class _SectionLabel extends StatelessWidget {
   const _SectionLabel(this.text);
 
+  static const double _letterSpacing = 1.2;
+
   final String text;
 
   @override
@@ -93,7 +95,7 @@ class _SectionLabel extends StatelessWidget {
         text.toUpperCase(),
         style: theme.textTheme.labelSmall?.copyWith(
           color: theme.colorScheme.onSurfaceVariant,
-          letterSpacing: 1.2,
+          letterSpacing: _letterSpacing,
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -194,7 +196,7 @@ class _ResetOnboardingTile extends ConsumerWidget {
       builder: (ctx) => AlertDialog(
         title: const Text('Restart onboarding?'),
         content: const Text(
-          'You\'ll go back through the Welcome screen and pick your goal and '
+          "You'll go back through the Welcome screen and pick your goal and "
           'brewer again. Your XP, streak, and collected cards stay as they '
           'are.',
         ),

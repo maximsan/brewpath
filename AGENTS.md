@@ -62,26 +62,25 @@ explanations — plus test and iOS/SPM build notes — lives in
 - **Providers:** function-style `@riverpod` only; class-based `@riverpod` only when state is mutable
 - **Tests:** unit tests in `test/unit/`; widget tests in `test/widget/`; integration tests in `integration_test/`
 - **No print statements** — use `debugPrint` only in development guards; never in production paths
-- **Lints:** `riverpod_lint` is active via the `plugins:` block in `analysis_options.yaml` (native analysis_server_plugin — not a dependency, not `custom_lint`)
+- **Lints:** `very_good_analysis` baseline + `riverpod_lint` and `dart_code_linter` active via the `plugins:` block in `analysis_options.yaml` (native analysis_server_plugins — not `custom_lint`)
 
 ## Code Quality Rules
 
-These are not all lint-enforceable. `riverpod_lint` 3.x **is** active (native
-`analysis_server_plugin`, enabled via the `plugins:` block in
-`analysis_options.yaml` — no `custom_lint`). But the stock linter still has no
-rule for magic numbers, identifier length, or file/class size, and
-`custom_lint`-based packs remain blocked (analyzer-8 cap). So the rules below
-stay conventions — follow them on every new or modified file:
+Magic numbers and per-function size/complexity are now **lint-enforced** by
+`dart_code_linter` (config + exclusions in `analysis_options.yaml`).
+**Identifier length** and **per-file size** have no rule, so they stay
+conventions — follow every rule below on each new or modified file:
 
-- **No magic numbers.** Extract meaningful or repeated literals to named
-  `static const` or theme tokens (`AppSpacing`, `AppColors`, `AppTypography`).
-  Only `0`/`1` may appear inline. Animation/layout constants get intent names
-  (`_stageSize`, `_captionGap`), not bare numbers in the widget tree.
+- **No magic numbers** (lint-enforced). Extract meaningful or repeated literals
+  to named `static const` or theme tokens (`AppSpacing`, `AppColors`,
+  `AppTypography`); only `0`/`1`/`2` inline, with intent names (`_stageSize`),
+  never bare numbers in the widget tree.
 - **Descriptive names.** No single-letter identifiers except trivial loop
   indices (`i`). Animation/controller values are `progress`, not `t`; phase
   fractions get real names (`normalizedPhase`, not `p`).
-- **Small files & classes.** Soft cap ≈ 250 lines/file. When a file grows
-  multiple `State`/widget classes or mixes UI with logic, split it. Keep
+- **Small files & classes.** Per-file size stays a convention (soft cap ≈ 250
+  lines/file — no rule); per-function size/complexity is lint-enforced. Split a
+  file that grows multiple `State`/widget classes or mixes UI with logic; keep
   `build()` declarative — push math and derivations into named helpers.
 - **Extract pure helpers.** Animation math, mapping, and derivations live in a
   sibling pure-Dart file (e.g. `*_animation.dart`) as named top-level functions,

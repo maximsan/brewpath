@@ -4,6 +4,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 /// Firebase Crashlytics-backed implementation. Wired in
 /// `crash_reporting_provider.dart` once `kUseFirebase` is enabled.
 class FirebaseCrashlyticsService implements CrashReportingService {
+  /// Creates a [FirebaseCrashlyticsService] (optional custom [crashlytics]).
   FirebaseCrashlyticsService([FirebaseCrashlytics? crashlytics])
     : _crashlytics = crashlytics ?? FirebaseCrashlytics.instance;
 

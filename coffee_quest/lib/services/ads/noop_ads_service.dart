@@ -2,6 +2,7 @@ import 'package:coffee_quest/services/ads/ads_service.dart';
 
 /// Active ads implementation for the MVP — never loads or shows anything.
 class NoOpAdsService implements AdsService {
+  /// Creates a [NoOpAdsService].
   const NoOpAdsService();
 
   @override
