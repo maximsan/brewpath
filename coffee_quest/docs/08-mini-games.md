@@ -34,12 +34,12 @@ The dispatcher widget. Receives the current `LessonStepModel` and calls `onResul
 ```dart
 // lib/features/mini_games/presentation/lesson_step_runner.dart
 import 'package:flutter/material.dart';
-import '../../../shared/models/lesson_step_model.dart';
-import '../domain/mini_game_result.dart';
-import 'multiple_choice_game.dart';
-import 'drag_drop_game.dart';
-import 'slider_game.dart';
-import 'tap_order_game.dart';
+import '../../../../shared/models/lesson_step_model.dart';
+import '../../domain/mini_game_result.dart';
+import '../../docs/multiple_choice_game.dart';
+import '../../docs/drag_drop_game.dart';
+import '../../docs/slider_game.dart';
+import '../../docs/tap_order_game.dart';
 
 class LessonStepRunner extends StatelessWidget {
   const LessonStepRunner({
@@ -70,9 +70,11 @@ Adding a new game type = add a new `LessonStepModel` variant + add a case here. 
 ## 1. MultipleChoiceGame
 
 ### Purpose
+
 Presents a question with 2–4 options. One correct answer.
 
 ### UX Flow
+
 1. Question text displayed at top
 2. Answer buttons shown below
 3. User taps one button
@@ -85,8 +87,8 @@ Presents a question with 2–4 options. One correct answer.
 ```dart
 // lib/features/mini_games/presentation/multiple_choice_game.dart
 import 'package:flutter/material.dart';
-import '../../../shared/models/lesson_step_model.dart';
-import '../domain/mini_game_result.dart';
+import '../../../../shared/models/lesson_step_model.dart';
+import '../../domain/mini_game_result.dart';
 
 class MultipleChoiceGame extends StatefulWidget {
   const MultipleChoiceGame({
@@ -134,6 +136,7 @@ class _MultipleChoiceGameState extends State<MultipleChoiceGame> {
 ```
 
 ### Key Behaviors
+
 - Tapping a button is irreversible within the step
 - Correct answer is always highlighted after the user submits
 - Explanation is always shown after submission (correct or incorrect)
@@ -144,9 +147,11 @@ class _MultipleChoiceGameState extends State<MultipleChoiceGame> {
 ## 2. DragDropGame
 
 ### Purpose
+
 User matches terms on the left to definitions on the right by dragging.
 
 ### UX Flow
+
 1. Left column: draggable term chips
 2. Right column: drop targets labeled with the definition
 3. User drags a term chip and drops it onto a definition
@@ -171,6 +176,7 @@ User matches terms on the left to definitions on the right by dragging.
 ```
 
 ### Key Behaviors
+
 - A term that is already correctly placed cannot be dragged again
 - There is no "Submit" button — completion triggers automatically when all terms are placed correctly
 - Wrong drop visually rejects (chip bounces back) — no state penalty
@@ -180,9 +186,11 @@ User matches terms on the left to definitions on the right by dragging.
 ## 3. SliderGame
 
 ### Purpose
+
 User moves a labeled slider to a target range. Example: "Set water temperature to 90–96°C."
 
 ### UX Flow
+
 1. Instruction text displayed at top
 2. Labeled slider shown with min/max labels and unit
 3. Current value shown numerically above or below the thumb
@@ -211,6 +219,7 @@ User moves a labeled slider to a target range. Example: "Set water temperature t
 ```
 
 ### Key Behaviors
+
 - Initial slider position is the midpoint of the range
 - Target range is NOT visually shown before the user submits (no spoilers)
 - After submission, the target range is highlighted on the slider track
@@ -220,9 +229,11 @@ User moves a labeled slider to a target range. Example: "Set water temperature t
 ## 4. TapOrderGame
 
 ### Purpose
+
 User taps items in the correct sequence. Example: ordering roast levels from light to dark.
 
 ### UX Flow
+
 1. Items displayed in random order as chips
 2. User taps chips in sequence — tapped chips move to an "answer area" at the bottom
 3. When all chips are placed: automatically checks order
@@ -248,6 +259,7 @@ User taps items in the correct sequence. Example: ordering roast levels from lig
 ```
 
 ### Key Behaviors
+
 - Items are shuffled in `initState` using `List.from(step.items)..shuffle()`
 - The shuffle must not produce the correct order (re-shuffle if it does — or accept it as valid)
 - Tapping an item in the answer area does NOT remove it (no backtracking after placement, to match Duolingo UX)

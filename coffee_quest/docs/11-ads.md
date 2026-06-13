@@ -76,7 +76,7 @@ abstract class AdsService {
 
 ```dart
 // lib/services/ads/noop_ads_service.dart
-import 'ads_service.dart';
+import '../../docs/ads_service.dart';
 
 class NoOpAdsService implements AdsService {
   @override
@@ -120,7 +120,7 @@ class NoOpAdsService implements AdsService {
 //
 // See: https://pub.dev/packages/google_mobile_ads
 
-import 'ads_service.dart';
+import '../../docs/ads_service.dart';
 
 class AdMobAdsService implements AdsService {
   @override
@@ -152,10 +152,10 @@ class AdMobAdsService implements AdsService {
 ```dart
 // lib/services/ads/ads_provider.dart
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'ads_service.dart';
-import 'noop_ads_service.dart';
+import '../../docs/ads_service.dart';
+import '../../docs/noop_ads_service.dart';
 
-part 'ads_provider.g.dart';
+part '../../docs/ads_provider.g.dart';
 
 @riverpod
 AdsService adsService(Ref ref) => NoOpAdsService();
@@ -185,12 +185,12 @@ abstract class AdUnitIds {
 
 ## Future Ad Placement Strategy
 
-| Placement | Type | Trigger |
-|---|---|---|
-| Between module completion and next module start | Interstitial | After module completion screen CTA |
-| Optional extra XP | Rewarded | Button on Profile or lesson completion screen |
-| Never inside an active lesson | — | Hard rule |
-| Never on first launch | — | User onboarding protection |
+| Placement                                       | Type         | Trigger                                       |
+| ----------------------------------------------- | ------------ | --------------------------------------------- |
+| Between module completion and next module start | Interstitial | After module completion screen CTA            |
+| Optional extra XP                               | Rewarded     | Button on Profile or lesson completion screen |
+| Never inside an active lesson                   | —            | Hard rule                                     |
+| Never on first launch                           | —            | User onboarding protection                    |
 
 **No mediation in MVP.** AdMob direct fills are sufficient until significant DAU is reached.
 

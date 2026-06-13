@@ -5,6 +5,7 @@
 There is **no real paywall or purchase flow in MVP**. The payments layer exists only as a placeholder so monetization can be added later without architectural changes.
 
 The abstraction is established now so that:
+
 - The codebase has a clear home for payment logic
 - No feature code ever calls StoreKit directly
 - The paywall UI can be dropped into the existing slot when ready
@@ -69,8 +70,8 @@ class StoreProduct {
 ```dart
 // lib/services/payments/noop_payments_service.dart
 import 'dart:async';
-import 'payments_service.dart';
-import 'store_product.dart';
+import '../../docs/payments_service.dart';
+import '../../docs/store_product.dart';
 
 class NoOpPaymentsService implements PaymentsService {
   @override
@@ -112,8 +113,8 @@ class NoOpPaymentsService implements PaymentsService {
 //
 // See: https://pub.dev/packages/in_app_purchase
 
-import 'payments_service.dart';
-import 'store_product.dart';
+import '../../docs/payments_service.dart';
+import '../../docs/store_product.dart';
 
 class InAppPurchaseService implements PaymentsService {
   @override
@@ -151,10 +152,10 @@ class InAppPurchaseService implements PaymentsService {
 ```dart
 // lib/services/payments/payments_provider.dart
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'payments_service.dart';
-import 'noop_payments_service.dart';
+import '../../docs/payments_service.dart';
+import '../../docs/noop_payments_service.dart';
 
-part 'payments_provider.g.dart';
+part '../../docs/payments_provider.g.dart';
 
 @riverpod
 PaymentsService paymentsService(Ref ref) => NoOpPaymentsService();
@@ -165,11 +166,11 @@ PaymentsService paymentsService(Ref ref) => NoOpPaymentsService();
 
 ## Product IDs Convention
 
-| Product Type | ID Convention | Example |
-|---|---|---|
-| Lifetime unlock | `com.yourcompany.coffeequest.lifetime` | One-time purchase, no subscription |
-| Monthly subscription | `com.yourcompany.coffeequest.monthly` | Future option |
-| Annual subscription | `com.yourcompany.coffeequest.annual` | Future option |
+| Product Type         | ID Convention                          | Example                            |
+| -------------------- | -------------------------------------- | ---------------------------------- |
+| Lifetime unlock      | `com.yourcompany.coffeequest.lifetime` | One-time purchase, no subscription |
+| Monthly subscription | `com.yourcompany.coffeequest.monthly`  | Future option                      |
+| Annual subscription  | `com.yourcompany.coffeequest.annual`   | Future option                      |
 
 Define these IDs in `lib/core/constants/product_ids.dart` when implementing.
 

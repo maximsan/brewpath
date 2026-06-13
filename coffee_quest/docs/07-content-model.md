@@ -19,7 +19,11 @@ This approach allows offline-first behavior and keeps MVP complexity low.
     "title": "Beans",
     "description": "Where coffee comes from and what makes beans different.",
     "iconName": "beans",
-    "lessonIds": ["lesson_where_coffee", "lesson_arabica_robusta", "lesson_green_coffee"],
+    "lessonIds": [
+      "lesson_where_coffee",
+      "lesson_arabica_robusta",
+      "lesson_green_coffee"
+    ],
     "unlockRequirement": null
   },
   {
@@ -35,7 +39,12 @@ This approach allows offline-first behavior and keeps MVP complexity low.
     "title": "Roast",
     "description": "What roasting does to coffee and how roast level affects flavor.",
     "iconName": "roast",
-    "lessonIds": ["lesson_what_roasting_does", "lesson_light_roast", "lesson_medium_roast", "lesson_dark_roast"],
+    "lessonIds": [
+      "lesson_what_roasting_does",
+      "lesson_light_roast",
+      "lesson_medium_roast",
+      "lesson_dark_roast"
+    ],
     "unlockRequirement": "module_processing"
   },
   {
@@ -43,7 +52,12 @@ This approach allows offline-first behavior and keeps MVP complexity low.
     "title": "Brewing Basics",
     "description": "The key variables that control how your coffee tastes.",
     "iconName": "brewing",
-    "lessonIds": ["lesson_grind_size", "lesson_water_temp", "lesson_brew_ratio", "lesson_extraction"],
+    "lessonIds": [
+      "lesson_grind_size",
+      "lesson_water_temp",
+      "lesson_brew_ratio",
+      "lesson_extraction"
+    ],
     "unlockRequirement": "module_roast"
   },
   {
@@ -51,7 +65,11 @@ This approach allows offline-first behavior and keeps MVP complexity low.
     "title": "Taste",
     "description": "How to understand and describe what you're tasting.",
     "iconName": "taste",
-    "lessonIds": ["lesson_acidity_body", "lesson_how_to_taste", "lesson_flavor_descriptors"],
+    "lessonIds": [
+      "lesson_acidity_body",
+      "lesson_how_to_taste",
+      "lesson_flavor_descriptors"
+    ],
     "unlockRequirement": "module_brewing"
   }
 ]
@@ -95,8 +113,8 @@ Full lesson content for all 17 lessons must follow this pattern. The schema is t
 // lib/shared/models/module_model.dart
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'module_model.freezed.dart';
-part 'module_model.g.dart';
+part '../../docs/module_model.freezed.dart';
+part '../../docs/module_model.g.dart';
 
 @freezed
 class ModuleModel with _$ModuleModel {
@@ -119,10 +137,10 @@ class ModuleModel with _$ModuleModel {
 ```dart
 // lib/shared/models/lesson_model.dart
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'lesson_step_model.dart';
+import '../../docs/lesson_step_model.dart';
 
-part 'lesson_model.freezed.dart';
-part 'lesson_model.g.dart';
+part '../../docs/lesson_model.freezed.dart';
+part '../../docs/lesson_model.g.dart';
 
 @freezed
 class LessonModel with _$LessonModel {
@@ -147,8 +165,8 @@ class LessonModel with _$LessonModel {
 // lib/shared/models/lesson_step_model.dart
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'lesson_step_model.freezed.dart';
-part 'lesson_step_model.g.dart';
+part '../../docs/lesson_step_model.freezed.dart';
+part '../../docs/lesson_step_model.g.dart';
 
 @Freezed(unionKey: 'type', unionValueCase: FreezedUnionCase.snake)
 sealed class LessonStepModel with _$LessonStepModel {
@@ -187,6 +205,7 @@ sealed class LessonStepModel with _$LessonStepModel {
 ```
 
 JSON `"type"` values map to Freezed union cases:
+
 - `"multiple_choice"` → `MultipleChoiceStep`
 - `"drag_drop"` → `DragDropStep`
 - `"slider"` → `SliderStep`
@@ -198,8 +217,8 @@ JSON `"type"` values map to Freezed union cases:
 // lib/shared/models/coffee_card_model.dart
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'coffee_card_model.freezed.dart';
-part 'coffee_card_model.g.dart';
+part '../../docs/coffee_card_model.freezed.dart';
+part '../../docs/coffee_card_model.g.dart';
 
 @freezed
 class CoffeeCardModel with _$CoffeeCardModel {
@@ -244,9 +263,9 @@ One entry per lesson. 17 cards total.
 // lib/shared/repositories/content_repository.dart
 import 'dart:convert';
 import 'package:flutter/services.dart';
-import '../models/module_model.dart';
-import '../models/lesson_model.dart';
-import '../models/coffee_card_model.dart';
+import '../../models/module_model.dart';
+import '../../models/lesson_model.dart';
+import '../../models/coffee_card_model.dart';
 
 class ContentRepository {
   List<ModuleModel>? _modules;

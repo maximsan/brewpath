@@ -2,11 +2,11 @@
 
 ## Services In Scope for MVP
 
-| Service | Package | Purpose |
-|---|---|---|
-| Analytics | `firebase_analytics` | Track screen views and lesson events |
-| Crashlytics | `firebase_crashlytics` | Catch and report unhandled exceptions |
-| Remote Config | `firebase_remote_config` | Feature flags and tunable values |
+| Service       | Package                  | Purpose                               |
+| ------------- | ------------------------ | ------------------------------------- |
+| Analytics     | `firebase_analytics`     | Track screen views and lesson events  |
+| Crashlytics   | `firebase_crashlytics`   | Catch and report unhandled exceptions |
+| Remote Config | `firebase_remote_config` | Feature flags and tunable values      |
 
 Firebase Auth, Firestore, Cloud Functions, and Firebase Storage are **not used in MVP**.
 
@@ -49,7 +49,7 @@ abstract class AnalyticsService {
 ```dart
 // lib/services/analytics/firebase_analytics_service.dart
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'analytics_service.dart';
+import '../../docs/analytics_service.dart';
 
 class FirebaseAnalyticsService implements AnalyticsService {
   final _analytics = FirebaseAnalytics.instance;
@@ -72,7 +72,7 @@ class FirebaseAnalyticsService implements AnalyticsService {
 
 ```dart
 // lib/services/analytics/noop_analytics_service.dart
-import 'analytics_service.dart';
+import '../../docs/analytics_service.dart';
 
 class NoOpAnalyticsService implements AnalyticsService {
   @override
@@ -91,10 +91,10 @@ class NoOpAnalyticsService implements AnalyticsService {
 ```dart
 // lib/services/analytics/analytics_provider.dart
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'analytics_service.dart';
-import 'firebase_analytics_service.dart';
+import '../../docs/analytics_service.dart';
+import '../../docs/firebase_analytics_service.dart';
 
-part 'analytics_provider.g.dart';
+part '../../docs/analytics_provider.g.dart';
 
 @riverpod
 AnalyticsService analyticsService(Ref ref) => FirebaseAnalyticsService();
@@ -106,16 +106,16 @@ AnalyticsService analyticsService(Ref ref) => FirebaseAnalyticsService();
 
 All event names use `snake_case`. Parameters are also `snake_case` string keys with `String`, `int`, or `double` values (Firebase Analytics limitation).
 
-| Event Name | When Fired | Parameters |
-|---|---|---|
-| `screen_view` | On screen navigation | `screen_name: String` |
-| `lesson_started` | User taps Start on a lesson | `lesson_id: String`, `module_id: String` |
-| `lesson_completed` | Lesson completion confirmed | `lesson_id: String`, `module_id: String`, `xp_earned: int` |
-| `lesson_step_correct` | Mini-game step answered correctly | `lesson_id: String`, `step_index: int`, `game_type: String` |
+| Event Name              | When Fired                          | Parameters                                                  |
+| ----------------------- | ----------------------------------- | ----------------------------------------------------------- |
+| `screen_view`           | On screen navigation                | `screen_name: String`                                       |
+| `lesson_started`        | User taps Start on a lesson         | `lesson_id: String`, `module_id: String`                    |
+| `lesson_completed`      | Lesson completion confirmed         | `lesson_id: String`, `module_id: String`, `xp_earned: int`  |
+| `lesson_step_correct`   | Mini-game step answered correctly   | `lesson_id: String`, `step_index: int`, `game_type: String` |
 | `lesson_step_incorrect` | Mini-game step answered incorrectly | `lesson_id: String`, `step_index: int`, `game_type: String` |
-| `card_unlocked` | Coffee Card earned | `card_id: String`, `lesson_id: String` |
-| `module_unlocked` | Module unlocked | `module_id: String` |
-| `xp_earned` | XP awarded | `amount: int`, `source: String` |
+| `card_unlocked`         | Coffee Card earned                  | `card_id: String`, `lesson_id: String`                      |
+| `module_unlocked`       | Module unlocked                     | `module_id: String`                                         |
+| `xp_earned`             | XP awarded                          | `amount: int`, `source: String`                             |
 
 ### Where Events Are Fired
 
@@ -143,7 +143,7 @@ abstract class CrashReportingService {
 ```dart
 // lib/services/crash_reporting/firebase_crashlytics_service.dart
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'crash_reporting_service.dart';
+import '../../docs/crash_reporting_service.dart';
 
 class FirebaseCrashlyticsService implements CrashReportingService {
   final _crashlytics = FirebaseCrashlytics.instance;
@@ -213,7 +213,7 @@ abstract class RemoteConfigKeys {
 ```dart
 // lib/services/remote_config/firebase_remote_config_service.dart
 import 'package:firebase_remote_config/firebase_remote_config.dart';
-import 'remote_config_service.dart';
+import '../../docs/remote_config_service.dart';
 
 class FirebaseRemoteConfigService implements RemoteConfigService {
   final _config = FirebaseRemoteConfig.instance;
@@ -246,11 +246,11 @@ class FirebaseRemoteConfigService implements RemoteConfigService {
 
 ## Minimum Remote Config Strategy for MVP
 
-| Key | Default | Purpose |
-|---|---|---|
-| `force_update_min_version` | `"0.0.0"` | If app version < this value, show a force-update dialog |
-| `daily_lesson_goal` | `1` | How many lessons per day counts as meeting the daily goal |
-| `enable_card_animations` | `false` | Toggle for future animated card unlock reveal |
+| Key                        | Default   | Purpose                                                   |
+| -------------------------- | --------- | --------------------------------------------------------- |
+| `force_update_min_version` | `"0.0.0"` | If app version < this value, show a force-update dialog   |
+| `daily_lesson_goal`        | `1`       | How many lessons per day counts as meeting the daily goal |
+| `enable_card_animations`   | `false`   | Toggle for future animated card unlock reveal             |
 
 ---
 
