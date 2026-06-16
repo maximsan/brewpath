@@ -12,10 +12,10 @@ brewpath/               ← git root, CLAUDE.md lives here
 ## Learning track
 
 A hands-on, learn-by-doing Flutter course for this app lives in
-[`../learning/`](../learning/). When the user asks to "continue the lesson" /
+[`learning/`](learning/). When the user asks to "continue the lesson" /
 "continue the Flutter onboarding", read
-[`../learning/README.md`](../learning/README.md) (teaching contract) and
-[`../learning/curriculum.md`](../learning/curriculum.md) (current step, marked 👉)
+[`learning/README.md`](learning/README.md) (teaching contract) and
+[`learning/curriculum.md`](learning/curriculum.md) (current step, marked 👉)
 first, then resume.
 
 ## Architecture

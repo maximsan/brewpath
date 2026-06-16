@@ -163,7 +163,7 @@ abstract class _$OnboardingDraft
   ({String? brewer, String? goal}) build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref =
         this.ref
             as $Ref<
@@ -181,6 +181,6 @@ abstract class _$OnboardingDraft
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }

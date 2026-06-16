@@ -24,7 +24,7 @@ curriculum, and resume from there following the contract below.
 3. **Verify every step before moving on:**
    - Read the changed files / `git diff`.
    - If codegen was touched (`@riverpod`, `@freezed`, a Drift table), run
-     `dart run build_runner build` from `coffee_quest/`.
+     `dart run build_runner build` from the repo root.
    - Run `flutter analyze` and the relevant tests; report results honestly,
      including failures and their output.
    - Give specific, teaching-oriented feedback (what's right, what's wrong, and
@@ -36,7 +36,7 @@ curriculum, and resume from there following the contract below.
 5. **Be accurate.** Verify claims against the actual code and pub.dev; never
    invent APIs or behavior. If unsure, check before asserting.
 6. **Respect project conventions** in
-   [`../coffee_quest/CLAUDE.md`](../coffee_quest/CLAUDE.md): `package:coffee_quest/…`
+   [`../CLAUDE.md`](../CLAUDE.md): `package:coffee_quest/…`
    imports inside `lib/`; no magic numbers (lint-enforced by `dart_code_linter`,
    only `0/1/2` allowed); navigate by route `name` (`context.goNamed(...)`), not
    hardcoded paths; function-style `@riverpod` for derived reads, class-style only

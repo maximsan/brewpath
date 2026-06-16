@@ -53,7 +53,7 @@ abstract class _$SettingsController extends $AsyncNotifier<UserSettingsRecord> {
   FutureOr<UserSettingsRecord> build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref =
         this.ref as $Ref<AsyncValue<UserSettingsRecord>, UserSettingsRecord>;
     final element =
@@ -64,7 +64,7 @@ abstract class _$SettingsController extends $AsyncNotifier<UserSettingsRecord> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
