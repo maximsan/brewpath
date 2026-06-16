@@ -2,6 +2,7 @@ import 'package:coffee_quest/app/analytics_navigator_observer.dart';
 import 'package:coffee_quest/app/app_shell.dart';
 import 'package:coffee_quest/features/cards/presentation/card_detail_screen.dart';
 import 'package:coffee_quest/features/cards/presentation/cards_screen.dart';
+import 'package:coffee_quest/features/cards/presentation/favorites_screen.dart';
 import 'package:coffee_quest/features/learn/presentation/game_type_practice_screen.dart';
 import 'package:coffee_quest/features/learn/presentation/learn_screen.dart';
 import 'package:coffee_quest/features/learn/presentation/module_detail_screen.dart';
@@ -170,6 +171,11 @@ GoRouter appRouter(Ref ref) {
                 name: 'cards',
                 builder: (context, state) => const CardsScreen(),
                 routes: [
+                  GoRoute(
+                    path: 'favorites',
+                    name: 'favorites',
+                    builder: (context, state) => const FavoritesScreen(),
+                  ),
                   GoRoute(
                     path: ':cardId',
                     name: 'cardDetail',

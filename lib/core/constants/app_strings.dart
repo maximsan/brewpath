@@ -12,4 +12,5 @@ abstract class AppStrings {
       'Complete the previous module to unlock this one.';
   static const continueLabel = 'Continue';
   static const tryAgainLabel = 'Try Again';
+  static const favorites = 'Favorites';
 }

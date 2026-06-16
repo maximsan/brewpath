@@ -18,6 +18,9 @@ abstract class RouteNames {
   /// A single collected card's detail screen.
   static const cardDetail = '/cards/:cardId';
 
+  /// A screen with favorite cards
+  static const favorites = '/cards/favorites';
+
   /// Profile tab.
   static const profile = '/profile';
 }
