@@ -1,3 +1,4 @@
+import 'package:coffee_quest/features/cards/domain/favorite_cards_provider.dart';
 import 'package:coffee_quest/shared/models/coffee_card_model.dart';
 import 'package:coffee_quest/shared/repositories/content_repository.dart';
 import 'package:coffee_quest/shared/repositories/repository_providers.dart';
@@ -36,4 +37,21 @@ Future<List<CardWithCollection>> cardsWithCollection(Ref ref) async {
             CardWithCollection(card: c, isCollected: collected.contains(c.id)),
       )
       .toList();
+}
+
+/// Favorite user cards, derived from the in-memory favorites set.
+@riverpod
+Future<List<CoffeeCardModel>> favoriteCardsList(Ref ref) async {
+  final favorites = ref.watch(favoriteCardsProvider);
+  final cards = await ref.watch(contentRepositoryProvider).getCards();
+
+  return cards.where((card) => favorites.contains(card.id)).toList();
+}
+
+/// Returns first equal card by Id
+@riverpod
+Future<CoffeeCardModel?> cardById(Ref ref, String cardId) async {
+  final cards = await ref.watch(contentRepositoryProvider).getCards();
+
+  return cards.where((card) => card.id == cardId).firstOrNull;
 }

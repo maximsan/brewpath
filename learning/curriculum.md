@@ -25,13 +25,12 @@ derived providers, `AsyncValue` UI, empty/loading/error states.
   extracted badge constants. Known follow-up: inline `FutureBuilder` Future in
   `build` flickers the body on each toggle now that the screen rebuilds — fixed
   in B3 via a `cardById` provider._
-- 👉 ☐ **B3 — Derived providers.** In `cards_providers.dart`: (a) `favoriteCardsList`
-  (function-style `@riverpod`) combining the favorites set with
-  `contentRepository.getCards()` → `List<CoffeeCardModel>` (for B4's screen); and
-  (b) `cardById` (family) to replace the inline-Future antipattern in
-  `card_detail_screen.dart` and kill the toggle flicker.
-- ☐ **B4 — Favorites screen.** New `FavoritesScreen` (`ConsumerWidget`) rendering
-  the list, with proper loading / empty / error states. Use
+- ☑ **B3 — Derived providers.** `favoriteCardsList` + `cardById` (family) in
+  `cards_providers.dart`. _Done 2026-06-16 — correct reactive chain; rewired
+  `card_detail_screen.dart` to `ref.watch(cardByIdProvider(cardId)).when(...)`,
+  which removed the inline-Future flicker; cleaned up unused imports._
+- 👉 ☐ **B4 — Favorites screen.** New `FavoritesScreen` (`ConsumerWidget`)
+  rendering `favoriteCardsList`, with proper loading / empty / error states. Use
   `/flutter-mobile-design`; add `Semantics` labels and respect reduced motion.
 - ☐ **B5 — Wire the route.** Nested `GoRoute` under `/cards` — declare the static
   `favorites` route **before** `:cardId` so the param doesn't capture
@@ -82,3 +81,8 @@ invalidation.
   pointer. (Root `CLAUDE.md` "Project Layout" / "run commands from coffee_quest/"
   still stale — flagged to user.) B2 verified done; covered `AppSpacing` token
   swap + the "never build a Future inside `build()`" rule. **Next: B3.**
+- **2026-06-16** — B3 verified done (codegen emitted `favoriteCardsListProvider` +
+  `cardByIdProvider` family). Flicker fixed via cached provider read. Covered
+  family providers (arg as cache key) and why `ref.watch` of a provider beats an
+  inline `FutureBuilder`. **Next: B4 (Favorites screen) — pull in
+  `/flutter-mobile-design`.**
