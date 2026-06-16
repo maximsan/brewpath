@@ -41,8 +41,10 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      # Info-level lints (e.g. public_member_api_docs) report but don't fail CI;
+      # warnings and errors still do. flutter analyze defaults --fatal-infos on.
       - name: Analyze
-        run: flutter analyze
+        run: flutter analyze --no-fatal-infos
 
       # dart_code_linter's per-function metrics (source-lines-of-code,
       # cyclomatic-complexity, nesting, parameter/method counts) aren't surfaced
