@@ -8,19 +8,19 @@ part of 'favorite_cards_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// In-memory set of favorited card IDs.
+/// In-memory set of favorite card IDs.
 /// Phase B keeps this in memory only;
 /// Phase A backs it with Drift so favorites survive a restart.
 
 @ProviderFor(FavoriteCards)
 final favoriteCardsProvider = FavoriteCardsProvider._();
 
-/// In-memory set of favorited card IDs.
+/// In-memory set of favorite card IDs.
 /// Phase B keeps this in memory only;
 /// Phase A backs it with Drift so favorites survive a restart.
 final class FavoriteCardsProvider
     extends $NotifierProvider<FavoriteCards, Set<String>> {
-  /// In-memory set of favorited card IDs.
+  /// In-memory set of favorite card IDs.
   /// Phase B keeps this in memory only;
   /// Phase A backs it with Drift so favorites survive a restart.
   FavoriteCardsProvider._()
@@ -52,7 +52,7 @@ final class FavoriteCardsProvider
 
 String _$favoriteCardsHash() => r'85779f39d3a950074a09ad32f9563e233a427922';
 
-/// In-memory set of favorited card IDs.
+/// In-memory set of favorite card IDs.
 /// Phase B keeps this in memory only;
 /// Phase A backs it with Drift so favorites survive a restart.
 

@@ -70,18 +70,12 @@ final class CardsWithCollectionProvider
 String _$cardsWithCollectionHash() =>
     r'e90b2194edb08dcedb9d9014f5086725bf05c085';
 
-/// Watches two things: ref.watch(favoriteCardsProvider) (the Set<String>)
-/// and ref.watch(contentRepositoryProvider).getCards() (the card content).
-/// Returns Future<List<CoffeeCardModel>> —
-/// the cards whose id is in the favorites set.
+/// Favorite user cards, derived from the in-memory favorites set.
 
 @ProviderFor(favoriteCardsList)
 final favoriteCardsListProvider = FavoriteCardsListProvider._();
 
-/// Watches two things: ref.watch(favoriteCardsProvider) (the Set<String>)
-/// and ref.watch(contentRepositoryProvider).getCards() (the card content).
-/// Returns Future<List<CoffeeCardModel>> —
-/// the cards whose id is in the favorites set.
+/// Favorite user cards, derived from the in-memory favorites set.
 
 final class FavoriteCardsListProvider
     extends
@@ -93,10 +87,7 @@ final class FavoriteCardsListProvider
     with
         $FutureModifier<List<CoffeeCardModel>>,
         $FutureProvider<List<CoffeeCardModel>> {
-  /// Watches two things: ref.watch(favoriteCardsProvider) (the Set<String>)
-  /// and ref.watch(contentRepositoryProvider).getCards() (the card content).
-  /// Returns Future<List<CoffeeCardModel>> —
-  /// the cards whose id is in the favorites set.
+  /// Favorite user cards, derived from the in-memory favorites set.
   FavoriteCardsListProvider._()
     : super(
         from: null,

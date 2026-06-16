@@ -29,10 +29,12 @@ derived providers, `AsyncValue` UI, empty/loading/error states.
   `cards_providers.dart`. _Done 2026-06-16 — correct reactive chain; rewired
   `card_detail_screen.dart` to `ref.watch(cardByIdProvider(cardId)).when(...)`,
   which removed the inline-Future flicker; cleaned up unused imports._
-- 👉 ☐ **B4 — Favorites screen.** New `FavoritesScreen` (`ConsumerWidget`)
-  rendering `favoriteCardsList`, with proper loading / empty / error states. Use
-  `/flutter-mobile-design`; add `Semantics` labels and respect reduced motion.
-- ☐ **B5 — Wire the route.** Nested `GoRoute` under `/cards` — declare the static
+- ☑ **B4 — Favorites screen.** `FavoritesScreen` + `_FavoritesGrid` +
+  `_FavoritesEmpty` in `favorites_screen.dart`. _Done 2026-06-16 (via
+  `/flutter-mobile-design`) — reuses `CardGridItemWidget`, all three async states,
+  accessible empty state (`Semantics` + `excludeSemantics`), vertical-centering
+  bug fixed (`mainAxisSize.min`), tokens throughout._
+- 👉 ☐ **B5 — Wire the route.** Nested `GoRoute` under `/cards` — declare the static
   `favorites` route **before** `:cardId` so the param doesn't capture
   "favorites". Add `RouteNames.favorites` + an `AppStrings` label; reach it via an
   AppBar action on `CardsScreen` using `context.goNamed('favorites')`.
@@ -86,3 +88,7 @@ invalidation.
   family providers (arg as cache key) and why `ref.watch` of a provider beats an
   inline `FutureBuilder`. **Next: B4 (Favorites screen) — pull in
   `/flutter-mobile-design`.**
+- **2026-06-16** — B4 done. Built `FavoritesScreen` piece-by-piece; taught
+  `super.key` / widget keys, `const` constructors, `Column` + `Center` sizing
+  (`mainAxisSize.min`), and `Semantics(excludeSemantics:)` for a one-sentence
+  empty-state announcement. **Next: B5 (route wiring) — the go_router step.**
