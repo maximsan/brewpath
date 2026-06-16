@@ -19,6 +19,8 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
           cache: true
+      - name: Install dependencies
+        run: flutter pub get
       # Scoped to source dirs — `dart format .` would descend into build/
       # (Firebase plugins copy example apps there with broken includes).
       - name: Check formatting

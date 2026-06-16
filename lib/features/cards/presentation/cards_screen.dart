@@ -7,6 +7,7 @@ import 'package:coffee_quest/features/cards/presentation/card_grid_item_widget.d
 import 'package:coffee_quest/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 /// Cards tab: a grid of collectible coffee cards (locked until earned).
 class CardsScreen extends ConsumerWidget {
@@ -18,7 +19,16 @@ class CardsScreen extends ConsumerWidget {
     final cards = ref.watch(cardsWithCollectionProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text(AppStrings.tabCards)),
+      appBar: AppBar(
+        title: const Text(AppStrings.tabCards),
+        actions: [
+          IconButton(
+            onPressed: () => context.goNamed('favorites'),
+            icon: const Icon(Icons.favorite),
+            tooltip: AppStrings.favorites,
+          ),
+        ],
+      ),
       body: cards.when(
         loading: () => const LoadingIndicator(),
         error: (e, _) => ErrorView(message: '$e'),

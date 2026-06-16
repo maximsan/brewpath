@@ -34,10 +34,10 @@ derived providers, `AsyncValue` UI, empty/loading/error states.
   `/flutter-mobile-design`) — reuses `CardGridItemWidget`, all three async states,
   accessible empty state (`Semantics` + `excludeSemantics`), vertical-centering
   bug fixed (`mainAxisSize.min`), tokens throughout._
-- 👉 ☐ **B5 — Wire the route.** Nested `GoRoute` under `/cards` — declare the static
-  `favorites` route **before** `:cardId` so the param doesn't capture
-  "favorites". Add `RouteNames.favorites` + an `AppStrings` label; reach it via an
-  AppBar action on `CardsScreen` using `context.goNamed('favorites')`.
+- ☑ **B5 — Wire the route.** Nested `favorites` `GoRoute` under `/cards`,
+  declared before `:cardId`; `RouteNames.favorites` + `AppStrings.favorites`;
+  AppBar entry point on `CardsScreen` via `context.goNamed('favorites')`.
+  _Done 2026-06-16 — **Phase B complete.** Full loop works end-to-end._
 
 ## Phase A — "Persist favorites" (persistence slice)
 
@@ -45,7 +45,7 @@ Teaches: Drift schema change, migration, `drift_dev` codegen + schema snapshots,
 repository + DTO mapping, a mutable controller backed by storage, provider
 invalidation.
 
-- ☐ **A1 — Schema.** Add a `FavoriteCardRecords` table (unique `cardId`) in
+- 👉 ☐ **A1 — Schema.** Add a `FavoriteCardRecords` table (unique `cardId`) in
   `shared/storage/app_database.dart`; bump `schemaVersion`; add the `onUpgrade`
   migration step.
 - ☐ **A2 — Codegen + schema snapshot.** `dart run build_runner build`, then the
@@ -92,3 +92,7 @@ invalidation.
   `super.key` / widget keys, `const` constructors, `Column` + `Center` sizing
   (`mainAxisSize.min`), and `Semantics(excludeSemantics:)` for a one-sentence
   empty-state announcement. **Next: B5 (route wiring) — the go_router step.**
+- **2026-06-16** — **B5 done → Phase B complete.** Wired the nested `favorites`
+  route (static-before-dynamic ordering, the key go_router lesson), constants,
+  and the Cards AppBar entry point with `goNamed`. Full favorites loop works
+  end-to-end. **Next: Phase A (persist favorites with Drift) — start at A1.**
