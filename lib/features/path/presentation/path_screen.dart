@@ -1,4 +1,4 @@
-import 'package:coffee_quest/core/constants/app_strings.dart';
+import 'package:coffee_quest/core/constants/app_labels.dart';
 import 'package:coffee_quest/core/widgets/error_view.dart';
 import 'package:coffee_quest/core/widgets/loading_indicator.dart';
 import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
@@ -17,7 +17,7 @@ class PathScreen extends ConsumerWidget {
     final modules = ref.watch(modulesWithProgressProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text(AppStrings.tabPath)),
+      appBar: AppBar(title: const Text(AppLabels.tabPath)),
       body: modules.when(
         loading: () => const LoadingIndicator(),
         error: (e, _) => ErrorView(message: '$e'),

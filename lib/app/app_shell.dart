@@ -1,4 +1,4 @@
-import 'package:coffee_quest/core/constants/app_strings.dart';
+import 'package:coffee_quest/core/constants/app_labels.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -31,22 +31,22 @@ class AppShell extends StatelessWidget {
           NavigationDestination(
             icon: Icon(Icons.school_outlined),
             selectedIcon: Icon(Icons.school),
-            label: AppStrings.tabLearn,
+            label: AppLabels.tabLearn,
           ),
           NavigationDestination(
             icon: Icon(Icons.route_outlined),
             selectedIcon: Icon(Icons.route),
-            label: AppStrings.tabPath,
+            label: AppLabels.tabPath,
           ),
           NavigationDestination(
             icon: Icon(Icons.style_outlined),
             selectedIcon: Icon(Icons.style),
-            label: AppStrings.tabCards,
+            label: AppLabels.tabCards,
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outline),
             selectedIcon: Icon(Icons.person),
-            label: AppStrings.tabProfile,
+            label: AppLabels.tabProfile,
           ),
         ],
       ),

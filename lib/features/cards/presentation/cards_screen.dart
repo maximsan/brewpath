@@ -1,4 +1,5 @@
-import 'package:coffee_quest/core/constants/app_strings.dart';
+import 'package:coffee_quest/core/constants/app_labels.dart';
+import 'package:coffee_quest/core/constants/app_routes.dart';
 import 'package:coffee_quest/core/widgets/error_view.dart';
 import 'package:coffee_quest/core/widgets/loading_indicator.dart';
 import 'package:coffee_quest/core/widgets/section_header.dart';
@@ -20,12 +21,12 @@ class CardsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(AppStrings.tabCards),
+        title: const Text(AppLabels.tabCards),
         actions: [
           IconButton(
-            onPressed: () => context.goNamed('favorites'),
+            onPressed: () => context.goNamed(AppRoutes.favorites.name),
             icon: const Icon(Icons.favorite),
-            tooltip: AppStrings.favorites,
+            tooltip: AppLabels.favorites,
           ),
         ],
       ),

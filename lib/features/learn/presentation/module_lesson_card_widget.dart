@@ -1,3 +1,4 @@
+import 'package:coffee_quest/core/constants/app_routes.dart';
 import 'package:coffee_quest/shared/models/lesson_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -28,14 +29,20 @@ class ModuleLessonCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final destination = isCompleted
-        ? '/learn/lesson/${lesson.id}?review=true'
-        : '/learn/lesson/${lesson.id}';
+    final lessonParams = {'lessonId': lesson.id};
+    // Completed lessons re-open in review mode; new ones start fresh.
+    final lessonQuery = isCompleted
+        ? const {'review': 'true'}
+        : const <String, String>{};
 
     return Card(
       margin: EdgeInsets.zero,
       child: InkWell(
-        onTap: () => context.go(destination),
+        onTap: () => context.goNamed(
+          AppRoutes.lesson.name,
+          pathParameters: lessonParams,
+          queryParameters: lessonQuery,
+        ),
         borderRadius: BorderRadius.circular(_cardRadius),
         child: Padding(
           padding: const EdgeInsets.all(14),
@@ -66,7 +73,11 @@ class ModuleLessonCardWidget extends StatelessWidget {
               const SizedBox(width: 8),
               if (isCompleted)
                 TextButton(
-                  onPressed: () => context.go(destination),
+                  onPressed: () => context.goNamed(
+                    AppRoutes.lesson.name,
+                    pathParameters: lessonParams,
+                    queryParameters: lessonQuery,
+                  ),
                   child: const Text('Review'),
                 )
               else

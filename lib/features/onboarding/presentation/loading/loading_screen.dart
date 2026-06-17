@@ -1,3 +1,4 @@
+import 'package:coffee_quest/core/constants/app_routes.dart';
 import 'package:coffee_quest/features/onboarding/presentation/loading/loading_animation.dart';
 import 'package:coffee_quest/features/onboarding/presentation/loading/wake_sequence_controller.dart';
 import 'package:coffee_quest/features/onboarding/presentation/loading/widgets/pulsing_dots.dart';
@@ -71,8 +72,11 @@ class _LoadingScreenState extends ConsumerState<LoadingScreen> {
   /// (`appRouter`) owns the gate→destination policy and bounces returning
   /// users on to `/learn`, so this screen does not duplicate that decision.
   void _advance() {
-    if (!mounted) return;
-    context.goNamed('welcome');
+    if (!mounted) {
+      return;
+    }
+
+    context.goNamed(AppRoutes.welcome.name);
   }
 
   @override

@@ -1,3 +1,4 @@
+import 'package:coffee_quest/core/constants/app_routes.dart';
 import 'package:coffee_quest/core/utils/module_icons.dart';
 import 'package:coffee_quest/features/cards/domain/cards_providers.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,12 @@ class CardGridItemWidget extends StatelessWidget {
     return Card(
       margin: EdgeInsets.zero,
       child: InkWell(
-        onTap: collected ? () => context.go('/cards/${item.card.id}') : null,
+        onTap: collected
+            ? () => context.goNamed(
+                AppRoutes.cardDetail.name,
+                pathParameters: {'cardId': item.card.id},
+              )
+            : null,
         borderRadius: BorderRadius.circular(_cornerRadius),
         child: Padding(
           padding: const EdgeInsets.all(12),

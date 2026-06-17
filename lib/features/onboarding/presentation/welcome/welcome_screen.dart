@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:coffee_quest/core/constants/app_routes.dart';
 import 'package:coffee_quest/core/widgets/link_button.dart';
 import 'package:coffee_quest/core/widgets/primary_button.dart';
 import 'package:coffee_quest/core/widgets/smallcaps_label.dart';
@@ -69,7 +70,7 @@ class WelcomeScreen extends ConsumerWidget {
               const SizedBox(height: AppSpacing.lg + 4),
               PrimaryButton(
                 label: 'Plant your seed',
-                onPressed: () => context.go('/onboarding/goal'),
+                onPressed: () => context.goNamed(AppRoutes.onboardingGoal.name),
               ),
               Center(
                 child: LinkButton(

@@ -1,4 +1,4 @@
-import 'package:coffee_quest/core/constants/app_strings.dart';
+import 'package:coffee_quest/core/constants/app_labels.dart';
 import 'package:coffee_quest/core/widgets/error_view.dart';
 import 'package:coffee_quest/core/widgets/loading_indicator.dart';
 import 'package:coffee_quest/features/cards/domain/cards_providers.dart';
@@ -19,7 +19,7 @@ class FavoritesScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(AppStrings.favorites),
+        title: const Text(AppLabels.favorites),
       ),
       body: favorites.when(
         data: (cards) => cards.isEmpty

@@ -1,4 +1,5 @@
-import 'package:coffee_quest/core/constants/app_strings.dart';
+import 'package:coffee_quest/core/constants/app_labels.dart';
+import 'package:coffee_quest/core/constants/app_routes.dart';
 import 'package:coffee_quest/core/utils/module_icons.dart';
 import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
 import 'package:flutter/material.dart';
@@ -21,11 +22,14 @@ class ModuleCardWidget extends StatelessWidget {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(
-          const SnackBar(content: Text(AppStrings.lockedModuleMessage)),
+          const SnackBar(content: Text(AppLabels.lockedModuleMessage)),
         );
       return;
     }
-    context.go('/learn/module/${item.module.id}');
+    context.goNamed(
+      AppRoutes.moduleDetail.name,
+      pathParameters: {'moduleId': item.module.id},
+    );
   }
 
   @override

@@ -1,4 +1,4 @@
-import 'package:coffee_quest/core/constants/app_strings.dart';
+import 'package:coffee_quest/core/constants/app_labels.dart';
 import 'package:coffee_quest/core/widgets/error_view.dart';
 import 'package:coffee_quest/core/widgets/loading_indicator.dart';
 import 'package:coffee_quest/core/widgets/section_header.dart';
@@ -25,7 +25,7 @@ class LearnScreen extends ConsumerWidget {
     final completedLessons = ref.watch(completedLessonsProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text(AppStrings.tabLearn)),
+      appBar: AppBar(title: const Text(AppLabels.tabLearn)),
       body: modules.when(
         loading: () => const LoadingIndicator(),
         error: (e, _) => ErrorView(message: '$e'),

@@ -1,3 +1,4 @@
+import 'package:coffee_quest/core/constants/app_routes.dart';
 import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -42,7 +43,10 @@ class PracticeByGameTypeWidget extends StatelessWidget {
                 ),
               ),
               onPressed: enabled
-                  ? () => context.go('/learn/practice/game-type/$key')
+                  ? () => context.goNamed(
+                      AppRoutes.practiceGameType.name,
+                      pathParameters: {'gameType': key},
+                    )
                   : null,
             );
           }(),

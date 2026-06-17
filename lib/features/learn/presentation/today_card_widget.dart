@@ -1,3 +1,4 @@
+import 'package:coffee_quest/core/constants/app_routes.dart';
 import 'package:coffee_quest/shared/models/lesson_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -39,7 +40,10 @@ class TodayCardWidget extends StatelessWidget {
     LessonModel lesson,
   ) {
     return InkWell(
-      onTap: () => context.go('/learn/lesson/${lesson.id}'),
+      onTap: () => context.goNamed(
+        AppRoutes.lesson.name,
+        pathParameters: {'lessonId': lesson.id},
+      ),
       borderRadius: BorderRadius.circular(_heroRadius),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -87,7 +91,10 @@ class TodayCardWidget extends StatelessWidget {
                 _XpPill(xp: lesson.xpReward),
                 const Spacer(),
                 FilledButton.icon(
-                  onPressed: () => context.go('/learn/lesson/${lesson.id}'),
+                  onPressed: () => context.goNamed(
+                    AppRoutes.lesson.name,
+                    pathParameters: {'lessonId': lesson.id},
+                  ),
                   icon: const Icon(Icons.play_arrow),
                   label: const Text('Start'),
                 ),

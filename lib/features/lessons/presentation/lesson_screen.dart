@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:coffee_quest/core/constants/app_routes.dart';
 import 'package:coffee_quest/core/widgets/error_view.dart';
 import 'package:coffee_quest/core/widgets/loading_indicator.dart';
 import 'package:coffee_quest/features/mini_games/domain/mini_game_result.dart';
@@ -75,9 +76,14 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
           // Mastery = first-try accuracy as a percentage (0–100).
           final score = (100 * _firstTryCorrectCount / lesson.steps.length)
               .round();
-          context.go(
-            '/learn/lesson/${lesson.id}/complete'
-            '?review=${widget.review}&practice=${widget.practice}&score=$score',
+          context.goNamed(
+            AppRoutes.lessonComplete.name,
+            pathParameters: {'lessonId': lesson.id},
+            queryParameters: {
+              'review': '${widget.review}',
+              'practice': '${widget.practice}',
+              'score': '$score',
+            },
           );
         } else {
           setState(() {

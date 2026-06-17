@@ -1,3 +1,4 @@
+import 'package:coffee_quest/core/constants/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -39,7 +40,7 @@ class GameTypeEmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             FilledButton(
-              onPressed: () => context.go('/learn'),
+              onPressed: () => context.goNamed(AppRoutes.learn.name),
               child: const Text('Back to Learn'),
             ),
           ],
@@ -117,7 +118,7 @@ class GameTypeSummary extends StatelessWidget {
             ),
             const SizedBox(height: 32),
             FilledButton(
-              onPressed: () => context.go('/learn'),
+              onPressed: () => context.goNamed(AppRoutes.learn.name),
               child: const Text('Continue'),
             ),
           ],

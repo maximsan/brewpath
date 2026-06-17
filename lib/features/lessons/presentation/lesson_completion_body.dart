@@ -1,4 +1,5 @@
-import 'package:coffee_quest/core/constants/app_strings.dart';
+import 'package:coffee_quest/core/constants/app_labels.dart';
+import 'package:coffee_quest/core/constants/app_routes.dart';
 import 'package:coffee_quest/core/utils/module_icons.dart';
 import 'package:coffee_quest/features/lessons/domain/lesson_completion_service.dart';
 import 'package:coffee_quest/features/lessons/presentation/lesson_completion_reward.dart';
@@ -35,8 +36,8 @@ class LessonCompletionBody extends StatelessWidget {
             ..._content(context),
             const SizedBox(height: 32),
             FilledButton(
-              onPressed: () => context.go('/learn'),
-              child: const Text(AppStrings.continueLabel),
+              onPressed: () => context.goNamed(AppRoutes.learn.name),
+              child: const Text(AppLabels.continueLabel),
             ),
           ],
         ),

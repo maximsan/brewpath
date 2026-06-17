@@ -1,3 +1,4 @@
+import 'package:coffee_quest/core/constants/app_routes.dart';
 import 'package:coffee_quest/core/utils/module_icons.dart';
 import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
 import 'package:flutter/material.dart';
@@ -127,7 +128,10 @@ class _LessonRow extends StatelessWidget {
         completed ? Icons.check_circle : Icons.fitness_center,
         color: completed ? colors.primary : colors.onSurfaceVariant,
       ),
-      onTap: () => context.go('/learn/practice/lesson/${entry.lesson.id}'),
+      onTap: () => context.goNamed(
+        AppRoutes.practiceLesson.name,
+        pathParameters: {'lessonId': entry.lesson.id},
+      ),
     );
   }
 }

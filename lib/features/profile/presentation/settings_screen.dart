@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:coffee_quest/core/constants/app_routes.dart';
 import 'package:coffee_quest/features/onboarding/presentation/onboarding_providers.dart';
 import 'package:coffee_quest/features/profile/domain/settings_providers.dart';
 import 'package:flutter/material.dart';
@@ -217,6 +218,6 @@ class _ResetOnboardingTile extends ConsumerWidget {
     await ref.read(onboardingRepositoryProvider).resetOnboarding();
     ref.invalidate(onboardingCompletedProvider);
     if (!context.mounted) return;
-    context.go('/welcome');
+    context.goNamed(AppRoutes.welcome.name);
   }
 }

@@ -1,3 +1,4 @@
+import 'package:coffee_quest/core/constants/app_routes.dart';
 import 'package:coffee_quest/features/profile/domain/settings_providers.dart';
 import 'package:coffee_quest/features/profile/presentation/widgets/preference_tile.dart';
 import 'package:coffee_quest/features/profile/presentation/widgets/premium_card.dart';
@@ -31,8 +32,9 @@ class ProfileScreen extends ConsumerWidget {
               pinned: true,
               delegate: ProfileHeaderDelegate(
                 title: 'Profile',
-                onClose: () => context.go('/learn'),
-                onSettings: () => context.go('/profile/settings'),
+                onClose: () => context.goNamed(AppRoutes.learn.name),
+                onSettings: () =>
+                    context.goNamed(AppRoutes.profileSettings.name),
               ),
             ),
             SliverPadding(

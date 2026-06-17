@@ -1,4 +1,4 @@
-import 'package:coffee_quest/core/constants/app_strings.dart';
+import 'package:coffee_quest/core/constants/app_labels.dart';
 import 'package:coffee_quest/features/mini_games/domain/mini_game_result.dart';
 import 'package:coffee_quest/shared/models/lesson_step_model.dart';
 import 'package:coffee_quest/shared/theme/app_spacing.dart';
@@ -113,7 +113,7 @@ class _TapOrderGameState extends State<TapOrderGame> {
           if (_correct)
             FilledButton(
               onPressed: _onContinue,
-              child: const Text(AppStrings.continueLabel),
+              child: const Text(AppLabels.continueLabel),
             )
           else
             Row(
@@ -128,7 +128,7 @@ class _TapOrderGameState extends State<TapOrderGame> {
                 Expanded(
                   child: FilledButton(
                     onPressed: _onContinue,
-                    child: const Text(AppStrings.tryAgainLabel),
+                    child: const Text(AppLabels.tryAgainLabel),
                   ),
                 ),
               ],

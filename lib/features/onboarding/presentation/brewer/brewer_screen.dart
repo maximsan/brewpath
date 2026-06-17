@@ -1,3 +1,4 @@
+import 'package:coffee_quest/core/constants/app_routes.dart';
 import 'package:coffee_quest/core/widgets/pick_card.dart';
 import 'package:coffee_quest/core/widgets/primary_button.dart';
 import 'package:coffee_quest/core/widgets/smallcaps_label.dart';
@@ -53,7 +54,7 @@ class _BrewerScreenState extends ConsumerState<BrewerScreen> {
         await draft.complete();
       },
       onFinished: () {
-        if (mounted) context.go('/learn');
+        if (mounted) context.goNamed(AppRoutes.learn.name);
       },
     )..addListener(_onControllerChanged);
   }

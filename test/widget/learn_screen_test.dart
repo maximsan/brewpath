@@ -1,4 +1,4 @@
-import 'package:coffee_quest/core/constants/app_strings.dart';
+import 'package:coffee_quest/core/constants/app_labels.dart';
 import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
 import 'package:coffee_quest/features/learn/presentation/learn_screen.dart';
 import 'package:coffee_quest/features/learn/presentation/module_card_widget.dart';
@@ -98,6 +98,6 @@ void main() {
 
     await tester.tap(find.byIcon(Icons.lock_outline).first);
     await tester.pump(); // let the SnackBar appear
-    expect(find.text(AppStrings.lockedModuleMessage), findsOneWidget);
+    expect(find.text(AppLabels.lockedModuleMessage), findsOneWidget);
   });
 }

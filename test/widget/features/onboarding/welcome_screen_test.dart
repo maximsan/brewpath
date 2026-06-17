@@ -1,3 +1,4 @@
+import 'package:coffee_quest/core/constants/app_routes.dart';
 import 'package:coffee_quest/features/onboarding/presentation/welcome/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,9 +14,14 @@ void main() {
     final router = GoRouter(
       initialLocation: '/welcome',
       routes: [
-        GoRoute(path: '/welcome', builder: (_, _) => const WelcomeScreen()),
+        GoRoute(
+          path: '/welcome',
+          name: AppRoutes.welcome.name,
+          builder: (_, _) => const WelcomeScreen(),
+        ),
         GoRoute(
           path: '/onboarding/goal',
+          name: AppRoutes.onboardingGoal.name,
           builder: (_, _) => const Scaffold(body: Text('goal-stub')),
         ),
       ],
