@@ -10,11 +10,13 @@ class FavoriteCards extends _$FavoriteCards {
   @override
   Set<String> build() => {};
 
+  /// Adds [cardId] to favorites if absent, otherwise removes it.
   void toggle(String cardId) {
     state = state.contains(cardId)
         ? ({...state}..remove(cardId)) // new set, minus the id
         : ({...state, cardId}); // new set, plus the id
   }
 
+  /// Whether [cardId] is currently favorited.
   bool isFavorite(String cardId) => state.contains(cardId);
 }

@@ -5,6 +5,7 @@ import 'package:coffee_quest/features/cards/presentation/cards_screen.dart';
 import 'package:coffee_quest/features/learn/presentation/game_type_practice_screen.dart';
 import 'package:coffee_quest/features/learn/presentation/learn_screen.dart';
 import 'package:coffee_quest/features/learn/presentation/module_detail_screen.dart';
+import 'package:coffee_quest/features/learn/presentation/module_summary_screen.dart';
 import 'package:coffee_quest/features/lessons/presentation/lesson_completion_screen.dart';
 import 'package:coffee_quest/features/lessons/presentation/lesson_screen.dart';
 import 'package:coffee_quest/features/onboarding/presentation/brewer/brewer_screen.dart';
@@ -129,6 +130,16 @@ GoRouter appRouter(Ref ref) {
                         ),
                       ),
                     ],
+                  ),
+                  // Module-completion recap, pushed over the shell after the
+                  // last lesson's completion screen.
+                  GoRoute(
+                    path: 'module-summary/:moduleId',
+                    name: 'moduleSummary',
+                    parentNavigatorKey: _rootKey,
+                    builder: (context, state) => ModuleSummaryScreen(
+                      moduleId: state.pathParameters['moduleId']!,
+                    ),
                   ),
                   // Practice flows live under /learn so the back button
                   // returns to the Learn tab. Both push on the root navigator

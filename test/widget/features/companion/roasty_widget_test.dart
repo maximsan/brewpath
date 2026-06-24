@@ -1,5 +1,5 @@
-import 'package:coffee_quest/features/onboarding/presentation/widgets/roasty.dart';
-import 'package:coffee_quest/features/onboarding/presentation/widgets/roasty_state.dart';
+import 'package:coffee_quest/features/companion/domain/roasty_state.dart';
+import 'package:coffee_quest/features/companion/presentation/roasty.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

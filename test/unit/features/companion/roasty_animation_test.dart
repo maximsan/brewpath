@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
-import 'package:coffee_quest/features/onboarding/presentation/widgets/roasty_animation.dart';
-import 'package:coffee_quest/features/onboarding/presentation/widgets/roasty_state.dart';
+import 'package:coffee_quest/features/companion/domain/roasty_state.dart';
+import 'package:coffee_quest/features/companion/presentation/roasty_animation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 // Values below are pinned to the current easing formulas (copied 1:1 from the

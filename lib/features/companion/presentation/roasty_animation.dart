@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:coffee_quest/features/onboarding/presentation/widgets/roasty_state.dart';
+import 'package:coffee_quest/features/companion/domain/roasty_state.dart';
 import 'package:flutter/material.dart';
 
 // Animation switches handle the states with special motion and default the
@@ -30,6 +30,13 @@ Duration roastyDuration(RoastyState state) {
       return const Duration(milliseconds: 400); // blink-pop one-shot
   }
 }
+
+/// Controller value to hold when a [RoastyState] is painted without animation
+/// (`Roasty(animate: false)` or reduced motion). A neutral resting pose: the
+/// body math is at rest at `t = 0`, and the face is state-driven (not
+/// `t`-driven) so the right expression still shows. Pure, so a frame can be
+/// frozen without a ticker.
+double roastyStaticFrame(RoastyState state) => 0;
 
 /// Whether [state]'s animation repeats (vs. plays once).
 bool roastyLoops(RoastyState state) {

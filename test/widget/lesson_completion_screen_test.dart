@@ -1,4 +1,6 @@
+import 'package:coffee_quest/features/companion/presentation/companion.dart';
 import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
+import 'package:coffee_quest/features/learn/presentation/module_summary_screen.dart';
 import 'package:coffee_quest/features/lessons/domain/lesson_completion_service.dart';
 import 'package:coffee_quest/features/lessons/presentation/lesson_completion_screen.dart';
 import 'package:coffee_quest/features/progress/domain/progress_providers.dart';
@@ -10,6 +12,7 @@ import 'package:coffee_quest/shared/repositories/content_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
 import '../support/widget_harness.dart';
 
@@ -87,6 +90,17 @@ ProviderContainer _buildContainer() => ProviderContainer(
   overrides: [contentRepositoryProvider.overrideWith((ref) => _FakeContent())],
 );
 
+/// Wraps the screen in a MaterialApp that forces reduced motion, so the
+/// completion companion renders a static frame. Without it, the companion's
+/// idle loop never settles and `settleLoaders`' final `pumpAndSettle` hangs.
+Widget _app(Widget home) => MaterialApp(
+  home: home,
+  builder: (context, child) => MediaQuery(
+    data: MediaQuery.of(context).copyWith(disableAnimations: true),
+    child: child!,
+  ),
+);
+
 void main() {
   setUp(useInMemoryDatabase);
 
@@ -110,8 +124,8 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: const MaterialApp(
-            home: LessonCompletionScreen(
+          child: _app(
+            const LessonCompletionScreen(
               lessonId: 'lesson_where_coffee',
               score: 100,
             ),
@@ -175,8 +189,8 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: const MaterialApp(
-            home: LessonCompletionScreen(
+          child: _app(
+            const LessonCompletionScreen(
               lessonId: 'lesson_where_coffee',
               score: 100,
             ),
@@ -244,8 +258,8 @@ void main() {
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
-        child: const MaterialApp(
-          home: LessonCompletionScreen(
+        child: _app(
+          const LessonCompletionScreen(
             lessonId: 'lesson_green_coffee',
             score: 100,
           ),
@@ -257,6 +271,29 @@ void main() {
     expect(find.text('Lesson complete!'), findsOneWidget);
     expect(find.text('+50 XP'), findsOneWidget); // lesson_green_coffee, 5 steps
     expect(find.text('+25 XP · Module complete!'), findsOneWidget);
+  });
+
+  // The first-completion path shows the celebratory companion in place of the
+  // static badge; review/practice paths keep the badge (no companion).
+  testWidgets('first completion shows the companion', (tester) async {
+    final container = _buildContainer();
+    addTearDown(container.dispose);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: _app(
+          const LessonCompletionScreen(
+            lessonId: 'lesson_where_coffee',
+            score: 100,
+          ),
+        ),
+      ),
+    );
+    await settleLoaders(tester);
+
+    expect(find.text('Lesson complete!'), findsOneWidget);
+    expect(find.byType(Companion), findsOneWidget);
   });
 
   // Review mode never re-awards full lesson XP; it shows the best score and
@@ -281,8 +318,8 @@ void main() {
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
-        child: const MaterialApp(
-          home: LessonCompletionScreen(
+        child: _app(
+          const LessonCompletionScreen(
             lessonId: 'lesson_where_coffee',
             review: true,
             score: 80,
@@ -297,5 +334,75 @@ void main() {
     expect(find.text('+2 XP · Practice'), findsOneWidget);
     // A review must not re-award full lesson XP.
     expect(find.textContaining('Lesson complete!'), findsNothing);
+  });
+
+  // Completing a module's last lesson, then tapping Continue, routes to the
+  // module-summary recap rather than back to Learn.
+  testWidgets('module completion continues to the module summary', (
+    tester,
+  ) async {
+    final container = _buildContainer();
+    addTearDown(container.dispose);
+    container.listen(contentRepositoryProvider, (_, _) {});
+    container.listen(lessonCompletionServiceProvider, (_, _) {});
+
+    final content = container.read(contentRepositoryProvider);
+    final service = container.read(lessonCompletionServiceProvider);
+    for (final id in const [
+      'lesson_where_coffee',
+      'lesson_arabica_robusta',
+      'lesson_coffee_plant',
+      'lesson_altitude_quality',
+    ]) {
+      final lesson = await tester.runAsync(() => content.getLessonById(id));
+      await tester.runAsync(() => service.completeLesson(lesson!, score: 100));
+    }
+
+    final router = GoRouter(
+      initialLocation: '/learn/lesson/lesson_green_coffee/complete?score=100',
+      routes: [
+        GoRoute(
+          path: '/learn',
+          name: 'learn',
+          builder: (context, state) => const Scaffold(body: Text('Learn tab')),
+        ),
+        GoRoute(
+          path: '/learn/lesson/:lessonId/complete',
+          name: 'lessonComplete',
+          builder: (context, state) => LessonCompletionScreen(
+            lessonId: state.pathParameters['lessonId']!,
+            score: int.tryParse(state.uri.queryParameters['score'] ?? '') ?? 0,
+          ),
+        ),
+        GoRoute(
+          path: '/learn/module-summary/:moduleId',
+          name: 'moduleSummary',
+          builder: (context, state) =>
+              ModuleSummaryScreen(moduleId: state.pathParameters['moduleId']!),
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
+          routerConfig: router,
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(disableAnimations: true),
+            child: child!,
+          ),
+        ),
+      ),
+    );
+    await settleLoaders(tester);
+
+    expect(find.text('Lesson complete!'), findsOneWidget);
+    await tester.tap(find.text('Continue'));
+    await settleLoaders(tester);
+
+    expect(find.text('Module complete!'), findsOneWidget);
+    expect(find.byType(ModuleSummaryScreen), findsOneWidget);
   });
 }

@@ -1,4 +1,4 @@
-import 'package:coffee_quest/features/onboarding/presentation/widgets/roasty_state.dart';
+import 'package:coffee_quest/features/companion/domain/roasty_state.dart';
 
 /// The six ordered steps of Roasty's wake-up sequence.
 /// Each phase owns its own on-screen [duration] and
