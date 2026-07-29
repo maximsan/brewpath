@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:math' as math;
 
-import 'package:coffee_quest/features/onboarding/presentation/widgets/roasty_animation.dart';
-import 'package:coffee_quest/features/onboarding/presentation/widgets/roasty_body.dart';
-import 'package:coffee_quest/features/onboarding/presentation/widgets/roasty_faces.dart';
-import 'package:coffee_quest/features/onboarding/presentation/widgets/roasty_particles.dart';
-import 'package:coffee_quest/features/onboarding/presentation/widgets/roasty_state.dart';
+import 'package:coffee_quest/features/companion/domain/roasty_state.dart';
+import 'package:coffee_quest/features/companion/presentation/roasty_animation.dart';
+import 'package:coffee_quest/features/companion/presentation/roasty_body.dart';
+import 'package:coffee_quest/features/companion/presentation/roasty_faces.dart';
+import 'package:coffee_quest/features/companion/presentation/roasty_particles.dart';
 import 'package:flutter/material.dart';
 
 /// Animated Roasty mascot. Reproduces the geometry + per-state animations
@@ -21,6 +21,7 @@ class Roasty extends StatefulWidget {
     this.size = 160,
     this.replayKey,
     this.sproutScale,
+    this.animate = true,
     super.key,
   });
 
@@ -33,6 +34,11 @@ class Roasty extends StatefulWidget {
   /// Changing this restarts one-shot animations (mirrors the prototype key).
   final Object? replayKey;
 
+  /// Whether the mascot animates. When false — or when the platform requests
+  /// reduced motion ([MediaQueryData.disableAnimations]) — Roasty paints a
+  /// single held frame ([roastyStaticFrame]) and the controller stays idle.
+  final bool animate;
+
   /// Overrides the sprout's scale when non-null, letting a host (e.g. the
   /// loading screen) drive the wake-up grow. When null the sprout follows the
   /// state-based default (shrunk while sleeping, full otherwise).
@@ -44,6 +50,7 @@ class Roasty extends StatefulWidget {
 
 class _RoastyState extends State<Roasty> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  bool _animating = false;
 
   @override
   void initState() {
@@ -56,7 +63,13 @@ class _RoastyState extends State<Roasty> with SingleTickerProviderStateMixin {
               unawaited(_controller.repeat());
             }
           });
-    _startForState(widget.state);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Reduced-motion lives in MediaQuery, so first available here.
+    _syncAnimation();
   }
 
   @override
@@ -64,10 +77,30 @@ class _RoastyState extends State<Roasty> with SingleTickerProviderStateMixin {
     super.didUpdateWidget(oldWidget);
     final stateChanged = oldWidget.state != widget.state;
     final replayChanged = oldWidget.replayKey != widget.replayKey;
-    if (stateChanged || replayChanged) {
-      _controller.stop();
+    final animateChanged = oldWidget.animate != widget.animate;
+    if (stateChanged || replayChanged || animateChanged) {
       _controller.duration = roastyDuration(widget.state);
-      _startForState(widget.state);
+      _syncAnimation(forceRestart: stateChanged || replayChanged);
+    }
+  }
+
+  /// Reconciles the controller with the effective animate flag — the widget's
+  /// [Roasty.animate] AND platform reduced-motion. When animating, (re)starts
+  /// the state's motion; otherwise stops on the static frame.
+  void _syncAnimation({bool forceRestart = false}) {
+    final reduceMotion =
+        MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+    final shouldAnimate = widget.animate && !reduceMotion;
+    if (shouldAnimate) {
+      if (!_animating || forceRestart) {
+        _animating = true;
+        _startForState(widget.state);
+      }
+    } else {
+      _animating = false;
+      _controller
+        ..stop()
+        ..value = roastyStaticFrame(widget.state);
     }
   }
 

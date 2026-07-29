@@ -1,6 +1,9 @@
 import 'package:coffee_quest/core/widgets/error_view.dart';
 import 'package:coffee_quest/core/widgets/loading_indicator.dart';
 import 'package:coffee_quest/features/cards/domain/cards_providers.dart';
+import 'package:coffee_quest/features/companion/application/companion_providers.dart';
+import 'package:coffee_quest/features/companion/domain/companion_reaction.dart';
+import 'package:coffee_quest/features/companion/presentation/companion_handle.dart';
 import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
 import 'package:coffee_quest/features/lessons/domain/lesson_completion_service.dart';
 import 'package:coffee_quest/features/lessons/presentation/lesson_completion_body.dart';
@@ -43,6 +46,16 @@ class LessonCompletionScreen extends ConsumerStatefulWidget {
 class _LessonCompletionScreenState
     extends ConsumerState<LessonCompletionScreen> {
   late final Future<LessonCompletionReward> _future = _completeAndLoad();
+  final CompanionHandle _companionHandle = CompanionHandle();
+  String? _companionLine;
+  String? _moduleId;
+  bool _reacted = false;
+
+  @override
+  void dispose() {
+    _companionHandle.dispose();
+    super.dispose();
+  }
 
   /// Persists the run exactly once. First completion awards full XP/cards;
   /// review only updates mastery and may grant practice XP; practice runs
@@ -54,6 +67,7 @@ class _LessonCompletionScreenState
     if (lesson == null) {
       throw StateError('Lesson ${widget.lessonId} not found');
     }
+    _moduleId = lesson.moduleId;
 
     if (widget.practice) {
       // Pure practice — no service call, no XP, no card, no streak. Just
@@ -107,18 +121,47 @@ class _LessonCompletionScreenState
       body: SafeArea(
         child: FutureBuilder<LessonCompletionReward>(
           future: _future,
-          builder: (context, snap) {
-            if (snap.connectionState != ConnectionState.done) {
-              return const LoadingIndicator();
-            }
-            if (snap.hasError) return ErrorView(message: '${snap.error}');
-            return LessonCompletionBody(
-              reward: snap.data!,
-              score: widget.score,
-            );
-          },
+          builder: _buildResult,
         ),
       ),
     );
+  }
+
+  Widget _buildResult(
+    BuildContext context,
+    AsyncSnapshot<LessonCompletionReward> snap,
+  ) {
+    if (snap.connectionState != ConnectionState.done) {
+      return const LoadingIndicator();
+    }
+    if (snap.hasError) return ErrorView(message: '${snap.error}');
+    final reward = snap.data!;
+    final firstCompletion = reward.completion != null;
+    if (firstCompletion) {
+      _companionLine ??= ref
+          .watch(companionLinesProvider)
+          .asData
+          ?.value
+          .lineFor(CompanionReaction.lessonComplete);
+      _fireLessonCompleteOnce();
+    }
+    final moduleCompleted = reward.completion?.moduleCompleted ?? false;
+    return LessonCompletionBody(
+      reward: reward,
+      score: widget.score,
+      companionHandle: firstCompletion ? _companionHandle : null,
+      companionLine: firstCompletion ? _companionLine : null,
+      moduleSummaryId: moduleCompleted ? _moduleId : null,
+    );
+  }
+
+  /// Fires the lesson-complete reaction a single time, after the first frame so
+  /// the companion is mounted and schedules its own auto-revert.
+  void _fireLessonCompleteOnce() {
+    if (_reacted) return;
+    _reacted = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _companionHandle.react(CompanionReaction.lessonComplete);
+    });
   }
 }

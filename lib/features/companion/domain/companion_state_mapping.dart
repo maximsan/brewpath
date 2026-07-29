@@ -1,0 +1,43 @@
+import 'package:coffee_quest/features/companion/domain/companion_mood.dart';
+import 'package:coffee_quest/features/companion/domain/companion_reaction.dart';
+import 'package:coffee_quest/features/companion/domain/roasty_state.dart';
+
+/// Pure mapping from the high-level companion model (a persistent [mood] plus
+/// an optional transient [reaction]) to the low-level [RoastyState] the
+/// renderer understands. A present [reaction] always wins; else [mood] decides.
+///
+/// NOTE: the current Roasty skin has no dedicated "happy" pose, so
+/// [CompanionMood.happy] maps to [RoastyState.idle]. Add a distinct pose to the
+/// skin and update this mapping when one exists.
+RoastyState roastyStateFor({
+  required CompanionMood mood,
+  CompanionReaction? reaction,
+}) {
+  if (reaction != null) return _reactionState(reaction);
+  return _moodState(mood);
+}
+
+RoastyState _reactionState(CompanionReaction reaction) {
+  switch (reaction) {
+    case CompanionReaction.correct:
+      return RoastyState.correct;
+    case CompanionReaction.wrong:
+      return RoastyState.wrong;
+    case CompanionReaction.lessonComplete:
+      return RoastyState.lesson;
+    case CompanionReaction.moduleComplete:
+      return RoastyState.module;
+    case CompanionReaction.xpGained:
+      return RoastyState.xp;
+    case CompanionReaction.cardEarned:
+      return RoastyState.card;
+  }
+}
+
+RoastyState _moodState(CompanionMood mood) {
+  switch (mood) {
+    case CompanionMood.idle:
+    case CompanionMood.happy:
+      return RoastyState.idle;
+  }
+}

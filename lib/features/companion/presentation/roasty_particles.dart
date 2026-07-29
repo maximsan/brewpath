@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
-import 'package:coffee_quest/features/onboarding/presentation/widgets/roasty_faces.dart';
-import 'package:coffee_quest/features/onboarding/presentation/widgets/roasty_state.dart';
+import 'package:coffee_quest/features/companion/domain/roasty_state.dart';
+import 'package:coffee_quest/features/companion/presentation/roasty_faces.dart';
 import 'package:flutter/material.dart';
 
 // The front particle dispatch handles the states with particles and defaults

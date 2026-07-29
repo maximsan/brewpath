@@ -1,5 +1,8 @@
 import 'package:coffee_quest/core/constants/app_strings.dart';
 import 'package:coffee_quest/core/utils/module_icons.dart';
+import 'package:coffee_quest/features/companion/presentation/companion.dart';
+import 'package:coffee_quest/features/companion/presentation/companion_bubble.dart';
+import 'package:coffee_quest/features/companion/presentation/companion_handle.dart';
 import 'package:coffee_quest/features/lessons/domain/lesson_completion_service.dart';
 import 'package:coffee_quest/features/lessons/presentation/lesson_completion_reward.dart';
 import 'package:coffee_quest/shared/models/coffee_card_model.dart';
@@ -15,6 +18,9 @@ class LessonCompletionBody extends StatelessWidget {
     required this.reward,
     required this.score,
     super.key,
+    this.companionHandle,
+    this.companionLine,
+    this.moduleSummaryId,
   });
 
   /// The loaded reward to render.
@@ -22,6 +28,17 @@ class LessonCompletionBody extends StatelessWidget {
 
   /// First-try accuracy of the run (0–100); shown for practice runs.
   final int score;
+
+  /// Drives the celebratory companion on the first-completion path. When null
+  /// (review / practice runs) a static badge is shown instead.
+  final CompanionHandle? companionHandle;
+
+  /// Optional speech line shown in the companion's bubble.
+  final String? companionLine;
+
+  /// When set, Continue routes to the module-summary recap for this module id
+  /// (the lesson just completed its module); otherwise it returns to Learn.
+  final String? moduleSummaryId;
 
   @override
   Widget build(BuildContext context) {
@@ -35,13 +52,22 @@ class LessonCompletionBody extends StatelessWidget {
             ..._content(context),
             const SizedBox(height: 32),
             FilledButton(
-              onPressed: () => context.go('/learn'),
+              onPressed: () => _onContinue(context),
               child: const Text(AppStrings.continueLabel),
             ),
           ],
         ),
       ),
     );
+  }
+
+  void _onContinue(BuildContext context) {
+    final moduleId = moduleSummaryId;
+    if (moduleId != null) {
+      context.goNamed('moduleSummary', pathParameters: {'moduleId': moduleId});
+    } else {
+      context.go('/learn');
+    }
   }
 
   List<Widget> _content(BuildContext context) {
@@ -59,7 +85,7 @@ class LessonCompletionBody extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     return [
-      const _HeroBadge(icon: Icons.celebration),
+      _CompletionHero(handle: companionHandle, line: companionLine),
       const SizedBox(height: 20),
       Text(
         'Lesson complete!',
@@ -158,6 +184,33 @@ class LessonCompletionBody extends StatelessWidget {
         ),
       ),
     ];
+  }
+}
+
+/// The first-completion hero: the celebratory companion (with a speech bubble
+/// when a line is available), falling back to the static badge if no handle is
+/// supplied.
+class _CompletionHero extends StatelessWidget {
+  const _CompletionHero({this.handle, this.line});
+
+  static const double _companionSize = 140;
+
+  final CompanionHandle? handle;
+  final String? line;
+
+  @override
+  Widget build(BuildContext context) {
+    final handle = this.handle;
+    if (handle == null) {
+      return const _HeroBadge(icon: Icons.celebration);
+    }
+    final companion = Companion(handle: handle, size: _companionSize);
+    final line = this.line;
+    return Center(
+      child: line == null
+          ? companion
+          : CompanionBubble(text: line, child: companion),
+    );
   }
 }
 
