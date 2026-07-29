@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Concept Card — Fill the sentence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#1A130E; --surface:#251B14; --surface-2:#30231A;
+    --ink:#F3E7D2; --ink-mute:#B59E84; --rule:#44321E;
+    --accent:#E07A4F; --accent-ink:#1A130E; --sage:#97A285; --berry:#C75450; --warn:#E6A35C;
+    --r:14px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{margin:0;min-height:100vh;background:#2a2622;color:var(--ink);font-family:'IBM Plex Sans',sans-serif;display:flex;align-items:center;justify-content:center;padding:40px;}
+  a{color:var(--accent);} a:hover{color:var(--warn);}
+  .ff-display{font-family:'Fraunces',serif;font-optical-sizing:auto;}
+
+  .phone{width:390px;height:760px;border-radius:44px;background:#000;padding:11px;
+    box-shadow:0 40px 80px -20px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.05);}
+  .screen{width:100%;height:100%;border-radius:34px;background:var(--bg);overflow:hidden;position:relative;display:flex;flex-direction:column;}
+  .statusbar{display:flex;justify-content:space-between;align-items:center;padding:14px 26px 0;font-size:14px;font-weight:600;color:var(--ink);}
+  .statusbar .dots{display:flex;gap:5px;align-items:center;opacity:.85;}
+  .statusbar .dots span{width:6px;height:6px;border-radius:50%;background:var(--ink);}
+  .lesson-progress{display:flex;align-items:center;gap:12px;padding:16px 24px 0;}
+  .lesson-progress .bar{flex:1;height:5px;border-radius:3px;background:var(--surface-2);overflow:hidden;}
+  .lesson-progress .bar i{display:block;height:100%;width:45%;background:var(--accent);border-radius:3px;}
+  .lesson-progress .x{color:var(--ink-mute);font-size:18px;line-height:1;}
+  .card{flex:1;display:flex;flex-direction:column;padding:26px 24px 22px;min-height:0;}
+
+  .cue{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);
+    border:1px solid color-mix(in oklab,var(--accent) 40%,transparent);background:color-mix(in oklab,var(--accent) 10%,transparent);border-radius:999px;padding:6px 12px;align-self:flex-start;}
+  .cue .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);}
+
+  h2.title{font-size:28px;font-weight:400;line-height:1.1;letter-spacing:-.01em;margin:14px 0 0;color:var(--ink);}
+  .prose{font-size:16px;line-height:1.7;color:var(--ink);margin-top:18px;text-wrap:pretty;}
+
+  .blank{display:inline-flex;align-items:center;vertical-align:baseline;}
+  .slot{font-family:'IBM Plex Mono',monospace;font-size:15px;color:var(--ink-mute);border-bottom:2px dashed color-mix(in oklab,var(--accent) 55%,var(--rule));
+    padding:0 6px 1px;min-width:78px;text-align:center;transition:all .2s;}
+  .slot.filled{color:var(--sage);border-bottom-color:var(--sage);border-bottom-style:solid;}
+  .slot.filled-wrong{color:var(--warn);border-bottom-color:var(--warn);border-bottom-style:solid;}
+
+  .cbank{margin-top:26px;display:flex;flex-direction:column;gap:12px;}
+  .cbank .rl{font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:8px;}
+  .cbank .group+.group{margin-top:6px;}
+  .opts{display:flex;gap:10px;}
+  /* mirrors .mcq-choice used across the app */
+  .mcq-choice{flex:1;display:block;text-align:center;padding:15px 16px;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);
+    font-family:'IBM Plex Sans',sans-serif;font-size:15px;font-weight:500;color:var(--ink);cursor:pointer;transition:all 150ms ease;}
+  .mcq-choice.correct{border-color:var(--sage);background:color-mix(in oklab,var(--sage) 12%,var(--surface));color:var(--ink);}
+  .mcq-choice.incorrect{border-color:var(--berry);background:color-mix(in oklab,var(--berry) 8%,var(--surface));}
+  .mcq-choice:disabled{cursor:default;}
+  .group.solved .mcq-choice:not(.correct):not(.incorrect){opacity:.4;}
+
+  .btn{appearance:none;border:none;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;font-weight:500;font-size:15px;border-radius:999px;padding:16px;width:100%;transition:transform .12s,opacity .12s;}
+  .btn:active{transform:scale(.98);}
+  .btn-primary{background:var(--accent);color:var(--accent-ink);}
+  .btn-primary:disabled{opacity:.35;cursor:not-allowed;}
+  .spacer{flex:1;}
+  .foot{padding-top:20px;}
+</style>
+</head>
+<body>
+  <div class="phone"><div class="screen">
+    <div class="statusbar"><span>9:41</span><span class="dots"><span></span><span></span><span></span></span></div>
+    <div class="lesson-progress"><span class="x">&times;</span><div class="bar"><i></i></div></div>
+    <div class="card" id="card">
+      <span class="cue"><span class="dot"></span>Complete it</span>
+      <h2 class="title ff-display">Arabica</h2>
+      <p class="prose">About 60% of the world&rsquo;s coffee. It grows at
+        <span class="blank"><span class="slot" data-slot="0">______</span></span>
+        elevations in
+        <span class="blank"><span class="slot" data-slot="1">______</span></span>
+        air &mdash; sweeter and more aromatic for it.</p>
+      <div class="cbank">
+        <div class="group" data-slot="0" data-answer="higher">
+          <div class="rl">Elevation</div>
+          <div class="opts"><button class="mcq-choice" data-v="lower">lower</button><button class="mcq-choice" data-v="higher">higher</button></div>
+        </div>
+        <div class="group" data-slot="1" data-answer="cooler">
+          <div class="rl">Air</div>
+          <div class="opts"><button class="mcq-choice" data-v="warmer">warmer</button><button class="mcq-choice" data-v="cooler">cooler</button></div>
+        </div>
+      </div>
+      <div class="spacer"></div>
+      <div class="foot"><button class="btn btn-primary" disabled>Continue</button></div>
+    </div>
+  </div></div>
+
+<script>
+(function(){
+  const card=document.getElementById('card');
+  const groups=[...card.querySelectorAll('.group')];
+  const cont=card.querySelector('.btn-primary');
+  const chk=()=>cont.disabled=!groups.every(g=>g.classList.contains('solved'));
+
+  groups.forEach(g=>{
+    const answer=g.dataset.answer;
+    const slot=card.querySelector('.slot[data-slot="'+g.dataset.slot+'"]');
+    g.querySelectorAll('.mcq-choice').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        if(g.classList.contains('solved'))return;
+        g.classList.add('solved');
+        const right=btn.dataset.v===answer;
+        btn.classList.add(right?'correct':'incorrect');
+        // always surface the correct answer
+        g.querySelectorAll('.mcq-choice').forEach(b=>{
+          if(b.dataset.v===answer)b.classList.add('correct');
+          b.disabled=true;
+        });
+        slot.textContent=answer;slot.classList.add(right?'filled':'filled-wrong');
+        chk();
+      });
+    });
+  });
+})();
+</script>
+
+<template id="__bundler_thumbnail">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="#1A130E"/><rect x="150" y="120" width="100" height="160" rx="16" fill="#251B14" stroke="#E07A4F" stroke-width="3"/><circle cx="200" cy="200" r="26" fill="#E07A4F"/><path d="M188 200l9 9 16-18" stroke="#1A130E" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</template>
+</body>
+</html>

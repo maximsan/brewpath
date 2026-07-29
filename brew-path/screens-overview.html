@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>BrewPath — All Screens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #1a1612; color: #EDE6D6;
+    font-family: 'IBM Plex Sans', sans-serif; }
+  .page { padding: 56px 48px 80px; }
+  .head { max-width: 1100px; margin: 0 auto 40px; }
+  .smallcaps { font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: #8C9089; margin-bottom: 12px; }
+  h1 { font-family: 'Fraunces', serif; font-weight: 400; font-size: 42px;
+    line-height: 1.05; letter-spacing: -0.02em; margin: 0; }
+  .sub { color: #8C9089; font-size: 15px; line-height: 1.5; margin-top: 12px; max-width: 540px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 48px 32px; max-width: 1400px; margin: 0 auto; }
+  .frame { display: flex; flex-direction: column; align-items: center; }
+  .label { font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    letter-spacing: 0.18em; text-transform: uppercase; color: #8C9089;
+    margin-top: 16px; text-align: center; }
+  .label .num { color: #D9694C; margin-right: 8px; }
+  .label .name { color: #EDE6D6; font-family: 'Fraunces', serif; font-size: 16px;
+    letter-spacing: -0.01em; text-transform: none; display: block; margin-top: 4px; }
+  .phone-shell { width: 320px; height: 694px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.45); border-radius: 46px;
+    overflow: hidden; background: #221d18; position: relative; }
+  .phone-shell iframe { width: 100%; height: 100%; border: 0;
+    background: transparent; display: block; pointer-events: auto; }
+  .phone-shell .placeholder { position: absolute; inset: 0; display: flex;
+    align-items: center; justify-content: center;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: #5a554d; }
+  a.live { color: #D9694C; text-decoration: none; font-size: 13px;
+    border: 1px solid #232A25; padding: 8px 14px; border-radius: 2px;
+    display: inline-block; }
+  a.live:hover { background: #232A25; }
+  .links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+
+  /* ── v1 / v2 scope marking ─────────────────────────────── */
+  /* Deferred (v2) surfaces are dimmed and flagged so it's unambiguous which
+     screens are NOT part of the v1 cut. */
+  .legend { display: flex; align-items: center; gap: 18px; margin-top: 22px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: #8C9089; flex-wrap: wrap; }
+  .legend .key { display: inline-flex; align-items: center; gap: 8px; }
+  .legend .swatch { width: 22px; height: 14px; border-radius: 2px; flex-shrink: 0; }
+  .legend .swatch.v1 { background: #2a2622; border: 1px solid #3a352e; }
+  .legend .swatch.v2 { background: #E6A35C; }
+
+  .badge-v2 { position: absolute; top: 12px; left: 12px; z-index: 6;
+    font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 500;
+    letter-spacing: 0.16em; text-transform: uppercase; color: #1a1612;
+    background: #E6A35C; padding: 4px 9px; border-radius: 2px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.4); }
+  .frame.v2 .phone-shell iframe { opacity: 0.5; filter: grayscale(0.35); transition: opacity 200ms ease, filter 200ms ease; }
+  .frame.v2:hover .phone-shell iframe { opacity: 0.92; filter: none; }
+  .frame.v2 .phone-shell { box-shadow: 0 30px 60px rgba(0,0,0,0.45), inset 0 0 0 1.5px rgba(230,163,92,0.55); }
+  .label .v2tag { display: block; margin-top: 4px; color: #E6A35C;
+    font-family: 'IBM Plex Mono', monospace; font-size: 9px; letter-spacing: 0.16em; }
+
+  a.live.v2 { color: #E6A35C; border-color: rgba(230,163,92,0.4); }
+  a.live.v2:hover { background: rgba(230,163,92,0.12); }
+  a.live.v2::after { content: 'V2'; margin-left: 8px; font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; letter-spacing: 0.14em; color: #1a1612; background: #E6A35C;
+    padding: 1px 5px; border-radius: 2px; vertical-align: middle; }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="head">
+      <div class="smallcaps">BREWPATH · DESIGN OVERVIEW</div>
+      <h1>Every screen, side by side.</h1>
+      <p class="sub">Each tile is a live, interactive frame of the prototype routed to a single screen. Tap inside to use it; or open the full prototype to navigate naturally. Screens flagged <b style="color:#E6A35C;">V2</b> are deferred out of the v1 cut (Coffee Atlas, Coffee Duel, rewarded-ad trials, the perfect-module gift, and the onboarding question flow) — they're shown here for reference but are not part of the first release.</p>
+      <div class="links">
+        <a class="live" href="index.html">Open full prototype →</a>
+        <a class="live v2" href="onboarding.html">Onboarding walkthrough →</a>
+        <a class="live" href="lesson.html">Lesson walkthrough →</a>
+        <a class="live" href="module.html">Module walkthrough →</a>
+        <a class="live" href="challenge.html">Brew Challenge walkthrough →</a>
+        <a class="live v2" href="atlas.html">Coffee Atlas walkthrough →</a>
+        <a class="live" href="dictionary.html">Coffee Dictionary walkthrough →</a>
+        <a class="live v2" href="duel.html">Coffee Duel walkthrough →</a>
+        <a class="live" href="customize.html">Customize Studio walkthrough →</a>
+        <a class="live" href="mascot-animations.html">Roasty in motion →</a>
+      </div>
+      <div class="legend">
+        <span class="key"><span class="swatch v1"></span>In v1</span>
+        <span class="key"><span class="swatch v2"></span>Deferred to v2 · not in v1</span>
+      </div>
+    </div>
+
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <script>
+    const SCREENS = [
+      ['loading',          '00',  'Loading'],
+      ['welcome',          '01',  'Welcome'],
+      ['learn',            '04',  'Today'],
+      ['today-challenge',  '04a', 'Today · Brew challenge'],
+      ['today-challenge-done','04b','Today · Challenge done'],
+      ['path',             '05',  'Path'],
+      ['path-challenge',    '05c', 'Path · Module challenge'],
+      ['module',           '05b', 'Module'],
+      ['cards',            '06',  'Cards'],
+      ['cardsheet',        '07',  'Card detail'],
+      ['card-training',    '07t', 'Card · Visual guide'],
+      ['card-stamp',       '07a', 'Card · Challenge stamp'],
+      ['card-stamp-locked','07b', 'Card · Stamp locked'],
+      ['atlas',            'C',   'Coffee Atlas'],
+      ['dictionary',       'D',   'Coffee Dictionary'],
+      ['profile',          '08',  'Profile'],
+      ['saved',            '08a', 'Saved / favorites'],
+      ['tree',             '08b', 'Tree (grove)'],
+      ['settings',         '08c', 'Settings'],
+      ['about',            '08j', 'About'],
+      ['account',          '08k', 'Account & sync'],
+      ['subscription',     '08l', 'Subscription'],
+      ['rewarded-ad',      '08m', 'Rewarded ad · trial'],
+      ['roasty-gift',      '08n', 'Perfect-module gift'],
+      ['studio',           '08f', 'Customize Studio'],
+      ['lesson',           '09',  'Lesson player'],
+      ['card-predict',     '09g', 'Lesson · Predict card'],
+      ['card-decision',    '09d', 'Lesson · Decision card'],
+      ['card-recall',      '09r', 'Lesson · Recall card'],
+      ['card-practical',   '09p', 'Lesson · Practical card'],
+      ['card-visual',      '09v', 'Lesson · Visual guide'],
+      ['card-tastefix',    '09t', 'Lesson · Taste Fix'],
+      ['lesson-complete',  '10',  'Lesson reward'],
+      ['module-complete',  '11',  'Module reward'],
+      ['module-card',      '12',  'Collectible card'],
+      ['module-challenge', '12a', 'Module Brew Challenge'],
+      ['streak',           '13',  'Streak'],
+      ['duel',             'E',   'Coffee Duel'],
+    ];
+    const grid = document.getElementById('grid');
+
+    // Screens deferred out of the v1 cut (see the v1 Readiness Audit): the two
+    // backend/content features, the rewarded-ad + gift trial layer.
+    const V2_SCREENS = new Set(['atlas', 'rewarded-ad', 'roasty-gift', 'duel']);
+
+    // Native lazy-loading defers offscreen iframes without depending on
+    // IntersectionObserver (which doesn't fire inside the nested preview).
+    // First few tiles load eagerly so the page paints right away.
+    const EAGER = 6;
+    function renderGrid() {
+      grid.innerHTML = '';
+      SCREENS.forEach(([slug, num, name], i) => {
+        const cell = document.createElement('div');
+        const isV2 = V2_SCREENS.has(slug);
+        cell.className = 'frame' + (isV2 ? ' v2' : '');
+        const lazy = i >= EAGER ? ' loading="lazy"' : '';
+        cell.innerHTML = `
+          <div class="phone-shell">
+            ${isV2 ? '<span class="badge-v2">V2 · Not in v1</span>' : ''}
+            <div class="placeholder">${num}</div>
+            <iframe src="index.html?screen=${slug}" title="${name}"${lazy}
+              onload="this.previousElementSibling && this.previousElementSibling.classList.contains('placeholder') && this.previousElementSibling.remove()"></iframe>
+          </div>
+          <div class="label"><span class="num">${num}</span>SCREEN<span class="name">${name}</span>${isV2 ? '<span class="v2tag">Deferred to v2</span>' : ''}</div>
+        `;
+        grid.appendChild(cell);
+      });
+    }
+    renderGrid();
+  </script>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>BrewPath — Lesson Walkthrough</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #1a1612; color: #EDE6D6;
+    font-family: 'IBM Plex Sans', sans-serif; }
+  .page { padding: 56px 48px 96px; }
+  .head { max-width: 1100px; margin: 0 auto 8px; }
+  .smallcaps { font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: #C98A6A; margin-bottom: 12px; }
+  h1 { font-family: 'Fraunces', serif; font-weight: 400; font-size: 42px;
+    line-height: 1.05; letter-spacing: -0.02em; margin: 0; }
+  .sub { color: #8C9089; font-size: 15px; line-height: 1.55; margin-top: 12px; max-width: 620px; }
+  a.live { color: #D9694C; text-decoration: none; font-size: 13px;
+    border: 1px solid #2A2420; padding: 8px 14px; border-radius: 2px;
+    display: inline-block; margin-top: 18px; }
+  a.live:hover { background: #2A2420; }
+
+  .flow { max-width: 1100px; margin: 30px auto 0; display: flex; flex-wrap: wrap;
+    align-items: center; gap: 10px; font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #8C9089; }
+  .flow .step { color: #EDE6D6; }
+  .flow .arrow { color: #5A554D; }
+
+  .section { max-width: 1400px; margin: 76px auto 0; }
+  .section-head { max-width: 1100px; margin: 0 0 36px; display: flex;
+    align-items: flex-end; justify-content: space-between; gap: 24px;
+    border-bottom: 1px solid #2A2420; padding-bottom: 20px; }
+  .section-head .ttl { font-family: 'Fraunces', serif; font-weight: 400;
+    font-size: 28px; letter-spacing: -0.01em; margin: 0; }
+  .section-head .meta { font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: #8C9089; white-space: nowrap; }
+  .section-head .desc { color: #8C9089; font-size: 14px; line-height: 1.5;
+    margin: 8px 0 0; max-width: 540px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 52px 32px; max-width: 1400px; margin: 0 auto; }
+  .frame { display: flex; flex-direction: column; align-items: center; }
+  .phone-shell { width: 300px; height: 651px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.45); border-radius: 44px;
+    overflow: hidden; background: transparent; position: relative; }
+  .phone-shell iframe { width: 100%; height: 100%; border: 0;
+    background: transparent; display: block; pointer-events: auto; }
+  /* Replay control — a walkthrough testing tool, NOT part of the app design.
+     Sits above the frame so animated screens can be re-triggered on demand. */
+  .replay-btn {
+    position: absolute; top: 14px; right: 14px; z-index: 5;
+    display: inline-flex; align-items: center; gap: 7px;
+    appearance: none; cursor: pointer;
+    background: rgba(20,16,12,0.72); backdrop-filter: blur(6px);
+    color: #EDE6D6; border: 1px solid rgba(217,105,76,0.5);
+    border-radius: 999px; padding: 6px 12px 6px 10px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    transition: background 150ms ease, border-color 150ms ease, opacity 150ms ease;
+  }
+  .replay-btn:hover { background: rgba(30,22,16,0.92); border-color: #D9694C; }
+  .replay-btn svg { width: 13px; height: 13px; display: block; }
+  .replay-btn.spinning svg { animation: replaySpin 500ms cubic-bezier(0.4,0,0.2,1); }
+  @keyframes replaySpin { to { transform: rotate(-360deg); } }
+  .caption { margin-top: 16px; width: 300px; }
+  .caption .row { display: flex; align-items: baseline; gap: 10px; }
+  .caption .num { font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.12em; color: #D9694C; flex-shrink: 0; }
+  .caption .name { font-family: 'Fraunces', serif; font-size: 18px;
+    letter-spacing: -0.01em; color: #EDE6D6; }
+  .caption .how { color: #8C9089; font-size: 13px; line-height: 1.5;
+    margin: 7px 0 0; padding-left: 30px; }
+  .caption .tag { font-family: 'IBM Plex Mono', monospace; font-size: 9.5px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: #6E7368;
+    border: 1px solid #2A2420; border-radius: 999px; padding: 3px 9px;
+    margin-left: auto; flex-shrink: 0; align-self: center; }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="head">
+      <div class="smallcaps">BREWPATH · LESSON WALKTHROUGH</div>
+      <h1>One lesson, card by card.</h1>
+      <p class="sub">A lesson is a short stack of cards you swipe through in a few minutes. It opens with a framing card, teaches a couple of concepts, then checks understanding with a run of interactive cards — multiple choice, match, calibrate, order — before landing a single takeaway and paying out the reward. This walkthrough follows the “Arabica vs Robusta” lesson through every card kind. Tap inside any frame to play it.</p>
+      <a class="live" href="screens-overview.html">← Back to all screens</a>
+      <a class="live" href="index.html" style="margin-left:10px;">Open full prototype →</a>
+
+      <div class="flow">
+        <span class="step">Enter</span><span class="arrow">→</span>
+        <span class="step">Teach</span><span class="arrow">→</span>
+        <span class="step">Practice</span><span class="arrow">→</span>
+        <span class="step">Land</span><span class="arrow">→</span>
+        <span class="step">Reward</span>
+      </div>
+    </div>
+
+    <div id="sections"></div>
+  </div>
+
+  <script>
+    const SECTIONS = [
+      {
+        title: 'Enter',
+        meta: '1 STATE · START',
+        desc: 'A lesson is picked from its module — the current lesson is highlighted as the next thing to do. Tapping it drops straight into the card stack.',
+        games: [
+          ['module', 'E1', 'Module overview', 'Module 1 · Beans. The lesson list threaded on a path spine; the current lesson is marked “continue”. Locked lessons wait their turn.', 'MODULE'],
+        ],
+      },
+      {
+        title: 'Teach',
+        meta: '2 STATES · READ',
+        desc: 'The reading cards. An intro frames the lesson in a sentence; concept cards deliver one idea each, with a small cupping-form table of the facts that matter.',
+        games: [
+          ['card-intro',   'T1', 'Intro card',   'The opening beat — lesson number, title, and a single sentence setting up what the next few cards will teach.', 'INTRO'],
+          ['card-concept', 'T2', 'Concept card', 'One idea per card. Body copy with tappable glossary terms, plus a compact fact table (elevation, caffeine) underneath.', 'CONCEPT'],
+        ],
+      },
+      {
+        title: 'Practice',
+        meta: '5 STATES · CHECK',
+        desc: 'The interactive run. Each card is a different question type; a “?” opens how-to-play, Roasty reacts to the answer, and a correct card pays XP. Tap inside to actually play each one.',
+        games: [
+          ['card-mcq',      'P1', 'Multiple choice', 'Pick one answer. The right choice greens, a wrong pick reddens, and Roasty explains either way before you continue.', 'MCQ'],
+          ['card-multi',    'P2', 'Select all',      'More than one answer can be right. Tap every option that belongs, then check the whole set at once — missed answers are flagged.', 'MULTI'],
+          ['card-match',    'P3', 'Match pairs',     'Drag each trait onto its species — or tap one then the other. A connection line snaps in when the pair is right.', 'MATCH'],
+          ['card-slider',   'P4', 'Calibrate',       'Dial the grinder to where you think the answer lands. Checking reveals the acceptable target zone on the track.', 'SLIDER'],
+          ['card-sequence', 'P5', 'Put in order',    'Tap the items into the correct sequence, then submit. Wrong positions show where each item should have gone.', 'SEQUENCE'],
+        ],
+      },
+      {
+        title: 'Land & reward',
+        meta: '4 STATES · FINISH',
+        desc: 'The close. A single takeaway line distils the whole lesson, then the reward beats fire in sequence — XP banked, module completed, a collectible card pressed, and the streak nudged.',
+        games: [
+          ['card-takeaway',    'L1', 'Takeaway',        'The lesson in one line, set large. The button reads “Finish lesson” — the last tap before the reward.', 'TAKEAWAY'],
+          ['lesson-complete',  'L2', 'Lesson reward',   'Roasty celebrates, XP counts up from the old total to the new, and the flavour wheel fills another wedge.', 'REWARD', true],
+          ['module-complete',  'L3', 'Module reward',   'The bigger beat when the final lesson closes a module — the whole module marked done, a heftier XP payout.', 'REWARD', true],
+          ['module-card',      'L4', 'Collectible card', 'The module’s reward: a botanical specimen card pressed into your collection, earned by finishing every lesson.', 'CARD', true],
+          ['streak',           'L5', 'Streak',          'The day counted toward your streak — a gentle nudge to come back tomorrow and keep the run alive.', 'STREAK', true],
+        ],
+      },
+    ];
+
+    const root = document.getElementById('sections');
+    SECTIONS.forEach((sec) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'section';
+      wrap.innerHTML = `
+        <div class="section-head">
+          <div>
+            <div class="ttl">${sec.title}</div>
+            <p class="desc">${sec.desc}</p>
+          </div>
+          <div class="meta">${sec.meta}</div>
+        </div>
+        <div class="grid"></div>
+      `;
+      const grid = wrap.querySelector('.grid');
+      sec.games.forEach(([slug, num, name, how, tag, anim]) => {
+        const cell = document.createElement('div');
+        cell.className = 'frame';
+        const replay = anim ? `
+            <button class="replay-btn" type="button" title="Replay the animation">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v4h4"/>
+              </svg>
+              Replay
+            </button>` : '';
+        cell.innerHTML = `
+          <div class="phone-shell">
+            ${replay}
+            <iframe src="index.html?screen=${slug}" title="${name}" loading="lazy"></iframe>
+          </div>
+          <div class="caption">
+            <div class="row">
+              <span class="num">${num}</span>
+              <span class="name">${name}</span>
+              <span class="tag">${tag}</span>
+            </div>
+            <p class="how">${how}</p>
+          </div>
+        `;
+        if (anim) {
+          const btn = cell.querySelector('.replay-btn');
+          const iframe = cell.querySelector('iframe');
+          btn.addEventListener('click', () => {
+            // Reloading the frame re-mounts the screen, replaying its
+            // on-load animation (XP count-up, tree growth, card flip-in).
+            iframe.src = iframe.src;
+            btn.classList.remove('spinning');
+            void btn.offsetWidth; // restart the spin
+            btn.classList.add('spinning');
+          });
+        }
+        grid.appendChild(cell);
+      });
+      root.appendChild(wrap);
+    });
+  </script>
+</body>
+</html>

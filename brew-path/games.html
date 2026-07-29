@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>BrewPath — Every Game</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #1a1612; color: #EDE6D6;
+    font-family: 'IBM Plex Sans', sans-serif; }
+  .page { padding: 56px 48px 96px; }
+  .head { max-width: 1100px; margin: 0 auto 8px; }
+  .smallcaps { font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: #8C9089; margin-bottom: 12px; }
+  h1 { font-family: 'Fraunces', serif; font-weight: 400; font-size: 42px;
+    line-height: 1.05; letter-spacing: -0.02em; margin: 0; }
+  .sub { color: #8C9089; font-size: 15px; line-height: 1.5; margin-top: 12px; max-width: 560px; }
+  a.live { color: #D9694C; text-decoration: none; font-size: 13px;
+    border: 1px solid #2A2420; padding: 8px 14px; border-radius: 2px;
+    display: inline-block; margin-top: 18px; }
+  a.live:hover { background: #2A2420; }
+
+  /* section banners */
+  .section { max-width: 1400px; margin: 76px auto 0; }
+  .section-head { max-width: 1100px; margin: 0 0 36px; display: flex;
+    align-items: flex-end; justify-content: space-between; gap: 24px;
+    border-bottom: 1px solid #2A2420; padding-bottom: 20px; }
+  .section-head .ttl { font-family: 'Fraunces', serif; font-weight: 400;
+    font-size: 28px; letter-spacing: -0.01em; margin: 0; }
+  .section-head .meta { font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: #8C9089; white-space: nowrap; }
+  .section-head .desc { color: #8C9089; font-size: 14px; line-height: 1.5;
+    margin: 8px 0 0; max-width: 520px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 52px 32px; max-width: 1400px; margin: 0 auto; }
+  .frame { display: flex; flex-direction: column; align-items: center; }
+  .phone-shell { width: 300px; height: 651px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.45); border-radius: 44px;
+    overflow: hidden; background: transparent; position: relative; }
+  .phone-shell iframe { width: 100%; height: 100%; border: 0;
+    background: transparent; display: block; pointer-events: auto; }
+  .caption { margin-top: 16px; width: 300px; }
+  .caption .row { display: flex; align-items: baseline; gap: 10px; }
+  .caption .num { font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.12em; color: #D9694C; flex-shrink: 0; }
+  .caption .name { font-family: 'Fraunces', serif; font-size: 18px;
+    letter-spacing: -0.01em; color: #EDE6D6; }
+  .caption .how { color: #8C9089; font-size: 13px; line-height: 1.5;
+    margin: 7px 0 0; padding-left: 30px; }
+  .caption .tag { font-family: 'IBM Plex Mono', monospace; font-size: 9.5px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: #6E7368;
+    border: 1px solid #2A2420; border-radius: 999px; padding: 3px 9px;
+    margin-left: auto; flex-shrink: 0; align-self: center; }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="head">
+      <div class="smallcaps">BREWPATH · GAME LIBRARY</div>
+      <h1>Every game, end to end.</h1>
+      <p class="sub">One live frame per game type in the flow — the interactive cards inside a lesson, the replayable mini-games, and the dictionary drills. Tap inside any frame to play it. Each row is a category.</p>
+      <a class="live" href="screens-overview.html">← Back to all screens</a>
+    </div>
+
+    <div id="sections"></div>
+  </div>
+
+  <script>
+    // Each game type maps to a deep-link route into the live prototype.
+    const SECTIONS = [
+      {
+        title: 'In-lesson games',
+        meta: '5 TYPES · INSIDE A LESSON',
+        desc: 'Interactive cards woven into every lesson. The player advances through them; answering correctly earns XP and Roasty reacts in the moment.',
+        games: [
+          ['card-mcq',      'L1', 'Multiple choice', 'Pick the one right answer from a set. Correct picks turn green, wrong ones red, and an explanation follows.', 'MCQ'],
+          ['card-multi',    'L2', 'Select all',      'Some questions have more than one right answer. Tap every option you think fits, then check the whole set at once.', 'MULTI'],
+          ['card-match',    'L3', 'Match pairs',     'Drag a trait from the left onto the species it belongs to (or tap one then the other). Matched pairs lock; clear the board to continue.', 'MATCH'],
+          ['card-slider',   'L4', 'Calibrate',       'Drag the slider to where you think the answer lands, then check to see if you hit the target range.', 'SLIDER'],
+          ['card-sequence', 'L5', 'Put in order',    'Tap items in the correct sequence, then submit to reveal which positions you got right and the correct order.', 'SEQUENCE'],
+        ],
+      },
+      {
+        title: 'Mini-games',
+        meta: '3 TYPES · REPLAYABLE',
+        desc: 'Standalone, replayable challenges launched from the Learn tab. Each opens on a how-to-play intro, then runs its own scored round.',
+        games: [
+          ['game-intro',  'M1', 'Match the facts',       'Pair every fact with the right species before the board clears. Pulled from the Arabica vs Robusta lesson.', 'INTRO'],
+          ['game-flavor', 'M2', 'Name the flavor notes', 'Spin the flavor wheel and name what you taste — from broad families down to the exact note.', 'INTRO'],
+          ['game-quiz',   'M3', 'True or false',         'Quick-fire statements about coffee. Decide true or false and keep your streak alive.', 'INTRO'],
+        ],
+      },
+      {
+        title: 'Dictionary games',
+        meta: '2 TYPES · VOCAB DRILLS',
+        desc: 'Lightweight study tools built from the Coffee Dictionary — review saved terms or test recall against the full glossary.',
+        games: [
+          ['flashcards', 'D1', 'Flashcards',       'Your saved terms become a flippable deck. Tap a card to reveal the definition; shuffle to mix it up.', 'STUDY'],
+          ['vocab-game', 'D2', 'Vocab mini-game',  'Read a definition and guess the term it describes from four choices. Six rounds, then a score.', 'QUIZ'],
+        ],
+      },
+    ];
+
+    const root = document.getElementById('sections');
+    SECTIONS.forEach((sec) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'section';
+      wrap.innerHTML = `
+        <div class="section-head">
+          <div>
+            <div class="ttl">${sec.title}</div>
+            <p class="desc">${sec.desc}</p>
+          </div>
+          <div class="meta">${sec.meta}</div>
+        </div>
+        <div class="grid"></div>
+      `;
+      const grid = wrap.querySelector('.grid');
+      sec.games.forEach(([slug, num, name, how, tag]) => {
+        const cell = document.createElement('div');
+        cell.className = 'frame';
+        cell.innerHTML = `
+          <div class="phone-shell">
+            <iframe src="index.html?screen=${slug}" title="${name}" loading="lazy"></iframe>
+          </div>
+          <div class="caption">
+            <div class="row">
+              <span class="num">${num}</span>
+              <span class="name">${name}</span>
+              <span class="tag">${tag}</span>
+            </div>
+            <p class="how">${how}</p>
+          </div>
+        `;
+        grid.appendChild(cell);
+      });
+      root.appendChild(wrap);
+    });
+  </script>
+</body>
+</html>

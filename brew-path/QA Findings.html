@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en" data-mood="dark-roast">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>BrewPath — QA Findings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#F4EFE6; --surface:#FBF7EE; --surface-2:#EFE8DA;
+    --ink:#1B1614; --ink-mute:#6B5F54; --rule:#D8CFBF;
+    --accent:#B8533A; --accent-ink:#FBF7EE;
+    --sage:#5F6E55; --warn:#9A5F1C; --berry:#A8362A; --cream:#7A6A54;
+  }
+  [data-mood="dark-roast"] {
+    --bg:#1A130E; --surface:#251B14; --surface-2:#30231A;
+    --ink:#F3E7D2; --ink-mute:#B59E84; --rule:#44321E;
+    --accent:#E07A4F; --accent-ink:#1A130E;
+    --sage:#97A285; --warn:#E6A35C; --berry:#C75450; --cream:#F0DCB8;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    transition: background 300ms ease, color 300ms ease;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { color: var(--ink); }
+  .ff-display { font-family: 'Fraunces', serif; font-optical-sizing: auto; }
+  .mono { font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; }
+
+  /* topbar */
+  .topbar { position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between;
+    padding:18px 40px; background:color-mix(in oklab, var(--bg) 88%, transparent); backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--rule); }
+  .brand { display:flex; align-items:baseline; gap:14px; }
+  .brand .mark { font-family:'Fraunces',serif; font-size:19px; letter-spacing:-0.01em; }
+  .brand .tag { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:var(--ink-mute); }
+  .theme-toggle { display:flex; gap:4px; background:var(--surface); border:1px solid var(--rule); border-radius:999px; padding:4px; }
+  .theme-toggle button { appearance:none; border:none; background:transparent; cursor:pointer; font-family:'IBM Plex Mono',monospace;
+    font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-mute); padding:7px 14px; border-radius:999px; white-space:nowrap; }
+  .theme-toggle button.active { background:var(--accent); color:var(--accent-ink); }
+
+  .wrap { max-width:1320px; margin:0 auto; padding:0 56px 120px; }
+
+  .hero { padding:8px 56px 8px; max-width:1320px; margin:0 auto; }
+  .hero-inner { padding:40px 0 4px; max-width:760px; }
+  .hero .mono { font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent); }
+  .hero h1 { font-family:'Fraunces',serif; font-weight:400; font-size:50px; line-height:1.03; letter-spacing:-0.025em; margin:14px 0 0; }
+  .hero p { color:var(--ink-mute); font-size:16.5px; line-height:1.6; margin:18px 0 0; text-wrap:pretty; max-width:680px; }
+
+  .section { padding:64px 0 0; scroll-margin-top:84px; }
+  .sec-head { max-width:720px; margin-bottom:28px; }
+  .sec-head .eyebrow { font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent); }
+  .sec-head h2 { font-family:'Fraunces',serif; font-weight:400; font-size:34px; letter-spacing:-0.02em; margin:8px 0 0; }
+  .sec-intro { color:var(--ink-mute); font-size:15px; line-height:1.6; margin:12px 0 0; text-wrap:pretty; }
+
+  @media (max-width:900px) {
+    .wrap { padding:0 24px 100px; }
+    .hero, .topbar { padding-left:24px; padding-right:24px; }
+    .hero h1 { font-size:38px; }
+  }
+.fitem{border:1px solid var(--rule);border-radius:2px;padding:16px 18px;margin-top:10px;background:var(--surface)}
+.fhead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.sev{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;padding:3px 8px;border-radius:999px;white-space:nowrap}
+.sev{border:1px solid transparent}
+.sev.fix{color:var(--ink);background:color-mix(in oklab, var(--berry) 20%, var(--surface));border-color:color-mix(in oklab, var(--berry) 45%, var(--rule))}
+.sev.nit{color:var(--ink);background:color-mix(in oklab, var(--warn) 20%, var(--surface));border-color:color-mix(in oklab, var(--warn) 45%, var(--rule))}
+.sev.note{color:var(--ink-mute);border-color:var(--rule)}
+.sev.clean{color:var(--ink);background:color-mix(in oklab, var(--sage) 20%, var(--surface));border-color:color-mix(in oklab, var(--sage) 45%, var(--rule))}
+.sev.done{color:var(--ink);background:color-mix(in oklab, var(--sage) 20%, var(--surface));border-color:color-mix(in oklab, var(--sage) 45%, var(--rule))}
+.fitem.done{border-left:3px solid var(--sage)}
+.fitem.done .ftitle{color:var(--ink-mute)}
+.fixnote{display:block;margin-top:8px;padding-top:8px;border-top:1px solid var(--rule);color:var(--ink)}
+.fixnote b{color:var(--sage)}
+.ftitle{font-weight:500;font-size:15px;flex:1;min-width:220px;color:var(--ink)}
+.floc{font-size:10.5px;color:var(--ink-mute);letter-spacing:.04em}
+.fbody{font-size:13.5px;line-height:1.62;color:var(--ink-mute);margin-top:9px;text-wrap:pretty}
+.fbody b{color:var(--ink);font-weight:500}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+.ctable{width:100%;border-collapse:collapse;margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:11.5px}
+.ctable th{text-align:left;color:var(--ink-mute);font-weight:400;letter-spacing:.1em;text-transform:uppercase;font-size:9px;padding:0 10px 8px 0;border-bottom:1px solid var(--rule)}
+.ctable td{padding:8px 10px 8px 0;border-bottom:1px solid var(--rule);color:var(--ink)}
+.r-ok{color:var(--sage)}.r-weak{color:var(--warn)}.r-fail{color:var(--berry)}
+.ledger{width:100%;border-collapse:collapse;margin-top:6px}
+.ledger th{text-align:left;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-mute);font-weight:400;padding:0 16px 9px 0;border-bottom:1px solid var(--rule)}
+.ledger td{padding:13px 16px 13px 0;border-bottom:1px solid var(--rule);font-size:13.5px;line-height:1.5;color:var(--ink-mute);vertical-align:baseline;text-wrap:pretty}
+.ledger td:first-child{color:var(--ink);font-weight:500;width:31%}
+.ledger td.loc{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.04em;white-space:nowrap;width:17%}
+.ledger tr:last-child td{border-bottom:none}
+.ledger caption{caption-side:top;text-align:left;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--sage);padding:22px 0 8px}
+@media(max-width:760px){.ledger td.loc{display:none}.ledger th:nth-child(2){display:none}}
+.clean-list{display:grid;grid-template-columns:1fr 1fr;gap:0 34px;margin-top:4px}
+@media(max-width:760px){.clean-list{grid-template-columns:1fr}}
+.cl{padding:14px 0;border-bottom:1px solid var(--rule);display:grid;grid-template-columns:1fr auto;gap:10px;align-items:baseline}
+.cl b{font-weight:500;font-size:14.5px;color:var(--ink)}
+.cl span{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;color:var(--sage);white-space:nowrap}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="brand"><span class="mark">BrewPath</span><span class="tag">QA Findings</span></div>
+<div class="theme-toggle" id="theme-toggle"><button data-mood="dark-roast" class="active">Dark roast</button><button data-mood="cupping">Cupping</button></div></div>
+<div class="hero"><div class="hero-inner">
+<div class="mono">CLOSED &#183; 15 LESSONS &#183; 116 CARDS &#183; 1,445 STRINGS &#183; 42 TERMS &#183; JUL 2026</div>
+<h1>Nothing is open in the build.</h1>
+<p>Two passes ran: one reading the content model, one driving all 97 screen routes. Eleven defects came out of them and all eleven are fixed; cupping&#8217;s contrast was raised to AA. This is now the record of that work &#8212; what is still open sits at the top, and it is judgement rather than code.</p>
+</div></div>
+<div class="wrap"><main>
+<section class="section"><div class="sec-head"><div class="eyebrow">Still open</div><h2>Three deferred surfaces, two accepted contrast calls</h2><p class="sec-intro">Nothing here renders in the v1 cut, or is a decision already taken. Listed so it is not rediscovered later.</p></div>
+<table class="ledger"><tr><th>Item</th><th>Where</th><th>Disposition</th></tr>
+<tr><td>Tap targets under 44px</td><td class="loc">customize.jsx:464, gating.jsx:182</td><td>Backdrop swatches (28px) and the rewarded-ad close (30px). Both behind <span class="mono">isV1</span> &#8212; fix when those surfaces return.</td></tr>
+<tr><td>Rewarded ad hardcodes the dark accent</td><td class="loc">gating.jsx:176</td><td><span class="mono">#E07A4F</span> would be the wrong orange in cupping. v2 surface.</td></tr>
+<tr><td>Atlas smallcaps carry a lowercase &#8220;and&#8221;</td><td class="loc">atlas.jsx:191, 199, 231</td><td>&#8220;ALTITUDE and CLIMATE&#8221; only reads right if the component uppercases it. v2 surface.</td></tr>
+<tr><td>Accent held at 4.23 in cupping</td><td class="loc">--accent</td><td>Short of 4.5 only as small text on <span class="mono">--bg</span>; passes on <span class="mono">--surface</span> where most of it lives. Moving the one brand colour costs more than it buys.</td></tr>
+<tr><td>Berry at 3.86 in dark roast</td><td class="loc">--berry</td><td>The mirror of the cupping problem, far smaller in scope: it reads as the cross mark, not as text.</td></tr>
+<tr><td>Hairlines below 3:1 in both moods</td><td class="loc">--rule</td><td>Decoration, so not a violation &#8212; but this UI leans on edges to carry structure. Worth one look on a real phone at low brightness.</td></tr>
+</table></section>
+
+<section class="section"><div class="sec-head"><div class="eyebrow">Your half</div><h2>What the machine cannot check</h2><p class="sec-intro">Everything below this section is structure. None of it tells you whether the course is any good &#8212; that needs you, and it is the more valuable pass.</p></div>
+<div class="grid2">
+<div class="fitem"><div class="fhead"><span class="sev note">note</span><span class="ftitle">Is each question worth asking</span><span class="floc mono">judgement</span></div><div class="fbody">A card can be structurally perfect and still test a detail that does not matter, or give its answer away through phrasing. Watch for questions where the correct option is simply the longest or most specific &#8212; the commonest tell in authored quizzes.</div></div>
+<div class="fitem"><div class="fhead"><span class="sev note">note</span><span class="ftitle">Do the explanations teach</span><span class="floc mono">judgement</span></div><div class="fbody">Every graded card has an explanation, but I can only confirm one exists. Whether it explains <i>why</i> the wrong answers are wrong is the difference between a quiz and a lesson.</div></div>
+<div class="fitem"><div class="fhead"><span class="sev note">note</span><span class="ftitle">Pacing</span><span class="floc mono">judgement</span></div><div class="fbody">116 cards across 15 lessons averages about 8 per lesson. Whether a particular lesson drags, or stops before it lands, only shows up when you play it.</div></div>
+<div class="fitem"><div class="fhead"><span class="sev note">note</span><span class="ftitle">Real-device feel</span><span class="floc mono">judgement</span></div><div class="fbody">Safe areas, thumb reach, hairline visibility at low brightness, and whether the drill timers feel generous or stressful. None of it is visible in a desktop preview.</div></div>
+</div></section>
+
+<section class="section"><div class="sec-head"><div class="eyebrow">Closed</div><h2>Eleven defects, fixed</h2><p class="sec-intro">The full record, one line each. Five came from the content and token pass, six from the build sweep &#8212; which loaded all 97 routes and crashed on none of them.</p></div>
+<table class="ledger"><caption>Content and tokens</caption><tr><th>Defect</th><th>Where</th><th>Fix</th></tr>
+<tr><td>Sleep &#8220;zzz&#8221; nearly invisible in dark roast</td><td class="loc">roasty.jsx</td><td>Hardcoded the light mood&#8217;s ink-mute, computing to 2.96:1. Now <span class="mono">var(--ink-mute)</span>, equal weight in both moods.</td></tr>
+<tr><td>Celebration glow used the light-mood warn</td><td class="loc">roasty.jsx</td><td>Shimmer, rays, star eyes, sparkles and the points burst take <span class="mono">var(--warn)</span>. Confetti and costume fills stay literal &#8212; those belong to Roasty, not the theme.</td></tr>
+<tr><td>Four strings used straight apostrophes</td><td class="loc">m1l1, m1l2</td><td>Retypeset, with the pair of straight double quotes around &#8220;Bean&#8221;. All 1,445 strings now use typographic marks.</td></tr>
+<tr><td>Header buttons were 42px</td><td class="loc">screens.jsx</td><td>Saved, Dictionary and the Profile gear are 44&#215;44 &#8212; edge controls, least accurate thumbs.</td></tr>
+<tr><td>Danger button bypassed its token</td><td class="loc">settings.jsx</td><td>Now <span class="mono">var(--accent-ink)</span>, so destructive and primary stay in step if the palette moves.</td></tr>
+</table>
+<table class="ledger"><caption>Build sweep &#183; logic and render</caption><tr><th>Defect</th><th>Where</th><th>Fix</th></tr>
+<tr><td>The week strip could lie about your streak</td><td class="loc">screens.jsx</td><td>Filled days were hardcoded Mon&#8211;Fri, so a reset streak still showed five earned days. They now derive from the streak, clipped to the week start, at all three call sites. Verified at 0, 1, 3, 5, 7, 30 and with a freeze in the run.</td></tr>
+<tr><td>Spent freezes refunded themselves weekly</td><td class="loc">app.jsx</td><td>Split into <span class="mono">frozenDays</span> (presentational, weekly) and <span class="mono">freezesSpent</span> (lifetime, clears only on Reset).</td></tr>
+<tr><td>Reward title ran under the flavour stamp</td><td class="loc">rewards.jsx</td><td>Badge and title reserve the gutter with padding instead of a hard cap, so long titles reflow rather than collide.</td></tr>
+<tr><td>The points payout wrapped to two lines</td><td class="loc">rewards.jsx</td><td>&#8220;+10 PTS&#8221; holds on one line in both reward screens.</td></tr>
+<tr><td>A reward without meta rows threw</td><td class="loc">rewards.jsx</td><td>Unguarded <span class="mono">reward.meta.map</span>; the component now tolerates a missing or partial reward mid-transition.</td></tr>
+<tr><td>Dead code in the reward screens</td><td class="loc">rewards.jsx &#183; &#8722;3.4KB</td><td>Unrendered <span class="mono">XPProgress</span>, an uncalled <span class="mono">BeanGlyph</span>, three unused replay handlers, an orphan XP-threshold table, two unreachable palette branches.</td></tr>
+</table>
+<table class="ledger"><caption>Contrast &#183; cupping raised to AA</caption><tr><th>Change</th><th>Where</th><th>Result</th></tr>
+<tr><td>Darkened warn and sage</td><td class="loc">index.html, Design System, ds-content</td><td><span class="mono">--warn #C8843A &#8594; #9A5F1C</span> and <span class="mono">--sage #7A8471 &#8594; #5F6E55</span>, applied to the app and every doc carrying the palette. Hues unchanged, value only.</td></tr>
+</table>
+<table class="ctable"><tr><th>Pair</th><th>Cupping</th><th>Dark roast</th><th>Where it shows</th></tr>
+<tr><td>warn on bg</td><td class="r-ok">4.55 aa</td><td class="r-ok">8.53 ok</td><td>streak flame, fastest-answer callout</td></tr>
+<tr><td>warn on surface</td><td class="r-ok">4.88 aa</td><td class="r-ok">7.83 ok</td><td>completion glow</td></tr>
+<tr><td>sage on bg</td><td class="r-ok">4.76 aa</td><td class="r-ok">6.84 ok</td><td>correct answers, learned terms</td></tr>
+<tr><td>sage on surface</td><td class="r-ok">5.10 aa</td><td class="r-ok">6.28 ok</td><td>pass marks</td></tr>
+<tr><td>accent on bg</td><td class="r-weak">4.23 held</td><td class="r-ok">6.18 ok</td><td>eyebrows, links, current step</td></tr>
+<tr><td>berry on surface</td><td class="r-ok">6.09 ok</td><td class="r-weak">3.86 held</td><td>wrong answers, the cross mark</td></tr>
+</table></section>
+
+<section class="section"><div class="sec-head"><div class="eyebrow">Clean</div><h2>What came back with nothing wrong</h2><p class="sec-intro">Stated explicitly, because &#8220;no findings&#8221; is a result. These are the checks most likely to be hiding a shipping bug.</p></div>
+<div class="clean-list">
+<div class="cl"><b>Answer keys &#8212; exactly one correct, every card</b><span>58 graded</span></div>
+<div class="cl"><b>Match pairs unique, no side missing</b><span>6 cards</span></div>
+<div class="cl"><b>Every blank&#8217;s answer among its own options</b><span>all concept</span></div>
+<div class="cl"><b>Card stacks and module rewards all present</b><span>5 modules</span></div>
+<div class="cl"><b>Dictionary cross-links all resolve</b><span>42 terms</span></div>
+<div class="cl"><b>No literal font sizes outside the tokens</b><span>all screens</span></div>
+<div class="cl"><b>Ampersands only inside a proper name</b><span>whole app</span></div>
+<div class="cl"><b>No double spaces, dot-ellipses or fake em dashes</b><span>1,445 strings</span></div>
+</div></section>
+</main></div>
+<script>(function(){var tg=document.getElementById('theme-toggle');tg.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;document.documentElement.setAttribute('data-mood',b.dataset.mood);tg.querySelectorAll('button').forEach(function(x){x.classList.toggle('active',x===b)})})})();</script>
+</body></html>
