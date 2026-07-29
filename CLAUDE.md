@@ -102,3 +102,20 @@ conventions — follow every rule below on each new or modified file:
   _Run-time flags_ table.
 - **Loading/empty/error states** get `Semantics` labels and respect
   `MediaQuery.disableAnimations` (reduced motion).
+
+## Agent skills
+
+### Issue tracker
+
+GitHub Issues on `maximsan/brewpath`, via the `gh` CLI. See
+[`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md).
+
+### Triage labels
+
+The five canonical triage roles use their default label strings. See
+[`docs/agents/triage-labels.md`](docs/agents/triage-labels.md).
+
+### Domain docs
+
+Single-context: `CONTEXT.md` + `docs/adr/` at the repo root. See
+[`docs/agents/domain.md`](docs/agents/domain.md).
