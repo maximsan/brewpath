@@ -155,10 +155,10 @@ const DICT_TERMS = [
     related: ['extraction', 'brew-ratio'], lesson: 'm5l3' },
   { id: 'pour-over', term: 'Pour-Over', cat: 'brewing', aliases: ['pour-over', 'pour over'],
     short: 'Brewing by pouring hot water through grounds in a filter cone, like a V60 or Chemex.',
-    related: ['bloom', 'immersion', 'gooseneck'], lesson: 'm5l1' },
+    related: ['bloom', 'immersion', 'gooseneck'], lesson: 'm4l5' },
   { id: 'immersion', term: 'Immersion', cat: 'brewing',
     short: 'Brewing by steeping grounds fully in water, like a French press, then separating them.',
-    related: ['pour-over'], lesson: 'm5l1' },
+    related: ['pour-over'], lesson: 'm4l5' },
 
   // ── ESPRESSO ─────────────────────────────────────────────
   { id: 'crema', term: 'Crema', pron: 'KREH-muh', cat: 'espresso',
@@ -245,10 +245,10 @@ const DICT_TERMS = [
 
   { id: 'aeropress', term: 'AeroPress', pron: 'AIR-oh-press', cat: 'equipment',
     short: 'A compact plunger brewer that uses gentle pressure to make a quick, clean cup.',
-    related: ['immersion', 'pour-over'], lesson: 'm5l1' },
+    related: ['immersion', 'pour-over'], lesson: 'm4l5' },
   { id: 'chemex', term: 'Chemex', pron: 'CHEM-ex', cat: 'equipment',
     short: 'An hourglass-shaped pour-over brewer using thick filters for an exceptionally clean cup.',
-    related: ['pour-over'], lesson: 'm5l1' },
+    related: ['pour-over'], lesson: 'm4l5' },
   { id: 'scale', term: 'Scale', cat: 'equipment',
     short: 'A small kitchen scale lets you weigh coffee and water for a repeatable brew ratio.',
     related: ['brew-ratio', 'gooseneck'], lesson: 'm5l1' },
@@ -261,7 +261,7 @@ const DICT_TERMS = [
     short: 'Coffee from one place — a country, region, or even a single farm — rather than a blend.',
     deep: 'Single origins let you taste the character of a specific place and harvest. Blends mix origins for consistency or a target flavour; single origins celebrate difference.',
     example: '“Ethiopia Yirgacheffe” is a single origin; “House Blend” usually isn’t.',
-    related: ['terroir', 'cultivar', 'traceability'], lesson: 'm1l3',
+    related: ['terroir', 'cultivar', 'traceability'], lesson: 'm1l5',
     sources: [{ label: 'James Hoffmann — The World Atlas of Coffee' }],
     check: { q: 'A single-origin coffee comes from…',
       choices: [{ t: 'One defined place', correct: true }, { t: 'A mix of many countries' }, { t: 'A specific roast level' }],
@@ -271,7 +271,7 @@ const DICT_TERMS = [
     short: 'A certification that guarantees farmers a minimum price and community premiums for their coffee.',
     deep: 'Fair Trade sets a price floor to protect growers from volatile markets and adds a premium for community projects. It’s one of several models aiming to make the supply chain fairer.',
     example: 'A Fair Trade label means the co-op was paid at least the guaranteed minimum.',
-    related: ['direct-trade', 'traceability', 'specialty'], lesson: 'm1l3',
+    related: ['direct-trade', 'traceability', 'specialty'], lesson: 'm1l5',
     sources: [{ label: 'Fairtrade International — Standards', url: 'https://www.fairtrade.net/en/why-fairtrade/how-we-do-it/standards.html' }],
     check: { q: 'Fair Trade mainly guarantees…',
       choices: [{ t: 'A minimum price for farmers', correct: true }, { t: 'A darker roast' }, { t: 'Faster shipping' }],
@@ -279,13 +279,13 @@ const DICT_TERMS = [
 
   { id: 'direct-trade', term: 'Direct Trade', cat: 'trade', aliases: ['direct trade'],
     short: 'Roasters buying straight from farmers, often paying above market for quality and relationships.',
-    related: ['fair-trade', 'traceability'], lesson: 'm1l3' },
+    related: ['fair-trade', 'traceability'], lesson: 'm1l5' },
   { id: 'traceability', term: 'Traceability', cat: 'trade',
     short: 'Knowing exactly where a coffee came from, down to the farm or washing station.',
-    related: ['single-origin', 'direct-trade'], lesson: 'm1l3' },
+    related: ['single-origin', 'direct-trade'], lesson: 'm1l5' },
   { id: 'specialty', term: 'Specialty Coffee', cat: 'trade', aliases: ['specialty coffee'],
     short: 'High-quality coffee scoring 80+ points on a 100-point scale, made with care at every step.',
-    related: ['single-origin', 'arabica'], lesson: 'm1l1' },
+    related: ['single-origin', 'arabica'], lesson: 'm1l5' },
 ];
 
 // ── Lookups ─────────────────────────────────────────────────

@@ -63,6 +63,21 @@ const BREW_CHALLENGES = [
     instruction: 'Brew your usual cup, then brew it again with a little more coffee. Notice which one you like better.',
     effort: 'Next brew · 3 min',
     reactions: ['Preferred more coffee', 'Preferred less', 'About the same'] },
+  { id: 'bc-m2l6', type: 'lesson', lessonId: 'm2l6', moduleId: 'm2', cardId: 'c-m2l6',
+    title: 'Blind decaf test',
+    instruction: 'Brew a decaf and a regular coffee, then taste them blind and see whether you can actually tell which is which.',
+    effort: 'Next brews · 5 min',
+    reactions: ['Told them apart', 'Couldn’t tell', 'Only brewed one'] },
+  { id: 'bc-m4l6', type: 'lesson', lessonId: 'm4l6', moduleId: 'm4', cardId: 'c-m4l6',
+    title: 'Fresh vs pre-ground',
+    instruction: 'Grind half your dose now and leave the other half ground overnight. Brew both the same way tomorrow and taste them side by side.',
+    effort: 'Next brews · 5 min',
+    reactions: ['Fresh was clearly better', 'Close, but fresh won', 'Couldn’t tell'] },
+  { id: 'bc-m5l6', type: 'lesson', lessonId: 'm5l6', moduleId: 'm5', cardId: 'c-m5l6',
+    title: 'Brew it by the numbers',
+    instruction: 'Brew one cup with a scale, a ratio and a timer — exactly as the lesson lays out. Just once, properly.',
+    effort: 'Next brew · 5 min',
+    reactions: ['Best cup I’ve made', 'Better than usual', 'About the same'] },
 ];
 
 // Total across the whole roadmap — powers the single Profile stat.

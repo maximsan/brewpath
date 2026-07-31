@@ -13,7 +13,7 @@ Everything below is read out of the prototype source, not invented. Where the pr
 |---|---|
 | App shell, phone frame, design tokens, CSS | `index.html` (1,297 lines) |
 | Top-level state + routing + all flow wiring | `app.jsx` (1,347 lines) |
-| Course content (modules, lessons, cards, collectibles) | `data.jsx` (1,616 lines) |
+| Course content (modules, lessons, cards, collectibles) | `data.jsx` (2,944 lines) |
 | Tab screens, streak, tree, settings shell, mini-game catalog | `screens.jsx` (2,399 lines) |
 | Lesson player + all card renderers + mini-game player | `lesson.jsx` (1,316 lines) |
 | Design-system documentation site | `Design System.html` + `ds-content.js` |
@@ -63,6 +63,7 @@ Locked in `v1 Readiness Audit.html` (June 2026, reconciled July 2026) and enforc
 | **Mood player** | 1 | Delightful extra; ships with Studio depth in v2. |
 | Cosmetic IAPs, weekly-goal setting, data export | — | Explicitly deferred. |
 | Lifetime tier, paid streak protection | — | **Dropped, not deferred.** Reasons recorded in the audit. |
+| **Four future course modules** — Espresso Basics · Milk Drinks · Brewing Gear · Coffee Tasting | 0 built | Not built at all, but **named to users** on the Path tab by `ComingSoonPath` (§4). Unwritten content, not switched-off code. One lesson pulled forward out of Brewing Gear into v1 Grind. |
 
 ### Tab bar
 **v1: four tabs — Learn · Path · Cards · Profile.** Atlas is removed from the tab bar (`app.jsx:560` force-redirects `tab === 'atlas'` back to `learn`). Dictionary and Saved stay as pinned top-right header entries.
@@ -150,12 +151,58 @@ Also in the file: `RoastyLoadingScreen` (branded splash, auto-advances), `Roasty
 | Tab | Screen | Content |
 |---|---|---|
 | **Learn** ("Today") | `LearnTab` | Date header, freeze-save notice, Continue Learning card, active Brew Challenge, saved challenges, Practice Again (collapsible: Lessons, Mini-games) |
-| **Path** | `PathTab` | Vertical module path with lesson nodes, mastery bean fill, brew-challenge nodes, coming-soon modules |
+| **Path** | `PathTab` | Vertical module path with lesson nodes, mastery bean fill, brew-challenge nodes, and the four named coming-soon modules (§4, `ComingSoonPath`) |
 | **Cards** | `CardsTab` | Collectible card grid; tap → `CardSheet` |
 | **Profile** | `ProfileTab` | Tree hero, streak card + week strip, points line, mastery rollup, brew-challenge stat, Studio card, Saved card, joined date |
 
 ### Global header (`AppHeader`)
 Pinned top-right: **Saved** (with count badge, lock badge if gated) and **Dictionary**. Profile variant swaps in a gear → Settings. Duel entry is present but `showDuel={!isV1}`.
+
+Per-tab eyebrow + title (`APP_HEADER_TITLES`, `screens.jsx:719`) — user-visible copy, declared in code rather than content:
+
+| Tab | Eyebrow | Title |
+|---|---|---|
+| Learn | `TODAY` | The date, e.g. "Friday, May 8" (**frozen** to `new Date(2026, 4, 8)` in the prototype — see §5.11) |
+| Path | `YOUR PATH` | Beginner Foundations |
+| Cards | `YOUR DECK` | Collection |
+| Profile | `PROFILE` | Hello, Taster. |
+
+"Beginner Foundations" is the only name the five-module course is given anywhere in the product.
+
+### The roadmap the Path tab shows users (`ComingSoonPath`, `screens.jsx:1155`)
+
+The Path tab does not end at Brew. Below the last module it renders the app's
+**own user-facing roadmap** — four named future modules, declared as a local
+array in the component, not in `data.jsx`:
+
+| id | Title | Category glyph |
+|---|---|---|
+| `espresso` | **Espresso Basics** | `espresso` |
+| `milk` | **Milk Drinks** | `milk` |
+| `gear` | **Brewing Gear** | `equipment` |
+| `tasting` | **Coffee Tasting** | `sensory` |
+
+This is a **product commitment visible to users**, not internal backlog. Treat it
+as content: anything that would move one of these four into v1, or drop it, is a
+change to something users have already been shown.
+
+**Two variants, only one wired up.**
+
+- `compact` — a dashed sage node, the smallcaps line "More coming soon", and the four titles joined by `·`. This is the **only variant rendered** (`screens.jsx:1463`).
+- Full — a dotted trail continuing the path spine, an `ON THE HORIZON` eyebrow, the heading "More coffee adventures coming soon", the lead "New modules on espresso, milk drinks, brewing gear, and tasting skills are planned", and a 2×2 grid of dashed cards, each with its category glyph and a "Coming soon" chip. **Defined but never called** — dead code in the prototype, and a design worth reviewing before it is either built or deleted.
+
+**Relationship to the §5.5 gating rule.** These four are *not* locked `MODULES`
+entries. `syncModuleProgress` locks a module when the previous one is incomplete
+**or its content is unauthored** (`window.LESSONS[m.lessons[0].id]` missing) —
+that rule governs the five modules that exist in data. `ComingSoonPath` is
+separate: a hardcoded teaser for modules with no `MODULES` entry at all. The
+gating rule keeps *unauthored* modules locked; this component advertises
+*unbuilt* ones.
+
+> **v1 scope.** All four are v2. **Coffee Tasting** is where the mobile app's
+> existing Taste module is parked intact. One lesson has been pulled forward out
+> of **Brewing Gear** into v1 Grind — "Choosing your first grinder" (`m4l7`);
+> espresso grinders stay with Espresso Basics.
 
 ### Full route list (90 deep-link states)
 
@@ -203,7 +250,7 @@ Derived from the **best-ever** `{correct, total}` per lesson, as a **percentage*
 Best-ever **never downgrades** on a worse replay (`app.jsx:648`). A replay *can* improve mastery even though it grants no points.
 Graded card kinds that count toward the score: `mcq`, `multi`, `match`, `slider`, `sequence`, `tastefix`, `decision`, `recall` (`lesson.jsx:139`). Ungraded: `intro`, `predict`, `concept`, `practical`, `visual`, `takeaway`.
 
-### 5.3 The Coffee Tree (`data.jsx:1488`)
+### 5.3 The Coffee Tree (`data.jsx:2816`)
 
 - Grows **only** from first-time completion of **core** (main-path) lessons. Replays, challenges, duels and mini-games never grow it.
 - `stage = clamp(1..10, round(1 + (coreDone / coreTotal) * 9))` — 10 stages over 15 core lessons.
@@ -229,15 +276,16 @@ The freeze is a **mechanic, not a setting** — there is deliberately no toggle.
 - Streak is **free forever** — paid streak protection was explicitly dropped.
 - `StreakScreen` + `ShareStreakSheet` (share targets) exist.
 
-### 5.5 Progression gating (`data.jsx:1571`)
+### 5.5 Progression gating (`data.jsx:2899`)
 
 `syncModuleProgress(completedSet)` recomputes on every render:
 - Finished lesson → `complete`; first unfinished in an unlocked module → `current`; rest → `locked`.
-- A module unlocks when the **previous module is fully complete AND its own first lesson is authored** in `LESSONS`. Unauthored future modules stay locked ("coming soon").
+- A module unlocks when the **previous module is fully complete AND its own first lesson is authored** in `LESSONS`. Unauthored future modules stay locked.
+- This rule covers modules that **have a `MODULES` entry**. The four future modules users are shown below the path have no entry at all — they come from `ComingSoonPath` (§4), a separate hardcoded teaser. Do not conflate the two.
 - Module 1 is authored open.
 - Resetting progress re-locks everything correctly.
 
-### 5.6 Collectible cards (`data.jsx:1601`)
+### 5.6 Collectible cards (`data.jsx:2929`)
 
 `syncCollection(completedSet)`:
 - A **lesson card** unlocks when its lesson completes.
@@ -314,49 +362,66 @@ Small, optional **real-life** tasks. They never block learning, streaks, XP, car
 
 ## 6. Content inventory
 
-### 6.1 Course — 5 modules, 15 lessons, 116 cards
+### 6.1 Course — 5 modules, 30 lessons, 239 cards
+
+Lessons are listed in **display order**, which is array position in
+`MODULES[].lessons` — *not* id order. Existing ids never moved when the course
+was restructured, so Roasting opens on `m3l4` and Grind runs `l1 · l2 · l5 · l3
+· l6 · l7`. Four things point at lesson ids (`COLLECTION[].unlock.lesson`, brew
+challenge pointers, dictionary `lesson` fields, mini-game `lessonId`), which is
+why renumbering was ruled out.
 
 | # | Module | Label | Lessons |
 |---|---|---|---|
-| 1 | Beans | BEANS | What coffee actually is · Arabica vs Robusta · What origin means |
-| 2 | Processing | PROCESSING | Washed, natural, honey · Why processing matters · Reading a bag label |
-| 3 | Roasting | ROASTING | Light, medium, dark · First and second crack · Reading a roast date |
-| 4 | Grind | GRIND | Particle size, in plain English · Burr vs blade · Dialing in by taste |
-| 5 | Brew | BREW | The brew ratio · Water, the variable · Tasting your cup |
+| 1 | Beans | BEANS | What coffee actually is · Arabica vs Robusta · What origin means · Why altitude matters · What the shelf promises · Why two Ethiopias taste different |
+| 2 | Processing | PROCESSING | Washed, natural, honey · Why processing matters · Reading a bag label · Drying coffee · What happens in the tank · Decaf, honestly |
+| 3 | Roasting | ROASTING | What roasting does · Light, medium, dark · First and second crack · Reading a roast date · Light vs dark, side by side · How much caffeine are you actually drinking? |
+| 4 | Grind | GRIND | Particle size, in plain English · Burr vs blade · Which grind for which brewer · Dialing in by taste · Why pre-ground never tastes as good · Choosing your first grinder |
+| 5 | Brew | BREW | The brew ratio · Water, the variable · Extraction explained · Choosing a filter · Tasting your cup · Your first good cup |
 
 Every lesson: `xp: 10`, `time: 3–5 min`, 7–10 cards.
 
-**Cards per lesson:** m1l1 8 · m1l2 10 · m1l3 9 · m2l1 8 · m2l2 8 · m2l3 8 · m3l1 8 · m3l2 7 · m3l3 7 · m4l1 7 · m4l2 7 · m4l3 7 · m5l1 7 · m5l2 8 · m5l3 7 = **116**
+**Cards per lesson** (display order): m1l1 8 · m1l2 10 · m1l3 9 · m1l4 8 · m1l5 9 · m1l6 7 · m2l1 8 · m2l2 8 · m2l3 8 · m2l4 8 · m2l5 8 · m2l6 8 · m3l4 8 · m3l1 8 · m3l2 7 · m3l3 7 · m3l5 8 · m3l6 8 · m4l1 7 · m4l2 9 · m4l5 8 · m4l3 7 · m4l6 8 · m4l7 7 · m5l1 7 · m5l2 8 · m5l4 8 · m5l5 8 · m5l3 7 · m5l6 10 = **239**
 
-Content stats from the QA record: **1,445 strings**, all with typographic quotes/dashes; 58 graded cards, all with exactly one correct answer.
+**136 graded cards**, each with exactly one correct answer (`multi` graded as a
+set). All strings carry typographic quotes and dashes.
+
+> **15 of the 30 lessons carry `draft: true`.** Their card kinds, order, grading
+> and rewards are final; their prose is a working draft awaiting the writing
+> pass. The flag is data-only — nothing outside `data.jsx` reads it.
+
+*(The "1,445 strings" figure this section used to quote predates the
+restructure and was measured by an unrecorded method; a straight recursive
+string count over `MODULES`, `LESSONS`, `COLLECTION` and `MODULE_REWARDS` now
+returns ≈3,580, plus ≈505 in `dictionary-data.jsx`.)*
 
 ### 6.2 Card kinds (14 in the lesson player)
 
 | Kind | Count | Graded | What it is |
 |---|---|---|---|
-| `concept` | 25 | no | Teaching card. **Fill-in-the-blank sentence** (tap a word from two choices per blank — the sentence always resolves correctly, so the user always leaves with the right idea) + paragraphs + a meta key/value pair |
-| `predict` | 15 | no | Opening card. A framing body + one binary guess, held at lesson scope |
-| `recall` | 15 | **yes** | "Before you go" — closing check that resolves the opening prediction, plus a one-line takeaway |
-| `mcq` | 15 | **yes** | 4-choice multiple choice + explanation |
-| `decision` | 15 | **yes** | Scenario card ("AT THE SHELF" / "IN THE KITCHEN" / "AT THE BREWER") — a real situation, two options, separate right/wrong explanations, plus a takeaway note |
-| `multi` | 7 | **yes** | Select-all-that-apply, graded as a whole set |
-| `tastefix` | 6 | **yes** | A cup came out wrong — pick the one change that fixes it, watch the cup react |
-| `match` | 6 | **yes** | Drag or tap-tap pairing, several traits can share an answer, animated connector lines |
-| `visual` | 5 | no | Full-bleed visual guide (roast / grind / extraction / ratio spectrums), savable to Saved |
-| `sequence` | 4 | **yes** | Tap items in order, submit, reveal which spots were right |
-| `slider` | 3 | **yes** | Calibrate — drag to a value, check against a target range (incl. a grinder-dial variant) |
-| `practical` | — | no | Hands-on instruction card |
-| `intro` | — | no | Plain framing card |
-| `takeaway` | — | no | Closing statement card |
+| `concept` | 59 | no | Teaching card. **Fill-in-the-blank sentence** (tap a word from two choices per blank — the sentence always resolves correctly, so the user always leaves with the right idea) + paragraphs + a meta key/value pair |
+| `predict` | 30 | no | Opening card. A framing body + one binary guess, held at lesson scope |
+| `recall` | 30 | **yes** | "Before you go" — closing check that resolves the opening prediction, plus a one-line takeaway |
+| `mcq` | 25 | **yes** | 4-choice multiple choice + explanation |
+| `decision` | 27 | **yes** | Scenario card ("AT THE SHELF" / "IN THE KITCHEN" / "AT THE BREWER") — a real situation, two options, separate right/wrong explanations, plus a takeaway note |
+| `multi` | 10 | **yes** | Select-all-that-apply, graded as a whole set |
+| `tastefix` | 8 | **yes** | A cup came out wrong — pick the one change that fixes it, watch the cup react |
+| `match` | 16 | **yes** | Drag or tap-tap pairing, several traits can share an answer, animated connector lines |
+| `visual` | 10 | no | Full-bleed visual guide, savable to Saved. Variants: `roast` · `grind` · `extraction` · `ratio` · `variety` · `caffeine` · `distribution` — the last three are referenced by cards but have no art yet |
+| `sequence` | 11 | **yes** | Tap items in order, submit, reveal which spots were right |
+| `slider` | 9 | **yes** | Calibrate — drag to a value, check against a target range (incl. a grinder-dial variant) |
+| `practical` | 4 | no | Hands-on instruction card. All four are in `m5l6` (*Your first good cup*), the only lesson that uses the kind |
+| `intro` | 0 | no | Plain framing card. **Renderer exists, no authored card anywhere** |
+| `takeaway` | 0 | no | Closing statement card. **Renderer exists, no authored card anywhere** |
 
 Every interactive kind has a `GAME_HELP` entry (title, blurb, 3 numbered steps) surfaced from a "?" bottom-sheet in the lesson top bar.
 
 **Lesson player chrome:** close button, `RoastBean` progress (fills as a roasting bean) + `NN / NN` counter, save-lesson bookmark. Glossary terms inside body copy are auto-linkified and open a `TermPeekSheet` without leaving the lesson.
 
-### 6.3 Collectible cards — 24 total
+### 6.3 Collectible cards — 39 total
 
 - **4 training / visual-guide cards** (earned from the start): Roast Levels, Grind Size, Extraction, Coffee-to-Water Ratio
-- **15 lesson cards** (one per lesson), art kinds: `botanical`, `map`, `specimen`, `dryingbed`, `ferment`, `label`, `roastscale`, `crack`, `calendar`, `gauge`, `droplet`, `spectrum`
+- **30 lesson cards** (one per lesson, no gaps). Art `kind` values in use: `botanical`, `map`, `specimen`, `dryingbed`, `ferment`, `label`, `roastscale`, `crack`, `calendar`, `gauge`, `droplet`, `spectrum`, plus `scales`, `hourglass` and `burrs` which are **referenced but have no `CARD_ART` component yet**
 - **5 module Field Guide cards**: Beans, Processing, Roasting, Grind, Brew
 
 Each card: title, summary, a `fact`, and a `meta` key/value table. Each has bespoke inline-SVG art plus a colour tint. Module rewards (`MODULE_REWARDS`) carry an additional badge string (e.g. `BEANS · COMPLETE`).
@@ -393,7 +458,7 @@ Separate system from lesson cards: own intro → play → results flow, **never*
 
 Each has a blurb + 3 how-to-play steps + its own content bank (`MINI_GAME_CONTENT`). Surfaced under Learn → "Practice again → Mini-games", where the row leads with the *lesson* name and the game name becomes the eyebrow.
 
-### 6.6 Brew Challenges — 9
+### 6.6 Brew Challenges — 12
 
 | id | Type | Title | Effort |
 |---|---|---|---|
@@ -406,8 +471,14 @@ Each has a blurb + 3 how-to-play steps + its own content bank (`MINI_GAME_CONTEN
 | `bc-m3l1` | lesson | Compare two roasts | Next bags · 5 min |
 | `bc-m4l3` | lesson | Move one grind step | Next brew · 3 min |
 | `bc-m5l1` | lesson | Dial your ratio | Next brew · 3 min |
+| `bc-m2l6` | lesson | Blind decaf test | Next brews · 5 min |
+| `bc-m4l6` | lesson | Fresh vs pre-ground | Next brews · 5 min |
+| `bc-m5l6` | lesson | Brew it by the numbers | Next brew · 5 min |
 
-`BREW_TOTAL = 9`, which is what the Profile stat counts against.
+`BREW_TOTAL` derives from `BREW_CHALLENGES.length` (**12**), which is what the
+Profile stat counts against. Challenges exist only where a beginner can honestly
+run the experiment with beans and a brewer they already own — which is why 18 of
+the 30 lessons have none.
 Each has three reaction options for the log sheet (e.g. "Tasted the difference / Hard to tell / Only brewed one").
 
 ### 6.7 Personalization content (Studio)
@@ -532,6 +603,35 @@ Everything else — Roasty, all icons, all card art, the world map, all glyphs �
 1. Wire StoreKit — receipt validation, restore, and a real trial counter (the prototype's is frozen).
 2. Gate the dev **Tweaks panel** out of the production build (`tweaks-panel.jsx`, a build-time `dev` conditional).
 
+**Opened by the 30-lesson restructure:**
+| Item | Where | Disposition |
+|---|---|---|
+| Two collectibles share the title **Fermentation** — `c-m2l2` (on *Why processing matters*) and `c-m2l5` (on the new *What happens in the tank*) | `data.jsx` `COLLECTION` | `c-m2l2` is now misnamed relative to its lesson; renaming it is prose work and was left to the writing pass |
+| Two collectibles share the title **Extraction** — the `tr-extraction` training card and `c-m5l4` | `data.jsx` `COLLECTION` | Same call; the training card is a separate group but both appear in the Cards tab |
+| Three `CARD_ART` kinds referenced with no component: `scales`, `hourglass`, `burrs` | `screens.jsx:1758` | Falls through to the rotated `FlavorStamp`; art is a separate workstream |
+| Three `visual` variants referenced with no art: `variety`, `caffeine`, `distribution` | `data.jsx` `m1l6`, `m3l6`, `m4l2` | Same |
+| `intro` and `takeaway` still have **zero authored cards** across all 239 | `lesson.jsx:211`, `lesson.jsx:1000` | Renderers exist and are unexercised; `practical` left this group when `m5l6` was written |
+
+### Omission sweep (`ComingSoonPath` and siblings)
+
+The `ComingSoonPath` omission prompted a sweep for other **user-visible content
+declared in code rather than in `data.jsx`**. Method: every top-level
+`const NAME = [...]`/`{...}` across the 15 app `.jsx` files, plus every
+component-local array rendered through `.map()`, checked against this document.
+
+**Found:**
+1. **`ComingSoonPath`** — four named future modules, undocumented. Now §4.
+2. **`APP_HEADER_TITLES`** (`screens.jsx:719`) — the four tab eyebrow/title pairs, including "Beginner Foundations", the only name the course has anywhere. Now §4.
+3. **The full `ComingSoonPath` variant is dead code** — defined, never called. Now §4.
+
+**Checked and already documented:** `MINI_GAMES` + `MINI_GAME_CONTENT` (§6.5) ·
+`GAME_HELP` (§6.2) · `TRAINING` (§6.3) · `REMINDER_TIMES`, `FAQ_ITEMS`,
+`PLAN_OPTS` (§6.8, §5.9) · `PLUS_FEATURES` (§5.9) · `ONB_QUESTIONS` (§8, v2) ·
+`ROASTY_ANIM_META` (§3) · `SCREEN_ROUTES` (§4) · `CARD_ART` / `CARD_TINT` (§6.3).
+
+Beyond those, `ComingSoonPath`'s `cards` is the **only** component-local array of
+user-visible titles in the prototype — the pattern that hid it does not recur.
+
 ---
 
 ## 11. Gap-analysis checklist
@@ -577,11 +677,11 @@ Use this as the ticket-generation spine. Each line is independently verifiable a
 - [ ] Streak screen + share sheet
 
 ### Content
-- [ ] 5 modules / 15 lessons / 116 cards / 1,445 strings ported with typographic punctuation intact
+- [ ] 5 modules / 30 lessons / 239 cards ported with typographic punctuation intact
 - [ ] 42 dictionary terms (18 full) + 8 categories + cross-links + sources
-- [ ] 24 collectible cards with bespoke art
+- [ ] 39 collectible cards with bespoke art (23 designs still to draw — see §6.3)
 - [ ] 4 mini-games with content banks
-- [ ] 10 brew challenges
+- [ ] 12 brew challenges
 - [ ] Studio option tables + 5 tree skins
 
 ### Monetization
@@ -608,7 +708,7 @@ Use this as the ticket-generation spine. Each line is independently verifiable a
 
 1. **Design foundation** — tokens, typography, theming, iconography, sheet primitives
 2. **Roasty** — component, 9 animation states, personalization props
-3. **Content pipeline** — port 116 cards / 42 terms / 24 collectibles out of `.jsx` into a real content format
+3. **Content pipeline** — port 239 cards / 42 terms / 39 collectibles out of `.jsx` into a real content format
 4. **Lesson player** — 14 card kinds + help drawer + term linking
 5. **Progression engine** — points, mastery, gating, collectible sync, persistence
 6. **Coffee Tree** — 10 stages, growth rules, animated transitions
