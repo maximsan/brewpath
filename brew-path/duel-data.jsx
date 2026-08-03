@@ -34,7 +34,7 @@ const DUEL_QUESTIONS = {
       explain: 'About 60% Arabica, most of the rest Robusta.' },
     { q: 'Robusta has, versus Arabica, roughly…',
       choices: [{ t: 'Half the caffeine' }, { t: 'The same caffeine' }, { t: 'Twice the caffeine', correct: true }, { t: 'No caffeine' }],
-      explain: 'Robusta is hardier and heavier, with about double the caffeine (~2.4%).' },
+      explain: 'Robusta is tougher and heavier, with about double the caffeine (~2.4%).' },
   ],
   origin: [
     { q: 'Bright, floral, tea-like, often washed. Famously from…',
@@ -108,10 +108,9 @@ const DUEL_QUESTIONS = {
 
 const duelType = (id) => DUEL_TYPES.find(t => t.id === id) || DUEL_TYPES[0];
 
-// ── XP reward model ────────────────────────────────────────
-// A duel is lightweight: a flat entry reward plus a small per-correct bonus,
-// and a win bonus settled at comparison time.
-function duelXp(correct, total) {
+// ── Points reward model ────────────────────────────────────
+// A duel is lightweight: a flat entry reward plus a small per-correct bonus.
+function duelPoints(correct, total) {
   return 15 + correct * 4; // 15…35 for a 5-q duel
 }
 
@@ -187,7 +186,7 @@ const DUEL_RECORDS = {
 window.DUEL_TYPES = DUEL_TYPES;
 window.DUEL_QUESTIONS = DUEL_QUESTIONS;
 window.duelType = duelType;
-window.duelXp = duelXp;
+window.duelPoints = duelPoints;
 window.DUEL_FRIENDS = DUEL_FRIENDS;
 window.DEMO_FRIEND_RUN = DEMO_FRIEND_RUN;
 window.DEMO_YOU_RUN = DEMO_YOU_RUN;

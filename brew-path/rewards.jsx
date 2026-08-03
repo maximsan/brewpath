@@ -1,74 +1,14 @@
-// rewards.jsx — Reward states: XP toast, lesson complete, module complete, module reward card.
+// rewards.jsx — Reward states: lesson complete, module complete, module reward card.
 
 const { useState: useStateR, useEffect: useEffectR } = React;
 
 // ───────────────────────────────────────────────────────────
-// XP Toast — small "+N XP" card that appears briefly after a
-// correct answer or completed mini-game. Self-dismisses; does not
-// interrupt the flow. Floats above the lesson content.
-// ───────────────────────────────────────────────────────────
-function XPToast({ amount, kind = 'xp' }) {
-  if (!amount) return null;
-  return (
-    <div style={{
-      position: 'absolute', top: 96, left: '50%', transform: 'translateX(-50%)',
-      zIndex: 30, pointerEvents: 'none',
-    }}>
-      <style>{`
-        @keyframes xpIn {
-          0%   { opacity: 0; transform: translateY(8px) scale(0.92); }
-          18%  { opacity: 1; transform: translateY(0)   scale(1.06); }
-          30%  { transform: translateY(0)   scale(1); }
-          75%  { opacity: 1; transform: translateY(0)   scale(1); }
-          100% { opacity: 0; transform: translateY(-12px) scale(0.96); }
-        }
-        @keyframes xpShine {
-          0%   { transform: translateX(-120%); opacity: 0; }
-          25%  { opacity: 1; }
-          100% { transform: translateX(120%); opacity: 0; }
-        }
-        .xp-toast {
-          animation: xpIn 1500ms cubic-bezier(0.2, 1.0, 0.3, 1.0) both;
-          position: relative;
-        }
-        .xp-toast::after {
-          content: ''; position: absolute; inset: 0; border-radius: 999px;
-          background: linear-gradient(120deg, transparent 40%, rgba(255,255,255,0.45) 50%, transparent 60%);
-          animation: xpShine 900ms ease-out 200ms both; pointer-events: none;
-        }
-      `}</style>
-      <div className="xp-toast" style={{
-        background: 'var(--accent)',
-        color: 'var(--accent-ink)',
-        padding: '10px 18px',
-        borderRadius: 999,
-        boxShadow: '0 8px 24px color-mix(in oklab, var(--accent) 35%, transparent), 0 2px 6px rgba(0,0,0,0.18)',
-        display: 'flex', alignItems: 'center', gap: 8,
-        overflow: 'hidden',
-      }}>
-        <span style={{
-          width: 22, height: 22, borderRadius: 999,
-          background: 'color-mix(in oklab, var(--accent-ink) 25%, var(--accent))',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <PointsBean size={14} color="var(--accent-ink)" crease="var(--accent)"/>
-        </span>
-        <span className="ff-mono" style={{
-          fontSize: 'var(--t-support)', fontWeight: 500, letterSpacing: '0.06em',
-          textTransform: 'uppercase',
-        }}>+{amount} PTS</span>
-      </div>
-    </div>
-  );
-}
-
-// ───────────────────────────────────────────────────────────
 // Lesson Complete — full screen, tree animates from previous
-// XP state to new XP state. Continue → next lesson.
+// points state to new points state. Continue → next lesson.
 // ───────────────────────────────────────────────────────────
-function LessonCompleteScreen({ lesson, result, freezeEarned = false, lessonState, onPractice, fromStage, toStage, prevXp, newXp, nextPlayable = true, onContinue, onBack, onDuel, brewChallenge, brewChallengeState, onStartChallenge, onNotNowChallenge, onOpenCards }) {
+function LessonCompleteScreen({ lesson, result, freezeEarned = false, lessonState, onPractice, fromStage, toStage, prevPoints, newPoints, nextPlayable = true, onContinue, onBack, onDuel, brewChallenge, brewChallengeState, onStartChallenge, onNotNowChallenge, onOpenCards }) {
   // Tree stages come from CORE-LESSON progress only (fromStage/toStage,
-  // via treeStageFromCore). No XP-derived fallback — single source of truth.
+  // via treeStageFromCore). No points-derived fallback — single source of truth.
   const prevStage = fromStage != null ? fromStage : 1;
   const newStage  = toStage   != null ? toStage   : 1;
 
@@ -81,7 +21,7 @@ function LessonCompleteScreen({ lesson, result, freezeEarned = false, lessonStat
     ? { fg: 'var(--accent)', bg: 'color-mix(in oklab, var(--accent) 12%, var(--surface))', bd: 'color-mix(in oklab, var(--accent) 40%, var(--rule))' }
     : null;
 
-  const earned = newXp - prevXp;
+  const earned = newPoints - prevPoints;
 
   const [phase, setPhase] = useStateR('roasty');
   const [preview, setPreview] = useStateR(false);
@@ -248,7 +188,7 @@ function LessonCompleteScreen({ lesson, result, freezeEarned = false, lessonStat
             <window.CloseMark size={16}/>
           </button>
           <div onClick={(e) => e.stopPropagation()} style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-            <RewardCard reward={lesson.reward} module={lesson} totalXp={newXp}/>
+            <RewardCard reward={lesson.reward} module={lesson}/>
           </div>
         </div>
       )}
@@ -260,11 +200,11 @@ function LessonCompleteScreen({ lesson, result, freezeEarned = false, lessonStat
 // Module Complete — tree growth with a stronger emotional beat.
 // Continue → module reward card.
 // ───────────────────────────────────────────────────────────
-function ModuleCompleteScreen({ module, fromStage, toStage, prevXp, newXp, onContinue, onBack, reward, totalXp, hasNext }) {
+function ModuleCompleteScreen({ module, fromStage, toStage, prevPoints, newPoints, onContinue, onBack, reward, hasNext }) {
   // Tree stages come from CORE-LESSON progress only (single source of truth).
   const prevStage = fromStage != null ? fromStage : 1;
   const newStage  = toStage   != null ? toStage   : 1;
-  const earned = newXp - prevXp;
+  const earned = newPoints - prevPoints;
 
   const [phase, setPhase] = useStateR('roasty');
   const [flipped, setFlipped] = useStateR(false);
@@ -383,7 +323,7 @@ function ModuleCompleteScreen({ module, fromStage, toStage, prevXp, newXp, onCon
               </div>
 
               <div className="px-24" style={{ paddingTop: 22, display: 'flex', justifyContent: 'center', position: 'relative' }}>
-                {half && <RewardCard reward={reward} module={module} totalXp={totalXp}/>}
+                {half && <RewardCard reward={reward} module={module}/>}
               </div>
 
               <div style={{ flex: 1, minHeight: 24 }}/>
@@ -406,7 +346,7 @@ function ModuleCompleteScreen({ module, fromStage, toStage, prevXp, newXp, onCon
 // Module Reward Card — celebratory unlock screen for the
 // collectible card you earn by finishing a module.
 // ───────────────────────────────────────────────────────────
-function ModuleRewardCardScreen({ module, reward, totalXp, onContinue, onBack, hasNext }) {
+function ModuleRewardCardScreen({ module, reward, onContinue, onBack, hasNext }) {
   const [phase, setPhase] = useStateR('roasty');
   if (phase === 'roasty') {
     return <RoastyMoment state="card" eyebrow="REWARD UNLOCKED" title="You earned a card."
@@ -439,7 +379,7 @@ function ModuleRewardCardScreen({ module, reward, totalXp, onContinue, onBack, h
         </div>
 
         <div className="px-24" style={{ paddingTop: 24, display: 'flex', justifyContent: 'center', position: 'relative' }}>
-          <RewardCard reward={reward} module={module} totalXp={totalXp}/>
+          <RewardCard reward={reward} module={module}/>
         </div>
 
         <div style={{ flex: 1, minHeight: 24 }}/>
@@ -454,7 +394,10 @@ function ModuleRewardCardScreen({ module, reward, totalXp, onContinue, onBack, h
   );
 }
 
-function RewardCard({ reward, module, totalXp }) {
+// The card is the module reward, not a receipt. It carries the guide itself —
+// badge, title, summary, spec rows, memorable fact — and deliberately no points
+// total: points are paid per lesson and reported by the completion chip.
+function RewardCard({ reward, module }) {
   const [shown, setShown] = useStateR(false);
   const rows = (reward && reward.meta) || [];
   useEffectR(() => {
@@ -511,7 +454,6 @@ function RewardCard({ reward, module, totalXp }) {
         {rows.map(([k, v], i) => (
           <FormRow key={i} label={k} value={v}/>
         ))}
-        <FormRow label="POINTS EARNED" value={`${totalXp} PTS`}/>
       </div>
 
       <hr className="rule" style={{ marginTop: 16 }}/>
@@ -526,7 +468,6 @@ function RewardCard({ reward, module, totalXp }) {
   );
 }
 
-window.XPToast = XPToast;
 window.LessonCompleteScreen = LessonCompleteScreen;
 window.ModuleCompleteScreen = ModuleCompleteScreen;
 window.ModuleRewardCardScreen = ModuleRewardCardScreen;

@@ -124,8 +124,8 @@ function AtlasMapScreen({ states, favs, styleMode, holdLoading, onOpenOrigin, on
 
       <OriginPeekSheet origin={peekOrigin} state={peekOrigin ? (states[peekOrigin.slug] || 'not-explored') : null}
                        fav={peekOrigin ? favs.indexOf(peekOrigin.slug) >= 0 : false}
-                       onOpen={() => { const s = peek; setPeek(null); onOpenOrigin(s); }}
-                       onActivity={() => { const s = peek; setPeek(null); onOpenActivity(s); }}
+                       onOpen={() => { const slug = peek; setPeek(null); onOpenOrigin(slug); }}
+                       onActivity={() => { const slug = peek; setPeek(null); onOpenActivity(slug); }}
                        onToggleFav={() => peekOrigin && onToggleFav(peekOrigin.slug)}
                        onTasted={() => peekOrigin && onMarkTasted(peekOrigin.slug)}
                        onClose={() => setPeek(null)}/>
@@ -421,4 +421,3 @@ function RegionScreen({ regionId, states, favs, onOpenOrigin, onClose }) {
 window.AtlasMapScreen = AtlasMapScreen;
 window.OriginProfile = OriginProfile;
 window.RegionScreen = RegionScreen;
-window.AtlasStateChip = StateChip;

@@ -2,10 +2,11 @@
 
 const { useState: useStateL, useEffect: useEffectL, useRef: useRefL } = React;
 
-// How-to-play copy for each interactive card, surfaced from the "?" in the
-// top bar as a bottom-sheet drawer. Mirrors the standalone mini-game intros:
-// icon + blurb + numbered steps.
-const GAME_HELP = {
+// How-to-play copy keyed by card KIND (mcq, match, slider…), not by mini-game
+// id — the same entry is reused wherever that kind of card appears, in the
+// lesson player or a mini-game. Surfaced from the "?" beside the card's cue as
+// a bottom-sheet drawer: icon + blurb + numbered steps.
+const CARD_KIND_HELP = {
   mcq: {
     title: 'Multiple choice',
     blurb: 'Read the question and pick the answer you think is right — an explanation follows either way.',
@@ -97,9 +98,9 @@ function HelpDrawer({ open, kind, help, onClose }) {
 // the how-to-play drawer for this card kind. Self-contained (owns its open
 // state + drawer) so it renders identically inside the lesson player and the
 // standalone mini-games, wherever a game card lives.
-function GameCue({ kind, children }) {
+function CardCue({ kind, children }) {
   const [open, setOpen] = useStateL(false);
-  const help = GAME_HELP[kind];
+  const help = CARD_KIND_HELP[kind];
   return (
     <React.Fragment>
       <div className="smallcaps" style={{
@@ -135,10 +136,8 @@ function LessonPlayer({ lessonId, onClose, onComplete, nextLessonId, isFav, onTo
     : 0;
   const [idx, setIdx] = useStateL(startAt);
   const [key, setKey] = useStateL(0); // re-trigger fade on advance
-  const [toast, setToast] = useStateL(null); // { amount, t }
-  const toastTimer = useRefL(null);
   // Track a "perfect" run: count quiz cards and how many were answered
-  // correctly. Each quiz card fires onXp exactly once, and only on success.
+  // correctly. Each quiz card fires onCorrect exactly once, and only on success.
   const correctRef = useRefL(0);
 
   if (!lesson) return null;
@@ -158,8 +157,8 @@ function LessonPlayer({ lessonId, onClose, onComplete, nextLessonId, isFav, onTo
   // A correct answer signals "count it" for the score — it no longer shows a
   // points toast. Points appear only on the result screen (effort/habit), so
   // mid-lesson feedback stays purely qualitative (Roasty's correct/wrong react).
-  const showXp = () => {
-    correctRef.current += 1; // an onXp call == one correctly-answered quiz card
+  const countCorrect = () => {
+    correctRef.current += 1; // one onCorrect call == one correctly-answered quiz card
   };
 
   // wedge progress (6 wedges)
@@ -187,20 +186,20 @@ function LessonPlayer({ lessonId, onClose, onComplete, nextLessonId, isFav, onTo
       <div className="scroll" style={{ paddingTop: 134, paddingBottom: 32, display: 'flex', flexDirection: 'column' }}>
         <div key={key} className="fade-up" style={{ flex: '1 0 auto', display: 'flex', flexDirection: 'column' }}>
           {card.kind === 'predict'  && window.PredictCard && <window.PredictCard card={card} onContinue={advance} onPredict={setPrediction} onTermTap={onTermTap}/>}
-          {card.kind === 'decision' && window.DecisionCard && <window.DecisionCard card={card} onContinue={advance} onXp={showXp} onTermTap={onTermTap}/>}
-          {card.kind === 'recall'   && window.RecallCard && <window.RecallCard card={card} onContinue={advance} onXp={showXp} prediction={prediction}/>}
+          {card.kind === 'decision' && window.DecisionCard && <window.DecisionCard card={card} onContinue={advance} onCorrect={countCorrect} onTermTap={onTermTap}/>}
+          {card.kind === 'recall'   && window.RecallCard && <window.RecallCard card={card} onContinue={advance} onCorrect={countCorrect} prediction={prediction}/>}
           {card.kind === 'concept'  && <ConceptCard card={card} onContinue={advance} onTermTap={onTermTap}/>}
           {card.kind === 'visual'    && window.VisualLessonCard && <window.VisualLessonCard card={card} onContinue={advance}
             saved={!!(favorites && favorites.has('g:' + card.variant))}
             onToggleSave={onToggleFavKey ? () => onToggleFavKey('g:' + card.variant) : null}/>}
-          {card.kind === 'tastefix'  && window.TasteFixCard && <window.TasteFixCard card={card} onContinue={advance} onXp={showXp}/>}
-          {card.kind === 'bagpick'   && window.BagPickCard && <window.BagPickCard card={card} onContinue={advance} onXp={showXp}/>}
+          {card.kind === 'tastefix'  && window.TasteFixCard && <window.TasteFixCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
+          {card.kind === 'bagpick'   && window.BagPickCard && <window.BagPickCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
           {card.kind === 'practical' && window.PracticalCard && <window.PracticalCard card={card} onContinue={advance}/>}
-          {card.kind === 'mcq'      && <MCQCard card={card} onContinue={advance} onXp={showXp}/>}
-          {card.kind === 'multi'    && <MultiCard card={card} onContinue={advance} onXp={showXp}/>}
-          {card.kind === 'match'    && <MatchCard card={card} onContinue={advance} onXp={showXp}/>}
-          {card.kind === 'slider'   && <SliderCard card={card} onContinue={advance} onXp={showXp}/>}
-          {card.kind === 'sequence' && <SequenceCard card={card} onContinue={advance} onXp={showXp}/>}
+          {card.kind === 'mcq'      && <MCQCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
+          {card.kind === 'multi'    && <MultiCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
+          {card.kind === 'match'    && <MatchCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
+          {card.kind === 'slider'   && <SliderCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
+          {card.kind === 'sequence' && <SequenceCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
         </div>
       </div>
     </div>
@@ -278,7 +277,7 @@ function ConceptFillCard({ card, onContinue, onTermTap }) {
 
   return (
     <div className="px-24" style={{ display: 'flex', flexDirection: 'column', flex: '1 0 auto', minHeight: 600 }}>
-      <GameCue kind="fill">Complete the sentence</GameCue>
+      <CardCue kind="fill">Complete the sentence</CardCue>
       <h2 className="ff-display" style={{
         fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.1, letterSpacing: '-0.01em',
         margin: '0 0 4px', color: 'var(--ink)', textWrap: 'pretty',
@@ -357,22 +356,22 @@ function ConceptFillCard({ card, onContinue, onTermTap }) {
   );
 }
 
-function MCQCard({ card, onContinue, onXp }) {
+function MCQCard({ card, onContinue, onCorrect }) {
   const [picked, setPicked] = useStateL(null);
   const correctIdx = card.choices.findIndex(c => c.correct);
   // Render order only — shuffled once per mount so the correct choice is not
-  // always first. Grading, feedback and XP all key off the authored index.
+  // always first. Grading, feedback and scoring all key off the authored index.
   const [order] = useStateL(() => shuffledIdx(card.choices.length));
 
   const handlePick = (i) => {
     if (picked !== null) return;
     setPicked(i);
-    if (i === correctIdx && onXp) onXp(2);
+    if (i === correctIdx && onCorrect) onCorrect();
   };
 
   return (
     <div className="px-24" style={{ display: 'flex', flexDirection: 'column', flex: '1 0 auto', minHeight: 600 }}>
-      <GameCue kind="mcq">Multiple choice · pick one</GameCue>
+      <CardCue kind="mcq">Multiple choice · pick one</CardCue>
       <h2 className="ff-display" style={{
         fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.1, letterSpacing: '-0.01em',
         margin: 0, color: 'var(--ink)', textWrap: 'pretty',
@@ -424,10 +423,10 @@ function MCQCard({ card, onContinue, onXp }) {
   );
 }
 
-function MultiCard({ card, onContinue, onXp }) {
+function MultiCard({ card, onContinue, onCorrect }) {
   const [sel, setSel] = useStateL(() => new Set());
   const [submitted, setSubmitted] = useStateL(false);
-  const [paidXp, setPaidXp] = useStateL(false);
+  const [scored, setScored] = useStateL(false);
   // Render order only — keeps the correct options from clustering at the top.
   const [order] = useStateL(() => shuffledIdx(card.choices.length));
 
@@ -438,7 +437,7 @@ function MultiCard({ card, onContinue, onXp }) {
 
   const toggle = (i) => {
     if (submitted) return;
-    setSel(s => { const n = new Set(s); n.has(i) ? n.delete(i) : n.add(i); return n; });
+    setSel(prev => { const next = new Set(prev); next.has(i) ? next.delete(i) : next.add(i); return next; });
   };
 
   const allRight = sel.size === correctSet.size && [...sel].every(i => correctSet.has(i));
@@ -446,7 +445,7 @@ function MultiCard({ card, onContinue, onXp }) {
   const submit = () => {
     if (submitted) return;
     setSubmitted(true);
-    if (allRight && !paidXp) { setPaidXp(true); onXp && onXp(3); }
+    if (allRight && !scored) { setScored(true); onCorrect && onCorrect(); }
   };
 
   const CheckMark = () => (
@@ -462,7 +461,7 @@ function MultiCard({ card, onContinue, onXp }) {
 
   return (
     <div className="px-24" style={{ display: 'flex', flexDirection: 'column', flex: '1 0 auto', minHeight: 600 }}>
-      <GameCue kind="multi">Select all that apply</GameCue>
+      <CardCue kind="multi">Select all that apply</CardCue>
       <h2 className="ff-display" style={{
         fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.1, letterSpacing: '-0.01em',
         margin: 0, color: 'var(--ink)', textWrap: 'pretty',
@@ -563,7 +562,7 @@ function MatchLine({ x1, y1, x2, y2, color, dashed, animate, arrow }) {
   );
 }
 
-function MatchCard({ card, onContinue, onXp }) {
+function MatchCard({ card, onContinue, onCorrect }) {
   // Right column is the deduped set of answers, so several traits can share
   // one species and the connection lines fan clearly toward it.
   const species = React.useMemo(() => {
@@ -584,7 +583,7 @@ function MatchCard({ card, onContinue, onXp }) {
   const [wrong, setWrong] = useStateL(null);      // { left, right }
   const [snap, setSnap] = useStateL(null);        // right idx that just locked
   const [misses, setMisses] = useStateL(0);       // wrong drops this board
-  const [paidXp, setPaidXp] = useStateL(false);
+  const [scored, setScored] = useStateL(false);
   const [lines, setLines] = useStateL([]);
   const [dims, setDims] = useStateL({ w: 0, h: 0 });
 
@@ -625,7 +624,7 @@ function MatchCard({ card, onContinue, onXp }) {
   // anything else scores nothing, the same rule every other card follows.
   const clean = misses === 0;
   useEffectL(() => {
-    if (allDone && !paidXp) { setPaidXp(true); if (clean) onXp && onXp(3); }
+    if (allDone && !scored) { setScored(true); if (clean) onCorrect && onCorrect(); }
   }, [allDone]);
 
   const localScale = () => {
@@ -695,7 +694,7 @@ function MatchCard({ card, onContinue, onXp }) {
 
   return (
     <div className="px-24" style={{ display: 'flex', flexDirection: 'column', flex: '1 0 auto', minHeight: 600 }}>
-      <GameCue kind="match">Match · drag to pair</GameCue>
+      <CardCue kind="match">Match · drag to pair</CardCue>
       <h2 className="ff-display" style={{
         fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.15, letterSpacing: '-0.01em',
         margin: 0, color: 'var(--ink)', textWrap: 'pretty',
@@ -858,17 +857,17 @@ function GrinderDial({ val, clicks }) {
 // itself is stated above the track, next to the zone it highlights — see
 // SliderCard. Status colour stays on the verdict alone.
 
-function SliderCard({ card, onContinue, onXp }) {
+function SliderCard({ card, onContinue, onCorrect }) {
   const [val, setVal] = useStateL(50);
   const [touched, setTouched] = useStateL(false);
   const [checked, setChecked] = useStateL(false);
-  const [paidXp, setPaidXp] = useStateL(false);
+  const [scored, setScored] = useStateL(false);
   const within = Math.abs(val - card.target) <= card.tolerance;
   const isGrinder = card.leftLabel === 'FINER' && card.rightLabel === 'COARSER';
 
   const handleCheck = () => {
     setChecked(true);
-    if (within && !paidXp) { setPaidXp(true); onXp && onXp(3); }
+    if (within && !scored) { setScored(true); onCorrect && onCorrect(); }
   };
 
   // Simple 5-band descriptive scale so the raw 0–100 value always reads as
@@ -885,7 +884,7 @@ function SliderCard({ card, onContinue, onXp }) {
 
   return (
     <div className="px-24" style={{ display: 'flex', flexDirection: 'column', flex: '1 0 auto', minHeight: 600 }}>
-      <GameCue kind="slider">Calibrate · dial to the target</GameCue>
+      <CardCue kind="slider">Calibrate · dial to the target</CardCue>
       <h2 className="ff-display" style={{
         fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.15, letterSpacing: '-0.01em',
         margin: 0, color: 'var(--ink)', textWrap: 'pretty',
@@ -962,7 +961,7 @@ function SliderCard({ card, onContinue, onXp }) {
   );
 }
 
-function SequenceCard({ card, onContinue, onXp }) {
+function SequenceCard({ card, onContinue, onCorrect }) {
   const [order, setOrder] = useStateL([]); // array of indices in tap order
   // Display order is shuffled on mount so a card authored in its correct order
   // never opens pre-solved. Grading still reads item.order, so this is cosmetic.
@@ -975,7 +974,7 @@ function SequenceCard({ card, onContinue, onXp }) {
     return o;
   });
   const [submitted, setSubmitted] = useStateL(false);
-  const [paidXp, setPaidXp] = useStateL(false);
+  const [scored, setScored] = useStateL(false);
   const allTapped = order.length === card.items.length;
 
   function tap(i) {
@@ -992,7 +991,7 @@ function SequenceCard({ card, onContinue, onXp }) {
 
   const handleSubmit = () => {
     setSubmitted(true);
-    if (isCorrect && onXp && !paidXp) { setPaidXp(true); onXp(3); }
+    if (isCorrect && onCorrect && !scored) { setScored(true); onCorrect(); }
   };
 
   // Correct sequence as a readable string for the reveal.
@@ -1000,7 +999,7 @@ function SequenceCard({ card, onContinue, onXp }) {
 
   return (
     <div className="px-24" style={{ display: 'flex', flexDirection: 'column', flex: '1 0 auto', minHeight: 600 }}>
-      <GameCue kind="sequence">Put in order · tap in sequence</GameCue>
+      <CardCue kind="sequence">Put in order · tap in sequence</CardCue>
       <h2 className="ff-display" style={{
         fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.15, letterSpacing: '-0.01em',
         margin: 0, color: 'var(--ink)', textWrap: 'pretty',
@@ -1089,7 +1088,7 @@ const MINI_GAME_CONTENT = {
     { kind: 'match', prompt: 'Which species? Pair each fact',
       pairs: [
         { l: '~60% of world coffee', r: 'Arabica' },
-        { l: 'Hardier, disease-resistant', r: 'Robusta' },
+        { l: 'Tougher, disease-resistant', r: 'Robusta' },
         { l: 'More delicate acidity', r: 'Arabica' },
         { l: 'Thrives at low elevation', r: 'Robusta' },
       ] },
@@ -1153,8 +1152,11 @@ const MINI_GAME_CONTENT = {
     { kind: 'quiz', statement: 'Dark roasts always have far more caffeine than light roasts',
       answer: false, explain: 'False — roast level barely changes caffeine; by volume light roasts can edge ahead.' },
   ],
-  // Blind bag — call the process from the look of the green bean. Only 'bagpick' cards.
-  'g-bagpick': (typeof BAGPICK_ROUNDS !== 'undefined' ? BAGPICK_ROUNDS : []),
+  // Blind bag — call the process from the look of the green bean. Only 'bagpick'
+  // cards. The rounds are authored next to the bag artwork in bean-anatomy.jsx,
+  // so they resolve on read rather than at eval time — load order can't silently
+  // empty the game.
+  get 'g-bagpick'() { return window.BAGPICK_ROUNDS || []; },
   // Taste Fix — diagnose the cup and pick the fix. Only 'tastefix' cards.
   'g-tastefix': [
     { kind: 'tastefix', tags: ['SOUR', 'THIN'],
@@ -1291,12 +1293,12 @@ const MINI_GAME_CONTENT = {
 };
 
 // True / false statement card.
-function TrueFalseCard({ card, onContinue, onScore }) {
+function TrueFalseCard({ card, onContinue, onCorrect }) {
   const [picked, setPicked] = useStateL(null); // true | false
   const pick = (val) => {
     if (picked !== null) return;
     setPicked(val);
-    onScore && onScore(val === card.answer);
+    if (val === card.answer && onCorrect) onCorrect();
   };
   const isRight = picked !== null && picked === card.answer;
   const btnCls = (val) => {
@@ -1309,7 +1311,7 @@ function TrueFalseCard({ card, onContinue, onScore }) {
   };
   return (
     <div className="px-24" style={{ display: 'flex', flexDirection: 'column', flex: '1 0 auto', minHeight: 600 }}>
-      <GameCue kind="quiz">True or false</GameCue>
+      <CardCue kind="quiz">True or false</CardCue>
       <h2 className="ff-display" style={{
         fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.18, letterSpacing: '-0.01em',
         margin: 0, color: 'var(--ink)', textWrap: 'pretty',
@@ -1345,7 +1347,7 @@ function TrueFalseCard({ card, onContinue, onScore }) {
 }
 
 // Flavor-note card — read the tasting clue, pick the matching note.
-function FlavorNoteCard({ card, onContinue, onScore }) {
+function FlavorNoteCard({ card, onContinue, onCorrect }) {
   const [picked, setPicked] = useStateL(null);
   const correctIdx = card.answer;
   // Render order only — card.answer stays the identity for grading.
@@ -1353,11 +1355,11 @@ function FlavorNoteCard({ card, onContinue, onScore }) {
   const pick = (i) => {
     if (picked !== null) return;
     setPicked(i);
-    onScore && onScore(i === correctIdx);
+    if (i === correctIdx && onCorrect) onCorrect();
   };
   return (
     <div className="px-24" style={{ display: 'flex', flexDirection: 'column', flex: '1 0 auto', minHeight: 600 }}>
-      <GameCue kind="flavor">Tasting · name the note</GameCue>
+      <CardCue kind="flavor">Tasting · name the note</CardCue>
       <h2 className="ff-display" style={{
         fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.1, letterSpacing: '-0.01em',
         margin: 0, color: 'var(--ink)', textWrap: 'pretty',
@@ -1406,36 +1408,39 @@ function FlavorNoteCard({ card, onContinue, onScore }) {
 
 // MiniGamePlayer — runs one standalone game to completion. Plays ONLY the
 // cards authored for that game (all one kind), scores them, and ends on a
-// self-contained results screen. Never touches lesson XP / progression.
+// self-contained results screen. Never touches lesson points / progression.
 function MiniGamePlayer({ game, onClose }) {
   const content = (MINI_GAME_CONTENT[game.id]) || [];
-  const total = content.length;
-  const [idx, setIdx] = useStateL(0);
+  const roundCount = content.length;
+  const [roundIndex, setRoundIndex] = useStateL(0);
   const [key, setKey] = useStateL(0);
   const [score, setScore] = useStateL(0);
   const [done, setDone] = useStateL(false);
   const scoredRef = useRefL(false);
 
-  if (!total) return null;
+  if (!roundCount) return null;
 
   const advance = () => {
-    if (idx + 1 >= total) { setDone(true); return; }
+    if (roundIndex + 1 >= roundCount) { setDone(true); return; }
     scoredRef.current = false;
-    setIdx(idx + 1);
+    setRoundIndex(roundIndex + 1);
     setKey(k => k + 1);
   };
-  const scoreOnce = (ok) => {
+  // Cards report success only — one call means one correctly-answered card, and a
+  // wrong answer simply never calls. Wrong count is roundCount - score, so there is
+  // nothing to report. The ref keeps a card from scoring twice.
+  const countCorrect = () => {
     if (scoredRef.current) return;
     scoredRef.current = true;
-    if (ok) setScore(s => s + 1);
+    setScore(prev => prev + 1);
   };
   const replay = () => {
     scoredRef.current = false;
-    setScore(0); setIdx(0); setKey(k => k + 1); setDone(false);
+    setScore(0); setRoundIndex(0); setKey(k => k + 1); setDone(false);
   };
 
-  const filled = Math.round(((idx + 1) / total) * 6);
-  const card = content[idx];
+  const filled = Math.round(((roundIndex + 1) / roundCount) * 6);
+  const card = content[roundIndex];
 
   const topbar = (progressed) => (
     <div className="lesson-topbar">
@@ -1445,9 +1450,9 @@ function MiniGamePlayer({ game, onClose }) {
         </button>
       </div>
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 10 }}>
-        <RoastBean done={progressed ? total : idx + 1} total={total}/>
+        <RoastBean done={progressed ? roundCount : roundIndex + 1} total={roundCount}/>
         <span className="ff-mono" style={{ fontSize: 'var(--t-label)', letterSpacing: '0.12em', color: 'var(--ink-mute)', textTransform: 'uppercase' }}>
-          {progressed ? `${String(total).padStart(2, '0')} / ${String(total).padStart(2, '0')}` : `${String(idx + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}`}
+          {progressed ? `${String(roundCount).padStart(2, '0')} / ${String(roundCount).padStart(2, '0')}` : `${String(roundIndex + 1).padStart(2, '0')} / ${String(roundCount).padStart(2, '0')}`}
         </span>
       </div>
       <div style={{ justifySelf: 'end', display: 'flex', alignItems: 'center', gap: 8 }}/>
@@ -1455,7 +1460,7 @@ function MiniGamePlayer({ game, onClose }) {
   );
 
   if (done) {
-    const pct = Math.round((score / total) * 100);
+    const pct = Math.round((score / roundCount) * 100);
     const great = pct >= 80;
     return (
       <div className="screen" data-screen-label="Mini-game complete" style={{ background: 'var(--bg)' }}>
@@ -1467,7 +1472,7 @@ function MiniGamePlayer({ game, onClose }) {
             </div>
             <div className="smallcaps" style={{ margin: '24px 0 12px' }}>{game.title}</div>
             <div className="ff-display" style={{ fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1, color: 'var(--ink)' }}>
-              {score}<span style={{ color: 'var(--ink-mute)', fontSize: 'var(--t-title)' }}> / {total}</span>
+              {score}<span style={{ color: 'var(--ink-mute)', fontSize: 'var(--t-title)' }}> / {roundCount}</span>
             </div>
             <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: '18px 0 0', maxWidth: 300, textWrap: 'pretty' }}>
               {great ? 'Sharp palate. You know this one cold.' : pct >= 50 ? 'Solid round — run it back to sharpen up.' : 'Worth another pass. Try again?'}
@@ -1488,13 +1493,13 @@ function MiniGamePlayer({ game, onClose }) {
       {topbar(false)}
       <div className="scroll" style={{ paddingTop: 134, paddingBottom: 32, display: 'flex', flexDirection: 'column' }}>
         <div key={key} className="fade-up" style={{ flex: '1 0 auto', display: 'flex', flexDirection: 'column' }}>
-          {card.kind === 'match'  && <MatchCard card={card} onContinue={advance} onXp={() => scoreOnce(true)}/>}
-          {card.kind === 'tastefix' && window.TasteFixCard && <window.TasteFixCard card={card} onContinue={advance} onXp={() => scoreOnce(true)}/>}
-          {card.kind === 'bagpick' && window.BagPickCard && <window.BagPickCard card={card} onContinue={advance} onXp={() => scoreOnce(true)}/>}
-          {card.kind === 'quiz'   && <TrueFalseCard card={card} onContinue={advance} onScore={scoreOnce}/>}
-          {card.kind === 'flavor' && <FlavorNoteCard card={card} onContinue={advance} onScore={scoreOnce}/>}
-          {card.kind === 'slider' && <SliderCard card={card} onContinue={advance} onXp={() => scoreOnce(true)}/>}
-          {card.kind === 'sequence' && <SequenceCard card={card} onContinue={advance} onXp={() => scoreOnce(true)}/>}
+          {card.kind === 'match'  && <MatchCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
+          {card.kind === 'tastefix' && window.TasteFixCard && <window.TasteFixCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
+          {card.kind === 'bagpick' && window.BagPickCard && <window.BagPickCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
+          {card.kind === 'quiz'   && <TrueFalseCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
+          {card.kind === 'flavor' && <FlavorNoteCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
+          {card.kind === 'slider' && <SliderCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
+          {card.kind === 'sequence' && <SequenceCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
         </div>
       </div>
     </div>

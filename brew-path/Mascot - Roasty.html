@@ -182,7 +182,7 @@
   .roasty .face-wrong,
   .roasty .face-lesson,
   .roasty .face-module,
-  .roasty .face-xp,
+  .roasty .face-points,
   .roasty .face-card,
   .roasty .face-sleep,
   .roasty .face-awake { display: none; }
@@ -192,7 +192,7 @@
   .roasty[data-state="wrong"]   .face-wrong   { display: block; }
   .roasty[data-state="lesson"]  .face-lesson  { display: block; }
   .roasty[data-state="module"]  .face-module  { display: block; }
-  .roasty[data-state="xp"]      .face-xp      { display: block; }
+  .roasty[data-state="points"]      .face-points      { display: block; }
   .roasty[data-state="card"]    .face-card    { display: block; }
   .roasty[data-state="sleep"]   .face-sleep   { display: block; }
   .roasty[data-state="awake"]   .face-awake   { display: block; }
@@ -200,7 +200,7 @@
   /* ====== STATE PARTICLES & DECORATIONS ====== */
   .roasty .confetti,
   .roasty .sparkles,
-  .roasty .xp-burst,
+  .roasty .points-burst,
   .roasty .card-glow,
   .roasty .module-rays,
   .roasty .water-drop,
@@ -210,7 +210,7 @@
   .roasty[data-state="lesson"]  .confetti,
   .roasty[data-state="module"]  .module-rays,
   .roasty[data-state="module"]  .confetti,
-  .roasty[data-state="xp"]      .xp-burst,
+  .roasty[data-state="points"]      .points-burst,
   .roasty[data-state="card"]    .card-glow,
   .roasty[data-state="wrong"]   .wrong-x { display: block; }
 
@@ -288,13 +288,13 @@
   @keyframes ray-spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
   .roasty .module-rays { transform-origin: 100px 140px; animation: ray-spin 8s linear infinite; }
 
-  @keyframes xp-rise {
+  @keyframes points-rise {
     0%   { transform: translateY(0); opacity: 0; }
     20%  { opacity: 1; }
     100% { transform: translateY(-60px); opacity: 0; }
   }
-  .roasty[data-state="xp"] .xp-burst {
-    animation: xp-rise 1.3s ease-out;
+  .roasty[data-state="points"] .points-burst {
+    animation: points-rise 1.3s ease-out;
   }
 
   @keyframes card-shimmer {
@@ -1298,8 +1298,8 @@
         <ellipse cx="100" cy="188" rx="5" ry="4" fill="#C47654" opacity="0.7"/>
       </g>
 
-      <!-- XP — wink -->
-      <g class="face-xp">
+      <!-- Points earned — wink -->
+      <g class="face-points">
         <!-- left eye open -->
         <ellipse cx="80"  cy="148" rx="10" ry="12" fill="#FBF7EE"/>
         <ellipse cx="80"  cy="151" rx="5"  ry="6"  fill="#2A1B12"/>
@@ -1368,10 +1368,10 @@
       </g>
     </g>
 
-    <!-- XP burst (xp state) -->
-    <g class="xp-burst">
+    <!-- Points burst (points state) -->
+    <g class="points-burst">
       <rect x="68" y="42" width="64" height="24" rx="2" fill="#C8843A"/>
-      <text x="100" y="59" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="#FBF7EE" letter-spacing="1">+15 PTS</text>
+      <text x="100" y="59" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="#FBF7EE" letter-spacing="1">+10 PTS</text>
     </g>
 
   </svg>
@@ -1477,7 +1477,7 @@
     { key: 'wrong',   name: 'wrong answer',     meta: 'wobble · concern',      caption: 'tap to replay' },
     { key: 'lesson',  name: 'lesson complete',  meta: 'jump · confetti',       caption: 'tap to replay' },
     { key: 'module',  name: 'module complete',  meta: 'grow · rays',           caption: 'tap to replay' },
-    { key: 'xp',      name: 'Points earned',    meta: 'wink · float',          caption: 'tap to replay' },
+    { key: 'points',      name: 'Points earned',    meta: 'wink · float',          caption: 'tap to replay' },
     { key: 'card',    name: 'card unlocked',    meta: 'shimmer · glow',        caption: 'tap to replay' },
     { key: 'sleep',   name: 'sleeping',         meta: 'loading state',         caption: 'tap to replay' },
   ];

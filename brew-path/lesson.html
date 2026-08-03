@@ -122,7 +122,7 @@
       {
         title: 'Practice',
         meta: '8 STATES · CHECK',
-        desc: 'The interactive run. Each card is a different question type; a “?” opens how-to-play, Roasty reacts to the answer, and a correct card pays XP. Tap inside to actually play each one.',
+        desc: 'The interactive run. Each card is a different question type; a “?” opens how-to-play, Roasty reacts to the answer, and a correct card counts toward the run’s score. Tap inside to actually play each one.',
         games: [
           ['card-mcq',      'P1', 'Multiple choice', 'Pick one answer. The right choice greens, a wrong pick reddens, and Roasty explains either way before you continue.', 'MCQ'],
           ['card-multi',    'P2', 'Select all',      'More than one answer can be right. Tap every option that belongs, then check the whole set at once — missed answers are flagged.', 'MULTI'],
@@ -137,11 +137,11 @@
       {
         title: 'Land & reward',
         meta: '5 STATES · FINISH',
-        desc: 'The close. The recall card lands the lesson in one line and resolves the opening guess, then the reward beats fire in sequence — XP banked, module completed, a collectible card pressed, and the streak nudged.',
+        desc: 'The close. The recall card lands the lesson in one line and resolves the opening guess, then the reward beats fire in sequence — points banked, module completed, a collectible card pressed, and the streak nudged.',
         games: [
           ['card-recall',      'L0', 'Recall card',     'The last question. It answers the guess from the first screen, so the takeaway reads as earned rather than announced.', 'RECALL'],
-          ['lesson-complete',  'L1', 'Lesson reward',   'Roasty celebrates, XP counts up from the old total to the new, and the flavour wheel fills another wedge.', 'REWARD', true],
-          ['module-complete',  'L2', 'Module reward',   'The bigger beat when the final lesson closes a module — the whole module marked done, a heftier XP payout.', 'REWARD', true],
+          ['lesson-complete',  'L1', 'Lesson reward',   'Roasty celebrates, the lesson’s points land, and the tree grows toward its next stage.', 'REWARD', true],
+          ['module-complete',  'L2', 'Module reward',   'The bigger beat when the final lesson closes a module — the whole module marked done and a collectible card pressed — the module’s own reward.', 'REWARD', true],
           ['module-card',      'L3', 'Collectible card', 'The module’s reward: a botanical specimen card pressed into your collection, earned by finishing every lesson.', 'CARD', true],
           ['streak',           'L4', 'Streak',          'The day counted toward your streak — a gentle nudge to come back tomorrow and keep the run alive.', 'STREAK', true],
         ],
@@ -192,7 +192,7 @@
           const iframe = cell.querySelector('iframe');
           btn.addEventListener('click', () => {
             // Reloading the frame re-mounts the screen, replaying its
-            // on-load animation (XP count-up, tree growth, card flip-in).
+            // on-load animation (points landing, tree growth, card flip-in).
             iframe.src = iframe.src;
             btn.classList.remove('spinning');
             void btn.offsetWidth; // restart the spin

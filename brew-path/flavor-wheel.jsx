@@ -4,11 +4,8 @@
 // ── Shared icon-weight tokens ────────────────────────────────
 // ONE source of truth for stroke weight across the whole icon family, so the
 // weight can never drift again. GLYPH_STROKE is the primary outline weight for
-// every 24×24 concept glyph (nav, duel types, dictionary categories);
-// GLYPH_DETAIL is the lighter weight reserved for interior accent lines
-// (steam, veins, gear teeth) — the deliberate within-glyph hierarchy.
+// every 24×24 concept glyph (nav, duel types, dictionary categories).
 window.GLYPH_STROKE = 1.6;
-window.GLYPH_DETAIL = 1.3;
 
 function FlavorWheel({ size = 20, filled = 0, total = 6, color, mute, ring = true, rotate = 0, stroke = 1.8, crease }) {
   const c = color || 'var(--accent)';
@@ -168,7 +165,7 @@ function CoffeeTree({ size = 120 }) {
 }
 
 // CoffeePersona — your tree, painted as a hand-illustrated PNG that
-// advances through 10 growth stages as you rack up XP.
+// advances through 10 growth stages as you earn points.
 //   1 sprout · 2 small sprout · 3 sapling-with-flowerbuds · 4 sapling-fruit
 //   5 yellow-green cherries · 6 mid bush yellow · 7 yellow-orange
 //   8 orange · 9 red · 10 deep-red full canopy
@@ -295,11 +292,7 @@ function AnimatedTree({ fromStage = 1, toStage = 2, size = 240, onDone, delay = 
           80%  { transform: scale(0.98); }
           100% { transform: scale(1); }
         }
-        @keyframes treeStageIn {
-          from { opacity: 0; transform: translateY(8px) scale(0.94); }
-          to   { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        @keyframes leafDrift {
+@keyframes leafDrift {
           0%   { opacity: 0; transform: translate(0,0) rotate(0deg); }
           15%  { opacity: 1; }
           100% { opacity: 0; transform: translate(var(--lx), var(--ly)) rotate(var(--lr)); }
@@ -505,5 +498,5 @@ window.IconCards  = IconCards;
 window.IconLeaf   = IconLeaf;
 
 // Tree growth has a single source of truth: completed core-lesson count,
-// via window.treeStageFromCore (see data.jsx). The old XP-threshold
-// stageFromXp has been retired so the tree never tells two stories.
+// via window.treeStageFromCore (see data.jsx). The old points-threshold
+// stageFromPoints has been retired so the tree never tells two stories.

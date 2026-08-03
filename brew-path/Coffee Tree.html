@@ -146,9 +146,7 @@
   #treeNext { z-index: 2; opacity: 0; }
   .tree-sway { animation: sway 6s ease-in-out infinite; }
   @keyframes sway { 0%,100% { transform: rotate(-0.8deg); } 50% { transform: rotate(0.8deg); } }
-  @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
-  @keyframes bounce {
+@keyframes bounce {
     0% { transform: scale(0.9); } 55% { transform: scale(1.05); }
     78% { transform: scale(0.985); } 100% { transform: scale(1); }
   }
@@ -247,13 +245,13 @@
   }
   .reset-link:hover { color: var(--ink); }
 
-  .xp-chip {
+  .points-chip {
     display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px;
     border: 1px solid var(--rule); border-radius: 999px;
     font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--ink);
     letter-spacing: 0.04em;
   }
-  .xp-chip b { color: var(--accent); font-weight: 500; }
+  .points-chip b { color: var(--accent); font-weight: 500; }
   .caption { color: rgba(255,255,255,0.4); font-family: 'IBM Plex Mono', monospace;
     font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; }
 
@@ -303,13 +301,13 @@
         </div>
 
         <div style="display:flex; justify-content:center; margin-top:14px;">
-          <span class="xp-chip"><b id="xpNow">0</b> OF 5 MODULES</span>
+          <span class="points-chip"><b id="pointsNow">0</b> OF 5 MODULES</span>
         </div>
 
         <div class="px-24" style="padding-top:26px;">
           <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;">
             <span class="smallcaps" id="progLabel">NEXT · FINISH BEANS</span>
-            <span class="ff-mono" id="progXp" style="font-size:12px; color:var(--ink-mute); letter-spacing:0.08em;">0 / 5 MODULES</span>
+            <span class="ff-mono" id="progModules" style="font-size:12px; color:var(--ink-mute); letter-spacing:0.08em;">0 / 5 MODULES</span>
           </div>
           <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
           <div class="ladder" id="ladder" style="margin-top:14px;">
@@ -343,17 +341,17 @@
 
 <script>
 (function(){
-  // Six growth stages, each tied to a cumulative XP number. Stage 0 is the bare
+  // Six growth stages, one per completed module. Stage 0 is the bare
   // seed you start with; each of the five modules, once finished, grows the tree
   // to the next visibly distinct stage. Asset frames 1/2/4/6/8/10 are chosen so
   // every step is a clear jump — sprout → buds → green cherries → ripening → harvest.
   var STAGES = [
-    { asset: 1,  name: 'Seed',       xp: 0,   module: null,         label: 'BEFORE YOU BEGIN' },
-    { asset: 2,  name: 'Sprout',     xp: 30,  module: 'Beans',      label: 'FIRST TWO LEAVES' },
-    { asset: 4,  name: 'Budding',    xp: 66,  module: 'Processing', label: 'BRANCHES & BUDS' },
-    { asset: 6,  name: 'In Flower',  xp: 108, module: 'Roasting',   label: 'CHERRIES SET' },
-    { asset: 8,  name: 'Ripening',   xp: 156, module: 'Grind',      label: 'TURNING ORANGE' },
-    { asset: 10, name: 'Harvest',    xp: 210, module: 'Brew',       label: 'FULL RED CANOPY' },
+    { asset: 1,  name: 'Seed',   module: null,         label: 'BEFORE YOU BEGIN' },
+    { asset: 2,  name: 'Sprout',  module: 'Beans',      label: 'FIRST TWO LEAVES' },
+    { asset: 4,  name: 'Budding',  module: 'Processing', label: 'BRANCHES & BUDS' },
+    { asset: 6,  name: 'In Flower', module: 'Roasting',   label: 'CHERRIES SET' },
+    { asset: 8,  name: 'Ripening', module: 'Grind',      label: 'TURNING ORANGE' },
+    { asset: 10, name: 'Harvest', module: 'Brew',       label: 'FULL RED CANOPY' },
   ];
   var STORE = 'cq-tree-modules';
 
@@ -363,9 +361,9 @@
   var hero = document.getElementById('treeHero');
   var stageName = document.getElementById('stageName');
   var stageCount = document.getElementById('stageCount');
-  var xpNow = document.getElementById('xpNow');
+  var pointsNow = document.getElementById('pointsNow');
   var progLabel = document.getElementById('progLabel');
-  var progXp = document.getElementById('progXp');
+  var progModules = document.getElementById('progModules');
   var progFill = document.getElementById('progFill');
   var ladderSpans = document.getElementById('ladder').children;
   var msWrap = document.getElementById('milestones');
@@ -411,7 +409,7 @@
     base.src = 'assets/trees/' + st.asset + '.png';
     stageName.textContent = st.name;
     stageCount.textContent = 'STAGE ' + (completed + 1) + ' OF 6';
-    xpNow.textContent = completed;
+    pointsNow.textContent = completed;
 
     for (var i = 0; i < ladderSpans.length; i++){
       ladderSpans[i].classList.toggle('on', i <= completed);
@@ -419,14 +417,14 @@
 
     if (completed >= 5){
       progLabel.textContent = 'FULLY GROWN';
-      progXp.textContent = '5 / 5 MODULES';
+      progModules.textContent = '5 / 5 MODULES';
       progFill.style.width = '100%';
       growBtn.textContent = 'Fully grown — harvest ready';
       growBtn.disabled = true;
     } else {
       var nx = STAGES[completed + 1];
       progLabel.textContent = 'NEXT · FINISH ' + nx.module.toUpperCase();
-      progXp.textContent = completed + ' / 5 MODULES';
+      progModules.textContent = completed + ' / 5 MODULES';
       progFill.style.width = ((completed / 5) * 100) + '%';
       growBtn.textContent = 'Finish ' + nx.module;
       growBtn.disabled = false;
@@ -484,7 +482,7 @@
       hero.classList.remove('tree-bounce'); void hero.offsetWidth; hero.classList.add('tree-bounce');
 
       // Advance the module count.
-      xpNow.textContent = completed;
+      pointsNow.textContent = completed;
 
       stageName.textContent = to.name;
       stageName.style.opacity = '1';
@@ -496,12 +494,12 @@
       for (var i = 0; i < ladderSpans.length; i++) ladderSpans[i].classList.toggle('on', i <= completed);
       if (completed >= 5){
         progLabel.textContent = 'FULLY GROWN';
-        progXp.textContent = '5 / 5 MODULES';
+        progModules.textContent = '5 / 5 MODULES';
         progFill.style.width = '100%';
       } else {
         var nx = STAGES[completed + 1];
         progLabel.textContent = 'NEXT · FINISH ' + nx.module.toUpperCase();
-        progXp.textContent = completed + ' / 5 MODULES';
+        progModules.textContent = completed + ' / 5 MODULES';
         progFill.style.width = ((completed / 5) * 100) + '%';
       }
     }, 300);

@@ -74,8 +74,6 @@ window.migrateGrove = (saved) => {
   const legacy = { heirloom: 'daylight', goldenhour: 'goldenhour', moonlit: 'moonlit', blossom: 'daylight', verdant: 'daylight' };
   return { variety: 'arabica', light: legacy[saved.tree] || 'daylight' };
 };
-// Legacy shim — anything still calling skinFilter(id) gets a daylight Arabica.
-window.skinFilter = (id) => window.groveFilter(id, 'daylight');
 
 // ── Roasty option tables (labels live here; the art lives in roasty.jsx) ──
 window.ROAST_OPTS  = [
@@ -123,31 +121,6 @@ function StudioTopbar({ onBack, kind = 'close' }) {
       </button>
       <div/><div/>
     </div>
-  );
-}
-
-function PlusBadge({ style }) {
-  return (
-    <span className="ff-mono" style={{
-      fontSize: 'var(--t-micro)', letterSpacing: '0.16em', textTransform: 'uppercase',
-      color: 'var(--accent)', border: '1px solid color-mix(in oklab, var(--accent) 45%, var(--rule))',
-      borderRadius: 999, padding: '3px 9px', ...style,
-    }}>PLUS</span>
-  );
-}
-
-// A small lock chip used on teaser tiles.
-function LockChip() {
-  return (
-    <span style={{
-      position: 'absolute', top: 8, right: 8, width: 22, height: 22, borderRadius: 999,
-      background: 'color-mix(in oklab, var(--bg) 70%, transparent)', display: 'grid', placeItems: 'center',
-    }}>
-      <svg width="11" height="11" viewBox="0 0 20 20" style={{ color: 'var(--accent)' }}>
-        <rect x="4.5" y="8.5" width="11" height="8" rx="1.6" fill="none" stroke="currentColor" strokeWidth="1.7"/>
-        <path d="M7 8.5 V6.5 a3 3 0 0 1 6 0 V8.5" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-      </svg>
-    </span>
   );
 }
 
@@ -247,11 +220,13 @@ function PaywallScreen({ onSubscribe, onClose, showMoodPlayer = true }) {
           <p className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.08em', color: 'var(--ink-mute)', textAlign: 'center', margin: '14px 0 0', textTransform: 'uppercase' }}>
             Free for 7 days, then {plan === 'yearly' ? '$29.99/yr' : '$4.99/mo'} · cancel anytime
           </p>
-          {/* Store review requires restore + legal on the purchase screen itself. */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 18, marginTop: 12 }}>
+          {/* Store review requires restore + legal on the purchase screen itself.
+              Micro type, but still real targets: padding carries each link to 44px
+              and the row's negative margin keeps the original 12px optical gap. */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 4, marginTop: 12, marginBottom: -14 }}>
             {['Restore purchases', 'Terms', 'Privacy'].map(l => (
               <a key={l} href="#" onClick={(e) => e.preventDefault()} className="ff-mono"
-                 style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-mute)', textDecoration: 'none' }}>{l}</a>
+                 style={{ display: 'inline-block', padding: '15px 8px', margin: '-15px 0', fontSize: 'var(--t-micro)', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-mute)', textDecoration: 'none' }}>{l}</a>
             ))}
           </div>
         </div>
@@ -535,7 +510,7 @@ function RoastyStudio({ roastyCfg, onApply, onClose, onMoodPlayer, showMoodPlaye
 // ───────────────────────────────────────────────────────────
 function RoastyMoodScreen({ roastyCfg, onClose }) {
   const meta = window.ROASTY_ANIM_META || {};
-  const moods = ['idle', 'correct', 'xp', 'lesson', 'module', 'card', 'wrong', 'sleep', 'awake'];
+  const moods = ['idle', 'correct', 'points', 'lesson', 'module', 'card', 'wrong', 'sleep', 'awake'];
   const [mood, setMood] = useStateC('correct');
   const [k, setK] = useStateC(0);
   const [bg, setBg] = useStateC('studio');

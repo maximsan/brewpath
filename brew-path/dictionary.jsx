@@ -294,33 +294,6 @@ function DictQuickChips({ savedTermCount, onFlashcards, onVocabGame }) {
   );
 }
 
-// Recently-opened horizontal strip. Postponed for v2 — kept in the codebase
-// but not currently rendered by DictionaryHome.
-function DictRecentStrip({ recent, onOpen }) {
-  if (!recent || !recent.length) return null;
-  return (
-    <div>
-      <div className="smallcaps" style={{ marginBottom: 12 }}>RECENTLY OPENED</div>
-      <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 4, scrollbarWidth: 'none' }}>
-        {recent.map(id => {
-          const t = (window.DICT_BY_ID || {})[id];
-          if (!t) return null;
-          return (
-            <button key={id} onClick={() => onOpen(id)} style={{
-              flexShrink: 0, appearance: 'none', cursor: 'pointer', textAlign: 'left',
-              background: 'var(--surface)', border: '1px solid var(--rule)', borderRadius: 12, padding: '11px 13px',
-              display: 'flex', alignItems: 'center', gap: 9, maxWidth: 200,
-            }}>
-              <CatGlyph cat={t.cat} size={17} color="var(--ink-mute)"/>
-              <span style={{ fontSize: 'var(--t-support)', color: 'var(--ink)', fontWeight: 500, whiteSpace: 'nowrap' }}>{t.term}</span>
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
 // ════════════════════════════════════════════════════════════
 // DICTIONARY HOME
 // ════════════════════════════════════════════════════════════

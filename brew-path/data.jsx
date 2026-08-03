@@ -5,50 +5,50 @@ const MODULES = [
     id: 'm1', n: 1, label: 'BEANS', title: 'Beans', glyph: 'beans',
     locked: false,
     lessons: [
-      { id: 'm1l1', title: 'What coffee actually is', xp: 10, time: 3, status: 'complete' },
-      { id: 'm1l2', title: 'Arabica vs Robusta',     xp: 10, time: 3, status: 'current' },
-      { id: 'm1l3', title: 'What origin means',      xp: 10, time: 4, status: 'locked' },
-      { id: 'm1l4', title: 'Why altitude matters',   xp: 10, time: 4, status: 'locked' },
-      { id: 'm1l5', title: 'What the shelf promises', xp: 10, time: 4, status: 'locked' },
-      { id: 'm1l6', title: 'Why two Ethiopias taste different', xp: 10, time: 3, status: 'locked' },
-      { id: 'm1l7', title: 'Inside the cherry, layer by layer', xp: 10, time: 5, status: 'locked' },
+      { id: 'm1l1', title: 'What coffee actually is', points: 10, time: 3, status: 'complete' },
+      { id: 'm1l2', title: 'Arabica vs Robusta',     points: 10, time: 3, status: 'current' },
+      { id: 'm1l3', title: 'What origin means',      points: 10, time: 4, status: 'locked' },
+      { id: 'm1l4', title: 'Why altitude matters',   points: 10, time: 4, status: 'locked' },
+      { id: 'm1l5', title: 'What the shelf promises', points: 10, time: 4, status: 'locked' },
+      { id: 'm1l6', title: 'Why two Ethiopias taste different', points: 10, time: 3, status: 'locked' },
+      { id: 'm1l7', title: 'Inside the cherry, layer by layer', points: 10, time: 5, status: 'locked' },
     ],
   },
   {
     id: 'm2', n: 2, label: 'PROCESSING', title: 'Processing', glyph: 'processing',
     locked: true,
     lessons: [
-      { id: 'm2l1', title: 'Washed, natural, honey', xp: 10, time: 4, status: 'locked' },
-      { id: 'm2l2', title: 'Why processing matters', xp: 10, time: 4, status: 'locked' },
-      { id: 'm2l3', title: 'Reading a bag label',    xp: 10, time: 3, status: 'locked' },
-      { id: 'm2l4', title: 'Drying coffee',          xp: 10, time: 4, status: 'locked' },
-      { id: 'm2l5', title: 'What happens in the tank', xp: 10, time: 4, status: 'locked' },
-      { id: 'm2l6', title: 'Decaf, honestly',        xp: 10, time: 4, status: 'locked' },
+      { id: 'm2l1', title: 'Washed, natural, honey', points: 10, time: 4, status: 'locked' },
+      { id: 'm2l2', title: 'Why processing matters', points: 10, time: 4, status: 'locked' },
+      { id: 'm2l3', title: 'Reading a bag label',    points: 10, time: 3, status: 'locked' },
+      { id: 'm2l4', title: 'Drying coffee',          points: 10, time: 4, status: 'locked' },
+      { id: 'm2l5', title: 'What happens in the tank', points: 10, time: 4, status: 'locked' },
+      { id: 'm2l6', title: 'Decaf, honestly',        points: 10, time: 4, status: 'locked' },
     ],
   },
   { id: 'm3', n: 3, label: 'ROASTING',  title: 'Roasting',  glyph: 'roasting', locked: true, lessons: [
-      { id: 'm3l4', title: 'What roasting does',     xp: 10, time: 4, status: 'locked' },
-      { id: 'm3l1', title: 'Light, medium, dark', xp: 10, time: 4, status: 'locked' },
-      { id: 'm3l2', title: 'First and second crack', xp: 10, time: 5, status: 'locked' },
-      { id: 'm3l3', title: 'Reading a roast date',   xp: 10, time: 3, status: 'locked' },
-      { id: 'm3l5', title: 'Light vs dark, side by side', xp: 10, time: 4, status: 'locked' },
-      { id: 'm3l6', title: 'How much caffeine are you actually drinking?', xp: 10, time: 4, status: 'locked' },
+      { id: 'm3l4', title: 'What roasting does',     points: 10, time: 4, status: 'locked' },
+      { id: 'm3l1', title: 'Light, medium, dark', points: 10, time: 4, status: 'locked' },
+      { id: 'm3l2', title: 'First and second crack', points: 10, time: 5, status: 'locked' },
+      { id: 'm3l3', title: 'Reading a roast date',   points: 10, time: 3, status: 'locked' },
+      { id: 'm3l5', title: 'Light vs dark, side by side', points: 10, time: 4, status: 'locked' },
+      { id: 'm3l6', title: 'How much caffeine are you actually drinking?', points: 10, time: 4, status: 'locked' },
   ]},
   { id: 'm4', n: 4, label: 'GRIND',     title: 'Grind',     glyph: 'grind', locked: true, lessons: [
-      { id: 'm4l1', title: 'Particle size, in plain English', xp: 10, time: 4, status: 'locked' },
-      { id: 'm4l2', title: 'Burr vs blade',                   xp: 10, time: 4, status: 'locked' },
-      { id: 'm4l5', title: 'Which grind for which brewer',    xp: 10, time: 3, status: 'locked' },
-      { id: 'm4l3', title: 'Dialing in by taste',             xp: 10, time: 5, status: 'locked' },
-      { id: 'm4l6', title: 'Why pre-ground never tastes as good', xp: 10, time: 3, status: 'locked' },
-      { id: 'm4l7', title: 'Choosing your first grinder',     xp: 10, time: 3, status: 'locked' },
+      { id: 'm4l1', title: 'Particle size, in plain English', points: 10, time: 4, status: 'locked' },
+      { id: 'm4l2', title: 'Burr vs blade',                   points: 10, time: 4, status: 'locked' },
+      { id: 'm4l5', title: 'Which grind for which brewer',    points: 10, time: 3, status: 'locked' },
+      { id: 'm4l3', title: 'Dialing in by taste',             points: 10, time: 5, status: 'locked' },
+      { id: 'm4l6', title: 'Why pre-ground never tastes as good', points: 10, time: 3, status: 'locked' },
+      { id: 'm4l7', title: 'Choosing your first grinder',     points: 10, time: 3, status: 'locked' },
   ]},
   { id: 'm5', n: 5, label: 'BREW',      title: 'Brew',      glyph: 'brewing', locked: true, lessons: [
-      { id: 'm5l1', title: 'The brew ratio',     xp: 10, time: 5, status: 'locked' },
-      { id: 'm5l2', title: 'Water, the variable', xp: 10, time: 4, status: 'locked' },
-      { id: 'm5l4', title: 'Extraction explained', xp: 10, time: 5, status: 'locked' },
-      { id: 'm5l5', title: 'Choosing a filter',  xp: 10, time: 4, status: 'locked' },
-      { id: 'm5l3', title: 'Tasting your cup',   xp: 10, time: 5, status: 'locked' },
-      { id: 'm5l6', title: 'Your first good cup', xp: 10, time: 5, status: 'locked' },
+      { id: 'm5l1', title: 'The brew ratio',     points: 10, time: 5, status: 'locked' },
+      { id: 'm5l2', title: 'Water, the variable', points: 10, time: 4, status: 'locked' },
+      { id: 'm5l4', title: 'Extraction explained', points: 10, time: 5, status: 'locked' },
+      { id: 'm5l5', title: 'Choosing a filter',  points: 10, time: 4, status: 'locked' },
+      { id: 'm5l3', title: 'Tasting your cup',   points: 10, time: 5, status: 'locked' },
+      { id: 'm5l6', title: 'Your first good cup', points: 10, time: 5, status: 'locked' },
   ]},
 ];
 
@@ -57,7 +57,7 @@ const LESSONS = {
   m1l1: {
     moduleLabel: 'MODULE 1 · BEANS',
     title: 'What coffee actually is',
-    xp: 10, time: 3,
+    points: 10, time: 3,
     cards: [
       { kind: 'predict', label: 'LESSON 1', title: 'What coffee actually is',
         body: 'Coffee starts on a tree, inside something that looks like a small red cherry.',
@@ -146,7 +146,7 @@ const LESSONS = {
   m1l2: {
     moduleLabel: 'MODULE 1 · BEANS',
     title: 'Arabica vs Robusta',
-    xp: 10, time: 3,
+    points: 10, time: 3,
     cards: [
       { kind: 'predict', label: 'LESSON 2', title: 'Arabica vs Robusta',
         body: 'Two species do almost all of the world\u2019s coffee.',
@@ -165,7 +165,7 @@ const LESSONS = {
       { kind: 'concept', label: 'CONCEPT', title: 'Robusta',
         fill: ['Robusta grows at ', { a: 'lower', o: ['lower', 'higher'], label: 'Elevation' }, ' elevations and carries ', { a: 'more', o: ['more', 'less'], label: 'Caffeine' }, ' caffeine than Arabica.'],
         paragraphs: [
-          'Hardier, lower-elevation, almost twice the caffeine. Heavier-bodied, more bitter, more grain-like.',
+          'Tougher, lower-elevation, almost twice the caffeine. Heavier-bodied, more bitter, more grain-like.',
           'Common in espresso blends for crema and punch, and in instant coffee.',
         ],
         meta: [['ELEVATION', '0–900m'], ['CAFFEINE', '~2.4%']],
@@ -186,9 +186,9 @@ const LESSONS = {
           { t: 'Sweeter and more aromatic', correct: true },
           { t: 'About 60% of world coffee', correct: true },
           { t: 'Nearly twice the caffeine' },
-          { t: 'Hardier and easier to grow' },
+          { t: 'Tougher and easier to grow' },
         ],
-        explain: 'Arabica is the high-grown, sweeter, more aromatic species — about 60% of world coffee. The extra caffeine and hardiness belong to Robusta.',
+        explain: 'Arabica is the high-grown, sweeter, more aromatic species — about 60% of world coffee. The extra caffeine and toughness belong to Robusta.',
       },
       { kind: 'slider',
         prompt: 'Where does Arabica grow best?',
@@ -258,7 +258,7 @@ const LESSONS = {
   m1l3: {
     moduleLabel: 'MODULE 1 · BEANS',
     title: 'What origin means',
-    xp: 10, time: 4,
+    points: 10, time: 4,
     cards: [
       { kind: 'predict', label: 'LESSON 3', title: 'What origin means',
         body: 'Two bags of the same variety can taste worlds apart.',
@@ -355,7 +355,7 @@ const LESSONS = {
   m1l4: {
     moduleLabel: 'MODULE 1 · BEANS',
     title: 'Why altitude matters',
-    xp: 10, time: 4,
+    points: 10, time: 4,
     cards: [
       { kind: 'predict', label: 'LESSON 4', title: 'Why altitude matters',
         body: 'Bags of specialty coffee often print a number in metres. It is there for a reason.',
@@ -410,10 +410,10 @@ const LESSONS = {
         explain: 'Slow maturation lets the cherry’s sugars and acids reach a deeper, more layered profile.',
       },
       { kind: 'decision', label: 'AT THE SHELF', title: 'The number in metres',
-        scenario: 'Two Colombian bags, same roaster, same week, same price. One prints “1,900 masl”. The other prints nothing about altitude.',
+        scenario: 'Two Colombian bags, same roaster, same week, same price. One prints “grown at 1,900 metres”. The other prints nothing about altitude.',
         question: 'Which is the safer buy if you want complexity?',
         options: [
-          { t: 'The bag printing 1,900 masl', sub: 'High and specific', correct: true },
+          { t: 'The bag printing 1,900 metres', sub: 'High and specific', correct: true },
           { t: 'The bag with no altitude', sub: 'Could be anything' },
         ],
         right: 'A printed altitude is a traceable claim. At 1,900 m you can expect density and acidity, and the roaster is telling you they know where it came from.',
@@ -440,7 +440,7 @@ const LESSONS = {
   m1l5: {
     moduleLabel: 'MODULE 1 · BEANS',
     title: 'What the shelf promises',
-    xp: 10, time: 4,
+    points: 10, time: 4,
     cards: [
       { kind: 'predict', label: 'LESSON 5', title: 'What the shelf promises',
         body: 'Bags carry words that sound like guarantees — Fair Trade, single origin, specialty. Some of them are.',
@@ -535,7 +535,7 @@ const LESSONS = {
   m1l6: {
     moduleLabel: 'MODULE 1 · BEANS',
     title: 'Why two Ethiopias taste different',
-    xp: 10, time: 3,
+    points: 10, time: 3,
     cards: [
       { kind: 'predict', label: 'LESSON 6', title: 'Why two Ethiopias taste different',
         body: 'In Lesson 3 you took one variety and moved it between countries. Now run the experiment the other way round — same country, same process, two different varieties.',
@@ -602,7 +602,7 @@ const LESSONS = {
   m1l7: {
     moduleLabel: 'MODULE 1 · BEANS',
     title: 'Inside the cherry, layer by layer',
-    xp: 10, time: 5,
+    points: 10, time: 5,
     cards: [
       { kind: 'predict', label: 'LESSON 7', title: 'Inside the cherry, layer by layer',
         body: 'Between the skin of the fruit and the seed you brew sit four more layers. One of them decides more about how your coffee tastes than the roast does.',
@@ -634,7 +634,7 @@ const LESSONS = {
           'Coffee rests and ships inside its parchment, then gets hulled just before export. That’s why green coffee arrives at a roastery bare.',
           'The silverskin is the last tissue-thin membrane. Most of it flakes off during roasting as chaff; what survives stays packed in the bean’s centre crease.',
         ],
-        meta: [['LAYER 04', 'Parchment · pergamino'], ['LAYER 05', 'Silverskin · chaff']],
+        meta: [['LAYER 04', 'Parchment'], ['LAYER 05', 'Silverskin · chaff']],
       },
       { kind: 'sequence',
         prompt: 'Peel a cherry from the outside in. Tap the layers in order',
@@ -705,7 +705,7 @@ const LESSONS = {
   m2l1: {
     moduleLabel: 'MODULE 2 · PROCESSING',
     title: 'Washed, natural, honey',
-    xp: 10, time: 4,
+    points: 10, time: 4,
     cards: [
       { kind: 'predict', label: 'LESSON 1', title: 'Washed, natural, honey',
         body: 'Once a cherry is picked, someone has to get the seed out of the fruit. That’s processing.',
@@ -793,7 +793,7 @@ const LESSONS = {
   m2l2: {
     moduleLabel: 'MODULE 2 · PROCESSING',
     title: 'Why processing matters',
-    xp: 10, time: 4,
+    points: 10, time: 4,
     cards: [
       { kind: 'predict', label: 'LESSON 2', title: 'Why processing matters',
         body: 'The same bean, from the same farm, can land in your cup as two completely different coffees.',
@@ -883,7 +883,7 @@ const LESSONS = {
   m2l3: {
     moduleLabel: 'MODULE 2 · PROCESSING',
     title: 'Reading a bag label',
-    xp: 10, time: 3,
+    points: 10, time: 3,
     cards: [
       { kind: 'predict', label: 'LESSON 3', title: 'Reading a bag label',
         body: 'You now know enough to decode a bag of specialty coffee before you buy it.',
@@ -972,7 +972,7 @@ const LESSONS = {
   m2l4: {
     moduleLabel: 'MODULE 2 · PROCESSING',
     title: 'Drying coffee',
-    xp: 10, time: 4,
+    points: 10, time: 4,
     cards: [
       { kind: 'predict', label: 'LESSON 4', title: 'Drying coffee',
         body: 'After the fruit is dealt with, the seed still has to dry. It is the slowest, quietest step at origin — and one of the easiest to get wrong.',
@@ -1055,7 +1055,7 @@ const LESSONS = {
   m2l5: {
     moduleLabel: 'MODULE 2 · PROCESSING',
     title: 'What happens in the tank',
-    xp: 10, time: 4,
+    points: 10, time: 4,
     cards: [
       { kind: 'predict', label: 'LESSON 5', title: 'What happens in the tank',
         body: 'Washed, natural, honey — you know the three names. Underneath all of them sits one stage that actually makes the difference.',
@@ -1139,7 +1139,7 @@ const LESSONS = {
   m2l6: {
     moduleLabel: 'MODULE 2 · PROCESSING',
     title: 'Decaf, honestly',
-    xp: 10, time: 4,
+    points: 10, time: 4,
     cards: [
       { kind: 'predict', label: 'LESSON 6', title: 'Decaf, honestly',
         body: 'Decaf has a reputation problem, and most of it is about a process almost nobody can describe.',
@@ -1158,10 +1158,10 @@ const LESSONS = {
       { kind: 'concept', label: 'CONCEPT', title: 'Three routes out',
         fill: ['All three methods ', { a: 'soak, strip and return', o: ['soak, strip and return', 'burn off'], label: 'The pattern' }, ' the beans — what changes is the ', { a: 'solvent', o: ['solvent', 'temperature'], label: 'What does the work' }, '.'],
         paragraphs: [
-          'Solvent methods use ethyl acetate — often derived from sugarcane — or methylene chloride. Swiss Water uses water and a carbon filter. CO2 uses pressurised gas.',
+          'Solvent methods use ethyl acetate — often derived from sugarcane — or methylene chloride. Swiss Water uses water and a carbon filter. CO₂ uses pressurised gas.',
           'The shape is the same in each: wet the beans so the caffeine is mobile, pull it out, then put everything else back.',
         ],
-        meta: [['SOLVENT', 'EA · methylene chloride'], ['NO SOLVENT', 'Swiss Water · CO2']],
+        meta: [['SOLVENT', 'Ethyl acetate'], ['NO SOLVENT', 'Water · CO₂']],
       },
       { kind: 'concept', label: 'CONCEPT', title: 'Never zero',
         fill: ['The legal bar is roughly ', { a: '97%', o: ['97%', '100%'], label: 'Removed' }, ' removal, so a decaf cup still carries ', { a: 'a few milligrams', o: ['a few milligrams', 'nothing at all'], label: 'What is left' }, ' against about 95 in a regular one.'],
@@ -1175,7 +1175,7 @@ const LESSONS = {
         prompt: 'Match each method to its mechanism',
         pairs: [
           { l: 'Swiss Water',   r: 'Water and a carbon filter' },
-          { l: 'CO2',           r: 'Pressurised gas' },
+          { l: 'CO₂',            r: 'Pressurised gas' },
           { l: 'Ethyl acetate', r: 'A solvent rinse, often from sugarcane' },
         ],
       },
@@ -1193,10 +1193,10 @@ const LESSONS = {
         scenario: 'You are making an evening pot of decaf. Someone at the table says decaf is full of chemicals and they would rather not.',
         question: 'What do you do?',
         options: [
-          { t: 'Pour it, and explain what the processes actually are', sub: 'Swiss Water and CO2 use no solvent', correct: true },
+          { t: 'Pour it, and explain what the processes actually are', sub: 'Swiss Water and CO₂ use no solvent', correct: true },
           { t: 'Tip it out and make regular coffee', sub: 'It is late' },
         ],
-        right: 'Swiss Water and CO2 use no solvent at all, and where a solvent is used it is rinsed out and then hits roasting temperatures well above its boiling point. The fear is about a stage that ends before the bean is even roasted.',
+        right: 'Swiss Water and CO₂ use no solvent at all, and where a solvent is used it is rinsed out and then hits roasting temperatures well above its boiling point. The fear is about a stage that ends before the bean is even roasted.',
         wrong: 'Regular coffee at 9 pm solves a worry by creating a bigger one. The chemistry question has a real answer, and it is a reassuring one.',
         note: 'The “chemicals” worry is about a process that finishes before roasting — and two of the three methods use none.' },
       { kind: 'recall', label: 'BEFORE YOU GO',
@@ -1213,7 +1213,7 @@ const LESSONS = {
       title: 'Decaf',
       summary: 'How the caffeine comes out, and what stays behind.',
       fact: 'Roughly 97% removed is the bar — a decaf cup still carries a few milligrams.',
-      meta: [['METHODS', 'Solvent · water · CO2'], ['REMOVED', '~97%']],
+      meta: [['METHODS', 'Solvent · water · CO₂'], ['REMOVED', '~97%']],
     },
   },
 
@@ -1221,7 +1221,7 @@ const LESSONS = {
   m3l4: {
     moduleLabel: 'MODULE 3 · ROASTING',
     title: 'What roasting does',
-    xp: 10, time: 4,
+    points: 10, time: 4,
     cards: [
       { kind: 'predict', label: 'LESSON 1', title: 'What roasting does',
         body: 'Green coffee smells like hay and tastes like nothing. Everything you recognise as coffee is made in the roaster.',
@@ -1307,7 +1307,7 @@ const LESSONS = {
   m3l1: {
     moduleLabel: 'MODULE 3 \u00b7 ROASTING',
     title: 'Light, medium, dark',
-    xp: 10, time: 4,
+    points: 10, time: 4,
     cards: [
       { kind: 'predict', label: 'LESSON 2', title: 'Light, medium, dark',
         body: 'Green coffee tastes of almost nothing. Roasting is the heat that makes it drinkable.',
@@ -1389,7 +1389,7 @@ const LESSONS = {
   m3l2: {
     moduleLabel: 'MODULE 3 \u00b7 ROASTING',
     title: 'First and second crack',
-    xp: 10, time: 5,
+    points: 10, time: 5,
     cards: [
       { kind: 'predict', label: 'LESSON 3', title: 'First and second crack',
         body: 'Roasters don’t just watch a clock. Coffee tells them how far it has roasted.',
@@ -1466,7 +1466,7 @@ const LESSONS = {
   m3l3: {
     moduleLabel: 'MODULE 3 \u00b7 ROASTING',
     title: 'Reading a roast date',
-    xp: 10, time: 3,
+    points: 10, time: 3,
     cards: [
       { kind: 'predict', label: 'LESSON 4', title: 'Reading a roast date',
         body: 'Coffee is fresh food, and freshness has a window.',
@@ -1546,7 +1546,7 @@ const LESSONS = {
   m3l5: {
     moduleLabel: 'MODULE 3 · ROASTING',
     title: 'Light vs dark, side by side',
-    xp: 10, time: 4,
+    points: 10, time: 4,
     cards: [
       { kind: 'predict', label: 'LESSON 5', title: 'Light vs dark, side by side',
         body: 'You know what the roast spectrum is. Now put two cups next to each other and choose between them on purpose.',
@@ -1627,7 +1627,7 @@ const LESSONS = {
   m3l6: {
     moduleLabel: 'MODULE 3 · ROASTING',
     title: 'How much caffeine are you actually drinking?',
-    xp: 10, time: 4,
+    points: 10, time: 4,
     cards: [
       { kind: 'predict', label: 'LESSON 6', title: 'How much caffeine are you actually drinking?',
         body: 'Almost everyone gets this one backwards, and the reason is a word people use loosely.',
@@ -1705,7 +1705,7 @@ const LESSONS = {
   m4l1: {
     moduleLabel: 'MODULE 4 \u00b7 GRIND',
     title: 'Particle size, in plain English',
-    xp: 10, time: 4,
+    points: 10, time: 4,
     cards: [
       { kind: 'predict', label: 'LESSON 1', title: 'Particle size, in plain English',
         body: 'Grinding isn’t just about making beans small enough to brew. The size of the pieces quietly controls the cup.',
@@ -1776,7 +1776,7 @@ const LESSONS = {
   m4l2: {
     moduleLabel: 'MODULE 4 \u00b7 GRIND',
     title: 'Burr vs blade',
-    xp: 10, time: 4,
+    points: 10, time: 4,
     cards: [
       { kind: 'predict', label: 'LESSON 2', title: 'Burr vs blade',
         body: 'Some gear matters far more than the rest.',
@@ -1869,7 +1869,7 @@ const LESSONS = {
   m4l5: {
     moduleLabel: 'MODULE 4 · GRIND',
     title: 'Which grind for which brewer',
-    xp: 10, time: 3,
+    points: 10, time: 3,
     cards: [
       { kind: 'predict', label: 'LESSON 3', title: 'Which grind for which brewer',
         body: 'You know what particle size does. Now land it on the one brewer sitting on your counter.',
@@ -1947,7 +1947,7 @@ const LESSONS = {
   m4l3: {
     moduleLabel: 'MODULE 4 \u00b7 GRIND',
     title: 'Dialing in by taste',
-    xp: 10, time: 5,
+    points: 10, time: 5,
     cards: [
       { kind: 'predict', label: 'LESSON 4', title: 'Dialing in by taste',
         body: 'You don’t need a fancy setup to fix a bad cup.',
@@ -2022,7 +2022,7 @@ const LESSONS = {
   m4l6: {
     moduleLabel: 'MODULE 4 · GRIND',
     title: 'Why pre-ground never tastes as good',
-    xp: 10, time: 3,
+    points: 10, time: 3,
     cards: [
       { kind: 'predict', label: 'LESSON 5', title: 'Why pre-ground never tastes as good',
         body: 'You have been dialling grind size in by taste. Worth knowing what happens to those grounds while they sit.',
@@ -2039,12 +2039,12 @@ const LESSONS = {
         meta: [['WHOLE BEAN', 'One surface'], ['GROUND', 'Thousands']],
       },
       { kind: 'concept', label: 'CONCEPT', title: 'What leaves, what arrives',
-        fill: ['CO2 and ', { a: 'aromatics', o: ['aromatics', 'caffeine'], label: 'What leaves' }, ' go out; ', { a: 'oxygen and moisture', o: ['oxygen and moisture', 'nothing much'], label: 'What comes in' }, ' come in.'],
+        fill: ['CO₂ and ', { a: 'aromatics', o: ['aromatics', 'caffeine'], label: 'What leaves' }, ' go out; ', { a: 'oxygen and moisture', o: ['oxygen and moisture', 'nothing much'], label: 'What comes in' }, ' come in.'],
         paragraphs: [
           'That smell filling the kitchen when you grind is not a bonus. It is the coffee leaving the coffee — aromatic compounds you were about to drink, going into the room instead.',
           'Meanwhile oxygen and moisture move the other way, and the oils start to oxidise. Both directions are one-way.',
         ],
-        meta: [['OUT', 'CO2 · aromatics'], ['IN', 'Oxygen · moisture']],
+        meta: [['OUT', 'CO₂ · aromatics'], ['IN', 'Oxygen · moisture']],
       },
       { kind: 'concept', label: 'CONCEPT', title: 'The order of upgrades',
         fill: ['A ', { a: 'cheap grinder with fresh beans', o: ['cheap grinder with fresh beans', 'great bag bought pre-ground'], label: 'Wins' }, ' beats an expensive bag bought pre-ground — if you buy one thing, buy the ', { a: 'grinder', o: ['grinder', 'brewer'], label: 'Buy this' }, '.'],
@@ -2106,7 +2106,7 @@ const LESSONS = {
   m4l7: {
     moduleLabel: 'MODULE 4 · GRIND',
     title: 'Choosing your first grinder',
-    xp: 10, time: 3,
+    points: 10, time: 3,
     cards: [
       { kind: 'predict', label: 'LESSON 6', title: 'Choosing your first grinder',
         body: 'You already know to buy a burr. This is the next question — which burr, and what the price step is actually buying.',
@@ -2179,7 +2179,7 @@ const LESSONS = {
   m5l1: {
     moduleLabel: 'MODULE 5 \u00b7 BREW',
     title: 'The brew ratio',
-    xp: 10, time: 5,
+    points: 10, time: 5,
     cards: [
       { kind: 'predict', label: 'LESSON 1', title: 'The brew ratio',
         body: 'Before grind, before water — one decision sets the strength of every cup.',
@@ -2254,7 +2254,7 @@ const LESSONS = {
   m5l2: {
     moduleLabel: 'MODULE 5 \u00b7 BREW',
     title: 'Water, the variable',
-    xp: 10, time: 4,
+    points: 10, time: 4,
     cards: [
       { kind: 'predict', label: 'LESSON 2', title: 'Water, the variable',
         body: 'A cup of coffee is mostly one ingredient, and it isn’t the beans.',
@@ -2348,7 +2348,7 @@ const LESSONS = {
   m5l4: {
     moduleLabel: 'MODULE 5 · BREW',
     title: 'Extraction explained',
-    xp: 10, time: 5,
+    points: 10, time: 5,
     cards: [
       { kind: 'predict', label: 'LESSON 3', title: 'Extraction explained',
         body: 'Ratio sets how much coffee. Extraction is how much of that coffee actually made it into the water.',
@@ -2424,7 +2424,7 @@ const LESSONS = {
   m5l5: {
     moduleLabel: 'MODULE 5 · BREW',
     title: 'Choosing a filter',
-    xp: 10, time: 4,
+    points: 10, time: 4,
     cards: [
       { kind: 'predict', label: 'LESSON 4', title: 'Choosing a filter',
         body: 'The cheapest part of the whole setup, and it changes the cup more than most people expect.',
@@ -2506,7 +2506,7 @@ const LESSONS = {
   m5l3: {
     moduleLabel: 'MODULE 5 \u00b7 BREW',
     title: 'Tasting your cup',
-    xp: 10, time: 5,
+    points: 10, time: 5,
     cards: [
       { kind: 'predict', label: 'LESSON 5', title: 'Tasting your cup',
         body: 'Everything so far comes down to this: taste a cup and name what’s off.',
@@ -2581,7 +2581,7 @@ const LESSONS = {
   m5l6: {
     moduleLabel: 'MODULE 5 · BREW',
     title: 'Your first good cup',
-    xp: 10, time: 5,
+    points: 10, time: 5,
     cards: [
       { kind: 'predict', label: 'LESSON 6', title: 'Your first good cup',
         body: 'Everything the course has taught, assembled into one brew you actually make. Start with something you will see in about a minute.',
@@ -2604,7 +2604,7 @@ const LESSONS = {
       { kind: 'practical', tag: 'STEP 2', title: 'Bloom',
         paragraphs: [
           'Pour about thirty grams of water — roughly twice the weight of the coffee — and stop. Wait thirty to forty-five seconds.',
-          'The bed will swell and bubble as trapped CO2 escapes. That is the bloom, and it is the coffee telling you it is still fresh.',
+          'The bed will swell and bubble as trapped CO₂ escapes. That is the bloom, and it is the coffee telling you it is still fresh.',
         ],
         note: 'If it does not swell, the coffee is old. That is the freshness test from Grind, running in your own kitchen.' },
       { kind: 'practical', tag: 'STEP 3', title: 'Pour and finish',
@@ -2659,11 +2659,11 @@ const LESSONS = {
       { kind: 'recall', label: 'BEFORE YOU GO',
         question: 'The grounds sat flat when you poured the bloom. What does that tell you?',
         choices: [
-          { t: 'The coffee is old — the CO2 that makes the bloom has already escaped', correct: true },
+          { t: 'The coffee is old — the CO₂ that makes the bloom has already escaped', correct: true },
           { t: 'The water was not hot enough' },
           { t: 'You ground it too fine' },
         ],
-        explain: 'The bloom is trapped CO2 leaving fresh grounds. A flat bed means there is none left, which means the coffee has been ground or roasted too long ago.',
+        explain: 'The bloom is trapped CO₂ leaving fresh grounds. A flat bed means there is none left, which means the coffee has been ground or roasted too long ago.',
         line: 'You didn’t buy a better cup. You measured one.' },
     ],
     reward: {
@@ -2809,7 +2809,7 @@ const COLLECTION = [
   { id: 'c-m2l6', earned: false, unlock: { lesson: 'm2l6' }, kind: 'decaf', title: 'Decaf',
     summary: 'How the caffeine comes out, and what stays behind.',
     fact: 'Roughly 97% removed is the bar — a decaf cup still carries a few milligrams.',
-    meta: [['METHODS', 'Solvent · water · CO2'], ['REMOVED', '~97%']] },
+    meta: [['METHODS', 'Solvent · water · CO₂'], ['REMOVED', '~97%']] },
   { id: 'c-m3l4', earned: false, unlock: { lesson: 'm3l4' }, kind: 'roastcurve', title: 'The Roast',
     summary: 'What heat actually does to a green bean.',
     fact: 'First crack arrives around 195–205 °C, when steam pressure pops the bean open.',
@@ -3041,3 +3041,10 @@ window.syncCollection = function(completedSet) {
     else if (c.unlock.module) c.earned = moduleComplete(c.unlock.module);
   });
 };
+
+// ── Signed-in identity ────────────────────────────────────────
+// One source of truth: the Profile greeting, the Settings row, the Account card
+// and the data-export copy all read from here, so the name and the address can
+// never disagree. Replaced by the real account on sign-in.
+window.USER = { name: 'Maya', email: 'maya@hey.com' };
+window.USER.initial = window.USER.name.charAt(0).toLowerCase();

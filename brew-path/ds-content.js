@@ -620,7 +620,11 @@ function renderComponents() {
     `<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
        <span style="display:inline-flex;align-items:center;gap:8px;border:1px solid var(--rule);border-radius:999px;padding:5px 12px 5px 9px;"><svg width="15" height="15" viewBox="0 0 20 20" fill="none" style="color:var(--accent);"><path d="M4 8 H6.5 L10 4.5 V15.5 L6.5 12 H4 Z" fill="currentColor" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/><path d="M13 7.5 a3.5 3.5 0 0 1 0 5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity="0.7"/></svg><span class="mono" style="font-size:11px;letter-spacing:0.04em;color:var(--ink-mute);">uh-RAB-ih-kuh</span></span>
        <span style="display:inline-flex;align-items:center;gap:8px;border:1px solid var(--rule);border-radius:999px;padding:4px 10px 4px 8px;"><svg width="15" height="15" viewBox="0 0 20 20" fill="none" style="color:var(--accent);"><path d="M4 8 H6.5 L10 4.5 V15.5 L6.5 12 H4 Z" fill="currentColor" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/><path d="M13 7.5 a3.5 3.5 0 0 1 0 5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity="0.7"/></svg><span class="mono" style="font-size:11px;letter-spacing:0.04em;color:var(--ink-mute);">KREH-muh</span></span>
-     </div>`, ['Hairline pill: accent speaker glyph + respelling in mono.', 'Tapping speaks the term and pulses a second arc.', 'Renders only when a respelling exists \u2014 never a bare speaker icon.', 'Respelling, never IPA: the respelling is the readable artefact, the audio is the bonus.']));
+     </div>`, ['Hairline pill: accent speaker glyph + respelling in mono.', 'Tapping speaks the term and pulses a second arc.', 'Renders only when a respelling exists \u2014 never a bare speaker icon.', 'Respelling, never IPA: the respelling is the readable artefact, the audio is the bonus.',
+     'The respelling convention: syllables split by hyphens, <b>exactly one syllable in caps \\u2014 the stressed one</b> (primary stress only, never a secondary beat: <span class="mono">POR-tuh-fil-ter</span>), and sounds spelled as an English reader would guess them \u2014 <span class="mono">uh</span> for a schwa, <span class="mono">ay/ee/oh</span> for long vowels, a trailing <i>a</i> as <span class="mono">-uh</span>.',
+     'Names read as letters take no stress cap at all \u2014 acronyms go letter by letter (<span class="mono">S-C-A</span>, <span class="mono">M-A-S-L</span>) and any number is written as a word (<span class="mono">V-sixty</span>, <span class="mono">C-O-two</span>, <span class="mono">S-L twenty-eight</span>). Caps are for stress, and a string of letter names has none.',
+     'Spell the sound, not the spelling: Chemex is <span class="mono">KEM-ex</span>, never <span class="mono">CHEM-ex</span> \u2014 if the respelling can be misread, it has failed.',
+     'A respelling is authored only where the term is genuinely mispronounceable. Plain English words (Bloom, Body, Fines) carry none and the chip does not render \u2014 do not invent one to fill the line.']));
 
   wrap.append(compStates('Term status chip',
     'Term entry header and term rows \u2014 the dictionary\u2019s only two states.',
@@ -808,12 +812,12 @@ function renderComponents() {
        <span style="display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:var(--accent-ink);border-radius:999px;padding:8px 14px;">${gPointsBean(14, 'var(--accent-ink)', 'var(--accent)')}<span class="mono" style="font-size:13px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;">+12 PTS</span></span>
      </div>`, ['One solid silhouette with a carved crease and <b>no</b> fill state.', 'Points are a quantity, not a level \u2014 partial fill belongs to the gauge alone.', 'On an accent fill it inverts, crease in the fill colour.']));
 
-  wrap.append(compRules('Points toast',
-    'Fires the moment a quiz card is answered correctly, mid-lesson.',
+  wrap.append(compRules('Points chip',
+    'The sage points mark. Fires once at the end of a run \u2014 a logged Brew Challenge, a finished lesson, a finished module. Never mid-lesson.',
     `<div style="display:flex;gap:14px;align-items:center;">
        <span class="mono" style="font-size:11px;font-weight:500;letter-spacing:0.1em;color:var(--sage);border:1px solid color-mix(in oklab, var(--sage) 45%, transparent);background:color-mix(in oklab, var(--sage) 10%, transparent);border-radius:999px;padding:3px 9px;">+10 PTS</span>
        <span class="mono" style="font-size:9.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-mute);">rises 12px · fades at 950ms</span>
-     </div>`, ['A sage pill that lifts and fades \u2014 the only celebration that interrupts.', 'Points are effort, so the toast never reports mastery.', 'A wrong answer gets no counter-toast: feedback lives in the explanation.']));
+     </div>`, ['A sage pill that scales up as its screen lands. It never interrupts a lesson in progress.', 'Points are effort, so the chip never reports mastery.', 'Mid-lesson feedback is qualitative only \u2014 Roasty reacts, the explanation teaches, and no counter appears either way.']));
 
   wrap.append(compStates('Fill-in-the-blank',
     'FillSlot (lesson.jsx) on the shared .fill-slot class \u2014 concept \u201ccomplete the sentence\u201d cards and the predict card\u2019s cloze question.',
@@ -896,6 +900,28 @@ function renderComponents() {
        </div>
      </div>`, ['The section kicker with the cup mark sits <b>outside</b> the card.', 'Accent-tinted surface, accent hairline; title 26, instruction 15.', 'Trigger and estimate are two mono lines against a primary Log Result.', 'The corner X saves for later \u2014 it never deletes.', 'Never scored: completion is self-reported.']));
 
+  wrap.append(compRules('Card or section',
+    'The decision every screen block faces: a bordered card, or a labelled section in the page flow.',
+    `<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+       <div>
+         <div style="${SMALLCAPS}margin-bottom:7px;">CARD</div>
+         <div style="border:1px solid color-mix(in oklab, var(--accent) 30%, var(--rule));border-radius:2px;padding:14px;background:linear-gradient(160deg, color-mix(in oklab, var(--accent) 12%, var(--surface)) 0%, var(--surface) 62%);">
+           <div style="${SMALLCAPS}color:var(--accent);">BREWPATH PLUS</div>
+           <div class="ff-display" style="font-size:19px;color:var(--ink);margin-top:8px;">$29.99/yr</div>
+           <div style="font-size:12px;color:var(--ink-mute);margin-top:4px;">Renews 18 Jun 2027</div>
+         </div>
+       </div>
+       <div>
+         <div style="${SMALLCAPS}margin-bottom:7px;">SECTION</div>
+         <div style="${SMALLCAPS}margin-bottom:4px;">FREE PLAN</div>
+         <div style="font-size:14px;color:var(--ink);padding:12px 0;">Every lesson and the dictionary, included.</div>
+       </div>
+     </div>`,
+    ['A card is a <b>container for facts</b> — a price, a renewal date, a countdown. Given facts, it earns its border.',
+     'With nothing to hold, drop the card, not the content: use the screen’s own grammar — smallcaps label, then rows at 16px 0. A bordered box with one line in it reads as a render failure, not restraint.',
+     'Never let a container change weight between states of one screen. The Subscription screen keeps its card only where there is billing; free uses the same section shape as MANAGE and WITH PLUS below it.',
+     'The display slot states a <b>value</b>. If a state has no value to show, it has no display line — it must never be filled with an absence (“No subscription”).']));
+
   wrap.append(compRules('Empty state',
     'A filter with no matches, a passport with no stamps, a Saved shelf before anything is saved.',
     `<div style="text-align:center;padding:22px 16px;">
@@ -941,6 +967,20 @@ function renderComponents() {
       'Lead with a mono eyebrow, then a Fraunces title, then actions.',
       'Tap-scrim or \u201cNot now\u201d always dismisses \u2014 never trap the user.',
     ]));
+
+  wrap.append(compRules('Result sheet',
+    'What a system action reports back — restore purchases succeeded, found nothing, or could not reach the store.',
+    `<div style="max-width:300px;background:var(--bg);border:1px solid var(--rule);border-radius:14px;padding:18px;">
+       <div style="${SMALLCAPS}margin-bottom:8px;">NOTHING TO RESTORE</div>
+       <div class="ff-display" style="font-size:19px;color:var(--ink);line-height:1.1;">No purchase on this Apple ID.</div>
+       <p style="font-size:13px;line-height:1.5;color:var(--ink-mute);margin:10px 0 16px;">If you bought Plus with a different Apple ID, sign in with that one and try again.</p>
+       <div class="btn-primary" style="text-align:center;box-sizing:border-box;">Done</div>
+     </div>`,
+    ['The confirm sheet with <b>one</b> action instead of two — there is nothing to cancel, only to acknowledge. Same shell, same type ramp.',
+     'iOS owns the system auth sheet; the outcome is ours. Every branch gets stated — a silent failure reads as a broken button.',
+     'The body says only what to do next. The title already carries the finding, so it is never restated, and no outcome is padded with reassurance the user did not ask for (“nothing was charged”).',
+     'A recoverable failure labels its action for the retry (“Try again”), not “Done”.',
+     'In the build, the branch is whatever StoreKit returns. This prototype exposes a <b>Restore result</b> tweak only so all three sheets can be seen without a real purchase history \u2014 it is a preview control, not app state, and it does not port.']));
 
   wrap.append(compStates('Sheet layers',
     'Two stacking layers, and the rule for what happens to an open sheet when the screen behind it changes.',
@@ -1000,8 +1040,11 @@ function renderComponents() {
     ]));
 
   wrap.append(compRules('Settings / nav row',
-    'Settings, About and Account screens, and the navigational cards on Profile.',
-    settingsRowDemo(), ['Label left; the right takes a mono value, then a chevron (internal), arrow (external) or toggle.', 'Hairline between rows.', 'Destructive rows take berry, never accent.']));
+    'ONE component (NavRow, settings.jsx) behind every settings row in the app \u2014 Settings, About, Account and sync, Help and support, Subscription. SettingsRow is an alias of it, not a second copy.',
+    settingsRowDemo(), ['Label left; the right takes a mono value, then a chevron (internal), arrow (external) or toggle.', 'Hairline between rows.', 'Destructive rows take berry, never accent.',
+      'A row that fires a <b>network call</b> has a pending state: the label swaps to the present participle (“Restoring…”), drops to ink-mute, the chevron becomes a spinner and taps are refused until it settles. Never leave a row looking tappable while it is working.',
+      'Rows are the register for a settings <b>action</b>. A quiet mono link is for purchase surfaces; a primary button is for the one thing a screen is for. Restore purchases is a row in Settings and a link on the paywall — same action, different surface.',
+      'Six trailing variants, one row: mono value, chevron, external arrow, toggle, pending spinner, destructive. A row carrying a <b>toggle</b> is tappable across its full width \u2014 the 26px switch is never the only target \u2014 and the switch stops its own tap so the row cannot double-fire.']));
 
   return section('components', 'Library', 'Components',
     'The reusable building blocks, each shown live in the current theme. Anything new should be assembled from these before a fresh pattern is invented.',
@@ -1036,10 +1079,6 @@ function beanDemo(pct, color) {
     <path d="M12 3.5 C 13.5 7, 10.5 9, 12 12 S 13.5 17, 12 20.5" transform="rotate(-18 12 12)" fill="none" stroke="${pct > 0.6 ? 'var(--ink)' : 'var(--ink-mute)'}" stroke-width="1.1" stroke-linecap="round"/>
   </svg>`;
 }
-function capDemo(t) {
-  return `<div class="mono" style="font-size:9.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-mute);margin-top:8px;white-space:nowrap;">${t}</div>`;
-}
-
 // ── Chrome & navigation demos ────────────────────────────────
 const SC = "font-family:'IBM Plex Sans',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-mute);";
 function compSubhead(title, meta) {
@@ -1129,21 +1168,18 @@ function segmentedDemo() {
   const seg = (label, on) => `<div style="flex:1;text-align:center;font-family:'IBM Plex Sans',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;padding:9px 4px;background:${on ? 'var(--accent)' : 'transparent'};color:${on ? 'var(--accent-ink)' : 'var(--ink-mute)'};">${label}</div>`;
   return `<div style="display:flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--surface);">${seg('All', true)}${seg('Learned', false)}${seg('To learn', false)}</div>`;
 }
-function toggleDemo() {
-  const tog = (on) => `<span style="position:relative;width:44px;height:26px;padding:3px;border-radius:999px;box-sizing:border-box;display:inline-block;border:1px solid ${on ? 'var(--accent)' : 'var(--rule)'};background:${on ? 'var(--accent)' : 'transparent'};"><span style="display:block;width:18px;height:18px;border-radius:999px;background:${on ? 'var(--accent-ink)' : 'var(--ink-mute)'};transform:translateX(${on ? '18px' : '0'});"></span></span>`;
-  const cell = (node, cap) => `<div class="afford">${node}<span class="cap">${cap}</span></div>`;
-  return `<div class="afford-row" style="gap:36px;">${cell(tog(true), 'ON')}${cell(tog(false), 'OFF')}</div>`;
-}
 function settingsRowDemo() {
   const chev = `<svg width="8" height="14" viewBox="0 0 8 14"><path d="M1 1l6 6-6 6" fill="none" stroke="var(--ink-mute)" stroke-opacity="0.6" stroke-width="1.5" stroke-linecap="round"/></svg>`;
   const ext = `<svg width="13" height="13" viewBox="0 0 13 13"><path d="M3 10 L10 3 M4.5 3 H10 V8.5" fill="none" stroke="var(--ink-mute)" stroke-opacity="0.6" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   const tog = `<span style="position:relative;width:44px;height:26px;padding:3px;border-radius:999px;box-sizing:border-box;display:inline-block;border:1px solid var(--accent);background:var(--accent);"><span style="display:block;width:18px;height:18px;border-radius:999px;background:var(--accent-ink);transform:translateX(18px);"></span></span>`;
+  const spin = `<svg width="15" height="15" viewBox="0 0 15 15"><circle cx="7.5" cy="7.5" r="5.6" fill="none" stroke="var(--rule)" stroke-width="1.6"/><path d="M7.5 1.9a5.6 5.6 0 0 1 5.6 5.6" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg>`;
   const row = (label, right, last, danger) => `<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 0;${last ? '' : 'border-bottom:1px solid var(--rule);'}"><span style="font-size:15px;color:${danger ? 'var(--berry)' : 'var(--ink)'};">${label}</span><span style="display:flex;align-items:center;gap:10px;">${right}</span></div>`;
   const val = (v) => `<span class="mono" style="font-size:13px;color:var(--ink-mute);">${v}</span>`;
   return `<div class="card" style="padding:4px 18px;">
     ${row('Daily reminder', val('8:00') + chev, false, false)}
     ${row('Sound effects', tog, false, false)}
     ${row('Rate the app', ext, false, false)}
+    ${row('Restoring\u2026', spin, false, false)}
     ${row('Reset progress', chev, true, true)}
   </div>`;
 }
@@ -1157,16 +1193,6 @@ function miniBean(pct, color) {
     <ellipse cx="12" cy="12" rx="7.5" ry="9.5" transform="rotate(-18 12 12)" fill="none" stroke="${full ? 'var(--ink)' : 'var(--ink-mute)'}" stroke-width="1"/>
     <path d="M12 3.5 C 13.5 7, 10.5 9, 12 12 S 13.5 17, 12 20.5" transform="rotate(-18 12 12)" fill="none" stroke="${pct > 0.6 ? 'var(--ink)' : 'var(--ink-mute)'}" stroke-width="0.9" stroke-linecap="round"/>
   </svg>`;
-}
-function miniCheck() {
-  return `<span style="width:24px;height:24px;border-radius:999px;display:grid;place-items:center;background:color-mix(in oklab,var(--sage) 22%,var(--surface));border:1px solid color-mix(in oklab,var(--sage) 55%,var(--rule));">
-    <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.2 L5 9 L10 3" stroke="var(--sage)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
-}
-function miniDot() {
-  return `<span style="width:24px;height:24px;border-radius:999px;display:grid;place-items:center;border:1px solid var(--accent);"><span style="width:7px;height:7px;border-radius:999px;background:var(--accent);"></span></span>`;
-}
-function miniLock() {
-  return `<svg width="18" height="18" viewBox="0 0 20 20" style="color:var(--ink-mute)" fill="none"><rect x="4.5" y="8.5" width="11" height="8" rx="1.6" stroke="currentColor" stroke-width="1.5"/><path d="M7 8.5 V6.5 a3 3 0 0 1 6 0 V8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`;
 }
 function chip(label, color, filled) {
   const dot = `<span style="width:6px;height:6px;border-radius:999px;background:${filled ? color : 'transparent'};border:1px solid ${color};display:inline-block;"></span>`;
@@ -1382,7 +1408,7 @@ function renderFlags() {
 
 // Every interactive card kind in the app, in the order a lesson uses them.
 // cue    — the game-cue phrase above the question (null = no cue, no "?" drawer)
-// scored — does a right answer pay XP / count toward a score?
+// scored — does a right answer pay points / count toward a score?
 // game   — the mini-game id this kind is also published as, if any.
 const GAME_KINDS = [
   ['predict',  null,                            false, null,
@@ -1440,7 +1466,7 @@ function gameInventory() {
     el('ul', { class: 'rules' }, [
       'A kind is promoted to a <b>mini-game</b> only if all three hold: it is <b>self-scoring</b>, a whole round can be <b>one kind</b>, and it is a <b>skill that improves with reps</b>.',
       'predict, concept, visual and practical fail the first test; decision and recall fail the third \u2014 recall is bound to the guess made earlier in its own lesson.',
-      'Mini-games never touch lesson XP or progression. Lesson cards always do.',
+      'Mini-games never touch lesson points or progression. Lesson cards always do.',
       'A mini-game is <b>course-wide practice</b>, never a replay of one lesson \u2014 it carries no lesson id, and its Practice Again row leads with the game name over a topic eyebrow.',
       'A card that <b>cannot be failed</b> still has to be graded on something. Match has no wrong end state \u2014 you clear it either way \u2014 so it grades the <b>route</b>: a board scores only if every pair lands first time.',
     ].map(r => el('li', { html: r }))));
@@ -1465,12 +1491,12 @@ function renderGames() {
 
   wrap.append(gameInventory());
 
-  wrap.append(compRules('Game cue',
+  wrap.append(compRules('Card cue',
     'Above the question on every scored card \u2014 in a lesson and in a mini-game alike.',
     "<div style=\"display:flex;align-items:center;gap:8px;line-height:1;font-family:'IBM Plex Sans',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);\"><span>MATCH · DRAG TO PAIR</span><span style=\"width:20px;height:20px;border-radius:999px;border:1px solid var(--rule);color:var(--ink-mute);font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1;display:grid;place-items:center;flex-shrink:0;\">?</span></div>",
-    ['Accent smallcaps naming the game type, with a 20px “?” ring beside it.',
-     'The “?” opens the how-to-play drawer for that kind \u2014 title, one-line blurb, three numbered steps. Same copy everywhere the kind appears.',
-     'Every kind with a cue must have a matching <span class="mono">GAME_HELP</span> entry. A cue with no drawer is a bug.',
+    ['Accent smallcaps naming the card kind, with a 20px “?” ring beside it. One component, <span class="mono">CardCue</span>, keyed by kind.',
+     'The “?” opens the how-to-play drawer for that kind \u2014 title, one-line blurb, three numbered steps. The drawer teaches the <b>interaction</b>, so it reads the same wherever that kind appears. A standalone mini-game’s intro screen teaches <b>that game</b> and names its own subject \u2014 deliberately different copy, not a drifted duplicate.',
+     'Every kind with a cue must have a matching <span class="mono">CARD_KIND_HELP</span> entry. A cue with no drawer is a bug.',
      'Narrative cards (predict, decision, recall) take a plain label instead \u2014 no ring, no drawer.']));
 
   wrap.append(compRules('Round length',
@@ -1481,7 +1507,7 @@ function renderGames() {
      'The roast meter runs 01 / N across the round; the results screen scores <span class="mono">n / N</span> and switches copy at 80% and 50%.']));
 
   return section('games', 'System', 'Games',
-    'Two systems share one card library. Lesson cards advance a lesson, pay XP and feed progression; mini-games are standalone, replayable and scored on their own. The same components render both \u2014 what changes is who is counting.',
+    'Two systems share one card library. Lesson cards advance a lesson, pay points and feed progression; mini-games are standalone, replayable and scored on their own. The same components render both \u2014 what changes is who is counting.',
     wrap);
 }
 

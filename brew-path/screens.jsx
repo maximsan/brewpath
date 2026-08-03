@@ -437,7 +437,7 @@ function ShareStreakSheet({ streak, nextMilestone, frozen, open, onClose }) {
 // TreeScreen — the dedicated home of the living coffee tree, reached from the
 // Profile. Shows the current growth stage, progress toward the next, and a
 // 10-stage ladder. The growth animation itself plays at module completion.
-function TreeScreen({ stage, xp, coreDone, coreTotal, onClose }) {
+function TreeScreen({ stage, coreDone, coreTotal, onClose }) {
   const s = Math.max(1, Math.min(10, stage || 1));
   const names = window.STAGE_NAMES || [];
   const pretty = (n) => n ? n.charAt(0) + n.slice(1).toLowerCase() : '';
@@ -545,7 +545,7 @@ function SettingsScreen({ theme, onTheme, onClose, onAbout, onAccount, onSubscri
 
         <div className="px-24" style={{ paddingTop: 26 }}>
           <div className="smallcaps" style={{ marginBottom: 4 }}>ACCOUNT</div>
-          <SettingsRow label="Account and sync" value="maya@hey.com" onClick={onAccount}/>
+          <SettingsRow label="Account and sync" value={(window.USER || {}).email} onClick={onAccount}/>
           <SettingsRow label="Subscription" value={isPlus ? (inTrial ? 'Trial' : 'Plus') : 'Free'} onClick={onSubscription}/>
           {/* Data export is deferred to v2 — rendered only in the 'everything' scope. */}
           {showDataExport && <SettingsRow label="Download my data" onClick={() => setDataOpen(true)}/>}
@@ -578,7 +578,7 @@ function SettingsScreen({ theme, onTheme, onClose, onAbout, onAccount, onSubscri
         <ConfirmSheet open={resetOpen} danger
           eyebrow="RESET PROGRESS"
           title="Start again from seed?"
-          body="This wipes your trail and returns your coffee tree to a bare seed. There’s no undo — but every lesson is waiting to be re-grown."
+          body="Your tree returns to a bare seed and every lesson locks back to the start. There’s no undo."
           lines={progressSummary}
           confirmLabel="Reset everything"
           onConfirm={() => { setResetOpen(false); onReset && onReset(); }}
@@ -588,7 +588,7 @@ function SettingsScreen({ theme, onTheme, onClose, onAbout, onAccount, onSubscri
         <ConfirmSheet open={dataOpen}
           eyebrow="YOUR DATA"
           title="Get a copy of your data"
-          body="We’ll email an export of your progress, streaks, and tasting notes to maya@hey.com. It usually arrives within a few minutes."
+          body={'We’ll email an export of your progress, streaks and tasting notes to ' + ((window.USER || {}).email || '') + '. It usually arrives within a few minutes.'}
           confirmLabel="Email my data"
           cancelLabel="Cancel"
           onConfirm={() => setDataOpen(false)}
@@ -717,7 +717,7 @@ const APP_HEADER_TITLES = {
   })(),
   path:  { eyebrow: 'YOUR PATH', title: 'Beginner Foundations' },
   cards: { eyebrow: 'YOUR DECK', title: 'Collection' },
-  profile: { eyebrow: 'PROFILE', title: 'Hello, Taster.' },
+  profile: { eyebrow: 'PROFILE', title: 'Hello, ' + ((window.USER || {}).name || 'there') + '.' },
 };
 
 function AppHeader({ tab, variant = 'default', scrolled, dictLocked, onDict, savedLocked, onSaved, savedCount = 0, showDuel, duelLocked, duelCount = 0, onDuel, onSettings }) {
@@ -754,7 +754,7 @@ window.AppHeader = AppHeader;
 
 // LEARN TAB
 // ───────────────────────────────────────────────────────────
-function LearnTab({ freezeSaved = false, freezesHeld = 0, nextFreezeIn = 7, onDismissFreeze, onLesson, onGame, onStreak, onOpenModule, onOpenSaved, onOpenDictionary, onOpenTermOfDay, onOpenDuel, showDuel = true, savedCount, isLocked, state, brewChallenge, brewMode, brewAutoHide = true, brewXpAwarded = true, onBrewLog, onBrewSkip, onBrewDismiss, onBrewCard, brewCompleted, brewActiveId, brewSaved, onBrewUnsave, brewPathMode, onBrewAction }) {
+function LearnTab({ freezeSaved = false, freezesHeld = 0, nextFreezeIn = 7, onDismissFreeze, onLesson, onGame, onStreak, onOpenModule, onOpenSaved, onOpenDictionary, onOpenTermOfDay, onOpenDuel, showDuel = true, savedCount, isLocked, state, brewChallenge, brewMode, brewAutoHide = true, brewPointsAwarded = true, onBrewLog, onBrewSkip, onBrewDismiss, onBrewCard, brewCompleted, brewActiveId, brewSaved, onBrewUnsave, brewPathMode, onBrewAction }) {
   const lock = isLocked || (() => false);
   const tod = window.dictTermOfDay ? window.dictTermOfDay() : null;
   const termCount = (window.DICT_TERMS || []).length;
@@ -861,7 +861,7 @@ function LearnTab({ freezeSaved = false, freezesHeld = 0, nextFreezeIn = 7, onDi
 
         {/* 2 · Active Brew Challenge — below Continue Learning, above Up Next */}
         {brewChallenge && brewMode && window.ActiveBrewCard && (
-          <window.ActiveBrewCard challenge={brewChallenge} mode={brewMode} autoHide={brewAutoHide} showXp={brewXpAwarded}
+          <window.ActiveBrewCard challenge={brewChallenge} mode={brewMode} autoHide={brewAutoHide} showPoints={brewPointsAwarded}
             onLog={onBrewLog} onSkip={onBrewSkip} onDismiss={onBrewDismiss} onOpenCard={onBrewCard}/>
         )}
 
@@ -1330,16 +1330,16 @@ function PathTab({ onLesson, onOpenModule, brewCompleted, brewActiveId, brewSave
             return <CompactModuleRow key={mod.id} mod={mod} prereq={prereq} onOpenModule={onOpenModule} nav={false}/>;
           }
           // Module Brew Challenge — the only challenge shown on Path.
-          const mc = window.brewForModule ? window.brewForModule(mod.id) : null;
-          let mcState = 'locked';
-          if (mc) {
+          const moduleChallenge = window.brewForModule ? window.brewForModule(mod.id) : null;
+          let challengeState = 'locked';
+          if (moduleChallenge) {
             const allDone = mod.lessons.every(l => l.status === 'complete');
             // Active wins over completed: a replay of an already-earned
             // challenge shows live progress on the Path, not the recap state.
-            if (brewActiveId === mc.id) mcState = 'active';
-            else if (brewCompleted && brewCompleted.has(mc.id)) mcState = 'completed';
-            else if (allDone) mcState = 'available';
-            if (brewPathMode && brewPathMode !== 'auto' && mod.id === 'm1') mcState = brewPathMode;
+            if (brewActiveId === moduleChallenge.id) challengeState = 'active';
+            else if (brewCompleted && brewCompleted.has(moduleChallenge.id)) challengeState = 'completed';
+            else if (allDone) challengeState = 'available';
+            if (brewPathMode && brewPathMode !== 'auto' && mod.id === 'm1') challengeState = brewPathMode;
           }
           const canCollapse = allDone && !mod.locked;
           const open = !canCollapse || !!expandedMods[mod.id];
@@ -1442,8 +1442,8 @@ function PathTab({ onLesson, onOpenModule, brewCompleted, brewActiveId, brewSave
                   </React.Fragment>
                 );
               })}
-              {mc && mcState !== 'locked' && window.PathChallengeNode && (
-                <window.PathChallengeNode challenge={mc} state={mcState} onAction={onBrewAction}/>
+              {moduleChallenge && challengeState !== 'locked' && window.PathChallengeNode && (
+                <window.PathChallengeNode challenge={moduleChallenge} state={challengeState} onAction={onBrewAction}/>
               )}
               </div>
             </div>
@@ -2416,7 +2416,7 @@ function ProfileTab({ state, theme, onTheme, brewDone, brewTotal, frozenDays, on
           <h1 className="ff-display" style={{
             fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em',
             margin: 0, color: 'var(--ink)',
-          }}>Hello, Taster.</h1>
+          }}>Hello, {(window.USER || {}).name || 'there'}.</h1>
         </div>
 
         {/* Tree hero — one clear “I’m growing” signal */}
@@ -2482,7 +2482,7 @@ function ProfileTab({ state, theme, onTheme, brewDone, brewTotal, frozenDays, on
         <div className="px-24" style={{ paddingTop: 14 }}>
           <div className="ff-mono" style={{ fontSize: 'var(--t-label)', letterSpacing: '0.06em', color: 'var(--ink-mute)', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
             <PointsBean size={13} crease="var(--bg)"/>
-            {lessonsDone} lesson{lessonsDone === 1 ? '' : 's'} · {state.xp} points
+            {lessonsDone} lesson{lessonsDone === 1 ? '' : 's'} · {state.points} points
           </div>
         </div>
 
@@ -2557,7 +2557,7 @@ function ProfileTab({ state, theme, onTheme, brewDone, brewTotal, frozenDays, on
                 {lock('studio') && window.PlusPill && <window.PlusPill/>}
               </div>
               <div className="ff-display" style={{ fontSize: 'var(--t-heading)', fontWeight: 400, letterSpacing: '-0.01em', color: 'var(--ink)', lineHeight: 1.05 }}>Dress up Roasty</div>
-              <div style={{ fontSize: 'var(--t-support)', color: 'var(--ink-mute)', marginTop: 3 }}>Hats, skins and more</div>
+              <div style={{ fontSize: 'var(--t-support)', color: 'var(--ink-mute)', marginTop: 3 }}>Hats, outfits and your plant</div>
             </div>
             <window.Chevron/>
           </button>
@@ -2646,7 +2646,7 @@ function ThemeRow({ theme, onTheme }) {
                     border: '1px solid ' + (theme === k ? 'var(--accent)' : 'var(--rule)'),
                     background: theme === k ? 'var(--accent)' : 'transparent',
                     color: theme === k ? 'var(--accent-ink)' : 'var(--ink)',
-                    padding: '10px 8px',
+                    padding: '14px 8px', minHeight: 44,
                     borderRadius: 2,
                     fontSize: 'var(--t-label)',
                     fontWeight: 500,
@@ -2662,38 +2662,12 @@ function ThemeRow({ theme, onTheme }) {
   );
 }
 
-function SettingsRow({ label, sub, value, accent, dim, toggle, toggleOn, onToggle, onClick }) {
-  const Toggle = window.SettingsToggle;
-  return (
-    <div onClick={toggle ? undefined : onClick} style={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      gap: 16,
-      padding: '16px 0',
-      borderBottom: '1px solid var(--rule)',
-      cursor: toggle ? 'default' : 'pointer',
-      opacity: dim ? 0.55 : 1,
-      transition: 'opacity 180ms ease',
-    }}>
-      <span style={{ minWidth: 0, flex: 1 }}>
-        <span style={{ display: 'block', fontSize: 'var(--t-body)', color: accent ? 'var(--berry)' : 'var(--ink)', whiteSpace: 'nowrap' }}>{label}</span>
-        {sub && <span style={{ display: 'block', fontSize: 'var(--t-label)', lineHeight: 1.45, color: 'var(--ink-mute)', marginTop: 3, textWrap: 'pretty' }}>{sub}</span>}
-      </span>
-      {toggle && Toggle && (
-        <Toggle on={toggleOn} onChange={onToggle} label={label}/>
-      )}
-      {!toggle && value && (
-        <span style={{ display: 'flex', alignItems: 'center', gap: 10, whiteSpace: 'nowrap', minWidth: 0, overflow: 'hidden' }}>
-          <span className="ff-mono" style={{ fontSize: 'var(--t-support)', color: 'var(--ink-mute)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{value}</span>
-          <window.Chevron/>
-        </span>
-      )}
-      {!toggle && !value && (
-        <window.Chevron/>
-      )}
-    </div>
-  );
+// SettingsRow — alias of the one row component (NavRow, settings.jsx). Kept as a
+// name because Settings call sites read better with it; it adds no behaviour, so
+// the two can never drift apart again.
+function SettingsRow(props) {
+  const Row = window.NavRow;
+  return Row ? <Row {...props}/> : null;
 }
 
 // ───────────────────────────────────────────────────────────

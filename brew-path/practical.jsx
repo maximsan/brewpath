@@ -31,10 +31,10 @@ window.TuneMark = TuneMark;
 // The signature interaction of this update. A scenario ("my cup tastes sour
 // and thin"), one question ("what would you try first?"), a few options, and
 // non-punitive feedback that names the cause. Scored like an MCQ so it feeds
-// the lesson's perfect-run + XP the same way.
+// the lesson's perfect-run + scoring the same way.
 // card = { kind:'tastefix', tags:['SOUR','THIN'], scenario, prompt, choices:[{t,correct}], explain }
 // ───────────────────────────────────────────────────────────
-function TasteFixCard({ card, onContinue, onXp }) {
+function TasteFixCard({ card, onContinue, onCorrect }) {
   const [picked, setPicked] = React.useState(null);
   // Render order only — the fix is authored first in every tastefix card, so
   // without this the answer is always the top button.
@@ -50,7 +50,7 @@ function TasteFixCard({ card, onContinue, onXp }) {
   const handlePick = (i) => {
     if (picked !== null) return;
     setPicked(i);
-    if (i === correctIdx && onXp) onXp(2);
+    if (i === correctIdx && onCorrect) onCorrect();
   };
   const right = picked !== null && picked === correctIdx;
 
@@ -92,7 +92,7 @@ function TasteFixCard({ card, onContinue, onXp }) {
 
   return (
     <div className="px-24" style={{ display: 'flex', flexDirection: 'column', flex: '1 0 auto', minHeight: 600 }}>
-      <GameCue kind="tastefix">Taste Fix</GameCue>
+      <CardCue kind="tastefix">Taste Fix</CardCue>
 
       {/* prerequisites — the cup you're fixing + its setup, one crafted card that reacts to your fix */}
       <div ref={panelRef} style={{
@@ -405,7 +405,6 @@ const TRAINING = {
   },
 };
 window.TRAINING = TRAINING;
-window.trainingByVariant = (v) => TRAINING[v] || null;
 
 // The full training card — used inside lessons + the card-detail sheet.
 function TrainingCard({ variant, inSheet = false, hideHeader = false }) {

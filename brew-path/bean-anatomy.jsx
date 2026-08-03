@@ -160,7 +160,7 @@ window.PROCESS_LABEL = PROCESS_LABEL;
 // card = { kind:'bagpick', bag, origin, bean, cues:[{id,label,text}], tell,
 //          options:['washed','honey','natural'], answer, prompt, explain }
 // ───────────────────────────────────────────────────────────
-function BagPickCard({ card, onContinue, onXp }) {
+function BagPickCard({ card, onContinue, onCorrect }) {
   const [seen, setSeen] = useStateB(() => new Set());
   const [picked, setPicked] = useStateB(null);
   // Render order only — option identity is the process key, not the position.
@@ -177,17 +177,17 @@ function BagPickCard({ card, onContinue, onXp }) {
 
   const inspect = (id) => {
     if (picked !== null) return;
-    setSeen(s => { const n = new Set(s); n.add(id); return n; });
+    setSeen(prev => { const next = new Set(prev); next.add(id); return next; });
   };
   const pick = (opt) => {
     if (picked !== null) return;
     setPicked(opt);
-    if (opt === card.answer && onXp) onXp(3);
+    if (opt === card.answer && onCorrect) onCorrect();
   };
 
   return (
     <div className="px-24" style={{ display: 'flex', flexDirection: 'column', flex: '1 0 auto', minHeight: 600 }}>
-      <GameCue kind="bagpick">Blind bag · read the beans</GameCue>
+      <CardCue kind="bagpick">Blind bag · read the beans</CardCue>
 
       {/* the bag: no label until you commit */}
       <div style={{

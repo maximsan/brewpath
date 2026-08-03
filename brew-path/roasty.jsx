@@ -16,7 +16,7 @@ const { useState: useStateRO, useEffect: useEffectRO, useRef: useRefRO } = React
 .roasty .face-wrong,
 .roasty .face-lesson,
 .roasty .face-module,
-.roasty .face-xp,
+.roasty .face-points,
 .roasty .face-card,
 .roasty .face-sleep,
 .roasty .face-awake { display: none; }
@@ -25,19 +25,19 @@ const { useState: useStateRO, useEffect: useEffectRO, useRef: useRefRO } = React
 .roasty[data-state="wrong"]   .face-wrong   { display: block; }
 .roasty[data-state="lesson"]  .face-lesson  { display: block; }
 .roasty[data-state="module"]  .face-module  { display: block; }
-.roasty[data-state="xp"]      .face-xp      { display: block; }
+.roasty[data-state="points"]      .face-points      { display: block; }
 .roasty[data-state="card"]    .face-card    { display: block; }
 .roasty[data-state="sleep"]   .face-sleep   { display: block; }
 .roasty[data-state="awake"]   .face-awake   { display: block; }
 
 /* ── state→particle visibility ── */
-.roasty .confetti, .roasty .sparkles, .roasty .xp-burst,
+.roasty .confetti, .roasty .sparkles, .roasty .points-burst,
 .roasty .card-glow, .roasty .module-rays, .roasty .wrong-x,
 .roasty .sleep-zzz { display: none; }
 .roasty[data-state="correct"] .sparkles,
 .roasty[data-state="lesson"]  .confetti,
 .roasty[data-state="module"]  .module-rays,
-.roasty[data-state="xp"]      .xp-burst,
+.roasty[data-state="points"]      .points-burst,
 .roasty[data-state="card"]    .card-glow,
 .roasty[data-state="wrong"]   .wrong-x,
 .roasty[data-state="sleep"]   .sleep-zzz { display: block; }
@@ -62,7 +62,7 @@ const { useState: useStateRO, useEffect: useEffectRO, useRef: useRefRO } = React
 .roasty[data-state="correct"] .sprout-group,
 .roasty[data-state="lesson"] .sprout-group,
 .roasty[data-state="module"] .sprout-group,
-.roasty[data-state="xp"] .sprout-group,
+.roasty[data-state="points"] .sprout-group,
 .roasty[data-state="card"] .sprout-group {
   animation: roasty-leaf-sway 2.8s ease-in-out infinite;
 }
@@ -123,14 +123,14 @@ const { useState: useStateRO, useEffect: useEffectRO, useRef: useRefRO } = React
   animation: roasty-ray-radiate 1600ms cubic-bezier(.2,.6,.3,1) infinite;
 }
 
-/* ── XP: rise ── */
-@keyframes roasty-xp-rise {
+/* ── Points: rise ── */
+@keyframes roasty-points-rise {
   0%   { transform: translateY(0); opacity: 0; }
   20%  { opacity: 1; }
   100% { transform: translateY(-50px); opacity: 0; }
 }
-.roasty[data-state="xp"] .xp-burst {
-  animation: roasty-xp-rise 1.3s ease-out;
+.roasty[data-state="points"] .points-burst {
+  animation: roasty-points-rise 1.3s ease-out;
 }
 
 /* ── card: shimmer ── */
@@ -334,7 +334,7 @@ function roastyHatArt(kind) {
 
 // ─── Roasty SVG component ─────────────────────────────────
 let _roastyCounter = 0;
-function Roasty({ state = 'idle', size = 160, replayKey, style, roast, hat, gear, sprout }) {
+function Roasty({ state = 'idle', size = 160, replayKey, style, roast, hat, gear, sprout, pointsAmount = 10 }) {
   const idRef = useRefRO(null);
   if (idRef.current === null) idRef.current = 'r' + (++_roastyCounter);
   const u = idRef.current;
@@ -492,8 +492,8 @@ function Roasty({ state = 'idle', size = 160, replayKey, style, roast, hat, gear
             <ellipse cx="100" cy="188" rx="5" ry="4" fill="#C47654" opacity="0.7"/>
           </g>
 
-          {/* XP face — wink */}
-          <g className="face-xp">
+          {/* Points face — wink */}
+          <g className="face-points">
             <ellipse cx="80"  cy="148" rx="10" ry="12" fill="#FBF7EE"/>
             <ellipse cx="80"  cy="151" rx="5"  ry="6"  fill="#2A1B12"/>
             <circle  cx="82"  cy="148" r="1.7" fill="#FBF7EE"/>
@@ -568,11 +568,11 @@ function Roasty({ state = 'idle', size = 160, replayKey, style, roast, hat, gear
           </g>
         </g>
 
-        {/* XP burst */}
-        <g className="xp-burst">
+        {/* Points burst */}
+        <g className="points-burst">
           <rect x="68" y="42" width="64" height="24" rx="2" fill="var(--accent)"/>
           <text x="100" y="59" textAnchor="middle" fontFamily="IBM Plex Mono, monospace"
-                fontSize="13" fontWeight="500" fill="var(--accent-ink)" letterSpacing="1">+15 PTS</text>
+                fontSize="13" fontWeight="500" fill="var(--accent-ink)" letterSpacing="1">+{pointsAmount} PTS</text>
         </g>
 
         {/* sleep Zzz */}
@@ -633,12 +633,7 @@ function RoastyLoadingScreen({ onDone, message = 'Brewing your lesson' }) {
           85%  { top: 41%; opacity: 1; transform: translateX(-50%) scale(1.6, 0.4); }
           100% { top: 41%; opacity: 0; transform: translateX(-50%) scale(1.6, 0.4); }
         }
-        @keyframes loading-sprout-grow {
-          0%   { transform: scale(0.15); }
-          60%  { transform: scale(1.18); }
-          100% { transform: scale(1); }
-        }
-        @keyframes loading-dot-pulse {
+@keyframes loading-dot-pulse {
           0%, 100% { opacity: 0.22; transform: scale(1); }
           50%      { opacity: 1;    transform: scale(1.4); }
         }
@@ -818,7 +813,7 @@ const ROASTY_ANIM_META = {
   idle:    { label: 'Idle',            note: 'Resting · breathes, leaf sways', beat: null },
   correct: { label: 'Correct answer',  note: 'Hop + sparkles',                 beat: 1750 },
   wrong:   { label: 'Wrong answer',    note: 'Soft wobble',                    beat: 1350 },
-  xp:      { label: 'Points earned',   note: 'Wink + points rise',             beat: 2150 },
+  points:  { label: 'Points earned',   note: 'Wink + points rise',             beat: 2150 },
   lesson:  { label: 'Lesson complete', note: 'Jump + confetti',                beat: 1950 },
   module:  { label: 'Module complete', note: 'Grow + rays',                   beat: 1850 },
   card:    { label: 'Card unlocked',   note: 'Shimmer + glow',                 beat: null },

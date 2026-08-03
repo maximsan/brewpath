@@ -1,6 +1,6 @@
 // brew-challenge.jsx — Active Brew Challenge feature.
 // A Brew Challenge is a small, optional real-life coffee task tied to a lesson
-// or module. It never blocks learning, streaks, XP, cards, or progress.
+// or module. It never blocks learning, streaks, points, cards, or progress.
 // This file owns: the challenge content model + lookups, the "challenge stamp"
 // mark, the Today card (active / completed), the Log Result sheet, the lesson-
 // completion suggestion block, and the full Module Brew Challenge screen.
@@ -217,7 +217,7 @@ window.BrewActions = BrewActions;
 // mode: 'active'  → live task with Log Result / Skip
 //       'completed' → brief confirmation with the earned stamp + dismiss
 // ───────────────────────────────────────────────────────────
-function ActiveBrewCard({ challenge, mode, onLog, onSkip, onDismiss, onOpenCard, autoHide = true, showXp = true }) {
+function ActiveBrewCard({ challenge, mode, onLog, onSkip, onDismiss, onOpenCard, autoHide = true, showPoints = true }) {
   // Completed is a transient confirmation, not a pinned card: it lingers a few
   // seconds, fades, and clears itself. The lasting record is the Path node +
   // card stamp. The ✕ remains for immediate dismissal.
@@ -259,7 +259,7 @@ function ActiveBrewCard({ challenge, mode, onLog, onSkip, onDismiss, onOpenCard,
           <div style={{ minWidth: 0 }}>
             <div className="ff-display" style={{ fontSize: 'var(--t-heading)', fontWeight: 400, letterSpacing: '-0.01em', color: 'var(--ink)', lineHeight: 1.1 }}>{challenge.title}</div>
             <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-              {showXp && <span className="cheer-xp">+5 PTS</span>}
+              {showPoints && <span className="cheer-points">+5 PTS</span>}
               {card && (
                 <button onClick={() => onOpenCard && onOpenCard(card)} className="ff-mono" style={{
                   appearance: 'none', border: 'none', background: 'transparent', cursor: 'pointer', padding: 0,
@@ -324,7 +324,7 @@ function LogResultSheet({ challenge, open, onClose, onComplete }) {
   const reactions = (challenge && challenge.reactions) || [];
 
   const markDone = () => {
-    if (onComplete) onComplete(pick); // parent records completion + awards XP
+    if (onComplete) onComplete(pick); // parent records completion + awards points
     onClose();                        // close straight back to the completed card on Learn
   };
 

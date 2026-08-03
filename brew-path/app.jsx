@@ -19,7 +19,8 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "brewPath":      "auto",
   "progress":      "default",
   "tasteFixReact": true,
-  "tasteFixSetup": "card"
+  "tasteFixSetup": "card",
+  "restoreOutcome": "plus"
 }/*EDITMODE-END*/;
 
 // ── Deep links ───────────────────────────────────────────────
@@ -47,7 +48,7 @@ const SCREEN_ROUTES = {
   lesson:           { view: 'lesson', lessonId: 'm1l2' },
   // ── Two distinct game systems ──
   // 1. LESSON CARDS: interactive steps INSIDE a lesson. They advance the
-  //    lesson, grant lesson XP, and feed progression. The `card-*` deep-links
+  //    lesson, grant lesson points, and feed progression. The `card-*` deep-links
   //    open a lesson straight at a card of that kind (for the screens overview).
   'card-mcq':       { view: 'lesson', lessonId: 'm1l1', startKind: 'mcq' },
   'card-predict':   { view: 'lesson', lessonId: 'm1l2', startKind: 'predict' },
@@ -70,7 +71,7 @@ const SCREEN_ROUTES = {
   'lesson-taste':   { view: 'lesson', lessonId: 'm5l3' },
   'card-training':  { view: 'app', tab: 'cards', sheet: true, cardId: 'tr-extraction' },
   // 2. MINI-GAMES: standalone, replayable challenges with their own
-  //    intro → play → results flow. They never touch lesson XP / progression.
+  //    intro → play → results flow. They never touch lesson points / progression.
   //    The `game-*` deep-links open a mini-game intro.
   'game-intro':     { view: 'game-intro', gameId: 'g-match' },
   'game-flavor':    { view: 'game-intro', gameId: 'g-flavor' },
@@ -94,13 +95,13 @@ const SCREEN_ROUTES = {
   'rewarded-ad':    { view: 'rewarded-ad', adFeature: 'dictionary' },
   'roasty-gift':    { view: 'roasty-gift' },
   // Reward states
-  'lesson-complete':{ view: 'lesson-complete', lessonId: 'm1l2', prevXp: 110, newXp: 120 },
-  'lesson-complete-weak':{ view: 'lesson-complete', lessonId: 'm1l2', prevXp: 110, newXp: 120, result: { correct: 2, total: 7 } },
-  'lesson-complete-perfect':{ view: 'lesson-complete', lessonId: 'm1l2', prevXp: 110, newXp: 120, result: { correct: 7, total: 7 } },
-  'module-complete':{ view: 'module-complete', lessonId: 'm1l3', prevXp: 110, newXp: 150 },
-  'module-card':    { view: 'module-card',     lessonId: 'm1l3', prevXp: 110, newXp: 150 },
+  'lesson-complete':{ view: 'lesson-complete', lessonId: 'm1l2', prevPoints: 110, newPoints: 120 },
+  'lesson-complete-weak':{ view: 'lesson-complete', lessonId: 'm1l2', prevPoints: 110, newPoints: 120, result: { correct: 2, total: 7 } },
+  'lesson-complete-perfect':{ view: 'lesson-complete', lessonId: 'm1l2', prevPoints: 110, newPoints: 120, result: { correct: 7, total: 7 } },
+  'module-complete':{ view: 'module-complete', lessonId: 'm1l3', prevPoints: 110, newPoints: 150 },
+  'module-card':    { view: 'module-card',     lessonId: 'm1l3', prevPoints: 110, newPoints: 150 },
   // ── Active Brew Challenge ──
-  'module-challenge':    { view: 'module-challenge', lessonId: 'm1l3', prevXp: 110, newXp: 150 },
+  'module-challenge':    { view: 'module-challenge', lessonId: 'm1l3', prevPoints: 110, newPoints: 150 },
   'today-challenge':     { view: 'app', tab: 'learn', brewToday: 'active' },
   'today-challenge-done':{ view: 'app', tab: 'learn', brewToday: 'completed' },
   'today-nochallenge':   { view: 'app', tab: 'learn', brewToday: 'none' },
@@ -175,9 +176,9 @@ function App() {
   // ── Theme (appearance) ──
   const [themePref, setThemePref] = useStateA(readThemePref);
   const [systemDark, setSystemDark] = useStateA(systemPrefersDark);
-  const setTheme = (k) => {
-    setThemePref(k);
-    try { localStorage.setItem('cq-theme', k); } catch (e) {}
+  const setTheme = (pref) => {
+    setThemePref(pref);
+    try { localStorage.setItem('cq-theme', pref); } catch (e) {}
   };
   // Track the OS color scheme so `system` follows it live.
   useEffectA(() => {
@@ -207,10 +208,10 @@ function App() {
   const [completedLesson, setCompletedLesson] = useStateA(
     _route && _route.lessonId && (_route.view === 'lesson-complete' || _route.view === 'module-complete' || _route.view === 'module-card' || _route.view === 'module-challenge')
       ? (() => {
-          const l = findLessonOrPlaceholder(_route.lessonId);
+          const lesson = findLessonOrPlaceholder(_route.lessonId);
           // Demo seed so the deep-linked result screen previews score + state.
           const result = _route.result || { correct: 5, total: 7 };
-          return { ...l, result, lessonState: window.lessonStateFromResult(result) };
+          return { ...lesson, result, lessonState: window.lessonStateFromResult(result) };
         })()
       : null
   );
@@ -250,7 +251,7 @@ function App() {
   }, [favorites]);
   // Only lessons / terms / guides land on the Saved shelf, so only those count
   // against the free tier's soft cap.
-  const isSavedKey = (k) => /^(l|t|g):/.test(k);
+  const isSavedKey = (key) => /^(l|t|g):/.test(key);
   const toggleFavorite = (key) => {
     // Free tier holds a limited shelf; Plus makes saving unlimited. Removing is
     // always allowed, so a capped free user can still curate.
@@ -260,9 +261,9 @@ function App() {
       return;
     }
     setFavorites(prev => {
-      const n = new Set(prev);
-      if (n.has(key)) n.delete(key); else n.add(key);
-      return n;
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key); else next.add(key);
+      return next;
     });
   };
 
@@ -283,9 +284,9 @@ function App() {
   const ATLAS_RANK_STATE = ['not-explored', 'discovered', 'lesson', 'tasted'];
   const advanceAtlas = (slug, targetRank) => setAtlasData(d => {
     const cur = window.atlasRank(d.states[slug]);
-    const nr = Math.max(cur, targetRank);
-    if (nr === cur && d.states[slug]) return d;
-    return { ...d, states: { ...d.states, [slug]: ATLAS_RANK_STATE[nr] } };
+    const nextRank = Math.max(cur, targetRank);
+    if (nextRank === cur && d.states[slug]) return d;
+    return { ...d, states: { ...d.states, [slug]: ATLAS_RANK_STATE[nextRank] } };
   });
   const atlasDiscover         = (slug) => advanceAtlas(slug, 1);
   const atlasCompleteActivity = (slug) => {
@@ -300,14 +301,14 @@ function App() {
     if (isTasted) {
       setAtlasData(d => {
         const back = (d.tastedFrom && d.tastedFrom[slug]) || 'lesson';
-        const tf = { ...(d.tastedFrom || {}) }; delete tf[slug];
-        return { ...d, states: { ...d.states, [slug]: back }, tastedFrom: tf };
+        const tastedFrom = { ...(d.tastedFrom || {}) }; delete tastedFrom[slug];
+        return { ...d, states: { ...d.states, [slug]: back }, tastedFrom };
       });
       if (freshSlug === slug) setFreshSlug(null);
     } else {
       setAtlasData(d => {
-        const tf = { ...(d.tastedFrom || {}), [slug]: d.states[slug] || 'discovered' };
-        return { ...d, states: { ...d.states, [slug]: 'tasted' }, tastedFrom: tf };
+        const tastedFrom = { ...(d.tastedFrom || {}), [slug]: d.states[slug] || 'discovered' };
+        return { ...d, states: { ...d.states, [slug]: 'tasted' }, tastedFrom };
       });
       setFreshSlug(slug);
       setStampAward({ slug, state: 'tasted' });
@@ -408,12 +409,12 @@ function App() {
   const openCustomize = () => setView('studio');
 
   // ── Progression state ──
-  // Seed XP from the real completed-lesson total so the growth tree matches
+  // Seed points from the real completed-lesson total so the growth tree matches
   // visible progress (only lesson 1 is done → an early sprout, not a full bush).
   const [progression, setProgression] = useStateA({
     streak: 7,
-    xp:      _route && _route.newXp  != null ? _route.newXp  : 10,
-    prevXp:  _route && _route.prevXp != null ? _route.prevXp : 10,
+    points:  _route && _route.newPoints  != null ? _route.newPoints  : 10,
+    prevPoints:  _route && _route.prevPoints != null ? _route.prevPoints : 10,
     completed: new Set(['m1l1']),
     // Best-ever { correct, total } per lesson id. Drives lesson state
     // (Needs Practice / Completed / Mastered / Perfect). We keep the highest
@@ -422,7 +423,7 @@ function App() {
   });
 
   // Surface a stable `state` reference for legacy callers (LearnTab, StreakScreen, ProfileTab).
-  const state = { streak: progression.streak, xp: progression.xp };
+  const state = { streak: progression.streak, points: progression.points };
 
   // ── Streak freeze ──
   // Earned, scarce, and spent for you: one freeze per 7 consecutive days, at most
@@ -473,17 +474,17 @@ function App() {
   };
   const effectiveCompleted = React.useMemo(() => {
     if (t.progress === 'm1-complete' && window.MODULES && window.MODULES[0]) {
-      const s = new Set(progression.completed);
-      window.MODULES[0].lessons.forEach(l => s.add(l.id));
-      return s;
+      const ids = new Set(progression.completed);
+      window.MODULES[0].lessons.forEach(lesson => ids.add(lesson.id));
+      return ids;
     }
     if (t.progress === 'states-demo') {
       return new Set([...progression.completed, ...Object.keys(DEMO_BEST)]);
     }
     if (t.progress === 'all-unlocked' && window.MODULES) {
-      const s = new Set(progression.completed);
-      window.MODULES.forEach(m => m.lessons.forEach(l => s.add(l.id)));
-      return s;
+      const ids = new Set(progression.completed);
+      window.MODULES.forEach(mod => mod.lessons.forEach(lesson => ids.add(lesson.id)));
+      return ids;
     }
     return progression.completed;
   }, [t.progress, progression.completed]);
@@ -509,8 +510,8 @@ function App() {
   // (each unlocks a card stamp). Skipping/expiry just clears the active one —
   // no archive, no penalty. Persisted across refreshes.
   const [brew, setBrew] = useStateA(() => {
-    let s = null; try { s = JSON.parse(localStorage.getItem('cq-brew')); } catch (e) {}
-    if (s && Array.isArray(s.completed)) return { activeId: s.activeId || null, startedAt: s.startedAt || null, completed: new Set(s.completed), saved: new Set(Array.isArray(s.saved) ? s.saved : []) };
+    let stored = null; try { stored = JSON.parse(localStorage.getItem('cq-brew')); } catch (e) {}
+    if (stored && Array.isArray(stored.completed)) return { activeId: stored.activeId || null, startedAt: stored.startedAt || null, completed: new Set(stored.completed), saved: new Set(Array.isArray(stored.saved) ? stored.saved : []) };
     const _brewDemo = _initial && ['card-stamp', 'card-stamp-locked', 'path-challenge', 'path-challenge-open', 'today-challenge-done'].indexOf(_initial) >= 0;
     return { activeId: null, startedAt: null, completed: new Set(_brewDemo ? ['bc-m1l1'] : []), saved: new Set() };
   });
@@ -518,37 +519,89 @@ function App() {
     try { localStorage.setItem('cq-brew', JSON.stringify({ activeId: brew.activeId, startedAt: brew.startedAt, completed: [...brew.completed], saved: [...brew.saved] })); } catch (e) {}
   }, [brew]);
   const [justLoggedId, setJustLoggedId] = useStateA(null); // ephemeral 'completed' card on Today
-  const [justLoggedXp, setJustLoggedXp] = useStateA(true); // whether that completion earned points (first time only)
+  const [justLoggedPoints, setJustLoggedPoints] = useStateA(true); // whether that completion earned points (first time only)
   const [logSheetId, setLogSheetId]     = useStateA(_route && _route.logSheet ? 'bc-m1l2' : null); // Log Result sheet target
   const [brewRecap, setBrewRecap]       = useStateA(null); // read-only recap for a completed challenge
   // Active only within the 48h window; past that it silently drops off Today.
   const brewActiveId = (brew.activeId && brew.startedAt && (Date.now() - brew.startedAt) <= (window.BREW_WINDOW_MS || 1)) ? brew.activeId : null;
   // Start (or replay) a challenge. Replaying a completed one is allowed and
-  // unlimited — it never affects XP, module progress, or the earned stamp. A
+  // unlimited — it never affects points, module progress, or the earned stamp. A
   // completed challenge only returns to Today when the user explicitly asks
   // (via the recap sheet); it never resurfaces on its own.
   // Starting a challenge makes it active and clears it from the saved queue.
   // If a different, uncompleted challenge was active, park it back into saved
   // (same rule as "Save for later") instead of silently dropping it.
-  const startBrew  = (id) => { if (!id) return; setJustLoggedId(null); setBrew(b => { const s = new Set(b.saved); s.delete(id); if (b.activeId && b.activeId !== id && !b.completed.has(b.activeId)) s.add(b.activeId); return { ...b, activeId: id, startedAt: Date.now(), saved: s }; }); };
+  const startBrew = (id) => {
+    if (!id) return;
+    setJustLoggedId(null);
+    setBrew(prev => {
+      const saved = new Set(prev.saved);
+      saved.delete(id);
+      if (prev.activeId && prev.activeId !== id && !prev.completed.has(prev.activeId)) saved.add(prev.activeId);
+      return { ...prev, activeId: id, startedAt: Date.now(), saved };
+    });
+  };
   // "Save for later": park the active challenge into the saved queue (unless it's
   // already completed — replays don't re-queue) and clear it off Today.
-  const skipBrew   = () => setBrew(b => { const s = new Set(b.saved); if (b.activeId && !b.completed.has(b.activeId)) s.add(b.activeId); return { ...b, activeId: null, startedAt: null, saved: s }; });
+  const skipBrew = () => setBrew(prev => {
+    const saved = new Set(prev.saved);
+    if (prev.activeId && !prev.completed.has(prev.activeId)) saved.add(prev.activeId);
+    return { ...prev, activeId: null, startedAt: null, saved };
+  });
   // Explicit save without starting (from the lesson-complete suggestion).
   // A challenge can only be saved once its source lesson has been reached.
-  const brewReached = (id) => { const ch = window.brewById && window.brewById(id); if (!ch) return false; if (ch.type === 'module') { const mod = MODULES.find(m => m.id === ch.moduleId); return !!mod && mod.lessons.every(l => l.status === 'complete'); } if (!ch.lessonId) return false; const ctx = window.findLessonContext && window.findLessonContext(ch.lessonId); if (!ctx) return false; return ctx.lesson.status === 'complete'; };
-  const saveBrew   = (id) => { if (!id || !brewReached(id)) return; setBrew(b => { if (b.completed.has(id)) return b; const s = new Set(b.saved); s.add(id); return { ...b, saved: s }; }); };
-  const unsaveBrew = (id) => setBrew(b => { const s = new Set(b.saved); s.delete(id); return { ...b, saved: s }; });
-  const logBrewDone = (id) => { setBrew(b => { const c = new Set(b.completed); c.add(id); const s = new Set(b.saved); s.delete(id); return { ...b, activeId: null, startedAt: null, completed: c, saved: s }; }); setLogSheetId(null); setJustLoggedId(id); };
+  const brewReached = (id) => {
+    const challenge = window.brewById && window.brewById(id);
+    if (!challenge) return false;
+    if (challenge.type === 'module') {
+      const mod = MODULES.find(m => m.id === challenge.moduleId);
+      return !!mod && mod.lessons.every(lesson => lesson.status === 'complete');
+    }
+    if (!challenge.lessonId) return false;
+    const context = window.findLessonContext && window.findLessonContext(challenge.lessonId);
+    return !!context && context.lesson.status === 'complete';
+  };
+  const saveBrew = (id) => {
+    if (!id || !brewReached(id)) return;
+    setBrew(prev => {
+      if (prev.completed.has(id)) return prev;
+      const saved = new Set(prev.saved);
+      saved.add(id);
+      return { ...prev, saved };
+    });
+  };
+  const unsaveBrew = (id) => setBrew(prev => {
+    const saved = new Set(prev.saved);
+    saved.delete(id);
+    return { ...prev, saved };
+  });
+  const logBrewDone = (id) => {
+    setBrew(prev => {
+      const completed = new Set(prev.completed);
+      completed.add(id);
+      const saved = new Set(prev.saved);
+      saved.delete(id);
+      return { ...prev, activeId: null, startedAt: null, completed, saved };
+    });
+    setLogSheetId(null);
+    setJustLoggedId(id);
+  };
   // Complete from the Log Result reflection sheet: record the stamp and award
   // +5 PTS — but only on the FIRST completion; replays re-stamp nothing.
   const completeBrew = (id) => {
     if (!id) return;
     const first = !brew.completed.has(id);
-    setBrew(b => { const s = new Set(b.saved); s.delete(id); if (b.completed.has(id)) return { ...b, activeId: null, startedAt: null, saved: s }; const c = new Set(b.completed); c.add(id); return { ...b, activeId: null, startedAt: null, completed: c, saved: s }; });
+    setBrew(prev => {
+      const saved = new Set(prev.saved);
+      saved.delete(id);
+      if (prev.completed.has(id)) return { ...prev, activeId: null, startedAt: null, saved };
+      const completed = new Set(prev.completed);
+      completed.add(id);
+      return { ...prev, activeId: null, startedAt: null, completed, saved };
+    });
     setJustLoggedId(id);
-    setJustLoggedXp(first);
-    if (first) setProgression(p => ({ ...p, prevXp: p.xp, xp: p.xp + 5 }));
+    setJustLoggedPoints(first);
+    if (first) setProgression(p => ({ ...p, prevPoints: p.points, points: p.points + 5 }));
   };
 
   // Apply theme/voice/cadence to the document root. The theme preference owns
@@ -596,19 +649,19 @@ function App() {
   const startLesson = (id) => {
     setActiveLessonId(id);
     setReviewActive(false);
-    setProgression(p => ({ ...p, prevXp: p.xp }));
+    setProgression(p => ({ ...p, prevPoints: p.points }));
     setView('lesson');
   };
 
   // Open a lesson from a list. Completed lessons go through a review-confirm
-  // sheet first (no new XP); fresh lessons start immediately.
+  // sheet first (no new points); fresh lessons start immediately.
   const openLesson = (id) => {
     setLessonOrigin(view === 'module' ? 'module' : 'app');
     if (isLessonComplete(id)) setReviewLessonId(id);
     else startLesson(id);
   };
 
-  // Confirmed from the review sheet → replay in review mode (no XP, no reward).
+  // Confirmed from the review sheet → replay in review mode (no points, no reward).
   const startReview = () => {
     const id = reviewLessonId;
     setReviewLessonId(null);
@@ -659,9 +712,9 @@ function App() {
     }
   }, [view]);
   const closeTerm = () => {
-    const r = termReturn;
+    const origin = termReturn;
     setTermReturn(null);
-    if (r) { setActiveLessonId(r.lessonId || activeLessonId); setTab(r.tab || tab); setView(r.view || 'app'); }
+    if (origin) { setActiveLessonId(origin.lessonId || activeLessonId); setTab(origin.tab || tab); setView(origin.view || 'app'); }
     else { setTab('learn'); setView('app'); }
   };
 
@@ -679,7 +732,7 @@ function App() {
         return { ...p, bestResults: { ...p.bestResults, [id]: { correct: meta.correct, total: meta.total } } };
       });
     }
-    // Review replays don't grant XP or route into the reward screens — they
+    // Review replays don't grant points or route into the reward screens — they
     // just return you to wherever you opened the lesson from.
     if (reviewActive) {
       setReviewActive(false);
@@ -687,7 +740,7 @@ function App() {
       return;
     }
     // Remember a flawless run for the perfect-module gift.
-    if (meta && meta.perfect) setPerfectLessons(s => { const n = new Set(s); n.add(id); return n; });
+    if (meta && meta.perfect) setPerfectLessons(prev => { const next = new Set(prev); next.add(id); return next; });
     const ctx = window.findLessonContext(id);
     // Best result to display + the derived lesson state (uses best-ever, so a
     // strong first run shows Mastered even if this exact run was weaker).
@@ -700,14 +753,15 @@ function App() {
     }
     const fullLesson = { ...(lesson || {}), id, result, lessonState: window.lessonStateFromResult(result) };
     setCompletedLesson(fullLesson);
-    // Points = effort + habit: a flat +10 for a FIRST completion. Replays return
-    // early above (+0) and Perfect earns no bonus — mastery is the reward there.
-    const earned = 10;
+    // Points = effort + habit: the lesson's authored payout on a FIRST completion.
+    // Replays return early above (+0); Perfect earns no bonus — mastery is the
+    // reward there. data.jsx is the only place the number is written.
+    const earned = (lesson && lesson.points) || 10;
     setProgression(p => {
-      const nextXp = p.xp + earned;
+      const nextPoints = p.points + earned;
       const completed = new Set(p.completed);
       completed.add(id);
-      return { ...p, prevXp: p.xp, xp: nextXp, completed };
+      return { ...p, prevPoints: p.points, points: nextPoints, completed };
     });
     // Route into the right reward screen.
     if (ctx && ctx.isLastInModule) {
@@ -762,13 +816,13 @@ function App() {
   // From the Roasty gift → either claim a temporary Studio unlock, or move on.
   const proceedAfterGift = () => {
     const id = giftModule ? giftModule.id : null;
-    if (id) setGiftedModules(s => { const n = new Set(s); n.add(id); return n; });
+    if (id) setGiftedModules(prev => { const next = new Set(prev); next.add(id); return next; });
     const nextId = completedLesson ? window.findNextModuleFirstLesson(completedLesson.id) : null;
     if (nextId) startLesson(nextId);
     else { setView('app'); setTab('path'); }
   };
   const claimRoastyGift = () => {
-    if (giftModule) setGiftedModules(s => { const n = new Set(s); n.add(giftModule.id); return n; });
+    if (giftModule) setGiftedModules(prev => { const next = new Set(prev); next.add(giftModule.id); return next; });
     grantTrial('studio', window.TRIAL_GIFT_MIN || 1440);
     setView('studio');
   };
@@ -781,7 +835,7 @@ function App() {
   // Reset progress — clears the trail. Completed core lessons drive the tree, so
   // zeroing them returns the grove to a bare seed. Lands the user back on their profile.
   const resetProgress = () => {
-    setProgression({ streak: 0, xp: 0, prevXp: 0, completed: new Set(), bestResults: {} });
+    setProgression({ streak: 0, points: 0, prevPoints: 0, completed: new Set(), bestResults: {} });
     setBrew({ activeId: null, startedAt: null, completed: new Set() });
     setFrozenDays([]);
     setTab('profile'); setView('app');
@@ -789,7 +843,7 @@ function App() {
   // Delete account — prototype behaviour: wipe progress + Plus, land back on
   // the welcome screen as a signed-out user.
   const deleteAccount = () => {
-    setProgression({ streak: 0, xp: 0, prevXp: 0, completed: new Set(), bestResults: {} });
+    setProgression({ streak: 0, points: 0, prevPoints: 0, completed: new Set(), bestResults: {} });
     setFrozenDays([]);
     setFreezesSpent(0);
     setFreezeNoticeSeen(false);
@@ -869,7 +923,7 @@ function App() {
       onUpgrade={() => setView('paywall')}
       onToggleFav={toggleFavorite}
       onLesson={openLesson}
-      onOpenGuide={(variant) => { const c = (window.COLLECTION || []).find(x => x.train === variant); if (c) openCardSheet(c); }}
+      onOpenGuide={(variant) => { const card = (window.COLLECTION || []).find(entry => entry.train === variant); if (card) openCardSheet(card); }}
       onOpenTerm={openTermFull}
       onFlashcards={() => { setFlashBack('saved'); setView('flashcards'); }}
       onClose={() => { setView('app'); }}
@@ -884,9 +938,9 @@ function App() {
       result={completedLesson.result}
       lessonState={completedLesson.lessonState}
       onPractice={() => { setActiveLessonId(completedLesson.id); setReviewActive(true); setView('lesson'); }}
-      prevXp={progression.prevXp}
-      newXp={progression.xp}
-      nextPlayable={(() => { const n = window.findNextLessonId(completedLesson.id); return !!(n && window.LESSONS && window.LESSONS[n]); })()}
+      prevPoints={progression.prevPoints}
+      newPoints={progression.points}
+      nextPlayable={(() => { const nextId = window.findNextLessonId(completedLesson.id); return !!(nextId && window.LESSONS && window.LESSONS[nextId]); })()}
       brewChallenge={window.brewForLesson(completedLesson.id)}
       brewChallengeState={(() => { const ch = window.brewForLesson(completedLesson.id); if (!ch) return null; if (brewActiveId === ch.id) return 'active'; if (brew.completed.has(ch.id)) return 'completed'; if (brew.saved.has(ch.id)) return 'saved'; return null; })()}
       onStartChallenge={() => { const ch = window.brewForLesson(completedLesson.id); if (ch) startBrew(ch.id); setView('app'); setTab('learn'); }}
@@ -900,16 +954,14 @@ function App() {
     const ctx = window.findLessonContext(completedLesson.id);
     const mod = ctx ? ctx.module : MODULES[0];
     const reward = MODULE_REWARDS[mod.id] || MODULE_REWARDS.m1;
-    const totalModuleXp = mod.lessons.reduce((acc, l) => acc + (l.xp || 10), 0);
     const _newCore = window.coreDoneCount(effectiveCompleted);
     body = <ModuleCompleteScreen
       module={mod}
       fromStage={window.treeStageFromCore(Math.max(0, _newCore - 1))}
       toStage={window.treeStageFromCore(_newCore)}
-      prevXp={progression.prevXp}
-      newXp={progression.xp}
+      prevPoints={progression.prevPoints}
+      newPoints={progression.points}
       reward={reward}
-      totalXp={totalModuleXp}
       hasNext={ctx && !ctx.isLastModule}
       onContinue={continueFromModuleReward}
       onBack={backToPath}
@@ -918,11 +970,9 @@ function App() {
     const ctx = window.findLessonContext(completedLesson.id);
     const mod = ctx ? ctx.module : MODULES[0];
     const reward = MODULE_REWARDS[mod.id] || MODULE_REWARDS.m1;
-    const totalModuleXp = mod.lessons.reduce((acc, l) => acc + (l.xp || 10), 0);
     body = <ModuleRewardCardScreen
       module={mod}
       reward={reward}
-      totalXp={totalModuleXp}
       hasNext={ctx && !ctx.isLastModule}
       onContinue={continueFromModuleReward}
       onBack={backToPath}
@@ -930,11 +980,11 @@ function App() {
   } else if (view === 'module-challenge' && completedLesson) {
     const ctx = window.findLessonContext(completedLesson.id);
     const mod = ctx ? ctx.module : MODULES[0];
-    const mc = window.brewForModule(mod.id);
+    const moduleChallenge = window.brewForModule(mod.id);
     body = <window.ModuleChallengeScreen
-      module={mod} challenge={mc}
-      onStart={() => { if (mc) startBrew(mc.id); setView('app'); setTab('learn'); }}
-      onNotNow={() => { if (mc) saveBrew(mc.id); advanceAfterModule(); }}
+      module={mod} challenge={moduleChallenge}
+      onStart={() => { if (moduleChallenge) startBrew(moduleChallenge.id); setView('app'); setTab('learn'); }}
+      onNotNow={() => { if (moduleChallenge) saveBrew(moduleChallenge.id); advanceAfterModule(); }}
       onBack={backToPath}/>;
   } else if (view === 'game-intro' && activeGame) {
     body = <GameIntroScreen
@@ -1006,7 +1056,6 @@ function App() {
       stage={window.treeStageFromCore(window.coreDoneCount(effectiveCompleted))}
       coreDone={window.coreDoneCount(effectiveCompleted)}
       coreTotal={window.CORE_TOTAL}
-      xp={state.xp}
       onClose={() => { setTab('profile'); setView('app'); }}
     />;
   } else if (view === 'settings') {
@@ -1026,7 +1075,7 @@ function App() {
       onDeleteAccount={deleteAccount}
       progressSummary={[
         { label: 'Daily streak', value: progression.streak + (progression.streak === 1 ? ' day' : ' days') },
-        { label: 'Points earned', value: progression.xp + ' pts' },
+        { label: 'Points earned', value: progression.points + ' pts' },
         { label: 'Lessons completed', value: String(progression.completed.size) },
         { label: 'Your coffee tree', value: 'Back to ' + (STAGE_NAMES[0]) },
       ]}
@@ -1058,6 +1107,8 @@ function App() {
       onUpgrade={() => setView('paywall')}
       onChangePlan={(p) => setSubPlan(p)}
       onCancel={() => { setIsPlus(false); setTrialDaysLeft(0); setView(subFrom); }}
+      restoreOutcome={t.restoreOutcome}
+      onRestored={() => { setIsPlus(true); setTrialDaysLeft(0); }}
     />;
   } else if (view === 'paywall') {
     body = <PaywallScreen
@@ -1138,12 +1189,13 @@ function App() {
   } else if (view === 'duel') {
     body = <DuelFlow key={duelKey} initialStage={duelStage}
       tweaks={{ picker: t.duelPicker, reveal: t.duelReveal }}
+      onEarnPoints={(n) => setProgression(p => ({ ...p, prevPoints: p.points, points: p.points + n }))}
       onExit={() => { setView('app'); setTab('learn'); }}/>;
   } else if (view === 'rewarded-ad') {
     body = <window.RewardedAdScreen
       featureKey={adFeature}
       minutes={window.TRIAL_AD_MIN || 15}
-      onClaim={() => { const k = adFeature; grantTrial(k, window.TRIAL_AD_MIN || 15); runFeature(k); }}
+      onClaim={() => { const feature = adFeature; grantTrial(feature, window.TRIAL_AD_MIN || 15); runFeature(feature); }}
       onClose={() => { setView('app'); }}/>;
   } else if (view === 'roasty-gift') {
     body = <window.RoastyGiftScreen
@@ -1170,7 +1222,7 @@ function App() {
                                         brewChallenge={todayCh}
                                         brewMode={todayMode}
                                         brewAutoHide={brewTodayMode === 'auto'}
-                                        brewXpAwarded={justLoggedXp}
+                                        brewPointsAwarded={justLoggedPoints}
                                         onBrewLog={() => todayCh && setLogSheetId(todayCh.id)}
                                         onBrewSkip={skipBrew}
                                         onBrewDismiss={() => setJustLoggedId(null)}
@@ -1260,7 +1312,7 @@ function App() {
           showAd={!isV1}
           onClose={() => setGateFeature(null)}
           onUpgrade={() => { setGateFeature(null); setView('paywall'); }}
-          onWatchAd={() => { const k = gateFeature; setGateFeature(null); setAdFeature(k); setView('rewarded-ad'); }}/>
+          onWatchAd={() => { const feature = gateFeature; setGateFeature(null); setAdFeature(feature); setView('rewarded-ad'); }}/>
       )}
       {window.StampPressOverlay && stampAward && (
         <window.StampPressOverlay origin={window.atlasOrigin(stampAward.slug)} state={stampAward.state}
@@ -1353,6 +1405,13 @@ function App() {
         <TweakSection label="Customize · Plus"/>
         <TweakToggle label="Plus unlocked" value={isPlus}
           onChange={(v) => setIsPlus(v)}/>
+        <TweakSelect label="Restore result" value={t.restoreOutcome}
+          options={[
+            { value: 'plus',  label: 'Plus restored' },
+            { value: 'none',  label: 'Nothing to restore' },
+            { value: 'error', label: 'Store unreachable' },
+          ]}
+          onChange={(v) => setTweak('restoreOutcome', v)}/>
       </TweaksPanel>
     </>
   );
@@ -1364,10 +1423,10 @@ function findLessonOrPlaceholder(id) {
   const ctx = window.findLessonContext(id);
   const base = ctx ? {
     title: ctx.lesson.title,
-    xp:    ctx.lesson.xp || 10,
+    points: ctx.lesson.points || 10,
     cards: [],
     reward: { title: ctx.module.title, summary: '', meta: [] },
-  } : { title: 'Lesson', xp: 10, cards: [], reward: { title: 'Reward', meta: [] } };
+  } : { title: 'Lesson', points: 10, cards: [], reward: { title: 'Reward', meta: [] } };
   const lesson = LESSONS[id] || base;
   return { ...lesson, id };
 }

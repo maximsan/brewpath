@@ -124,7 +124,7 @@ function PredictCard({ card, onContinue, onPredict, onTermTap }) {
 // The applied beat: a scenario with two plausible real-world buys. Feedback is
 // framed as consequence rather than score, because neither option is wrong in
 // the abstract — only wrong for THIS cup.
-function DecisionCard({ card, onContinue, onXp, onTermTap }) {
+function DecisionCard({ card, onContinue, onCorrect, onTermTap }) {
   const [pick, setPick] = useStateAC(null);
   const [order] = useStateAC(() => acShuffle(card.options.length));
   const chosen = pick == null ? null : card.options[pick];
@@ -132,7 +132,7 @@ function DecisionCard({ card, onContinue, onXp, onTermTap }) {
   const choose = (i) => {
     if (pick != null) return;
     setPick(i);
-    if (card.options[i].correct && onXp) onXp();
+    if (card.options[i].correct && onCorrect) onCorrect();
   };
   return (
     <div className="px-24" style={{ display: 'flex', flexDirection: 'column', flex: '1 0 auto', minHeight: 600 }}>
@@ -211,7 +211,7 @@ function DecisionCard({ card, onContinue, onXp, onTermTap }) {
 // The close. One transfer question (applied, not definitional), and once it's
 // answered the card resolves the guess made on the very first screen and lands
 // the takeaway as something earned rather than announced.
-function RecallCard({ card, onContinue, onXp, prediction }) {
+function RecallCard({ card, onContinue, onCorrect, prediction }) {
   const [pick, setPick] = useStateAC(null);
   const [order] = useStateAC(() => acShuffle(card.choices.length));
   const correctIdx = card.choices.findIndex(c => c.correct);
@@ -219,7 +219,7 @@ function RecallCard({ card, onContinue, onXp, prediction }) {
   const choose = (i) => {
     if (answered) return;
     setPick(i);
-    if (i === correctIdx && onXp) onXp();
+    if (i === correctIdx && onCorrect) onCorrect();
   };
   const guessedRight = prediction && prediction.pick === prediction.a;
 
@@ -258,7 +258,7 @@ function RecallCard({ card, onContinue, onXp, prediction }) {
           display: 'flex', gap: 13, alignItems: 'flex-start',
         }}>
           <div style={{ flexShrink: 0, marginTop: -6 }}>
-            <window.Roasty state={guessedRight ? 'xp' : 'card'} size={64}/>
+            <window.Roasty state={guessedRight ? 'correct' : 'card'} size={64}/>
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div className="smallcaps-mono" style={{ marginBottom: 7 }}>

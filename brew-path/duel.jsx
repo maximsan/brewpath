@@ -137,17 +137,6 @@ function StatBlock({ label, value, accent }) {
   );
 }
 
-// Small reusable "duel type" pill used in headers.
-function DuelTypeTag({ type, color = 'var(--ink-mute)' }) {
-  const t = window.duelType(type);
-  return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-      <DuelGlyph type={type} size={16} color={color}/>
-      <span className="ff-mono" style={{ fontSize: 'var(--t-label)', letterSpacing: '0.12em', textTransform: 'uppercase', color }}>{t.name}</span>
-    </span>
-  );
-}
-
 // ───────────────────────────────────────────────────────────
 // Helpers for scoring a run
 // ───────────────────────────────────────────────────────────
@@ -527,7 +516,7 @@ function CrossMark() {
 function DuelResult({ run, reveal = 'tally', opponent, onSend, onClose }) {
   const [phase, setPhase] = useStateD('roasty');
   const acc = Math.round((run.correct / run.total) * 100);
-  const xp = window.duelXp(run.correct, run.total);
+  const points = window.duelPoints(run.correct, run.total);
   const [showReview, setShowReview] = useStateD(false);
   if (phase === 'roasty') {
     return <RoastyMoment state={run.correct >= 4 ? 'correct' : 'idle'} eyebrow="ROUND COMPLETE"
@@ -549,7 +538,7 @@ function DuelResult({ run, reveal = 'tally', opponent, onSend, onClose }) {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
             <StatBlock label="ACCURACY" value={acc + '%'}/>
             <StatBlock label="TIME" value={run.timeSec + 's'}/>
-            <StatBlock label="REWARD" value={'+' + xp} accent/>
+            <StatBlock label="POINTS" value={'+' + points} accent/>
           </div>
         </div>
 
@@ -966,7 +955,7 @@ function DuelMessage({ state, eyebrow, title, body, primary, onPrimary, secondar
 // ═══════════════════════════════════════════════════════════
 // DuelFlow — the state machine that ties it all together.
 // ═══════════════════════════════════════════════════════════
-function DuelFlow({ initialStage = 'hub', tweaks = {}, onExit }) {
+function DuelFlow({ initialStage = 'hub', tweaks = {}, onExit, onEarnPoints }) {
   // Seed demo data for deep-linked stages so every screen renders populated.
   const seedFriendRec = window.DUEL_RECORDS.incoming[0];
   const isLoss = initialStage === 'comparison-loss';
@@ -995,6 +984,9 @@ function DuelFlow({ initialStage = 'hub', tweaks = {}, onExit }) {
   const finishPlay = (run) => {
     clearProgress();
     setYouRun(run);
+    // Credit the reward the result screen is about to show. Fires once per
+    // completed run — a duel pays out whether or not the opponent ever replies.
+    if (onEarnPoints) onEarnPoints(window.duelPoints(run.correct, run.total));
     // Against a known opponent (received/rematch/roasty) → straight to comparison.
     if (opponent) {
       const fr = opponent.isRoasty ? roastyRun(run.type) : (incomingRun(run.type) || window.DEMO_FRIEND_RUN);
