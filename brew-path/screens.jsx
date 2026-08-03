@@ -50,8 +50,9 @@ function OnboardingWelcome({ onNext }) {
                       position: 'absolute', bottom: 12, right: 12,
                       width: 44, height: 44, borderRadius: 999, border: 'none',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      background: 'rgba(20,18,14,0.42)', backdropFilter: 'blur(8px)',
-                      WebkitBackdropFilter: 'blur(8px)', color: '#fff', cursor: 'pointer',
+                      background: 'var(--scrim)',
+                      backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+                      color: 'var(--scrim-ink)', cursor: 'pointer',
                     }}>
               {muted ? (
                 <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
@@ -83,14 +84,7 @@ function OnboardingWelcome({ onNext }) {
             Short, hands-on lessons in the craft of coffee. Every one you finish feeds a living tree, growing from seed to harvest.
           </p>
 
-          <div className="smallcaps" style={{
-            marginTop: 'auto', paddingTop: 32, color: 'var(--ink-mute)', display: 'flex',
-            alignItems: 'center', gap: 8,
-          }}>
-            <span className="tap-pulse" style={{
-              width: 7, height: 7, borderRadius: 999, background: 'var(--accent)',
-              display: 'inline-block',
-            }}/>
+          <div className="tap-cue" style={{ marginTop: 'auto', paddingTop: 32 }}>
             TAP ANYWHERE TO CONTINUE
           </div>
         </div>
@@ -256,7 +250,7 @@ function FreezeTokens({ held = 0, cap = 2, size = 9 }) {
 function StreakScreen({ streak, frozenDays, freezesHeld = 0, freezeCap = 2, nextFreezeIn = 7, onClose, onContinue }) {
   const [phase, setPhase] = React.useState('roasty');
   const [armed, setArmed] = React.useState(false);
-  const [hdrScrolled, setHdrScrolled] = React.useState(false);
+  const [hdrScrolled, onHdrScroll] = window.useScrollFlag();
   const [shareOpen, setShareOpen] = React.useState(false);
   // Re-arm the progress ring every time the content view (re)appears, so a
   // Replay re-runs the fill from zero.
@@ -292,7 +286,7 @@ function StreakScreen({ streak, frozenDays, freezesHeld = 0, freezeCap = 2, next
     <div className="screen" data-screen-label="Streak" style={{ background: 'var(--bg)' }}>
       {window.SubScreenHeader && <window.SubScreenHeader scrolled={hdrScrolled} title="Your streak" icon="close" onBack={onClose}/>}
 
-      <div className="scroll" onScroll={(e) => setHdrScrolled(e.target.scrollTop > 48)} style={{ paddingTop: 84, paddingBottom: 24, display: 'flex', flexDirection: 'column' }}>
+      <div className="scroll" onScroll={onHdrScroll} style={{ paddingTop: 84, paddingBottom: 24, display: 'flex', flexDirection: 'column' }}>
         {/* hero ring */}
         <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 8 }}>
           <div style={{ position: 'relative', width: 208, height: 208 }}>
@@ -453,12 +447,12 @@ function TreeScreen({ stage, xp, coreDone, coreTotal, onClose }) {
   const frac = Math.max(0.03, Math.min(1, done / total));
   const nextName = s >= 10 ? null : (names[s] || 'NEXT');
   const SubHeader = window.SubScreenHeader;
-  const [hdrScrolled, setHdrScrolled] = useState(false);
+  const [hdrScrolled, onHdrScroll] = window.useScrollFlag();
 
   return (
     <div className="screen" data-screen-label="Tree" style={{ background: 'var(--bg)' }}>
       {SubHeader && <SubHeader scrolled={hdrScrolled} title="Your coffee tree" icon="close" onBack={onClose}/>}
-      <div className="scroll" onScroll={(e) => setHdrScrolled(e.target.scrollTop > 48)} style={{ paddingTop: 84, paddingBottom: 28, display: 'flex', flexDirection: 'column' }}>
+      <div className="scroll" onScroll={onHdrScroll} style={{ paddingTop: 84, paddingBottom: 28, display: 'flex', flexDirection: 'column' }}>
         <div className="px-24" style={{ textAlign: 'center' }}>
           <div className="smallcaps" style={{ color: 'var(--accent)' }}>YOUR COFFEE TREE</div>
           <h1 className="ff-display" style={{ fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em', margin: '8px 0 0', color: 'var(--ink)' }}>{pretty(name)}</h1>
@@ -526,12 +520,12 @@ function SettingsScreen({ theme, onTheme, onClose, onAbout, onAccount, onSubscri
   const TimeSheet = window.TimeSheet;
   const Toggle = window.SettingsToggle;
   const SubHeader = window.SubScreenHeader;
-  const [scrolled, setScrolled] = useState(false);
+  const [scrolled, onScroll] = window.useScrollFlag();
 
   return (
     <div className="screen" data-screen-label="Settings" style={{ background: 'var(--bg)' }}>
       {SubHeader && <SubHeader scrolled={scrolled} title="Settings" onBack={onClose}/>}
-      <div className="scroll" onScroll={(e) => setScrolled(e.target.scrollTop > 48)} style={{ paddingTop: 108, paddingBottom: 28 }}>
+      <div className="scroll" onScroll={onScroll} style={{ paddingTop: 108, paddingBottom: 28 }}>
         <div className="px-24">
           <h1 className="ff-display" style={{ fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em', margin: 0, color: 'var(--ink)' }}>Settings</h1>
         </div>
@@ -584,7 +578,7 @@ function SettingsScreen({ theme, onTheme, onClose, onAbout, onAccount, onSubscri
         <ConfirmSheet open={resetOpen} danger
           eyebrow="RESET PROGRESS"
           title="Start again from seed?"
-          body="This wipes your trail and returns your coffee tree to a bare seed. There's no undo — but every lesson is waiting to be re-grown."
+          body="This wipes your trail and returns your coffee tree to a bare seed. There’s no undo — but every lesson is waiting to be re-grown."
           lines={progressSummary}
           confirmLabel="Reset everything"
           onConfirm={() => { setResetOpen(false); onReset && onReset(); }}
@@ -594,7 +588,7 @@ function SettingsScreen({ theme, onTheme, onClose, onAbout, onAccount, onSubscri
         <ConfirmSheet open={dataOpen}
           eyebrow="YOUR DATA"
           title="Get a copy of your data"
-          body="We'll email an export of your progress, streaks, and tasting notes to maya@hey.com. It usually arrives within a few minutes."
+          body="We’ll email an export of your progress, streaks, and tasting notes to maya@hey.com. It usually arrives within a few minutes."
           confirmLabel="Email my data"
           cancelLabel="Cancel"
           onConfirm={() => setDataOpen(false)}
@@ -604,7 +598,7 @@ function SettingsScreen({ theme, onTheme, onClose, onAbout, onAccount, onSubscri
         <ConfirmSheet open={deleteOpen} danger
           eyebrow="DELETE ACCOUNT"
           title="Delete your account?"
-          body="This permanently erases your account and everything in it after 30 days. Sign back in before then and it's all restored."
+          body="This permanently erases your account and everything in it after 30 days. Sign back in before then and it’s all restored."
           confirmLabel="Delete my account"
           cancelLabel="Keep my account"
           onConfirm={() => { setDeleteOpen(false); onDeleteAccount && onDeleteAccount(); }}
@@ -729,36 +723,9 @@ const APP_HEADER_TITLES = {
 function AppHeader({ tab, variant = 'default', scrolled, dictLocked, onDict, savedLocked, onSaved, savedCount = 0, showDuel, duelLocked, duelCount = 0, onDuel, onSettings }) {
   const meta = APP_HEADER_TITLES[tab] || { eyebrow: '', title: '' };
   return (
-    <div style={{
-      position: 'absolute', top: 0, left: 0, right: 0, height: 116, zIndex: 40,
-      display: 'flex', alignItems: 'flex-end',
-      pointerEvents: 'none',
-      background: scrolled ? 'color-mix(in oklab, var(--bg) 78%, transparent)' : 'transparent',
-      backdropFilter: scrolled ? 'blur(16px) saturate(1.3)' : 'none',
-      WebkitBackdropFilter: scrolled ? 'blur(16px) saturate(1.3)' : 'none',
-      borderBottom: '1px solid ' + (scrolled ? 'var(--rule)' : 'transparent'),
-      transition: 'background 260ms ease, backdrop-filter 260ms ease, border-color 260ms ease',
-    }}>
+    <window.StickyHeaderChrome scrolled={scrolled} height={116}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '0 18px 14px', width: '100%' }}>
-      {/* compact title — revealed as the large title scrolls under the bar */}
-      <div style={{
-        minWidth: 0, flex: 1,
-        opacity: scrolled ? 1 : 0,
-        transform: scrolled ? 'translateY(0)' : 'translateY(7px)',
-        transition: 'opacity 240ms ease, transform 240ms ease',
-        pointerEvents: 'none',
-      }}>
-        {meta.eyebrow && (
-          <div className="ff-mono" style={{
-            fontSize: 'var(--t-micro)', letterSpacing: '0.18em', textTransform: 'uppercase',
-            color: 'var(--ink-mute)', lineHeight: 1,
-          }}>{meta.eyebrow}</div>
-        )}
-        <div className="ff-display" style={{
-          fontSize: 'var(--t-heading)', fontWeight: 400, letterSpacing: '-0.01em', color: 'var(--ink)',
-          lineHeight: 1.15, marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-        }}>{meta.title}</div>
-      </div>
+      <window.HeaderCompactTitle scrolled={scrolled} eyebrow={meta.eyebrow} title={meta.title}/>
 
       {/* right entries — always visible, sit flush to the right edge */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0, marginLeft: 'auto', pointerEvents: 'auto' }}>
@@ -780,7 +747,7 @@ function AppHeader({ tab, variant = 'default', scrolled, dictLocked, onDict, sav
         )}
       </div>
       </div>
-    </div>
+    </window.StickyHeaderChrome>
   );
 }
 window.AppHeader = AppHeader;
@@ -959,13 +926,14 @@ function LearnTab({ freezeSaved = false, freezesHeld = 0, nextFreezeIn = 7, onDi
                 <PracticeGroup key={g.id} label={g.label} count={g.items.length} defaultOpen={false}>
                   {g.items.map(it => {
                     const isGame = g.id === 'games';
-                    // For mini-games, lead with the lesson name; the game name becomes the eyebrow.
-                    const rowTitle = isGame ? ((window.LESSONS?.[it.lessonId]?.title) || it.sub) : it.title;
-                    const rowSub = isGame ? it.title.toUpperCase() : it.sub;
+                    // Mini-games draw on the whole course, not one lesson, so the row
+                    // leads with the game's own name and takes its topic as the eyebrow.
+                    const rowTitle = it.title;
+                    const rowSub = it.sub;
                     return (
                     <ReplayRow key={it.id} icon={<ReplayIcon kind={it.kind}/>} title={rowTitle}
                                sub={rowSub} meta={it.meta}
-                               onClick={() => isGame ? onGame(it) : onLesson(it.lessonId)}/>
+                               onClick={() => isGame ? onGame(it) : onLesson(it.id)}/>
                     );
                   })}
                 </PracticeGroup>
@@ -1020,8 +988,20 @@ function PracticeGroup({ label, count, defaultOpen, children }) {
 }
 
 function ReplayIcon({ kind, size = 20 }) {
-  if (kind === 'lesson' || kind === 'flavor') return <FlavorWheel size={size} filled={1} stroke={1}/>;
+  if (kind === 'lesson') return <FlavorWheel size={size} filled={1} stroke={1}/>;
   const s = { color: 'var(--ink-mute)' };
+  if (kind === 'flavor') {
+    // cupping bowl with aroma rising — naming what you smell and taste.
+    // Deliberately NOT the flavour wheel: that glyph means lesson progress.
+    return (
+      <svg width={size} height={size} viewBox="0 0 20 20" style={s}>
+        <path d="M3.5 11.5h13a6.5 6.5 0 0 1-13 0Z" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
+        <path d="M2.5 11.5h15" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+        <path d="M7 8.2c0-1.2 1.1-1.4 1.1-2.6 0-.7-.4-1.1-.8-1.4" fill="none" stroke="var(--accent)" strokeWidth="1.2" strokeLinecap="round"/>
+        <path d="M10.4 8.2c0-1.5 1.3-1.8 1.3-3.3 0-.9-.5-1.4-1-1.8" fill="none" stroke="var(--accent)" strokeWidth="1.2" strokeLinecap="round"/>
+      </svg>
+    );
+  }
   if (kind === 'module') {
     return (
       <svg width={size} height={size} viewBox="0 0 20 20" style={s}>
@@ -1076,6 +1056,17 @@ function ReplayIcon({ kind, size = 20 }) {
         <path d="M13 9h2a1.5 1.5 0 0 1 0 3h-1.2" fill="none" stroke="currentColor" strokeWidth="1.3"/>
         <path d="M6.5 17.2c1.6.9 5.4.9 7 0" fill="none" stroke="var(--accent)" strokeWidth="1.3" strokeLinecap="round"/>
         <path d="M12.2 16.2l1.6 1 -1 1.6" fill="none" stroke="var(--accent)" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    );
+  }
+  if (kind === 'bagpick') {
+    // an unlabelled bag with a bean inside — read the sample, name the process
+    return (
+      <svg width={size} height={size} viewBox="0 0 20 20" style={s}>
+        <path d="M5.5 6.5 L14.5 6.5 L15.5 17 L4.5 17 Z" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
+        <path d="M7 6.5 L7 4.2 L13 4.2 L13 6.5" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
+        <ellipse cx="10" cy="12.4" rx="2.5" ry="3.2" fill="none" stroke="var(--accent)" strokeWidth="1.3"/>
+        <path d="M10 9.4 Q11 11.4 10 12.4 Q9 13.4 10 15.6" fill="none" stroke="var(--accent)" strokeWidth="1.1" strokeLinecap="round"/>
       </svg>
     );
   }
@@ -1509,9 +1500,9 @@ function CardsTab({ onOpen, brewCompleted }) {
             {(() => {
               const firstLockedIdx = collectibles.findIndex(c => !c.earned);
               return collectibles.map((c, i) => {
-                if (c.earned) return <CollectionCard key={c.id} card={c} index={i} onOpen={onOpen} stamped={stampedFor(c)} challengeOpen={challengeOpen(c)}/>;
+                if (c.earned) return <CollectionCard key={c.id} card={c} index={i} total={collectibles.length} onOpen={onOpen} stamped={stampedFor(c)} challengeOpen={challengeOpen(c)}/>;
                 // Preview the very next card as a locked teaser so the grid stays consistent.
-                if (i === firstLockedIdx) return <CollectionCard key={c.id} card={c} index={i} onOpen={onOpen} stamped={false}/>;
+                if (i === firstLockedIdx) return <CollectionCard key={c.id} card={c} index={i} total={collectibles.length} onOpen={onOpen} stamped={false}/>;
                 return null;
               });
             })()}
@@ -1523,7 +1514,7 @@ function CardsTab({ onOpen, brewCompleted }) {
               display: 'flex', alignItems: 'center', gap: 14,
               background: 'color-mix(in oklab, var(--surface) 55%, var(--bg))',
             }}>
-              <span style={{ width: 40, height: 40, flexShrink: 0, borderRadius: 10, display: 'grid', placeItems: 'center', background: 'var(--bg)', border: '1px solid var(--rule)' }}>
+              <span style={{ width: 40, height: 40, flexShrink: 0, borderRadius: 12, display: 'grid', placeItems: 'center', background: 'var(--bg)', border: '1px solid var(--rule)' }}>
                 <IconLock/>
               </span>
               <div style={{ minWidth: 0 }}>
@@ -1755,8 +1746,424 @@ function CardArtSpectrum() {
   );
 }
 
+function CardArtScales() {
+  return (
+    <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
+      <line x1="50" y1="28" x2="50" y2="78" stroke="var(--ink-mute)" strokeWidth="1.4" strokeLinecap="round"/>
+      <line x1="38" y1="82" x2="62" y2="82" stroke="var(--ink-mute)" strokeWidth="1.4" strokeLinecap="round"/>
+      <line x1="24" y1="38" x2="76" y2="31" stroke="var(--ink)" strokeWidth="1.4" strokeLinecap="round"/>
+      <circle cx="50" cy="34.5" r="2.4" fill="var(--accent)"/>
+      <path d="M24 38 L18 54 M24 38 L30 54" fill="none" stroke="var(--ink-mute)" strokeWidth="0.8"/>
+      <path d="M16 54 A8.5 8.5 0 0 0 32 54" fill="var(--surface-2)" stroke="var(--rule)" strokeWidth="1.2"/>
+      <circle cx="21.5" cy="53" r="2" fill="var(--accent)"/><circle cx="26.5" cy="53" r="2" fill="var(--accent)" fillOpacity="0.7"/>
+      <path d="M76 31 L70 47 M76 31 L82 47" fill="none" stroke="var(--ink-mute)" strokeWidth="0.8"/>
+      <path d="M68 47 A8.5 8.5 0 0 0 84 47" fill="var(--surface-2)" stroke="var(--rule)" strokeWidth="1.2"/>
+      <circle cx="76" cy="45" r="2.8" fill="none" stroke="var(--sage)" strokeWidth="1"/>
+    </svg>
+  );
+}
+function CardArtHourglass() {
+  return (
+    <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
+      <line x1="34" y1="24" x2="66" y2="24" stroke="var(--ink-mute)" strokeWidth="1.8" strokeLinecap="round"/>
+      <line x1="34" y1="80" x2="66" y2="80" stroke="var(--ink-mute)" strokeWidth="1.8" strokeLinecap="round"/>
+      <path d="M38 24 Q38 42 48 51 Q38 60 38 80 M62 24 Q62 42 52 51 Q62 60 62 80" fill="none" stroke="var(--ink-mute)" strokeWidth="1.4"/>
+      <path d="M42 30 L58 30 L50.5 44 Z" fill="var(--accent)" fillOpacity="0.3"/>
+      <line x1="50" y1="52" x2="50" y2="70" stroke="var(--accent)" strokeWidth="1.1" strokeDasharray="2 2.5"/>
+      <path d="M41 78 Q50 64 59 78 Z" fill="var(--accent)" fillOpacity="0.55"/>
+      <g fill="var(--ink-mute)" opacity="0.5"><circle cx="26" cy="88" r="1.3"/><circle cx="72" cy="87" r="1.1"/><circle cx="79" cy="90" r="1.4"/></g>
+    </svg>
+  );
+}
+function CardArtBurrs() {
+  const spokes = (cx, cy) => Array.from({ length: 8 }).map((_, i) => {
+    const a = i * Math.PI / 4 + Math.PI / 8;
+    return <line key={i} x1={cx + Math.cos(a) * 7} y1={cy + Math.sin(a) * 7} x2={cx + Math.cos(a) * 13} y2={cy + Math.sin(a) * 13} stroke="var(--ink-mute)" strokeWidth="1.1" strokeLinecap="round"/>;
+  });
+  return (
+    <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
+      <circle cx="37" cy="38" r="16" fill="var(--surface-2)" stroke="var(--ink-mute)" strokeWidth="1.3"/>
+      {spokes(37, 38)}
+      <circle cx="37" cy="38" r="4" fill="none" stroke="var(--ink-mute)" strokeWidth="1.1"/>
+      <circle cx="63" cy="64" r="16" fill="var(--surface-2)" stroke="var(--ink-mute)" strokeWidth="1.3"/>
+      {spokes(63, 64)}
+      <circle cx="63" cy="64" r="4" fill="var(--accent)"/>
+      <g fill="var(--accent)" opacity="0.7"><circle cx="55" cy="46" r="1.4"/><circle cx="60" cy="41" r="1.1"/><circle cx="51" cy="53" r="1.2"/></g>
+    </svg>
+  );
+}
+
+function CardArtGuide() {
+  return (
+    <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
+      <rect x="28" y="22" width="44" height="58" rx="5" fill="var(--surface-2)" stroke="var(--rule)" strokeWidth="1.3"/>
+      <line x1="34" y1="23" x2="34" y2="79" stroke="var(--rule)" strokeWidth="1"/>
+      <line x1="66" y1="22" x2="66" y2="80" stroke="var(--accent)" strokeWidth="1.6"/>
+      <circle cx="50" cy="42" r="7" fill="none" stroke="var(--sage)" strokeWidth="1.2"/>
+      <path d="M50 37 Q47.5 42 50 47" fill="none" stroke="var(--sage)" strokeWidth="1"/>
+      <g stroke="var(--ink-mute)" strokeWidth="1" strokeLinecap="round" opacity="0.55">
+        <line x1="40" y1="58" x2="60" y2="58"/><line x1="40" y1="64" x2="56" y2="64"/><line x1="40" y1="70" x2="60" y2="70"/>
+      </g>
+    </svg>
+  );
+}
+
+// ── Bespoke art for the 15 later-lesson collectible cards ──
+// Each radiates its single idea so no two tiles read the same.
+function CardArtParticles() {
+  // Grind-size gradient: boulders → dust, left to right — the speed dial itself.
+  const col = (x, r, n) => Array.from({ length: n }).map((_, i) => (
+    <circle key={x + '-' + i} cx={x + (i % 2) * r * 1.6 - r * 0.8} cy={30 + i * (44 / (n - 1))} r={r} fill="var(--art-roast-mid)" fillOpacity="0.8"/>
+  ));
+  return (
+    <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
+      {col(24, 5, 3)}
+      {col(44, 3.2, 5)}
+      {col(62, 2, 7)}
+      {col(78, 1.1, 10)}
+      <path d="M22 86 L78 86" stroke="var(--accent)" strokeWidth="1.2" strokeLinecap="round"/>
+      <path d="M78 86 L73 83 M78 86 L73 89" stroke="var(--accent)" strokeWidth="1.2" strokeLinecap="round"/>
+      <text x="50" y="96" fontSize="5.5" fill="var(--accent)" fontFamily="IBM Plex Mono" textAnchor="middle" letterSpacing="0.5">MORE SURFACE</text>
+    </svg>
+  );
+}
+function CardArtBurrBlade() {
+  // Burr's even grounds vs blade's dust-and-boulders — the comparison IS the idea.
+  return (
+    <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
+      {/* burr cone — ridged */}
+      <path d="M18 26 L42 26 L34 48 L26 48 Z" fill="var(--surface-2)" stroke="var(--ink-mute)" strokeWidth="1.3" strokeLinejoin="round"/>
+      <g stroke="var(--ink-mute)" strokeWidth="0.8" opacity="0.6"><line x1="24" y1="28" x2="28" y2="46"/><line x1="30" y1="28" x2="30" y2="46"/><line x1="36" y1="28" x2="32" y2="46"/></g>
+      {/* its even output */}
+      <g fill="var(--sage)">{Array.from({ length: 9 }).map((_, i) => <circle key={i} cx={22 + (i % 3) * 8} cy={60 + Math.floor(i / 3) * 8} r="1.8"/>)}</g>
+      {/* blade propeller */}
+      <circle cx="70" cy="36" r="13" fill="var(--surface-2)" stroke="var(--ink-mute)" strokeWidth="1.3"/>
+      <path d="M70 36 Q62 30 60 36 Q68 39 70 36 Q78 42 80 36 Q72 33 70 36" fill="var(--ink-mute)" opacity="0.8"/>
+      <circle cx="70" cy="36" r="1.6" fill="var(--accent)"/>
+      {/* its uneven output: dust + boulders */}
+      <g fill="var(--berry)"><circle cx="62" cy="62" r="3.6"/><circle cx="74" cy="66" r="2.8"/><circle cx="68" cy="74" r="0.9"/><circle cx="78" cy="58" r="0.8"/><circle cx="60" cy="72" r="0.7"/><circle cx="80" cy="73" r="1"/></g>
+      <text x="28" y="90" fontSize="5.5" fill="var(--sage)" fontFamily="IBM Plex Mono" textAnchor="middle">EVEN</text>
+      <text x="70" y="90" fontSize="5.5" fill="var(--berry)" fontFamily="IBM Plex Mono" textAnchor="middle">UNEVEN</text>
+    </svg>
+  );
+}
+function CardArtGrindDial() {
+  // The grinder as the cup's first dial — a hand mill with an adjustment dial swept
+  // fine→coarse. Distinct from CardArtBurrs (bare burr pair) by being the tool + dial.
+  return (
+    <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
+      {/* crank */}
+      <path d="M50 22 Q66 14 74 22" fill="none" stroke="var(--ink-mute)" strokeWidth="1.6" strokeLinecap="round"/>
+      <circle cx="76" cy="24" r="3" fill="var(--surface-2)" stroke="var(--ink-mute)" strokeWidth="1.2"/>
+      <circle cx="50" cy="24" r="2.4" fill="var(--ink-mute)"/>
+      {/* mill body */}
+      <path d="M36 28 L64 28 L61 66 L39 66 Z" fill="var(--surface-2)" stroke="var(--ink-mute)" strokeWidth="1.4" strokeLinejoin="round"/>
+      <line x1="37.5" y1="46" x2="62.5" y2="46" stroke="var(--rule)" strokeWidth="1"/>
+      {/* adjustment dial — the point of the card */}
+      <path d="M28 84 A22 22 0 0 1 72 84" fill="none" stroke="var(--rule)" strokeWidth="1.2"/>
+      <g stroke="var(--ink-mute)" strokeWidth="1" strokeLinecap="round" opacity="0.7">
+        <line x1="30" y1="78" x2="33" y2="81"/><line x1="50" y1="70" x2="50" y2="74"/><line x1="70" y1="78" x2="67" y2="81"/>
+      </g>
+      <path d="M50 84 L38 74" stroke="var(--accent)" strokeWidth="1.8" strokeLinecap="round"/>
+      <circle cx="50" cy="84" r="2.6" fill="var(--accent)"/>
+      <text x="24" y="94" fontSize="5.5" fill="var(--ink-mute)" fontFamily="IBM Plex Mono" textAnchor="middle">FINE</text>
+      <text x="76" y="94" fontSize="5.5" fill="var(--ink-mute)" fontFamily="IBM Plex Mono" textAnchor="middle">COARSE</text>
+    </svg>
+  );
+}
+function CardArtAltitude() {
+  return (
+    <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
+      {/* peak */}
+      <path d="M18 78 L44 30 L60 54 L70 40 L84 78 Z" fill="var(--surface-2)" stroke="var(--ink-mute)" strokeWidth="1.3" strokeLinejoin="round"/>
+      {/* snow cap */}
+      <path d="M44 30 L36 45 Q44 41 51 46 L44 30 Z" fill="var(--cream)" opacity="0.6"/>
+      {/* specialty elevation band */}
+      <rect x="8" y="50" width="84" height="14" fill="var(--sage)" fillOpacity="0.16"/>
+      <line x1="8" y1="50" x2="92" y2="50" stroke="var(--sage)" strokeWidth="1" strokeDasharray="3 3"/>
+      <line x1="8" y1="64" x2="92" y2="64" stroke="var(--sage)" strokeWidth="1" strokeDasharray="3 3"/>
+      <text x="10" y="48" fontSize="6" fill="var(--sage)" fontFamily="IBM Plex Mono">2200m</text>
+      <text x="10" y="73" fontSize="6" fill="var(--sage)" fontFamily="IBM Plex Mono">1200m</text>
+    </svg>
+  );
+}
+function CardArtVarieties() {
+  const sprig = (x, s, fill) => (
+    <g transform={`translate(${x} 0)`}>
+      <path d="M0 78 L0 44" stroke="var(--sage)" strokeWidth="1.2" strokeLinecap="round"/>
+      <path d={`M0 ${58} Q${-7 * s} ${52} ${-11 * s} ${58} Q${-6 * s} ${64} 0 ${62} Z`} fill={fill} fillOpacity="0.4" stroke="var(--sage)" strokeWidth="1"/>
+      <path d={`M0 ${50} Q${7 * s} ${44} ${11 * s} ${50} Q${6 * s} ${56} 0 ${54} Z`} fill={fill} fillOpacity="0.4" stroke="var(--sage)" strokeWidth="1"/>
+      <circle cx="0" cy="42" r="2.4" fill="var(--berry)"/>
+    </g>
+  );
+  return (
+    <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
+      <line x1="14" y1="78" x2="86" y2="78" stroke="var(--rule)" strokeWidth="1"/>
+      {sprig(28, 0.85, 'var(--sage)')}
+      {sprig(50, 1, 'var(--sage)')}
+      {sprig(72, 1.15, 'var(--art-ripe)')}
+      <text x="50" y="90" fontSize="5.5" fill="var(--ink-mute)" fontFamily="IBM Plex Mono" textAnchor="middle" letterSpacing="0.4">TYPICA · BOURBON · GEISHA</text>
+    </svg>
+  );
+}
+function CardArtDrying() {
+  return (
+    <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
+      {/* sun */}
+      <circle cx="72" cy="30" r="9" fill="var(--art-ripe)" fillOpacity="0.85"/>
+      <g stroke="var(--art-ripe)" strokeWidth="1.1" strokeLinecap="round">
+        <line x1="72" y1="13" x2="72" y2="18"/><line x1="88" y1="30" x2="83" y2="30"/><line x1="84" y1="42" x2="80" y2="38"/><line x1="60" y1="42" x2="64" y2="38"/>
+      </g>
+      {/* raised bed */}
+      <path d="M14 70 L86 62 L86 70 L14 78 Z" fill="var(--surface-2)" stroke="var(--rule)" strokeWidth="1.2" strokeLinejoin="round"/>
+      <path d="M22 78 L20 90 M46 75 L45 90 M70 71 L71 90" stroke="var(--rule)" strokeWidth="1" strokeLinecap="round" opacity="0.6"/>
+      {/* cherries drying */}
+      <g><circle cx="26" cy="66" r="2.6" fill="var(--berry)"/><circle cx="38" cy="65" r="2.6" fill="var(--berry)" fillOpacity="0.8"/><circle cx="50" cy="64" r="2.6" fill="var(--art-ripe)"/><circle cx="62" cy="63" r="2.6" fill="var(--sage)"/><circle cx="74" cy="62" r="2.6" fill="var(--sage)" fillOpacity="0.7"/></g>
+      <text x="14" y="52" fontSize="6" fill="var(--ink-mute)" fontFamily="IBM Plex Mono">10–25 DAYS</text>
+    </svg>
+  );
+}
+function CardArtAnaerobic() {
+  return (
+    <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
+      {/* sealed tank */}
+      <rect x="34" y="30" width="32" height="48" rx="5" fill="var(--surface-2)" stroke="var(--ink-mute)" strokeWidth="1.4"/>
+      <rect x="38" y="26" width="24" height="8" rx="3" fill="var(--surface)" stroke="var(--ink-mute)" strokeWidth="1.3"/>
+      {/* airlock valve */}
+      <line x1="50" y1="26" x2="50" y2="16" stroke="var(--ink-mute)" strokeWidth="1.4" strokeLinecap="round"/>
+      <circle cx="50" cy="14" r="3.4" fill="none" stroke="var(--accent)" strokeWidth="1.3"/>
+      {/* liquid */}
+      <path d="M35 56 Q50 60 65 56 L65 73 Q50 76 35 73 Z" fill="var(--sage)" fillOpacity="0.28"/>
+      {/* bubbles rising */}
+      <g fill="none" stroke="var(--sage)" strokeWidth="1">
+        <circle cx="45" cy="62" r="2.4"/><circle cx="55" cy="55" r="1.8"/><circle cx="48" cy="48" r="1.2"/><circle cx="57" cy="66" r="1.5"/>
+      </g>
+      <text x="50" y="90" fontSize="6" fill="var(--ink-mute)" fontFamily="IBM Plex Mono" textAnchor="middle" letterSpacing="1">NO OXYGEN</text>
+    </svg>
+  );
+}
+function CardArtDecaf() {
+  return (
+    <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
+      {/* bean */}
+      <ellipse cx="42" cy="56" rx="16" ry="21" transform="rotate(-16 42 56)" fill="var(--art-roast-mid)" fillOpacity="0.85" stroke="var(--art-roast-dark)" strokeWidth="1.2"/>
+      <path d="M42 37 Q36 56 42 75" transform="rotate(-16 42 56)" fill="none" stroke="var(--art-roast-dark)" strokeWidth="1.2"/>
+      {/* caffeine molecules leaving */}
+      <g fill="none" stroke="var(--accent)" strokeWidth="1.1">
+        <circle cx="66" cy="40" r="3"/><circle cx="76" cy="52" r="2.4"/><circle cx="70" cy="64" r="2"/>
+      </g>
+      <g stroke="var(--accent)" strokeWidth="0.8" strokeDasharray="2 2" opacity="0.6">
+        <path d="M56 46 L63 42"/><path d="M58 54 L73 52"/><path d="M56 62 L68 63"/>
+      </g>
+      <text x="50" y="90" fontSize="7" fill="var(--accent)" fontFamily="IBM Plex Mono" textAnchor="middle" letterSpacing="1">~97% OUT</text>
+    </svg>
+  );
+}
+function CardArtRoastCurve() {
+  return (
+    <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
+      {/* axes */}
+      <line x1="18" y1="20" x2="18" y2="78" stroke="var(--rule)" strokeWidth="1"/>
+      <line x1="18" y1="78" x2="86" y2="78" stroke="var(--rule)" strokeWidth="1"/>
+      {/* temperature curve */}
+      <path d="M18 74 Q40 70 56 50 Q70 34 84 26" fill="none" stroke="var(--art-roast-mid)" strokeWidth="2" strokeLinecap="round"/>
+      {/* first crack marker */}
+      <circle cx="56" cy="50" r="3" fill="var(--accent)"/>
+      <g stroke="var(--accent)" strokeWidth="1" strokeLinecap="round"><line x1="56" y1="42" x2="56" y2="38"/><line x1="63" y1="47" x2="67" y2="45"/><line x1="49" y1="47" x2="45" y2="45"/></g>
+      <text x="60" y="36" fontSize="6" fill="var(--accent)" fontFamily="IBM Plex Mono">1st crack</text>
+      <text x="20" y="16" fontSize="6" fill="var(--ink-mute)" fontFamily="IBM Plex Mono">°C</text>
+    </svg>
+  );
+}
+function CardArtLightDark() {
+  return (
+    <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
+      <defs>
+        <clipPath id="beanClipLD"><ellipse cx="50" cy="52" rx="20" ry="26"/></clipPath>
+      </defs>
+      <g clipPath="url(#beanClipLD)">
+        <rect x="30" y="26" width="20" height="52" fill="var(--art-roast-light)"/>
+        <rect x="50" y="26" width="20" height="52" fill="var(--art-roast-dark)"/>
+      </g>
+      <ellipse cx="50" cy="52" rx="20" ry="26" fill="none" stroke="var(--ink-mute)" strokeWidth="1.3"/>
+      <path d="M50 26 Q44 52 50 78" fill="none" stroke="var(--cream)" strokeWidth="1.2" opacity="0.7"/>
+      <text x="30" y="90" fontSize="6" fill="var(--art-roast-mid)" fontFamily="IBM Plex Mono" textAnchor="middle">LIGHT</text>
+      <text x="70" y="90" fontSize="6" fill="var(--art-roast-dark)" fontFamily="IBM Plex Mono" textAnchor="middle">DARK</text>
+    </svg>
+  );
+}
+function CardArtCaffeine() {
+  const cup = (cx, w, h, y, label, mg) => (
+    <g>
+      <path d={`M${cx - w} ${y} L${cx + w} ${y} L${cx + w - 2} ${y + h} L${cx - w + 2} ${y + h} Z`} fill="var(--surface-2)" stroke="var(--ink-mute)" strokeWidth="1.2" strokeLinejoin="round"/>
+      <path d={`M${cx - w + 2} ${y + h * 0.35} L${cx + w - 2} ${y + h * 0.35} L${cx + w - 2} ${y + h} L${cx - w + 2} ${y + h} Z`} fill="var(--art-roast-mid)" fillOpacity="0.5"/>
+      <text x={cx} y={y + h + 9} fontSize="6" fill="var(--ink-mute)" fontFamily="IBM Plex Mono" textAnchor="middle">{label}</text>
+      <text x={cx} y={y - 4} fontSize="7" fill="var(--accent)" fontFamily="IBM Plex Mono" textAnchor="middle">{mg}</text>
+    </g>
+  );
+  return (
+    <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
+      {cup(32, 8, 16, 46, 'ESPRESSO', '63mg')}
+      {cup(66, 13, 26, 36, 'DRIP', '95mg')}
+    </svg>
+  );
+}
+function CardArtGrindBrewer() {
+  const dots = (cx, cy, n, r) => Array.from({ length: n }).map((_, i) => {
+    const cols = Math.ceil(Math.sqrt(n));
+    const dx = (i % cols - (cols - 1) / 2) * (r * 2.4);
+    const dy = (Math.floor(i / cols) - (cols - 1) / 2) * (r * 2.4);
+    return <circle key={i} cx={cx + dx} cy={cy + dy} r={r} fill="var(--art-roast-mid)" fillOpacity="0.8"/>;
+  });
+  return (
+    <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
+      {/* fine */}
+      <circle cx="28" cy="40" r="13" fill="var(--surface-2)" stroke="var(--rule)" strokeWidth="1"/>
+      {dots(28, 40, 12, 1.4)}
+      <text x="28" y="62" fontSize="5.5" fill="var(--ink-mute)" fontFamily="IBM Plex Mono" textAnchor="middle">ESPRESSO</text>
+      {/* coarse */}
+      <circle cx="72" cy="40" r="13" fill="var(--surface-2)" stroke="var(--rule)" strokeWidth="1"/>
+      {dots(72, 40, 4, 3)}
+      <text x="72" y="62" fontSize="5.5" fill="var(--ink-mute)" fontFamily="IBM Plex Mono" textAnchor="middle">PRESS</text>
+      {/* contact-time arrow */}
+      <path d="M30 76 L70 76" stroke="var(--accent)" strokeWidth="1.2" strokeLinecap="round"/>
+      <path d="M70 76 L65 73 M70 76 L65 79" stroke="var(--accent)" strokeWidth="1.2" strokeLinecap="round"/>
+      <text x="50" y="90" fontSize="5.5" fill="var(--accent)" fontFamily="IBM Plex Mono" textAnchor="middle" letterSpacing="0.5">LONGER CONTACT</text>
+    </svg>
+  );
+}
+function CardArtExtraction() {
+  return (
+    <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
+      {/* beaker */}
+      <path d="M38 24 L38 40 L28 74 Q27 80 34 80 L66 80 Q73 80 72 74 L62 40 L62 24 Z" fill="none" stroke="var(--ink-mute)" strokeWidth="1.4" strokeLinejoin="round"/>
+      <line x1="34" y1="24" x2="66" y2="24" stroke="var(--ink-mute)" strokeWidth="1.8" strokeLinecap="round"/>
+      {/* target extraction band */}
+      <path d="M31 62 Q50 65 69 62 L72 74 Q73 80 66 80 L34 80 Q27 80 28 74 Z" fill="var(--accent)" fillOpacity="0.28"/>
+      <line x1="30" y1="62" x2="70" y2="62" stroke="var(--accent)" strokeWidth="1"/>
+      <line x1="33" y1="52" x2="67" y2="52" stroke="var(--rule)" strokeWidth="0.8" strokeDasharray="2 2"/>
+      <text x="50" y="49" fontSize="8" fill="var(--accent)" fontFamily="IBM Plex Mono" textAnchor="middle" letterSpacing="1">18–22%</text>
+    </svg>
+  );
+}
+function CardArtFilter() {
+  return (
+    <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
+      {/* cone dripper */}
+      <path d="M28 26 L72 26 L52 62 L48 62 Z" fill="var(--surface-2)" stroke="var(--ink-mute)" strokeWidth="1.4" strokeLinejoin="round"/>
+      {/* paper ridges */}
+      <g stroke="var(--rule)" strokeWidth="0.7" opacity="0.6"><line x1="38" y1="30" x2="45" y2="58"/><line x1="50" y1="30" x2="50" y2="59"/><line x1="62" y1="30" x2="55" y2="58"/></g>
+      {/* bed of grounds */}
+      <path d="M34 34 Q50 40 66 34 L60 46 Q50 49 40 46 Z" fill="var(--art-roast-mid)" fillOpacity="0.5"/>
+      {/* drip */}
+      <path d="M50 62 C53 68 55 71 55 74 A5 5 0 0 1 45 74 C45 71 47 68 50 62 Z" fill="var(--accent)" fillOpacity="0.3" stroke="var(--accent)" strokeWidth="1.1"/>
+      <text x="50" y="90" fontSize="6" fill="var(--ink-mute)" fontFamily="IBM Plex Mono" textAnchor="middle" letterSpacing="1">PAPER · METAL</text>
+    </svg>
+  );
+}
+function CardArtFirstCup() {
+  return (
+    <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
+      {/* saucer */}
+      <ellipse cx="50" cy="80" rx="30" ry="5" fill="var(--rule)" opacity="0.5"/>
+      {/* cup */}
+      <path d="M30 46 L70 46 L65 72 Q64 76 58 76 L42 76 Q36 76 35 72 Z" fill="var(--surface-2)" stroke="var(--ink-mute)" strokeWidth="1.4" strokeLinejoin="round"/>
+      {/* handle */}
+      <path d="M70 50 Q80 52 79 60 Q78 67 68 67" fill="none" stroke="var(--ink-mute)" strokeWidth="1.4"/>
+      {/* coffee + bloom */}
+      <ellipse cx="50" cy="47" rx="19" ry="4.5" fill="var(--art-roast-dark)"/>
+      <ellipse cx="50" cy="46" rx="11" ry="2.6" fill="var(--art-roast-light)" fillOpacity="0.6"/>
+      {/* steam */}
+      <g fill="none" stroke="var(--accent)" strokeWidth="1.1" strokeLinecap="round" opacity="0.7">
+        <path d="M43 38 Q39 33 43 28 Q47 23 43 18"/>
+        <path d="M57 38 Q53 33 57 28 Q61 23 57 18"/>
+      </g>
+    </svg>
+  );
+}
+
+// ── Module Field Guides — one cohesive booklet family, a distinct
+// emblem + spine colour per module so all five read uniquely. ──
+function GuideCard({ tint, num, children }) {
+  return (
+    <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
+      <rect x="33" y="20" width="42" height="60" rx="4" fill="var(--surface)" stroke="var(--rule)" strokeWidth="1" opacity="0.55"/>
+      <rect x="27" y="22" width="44" height="58" rx="4" fill="var(--surface-2)" stroke="var(--rule)" strokeWidth="1.3"/>
+      <path d="M27 25 Q27 22 30 22 L34 22 L34 80 L30 80 Q27 80 27 77 Z" fill={tint} fillOpacity="0.9"/>
+      <line x1="34" y1="22" x2="34" y2="80" stroke="var(--rule)" strokeWidth="0.8"/>
+      <g transform="translate(52.5 45)">{children}</g>
+      <text x="52.5" y="73" fontSize="6.5" fill="var(--ink-mute)" fontFamily="IBM Plex Mono" textAnchor="middle" letterSpacing="1.5">FIELD GUIDE {num}</text>
+    </svg>
+  );
+}
+function CardArtGuideBeans() {
+  return (
+    <GuideCard tint="var(--sage)" num="01">
+      <ellipse cx="0" cy="0" rx="9" ry="12" fill="var(--sage)" fillOpacity="0.28" stroke="var(--sage)" strokeWidth="1.4"/>
+      <path d="M0 -11 Q-3.5 0 0 11" fill="none" stroke="var(--sage)" strokeWidth="1.2"/>
+      <circle cx="0" cy="-15" r="2" fill="var(--berry)"/>
+    </GuideCard>
+  );
+}
+function CardArtGuideProcess() {
+  return (
+    <GuideCard tint="var(--accent)" num="02">
+      <path d="M0 -13 C6 -3 10 3 10 8 A10 10 0 0 1 -10 8 C-10 3 -6 -3 0 -13 Z" fill="var(--accent)" fillOpacity="0.2" stroke="var(--accent)" strokeWidth="1.3" strokeLinejoin="round"/>
+      <path d="M-5 8 A6.5 6.5 0 0 1 -1 1.5" fill="none" stroke="var(--cream)" strokeWidth="1" strokeLinecap="round" opacity="0.7"/>
+    </GuideCard>
+  );
+}
+function CardArtGuideRoast() {
+  return (
+    <GuideCard tint="var(--art-roast-mid)" num="03">
+      <ellipse cx="0" cy="0" rx="9" ry="12" fill="var(--art-roast-mid)" stroke="var(--art-roast-dark)" strokeWidth="1.2"/>
+      <path d="M0 -11 Q-3.5 0 0 11" fill="none" stroke="var(--art-roast-dark)" strokeWidth="1.2"/>
+      <g stroke="var(--accent)" strokeWidth="1" strokeLinecap="round" opacity="0.75"><path d="M0 -17 Q-3 -20 0 -23"/><path d="M6 -15 Q3 -18 6 -21"/></g>
+    </GuideCard>
+  );
+}
+function CardArtGuideGrind() {
+  const spokes = Array.from({ length: 8 }).map((_, i) => {
+    const a = i * Math.PI / 4 + Math.PI / 8;
+    return <line key={i} x1={Math.cos(a) * 6} y1={Math.sin(a) * 6} x2={Math.cos(a) * 11} y2={Math.sin(a) * 11} stroke="var(--ink-mute)" strokeWidth="1.1" strokeLinecap="round"/>;
+  });
+  return (
+    <GuideCard tint="var(--ink-mute)" num="04">
+      <circle cx="0" cy="0" r="12" fill="var(--surface)" stroke="var(--ink-mute)" strokeWidth="1.3"/>
+      {spokes}
+      <circle cx="0" cy="0" r="3.4" fill="var(--accent)"/>
+    </GuideCard>
+  );
+}
+function CardArtGuideBrew() {
+  return (
+    <GuideCard tint="var(--berry)" num="05">
+      <path d="M-11 -3 L11 -3 L8 12 Q7 15 3 15 L-3 15 Q-7 15 -8 12 Z" fill="var(--surface)" stroke="var(--ink-mute)" strokeWidth="1.3" strokeLinejoin="round"/>
+      <path d="M11 0 Q18 2 17 8 Q16 12 9 12" fill="none" stroke="var(--ink-mute)" strokeWidth="1.2"/>
+      <ellipse cx="0" cy="-3" rx="10" ry="2.6" fill="var(--art-roast-dark)"/>
+      <g fill="none" stroke="var(--accent)" strokeWidth="1" strokeLinecap="round" opacity="0.7"><path d="M-4 -9 Q-7 -13 -4 -17"/><path d="M4 -9 Q7 -13 4 -17"/></g>
+    </GuideCard>
+  );
+}
+
+function CardArtLayers() {
+  // The cherry in section — six concentric layers, seed split down the middle.
+  const rings = [['var(--art-cherry-skin)', 40], ['var(--art-cherry-pulp)', 36.5], ['var(--art-cherry-gel)', 29],
+    ['var(--art-cherry-parchment)', 25.5], ['var(--art-cherry-silverskin)', 22], ['var(--art-cherry-seed)', 19.5]];
+  return (
+    <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
+      {rings.map(([c, r], i) => (
+        <circle key={i} cx="50" cy="48" r={r} fill={c} stroke="rgba(27,22,20,0.24)" strokeWidth="0.7"/>
+      ))}
+      <line x1="50" y1="29" x2="50" y2="67" stroke="var(--art-seed-crease)" strokeWidth="1.6"/>
+      <text x="50" y="96" fontSize="5.5" fill="var(--ink-mute)" fontFamily="IBM Plex Mono" textAnchor="middle" letterSpacing="0.4">SKIN · PULP · GEL · SEED</text>
+    </svg>
+  );
+}
+
 const CARD_ART = {
   botanical: CardArtBotanical,
+  layers:    CardArtLayers,
   map:       CardArtMap,
   specimen:  CardArtSpecimen,
   dryingbed: CardArtDryingBed,
@@ -1768,10 +2175,35 @@ const CARD_ART = {
   gauge:     CardArtGauge,
   droplet:   CardArtDroplet,
   spectrum:  CardArtSpectrum,
+  scales:    CardArtScales,
+  hourglass: CardArtHourglass,
+  burrs:     CardArtBurrs,
+  guide:     CardArtGuide,
+  particles: CardArtParticles,
+  burrblade: CardArtBurrBlade,
+  grinddial: CardArtGrindDial,
+  altitude:  CardArtAltitude,
+  varieties: CardArtVarieties,
+  drying:    CardArtDrying,
+  anaerobic: CardArtAnaerobic,
+  decaf:     CardArtDecaf,
+  roastcurve:CardArtRoastCurve,
+  lightdark: CardArtLightDark,
+  caffeine:  CardArtCaffeine,
+  grindbrewer:CardArtGrindBrewer,
+  extraction:CardArtExtraction,
+  filter:    CardArtFilter,
+  firstcup:  CardArtFirstCup,
+  guideBeans:  CardArtGuideBeans,
+  guideProcess:CardArtGuideProcess,
+  guideRoast:  CardArtGuideRoast,
+  guideGrind:  CardArtGuideGrind,
+  guideBrew:   CardArtGuideBrew,
 };
 
 const CARD_TINT = {
   botanical: 'color-mix(in oklab, var(--surface) 88%, var(--sage) 12%)',
+  layers:    'color-mix(in oklab, var(--surface) 90%, var(--berry) 10%)',
   map:       'color-mix(in oklab, var(--surface) 92%, var(--accent) 8%)',
   specimen:  'var(--surface-2)',
   training:  'color-mix(in oklab, var(--surface) 90%, var(--accent) 10%)',
@@ -1784,9 +2216,37 @@ const CARD_TINT = {
   gauge:     'color-mix(in oklab, var(--surface) 90%, var(--accent) 10%)',
   droplet:   'color-mix(in oklab, var(--surface) 90%, var(--accent) 10%)',
   spectrum:  'color-mix(in oklab, var(--surface) 90%, var(--art-ripe) 10%)',
+  scales:    'color-mix(in oklab, var(--surface) 91%, var(--accent) 9%)',
+  hourglass: 'color-mix(in oklab, var(--surface) 90%, var(--art-roast-mid) 10%)',
+  burrs:     'color-mix(in oklab, var(--surface) 92%, var(--ink) 8%)',
+  guide:     'color-mix(in oklab, var(--surface) 88%, var(--sage) 12%)',
+  particles: 'color-mix(in oklab, var(--surface) 90%, var(--art-roast-mid) 10%)',
+  burrblade: 'color-mix(in oklab, var(--surface) 92%, var(--ink) 8%)',
+  grinddial: 'color-mix(in oklab, var(--surface) 91%, var(--accent) 9%)',
+  altitude:  'color-mix(in oklab, var(--surface) 90%, var(--sage) 10%)',
+  varieties: 'color-mix(in oklab, var(--surface) 89%, var(--sage) 11%)',
+  drying:    'color-mix(in oklab, var(--surface) 90%, var(--art-ripe) 10%)',
+  anaerobic: 'color-mix(in oklab, var(--surface) 89%, var(--sage) 11%)',
+  decaf:     'color-mix(in oklab, var(--surface) 90%, var(--art-roast-mid) 10%)',
+  roastcurve:'color-mix(in oklab, var(--surface) 90%, var(--art-roast-mid) 10%)',
+  lightdark: 'color-mix(in oklab, var(--surface) 90%, var(--art-roast-mid) 10%)',
+  caffeine:  'color-mix(in oklab, var(--surface) 91%, var(--accent) 9%)',
+  grindbrewer:'color-mix(in oklab, var(--surface) 92%, var(--ink) 8%)',
+  extraction:'color-mix(in oklab, var(--surface) 90%, var(--accent) 10%)',
+  filter:    'color-mix(in oklab, var(--surface) 90%, var(--accent) 10%)',
+  firstcup:  'color-mix(in oklab, var(--surface) 90%, var(--art-roast-mid) 10%)',
+  guideBeans:  'color-mix(in oklab, var(--surface) 88%, var(--sage) 12%)',
+  guideProcess:'color-mix(in oklab, var(--surface) 88%, var(--accent) 12%)',
+  guideRoast:  'color-mix(in oklab, var(--surface) 88%, var(--art-roast-mid) 12%)',
+  guideGrind:  'color-mix(in oklab, var(--surface) 90%, var(--ink) 10%)',
+  guideBrew:   'color-mix(in oklab, var(--surface) 89%, var(--berry) 11%)',
 };
 
-function CollectionCard({ card, index, onOpen, stamped, challengeOpen }) {
+function CollectionCard({ card, index, total, onOpen, stamped, challengeOpen }) {
+  // `index` is the card's place in the whole catalogue, not in this grid — cards
+  // unlock out of catalogue order, so the grid shows gaps (01, 04, 21). Printing
+  // the total makes the number read as "where this sits in the set".
+  const num = String(index + 1).padStart(2, '0') + (total ? ' / ' + total : '');
   if (!card.earned) {
     return (
       <div className="collect-card locked">
@@ -1797,7 +2257,7 @@ function CollectionCard({ card, index, onOpen, stamped, challengeOpen }) {
         }}>
           <LockedSilhouette kind={card.kind || 'q'}/>
         </div>
-        <div className="cc-sub" style={{ opacity: 0.55 }}>{String(index + 1).padStart(2, '0')}</div>
+        <div className="cc-sub" style={{ opacity: 0.55 }}>{num}</div>
       </div>
     );
   }
@@ -1808,14 +2268,16 @@ function CollectionCard({ card, index, onOpen, stamped, challengeOpen }) {
   return (
     <div className="collect-card" onClick={() => onOpen(card)}
          style={{ background: surfaceTint }}>
-      {stamped && window.BrewCup && (
-        <span title="Challenge stamp earned" style={{
+      {stamped && (
+        <span title="Challenge tried" style={{
           position: 'absolute', top: 10, right: 10, zIndex: 2,
           width: 26, height: 26, borderRadius: 999, display: 'grid', placeItems: 'center',
           background: 'color-mix(in oklab, var(--accent) 16%, var(--surface))',
           border: '1px solid color-mix(in oklab, var(--accent) 40%, var(--rule))',
         }}>
-          <window.BrewCup size={14} color="var(--accent)" steam={false}/>
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+            <path d="M3.6 7.4 L6.1 9.8 L10.6 4.6" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
         </span>
       )}
       {!stamped && challengeOpen && (
@@ -1828,7 +2290,7 @@ function CollectionCard({ card, index, onOpen, stamped, challengeOpen }) {
           border: '1px dashed color-mix(in oklab, var(--accent) 45%, var(--rule))',
         }}>Challenge</span>
       )}
-      <div className="cc-sub">{isTraining ? 'TRAINING' : 'CARD ' + String(index + 1).padStart(2, '0')}</div>
+      <div className="cc-sub">{isTraining ? 'TRAINING' : 'CARD ' + num}</div>
       <div style={{
         flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
         padding: '4px 0',
@@ -1854,12 +2316,15 @@ function CardSheet({ card, open, onClose, brewCompleted, brewActive, onBrewTry, 
             <>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div className="smallcaps" style={{ marginBottom: 8 }}>{isGuide ? 'VISUAL GUIDE' : 'COFFEE CARD'}</div>
+                  {isGuide && <div className="smallcaps" style={{ marginBottom: 8 }}>VISUAL GUIDE</div>}
                   <h2 className="ff-display" style={{
                     fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em',
                     margin: 0, color: 'var(--ink)',
                   }}>{card.title}</h2>
                 </div>
+                {!isGuide && brewCompleted && window.TriedSeal && (
+                  <div style={{ paddingTop: 6 }}><window.TriedSeal/></div>
+                )}
                 {isGuide && onToggleGuideSave && window.FavButton && (
                   <window.FavButton active={!!guideSaved} onClick={onToggleGuideSave}/>
                 )}
@@ -1874,15 +2339,17 @@ function CardSheet({ card, open, onClose, brewCompleted, brewActive, onBrewTry, 
                 return (
                   <div style={{
                     margin: '16px 0 20px',
-                    height: 140,
+                    height: 150,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    background: card.kind === 'specimen' ? 'var(--surface-2)' : 'var(--surface)',
-                    border: '1px solid var(--rule)',
+                    overflow: 'hidden',
+                    background: CARD_TINT[card.kind] || 'var(--surface-2)',
                     borderRadius: 2,
                   }}>
-                    {Art ? <Art/> : <FlavorStamp size={72} rotate={-8}/>}
+                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', transform: 'scale(1.15)' }}>
+                      {Art ? <Art/> : <FlavorStamp size={72} rotate={-8}/>}
+                    </div>
                   </div>
                 );
               })()}
@@ -1893,22 +2360,23 @@ function CardSheet({ card, open, onClose, brewCompleted, brewActive, onBrewTry, 
               }}>{card.summary}</p>
 
               {card.meta && (
-                <div style={{ marginBottom: 24 }}>
+                <div style={{ marginBottom: 24, display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {card.meta.map(([k, v], i) => (
-                    <FormRow key={i} label={k} value={v}/>
+                    <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr auto', alignItems: 'baseline', gap: 16 }}>
+                      <span className="smallcaps" style={{ color: 'var(--ink-mute)' }}>{k}</span>
+                      <span className="ff-mono" style={{ fontSize: 'var(--t-body)', fontVariantNumeric: 'tabular-nums', color: 'var(--accent)' }}>{v}</span>
+                    </div>
                   ))}
                 </div>
               )}
 
-              <hr className="rule"/>
-              <div style={{ padding: '20px 0' }}>
+              <div style={{ padding: '0 0 24px' }}>
                 <div className="smallcaps" style={{ marginBottom: 8 }}>FACT</div>
                 <p className="ff-display" style={{
                   fontSize: 'var(--t-heading)', lineHeight: 1.4, fontWeight: 400,
                   margin: 0, color: 'var(--ink)', textWrap: 'pretty',
                 }}>{card.fact}</p>
               </div>
-              <hr className="rule"/>
 
               {window.CardStampSection && (
                 <window.CardStampSection card={card} completed={brewCompleted} active={brewActive} onTry={onBrewTry}/>
@@ -2293,27 +2761,45 @@ window.Icons = {
 const MINI_GAMES = [
   {
     id: 'g-match', kind: 'match', title: 'Match the facts',
-    sub: 'ARABICA VS ROBUSTA', meta: '~2 MIN', lessonId: 'm1l2',
+    sub: 'ARABICA VS ROBUSTA', meta: '~2 MIN',
     blurb: 'Pair every fact with the right species before the board clears.',
-    steps: ['Read a fact on the left', 'Tap the species it belongs to', 'Clear all pairs to win'],
+    steps: ['Read a fact on the left', 'Tap the species it belongs to', 'Clear the board with no wrong drops'],
   },
   {
     id: 'g-flavor', kind: 'flavor', title: 'Name the flavor notes',
-    sub: 'TASTING', meta: '~2 MIN', lessonId: 'm1l1',
+    sub: 'TASTING NOTES', meta: '~2 MIN',
     blurb: 'Read each tasting clue and name what you taste — pick the note that fits the cup.',
     steps: ['Read the tasting clue', 'Weigh the four notes', 'Pick the one that fits'],
   },
   {
     id: 'g-quiz', kind: 'quiz', title: 'True or false',
-    sub: 'WHAT COFFEE IS', meta: '~1 MIN', lessonId: 'm1l1',
+    sub: 'COFFEE BASICS', meta: '~1 MIN',
     blurb: 'Quick-fire statements about coffee. Decide whether each one is true or false.',
     steps: ['Read the statement', 'Choose true or false', 'See why it lands that way'],
   },
   {
+    id: 'g-bagpick', kind: 'bagpick', title: 'Read the green bean',
+    sub: 'WASHED, HONEY OR NATURAL', meta: '~2 MIN',
+    blurb: 'Five unlabelled bags. Draw a sample, inspect the beans, and call the process from the look alone.',
+    steps: ['Draw a sample from the bag', 'Inspect colour, centre cut and aroma', 'Call it — washed, honey or natural'],
+  },
+  {
     id: 'g-tastefix', kind: 'tastefix', title: 'Fix the cup',
-    sub: 'DIAGNOSE and DIAL IN', meta: '~2 MIN', lessonId: 'm5l3',
+    sub: 'DIAGNOSE AND DIAL IN', meta: '~2 MIN',
     blurb: 'A cup comes out wrong — read what’s off and pick the one change that pulls it back to balanced.',
     steps: ['Read what the cup tastes like', 'Pick the fix that balances it', 'Watch the cup react'],
+  },
+  {
+    id: 'g-calibrate', kind: 'slider', title: 'Dial it in',
+    sub: 'GRIND, RATIO, WATER, TIME', meta: '~2 MIN',
+    blurb: 'Grind, ratio, temperature, time — drag each dial to where the answer actually lands.',
+    steps: ['Read what you are setting', 'Drag the dial to your answer', 'Check it against the target zone'],
+  },
+  {
+    id: 'g-sequence', kind: 'sequence', title: 'Put it in order',
+    sub: 'BEAN TO CUP', meta: '~2 MIN',
+    blurb: 'Five things, one right order. Farm to cup, skin to seed, first pour to drawdown.',
+    steps: ['Read what is being ordered', 'Tap the items in sequence', 'Submit to see the right order'],
   },
 ];
 
@@ -2358,7 +2844,7 @@ function GameIntroScreen({ game, onStart, onClose }) {
           }}>
             <span>{game.meta}</span>
             <span aria-hidden="true" style={{ opacity: 0.9 }}>·</span>
-            <span>{game.steps.length} STEPS</span>
+            <span>{((window.MINI_GAME_CONTENT || {})[game.id] || []).length} ROUNDS</span>
           </div>
 
           <div className="smallcaps" style={{ margin: '30px 0 14px' }}>HOW TO PLAY</div>

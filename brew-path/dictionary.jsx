@@ -332,8 +332,9 @@ function DictionaryHome({ name = 'Coffee Dictionary', learnedSet, favorites, rec
   const [cat, setCat] = useStateD(null);
   // Same sticky-header contract as every other subscreen: useScrollFlag +
   // SubScreenHeader, so the large in-flow title collapses into the shared
-  // blurred bar with the compact title beside the back chevron.
-  const [scrolled, onScroll] = window.useScrollFlag(72);
+  // blurred bar with the compact title beside the back chevron. The reset key
+  // is the category, since drilling in/out reuses this one scroller.
+  const [scrolled, onScroll, scrollRef] = window.useScrollFlag(40, cat);
   // The compact title tracks context: category drill-down shows the category.
   const compactTitle = cat ? ((window.DICT_CAT_BY_ID || {})[cat] || {}).label || name : name;
 
@@ -448,7 +449,7 @@ function DictionaryHome({ name = 'Coffee Dictionary', learnedSet, favorites, rec
   return (
     <div className="screen" data-screen-label="Dictionary" style={{ background: 'var(--bg)' }}>
       {topbar}
-      <div className="scroll" onScroll={onScroll} style={{ paddingTop: 108, paddingBottom: 120 }}>
+      <div ref={scrollRef} className="scroll" onScroll={onScroll} style={{ paddingTop: 108, paddingBottom: 120 }}>
         <div className="px-24">
           <div className="smallcaps" style={{ marginBottom: 10, color: 'var(--accent)' }}>REFERENCE · {terms.length} TERMS</div>
           <h1 className="ff-display" style={{ fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em', margin: 0, color: 'var(--ink)' }}>{name}</h1>
@@ -474,14 +475,15 @@ function TermCheck({ check }) {
   return (
     <div style={{ background: 'var(--surface)', border: '1px solid var(--rule)', borderRadius: 14, padding: 18 }}>
       <div className="smallcaps" style={{ marginBottom: 12 }}>KNOWLEDGE CHECK</div>
-      <div style={{ fontSize: 'var(--t-body)', color: 'var(--ink)', fontWeight: 500, lineHeight: 1.3, marginBottom: 14, textWrap: 'pretty' }}>{check.q}</div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div className="ff-display" style={{ fontSize: 'var(--t-heading)', color: 'var(--ink)', fontWeight: 400, lineHeight: 1.35, letterSpacing: '-0.01em', marginBottom: 6, textWrap: 'pretty' }}>{check.q}</div>
+      <div className="mcq-inset" style={{ display: 'flex', flexDirection: 'column' }}>
         {check.choices.map((c, i) => {
           let cls = 'mcq-choice';
           if (picked !== null) { if (i === correctIdx) cls += ' correct'; else if (i === picked) cls += ' incorrect'; }
           return (
-            <button key={i} className={cls} disabled={picked !== null} onClick={() => setPicked(i)} style={{ fontSize: 'var(--t-support)', padding: '14px 16px' }}>
-              {c.t}
+            <button key={i} className={cls} disabled={picked !== null} onClick={() => setPicked(i)} style={{ fontSize: 'var(--t-support)' }}>
+              <span className="mcq-dot"/>
+              <span>{c.t}</span>
             </button>
           );
         })}
@@ -501,7 +503,7 @@ function TermCheck({ check }) {
   );
 }
 
-function RelatedChips({ ids, onOpen, currentId }) {
+function RelatedChips({ ids, onOpen, currentId, currentCat, learnedSet }) {
   const list = (ids || []).map(id => (window.DICT_BY_ID || {})[id]).filter(Boolean).filter(t => t.id !== currentId);
   if (!list.length) return null;
   return (
@@ -512,8 +514,9 @@ function RelatedChips({ ids, onOpen, currentId }) {
           borderRadius: 999, padding: '8px 14px', display: 'inline-flex', alignItems: 'center', gap: 8,
           fontFamily: 'IBM Plex Sans, sans-serif', fontSize: 'var(--t-support)', color: 'var(--ink)',
         }}>
-          <CatGlyph cat={t.cat} size={15} color="var(--ink-mute)"/>
+          {t.cat !== currentCat && <CatGlyph cat={t.cat} size={15} color="var(--ink-mute)"/>}
           {t.term}
+          {learnedSet && learnedSet.has(t.id) && <span title="Learned" style={{ width: 5, height: 5, borderRadius: 999, background: 'var(--sage)', flexShrink: 0 }}></span>}
         </button>
       ))}
     </div>
@@ -585,73 +588,49 @@ function SourcesList({ sources }) {
 // ════════════════════════════════════════════════════════════
 // TERM DETAIL — 2 layouts
 // ════════════════════════════════════════════════════════════
-function TermDetail({ termId, variant = 'entry', learned, isFav, onToggleFav, onOpenTerm, onLesson, onClose }) {
+function TermDetail({ termId, variant = 'entry', learned, learnedSet, isFav, onToggleFav, onOpenTerm, onLesson, onClose }) {
   const term = (window.DICT_BY_ID || {})[termId];
-  // Collapsing sticky header — same pattern as SubScreenHeader (settings.jsx)
-  // and the dictionary home: transparent at rest; blurred + hairlined with a
-  // compact title once the large title scrolls behind it.
-  const [scrolled, setScrolled] = useStateD(false);
-  const onDetailScroll = (e) => setScrolled(e.target.scrollTop > 96);
-  useEffectD(() => { const el = document.querySelector('#dict-detail-scroll'); if (el) el.scrollTop = 0; setScrolled(false); }, [termId]);
+  // Shared collapsing header (settings.jsx) — the term page adds a bookmark on
+  // the trailing side and a ringed back control to match it. Reset key is the
+  // term: related-term taps reuse this scroller.
+  const [scrolled, onDetailScroll, scrollRef] = window.useScrollFlag(40, termId);
   if (!term) return null;
   const cat = (window.DICT_CAT_BY_ID || {})[term.cat];
+  // Back control mirrors the bookmark's chrome so the two ends of the bar match.
+  const ringChrome = (typeof window !== 'undefined' && window.BOOKMARK_STYLE) === 'ring';
 
-  const topbar = (
-    <div style={{
-      position: 'absolute', top: 0, left: 0, right: 0, height: 96, zIndex: 40,
-      display: 'flex', alignItems: 'flex-end', pointerEvents: 'none',
-      background: scrolled ? 'color-mix(in oklab, var(--bg) 78%, transparent)' : 'transparent',
-      backdropFilter: scrolled ? 'blur(16px) saturate(1.3)' : 'none',
-      WebkitBackdropFilter: scrolled ? 'blur(16px) saturate(1.3)' : 'none',
-      borderBottom: '1px solid ' + (scrolled ? 'var(--rule)' : 'transparent'),
-      transition: 'background 260ms ease, backdrop-filter 260ms ease, border-color 260ms ease',
-    }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0 20px 10px', width: '100%' }}>
-        <button className="close-btn" onClick={onClose} aria-label="Back" style={{ pointerEvents: 'auto', marginLeft: -4 }}>
-          <window.BackMark/>
-        </button>
-        <div style={{
-          minWidth: 0, flex: 1,
-          opacity: scrolled ? 1 : 0,
-          transform: scrolled ? 'translateY(0)' : 'translateY(7px)',
-          transition: 'opacity 240ms ease, transform 240ms ease',
-          pointerEvents: 'none',
-        }}>
-          {cat && (
-            <div className="ff-mono" style={{
-              fontSize: 'var(--t-micro)', letterSpacing: '0.18em', textTransform: 'uppercase',
-              color: 'var(--ink-mute)', lineHeight: 1,
-            }}>{cat.label}</div>
-          )}
-          <div className="ff-display" style={{
-            fontSize: 'var(--t-heading)', fontWeight: 400, letterSpacing: '-0.01em', color: 'var(--ink)',
-            lineHeight: 1.15, marginTop: cat ? 2 : 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-          }}>{term.term}</div>
-        </div>
-        {window.TopBarFav && <window.TopBarFav active={!!isFav} onClick={onToggleFav} label="Save term" style={{ pointerEvents: 'auto' }}/>}
-      </div>
-    </div>
-  );
+  const topbar = window.SubScreenHeader ? (
+    <window.SubScreenHeader
+      scrolled={scrolled} eyebrow={cat ? cat.label : ''} title={term.term} onBack={onClose} ringBack={ringChrome}
+      right={window.TopBarFav && <window.TopBarFav active={!!isFav} onClick={onToggleFav} label="Save term"/>}/>
+  ) : null;
 
-  const sections = (
+  // Teaching content, then a break, then reference material. The two blocks are
+  // read differently, so they're spaced differently.
+  const teaching = (
     <>
       {term.deep && (
         <div>
           <div className="smallcaps" style={{ marginBottom: 10 }}>IN DEPTH</div>
-          <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.6, color: 'var(--ink)', margin: 0, textWrap: 'pretty' }}>{term.deep}</p>
+          <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.65, color: 'var(--ink)', margin: 0, textWrap: 'pretty' }}>{term.deep}</p>
         </div>
       )}
       {term.example && (
-        <div style={{ background: 'var(--surface)', border: '1px solid var(--rule)', borderRadius: 14, padding: 18 }}>
-          <div className="smallcaps" style={{ marginBottom: 10, color: 'var(--accent)' }}>IN PRACTICE</div>
-          <p className="ff-display" style={{ fontSize: 'var(--t-heading)', lineHeight: 1.4, fontWeight: 400, margin: 0, color: 'var(--ink)', textWrap: 'pretty' }}>{term.example}</p>
+        <div style={{ borderLeft: '2px solid var(--accent)', paddingLeft: 16 }}>
+          <div className="smallcaps" style={{ marginBottom: 8, color: 'var(--accent)' }}>IN PRACTICE</div>
+          <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.6, fontWeight: 400, margin: 0, color: 'var(--ink)', textWrap: 'pretty' }}>{term.example}</p>
         </div>
       )}
       {term.check && <TermCheck check={term.check}/>}
+    </>
+  );
+
+  const reference = (
+    <>
       {term.related && term.related.length > 0 && (
         <div>
           <div className="smallcaps" style={{ marginBottom: 10 }}>RELATED TERMS</div>
-          <RelatedChips ids={term.related} onOpen={onOpenTerm} currentId={term.id}/>
+          <RelatedChips ids={term.related} onOpen={onOpenTerm} currentId={term.id} currentCat={term.cat} learnedSet={learnedSet}/>
         </div>
       )}
       {term.lesson && (
@@ -668,20 +647,25 @@ function TermDetail({ termId, variant = 'entry', learned, isFav, onToggleFav, on
   return (
     <div className="screen" data-screen-label="Term" style={{ background: 'var(--bg)' }}>
       {topbar}
-      <div id="dict-detail-scroll" className="scroll" onScroll={onDetailScroll} style={{ paddingTop: 108, paddingBottom: 36 }}>
+      <div ref={scrollRef} id="dict-detail-scroll" className="scroll" onScroll={onDetailScroll} style={{ paddingTop: 108, paddingBottom: 36 }}>
         <div className="px-24">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
             <span className="smallcaps" style={{ color: 'var(--accent)', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
               <CatGlyph cat={term.cat} size={16} color="var(--accent)"/>{cat ? cat.label : ''}
             </span>
+            {/* Status only — the action lives on the lesson card below, which
+                also names the module, so a header button would duplicate it. */}
             <StatusChipMini learned={learned}/>
           </div>
           <h1 className="ff-display" style={{ fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.02, letterSpacing: '-0.03em', margin: '14px 0 0', color: 'var(--ink)', textWrap: 'pretty' }}>{term.term}</h1>
           {term.pron && <div style={{ marginTop: 14 }}><SpeakButton word={term.term} pron={term.pron}/></div>}
-          <p style={{ fontSize: 'var(--t-lead)', lineHeight: 1.5, color: 'var(--ink)', margin: '20px 0 0', fontWeight: 400, textWrap: 'pretty' }}>{term.short}</p>
+          <p className="ff-display" style={{ fontSize: 'var(--t-heading)', lineHeight: 1.35, letterSpacing: '-0.01em', color: 'var(--ink)', margin: '18px 0 0', fontWeight: 400, textWrap: 'pretty' }}>{term.short}</p>
         </div>
-        <div className="px-24" style={{ paddingTop: 28, display: 'flex', flexDirection: 'column', gap: 26 }}>
-          {sections}
+        <div className="px-24" style={{ paddingTop: 30, display: 'flex', flexDirection: 'column', gap: 26 }}>
+          {teaching}
+        </div>
+        <div className="px-24" style={{ paddingTop: 40, display: 'flex', flexDirection: 'column', gap: 24 }}>
+          {reference}
         </div>
       </div>
     </div>
@@ -691,7 +675,7 @@ function TermDetail({ termId, variant = 'entry', learned, isFav, onToggleFav, on
 // ════════════════════════════════════════════════════════════
 // IN-LESSON TERM PEEK — compact bottom sheet
 // ════════════════════════════════════════════════════════════
-function TermPeekSheet({ termId, open, learned, isFav, onToggleFav, onOpenFull, onOpenTerm, onClose }) {
+function TermPeekSheet({ termId, open, learned, learnedSet, isFav, onToggleFav, onOpenFull, onOpenTerm, onClose }) {
   const term = termId ? (window.DICT_BY_ID || {})[termId] : null;
   const cat = term ? (window.DICT_CAT_BY_ID || {})[term.cat] : null;
   return (
@@ -699,30 +683,29 @@ function TermPeekSheet({ termId, open, learned, isFav, onToggleFav, onOpenFull, 
       <div className={'sheet-backdrop' + (open ? ' open' : '')} onClick={onClose}/>
       <div className={'sheet' + (open ? ' open' : '')} style={{ maxHeight: '56%' }}>
         <div className="sheet-handle"/>
-        <div className="sheet-content" style={{ paddingTop: 14 }}>
+        <div className="sheet-content" style={{ paddingTop: 18 }}>
           {term && (
             <>
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
-                <span className="smallcaps" style={{ color: 'var(--accent)', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                  <CatGlyph cat={term.cat} size={15} color="var(--accent)"/>{cat ? cat.label : ''}
-                </span>
-                {window.FavButton && <window.FavButton size={34} active={!!isFav} onClick={onToggleFav}/>}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <h2 className="ff-display" style={{ fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1, letterSpacing: '-0.02em', margin: 0, color: 'var(--ink)', flex: 1, minWidth: 0, transform: 'translateY(-1px)' }}>{term.term}</h2>
+                {learned && (
+                  <span title="Learned" style={{ width: 36, height: 36, borderRadius: 999, flexShrink: 0, display: 'grid', placeItems: 'center', border: '1px solid color-mix(in oklab, var(--sage) 55%, var(--rule))', background: 'color-mix(in oklab, var(--sage) 12%, var(--surface))' }}>
+                    <svg width="13" height="13" viewBox="0 0 10 10" fill="none"><path d="M1.5 5.2 L4 7.6 L8.5 2.6" stroke="var(--sage)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </span>
+                )}
+                {window.FavButton && <window.FavButton size={36} active={!!isFav} onClick={onToggleFav}/>}
               </div>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap', marginTop: 10 }}>
-                <h2 className="ff-display" style={{ fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.04, letterSpacing: '-0.02em', margin: 0, color: 'var(--ink)' }}>{term.term}</h2>
-                <StatusChipMini learned={learned}/>
-              </div>
-              {term.pron && <div style={{ marginTop: 12 }}><SpeakButton word={term.term} pron={term.pron}/></div>}
-              <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.55, color: 'var(--ink)', margin: '16px 0 0', textWrap: 'pretty' }}>{term.short}</p>
+              {term.pron && <div style={{ marginTop: 22 }}><SpeakButton word={term.term} pron={term.pron}/></div>}
+              <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.45, color: 'var(--ink)', margin: term.pron ? '16px 0 0' : '22px 0 0', textWrap: 'pretty' }}>{term.short}</p>
 
               {term.related && term.related.length > 0 && (
                 <div style={{ marginTop: 18 }}>
-                  <div className="smallcaps" style={{ marginBottom: 10 }}>RELATED</div>
-                  <RelatedChips ids={term.related} onOpen={onOpenTerm} currentId={term.id}/>
+                  <div className="smallcaps" style={{ marginBottom: 16 }}>RELATED</div>
+                  <RelatedChips ids={term.related} onOpen={onOpenTerm} currentId={term.id} learnedSet={learnedSet}/>
                 </div>
               )}
 
-              <div style={{ display: 'flex', gap: 10, marginTop: 22 }}>
+              <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
                 <button className="btn btn-ghost" style={{ flex: 1 }} onClick={onClose}>Got it</button>
                 <button className="btn btn-primary" style={{ flex: 1 }} onClick={() => onOpenFull(term.id)}>Full entry</button>
               </div>

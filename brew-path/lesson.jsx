@@ -18,8 +18,8 @@ const GAME_HELP = {
   },
   match: {
     title: 'Match pairs',
-    blurb: 'Drag each trait onto the item it belongs to — or tap one then the other. Several traits can share the same answer.',
-    steps: ['Drag a trait onto its match (or tap both)', 'It locks in when it’s right', 'Match every trait to continue'],
+    blurb: 'Drag each trait onto the item it belongs to — or tap one then the other. Several traits can share the same answer, and the board only scores if every pair lands first time.',
+    steps: ['Drag a trait onto its match (or tap both)', 'It locks in when it’s right', 'Clear the board with no wrong drops'],
   },
   slider: {
     title: 'Calibrate',
@@ -45,6 +45,11 @@ const GAME_HELP = {
     title: 'Taste Fix',
     blurb: 'Your cup came out wrong. Read what\u2019s off, then pick the one change you\u2019d try first \u2014 the feedback names the cause either way.',
     steps: ['Read what the cup tastes like', 'Pick the fix you\u2019d try first', 'See why it works, then continue'],
+  },
+  bagpick: {
+    title: 'Blind bag',
+    blurb: 'An unlabelled bag of green coffee. Inspect the sample — colour, centre cut, aroma — then call how it was processed from the look alone.',
+    steps: ['Tap each cue to inspect the sample', 'Weigh what the beans are telling you', 'Call the process — the tell is named either way'],
   },
   fill: {
     title: 'Complete the sentence',
@@ -139,7 +144,7 @@ function LessonPlayer({ lessonId, onClose, onComplete, nextLessonId, isFav, onTo
   if (!lesson) return null;
   const card = lesson.cards[idx];
   const total = lesson.cards.length;
-  const quizTotal = lesson.cards.filter(c => ['mcq', 'multi', 'match', 'slider', 'sequence', 'tastefix', 'decision', 'recall'].includes(c.kind)).length;
+  const quizTotal = lesson.cards.filter(c => ['mcq', 'multi', 'match', 'slider', 'sequence', 'tastefix', 'bagpick', 'decision', 'recall'].includes(c.kind)).length;
 
   const advance = () => {
     if (idx + 1 >= total) {
@@ -181,22 +186,21 @@ function LessonPlayer({ lessonId, onClose, onComplete, nextLessonId, isFav, onTo
 
       <div className="scroll" style={{ paddingTop: 134, paddingBottom: 32, display: 'flex', flexDirection: 'column' }}>
         <div key={key} className="fade-up" style={{ flex: '1 0 auto', display: 'flex', flexDirection: 'column' }}>
-          {card.kind === 'intro'    && <IntroCard card={card} onContinue={advance} onTermTap={onTermTap}/>}
           {card.kind === 'predict'  && window.PredictCard && <window.PredictCard card={card} onContinue={advance} onPredict={setPrediction} onTermTap={onTermTap}/>}
           {card.kind === 'decision' && window.DecisionCard && <window.DecisionCard card={card} onContinue={advance} onXp={showXp} onTermTap={onTermTap}/>}
           {card.kind === 'recall'   && window.RecallCard && <window.RecallCard card={card} onContinue={advance} onXp={showXp} prediction={prediction}/>}
           {card.kind === 'concept'  && <ConceptCard card={card} onContinue={advance} onTermTap={onTermTap}/>}
-          {card.kind === 'practical' && window.PracticalCard && <window.PracticalCard card={card} onContinue={advance} onTermTap={onTermTap}/>}
           {card.kind === 'visual'    && window.VisualLessonCard && <window.VisualLessonCard card={card} onContinue={advance}
             saved={!!(favorites && favorites.has('g:' + card.variant))}
             onToggleSave={onToggleFavKey ? () => onToggleFavKey('g:' + card.variant) : null}/>}
           {card.kind === 'tastefix'  && window.TasteFixCard && <window.TasteFixCard card={card} onContinue={advance} onXp={showXp}/>}
+          {card.kind === 'bagpick'   && window.BagPickCard && <window.BagPickCard card={card} onContinue={advance} onXp={showXp}/>}
+          {card.kind === 'practical' && window.PracticalCard && <window.PracticalCard card={card} onContinue={advance}/>}
           {card.kind === 'mcq'      && <MCQCard card={card} onContinue={advance} onXp={showXp}/>}
           {card.kind === 'multi'    && <MultiCard card={card} onContinue={advance} onXp={showXp}/>}
           {card.kind === 'match'    && <MatchCard card={card} onContinue={advance} onXp={showXp}/>}
           {card.kind === 'slider'   && <SliderCard card={card} onContinue={advance} onXp={showXp}/>}
           {card.kind === 'sequence' && <SequenceCard card={card} onContinue={advance} onXp={showXp}/>}
-          {card.kind === 'takeaway' && <TakeawayCard card={card} onContinue={advance}/>}
         </div>
       </div>
     </div>
@@ -206,27 +210,6 @@ function LessonPlayer({ lessonId, onClose, onComplete, nextLessonId, isFav, onTo
 // Wrap recognised glossary terms in tappable spans when a handler is present.
 function maybeLinkTerms(text, onTermTap) {
   return (onTermTap && window.linkifyTerms) ? window.linkifyTerms(text, onTermTap) : text;
-}
-
-function IntroCard({ card, onContinue, onTermTap }) {
-  return (
-    <div className="px-24" style={{ display: 'flex', flexDirection: 'column', flex: '1 0 auto', minHeight: 600 }}>
-      <div className="smallcaps" style={{ marginBottom: 14 }}>{card.label}</div>
-      <h1 className="ff-display" style={{
-        fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em',
-        margin: 0, color: 'var(--ink)', textWrap: 'pretty',
-      }}>{card.title}</h1>
-      <p style={{
-        fontSize: 'var(--t-lead)', lineHeight: 1.5, color: 'var(--ink-mute)',
-        marginTop: 24, fontWeight: 400, textWrap: 'pretty',
-      }}>{maybeLinkTerms(card.body, onTermTap)}</p>
-
-      <div style={{ flex: 1 }}/>
-      <div style={{ paddingTop: 32 }}>
-        <button className="btn btn-primary" onClick={onContinue}>Continue</button>
-      </div>
-    </div>
-  );
 }
 
 function ConceptCard({ card, onContinue, onTermTap }) {
@@ -265,6 +248,20 @@ function ConceptCard({ card, onContinue, onTermTap }) {
   );
 }
 
+// THE blank. One inline slot for every fill-in-the-blank mechanic in the app —
+// concept sentences (graded) and the predict card's cloze question (a guess).
+// States: empty (dashed, waiting) · guess (accent, ungraded) · filled (locked,
+// unchecked) · right (sage) · wrong (berry). Set `inherit` when the slot sits
+// inside display type so it keeps the sentence's own face instead of mono.
+function FillSlot({ word, state = 'empty', inherit }) {
+  const cls = 'fill-slot'
+    + (state === 'empty' ? '' : ' filled')
+    + (state === 'right' || state === 'wrong' || state === 'guess' ? ' ' + state : '')
+    + (inherit ? ' inherit' : '');
+  return <span className={cls}>{word != null && word !== '' ? word : '\u00a0'}</span>;
+}
+window.FillSlot = FillSlot;
+
 // Concept card as a "complete the sentence" interaction. card.fill is an array of
 // parts: strings render as prose, objects { a, o, label } render as an inline blank
 // with a two-choice bank below. Picks lock on first tap (no retry, no scoring); the
@@ -294,11 +291,9 @@ function ConceptFillCard({ card, onContinue, onTermTap }) {
           // always show the learner's own pick; after checking, colour it by correctness
           // (the option row below marks which word was right)
           const shown = picked;
-          const state = checked && picked != null ? (picked === p.a ? ' right' : ' wrong') : '';
+          const state = checked && picked != null ? (picked === p.a ? 'right' : 'wrong') : '';
           return (
-            <span key={i} className={'fill-slot' + (shown != null ? ' filled' : '') + state}>
-              {shown != null ? shown : '\u2014\u2014\u2014\u2014'}
-            </span>
+            <FillSlot key={i} word={shown} state={shown == null ? 'empty' : (state || 'filled')}/>
           );
         })}
       </p>
@@ -365,6 +360,9 @@ function ConceptFillCard({ card, onContinue, onTermTap }) {
 function MCQCard({ card, onContinue, onXp }) {
   const [picked, setPicked] = useStateL(null);
   const correctIdx = card.choices.findIndex(c => c.correct);
+  // Render order only — shuffled once per mount so the correct choice is not
+  // always first. Grading, feedback and XP all key off the authored index.
+  const [order] = useStateL(() => shuffledIdx(card.choices.length));
 
   const handlePick = (i) => {
     if (picked !== null) return;
@@ -381,17 +379,17 @@ function MCQCard({ card, onContinue, onXp }) {
       }}>{card.prompt}</h2>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 24 }}>
-        {card.choices.map((c, i) => {
+        {order.map((oi) => {
           let cls = 'mcq-choice';
           if (picked !== null) {
-            if (i === correctIdx) cls += ' correct';
-            else if (i === picked) cls += ' incorrect';
+            if (oi === correctIdx) cls += ' correct';
+            else if (oi === picked) cls += ' incorrect';
           }
           return (
-            <button key={i} className={cls}
+            <button key={oi} className={cls}
                     disabled={picked !== null}
-                    onClick={() => handlePick(i)}>
-              {c.t}
+                    onClick={() => handlePick(oi)}>
+              {card.choices[oi].t}
             </button>
           );
         })}
@@ -430,6 +428,8 @@ function MultiCard({ card, onContinue, onXp }) {
   const [sel, setSel] = useStateL(() => new Set());
   const [submitted, setSubmitted] = useStateL(false);
   const [paidXp, setPaidXp] = useStateL(false);
+  // Render order only — keeps the correct options from clustering at the top.
+  const [order] = useStateL(() => shuffledIdx(card.choices.length));
 
   const correctSet = React.useMemo(
     () => new Set(card.choices.map((c, i) => (c.correct ? i : -1)).filter(i => i >= 0)),
@@ -469,9 +469,10 @@ function MultiCard({ card, onContinue, onXp }) {
       }}>{card.prompt}</h2>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 24 }}>
-        {card.choices.map((c, i) => {
-          const on = sel.has(i);
-          const isCorrect = correctSet.has(i);
+        {order.map((oi) => {
+          const c = card.choices[oi];
+          const on = sel.has(oi);
+          const isCorrect = correctSet.has(oi);
           let cls = 'ms-choice';
           let box = null;
           let tag = null;
@@ -481,7 +482,7 @@ function MultiCard({ card, onContinue, onXp }) {
           else if (on && !isCorrect) { cls += ' incorrect'; box = <XMark/>; }
           else if (!on && isCorrect) { cls += ' missed'; box = <CheckMark/>; tag = <span className="ms-tag">Missed</span>; }
           return (
-            <button key={i} className={cls} disabled={submitted} onClick={() => toggle(i)}>
+            <button key={oi} className={cls} disabled={submitted} onClick={() => toggle(oi)}>
               <span className="ms-box">{box}</span>
               <span>{c.t}</span>
               {tag}
@@ -518,6 +519,17 @@ function MultiCard({ card, onContinue, onXp }) {
       </div>
     </div>
   );
+}
+
+// Fisher–Yates over 0..n-1 — used to randomise how game cards lay out so a
+// replay never opens in the same arrangement (or, worse, the solved one).
+function shuffledIdx(n) {
+  const a = Array.from({ length: n }, (_, i) => i);
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 }
 
 // Animated connection line — draws itself in on mount via stroke-dashoffset,
@@ -560,12 +572,18 @@ function MatchCard({ card, onContinue, onXp }) {
     return seen;
   }, [card]);
 
+  // Render order only — shuffled once per mount. Pair index and species index
+  // stay the identity everything else (matching, refs, lines) keys off.
+  const [leftOrder] = useStateL(() => shuffledIdx(card.pairs.length));
+  const [rightOrder] = useStateL(() => shuffledIdx(species.length));
+
   const [matches, setMatches] = useStateL([]);   // [{ left, right }]
   const [selLeft, setSelLeft] = useStateL(null);
   const [drag, setDrag] = useStateL(null);        // { from, x, y, moved }
   const [hotRight, setHotRight] = useStateL(null);
   const [wrong, setWrong] = useStateL(null);      // { left, right }
   const [snap, setSnap] = useStateL(null);        // right idx that just locked
+  const [misses, setMisses] = useStateL(0);       // wrong drops this board
   const [paidXp, setPaidXp] = useStateL(false);
   const [lines, setLines] = useStateL([]);
   const [dims, setDims] = useStateL({ w: 0, h: 0 });
@@ -602,8 +620,12 @@ function MatchCard({ card, onContinue, onXp }) {
     return () => window.removeEventListener('resize', onR);
   });
 
+  // A match board can't be failed — you keep going until it's cleared — so the
+  // graded thing is HOW you cleared it. Zero wrong drops is a correct board;
+  // anything else scores nothing, the same rule every other card follows.
+  const clean = misses === 0;
   useEffectL(() => {
-    if (allDone && !paidXp) { setPaidXp(true); onXp && onXp(3); }
+    if (allDone && !paidXp) { setPaidXp(true); if (clean) onXp && onXp(3); }
   }, [allDone]);
 
   const localScale = () => {
@@ -626,6 +648,7 @@ function MatchCard({ card, onContinue, onXp }) {
       setSnap(rightIdx);
       setTimeout(() => setSnap(null), 340);
     } else {
+      setMisses(n => n + 1);
       setWrong({ left: leftIdx, right: rightIdx });
       setTimeout(() => setWrong(null), 480);
     }
@@ -703,7 +726,8 @@ function MatchCard({ card, onContinue, onXp }) {
         )}
 
         <div className="match-col left">
-          {card.pairs.map((p, i) => {
+          {leftOrder.map((i) => {
+            const p = card.pairs[i];
             const done = matchedLeft(i);
             const cls = 'match-item'
               + (done ? ' matched' : '')
@@ -724,7 +748,8 @@ function MatchCard({ card, onContinue, onXp }) {
         </div>
 
         <div className="match-col right">
-          {species.map((sp, j) => {
+          {rightOrder.map((j) => {
+            const sp = species[j];
             const linked = rightLinked(j);
             const cls = 'match-item'
               + (linked ? ' linked' : '')
@@ -743,6 +768,26 @@ function MatchCard({ card, onContinue, onXp }) {
           })}
         </div>
       </div>
+
+      {allDone && (
+        <div style={{ marginTop: 24, display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+          <div style={{ flexShrink: 0, marginTop: -8 }}>
+            <Roasty state={clean ? 'correct' : 'wrong'} size={72}/>
+          </div>
+          <div style={{ flex: 1 }}>
+            <div className="ff-mono" style={{
+              fontSize: 'var(--t-label)', letterSpacing: '0.14em',
+              color: clean ? 'var(--sage)' : 'var(--berry)',
+              textTransform: 'uppercase', marginBottom: 8,
+            }}>{clean ? 'CLEAN BOARD' : `${misses} WRONG ${misses === 1 ? 'DROP' : 'DROPS'}`}</div>
+            <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: 0 }}>
+              {clean
+                ? 'Every pair first time. That is the one that counts.'
+                : 'Cleared it, but not first time — the board only scores when every pair lands on the first try.'}
+            </p>
+          </div>
+        </div>
+      )}
 
       <div style={{ flex: 1 }}/>
       <div style={{ paddingTop: 32 }}>
@@ -808,6 +853,11 @@ function GrinderDial({ val, clicks }) {
   );
 }
 
+// The target readout under a slider card's verdict. Three treatments (Tweaks →
+// Roasty's reaction to a slider answer: verdict + feedback only. The target
+// itself is stated above the track, next to the zone it highlights — see
+// SliderCard. Status colour stays on the verdict alone.
+
 function SliderCard({ card, onContinue, onXp }) {
   const [val, setVal] = useStateL(50);
   const [touched, setTouched] = useStateL(false);
@@ -848,7 +898,21 @@ function SliderCard({ card, onContinue, onXp }) {
       )}
 
       <div style={{ marginTop: isGrinder ? 20 : 40 }}>
-        <div className="slider-live">{bands[bandIdx]}</div>
+        {/* One fixed-height slot, bottom-aligned, so the track never moves when the
+            answer is checked. Both states are label + value: before checking it
+            reads back the learner's own band in accent (accent = a committed
+            claim); after, it states the target in sage, keyed to the sage zone
+            drawn on the track directly below — so the answer is read where the
+            eye already is, and the range is never stated twice on the screen. */}
+        <div style={{ minHeight: 58, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', marginBottom: 6 }}>
+          <div className="smallcaps" style={{ color: checked ? 'var(--sage)' : 'var(--ink-mute)', marginBottom: 3 }}>
+            {checked ? 'Target' : 'Your setting'}
+          </div>
+          <p style={{
+            fontSize: 'var(--t-body)', lineHeight: 1.35, margin: 0, textWrap: 'pretty',
+            color: checked ? 'var(--ink)' : 'var(--accent)',
+          }}>{checked ? bands[targetBandIdx] : bands[bandIdx]}</p>
+        </div>
 
         <div className="slider-track-wrap">
           {checked && (
@@ -863,8 +927,8 @@ function SliderCard({ card, onContinue, onXp }) {
         <div style={{
           display: 'flex', justifyContent: 'space-between', marginTop: 8,
         }}>
-          <span className="ff-mono" style={{ fontSize: 'var(--t-support)', letterSpacing: '0.14em', color: 'var(--ink)', textTransform: 'uppercase', display: 'inline-flex', alignItems: 'center', gap: 6 }}><span style={{ fontSize: 'var(--t-lead)', lineHeight: 1 }}>←</span> {card.leftLabel}</span>
-          <span className="ff-mono" style={{ fontSize: 'var(--t-support)', letterSpacing: '0.14em', color: 'var(--ink)', textTransform: 'uppercase', display: 'inline-flex', alignItems: 'center', gap: 6 }}>{card.rightLabel} <span style={{ fontSize: 'var(--t-lead)', lineHeight: 1 }}>→</span></span>
+          <span className="smallcaps" style={{ color: 'var(--ink)', display: 'inline-flex', alignItems: 'center', gap: 6 }}><span style={{ display: 'inline-flex', transform: 'rotate(180deg)' }}><window.ArrowMark/></span>{card.leftLabel}</span>
+          <span className="smallcaps" style={{ color: 'var(--ink)', display: 'inline-flex', alignItems: 'center', gap: 6 }}>{card.rightLabel}<window.ArrowMark/></span>
         </div>
       </div>
 
@@ -874,19 +938,15 @@ function SliderCard({ card, onContinue, onXp }) {
             <Roasty state={within ? 'correct' : 'wrong'} size={72}/>
           </div>
           <div style={{ flex: 1 }}>
-            <div className="ff-mono" style={{
-              fontSize: 'var(--t-label)', letterSpacing: '0.14em',
+          <div className="smallcaps" style={{
+              letterSpacing: '0.14em',
               color: within ? 'var(--sage)' : 'var(--berry)',
-              textTransform: 'uppercase', marginBottom: 8,
+              marginBottom: 8,
             }}>
               {within ? 'DIALED IN' : 'NOT QUITE'}
             </div>
             <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: 0 }}>
               {card.feedback}
-            </p>
-            <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink)', margin: '10px 0 0' }}>
-              <span className="ff-mono" style={{ fontSize: 'var(--t-label)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--sage)' }}>Target</span>
-              {'  '}{bands[targetBandIdx]}
             </p>
           </div>
         </div>
@@ -904,6 +964,16 @@ function SliderCard({ card, onContinue, onXp }) {
 
 function SequenceCard({ card, onContinue, onXp }) {
   const [order, setOrder] = useStateL([]); // array of indices in tap order
+  // Display order is shuffled on mount so a card authored in its correct order
+  // never opens pre-solved. Grading still reads item.order, so this is cosmetic.
+  const [displayOrder] = useStateL(() => {
+    const n = card.items.length;
+    const solved = (o) => o.every((idx, pos) => card.items[idx].order === pos + 1);
+    let o = shuffledIdx(n);
+    if (solved(o)) o = shuffledIdx(n);
+    if (solved(o)) o = [...o].reverse();
+    return o;
+  });
   const [submitted, setSubmitted] = useStateL(false);
   const [paidXp, setPaidXp] = useStateL(false);
   const allTapped = order.length === card.items.length;
@@ -937,7 +1007,8 @@ function SequenceCard({ card, onContinue, onXp }) {
       }}>{card.prompt}</h2>
 
       <div style={{ marginTop: 24 }}>
-        {card.items.map((it, i) => {
+        {displayOrder.map((i) => {
+          const it = card.items[i];
           const pos = order.indexOf(i);
           const posRight = submitted && pos >= 0 && it.order === pos + 1;
           const posWrong = submitted && pos >= 0 && it.order !== pos + 1;
@@ -997,25 +1068,6 @@ function SequenceCard({ card, onContinue, onXp }) {
   );
 }
 
-function TakeawayCard({ card, onContinue }) {
-  return (
-    <div className="px-24" style={{ display: 'flex', flexDirection: 'column', flex: '1 0 auto', minHeight: 620 }}>
-      <div className="smallcaps" style={{ marginBottom: 14 }}>{card.label}</div>
-
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', paddingBottom: 40 }}>
-        <h1 className="ff-display" style={{
-          fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.1, letterSpacing: '-0.02em',
-          margin: 0, color: 'var(--ink)', textWrap: 'balance',
-        }}>{card.line}</h1>
-      </div>
-
-      <div style={{ paddingTop: 16 }}>
-        <button className="btn btn-primary" onClick={onContinue}>Finish lesson</button>
-      </div>
-    </div>
-  );
-}
-
 // Old CompletionScreen replaced by LessonCompleteScreen + ModuleCompleteScreen
 // + ModuleRewardCardScreen in rewards.jsx.
 
@@ -1027,59 +1079,82 @@ function TakeawayCard({ card, onContinue }) {
 const MINI_GAME_CONTENT = {
   // Match the facts — Arabica vs Robusta. Only 'match' cards.
   'g-match': [
-    { kind: 'match', prompt: 'Match each trait to its species.',
+    { kind: 'match', prompt: 'Match each trait to its species',
       pairs: [
         { l: 'Sweeter, more aromatic', r: 'Arabica' },
         { l: 'Almost twice the caffeine', r: 'Robusta' },
         { l: 'Grown 900–2000m', r: 'Arabica' },
         { l: 'Heavier body, more bitter', r: 'Robusta' },
       ] },
-    { kind: 'match', prompt: 'Which species? Pair each fact.',
+    { kind: 'match', prompt: 'Which species? Pair each fact',
       pairs: [
         { l: '~60% of world coffee', r: 'Arabica' },
         { l: 'Hardier, disease-resistant', r: 'Robusta' },
         { l: 'More delicate acidity', r: 'Arabica' },
         { l: 'Thrives at low elevation', r: 'Robusta' },
       ] },
+    { kind: 'match', prompt: 'Pair each cue with its species',
+      pairs: [
+        { l: 'Oval bean, curved crease', r: 'Arabica' },
+        { l: 'Rounder bean, straight crease', r: 'Robusta' },
+        { l: 'Frost-sensitive, needs altitude', r: 'Arabica' },
+        { l: 'Tolerates heat and humidity', r: 'Robusta' },
+      ] },
+    { kind: 'match', prompt: 'Which species does each belong to?',
+      pairs: [
+        { l: 'Caffeine around 1.2%', r: 'Arabica' },
+        { l: 'Caffeine around 2.4%', r: 'Robusta' },
+        { l: 'Prized for florals and fruit', r: 'Arabica' },
+        { l: 'Adds crema and punch to espresso', r: 'Robusta' },
+      ] },
+    { kind: 'match', prompt: 'Match each shelf cue to its species',
+      pairs: [
+        { l: 'Most specialty single origins', r: 'Arabica' },
+        { l: 'The backbone of instant coffee', r: 'Robusta' },
+        { l: 'Costs more per kilo at origin', r: 'Arabica' },
+        { l: 'Cheaper to grow, higher yield', r: 'Robusta' },
+      ] },
   ],
   // Name the flavor notes — tasting. Only 'flavor' cards.
   'g-flavor': [
-    { kind: 'flavor', clue: 'A sharp, tangy brightness that makes your mouth water.',
-      prompt: 'Name the note.',
+    { kind: 'flavor', clue: 'A sharp, tangy brightness that makes your mouth water',
+      prompt: 'Name the note',
       choices: [{ t: 'Citrus' }, { t: 'Caramel' }, { t: 'Cedar' }, { t: 'Tobacco' }],
       answer: 0, explain: 'That mouth-watering snap is acidity — most often citrus in a bright coffee.' },
-    { kind: 'flavor', clue: 'Deep, roasty and bittersweet — like dark baking cocoa.',
-      prompt: 'Name the note.',
+    { kind: 'flavor', clue: 'Deep, roasty and bittersweet — like dark baking cocoa',
+      prompt: 'Name the note',
       choices: [{ t: 'Floral' }, { t: 'Chocolate' }, { t: 'Berry' }, { t: 'Grassy' }],
       answer: 1, explain: 'Bittersweet and roasty reads as chocolate — a classic note in darker roasts.' },
-    { kind: 'flavor', clue: 'Delicate and perfumed, like jasmine or orange blossom.',
-      prompt: 'Name the note.',
+    { kind: 'flavor', clue: 'Delicate and perfumed, like jasmine or orange blossom',
+      prompt: 'Name the note',
       choices: [{ t: 'Nutty' }, { t: 'Smoky' }, { t: 'Floral' }, { t: 'Malty' }],
       answer: 2, explain: 'Perfumed and light on the nose — that is a floral note, common in Ethiopian coffees.' },
-    { kind: 'flavor', clue: 'Sweet and jammy, like ripe strawberry or blueberry.',
-      prompt: 'Name the note.',
+    { kind: 'flavor', clue: 'Sweet and jammy, like ripe strawberry or blueberry',
+      prompt: 'Name the note',
       choices: [{ t: 'Berry' }, { t: 'Earthy' }, { t: 'Spicy' }, { t: 'Woody' }],
       answer: 0, explain: 'Jammy sweetness points to berry — often found in natural-process coffees.' },
-    { kind: 'flavor', clue: 'Warm and toasted, like almonds or hazelnut skins.',
-      prompt: 'Name the note.',
+    { kind: 'flavor', clue: 'Warm and toasted, like almonds or hazelnut skins',
+      prompt: 'Name the note',
       choices: [{ t: 'Winey' }, { t: 'Nutty' }, { t: 'Herbal' }, { t: 'Fruity' }],
       answer: 1, explain: 'Toasted and warm is the nutty family — think almond, hazelnut, pecan.' },
   ],
   // True or false — what coffee is. Only 'quiz' cards.
   'g-quiz': [
-    { kind: 'quiz', statement: 'A coffee bean is actually the seed of a fruit.',
+    { kind: 'quiz', statement: 'A coffee bean is actually the seed of a fruit',
       answer: true, explain: 'True — it is the seed of the coffee cherry.' },
-    { kind: 'quiz', statement: 'Espresso beans are a special species grown only for espresso.',
-      answer: false, explain: 'False — espresso is a brewing method, not a species. Any bean can be pulled as espresso.' },
-    { kind: 'quiz', statement: "Most of the world's coffee grows in a band near the equator.",
+    { kind: 'quiz', statement: "Most of the world's coffee grows in a band near the equator",
       answer: true, explain: 'True — the "bean belt" runs roughly 25°N to 25°S.' },
-    { kind: 'quiz', statement: 'Robusta has less caffeine than Arabica.',
-      answer: false, explain: 'False — Robusta has almost twice the caffeine of Arabica.' },
-    { kind: 'quiz', statement: 'A coffee cherry usually contains two seeds.',
+    { kind: 'quiz', statement: 'Espresso beans are a special species grown only for espresso',
+      answer: false, explain: 'False — espresso is a brewing method, not a species. Any bean can be pulled as espresso.' },
+    { kind: 'quiz', statement: 'A coffee cherry usually contains two seeds',
       answer: true, explain: 'True — two flat-faced seeds sit pressed together inside each cherry.' },
-    { kind: 'quiz', statement: 'Dark roasts always have far more caffeine than light roasts.',
+    { kind: 'quiz', statement: 'Robusta has less caffeine than Arabica',
+      answer: false, explain: 'False — Robusta has almost twice the caffeine of Arabica.' },
+    { kind: 'quiz', statement: 'Dark roasts always have far more caffeine than light roasts',
       answer: false, explain: 'False — roast level barely changes caffeine; by volume light roasts can edge ahead.' },
   ],
+  // Blind bag — call the process from the look of the green bean. Only 'bagpick' cards.
+  'g-bagpick': (typeof BAGPICK_ROUNDS !== 'undefined' ? BAGPICK_ROUNDS : []),
   // Taste Fix — diagnose the cup and pick the fix. Only 'tastefix' cards.
   'g-tastefix': [
     { kind: 'tastefix', tags: ['SOUR', 'THIN'],
@@ -1102,6 +1177,116 @@ const MINI_GAME_CONTENT = {
       prompt: 'Your espresso still tastes harsh. What would you try first?',
       choices: [{ t: 'Try a different bean', correct: true }, { t: 'Grind finer' }, { t: 'Pull a longer shot' }, { t: 'Tamp harder' }],
       explain: 'When grind and freshness are already right, harsh and rubbery usually traces back to the bean itself — swap it.' },
+    { kind: 'tastefix', tags: ['FLAT', 'LIFELESS'],
+      scenario: 'The bag was opened six weeks ago.',
+      prompt: 'Nothing tastes wrong — it just tastes like nothing. What first?',
+      choices: [{ t: 'Buy a fresher bag', correct: true }, { t: 'Grind finer' }, { t: 'Use hotter water' }, { t: 'Add more coffee' }],
+      explain: 'Flat and lifeless is staling, not extraction. No dial-in puts back aromatics that have already gone — start with fresher beans.' },
+  ],
+  // Dial it in — calibrate the number. Only 'slider' cards.
+  'g-calibrate': [
+    { kind: 'slider',
+      prompt: 'How fine should you grind for espresso?',
+      leftLabel: 'FINER', rightLabel: 'COARSER',
+      target: 28, tolerance: 11,
+      scale: [
+        'Powder — chokes the machine',
+        'Fine — espresso',
+        'Table salt — moka, AeroPress',
+        'Sea salt — pour-over',
+        'Breadcrumbs — French press',
+      ],
+      feedback: 'Espresso lives at the fine end, just above powder. Too fine and the machine chokes; too coarse and the shot gushes.' },
+    { kind: 'slider',
+      prompt: 'And how coarse for a French press?',
+      leftLabel: 'FINER', rightLabel: 'COARSER',
+      target: 88, tolerance: 11,
+      scale: [
+        'Powder — silt in every sip',
+        'Fine — espresso',
+        'Table salt — moka, AeroPress',
+        'Sea salt — pour-over',
+        'Breadcrumbs — French press',
+      ],
+      feedback: 'Four minutes of full immersion needs the coarsest setting on the dial — anything finer over-extracts and muddies the cup.' },
+    { kind: 'slider',
+      prompt: 'What brew ratio for a filter cup?',
+      leftLabel: 'STRONGER', rightLabel: 'WEAKER',
+      target: 50, tolerance: 13,
+      scale: [
+        '1:12 — espresso-adjacent',
+        '1:14 — punchy',
+        '1:16 — the filter standard',
+        '1:18 — light and long',
+        '1:20 — tea-like',
+      ],
+      feedback: 'Most filter recipes land near 1:16. Pick one, weigh it, and change a single thing at a time from there.' },
+    { kind: 'slider',
+      prompt: 'How hot should the brew water be?',
+      leftLabel: 'COOLER', rightLabel: 'HOTTER',
+      target: 72, tolerance: 13,
+      scale: [
+        'Below 80 °C — sour and flat',
+        '85 °C — under-extracts easily',
+        '90 °C — safe for dark roasts',
+        '93–96 °C — just off the boil',
+        'Rolling boil — scorches the bed',
+      ],
+      feedback: 'Just off the boil, around 93 to 96 °C. A rolling boil scorches the bed; much cooler and the sweetness never comes out.' },
+    { kind: 'slider',
+      prompt: 'How long should a single pour-over run?',
+      leftLabel: 'FASTER', rightLabel: 'SLOWER',
+      target: 50, tolerance: 13,
+      scale: [
+        'Under 2 min — thin and sour',
+        '2:30 — fast, under-extracted',
+        '3:00–3:30 — the target window',
+        '4:00 — slow, edging bitter',
+        'Over 5 min — stalled and harsh',
+      ],
+      feedback: 'Three to three and a half minutes, start to drawdown. Much faster is under-extracted; much slower means the bed has clogged.' },
+  ],
+  // Bean to cup — put the steps in order. Only 'sequence' cards.
+  'g-sequence': [
+    { kind: 'sequence', prompt: 'Order the journey from farm to cup',
+      items: [
+        { label: 'Pick the cherry', order: 1 },
+        { label: 'Process and dry', order: 2 },
+        { label: 'Roast', order: 3 },
+        { label: 'Grind', order: 4 },
+        { label: 'Brew', order: 5 },
+      ] },
+    { kind: 'sequence', prompt: 'Order the layers of a cherry, skin inwards',
+      items: [
+        { label: 'Skin', order: 1 },
+        { label: 'Pulp', order: 2 },
+        { label: 'Mucilage', order: 3 },
+        { label: 'Parchment', order: 4 },
+        { label: 'Seed', order: 5 },
+      ] },
+    { kind: 'sequence', prompt: 'Order a pour-over, first step to last',
+      items: [
+        { label: 'Weigh the beans', order: 1 },
+        { label: 'Grind', order: 2 },
+        { label: 'Bloom', order: 3 },
+        { label: 'Pour in stages', order: 4 },
+        { label: 'Drawdown', order: 5 },
+      ] },
+    { kind: 'sequence', prompt: 'Order these roasts, lightest to darkest',
+      items: [
+        { label: 'Light — bright, acidic', order: 1 },
+        { label: 'Medium — balanced, sweet', order: 2 },
+        { label: 'Medium-dark — first oils', order: 3 },
+        { label: 'Dark — smoky, bitter', order: 4 },
+      ] },
+    { kind: 'sequence', prompt: 'Order these brewers by grind, finest to coarsest',
+      items: [
+        { label: 'Espresso', order: 1 },
+        { label: 'AeroPress', order: 2 },
+        { label: 'Pour-over', order: 3 },
+        { label: 'Drip machine', order: 4 },
+        { label: 'French press', order: 5 },
+      ] },
   ],
 };
 
@@ -1163,6 +1348,8 @@ function TrueFalseCard({ card, onContinue, onScore }) {
 function FlavorNoteCard({ card, onContinue, onScore }) {
   const [picked, setPicked] = useStateL(null);
   const correctIdx = card.answer;
+  // Render order only — card.answer stays the identity for grading.
+  const [order] = useStateL(() => shuffledIdx(card.choices.length));
   const pick = (i) => {
     if (picked !== null) return;
     setPicked(i);
@@ -1181,14 +1368,14 @@ function FlavorNoteCard({ card, onContinue, onScore }) {
       }}>“{card.clue}”</p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 24 }}>
-        {card.choices.map((c, i) => {
+        {order.map((oi) => {
           let cls = 'mcq-choice';
           if (picked !== null) {
-            if (i === correctIdx) cls += ' correct';
-            else if (i === picked) cls += ' incorrect';
+            if (oi === correctIdx) cls += ' correct';
+            else if (oi === picked) cls += ' incorrect';
           }
           return (
-            <button key={i} className={cls} disabled={picked !== null} onClick={() => pick(i)}>{c.t}</button>
+            <button key={oi} className={cls} disabled={picked !== null} onClick={() => pick(oi)}>{card.choices[oi].t}</button>
           );
         })}
       </div>
@@ -1303,8 +1490,11 @@ function MiniGamePlayer({ game, onClose }) {
         <div key={key} className="fade-up" style={{ flex: '1 0 auto', display: 'flex', flexDirection: 'column' }}>
           {card.kind === 'match'  && <MatchCard card={card} onContinue={advance} onXp={() => scoreOnce(true)}/>}
           {card.kind === 'tastefix' && window.TasteFixCard && <window.TasteFixCard card={card} onContinue={advance} onXp={() => scoreOnce(true)}/>}
+          {card.kind === 'bagpick' && window.BagPickCard && <window.BagPickCard card={card} onContinue={advance} onXp={() => scoreOnce(true)}/>}
           {card.kind === 'quiz'   && <TrueFalseCard card={card} onContinue={advance} onScore={scoreOnce}/>}
           {card.kind === 'flavor' && <FlavorNoteCard card={card} onContinue={advance} onScore={scoreOnce}/>}
+          {card.kind === 'slider' && <SliderCard card={card} onContinue={advance} onXp={() => scoreOnce(true)}/>}
+          {card.kind === 'sequence' && <SequenceCard card={card} onContinue={advance} onXp={() => scoreOnce(true)}/>}
         </div>
       </div>
     </div>

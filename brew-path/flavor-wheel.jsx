@@ -66,6 +66,8 @@ function FlavorWheel({ size = 20, filled = 0, total = 6, color, mute, ring = tru
 // all, so it can never be read as the mastery gauge — this is where you are,
 // not how well you did. Roast colours are literal coffee, so they are the same
 // in both moods, like the illustration fills.
+// Kept as hex because roastAt() interpolates between the stops — these are the
+// literal values of --art-raw / --art-roast-light / -mid / -deep / -dark.
 const ROAST_RAMP = ['#9FB088', '#C79A63', '#A2703C', '#7A4526', '#54301C'];
 function roastAt(t) {
   const p = Math.max(0, Math.min(1, t)) * (ROAST_RAMP.length - 1);
@@ -174,10 +176,13 @@ window.STAGE_NAMES = [
   'SEED', 'SPROUT', 'SAPLING', 'BUDDING', 'FLOWERING',
   'GREEN CHERRY', 'TURNING', 'RIPENING', 'NEAR HARVEST', 'HARVEST',
 ];
-function CoffeePersona({ stage = 1, size = 200, animate = true, withGround = true, treatment }) {
+function CoffeePersona({ stage = 1, size = 200, animate = true, withGround = true, treatment, shape }) {
   // Stage 1..10 (1-indexed for human alignment with the asset filenames).
   const s = Math.max(1, Math.min(10, stage || 1));
   const _treat = treatment != null ? treatment : ((window.TREE_CONFIG || {}).treatment || '');
+  // Silhouette differs per botanical variety. Held on a wrapper so it can't
+  // fight the sway animation, which owns transform on the img itself.
+  const _shape = shape != null ? shape : ((window.TREE_CONFIG || {}).shape || '');
   return (
     <div style={{
       width: size, height: size, display: 'flex',
@@ -199,6 +204,7 @@ function CoffeePersona({ stage = 1, size = 200, animate = true, withGround = tru
         }
       `}</style>
       {withGround && <div className="persona-ground"/>}
+      <div style={{ width: '100%', height: '100%', transform: _shape || 'none', transformOrigin: '50% 86%' }}>
       <img key={s}
            className="persona-img"
            src={`assets/trees/${s}.png`}
@@ -208,6 +214,7 @@ function CoffeePersona({ stage = 1, size = 200, animate = true, withGround = tru
              display: 'block', position: 'relative',
              filter: _treat || 'none',
            }}/>
+      </div>
     </div>
   );
 }
@@ -456,6 +463,19 @@ function Chevron({ w = 8, h = 14, color = 'var(--ink-mute)', opacity = 0.7 }) {
     </svg>
   );
 }
+// ArrowMark — a directional axis mark: shaft plus head, unlike Chevron which is
+// a head alone. Use it where the icon states a DIRECTION along a scale (slider
+// endpoints, ranges); use Chevron where it states "there is more this way"
+// (rows, drill-ins). Drawn on a 14×10 box at stroke 1.5 so it sits at exactly
+// the same weight as Chevron beside it. Rotate 180° for the left end.
+function ArrowMark({ w = 14, h = 10, color = 'currentColor', opacity = 1 }) {
+  return (
+    <svg width={w} height={h} viewBox="0 0 14 10" style={{ flexShrink: 0 }} aria-hidden="true">
+      <path d="M1.25 5h10.5M8.6 1.9L11.75 5 8.6 8.1" fill="none" stroke={color} strokeOpacity={opacity}
+            strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
 function BackMark({ size = 18, color = 'currentColor' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 18 18" aria-hidden="true">
@@ -477,7 +497,7 @@ function CheckMark({ size = 18, color = 'var(--sage)', sw = 2 }) {
     </svg>
   );
 }
-Object.assign(window, { Chevron, BackMark, CloseMark, CheckMark });
+Object.assign(window, { Chevron, ArrowMark, BackMark, CloseMark, CheckMark });
 
 window.IconCup    = IconCup;
 window.IconRoute  = IconRoute;

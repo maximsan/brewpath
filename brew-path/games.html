@@ -41,6 +41,10 @@
     overflow: hidden; background: transparent; position: relative; }
   .phone-shell iframe { width: 100%; height: 100%; border: 0;
     background: transparent; display: block; pointer-events: auto; }
+  .placeholder { position: absolute; inset: 0; z-index: 2; display: grid; place-items: center;
+    background: #221d19; border-radius: 44px; color: #55504a; }
+  .placeholder span { font-family: 'IBM Plex Mono', monospace; font-size: 13px;
+    letter-spacing: 0.18em; color: #55504a; }
   .caption { margin-top: 16px; width: 300px; }
   .caption .row { display: flex; align-items: baseline; gap: 10px; }
   .caption .num { font-family: 'IBM Plex Mono', monospace; font-size: 11px;
@@ -60,7 +64,7 @@
     <div class="head">
       <div class="smallcaps">BREWPATH · GAME LIBRARY</div>
       <h1>Every game, end to end.</h1>
-      <p class="sub">One live frame per game type in the flow — the interactive cards inside a lesson, the replayable mini-games, and the dictionary drills. Tap inside any frame to play it. Each row is a category.</p>
+      <p class="sub">Every playable surface in the v1 cut — 21 in total. One live frame per game type: the interactive cards inside a lesson, the replayable mini-games, and the dictionary drills. Tap inside any frame to play it. Each row is a category.</p>
       <a class="live" href="screens-overview.html">← Back to all screens</a>
     </div>
 
@@ -72,33 +76,44 @@
     const SECTIONS = [
       {
         title: 'In-lesson games',
-        meta: '5 TYPES · INSIDE A LESSON',
-        desc: 'Interactive cards woven into every lesson. The player advances through them; answering correctly earns XP and Roasty reacts in the moment.',
+        meta: '11 TYPES · INSIDE A LESSON',
+        desc: 'Interactive cards woven into every lesson, in the order a lesson uses them. The player advances through them; a correct answer earns XP and Roasty reacts in the moment.',
         games: [
-          ['card-mcq',      'L1', 'Multiple choice', 'Pick the one right answer from a set. Correct picks turn green, wrong ones red, and an explanation follows.', 'MCQ'],
-          ['card-multi',    'L2', 'Select all',      'Some questions have more than one right answer. Tap every option you think fits, then check the whole set at once.', 'MULTI'],
-          ['card-match',    'L3', 'Match pairs',     'Drag a trait from the left onto the species it belongs to (or tap one then the other). Matched pairs lock; clear the board to continue.', 'MATCH'],
-          ['card-slider',   'L4', 'Calibrate',       'Drag the slider to where you think the answer lands, then check to see if you hit the target range.', 'SLIDER'],
-          ['card-sequence', 'L5', 'Put in order',    'Tap items in the correct sequence, then submit to reveal which positions you got right and the correct order.', 'SEQUENCE'],
+          ['card-predict',  'L01', 'Predict',          'Every lesson opens with a guess made before anything is taught. Never graded — the pick is sealed and paid off by the recall card at the end.', 'PREDICT'],
+          ['card-concept',  'L02', 'Fill the blank',   'Teaching cards state the idea with words missing. Pick from a two-word bank for each blank; picks lock on the first tap and always resolve to the true sentence.', 'CONCEPT'],
+          ['card-mcq',      'L03', 'Multiple choice',  'Pick the one right answer from a set. The correct pick turns green, a wrong one red, and an explanation follows.', 'MCQ'],
+          ['card-multi',    'L04', 'Select all',       'Some questions have more than one right answer. Tap every option you think fits, then check the whole set at once.', 'MULTI'],
+          ['card-match',    'L05', 'Match pairs',      'Drag a trait from the left onto the species it belongs to (or tap one then the other). Matched pairs lock, and the board only scores if every pair lands first time.', 'MATCH'],
+          ['card-slider',   'L06', 'Calibrate',        'Drag the slider to where you think the answer lands, then check to see if you hit the target range.', 'SLIDER'],
+          ['card-sequence', 'L07', 'Put in order',     'Display order is shuffled on every run. Tap items into the correct sequence, then submit to reveal which positions you got right.', 'SEQUENCE'],
+          ['card-decision', 'L08', 'At the shelf',     'A real buying scenario with two plausible bags. Neither is wrong in the abstract — only wrong for this cup, so feedback is framed as consequence, not score.', 'DECISION'],
+          ['card-recall',   'L09', 'Before you go',    'The closing card. It resolves the guess you made on the very first screen and lands the lesson takeaway as something earned.', 'RECALL'],
+          ['card-tastefix', 'L10', 'Fix the cup',      'The cup tastes off — tagged with what is wrong. Pick the one change that pulls it back to balanced, and watch the cup react.', 'TASTEFIX'],
+          ['card-bagpick',  'L11', 'Blind bag',        'An unlabelled bag of green coffee. Inspect colour, centre cut and aroma, then call the process from the look alone.', 'BAGPICK'],
         ],
       },
       {
         title: 'Mini-games',
-        meta: '3 TYPES · REPLAYABLE',
-        desc: 'Standalone, replayable challenges launched from the Learn tab. Each opens on a how-to-play intro, then runs its own scored round.',
+        meta: '7 TYPES · REPLAYABLE',
+        desc: 'Standalone, replayable challenges launched from Practice Again on the Learn tab. Each opens on a how-to-play intro, then runs a scored round of five or six and ends on its own results screen. They never touch lesson XP or progression.',
         games: [
-          ['game-intro',  'M1', 'Match the facts',       'Pair every fact with the right species before the board clears. Pulled from the Arabica vs Robusta lesson.', 'INTRO'],
-          ['game-flavor', 'M2', 'Name the flavor notes', 'Spin the flavor wheel and name what you taste — from broad families down to the exact note.', 'INTRO'],
-          ['game-quiz',   'M3', 'True or false',         'Quick-fire statements about coffee. Decide true or false and keep your streak alive.', 'INTRO'],
+          ['game-intro',     'M1', 'Match the facts',       'Five boards of Arabica-vs-Robusta traits. Pair every fact with the right species — a board counts only if you clear it with no wrong drops.', 'INTRO · 5'],
+          ['game-flavor',    'M2', 'Name the flavor notes', 'Read each tasting clue and name what you taste — pick the note that fits the cup from four candidates.', 'INTRO · 5'],
+          ['game-quiz',      'M3', 'True or false',         'Quick-fire statements about coffee. Decide true or false and see why each one lands that way.', 'INTRO · 6'],
+          ['game-bagpick',   'M4', 'Read the green bean',   'Five unlabelled bags. Draw a sample, inspect the beans, and call washed, honey or natural from the look alone.', 'INTRO · 5'],
+          ['game-tastefix',  'M5', 'Fix the cup',           'A cup comes out wrong — read what is off and pick the one change that pulls it back to balanced.', 'INTRO · 5'],
+          ['game-calibrate', 'M6', 'Dial it in',            'Grind, ratio, temperature, time. Drag each dial to where you think the answer lands, then check it against the target zone.', 'INTRO · 5'],
+          ['game-sequence',  'M7', 'Put it in order',       'Five things, one right order — farm to cup, skin to seed, first pour to drawdown. Tap them in sequence, then submit.', 'INTRO · 5'],
         ],
       },
       {
         title: 'Dictionary games',
-        meta: '2 TYPES · VOCAB DRILLS',
-        desc: 'Lightweight study tools built from the Coffee Dictionary — review saved terms or test recall against the full glossary.',
+        meta: '3 TYPES · VOCAB DRILLS',
+        desc: 'Lightweight study tools built from the Coffee Dictionary — review saved terms, test recall against the full glossary, or answer the one-tap check inside any term entry.',
         games: [
-          ['flashcards', 'D1', 'Flashcards',       'Your saved terms become a flippable deck. Tap a card to reveal the definition; shuffle to mix it up.', 'STUDY'],
-          ['vocab-game', 'D2', 'Vocab mini-game',  'Read a definition and guess the term it describes from four choices. Six rounds, then a score.', 'QUIZ'],
+          ['flashcards', 'D1', 'Flashcards',       'Your saved terms become a flippable deck. Tap a card to reveal the definition; shuffle to mix it up, with a recap when the deck is done.', 'STUDY'],
+          ['vocab-game', 'D2', 'Vocab mini-game',  'Pick your deck (saved terms or whole glossary) and round length, then read a definition and guess the term from four choices.', 'QUIZ'],
+          ['term',       'D3', 'Knowledge check',  'The one-tap check inside a term entry — scroll the entry to reach it. A compact three-choice question with an explanation on answer.', 'CHECK'],
         ],
       },
     ];
@@ -123,7 +138,8 @@
         cell.className = 'frame';
         cell.innerHTML = `
           <div class="phone-shell">
-            <iframe src="index.html?screen=${slug}" title="${name}" loading="lazy"></iframe>
+            <div class="placeholder"><span>${num}</span></div>
+            <iframe data-src="index.html?screen=${slug}" title="${name}"></iframe>
           </div>
           <div class="caption">
             <div class="row">
@@ -138,6 +154,53 @@
       });
       root.appendChild(wrap);
     });
+
+    // Each frame boots a full copy of the prototype (React + Babel + every JSX
+    // file, transpiled in-browser). Mounting 21 at once never lets the main
+    // thread go idle, so frames are queued: a frame only gets its src when it
+    // scrolls near the viewport, and at most MAX_CONCURRENT boot at a time.
+    const MAX_CONCURRENT = 3;
+    const queue = [];
+    let booting = 0;
+
+    function pump() {
+      while (booting < MAX_CONCURRENT && queue.length) {
+        const frame = queue.shift();
+        if (!frame || frame.dataset.booted) continue;
+        frame.dataset.booted = '1';
+        booting++;
+        let settled = false;
+        const done = () => {
+          if (settled) return;
+          settled = true;
+          booting--;
+          const ph = frame.parentElement.querySelector('.placeholder');
+          if (ph) ph.remove();
+          pump();
+        };
+        frame.addEventListener('load', done, { once: true });
+        // Never let one stuck frame block the queue forever.
+        setTimeout(done, 8000);
+        frame.src = frame.dataset.src;
+      }
+    }
+
+    const frames = [...document.querySelectorAll('.phone-shell iframe')];
+    queue.push(...frames);
+
+    // Whatever the reader is actually looking at jumps the queue.
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        io.unobserve(e.target);
+        const at = queue.indexOf(e.target);
+        if (at > 0) { queue.splice(at, 1); queue.unshift(e.target); }
+      });
+      pump();
+    }, { rootMargin: '600px 0px' });
+    frames.forEach(f => io.observe(f));
+
+    pump();
   </script>
 </body>
 </html>

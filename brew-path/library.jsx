@@ -248,7 +248,7 @@ function ModuleScreen({ module, completedSet, favorites, onToggleFav, onLesson, 
 
           {/* lessons — title + status only */}
           <div className="px-24" style={{ paddingTop: 30 }}>
-            <div className="smallcaps" style={{ marginBottom: 6 }}>{allLocked ? "WHAT YOU'LL LEARN" : 'LESSONS'}</div>
+            <div className="smallcaps" style={{ marginBottom: 6 }}>{allLocked ? 'WHAT YOU’LL LEARN' : 'LESSONS'}</div>
             <div>
               {lessons.map((l) => {
                 const locked = l.st === 'locked';

@@ -50,20 +50,21 @@ const SCREEN_ROUTES = {
   //    lesson, grant lesson XP, and feed progression. The `card-*` deep-links
   //    open a lesson straight at a card of that kind (for the screens overview).
   'card-mcq':       { view: 'lesson', lessonId: 'm1l1', startKind: 'mcq' },
-  'card-intro':     { view: 'lesson', lessonId: 'm1l1', startKind: 'intro' },
   'card-predict':   { view: 'lesson', lessonId: 'm1l2', startKind: 'predict' },
   'card-decision':  { view: 'lesson', lessonId: 'm1l2', startKind: 'decision' },
   'card-recall':    { view: 'lesson', lessonId: 'm1l2', startKind: 'recall' },
   'card-concept':   { view: 'lesson', lessonId: 'm1l2', startKind: 'concept' },
-  'card-takeaway':  { view: 'lesson', lessonId: 'm1l1', startKind: 'takeaway' },
   'card-multi':     { view: 'lesson', lessonId: 'm1l2', startKind: 'multi' },
   'card-match':     { view: 'lesson', lessonId: 'm1l2', startKind: 'match' },
   'card-slider':    { view: 'lesson', lessonId: 'm1l2', startKind: 'slider' },
   'card-sequence':  { view: 'lesson', lessonId: 'm1l2', startKind: 'sequence' },
-  // Practical / visual-training / taste-fix card kinds, homed in the taste-first lessons.
-  'card-practical': { view: 'lesson', lessonId: 'm5l1', startKind: 'practical' },
+  // Visual-training / taste-fix card kinds, homed in the taste-first lessons.
   'card-visual':    { view: 'lesson', lessonId: 'm5l3', startKind: 'visual' },
+  'card-anatomy':   { view: 'lesson', lessonId: 'm1l7', startKind: 'visual' },
+  'card-bagpick':   { view: 'lesson', lessonId: 'm1l7', startKind: 'bagpick' },
+  'lesson-layers':  { view: 'lesson', lessonId: 'm1l7' },
   'card-tastefix':  { view: 'lesson', lessonId: 'm5l3', startKind: 'tastefix' },
+  'card-practical': { view: 'lesson', lessonId: 'm1l7', startKind: 'practical' },
   'lesson-grind':   { view: 'lesson', lessonId: 'm4l3' },
   'lesson-ratio':   { view: 'lesson', lessonId: 'm5l1' },
   'lesson-taste':   { view: 'lesson', lessonId: 'm5l3' },
@@ -74,6 +75,10 @@ const SCREEN_ROUTES = {
   'game-intro':     { view: 'game-intro', gameId: 'g-match' },
   'game-flavor':    { view: 'game-intro', gameId: 'g-flavor' },
   'game-quiz':      { view: 'game-intro', gameId: 'g-quiz' },
+  'game-bagpick':   { view: 'game-intro', gameId: 'g-bagpick' },
+  'game-tastefix':  { view: 'game-intro', gameId: 'g-tastefix' },
+  'game-calibrate': { view: 'game-intro', gameId: 'g-calibrate' },
+  'game-sequence':  { view: 'game-intro', gameId: 'g-sequence' },
   streak:           { view: 'streak' },
   tree:             { view: 'tree' },
   settings:         { view: 'settings' },
@@ -348,16 +353,23 @@ function App() {
   // Where the Mood player should return to (reachable from the Studio hub
   // and from the "See moods" shortcut inside Dress up Roasty).
   const [moodFrom, setMoodFrom]   = useStateA('studio');
-  const [treeId, setTreeId]       = useStateA(_savedCustom.tree || 'heirloom');
+  // The grove has two axes: which botanical variety is planted, and the light
+  // it stands in. Old saves held a single conflated "skin" id — migrateGrove splits it.
+  const _grove = window.migrateGrove ? window.migrateGrove(_savedCustom) : { variety: 'arabica', light: 'daylight' };
+  const [treeId, setTreeId]       = useStateA(_grove.variety);
+  const [lightId, setLightId]     = useStateA(_grove.light);
   const [roastyCfg, setRoastyCfg] = useStateA(_savedCustom.roasty || { roast: 'medium', hat: 'none', gear: 'none', sprout: 'leaf' });
 
   // Mirror to window so every <Roasty/> and <CoffeePersona/> reflects the
   // applied look (set during render so children read current values), and persist.
   window.ROASTY_CONFIG = roastyCfg;
-  window.TREE_CONFIG = { treatment: window.skinFilter ? window.skinFilter(treeId) : '' };
+  window.TREE_CONFIG = {
+    treatment: window.groveFilter ? window.groveFilter(treeId, lightId) : '',
+    shape: window.groveShape ? window.groveShape(treeId) : '',
+  };
   useEffectA(() => {
-    try { localStorage.setItem('cq-custom', JSON.stringify({ plus: isPlus, trialDaysLeft, subPlan, tree: treeId, roasty: roastyCfg })); } catch (e) {}
-  }, [isPlus, trialDaysLeft, subPlan, treeId, roastyCfg]);
+    try { localStorage.setItem('cq-custom', JSON.stringify({ plus: isPlus, trialDaysLeft, subPlan, variety: treeId, light: lightId, roasty: roastyCfg })); } catch (e) {}
+  }, [isPlus, trialDaysLeft, subPlan, treeId, lightId, roastyCfg]);
 
   // ── Plus gating: temporary unlocks, gate sheet, rewarded ad, the gift ──
   // tempUnlocks maps a feature key → expiry timestamp (ms). A feature is open
@@ -633,6 +645,19 @@ function App() {
   };
   // Compact, non-interrupting peek (used inside lessons).
   const openTermPeek = (id) => { recordRecent(id); setTermPeek(id); };
+  // Root-level sheets outlive the screen they were opened from, so any
+  // navigation out (saving past the free cap → gate → paywall, a deep link, a
+  // back-out) would leave one floating on the sheet layer above the new screen.
+  // One place closes them all; each is scoped to the view it belongs to.
+  useEffectA(() => {
+    if (view !== 'lesson' && termPeek) setTermPeek(null);
+    if (view !== 'app') {
+      if (sheetOpen) closeCardSheet();
+      if (logSheetId) setLogSheetId(null);
+      if (brewRecap) setBrewRecap(null);
+      if (reviewLessonId) setReviewLessonId(null);
+    }
+  }, [view]);
   const closeTerm = () => {
     const r = termReturn;
     setTermReturn(null);
@@ -939,6 +964,7 @@ function App() {
   } else if (view === 'term') {
     body = <TermDetail
       termId={activeTermId}
+      learnedSet={learnedSet}
       learned={learnedSet.has(activeTermId)}
       isFav={favorites.has('t:' + activeTermId)}
       onToggleFav={() => toggleFavorite('t:' + activeTermId)}
@@ -962,6 +988,7 @@ function App() {
       onClose={() => setView(flashBack === 'saved' ? 'saved' : 'dictionary')}/>;
   } else if (view === 'vocab-game') {
     body = <VocabGameScreen
+      favorites={favorites}
       onOpenTerm={openTermFull}
       onClose={() => setView('dictionary')}/>;
   } else if (view === 'streak') {
@@ -1048,7 +1075,7 @@ function App() {
   } else if (view === 'studio') {
     body = featureUnlocked('studio') ? (
       <StudioHub
-        roastyCfg={roastyCfg} treeId={treeId}
+        roastyCfg={roastyCfg} treeId={treeId} lightId={lightId}
         showMoodPlayer={!isV1}
         onChooseTree={() => setView('tree-chooser')}
         onDressRoasty={() => setView('roasty-studio')}
@@ -1062,7 +1089,7 @@ function App() {
           onUnlock={() => setView('paywall')}
           preview={(
             <StudioHub
-              roastyCfg={roastyCfg} treeId={treeId}
+              roastyCfg={roastyCfg} treeId={treeId} lightId={lightId}
               showMoodPlayer={!isV1} chrome={false}
               onChooseTree={() => {}} onDressRoasty={() => {}}
               onMoodPlayer={() => {}} onClose={() => {}}
@@ -1072,8 +1099,8 @@ function App() {
     );
   } else if (view === 'tree-chooser') {
     body = <TreeChooserScreen
-      treeId={treeId}
-      onApply={(id) => { setTreeId(id); setView('studio'); }}
+      treeId={treeId} lightId={lightId}
+      onApply={(v, l) => { setTreeId(v); setLightId(l); setView('studio'); }}
       onClose={() => setView('studio')}
     />;
   } else if (view === 'roasty-studio') {
@@ -1283,6 +1310,7 @@ function App() {
       <TermPeekSheet
         termId={termPeek}
         open={!!termPeek}
+        learnedSet={learnedSet}
         learned={termPeek ? learnedSet.has(termPeek) : false}
         isFav={termPeek ? favorites.has('t:' + termPeek) : false}
         onToggleFav={() => termPeek && toggleFavorite('t:' + termPeek)}

@@ -21,62 +21,74 @@ const BREW_CHALLENGES = [
     title: 'Two cups, two ratios',
     instruction: 'Brew the same coffee twice at two different ratios — try 1:15 and 1:17 — and compare the taste side by side.',
     effort: 'Next brews · 5 min',
-    reactions: ['Tasted the difference', 'Hard to tell', 'Only brewed one'] },
+    prompt: 'WHICH CUP WON?',
+    reactions: ['Preferred 1:15', 'Preferred 1:17', 'Hard to tell'] },
   { id: 'bc-m2', type: 'module', moduleId: 'm2', cardId: 'cM2',
     title: 'Blind process test',
     instruction: 'Brew a washed and a natural of the same origin, then taste blind and guess which is which.',
     effort: 'Next brews · 5 min',
-    reactions: ['Called it', 'Coin flip', 'Only brewed one'] },
+    prompt: 'HOW DID THE GUESS GO?',
+    reactions: ['Called it', 'Got it backwards', 'Honestly a coin flip'] },
   { id: 'bc-m3', type: 'module', moduleId: 'm3', cardId: 'cM3',
     title: 'Light vs dark, same origin',
     instruction: 'Brew a light and a dark roast of a coffee you like and notice which one you reach for again.',
     effort: 'Next bags · 5 min',
+    prompt: 'WHICH ONE WON?',
     reactions: ['Prefer lighter', 'Prefer darker', 'About the same'] },
   { id: 'bc-m4', type: 'module', moduleId: 'm4', cardId: 'cM4',
     title: 'One-step grind test',
     instruction: 'Brew the same coffee twice, one grind step apart, and taste which side extracts better.',
     effort: 'Next brews · 3 min',
-    reactions: ['Tasted the difference', 'Hard to tell', 'Only brewed one'] },
+    prompt: 'WHICH CUP WON?',
+    reactions: ['Finer cup won', 'Coarser cup won', 'Hard to tell'] },
   { id: 'bc-m5', type: 'module', moduleId: 'm5', cardId: 'cM5',
     title: 'Fix one bad cup',
     instruction: 'Next time a cup is off, name it — sour and thin, or bitter and dry — and make exactly one change to fix it.',
     effort: 'Next brew · 3 min',
+    prompt: 'DID THE FIX WORK?',
     reactions: ['Fixed it', 'A bit better', 'Still off'] },
   // A few important lesson challenges on the most hands-on lessons.
   { id: 'bc-m1l1', type: 'lesson', lessonId: 'm1l1', moduleId: 'm1', cardId: 'c1',
     title: 'Name the origin',
     instruction: 'Next time you open a bag of coffee, find the country it was grown in — and say it out loud.',
     effort: 'Next bag · 1 min',
-    reactions: ['Found it', 'Not sure', 'No bag yet'] },
+    prompt: 'DID YOU FIND IT?',
+    reactions: ['Found it', 'Bag didn’t say'] },
   { id: 'bc-m3l1', type: 'lesson', lessonId: 'm3l1', moduleId: 'm3', cardId: 'c-m3l1',
     title: 'Compare two roasts',
     instruction: 'Brew a light and a dark roast side by side and notice which tastes brighter and which tastes bolder.',
     effort: 'Next bags · 5 min',
+    prompt: 'WHAT DID YOU NOTICE?',
     reactions: ['Lighter tasted brighter', 'Darker tasted bolder', 'About the same'] },
   { id: 'bc-m4l3', type: 'lesson', lessonId: 'm4l3', moduleId: 'm4', cardId: 'c-m4l3',
     title: 'Move one grind step',
     instruction: 'Change your grinder by one step, brew again, and see whether the cup moves the way you expected.',
     effort: 'Next brew · 3 min',
-    reactions: ['Tasted the change', 'Hard to tell', 'Only brewed one'] },
+    prompt: 'DID THE CUP MOVE?',
+    reactions: ['Moved as expected', 'Went the other way', 'Hard to tell'] },
   { id: 'bc-m5l1', type: 'lesson', lessonId: 'm5l1', moduleId: 'm5', cardId: 'c-m5l1',
     title: 'Dial your ratio',
     instruction: 'Brew your usual cup, then brew it again with a little more coffee. Notice which one you like better.',
     effort: 'Next brew · 3 min',
+    prompt: 'WHICH DID YOU LIKE?',
     reactions: ['Preferred more coffee', 'Preferred less', 'About the same'] },
   { id: 'bc-m2l6', type: 'lesson', lessonId: 'm2l6', moduleId: 'm2', cardId: 'c-m2l6',
     title: 'Blind decaf test',
     instruction: 'Brew a decaf and a regular coffee, then taste them blind and see whether you can actually tell which is which.',
     effort: 'Next brews · 5 min',
-    reactions: ['Told them apart', 'Couldn’t tell', 'Only brewed one'] },
+    prompt: 'COULD YOU TELL?',
+    reactions: ['Told them apart', 'Guessed wrong', 'Couldn’t tell'] },
   { id: 'bc-m4l6', type: 'lesson', lessonId: 'm4l6', moduleId: 'm4', cardId: 'c-m4l6',
     title: 'Fresh vs pre-ground',
     instruction: 'Grind half your dose now and leave the other half ground overnight. Brew both the same way tomorrow and taste them side by side.',
     effort: 'Next brews · 5 min',
+    prompt: 'WHICH TASTED BETTER?',
     reactions: ['Fresh was clearly better', 'Close, but fresh won', 'Couldn’t tell'] },
   { id: 'bc-m5l6', type: 'lesson', lessonId: 'm5l6', moduleId: 'm5', cardId: 'c-m5l6',
     title: 'Brew it by the numbers',
     instruction: 'Brew one cup with a scale, a ratio and a timer — exactly as the lesson lays out. Just once, properly.',
     effort: 'Next brew · 5 min',
+    prompt: 'HOW WAS THE CUP?',
     reactions: ['Best cup I’ve made', 'Better than usual', 'About the same'] },
 ];
 
@@ -147,6 +159,26 @@ function BrewStamp({ size = 96, done = true, press = false }) {
   );
 }
 window.BrewStamp = BrewStamp;
+
+// Compact "tried it for real" seal — sits beside the card title in the sheet.
+// A quiet check-ring chip, not the full postmark.
+function TriedSeal() {
+  return (
+    <span className="ff-mono" aria-label="Challenge tried" style={{
+      display: 'inline-flex', alignItems: 'center', gap: 6, flexShrink: 0,
+      border: '1px solid color-mix(in oklab, var(--accent) 50%, transparent)',
+      borderRadius: 999, padding: '5px 10px 5px 7px',
+      color: 'var(--accent)', fontSize: 'var(--t-micro)', letterSpacing: '0.14em',
+      transform: 'rotate(-3deg)',
+    }}>
+      <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+        <path d="M3.6 7.4 L6.1 9.8 L10.6 4.6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+      TRIED
+    </span>
+  );
+}
+window.TriedSeal = TriedSeal;
 
 // Shared button pair used on the Today card / suggestion / module screen.
 // Two buttons only, always: a primary + a quiet secondary. Never three.
@@ -309,7 +341,7 @@ function LogResultSheet({ challenge, open, onClose, onComplete }) {
 
               {reactions.length > 0 && (
                 <>
-                  <div className="smallcaps" style={{ margin: '28px 0 16px' }}>HOW DID IT TASTE?</div>
+                  <div className="smallcaps" style={{ margin: '28px 0 16px' }}>{(challenge && challenge.prompt) || 'HOW DID IT TASTE?'}</div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                     {reactions.map((r, i) => {
                       const on = pick === i;
@@ -317,9 +349,9 @@ function LogResultSheet({ challenge, open, onClose, onComplete }) {
                         <button key={i} onClick={() => setPick(on ? null : i)} className="ff-ui" style={{
                           appearance: 'none', cursor: 'pointer', fontSize: 'var(--t-support)', fontWeight: 500,
                           padding: '8px 13px', borderRadius: 999,
-                          border: '1px solid ' + (on ? 'var(--accent)' : 'var(--rule)'),
-                          background: on ? 'color-mix(in oklab, var(--accent) 12%, var(--surface))' : 'var(--surface)',
-                          color: 'var(--ink)', boxShadow: on ? 'inset 0 0 0 1px var(--accent)' : 'none',
+                          border: '1px solid ' + (on ? 'transparent' : 'var(--rule)'),
+                          background: on ? 'color-mix(in oklab, var(--accent) 22%, var(--surface))' : 'var(--surface)',
+                          color: 'var(--ink)',
                         }}>{r}</button>
                       );
                     })}
@@ -327,7 +359,7 @@ function LogResultSheet({ challenge, open, onClose, onComplete }) {
                 </>
               )}
 
-              <div style={{ paddingTop: 32 }}>
+              <div style={{ paddingTop: 20 }}>
                 <button className="btn btn-primary" onClick={markDone} disabled={reactions.length > 0 && pick === null}
                   style={reactions.length > 0 && pick === null ? { opacity: 0.4, cursor: 'default' } : undefined}>Mark as done</button>
               </div>
@@ -352,8 +384,7 @@ function BrewRecapSheet({ challenge, open, onClose, onReplay }) {
       <div className={'sheet' + (open ? ' open' : '')}>
         <div className="sheet-handle"/>
         <div className="sheet-content">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
-            <BrewStamp size={84} done/>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
             <div style={{ minWidth: 0 }}>
               <h2 className="ff-display" style={{ fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.08, letterSpacing: '-0.01em', margin: 0, color: 'var(--ink)' }}>
                 {challenge ? challenge.title : ''}
@@ -364,6 +395,7 @@ function BrewRecapSheet({ challenge, open, onClose, onReplay }) {
                 </p>
               )}
             </div>
+            <div style={{ paddingTop: 4 }}><TriedSeal/></div>
           </div>
 
           <div style={{ paddingTop: 26 }}>
@@ -526,47 +558,33 @@ window.ModuleChallengeScreen = ModuleChallengeScreen;
 // ───────────────────────────────────────────────────────────
 function CardStampSection({ card, completed, active, onTry }) {
   const challenge = card && card.id ? window.brewForCard(card.id) : null;
-  if (!challenge) return null;
+  // Unearned cards (the locked teaser opens this same sheet) never offer the
+  // challenge — earning the card is the gate.
+  if (!challenge || !card.earned) return null;
   return (
     <>
-      <hr className="rule"/>
-      <div style={{ padding: '20px 0 4px' }}>
-        <div className="smallcaps" style={{ marginBottom: 14 }}>CHALLENGE STAMP</div>
-        {completed ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
-            <BrewStamp size={78} done/>
-            <div style={{ minWidth: 0 }}>
-              <div className="ff-display" style={{ fontSize: 'var(--t-heading)', fontWeight: 400, color: 'var(--ink)', lineHeight: 1.15 }}>{challenge.title}</div>
-              {!active && (
-                <button onClick={() => onTry(challenge)} className="ff-ui" style={{
-                  appearance: 'none', cursor: 'pointer', border: '1px solid var(--accent)',
-                  background: 'transparent', color: 'var(--accent)', borderRadius: 10,
-                  padding: '9px 16px', marginTop: 10, fontSize: 'var(--t-support)', fontWeight: 500,
-                }}>Brew it again</button>
-              )}
-              {active && (
-                <div style={{ fontSize: 'var(--t-support)', color: 'var(--ink-mute)', marginTop: 8 }}>Active again on Today — log it when you brew.</div>
-              )}
-            </div>
+      {completed ? (
+        <div style={{ padding: '0 0 4px' }}>
+          <div className="smallcaps" style={{ marginBottom: 10 }}>CHALLENGE</div>
+          <div className="ff-display" style={{ fontSize: 'var(--t-heading)', fontWeight: 400, color: 'var(--ink)', lineHeight: 1.15 }}>{challenge.title}</div>
+          {active ? (
+            <div style={{ fontSize: 'var(--t-support)', color: 'var(--ink-mute)', marginTop: 8 }}>Active again on Today — log it when you brew.</div>
+          ) : (
+            <button onClick={() => onTry(challenge)} className="btn btn-ghost" style={{ marginTop: 16, color: 'var(--accent)' }}>Brew it again</button>
+          )}
+        </div>
+      ) : (
+        <div style={{ padding: '0 0 4px' }}>
+          <div className="smallcaps" style={{ marginBottom: 10 }}>CHALLENGE</div>
+          <div className="ff-display" style={{ fontSize: 'var(--t-heading)', fontWeight: 400, color: 'var(--ink)', lineHeight: 1.15, marginBottom: 8 }}>{challenge.title}</div>
+          <div style={{ fontSize: 'var(--t-support)', lineHeight: 1.45, color: 'var(--ink-mute)', textWrap: 'pretty' }}>
+            {active ? 'Active on Today — log it when you brew.' : challenge.instruction}
           </div>
-        ) : (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
-            <BrewStamp size={78} done={false}/>
-            <div style={{ minWidth: 0 }}>
-              <div style={{ fontSize: 'var(--t-support)', lineHeight: 1.45, color: 'var(--ink-mute)', marginBottom: 12 }}>
-                {active ? <>Active on Today — log it when you brew.</> : <>{challenge.instruction}</>}
-              </div>
-              {!active && (
-                <button onClick={() => onTry(challenge)} className="ff-ui" style={{
-                  appearance: 'none', cursor: 'pointer', border: '1px solid var(--accent)',
-                  background: 'transparent', color: 'var(--accent)', borderRadius: 10,
-                  padding: '10px 18px', fontSize: 'var(--t-support)', fontWeight: 500,
-                }}>Try challenge</button>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
+          {!active && (
+            <button onClick={() => onTry(challenge)} className="btn btn-ghost" style={{ marginTop: 16, color: 'var(--accent)' }}>Try challenge</button>
+          )}
+        </div>
+      )}
     </>
   );
 }
@@ -662,7 +680,7 @@ function SavedBrewList({ saved, activeId, completed, onStart, onRemove }) {
             </div>
             <button onClick={() => onStart && onStart(ch)} className="ff-ui" style={{
               appearance: 'none', border: 'none', cursor: 'pointer', background: 'var(--accent)', color: 'var(--accent-ink)',
-              borderRadius: 10, padding: '8px 14px', fontSize: 'var(--t-support)', fontWeight: 500,
+              borderRadius: 12, padding: '8px 14px', fontSize: 'var(--t-support)', fontWeight: 500,
             }}>Start</button>
             <button onClick={() => onRemove && onRemove(ch.id)} aria-label="Remove from saved" style={{
               appearance: 'none', border: 'none', background: 'transparent', cursor: 'pointer',

@@ -1,7 +1,7 @@
 // customize.jsx — Premium customization (behind the "BrewPath Plus" paywall):
 //   • PaywallScreen     — the gate. Teaser + plan + free-trial CTA.
 //   • StudioHub         — landing with three doors once unlocked.
-//   • TreeChooserScreen — pick which plant grows in your grove (5 skins).
+//   • TreeChooserScreen — pick which plant grows in your grove (variety + light).
 //   • RoastyStudio      — dress Roasty up: roast, hat, gear, sprout.
 //   • RoastyMoodScreen  — Roasty centered; tap an emotion to see them react.
 //
@@ -11,20 +11,71 @@
 
 const { useState: useStateC, useEffect: useEffectC } = React;
 
-// ── Tree skins. Heirloom is the real art; the rest are seasonal treatments
-//    layered on the same 10-stage illustrations via CSS filters. (Real ship
-//    would want bespoke art per stage — these read as intentional skins.) ──
-window.TREE_SKINS = [
-  { id: 'heirloom',   name: 'Heirloom',    note: 'The classic coffee plant',  filter: 'none',                                                            free: true },
-  { id: 'goldenhour', name: 'Golden Hour', note: 'Warm amber canopy',         filter: 'sepia(0.45) saturate(1.5) hue-rotate(-12deg) brightness(1.05)'    },
-  { id: 'moonlit',    name: 'Moonlit',     note: 'Cool silver-blue leaves',   filter: 'saturate(0.6) hue-rotate(150deg) brightness(0.96) contrast(1.06)' },
-  { id: 'blossom',    name: 'Blossom',     note: 'Soft pink spring bloom',    filter: 'hue-rotate(-42deg) saturate(1.3) brightness(1.08)'                },
-  { id: 'verdant',    name: 'Verdant',     note: 'Deep evergreen, year-round',filter: 'saturate(1.5) hue-rotate(22deg) brightness(0.92)'                 },
+// ── The grove has two axes. PLANT is which coffee species you own — a real
+//    plant with its own silhouette. LIGHT is what it stands in — mood only,
+//    applied over any plant.
+//    Three species, no taxonomy lesson required: Arabica, Robusta and Liberica
+//    are all species, so the list is factually parallel and a beginner can read
+//    it top to bottom without a hierarchy. (Varieties within Arabica — Typica,
+//    Bourbon, Geisha — are a later layer, if ever.)
+//    Ship art is bespoke per plant per stage; until it exists each carries a
+//    silhouette transform + leaf tone over the shared frames, so the three read
+//    apart without relying on hue alone.
+//    No per-plant gating: the Studio door itself is behind the paywall, so
+//    everything inside it is owned. `drop` is a rollout note for the art
+//    pipeline, not an entitlement.
+//    One field per idea, one place each: `share` is prevalence (spec strip
+//    only), `use` is what the bean gets brewed as — the same question for all
+//    three, never prevalence in words (row subtitle only), `cup` is the spec
+//    strip's Tastes like, and `tell` covers what none of them can: the plant's
+//    body plus one consequence worth remembering. ──
+window.TREE_VARIETIES = [
+  { id: 'arabica', name: 'Arabica', latin: 'Coffea arabica', share: '~60%', use: 'Filter & pour-over',
+    origin: 'Ethiopia', grows: 'High and cool', cup: 'Sweet, fruity, delicate',
+    tell: 'Tall and slim, with glossy leaves on flat tiered branches — and fussy enough that one bad season moves the price of your morning cup.',
+    shape: 'none', leaf: '', drop: 'launch' },
+  { id: 'robusta', name: 'Robusta', latin: 'Coffea canephora', share: '~35%', use: 'Espresso & instant',
+    origin: 'West Africa · Vietnam', grows: 'Low and warm', cup: 'Bold, chocolatey, bitter',
+    tell: 'Broader and bushier, with much larger leaves and cherries in tight clusters along the branch. Twice the caffeine of Arabica, and the reason a good espresso carries a thick crema.',
+    shape: 'scale(1.2, 0.9)', leaf: 'saturate(1.2) hue-rotate(-8deg) brightness(0.94)', drop: 'launch' },
+  { id: 'liberica', name: 'Liberica', latin: 'Coffea liberica', share: '<1%', use: 'Local brews in SE Asia',
+    origin: 'Philippines · Malaysia', grows: 'Low and humid', cup: 'Smoky, jackfruit, savoury',
+    tell: 'Enormous leathery leaves and the biggest cherries of any coffee, on a tree that can grow twice as tall as the others — tall enough that picking it often needs a ladder.',
+    shape: 'scale(1.1, 1.12)', leaf: 'saturate(0.95) hue-rotate(6deg) brightness(0.96)', drop: 'later' },
 ];
-window.skinFilter = (id) => {
-  const s = (window.TREE_SKINS || []).find(x => x.id === id);
-  return s && s.filter !== 'none' ? s.filter : '';
+
+// Light sits on top of whichever variety is planted. Three treatments plus the
+// unfiltered default — enough to change the mood, not enough to pretend to be
+// a different plant.
+window.GROVE_LIGHT = [
+  { id: 'daylight',   name: 'Daylight',    note: 'No filter',      swatch: '#6B7F5A', filter: '' },
+  { id: 'goldenhour', name: 'Golden Hour', note: 'Late sun',       swatch: '#C98A3C', filter: 'sepia(0.45) saturate(1.5) hue-rotate(-12deg) brightness(1.05)' },
+  { id: 'moonlit',    name: 'Moonlit',     note: 'Cool night',     swatch: '#7E93A8', filter: 'saturate(0.6) hue-rotate(150deg) brightness(0.96) contrast(1.06)' },
+  { id: 'frost',      name: 'First Frost', note: 'Cold morning',   swatch: '#D9DEE0', filter: 'saturate(0.5) brightness(1.12) contrast(0.94)' },
+];
+
+window.getVariety = (id) => (window.TREE_VARIETIES || []).find(v => v.id === id) || window.TREE_VARIETIES[0];
+window.getLight   = (id) => (window.GROVE_LIGHT || []).find(l => l.id === id) || window.GROVE_LIGHT[0];
+// Leaf tone and light compose into one CSS filter; silhouette is a separate transform.
+window.groveFilter = (varietyId, lightId) =>
+  [window.getVariety(varietyId).leaf, window.getLight(lightId).filter].filter(f => f && f !== 'none').join(' ');
+window.groveShape = (varietyId) => {
+  const s = window.getVariety(varietyId).shape;
+  return s && s !== 'none' ? s : '';
 };
+// Old saves stored a single "skin" id that conflated both axes. Split it.
+window.migrateGrove = (saved) => {
+  saved = saved || {};
+  if (saved.variety) {
+    // Varieties from the earlier draft collapse into their species.
+    const v = { typica: 'arabica', bourbon: 'arabica', geisha: 'arabica' }[saved.variety] || saved.variety;
+    return { variety: v, light: saved.light || 'daylight' };
+  }
+  const legacy = { heirloom: 'daylight', goldenhour: 'goldenhour', moonlit: 'moonlit', blossom: 'daylight', verdant: 'daylight' };
+  return { variety: 'arabica', light: legacy[saved.tree] || 'daylight' };
+};
+// Legacy shim — anything still calling skinFilter(id) gets a daylight Arabica.
+window.skinFilter = (id) => window.groveFilter(id, 'daylight');
 
 // ── Roasty option tables (labels live here; the art lives in roasty.jsx) ──
 window.ROAST_OPTS  = [
@@ -109,9 +160,9 @@ function PaywallScreen({ onSubscribe, onClose, showMoodPlayer = true }) {
   const benefits = [
     ['Unlimited Saved', 'Keep every lesson, term and guide — past the free shelf of 10'],
     ['Dress up Roasty', 'Hats, glasses, scarves, roast level and more'],
-    ['Choose your plant', 'Five botanical skins for your growing grove'],
+    ['Choose your plant', 'Grow Arabica, Robusta or Liberica \u2014 real coffee species, each its own shape'],
     showMoodPlayer
-      ? ['Mood player', "Tap through Roasty's reactions any time"]
+      ? ['Mood player', "Tap through Roasty’s reactions any time"]
       : null,
   ].filter(Boolean);
 
@@ -166,7 +217,7 @@ function PaywallScreen({ onSubscribe, onClose, showMoodPlayer = true }) {
                 style={{
                   appearance: 'none', cursor: 'pointer', textAlign: 'left', width: '100%',
                   display: 'grid', gridTemplateColumns: '24px 1fr auto', alignItems: 'center', gap: 14,
-                  padding: '16px 18px', borderRadius: 4, background: 'var(--surface)',
+                  padding: '16px 18px', borderRadius: 2, background: 'var(--surface)',
                   border: '1px solid ' + (sel ? 'var(--accent)' : 'var(--rule)'),
                   boxShadow: sel ? 'inset 0 0 0 1px var(--accent)' : 'none',
                 }}>
@@ -235,8 +286,9 @@ function StudioDoor({ onClick, eyebrow, title, sub, art }) {
   );
 }
 
-function StudioHub({ roastyCfg, treeId, showMoodPlayer = true, chrome = true, onChooseTree, onDressRoasty, onMoodPlayer, onClose }) {
-  const skinName = ((window.TREE_SKINS || []).find(s => s.id === treeId) || {}).name || 'Heirloom';
+function StudioHub({ roastyCfg, treeId, lightId, showMoodPlayer = true, chrome = true, onChooseTree, onDressRoasty, onMoodPlayer, onClose }) {
+  const variety = window.getVariety(treeId);
+  const light = window.getLight(lightId);
   const SubHeader = window.SubScreenHeader;
   const [scrolled, onScroll] = window.useScrollFlag();
   return (
@@ -249,8 +301,9 @@ function StudioHub({ roastyCfg, treeId, showMoodPlayer = true, chrome = true, on
         </div>
 
         <div className="px-24" style={{ paddingTop: 24, display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <StudioDoor onClick={onChooseTree} eyebrow="GROVE" title="Choose your plant" sub={skinName}
-            art={<div style={{ width: 64, height: 64 }}><CoffeePersona stage={9} size={64} animate={false} withGround={false} treatment={window.skinFilter(treeId)}/></div>}/>
+          <StudioDoor onClick={onChooseTree} eyebrow="GROVE" title="Choose your plant" sub={variety.name + (light.id === 'daylight' ? '' : ' · ' + light.name)}
+            art={<div style={{ width: 64, height: 64 }}><CoffeePersona stage={9} size={64} animate={false} withGround={false}
+              treatment={window.groveFilter(treeId, lightId)} shape={window.groveShape(treeId)}/></div>}/>
           <StudioDoor onClick={onDressRoasty} eyebrow="COMPANION" title="Dress up Roasty" sub="Hat, gear, roast and sprout"
             art={<Roasty state="idle" size={62} roast={roastyCfg.roast} hat={roastyCfg.hat} gear={roastyCfg.gear} sprout={roastyCfg.sprout}/>}/>
           {showMoodPlayer && (
@@ -266,59 +319,122 @@ function StudioHub({ roastyCfg, treeId, showMoodPlayer = true, chrome = true, on
 // ───────────────────────────────────────────────────────────
 // TREE CHOOSER
 // ───────────────────────────────────────────────────────────
-function TreeChooserScreen({ treeId, onApply, onClose }) {
-  const skins = window.TREE_SKINS || [];
-  const [sel, setSel] = useStateC(treeId || 'heirloom');
-  const dirty = sel !== treeId;
+// Three plants, so a full-width row beats a grid: thumbnail, name, and the
+// positioning line — no odd empty cell, and nothing the detail block above
+// already says. No locks: the whole Studio is past the paywall, so everything
+// in it is owned.
+// GROVE_SELECTED is the one selected-state recipe on this screen, shared by the
+// plant rows and the light chips so "picked" looks identical in both.
+const GROVE_SELECTED = {
+  on:  { background: 'color-mix(in oklab, var(--accent) 10%, var(--surface))', border: '1px solid var(--accent)' },
+  off: { background: 'var(--surface)', border: '1px solid var(--rule)' },
+};
+
+function PlantRow({ variety, selected, lightId, onSelect }) {
+  return (
+    <button onClick={onSelect} aria-pressed={selected} className="ff-ui"
+      style={{
+        appearance: 'none', cursor: 'pointer', textAlign: 'left', width: '100%',
+        display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', minHeight: 72,
+        borderRadius: 2, ...(selected ? GROVE_SELECTED.on : GROVE_SELECTED.off),
+      }}>
+      <span style={{ width: 52, height: 52, display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+        <CoffeePersona stage={9} size={52} animate={false} withGround={false}
+          treatment={window.groveFilter(variety.id, lightId)} shape={window.groveShape(variety.id)}/>
+      </span>
+      <span style={{ flex: 1, minWidth: 0 }}>
+        <span className="ff-display" style={{ display: 'block', fontSize: 'var(--t-heading)', fontWeight: 400, letterSpacing: '-0.01em', color: 'var(--ink)', lineHeight: 1.1 }}>{variety.name}</span>
+        <span className="smallcaps-mono" style={{ display: 'block', fontSize: 'var(--t-micro)', color: selected ? 'var(--accent)' : 'var(--ink-mute)', marginTop: 4 }}>{variety.use}</span>
+      </span>
+      {selected && (
+        <span style={{ width: 22, height: 22, borderRadius: 999, background: 'var(--accent)', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+          <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 6.2l2.6 2.6L10 3" fill="none" stroke="var(--accent-ink)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        </span>
+      )}
+    </button>
+  );
+}
+
+function TreeChooserScreen({ treeId, lightId, onApply, onClose }) {
+  const varieties = window.TREE_VARIETIES || [];
+  const lights = window.GROVE_LIGHT || [];
+  const [selV, setSelV] = useStateC(treeId || 'arabica');
+  const [selL, setSelL] = useStateC(lightId || 'daylight');
+  const variety = window.getVariety(selV);
+  const dirty = selV !== treeId || selL !== lightId;
   const SubHeader = window.SubScreenHeader;
   const [scrolled, onScroll] = window.useScrollFlag();
 
   return (
-    <div className="screen" data-screen-label="Tree chooser" style={{ background: 'var(--bg)' }}>
-      {SubHeader && <SubHeader scrolled={scrolled} title="Choose your plant" onBack={onClose}/>}
-      <div className="scroll" onScroll={onScroll} style={{ paddingTop: 108, paddingBottom: 28, display: 'flex', flexDirection: 'column' }}>
-        <div className="px-24">
-          <div className="smallcaps" style={{ color: 'var(--accent)' }}>YOUR GROVE</div>
-          <h1 className="ff-display" style={{ fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.08, letterSpacing: '-0.01em', margin: '8px 0 0', color: 'var(--ink)' }}>Choose your plant</h1>
-          <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: '10px 0 0', maxWidth: 320 }}>
-            Every plant still grows through all ten stages, seed to harvest — only the look changes.
-          </p>
+    <div className="screen" data-screen-label="Grove — choose your plant" style={{ background: 'var(--bg)' }}>
+      {SubHeader && <SubHeader scrolled={scrolled} title="Your grove" onBack={onClose}/>}
+      <div className="scroll" onScroll={onScroll} style={{ paddingTop: 100, paddingBottom: 28, display: 'flex', flexDirection: 'column' }}>
+
+        {/* Live preview of the current pick — plant silhouette under the chosen light */}
+        <div style={{ height: 176, display: 'grid', placeItems: 'center' }}>
+          <CoffeePersona key={selV} stage={10} size={176} withGround
+            treatment={window.groveFilter(selV, selL)} shape={window.groveShape(selV)}/>
         </div>
 
-        <div className="px-24" style={{ paddingTop: 22 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            {skins.map(skin => {
-              const isSel = sel === skin.id;
+        {/* Name and binomial only — one display line, one mono line. The
+            positioning fact moved into the spec strip below, where it has to
+            answer the same question for all three plants. */}
+        <div className="px-24" style={{ paddingTop: 4 }}>
+          <h1 className="ff-display" style={{ fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.08, letterSpacing: '-0.01em', margin: 0, color: 'var(--ink)' }}>{variety.name}</h1>
+          <div className="ff-mono" style={{ fontSize: 'var(--t-support)', letterSpacing: '0.02em', color: 'var(--ink-mute)', marginTop: 4 }}>{variety.latin}</div>
+        </div>
+
+        {/* Plain-language spec strip — same shape a dictionary term page would carry */}
+        <div className="px-24" style={{ paddingTop: 16 }}>
+          <div className="form-row"><span className="lbl">Share of cups</span><span className="val">{variety.share}</span></div>
+          <div className="form-row"><span className="lbl">Home</span><span className="val">{variety.origin}</span></div>
+          <div className="form-row"><span className="lbl">Grows</span><span className="val">{variety.grows}</span></div>
+          <div className="form-row"><span className="lbl">Tastes like</span><span className="val">{variety.cup}</span></div>
+        </div>
+
+        <div className="px-24" style={{ paddingTop: 14 }}>
+          <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.55, color: 'var(--ink-mute)', margin: 0, textWrap: 'pretty' }}>{variety.tell}</p>
+        </div>
+
+        <div className="px-24" style={{ paddingTop: 26 }}>
+          <div className="smallcaps" style={{ marginBottom: 10 }}>PLANT</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {varieties.map(v => (
+              <PlantRow key={v.id} variety={v} lightId={selL}
+                selected={selV === v.id}
+                onSelect={() => setSelV(v.id)}/>
+            ))}
+          </div>
+        </div>
+
+        <div className="px-24" style={{ paddingTop: 24 }}>
+          <div className="smallcaps" style={{ marginBottom: 10 }}>LIGHT</div>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {lights.map(l => {
+              const sel = selL === l.id;
               return (
-                <button key={skin.id} onClick={() => setSel(skin.id)}
+                <button key={l.id} onClick={() => setSelL(l.id)} aria-pressed={sel} className="ff-ui"
                   style={{
-                    appearance: 'none', cursor: 'pointer', textAlign: 'left', padding: 12,
-                    background: 'var(--surface)', borderRadius: 4,
-                    border: '1px solid ' + (isSel ? 'var(--accent)' : 'var(--rule)'),
-                    boxShadow: isSel ? 'inset 0 0 0 1px var(--accent)' : 'none',
-                    position: 'relative',
+                    appearance: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 7,
+                    padding: '9px 14px 9px 11px', borderRadius: 999, minHeight: 44,
+                    ...(sel ? GROVE_SELECTED.on : GROVE_SELECTED.off),
                   }}>
-                  {isSel && (
-                    <span style={{ position: 'absolute', top: 10, right: 10, width: 22, height: 22, borderRadius: 999, background: 'var(--accent)', display: 'grid', placeItems: 'center', zIndex: 2 }}>
-                      <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 6.2l2.6 2.6L10 3" fill="none" stroke="var(--accent-ink)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                    </span>
-                  )}
-                  <div style={{ height: 120, display: 'grid', placeItems: 'center' }}>
-                    <CoffeePersona stage={9} size={120} animate={false} withGround={false} treatment={skin.filter === 'none' ? '' : skin.filter}/>
-                  </div>
-                  <div className="ff-display" style={{ fontSize: 'var(--t-heading)', fontWeight: 400, letterSpacing: '-0.01em', color: 'var(--ink)', marginTop: 6 }}>{skin.name}</div>
-                  <div className="ff-mono" style={{ fontSize: 'var(--t-label)', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-mute)', marginTop: 3 }}>{skin.note}</div>
+                  <span style={{ width: 14, height: 14, borderRadius: 999, background: l.swatch, border: '1px solid color-mix(in oklab, var(--ink) 22%, transparent)', flexShrink: 0 }}/>
+                  <span style={{ fontSize: 'var(--t-support)', fontWeight: sel ? 500 : 400, color: 'var(--ink)', whiteSpace: 'nowrap' }}>{l.name}</span>
                 </button>
               );
             })}
           </div>
         </div>
 
-        <div style={{ flex: 1, minHeight: 18 }}/>
-        <div className="px-24" style={{ paddingTop: 20 }}>
-          <button className="btn btn-primary" disabled={!dirty} onClick={() => onApply(sel)}>
+        <div style={{ flex: 1, minHeight: 20 }}/>
+        <div className="px-24" style={{ paddingTop: 22 }}>
+          <button className="btn btn-primary" disabled={!dirty} onClick={() => onApply(selV, selL)}>
             {dirty ? 'Plant in my grove' : 'Already planted'}
           </button>
+          <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: '12px 0 0', textAlign: 'center', textWrap: 'pretty' }}>
+            Every plant grows through all ten stages, seed to harvest.
+          </p>
         </div>
       </div>
     </div>
@@ -369,13 +485,13 @@ function RoastyStudio({ roastyCfg, onApply, onClose, onMoodPlayer, showMoodPlaye
   return (
     <div className="screen" data-screen-label="Roasty studio" style={{ background: 'var(--bg)' }}>
       {window.SubScreenHeader
-        ? <window.SubScreenHeader scrolled={false} title="Dress up Roasty" onBack={onClose}/>
+        ? <window.SubScreenHeader solid title="Dress up Roasty" onBack={onClose}/>
         : <StudioTopbar onBack={onClose} kind="back"/>}
 
-      {/* Live preview — pinned feel via a tinted panel */}
-      <div style={{ position: 'absolute', top: 54, left: 0, right: 0, zIndex: 5,
+      {/* Live preview — pinned panel, seated directly below the solid header */}
+      <div style={{ position: 'absolute', top: window.HEADER_H || 96, left: 0, right: 0, zIndex: 5,
         background: 'linear-gradient(180deg, color-mix(in oklab, var(--accent) 10%, var(--bg)) 0%, var(--bg) 100%)',
-        paddingTop: 32, paddingBottom: 14 }}>
+        paddingTop: 20, paddingBottom: 14 }}>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <Roasty state="idle" size={128} roast={cfg.roast} hat={cfg.hat} gear={cfg.gear} sprout={cfg.sprout}/>
         </div>
@@ -458,11 +574,13 @@ function RoastyMoodScreen({ roastyCfg, onClose }) {
         </div>
 
         {/* backdrop swatches */}
-        <div className="px-24" style={{ paddingTop: 16, display: 'flex', justifyContent: 'center', gap: 8 }}>
+        <div className="px-24" style={{ paddingTop: 8, display: 'flex', justifyContent: 'center', gap: 0 }}>
           {backdrops.map(b => (
             <button key={b.id} onClick={() => setBg(b.id)} aria-label={b.label}
-              style={{ appearance: 'none', cursor: 'pointer', width: 28, height: 28, borderRadius: 999, background: b.bg,
-                border: '2px solid ' + (bg === b.id ? 'var(--accent)' : 'var(--rule)') }}/>
+              style={{ appearance: 'none', cursor: 'pointer', width: 44, height: 44, padding: 0, background: 'transparent', border: 'none', display: 'grid', placeItems: 'center' }}>
+              <span style={{ width: 28, height: 28, borderRadius: 999, background: b.bg, boxSizing: 'border-box',
+                border: '2px solid ' + (bg === b.id ? 'var(--accent)' : 'var(--rule)') }}></span>
+            </button>
           ))}
         </div>
 

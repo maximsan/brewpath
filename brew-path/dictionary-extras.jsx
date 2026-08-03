@@ -270,32 +270,137 @@ function FlashcardsScreen({ favorites, onToggleFav, onOpenTerm, onBrowse, onClos
 // ════════════════════════════════════════════════════════════
 // VOCAB MINI-GAME — definition → guess the term
 // ════════════════════════════════════════════════════════════
-function buildVocabRounds(n) {
-  const pool = (window.DICT_TERMS || []).filter(t => t.short);
-  const shuffled = [...pool].sort(() => Math.random() - 0.5);
-  const picks = shuffled.slice(0, Math.min(n, shuffled.length));
+// Questions come from `pool` (saved terms or the whole glossary); distractors
+// always come from the full glossary, preferring the answer's own category
+// (2 of 3) so wrong choices stay plausible.
+function buildVocabRounds(n, pool) {
+  const all = (window.DICT_TERMS || []).filter(t => t.short);
+  const src = (pool && pool.length >= 4) ? pool : all;
+  const picks = [...src].sort(() => Math.random() - 0.5).slice(0, Math.min(n, src.length));
   return picks.map(answer => {
-    const distractors = pool.filter(t => t.id !== answer.id).sort(() => Math.random() - 0.5).slice(0, 3);
+    const sameCat = all.filter(t => t.id !== answer.id && t.cat === answer.cat).sort(() => Math.random() - 0.5);
+    const others = all.filter(t => t.id !== answer.id && t.cat !== answer.cat).sort(() => Math.random() - 0.5);
+    const distractors = [...sameCat.slice(0, 2), ...others].slice(0, 3);
     const choices = [...distractors, answer].sort(() => Math.random() - 0.5);
     return { answer, choices };
   });
 }
 
-function VocabGameScreen({ onClose, onOpenTerm }) {
-  const TOTAL = 6;
-  const [rounds, setRounds] = useStateX(() => buildVocabRounds(TOTAL));
+const VOCAB_LENGTHS = [[5, 'Quick'], [8, 'Standard'], [12, 'Deep']];
+const VOCAB_MIN_SAVED = 4;
+const VOCAB_MISS_KEY = 'bp-vocab-misses';
+function readMisses() {
+  try { const v = JSON.parse(localStorage.getItem(VOCAB_MISS_KEY) || '[]'); return new Set(Array.isArray(v) ? v : []); } catch (e) { return new Set(); }
+}
+function writeMisses(set) {
+  try { localStorage.setItem(VOCAB_MISS_KEY, JSON.stringify([...set])); } catch (e) {}
+}
+
+function VocabGameScreen({ favorites, onClose, onOpenTerm }) {
+  const favs = favorites || new Set();
+  const glossary = (window.DICT_TERMS || []).filter(t => t.short);
+  const savedPool = glossary.filter(t => favs.has('t:' + t.id));
+  const canSaved = savedPool.length >= VOCAB_MIN_SAVED;
+  const [misses, setMisses] = useStateX(readMisses);
+  const missPool = glossary.filter(t => misses.has(t.id));
+  const canMisses = missPool.length >= VOCAB_MIN_SAVED;
+  const [logged, setLogged] = useStateX(0);
+
+  const [deck, setDeck] = useStateX(canSaved ? 'saved' : 'all');
+  const [len, setLen] = useStateX(5);
+  const [phase, setPhase] = useStateX('setup');
+  const [rounds, setRounds] = useStateX([]);
   const [i, setI] = useStateX(0);
   const [picked, setPicked] = useStateX(null);
   const [score, setScore] = useStateX(0);
   const [done, setDone] = useStateX(false);
 
-  const restart = () => { setRounds(buildVocabRounds(TOTAL)); setI(0); setPicked(null); setScore(0); setDone(false); };
+  const poolFor = (d) => d === 'saved' ? savedPool : d === 'misses' ? missPool : glossary;
+  // A deck the UI marks unavailable must never stay the selection: fall back to
+  // the glossary when the saved/miss pool drops below the minimum mid-session.
+  const activeDeck = (deck === 'saved' && !canSaved) || (deck === 'misses' && !canMisses) ? 'all' : deck;
+  const activePool = poolFor(activeDeck);
+  const fits = VOCAB_LENGTHS.filter(([n]) => n <= activePool.length).map(([n]) => n);
+  const activeLen = len <= activePool.length ? len : (fits.length ? Math.max(...fits) : null);
+  const start = () => {
+    const pool = activePool;
+    setRounds(buildVocabRounds(Math.min(activeLen || len, pool.length), pool));
+    setI(0); setPicked(null); setScore(0); setLogged(0); setDone(false); setPhase('play');
+  };
+  const restart = start;
+
+  // ── round setup ──
+  if (phase === 'setup') {
+    const pool = activePool;
+    // On-system selection: the global .pick-card component (Fraunces title,
+    // 2px radius, selected = accent border + inset stroke — never a fill).
+    const dim = (disabled) => disabled ? { opacity: 0.45, cursor: 'default' } : { cursor: 'pointer' };
+    return (
+      <div className="screen" data-screen-label="Vocab game setup" style={{ background: 'var(--bg)' }}>
+        <DrillTopbar onClose={onClose} total={0}/>
+        <div className="scroll" style={{ paddingTop: 110, paddingBottom: 28, display: 'flex', flexDirection: 'column' }}>
+          <div className="px-24">
+            <div className="smallcaps" style={{ marginBottom: 10 }}>PRACTICE</div>
+            <h1 className="ff-display" style={{ fontSize: 'var(--t-display)', fontWeight: 400, letterSpacing: '-0.02em', margin: 0, color: 'var(--ink)' }}>Vocab game</h1>
+            <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.55, color: 'var(--ink-mute)', margin: '12px 0 0', textWrap: 'pretty' }}>Read a definition, pick the term. Choose your deck and how long a round you want.</p>
+          </div>
+          <div className="px-24" style={{ paddingTop: 26 }}>
+            <div className="smallcaps" style={{ marginBottom: 10 }}>DECK</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {[
+                { id: 'saved', title: 'Saved terms', note: canSaved ? 'The terms you\u2019ve bookmarked' : 'Save ' + VOCAB_MIN_SAVED + '+ terms to unlock', count: savedPool.length, disabled: !canSaved },
+                { id: 'all', title: 'Whole glossary', note: 'Every term in the dictionary', count: glossary.length, disabled: false },
+                { id: 'misses', title: 'Review misses', note: canMisses ? 'Terms you’ve missed before' : 'Miss a few first', count: missPool.length, disabled: !canMisses },
+              ].map(d => (
+                <div key={d.id} className={'pick-card' + (activeDeck === d.id ? ' selected' : '')} style={dim(d.disabled)} onClick={() => !d.disabled && setDeck(d.id)}>
+                  <div>
+                    <div className="pc-title">{d.title}</div>
+                    <div className="pc-desc">{d.note}</div>
+                  </div>
+                  <span className="ff-mono" style={{ fontSize: 'var(--t-support)', color: 'var(--ink-mute)', whiteSpace: 'nowrap' }}>{d.count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="px-24" style={{ paddingTop: 24 }}>
+            <div className="smallcaps" style={{ marginBottom: 10 }}>ROUND LENGTH</div>
+            {fits.length === 0 ? (
+              <div className="pick-card selected" style={{ display: 'block', textAlign: 'center', padding: '16px 8px', cursor: 'default' }}>
+                <div className="pc-title ff-mono" style={{ fontSize: 'var(--t-title)' }}>{pool.length}</div>
+                <div className="pc-desc">Every term in this deck</div>
+              </div>
+            ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
+              {VOCAB_LENGTHS.map(([n, label]) => {
+                const capped = n > pool.length;
+                return (
+                  <div key={n} className={'pick-card' + (activeLen === n ? ' selected' : '')} style={{ ...dim(capped), display: 'block', textAlign: 'center', padding: '16px 8px' }} onClick={() => !capped && setLen(n)}>
+                    <div className="pc-title" style={{ fontSize: 'var(--t-title)' }}>{n}</div>
+                    <div className="pc-desc">{label}</div>
+                  </div>
+                );
+              })}
+            </div>
+            )}
+            {activeDeck !== 'all' && pool.length < 12 && (
+              <p style={{ fontSize: 'var(--t-support)', color: 'var(--ink-mute)', margin: '12px 0 0', lineHeight: 1.5 }}>{activeDeck === 'misses' ? 'Longer rounds unlock as you log more misses.' : 'Longer rounds unlock as you bookmark more terms.'}</p>
+            )}
+          </div>
+          <div style={{ flex: 1, minHeight: 20 }}/>
+          <div className="px-24" style={{ paddingTop: 22 }}>
+            <button className="btn btn-primary" onClick={start}>Start round</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (done) {
     const pct = Math.round((score / rounds.length) * 100);
     const msg = pct >= 80 ? 'Sharp palate. You know this one cold.'
       : pct >= 50 ? 'Solid round — run it back to sharpen up.'
       : 'Worth another pass. Try again?';
+    const tail = logged > 0 ? ' The ' + logged + (logged === 1 ? ' term you missed was' : ' terms you missed were') + ' added to your review deck.' : '';
     return (
       <div className="screen" data-screen-label="Vocab game" style={{ background: 'var(--bg)' }}>
         <DrillTopbar onClose={onClose} pos={rounds.length - 1} total={rounds.length} done/>
@@ -304,9 +409,9 @@ function VocabGameScreen({ onClose, onOpenTerm }) {
           kicker="VOCAB GAME"
           big={score} bigSub={'/ ' + rounds.length}
           note="TERMS MATCHED"
-          msg={msg}
+          msg={msg + tail}
           primaryLabel="Play again" onPrimary={restart}
-          secondaryLabel="Back to dictionary" onSecondary={onClose}/>
+          secondaryLabel="Change round" onSecondary={() => setPhase('setup')}/>
       </div>
     );
   }
@@ -318,7 +423,10 @@ function VocabGameScreen({ onClose, onOpenTerm }) {
   const pick = (idx) => {
     if (picked !== null) return;
     setPicked(idx);
-    if (idx === correctIdx) setScore(s => s + 1);
+    const next = new Set(misses);
+    if (idx === correctIdx) { setScore(s => s + 1); next.delete(round.answer.id); }
+    else { next.add(round.answer.id); setLogged(n => n + 1); }
+    setMisses(next); writeMisses(next);
   };
   const next = () => {
     if (i + 1 >= rounds.length) setDone(true);

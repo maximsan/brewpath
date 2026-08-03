@@ -13,13 +13,32 @@
     --bg:#F4EFE6; --surface:#FBF7EE; --surface-2:#EFE8DA;
     --ink:#1B1614; --ink-mute:#6B5F54; --rule:#D8CFBF;
     --accent:#B8533A; --accent-ink:#FBF7EE;
-    --sage:#5F6E55; --warn:#9A5F1C; --berry:#A8362A; --cream:#7A6A54;
+    --sage:#5F6E55; --warn:#9A5F1C; --berry:#A8362A;
+    --water:#5C93B8; --water-hi:#A9CFE3;
+    --scrim:color-mix(in oklab, #1B1614 58%, transparent); --scrim-ink:#FBF7EE;
+    --dim-modal:color-mix(in oklab, #0E0A07 62%, transparent);
+    --veil:color-mix(in oklab, var(--bg) 38%, transparent);
+    --veil-strong:color-mix(in oklab, var(--bg) 82%, transparent);
+  }
+  /* Illustration palette — literal coffee. Mirrors index.html exactly, and sits
+     in :root ALONE on purpose: these do not flip with the mood, which is what
+     lets --warn mean celebration and nothing else. */
+  :root {
+    --art-raw:#9FB088; --art-roast-light:#C79A63; --art-roast-mid:#A2703C; --art-roast-deep:#7A4526; --art-roast-dark:#54301C;
+    --art-ripe:#C8843A; --art-sour:#B79A3C;
+    --art-cherry-skin:#A93227; --art-cherry-pulp:#C9563A; --art-cherry-gel:#D9A94C;
+    --art-cherry-parchment:#E3D2AE; --art-cherry-silverskin:#F1E8D6; --art-cherry-seed:#8FA184;
+    --art-seed-crease:#5C6B52;
+    --cream:#F0DCB8;
   }
   [data-mood="dark-roast"] {
     --bg:#1A130E; --surface:#251B14; --surface-2:#30231A;
     --ink:#F3E7D2; --ink-mute:#B59E84; --rule:#44321E;
     --accent:#E07A4F; --accent-ink:#1A130E;
-    --sage:#97A285; --warn:#E6A35C; --berry:#C75450; --cream:#F0DCB8;
+    --sage:#97A285; --warn:#E6A35C; --berry:#C75450;
+    --water:#7FB4D6; --water-hi:#C2E0EF;
+    --scrim:color-mix(in oklab, #1B1614 58%, transparent); --scrim-ink:#FBF7EE;
+    --dim-modal:color-mix(in oklab, #0E0A07 62%, transparent);
   }
 
   * { box-sizing: border-box; }
@@ -50,9 +69,19 @@
   .pick-card.selected { border-color:var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
   .pick-card .pc-title { font-family:'Fraunces',serif; font-size:19px; font-weight:400; line-height:1.1; color:var(--ink); letter-spacing:-0.01em; }
   .pick-card .pc-desc { font-size:13px; color:var(--ink-mute); margin-top:4px; line-height:1.4; }
+  .pick-tile { appearance:none; cursor:pointer; display:grid; place-items:center; padding:26px 14px; border-radius:14px; border:1px solid var(--rule); background:var(--surface); color:var(--ink); }
+  .pick-tile .pick-tile-t { font-family:'Fraunces',serif; font-optical-sizing:auto; font-size:19px; letter-spacing:-0.01em; }
+  .pick-tile.chosen { border-color:var(--accent); background:color-mix(in oklab, var(--accent) 12%, var(--surface)); }
+  .pick-tile.faded { opacity:0.62; }
   .mcq-choice { display:block; width:100%; text-align:left; padding:18px 20px; background:var(--surface); border:1px solid var(--rule); border-radius:2px; font-size:15px; font-weight:500; color:var(--ink); }
   .mcq-choice.correct { border-color:var(--sage); background:color-mix(in oklab, var(--sage) 12%, var(--surface)); }
   .mcq-choice.incorrect { border-color:var(--berry); background:color-mix(in oklab, var(--berry) 8%, var(--surface)); }
+  .fill-slot { font-family:'IBM Plex Mono',monospace; color:var(--ink-mute); border-bottom:2px dashed color-mix(in oklab, var(--accent) 55%, var(--rule)); padding:0 6px 1px; min-width:74px; text-align:center; display:inline-block; }
+  .fill-slot.filled { color:var(--ink); border-bottom-color:color-mix(in oklab, var(--accent) 70%, var(--rule)); border-bottom-style:solid; }
+  .fill-slot.filled.right { color:var(--sage); border-bottom-color:var(--sage); }
+  .fill-slot.filled.wrong { color:var(--berry); border-bottom-color:var(--berry); }
+  .fill-slot.filled.guess { color:var(--accent); border-bottom-color:var(--accent); }
+  .fill-slot.inherit { font-family:inherit; }
   .lesson-row { display:grid; grid-template-columns:32px 1fr auto; align-items:center; gap:14px; padding:16px 0; border-bottom:1px solid var(--rule); }
   .lesson-row:last-child { border-bottom:none; }
   .lesson-row.locked { opacity:0.4; }
@@ -123,6 +152,7 @@
 
   /* type */
   .type-sample { line-height:1.1; margin:6px 0 18px; color:var(--ink); }
+  .type-italic { font-style:italic; }
   .kv { display:flex; flex-direction:column; gap:10px; border-top:1px solid var(--rule); padding-top:14px; }
   .kv > div { display:grid; grid-template-columns:84px 1fr; gap:14px; align-items:start; }
   .klabel { font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-mute); padding-top:1px; }
@@ -162,6 +192,20 @@
   .comp-wide { grid-column:1 / -1; }
   .comp-subhead { grid-column:1 / -1; display:flex; align-items:baseline; justify-content:space-between; gap:14px; border-top:1px solid var(--rule); padding-top:20px; margin-top:8px; }
   .comp-subhead .ff-display { font-size:18px; font-weight:400; letter-spacing:-0.01em; color:var(--ink); }
+  /* state specimens — one cell per state, spec read off the tile */
+  .comp.states { grid-column:1 / -1; }
+  .comp-purpose { font-size:13.5px; line-height:1.55; color:var(--ink-mute); margin:2px 0 18px; max-width:760px; text-wrap:pretty; }
+  .state-grid { display:grid; gap:14px; }
+  .state-cell { background:var(--bg); border:1px solid var(--rule); border-radius:2px; padding:16px; }
+  .state-demo { min-height:84px; display:grid; place-items:center; padding:6px 0 16px; border-bottom:1px solid var(--rule); }
+  .state-name { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.16em; text-transform:uppercase; color:var(--accent); margin-top:14px; }
+  .state-when { font-size:12.5px; line-height:1.5; color:var(--ink-mute); margin-top:6px; text-wrap:pretty; }
+  .state-spec { display:flex; flex-wrap:wrap; gap:6px; margin-top:11px; }
+  .spec-chip { font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.04em; color:var(--ink-mute); border:1px solid var(--rule); border-radius:999px; padding:3px 8px; white-space:nowrap; }
+  .comp.states .rules { margin-top:18px; padding-top:16px; border-top:1px solid var(--rule); }
+  .rules.tight { margin:0; padding-left:16px; }
+  .rules.tight li { font-size:13px; line-height:1.5; margin-bottom:6px; }
+  .rules.tight li:last-child { margin-bottom:0; }
   .tabbar-demo { display:grid; grid-template-columns:repeat(5,1fr); background:var(--surface); border:1px solid var(--rule); border-radius:2px; padding:10px 0; }
   .tabbar-demo .tab { display:flex; flex-direction:column; align-items:center; gap:5px; }
   .tab-ico svg { width:24px; height:24px; }
@@ -221,7 +265,7 @@
     <div class="hero-inner">
       <div class="mono">ONE SYSTEM · TWO MOODS</div>
       <h1>Every colour, glyph and part — and where it belongs.</h1>
-      <p>A living reference for BrewPath. Each entry states where it is used and the rule behind it, so nothing is chosen by feel. Toggle the mood to see the whole system reskin. The Flags section lists where the system breaks its own logic, with a fix for each.</p>
+      <p>A living reference for BrewPath. Each entry states where it is used and the rule behind it, so nothing is chosen by feel. Toggle the mood to see the whole system reskin.</p>
     </div>
   </div>
 

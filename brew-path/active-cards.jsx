@@ -16,6 +16,25 @@
 
 const { useState: useStateAC } = React;
 
+// Fisher–Yates over 0..n-1 — choice display order, shuffled once per mount, so a
+// card authored answer-first never renders its answer first.
+// 'AT THE SHELF' → 'At the shelf'. Scene labels are authored in caps for the
+// mono eyebrow style; cards that promote the label to a Fraunces heading need
+// it back in sentence case.
+function acSentenceCase(s) {
+  const str = String(s || '').toLowerCase();
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function acShuffle(n) {
+  const a = Array.from({ length: n }, (_, i) => i);
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 // ── PREDICT ────────────────────────────────────────────────
 // Opens the lesson with a question it does NOT answer. The learner commits,
 // the guess is sealed, and the curiosity gap stays open until the recall card
@@ -29,23 +48,44 @@ function PredictCard({ card, onContinue, onPredict, onTermTap }) {
     setPick(opt);
     onPredict && onPredict({ q: card.question, pick: opt, a: card.a });
   };
+  // Cloze questions carry a `___` blank. Once a tile is picked the word drops
+  // into the sentence so the learner reads their own guess back as a claim —
+  // that's what the recall card later confirms or overturns. Questions without
+  // a blank render untouched.
+  const questionNode = (() => {
+    const parts = String(card.question).split(/_{2,}/);
+    if (parts.length < 2) return card.question;
+    return parts.map((seg, i) => (
+      <React.Fragment key={i}>
+        {seg}
+        {i < parts.length - 1 && window.FillSlot && (
+          <window.FillSlot word={pick} state={pick ? 'guess' : 'empty'}/>
+        )}
+      </React.Fragment>
+    ));
+  })();
   return (
     <div className="px-24" style={{ display: 'flex', flexDirection: 'column', flex: '1 0 auto', minHeight: 600 }}>
-      <div className="smallcaps-mono" style={{ marginBottom: 14 }}>{card.label}</div>
+      {/* No eyebrow: the label is the lesson number, which the top bar and the
+          Path already carry. The card opens on its own title. */}
       <h1 className="ff-display" style={{
         fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.08, letterSpacing: '-0.02em',
         margin: 0, color: 'var(--ink)', textWrap: 'pretty',
       }}>{card.title}</h1>
-      <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.55, color: 'var(--ink-mute)', marginTop: 18, textWrap: 'pretty' }}>
+      {/* Reading copy, not a caption — full ink at 1.6, matching concept
+          paragraphs. The Fraunces question below is contrast enough; no rule. */}
+      <p style={{ fontSize: 'var(--t-lead)', lineHeight: 1.55, color: 'var(--ink)', marginTop: 18, textWrap: 'pretty' }}>
         {window.linkifyTerms && onTermTap ? window.linkifyTerms(card.body, onTermTap) : card.body}
       </p>
 
-      <div style={{ height: 1, background: 'var(--rule)', margin: '26px 0 0' }}/>
-
-      <p className="ff-display" style={{
-        fontSize: 'var(--t-heading)', fontWeight: 400, lineHeight: 1.25, letterSpacing: '-0.015em',
-        color: 'var(--ink)', margin: '24px 0 0', textWrap: 'pretty',
-      }}>{card.question}</p>
+      {/* The guess moment as its own section — mono eyebrow, then the
+          question in the same sans lead as the description above. One text
+          voice; the mono slot and Fraunces tiles carry the emphasis. */}
+      <div className="smallcaps-mono" style={{ margin: '30px 0 0' }}>First guess</div>
+      <p style={{
+        fontSize: 'var(--t-lead)', lineHeight: 1.5,
+        color: 'var(--ink)', margin: '12px 0 0', textWrap: 'pretty',
+      }}>{questionNode}</p>
 
       <div className="pick-tiles">
         {card.options.map((opt) => (
@@ -86,6 +126,7 @@ function PredictCard({ card, onContinue, onPredict, onTermTap }) {
 // the abstract — only wrong for THIS cup.
 function DecisionCard({ card, onContinue, onXp, onTermTap }) {
   const [pick, setPick] = useStateAC(null);
+  const [order] = useStateAC(() => acShuffle(card.options.length));
   const chosen = pick == null ? null : card.options[pick];
   const right = chosen && chosen.correct;
   const choose = (i) => {
@@ -95,22 +136,20 @@ function DecisionCard({ card, onContinue, onXp, onTermTap }) {
   };
   return (
     <div className="px-24" style={{ display: 'flex', flexDirection: 'column', flex: '1 0 auto', minHeight: 600 }}>
-      <div className="smallcaps-mono" style={{ marginBottom: 14 }}>{card.label}</div>
-
+      {/* One header line, not two: the scene label IS the title here. The mono
+          eyebrow plus a written title said the same thing twice, and the
+          scenario below already carries the specifics. */}
       <h2 className="ff-display" style={{
         fontSize: 'var(--t-heading)', fontWeight: 400, lineHeight: 1.25, letterSpacing: '-0.015em',
         margin: '0 0 18px', color: 'var(--ink)', textWrap: 'pretty',
-      }}>{card.title}</h2>
+      }}>{acSentenceCase(card.label)}</h2>
 
-      <div style={{
-        background: 'var(--surface)', border: '1px solid var(--rule)', borderRadius: 14,
-        padding: '16px 17px', display: 'flex', gap: 13, alignItems: 'flex-start',
-      }}>
-        <svg width="17" height="17" viewBox="0 0 17 17" style={{ flexShrink: 0, marginTop: 2 }} aria-hidden="true">
-          <path d="M8.5 15.5c3.9 0 6.7-2.8 6.7-6.4S12.4 2.7 8.5 2.7 1.8 5.5 1.8 9.1c0 1.3.4 2.5 1.1 3.5l-.6 2.6 2.7-.7c1 .6 2.2 1 3.5 1z"
-                fill="none" stroke="var(--accent)" strokeWidth="1.3" strokeLinejoin="round"/>
-        </svg>
-        <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.55, color: 'var(--ink)', margin: 0, textWrap: 'pretty' }}>
+      {/* Left-rule aside, same treatment as the dictionary's IN PRACTICE block.
+          A boxed card here competed with the choice tiles below — the scenario
+          sets up the decision, it is not the thing being chosen. Unlabelled: the
+          scene label above is already the heading. */}
+      <div style={{ borderLeft: '2px solid var(--accent)', paddingLeft: 16 }}>
+        <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.6, color: 'var(--ink)', margin: 0, textWrap: 'pretty' }}>
           {card.scenario}
         </p>
       </div>
@@ -120,15 +159,16 @@ function DecisionCard({ card, onContinue, onXp, onTermTap }) {
       </p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 14 }}>
-        {card.options.map((o, i) => {
+        {order.map((oi) => {
+          const o = card.options[oi];
           let cls = 'bag-opt';
           if (pick != null) {
             if (o.correct) cls += ' correct';
-            else if (i === pick) cls += ' incorrect';
+            else if (oi === pick) cls += ' incorrect';
             else cls += ' faded';
           }
           return (
-            <button key={i} className={cls} disabled={pick != null} onClick={() => choose(i)}>
+            <button key={oi} className={cls} disabled={pick != null} onClick={() => choose(oi)}>
               <span className="bag-opt-t">{o.t}</span>
               <span className="bag-opt-s ff-mono">{o.sub}</span>
             </button>
@@ -173,6 +213,7 @@ function DecisionCard({ card, onContinue, onXp, onTermTap }) {
 // the takeaway as something earned rather than announced.
 function RecallCard({ card, onContinue, onXp, prediction }) {
   const [pick, setPick] = useStateAC(null);
+  const [order] = useStateAC(() => acShuffle(card.choices.length));
   const correctIdx = card.choices.findIndex(c => c.correct);
   const answered = pick != null;
   const choose = (i) => {
@@ -192,14 +233,14 @@ function RecallCard({ card, onContinue, onXp, prediction }) {
       }}>{card.question}</p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 20 }}>
-        {card.choices.map((c, i) => {
+        {order.map((oi) => {
           let cls = 'mcq-choice';
           if (answered) {
-            if (i === correctIdx) cls += ' correct';
-            else if (i === pick) cls += ' incorrect';
+            if (oi === correctIdx) cls += ' correct';
+            else if (oi === pick) cls += ' incorrect';
           }
           return (
-            <button key={i} className={cls} disabled={answered} onClick={() => choose(i)}>{c.t}</button>
+            <button key={oi} className={cls} disabled={answered} onClick={() => choose(oi)}>{card.choices[oi].t}</button>
           );
         })}
       </div>
@@ -235,7 +276,7 @@ function RecallCard({ card, onContinue, onXp, prediction }) {
       {answered && (
         <div className="fade-up" style={{
           marginTop: 32, marginLeft: -24, marginRight: -24,
-          padding: '30px 24px 32px', background: 'var(--surface-2)',
+          padding: '30px 24px 32px', background: 'var(--surface-2)', textAlign: 'center',
         }}>
           <h1 className="ff-display" style={{
             fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.08, letterSpacing: '-0.02em',

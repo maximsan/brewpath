@@ -156,7 +156,7 @@ function LessonCompleteScreen({ lesson, result, freezeEarned = false, lessonStat
                 <>
                   <div style={{ height: 1, background: 'var(--rule)' }}/>
                   <div style={{ padding: '13px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <span style={{ width: 34, height: 34, borderRadius: 8, flexShrink: 0, display: 'grid', placeItems: 'center', background: 'color-mix(in oklab, var(--accent) 12%, var(--surface))' }}>
+                    <span style={{ width: 34, height: 34, borderRadius: 12, flexShrink: 0, display: 'grid', placeItems: 'center', background: 'color-mix(in oklab, var(--accent) 12%, var(--surface))' }}>
                       {window.FreezeMark ? <window.FreezeMark size={18}/> : null}
                     </span>
                     <span style={{ minWidth: 0, flex: 1 }}>
@@ -174,7 +174,7 @@ function LessonCompleteScreen({ lesson, result, freezeEarned = false, lessonStat
                     width: '100%', appearance: 'none', cursor: 'pointer', textAlign: 'left', background: 'transparent', border: 0,
                     padding: '13px 16px', display: 'flex', alignItems: 'center', gap: 12,
                   }}>
-                    <span style={{ width: 34, height: 34, borderRadius: 8, flexShrink: 0, display: 'grid', placeItems: 'center', background: 'color-mix(in oklab, var(--accent) 12%, var(--surface))' }}>
+                    <span style={{ width: 34, height: 34, borderRadius: 12, flexShrink: 0, display: 'grid', placeItems: 'center', background: 'color-mix(in oklab, var(--accent) 12%, var(--surface))' }}>
                       <FlavorStamp size={26} rotate={-8}/>
                     </span>
                     <span style={{ minWidth: 0, flex: 1 }}>
@@ -235,7 +235,7 @@ function LessonCompleteScreen({ lesson, result, freezeEarned = false, lessonStat
         <div onClick={() => setPreview(false)} style={{
           position: 'absolute', inset: 0, zIndex: 20, display: 'flex', flexDirection: 'column',
           alignItems: 'center', justifyContent: 'center', padding: '0 24px',
-          background: 'color-mix(in oklab, var(--bg) 82%, transparent)', backdropFilter: 'blur(3px)',
+          background: 'var(--veil-strong)', backdropFilter: 'blur(3px)',
           overflowY: 'auto',
           animation: 'tfFade .18s ease-out',
         }}>
@@ -274,7 +274,7 @@ function ModuleCompleteScreen({ module, fromStage, toStage, prevXp, newXp, onCon
     setTimeout(() => setHalf(v), 410);
   };
   if (phase === 'roasty') {
-    return <RoastyMoment state="module" eyebrow="MODULE COMPLETE" title="Look how far you've come."
+    return <RoastyMoment state="module" eyebrow="MODULE COMPLETE" title="Look how far you’ve come."
                          autoMs={2200} onDone={() => setPhase('content')}/>;
   }
 
@@ -467,7 +467,7 @@ function RewardCard({ reward, module, totalXp }) {
       padding: '32px 24px 24px',
       background: 'var(--surface)',
       border: '1px solid color-mix(in oklab, var(--accent) 22%, var(--rule))',
-      borderRadius: 4,
+      borderRadius: 2,
       boxShadow: '0 18px 40px rgba(0,0,0,0.35), 0 0 0 1px color-mix(in oklab, var(--accent) 10%, transparent)',
       opacity: 0,
       transform: 'translateY(16px) scale(0.94) rotate(-2deg)',
@@ -483,7 +483,7 @@ function RewardCard({ reward, module, totalXp }) {
       `}</style>
 
       <div className="rc-ring" style={{
-        position: 'absolute', inset: 0, borderRadius: 4, pointerEvents: 'none',
+        position: 'absolute', inset: 0, borderRadius: 2, pointerEvents: 'none',
       }}/>
 
       {/* The stamp is absolutely positioned in the top-right corner, so the

@@ -131,7 +131,7 @@ function OriginMarker({ origin, state, fav, scale, selected, plain, dim, onTap, 
           fontSize: 'var(--t-label)', fontWeight: 500, letterSpacing: '0.01em',
           color: selected ? 'var(--accent)' : 'var(--ink)',
           background: 'color-mix(in oklab, var(--bg) 82%, transparent)',
-          padding: '1px 5px', borderRadius: 3, whiteSpace: 'nowrap',
+          padding: '1px 5px', borderRadius: 2, whiteSpace: 'nowrap',
           boxShadow: '0 1px 0 color-mix(in oklab, var(--ink) 8%, transparent)',
         }}>{origin.name}</span>
       )}

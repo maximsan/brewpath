@@ -34,6 +34,18 @@
     --sage:      #5F6E55;
     --warn:      #9A5F1C;
     --berry:     #A8362A;
+    --water:     #5C93B8;
+    --water-hi:  #A9CFE3;
+    /* Scrim — deliberately mood-independent: it sits on media, and the media
+       does not invert with the theme. Same value in every mood block. */
+    --scrim:     color-mix(in oklab, #1B1614 58%, transparent);
+    --scrim-ink: #FBF7EE;
+    /* Overlays. --dim-modal is fixed like --scrim: a modal must darken in BOTH moods,
+       so it never binds to --ink. --veil / --veil-strong do follow the mood — they are
+       the page background pulled over the page, so they must swap with it. */
+    --dim-modal:   color-mix(in oklab, #0E0A07 62%, transparent);
+    --veil:        color-mix(in oklab, var(--bg) 38%, transparent);
+    --veil-strong: color-mix(in oklab, var(--bg) 82%, transparent);
     --r:         14px;
   }
   [data-mood="dark-roast"] {
@@ -48,7 +60,11 @@
     --sage:      #97A285;
     --warn:      #E6A35C;
     --berry:     #C75450;
-    --cream:     #F0DCB8;
+    --water:     #7FB4D6;
+    --water-hi:  #C2E0EF;
+    --scrim:     color-mix(in oklab, #1B1614 58%, transparent);
+    --scrim-ink: #FBF7EE;
+    --dim-modal: color-mix(in oklab, #0E0A07 62%, transparent);
   }
   /* legacy alias kept so the old theme-toggle pathway still resolves */
   [data-theme="dark"] {
@@ -63,7 +79,11 @@
     --sage:      #97A285;
     --warn:      #E6A35C;
     --berry:     #C75450;
-    --cream:     #F0DCB8;
+    --water:     #7FB4D6;
+    --water-hi:  #C2E0EF;
+    --scrim:     color-mix(in oklab, #1B1614 58%, transparent);
+    --scrim-ink: #FBF7EE;
+    --dim-modal: color-mix(in oklab, #0E0A07 62%, transparent);
   }
 
   /* VOICE — display typeface character */
@@ -232,8 +252,15 @@
      moods (a ripe cherry is the same colour under any theme), which is exactly
      why these are not --warn: that token means celebration and nothing else. */
   :root {
-    --art-raw:#9FB088; --art-roast-light:#C79A63; --art-roast-mid:#A2703C; --art-roast-dark:#54301C;
+    --art-raw:#9FB088; --art-roast-light:#C79A63; --art-roast-mid:#A2703C; --art-roast-deep:#7A4526; --art-roast-dark:#54301C;
     --art-ripe:#C8843A; --art-sour:#B79A3C;
+    /* the cherry in section — one ramp, shared by every cross-section drawing */
+    --art-cherry-skin:#A93227; --art-cherry-pulp:#C9563A; --art-cherry-gel:#D9A94C;
+    --art-cherry-parchment:#E3D2AE; --art-cherry-silverskin:#F1E8D6; --art-cherry-seed:#8FA184;
+    --art-seed-crease:#5C6B52;
+    /* highlight on illustration fills — was defined in the dark mood only, so every
+       art highlight lost its colour in cupping. Literal, so it does not flip. */
+    --cream:#F0DCB8;
   }
   :root {
     --t-hero: 56px; --t-display: 30px; --t-title: 26px; --t-heading: 19px;
@@ -593,8 +620,18 @@
     background: color-mix(in oklab, var(--berry) 8%, var(--surface));
   }
   .mcq-choice:disabled { cursor: default; }
+  /* Inset variant — used inside an already-contained card (term page knowledge
+     check) so options are hairline-separated rows, not boxes inside a box. */
+  .mcq-inset .mcq-choice { background: transparent; border-color: transparent; border-top-color: var(--rule); border-radius: 0; padding: 13px 2px; display: flex; align-items: center; gap: 12px; text-align: left; }
+  .mcq-inset .mcq-choice:first-child { border-top-color: transparent; }
+  .mcq-inset .mcq-dot { width: 15px; height: 15px; border-radius: 999px; border: 1px solid var(--rule); flex-shrink: 0; transition: all 150ms ease; }
+  .mcq-inset .mcq-choice.correct { background: transparent; border-color: transparent; border-top-color: var(--rule); color: var(--sage); }
+  .mcq-inset .mcq-choice.incorrect { background: transparent; border-color: transparent; border-top-color: var(--rule); color: var(--berry); }
+  .mcq-inset .mcq-choice.correct:first-child, .mcq-inset .mcq-choice.incorrect:first-child { border-top-color: transparent; }
+  .mcq-inset .mcq-choice.correct .mcq-dot { border-color: var(--sage); background: var(--sage); }
+  .mcq-inset .mcq-choice.incorrect .mcq-dot { border-color: var(--berry); background: var(--berry); }
 
-  /* Concept "fill the sentence" — key words blanked, completed from a small bank */
+  /* THE blank — .fill-slot is shared by concept sentences and the predict cloze (see FillSlot in lesson.jsx) */
   .fill-slot { font-family: 'IBM Plex Mono', monospace; color: var(--ink-mute);
     border-bottom: 2px dashed color-mix(in oklab, var(--accent) 55%, var(--rule));
     padding: 0 6px 1px; min-width: 74px; text-align: center; display: inline-block;
@@ -602,6 +639,10 @@
   .fill-slot.filled { color: var(--ink); border-bottom-color: color-mix(in oklab, var(--accent) 70%, var(--rule)); border-bottom-style: solid; }
   .fill-slot.filled.right { color: var(--sage); border-bottom-color: var(--sage); }
   .fill-slot.filled.wrong { color: var(--berry); border-bottom-color: var(--berry); }
+  /* ungraded guess (predict card): accent, because it is the learner's claim, not a verdict */
+  .fill-slot.filled.guess { color: var(--accent); border-bottom-color: var(--accent); }
+  /* inside display type the slot keeps the sentence's face instead of switching to mono */
+  .fill-slot.inherit { font-family: inherit; }
   .fill-groups { display: flex; flex-direction: column; gap: 18px; margin-top: 28px; }
   .fill-rl { font-size: var(--t-label); font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
     color: var(--ink-mute); margin-bottom: 8px; }
@@ -655,7 +696,7 @@
     width: 22px; height: 22px;
     flex-shrink: 0;
     border: 1.5px solid var(--ink-mute);
-    border-radius: 5px;
+    border-radius: 2px;
     display: grid;
     place-items: center;
     color: transparent;
@@ -705,9 +746,9 @@
   }
   .collect-card .cc-title {
     font-family: 'Fraunces', serif;
-    font-size: var(--t-heading);
+    font-size: var(--t-lead);
     font-weight: 400;
-    line-height: 1.1;
+    line-height: 1.15;
     color: var(--ink);
     letter-spacing: -0.01em;
   }
@@ -723,7 +764,9 @@
   .sheet-backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(0,0,0,0.4);
+    background: var(--dim-modal);
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
     z-index: 95;
     opacity: 0;
     pointer-events: none;
@@ -937,7 +980,7 @@
     position: absolute;
     left: 0; right: 0; bottom: 0;
     background: var(--bg);
-    border-radius: 22px 22px 0 0;
+    border-radius: 16px 16px 0 0;
     padding: 14px 24px 30px;
     transform: translateY(105%);
     transition: transform .32s cubic-bezier(.4,0,.2,1);
@@ -946,7 +989,7 @@
   }
   .help-sheet.open { transform: translateY(0); }
   .help-grip {
-    width: 38px; height: 4px;
+    width: 36px; height: 4px;
     border-radius: 999px;
     background: var(--rule);
     margin: 0 auto 18px;
@@ -1183,6 +1226,9 @@
     50%      { opacity: 1;    transform: scale(1.15); }
   }
   .tap-pulse { animation: tapPulse 1.6s ease-in-out infinite; }
+  /* Intro caps mark — the tap-to-continue cue and the BREWPATH signature. They share
+     one slot on the loading screen, so they share one treatment: mono, widest tracking. */
+  .tap-cue { font-family: 'IBM Plex Mono', monospace; font-size: var(--t-label); font-weight: 400; letter-spacing: 0.24em; text-transform: uppercase; color: var(--ink-mute); text-align: center; }
   .fade-up { /* animation disabled in preview environment */ }
 
   /* slide-in tab transitions — no animation, content shows immediately. */
@@ -1235,7 +1281,7 @@
   </div>
 
   <div class="ff-mono" style="color: rgba(255,255,255,0.4); font-size: var(--t-label); letter-spacing: 0.16em; text-transform: uppercase;">
-    BREWPATH · CUPPING NOTES · iPhone 15
+    BREWPATH · PROTOTYPE · iPhone 15
   </div>
 </div>
 
@@ -1275,6 +1321,7 @@
 <script type="text/babel" src="settings.jsx"></script>
 <script type="text/babel" src="screens.jsx"></script>
 <script type="text/babel" src="onboarding.jsx"></script>
+<script type="text/babel" src="bean-anatomy.jsx"></script>
 <script type="text/babel" src="lesson.jsx"></script>
 <script type="text/babel" src="active-cards.jsx"></script>
 <script type="text/babel" src="practical.jsx"></script>

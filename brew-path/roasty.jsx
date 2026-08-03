@@ -570,9 +570,9 @@ function Roasty({ state = 'idle', size = 160, replayKey, style, roast, hat, gear
 
         {/* XP burst */}
         <g className="xp-burst">
-          <rect x="68" y="42" width="64" height="24" rx="2" fill="var(--warn)"/>
+          <rect x="68" y="42" width="64" height="24" rx="2" fill="var(--accent)"/>
           <text x="100" y="59" textAnchor="middle" fontFamily="IBM Plex Mono, monospace"
-                fontSize="13" fontWeight="500" fill="#FBF7EE" letterSpacing="1">+15 PTS</text>
+                fontSize="13" fontWeight="500" fill="var(--accent-ink)" letterSpacing="1">+15 PTS</text>
         </g>
 
         {/* sleep Zzz */}
@@ -677,7 +677,7 @@ function RoastyLoadingScreen({ onDone, message = 'Brewing your lesson' }) {
         .roasty-loader[data-step="5"] .caption { opacity: 1; animation: loading-fade-in 500ms ease both; }
         .roasty-loader .caption .msg {
           font-family: 'Fraunces', serif; font-style: italic; font-weight: 400;
-          font-size: 19px; letter-spacing: -0.02em; color: var(--ink);
+          font-size: var(--t-heading); letter-spacing: -0.02em; color: var(--ink);
           margin-bottom: 14px;
         }
         .roasty-loader .dots { display: inline-flex; gap: 6px; }
@@ -689,17 +689,15 @@ function RoastyLoadingScreen({ onDone, message = 'Brewing your lesson' }) {
         .roasty-loader .dots span:nth-child(2) { animation-delay: 0.2s; }
         .roasty-loader .dots span:nth-child(3) { animation-delay: 0.4s; }
         .roasty-loader .brand-mark {
-          position: absolute; bottom: 80px; left: 0; right: 0; text-align: center;
-          font-family: 'IBM Plex Mono', monospace; font-size: 9.5px;
-          letter-spacing: 0.24em; text-transform: uppercase; color: var(--ink-mute);
+          position: absolute; bottom: 80px; left: 0; right: 0;
         }
       `}</style>
 
       <div className="roasty-loader" data-step={step}>
         {/* water drop */}
         <svg className="drop" viewBox="0 0 14 20">
-          <path d="M7 0 C 9 6 13 10 13 14 A 6 6 0 0 1 1 14 C 1 10 5 6 7 0 Z" fill="#6FA3C8"/>
-          <ellipse cx="5" cy="11" rx="1.5" ry="2.4" fill="#A9CFE3" opacity="0.7"/>
+          <path d="M7 0 C 9 6 13 10 13 14 A 6 6 0 0 1 1 14 C 1 10 5 6 7 0 Z" fill="var(--water)"/>
+          <ellipse cx="5" cy="11" rx="1.5" ry="2.4" fill="var(--water-hi)" opacity="0.7"/>
         </svg>
 
         {/* Roasty — sprout grows via CSS transition tied to data-step on the loader */}
@@ -709,10 +707,10 @@ function RoastyLoadingScreen({ onDone, message = 'Brewing your lesson' }) {
 
         <div className="caption">
           <div className="msg">{message}</div>
-          <div className="dots"><span></span><span></span><span></span></div>
+          <div className="dots" aria-hidden="true"><span></span><span></span><span></span></div>
         </div>
 
-        <div className="brand-mark">
+        <div className="brand-mark tap-cue">
           {cycle === 0 ? 'BREWPATH' : 'TAP ANYWHERE TO CONTINUE'}
         </div>
       </div>

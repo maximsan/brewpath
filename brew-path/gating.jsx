@@ -98,8 +98,12 @@ function PlusGateSheet({ featureKey, open, onClose, onUpgrade, onWatchAd, showAd
   const f = PLUS_FEATURES[featureKey] || { label: 'This feature', blurb: '' };
   return (
     <>
-      <div className={'sheet-backdrop' + (open ? ' open' : '')} onClick={onClose}/>
-      <div className={'sheet' + (open ? ' open' : '')} role="dialog" aria-label={'Unlock ' + f.label}>
+      {/* Interrupt layer: the gate can fire from inside another sheet (saving a
+          term from the in-lesson peek hits the free Saved cap), so it sits one
+          step above the base sheet layer (95/96) instead of tying on z-index and
+          losing to whichever sheet renders later. */}
+      <div className={'sheet-backdrop' + (open ? ' open' : '')} style={{ zIndex: 97 }} onClick={onClose}/>
+      <div className={'sheet' + (open ? ' open' : '')} style={{ zIndex: 98 }} role="dialog" aria-label={'Unlock ' + f.label}>
         <div className="sheet-handle"/>
         <div className="sheet-content">
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
@@ -158,6 +162,9 @@ function RewardedAdScreen({ featureKey, minutes = TRIAL_AD_MIN, onClaim, onClose
   const done = left <= 0;
   const frac = (TOTAL - left) / TOTAL;
   const R = 17, C = 2 * Math.PI * R;
+  // The ad canvas is fixed near-black (#0b0908) in BOTH moods, so the ring deliberately
+  // keeps the dark-roast accent — var(--accent) would go too dark in cupping.
+  const AD_RING = '#E07A4F';
 
   return (
     <div className="screen" data-screen-label="Rewarded Ad" style={{ background: '#0b0908' }}>
@@ -173,17 +180,19 @@ function RewardedAdScreen({ featureKey, minutes = TRIAL_AD_MIN, onClaim, onClose
           <span style={{ position: 'relative', width: 40, height: 40, display: 'grid', placeItems: 'center' }}>
             <svg width="40" height="40" viewBox="0 0 40 40" style={{ position: 'absolute', transform: 'rotate(-90deg)' }}>
               <circle cx="20" cy="20" r={R} fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth="2.5"/>
-              <circle cx="20" cy="20" r={R} fill="none" stroke="#E07A4F" strokeWidth="2.5" strokeLinecap="round"
+              <circle cx="20" cy="20" r={R} fill="none" stroke={AD_RING} strokeWidth="2.5" strokeLinecap="round"
                       strokeDasharray={C} strokeDashoffset={C * (1 - frac)} style={{ transition: 'stroke-dashoffset 1s linear' }}/>
             </svg>
             <span className="ff-mono" style={{ fontSize: 'var(--t-label)', color: '#fff', fontVariantNumeric: 'tabular-nums' }}>{done ? '✓' : left}</span>
           </span>
           <button onClick={onClose} aria-label="Close ad" style={{
-            appearance: 'none', cursor: 'pointer', width: 30, height: 30, borderRadius: 999,
-            background: 'rgba(255,255,255,0.12)', border: 'none', color: '#fff', display: 'grid', placeItems: 'center',
+            appearance: 'none', cursor: 'pointer', width: 44, height: 44, margin: -7, padding: 0, borderRadius: 999,
+            background: 'transparent', border: 'none', color: '#fff', display: 'grid', placeItems: 'center',
             opacity: done ? 1 : 0.5,
           }}>
-            <svg width="13" height="13" viewBox="0 0 14 14"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg>
+            <span style={{ width: 30, height: 30, borderRadius: 999, background: 'rgba(255,255,255,0.12)', display: 'grid', placeItems: 'center' }}>
+              <svg width="13" height="13" viewBox="0 0 14 14"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg>
+            </span>
           </button>
         </div>
       </div>
@@ -355,7 +364,7 @@ function FeatureLock({ featureKey, style = 'blur', preview, onUnlock, showAd = t
         position: 'absolute', inset: 0, pointerEvents: 'none',
         background: curtain
           ? 'linear-gradient(180deg, transparent 0%, color-mix(in oklab, var(--bg) 30%, transparent) 34%, var(--bg) 70%)'
-          : 'color-mix(in oklab, var(--bg) 38%, transparent)',
+          : 'var(--veil)',
       }}/>
       <div style={{
         position: 'absolute', inset: 0, display: 'flex',

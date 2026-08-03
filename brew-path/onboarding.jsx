@@ -59,7 +59,7 @@ const ONB_QUESTIONS = {
     multi: true,
     options: [
       { title: 'Brew better at home' },
-      { title: 'Understand flavor' },
+      { title: 'Understand flavour' },
       { title: 'Order with confidence' },
       { title: 'Geek out on the craft' },
       { title: 'Slow down and enjoy it' },
@@ -97,7 +97,7 @@ function OnbSpeech({ text, voice = 'bubble-top', state = 'idle', size }) {
   const Bubble = ({ dir }) => (
     <div style={{
       position: 'relative', background: 'var(--surface)', border: '1px solid var(--rule)',
-      borderRadius: 6, padding: '13px 16px', color: 'var(--ink)',
+      borderRadius: 12, padding: '13px 16px', color: 'var(--ink)',
       fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 'var(--t-body)', lineHeight: 1.45,
       maxWidth: dir === 'left' ? 230 : 330, textWrap: 'pretty',
     }}>

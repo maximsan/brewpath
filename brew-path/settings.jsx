@@ -147,55 +147,104 @@ function NavRow({ label, value, accent, external, onClick }) {
   );
 }
 
-// Standard back top-bar matching the rest of the app.
-// Mirrors AppHeader's iOS large-title collapse: transparent at rest; once the
-// screen scrolls, it becomes a blurred, hairlined sticky bar and the compact
-// title fades in beside the back chevron.
-function useScrollFlag(threshold = 48) {
+// ── STICKY HEADER — one implementation for the whole app ──────
+// Every screen-level top bar renders through StickyHeaderChrome: transparent
+// at rest, then a blurred + tinted bar with a bottom hairline and a short
+// gradient fade below it, so scrolling type never reads through the edge.
+// Nothing else in the app is allowed to hand-roll this chrome — AppHeader
+// (tabs) and the term page both compose it. Constants are exported so scroll
+// containers can't drift out of sync with the bar's height.
+const HEADER_H = 96;                 // subscreen bar height
+const HEADER_PAD = 108;              // matching scroll paddingTop
+const HEADER_FILL = 'color-mix(in oklab, var(--bg) 94%, transparent)';
+const HEADER_BLUR = 'blur(16px) saturate(1.3)';
+
+// A single threshold everywhere: the bar materialises as soon as content
+// starts moving, so nothing is ever seen crossing an invisible edge.
+// `resetKey` guards the failure mode this replaced: when a screen swaps its
+// content inside the SAME scroller (dictionary category drill-down, term →
+// term), the scroller snaps back to top while `scrolled` stayed true — leaving
+// a solid bar and a compact title stacked on top of the un-scrolled large
+// title. Pass the value that identifies the content and attach the returned
+// ref to the scroll container; the flag and the offset then reset together.
+function useScrollFlag(threshold = 40, resetKey) {
   const [scrolled, setScrolled] = useStateS(false);
-  const onScroll = (e) => setScrolled(e.target.scrollTop > threshold);
-  return [scrolled, onScroll];
+  const ref = React.useRef(null);
+  // currentTarget, not target: a nested scroller must never flip the page bar.
+  const onScroll = (e) => setScrolled(e.currentTarget.scrollTop > threshold);
+  useEffectS(() => {
+    if (ref.current) ref.current.scrollTop = 0;
+    setScrolled(false);
+  }, [resetKey]);
+  return [scrolled, onScroll, ref];
 }
 
-function SubScreenHeader({ scrolled, eyebrow, title, onBack, icon = 'back' }) {
+function StickyHeaderChrome({ scrolled, height = HEADER_H, children }) {
   return (
     <div style={{
-      position: 'absolute', top: 0, left: 0, right: 0, height: 96, zIndex: 40,
+      position: 'absolute', top: 0, left: 0, right: 0, height, zIndex: 40,
       display: 'flex', alignItems: 'flex-end', pointerEvents: 'none',
-      background: scrolled ? 'color-mix(in oklab, var(--bg) 78%, transparent)' : 'transparent',
-      backdropFilter: scrolled ? 'blur(16px) saturate(1.3)' : 'none',
-      WebkitBackdropFilter: scrolled ? 'blur(16px) saturate(1.3)' : 'none',
+      background: scrolled ? HEADER_FILL : 'transparent',
+      backdropFilter: scrolled ? HEADER_BLUR : 'none',
+      WebkitBackdropFilter: scrolled ? HEADER_BLUR : 'none',
       borderBottom: '1px solid ' + (scrolled ? 'var(--rule)' : 'transparent'),
       transition: 'background 260ms ease, backdrop-filter 260ms ease, border-color 260ms ease',
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0 20px 10px', width: '100%' }}>
-        <button className="close-btn" onClick={onBack} aria-label="Back" style={{ pointerEvents: 'auto', marginLeft: -4 }}>
-          {icon === 'close' ? (
-            <window.CloseMark/>
-          ) : (
-            <window.BackMark/>
-          )}
-        </button>
-        <div style={{
-          minWidth: 0, flex: 1,
-          opacity: scrolled ? 1 : 0,
-          transform: scrolled ? 'translateY(0)' : 'translateY(7px)',
-          transition: 'opacity 240ms ease, transform 240ms ease',
-          pointerEvents: 'none',
-        }}>
-          {eyebrow && (
-            <div className="ff-mono" style={{
-              fontSize: 'var(--t-micro)', letterSpacing: '0.18em', textTransform: 'uppercase',
-              color: 'var(--ink-mute)', lineHeight: 1,
-            }}>{eyebrow}</div>
-          )}
-          <div className="ff-display" style={{
-            fontSize: 'var(--t-heading)', fontWeight: 400, letterSpacing: '-0.01em', color: 'var(--ink)',
-            lineHeight: 1.15, marginTop: eyebrow ? 2 : 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-          }}>{title}</div>
-        </div>
-      </div>
+      <div aria-hidden="true" style={{
+        position: 'absolute', top: '100%', left: 0, right: 0, height: 22, pointerEvents: 'none',
+        background: 'linear-gradient(to bottom, color-mix(in oklab, var(--bg) 88%, transparent), transparent)',
+        opacity: scrolled ? 1 : 0, transition: 'opacity 260ms ease',
+      }}/>
+      {children}
     </div>
+  );
+}
+
+// The compact title that fades in as the large in-flow title scrolls under.
+function HeaderCompactTitle({ scrolled, eyebrow, title }) {
+  return (
+    <div style={{
+      minWidth: 0, flex: 1,
+      opacity: scrolled ? 1 : 0,
+      transform: scrolled ? 'translateY(0)' : 'translateY(7px)',
+      transition: 'opacity 240ms ease, transform 240ms ease',
+      pointerEvents: 'none',
+    }}>
+      {eyebrow && (
+        <div className="ff-mono" style={{
+          fontSize: 'var(--t-micro)', letterSpacing: '0.18em', textTransform: 'uppercase',
+          color: 'var(--ink-mute)', lineHeight: 1,
+        }}>{eyebrow}</div>
+      )}
+      <div className="ff-display" style={{
+        fontSize: 'var(--t-heading)', fontWeight: 400, letterSpacing: '-0.01em', color: 'var(--ink)',
+        lineHeight: 1.15, marginTop: eyebrow ? 2 : 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+      }}>{title}</div>
+    </div>
+  );
+}
+
+// Standard back top-bar. `right` takes trailing controls (e.g. the bookmark),
+// `ringBack` circles the back control so both ends of the bar match weight,
+// `solid` pins the bar filled with its title always shown — for screens with a
+// fixed hero instead of a large in-flow title to collapse.
+function SubScreenHeader({ scrolled, eyebrow, title, onBack, icon = 'back', right, ringBack, solid }) {
+  const on = solid || scrolled;
+  return (
+    <StickyHeaderChrome scrolled={on}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0 20px 10px', width: '100%' }}>
+        {onBack && (
+          <button className="close-btn" onClick={onBack} aria-label={icon === 'close' ? 'Close' : 'Back'}
+            style={ringBack
+              ? { pointerEvents: 'auto', flexShrink: 0, border: '1px solid var(--rule)', borderRadius: 999, width: 32, height: 32, padding: 0, color: 'var(--ink-mute)' }
+              : { pointerEvents: 'auto', flexShrink: 0, marginLeft: -4 }}>
+            {icon === 'close' ? <window.CloseMark/> : <window.BackMark size={ringBack ? 15 : 18}/>}
+          </button>
+        )}
+        <HeaderCompactTitle scrolled={on} eyebrow={eyebrow} title={title}/>
+        {right && <div style={{ flexShrink: 0, pointerEvents: 'auto', display: 'flex', alignItems: 'center', gap: 10 }}>{right}</div>}
+      </div>
+    </StickyHeaderChrome>
   );
 }
 
@@ -206,11 +255,11 @@ function BackBar({ onClose, title, scrolled }) {
 // ── AboutScreen ───────────────────────────────────────────────
 function AboutScreen({ onClose }) {
   const Roasty = window.Roasty;
-  const [scrolled, onScroll] = useScrollFlag(140);
+  const [scrolled, onScroll] = useScrollFlag();
   return (
     <div className="screen" data-screen-label="About" style={{ background: 'var(--bg)' }}>
       <BackBar onClose={onClose} title="About" scrolled={scrolled}/>
-      <div className="scroll" onScroll={onScroll} style={{ paddingTop: 64, paddingBottom: 40 }}>
+      <div className="scroll" onScroll={onScroll} style={{ paddingTop: HEADER_PAD, paddingBottom: 40 }}>
         {/* Brand block */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '8px 24px 0' }}>
           {Roasty && <Roasty state="idle" size={132}/>}
@@ -553,6 +602,10 @@ function HelpSupportScreen({ onClose }) {
 
 window.SettingsToggle = SettingsToggle;
 window.SubScreenHeader = SubScreenHeader;
+window.StickyHeaderChrome = StickyHeaderChrome;
+window.HeaderCompactTitle = HeaderCompactTitle;
+window.HEADER_H = HEADER_H;
+window.HEADER_PAD = HEADER_PAD;
 window.useScrollFlag = useScrollFlag;
 window.ConfirmSheet = ConfirmSheet;
 window.TimeSheet = TimeSheet;

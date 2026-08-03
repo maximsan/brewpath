@@ -188,7 +188,7 @@ function ProfileSections({ origin, only }) {
         </Block>
       ))}
       {wrap('climate', (
-        <Block key="climate" label="ALTITUDE and CLIMATE">
+        <Block key="climate" label="ALTITUDE AND CLIMATE">
           <div style={{ border: '1px solid var(--rule)', borderRadius: 12, overflow: 'hidden' }}>
             <DataRow k="Altitude" v={origin.altitude}/>
             <DataRow k="Climate" v={origin.climate} wrap/>
@@ -196,7 +196,7 @@ function ProfileSections({ origin, only }) {
         </Block>
       ))}
       {wrap('species', (
-        <Block key="species" label="SPECIES and VARIETIES">
+        <Block key="species" label="SPECIES AND VARIETIES">
           <div style={{ marginBottom: 10 }}><ChipRow items={origin.species} accent/></div>
           <ChipRow items={origin.varieties}/>
         </Block>
@@ -228,7 +228,7 @@ function ProfileSections({ origin, only }) {
         </Block>
       ))}
       {wrap('sources', (
-        <Block key="sources" label="SOURCES and REVIEW">
+        <Block key="sources" label="SOURCES AND REVIEW">
           <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
             {origin.sources.map((s, i) => (
               <div key={i} style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
