@@ -107,11 +107,21 @@
 <div class="topbar"><div class="brand"><span class="mark">BrewPath</span><span class="tag">QA Findings</span></div>
 <div class="theme-toggle" id="theme-toggle"><button data-mood="dark-roast" class="active">Dark roast</button><button data-mood="cupping">Cupping</button></div></div>
 <div class="hero"><div class="hero-inner">
-<div class="mono">CLOSED &#183; 15 LESSONS &#183; 116 CARDS &#183; 1,445 STRINGS &#183; 42 TERMS &#183; JUL 2026</div>
+<div class="mono">CLOSED &#183; 32 LESSONS &#183; 258 CARDS &#183; 72 TERMS &#183; 96 ROUTES &#183; AUG 2026</div>
 <h1>Nothing is open in the build.</h1>
-<p>Two passes ran: one reading the content model, one driving all 97 screen routes. Eleven defects came out of them and all eleven are fixed; cupping&#8217;s contrast was raised to AA. This is now the record of that work &#8212; what is still open sits at the top, and it is judgement rather than code.</p>
+<p>Two passes ran: one reading the content model, one driving every screen route. Eleven defects came out of them and all eleven are fixed; cupping&#8217;s contrast was raised to AA. The build has since roughly doubled &#8212; 32 lessons, 72 terms, the espresso lesson and the reference term state &#8212; and the structural pass was re-run against it in August. What is still open sits at the top, and it is judgement rather than code.</p>
 </div></div>
 <div class="wrap"><main>
+<section class="section"><div class="sec-head"><div class="eyebrow">Re-verified &#183; Aug 2026</div><h2>The structural pass, re-run against the grown build</h2><p class="sec-intro">Every check below is mechanical and now clean on the current content. What it cannot tell you is whether any of it teaches.</p></div>
+<table class="ledger"><tr><th>Check</th><th>Result</th></tr>
+<tr><td>Dictionary lesson links resolve to a lesson that teaches the term</td><td>72 terms &#8212; <span class="mono">dictLessonAudit()</span> returns <span class="mono">[]</span>. 7 reference-only terms claim no lesson.</td></tr>
+<tr><td>Every lesson has a collectible card; every card unlocks from a real lesson</td><td>32 / 32, no orphans either direction.</td></tr>
+<tr><td>Every card <span class="mono">kind</span> has bespoke art and a tint</td><td>38 kinds in <span class="mono">COLLECTION</span>, all covered, and all 38 have a tint. 37 draw from <span class="mono">CARD_ART</span>; <span class="mono">training</span> routes to <span class="mono">TrainingThumb</span> by design and is filtered out of the collectible count. Both maps carry one extra key &#8212; <span class="mono">guide</span>, which belongs to the library list rather than the collection grid &#8212; so the tables read 38 and 39.</td></tr>
+<tr><td>Path order matches defined lessons</td><td>32 path entries, 32 definitions, no drift.</td></tr>
+<tr><td>m5l7 run through the Modules 2&#8211;5 review plan</td><td>Two fixes: two off-topic distractors replaced, and a decision whose sub-labels graded the options rather than describing them.</td></tr>
+<tr><td>Brew challenges</td><td>7 of 32 lessons, by design. m5l7 intentionally has none &#8212; it would ask for a machine the learner does not own.</td></tr>
+</table></section>
+
 <section class="section"><div class="sec-head"><div class="eyebrow">Still open</div><h2>Deferred surfaces closed; two accepted contrast calls remain</h2><p class="sec-intro">Nothing here renders in the v1 cut, or is a decision already taken. Listed so it is not rediscovered later.</p></div>
 <table class="ledger"><tr><th>Item</th><th>Where</th><th>Disposition</th></tr>
 <tr><td>Tap targets under 44px</td><td class="loc">customize.jsx:464, gating.jsx:182</td><td>Backdrop swatches (28px) and the rewarded-ad close (30px). Both behind <span class="mono">isV1</span> &#8212; fix when those surfaces return.</td></tr>

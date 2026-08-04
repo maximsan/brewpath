@@ -118,6 +118,7 @@ const SCREEN_ROUTES = {
   dictionary:       { view: 'dictionary' },
   term:             { view: 'term', termId: 'arabica' },
   'term-locked':    { view: 'term', termId: 'first-crack' },
+  'term-reference': { view: 'term', termId: 'masl' },
   'term-of-day':    { view: 'term-of-day' },
   flashcards:       { view: 'flashcards' },
   'vocab-game':     { view: 'vocab-game' },

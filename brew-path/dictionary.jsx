@@ -79,7 +79,20 @@ function CatGlyph({ cat, size = 22, color = 'currentColor' }) {
 }
 
 // ── Learned / locked status glyph ────────────────────────────
-function StatusGlyph({ learned, size = 20 }) {
+function StatusGlyph({ learned, reference, size = 20 }) {
+  // Reference-only: no lesson teaches this term, so it has no progress to
+  // report. A hairline ring with a dash reads as "off the path", where the
+  // dashed to-learn ring would read as "not yet" — a promise we can't keep.
+  if (!learned && reference) {
+    return (
+      <span style={{
+        width: size, height: size, borderRadius: 999, flexShrink: 0,
+        border: '1px solid var(--rule)', display: 'grid', placeItems: 'center',
+      }}>
+        <span style={{ width: 7, height: 1.5, borderRadius: 999, background: 'var(--ink-mute)', opacity: 0.55 }}/>
+      </span>
+    );
+  }
   if (learned) {
     return (
       <span style={{
@@ -104,11 +117,14 @@ function StatusGlyph({ learned, size = 20 }) {
   );
 }
 
-function StatusChipMini({ learned }) {
-  const [label, color] = learned ? ['LEARNED', 'var(--sage)'] : ['TO LEARN', 'var(--ink-mute)'];
+function StatusChipMini({ learned, reference }) {
+  const ref = !learned && reference;
+  const [label, color] = learned ? ['LEARNED', 'var(--sage)'] : ref ? ['REFERENCE', 'var(--ink-mute)'] : ['TO LEARN', 'var(--ink-mute)'];
   return (
     <span className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.16em', textTransform: 'uppercase', color, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-      <span style={{ width: 6, height: 6, borderRadius: 999, background: learned ? color : 'transparent', border: '1px solid ' + (learned ? color : 'var(--rule)') }}/>
+      {ref
+        ? <span style={{ width: 7, height: 1.5, borderRadius: 999, background: 'var(--ink-mute)', opacity: 0.55 }}/>
+        : <span style={{ width: 6, height: 6, borderRadius: 999, background: learned ? color : 'transparent', border: '1px solid ' + (learned ? color : 'var(--rule)') }}/>}
       {label}
     </span>
   );
@@ -212,7 +228,7 @@ function DictTermRow({ term, learned, isFav, onOpen, onToggleFav, snippet }) {
         flex: 1, minWidth: 0, appearance: 'none', border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left', padding: 0,
         display: 'grid', gridTemplateColumns: '22px 1fr', alignItems: 'center', gap: 13,
       }}>
-        <StatusGlyph learned={learned}/>
+        <StatusGlyph learned={learned} reference={!term.lesson}/>
         <span style={{ minWidth: 0 }}>
           <span style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
             <span style={{ fontSize: 'var(--t-body)', color: 'var(--ink)', fontWeight: 500, lineHeight: 1.2 }}>{term.term}</span>
@@ -317,7 +333,11 @@ function DictionaryHome({ name = 'Coffee Dictionary', learnedSet, favorites, rec
   const tod = window.dictTermOfDay ? window.dictTermOfDay() : null;
   const isLearned = (t) => learnedSet && learnedSet.has(t.id);
   const isFav = (id) => favorites && favorites.has('t:' + id);
-  const passFilter = (t) => filter === 'all' || (filter === 'learned' ? isLearned(t) : !isLearned(t));
+  // Reference-only terms have no lesson, so they can never leave the unlearned
+  // set — keeping them in the To-learn bucket would advertise a lesson that
+  // does not exist. They show under All only.
+  const isToLearn = (t) => !isLearned(t) && !!t.lesson;
+  const passFilter = (t) => filter === 'all' || (filter === 'learned' ? isLearned(t) : isToLearn(t));
 
   const q = query.trim().toLowerCase();
   const searchResults = q
@@ -330,7 +350,7 @@ function DictionaryHome({ name = 'Coffee Dictionary', learnedSet, favorites, rec
   const filterCounts = (list) => ({
     all: list.length,
     learned: list.filter(isLearned).length,
-    locked: list.filter(t => !isLearned(t)).length,
+    locked: list.filter(isToLearn).length,
   });
 
   const SubHeader = window.SubScreenHeader;
@@ -606,10 +626,19 @@ function TermDetail({ termId, variant = 'entry', learned, learnedSet, isFav, onT
           <RelatedChips ids={term.related} onOpen={onOpenTerm} currentId={term.id} currentCat={term.cat} learnedSet={learnedSet}/>
         </div>
       )}
-      {term.lesson && (
+      {term.lesson ? (
         <div>
           <div className="smallcaps" style={{ marginBottom: 10 }}>{learned ? 'WHERE YOU LEARNED IT' : 'WHERE YOU’LL LEARN IT'}</div>
           <LessonRefCard lessonId={term.lesson} onLesson={onLesson}/>
+        </div>
+      ) : (
+        /* No lesson teaches this term. Say so plainly rather than dropping the
+           row — a silent gap reads as a bug, and a false link reads as a lie. */
+        <div>
+          <div className="smallcaps" style={{ marginBottom: 10 }}>REFERENCE ONLY</div>
+          <p style={{ margin: 0, fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink-mute)', textWrap: 'pretty' }}>
+            No lesson covers this one — it’s here for when you meet it on a bag or a menu.
+          </p>
         </div>
       )}
       {term.sources && term.sources.length > 0 && <SourcesList sources={term.sources}/>}
@@ -628,7 +657,7 @@ function TermDetail({ termId, variant = 'entry', learned, learnedSet, isFav, onT
             </span>
             {/* Status only — the action lives on the lesson card below, which
                 also names the module, so a header button would duplicate it. */}
-            <StatusChipMini learned={learned}/>
+            <StatusChipMini learned={learned} reference={!term.lesson}/>
           </div>
           <h1 className="ff-display" style={{ fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.02, letterSpacing: '-0.03em', margin: '14px 0 0', color: 'var(--ink)', textWrap: 'pretty' }}>{term.term}</h1>
           {term.pron && <div style={{ marginTop: 14 }}><SpeakButton word={term.term} pron={term.pron}/></div>}

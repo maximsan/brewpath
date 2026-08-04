@@ -627,11 +627,14 @@ function renderComponents() {
      'A respelling is authored only where the term is genuinely mispronounceable. Plain English words (Bloom, Body, Fines) carry none and the chip does not render \u2014 do not invent one to fill the line.']));
 
   wrap.append(compStates('Term status chip',
-    'Term entry header and term rows \u2014 the dictionary\u2019s only two states.',
+    'Term entry header and term rows \u2014 the dictionary\u2019s three states.',
     [
       { label: 'Learned', demo: '<span class="mono" style="font-size:9.5px;letter-spacing:0.16em;text-transform:uppercase;color:var(--sage);display:inline-flex;align-items:center;gap:6px;"><span style="width:6px;height:6px;border-radius:999px;background:var(--sage);"></span>Learned</span>',
         when: 'The term has been met in a lesson.',
         spec: ['--sage', 'filled dot'] },
+      { label: 'Reference', demo: '<span class="mono" style="font-size:9.5px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-mute);display:inline-flex;align-items:center;gap:6px;"><span style="width:7px;height:1.5px;border-radius:999px;background:var(--ink-mute);opacity:0.55;"></span>Reference</span>',
+        when: 'No lesson teaches it \u2014 so it can never become Learned. Pairs with the REFERENCE ONLY block in the entry.',
+        spec: ['--ink-mute', '7\u00d71.5 dash'] },
       { label: 'To learn', demo: '<span class="mono" style="font-size:9.5px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-mute);display:inline-flex;align-items:center;gap:6px;"><span style="width:6px;height:6px;border-radius:999px;border:1px solid var(--rule);"></span>To learn</span>',
         when: 'Readable, but not yet taught.',
         spec: ['--ink-mute', 'hollow dot'] },
@@ -660,6 +663,7 @@ function renderComponents() {
     ],
     [
       'The dashed ring is semantic: an unlearned term is <b>provisional</b>, not empty \u2014 a solid empty circle would read as a disabled checkbox.',
+      'A third ring exists for <b>reference-only</b> terms \u2014 hairline solid with a short dash. Dashed means \u201cnot yet\u201d; the dash means \u201cnot on the path at all\u201d. Never show a to-learn ring for a term no lesson teaches.',
       'One line under the term: the category normally, the definition in search results.',
       'The bookmark sits outside the tap target that opens the term.',
     ], 300));

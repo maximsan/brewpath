@@ -44,7 +44,7 @@ const DICT_TERMS = [
     short: 'A cultivated variety of coffee plant, bred or selected for traits like flavour, yield, or disease resistance.',
     deep: 'Think of cultivars the way you think of apple varieties — Bourbon, Typica, Geisha and SL28 are all arabica, but each brings its own character. Some are chosen for cup quality, others for surviving leaf rust.',
     example: '“Geisha” on a label points to a prized cultivar famous for jasmine-like aromatics.',
-    related: ['arabica', 'single-origin', 'terroir'], lesson: 'm1l3',
+    related: ['arabica', 'single-origin', 'terroir'], lesson: 'm1l6',
     sources: [{ label: 'World Coffee Research — Arabica Catalog', url: 'https://varieties.worldcoffeeresearch.org/arabica' }],
     check: { q: 'A cultivar is best described as…',
       choices: [{ t: 'A brewing method' }, { t: 'A cultivated variety of the coffee plant', correct: true }, { t: 'A roast level' }],
@@ -111,7 +111,7 @@ const DICT_TERMS = [
     short: 'Metres above sea level — a shorthand some bags print instead of writing out the growing altitude.',
     deep: 'Nothing more than a unit label: “1,900 masl” means grown at 1,900 metres. It is trade shorthand rather than something you need to say out loud, and plenty of bags skip it and print “1,900 m” or feet instead. What matters is the number, and that there is one at all — a specific altitude is a quality signal, no altitude tells you nothing.',
     example: '“1,900 masl” and “grown at 1,900 metres” mean exactly the same thing.',
-    related: ['bean-belt', 'terroir', 'specialty'], lesson: 'm1l4' },
+    related: ['bean-belt', 'terroir', 'specialty'] },
 
   { id: 'mucilage', term: 'Mucilage', pron: 'MYOO-sih-lij', cat: 'processing',
     short: 'The sticky, sugary gel glued to the coffee seed under the fruit — the layer processing is really about.',
@@ -208,16 +208,16 @@ const DICT_TERMS = [
     check: { q: 'Green coffee is…',
       choices: [{ t: 'Dried, unroasted coffee seeds', correct: true }, { t: 'Under-ripe cherries' }, { t: 'A light roast level' }],
       explain: 'It’s the unroasted seed — what farms sell and roasters buy.' } },
-  { id: 'washing-station', term: 'Washing Station', cat: 'processing', aliases: ['washing station', 'wet mill', 'mill'],
+  { id: 'washing-station', term: 'Washing Station', cat: 'processing', aliases: ['washing station', 'wet mill'],
     short: 'The shared site where a village’s cherries are pulped, fermented, washed and dried — often the real author of a coffee’s cup.',
     deep: 'Smallholders rarely process their own cherries. They deliver to a station, which does the work for hundreds of farms at once — so on a Kenyan or Ethiopian bag, the station name is the closest thing to a producer name you get.',
     example: 'Two Ethiopian lots from the same hillside can taste different because they went to different stations.',
-    related: ['washed', 'fermentation', 'traceability'], lesson: 'm2l1' },
+    related: ['washed', 'fermentation', 'traceability'] },
   { id: 'wet-hulled', term: 'Wet-Hulled', cat: 'processing', aliases: ['wet-hulled', 'wet hulled', 'wet-hulling', 'wet hulling', 'giling basah'],
     short: 'An Indonesian method where the parchment comes off while the bean is still damp — the source of that earthy, heavy Sumatran cup.',
     deep: 'Elsewhere coffee dries fully inside its parchment; here it is hulled part-dried, at high moisture, and finishes drying bare. It is a response to a wet climate that never gives you enough dry days, and it turns the beans a distinctive jade colour.',
     example: 'A wet-hulled Sumatra reads as earthy, herbal and cedar-like, with very low acidity.',
-    related: ['parchment', 'washed', 'body'], lesson: 'm2l1' },
+    related: ['parchment', 'washed', 'body'] },
 
   // ── ROASTING ─────────────────────────────────────────────
   { id: 'first-crack', term: 'First Crack', cat: 'roasting', aliases: ['first crack'],
@@ -245,13 +245,13 @@ const DICT_TERMS = [
     related: ['first-crack', 'roast-level'], lesson: 'm3l2' },
   { id: 'development', term: 'Development Time', cat: 'roasting', aliases: ['development time', 'development'],
     short: 'The stretch after first crack that balances the inside and outside of the bean.',
-    related: ['first-crack'], lesson: 'm3l2' },
+    related: ['first-crack'], lesson: 'm3l4' },
   { id: 'roast-date', term: 'Roast Date', cat: 'roasting', aliases: ['roast date'],
     short: 'When the coffee was roasted — fresher is better; aim to brew within a few weeks.',
     related: ['roast-level'], lesson: 'm3l3' },
   { id: 'degassing', term: 'Degassing', cat: 'roasting', aliases: ['degassing', 'degas'],
     short: 'Roasted beans releasing built-up CO₂ for days after roasting — the gas behind the bloom.',
-    related: ['roast-date', 'staling', 'bloom'], lesson: 'm4l6' },
+    related: ['roast-date', 'staling', 'bloom'], lesson: 'm3l3' },
   { id: 'co2', term: 'CO₂', pron: 'C-O-two', cat: 'roasting', aliases: ['co2', 'co₂', 'carbon dioxide'],
     short: 'Carbon dioxide — the gas roasting traps inside the bean, and the reason fresh grounds bloom.',
     deep: 'Roasting generates carbon dioxide and locks it in the bean, which then leaks out for days or weeks afterwards. That escaping gas is what makes fresh grounds swell in the bloom, what fills the valve on a bag, and part of what builds crema on an espresso shot. As it leaves, oxygen and moisture take its place — which is staling.',
@@ -271,7 +271,7 @@ const DICT_TERMS = [
     short: 'The first splash of water on fresh grounds, which releases trapped CO₂ and makes the bed swell and bubble.',
     deep: 'Fresh coffee is full of carbon dioxide. Wetting it for 30–45 seconds before the main pour lets that gas escape, so water can extract evenly instead of channelling around bubbles.',
     example: 'A vigorous bloom is a good sign your coffee is fresh.',
-    related: ['extraction', 'brew-ratio', 'pour-over'], lesson: 'm5l1',
+    related: ['extraction', 'brew-ratio', 'pour-over'], lesson: 'm5l6',
     sources: [{ label: 'James Hoffmann — Technique Guides' }],
     check: { q: 'The bloom releases…',
       choices: [{ t: 'Caffeine' }, { t: 'Trapped CO₂ gas', correct: true }, { t: 'Oils only' }],
@@ -301,14 +301,14 @@ const DICT_TERMS = [
     short: 'Total Dissolved Solids — the measured number for how strong a brew is, read as a percentage.',
     deep: 'TDS is the share of the cup that is dissolved coffee rather than water, measured with a refractometer. Filter coffee usually lands between 1.15% and 1.45%; espresso runs far higher, around 8–12%. It answers “how strong”, not “how well extracted” — the same TDS can come from a good ratio or from over-extracting too little coffee, which is why it is always read alongside the brew ratio.',
     example: 'A cup at 1.20% TDS is weaker than one at 1.40% — but neither number tells you whether it tastes good.',
-    related: ['extraction', 'brew-ratio', 'sca'], lesson: 'm5l3',
+    related: ['extraction', 'brew-ratio', 'sca'],
     sources: [{ label: 'SCA — Brewing Control Chart', url: 'https://sca.coffee/sca-news/25/issue-13/towards-a-new-brewing-chart' }],
     check: { q: 'TDS measures…',
       choices: [{ t: 'How strong the brew is', correct: true }, { t: 'How hot the water was' }, { t: 'How fresh the beans are' }],
       explain: 'It is the percentage of dissolved coffee in the cup — strength. Extraction and taste are separate questions.' } },
   { id: 'pour-over', term: 'Pour-Over', cat: 'brewing', aliases: ['pour-over', 'pour over'],
     short: 'Brewing by pouring hot water through grounds in a filter cone, like a V60 or Chemex.',
-    related: ['bloom', 'immersion', 'gooseneck'], lesson: 'm4l5' },
+    related: ['bloom', 'immersion', 'gooseneck'], lesson: 'm5l6' },
   { id: 'immersion', term: 'Immersion', cat: 'brewing',
     short: 'Brewing by steeping grounds fully in water, like a French press, then separating them.',
     related: ['pour-over', 'french-press', 'cold-brew'], lesson: 'm4l5' },
@@ -316,14 +316,14 @@ const DICT_TERMS = [
     short: 'Coffee steeped in cold water for 12–24 hours instead of brewed hot — smooth, low-acid, and strong.',
     deep: 'Cold water pulls out sugars and caffeine but leaves most of the bright acids and bitter compounds behind, which is why it tastes round and chocolatey. It is usually brewed as a concentrate and diluted, so a serving carries more caffeine than a mug of drip.',
     example: 'A 1:8 concentrate steeped overnight, then cut with water or milk to taste.',
-    related: ['immersion', 'extraction', 'caffeine'], lesson: 'm4l5' },
+    related: ['immersion', 'extraction', 'caffeine'] },
 
   // ── ESPRESSO ─────────────────────────────────────────────
   { id: 'espresso', term: 'Espresso', pron: 'es-PRESS-oh', cat: 'espresso', aliases: ['espresso', 'espresso shot'],
     short: 'A small, concentrated coffee pulled by forcing hot water through finely ground coffee under about 9 bars of pressure.',
     deep: 'Not a roast level and not a bean — a brewing method. Pressure does in 25–30 seconds what a filter brew takes minutes to do, giving a syrupy cup several times stronger than drip, topped with crema. Everything milk drinks are built on starts here.',
     example: 'A typical modern shot: 18 g of coffee in, ~36 g of liquid out, in about 28 seconds.',
-    related: ['crema', 'portafilter', 'dialing-in', 'extraction'], lesson: 'm4l1',
+    related: ['crema', 'portafilter', 'dialing-in', 'extraction'], lesson: 'm5l7',
     sources: [{ label: 'Perfect Daily Grind — Espresso Basics', url: 'https://perfectdailygrind.com/2020/04/crema-how-its-formed-what-it-tells-us-how-to-learn-from-it/' }],
     check: { q: 'Espresso is defined by…',
       choices: [{ t: 'Pressure and a fine grind', correct: true }, { t: 'A dark roast level' }, { t: 'A particular bean species' }],
@@ -332,12 +332,12 @@ const DICT_TERMS = [
     short: 'Adjusting the grind until a shot runs in the time you want and tastes right — the daily ritual of espresso.',
     deep: 'You hold the dose and the target output steady and move only the grind: finer slows the shot and pushes extraction up, coarser speeds it up. Fresh coffee, humidity and the bag’s age all shift it, so yesterday’s setting rarely survives today.',
     example: 'The shot ran in 18 seconds and tasted sour, so you grind finer and pull again.',
-    related: ['espresso', 'grind-size', 'extraction', 'channeling'], lesson: 'm4l2' },
+    related: ['espresso', 'grind-size', 'extraction', 'channeling'], lesson: 'm4l3' },
   { id: 'crema', term: 'Crema', pron: 'KREH-muh', cat: 'espresso',
     short: 'The reddish-brown foam on top of an espresso shot, made of emulsified oils and CO₂.',
     deep: 'Crema forms when pressurised water forces oils and gases into a fine emulsion. It’s a sign of fresh coffee and a well-pulled shot, though it isn’t the whole story of quality.',
     example: 'A thick, hazelnut-coloured crema usually means fresh beans and a good extraction.',
-    related: ['portafilter', 'robusta', 'channeling'], lesson: 'm4l1',
+    related: ['portafilter', 'robusta', 'channeling'], lesson: 'm5l7',
     sources: [{ label: 'Perfect Daily Grind — Espresso Basics', url: 'https://perfectdailygrind.com/2020/04/crema-how-its-formed-what-it-tells-us-how-to-learn-from-it/' }],
     check: { q: 'Crema is mostly made of…',
       choices: [{ t: 'Milk foam' }, { t: 'Emulsified oils and CO₂', correct: true }, { t: 'Sugar' }],
@@ -347,7 +347,7 @@ const DICT_TERMS = [
     short: 'The handled basket that holds the coffee grounds and locks into an espresso machine.',
     deep: 'You grind into the portafilter, distribute and tamp the grounds level, then lock it into the group head. Even, well-tamped coffee in the basket is the key to an even shot.',
     example: 'Knocking the spent puck out of the portafilter is the satisfying clack you hear in cafés.',
-    related: ['crema', 'tamp', 'channeling'], lesson: 'm4l1',
+    related: ['crema', 'tamp', 'channeling'], lesson: 'm5l7',
     sources: [{ label: 'Perfect Daily Grind — Espresso Basics', url: 'https://perfectdailygrind.com/2020/04/crema-how-its-formed-what-it-tells-us-how-to-learn-from-it/' }],
     check: { q: 'The portafilter…',
       choices: [{ t: 'Heats the water' }, { t: 'Holds the grounds and locks into the machine', correct: true }, { t: 'Grinds the beans' }],
@@ -355,13 +355,13 @@ const DICT_TERMS = [
 
   { id: 'cortado', term: 'Cortado', pron: 'kor-TAH-doh', cat: 'espresso',
     short: 'An espresso “cut” with a small, equal amount of warm milk to soften it.',
-    related: ['crema'], lesson: 'm4l1' },
+    related: ['crema'], lesson: 'm5l7' },
   { id: 'channeling', term: 'Channeling', cat: 'espresso',
     short: 'When water forces a path through cracks in the espresso puck, extracting unevenly.',
-    related: ['portafilter', 'tamp', 'extraction'], lesson: 'm4l2' },
+    related: ['portafilter', 'tamp', 'extraction'], lesson: 'm5l7' },
   { id: 'tamp', term: 'Tamp', cat: 'espresso',
     short: 'Pressing the espresso grounds flat and firm in the portafilter for an even shot.',
-    related: ['portafilter', 'channeling'], lesson: 'm4l1' },
+    related: ['portafilter', 'channeling'], lesson: 'm5l7' },
 
   // ── SENSORY VOCABULARY ───────────────────────────────────
   { id: 'acidity', term: 'Acidity', cat: 'sensory',
@@ -397,7 +397,7 @@ const DICT_TERMS = [
     short: 'The industry’s standard tasting method: same grind, same water, no filter — slurped from a spoon and scored.',
     deep: 'Grounds steep in a bowl, the crust is broken, and tasters slurp across many bowls side by side. Holding every variable but the coffee still lets buyers compare lots fairly, and the 100-point score that comes out of it is what puts a coffee above the specialty line.',
     example: 'A lot cupping at 86 points will be sold as specialty; one at 78 goes to commodity blends.',
-    related: ['acidity', 'balance', 'specialty', 'sca'], lesson: 'm5l3',
+    related: ['acidity', 'balance', 'specialty', 'sca'],
     sources: [{ label: 'SCA — Cupping Protocols', url: 'https://sca.coffee/research?page=resources' }] },
 
   // ── EQUIPMENT ────────────────────────────────────────────
@@ -415,7 +415,7 @@ const DICT_TERMS = [
     short: 'A kettle with a long, curved spout that gives slow, precise control over your pour.',
     deep: 'The narrow spout lets you place water exactly where you want it and control the flow rate — important for even pour-over brewing and a controlled bloom.',
     example: 'A gooseneck makes it easy to pour in slow, steady spirals over the grounds.',
-    related: ['pour-over', 'bloom', 'scale'], lesson: 'm5l1',
+    related: ['pour-over', 'bloom', 'scale'],
     sources: [{ label: 'James Hoffmann — Gear Guides' }],
     check: { q: 'A gooseneck kettle helps you…',
       choices: [{ t: 'Boil faster' }, { t: 'Pour slowly and precisely', correct: true }, { t: 'Grind finer' }],
@@ -439,7 +439,7 @@ const DICT_TERMS = [
     related: ['immersion', 'body', 'grind-size', 'fines'], lesson: 'm4l5' },
   { id: 'scale', term: 'Scale', cat: 'equipment',
     short: 'A small kitchen scale lets you weigh coffee and water for a repeatable brew ratio.',
-    related: ['brew-ratio', 'gooseneck'], lesson: 'm5l1' },
+    related: ['brew-ratio', 'gooseneck'], lesson: 'm5l6' },
   { id: 'grind-size', term: 'Grind Size', cat: 'equipment', aliases: ['grind size'],
     short: 'How coarse or fine the coffee is ground — the main dial for matching your brew method.',
     related: ['burr-grinder', 'extraction'], lesson: 'm4l1' },
@@ -447,7 +447,7 @@ const DICT_TERMS = [
     short: 'The dust-sized particles every grinder produces alongside the grind you asked for — they over-extract and can clog the filter.',
     deep: 'No grinder is perfectly even; there is always a tail of powder. Fines give up their flavour fastest, so too many read as bitter and dry, and they slow a brew by packing into the filter bed. Better burrs make fewer of them; sifting or a slightly coarser grind manages the rest.',
     example: 'A brew that stalls and tastes harsh is often drowning in fines from a worn grinder.',
-    related: ['burr-grinder', 'grind-size', 'extraction', 'channeling'], lesson: 'm4l2' },
+    related: ['burr-grinder', 'grind-size', 'extraction', 'channeling'], lesson: 'm5l5' },
 
   // ── COFFEE TRADE ─────────────────────────────────────────
   { id: 'single-origin', term: 'Single Origin', cat: 'trade', aliases: ['single origin', 'single-origin'],
@@ -561,5 +561,20 @@ window.DICT_LEARNED_SEED = DICT_LEARNED_SEED;
 window.GLOSSARY_INDEX = GLOSSARY_INDEX;
 window.termLearned = termLearned;
 window.learnedTermSet = learnedTermSet;
+// Every term.lesson is a promise the UI prints as "where you'll learn it", and
+// learnedTermSet derives knowledge state from it. Neither survives a link to a
+// lesson that never says the word, so this audits the claim against the lesson
+// text. Run window.dictLessonAudit() after editing either file: [] means clean.
+function dictLessonAudit() {
+  const lessons = window.LESSONS || {};
+  return DICT_TERMS.filter(t => t.lesson).map(t => {
+    const l = lessons[t.lesson];
+    if (!l) return { id: t.id, lesson: t.lesson, problem: 'lesson does not exist' };
+    const text = JSON.stringify(l).toLowerCase();
+    const words = [t.term.toLowerCase()].concat(t.aliases || []);
+    return words.some(w => text.includes(w)) ? null : { id: t.id, lesson: t.lesson, problem: 'lesson never mentions the term' };
+  }).filter(Boolean);
+}
+window.dictLessonAudit = dictLessonAudit;
 window.dictTermOfDay = dictTermOfDay;
 window.dictCatCounts = dictCatCounts;

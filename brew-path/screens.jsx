@@ -2082,6 +2082,27 @@ function CardArtFirstCup() {
   );
 }
 
+function CardArtShot() {
+  return (
+    <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
+      {/* pressure arc + needle: the one thing that makes it espresso */}
+      <path d="M26 34 A24 24 0 0 1 74 34" fill="none" stroke="var(--rule)" strokeWidth="1.4" strokeLinecap="round"/>
+      <g stroke="var(--rule)" strokeWidth="1"><path d="M26 34 v-4"/><path d="M50 10 v-0"/><path d="M74 34 v-4"/></g>
+      <path d="M50 34 L64 22" fill="none" stroke="var(--accent)" strokeWidth="1.8" strokeLinecap="round"/>
+      <circle cx="50" cy="34" r="2.4" fill="var(--accent)"/>
+      {/* portafilter spout */}
+      <path d="M38 42 L62 42 L57 54 L43 54 Z" fill="var(--surface-2)" stroke="var(--ink-mute)" strokeWidth="1.4" strokeLinejoin="round"/>
+      <path d="M47 54 L53 54 L52 60 L48 60 Z" fill="var(--ink-mute)" opacity="0.55"/>
+      {/* stream */}
+      <path d="M50 60 L50 70" stroke="var(--art-roast-dark)" strokeWidth="2.2" strokeLinecap="round"/>
+      {/* glass with crema band on top */}
+      <path d="M36 70 L64 70 L60 88 Q59 90 56 90 L44 90 Q41 90 40 88 Z" fill="var(--surface-2)" stroke="var(--ink-mute)" strokeWidth="1.4" strokeLinejoin="round"/>
+      <path d="M37.5 74 L62.5 74 L60.5 82 L39.5 82 Z" fill="var(--art-roast-dark)"/>
+      <path d="M36.5 70.6 L63.5 70.6 L62.7 74 L37.3 74 Z" fill="var(--art-roast-light)" fillOpacity="0.85"/>
+    </svg>
+  );
+}
+
 // ── Module Field Guides — one cohesive booklet family, a distinct
 // emblem + spine colour per module so all five read uniquely. ──
 function GuideCard({ tint, num, children }) {
@@ -2194,6 +2215,7 @@ const CARD_ART = {
   extraction:CardArtExtraction,
   filter:    CardArtFilter,
   firstcup:  CardArtFirstCup,
+  shot:      CardArtShot,
   guideBeans:  CardArtGuideBeans,
   guideProcess:CardArtGuideProcess,
   guideRoast:  CardArtGuideRoast,
@@ -2235,6 +2257,7 @@ const CARD_TINT = {
   extraction:'color-mix(in oklab, var(--surface) 90%, var(--accent) 10%)',
   filter:    'color-mix(in oklab, var(--surface) 90%, var(--accent) 10%)',
   firstcup:  'color-mix(in oklab, var(--surface) 90%, var(--art-roast-mid) 10%)',
+  shot:      'color-mix(in oklab, var(--surface) 90%, var(--art-roast-dark) 10%)',
   guideBeans:  'color-mix(in oklab, var(--surface) 88%, var(--sage) 12%)',
   guideProcess:'color-mix(in oklab, var(--surface) 88%, var(--accent) 12%)',
   guideRoast:  'color-mix(in oklab, var(--surface) 88%, var(--art-roast-mid) 12%)',
