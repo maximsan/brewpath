@@ -291,7 +291,7 @@ const DICT_TERMS = [
     short: 'How much flavour is dissolved out of the grounds — too little tastes sour, too much tastes bitter.',
     deep: 'Water pulls compounds out of coffee in an order: fruity acids first, sweetness next, bitter and dry notes last. The sweet spot — “even extraction” — is the goal of grinding, ratio and time.',
     example: 'Sour, weak coffee is usually under-extracted; harsh, dry coffee is over-extracted.',
-    related: ['brew-ratio', 'tds', 'bloom'], lesson: 'm5l3',
+    related: ['brew-ratio', 'tds', 'bloom'], lesson: 'm5l4',
     sources: [{ label: 'SCA — Brewing Control Chart', url: 'https://sca.coffee/sca-news/25/issue-13/towards-a-new-brewing-chart' }],
     check: { q: 'A sour, thin cup is most likely…',
       choices: [{ t: 'Over-extracted' }, { t: 'Under-extracted', correct: true }, { t: 'Perfectly balanced' }],
