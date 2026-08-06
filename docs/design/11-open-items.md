@@ -66,6 +66,56 @@ The structural pass was re-run against the grown build. Every mechanical check i
 1. Wire StoreKit — receipt validation, restore, and a real trial counter (the prototype's is frozen).
 2. Gate the dev **Tweaks panel** out of the production build (`tweaks-panel.jsx`, 569 lines, a build-time `dev` conditional).
 
+## Divergences: where the Flutter app and this design disagree
+
+Everything above describes the **prototype**. This section is the first entry
+where the shipped app was checked against it — which is the stated purpose of
+this whole reference, and had not actually been done until now.
+
+> ⚠️ **This is not a systematic diff.** It came out of one question ("do we still
+> use XP anywhere?"). One question found three mechanical disagreements, which
+> suggests a real diff would find more. Treat the list below as a sample, not a
+> total.
+
+### The progression model is materially different
+
+The app is still built on **XP**; the design settled on **points**. That is a
+naming difference on the surface and three genuine disagreements underneath.
+
+| Rule | This design | The Flutter app | Where |
+|---|---|---|---|
+| Lesson reward | **Flat 10**, identical for every lesson | **10 × step count** — a long lesson pays several times a short one | `lib/core/constants/xp_values.dart` — `forLesson(stepCount) => stepCount * perStep` |
+| Module completion | **No bonus at all** | **+25** | `XpValues.moduleCompletionBonus` |
+| Replay / practice | **Zero, always** | **+2 per run**, capped once per lesson per day | `XpValues.practiceXp` |
+| Brew challenge | +5 on first completion | Not implemented | — |
+| Mascot state name | `points` | `RoastyState.xp` | `lib/features/companion/domain/roasty_state.dart` |
+| User-facing label | "points" | "+N XP", "Total XP" | `today_card_widget.dart`, `module_lesson_card_widget.dart` |
+
+**The practice-XP conflict is the one that matters.** [§5](05-mechanics.md) 5.1
+is explicit that replays pay nothing, and the reason is structural: points
+measure showing up, mastery measures knowing it, and a replay is supposed to
+improve the second without touching the first. Paying 2 XP per practice run
+reintroduces exactly the grind incentive that separation exists to prevent.
+
+The app also already carries the copy *"Practice runs do not change your XP,
+streak, or progress"* (`game_type_practice_widgets.dart`) while granting practice
+XP — so the app currently contradicts itself, independently of the design.
+
+**Variable-vs-flat is the second.** Scaling by lesson length means a learner is
+paid for volume rather than attendance. Whether that is wrong depends on what
+points are *for*, which the design answers and the app does not.
+
+> **Neither model is self-evidently right — this needs a decision, not a fix.**
+> The design's position is argued; the app's may simply predate it. See
+> [PRODUCT.md](PRODUCT.md) §14 for the product framing.
+
+### Smaller
+
+| Item | Detail |
+|---|---|
+| **`tools/extract-facts.js` reads a dead field** | Line 86 pulls `L[i].xp`, which is `null` for every lesson — per-lesson points live on the module entries. Harmless, but this reference's own tooling still carries the legacy name |
+| **`CLAUDE.md` points at the wrong app path** | It documents the Flutter app as living in `coffee_quest/`, but `lib/` and `test/` are at the repo root. Package imports still use `package:coffee_quest/…`, so the package name is right and the directory is not. Not corrected here — project instructions are outside this reference's remit |
+
 ## Omission sweep — method and standing result
 
 The `ComingSoonPath` omission prompted a standing sweep for **user-visible

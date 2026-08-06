@@ -12,7 +12,7 @@ longer appears in the source; treat it as a legacy name.
 
 - **+10 points, flat, for a first lesson completion.** The value is per-lesson data (`MODULES[].lessons[].points`, currently 10 for all 32) with a `|| 10` fallback in `app.jsx:760` — so it is tunable per lesson without touching code.
 - **Replays pay 0.** A completed lesson opens through a review-confirm sheet; review mode grants no points and skips the reward screens entirely.
-- **Perfect earns no bonus** — "mastery is the reward there."
+- **Perfect earns no bonus.** ⚠️ Earlier versions of this reference justified this with the quote *"mastery is the reward there"*, attributed to the source. **That phrase exists in no file in the prototype** — it was inherited from an earlier draft of this document and repeated as if sourced. The rule is verified in code; the justification for it is not written down anywhere.
 - **+5 points for the first completion of a Brew Challenge** (`app.jsx:605`). Replays pay 0.
 - Points are **effort/habit only**. They do not drive the tree, unlocks, or mastery.
 - Mid-lesson correct answers show **no points toast** — feedback is purely qualitative (Roasty reacts). Points appear only on the result screen.

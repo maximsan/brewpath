@@ -83,7 +83,9 @@ out.course = {
     lessonIds: m.lessons.map((l) => l.id).join(' '),
     lessonTitles: m.lessons.map((l) => L[l.id] && L[l.id].title).join(' · '),
   })),
-  xpValues: [...new Set(displayOrder.map((i) => L[i].xp))],
+  // Per-lesson reward lives on the MODULES entry (`points`), not on LESSONS.
+  // The legacy `xp` field is gone; reading it returned null for every lesson.
+  pointsValues: [...new Set(M.flatMap((m) => m.lessons.map((l) => l.points)))],
   timeValues: [...new Set(displayOrder.map((i) => L[i].time))],
 };
 

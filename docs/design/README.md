@@ -4,9 +4,19 @@ A complete, source-derived description of the BrewPath design prototype that
 lives in [`brew-path/`](../../brew-path/): every screen, rule, content item,
 component state, asset and open decision.
 
-**What it's for.** Diffing the prototype against the Flutter app, generating
-implementation tickets, and giving an agent enough context to reason about scope
-without reading 27 `.jsx` files.
+## Two layers — start with the right one
+
+| | [**PRODUCT.md**](PRODUCT.md) | The numbered files (§0–§13) |
+|---|---|---|
+| **Reads like** | Plain language, product prose | Engineering reference |
+| **Contains** | What the app does and why, with the trade-off named for every feature | Exact rules, component states, counts, identifiers, defects |
+| **Use it to** | **Decide** — debate a feature, hand to another model, agree what to keep, change or drop | **Build** — implement a rule correctly, port a screen, generate tickets |
+| **Names things** | The way a user sees them | The way the code does |
+
+**If you are reasoning about the product, read [PRODUCT.md](PRODUCT.md) and
+ignore everything else in this folder.** It is one self-contained document with
+no code in it. The numbered files exist for the moment someone actually builds
+this.
 
 **The rule this reference is written under:** everything here is read out of the
 prototype source, not invented. Where the prototype and the design documents
@@ -24,6 +34,7 @@ places where the product genuinely has not decided something.
 
 | If you want to… | Read |
 |---|---|
+| **Discuss the product conceptually — what to keep, change or drop** | [**PRODUCT.md**](PRODUCT.md) — the whole app in plain language, no code |
 | Understand the product in 30 seconds | [§1 Product](01-product.md) |
 | Know what ships in v1 and what doesn't | [§2 Scope](02-scope.md) |
 | Find a specific screen in the prototype | [§0 How to read the prototype](00-reading-the-prototype.md) |
@@ -48,7 +59,7 @@ places where the product genuinely has not decided something.
 | 8 | [Flows](08-flows.md) | First run · daily loop · reward routing · replay · challenges · dictionary · paywall |
 | 9 | [Deferred — v2](09-deferred-v2.md) | Atlas · Duel · ads & trials · onboarding questions · mood player · Liberica art |
 | 10 | [Assets](10-assets.md) | Raster vs inline SVG; what each folder holds |
-| 11 | [Open items](11-open-items.md) | QA re-verification · still open · closed · newly opened · the omission sweep |
+| 11 | [Open items](11-open-items.md) | QA re-verification · still open · closed · newly opened · **divergences between the app and this design** · the omission sweep |
 | 12 | [Checklist](12-checklist.md) | Flat list of build tasks — the input to issue generation, consumed once. **Build tasks only**: decisions live in §5, open questions in §11 |
 | 13 | [Epics](13-epics.md) | How to slice the build |
 
@@ -64,10 +75,11 @@ irrelevant to any one question.
 
 | Question shape | Attach |
 |---|---|
-| "Does our implementation of X match the design?" | The one mechanics or content section covering X, plus [§7 Components](07-components.md) if it has UI |
+| "Does our implementation of X match the design?" | The one mechanics or content section covering X, plus [§7 Components](07-components.md) if it has UI. **Check [§11](11-open-items.md) "Divergences" first** — some disagreements are already known |
 | "What should we build next?" | [§11](11-open-items.md) **first** (several tasks are blocked on decisions there), then [§2](02-scope.md) + [§12](12-checklist.md) |
 | "Is this in scope for v1?" | [§2](02-scope.md) alone — it is self-contained |
-| "Why does the app do X?" | [§5](05-mechanics.md) — the rules carry their reasoning, not just their values |
+| "Why does the app do X?" | [PRODUCT.md](PRODUCT.md) for the product reasoning; [§5](05-mechanics.md) for the exact rule |
+| "Should the app do X at all?" | [PRODUCT.md](PRODUCT.md) alone — every feature section names its trade-off, and §14 lists the open arguments |
 | "What's left undecided?" | [§11](11-open-items.md) alone |
 
 **Two cautions when an agent works from this:**
