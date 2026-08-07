@@ -257,18 +257,9 @@ function BagPickCard({ card, onContinue, onCorrect }) {
       </div>
 
       {picked !== null && (
-        <div className="fade-up" style={{ marginTop: 20, display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-          <div style={{ flexShrink: 0, marginTop: -8 }}>
-            <Roasty state={right ? 'correct' : 'wrong'} size={72}/>
-          </div>
-          <div style={{ flex: 1 }}>
-            <div className="ff-mono" style={{
-              fontSize: 'var(--t-label)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 8,
-              color: right ? 'var(--sage)' : 'var(--berry)',
-            }}>{right ? 'CALLED IT' : PROCESS_LABEL[card.answer].toUpperCase() + ', ACTUALLY'}</div>
-            <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: 0, textWrap: 'pretty' }}>{card.explain}</p>
-          </div>
-        </div>
+        <window.AnswerFeedback correct={right} marginTop={20}
+          label={right ? 'CALLED IT' : PROCESS_LABEL[card.answer].toUpperCase() + ', ACTUALLY'}
+          text={card.explain}/>
       )}
 
       <div style={{ flex: 1 }}/>

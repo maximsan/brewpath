@@ -50,7 +50,8 @@ const W = loadData();
 
 // ── Course ────────────────────────────────────────────────────────────────
 const L = W.LESSONS, M = W.MODULES;
-const GRADED = ['mcq', 'multi', 'match', 'slider', 'sequence', 'tastefix', 'bagpick', 'decision', 'recall'];
+/** Must match the graded-kind list in lesson.jsx's `quizTotal`. */
+const GRADED = ['mcq', 'multi', 'match', 'slider', 'sequence', 'tastefix', 'bagpick', 'decision', 'recall', 'flavor'];
 const kinds = {};
 let cards = 0, graded = 0;
 const perLesson = [];

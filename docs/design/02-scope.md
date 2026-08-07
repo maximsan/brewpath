@@ -7,7 +7,7 @@ Locked in `v1 Readiness Audit.html` (June 2026, reconciled July 2026) and enforc
 
 ## Counted by route
 
-`SCREEN_ROUTES` holds **103 deep-link states**, of which **34 are `!isV1`**:
+`SCREEN_ROUTES` holds **104 deep-link states**, of which **34 are `!isV1`**:
 onboarding questions (8) · Atlas (10) · Duel (13) · trials (2) · mood player (1).
 That leaves **69 v1 routes**.
 
@@ -15,10 +15,14 @@ Routes are not screens. Of the 69, **20 open the lesson player** at a given card
 kind and **7 open the mini-game flow** — deep-link conveniences, not distinct
 destinations. Collapsing those leaves roughly **44 distinct v1 destinations**.
 
-> The previous "≈38 screens of ~64 built" could not be reproduced from any
-> countable thing in the source and has been replaced by the route arithmetic
-> above, which can. Treat "44" as *destinations you can navigate to*, not as a
-> screen-file count.
+> **The audit now says ~32 screens in the v1 cut** (revised down from ~38), out
+> of ~64 built. That is the project's own count and it is the one to quote
+> externally. The route arithmetic above measures a different thing —
+> destinations you can navigate to — and the two are not in conflict.
+>
+> The audit was also re-headed **"Decision"** rather than "Recommendation", and
+> its closing line changed from "everything is built or decided" to **"three
+> tasks, in the order they block a release."**
 
 ## In v1
 | Area | Notes |

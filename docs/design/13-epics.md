@@ -5,7 +5,7 @@
 
 1. **Design foundation** — tokens (theme + illustration), typography, theming, iconography, sheet primitives
 2. **Roasty** — component, 9 animation states, personalization props
-3. **Content pipeline** — port 257 cards / 72 terms / 42 collectibles out of `.jsx` into a real content format
+3. **Content pipeline** — port 257 cards / 72 terms / 42 card entries out of `.jsx` into a real content format
 4. **Lesson player** — 13 card kinds + help drawer + term linking
 5. **Bean & cherry visuals** — `CherrySection`, `GreenBean`, `BagPickCard` (their own epic: bespoke rendering, own palette, own mini-game)
 6. **Progression engine** — points, mastery, gating, collectible sync, persistence

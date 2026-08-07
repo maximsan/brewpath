@@ -59,9 +59,22 @@ const CARD_KIND_HELP = {
   },
 };
 
+// The scrim and sheet are absolutely positioned, so they need the SCREEN as
+// their containing block — not the card. Card bodies animate in on `.fade-up`,
+// and a transform makes that element the containing block for any absolute
+// descendant, which cropped the scrim to the card box: an undimmed band under
+// the top bar and a sheet that stopped short of the bottom edge. Portalling to
+// the nearest `.screen` puts both back on the full screen. The hidden anchor is
+// only there to find that ancestor from inside whatever card rendered us.
 function HelpDrawer({ open, kind, help, onClose }) {
+  const anchorRef = React.useRef(null);
+  const [host, setHost] = useStateL(null);
+  React.useEffect(() => {
+    const el = anchorRef.current;
+    if (el) setHost(el.closest('.screen') || el.parentElement || null);
+  }, []);
   if (!help) return null;
-  return (
+  const drawer = (
     <React.Fragment>
       <div className={'help-scrim' + (open ? ' open' : '')} onClick={onClose}/>
       <div className={'help-sheet' + (open ? ' open' : '')} role="dialog" aria-modal="true">
@@ -90,6 +103,12 @@ function HelpDrawer({ open, kind, help, onClose }) {
         </div>
         <button className="btn btn-primary" style={{ marginTop: 24 }} onClick={onClose}>Got it</button>
       </div>
+    </React.Fragment>
+  );
+  return (
+    <React.Fragment>
+      <span ref={anchorRef} style={{ display: 'none' }}/>
+      {host ? ReactDOM.createPortal(drawer, host) : null}
     </React.Fragment>
   );
 }
@@ -122,7 +141,7 @@ function CardCue({ kind, children }) {
   );
 }
 
-function LessonPlayer({ lessonId, onClose, onComplete, nextLessonId, isFav, onToggleFav, onTermTap, startKind, favorites, onToggleFavKey }) {
+function LessonPlayer({ lessonId, onClose, onComplete, isFav, onToggleFav, onTermTap, startKind, favorites, onToggleFavKey }) {
   const lesson = LESSONS[lessonId];
   // The opening `predict` card's guess, held at lesson scope so the closing
   // `recall` card can resolve it. Cleared whenever a new lesson opens.
@@ -143,7 +162,7 @@ function LessonPlayer({ lessonId, onClose, onComplete, nextLessonId, isFav, onTo
   if (!lesson) return null;
   const card = lesson.cards[idx];
   const total = lesson.cards.length;
-  const quizTotal = lesson.cards.filter(c => ['mcq', 'multi', 'match', 'slider', 'sequence', 'tastefix', 'bagpick', 'decision', 'recall'].includes(c.kind)).length;
+  const quizTotal = lesson.cards.filter(c => ['mcq', 'multi', 'match', 'slider', 'sequence', 'tastefix', 'bagpick', 'decision', 'recall', 'flavor'].includes(c.kind)).length;
 
   const advance = () => {
     if (idx + 1 >= total) {
@@ -154,9 +173,9 @@ function LessonPlayer({ lessonId, onClose, onComplete, nextLessonId, isFav, onTo
     }
   };
 
-  // A correct answer signals "count it" for the score — it no longer shows a
-  // points toast. Points appear only on the result screen (effort/habit), so
-  // mid-lesson feedback stays purely qualitative (Roasty's correct/wrong react).
+  // A correct answer signals "count it" for the score, and nothing more: points
+  // appear only on the result screen (effort/habit), so mid-lesson feedback
+  // stays purely qualitative (Roasty's correct/wrong react).
   const countCorrect = () => {
     correctRef.current += 1; // one onCorrect call == one correctly-answered quiz card
   };
@@ -195,11 +214,12 @@ function LessonPlayer({ lessonId, onClose, onComplete, nextLessonId, isFav, onTo
           {card.kind === 'tastefix'  && window.TasteFixCard && <window.TasteFixCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
           {card.kind === 'bagpick'   && window.BagPickCard && <window.BagPickCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
           {card.kind === 'practical' && window.PracticalCard && <window.PracticalCard card={card} onContinue={advance}/>}
-          {card.kind === 'mcq'      && <MCQCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
-          {card.kind === 'multi'    && <MultiCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
-          {card.kind === 'match'    && <MatchCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
-          {card.kind === 'slider'   && <SliderCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
-          {card.kind === 'sequence' && <SequenceCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
+          {card.kind === 'mcq'      && <MCQCard card={card} onContinue={advance} onCorrect={countCorrect} onTermTap={onTermTap}/>}
+          {card.kind === 'multi'    && <MultiCard card={card} onContinue={advance} onCorrect={countCorrect} onTermTap={onTermTap}/>}
+          {card.kind === 'match'    && <MatchCard card={card} onContinue={advance} onCorrect={countCorrect} onTermTap={onTermTap}/>}
+          {card.kind === 'slider'   && <SliderCard card={card} onContinue={advance} onCorrect={countCorrect} onTermTap={onTermTap}/>}
+          {card.kind === 'sequence' && <SequenceCard card={card} onContinue={advance} onCorrect={countCorrect} onTermTap={onTermTap}/>}
+          {card.kind === 'flavor' && <FlavorNoteCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
         </div>
       </div>
     </div>
@@ -210,6 +230,14 @@ function LessonPlayer({ lessonId, onClose, onComplete, nextLessonId, isFav, onTo
 function maybeLinkTerms(text, onTermTap) {
   return (onTermTap && window.linkifyTerms) ? window.linkifyTerms(text, onTermTap) : text;
 }
+
+// ── Graded-answer feedback ──────────────────────────────────
+// Shared app-wide from roasty.jsx. Every graded surface in the product renders
+// window.AnswerFeedback — the lesson kinds below, the mini-games, Duel, the
+// dictionary checks, and the predict/decision/recall cards in active-cards.jsx.
+// Card kinds supply their own verdict wording (CORRECT / ALL CORRECT /
+// DIALED IN / IN ORDER / CLEAN BOARD) and nothing else.
+const AnswerFeedback = window.AnswerFeedback;
 
 function ConceptCard({ card, onContinue, onTermTap }) {
   if (card.fill) return <ConceptFillCard card={card} onContinue={onContinue} onTermTap={onTermTap}/>;
@@ -325,25 +353,9 @@ function ConceptFillCard({ card, onContinue, onTermTap }) {
       </div>
 
       {checked && (
-        <div className="fade-up" style={{ marginTop: 22, display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-          <div style={{ flexShrink: 0, marginTop: -8 }}>
-            <Roasty state={allRight ? 'correct' : 'wrong'} size={72}/>
-          </div>
-          <div style={{ flex: 1 }}>
-            <div className="ff-mono" style={{
-              fontSize: 'var(--t-label)', letterSpacing: '0.14em',
-              color: allRight ? 'var(--sage)' : 'var(--berry)',
-              textTransform: 'uppercase', marginBottom: 8,
-            }}>
-              {allRight ? 'CORRECT' : 'NOT QUITE'}
-            </div>
-            {support.length > 0 && (
-              <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: 0, textWrap: 'pretty' }}>
-                {maybeLinkTerms(support[0], onTermTap)}
-              </p>
-            )}
-          </div>
-        </div>
+        <AnswerFeedback correct={allRight} onTermTap={onTermTap}
+          label={allRight ? 'CORRECT' : 'NOT QUITE'}
+          text={support.length > 0 ? support[0] : null}/>
       )}
 
       <div style={{ flex: 1 }}/>
@@ -356,7 +368,7 @@ function ConceptFillCard({ card, onContinue, onTermTap }) {
   );
 }
 
-function MCQCard({ card, onContinue, onCorrect }) {
+function MCQCard({ card, onContinue, onCorrect, onTermTap }) {
   const [picked, setPicked] = useStateL(null);
   const correctIdx = card.choices.findIndex(c => c.correct);
   // Render order only — shuffled once per mount so the correct choice is not
@@ -395,24 +407,9 @@ function MCQCard({ card, onContinue, onCorrect }) {
       </div>
 
       {picked !== null && (
-        <div style={{ marginTop: 20, display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-          {/* Roasty reacts to the answer */}
-          <div style={{ flexShrink: 0, marginTop: -8 }}>
-            <Roasty state={picked === correctIdx ? 'correct' : 'wrong'} size={72}/>
-          </div>
-          <div style={{ flex: 1 }}>
-            <div className="ff-mono" style={{
-              fontSize: 'var(--t-label)', letterSpacing: '0.14em',
-              color: picked === correctIdx ? 'var(--sage)' : 'var(--berry)',
-              textTransform: 'uppercase', marginBottom: 8,
-            }}>
-              {picked === correctIdx ? 'CORRECT' : 'NOT QUITE'}
-            </div>
-            <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: 0 }}>
-              {card.explain}
-            </p>
-          </div>
-        </div>
+        <AnswerFeedback correct={picked === correctIdx} onTermTap={onTermTap}
+          label={picked === correctIdx ? 'CORRECT' : 'NOT QUITE'}
+          text={card.explain}/>
       )}
 
       <div style={{ flex: 1 }}/>
@@ -423,7 +420,7 @@ function MCQCard({ card, onContinue, onCorrect }) {
   );
 }
 
-function MultiCard({ card, onContinue, onCorrect }) {
+function MultiCard({ card, onContinue, onCorrect, onTermTap }) {
   const [sel, setSel] = useStateL(() => new Set());
   const [submitted, setSubmitted] = useStateL(false);
   const [scored, setScored] = useStateL(false);
@@ -491,23 +488,9 @@ function MultiCard({ card, onContinue, onCorrect }) {
       </div>
 
       {submitted && (
-        <div style={{ marginTop: 20, display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-          <div style={{ flexShrink: 0, marginTop: -8 }}>
-            <Roasty state={allRight ? 'correct' : 'wrong'} size={72}/>
-          </div>
-          <div style={{ flex: 1 }}>
-            <div className="ff-mono" style={{
-              fontSize: 'var(--t-label)', letterSpacing: '0.14em',
-              color: allRight ? 'var(--sage)' : 'var(--berry)',
-              textTransform: 'uppercase', marginBottom: 8,
-            }}>
-              {allRight ? 'ALL CORRECT' : 'NOT QUITE'}
-            </div>
-            <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: 0 }}>
-              {card.explain}
-            </p>
-          </div>
-        </div>
+        <AnswerFeedback correct={allRight} onTermTap={onTermTap}
+          label={allRight ? 'ALL CORRECT' : 'NOT QUITE'}
+          text={card.explain}/>
       )}
 
       <div style={{ flex: 1 }}/>
@@ -562,7 +545,7 @@ function MatchLine({ x1, y1, x2, y2, color, dashed, animate, arrow }) {
   );
 }
 
-function MatchCard({ card, onContinue, onCorrect }) {
+function MatchCard({ card, onContinue, onCorrect, onTermTap }) {
   // Right column is the deduped set of answers, so several traits can share
   // one species and the connection lines fan clearly toward it.
   const species = React.useMemo(() => {
@@ -769,23 +752,11 @@ function MatchCard({ card, onContinue, onCorrect }) {
       </div>
 
       {allDone && (
-        <div style={{ marginTop: 24, display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-          <div style={{ flexShrink: 0, marginTop: -8 }}>
-            <Roasty state={clean ? 'correct' : 'wrong'} size={72}/>
-          </div>
-          <div style={{ flex: 1 }}>
-            <div className="ff-mono" style={{
-              fontSize: 'var(--t-label)', letterSpacing: '0.14em',
-              color: clean ? 'var(--sage)' : 'var(--berry)',
-              textTransform: 'uppercase', marginBottom: 8,
-            }}>{clean ? 'CLEAN BOARD' : `${misses} WRONG ${misses === 1 ? 'DROP' : 'DROPS'}`}</div>
-            <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: 0 }}>
-              {clean
-                ? 'Every pair first time. That is the one that counts.'
-                : 'Cleared it, but not first time — the board only scores when every pair lands on the first try.'}
-            </p>
-          </div>
-        </div>
+        <AnswerFeedback correct={clean} onTermTap={onTermTap}
+          label={clean ? 'CLEAN BOARD' : `${misses} WRONG ${misses === 1 ? 'DROP' : 'DROPS'}`}
+          text={clean
+            ? 'Every pair first time. That is the one that counts.'
+            : 'Cleared it, but not first time — the board only scores when every pair lands on the first try.'}/>
       )}
 
       <div style={{ flex: 1 }}/>
@@ -857,7 +828,7 @@ function GrinderDial({ val, clicks }) {
 // itself is stated above the track, next to the zone it highlights — see
 // SliderCard. Status colour stays on the verdict alone.
 
-function SliderCard({ card, onContinue, onCorrect }) {
+function SliderCard({ card, onContinue, onCorrect, onTermTap }) {
   const [val, setVal] = useStateL(50);
   const [touched, setTouched] = useStateL(false);
   const [checked, setChecked] = useStateL(false);
@@ -932,23 +903,9 @@ function SliderCard({ card, onContinue, onCorrect }) {
       </div>
 
       {checked && (
-        <div style={{ marginTop: 24, display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-          <div style={{ flexShrink: 0, marginTop: -8 }}>
-            <Roasty state={within ? 'correct' : 'wrong'} size={72}/>
-          </div>
-          <div style={{ flex: 1 }}>
-          <div className="smallcaps" style={{
-              letterSpacing: '0.14em',
-              color: within ? 'var(--sage)' : 'var(--berry)',
-              marginBottom: 8,
-            }}>
-              {within ? 'DIALED IN' : 'NOT QUITE'}
-            </div>
-            <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: 0 }}>
-              {card.feedback}
-            </p>
-          </div>
-        </div>
+        <AnswerFeedback correct={within} onTermTap={onTermTap}
+          label={within ? 'DIALED IN' : 'NOT QUITE'}
+          text={card.feedback}/>
       )}
 
       <div style={{ flex: 1 }}/>
@@ -961,7 +918,7 @@ function SliderCard({ card, onContinue, onCorrect }) {
   );
 }
 
-function SequenceCard({ card, onContinue, onCorrect }) {
+function SequenceCard({ card, onContinue, onCorrect, onTermTap }) {
   const [order, setOrder] = useStateL([]); // array of indices in tap order
   // Display order is shuffled on mount so a card authored in its correct order
   // never opens pre-solved. Grading still reads item.order, so this is cosmetic.
@@ -1034,27 +991,14 @@ function SequenceCard({ card, onContinue, onCorrect }) {
       )}
 
       {submitted && (
-        <div style={{ marginTop: 20, display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-          <div style={{ flexShrink: 0, marginTop: -8 }}>
-            <Roasty state={isCorrect ? 'correct' : 'wrong'} size={72}/>
-          </div>
-          <div style={{ flex: 1 }}>
-            <div className="ff-mono" style={{
-              fontSize: 'var(--t-label)', letterSpacing: '0.14em',
-              color: isCorrect ? 'var(--sage)' : 'var(--berry)',
-              textTransform: 'uppercase', marginBottom: 8,
-            }}>
-              {isCorrect ? 'IN ORDER' : 'NOT QUITE'}
-            </div>
-            <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: 0 }}>
-              {isCorrect ? 'Nailed the sequence.' : 'Not the right order this time.'}
-            </p>
-            <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink)', margin: '10px 0 0' }}>
-              <span className="ff-mono" style={{ fontSize: 'var(--t-label)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--sage)' }}>Correct order</span>
-              <br/>{correctSeq}
-            </p>
-          </div>
-        </div>
+        <AnswerFeedback correct={isCorrect} onTermTap={onTermTap}
+          label={isCorrect ? 'IN ORDER' : 'NOT QUITE'}
+          text={isCorrect ? 'Nailed the sequence.' : 'Not the right order this time.'}>
+          <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink)', margin: '10px 0 0' }}>
+            <span className="ff-mono" style={{ fontSize: 'var(--t-label)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--sage)' }}>Correct order</span>
+            <br/>{correctSeq}
+          </p>
+        </AnswerFeedback>
       )}
 
       <div style={{ flex: 1 }}/>
@@ -1077,41 +1021,44 @@ function SequenceCard({ card, onContinue, onCorrect }) {
 // ───────────────────────────────────────────────────────────
 const MINI_GAME_CONTENT = {
   // Match the facts — Arabica vs Robusta. Only 'match' cards.
+  // Splits run 3:1, 1:3, 2:3, 3:1, 1:3 — never even, and the majority side
+  // changes round to round, so no drop can be deduced from the ones before it.
   'g-match': [
     { kind: 'match', prompt: 'Match each trait to its species',
       pairs: [
         { l: 'Sweeter, more aromatic', r: 'Arabica' },
-        { l: 'Almost twice the caffeine', r: 'Robusta' },
         { l: 'Grown 900–2000m', r: 'Arabica' },
-        { l: 'Heavier body, more bitter', r: 'Robusta' },
+        { l: 'More delicate acidity', r: 'Arabica' },
+        { l: 'Almost twice the caffeine', r: 'Robusta' },
       ] },
     { kind: 'match', prompt: 'Which species? Pair each fact',
       pairs: [
         { l: '~60% of world coffee', r: 'Arabica' },
         { l: 'Tougher, disease-resistant', r: 'Robusta' },
-        { l: 'More delicate acidity', r: 'Arabica' },
         { l: 'Thrives at low elevation', r: 'Robusta' },
+        { l: 'Cheaper to grow, higher yield', r: 'Robusta' },
       ] },
     { kind: 'match', prompt: 'Pair each cue with its species',
       pairs: [
         { l: 'Oval bean, curved crease', r: 'Arabica' },
-        { l: 'Rounder bean, straight crease', r: 'Robusta' },
         { l: 'Frost-sensitive, needs altitude', r: 'Arabica' },
+        { l: 'Rounder bean, straight crease', r: 'Robusta' },
         { l: 'Tolerates heat and humidity', r: 'Robusta' },
+        { l: 'Heavier body, more bitter', r: 'Robusta' },
       ] },
     { kind: 'match', prompt: 'Which species does each belong to?',
       pairs: [
         { l: 'Caffeine around 1.2%', r: 'Arabica' },
-        { l: 'Caffeine around 2.4%', r: 'Robusta' },
         { l: 'Prized for florals and fruit', r: 'Arabica' },
-        { l: 'Adds crema and punch to espresso', r: 'Robusta' },
+        { l: 'Costs more per kilo at origin', r: 'Arabica' },
+        { l: 'Caffeine around 2.4%', r: 'Robusta' },
       ] },
     { kind: 'match', prompt: 'Match each shelf cue to its species',
       pairs: [
         { l: 'Most specialty single origins', r: 'Arabica' },
         { l: 'The backbone of instant coffee', r: 'Robusta' },
-        { l: 'Costs more per kilo at origin', r: 'Arabica' },
-        { l: 'Cheaper to grow, higher yield', r: 'Robusta' },
+        { l: 'Adds crema and punch to espresso', r: 'Robusta' },
+        { l: 'Standard in Italian espresso blends', r: 'Robusta' },
       ] },
   ],
   // Name the flavor notes — tasting. Only 'flavor' cards.
@@ -1161,19 +1108,19 @@ const MINI_GAME_CONTENT = {
   'g-tastefix': [
     { kind: 'tastefix', tags: ['SOUR', 'THIN'],
       scenario: 'Grind’s dialled in and the beans are fresh.',
-      prompt: 'Your pour-over came out off. What would you try first?',
+      prompt: 'The first sip puckers, and the cup feels hollow. What first?',
       choices: [{ t: 'Grind finer', correct: true }, { t: 'Grind coarser' }, { t: 'Use colder water' }, { t: 'Brew for less time' }],
-      explain: 'Sour and thin is under-extraction — a finer grind pulls more sweetness and rounds the cup toward balanced.' },
+      explain: 'Puckering with no weight behind it is the under-extracted signature: the water left before it took enough. Finer grounds slow it down and pull the sweetness through.' },
     { kind: 'tastefix', tags: ['BITTER', 'DRY'],
-      scenario: 'Same beans, same ratio as before.',
-      prompt: 'Now it’s off the other way. What would you try first?',
+      scenario: 'Same beans, same ratio as the last cup.',
+      prompt: 'This one dries your tongue and the bitterness lingers. What first?',
       choices: [{ t: 'Grind coarser', correct: true }, { t: 'Grind finer' }, { t: 'Use hotter water' }, { t: 'Add more coffee' }],
-      explain: 'Bitter and dry is over-extraction — a coarser grind slows the pull and eases the harshness back toward balanced.' },
+      explain: 'A drying finish that hangs around is the over-extracted signature — too much came out, including the harsh end of it. Coarser grounds ease the pull back toward balance.' },
     { kind: 'tastefix', tags: ['WEAK', 'WATERY'],
-      scenario: 'It tastes clean, just faint — not sour.',
-      prompt: 'The cup is thin but not sour. What first?',
+      scenario: 'You brewed it at 1:18. Nothing about it is sour.',
+      prompt: 'Clean, pleasant, and far too faint. What first?',
       choices: [{ t: 'Use more coffee', correct: true }, { t: 'Grind finer' }, { t: 'Brew longer' }, { t: 'Use hotter water' }],
-      explain: 'Thin but not sour points at strength, not extraction — nudge the ratio (more coffee per cup) before touching grind.' },
+      explain: 'With no sourness anywhere, the extraction is doing its job — there is simply not enough coffee in the water to taste. Move the ratio; grinding finer would start over-extracting what little is there.' },
     { kind: 'tastefix', tags: ['HARSH', 'RUBBERY'],
       scenario: 'Fresh beans, dialled grind, espresso.',
       prompt: 'Your espresso still tastes harsh. What would you try first?',
@@ -1293,7 +1240,7 @@ const MINI_GAME_CONTENT = {
 };
 
 // True / false statement card.
-function TrueFalseCard({ card, onContinue, onCorrect }) {
+function TrueFalseCard({ card, onContinue, onCorrect, onTermTap }) {
   const [picked, setPicked] = useStateL(null); // true | false
   const pick = (val) => {
     if (picked !== null) return;
@@ -1323,19 +1270,9 @@ function TrueFalseCard({ card, onContinue, onCorrect }) {
       </div>
 
       {picked !== null && (
-        <div style={{ marginTop: 20, display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-          <div style={{ flexShrink: 0, marginTop: -8 }}>
-            <Roasty state={isRight ? 'correct' : 'wrong'} size={72}/>
-          </div>
-          <div style={{ flex: 1 }}>
-            <div className="ff-mono" style={{
-              fontSize: 'var(--t-label)', letterSpacing: '0.14em',
-              color: isRight ? 'var(--sage)' : 'var(--berry)',
-              textTransform: 'uppercase', marginBottom: 8,
-            }}>{isRight ? 'CORRECT' : 'NOT QUITE'}</div>
-            <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: 0 }}>{card.explain}</p>
-          </div>
-        </div>
+        <AnswerFeedback correct={isRight} onTermTap={onTermTap}
+          label={isRight ? 'CORRECT' : 'NOT QUITE'}
+          text={card.explain}/>
       )}
 
       <div style={{ flex: 1 }}/>
@@ -1347,7 +1284,7 @@ function TrueFalseCard({ card, onContinue, onCorrect }) {
 }
 
 // Flavor-note card — read the tasting clue, pick the matching note.
-function FlavorNoteCard({ card, onContinue, onCorrect }) {
+function FlavorNoteCard({ card, onContinue, onCorrect, onTermTap }) {
   const [picked, setPicked] = useStateL(null);
   const correctIdx = card.answer;
   // Render order only — card.answer stays the identity for grading.
@@ -1383,19 +1320,9 @@ function FlavorNoteCard({ card, onContinue, onCorrect }) {
       </div>
 
       {picked !== null && (
-        <div style={{ marginTop: 20, display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-          <div style={{ flexShrink: 0, marginTop: -8 }}>
-            <Roasty state={picked === correctIdx ? 'correct' : 'wrong'} size={72}/>
-          </div>
-          <div style={{ flex: 1 }}>
-            <div className="ff-mono" style={{
-              fontSize: 'var(--t-label)', letterSpacing: '0.14em',
-              color: picked === correctIdx ? 'var(--sage)' : 'var(--berry)',
-              textTransform: 'uppercase', marginBottom: 8,
-            }}>{picked === correctIdx ? 'CORRECT' : 'NOT QUITE'}</div>
-            <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: 0 }}>{card.explain}</p>
-          </div>
-        </div>
+        <AnswerFeedback correct={picked === correctIdx} onTermTap={onTermTap}
+          label={picked === correctIdx ? 'CORRECT' : 'NOT QUITE'}
+          text={card.explain}/>
       )}
 
       <div style={{ flex: 1 }}/>
@@ -1409,7 +1336,7 @@ function FlavorNoteCard({ card, onContinue, onCorrect }) {
 // MiniGamePlayer — runs one standalone game to completion. Plays ONLY the
 // cards authored for that game (all one kind), scores them, and ends on a
 // self-contained results screen. Never touches lesson points / progression.
-function MiniGamePlayer({ game, onClose }) {
+function MiniGamePlayer({ game, onClose, onTermTap }) {
   const content = (MINI_GAME_CONTENT[game.id]) || [];
   const roundCount = content.length;
   const [roundIndex, setRoundIndex] = useStateL(0);
@@ -1493,13 +1420,13 @@ function MiniGamePlayer({ game, onClose }) {
       {topbar(false)}
       <div className="scroll" style={{ paddingTop: 134, paddingBottom: 32, display: 'flex', flexDirection: 'column' }}>
         <div key={key} className="fade-up" style={{ flex: '1 0 auto', display: 'flex', flexDirection: 'column' }}>
-          {card.kind === 'match'  && <MatchCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
+          {card.kind === 'match'  && <MatchCard card={card} onContinue={advance} onCorrect={countCorrect} onTermTap={onTermTap}/>}
           {card.kind === 'tastefix' && window.TasteFixCard && <window.TasteFixCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
           {card.kind === 'bagpick' && window.BagPickCard && <window.BagPickCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
           {card.kind === 'quiz'   && <TrueFalseCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
           {card.kind === 'flavor' && <FlavorNoteCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
-          {card.kind === 'slider' && <SliderCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
-          {card.kind === 'sequence' && <SequenceCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
+          {card.kind === 'slider' && <SliderCard card={card} onContinue={advance} onCorrect={countCorrect} onTermTap={onTermTap}/>}
+          {card.kind === 'sequence' && <SequenceCard card={card} onContinue={advance} onCorrect={countCorrect} onTermTap={onTermTap}/>}
         </div>
       </div>
     </div>

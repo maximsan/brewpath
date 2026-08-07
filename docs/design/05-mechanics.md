@@ -29,8 +29,13 @@ Derived from the **best-ever** `{correct, total}` per lesson, as a **percentage*
 
 Best-ever **never downgrades** on a worse replay. A replay *can* improve mastery even though it grants no points.
 
-**Graded card kinds** (`lesson.jsx:146`): `mcq`, `multi`, `match`, `slider`, `sequence`, `tastefix`, **`bagpick`**, `decision`, `recall`.
+**Graded card kinds** (`lesson.jsx:165`): `mcq`, `multi`, `match`, `slider`, `sequence`, `tastefix`, `bagpick`, `decision`, `recall`.
 **Ungraded:** `predict`, `concept`, `practical`, `visual` (+ the unexercised `intro`, `takeaway`).
+
+> ⚠️ **`flavor` is in neither list, and that is the bug.** It increments the
+> correct tally without being counted in the total, so mastery can exceed 100%
+> and a perfect score is reachable with a wrong answer. See
+> [§6](06-content.md) 6.2.
 
 ## 5.3 The Coffee Tree (`data.jsx`)
 
@@ -47,6 +52,22 @@ Best-ever **never downgrades** on a worse replay. A replay *can* improve mastery
 
 The freeze is a **mechanic, not a setting** — there is deliberately no toggle.
 
+> **What is and is not implemented.** The freeze system is real code, not a
+> sketch: `FREEZE_EARN_DAYS = 7`, `FREEZE_CAP = 2`, the derived held count, the
+> `nextFreezeIn` countdown, the `frozenDays` / `freezesSpent` split, the
+> save-notice trigger, and the week strip's streak-derived fill all execute.
+>
+> The **only** missing piece is the clock: nothing advances the streak, because
+> the prototype's date is frozen. The source says so itself and specifies the
+> real implementation — *"the earn beat can't be derived here: the prototype's
+> streak is fixed, so no lesson completion crosses a 7-day boundary. Driven from
+> the dev panel"*, and *"with real streak progression the check belongs on the
+> **pre-earn** held count (`heldBefore < FREEZE_CAP`); the derived value stands
+> in for it here."*
+>
+> Treat that second quote as a spec line, not a caveat — it names the exact bug
+> a naive port would introduce.
+
 - Earn: **1 freeze per 7 consecutive days**, cap **2 held**.
 - `freezesHeld = clamp(0..2, floor(streak / 7) - freezesSpent)` — derived, so it can never drift.
 - Spent **automatically** when a day is missed. The streak survives; the day renders as covered in the week strip.
@@ -58,6 +79,8 @@ The freeze is a **mechanic, not a setting** — there is deliberately no toggle.
 - Week strip filled days **derive from the streak**, clipped to week start (fixed defect: they used to be hardcoded Mon–Fri and could lie).
 - Streak is **free forever** — paid streak protection was explicitly dropped.
 - `StreakScreen` + `ShareStreakSheet` (share targets) exist.
+- **A qualifying day is "finish at least one lesson"** (stated in the Help FAQ). ⚠️ **Whether a *replay* qualifies is not stated anywhere** — and after the 32nd lesson there are no new ones, so the answer decides whether a streak can survive past the course. See [PRODUCT.md](PRODUCT.md) §15.
+- **Dev-panel simulation:** two toggles stand in for the states the frozen clock can't produce — *Freeze covered Thursday* and *Freeze earned this lesson*.
 
 ## 5.5 Progression gating (`data.jsx`)
 
@@ -76,7 +99,8 @@ The freeze is a **mechanic, not a setting** — there is deliberately no toggle.
 - A **module Field Guide card** unlocks when every lesson in the module is done.
 - **Training cards** have no `unlock` and are earned from the start.
 - ⚠️ **Only the *first* locked card is rendered in the Cards grid.** `CardsTab` (`screens.jsx:1471`) draws every earned card, then the single card at `firstLockedIdx` as a teaser, and `return null`s the rest. The grid is not "earned cards plus silhouettes" — it is earned cards plus exactly one. A "{n} more to collect" footer stands in for the remainder.
-- ⚠️ **Training cards never appear in the Cards grid at all.** Both `CardsTab` and `ProfileTab`'s rollup filter `c.kind !== 'training'`, so the grid counts **37**, not 42. Training guides surface only inside lessons (`TrainingCard`) and on the Saved shelf under `g:` keys (`library.jsx:421`).
+- **Training guides are a separate registry now.** They were moved out of `COLLECTION` into `TRAINING_CARDS`, so the collectible count *is* 37 — the old filter-at-render workaround is gone. Guides surface inside lessons (`TrainingCard`) and on the Saved shelf under `g:` keys.
+- **Card copy is not stored on the collectible.** `syncCardText()` copies title/summary/fact/meta from the lesson's own `reward` (or `MODULE_REWARDS`) at load; `syncTrainingText()` does the same for guides. One card, one text — see [§6](06-content.md) 6.3.
 - A card can carry a **Brew Challenge stamp** — a permanent "I tried this for real" mark pressed onto the card once the linked challenge is logged.
 
 ## 5.7 Saved shelf / favorites
@@ -102,6 +126,12 @@ Small, optional **real-life** tasks. They never block learning, streaks, points,
 - Surfaces: Today card, saved list, lesson-complete suggestion, full Module Challenge screen, Path node, card stamp section, Profile stat.
 
 ## 5.9 Plus, gating and trials (`gating.jsx`)
+
+> ⚠️ **This whole section describes a superseded model.** The prototype gates
+> **features**; the product-owner ruling gates **pace** — 2 new lessons/day free,
+> Premium lifts the limit ([PRODUCT.md](PRODUCT.md) §11). Everything below is an
+> accurate account of `gating.jsx` and a **poor guide to what to build**. The
+> daily cap exists in neither codebase, so there is nothing to port.
 
 **Gated feature catalog** (`PLUS_FEATURES`): `dictionary`, `atlas`, `duel`, `saved`, `studio`.
 
@@ -153,12 +183,24 @@ Small, optional **real-life** tasks. They never block learning, streaks, points,
 
 ## 5.12 Reset Progress and Delete Account
 
-Two destructive actions, both behind a `ConfirmSheet`. Until now this reference
-mentioned reset in five places and specified it in none — so what it actually
-clears was never written down. It is written down here because checking it
-turned up two defects.
+Two destructive actions, both behind a `ConfirmSheet`, and both driven by the
+`ACCOUNT_STORES` registry (`app.jsx:958`) rather than by hand. Every store is
+listed there once, with a scope and a reset callback:
 
-### Reset Progress (`resetProgress`, `app.jsx:838`)
+- **`progress`** — cleared by *Reset progress **and** Delete account*
+- **`account`** — cleared by *Delete account only* (a purchase or a preference)
+
+`cq-theme` is deliberately absent from the table and survives both wipes:
+appearance is a device preference, not account data.
+
+> ⚠️ **This section was written against the hand-written wipes that preceded the
+> registry.** The registry sweep (`wipeStores`, `app.jsx:980`) has since fixed
+> both defects recorded below *and* closed the deletion gap. Corrections are
+> marked inline; the audit is kept because it is what motivated the registry.
+
+### Reset Progress (`resetProgress`, `app.jsx:1008`)
+
+`wipeProgress()` sweeps every `progress`-scoped store.
 
 **Cleared:**
 
@@ -168,9 +210,11 @@ turned up two defects.
 | `progression.points` / `prevPoints` | `0` |
 | `progression.completed` | empty Set — every lesson re-locks, every collectible re-locks, the tree returns to `SEED` |
 | `progression.bestResults` | `{}` — all mastery erased |
-| `brew.activeId` / `startedAt` | `null` |
-| `brew.completed` | empty Set — challenge stamps vanish from cards, Path nodes empty, the Profile stat returns to `0 / 12` |
-| `frozenDays` | `[]` |
+| `brew` | `EMPTY_BREW()` — `activeId`, `startedAt`, `completed` **and `saved`** |
+| `frozenDays` / `freezesSpent` / `freezeNoticeSeen` | `[]` / `0` / `false` (the keyless registry row) |
+| `cq-favorites` | empty Set — **the Saved shelf goes with the progress it recorded** |
+| `cq-recent-terms` | `[]` |
+| `cq-atlas`, `cq-duel-progress` | v2 stores, swept by the same rule |
 
 Then it navigates to **Profile**, `view: 'app'`.
 
@@ -179,10 +223,20 @@ Then it navigates to **Profile**, `view: 'app'`.
 - Plus / trial state, `subPlan`
 - Studio choices — grove variety + light, Roasty config
 - Theme preference
-- The Saved shelf (`cq-favorites`)
-- `cq-recent-terms`
 
-**Not cleared, and arguably should be** — see the two defects below: `freezesSpent`, `freezeNoticeSeen`, `perfectLessons`, `giftedModules`.
+> ⚠️ **Correction.** This list previously also carried *the Saved shelf
+> (`cq-favorites`)* and *`cq-recent-terms`*. Both are wrong: the registry scopes
+> them `progress`, so both are cleared. The registry's own comment carries the
+> reasoning — *"a favorited lesson that has re-locked … is a record of work that
+> was just undone"* — and the confirm button says **"Reset everything"**, which a
+> surviving bookmark list breaks. Ratified by
+> [#14](https://github.com/maximsan/brewpath/issues/14); `PRODUCT.md` carried the
+> same error and is corrected too.
+
+**Still not cleared:** `perfectLessons` and `giftedModules`. Both are in-memory
+only — no key, so the dev guard cannot see them — and both feed the Roasty module
+gift, which is `!isV1`-gated, so the leak is within-session and v2-only. They
+belong in the keyless registry row alongside the freeze state.
 
 **Confirm sheet copy.** Eyebrow `RESET PROGRESS`, title *"Start again from seed?"*,
 body *"Your tree returns to a bare seed and every lesson locks back to the start.
@@ -192,43 +246,54 @@ Points earned · Lessons completed · Your coffee tree → Back to SEED.**
 
 > ⚠️ **The itemised summary under-states the loss.** It never mentions brew
 > challenges (all completions cleared, stamps removed), collectible cards
-> (all re-lock), or mastery (`bestResults` wiped). [§6](06-content.md) describes
-> these sheets as carrying "an itemised summary of what will be lost" — it is a
-> partial one. Either extend the lines or soften the claim.
+> (all re-lock), mastery (`bestResults` wiped), or — since the correction above —
+> the Saved shelf. [§6](06-content.md) describes these sheets as carrying "an
+> itemised summary of what will be lost"; it is a partial one. Either extend the
+> lines or soften the claim. The fix direction is *say more*, not *clear less*.
 
-### ⚠️ Defect 1 — `brew.saved` is dropped, not emptied
+### ✅ Defect 1 — `brew.saved` was dropped, not emptied — **FIXED**
 
-`resetProgress` sets `brew` to `{ activeId, startedAt, completed }` with **no
-`saved` key**, so `brew.saved` becomes `undefined` rather than an empty Set.
-Two consequences, both live:
+`resetProgress` used to set `brew` to `{ activeId, startedAt, completed }` with
+**no `saved` key**, so `brew.saved` became `undefined` rather than an empty Set.
+Two consequences, both live at the time:
 
-1. **The persistence effect (`app.jsx:520`) throws.** It runs `[...brew.saved]` on every `brew` change; the spread of `undefined` raises a TypeError. It is inside a `try/catch`, so there is no crash — but `cq-brew` is **never written**, and the pre-reset saved queue is still sitting in localStorage. **On the next launch the parked challenges come back.** A silent reset failure.
-2. **`app.jsx:946` calls `brew.saved.has(ch.id)` unguarded.** After a reset, completing any lesson that has a brew challenge hits this and throws for real.
+1. **The persistence effect threw.** It runs `[...brew.saved]` on every `brew` change; the spread of `undefined` raises a TypeError. Inside a `try/catch`, so no crash — but `cq-brew` was **never written**, and the pre-reset saved queue stayed in localStorage. **On the next launch the parked challenges came back.** A silent reset failure.
+2. **`brew.saved.has(ch.id)` was called unguarded.** After a reset, completing any lesson with a brew challenge threw for real.
 
 `SavedBrewList` guards it (`saved ? [...saved] : []`), which is why the Today
-list looks correct and hides the problem.
+list looked correct and hid the problem.
 
-**Fix:** `setBrew({ activeId: null, startedAt: null, completed: new Set(), saved: new Set() })`.
+**Fixed by the registry:** `cq-brew` resets via `EMPTY_BREW()` (`app.jsx:241`),
+which carries `saved: new Set()`. Reset can no longer construct a partial `brew`.
 
-### ⚠️ Defect 2 — `freezesSpent` survives reset
+### ✅ Defect 2 — `freezesSpent` survived reset — **FIXED**
 
-5.4 states that `freezesSpent` "clears only on Reset Progress". **It does not
-clear there at all** — only `deleteAccount` calls `setFreezesSpent(0)`.
+5.4 states that `freezesSpent` "clears only on Reset Progress". It did not clear
+there at all — only `deleteAccount` called `setFreezesSpent(0)`.
 
-This is invisible immediately (streak is `0`, so
-`clamp(0..2, floor(0/7) − freezesSpent)` is `0` either way) and appears later:
-once the user rebuilds a 7-day streak, held freezes are `1 − freezesSpent`. A
-user who had spent two freezes before resetting **cannot earn a freeze again
-until day 21**, with nothing in the UI explaining why.
+Invisible immediately (streak is `0`, so `clamp(0..2, floor(0/7) − freezesSpent)`
+is `0` either way) and surfacing later: once the user rebuilt a 7-day streak, held
+freezes were `1 − freezesSpent`, so a user who had spent two freezes before
+resetting **could not earn one again until day 21**, with nothing explaining why.
 
-The doc and the code disagreed in exactly the direction that hid it.
+**Fixed by the registry:** the keyless `progress` row clears `frozenDays`,
+`freezesSpent` and `freezeNoticeSeen` together, so the doc and the code now agree.
 
-### Delete Account (`deleteAccount`, `app.jsx:846`)
+⚠️ **The Flutter side removes the whole class.**
+[#17](https://github.com/maximsan/brewpath/issues/17) makes `freezesSpent`
+*derived* from the active-day set, which reset clears — so it cannot survive a
+wipe by construction rather than by remembering to clear it.
 
-Clears everything reset does **plus** `freezesSpent`, `freezeNoticeSeen`,
-`isPlus`, `trialDaysLeft`, then lands on `onboarding-1` as a signed-out user.
+### Delete Account (`deleteAccount`, `app.jsx:1016`)
 
-**Does not touch** `brew` state at all, the Saved shelf, or Studio config.
+`wipeStores(['progress', 'account'])` — every store in the registry, both scopes —
+then lands on `onboarding-1` as a signed-out user.
+
+> ⚠️ **Correction.** This previously read *"Does not touch `brew` state at all,
+> the Saved shelf, or Studio config."* That was true of the hand-written wipe and
+> is false of the registry: `cq-brew` and `cq-favorites` are `progress`-scoped and
+> `cq-custom` (Plus, trial, grove, Roasty) is `account`-scoped, so the two-scope
+> sweep clears all three. "Permanently deleted" now means all of it.
 
 #### ✅ DECIDED (Aug 2026): deletion is permanent — no recovery period
 
@@ -317,17 +382,19 @@ to be unmissable — which is why it sits in the body rather than a footnote.
 > may or may not be. Left as-is pending confirmation, since "keep only the
 > existing actions" reads as a constraint on how many, not a rename.
 
-**Also worth confirming against the decision:** `deleteAccount` does **not**
-touch `brew` state, the Saved shelf, or Studio config. "Permanently deleted"
-should mean all of it. The current implementation leaves three stores behind.
+✅ **Resolved against the decision.** This previously flagged that `deleteAccount`
+left `brew` state, the Saved shelf and Studio config behind, so "permanently
+deleted" was not true of all of it. The `ACCOUNT_STORES` sweep over both scopes
+now clears all three.
 
 ### Carried into the app
 
 Reset and delete are the two places where every other rule in this section has to
 agree at once. When implementing:
 
-- Decide per state whether it is **progress** (clear), **preference** (keep), or **entitlement** (never touch — it is not yours to clear).
-- The Saved shelf survives reset by design, which means a free user can hold 10 saved `l:` lessons that just re-locked. Confirm that opening one from Saved after a reset does something sensible.
+- Decide per state whether it is **progress** (clear), **preference** (keep), or **entitlement** (never touch — it is not yours to clear). Register it once; do not hand-list stores at the call site. The registry is what let three stores go unwiped.
+- **Port the dev guard, as a test.** `app.jsx:983` warns when a `cq-` key is written but not registered — it is the check that makes the registry worth having. In Flutter it becomes a test that fails the build when a snapshot field escapes both clear-sets.
+- **Name the two sets by what clears them.** `scope: 'account'` means *"cleared by Delete account **only**"* — it survives reset and dies with delete, and it reads as the exact opposite. [#14](https://github.com/maximsan/brewpath/issues/14) ports them as `clearedByReset` / `clearedByDeleteOnly`.
 - Both sheets are the only `danger` `ConfirmSheet` instances; they are the reference for that variant.
 
 ---

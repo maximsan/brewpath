@@ -695,8 +695,8 @@ function RoastyLoadingScreen({ onDone, message = 'Brewing your lesson' }) {
           <ellipse cx="5" cy="11" rx="1.5" ry="2.4" fill="var(--water-hi)" opacity="0.7"/>
         </svg>
 
-        {/* Roasty — sprout grows via CSS transition tied to data-step on the loader */}
-        <div className="sprout-anim">
+        {/* Roasty — the sprout grows via .roasty-loader[data-step] .sprout-group above */}
+        <div>
           <Roasty state={state} size={170}/>
         </div>
 
@@ -713,7 +713,100 @@ function RoastyLoadingScreen({ onDone, message = 'Brewing your lesson' }) {
   );
 }
 
+
+// ── AnswerFeedback ─────────────────────────────────────────────
+// The single verdict block for EVERY graded surface in the app: Roasty
+// reacting, a verdict eyebrow, the explanation. Lessons, mini-games, the
+// decision/predict/recall cards, the practical and blind-bag cards, Duel and
+// the dictionary checks all render this — nine hand-rolled copies used to
+// drift apart on gap, artwork size, type scale and top margin.
+//
+// Artwork and text are CENTRE-aligned. Roasty's drawn height exceeds its
+// nominal size (the sprout and zzz overflow the box), so top-aligning them
+// needed a hand-tuned negative margin that only held for one text length.
+//
+// Props: correct -> the state; or state= directly for the non-graded moods
+// ('card' on the predict hold). size 72 in lessons, 64 in Duel/predict,
+// 48 in the compact dictionary checks. bodySize 'support' or 'body'.
+// children render under the text.
+//
+// The label is ONE style everywhere — mono, uppercase, 0.14em, t-label. Only
+// its colour varies, and only with meaning: sage when the answer was right,
+// tone when it was wrong, ink-mute when nothing has been graded yet (the
+// predict hold). A second `smallcaps` label style used to exist for the
+// conversational cards; it claimed to be sentence-case but rendered through
+// .smallcaps-mono, so it came out uppercase like the rest and differed only
+// by being grey on cards that HAD been graded — reading as a bug.
+//
+// art={false} drops the mascot for a secondary verdict that sits under a block
+// that already has one — the recall card's prediction payoff. One mascot per
+// screen; a second reads as a repeat rather than a reply.
+function AnswerFeedback({
+  correct, state, size = 72, label, text, children, onTermTap,
+  marginTop = 22, borderTop = false, tone = 'berry',
+  labelTone, bodySize = 'support', className = 'fade-up', art = true,
+}) {
+  const link = (t) => (onTermTap && window.linkifyTerms) ? window.linkifyTerms(t, onTermTap) : t;
+  const graded = correct !== undefined ? correct : (state === 'correct' ? true : state === 'wrong' ? false : null);
+  const labelColor = labelTone === 'neutral' || graded === null
+    ? 'var(--ink-mute)' : graded ? 'var(--sage)' : `var(--${tone})`;
+  return (
+    <div className={className} style={{
+      marginTop, display: 'flex', gap: 14, alignItems: 'center',
+      ...(borderTop ? { paddingTop: 18, borderTop: '1px solid var(--rule)' } : null),
+    }}>
+      {art && (
+        <div style={{ flexShrink: 0 }}>
+          <Roasty state={state || (correct ? 'correct' : 'wrong')} size={size}/>
+        </div>
+      )}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        {label && (
+          <div className="ff-mono" style={{
+            fontSize: 'var(--t-label)', fontWeight: 500, letterSpacing: '0.14em',
+            textTransform: 'uppercase', marginBottom: 8, color: labelColor,
+          }}>{label}</div>
+        )}
+        {text && (
+          <p style={{
+            fontSize: `var(--t-${bodySize})`, lineHeight: bodySize === 'body' ? 1.55 : 1.5,
+            color: 'var(--ink-mute)', margin: 0, textWrap: 'pretty',
+          }}>{link(text)}</p>
+        )}
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// ── CardTakeaway ───────────────────────────────────────────
+// The rule a card leaves you with — `card.note`, wherever it appears. Decision
+// cards land a portable rule; practical steps land an aside worth keeping. Same
+// job, so one treatment: hairline, mono kicker, then the line itself in Fraunces
+// at heading size in full ink. Only the kicker word changes.
+//
+// It is deliberately NOT grey body copy. The note sits directly under an
+// explanation, and set in the same size and colour it read as a second paragraph
+// of that explanation rather than a different class of thing.
+function CardTakeaway({ label = 'Rule of thumb', text, marginTop = 18, className = 'fade-up' }) {
+  if (!text) return null;
+  return (
+    <div className={className} style={{ marginTop, paddingTop: 16, borderTop: '1px solid var(--rule)' }}>
+      <div className="ff-mono" style={{
+        fontSize: 'var(--t-label)', fontWeight: 500, letterSpacing: '0.14em',
+        textTransform: 'uppercase', color: 'var(--ink-mute)', marginBottom: 9,
+      }}>{label}</div>
+      <p className="ff-display" style={{
+        fontSize: 'var(--t-heading)', fontWeight: 400, lineHeight: 1.3,
+        letterSpacing: '-0.01em', color: 'var(--ink)', margin: 0, textWrap: 'pretty',
+      }}>{text}</p>
+    </div>
+  );
+}
+
 window.Roasty = Roasty;
+window.AnswerFeedback = AnswerFeedback;
+window.CardTakeaway = CardTakeaway;
 window.RoastyLoadingScreen = RoastyLoadingScreen;
 
 // ─── Roasty Moment ────────────────────────────────────────
@@ -773,35 +866,6 @@ function RoastyMoment({ state = 'lesson', size = 184, eyebrow, title, autoMs = 2
 }
 
 window.RoastyMoment = RoastyMoment;
-
-// ─── Replay button ────────────────────────────────────────
-// A small, unobtrusive pill for any screen with a one-shot entrance
-// animation (reward celebrations, streak ring). Sits top-right, out of the
-// way of the top-left close/back control. Tapping it re-runs the screen's
-// animation — each host wires onClick to reset its own animation state.
-function ReplayButton({ onClick, label = 'Replay', style }) {
-  return (
-    <button onClick={onClick} aria-label="Replay animation" className="ff-mono"
-      style={{
-        position: 'absolute', top: 62, right: 18, zIndex: 45,
-        appearance: 'none', cursor: 'pointer',
-        display: 'inline-flex', alignItems: 'center', gap: 7,
-        background: 'var(--surface)', border: '1px solid var(--rule)',
-        color: 'var(--ink-mute)', borderRadius: 999, padding: '7px 13px',
-        fontSize: 'var(--t-micro)', letterSpacing: '0.14em', textTransform: 'uppercase',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
-        ...style,
-      }}>
-      <svg width="13" height="13" viewBox="0 0 20 20" aria-hidden="true">
-        <path d="M15.5 6.5 A6 6 0 1 0 16 10" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M15.8 4 L16 6.8 L13.2 6.6" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
-      {label}
-    </button>
-  );
-}
-
-window.ReplayButton = ReplayButton;
 
 // ─── Roasty Anim Screen ───────────────────────────────────
 // A dedicated, full-screen review surface for a single mascot

@@ -26,7 +26,7 @@ was mapped before this pass.
 | `active-cards.jsx` | 297 | The three cards that replaced the read-only beats: `predict` (was `intro`), `decision` (was `practical`), `recall` (was `takeaway`). The rename is why `intro`/`takeaway` renderers sit unexercised ([§6.2](06-content.md)). |
 | `practical.jsx` | 583 | `TasteFixCard`, the `TRAINING` guide content + art (8 guides), `TrainingCard`, `TrainingThumb`. |
 | `bean-anatomy.jsx` | 345 | `CherrySection` (the interactive cross-section, `TRAINING.anatomy`), `GreenBean` (draws an unroasted seed from process cues), `BagPickCard` (card kind `bagpick`), `BAGPICK_ROUNDS`. **Load-order constraint: must evaluate before `lesson.jsx`,** which reads `BAGPICK_ROUNDS` at eval time. |
-| `library.jsx` | 518 | Module detail (two layouts), the Saved / Favorites screen, shared bookmark affordances. |
+| `library.jsx` | 235 | The Saved / Favorites screen and shared bookmark affordances. **`ModuleScreen` and its two layouts were deleted** — module detail no longer exists as a screen. |
 | `rewards.jsx` | 475 | Lesson complete, module complete, module reward card. |
 | `settings.jsx` | 700 | `ConfirmSheet`, `TimeSheet`, About, Account-and-sync, `PLAN_OPTS`, `FAQ_ITEMS`, `REMINDER_TIMES`. |
 | `customize.jsx` | 635 | Paywall, Studio hub, tree chooser, Roasty studio, mood player, and the option tables (`TREE_VARIETIES`, `GROVE_LIGHT`, `ROAST_OPTS`, `HAT_OPTS`, `GEAR_OPTS`, `SPROUT_OPTS`, `BACKDROPS`). |
@@ -37,13 +37,14 @@ was mapped before this pass.
 | Thing | Where |
 |---|---|
 | Design-system documentation site | `Design System.html` + `ds-content.js` |
-| Scope decision record | `v1 Readiness Audit.html` |
-| QA record | `QA Findings.html` (re-verified Aug 2026) |
+| Scope decision record | `v1 Readiness Audit.html` (reconciled Aug 2026; "Recommendation" is now "Decision") |
+| QA record | `QA Findings.html` — rewritten Aug 2026 as *the state of the build, not its history* |
+| **Content authoring rules** | **`CLAUDE.md`** — new. Seven rules governing what makes a good card ([§6](06-content.md) 6.9) |
 | Tree-variety design proposal | `Tree Variety Proposal v2.html` — the two-axis grove model now in code ([§6.7](06-content.md)) |
 | Screen gallery (live iframes) | `screens-overview.html` |
 | Flow walkthroughs | `onboarding.html`, `lesson.html`, `module.html`, `challenge.html`, `dictionary.html`, `atlas.html`, `duel.html`, `customize.html`, `games.html`, `Coffee Tree.html`, `Mascot - Roasty.html`, `mascot-animations.html` |
 
-**Deep links:** `index.html?screen=<slug>` routes straight to any of **103 states**
+**Deep links:** `index.html?screen=<slug>` routes straight to any of **104 states**
 (`SCREEN_ROUTES`, `app.jsx:32`). `?screen=anim-<state>` renders a looping mascot
 animation. This is the fastest way to see any screen.
 

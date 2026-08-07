@@ -150,9 +150,9 @@
 
   <div class="hero">
     <div class="hero-inner">
-      <div class="mono">DESIGN REVIEW · SHIP / DEFER · DECISIONS LOCKED · JUNE 2026 · RECONCILED JUL 2026</div>
+      <div class="mono">DESIGN REVIEW · SHIP / DEFER · DECISIONS LOCKED · JUNE 2026 · RECONCILED AUG 2026</div>
       <h1>The scope is set. Time to build v1.</h1>
-      <p>The big calls are locked — Atlas, Duel and the ad layer move to v2; the learning core plus the Dictionary ship; monetization is settled as a generous free tier with a Plus subscription. Every design and content item this review opened is now closed. What is left is three tasks: two engineering, one human.</p>
+      <p>The big calls are locked — Atlas, Duel and the ad layer move to v2; the learning core plus the Dictionary ship; monetization is settled as a generous free tier with a Plus subscription. Every design and content item this review opened is now closed. Three tasks remain: two engineering, one human.</p>
     </div>
   </div>
 
@@ -176,13 +176,13 @@
         </div>
         <div class="verdict">
           <div class="vcard lead">
-            <div class="vk">Recommendation</div>
+            <div class="vk">Decision</div>
             <div class="vbig">Ship the learning core + dictionary. Hold Atlas, Duel and ads for v2.</div>
-            <p>Confirmed. Keeps everything that delivers “learn coffee, a little every day,” and drops the two features that need a backend you don’t need yet plus a large second content vertical. Monetization still ships in v1.</p>
+            <p>Keeps everything that delivers “learn coffee, a little every day,” and drops the two features that need a backend you don’t need yet plus a large second content vertical.</p>
           </div>
           <div class="metrics">
             <div class="metric"><div class="num">~64</div><div class="lbl">screens built across all features today</div></div>
-            <div class="metric"><div class="num sage">~38</div><div class="lbl">screens in the recommended v1 cut</div></div>
+            <div class="metric"><div class="num sage">~32</div><div class="lbl">screens in the v1 cut</div></div>
             <div class="metric"><div class="num warn">2</div><div class="lbl">features deferred that need server / SDK work</div></div>
             <div class="metric"><div class="num sage">2</div><div class="lbl">Plus levers beyond cosmetics — unlimited Saved, and the Studio</div></div>
           </div>
@@ -239,7 +239,7 @@
             </div>
             <div class="item">
               <div class="item-top"><span class="item-name">Learn + Path + Lesson player</span><span class="item-ct">10 scr</span></div>
-              <div class="item-why">The core loop: daily home, structured path, four card types (MCQ, match, slider, sequence). This is the product.</div>
+              <div class="item-why">The core loop: daily home, structured path, and a lesson player that runs fourteen card kinds — teaching cards, graded questions, drills and visual guides. This is the product.</div>
             </div>
             <div class="item">
               <div class="item-top"><span class="item-name">Rewards + Collectible cards</span><span class="item-ct">incl. above</span></div>
@@ -262,8 +262,8 @@
           <div class="col defer">
             <div class="col-head"><span class="ttl"><span class="dot warn"></span>Defer to v2</span><span class="ct">~32 screens</span></div>
             <div class="item">
-              <div class="item-top"><span class="item-name">Onboarding question flow</span><span class="item-ct">6 scr · Standard (4 Q)</span></div>
-              <div class="item-why">The personalization questions only — goal, brewer, level, reminders. Deferred: no measurable value in v1 testing, nothing reads the answers. The Welcome + Meet Roasty intro stays in v1.</div>
+              <div class="item-top"><span class="item-name">Onboarding question flow</span><span class="item-ct">6 scr · needs a reader</span></div>
+              <div class="item-why">The personalization questions only — goal, brewer, level, reminders. Deferred because nothing reads the answers yet, so they cost taps and return nothing. In the v1 cut Meet Roasty goes straight to Learn; the screens stay reachable by deep link for review, pinned to the Standard four-question depth v2 will ship. The Welcome + Meet Roasty intro is v1.</div>
             </div>
             <div class="item">
               <div class="item-top"><span class="item-name">Coffee Duel</span><span class="item-ct">13 scr · needs backend</span></div>
@@ -299,7 +299,7 @@
         </div>
         <div class="stack">
           <div class="flag" style="border-left-color:var(--accent);">
-            <div class="flag-note"><span class="klabel acc">Tabs</span><span class="kval"><b>Learn · Path · Cards · Profile.</b> Atlas leaves the tab bar for v2. Dictionary and Plus stay as the pinned top-right entries.</span></div>
+            <div class="flag-note"><span class="klabel acc">Tabs</span><span class="kval"><b>Today · Path · Cards · Profile.</b> Atlas leaves the tab bar for v2. Saved and the Dictionary stay as the pinned top-right entries; the Duel entry goes with it.</span></div>
             <div class="flag-note"><span class="klabel acc">Loop</span><span class="kval">Open → today’s lesson → play the cards → earn points + a collectible → streak ticks → tree grows. Dictionary is one tap away. A complete daily product.</span></div>
             <div class="flag-note"><span class="klabel acc">Result</span><span class="kval">~40% less surface to QA, two fewer infra dependencies, one monetization model, and a v2 roadmap with two finished headline features waiting.</span></div>
           </div>
@@ -311,12 +311,12 @@
         <div class="sec-head">
           <div class="eyebrow">What&#8217;s left</div>
           <h2>Two engineering tasks, and one that is yours.</h2>
-          <p class="sec-intro">Everything else this review opened is built or decided.</p>
+          <p class="sec-intro">Three tasks, in the order they block a release.</p>
         </div>
 
         <div class="seq" style="margin-top:0;">
           <div class="row"><div><div class="rt">Wire StoreKit</div><div class="rb">Receipt validation and restore, and swap the frozen trial counter for a real one. The only paid-model work left, and it is engineering — the design side is done.</div></div></div>
-          <div class="row"><div><div class="rt">Gate the dev Tweaks panel out of production</div><div class="rb">A build-time <span class="mono">dev</span> conditional so the panel is absent from the store binary. Its four knobs — Progress, Plus unlocked, and the two freeze states — stay useful for QA until then. One line, owned by whoever wires the release build.</div></div></div>
+          <div class="row"><div><div class="rt">Gate the dev Tweaks panel out of production</div><div class="rb">A build-time <span class="mono">dev</span> conditional so the panel is absent from the store binary. Its six knobs — Scope, Progress, Restore result, Plus unlocked and the two freeze states — stay useful for QA until then. Scope must ship reading <span class="mono">v1 cut</span>: <i>Everything</i> renders the deferred surfaces for review. Restore result stands in for a store that does not exist yet and retires with StoreKit. Every key is documented at the head of <span class="mono">app.jsx</span>, marked <i>panel</i>, <i>routed</i> or <i>settled</i>; nothing reads a value that has no entry there. One line, owned by whoever wires the release build.</div></div></div>
           <div class="row"><div><div class="rt">Play the course</div><div class="rb">The machine pass is closed; the judgement pass is not. Whether the explanations teach, whether the pacing holds, and how it reads on a real device — see the open half of <a href="QA Findings.html">QA Findings</a>.</div></div></div>
         </div>
       </section>

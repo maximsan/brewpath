@@ -80,17 +80,24 @@ staging list that feeds it, not a living board. Nothing ticks these boxes.
 ## Content
 - [ ] 5 modules / 32 lessons / 257 cards ported with typographic punctuation intact ([§6](06-content.md) 6.1)
 - [ ] 72 dictionary terms (46 full) + 8 categories + cross-links + sources
-- [ ] Dictionary third state (**Reference**): glyph, chip, To-learn filter exclusion, `REFERENCE ONLY` block, 9 terms
+- [ ] Dictionary third state (**Reference**): glyph, chip, To-learn filter exclusion, `REFERENCE ONLY` block, 8 terms
 - [ ] Dictionary home: alias-matching search (deep-linkable + auto-focus), status filter with live counts, category grid, Term-of-Day banner, quick chips
 - [ ] Flashcards: flip, prev/next, shuffle, jump-to-term, empty state
 - [ ] Vocab game: setup phase (deck picker + round length with a `capped` guard), play, results with missed terms openable
 - [ ] Saved screen: three groups (terms · lessons · guides), each hidden when empty, plus the "study as flashcards" row
-- [ ] 42 collectible cards with bespoke art (**art complete — port, don't draw**)
+- [ ] 37 collectible cards + 5 training guides, all with bespoke art (**art complete — port, don't draw**)
 - [ ] 7 mini-games with content banks
 - [ ] 12 brew challenges
 - [ ] Studio: 3 species × 4 light treatments, 8 training guides, Roasty option tables
 
 ## Monetization
+
+> ⚠️ **Every line in this block was written against the superseded feature-gating
+> model.** The ruling is **2 new lessons/day free, Premium removes the limit**
+> ([PRODUCT.md](PRODUCT.md) §11), and what Premium buys beyond that is still
+> open. **Do not generate issues from this block** until that resolves — the
+> daily cap is greenfield in both codebases and nothing below describes it.
+
 - [ ] Paywall with 2 plans, 7-day trial CTA, Restore/Terms/Privacy
 - [ ] StoreKit: purchase, receipt validation, restore, real trial counter
 - [ ] Restore Purchases with all **three** outcomes — restored / nothing to restore / failed — plus pending and error-retry ([§7](07-components.md) 7.3)
@@ -104,10 +111,11 @@ staging list that feeds it, not a living board. Nothing ticks these boxes.
 
 ## Settings & compliance
 - [ ] All 5 settings sections ([§6](06-content.md) 6.8)
-- [ ] Reset progress: clear progression + brew (**including `saved`**) + `frozenDays` + `freezesSpent`; keep entitlement, Studio, theme, Saved shelf ([§5](05-mechanics.md) 5.12)
-- [ ] Reset confirm sheet: itemise **all** of what is lost, not just streak / points / lessons / tree
+- [ ] Reset progress: clear progression + brew (**including `saved`**) + `frozenDays` + `freezesSpent` + **the Saved shelf** + `recentTerms`; keep entitlement, Studio, theme ([§5](05-mechanics.md) 5.12)
+- [ ] Reset confirm sheet: itemise **all** of what is lost — not just streak / points / lessons / tree, and now the Saved shelf too
 - [ ] Account deletion is **permanent and immediate** — no recovery period ([§5](05-mechanics.md) 5.12)
-- [ ] Deletion clears **everything**, including `brew`, the Saved shelf and Studio config — the prototype leaves all three behind
+- [ ] Deletion clears **everything**, including `brew`, the Saved shelf and Studio config
+- [ ] Drive both wipes from **one registry**, never a hand-list at the call site, and port the prototype's dev guard as a build-failing test ([§5](05-mechanics.md) 5.12)
 - [ ] Delete sheet warns rather than gates — no forced cancellation, exactly two actions
 - [ ] Ship the approved delete body: permanent + irreversible, then the App Store subscription warning ([§5](05-mechanics.md) 5.12)
 - [ ] Help FAQ (4 entries — the answers are spec)

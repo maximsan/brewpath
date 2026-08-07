@@ -7,7 +7,7 @@
 // every 24×24 concept glyph (nav, duel types, dictionary categories).
 window.GLYPH_STROKE = 1.6;
 
-function FlavorWheel({ size = 20, filled = 0, total = 6, color, mute, ring = true, rotate = 0, stroke = 1.8, crease }) {
+function FlavorWheel({ size = 20, filled = 0, total = 6, color, mute, rotate = 0, stroke = 1.8, crease }) {
   const c = color || 'var(--accent)';
   const m = mute || 'var(--ink-mute)';
   const pct = Math.max(0, Math.min(1, filled / total));
@@ -131,35 +131,6 @@ function FlavorStamp({ size = 96, rotate = -8 }) {
               fill="none" stroke="var(--surface)" strokeOpacity="0.6"
               strokeWidth="1.4" strokeLinecap="round"/>
       </g>
-    </svg>
-  );
-}
-
-// Stylized coffee tree — small mark used on welcome (echoes landing-page hero)
-function CoffeeTree({ size = 120 }) {
-  return (
-    <svg width={size} height={size * 1.15} viewBox="0 0 120 138" style={{ display: 'block' }}>
-      <path d="M60 138 Q60 110 60 80 Q58 60 56 40 Q55 28 54 18"
-            fill="none" stroke="var(--ink)" strokeWidth="1.6" strokeLinecap="round"/>
-      <path d="M56 40 Q40 36 24 30" fill="none" stroke="var(--ink)" strokeWidth="1.2" strokeLinecap="round"/>
-      <path d="M58 60 Q42 58 26 56" fill="none" stroke="var(--ink)" strokeWidth="1.2" strokeLinecap="round"/>
-      <path d="M60 80 Q46 80 30 86" fill="none" stroke="var(--ink)" strokeWidth="1.2" strokeLinecap="round"/>
-      <path d="M55 28 Q70 24 86 18" fill="none" stroke="var(--ink)" strokeWidth="1.2" strokeLinecap="round"/>
-      <path d="M57 50 Q74 48 90 46" fill="none" stroke="var(--ink)" strokeWidth="1.2" strokeLinecap="round"/>
-      <path d="M59 70 Q76 70 92 76" fill="none" stroke="var(--ink)" strokeWidth="1.2" strokeLinecap="round"/>
-      {[
-        [22, 28], [26, 54], [30, 84], [88, 16], [92, 44], [94, 74],
-        [40, 34], [44, 56], [48, 84], [72, 22], [78, 48], [82, 72],
-      ].map(([x, y], i) => (
-        <ellipse key={'l' + i} cx={x} cy={y} rx="6.5" ry="2.4"
-                 transform={`rotate(${(i % 2 === 0 ? -28 : 28)} ${x} ${y})`}
-                 fill="none" stroke="var(--ink)" strokeWidth="1"/>
-      ))}
-      {[
-        [20, 30], [28, 56], [32, 86], [86, 18], [94, 46], [92, 74],
-      ].map(([x, y], i) => (
-        <circle key={'c' + i} cx={x} cy={y} r="2.2" fill="var(--accent)"/>
-      ))}
     </svg>
   );
 }
@@ -354,7 +325,6 @@ function AnimatedTree({ fromStage = 1, toStage = 2, size = 240, onDone, delay = 
 
 window.FlavorWheel = FlavorWheel;
 window.FlavorStamp = FlavorStamp;
-window.CoffeeTree = CoffeeTree;
 window.CoffeePersona = CoffeePersona;
 window.AnimatedTree = AnimatedTree;
 

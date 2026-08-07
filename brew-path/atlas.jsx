@@ -40,7 +40,7 @@ function SectionLabel({ children, style }) {
 }
 
 // ── Atlas map tab ───────────────────────────────────────────
-function AtlasMapScreen({ states, favs, styleMode, holdLoading, onOpenOrigin, onOpenActivity, onOpenPassport, onOpenRegion, onToggleFav, onMarkTasted }) {
+function AtlasMapScreen({ states, favs, styleMode, holdLoading, onOpenOrigin, onOpenActivity, onOpenPassport, onToggleFav, onMarkTasted }) {
   const [loading, setLoading] = useStateAt(true);
   const [region, setRegion] = useStateAt('americas');
   const [peek, setPeek] = useStateAt(null);          // slug

@@ -6,7 +6,7 @@
 ## Tabs (v1)
 | Tab | Screen | Content |
 |---|---|---|
-| **Learn** ("Today") | `LearnTab` | Date header, freeze-save notice, Continue Learning card, active Brew Challenge, saved challenges, Practice Again (collapsible: Lessons, Mini-games) |
+| **Today** (tab id `learn`) | `LearnTab` | Date header, freeze-save notice, Continue Learning card, active Brew Challenge, saved challenges, Practice Again (collapsible: Lessons, Mini-games) |
 | **Path** | `PathTab` | Vertical module path with lesson nodes, mastery bean fill, brew-challenge nodes, and the four named coming-soon modules (`ComingSoonPath`) |
 | **Cards** | `CardsTab` | Collectible card grid; tap → `CardSheet` |
 | **Profile** | `ProfileTab` | Tree hero, streak card + week strip, points line, mastery rollup, brew-challenge stat, Studio card, Saved card, joined date |
@@ -95,13 +95,13 @@ gating rule keeps *unauthored* modules locked; this component advertises
 > reading as a preview and start reading as a broken promise about what
 > "Espresso Basics" still contains.
 
-## Full route list (103 deep-link states)
+## Full route list (104 deep-link states)
 
 **Boot / intro** — `loading`, `welcome`, `meet`
 **Onboarding questions (v2)** — `expectation`, `goal`, `brewer`, `commitment`, `experience`, `motivations`, `reminders`, `onboarding-done`
 **Tabs** — `learn`, `path`, `cards`, `profile`
 **Lesson** — `lesson`, `lesson-grind`, `lesson-ratio`, `lesson-taste`, `lesson-layers`
-**Lesson cards (open a lesson at a given card kind)** — `card-predict`, `card-concept`, `card-mcq`, `card-multi`, `card-match`, `card-slider`, `card-sequence`, `card-decision`, `card-recall`, `card-visual`, `card-anatomy`, `card-bagpick`, `card-tastefix`, `card-practical`, `card-training`
+**Lesson cards (open a lesson at a given card kind)** — `card-predict`, `card-concept`, `card-flavor`, `card-mcq`, `card-multi`, `card-match`, `card-slider`, `card-sequence`, `card-decision`, `card-recall`, `card-visual`, `card-anatomy`, `card-bagpick`, `card-tastefix`, `card-practical`, `card-training`
 **Mini-games** — `game-intro`, `game-flavor`, `game-quiz`, `game-bagpick`, `game-tastefix`, `game-calibrate`, `game-sequence`
 **Rewards** — `lesson-complete`, `lesson-complete-weak`, `lesson-complete-perfect`, `module-complete`, `module-card`, `module-challenge`
 **Brew Challenge** — `today-challenge`, `today-challenge-done`, `today-nochallenge`, `today-challenge-log`, `path-challenge`, `path-challenge-open`, `card-stamp`, `card-stamp-locked`
@@ -114,11 +114,12 @@ gating rule keeps *unauthored* modules locked; this component advertises
 **Atlas (v2)** — `atlas`, `atlas-loading`, `origin`, `origin-tabbed`, `atlas-region`, `atlas-activity`, `passport`, `passport-empty`, `atlas-stamp`, `atlas-stamp-lesson`
 **Duel (v2)** — `duel`, `duel-empty`, `duel-pick`, `duel-play`, `duel-result`, `duel-invite`, `duel-sent`, `duel-received`, `duel-comparison`, `duel-loss`, `duel-rematch`, `duel-expired`, `duel-error`
 
-> ⚠️ **Three route counts are in circulation.** This doc says **103** (keys in
-> `SCREEN_ROUTES`). `QA Findings.html` says 96 in its hero and "all 97 routes"
-> in its closed-defects note — both predate the routes added for `m1l7`,
-> `m5l7`, the new mini-games and `term-reference`. 103 is the number to trust;
-> the others are historical.
+> **The route count is 104**, and every document now agrees. It is the number of
+> keys in `SCREEN_ROUTES` (`app.jsx`) and is re-derived by
+> `tools/extract-facts.js` — never counted by hand. Earlier figures of 96, 97
+> and 103 are historical: they predate the routes added for `m1l7`, `m5l7`, the
+> new mini-games, `term-reference` and `card-flavor`. If you meet one of them in
+> an older note, it is stale rather than a competing view.
 
 ---
 

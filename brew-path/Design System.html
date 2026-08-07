@@ -192,6 +192,17 @@
   .comp-wide { grid-column:1 / -1; }
   .comp-subhead { grid-column:1 / -1; display:flex; align-items:baseline; justify-content:space-between; gap:14px; border-top:1px solid var(--rule); padding-top:20px; margin-top:8px; }
   .comp-subhead .ff-display { font-size:18px; font-weight:400; letter-spacing:-0.01em; color:var(--ink); }
+  /* component index — 60+ panels need a way in */
+  .comp-index { border:1px solid var(--rule); border-radius:2px; background:var(--surface); padding:18px 20px 20px; margin-bottom:22px; }
+  .ci-head { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:16px; }
+  .ci-count { font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-mute); }
+  .ci-field { flex:1; min-width:200px; max-width:340px; font-family:'IBM Plex Sans',sans-serif; font-size:13px; color:var(--ink); background:var(--bg); border:1px solid var(--rule); border-radius:2px; padding:9px 12px; outline:none; }
+  .ci-field:focus { border-color:var(--accent); }
+  .ci-cols { display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:18px 22px; }
+  .ci-group { font-size:9.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-mute); margin-bottom:9px; }
+  .ci-list { display:flex; flex-direction:column; gap:5px; }
+  .ci-link { font-size:12.5px; line-height:1.35; color:var(--ink); text-decoration:none; border-bottom:1px solid transparent; align-self:flex-start; }
+  .ci-link:hover { color:var(--accent); border-bottom-color:var(--accent); }
   /* state specimens — one cell per state, spec read off the tile */
   .comp.states { grid-column:1 / -1; }
   .comp-purpose { font-size:13.5px; line-height:1.55; color:var(--ink-mute); margin:2px 0 18px; max-width:760px; text-wrap:pretty; }
@@ -284,6 +295,11 @@
       });
     })();
   </script>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <!-- the real mascot, so the library shows the component and not a redraw of it -->
+  <script type="text/babel" src="roasty.jsx"></script>
   <script src="ds-content.js"></script>
 </body>
 </html>

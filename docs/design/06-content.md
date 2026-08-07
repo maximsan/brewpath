@@ -38,7 +38,7 @@ Every lesson carries `points: 10` and `time: 3–6 min`; card counts run 6–11.
 `MODULE_REWARDS` is the only defensible size measure; the old "1,445 strings"
 figure predates two restructures and should not be quoted.)*
 
-## 6.2 Card kinds (13 authored, 15 with renderers)
+## 6.2 Card kinds (14 authored, 16 with renderers)
 
 | Kind | Count | Graded | What it is |
 |---|---|---|---|
@@ -52,8 +52,9 @@ figure predates two restructures and should not be quoted.)*
 | `visual` | 10 | no | Full-bleed visual guide, savable to Saved under a `g:` key. **8 variants, all with art** (§6.3) |
 | `multi` | 10 | **yes** | Select-all-that-apply, graded as a whole set |
 | `slider` | 9 | **yes** | Calibrate — drag to a value, check against a target range (incl. a grinder-dial variant) |
-| `tastefix` | 8 | **yes** | A cup came out wrong — pick the one change that fixes it, watch the cup react |
+| `tastefix` | 7 | **yes** | A cup came out wrong — pick the one change that fixes it, watch the cup react |
 | `practical` | 5 | no | Hands-on instruction card. Four in `m5l6` (*Your first good cup*), one in `m1l7` |
+| **`flavor`** | **1** | **yes** | **New.** A tasting clue ("Sharp and lively, with sweetness underneath and a finish that lingers") and four notes to choose from. Renderer `FlavorNoteCard`; the only authored instance is in `m5l3` (*Tasting your cup*), and it also backs the `g-flavor` mini-game |
 | **`bagpick`** | **1** | **yes** | **New.** Draw a sample from an unlabelled bag, inspect colour / centre cut / mottling / chaff on the rendered green beans, and call the process from the look alone. Renderer + content in `bean-anatomy.jsx`; the only authored instance is in `m1l7`, but it also backs a full mini-game (§6.5) |
 | `intro` | 0 | no | Plain framing card. **Renderer exists, no authored card anywhere** — superseded by `predict` |
 | `takeaway` | 0 | no | Closing statement card. **Renderer exists, no authored card anywhere** — superseded by `recall` |
@@ -76,59 +77,91 @@ self-explanatory) or an omission is an open question, not a documented decision.
 > interactive kind had an entry. **No `GAME_HELP` exists in the source**; both
 > the name and the coverage claim were wrong.
 
+> ✅ **Fixed (Aug 2026).** `flavor` briefly scored without being counted —
+> `FlavorNoteCard` incremented the correct tally while the kind was missing from
+> the graded list, so mastery could exceed 100% and a perfect score was reachable
+> with a wrong answer. `flavor` is now in the list at `lesson.jsx:165` and the
+> graded total is 144.
+
 **Lesson player chrome:** close button, `RoastBean` progress (fills as a roasting bean) + `NN / NN` counter, save-lesson bookmark. Glossary terms inside body copy are auto-linkified and open a `TermPeekSheet` without leaving the lesson.
 
-## 6.3 Collectible cards — 42 total
+## 6.3 Collectible cards — 37 collectibles + 5 guides, two registries
 
-| Group | Count | Unlock | In the Cards grid? |
+**The collectible model was restructured.** Training guides used to live inside
+`COLLECTION`; they now sit in their own `TRAINING_CARDS` array. The recorded
+reason is precise: sharing one array *"made a plain 'no two cards share a title'
+check report false collisions."*
+
+| Registry | Count | Unlock | In the Cards grid? |
 |---|---|---|---|
-| Training / visual guides | 5 | Earned from the start (no `unlock`) | **No — filtered out** |
-| Lesson cards | 32 | One per lesson, no gaps | Yes |
-| Module Field Guides | 5 | Beans · Processing · Roasting · Grind · Brew | Yes |
+| `COLLECTION` — lesson cards | 32 | One per lesson, no gaps | Yes |
+| `COLLECTION` — module Field Guides | 5 | Beans · Processing · Roasting · Grind · Brew | Yes |
+| `TRAINING_CARDS` — visual guides | 5 | `earned: true`, always available | **No — a separate array, never listed beside a collectible** |
 
-**The 5 training cards:** `tr-roast` Roast Levels · `tr-grind` Grind Size · `tr-extraction` Extraction · `tr-ratio` Coffee-to-Water Ratio · **`tr-anatomy` The Cherry in Section** (new).
+`COLLECTION` **array order is the catalogue number printed on each card**, so
+entries are never re-sorted — only appended.
 
-> ⚠️ **42 is the data count, not the grid count.** `CardsTab` and `ProfileTab`
-> both filter `c.kind !== 'training'`, so the Cards tab shows **37** and its
-> header reads "{earned} of 37". Training guides reach the user through lessons
-> (`TrainingCard`) and the Saved shelf (`g:` keys, `library.jsx:421`) — never
-> the grid. And of the 37, only **earned cards plus one locked teaser** render;
-> see [§5](05-mechanics.md) 5.6.
+**The 5 training guides:** `tr-roast` Roast Levels · `tr-grind` Grind Size ·
+`tr-extraction` Extraction · `tr-ratio` Coffee-to-Water Ratio · `tr-anatomy`
+The Cherry in Section. Each carries identity plus a `meta` table; its words come
+from `TRAINING` (`practical.jsx`).
 
-Each card: title, summary, a `fact`, and a `meta` key/value table, plus bespoke inline-SVG art and a colour tint. `MODULE_REWARDS` carries an additional badge string per module (`BEANS · COMPLETE` … `BREW · COMPLETE`).
+### One card, one text — the invariant, and how *not* to port it
 
-**Art coverage is now complete**, and the arithmetic is worth stating exactly
-because three different counts are defensible:
+A collectible entry carries **identity only** — `id`, `kind` (its art and tint),
+`unlock`, and an `earned` first-paint seed. **The words are not stored there.**
 
-- `COLLECTION` uses **38 distinct `kind` values**.
-- `CARD_ART` has **38 keys** — 37 of those kinds, plus `guide`.
-- `CARD_TINT` has **39 keys** — all 38 kinds, plus `guide`.
+**The invariant, which matters:** a card's title, summary and fact are authored
+in exactly one place — the lesson's own `reward`, or `MODULE_REWARDS`, or
+`TRAINING` for the guides — and every surface that shows that card reads from
+it. The stated purpose is *"so the reward moment and the collection sheet cannot
+show two different facts."*
 
-The one kind absent from `CARD_ART` is **`training`**, which routes to
-`TrainingThumb` by design. `guide` belongs to the library list rather than the
-collection grid. Every `kind` used in `COLLECTION` therefore resolves to art and
-a tint; nothing falls through.
+That is worth keeping. Before it existed, the same fact lived twice and nothing
+stopped the two copies drifting; both strings look fine in isolation, which is
+why that class of bug survives review.
 
-> ✅ **Closed since the last pass:** `scales`, `hourglass` and `burrs` now have
-> components; so do the `variety`, `caffeine` and `distribution` visual guides
-> (all eight `TRAINING` variants — `roast`, `grind`, `extraction`, `ratio`,
-> `anatomy`, `variety`, `caffeine`, `distribution` — have both full art and a
-> thumbnail). **23 designs are no longer outstanding; the art workstream is
-> done.**
+**The prototype's mechanism, which is not worth keeping.** Two functions mutate
+the arrays in place at load:
 
-> ⚠️ **Three collectibles share a title with another collectible:**
-> **Extraction** (`tr-extraction` training card and the `m5l4` lesson card),
-> **Fermentation** (`c-m2l2` on *Why processing matters*, `c-m2l5` on *What
-> happens in the tank*), and **The Cherry in Section** (`tr-anatomy` training
-> card and the `m1l7` lesson card — new with `m1l7`). Renaming is prose work; it
-> was left open by the writing pass and is now three collisions rather than two.
->
-> **Correction to an earlier claim:** these pairs do *not* collide in the Cards
-> grid, because the training half of each pair is filtered out of it. They
-> collide on the **Saved shelf**, where a `g:`-saved training guide and a
-> `c:`-favourited lesson card can sit adjacent under the same title. Same
-> problem, different screen — and the Saved shelf has less context to
-> disambiguate them than the grid would have had.
+| Function | Copies | From | Into |
+|---|---|---|---|
+| `syncCardText()` | `title`, `summary`, `fact`, `meta` | the lesson's `reward`, or `MODULE_REWARDS` | the 37 `COLLECTION` entries |
+| `syncTrainingText()` | `title`, `summary`, `fact` | `TRAINING` | the 5 `TRAINING_CARDS` |
+
+Two properties of that approach are prototype-grade only:
+
+- **It depends on script order, enforced by nothing.** `TRAINING_CARDS` ships with no titles at all — load `data.jsx` without `practical.jsx` and every guide is `undefined`. The titles exist solely because `practical.jsx` runs the sync afterwards, ten `<script>` tags later in `index.html`. Reorder them and five cards render blank with no error.
+- **It fails quietly.** `syncCardText()` does `if (!src) return;`, so a collectible pointing at a lesson with no `reward` keeps whatever it had. *(All 37 currently resolve, and the QA record checks this — so there is no live gap, only a silent failure mode.)*
+
+> **For the port: keep the invariant, drop the technique.** Derive a card's text
+> from its lesson at read time — a getter, or a view model that takes the lesson
+> as a dependency — so the compiler enforces what script order is currently
+> enforcing by luck. Mutating a global list at startup and depending on
+> initialisation order is a bad shape in Dart, and porting it faithfully would be
+> a more expensive mistake than the blank titles it risks in the prototype.
+
+**Not worth fixing in the prototype.** The order is correct, the dependency is
+commented at both ends, and the failure is latent. The prototype is a
+specification, not shipping software.
+
+> ✅ **The three duplicate titles are resolved.** Extraction, Fermentation and
+> The Cherry in Section no longer collide — `duplicateTitles` returns empty
+> across both registries. The fix was structural (splitting the arrays) plus
+> renaming, and the QA record now carries "no two collectible cards share a
+> name" as a standing check.
+
+**Art coverage is complete.** 37 collectibles, 37 distinct `kind` values — one
+per card — each with art in `CARD_ART` and a tint in `CARD_TINT`. Both maps read
+one higher (38 and 39) because each also carries a `guide` key belonging to the
+library list rather than the grid.
+
+Each card: title, summary, a `fact`, and a `meta` key/value table, plus bespoke
+inline-SVG art and a colour tint. `MODULE_REWARDS` carries an additional badge
+string per module (`BEANS · COMPLETE` … `BREW · COMPLETE`).
+
+> **In the Cards grid**, only **earned cards plus one locked teaser** render, with
+> a "{n} more to collect" footer — see [§5](05-mechanics.md) 5.6.
 
 ## 6.4 Coffee Dictionary — 72 terms, 8 categories
 
@@ -143,7 +176,7 @@ Term shape: `{ id, term, pron?, cat, aliases?, short, deep?, example?, related[]
 | Stubs with `short` only | 26 |
 | With a self-check question | 29 |
 | With a pronunciation respelling | 23 |
-| **Reference-only** (no lesson teaches them) | **9** |
+| **Reference-only** (no lesson teaches them) | **8** |
 
 Sources cited across the full terms: Hoffmann's *World Atlas of Coffee*, SCA, World Coffee Research, Perfect Daily Grind.
 
@@ -168,7 +201,7 @@ Behavioural consequences, all in `dictionary.jsx`:
 - `TermDetail` swaps the "WHERE YOU'LL LEARN IT" lesson card for a **`REFERENCE ONLY`** block reading *"No lesson covers this one — it's here for when you meet it on a bag or a menu."* Stated plainly rather than dropped, because a silent gap reads as a bug and a false link reads as a lie.
 - Route `term-reference` deep-links the state (seeded with `masl`).
 
-**The 9 reference-only terms:** `masl` · `washing-station` · `wet-hulled` · `tds` · `cold-brew` · `cupping` · `gooseneck` · `sca` · `origin-boards`.
+**The 8 reference-only terms:** `masl` · `washing-station` · `wet-hulled` · `tds` · `cold-brew` · `cupping` · `gooseneck` · `sca` · `origin-boards`.
 
 **Learned state**: a term is "learned" once its source lesson is complete; plus a 6-term demo seed. `dictLessonAudit()` returns `[]` — every non-reference term's `lesson` pointer resolves to a lesson that actually teaches it.
 
@@ -286,6 +319,30 @@ Both destructive actions use a `danger` `ConfirmSheet`.
 > finished and do nothing. Two of them (Privacy policy, Terms of use) are
 > store-review requirements that also appear on the paywall. See
 > [§7](07-components.md) 7.3.
+
+## 6.9 The content rulebook (`CLAUDE.md`)
+
+**New, and it closes a long-standing gap.** Until now the reference said nobody
+had written down what makes a question good. `brew-path/CLAUDE.md` now does —
+seven rules, all about the course content rather than the code:
+
+| Rule | What it forbids |
+|---|---|
+| **No two cards in a row share an answer** | Checked across the whole lesson, not just adjacent pairs. If two cards both resolve to "grind finer", the second teaches nothing — the learner pattern-matches instead of reasoning |
+| **No option is always right** | If a lesson presents a trade-off, the graded cards must cut both ways. A lesson that says "Robusta earns its place" and only ever rewards Arabica teaches the opposite of what it claims |
+| **A question must be able to surprise** | If the answer is obvious from the framing, or is simply the longest/most specific option, rewrite it. Prefer scenarios where the intuitive answer is wrong |
+| **A note must not restate its verdict** | Decision cards carry a `right`/`wrong` reaction *and* a `note`. The note only earns its place if it **generalises** — turns the scenario into a rule, adds the other half of the trade-off, or names the misconception sidestepped |
+| **Distractors must be genuinely wrong, not merely worse** | A distractor that would also work makes the card unanswerable. Where one is a common real mistake, name it in the explanation |
+| **Match cards must not be solvable by elimination** | Use uneven distributions (3:2, 2:1:1) so no drop is forced by the ones before it. An even split is really n−1 questions and a freebie |
+| **…except where the content is genuinely bijective** | Cherry layers, roast stages, origin → flavour, label claim → guarantee, decaf method → mechanism. **Never fabricate a pair for the sake of an uneven split** |
+
+The last two together are the sharpest thinking in the file: a rule, and an
+explicit carve-out that stops the rule being applied where it would force
+invention.
+
+> **What this does and does not close.** It defines the standard. The audit's
+> third remaining task — *"Play the course"* — is still open: whether each card
+> actually meets these rules is a human pass that has not been done.
 
 ---
 

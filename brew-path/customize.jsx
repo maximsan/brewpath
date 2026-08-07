@@ -589,7 +589,7 @@ function RoastyMoodScreen({ roastyCfg, onClose }) {
 // ───────────────────────────────────────────────────────────
 // PLUS WELCOME — the celebratory beat right after payment.
 // ───────────────────────────────────────────────────────────
-function PlusWelcomeScreen({ onOpenStudio, onClose, plan, showMoodPlayer = true }) {
+function PlusWelcomeScreen({ onOpenStudio, onClose}) {
   return (
     <div className="screen" data-screen-label="Plus welcome" style={{ background: 'var(--bg)' }}>
       <div aria-hidden="true" style={{

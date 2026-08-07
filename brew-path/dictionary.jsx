@@ -69,7 +69,7 @@ function CatGlyph({ cat, size = 22, color = 'currentColor' }) {
       return (<svg {...p}><path d="M12 12 L12 4 A 8 8 0 0 1 18.93 8 Z" fill="currentColor" opacity="0.9"/><circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth={sw}/><path d="M12 4 V20 M5.07 8 L18.93 16 M5.07 16 L18.93 8" stroke="currentColor" strokeWidth="1.3"/></svg>);
     case 'equipment': // Gooseneck kettle — the most recognisable tool on the counter. A gear says settings, not coffee gear.
       return (<svg {...p}><path d="M8.4 11.2 C 8.4 8.2 13.2 8.2 13.2 11.2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/><path d="M6.2 11.2 H15 V16.6 A3 3 0 0 1 12 19.6 H9.2 A3 3 0 0 1 6.2 16.6 Z" stroke="currentColor" strokeWidth={sw} strokeLinejoin="round"/><path d="M15 12.6 C 18.1 12.1 18.7 8.6 17 6.2" stroke="currentColor" strokeWidth={sw} strokeLinecap="round"/></svg>);
-    case 'grind': // Hand grinder with its crank, burr line across the body. The Grind module’s own mark — it used to borrow the Equipment gear.
+    case 'grind': // Hand grinder with its crank, burr line across the body — the Grind module’s own mark, not the Equipment gear.
       return (<svg {...p}><path d="M12 9.4 V6.6 H15.8 A1.7 1.7 0 0 1 15.8 10" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/><path d="M7.6 9.4 H16.4 V18 A2.4 2.4 0 0 1 14 20.4 H10 A2.4 2.4 0 0 1 7.6 18 Z" stroke="currentColor" strokeWidth={sw} strokeLinejoin="round"/><path d="M9.4 14.2 H14.6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>);
     case 'trade': // Balance scales — what a lot is worth and who gets paid. Exchange arrows read as sync, not trade.
       return (<svg {...p}><path d="M12 5.4 V18" stroke="currentColor" strokeWidth={sw} strokeLinecap="round"/><path d="M4.6 8.6 H19.4" stroke="currentColor" strokeWidth={sw} strokeLinecap="round"/><path d="M8.6 18.4 H15.4" stroke="currentColor" strokeWidth={sw} strokeLinecap="round"/><path d="M7 8.6 V10.2 M17 8.6 V10.2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/><path d="M4.4 10.2 A 2.6 2.6 0 0 0 9.6 10.2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/><path d="M14.4 10.2 A 2.6 2.6 0 0 0 19.6 10.2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>);
@@ -196,7 +196,7 @@ function DictSearchBar({ value, onChange, onClear, autoFocus, placeholder }) {
 }
 
 // ── Filter segmented control (All / Learned / Locked) ────────
-function DictFilter({ value, onChange, counts }) {
+function DictFilter({ value, onChange}) {
   const opts = [['all', 'All'], ['learned', 'Learned'], ['locked', 'To learn']];
   return (
     <div style={{ display: 'flex', gap: 0, border: '1px solid var(--rule)', borderRadius: 999, overflow: 'hidden', background: 'var(--surface)' }}>
@@ -313,7 +313,7 @@ function DictQuickChips({ savedTermCount, onFlashcards, onVocabGame }) {
 // ════════════════════════════════════════════════════════════
 // DICTIONARY HOME
 // ════════════════════════════════════════════════════════════
-function DictionaryHome({ name = 'Coffee Dictionary', learnedSet, favorites, recent,
+function DictionaryHome({ name = 'Coffee Dictionary', learnedSet, favorites,
                           savedTermCount, initialQuery, focusSearch, onOpenTerm, onToggleFav,
                           onTermOfDay, onFlashcards, onVocabGame, onClose }) {
   const [query, setQuery] = useStateD(initialQuery || '');
@@ -378,7 +378,7 @@ function DictionaryHome({ name = 'Coffee Dictionary', learnedSet, favorites, rec
     }));
     body = (
       <div className="px-24" style={{ paddingTop: 18 }}>
-        <DictFilter value={filter} onChange={setFilter} counts={fc}/>
+        <DictFilter value={filter} onChange={setFilter}/>
         <div className="ff-mono" style={{ fontSize: 'var(--t-label)', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-mute)', margin: '18px 0 4px' }}>
           {searchResults.length} {searchResults.length === 1 ? 'RESULT' : 'RESULTS'}
         </div>
@@ -405,7 +405,7 @@ function DictionaryHome({ name = 'Coffee Dictionary', learnedSet, favorites, rec
             <div style={{ fontSize: 'var(--t-support)', color: 'var(--ink-mute)', marginTop: 3 }}>{meta.short}</div>
           </div>
         </div>
-        <DictFilter value={filter} onChange={setFilter} counts={fc}/>
+        <DictFilter value={filter} onChange={setFilter}/>
         <div style={{ marginTop: 14 }}>{renderList(list, { snippet: true })}</div>
       </div>
     );
@@ -482,15 +482,8 @@ function TermCheck({ check }) {
         })}
       </div>
       {picked !== null && (
-        <div style={{ marginTop: 14, display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-          <div style={{ flexShrink: 0, marginTop: -4 }}>{window.Roasty && <Roasty state={picked === correctIdx ? 'correct' : 'wrong'} size={48}/>}</div>
-          <div>
-            <div className="ff-mono" style={{ fontSize: 'var(--t-label)', letterSpacing: '0.14em', textTransform: 'uppercase', color: picked === correctIdx ? 'var(--sage)' : 'var(--accent)', marginBottom: 6 }}>
-              {picked === correctIdx ? 'CORRECT' : 'NOT QUITE'}
-            </div>
-            <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: 0 }}>{check.explain}</p>
-          </div>
-        </div>
+        <window.AnswerFeedback correct={picked === correctIdx} size={48} marginTop={14} tone="accent"
+          label={picked === correctIdx ? 'CORRECT' : 'NOT QUITE'} text={check.explain}/>
       )}
     </div>
   );
@@ -581,7 +574,7 @@ function SourcesList({ sources }) {
 // ════════════════════════════════════════════════════════════
 // TERM DETAIL — 2 layouts
 // ════════════════════════════════════════════════════════════
-function TermDetail({ termId, variant = 'entry', learned, learnedSet, isFav, onToggleFav, onOpenTerm, onLesson, onClose }) {
+function TermDetail({ termId, learned, learnedSet, isFav, onToggleFav, onOpenTerm, onLesson, onClose }) {
   const term = (window.DICT_BY_ID || {})[termId];
   // Shared collapsing header (settings.jsx) — the term page adds a bookmark on
   // the trailing side and a ringed back control to match it. Reset key is the
