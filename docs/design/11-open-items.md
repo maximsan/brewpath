@@ -3,17 +3,21 @@
 > Part of the [BrewPath v1 design reference](README.md). All source paths are relative to `brew-path/`.
 
 
-## Re-verified Aug 2026 (`QA Findings.html`)
+## Verified Aug 2026 (`QA Findings.html`)
 
-The structural pass was re-run against the grown build. Every mechanical check is clean:
+`QA Findings.html` was rewritten as **"the state of the build, not its history"**
+— it now reports what holds rather than what was fixed. Its header reads
+*"Nothing is broken in the build"* and it agrees with this reference on 103
+routes (the 104th, `card-flavor`, arrived after).
 
-| Check | Result |
+| Check | Result it reports |
 |---|---|
-| Dictionary lesson links resolve to a lesson that teaches the term | 72 terms, `dictLessonAudit()` returns `[]`; 9 reference-only terms claim no lesson |
+| Dictionary lesson links resolve to a lesson that teaches the term | 72 terms, 64 pointers, `dictLessonAudit()` returns `[]` — verified. The audit scans **learner-visible copy only** (`lessonVisibleText()`), not the raw record |
 | Every lesson has a collectible card; every card unlocks from a real lesson | 32 / 32, no orphans either direction |
-| Every card `kind` has bespoke art and a tint | All resolve (see [§6.3](06-content.md) for the 38/39 arithmetic) |
+| Every card `kind` has bespoke art and a tint | 37 collectibles, 37 distinct kinds, one per card, all covered |
+| **A card's words match wherever it appears** | 42 card entries, one source each — `syncCardText()` for the 37 collectibles, `syncTrainingText()` for the 5 guides |
+| **No two collectible cards share a name** | Distinct across both registries; the invariant no longer depends on which lists render together |
 | Path order matches defined lessons | 32 entries, 32 definitions, no drift |
-| `m5l7` run through the Modules 2–5 review plan | Two fixes: two off-topic distractors replaced; one decision whose sub-labels graded the options rather than describing them |
 | Brew challenges | 7 of 32 lessons, by design |
 
 ## Still open — accepted or v2-only
@@ -27,6 +31,13 @@ The structural pass was re-run against the grown build. Every mechanical check i
 | Hairlines below 3:1 in both moods | `--rule` | Decoration, not a violation, but worth one look on a real phone at low brightness |
 
 ## Closed since the last pass
+- ✅ **`flavor` cards are graded.** They briefly incremented the score without being counted in the total, so mastery could exceed 100% and a perfect score was reachable with a wrong answer. `flavor` is now in the graded list; the total is 144.
+- ✅ **The `terroir` audit failure is fixed — and the check was tightened, not relaxed.** Two changes: the word now appears in *What origin means* ("Coffee borrowed wine's word for why that matters: terroir — soil, altitude and climate leaving a signature no other place can copy"), **and** `dictLessonAudit()` stopped scanning `JSON.stringify(lesson)` in favour of a new `lessonVisibleText()` that reads only fields a learner actually sees. The reasoning, from the source: *"a data field no card renders would otherwise pass a check whose whole point is that the word appears on screen."* The audit is now strictly harder to satisfy than when it was passing vacuously.
+- ✅ **The three duplicate collectible titles are resolved** — Extraction, Fermentation and The Cherry in Section. Fixed structurally: training guides moved out of `COLLECTION` into their own `TRAINING_CARDS` array, because sharing one array *"made a plain 'no two cards share a title' check report false collisions."* QA now carries the check as a standing invariant.
+- ✅ **Card copy can no longer drift between the reward screen and the collection sheet** — `syncCardText()` / `syncTrainingText()` copy the words from one authored source at load. See [§6](06-content.md) 6.3.
+- ✅ **The competing route counts are gone.** Every document now says **104**, the count of `SCREEN_ROUTES` keys as re-derived by `tools/extract-facts.js`. QA had lagged at 103 — it was written before `card-flavor` — and has been corrected; 96 and 97 are older still. The count is derived rather than authored, so it cannot drift again without the extractor drifting.
+- ✅ **The QA pacing note was stale ("116 cards across 15 lessons") and has been rewritten** along with the rest of that document.
+- ✅ **What makes a good question is now written down** — `brew-path/CLAUDE.md`, seven content rules. See [§6](06-content.md) 6.9. *(Whether the cards meet them is still an open human pass.)*
 - ✅ **All 23 outstanding card-art designs are drawn.** `scales`, `hourglass`, `burrs` have components; `variety`, `caffeine`, `distribution` have both guide art and thumbnails.
 - ✅ **The `draft: true` writing pass is complete** — 15 lessons cleared, 0 remain.
 - ✅ **The duplicate 7-item tree stage-name list is gone** from `app.jsx`; `STAGE_NAMES` is the only list.
@@ -34,12 +45,10 @@ The structural pass was re-run against the grown build. Every mechanical check i
 ## Opened or still open
 | Item | Where | Disposition |
 |---|---|---|
-| **Three duplicate collectible titles** — Extraction, Fermentation, and now **The Cherry in Section** (`tr-anatomy` vs the `m1l7` card) | `data.jsx` `COLLECTION` | Prose work, still unassigned. The third arrived with `m1l7` |
 | `intro` and `takeaway` have **zero authored cards** across all 257 | `lesson.jsx` | `active-cards.jsx` documents them as superseded by `predict` / `recall`. **Decide: delete the renderers, or author cards.** Leaving them is the status quo by default, not by choice |
 | **Two frozen "today" dates** — 8 May 2026 for the app, 18 Jun 2026 for the dictionary | `screens.jsx`, `dictionary-data.jsx`, `dictionary-extras.jsx` | Harmless in a prototype; a real clock must not inherit the split |
 | **Price list duplicated** across the paywall and the change-plan sheet | `customize.jsx:184`, `settings.jsx:384` | Two places to edit one price. Unify on the way in |
-| `QA Findings.html` **pacing note is internally stale** — still says "116 cards across 15 lessons" | `QA Findings.html` | The hero was updated to 32/257; the judgement section below it was not. Real figure: 257 cards / 32 lessons ≈ 8.0 per lesson |
-| Three route counts in circulation (103 / 96 / 97) | [§4](04-information-architecture.md) | 103 is the source of truth |
+| **Streak advancement is not implemented** | `app.jsx` | The streak is seeded at 7 and never incremented — no day rollover, no date comparison, no rule for what counts as a day's activity. Everything in [§5](05-mechanics.md) 5.4 (earn 1 per 7 days, cap 2, spend on a miss) describes a system that is drawn but not driven. **The rule for what ticks the streak is an open product decision, not a porting detail** — and it determines whether the app has a day 33 at all. See [PRODUCT.md](PRODUCT.md) §15 |
 | **`cq-recent-terms` is persisted but consumed by nothing** | `app.jsx:336–340`, `dictionary.jsx:316` | The key is written on every term open and passed in as `recent`; `DictionaryHome` never reads it and no recent-strip component exists. Build the strip or stop writing the key |
 | **Path expanded/collapsed state lives in a `window` global** — `window.__pathExpandedMods` | `screens.jsx:1280` | Mirrored out of React state; not persisted, lost on reload. Decide deliberately whether a collapsed module stays collapsed across launches |
 | **Three components accept props they never use** — `ProfileTab` (`theme`, `onTheme`), `LearnTab` (`onStreak`, `onOpenModule`, `onOpenSaved`, `onOpenDictionary`, `onOpenTermOfDay`, `brewPathMode`) | `screens.jsx` | 8 dead props. Harmless in the prototype, misleading when porting — they imply entry points that do not exist on those screens |
@@ -60,7 +69,7 @@ The structural pass was re-run against the grown build. Every mechanical check i
 | **Four future modules are promised to users with no design record of any kind** — Espresso Basics · Milk Drinks · Brewing Gear · Coffee Tasting | `screens.jsx:1147–1152` is their only appearance in the repo; `v1 Readiness Audit.html` never mentions them | **The largest open item in the product.** Four names ship to every user on the Path tab, backed by nothing: no lesson list, no scope, no rationale, no entry in the scope decision record. Either write the scope, or stop showing them |
 | **The radius scale in earlier versions of this doc was wrong** (4/12/14/16/20 vs the real 2 / 14 / 999) | this doc, [§3](03-design-system.md) | Corrected. Flagged because anything built from the old line has the wrong corner on every card and button |
 
-**Explicitly not verified by machine — needs a human pass:** whether each question is worth asking, whether explanations teach *why wrong answers are wrong*, pacing (avg ~8.1 cards/lesson), and real-device feel (safe areas, thumb reach, hairline visibility, whether drill timers feel generous or stressful). This is the more valuable pass and no amount of structural checking substitutes for it.
+**Explicitly not verified by machine — needs a human pass:** whether each question is worth asking, whether explanations teach *why wrong answers are wrong*, pacing (avg ~8.0 cards/lesson — 257 across 32), and real-device feel (safe areas, thumb reach, hairline visibility, whether drill timers feel generous or stressful). This is the more valuable pass and no amount of structural checking substitutes for it.
 
 **Remaining engineering work named by the audit:**
 1. Wire StoreKit — receipt validation, restore, and a real trial counter (the prototype's is frozen).

@@ -97,17 +97,8 @@ function PredictCard({ card, onContinue, onPredict, onTermTap }) {
       </div>
 
       {pick && (
-        <div className="fade-up" style={{ marginTop: 22, display: 'flex', gap: 13, alignItems: 'flex-start' }}>
-          <div style={{ flexShrink: 0, marginTop: -6 }}>
-            <window.Roasty state="card" size={64}/>
-          </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div className="smallcaps-mono" style={{ marginBottom: 7 }}>Your guess · {pick}</div>
-            <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.55, color: 'var(--ink-mute)', margin: 0, textWrap: 'pretty' }}>
-              {card.hold}
-            </p>
-          </div>
-        </div>
+        <window.AnswerFeedback state="card" size={64} bodySize="body"
+          label={'Your guess \u00B7 ' + pick} text={card.hold}/>
       )}
 
       <div style={{ flex: 1 }}/>
@@ -124,7 +115,7 @@ function PredictCard({ card, onContinue, onPredict, onTermTap }) {
 // The applied beat: a scenario with two plausible real-world buys. Feedback is
 // framed as consequence rather than score, because neither option is wrong in
 // the abstract — only wrong for THIS cup.
-function DecisionCard({ card, onContinue, onCorrect, onTermTap }) {
+function DecisionCard({ card, onContinue, onCorrect}) {
   const [pick, setPick] = useStateAC(null);
   const [order] = useStateAC(() => acShuffle(card.options.length));
   const chosen = pick == null ? null : card.options[pick];
@@ -177,26 +168,13 @@ function DecisionCard({ card, onContinue, onCorrect, onTermTap }) {
       </div>
 
       {pick != null && (
-        <div className="fade-up" style={{ marginTop: 20, display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-          <div style={{ flexShrink: 0, marginTop: -8 }}>
-            <window.Roasty state={right ? 'correct' : 'wrong'} size={72}/>
-          </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div className="smallcaps-mono" style={{ marginBottom: 8 }}>
-              {right ? 'Good call' : 'That would backfire'}
-            </div>
-            <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.55, color: 'var(--ink-mute)', margin: 0, textWrap: 'pretty' }}>
-              {right ? card.right : card.wrong}
-            </p>
-          </div>
-        </div>
+        <window.AnswerFeedback correct={right} bodySize="body"
+          label={right ? 'Good call' : 'That would backfire'}
+          text={right ? card.right : card.wrong}/>
       )}
 
       {pick != null && card.note && (
-        <p className="fade-up" style={{
-          fontSize: 'var(--t-body)', lineHeight: 1.55, color: 'var(--ink-mute)', margin: '18px 0 0',
-          paddingTop: 16, borderTop: '1px solid var(--rule)', textWrap: 'pretty',
-        }}>{card.note}</p>
+        <window.CardTakeaway text={card.note}/>
       )}
 
       <div style={{ flex: 1 }}/>
@@ -246,31 +224,20 @@ function RecallCard({ card, onContinue, onCorrect, prediction }) {
       </div>
 
       {answered && (
-        <p className="fade-up" style={{ fontSize: 'var(--t-body)', lineHeight: 1.55, color: 'var(--ink-mute)', margin: '18px 0 0', textWrap: 'pretty' }}>
-          {card.explain}
-        </p>
+        <window.AnswerFeedback correct={pick === correctIdx} bodySize="body"
+          label={pick === correctIdx ? 'Correct' : 'Not quite'}
+          text={card.explain}/>
       )}
 
-      {/* Prediction payoff — closes the loop opened on the first card. */}
+      {/* Prediction payoff — closes the loop opened on the first card. Artless:
+          it is a reply to the guess, not a second verdict on this answer. */}
       {answered && prediction && (
-        <div className="fade-up" style={{
-          marginTop: 22, paddingTop: 18, borderTop: '1px solid var(--rule)',
-          display: 'flex', gap: 13, alignItems: 'flex-start',
-        }}>
-          <div style={{ flexShrink: 0, marginTop: -6 }}>
-            <window.Roasty state={guessedRight ? 'correct' : 'card'} size={64}/>
-          </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div className="smallcaps-mono" style={{ marginBottom: 7 }}>
-              {guessedRight ? 'You called it' : 'Your opening guess'}
-            </div>
-            <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.55, color: 'var(--ink-mute)', margin: 0, textWrap: 'pretty' }}>
-              {guessedRight
-                ? 'You guessed ' + prediction.pick + ' before the lesson started — and you were right.'
-                : 'You guessed ' + prediction.pick + ' before the lesson started. It\u2019s ' + prediction.a + ' \u2014 now you know why.'}
-            </p>
-          </div>
-        </div>
+        <window.AnswerFeedback art={false} borderTop marginTop={18} bodySize="body"
+          state={guessedRight ? 'correct' : 'card'}
+          label={guessedRight ? 'You called it' : 'Your opening guess'}
+          text={guessedRight
+            ? 'You guessed ' + prediction.pick + ' before the lesson started — and you were right.'
+            : 'You guessed ' + prediction.pick + ' before the lesson started. It\u2019s ' + prediction.a + ' \u2014 now you know why.'}/>
       )}
 
       {answered && (
@@ -281,7 +248,14 @@ function RecallCard({ card, onContinue, onCorrect, prediction }) {
           <h1 className="ff-display" style={{
             fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.08, letterSpacing: '-0.02em',
             margin: 0, color: 'var(--ink)', textWrap: 'balance',
-          }}>{card.line}</h1>
+          }}>
+            {/* Each sentence takes its own row. These lines are two-beat aphorisms
+                ("Coffee is fruit. Everything else follows from that.") and the
+                parallel only reads if the break lands on the full stop. */}
+            {String(card.line).split(/(?<=[.?!])\s+/).map((s, i) => (
+              <span key={i} style={{ display: 'block' }}>{s}</span>
+            ))}
+          </h1>
         </div>
       )}
 

@@ -234,7 +234,7 @@ function ActiveBrewCard({ challenge, mode, onLog, onSkip, onDismiss, onOpenCard,
   const accentRule = 'color-mix(in oklab, var(--accent) 30%, var(--rule))';
 
   if (mode === 'completed') {
-    const card = challenge.cardId && (window.COLLECTION || []).find(c => c.id === challenge.cardId);
+    const card = challenge.cardId && window.findCard && window.findCard(challenge.cardId);
     return (
       <div className="px-24" style={{ paddingTop: 28 }}>
         <div className="brew-cheer" style={{

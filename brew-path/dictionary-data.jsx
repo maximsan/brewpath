@@ -212,7 +212,7 @@ const DICT_TERMS = [
     short: 'The shared site where a village’s cherries are pulped, fermented, washed and dried — often the real author of a coffee’s cup.',
     deep: 'Smallholders rarely process their own cherries. They deliver to a station, which does the work for hundreds of farms at once — so on a Kenyan or Ethiopian bag, the station name is the closest thing to a producer name you get.',
     example: 'Two Ethiopian lots from the same hillside can taste different because they went to different stations.',
-    related: ['washed', 'fermentation', 'traceability'] },
+    related: ['washed', 'fermentation', 'traceability'], lesson: 'm1l3' },
   { id: 'wet-hulled', term: 'Wet-Hulled', cat: 'processing', aliases: ['wet-hulled', 'wet hulled', 'wet-hulling', 'wet hulling', 'giling basah'],
     short: 'An Indonesian method where the parchment comes off while the bean is still damp — the source of that earthy, heavy Sumatran cup.',
     deep: 'Elsewhere coffee dries fully inside its parchment; here it is hulled part-dried, at high moisture, and finishes drying bare. It is a response to a wet climate that never gives you enough dry days, and it turns the beans a distinctive jade colour.',
@@ -565,16 +565,40 @@ window.learnedTermSet = learnedTermSet;
 // learnedTermSet derives knowledge state from it. Neither survives a link to a
 // lesson that never says the word, so this audits the claim against the lesson
 // text. Run window.dictLessonAudit() after editing either file: [] means clean.
+// It reads only the fields a learner actually SEES — a data field no card renders
+// (paragraphs[0] and [2..] of a fill card, for one) would otherwise pass a check
+// whose whole point is that the word appears on screen.
+function lessonVisibleText(l) {
+  const out = [l.title, l.moduleLabel];
+  const push = v => {
+    if (v == null) return;
+    if (typeof v === 'string' || typeof v === 'number') out.push(String(v));
+    else if (Array.isArray(v)) v.forEach(push);
+    else if (typeof v === 'object') ['t', 'sub', 'l', 'r', 'label', 'title', 'summary', 'fact'].forEach(k => push(v[k]));
+  };
+  (l.cards || []).forEach(c => {
+    ['label', 'title', 'body', 'question', 'prompt', 'scenario', 'clue', 'explain', 'right', 'wrong', 'note', 'line', 'feedback', 'hold', 'a']
+      .forEach(k => push(c[k]));
+    push(c.choices); push(c.options); push(c.pairs); push(c.items); push(c.meta); push(c.scale); push(c.leftLabel); push(c.rightLabel);
+    // Fill cards render the sentence parts plus paragraphs[1] as support copy;
+    // plain concept cards render every paragraph.
+    if (c.fill) { c.fill.forEach(p => push(typeof p === 'object' ? [p.a, p.o, p.label] : p)); push((c.paragraphs || [])[1]); }
+    else push(c.paragraphs);
+  });
+  if (l.reward) push([l.reward.title, l.reward.summary, l.reward.fact, l.reward.meta]);
+  return out.join(' ');
+}
 function dictLessonAudit() {
   const lessons = window.LESSONS || {};
   return DICT_TERMS.filter(t => t.lesson).map(t => {
     const l = lessons[t.lesson];
     if (!l) return { id: t.id, lesson: t.lesson, problem: 'lesson does not exist' };
-    const text = JSON.stringify(l).toLowerCase();
+    const text = lessonVisibleText(l).toLowerCase();
     const words = [t.term.toLowerCase()].concat(t.aliases || []);
     return words.some(w => text.includes(w)) ? null : { id: t.id, lesson: t.lesson, problem: 'lesson never mentions the term' };
   }).filter(Boolean);
 }
 window.dictLessonAudit = dictLessonAudit;
+window.lessonVisibleText = lessonVisibleText;
 window.dictTermOfDay = dictTermOfDay;
 window.dictCatCounts = dictCatCounts;

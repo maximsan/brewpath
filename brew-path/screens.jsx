@@ -191,17 +191,21 @@ function WeekStrip({ size = 'lg', frozen, streak = 0 }) {
         const iced = froze.has(i);
         const done = i <= todayIdx && i >= runStart && !iced;
         const today = i === todayIdx;
+        // Accent means earned. Today keeps a position cue either way, but it stays
+        // neutral until the day is actually done — otherwise a reset streak shows
+        // one glowing accent ring and reads as a credited day.
+        const cue = done ? 'var(--accent)' : 'var(--ink-mute)';
         return (
           <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: size === 'lg' ? 9 : 7 }}>
             <div className="ff-mono" style={{
               fontSize: size === 'lg' ? 11 : 9, letterSpacing: '0.1em', textTransform: 'uppercase',
-              color: today ? 'var(--accent)' : 'var(--ink-mute)',
+              color: today ? (done ? 'var(--accent)' : 'var(--ink)') : 'var(--ink-mute)',
             }}>{d}</div>
             <div style={{
               width: dot, height: dot, borderRadius: 999,
               background: done ? 'var(--accent)' : 'transparent',
               border: '1.5px solid ' + (done ? 'var(--accent)' : iced ? 'color-mix(in oklab, var(--accent) 55%, var(--rule))' : 'var(--rule)'),
-              boxShadow: today ? '0 0 0 3px color-mix(in oklab, var(--accent) 22%, transparent)' : 'none',
+              boxShadow: today ? '0 0 0 3px color-mix(in oklab, ' + cue + ' 22%, transparent)' : 'none',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               {done && (
@@ -343,7 +347,7 @@ function StreakScreen({ streak, frozenDays, freezesHeld = 0, freezeCap = 2, next
         </div>
       </div>
 
-      <ShareStreakSheet streak={streak} nextMilestone={nextMilestone} frozen={iced}
+      <ShareStreakSheet streak={streak} frozen={iced}
                         open={shareOpen} onClose={() => setShareOpen(false)}/>
     </div>
   );
@@ -366,7 +370,7 @@ function ShareTarget({ label, children, onClick }) {
   );
 }
 
-function ShareStreakSheet({ streak, nextMilestone, frozen, open, onClose }) {
+function ShareStreakSheet({ streak, frozen, open, onClose }) {
   const [copied, setCopied] = React.useState(false);
   React.useEffect(() => { if (!open) setCopied(false); }, [open]);
   return (
@@ -576,9 +580,8 @@ function SettingsScreen({ theme, onTheme, onClose, onAbout, onAccount, onSubscri
       )}
       {ConfirmSheet && (
         <ConfirmSheet open={resetOpen} danger
-          eyebrow="RESET PROGRESS"
           title="Start again from seed?"
-          body="Your tree returns to a bare seed and every lesson locks back to the start. There’s no undo."
+          body="Your tree returns to a bare seed, every lesson locks back to the start, and your saved items are cleared. There’s no undo."
           lines={progressSummary}
           confirmLabel="Reset everything"
           onConfirm={() => { setResetOpen(false); onReset && onReset(); }}
@@ -586,7 +589,6 @@ function SettingsScreen({ theme, onTheme, onClose, onAbout, onAccount, onSubscri
       )}
       {ConfirmSheet && showDataExport && (
         <ConfirmSheet open={dataOpen}
-          eyebrow="YOUR DATA"
           title="Get a copy of your data"
           body={'We’ll email an export of your progress, streaks and tasting notes to ' + ((window.USER || {}).email || '') + '. It usually arrives within a few minutes.'}
           confirmLabel="Email my data"
@@ -596,11 +598,10 @@ function SettingsScreen({ theme, onTheme, onClose, onAbout, onAccount, onSubscri
       )}
       {ConfirmSheet && (
         <ConfirmSheet open={deleteOpen} danger
-          eyebrow="DELETE ACCOUNT"
-          title="Delete your account?"
-          body="This permanently erases your account and everything in it after 30 days. Sign back in before then and it’s all restored."
-          confirmLabel="Delete my account"
-          cancelLabel="Keep my account"
+          title="Delete account?"
+          body="Your account and all associated data will be permanently deleted. This action cannot be undone."
+          confirmLabel="Delete account"
+          cancelLabel="Cancel"
           onConfirm={() => { setDeleteOpen(false); onDeleteAccount && onDeleteAccount(); }}
           onClose={() => setDeleteOpen(false)}/>
       )}
@@ -613,49 +614,7 @@ window.TreeScreen = TreeScreen;
 window.SettingsScreen = SettingsScreen;
 window.WeekStrip = WeekStrip;
 
-function PickScreen({ label, title, options, onContinue, screenLabel }) {
-  const [picked, setPicked] = useState(null);
-  return (
-    <div className="screen" data-screen-label={screenLabel}>
-      <div className="scroll" style={{ display: 'flex', flexDirection: 'column', paddingTop: 80, paddingBottom: 40 }}>
-        <div className="px-24" style={{ paddingTop: 24, paddingBottom: 28 }}>
-          <div className="smallcaps" style={{ marginBottom: 14 }}>{label}</div>
-          <h1 className="ff-display" style={{
-            fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.1, letterSpacing: '-0.01em',
-            margin: 0, color: 'var(--ink)',
-          }}>{title}</h1>
-        </div>
-
-        <div className="px-24 stack gap-12" style={{ flex: 1 }}>
-          {options.map((opt, i) => {
-            const sel = picked === i;
-            return (
-              <div key={i}
-                   className={'pick-card' + (sel ? ' selected' : '')}
-                   onClick={() => setPicked(i)}>
-                <div>
-                  <div className="pc-title">{opt.title}</div>
-                  <div className="pc-desc">{opt.desc}</div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="px-24" style={{ paddingTop: 24 }}>
-          <button className="btn btn-primary" disabled={picked === null}
-                  onClick={() => onContinue(options[picked])}>
-            Continue
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ───────────────────────────────────────────────────────────
-// Header entry button — persistent top-right access to the Coffee Dictionary,
-// mirroring DuelHeaderButton. Sits to the left of the duel icon on the Learn tab.
 // Header entry button — access to the Coffee Dictionary. Rendered inside the
 // shared AppHeader (static flow); falls back to a floating pill if used solo.
 function DictHeaderButton({ onClick, locked = false, inHeader = false }) {
@@ -754,7 +713,7 @@ window.AppHeader = AppHeader;
 
 // LEARN TAB
 // ───────────────────────────────────────────────────────────
-function LearnTab({ freezeSaved = false, freezesHeld = 0, nextFreezeIn = 7, onDismissFreeze, onLesson, onGame, onStreak, onOpenModule, onOpenSaved, onOpenDictionary, onOpenTermOfDay, onOpenDuel, showDuel = true, savedCount, isLocked, state, brewChallenge, brewMode, brewAutoHide = true, brewPointsAwarded = true, onBrewLog, onBrewSkip, onBrewDismiss, onBrewCard, brewCompleted, brewActiveId, brewSaved, onBrewUnsave, brewPathMode, onBrewAction }) {
+function LearnTab({ freezeSaved = false, freezesHeld = 0, nextFreezeIn = 7, onDismissFreeze, onLesson, onGame, onOpenDuel, showDuel = true, isLocked, state, brewChallenge, brewMode, brewAutoHide = true, brewPointsAwarded = true, onBrewLog, onBrewSkip, onBrewDismiss, onBrewCard, brewCompleted, brewActiveId, brewSaved, onBrewUnsave, onBrewAction }) {
   const lock = isLocked || (() => false);
   const tod = window.dictTermOfDay ? window.dictTermOfDay() : null;
   const termCount = (window.DICT_TERMS || []).length;
@@ -1224,16 +1183,16 @@ function ComingSoonPath({ compact = false }) {
 // ───────────────────────────────────────────────────────────
 // A collapsed module on the Focused path: one tappable row instead of an
 // expanded lesson list. Completed modules review; locked modules just wait.
-function CompactModuleRow({ mod, prereq, onOpenModule, nav = true }) {
+function CompactModuleRow({ mod, prereq }) {
   const locked = mod.locked;
   const n = mod.lessons.length;
   const complete = !locked && mod.lessons.every(l => l.status === 'complete');
-  const interactive = nav && !locked;
+  // Always static: the Path shows these as a summary row, never a destination.
+  const interactive = false;
   return (
     <div className="px-24" style={{ marginBottom: 20 }}>
       <button
-        onClick={() => { interactive && onOpenModule && onOpenModule(mod.id); }}
-        disabled={!interactive}
+        disabled
         style={{
           width: '100%', appearance: 'none', border: 'none', background: 'transparent',
           cursor: interactive ? 'pointer' : 'default', textAlign: 'left', padding: 0, display: 'block',
@@ -1263,7 +1222,7 @@ function CompactModuleRow({ mod, prereq, onOpenModule, nav = true }) {
   );
 }
 
-function PathTab({ onLesson, onOpenModule, brewCompleted, brewActiveId, brewSaved, brewPathMode, onBrewAction }) {
+function PathTab({ onLesson, brewCompleted, brewActiveId, brewSaved, brewPathMode, onBrewAction }) {
   const totalLessons = MODULES.reduce((a, m) => a + m.lessons.length, 0);
   const done = MODULES.flatMap(m => m.lessons).filter(l => l.status === 'complete').length;
   const unlocked = MODULES.filter(m => !m.locked).reduce((a, m) => a + m.lessons.length, 0);
@@ -1327,7 +1286,7 @@ function PathTab({ onLesson, onOpenModule, brewCompleted, brewActiveId, brewSave
           // row, and completed modules into a tappable accordion row (expand to
           // review lessons, replay, and reach challenges).
           if (!isActive && !allDone) {
-            return <CompactModuleRow key={mod.id} mod={mod} prereq={prereq} onOpenModule={onOpenModule} nav={false}/>;
+            return <CompactModuleRow key={mod.id} mod={mod} prereq={prereq}/>;
           }
           // Module Brew Challenge — the only challenge shown on Path.
           const moduleChallenge = window.brewForModule ? window.brewForModule(mod.id) : null;
@@ -1468,7 +1427,8 @@ function PathTab({ onLesson, onOpenModule, brewCompleted, brewActiveId, brewSave
 // CARDS TAB
 // ───────────────────────────────────────────────────────────
 function CardsTab({ onOpen, brewCompleted }) {
-  const collectibles = COLLECTION.filter(c => c.kind !== 'training');
+  // COLLECTION is collectibles only — the training guides live in TRAINING_CARDS.
+  const collectibles = COLLECTION;
   const earned = collectibles.filter(c => c.earned).length;
   const stampedFor = (c) => {
     const ch = c.earned && window.brewForCard ? window.brewForCard(c.id) : null;
@@ -2415,7 +2375,7 @@ function CardSheet({ card, open, onClose, brewCompleted, brewActive, onBrewTry, 
 // ───────────────────────────────────────────────────────────
 // PROFILE TAB
 // ───────────────────────────────────────────────────────────
-function ProfileTab({ state, theme, onTheme, brewDone, brewTotal, frozenDays, onOpenStreak, onOpenTree, onOpenCustomize, onOpenSaved, onOpenDuel, onOpenBrew, onPractice, showDuel = true, savedCount, isPlus, isLocked, onOpenSettings }) {
+function ProfileTab({ state, brewDone, brewTotal, frozenDays, onOpenStreak, onOpenTree, onOpenCustomize, onOpenSaved, onOpenDuel, onOpenBrew, onPractice, showDuel = true, savedCount, isLocked}) {
   const lock = isLocked || (() => false);
   const names = window.STAGE_NAMES || [];
   const pretty = (n) => n ? n.charAt(0) + n.slice(1).toLowerCase() : '';
@@ -2424,7 +2384,7 @@ function ProfileTab({ state, theme, onTheme, brewDone, brewTotal, frozenDays, on
   // Tree stage is core-course progress, not points.
   const stage = window.treeStageFromCore ? window.treeStageFromCore(lessonsDone) : 3;
   const stageName = pretty(names[stage - 1] || 'GROWING');
-  const collection = (window.COLLECTION || []).filter(c => c.kind !== 'training');
+  const collection = window.COLLECTION || [];
   const cardsDone = collection.filter(c => c.earned).length;
   const modules = window.MODULES || [];
   const modulesDone = modules.filter(m => m.lessons.length && m.lessons.every(l => l.status === 'complete')).length;
@@ -2484,11 +2444,13 @@ function ProfileTab({ state, theme, onTheme, brewDone, brewTotal, frozenDays, on
               <div style={{ display: 'flex', alignItems: 'center', gap: 13 }}>
                 <div style={{
                   width: 46, height: 46, borderRadius: 999,
-                  background: 'color-mix(in oklab, var(--accent) 13%, var(--surface))',
+                  background: state.streak > 0
+                    ? 'color-mix(in oklab, var(--accent) 13%, var(--surface))'
+                    : 'color-mix(in oklab, var(--ink-mute) 10%, var(--surface))',
                   display: 'grid', placeItems: 'center', flexShrink: 0,
                 }}>
                   {/* Same mark the Streak screen puts inside its ring — the card is a preview of that screen, so it cannot invent its own glyph. */}
-                  <SteamMark w={22}/>
+                  <SteamMark w={22} color={state.streak > 0 ? 'var(--accent)' : 'var(--ink-mute)'}/>
                 </div>
                 <div>
                   <div className="ff-mono" style={{ fontSize: 'var(--t-title)', fontWeight: 500, lineHeight: 1, letterSpacing: '-0.01em', color: 'var(--ink)' }}>{state.streak} days</div>
@@ -2505,7 +2467,7 @@ function ProfileTab({ state, theme, onTheme, brewDone, brewTotal, frozenDays, on
         <div className="px-24" style={{ paddingTop: 14 }}>
           <div className="ff-mono" style={{ fontSize: 'var(--t-label)', letterSpacing: '0.06em', color: 'var(--ink-mute)', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
             <PointsBean size={13} crease="var(--bg)"/>
-            {lessonsDone} lesson{lessonsDone === 1 ? '' : 's'} · {state.points} points
+            {`${lessonsDone} lesson${lessonsDone === 1 ? '' : 's'} · ${state.points} points`}
           </div>
         </div>
 
@@ -2696,16 +2658,14 @@ function SettingsRow(props) {
 // ───────────────────────────────────────────────────────────
 // TAB BAR
 // ───────────────────────────────────────────────────────────
-function TabBar({ active, onChange, isV1 = true, navModel = 'tabs' }) {
-  const merged = navModel === 'merged';
+function TabBar({ active, onChange, isV1 = true }) {
   const tabs = [
-    { id: 'learn',   label: merged ? 'LEARN' : 'TODAY',   Icon: IconCup   },
+    { id: 'learn',   label: 'TODAY',   Icon: IconCup   },
     { id: 'path',    label: 'PATH',    Icon: IconRoute },
     { id: 'atlas',   label: 'ATLAS',   Icon: IconGlobe },
     { id: 'cards',   label: 'CARDS',   Icon: IconCards },
     { id: 'profile', label: 'PROFILE', Icon: IconLeaf  },
-  ].filter(t => !isV1 || t.id !== 'atlas') // Atlas defers to v2
-   .filter(t => !merged || t.id !== 'path');        // merged: Path folds into Learn
+  ].filter(t => !isV1 || t.id !== 'atlas'); // Atlas defers to v2
   return (
     <div className="tabbar" style={{ gridTemplateColumns: 'repeat(' + tabs.length + ', 1fr)' }}>
       {tabs.map(t => {
@@ -2871,7 +2831,6 @@ window.MINI_GAMES = MINI_GAMES;
 window.GameIntroScreen = GameIntroScreen;
 window.OnboardingWelcome = OnboardingWelcome;
 window.OnboardingRoasty = OnboardingRoasty;
-window.PickScreen = PickScreen;
 window.LearnTab = LearnTab;
 window.DictHeaderButton = DictHeaderButton;
 window.PathTab = PathTab;

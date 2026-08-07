@@ -246,7 +246,7 @@ function OnbExpectation({ voice, count, copyTemplate }) {
 }
 
 // ── Closing hand-off — a small celebratory Roasty moment ────────────────────
-function OnbClosing({ voice }) {
+function OnbClosing() {
   return (
     <div className="px-24" style={{
       flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -318,7 +318,7 @@ function OnboardingFlow({ initialSlug = 'expectation', t = {}, onExit, onBack })
   if (slug === 'expectation') {
     body = <OnbExpectation voice={voice} count={qCount} copyTemplate={t.expectCopy}/>;
   } else if (slug === 'onboarding-done') {
-    body = <OnbClosing voice={voice}/>;
+    body = <OnbClosing/>;
   } else {
     body = <OnbQuestion q={ONB_QUESTIONS[slug]} value={answers[slug]} onChange={setAnswer}
                         flow={flow} voice={voice} qPos={qPos} qCount={qCount}/>;

@@ -34,20 +34,39 @@ function SettingsToggle({ on, onChange, label }) {
 }
 
 // ── ConfirmSheet — reusable bottom-sheet confirmation ─────────
-// Used for destructive actions (Reset progress). `lines` is an itemised
-// list of exactly what the action affects, so the stakes are concrete.
-function ConfirmSheet({ open, eyebrow, title, body, lines, confirmLabel, cancelLabel = 'Keep my progress', danger, onConfirm, onClose }) {
+// ── Sheet — the one bottom-sheet shell ──────────────────────────
+// Backdrop, panel, handle and content padding live here and nowhere else, so
+// sheet behaviour is changed once. ConfirmSheet, TimeSheet and PlanSheet all
+// wrap it. No sheet carries an eyebrow — each opens on its title.
+function Sheet({ open, onClose, children }) {
   return (
     <>
       <div className={'sheet-backdrop' + (open ? ' open' : '')} onClick={onClose}/>
       <div className={'sheet' + (open ? ' open' : '')}>
         <div className="sheet-handle"/>
-        <div className="sheet-content">
-          {eyebrow && <div className="smallcaps" style={{ marginBottom: 8, color: danger ? 'var(--berry)' : 'var(--ink-mute)' }}>{eyebrow}</div>}
-          <h2 className="ff-display" style={{
-            fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em',
-            margin: 0, color: 'var(--ink)',
-          }}>{title}</h2>
+        <div className="sheet-content">{children}</div>
+      </div>
+    </>
+  );
+}
+
+// Every sheet opens on its title, in the same display face at the same size.
+function SheetTitle({ children }) {
+  return (
+    <h2 className="ff-display" style={{
+      fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em',
+      margin: 0, color: 'var(--ink)',
+    }}>{children}</h2>
+  );
+}
+
+// ── ConfirmSheet — reusable bottom-sheet confirmation ─────────
+// Used for destructive actions (Reset progress). `lines` is an itemised
+// list of exactly what the action affects, so the stakes are concrete.
+function ConfirmSheet({ open, title, body, lines, confirmLabel, cancelLabel = 'Keep my progress', danger, onConfirm, onClose }) {
+  return (
+    <Sheet open={open} onClose={onClose}>
+      <SheetTitle>{title}</SheetTitle>
 
           {body && (
             <p style={{ margin: '12px 0 0', fontSize: 'var(--t-support)', lineHeight: 1.55, color: 'var(--ink-mute)', textWrap: 'pretty' }}>{body}</p>
@@ -76,9 +95,7 @@ function ConfirmSheet({ open, eyebrow, title, body, lines, confirmLabel, cancelL
               style={danger ? { background: 'var(--berry)', color: 'var(--accent-ink)' } : undefined}>{confirmLabel}</button>
             {cancelLabel && <button className="btn btn-ghost" onClick={onClose}>{cancelLabel}</button>}
           </div>
-        </div>
-      </div>
-    </>
+    </Sheet>
   );
 }
 
@@ -88,16 +105,8 @@ function TimeSheet({ open, value, onClose, onSave }) {
   const [sel, setSel] = useStateS(value);
   useEffectS(() => { if (open) setSel(value); }, [open, value]);
   return (
-    <>
-      <div className={'sheet-backdrop' + (open ? ' open' : '')} onClick={onClose}/>
-      <div className={'sheet' + (open ? ' open' : '')}>
-        <div className="sheet-handle"/>
-        <div className="sheet-content">
-          <div className="smallcaps" style={{ marginBottom: 8 }}>DAILY REMINDER</div>
-          <h2 className="ff-display" style={{
-            fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em',
-            margin: 0, color: 'var(--ink)',
-          }}>A nudge to brew</h2>
+    <Sheet open={open} onClose={onClose}>
+          <SheetTitle>A nudge to brew</SheetTitle>
           <p style={{ margin: '12px 0 0', fontSize: 'var(--t-body)', lineHeight: 1.55, color: 'var(--ink-mute)' }}>
             One quiet reminder a day to keep your streak alive.
           </p>
@@ -121,9 +130,7 @@ function TimeSheet({ open, value, onClose, onSave }) {
 
           <button className="btn btn-primary" style={{ marginTop: 22 }}
             onClick={() => onSave(sel)}>Set reminder</button>
-        </div>
-      </div>
-    </>
+    </Sheet>
   );
 }
 
@@ -142,11 +149,22 @@ function TimeSheet({ open, value, onClose, onSave }) {
 function NavRow({ label, sub, value, accent, dim, external, onClick, pending, pendingLabel, toggle, toggleOn, onToggle }) {
   const Toggle = window.SettingsToggle;
   const act = pending ? undefined : (toggle ? () => onToggle && onToggle(!toggleOn) : onClick);
+  // A row that DOES something is a button, so it is focusable, Enter/Space
+  // activated and announced as a control. Toggle rows stay a div: the switch
+  // inside them is already a button, and buttons cannot nest.
+  const asButton = !toggle && !!onClick;
+  const Tag = asButton ? 'button' : 'div';
+  const tagProps = asButton
+    ? { type: 'button', onClick: act, disabled: !!pending }
+    : { onClick: act };
   return (
-    <div onClick={act} aria-busy={pending || undefined} style={{
+    <Tag {...tagProps} aria-busy={pending || undefined} style={{
       display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
       padding: '16px 0', borderBottom: '1px solid var(--rule)', cursor: pending ? 'default' : 'pointer',
       opacity: dim ? 0.55 : 1, transition: 'opacity 180ms ease',
+      width: '100%', appearance: 'none', background: 'transparent', border: 'none',
+      borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--rule)',
+      textAlign: 'left', font: 'inherit', color: 'inherit', minHeight: 44,
     }}>
       <span style={{ minWidth: 0, flex: 1 }}>
         <span style={{ display: 'block', fontSize: 'var(--t-body)', color: pending ? 'var(--ink-mute)' : (accent ? 'var(--berry)' : 'var(--ink)'), whiteSpace: 'nowrap' }}>{pending ? (pendingLabel || label) : label}</span>
@@ -166,7 +184,7 @@ function NavRow({ label, sub, value, accent, dim, external, onClick, pending, pe
           )}
         </span>
       )}
-    </div>
+    </Tag>
   );
 }
 
@@ -389,13 +407,8 @@ function PlanSheet({ open, value, onClose, onSave }) {
   const [sel, setSel] = useStateS(value);
   useEffectS(() => { if (open) setSel(value); }, [open, value]);
   return (
-    <>
-      <div className={'sheet-backdrop' + (open ? ' open' : '')} onClick={onClose}/>
-      <div className={'sheet' + (open ? ' open' : '')}>
-        <div className="sheet-handle"/>
-        <div className="sheet-content">
-          <div className="smallcaps" style={{ marginBottom: 8 }}>BILLING CYCLE</div>
-          <h2 className="ff-display" style={{ fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em', margin: 0, color: 'var(--ink)' }}>Change your plan</h2>
+    <Sheet open={open} onClose={onClose}>
+          <SheetTitle>Change your plan</SheetTitle>
           <p style={{ margin: '12px 0 0', fontSize: 'var(--t-body)', lineHeight: 1.55, color: 'var(--ink-mute)' }}>
             Switches take effect at your next renewal. Nothing changes today.
           </p>
@@ -422,9 +435,7 @@ function PlanSheet({ open, value, onClose, onSave }) {
           </div>
           <button className="btn btn-primary" style={{ marginTop: 22 }}
             onClick={() => onSave(sel)}>{sel === value ? 'Keep current plan' : 'Switch plan'}</button>
-        </div>
-      </div>
-    </>
+    </Sheet>
   );
 }
 
@@ -453,11 +464,11 @@ function SubscriptionScreen({ isPlus, plan = 'yearly', renews = '18 Jun 2027', t
     }, 1500);
   };
   const RESTORE_RESULT = {
-    plus:  { eyebrow: 'PLUS RESTORED', title: 'Your Plus is back.',
+    plus:  { title: 'Your Plus is back.',
              body: 'We found your subscription on this Apple ID and reactivated it. Saved is unlimited again, and Roasty and your plant are yours to dress.' },
-    none:  { eyebrow: 'NOTHING TO RESTORE', title: 'No purchase on this Apple ID.',
+    none:  { title: 'No purchase on this Apple ID.',
              body: 'If you bought Plus with a different Apple ID, sign in with that one and try again.' },
-    error: { eyebrow: 'RESTORE FAILED', title: 'We couldn’t reach the store.',
+    error: { title: 'We couldn’t reach the store.',
              body: 'Check your connection and try again.' },
   };
   const PlanSheetC = window.PlanSheet;
@@ -589,7 +600,6 @@ function SubscriptionScreen({ isPlus, plan = 'yearly', renews = '18 Jun 2027', t
       )}
       {ConfirmSheet && (
         <ConfirmSheet open={cancelOpen} danger
-          eyebrow={inTrial ? 'CANCEL TRIAL' : 'CANCEL PLUS'}
           title={inTrial ? 'Cancel your free trial?' : 'Cancel your subscription?'}
           body={inTrial
             ? ('You won’t be billed. Plus stays open until ' + firstCharge + ', then the Studio locks and Saved returns to 10 items.')
@@ -601,7 +611,6 @@ function SubscriptionScreen({ isPlus, plan = 'yearly', renews = '18 Jun 2027', t
       )}
       {ConfirmSheet && restoreDone && (
         <ConfirmSheet open={!!restoreDone}
-          eyebrow={RESTORE_RESULT[restoreDone].eyebrow}
           title={RESTORE_RESULT[restoreDone].title}
           body={RESTORE_RESULT[restoreDone].body}
           confirmLabel={restoreDone === 'error' ? 'Try again' : 'Done'}
@@ -690,6 +699,8 @@ window.HEADER_PAD = HEADER_PAD;
 window.useScrollFlag = useScrollFlag;
 window.NavRow = NavRow;
 window.ConfirmSheet = ConfirmSheet;
+window.Sheet = Sheet;
+window.SheetTitle = SheetTitle;
 window.TimeSheet = TimeSheet;
 window.AboutScreen = AboutScreen;
 window.HelpSupportScreen = HelpSupportScreen;

@@ -6,7 +6,7 @@ const { useState: useStateR, useEffect: useEffectR } = React;
 // Lesson Complete — full screen, tree animates from previous
 // points state to new points state. Continue → next lesson.
 // ───────────────────────────────────────────────────────────
-function LessonCompleteScreen({ lesson, result, freezeEarned = false, lessonState, onPractice, fromStage, toStage, prevPoints, newPoints, nextPlayable = true, onContinue, onBack, onDuel, brewChallenge, brewChallengeState, onStartChallenge, onNotNowChallenge, onOpenCards }) {
+function LessonCompleteScreen({ lesson, result, freezeEarned = false, lessonState, onPractice, fromStage, toStage, prevPoints, newPoints, nextPlayable = true, onContinue, onBack, onDuel, brewChallenge, brewChallengeState, onStartChallenge, onNotNowChallenge}) {
   // Tree stages come from CORE-LESSON progress only (fromStage/toStage,
   // via treeStageFromCore). No points-derived fallback — single source of truth.
   const prevStage = fromStage != null ? fromStage : 1;
@@ -188,7 +188,7 @@ function LessonCompleteScreen({ lesson, result, freezeEarned = false, lessonStat
             <window.CloseMark size={16}/>
           </button>
           <div onClick={(e) => e.stopPropagation()} style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-            <RewardCard reward={lesson.reward} module={lesson}/>
+            <RewardCard reward={lesson.reward}/>
           </div>
         </div>
       )}
@@ -323,7 +323,7 @@ function ModuleCompleteScreen({ module, fromStage, toStage, prevPoints, newPoint
               </div>
 
               <div className="px-24" style={{ paddingTop: 22, display: 'flex', justifyContent: 'center', position: 'relative' }}>
-                {half && <RewardCard reward={reward} module={module}/>}
+                {half && <RewardCard reward={reward}/>}
               </div>
 
               <div style={{ flex: 1, minHeight: 24 }}/>
@@ -379,7 +379,7 @@ function ModuleRewardCardScreen({ module, reward, onContinue, onBack, hasNext })
         </div>
 
         <div className="px-24" style={{ paddingTop: 24, display: 'flex', justifyContent: 'center', position: 'relative' }}>
-          <RewardCard reward={reward} module={module}/>
+          <RewardCard reward={reward}/>
         </div>
 
         <div style={{ flex: 1, minHeight: 24 }}/>
@@ -397,7 +397,7 @@ function ModuleRewardCardScreen({ module, reward, onContinue, onBack, hasNext })
 // The card is the module reward, not a receipt. It carries the guide itself —
 // badge, title, summary, spec rows, memorable fact — and deliberately no points
 // total: points are paid per lesson and reported by the completion chip.
-function RewardCard({ reward, module }) {
+function RewardCard({ reward}) {
   const [shown, setShown] = useStateR(false);
   const rows = (reward && reward.meta) || [];
   useEffectR(() => {

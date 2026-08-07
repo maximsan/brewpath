@@ -3,6 +3,87 @@
 
 const { useState: useStateA, useEffect: useEffectA } = React;
 
+// ── Tweaks ───────────────────────────────────────────────────
+// Every key below is documented here, and this list is the whole set — if a key
+// is not in this table it does not exist. Three categories, and the difference
+// matters when you read the code:
+//
+//   PANEL   — has a control in the Tweaks panel. A reviewer can change it.
+//   ROUTED  — no control, but a URL parameter can override the default for one
+//             render, so screens-overview can show a variant as its own tile.
+//             The override is read-only and is never persisted. Each ROUTED row
+//             names the parameter it answers to.
+//   SETTLED — read by the code, but neither a control nor routable: the design
+//             decision behind it is made, and the value is the decision. The
+//             alternate branches are still in the source because they are cheap
+//             to keep and they document what was rejected. Deleting them is a v2
+//             cleanup, not a v1 blocker. To try another value, edit the default
+//             in the block below — every row lists its full value set, and those
+//             are the strings the branches actually test. The default is listed
+//             first.
+//
+// KEY              CAT      VALUES / WHAT SITS BEHIND IT
+// scope            PANEL    v1 | everything. v1 hides Atlas, Duel, the ad layer,
+//                           data export and the mood player — the surfaces the
+//                           readiness audit deferred. `everything` renders them
+//                           so they can be reviewed. SHIPS READING v1.
+// progress         PANEL    default | states-demo | m1-complete | all-unlocked.
+//                           Seeds the completed-lesson set that drives gating,
+//                           the tree and the collection, so a reviewer can see
+//                           late states without playing 32 lessons. states-demo
+//                           also layers DEMO_BEST over the score map, so every
+//                           mastery state appears at once. Dev-only.
+// restoreOutcome   PANEL    plus | none | error. Which of the three Restore
+//                           purchases results the button returns. There is no
+//                           real store yet, so the outcome has to be chosen.
+//                           Dies when StoreKit is wired.
+// voice            SETTLED  field-guide | specimen | plain-spoken. Copy register
+//                           across the app, applied as data-voice on <html>.
+//                           field-guide is the baseline and has no CSS rules of
+//                           its own; the other two override from index.html.
+// onbFlow          ROUTED   guided | fieldguide. Which onboarding direction runs
+//                           — guided keeps Roasty on every question, fieldguide
+//                           steps back. Overridden per-iframe by ?flow= so the
+//                           screens overview can show both (onboarding.jsx:91,
+//                           271). Note the code's own fallback is `guided`; the
+//                           default here wins whenever the tweak is present.
+// roastyVoice      SETTLED  bubble-top | bubble-side | caption. Where Roasty's
+//                           speech sits on an onboarding question.
+// flowDepth        SETTLED  full | standard | essential. How many onboarding
+//                           questions are asked (6 / 4 / 3, ONB_DEPTH).
+//                           v1 does not reach this flow at all — Meet Roasty
+//                           goes straight to Learn (app.jsx:1063), because the
+//                           question flow is deferred to v2. The isV1 override
+//                           below pins the depth to `standard` for anyone who
+//                           deep-links in to review it, so editing the default
+//                           here changes only the v2/Everything path.
+// expectCopy       SETTLED  The expectation-setting line; {n} is the question
+//                           count, substituted at render.
+// lockStyle        SETTLED  blur | hard | curtain | tint | outline. How locked
+//                           content is obscured behind a FeatureLock. `hard`
+//                           renders no preview at all.
+// bookmarkStyle    SETTLED  ring | solid | tint | outline. The saved/bookmark
+//                           affordance. solid/tint/outline pick the glyph's
+//                           filled state; ring instead puts a ring on the
+//                           top-bar button (library.jsx:11-13, 66).
+// tasteFixReact    SETTLED  true | false. Whether the cup on a taste-fix card
+//                           reacts to your answer (settle + pulse, or shake).
+// tasteFixSetup    SETTLED  card | brief. Whether a taste-fix scenario gets a
+//                           full setup card or a one-line brief.
+// atlasMapStyle    SETTLED  geo | dots. Atlas map rendering. v2 surface.
+// atlasProfile     ROUTED   scroll | tabbed. The origin-profile layout, a v2
+//                           surface (Atlas). The `origin-tabbed` ?screen= route
+//                           pins it to `tabbed` so both layouts are reviewable
+//                           side by side; everywhere else it reads the default.
+// duelPicker       SETTLED  grid | list. Duel-type picker layout. v2 surface.
+// duelReveal       SETTLED  tally | any other value. `tally` counts your score
+//                           up; anything else shows the final number at once.
+//                           Only `tally` is tested by name, so the alternative
+//                           has no canonical spelling. v2 surface.
+//
+// The panel also carries three controls that are NOT tweak keys — Plus unlocked
+// and the two freeze toggles write real app state, so they persist and behave
+// exactly as the app would. They are listed in the panel, not here, on purpose.
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "voice":   "field-guide",
   "onbFlow":      "fieldguide",
@@ -15,12 +96,11 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "duelReveal":    "tally",
   "lockStyle":     "blur",
   "bookmarkStyle": "ring",
-  "brewToday":     "auto",
-  "brewPath":      "auto",
   "progress":      "default",
   "tasteFixReact": true,
   "tasteFixSetup": "card",
-  "restoreOutcome": "plus"
+  "restoreOutcome": "plus",
+  "scope": "v1"
 }/*EDITMODE-END*/;
 
 // ── Deep links ───────────────────────────────────────────────
@@ -64,7 +144,8 @@ const SCREEN_ROUTES = {
   'card-anatomy':   { view: 'lesson', lessonId: 'm1l7', startKind: 'visual' },
   'card-bagpick':   { view: 'lesson', lessonId: 'm1l7', startKind: 'bagpick' },
   'lesson-layers':  { view: 'lesson', lessonId: 'm1l7' },
-  'card-tastefix':  { view: 'lesson', lessonId: 'm5l3', startKind: 'tastefix' },
+  'card-tastefix':  { view: 'lesson', lessonId: 'm4l3', startKind: 'tastefix' },
+  'card-flavor':    { view: 'lesson', lessonId: 'm5l3', startKind: 'flavor' },
   'card-practical': { view: 'lesson', lessonId: 'm1l7', startKind: 'practical' },
   'lesson-grind':   { view: 'lesson', lessonId: 'm4l3' },
   'lesson-ratio':   { view: 'lesson', lessonId: 'm5l1' },
@@ -152,6 +233,24 @@ const _route = _initial && SCREEN_ROUTES[_initial] ? SCREEN_ROUTES[_initial] : n
 // Animation review screens: ?screen=anim-<state> → a centered, looping mascot.
 const _animState = _initial && _initial.indexOf('anim-') === 0 ? _initial.slice(5) : null;
 
+// The shape of "no progress", defined once. Reset progress and Delete account
+// both clear to these, so neither can forget a key the other remembers.
+// (Delete additionally clears saved content, the Atlas passport, recents,
+// timed unlocks, Plus and customisation — see deleteAccount.)
+const EMPTY_PROGRESSION = () => ({ streak: 0, points: 0, prevPoints: 0, completed: new Set(), bestResults: {} });
+const EMPTY_BREW = () => ({ activeId: null, startedAt: null, completed: new Set(), saved: new Set() });
+
+// Seeded demo progress — the state a fresh install (or a reset, then a reload)
+// starts from. Only lesson 1 is done, so the tree is an early sprout.
+const SEED_PROGRESSION = () => ({
+  streak: 7, points: 10, prevPoints: 10,
+  completed: new Set(['m1l1']),
+  // Best-ever { correct, total } per lesson id. Drives lesson state
+  // (Needs Practice / Completed / Mastered / Perfect). We keep the highest
+  // ratio ever achieved and never downgrade it on a worse replay.
+  bestResults: { m1l1: { correct: 2, total: 3 } },
+});
+
 // Theme preference is a real, runtime user setting (light | dark | system).
 // It is stored in localStorage — NOT the host-persisted tweak system — so it
 // (a) survives reloads and (b) syncs live across every screens-overview iframe
@@ -169,7 +268,11 @@ function App() {
   // The prototype ships as the v1 cut: only the surfaces the readiness audit
   // locked into v1 (learning core, Dictionary, Saved, Plus/Studio). Atlas, Duel,
   // the rewarded-ad/trial layer and the mood player stay held back for v2.
-  const isV1 = true;
+  // Scope: what the review build shows. 'v1' is what ships — the learning core,
+  // Dictionary, Saved and Plus/Studio. 'everything' also renders the surfaces
+  // held back for v2 (Atlas, Duel, the rewarded-ad/trial layer, the mood player,
+  // data export), which are otherwise unreachable for review at any URL.
+  const isV1 = t.scope !== 'everything';
   // Bookmark glyph reads a global so every screen (many separate component
   // files) stays in sync without threading a prop through each call site.
   window.BOOKMARK_STYLE = t.bookmarkStyle;
@@ -218,7 +321,7 @@ function App() {
   );
   const [openCard, setOpenCard] = useStateA(
     _route && _route.sheet
-      ? (COLLECTION.find(c => c.id === _route.cardId) || COLLECTION[0])
+      ? (window.findCard(_route.cardId) || COLLECTION[0])
       : null
   );
   const [activeGame, setActiveGame] = useStateA(
@@ -232,7 +335,6 @@ function App() {
   const [activeModuleId, setActiveModuleId] = useStateA(_route && _route.moduleId ? _route.moduleId : 'm1');
   const [reviewLessonId, setReviewLessonId] = useStateA(null);
   const [reviewActive, setReviewActive] = useStateA(false);
-  const [lessonOrigin, setLessonOrigin] = useStateA('app'); // 'app' | 'module'
 
   // —— Coffee Duel ——
   const [duelStage, setDuelStage] = useStateA(_route && _route.duelStage ? _route.duelStage : 'hub');
@@ -412,16 +514,32 @@ function App() {
   // ── Progression state ──
   // Seed points from the real completed-lesson total so the growth tree matches
   // visible progress (only lesson 1 is done → an early sprout, not a full bush).
-  const [progression, setProgression] = useStateA({
-    streak: 7,
-    points:  _route && _route.newPoints  != null ? _route.newPoints  : 10,
-    prevPoints:  _route && _route.prevPoints != null ? _route.prevPoints : 10,
-    completed: new Set(['m1l1']),
-    // Best-ever { correct, total } per lesson id. Drives lesson state
-    // (Needs Practice / Completed / Mastered / Perfect). We keep the highest
-    // ratio ever achieved and never downgrade it on a worse replay.
-    bestResults: { m1l1: { correct: 2, total: 3 } },
+  // Persisted like every other store, so a challenge card or a favorite can
+  // never outlive the lesson that earned it.
+  const [progression, setProgression] = useStateA(() => {
+    let s = null; try { s = JSON.parse(localStorage.getItem('cq-progress')); } catch (e) {}
+    const base = (s && Array.isArray(s.completed))
+      ? { streak: s.streak || 0, points: s.points || 0, prevPoints: s.prevPoints || 0,
+          completed: new Set(s.completed), bestResults: s.bestResults || {} }
+      : SEED_PROGRESSION();
+    return base;
   });
+  useEffectA(() => {
+    try {
+      localStorage.setItem('cq-progress', JSON.stringify({
+        streak: progression.streak, points: progression.points, prevPoints: progression.prevPoints,
+        completed: [...progression.completed], bestResults: progression.bestResults,
+      }));
+    } catch (e) {}
+  }, [progression]);
+  // Reward screens show a before → after points count. In a real session that
+  // comes from progression; a reward deep link (six of them, app.jsx:99-105)
+  // supplies its own fixture pair. Deriving it HERE rather than seeding it into
+  // progression is what keeps route fixtures out of storage: nothing
+  // route-driven is ever written, so persistence needs no special-casing and
+  // every store — including this one — stays clearable by the wipes.
+  const rewardPrevPoints = _route && _route.prevPoints != null ? _route.prevPoints : progression.prevPoints;
+  const rewardNewPoints  = _route && _route.newPoints  != null ? _route.newPoints  : progression.points;
 
   // Surface a stable `state` reference for legacy callers (LearnTab, StreakScreen, ProfileTab).
   const state = { streak: progression.streak, points: progression.points };
@@ -438,7 +556,8 @@ function App() {
   //   frozenDays   — which days of THIS week a freeze covered. Drives the week
   //                  strip, and clears when the week rolls over.
   //   freezesSpent — how many have ever been spent. Drives the held count, and
-  //                  only clears on Reset progress.
+  //                  is cleared by Reset progress and Delete account alike
+  //                  (both go through wipeProgress).
   // Deriving held from frozenDays.length conflated the two: the moment the week
   // rolled over the strip cleared and every spent freeze was silently refunded.
   const [frozenDays, setFrozenDays] = useStateA([]);
@@ -514,7 +633,7 @@ function App() {
     let stored = null; try { stored = JSON.parse(localStorage.getItem('cq-brew')); } catch (e) {}
     if (stored && Array.isArray(stored.completed)) return { activeId: stored.activeId || null, startedAt: stored.startedAt || null, completed: new Set(stored.completed), saved: new Set(Array.isArray(stored.saved) ? stored.saved : []) };
     const _brewDemo = _initial && ['card-stamp', 'card-stamp-locked', 'path-challenge', 'path-challenge-open', 'today-challenge-done'].indexOf(_initial) >= 0;
-    return { activeId: null, startedAt: null, completed: new Set(_brewDemo ? ['bc-m1l1'] : []), saved: new Set() };
+    return { ...EMPTY_BREW(), completed: new Set(_brewDemo ? ['bc-m1l1'] : []) };
   });
   useEffectA(() => {
     try { localStorage.setItem('cq-brew', JSON.stringify({ activeId: brew.activeId, startedAt: brew.startedAt, completed: [...brew.completed], saved: [...brew.saved] })); } catch (e) {}
@@ -614,10 +733,8 @@ function App() {
     const isDark = themePref === 'dark' || (themePref === 'system' && systemDark);
     if (isDark) {
       root.setAttribute('data-mood', 'dark-roast');
-      root.setAttribute('data-theme', 'dark');
     } else {
       root.setAttribute('data-mood', 'cupping');
-      root.removeAttribute('data-theme');
     }
   }, [t.voice, themePref, systemDark]);
 
@@ -657,7 +774,6 @@ function App() {
   // Open a lesson from a list. Completed lessons go through a review-confirm
   // sheet first (no new points); fresh lessons start immediately.
   const openLesson = (id) => {
-    setLessonOrigin(view === 'module' ? 'module' : 'app');
     if (isLessonComplete(id)) setReviewLessonId(id);
     else startLesson(id);
   };
@@ -671,7 +787,6 @@ function App() {
     setView('lesson');
   };
 
-  const openModule = () => {}; // Module screen removed — lessons open directly.
   const openSaved = () => setView('saved');
   // Only lessons / terms / guides surface in the Saved screen, so the
   // header badge + counts must ignore other favorite keys (e.g. cards).
@@ -737,7 +852,7 @@ function App() {
     // just return you to wherever you opened the lesson from.
     if (reviewActive) {
       setReviewActive(false);
-      setView(lessonOrigin === 'module' ? 'module' : 'app');
+      setView('app');
       return;
     }
     // Remember a flawless run for the perfect-module gift.
@@ -833,23 +948,73 @@ function App() {
     setView('app'); setTab('path');
   };
 
+  // ── The store registry ──────────────────────────────────────
+  // Every account-scoped store is listed here ONCE, with its scope and how to
+  // clear it. The wipes iterate this table rather than naming stores by hand,
+  // which is what let three stores go unwiped. Adding a store to the app means
+  // adding a row here; the dev guard below catches it if you forget.
+  //   'progress' — cleared by Reset progress AND Delete account
+  //   'account'  — cleared by Delete account only (a purchase or a preference)
+  const ACCOUNT_STORES = [
+    { key: 'cq-progress',      scope: 'progress', reset: () => setProgression(EMPTY_PROGRESSION()) },
+    { key: 'cq-brew',          scope: 'progress', reset: () => setBrew(EMPTY_BREW()) },
+    // Saved content and the Atlas passport are progress too: a favorited lesson
+    // that has re-locked, or a passport stamp for an origin you no longer know,
+    // are records of work that was just undone.
+    { key: 'cq-favorites',     scope: 'progress', reset: () => setFavorites(new Set()) },
+    { key: 'cq-atlas',         scope: 'progress', reset: () => setAtlasData({ states: {}, favs: [], tastedFrom: {} }) },
+    { key: 'cq-recent-terms',  scope: 'progress', reset: () => setRecentTerms([]) },
+    // Duel keeps its own store so a half-finished round survives a refresh.
+    { key: 'cq-duel-progress', scope: 'progress', reset: () => window.clearDuelProgress && window.clearDuelProgress() },
+    // In-memory only (no key), but still progress that must go with the rest.
+    { key: null, scope: 'progress', reset: () => { setFrozenDays([]); setFreezesSpent(0); setFreezeNoticeSeen(false); } },
+    { key: 'cq-temp',          scope: 'account',  reset: () => setTempUnlocks({}) },
+    { key: 'cq-custom',        scope: 'account',  reset: () => {
+      setIsPlus(false); setTrialDaysLeft(0);
+      setTreeId('arabica'); setLightId('daylight');
+      setRoastyCfg({ roast: 'medium', hat: 'none', gear: 'none', sprout: 'leaf' });
+    } },
+    // cq-theme is deliberately absent: appearance is a device preference, not
+    // account data, and survives both wipes.
+  ];
+  const wipeStores = (scopes) => ACCOUNT_STORES.forEach(s => { if (scopes.indexOf(s.scope) >= 0) s.reset(); });
+  // Dev guard: watch what the app actually WRITES and complain if a key isn't in
+  // the table. This is the check that makes the registry worth having — without
+  // it the table is just a tidier hand-list. Watching writes rather than reading
+  // existing keys means no false alarms from stale keys or from other documents
+  // on this origin (Coffee Tree.html owns cq-tree-modules, for instance).
+  useEffectA(() => {
+    let restore = null;
+    try {
+      const known = new Set(ACCOUNT_STORES.map(s => s.key).filter(Boolean).concat(['cq-theme']));
+      const seen = new Set();
+      const native = localStorage.setItem.bind(localStorage);
+      localStorage.setItem = function (k, v) {
+        if (String(k).indexOf('cq-') === 0 && !known.has(k) && !seen.has(k)) {
+          seen.add(k);
+          console.warn('[stores] "' + k + '" is written but not registered in ACCOUNT_STORES — Reset progress and Delete account will miss it.');
+        }
+        return native(k, v);
+      };
+      restore = () => { localStorage.setItem = native; };
+    } catch (e) {}
+    return () => { if (restore) restore(); };
+  }, []);
+
+  const wipeProgress = () => wipeStores(['progress']);
   // Reset progress — clears the trail. Completed core lessons drive the tree, so
-  // zeroing them returns the grove to a bare seed. Lands the user back on their profile.
+  // zeroing them returns the grove to a bare seed. Plus and the trial are a
+  // purchase, not progress, so they survive. Lands the user back on their profile.
   const resetProgress = () => {
-    setProgression({ streak: 0, points: 0, prevPoints: 0, completed: new Set(), bestResults: {} });
-    setBrew({ activeId: null, startedAt: null, completed: new Set() });
-    setFrozenDays([]);
+    wipeProgress();
     setTab('profile'); setView('app');
   };
-  // Delete account — prototype behaviour: wipe progress + Plus, land back on
-  // the welcome screen as a signed-out user.
+  // Delete account — permanent, per spec: no recovery period, nothing to
+  // restore. Clears every store in the registry, both scopes, so no personal
+  // state survives into the next signed-out session. Signs out to the welcome
+  // screen, no success modal.
   const deleteAccount = () => {
-    setProgression({ streak: 0, points: 0, prevPoints: 0, completed: new Set(), bestResults: {} });
-    setFrozenDays([]);
-    setFreezesSpent(0);
-    setFreezeNoticeSeen(false);
-    setIsPlus(false);
-    setTrialDaysLeft(0);
+    wipeStores(['progress', 'account']);
     setView('onboarding-1');
   };
   const openCardSheet = (card) => { setOpenCard(card); setSheetOpen(true); };
@@ -859,9 +1024,15 @@ function App() {
   };
 
   // ── Active Brew Challenge — derived review state ──
-  // Deep-link routes (screens-overview) override the tweak; otherwise the tweak
-  // (default 'auto') follows live state.
+  // Both of these were once tweaks; they are now route-only, and the keys were
+  // removed from TWEAK_DEFAULTS rather than left sitting there unread.
+  // brewTodayMode: a screens-overview route can pin the Today card to a state
+  // ('active' | 'completed' | 'none') so each one is reachable as its own tile.
+  // Everywhere else it is 'auto' and follows live state.
   const brewTodayMode = (_route && _route.brewToday) || 'auto';
+  // brewPathMode: the same idea for the Path row's challenge pip. No route sets
+  // it today, so it is always 'auto' — kept as a named const because PathTab
+  // takes it as a prop and 'auto' is the meaningful value, not a placeholder.
   const brewPathMode  = 'auto';
   let todayCh = null, todayMode = null;
   if (brewTodayMode === 'active')         { todayMode = 'active';    todayCh = window.brewById('bc-m1l2'); }
@@ -896,7 +1067,8 @@ function App() {
       onSkip={() => { setView('app'); setTab('learn'); }}
     />;
   } else if (view === 'onboarding-flow') {
-    // v1 locks onboarding to the Standard (4-question) path.
+    // The v1 cut never routes here (Meet Roasty goes straight to Learn), so this
+    // is the deep-linked review path: pin it to Standard, the depth v2 will ship.
     const onbT = isV1 ? { ...t, flowDepth: 'standard' } : t;
     body = <OnboardingFlow
       initialSlug={onbStart}
@@ -913,7 +1085,7 @@ function App() {
       favorites={favorites}
       onToggleFavKey={toggleFavorite}
       onTermTap={openTermPeek}
-      onClose={() => { setReviewActive(false); setView(lessonOrigin === 'module' ? 'module' : 'app'); }}
+      onClose={() => { setReviewActive(false); setView('app'); }}
       onComplete={onLessonComplete}
     />;
   } else if (view === 'saved') {
@@ -924,7 +1096,7 @@ function App() {
       onUpgrade={() => setView('paywall')}
       onToggleFav={toggleFavorite}
       onLesson={openLesson}
-      onOpenGuide={(variant) => { const card = (window.COLLECTION || []).find(entry => entry.train === variant); if (card) openCardSheet(card); }}
+      onOpenGuide={(variant) => { const card = window.findTrainingCard && window.findTrainingCard(variant); if (card) openCardSheet(card); }}
       onOpenTerm={openTermFull}
       onFlashcards={() => { setFlashBack('saved'); setView('flashcards'); }}
       onClose={() => { setView('app'); }}
@@ -939,14 +1111,13 @@ function App() {
       result={completedLesson.result}
       lessonState={completedLesson.lessonState}
       onPractice={() => { setActiveLessonId(completedLesson.id); setReviewActive(true); setView('lesson'); }}
-      prevPoints={progression.prevPoints}
-      newPoints={progression.points}
+      prevPoints={rewardPrevPoints}
+      newPoints={rewardNewPoints}
       nextPlayable={(() => { const nextId = window.findNextLessonId(completedLesson.id); return !!(nextId && window.LESSONS && window.LESSONS[nextId]); })()}
       brewChallenge={window.brewForLesson(completedLesson.id)}
       brewChallengeState={(() => { const ch = window.brewForLesson(completedLesson.id); if (!ch) return null; if (brewActiveId === ch.id) return 'active'; if (brew.completed.has(ch.id)) return 'completed'; if (brew.saved.has(ch.id)) return 'saved'; return null; })()}
       onStartChallenge={() => { const ch = window.brewForLesson(completedLesson.id); if (ch) startBrew(ch.id); setView('app'); setTab('learn'); }}
       onNotNowChallenge={() => { const ch = window.brewForLesson(completedLesson.id); if (ch) saveBrew(ch.id); continueFromLessonComplete(); }}
-      onOpenCards={() => { setView('app'); setTab('cards'); }}
       onContinue={continueFromLessonComplete}
       onDuel={isV1 ? undefined : () => openDuel('pick')}
       onBack={backToPath}
@@ -960,8 +1131,8 @@ function App() {
       module={mod}
       fromStage={window.treeStageFromCore(Math.max(0, _newCore - 1))}
       toStage={window.treeStageFromCore(_newCore)}
-      prevPoints={progression.prevPoints}
-      newPoints={progression.points}
+      prevPoints={rewardPrevPoints}
+      newPoints={rewardNewPoints}
       reward={reward}
       hasNext={ctx && !ctx.isLastModule}
       onContinue={continueFromModuleReward}
@@ -1002,7 +1173,6 @@ function App() {
     body = <DictionaryHome
       learnedSet={learnedSet}
       favorites={favorites}
-      recent={recentTerms}
       savedTermCount={savedTermCount}
       initialQuery={dictSearchSeed}
       focusSearch={dictFocus}
@@ -1028,12 +1198,10 @@ function App() {
       isFav={tod ? favorites.has('t:' + tod.id) : false}
       onToggleFav={() => tod && toggleFavorite('t:' + tod.id)}
       onOpenFull={openTermFull}
-      onOpenTerm={openTermFull}
       onClose={() => { setTab('learn'); setView('app'); }}/>;
   } else if (view === 'flashcards') {
     body = <FlashcardsScreen
       favorites={favorites}
-      onToggleFav={toggleFavorite}
       onOpenTerm={openTermFull}
       onBrowse={() => setView('dictionary')}
       onClose={() => setView(flashBack === 'saved' ? 'saved' : 'dictionary')}/>;
@@ -1078,6 +1246,9 @@ function App() {
         { label: 'Daily streak', value: progression.streak + (progression.streak === 1 ? ' day' : ' days') },
         { label: 'Points earned', value: progression.points + ' pts' },
         { label: 'Lessons completed', value: String(progression.completed.size) },
+        { label: 'Cards collected', value: COLLECTION.filter(c => c.earned).length + ' of ' + COLLECTION.length },
+        { label: 'Brew challenges', value: brew.completed.size + ' of ' + window.BREW_TOTAL },
+        { label: 'Saved items', value: String(savedCount) },
         { label: 'Your coffee tree', value: 'Back to ' + (STAGE_NAMES[0]) },
       ]}
     />;
@@ -1119,8 +1290,6 @@ function App() {
     />;
   } else if (view === 'plus-welcome') {
     body = <PlusWelcomeScreen
-      plan={subPlan}
-      showMoodPlayer={!isV1}
       onOpenStudio={() => setView('studio')}
       onClose={() => { setTab('profile'); setView('app'); }}
     />;
@@ -1213,13 +1382,8 @@ function App() {
                                         onDismissFreeze={() => setFreezeNoticeSeen(true)}
                                         onLesson={openLesson}
                                         onGame={(g) => { setActiveGame(g); setView('game-intro'); }}
-                                        onOpenModule={openModule}
-                                        onOpenSaved={() => requestFeature('saved')}
-                                        onOpenDictionary={() => requestFeature('dictionary')}
-                                        onOpenTermOfDay={() => requestFeature('dictionary')}
                                         onOpenDuel={() => requestFeature('duel')}
                                         showDuel={!isV1}
-                                        savedCount={savedCount}
                                         brewChallenge={todayCh}
                                         brewMode={todayMode}
                                         brewAutoHide={brewTodayMode === 'auto'}
@@ -1233,10 +1397,8 @@ function App() {
                                         brewActiveId={brewActiveId}
                                         brewSaved={brew.saved}
                                         onBrewUnsave={unsaveBrew}
-                                        brewPathMode={brewPathMode}
-                                        onBrewAction={(ch, st) => { if (st === 'completed') { setBrewRecap(ch); return; } startBrew(ch.id); setTab('learn'); setView('app'); }}
-                                        onStreak={() => setView('streak')} state={state}/>}
-        {tab === 'path'    && <PathTab  onLesson={openLesson} onOpenModule={openModule}
+                                        onBrewAction={(ch, st) => { if (st === 'completed') { setBrewRecap(ch); return; } startBrew(ch.id); setTab('learn'); setView('app'); }} state={state}/>}
+        {tab === 'path'    && <PathTab  onLesson={openLesson}
                                         brewCompleted={brew.completed}
                                         brewActiveId={brewActiveId}
                                         brewSaved={brew.saved}
@@ -1251,7 +1413,7 @@ function App() {
                                         states={atlasData.states} favs={atlasData.favs} styleMode={t.atlasMapStyle}
                                         holdLoading={_initial === 'atlas-loading'}
                                         onOpenOrigin={openOrigin} onOpenActivity={openAtlasActivity}
-                                        onOpenPassport={openPassport} onOpenRegion={openAtlasRegion}
+                                        onOpenPassport={openPassport}
                                         onToggleFav={atlasToggleFav} onMarkTasted={atlasMarkTasted}/>
                                 : <window.FeatureLock featureKey="atlas" style={t.lockStyle} showAd={!isV1}
                                         onUnlock={() => setGateFeature('atlas')}
@@ -1260,13 +1422,11 @@ function App() {
                                             states={atlasData.states} favs={atlasData.favs} styleMode={t.atlasMapStyle}
                                             holdLoading={false}
                                             onOpenOrigin={() => {}} onOpenActivity={() => {}}
-                                            onOpenPassport={() => {}} onOpenRegion={() => {}}
+                                            onOpenPassport={() => {}}
                                             onToggleFav={() => {}} onMarkTasted={() => {}}/>
                                         )}/>)}
         {tab === 'cards'   && <CardsTab onOpen={openCardSheet} brewCompleted={brew.completed}/>}
         {tab === 'profile' && <ProfileTab state={state}
-                                          theme={themePref}
-                                          onTheme={setTheme}
                                           brewDone={brew.completed.size}
                                           brewTotal={window.BREW_TOTAL}
                                           onOpenStreak={() => setView('streak')}
@@ -1279,9 +1439,7 @@ function App() {
                                           onOpenDuel={() => requestFeature('duel')}
                                           showDuel={!isV1}
                                           savedCount={savedCount}
-                                          isPlus={isPlus}
-                                          isLocked={(k) => !featureUnlocked(k)}
-                                          onOpenSettings={() => setView('settings')}/>}
+                                          isLocked={(k) => !featureUnlocked(k)}/>}
       </>
     );
   }
@@ -1388,6 +1546,12 @@ function App() {
 
       <TweaksPanel title="Tweaks">
         <TweakSection label="Prototype state"/>
+        <TweakRadio label="Scope" value={t.scope}
+          options={[
+            { value: 'v1',         label: 'v1 cut' },
+            { value: 'everything', label: 'Everything' },
+          ]}
+          onChange={(v) => setTweak('scope', v)}/>
         <TweakSelect label="Progress" value={t.progress}
           options={[
             { value: 'default',     label: 'Start — mid module 1' },

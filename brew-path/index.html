@@ -13,7 +13,7 @@
       var sysDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
       var isDark = pref === 'dark' || (pref === 'system' && sysDark);
       var root = document.documentElement;
-      if (isDark) { root.setAttribute('data-mood', 'dark-roast'); root.setAttribute('data-theme', 'dark'); }
+      if (isDark) { root.setAttribute('data-mood', 'dark-roast'); }
       else { root.setAttribute('data-mood', 'cupping'); }
     } catch (e) {}
   })();
@@ -66,25 +66,6 @@
     --scrim-ink: #FBF7EE;
     --dim-modal: color-mix(in oklab, #0E0A07 62%, transparent);
   }
-  /* legacy alias kept so the old theme-toggle pathway still resolves */
-  [data-theme="dark"] {
-    --bg:        #1A130E;
-    --surface:   #251B14;
-    --surface-2: #30231A;
-    --ink:       #F3E7D2;
-    --ink-mute:  #B59E84;
-    --rule:      #44321E;
-    --accent:    #E07A4F;
-    --accent-ink:#1A130E;
-    --sage:      #97A285;
-    --warn:      #E6A35C;
-    --berry:     #C75450;
-    --water:     #7FB4D6;
-    --water-hi:  #C2E0EF;
-    --scrim:     color-mix(in oklab, #1B1614 58%, transparent);
-    --scrim-ink: #FBF7EE;
-    --dim-modal: color-mix(in oklab, #0E0A07 62%, transparent);
-  }
 
   /* VOICE — display typeface character */
   [data-voice="specimen"] .ff-display {
@@ -114,7 +95,6 @@
   /* Embed mode: when loaded as ?screen=… in an iframe, drop chrome and scale the
      phone to perfectly fit the iframe. */
   body.embed { padding: 0; background: transparent; }
-  body.embed .frame-toolbar,
   body.embed .stage > .ff-mono { display: none !important; }
   body.embed .stage { gap: 0; }
   body.embed .phone {
@@ -126,37 +106,6 @@
     flex-direction: column;
     align-items: center;
     gap: 20px;
-  }
-  .frame-toolbar {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 999px;
-    padding: 6px;
-    font-family: 'IBM Plex Sans', sans-serif;
-    font-size: var(--t-label);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.55);
-  }
-  .frame-toolbar .label { padding: 0 10px 0 14px; font-weight: 500; }
-  .frame-toolbar button {
-    appearance: none;
-    background: transparent;
-    border: none;
-    color: rgba(255,255,255,0.55);
-    font: inherit;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    padding: 7px 14px;
-    border-radius: 999px;
-    cursor: pointer;
-  }
-  .frame-toolbar button.active {
-    background: rgba(255,255,255,0.1);
-    color: #fff;
   }
 
   /* Phone */
@@ -535,7 +484,6 @@
   .cq-completed .challenge-card { border-style: solid; border-color: var(--rule); background: transparent; }
   .cq-completed .challenge-card::before { border-top-style: solid; border-top-color: var(--rule); }
   .cq-active .challenge-card { border-style: solid; border-color: color-mix(in oklab, var(--accent) 40%, var(--rule)); }
-  .challenge-sub:not(:disabled):hover .challenge-card { background: transparent; }
   .cq-completed.challenge-sub:hover .challenge-card { background: transparent; }
   .challenge-badge {
     width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; flex-shrink: 0;
@@ -546,7 +494,6 @@
   .challenge-kicker { font-family: 'IBM Plex Mono', monospace; font-size: var(--t-micro); letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .cq-completed .challenge-kicker { color: var(--sage); }
   .challenge-title { font-family: 'IBM Plex Sans', sans-serif; font-size: var(--t-support); font-weight: 500; color: var(--ink); line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .challenge-instr { font-size: var(--t-support); line-height: 1.5; color: var(--ink-mute); margin-top: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .challenge-pill {
     font-family: 'IBM Plex Mono', monospace; font-size: var(--t-micro); font-weight: 500; letter-spacing: 0.08em;
     text-transform: uppercase; padding: 8px 11px; border-radius: 999px; white-space: nowrap;
@@ -632,7 +579,9 @@
   .mcq-inset .mcq-choice.incorrect .mcq-dot { border-color: var(--berry); background: var(--berry); }
 
   /* THE blank — .fill-slot is shared by concept sentences and the predict cloze (see FillSlot in lesson.jsx) */
-  .fill-slot { font-family: 'IBM Plex Mono', monospace; color: var(--ink-mute);
+  /* line-height 1.15, not the paragraph's 1.7: the slot is an inline-block, so its
+     bottom border follows its own box — leading would drop the rule off the baseline. */
+  .fill-slot { font-family: 'IBM Plex Mono', monospace; color: var(--ink-mute); line-height: 1.15;
     border-bottom: 2px dashed color-mix(in oklab, var(--accent) 55%, var(--rule));
     padding: 0 6px 1px; min-width: 74px; text-align: center; display: inline-block;
     transition: color 200ms ease, border-color 200ms ease; }
@@ -908,70 +857,6 @@
     transition: color .15s ease, border-color .15s ease;
   }
   .help-btn:hover { color: var(--ink); border-color: var(--ink-mute); }
-  .help-text-btn {
-    appearance: none;
-    background: transparent;
-    border: 1px solid var(--rule);
-    border-radius: 999px;
-    padding: 6px 14px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: var(--t-label);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--ink-mute);
-    cursor: pointer;
-    transition: color .15s ease, border-color .15s ease;
-  }
-  .help-text-btn:hover { color: var(--ink); border-color: var(--ink-mute); }
-  .help-chip {
-    position: absolute;
-    top: 96px; left: 24px;
-    z-index: 20;
-    appearance: none;
-    background: transparent;
-    border: none;
-    padding: 0;
-    display: inline-flex;
-    align-items: center;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: var(--t-label);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--accent);
-    cursor: pointer;
-  }
-  .help-chip:hover { opacity: 0.7; }
-  .help-float {
-    position: absolute;
-    right: 20px; bottom: 96px;
-    z-index: 40;
-    appearance: none;
-    background: var(--surface-2, var(--bg));
-    border: 1px solid var(--rule);
-    border-radius: 999px;
-    padding: 9px 15px 9px 11px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: var(--t-label);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--ink);
-    cursor: pointer;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-    transition: transform .15s ease;
-  }
-  .help-float:hover { transform: translateY(-1px); }
-  .help-float-q {
-    display: grid;
-    place-items: center;
-    width: 18px; height: 18px;
-    border-radius: 999px;
-    background: var(--accent);
-    color: #fff;
-    font-size: var(--t-label);
-  }
   .help-scrim {
     position: absolute;
     inset: 0;
@@ -1007,15 +892,7 @@
     border: 2px solid var(--bg);
   }
 
-  /* Slider card — descriptive band label + target-zone overlay */
-  .slider-live {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: var(--t-label);
-    letter-spacing: 0.06em;
-    color: var(--accent);
-    margin-bottom: 6px;
-    min-height: 16px;
-  }
+  /* Slider card — target-zone overlay over the drag surface */
   .slider-track-wrap {
     position: relative;
   }
@@ -1028,11 +905,6 @@
     border-radius: 999px;
     z-index: 1;
     pointer-events: none;
-  }
-  /* Grinder illustration is the visual read-out; the range input underneath
-     is kept only as the drag surface, fully invisible. */
-  .slider-track-wrap--hidden input[type="range"].brew-slider {
-    opacity: 0;
   }
 
   /* Match game */
@@ -1223,11 +1095,6 @@
     from { opacity: 0; transform: translateY(4px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-  @keyframes tapPulse {
-    0%, 100% { opacity: 0.35; transform: scale(0.85); }
-    50%      { opacity: 1;    transform: scale(1.15); }
-  }
-  .tap-pulse { animation: tapPulse 1.6s ease-in-out infinite; }
   /* Row spinner — a settings row waiting on a network call (restore purchases). */
   @keyframes rowSpin { to { transform: rotate(360deg); } }
   .row-spin { animation: rowSpin 700ms linear infinite; transform-origin: 50% 50%; }
@@ -1239,25 +1106,9 @@
   /* slide-in tab transitions — no animation, content shows immediately. */
   .slide-in { /* no-op */ }
 
-  /* completion gradient bg */
-  .completion-bg {
-    background: linear-gradient(180deg, var(--bg) 0%, color-mix(in oklab, var(--bg) 90%, var(--warn)) 100%);
-  }
-
-  /* hover for buttons (mostly desktop preview) */
-  .pick-card:hover, .lesson-row:hover, .collect-card:hover, .mcq-choice:hover {
-    /* keep subtle so it stays mobile-feeling */
-  }
-
   /* utility */
   .px-24 { padding-left: 24px; padding-right: 24px; }
-  .px-20 { padding-left: 20px; padding-right: 20px; }
-  .pt-24 { padding-top: 24px; }
-  .pb-24 { padding-bottom: 24px; }
-  .pb-32 { padding-bottom: 32px; }
-  .gap-16 { gap: 16px; }
   .gap-12 { gap: 12px; }
-  .gap-8 { gap: 8px; }
   .stack { display: flex; flex-direction: column; }
 </style>
 </head>

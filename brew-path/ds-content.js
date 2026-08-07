@@ -417,6 +417,8 @@ const TAB_SVGS = ICONS.nav.items.map(i => i[3]);
 function renderComponents() {
   const wrap = el('div', { class: 'comp-grid' });
 
+  wrap.append(compSubhead('Lesson primitives', 'The pieces every card is built from'));
+
   wrap.append(compStates('Buttons',
     'One primary action per screen, a ghost for the second, a link for tertiary text actions.',
     [
@@ -493,7 +495,7 @@ function renderComponents() {
     ], 240));
 
   wrap.append(compStates('Lesson row',
-    'The Path and Module screens \u2014 bean node, title, mono meta.',
+    'The Path screen \u2014 bean node, title, mono meta.',
     [
       { label: 'Complete', demo: '<div class="lesson-row" style="width:100%;"><span>' + miniBean(1, 'var(--sage)') + '</span><span class="title">What coffee actually is</span><span class="meta"></span></div>',
         when: 'Passed. No chip \u2014 the full sage bean already says it.',
@@ -760,6 +762,38 @@ function renderComponents() {
 
   wrap.append(compSubhead('Feedback and progress', 'How the app answers back'));
 
+  // The one component every graded surface ends on — documented first in this
+  // group, as a state sheet rather than prose, because "what does the label do
+  // when nothing has been graded yet" is the question people arrive with.
+  wrap.append(compStates('Answer feedback · window.AnswerFeedback',
+    'The verdict block that closes EVERY graded surface in the product: all fourteen lesson card kinds, the seven mini-games, the Duel question screen, the predict / decision / recall cards and the two dictionary checks. One component, in roasty.jsx — nine hand-rolled copies used to drift apart on gap, artwork size, type scale and top margin.',
+    answerFeedbackStates(), [
+      'Roasty and the text share a <b>centre line</b>. Never top-aligned: the drawn artwork overflows its nominal size, so top alignment needs a hand-tuned negative margin that only holds for one text length.',
+      'Fixed 14px gap. Artwork is 72 in lessons, 64 in Duel and the predict cards, 48 in the compact dictionary checks — nothing else scales with it.',
+      'The label is <b>one style everywhere</b>: mono, uppercase, t-label, 0.14em, 8px below. Only its colour varies, and only with meaning — sage right, berry wrong, accent for a dictionary miss, ink-mute when nothing has been graded yet.',
+      'A verdict is <b>never</b> ink-mute. If the surface has marked an answer, the label carries the colour that says so.',
+      'Each card kind supplies only its verdict wording (CORRECT, ALL CORRECT, DIALED IN, IN ORDER, CLEAN BOARD, CALLED IT). Everything else is fixed here.',
+      'Body text is t-support by default; the conversational cards (predict, decision, recall payoff) take <b>bodySize="body"</b>. That is the only sanctioned type variation.',
+      'One mascot per screen. Where a card lands two verdicts — the recall card grades the answer and then answers the opening guess — the second takes <b>art={false}</b>. It is a reply, not a repeat.',
+    ], 250));
+
+  wrap.append(compStates('Card takeaway \u00b7 window.CardTakeaway',
+    'The rule a card leaves you with \u2014 <b>card.note</b>, on every kind that has one: the decision cards at the end of a lesson and the practical how-to steps. Two kickers, one treatment.',
+    [
+      { demo: takeawayDemo('Rule of thumb', 'Paper for clarity, metal for body. Match the filter to the coffee, not the habit.'),
+        label: 'Rule of thumb', when: 'Decision cards. A portable rule you can carry to the next bag.',
+        spec: ['default label'] },
+      { demo: takeawayDemo('Worth knowing', 'Weigh the water too, not just the coffee. A scale under the brewer is the whole trick.'),
+        label: 'Worth knowing', when: 'Practical steps, where the note is an aside rather than a rule.',
+        spec: ['label="Worth knowing"'] },
+    ], [
+      'Hairline, mono kicker, then the line in <b>Fraunces at t-heading in full ink</b>. Deliberately not grey body copy \u2014 the note sits under an explanation, and at the same size and colour it reads as a second paragraph of it rather than a different class of thing.',
+      'The kicker is <b>ink-mute</b>, never sage or berry. Those colours mean a verdict, and a takeaway is the same whichever way the learner answered.',
+      'One line, no scenario nouns. If it only works for the card it sits on it is not a takeaway.',
+      'It must <b>not</b> restate the verdict above it. The note earns its place by generalising \u2014 naming the rule, adding the other half of the trade-off, or catching the misconception. Sixteen course notes were cut for failing this.',
+      'Only the kicker word and the top margin vary. A new card kind with a note takes one of these two labels; it does not invent a treatment.',
+    ], 250));
+
   wrap.append(compStates('Bean node',
     'The one progress primitive \u2014 Path and Module lesson rows, the points mark, card and collection nodes.',
     [
@@ -937,8 +971,10 @@ function renderComponents() {
 
   wrap.append(compRules('Roasty, the companion',
     'Loading screens, lesson and module completion, correct and wrong answers, the gift and duel moments.',
-    `<div style="display:flex;align-items:center;gap:14px;">
-       <span style="width:52px;height:52px;border-radius:16px;background:var(--surface-2);display:grid;place-items:center;">${beanDemo(1, 'color-mix(in oklab, var(--accent) 70%, var(--ink))')}</span>
+    `<div style="display:flex;align-items:center;gap:16px;">
+       ${roastyArt('idle', 54)}
+       ${roastyArt('correct', 54)}
+       ${roastyArt('wrong', 54)}
        <a href="Mascot - Roasty.html" style="font-size:13px;color:var(--accent);">Open the Roasty study →</a>
      </div>`, ['One shape, eleven states: idle, card, lesson, module, correct, wrong, sleep, gift, duel win/loss, tasting.', 'He reacts, he never instructs \u2014 copy carries the teaching.', 'Full state sheet and motion specs live in the Mascot study file.']));
 
@@ -950,8 +986,8 @@ function renderComponents() {
     topBarDemo(), ['A 32 \u00b7 1fr \u00b7 32 grid: back or close left, roast meter centre, optional action right.', 'The centre stays empty on plain back bars.', 'The screen\u2019s title lives in the body below, never in the bar.']));
 
   wrap.append(compRules('Header buttons',
-    'Pinned top-right on the main tabs — the persistent entries to Coffee Duel and the Coffee Dictionary.',
-    headerButtonsDemo(), ['42px round, surface fill, hairline border, soft shadow.', 'The glyph is always accent.', 'A count or lock badge pins to the top-right corner when relevant.']));
+    'Top-right on the main tabs, in this order: Saved, then the Coffee Dictionary, then Coffee Duel. Dictionary is always there; Saved appears only once you have saved something or the cap is locked; Duel is deferred to v2 and does not render in the v1 cut.',
+    headerButtonsDemo(), ['44px round, surface fill, hairline border, soft shadow.', 'The glyph is always accent.', 'Badges pin to the top-right corner: Saved shows a bare dot (something is saved), Duel shows a count, and either can carry the lock badge when the feature is gated.']));
 
   // Tab bar — full width, lives with the rest of the chrome
   wrap.append(el('div', { class: 'panel comp comp-wide' },
@@ -959,7 +995,7 @@ function renderComponents() {
     el('div', { class: 'comp-demo', html: tabBarHTML() }),
     el('div', { class: 'kv' },
       el('div', null, el('span', { class: 'mono klabel' }, 'WHERE'), el('span', { class: 'kval' }, 'Persistent navigation across the top-level destinations. Five are designed; v1 renders four — Atlas is filtered out of the array (shown dimmed above) and returns in v2.')),
-      el('div', null, el('span', { class: 'mono klabel' }, 'RULE'), el('span', { class: 'kval' }, 'Active tab is accent + filled icon; the rest are ink-mute outlines. Labels are 9px mono, always uppercase. The first tab reads TODAY in the default tab nav and LEARN in the merged model, where Path folds into it — one tab id, two labels, never both at once.')),
+      el('div', null, el('span', { class: 'mono klabel' }, 'RULE'), el('span', { class: 'kval' }, 'Active tab is accent + filled icon; the rest are ink-mute outlines. Labels are 9px mono, always uppercase. The first tab reads TODAY; its id is learn, which is why the code and these notes use both words for the same destination.')),
     ),
   ));
 
@@ -1050,9 +1086,76 @@ function renderComponents() {
       'Rows are the register for a settings <b>action</b>. A quiet mono link is for purchase surfaces; a primary button is for the one thing a screen is for. Restore purchases is a row in Settings and a link on the paywall — same action, different surface.',
       'Six trailing variants, one row: mono value, chevron, external arrow, toggle, pending spinner, destructive. A row carrying a <b>toggle</b> is tappable across its full width \u2014 the 26px switch is never the only target \u2014 and the switch stops its own tap so the row cannot double-fire.']));
 
+  // Component index. Sixty-plus panels in one section with no sub-nav is a
+  // library you cannot look things up in — the group subheads exist but nothing
+  // jumps to them. Ids come off each panel's own title, so the index and the
+  // anchors can never fall out of sync with the panels themselves.
+  const panels = [...wrap.children].filter(n => n.classList && n.classList.contains('comp'));
+  panels.forEach(p => {
+    const t = p.querySelector('.comp-title');
+    if (t) p.id = 'c-' + dsSlug(t.textContent);
+  });
+  [...wrap.children].filter(n => n.classList && n.classList.contains('comp-subhead'))
+    .forEach(s => { const t = s.querySelector('.ff-display'); if (t) s.id = 'g-' + dsSlug(t.textContent); });
+
   return section('components', 'Library', 'Components',
     'The reusable building blocks, each shown live in the current theme. Anything new should be assembled from these before a fresh pattern is invented.',
-    wrap);
+    el('div', null, componentIndex(wrap), wrap));
+}
+
+// Slug shared by the index and the anchors it points at.
+function dsSlug(s) {
+  return s.toLowerCase().replace(/window\.\w+/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+// A filter field plus every component name, grouped. Typing hides panels whose
+// title does not match, so "answerfeedback" finds the block even if you do not
+// know which group it lives in.
+function componentIndex(wrap) {
+  const groups = [];
+  let current = { title: 'Core', items: [] };
+  groups.push(current);
+  [...wrap.children].forEach(n => {
+    if (!n.classList) return;
+    if (n.classList.contains('comp-subhead')) {
+      const t = n.querySelector('.ff-display');
+      current = { title: t ? t.textContent : '', id: n.id, items: [] };
+      groups.push(current);
+    } else if (n.classList.contains('comp')) {
+      const t = n.querySelector('.comp-title');
+      if (t) current.items.push({ name: t.textContent, id: n.id });
+    }
+  });
+
+  const field = el('input', { class: 'ci-field', type: 'search', placeholder: 'Filter components — try “feedback”' });
+  const cols = el('div', { class: 'ci-cols' }, groups.filter(g => g.items.length).map(g =>
+    el('div', { class: 'ci-col' },
+      el('div', { class: 'mono ci-group' }, g.title),
+      el('div', { class: 'ci-list' }, g.items.map(i =>
+        el('a', { class: 'ci-link', href: '#' + i.id, 'data-name': i.name.toLowerCase() }, i.name))))));
+
+  field.addEventListener('input', () => {
+    const q = field.value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+    cols.querySelectorAll('.ci-link').forEach(a => {
+      const hit = !q || a.dataset.name.replace(/[^a-z0-9]/g, '').includes(q);
+      a.style.display = hit ? '' : 'none';
+    });
+    cols.querySelectorAll('.ci-col').forEach(c => {
+      c.style.display = [...c.querySelectorAll('.ci-link')].some(a => a.style.display !== 'none') ? '' : 'none';
+    });
+    wrap.querySelectorAll('.comp').forEach(p => {
+      const t = p.querySelector('.comp-title');
+      const hit = !q || (t && t.textContent.toLowerCase().replace(/[^a-z0-9]/g, '').includes(q));
+      p.style.display = hit ? '' : 'none';
+    });
+    wrap.querySelectorAll('.comp-subhead').forEach(s => { s.style.display = q ? 'none' : ''; });
+  });
+
+  return el('div', { class: 'comp-index' },
+    el('div', { class: 'ci-head' },
+      el('div', { class: 'mono ci-count' }, groups.reduce((n, g) => n + g.items.length, 0) + ' components'),
+      field),
+    cols);
 }
 
 function tabBarHTML() {
@@ -1121,17 +1224,96 @@ function topBarDemo() {
     ${bar(back, '<div></div>')}
   </div>`;
 }
+function answerFeedbackStates() {
+  // These render the REAL mascot — window.Roasty out of roasty.jsx, mounted into
+  // the placeholder by mountRoastyArt() below. It used to be the progress-bean
+  // glyph on a rounded tile, which was wrong twice over: the wrong artwork, and
+  // a container the component does not have. A DS that redraws a component in
+  // stand-in shapes cannot be used to check the component.
+  const block = (color, label, text, extra, size, state) => `<div style="display:flex;gap:14px;align-items:center;">
+    ${roastyArt(state || (color === 'var(--sage)' ? 'correct' : color === 'var(--ink-mute)' ? 'card' : 'wrong'), size || 46)}
+    <div style="flex:1;min-width:0;">
+      <div class="mono" style="font-size:10px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:8px;color:${color};">${label}</div>
+      <div style="font-size:12px;line-height:1.5;color:var(--ink-mute);">${text}</div>
+      ${extra || ''}
+    </div>
+  </div>`;
+  return [
+    { demo: block('var(--sage)', 'Correct', 'Removing the fruit before drying lets the origin’s own clarity come through.'),
+      label: 'Right', when: 'Any graded surface, answered correctly.',
+      spec: ['label sage', 'state correct'] },
+    { demo: block('var(--berry)', 'Not quite', 'Most specialty coffee is arabica — it is also the more fragile plant to grow.'),
+      label: 'Wrong', when: 'Answered incorrectly, everywhere but the dictionary.',
+      spec: ['label berry', 'state wrong'] },
+    { demo: block('var(--accent)', 'Not quite', 'Close — that is the roast talking, not the process.'),
+      label: 'Wrong · dictionary', when: 'The two dictionary checks, where a miss is practice rather than failure.',
+      spec: ['tone="accent"'] },
+    { demo: block('var(--ink-mute)', 'Your guess · Robusta', 'No peeking — you’ll know for certain in about three minutes.'),
+      label: 'Held · ungraded', when: 'The predict card, once a guess is locked but before the lesson resolves it. Nothing has been marked, so the label stays neutral.',
+      spec: ['label ink-mute', 'state="card"'] },
+    { demo: `<div style="padding-top:14px;border-top:1px solid var(--rule);">
+        <div class="mono" style="font-size:10px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:8px;color:var(--sage);">You called it</div>
+        <div style="font-size:12px;line-height:1.5;color:var(--ink-mute);">You guessed Seed before the lesson started — and you were right.</div>
+      </div>`,
+      label: 'Artless · secondary', when: 'A second verdict under a block that already has the mascot — the recall card’s prediction payoff. One mascot per screen; a second reads as a repeat rather than a reply.',
+      spec: ['art={false}', 'borderTop'] },
+    { demo: block('var(--sage)', 'In order', 'Nailed the sequence.',
+        `<p style="margin:10px 0 0;font-size:11px;line-height:1.5;color:var(--ink-mute);"><span class="mono" style="font-size:9.5px;letter-spacing:0.14em;text-transform:uppercase;">Correct order</span><br/>Washed · Honey · Natural</p>`),
+      label: 'With detail', when: 'Sequence and match cards pass extra nodes as children — they render under the explanation, inside the text column.',
+      spec: ['children slot'] },
+    { demo: `<div style="display:flex;flex-direction:column;gap:14px;">
+        ${block('var(--sage)', 'Lesson · 72', 'The default. Every lesson card kind.', '', 54, 'correct')}
+        ${block('var(--sage)', 'Compact · 48', 'The dictionary checks, where the panel is tight.', '', 36, 'correct')}
+      </div>`,
+      label: 'Sizes', when: 'Artwork only — the gap, type and centre line never change with it.',
+      spec: ['72 lessons', '64 duel / predict', '48 dictionary'] },
+  ];
+}
+
+// A slot the real <Roasty/> is mounted into once React and roasty.jsx have
+// loaded. Height is size*1.4 — the mascot's own aspect, the same box the
+// component reserves in the app.
+function roastyArt(state, size) {
+  return `<span class="ds-roasty" data-state="${state}" data-size="${size}" style="display:block;flex-shrink:0;width:${size}px;height:${Math.round(size * 1.4)}px;"></span>`;
+}
+
+// roasty.jsx is transpiled by Babel, so it can land after boot(). Poll briefly,
+// then mount every placeholder. If React never arrives the slots stay empty
+// rather than falling back to a lookalike — a wrong mascot in the DS is worse
+// than a missing one.
+function mountRoastyArt(tries = 0) {
+  const hosts = [...document.querySelectorAll('.ds-roasty:not([data-mounted])')];
+  if (!hosts.length) return;
+  if (!window.Roasty || !window.React || !window.ReactDOM) {
+    if (tries < 60) setTimeout(() => mountRoastyArt(tries + 1), 50);
+    return;
+  }
+  hosts.forEach(host => {
+    host.setAttribute('data-mounted', '');
+    ReactDOM.createRoot(host).render(
+      React.createElement(window.Roasty, { state: host.dataset.state || 'idle', size: +host.dataset.size || 46 }));
+  });
+}
+function takeawayDemo(kicker, text) {
+  return `<div style="padding-top:14px;border-top:1px solid var(--rule);">
+    <div class="mono" style="font-size:10px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:9px;">${kicker}</div>
+    <p class="ff-display" style="font-size:17px;font-weight:400;line-height:1.3;letter-spacing:-0.01em;color:var(--ink);margin:0;text-wrap:pretty;">${text}</p>
+  </div>`;
+}
 function headerButtonsDemo() {
-  const round = (inner, badge) => `<span style="position:relative;width:42px;height:42px;border-radius:999px;background:var(--surface);border:1px solid var(--rule);box-shadow:0 2px 8px rgba(0,0,0,0.10);display:grid;place-items:center;">${inner}${badge}</span>`;
+  const round = (inner, badge) => `<span style="position:relative;width:44px;height:44px;border-radius:999px;background:var(--surface);border:1px solid var(--rule);box-shadow:0 2px 8px rgba(0,0,0,0.10);display:grid;place-items:center;">${inner}${badge}</span>`;
   const duel = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M7 5.5l10 13M17 5.5l-10 13" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/><circle cx="7" cy="5.5" r="1.7" fill="var(--accent)"/><circle cx="17" cy="5.5" r="1.7" fill="var(--accent)"/></svg>`;
   const dict = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 6.6C10.4 5.4 8.3 5.1 6.2 5.3A1 1 0 0 0 5 6.3v10.2a1 1 0 0 0 1.1 1c1.9-.2 3.9.1 5.4 1.2M12 6.6c1.6-1.2 3.7-1.5 5.8-1.3a1 1 0 0 1 1.1 1v10.2a1 1 0 0 1-1.1 1c-1.9-.2-3.9.1-5.4 1.2M12 6.6V19" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   const count = `<span class="mono" style="position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 4px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-size:9.5px;font-weight:500;display:grid;place-items:center;border:2px solid var(--bg);">2</span>`;
   const lockBadge = `<span style="position:absolute;top:-4px;right:-4px;width:18px;height:18px;border-radius:999px;background:var(--surface-2);border:2px solid var(--bg);display:grid;place-items:center;color:var(--ink-mute);">${gLockGlyph(9, 2)}</span>`;
+  const saved = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M7 4.8A1 1 0 0 1 8 3.8h8a1 1 0 0 1 1 1V20l-5-3.6L7 20V4.8Z" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const dot = `<span style="position:absolute;top:-1px;right:-1px;width:9px;height:9px;border-radius:999px;background:var(--accent);border:2px solid var(--bg);box-sizing:content-box;"></span>`;
   const cell = (node, cap) => `<div class="afford">${node}<span class="cap">${cap}</span></div>`;
   return `<div class="afford-row">
-    ${cell(round(duel, count), 'DUEL · COUNT')}
+    ${cell(round(saved, dot), 'SAVED · HAS ITEMS')}
     ${cell(round(dict, ''), 'DICTIONARY')}
-    ${cell(round(dict, lockBadge), 'LOCKED')}
+    ${cell(round(dict, lockBadge), 'DICTIONARY · LOCKED')}
+    ${cell(round(duel, count), 'DUEL · COUNT · v2')}
   </div>`;
 }
 function sheetDemo() {
@@ -1438,7 +1620,7 @@ const GAME_KINDS = [
   ['bagpick',  'Blind bag \u00b7 read the beans',    true,  'g-bagpick',
    'Inspect colour, centre cut and aroma on an unlabelled sample, then call the process.'],
   ['flavor',   'Tasting \u00b7 name the note',       true,  'g-flavor',
-   'Mini-game only. A tasting clue and four candidate notes.'],
+   'A tasting clue and four candidate notes \u2014 the one graded kind whose answer can be that nothing is wrong with the cup.'],
   ['quiz',     'True or false',                 true,  'g-quiz',
    'Mini-game only. One statement, two buttons, an explanation either way.'],
   ['visual',   null,                            false, null,
@@ -1646,5 +1828,6 @@ function boot() {
     });
   }, { rootMargin: '-45% 0px -50% 0px' });
   document.querySelectorAll('.ds-section').forEach(s => obs.observe(s));
+  mountRoastyArt();
 }
 document.addEventListener('DOMContentLoaded', boot);

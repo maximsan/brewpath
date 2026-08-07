@@ -395,7 +395,7 @@ function DuelPicker({ layout = 'grid', opponent, onPick, onClose }) {
 // ═══════════════════════════════════════════════════════════
 // PLAY — the 5-question challenge. Times each answer.
 // ═══════════════════════════════════════════════════════════
-function DuelPlay({ type, opponent, resumeState, onProgress, onDone, onQuit }) {
+function DuelPlay({ type, resumeState, onProgress, onDone, onQuit }) {
   const qs = window.DUEL_QUESTIONS[type] || [];
   const [idx, setIdx] = useStateD(resumeState ? resumeState.idx : 0);
   const [answers, setAnswers] = useStateD(resumeState ? resumeState.answers : []);
@@ -483,15 +483,8 @@ function DuelPlay({ type, opponent, resumeState, onProgress, onDone, onQuit }) {
           </div>
 
           {picked !== null && (
-            <div style={{ marginTop: 20, display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-              <div style={{ flexShrink: 0, marginTop: -8 }}><Roasty state={picked === cIdx ? 'correct' : 'wrong'} size={64}/></div>
-              <div style={{ flex: 1 }}>
-                <div className="ff-mono" style={{ fontSize: 'var(--t-label)', letterSpacing: '0.14em', color: picked === cIdx ? 'var(--sage)' : 'var(--berry)', textTransform: 'uppercase', marginBottom: 8 }}>
-                  {picked === cIdx ? 'CORRECT' : 'NOT QUITE'}
-                </div>
-                <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: 0 }}>{q.explain}</p>
-              </div>
-            </div>
+            <window.AnswerFeedback correct={picked === cIdx} size={64} marginTop={20}
+              label={picked === cIdx ? 'CORRECT' : 'NOT QUITE'} text={q.explain}/>
           )}
 
           <div style={{ flex: 1 }}/>
@@ -513,7 +506,7 @@ function CrossMark() {
 // ═══════════════════════════════════════════════════════════
 // RESULT — your own score after playing, before the friend answers.
 // ═══════════════════════════════════════════════════════════
-function DuelResult({ run, reveal = 'tally', opponent, onSend, onClose }) {
+function DuelResult({ run, reveal = 'tally', onSend, onClose }) {
   const [phase, setPhase] = useStateD('roasty');
   const acc = Math.round((run.correct / run.total) * 100);
   const points = window.duelPoints(run.correct, run.total);
@@ -623,7 +616,7 @@ function ReviewTag({ who, ok }) {
 // ═══════════════════════════════════════════════════════════
 // INVITE — the shareable artifact + native share sheet.
 // ═══════════════════════════════════════════════════════════
-function DuelInvite({ run, opponent, onShared, onClose }) {
+function DuelInvite({ run, onShared, onClose }) {
   const [sheetOpen, setSheetOpen] = useStateD(false);
   const link = 'brewpath.app/d/7K2P9';
   return (
@@ -750,7 +743,7 @@ function DuelShareSheet({ open, link, onClose, onDone }) {
 // ═══════════════════════════════════════════════════════════
 // SENT — confirmation / pending state after sharing.
 // ═══════════════════════════════════════════════════════════
-function DuelSent({ run, onDone, onClose }) {
+function DuelSent({ onDone, onClose }) {
   return (
     <div className="screen" data-screen-label="Duel · Sent" style={{ background: 'var(--bg)' }}>
       <DuelTopBar onClose={onClose}/>
@@ -871,8 +864,8 @@ function DuelComparison({ youRun, friendRun, friend, onRematch, onClose }) {
         <div className="px-24" style={{ paddingTop: 26 }}>
           <CompareRow label="Score" you={`${youRun.correct}/5`} them={`${friendRun.correct}/5`} youWin={youRun.correct >= friendRun.correct}/>
           <CompareRow label="Accuracy" you={`${Math.round(youRun.correct / 5 * 100)}%`} them={`${Math.round(friendRun.correct / 5 * 100)}%`} youWin={youRun.correct >= friendRun.correct}/>
-          <CompareRow label="Total time" you={`${youRun.timeSec}s`} them={`${friendRun.timeSec}s`} youWin={youRun.timeSec <= friendRun.timeSec} lowerWins/>
-          <CompareRow label="Fastest answer" you={`${fastYou.toFixed(1)}s`} them={`${fastThem.toFixed(1)}s`} youWin={fastestIsYou} lowerWins last/>
+          <CompareRow label="Total time" you={`${youRun.timeSec}s`} them={`${friendRun.timeSec}s`} youWin={youRun.timeSec <= friendRun.timeSec}/>
+          <CompareRow label="Fastest answer" you={`${fastYou.toFixed(1)}s`} them={`${fastThem.toFixed(1)}s`} youWin={fastestIsYou} last/>
         </div>
 
         {/* fastest-answer callout */}
@@ -913,7 +906,7 @@ function DuelComparison({ youRun, friendRun, friend, onRematch, onClose }) {
   );
 }
 
-function CompareRow({ label, you, them, youWin, lowerWins, last }) {
+function CompareRow({ label, you, them, youWin, last }) {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', gap: 12, padding: '13px 0', borderBottom: last ? 'none' : '1px solid var(--rule)' }}>
       <span className="ff-mono" style={{ fontSize: 'var(--t-body)', textAlign: 'right', color: youWin ? 'var(--accent)' : 'var(--ink-mute)', fontWeight: youWin ? 600 : 400 }}>{you}</span>
@@ -1020,7 +1013,7 @@ function DuelFlow({ initialStage = 'hub', tweaks = {}, onExit, onEarnPoints }) {
       return <DuelPicker layout={tweaks.picker || 'grid'} opponent={opponent}
         onPick={pickType} onClose={() => setStage('hub')}/>;
     case 'play':
-      return <DuelPlay type={type} opponent={opponent}
+      return <DuelPlay type={type}
         resumeState={null}
         onProgress={handleProgress}
         onDone={finishPlay}
@@ -1029,14 +1022,14 @@ function DuelFlow({ initialStage = 'hub', tweaks = {}, onExit, onEarnPoints }) {
       return <DuelPlay type={resume.type} resumeState={resume}
         onProgress={handleProgress} onDone={finishPlay} onQuit={() => setStage('hub')}/>;
     case 'result':
-      return <DuelResult run={youRun} reveal={tweaks.reveal || 'tally'} opponent={opponent}
+      return <DuelResult run={youRun} reveal={tweaks.reveal || 'tally'}
         onSend={(run) => { setYouRun(run); setStage('invite'); }}
         onClose={() => setStage('hub')}/>;
     case 'invite':
-      return <DuelInvite run={youRun} opponent={opponent}
+      return <DuelInvite run={youRun}
         onShared={() => setStage('sent')} onClose={() => setStage('result')}/>;
     case 'sent':
-      return <DuelSent run={youRun} onDone={() => setStage('hub')} onClose={() => setStage('hub')}/>;
+      return <DuelSent onDone={() => setStage('hub')} onClose={() => setStage('hub')}/>;
     case 'received':
       return <DuelReceived rec={incomingRec}
         onAccept={() => { setType(incomingRec.type); setOpponent(incomingRec.friend); setActiveFriend(incomingRec.friend); setStage('play'); }}
@@ -1116,3 +1109,6 @@ function DuelHeaderButton({ count = 0, onClick, locked = false, inHeader = false
 
 window.DuelFlow = DuelFlow;
 window.DuelHeaderButton = DuelHeaderButton;
+// Account-scoped store, so Reset progress and Delete account must be able to
+// clear it — a half-finished duel is progress like any other.
+window.clearDuelProgress = () => writeDuelProgress(null);

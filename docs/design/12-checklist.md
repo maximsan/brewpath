@@ -80,12 +80,12 @@ staging list that feeds it, not a living board. Nothing ticks these boxes.
 ## Content
 - [ ] 5 modules / 32 lessons / 257 cards ported with typographic punctuation intact ([§6](06-content.md) 6.1)
 - [ ] 72 dictionary terms (46 full) + 8 categories + cross-links + sources
-- [ ] Dictionary third state (**Reference**): glyph, chip, To-learn filter exclusion, `REFERENCE ONLY` block, 9 terms
+- [ ] Dictionary third state (**Reference**): glyph, chip, To-learn filter exclusion, `REFERENCE ONLY` block, 8 terms
 - [ ] Dictionary home: alias-matching search (deep-linkable + auto-focus), status filter with live counts, category grid, Term-of-Day banner, quick chips
 - [ ] Flashcards: flip, prev/next, shuffle, jump-to-term, empty state
 - [ ] Vocab game: setup phase (deck picker + round length with a `capped` guard), play, results with missed terms openable
 - [ ] Saved screen: three groups (terms · lessons · guides), each hidden when empty, plus the "study as flashcards" row
-- [ ] 42 collectible cards with bespoke art (**art complete — port, don't draw**)
+- [ ] 37 collectible cards + 5 training guides, all with bespoke art (**art complete — port, don't draw**)
 - [ ] 7 mini-games with content banks
 - [ ] 12 brew challenges
 - [ ] Studio: 3 species × 4 light treatments, 8 training guides, Roasty option tables

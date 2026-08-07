@@ -245,7 +245,7 @@ dictionary doubles as a second view of your progress. Terms you haven't reached
 show as **To learn**.
 
 There's a third state that's easy to miss and quite thoughtful: **Reference**.
-Nine terms are things you'll meet on a bag or a menu but that no lesson teaches
+Eight terms are things you'll meet on a bag or a menu but that no lesson teaches
 — they can never become "Learned". Rather than showing them as perpetually
 not-yet-done, they're marked as reference-only, with a line saying *"No lesson
 covers this one — it's here for when you meet it on a bag or a menu."* The design
@@ -291,7 +291,9 @@ a lesson.
 ## 9. Collecting
 
 Thirty-seven collectible cards, one per lesson plus one per completed module,
-each with its own illustration and a fact on the back. They unlock automatically
+each with its own illustration and a fact on the back. The fact is written once,
+in the lesson, and copied onto the card — so the moment you earn it and the card
+you look at later can never say two different things. They unlock automatically
 as you learn — there's no chase, no rarity, no duplicates.
 
 There are also five reference guides — roast levels, grind size, extraction,
@@ -432,33 +434,46 @@ the conclusion.
 Everything above is decided and built. These aren't — and each is tagged so you
 can see whether you would be arguing with the project or with me.
 
-**1. The four coming-soon modules. [Recorded gap]** Espresso Basics, Milk Drinks, Brewing Gear,
-Coffee Tasting are shown to every user with nothing behind them — no plan, no
-scope, no mention in the scope document. Either commit to them or stop showing
-them. This is the biggest open item in the product.
+**1. What the app is on day 33. [Derived]** The course is finite and the habit
+engine is not. See §15 — this reframes several of the questions below, and it is
+the one I would resolve first.
 
-**2. Is the free tier too generous to convert? [My reading]** The model is argued
+**2. The four coming-soon modules. [Recorded gap]** Espresso Basics, Milk Drinks,
+Brewing Gear, Coffee Tasting are shown to every user with nothing behind them —
+no plan, no scope, no mention in the scope document. **They are also the
+implicit answer to §15**, which makes "no lesson list, no scope, no rationale"
+more serious than a documentation gap: it means the retention plan is four words
+in a component.
+
+**3. Is the free tier too generous to convert? [My reading]** The model is argued
 in writing and argued well (§11). What is missing is a *number* — the audit
 defines power users as the ones who hit the cap rather than estimating how many
 do. Worth attaching a figure before ship.
 
-**3. Is v1 too thin? [My reading — the project decided the opposite]** The audit's
+**4. Is v1 too thin? [My reading — the project decided the opposite]** The audit's
 verdict was "oversized for a first release". I think the reverse risk went
 unweighed. Recorded as a disagreement, not a gap.
 
-**4. Four progress systems with no explanation. [Derived]** Points, mastery, plant, streak.
+**5. Four progress systems with no explanation. [Derived]** Points, mastery, plant, streak.
 Nothing in the app teaches the user that these are different things.
 
-**5. The mascot. [My reading]** Unavoidable, un-dimmable, and on every screen.
+**6. The mascot. [My reading]** Unavoidable, un-dimmable, and on every screen.
 
-**6. Optional challenges carry the core argument. [My reading]** The real-world tasks are the
+**7. Optional challenges carry the core argument. [My reading]** The real-world tasks are the
 strongest reason the app works, and they're the easiest thing to skip.
 
-**7. A fixed linear course. [My reading]** No way to jump to what you care about, while
+**8. A fixed linear course. [My reading]** No way to jump to what you care about, while
 simultaneously advertising future modules about the thing you might care about
 most.
 
-**8. The app that exists already disagrees with this design about how progress
+**9. Whether the course actually follows its own rules. [Recorded]** There is now
+a written standard for what makes a good card — no two cards in a row sharing an
+answer, no option that is always right, questions that can surprise, distractors
+that are genuinely wrong rather than merely worse. Nobody has yet played the
+course and checked it against them. The scope audit lists this as one of three
+things blocking a release, and the only one that is not engineering.
+
+**10. The app that exists already disagrees with this design about how progress
 works. [Derived]** The Flutter build pays XP scaled to lesson length, adds a
 module-completion bonus, and pays a small amount for practice runs. This design
 says a flat amount per lesson, no module bonus, and **nothing** for replays — on
@@ -471,11 +486,95 @@ Worth noting separately: this was found by asking one question. Nobody has
 systematically diffed the app against the design, which is what this whole
 reference exists to enable.
 
-**9. Nobody has checked whether the questions are any good. [Recorded]** Every structural
-check on the content passes. Whether a given question is worth asking, whether
-the explanations actually teach why a wrong answer is wrong, and whether the
-pacing feels right — none of that has been reviewed by a human. It's the highest-
-value remaining work on the content and it can't be automated.
+---
+
+## 15. What the app is on day 33
+
+**[Derived]** This is not in any project document, and it is the largest thing
+missing from the product as designed.
+
+### The arithmetic
+
+Thirty-two lessons, one a day, is **about five weeks**. After that the Today
+screen shows a state that exists in the build and is easy to miss:
+
+> **ALL CAUGHT UP** — "You've finished every lesson available."
+
+**Every reward system terminates within the same few weeks.** The plant reaches
+HARVEST and stops. Points come only from first completions and twelve challenges,
+so they stop too. Mastery caps out. The collection completes at thirty-seven.
+There is nothing left that pays.
+
+**The streak is the exception, and that is the problem.** It is the one mechanic
+designed for an indefinite horizon — earned freezes, a two-freeze cap, carefully
+reassuring recovery copy, and an explicit decision that it stays free forever.
+All of that assumes a tomorrow with something in it. The course does not have
+one.
+
+### The decision nobody has made
+
+**Streak advancement is not implemented anywhere.** The prototype seeds a streak
+of seven and never increments it — there is no day rollover, no date comparison,
+no rule saying what a day of activity *is*. The streak is drawn, not earned.
+
+That sounds like a prototype shortcut, and it is, but it means **the single most
+important retention decision in the app is still open**: what counts as showing
+up? A new lesson only? Any lesson? Any activity at all? The answer determines
+whether the app has a day 33 or not, and no document takes a position.
+
+### Four ways out
+
+**A. Ship more course.** The four coming-soon modules add perhaps twenty-five
+lessons — call it four more weeks. *This is the current implicit plan, and it
+only moves the problem.* Finite content is finite; day 33 becomes day 90.
+
+**B. Ship the Atlas.** Fifteen origins with activities, already designed, already
+built, explicitly held as v2's headline. It is a genuine second content vertical
+rather than more of the same. *Same objection, larger number.*
+
+**C. Make daily practice the loop after the course. [My recommendation]** The
+pieces already exist and are not wired together:
+
+- Seven mini-games with **generated** content banks — they do not run out
+- A vocab quiz with a deck picker and configurable round length
+- Flashcards over saved terms
+- A Term of the Day that is already deterministic by date
+- Mastery data that already knows which lessons are weak, surfaced on Profile and deep-linking into practice
+
+Assembled, that is a **daily drill** — today's term, a round of the game matching
+your weakest lesson, a challenge suggestion — that never exhausts, needs **no new
+authored content**, and gives the streak something legitimate to eat.
+
+It also fixes a smaller thing: mastery currently has no ongoing home. It is
+computed, displayed once, and then does nothing. Making practice the post-course
+loop turns mastery from a readout into a driver — which is what the four-system
+split was for.
+
+**The cost, stated honestly:** a drill is not a lesson. Day 40 would be quieter
+than day 4, and the app would have to be honest that you have moved from learning
+to keeping sharp. That is a different product promise and the copy would have to
+say so.
+
+**D. Let it end well. [My reading]** Accept that this is a five-week course,
+build a real ending — a finished plant, a completed collection, a genuine
+send-off — and let the streak retire with dignity instead of dying quietly at
+"all caught up". Then bring people back with a *release*, not a habit.
+
+This is the option nobody takes and it is not obviously wrong. A course that
+ends cleanly and is remembered fondly may be worth more than a habit loop
+running on fumes.
+
+### Why it matters beyond retention
+
+The answer changes things already decided:
+
+- **The streak's design rationale** assumes an open-ended horizon it does not have. If the answer is D, the freeze mechanic is over-engineered for a five-week run.
+- **The monetization model** is a subscription. A subscription against five weeks of content has a churn problem that no cap calibration fixes — the Saved shelf is worth paying for only while there is something to save.
+- **The coming-soon modules** stop being a marketing tease and become load-bearing.
+
+**Recommendation: decide C or D explicitly before building.** Both are
+defensible; drifting into A by default is the only bad outcome, because it means
+paying for content forever to postpone a question nobody asked.
 
 ---
 

@@ -9,7 +9,7 @@ const { useState: useStateX, useEffect: useEffectX, useRef: useRefX } = React;
 // ════════════════════════════════════════════════════════════
 // TERM OF THE DAY
 // ════════════════════════════════════════════════════════════
-function TermOfDayScreen({ onOpenFull, onOpenTerm, isFav, onToggleFav, onClose }) {
+function TermOfDayScreen({ onOpenFull, isFav, onToggleFav, onClose }) {
   const term = window.dictTermOfDay ? window.dictTermOfDay() : null;
   const cat = term ? (window.DICT_CAT_BY_ID || {})[term.cat] : null;
   const today = new Date(2026, 5, 18);
@@ -113,7 +113,7 @@ function DrillResults({ roastyState, kicker, big, bigSub, note, msg, primaryLabe
 // ════════════════════════════════════════════════════════════
 // FLASHCARDS — saved terms, flippable deck with a finish state
 // ════════════════════════════════════════════════════════════
-function FlashcardsScreen({ favorites, onToggleFav, onOpenTerm, onBrowse, onClose }) {
+function FlashcardsScreen({ favorites, onOpenTerm, onBrowse, onClose }) {
   const favs = favorites || new Set();
   const allDeck = (window.DICT_TERMS || []).filter(t => favs.has('t:' + t.id));
   const [order, setOrder] = useStateX(() => allDeck.map((_, i) => i));
@@ -459,15 +459,10 @@ function VocabGameScreen({ favorites, onClose, onOpenTerm }) {
           </div>
 
           {picked !== null && (
-            <div className="px-24" style={{ paddingTop: 18, display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-              <div style={{ flexShrink: 0, marginTop: -4 }}>{window.Roasty && <Roasty state={picked === correctIdx ? 'correct' : 'wrong'} size={48}/>}</div>
-              <div style={{ flex: 1 }}>
-                <div className="ff-mono" style={{ fontSize: 'var(--t-label)', letterSpacing: '0.14em', textTransform: 'uppercase', color: picked === correctIdx ? 'var(--sage)' : 'var(--accent)', marginBottom: 6 }}>
-                  {picked === correctIdx ? 'CORRECT' : 'NOT QUITE — IT’S ' + round.answer.term.toUpperCase()}
-                </div>
-                <button onClick={() => onOpenTerm(round.answer.id)} className="btn btn-link" style={{ padding: 0, fontSize: 'var(--t-support)' }}>See the full entry →</button>
-              </div>
-            </div>
+            <window.AnswerFeedback className="px-24 fade-up" correct={picked === correctIdx} size={48} marginTop={18} tone="accent"
+              label={picked === correctIdx ? 'CORRECT' : 'NOT QUITE — IT’S ' + round.answer.term.toUpperCase()}>
+              <button onClick={() => onOpenTerm(round.answer.id)} className="btn btn-link" style={{ padding: 0, fontSize: 'var(--t-support)' }}>See the full entry →</button>
+            </window.AnswerFeedback>
           )}
 
           <div style={{ flex: 1, minHeight: 16 }}/>

@@ -45,7 +45,7 @@ function LockBadge() {
 }
 
 // "PLUS" pill — reused on profile cards and sheets.
-function PlusPill({ tone = 'accent' }) {
+function PlusPill() {
   return (
     <span className="ff-mono" style={{
       fontSize: 'var(--t-micro)', letterSpacing: '0.16em', color: 'var(--accent)',

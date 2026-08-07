@@ -29,8 +29,13 @@ Derived from the **best-ever** `{correct, total}` per lesson, as a **percentage*
 
 Best-ever **never downgrades** on a worse replay. A replay *can* improve mastery even though it grants no points.
 
-**Graded card kinds** (`lesson.jsx:146`): `mcq`, `multi`, `match`, `slider`, `sequence`, `tastefix`, **`bagpick`**, `decision`, `recall`.
+**Graded card kinds** (`lesson.jsx:165`): `mcq`, `multi`, `match`, `slider`, `sequence`, `tastefix`, `bagpick`, `decision`, `recall`.
 **Ungraded:** `predict`, `concept`, `practical`, `visual` (+ the unexercised `intro`, `takeaway`).
+
+> ⚠️ **`flavor` is in neither list, and that is the bug.** It increments the
+> correct tally without being counted in the total, so mastery can exceed 100%
+> and a perfect score is reachable with a wrong answer. See
+> [§6](06-content.md) 6.2.
 
 ## 5.3 The Coffee Tree (`data.jsx`)
 
@@ -46,6 +51,12 @@ Best-ever **never downgrades** on a worse replay. A replay *can* improve mastery
 ## 5.4 Streak and streak freeze
 
 The freeze is a **mechanic, not a setting** — there is deliberately no toggle.
+
+> ⚠️ **None of the rules below are implemented.** The prototype seeds a streak of
+> 7 and never advances it — there is no day rollover and no definition of what a
+> day's activity is. Treat this section as the intended design, not as observed
+> behaviour, and note that **what ticks the streak is still an open decision**
+> ([PRODUCT.md](PRODUCT.md) §15).
 
 - Earn: **1 freeze per 7 consecutive days**, cap **2 held**.
 - `freezesHeld = clamp(0..2, floor(streak / 7) - freezesSpent)` — derived, so it can never drift.
@@ -76,7 +87,8 @@ The freeze is a **mechanic, not a setting** — there is deliberately no toggle.
 - A **module Field Guide card** unlocks when every lesson in the module is done.
 - **Training cards** have no `unlock` and are earned from the start.
 - ⚠️ **Only the *first* locked card is rendered in the Cards grid.** `CardsTab` (`screens.jsx:1471`) draws every earned card, then the single card at `firstLockedIdx` as a teaser, and `return null`s the rest. The grid is not "earned cards plus silhouettes" — it is earned cards plus exactly one. A "{n} more to collect" footer stands in for the remainder.
-- ⚠️ **Training cards never appear in the Cards grid at all.** Both `CardsTab` and `ProfileTab`'s rollup filter `c.kind !== 'training'`, so the grid counts **37**, not 42. Training guides surface only inside lessons (`TrainingCard`) and on the Saved shelf under `g:` keys (`library.jsx:421`).
+- **Training guides are a separate registry now.** They were moved out of `COLLECTION` into `TRAINING_CARDS`, so the collectible count *is* 37 — the old filter-at-render workaround is gone. Guides surface inside lessons (`TrainingCard`) and on the Saved shelf under `g:` keys.
+- **Card copy is not stored on the collectible.** `syncCardText()` copies title/summary/fact/meta from the lesson's own `reward` (or `MODULE_REWARDS`) at load; `syncTrainingText()` does the same for guides. One card, one text — see [§6](06-content.md) 6.3.
 - A card can carry a **Brew Challenge stamp** — a permanent "I tried this for real" mark pressed onto the card once the linked challenge is logged.
 
 ## 5.7 Saved shelf / favorites

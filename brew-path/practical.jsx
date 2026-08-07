@@ -139,18 +139,8 @@ function TasteFixCard({ card, onContinue, onCorrect }) {
       </div>
 
       {picked !== null && (
-        <div style={{ marginTop: 20, display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-          <div style={{ flexShrink: 0, marginTop: -8 }}>
-            <Roasty state={right ? 'correct' : 'wrong'} size={72}/>
-          </div>
-          <div style={{ flex: 1 }}>
-            <div className="ff-mono" style={{
-              fontSize: 'var(--t-label)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 8,
-              color: right ? 'var(--sage)' : 'var(--berry)',
-            }}>{right ? 'GOOD FIX' : 'NOT QUITE'}</div>
-            <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: 0, textWrap: 'pretty' }}>{card.explain}</p>
-          </div>
-        </div>
+        <window.AnswerFeedback correct={right} marginTop={20}
+          label={right ? 'GOOD FIX' : 'NOT QUITE'} text={card.explain}/>
       )}
 
       <div style={{ flex: 1 }}/>
@@ -270,7 +260,9 @@ const TRAINING = {
   },
   extraction: {
     id: 'extraction', label: 'EXTRACTION',
-    title: 'Extraction',
+    // Named apart from the c-m5l4 collectible ('Extraction') — different
+    // artifacts, so they must not share a title across the two registries.
+    title: 'The Extraction Spectrum',
     summary: 'Under to over — the one idea behind sour vs bitter.',
     fact: 'Sour usually means too little extraction; bitter usually means too much.',
     body: () => (
@@ -307,7 +299,8 @@ const TRAINING = {
   },
   anatomy: {
     id: 'anatomy', label: 'CHERRY ANATOMY',
-    title: 'The Cherry in Section',
+    // Ditto: m1l7's reward collectible owns 'The Cherry in Section'.
+    title: 'Cherry Anatomy',
     summary: 'Six layers between the skin of the fruit and the seed you brew.',
     fact: 'Layer 03 \u2014 the sticky mucilage \u2014 is the one washed, honey and natural argue over.',
     body: () => (window.CherrySection ? <window.CherrySection/> : null),
@@ -405,9 +398,12 @@ const TRAINING = {
   },
 };
 window.TRAINING = TRAINING;
+// One card, one text: the training card entries in data.jsx read their words
+// from here. This file loads after data.jsx, so the sync fires now.
+if (window.syncTrainingText) window.syncTrainingText();
 
 // The full training card — used inside lessons + the card-detail sheet.
-function TrainingCard({ variant, inSheet = false, hideHeader = false }) {
+function TrainingCard({ variant, hideHeader = false }) {
   const t = TRAINING[variant];
   if (!t) return null;
   return (
@@ -567,10 +563,7 @@ function PracticalCard({ card, onContinue }) {
         ))}
       </div>
       {card.note && (
-        <div style={{ marginTop: 22, paddingTop: 16, borderTop: '1px solid var(--rule)' }}>
-          <div className="ff-mono" style={{ fontSize: 'var(--t-label)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--sage)', marginBottom: 8 }}>WORTH KNOWING</div>
-          <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.55, color: 'var(--ink-mute)', margin: 0, textWrap: 'pretty' }}>{card.note}</p>
-        </div>
+        <window.CardTakeaway label="Worth knowing" text={card.note} marginTop={22} className=""/>
       )}
       <div style={{ flex: 1 }}></div>
       <div style={{ paddingTop: 32 }}>

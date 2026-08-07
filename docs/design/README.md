@@ -24,7 +24,7 @@ disagree, **the source wins and the discrepancy is flagged** rather than
 smoothed. The ⚠️ blocks are the most valuable part of these files — they mark
 places where the product genuinely has not decided something.
 
-> **Derived at `aa065bb` + working-tree changes (Aug 2026).** Countable facts
+> **Derived at `880b9d4` + staged design changes (Aug 2026).** Countable facts
 > come from [`tools/extract-facts.js`](tools/extract-facts.js), not from prose.
 > Re-run it after any design change — see [Keeping this current](#keeping-this-current).
 
@@ -34,7 +34,7 @@ places where the product genuinely has not decided something.
 
 | If you want to… | Read |
 |---|---|
-| **Discuss the product conceptually — what to keep, change or drop** | [**PRODUCT.md**](PRODUCT.md) — the whole app in plain language, no code |
+| **Discuss the product conceptually — what to keep, change or drop** | [**PRODUCT.md**](PRODUCT.md) — the whole app in plain language, no code. **Start at §14–15** if you want the arguments rather than the description |
 | Understand the product in 30 seconds | [§1 Product](01-product.md) |
 | Know what ships in v1 and what doesn't | [§2 Scope](02-scope.md) |
 | Find a specific screen in the prototype | [§0 How to read the prototype](00-reading-the-prototype.md) |
@@ -52,7 +52,7 @@ places where the product genuinely has not decided something.
 | 1 | [Product](01-product.md) | One paragraph |
 | 2 | [Scope](02-scope.md) | v1 vs v2 counted by route; the tab bar |
 | 3 | [Design system](03-design-system.md) | Colour, type, radius, elevation, theming, Roasty, icons — **and the index of the 57 components specified in `Design System.html`** |
-| 4 | [Information architecture](04-information-architecture.md) | Tabs, header, **the four coming-soon modules shown to users**, the 103-route list |
+| 4 | [Information architecture](04-information-architecture.md) | Tabs, header, **the four coming-soon modules shown to users**, the 104-route list |
 | 5 | [Mechanics](05-mechanics.md) | Points · mastery · tree · streak & freeze · gating · collectibles · Saved · brew challenges · Plus & trials · persistence · frozen values |
 | 6 | [Content](06-content.md) | Course · card kinds · collectibles · dictionary · mini-games · brew challenges · Studio · settings |
 | 7 | [Components](07-components.md) | Every exported component, its states and options, and its design-system binding |

@@ -44,6 +44,17 @@ the collectible-card link, brew-challenge suggestion, Practice again, Continue.
 
 `ModuleCompleteScreen` adds a **card flip** (`flipTo`) on the reward card.
 
+### The course-exhausted state
+
+When no lesson has `status: 'current'` — every unlocked lesson done — Today
+swaps its `CONTINUE LEARNING` eyebrow for **`ALL CAUGHT UP`** and the line
+*"You've finished every lesson available."* It does not offer a replay in that
+slot.
+
+This is reached after **32 lessons**, so roughly five weeks at one a day, and it
+is where the daily loop stops having a next step. See [PRODUCT.md](PRODUCT.md)
+§15.
+
 ## 7.4 Replay / review
 Tapping a completed lesson raises a `ConfirmSheet` stating explicitly: *Points and streak → No change*, length, last completed. Confirm → review mode.
 
@@ -51,7 +62,7 @@ Tapping a completed lesson raises a `ConfirmSheet` stating explicitly: *Points a
 Offered at lesson/module complete → Start (active, 48h) **or** Save for later → sits on Today → Log Result (pick a reaction) → **+5 pts first time** → stamp pressed onto the collectible card, Path node fills → recap sheet available afterwards → optional unlimited replay.
 
 ## 7.6 Dictionary
-Reachable from the header on any tab, from Learn's Term-of-Day, and from a term link inside a lesson (peek sheet, non-interrupting). Term detail cross-links to related terms and back into the source lesson — or, for the 9 reference-only terms, says plainly that no lesson covers it. Free and ungated in v1.
+Reachable from the header on any tab, from Today's Term-of-Day, and from a term link inside a lesson (peek sheet, non-interrupting). Term detail cross-links to related terms and back into the source lesson — or, for the 8 reference-only terms, says plainly that no lesson covers it. Free and ungated in v1.
 
 ## 7.7 Paywall
 Trigger points: Saved cap reached (peak intent), Studio card on Profile, Settings → Subscription. → `paywall` → select plan → `plus-welcome` → `studio`.
