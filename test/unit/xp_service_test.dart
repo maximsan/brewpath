@@ -1,4 +1,4 @@
-import 'package:coffee_quest/features/progress/domain/xp_service.dart';
+import 'package:brew_path/features/progress/domain/xp_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

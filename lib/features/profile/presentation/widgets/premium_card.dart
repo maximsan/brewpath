@@ -45,7 +45,7 @@ class PremiumCard extends StatelessWidget {
                     const SizedBox(height: 6),
                     Text(
                       'Unlock every module, remove ads, and keep your streak '
-                      'safe with a Coffee Quest subscription.',
+                      'safe with a BrewPath Plus subscription.',
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: colors.onPrimaryContainer.withValues(
                           alpha: _subtitleAlpha,

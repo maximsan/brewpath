@@ -1,14 +1,14 @@
-import 'package:coffee_quest/core/constants/xp_values.dart';
-import 'package:coffee_quest/features/lessons/domain/lesson_completion_service.dart';
-import 'package:coffee_quest/features/progress/domain/streak_service.dart';
-import 'package:coffee_quest/features/progress/domain/xp_service.dart';
-import 'package:coffee_quest/services/analytics/noop_analytics_service.dart';
-import 'package:coffee_quest/shared/repositories/card_repository.dart';
-import 'package:coffee_quest/shared/repositories/content_repository.dart';
-import 'package:coffee_quest/shared/repositories/module_progress_repository.dart';
-import 'package:coffee_quest/shared/repositories/progress_repository.dart';
-import 'package:coffee_quest/shared/repositories/settings_repository.dart';
-import 'package:coffee_quest/shared/storage/app_database.dart';
+import 'package:brew_path/core/constants/xp_values.dart';
+import 'package:brew_path/features/lessons/domain/lesson_completion_service.dart';
+import 'package:brew_path/features/progress/domain/streak_service.dart';
+import 'package:brew_path/features/progress/domain/xp_service.dart';
+import 'package:brew_path/services/analytics/noop_analytics_service.dart';
+import 'package:brew_path/shared/repositories/card_repository.dart';
+import 'package:brew_path/shared/repositories/content_repository.dart';
+import 'package:brew_path/shared/repositories/module_progress_repository.dart';
+import 'package:brew_path/shared/repositories/progress_repository.dart';
+import 'package:brew_path/shared/repositories/settings_repository.dart';
+import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 

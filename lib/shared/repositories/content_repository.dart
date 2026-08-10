@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:coffee_quest/shared/models/coffee_card_model.dart';
-import 'package:coffee_quest/shared/models/lesson_model.dart';
-import 'package:coffee_quest/shared/models/module_model.dart';
+import 'package:brew_path/shared/models/coffee_card_model.dart';
+import 'package:brew_path/shared/models/lesson_model.dart';
+import 'package:brew_path/shared/models/module_model.dart';
 import 'package:flutter/services.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

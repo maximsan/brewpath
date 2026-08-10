@@ -1,5 +1,5 @@
-import 'package:coffee_quest/features/learn/presentation/module_detail_screen.dart';
-import 'package:coffee_quest/shared/repositories/progress_repository.dart';
+import 'package:brew_path/features/learn/presentation/module_detail_screen.dart';
+import 'package:brew_path/shared/repositories/progress_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

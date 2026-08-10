@@ -1,7 +1,7 @@
 // Self-describing tokens / DTOs / storage infra; no per-member docs.
 // ignore_for_file: public_member_api_docs
 
-import 'package:coffee_quest/shared/repositories/settings_repository.dart'
+import 'package:brew_path/shared/repositories/settings_repository.dart'
     show SettingsRepository;
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
@@ -80,6 +80,12 @@ class UserSettings extends Table {
 class AppDatabase extends _$AppDatabase {
   /// Production opens a platform DB via drift_flutter; tests pass
   /// `NativeDatabase.memory()`.
+  ///
+  /// The `coffee_quest` name is the on-disk SQLite filename and is
+  /// deliberately **not** renamed with the package: changing it orphans the
+  /// existing database rather than migrating it. It is invisible to users, and
+  /// the persistence layer is scheduled for a destructive rebuild, so the
+  /// rename would cost local data for no gain.
   AppDatabase([QueryExecutor? executor])
     : super(executor ?? driftDatabase(name: 'coffee_quest'));
 

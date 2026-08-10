@@ -1,5 +1,5 @@
-import 'package:coffee_quest/app/app.dart';
-import 'package:coffee_quest/features/cards/presentation/card_grid_item_widget.dart';
+import 'package:brew_path/app/app.dart';
+import 'package:brew_path/features/cards/presentation/card_grid_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -11,7 +11,7 @@ void main() {
   testWidgets('shows all 17 cards, all locked for a fresh user', (
     tester,
   ) async {
-    await pumpWithProviders(tester, const CoffeeQuestApp());
+    await pumpWithProviders(tester, const BrewPathApp());
 
     await tester.tap(find.byIcon(Icons.style_outlined)); // Cards tab
     await settleLoaders(tester);

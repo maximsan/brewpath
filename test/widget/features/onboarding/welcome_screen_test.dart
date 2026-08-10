@@ -1,4 +1,4 @@
-import 'package:coffee_quest/features/onboarding/presentation/welcome/welcome_screen.dart';
+import 'package:brew_path/features/onboarding/presentation/welcome/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -1,4 +1,4 @@
-import 'package:coffee_quest/features/onboarding/presentation/brewer/brewer_controller.dart';
+import 'package:brew_path/features/onboarding/presentation/brewer/brewer_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

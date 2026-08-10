@@ -1,10 +1,10 @@
-import 'package:coffee_quest/features/learn/domain/module_summary_provider.dart';
-import 'package:coffee_quest/shared/models/coffee_card_model.dart';
-import 'package:coffee_quest/shared/models/lesson_model.dart';
-import 'package:coffee_quest/shared/models/lesson_step_model.dart';
-import 'package:coffee_quest/shared/models/module_model.dart';
-import 'package:coffee_quest/shared/repositories/content_repository.dart';
-import 'package:coffee_quest/shared/repositories/repository_providers.dart';
+import 'package:brew_path/features/learn/domain/module_summary_provider.dart';
+import 'package:brew_path/shared/models/coffee_card_model.dart';
+import 'package:brew_path/shared/models/lesson_model.dart';
+import 'package:brew_path/shared/models/lesson_step_model.dart';
+import 'package:brew_path/shared/models/module_model.dart';
+import 'package:brew_path/shared/repositories/content_repository.dart';
+import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

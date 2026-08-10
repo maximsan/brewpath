@@ -1,4 +1,4 @@
-import 'package:coffee_quest/shared/models/lesson_model.dart';
+import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

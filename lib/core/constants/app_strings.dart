@@ -3,7 +3,7 @@
 
 /// User-facing string constants.
 abstract class AppStrings {
-  static const appName = 'Coffee Quest';
+  static const appName = 'BrewPath';
   static const tabLearn = 'Learn';
   static const tabPath = 'Path';
   static const tabCards = 'Cards';

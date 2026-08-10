@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:coffee_quest/features/companion/domain/roasty_state.dart';
+import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:flutter/material.dart';
 
 // Animation switches handle the states with special motion and default the

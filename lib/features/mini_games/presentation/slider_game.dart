@@ -1,6 +1,6 @@
-import 'package:coffee_quest/core/constants/app_strings.dart';
-import 'package:coffee_quest/features/mini_games/domain/mini_game_result.dart';
-import 'package:coffee_quest/shared/models/lesson_step_model.dart';
+import 'package:brew_path/core/constants/app_strings.dart';
+import 'package:brew_path/features/mini_games/domain/mini_game_result.dart';
+import 'package:brew_path/shared/models/lesson_step_model.dart';
 import 'package:flutter/material.dart';
 
 /// Slider mini-game: the user drags a value into the target range.

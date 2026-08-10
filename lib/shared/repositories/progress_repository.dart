@@ -1,5 +1,5 @@
-import 'package:coffee_quest/shared/storage/app_database.dart';
-import 'package:coffee_quest/shared/storage/progress_record.dart';
+import 'package:brew_path/shared/storage/app_database.dart';
+import 'package:brew_path/shared/storage/progress_record.dart';
 import 'package:drift/drift.dart';
 
 /// Reads/writes lesson-completion records via Drift.

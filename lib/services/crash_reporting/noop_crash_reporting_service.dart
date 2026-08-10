@@ -1,4 +1,4 @@
-import 'package:coffee_quest/services/crash_reporting/crash_reporting_service.dart';
+import 'package:brew_path/services/crash_reporting/crash_reporting_service.dart';
 
 /// Inert crash reporting — the default until Firebase is activated.
 class NoOpCrashReportingService implements CrashReportingService {

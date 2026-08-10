@@ -1,7 +1,7 @@
-import 'package:coffee_quest/app/app.dart';
-import 'package:coffee_quest/shared/repositories/card_repository.dart';
-import 'package:coffee_quest/shared/repositories/progress_repository.dart';
-import 'package:coffee_quest/shared/repositories/settings_repository.dart';
+import 'package:brew_path/app/app.dart';
+import 'package:brew_path/shared/repositories/card_repository.dart';
+import 'package:brew_path/shared/repositories/progress_repository.dart';
+import 'package:brew_path/shared/repositories/settings_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -16,7 +16,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    await pumpWithProviders(tester, const CoffeeQuestApp());
+    await pumpWithProviders(tester, const BrewPathApp());
     await tester.tap(find.byIcon(Icons.person_outline));
     await settleLoaders(tester);
     await tester.tap(find.byIcon(Icons.settings_outlined));

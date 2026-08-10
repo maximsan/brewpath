@@ -1,5 +1,5 @@
-import 'package:coffee_quest/core/utils/module_icons.dart';
-import 'package:coffee_quest/features/cards/domain/cards_providers.dart';
+import 'package:brew_path/core/utils/module_icons.dart';
+import 'package:brew_path/features/cards/domain/cards_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

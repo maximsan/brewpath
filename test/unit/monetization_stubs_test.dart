@@ -1,10 +1,10 @@
-import 'package:coffee_quest/services/ads/ads_provider.dart';
-import 'package:coffee_quest/services/ads/ads_service.dart';
-import 'package:coffee_quest/services/ads/noop_ads_service.dart';
-import 'package:coffee_quest/services/payments/noop_payments_service.dart';
-import 'package:coffee_quest/services/payments/payments_provider.dart';
-import 'package:coffee_quest/services/payments/payments_service.dart';
-import 'package:coffee_quest/services/payments/store_product.dart';
+import 'package:brew_path/services/ads/ads_provider.dart';
+import 'package:brew_path/services/ads/ads_service.dart';
+import 'package:brew_path/services/ads/noop_ads_service.dart';
+import 'package:brew_path/services/payments/noop_payments_service.dart';
+import 'package:brew_path/services/payments/payments_provider.dart';
+import 'package:brew_path/services/payments/payments_service.dart';
+import 'package:brew_path/services/payments/store_product.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

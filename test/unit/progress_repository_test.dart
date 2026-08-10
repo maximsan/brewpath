@@ -1,8 +1,8 @@
-import 'package:coffee_quest/shared/repositories/card_repository.dart';
-import 'package:coffee_quest/shared/repositories/module_progress_repository.dart';
-import 'package:coffee_quest/shared/repositories/progress_repository.dart';
-import 'package:coffee_quest/shared/repositories/settings_repository.dart';
-import 'package:coffee_quest/shared/storage/app_database.dart';
+import 'package:brew_path/shared/repositories/card_repository.dart';
+import 'package:brew_path/shared/repositories/module_progress_repository.dart';
+import 'package:brew_path/shared/repositories/progress_repository.dart';
+import 'package:brew_path/shared/repositories/settings_repository.dart';
+import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 

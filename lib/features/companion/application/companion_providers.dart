@@ -1,7 +1,7 @@
-import 'package:coffee_quest/features/companion/data/companion_lines_repository.dart';
-import 'package:coffee_quest/features/companion/domain/companion_lines.dart';
-import 'package:coffee_quest/features/companion/domain/companion_mood.dart';
-import 'package:coffee_quest/features/progress/domain/progress_providers.dart';
+import 'package:brew_path/features/companion/data/companion_lines_repository.dart';
+import 'package:brew_path/features/companion/domain/companion_lines.dart';
+import 'package:brew_path/features/companion/domain/companion_mood.dart';
+import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'companion_providers.g.dart';

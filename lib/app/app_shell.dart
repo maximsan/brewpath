@@ -1,4 +1,4 @@
-import 'package:coffee_quest/core/constants/app_strings.dart';
+import 'package:brew_path/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

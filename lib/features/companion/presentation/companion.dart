@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:coffee_quest/features/companion/application/companion_providers.dart';
-import 'package:coffee_quest/features/companion/domain/companion_mood.dart';
-import 'package:coffee_quest/features/companion/domain/companion_reaction.dart';
-import 'package:coffee_quest/features/companion/domain/companion_state_mapping.dart';
-import 'package:coffee_quest/features/companion/presentation/companion_handle.dart';
-import 'package:coffee_quest/features/companion/presentation/roasty.dart';
-import 'package:coffee_quest/features/companion/presentation/roasty_animation.dart';
+import 'package:brew_path/features/companion/application/companion_providers.dart';
+import 'package:brew_path/features/companion/domain/companion_mood.dart';
+import 'package:brew_path/features/companion/domain/companion_reaction.dart';
+import 'package:brew_path/features/companion/domain/companion_state_mapping.dart';
+import 'package:brew_path/features/companion/presentation/companion_handle.dart';
+import 'package:brew_path/features/companion/presentation/roasty.dart';
+import 'package:brew_path/features/companion/presentation/roasty_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

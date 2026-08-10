@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:coffee_quest/features/companion/domain/companion_lines.dart';
-import 'package:coffee_quest/features/companion/domain/companion_reaction.dart';
+import 'package:brew_path/features/companion/domain/companion_lines.dart';
+import 'package:brew_path/features/companion/domain/companion_reaction.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

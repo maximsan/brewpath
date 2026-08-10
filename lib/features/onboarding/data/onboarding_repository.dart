@@ -1,4 +1,4 @@
-import 'package:coffee_quest/shared/repositories/settings_repository.dart';
+import 'package:brew_path/shared/repositories/settings_repository.dart';
 
 /// Snapshot of the onboarding gate. `completed=false` means the user has not
 /// yet finished the post-install flow and must be sent through it on launch.

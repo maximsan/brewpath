@@ -1,9 +1,9 @@
-import 'package:coffee_quest/core/utils/module_icons.dart';
-import 'package:coffee_quest/core/widgets/error_view.dart';
-import 'package:coffee_quest/core/widgets/loading_indicator.dart';
-import 'package:coffee_quest/features/cards/domain/cards_providers.dart';
-import 'package:coffee_quest/features/cards/domain/favorite_cards_provider.dart';
-import 'package:coffee_quest/shared/theme/app_spacing.dart';
+import 'package:brew_path/core/utils/module_icons.dart';
+import 'package:brew_path/core/widgets/error_view.dart';
+import 'package:brew_path/core/widgets/loading_indicator.dart';
+import 'package:brew_path/features/cards/domain/cards_providers.dart';
+import 'package:brew_path/features/cards/domain/favorite_cards_provider.dart';
+import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:coffee_quest/features/onboarding/presentation/onboarding_providers.dart';
-import 'package:coffee_quest/features/profile/domain/settings_providers.dart';
+import 'package:brew_path/features/onboarding/presentation/onboarding_providers.dart';
+import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

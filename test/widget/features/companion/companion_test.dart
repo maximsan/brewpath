@@ -1,9 +1,9 @@
-import 'package:coffee_quest/features/companion/domain/companion_reaction.dart';
-import 'package:coffee_quest/features/companion/domain/roasty_state.dart';
-import 'package:coffee_quest/features/companion/presentation/companion.dart';
-import 'package:coffee_quest/features/companion/presentation/companion_handle.dart';
-import 'package:coffee_quest/features/companion/presentation/roasty.dart';
-import 'package:coffee_quest/features/progress/domain/progress_providers.dart';
+import 'package:brew_path/features/companion/domain/companion_reaction.dart';
+import 'package:brew_path/features/companion/domain/roasty_state.dart';
+import 'package:brew_path/features/companion/presentation/companion.dart';
+import 'package:brew_path/features/companion/presentation/companion_handle.dart';
+import 'package:brew_path/features/companion/presentation/roasty.dart';
+import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -1,5 +1,5 @@
-import 'package:coffee_quest/app/app.dart';
-import 'package:coffee_quest/shared/repositories/progress_repository.dart';
+import 'package:brew_path/app/app.dart';
+import 'package:brew_path/shared/repositories/progress_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -16,7 +16,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    await pumpWithProviders(tester, const CoffeeQuestApp());
+    await pumpWithProviders(tester, const BrewPathApp());
     // Learn is the initial tab — no nav needed.
 
     expect(find.text("Today's lesson"), findsOneWidget);
@@ -33,7 +33,7 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
 
-      await pumpWithProviders(tester, const CoffeeQuestApp());
+      await pumpWithProviders(tester, const BrewPathApp());
 
       // ActionChip with onPressed: null reports `isEnabled == false`.
       final chips = tester.widgetList<ActionChip>(find.byType(ActionChip));
@@ -57,7 +57,7 @@ void main() {
         score: 100,
       );
 
-      await pumpWithProviders(tester, const CoffeeQuestApp());
+      await pumpWithProviders(tester, const BrewPathApp());
 
       final chips = tester.widgetList<ActionChip>(find.byType(ActionChip));
       expect(chips.any((c) => c.isEnabled), isTrue);

@@ -1,4 +1,4 @@
-import 'package:coffee_quest/services/payments/store_product.dart';
+import 'package:brew_path/services/payments/store_product.dart';
 
 /// Outcome of a purchase or restore flow.
 enum PurchaseStatus {

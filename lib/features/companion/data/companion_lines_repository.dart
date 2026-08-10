@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:coffee_quest/features/companion/domain/companion_lines.dart';
+import 'package:brew_path/features/companion/domain/companion_lines.dart';
 import 'package:flutter/services.dart';
 
 /// Loads and caches the companion's speech lines from the bundled

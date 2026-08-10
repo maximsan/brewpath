@@ -1,4 +1,4 @@
-import 'package:coffee_quest/features/lessons/presentation/xp_gain_toast.dart';
+import 'package:brew_path/features/lessons/presentation/xp_gain_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

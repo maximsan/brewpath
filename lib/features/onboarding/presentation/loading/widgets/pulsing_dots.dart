@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:coffee_quest/features/onboarding/presentation/loading/loading_animation.dart';
-import 'package:coffee_quest/shared/theme/app_colors.dart';
-import 'package:coffee_quest/shared/theme/app_spacing.dart';
+import 'package:brew_path/features/onboarding/presentation/loading/loading_animation.dart';
+import 'package:brew_path/shared/theme/app_colors.dart';
+import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 
 /// Three accent dots that pulse in a staggered loop beneath the loading

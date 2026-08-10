@@ -1,6 +1,6 @@
-import 'package:coffee_quest/shared/models/coffee_card_model.dart';
-import 'package:coffee_quest/shared/repositories/content_repository.dart';
-import 'package:coffee_quest/shared/repositories/repository_providers.dart';
+import 'package:brew_path/shared/models/coffee_card_model.dart';
+import 'package:brew_path/shared/repositories/content_repository.dart';
+import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'cards_providers.g.dart';

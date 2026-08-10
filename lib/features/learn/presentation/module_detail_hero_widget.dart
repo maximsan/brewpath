@@ -1,5 +1,5 @@
-import 'package:coffee_quest/core/utils/module_icons.dart';
-import 'package:coffee_quest/shared/models/module_model.dart';
+import 'package:brew_path/core/utils/module_icons.dart';
+import 'package:brew_path/shared/models/module_model.dart';
 import 'package:flutter/material.dart';
 
 /// Tinted hero at the top of the module screen: category icon + title +

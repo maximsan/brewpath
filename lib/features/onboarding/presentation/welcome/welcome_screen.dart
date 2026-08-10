@@ -1,13 +1,13 @@
 import 'dart:async';
 
-import 'package:coffee_quest/core/widgets/link_button.dart';
-import 'package:coffee_quest/core/widgets/primary_button.dart';
-import 'package:coffee_quest/core/widgets/smallcaps_label.dart';
-import 'package:coffee_quest/features/companion/domain/roasty_state.dart';
-import 'package:coffee_quest/features/companion/presentation/roasty.dart';
-import 'package:coffee_quest/shared/theme/app_colors.dart';
-import 'package:coffee_quest/shared/theme/app_spacing.dart';
-import 'package:coffee_quest/shared/theme/app_typography.dart';
+import 'package:brew_path/core/widgets/link_button.dart';
+import 'package:brew_path/core/widgets/primary_button.dart';
+import 'package:brew_path/core/widgets/smallcaps_label.dart';
+import 'package:brew_path/features/companion/domain/roasty_state.dart';
+import 'package:brew_path/features/companion/presentation/roasty.dart';
+import 'package:brew_path/shared/theme/app_colors.dart';
+import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/app_typography.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
