@@ -9,7 +9,7 @@ import 'package:brew_path/features/companion/presentation/roasty_particles.dart'
 import 'package:flutter/material.dart';
 
 /// Animated Roasty mascot. Reproduces the geometry + per-state animations
-/// from the design bundle (`coffee_quest/brew-path-app/project/roasty.jsx`)
+/// from the design bundle (`brew-path/roasty.jsx`)
 /// using Flutter's Canvas + a single [AnimationController]. Public API:
 /// `Roasty(state: …, size: …, replayKey: …)`. The `replayKey` mimics the
 /// prototype's `key={state + ':' + replayKey}` so one-shot animations

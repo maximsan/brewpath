@@ -30,7 +30,7 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
 
-    expect(find.text('COFFEE QUEST'), findsOneWidget);
+    expect(find.text('BREWPATH'), findsOneWidget);
     expect(find.textContaining('Plant your tree.'), findsOneWidget);
     expect(
       find.widgetWithText(FilledButton, 'Plant your seed'),

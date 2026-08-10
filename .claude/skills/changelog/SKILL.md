@@ -5,7 +5,7 @@ description: Use when updating docs/CHANGELOG.md — drafts curated Unreleased e
 
 # Changelog Skill
 
-You are updating `docs/CHANGELOG.md` for Coffee Quest. Work from the actual code
+You are updating `docs/CHANGELOG.md` for BrewPath. Work from the actual code
 changes, NOT from commit messages (the commit messages in this repo are often
 vague, e.g. "update other tabs").
 
@@ -16,7 +16,7 @@ vague, e.g. "update other tabs").
    - Otherwise: use commits since `docs/CHANGELOG.md` was last modified — find that commit with `git log -1 --format=%H -- docs/CHANGELOG.md`, then `git log <commit>..HEAD`.
    - Also include uncommitted work: check `git status` and `git diff` for staged/unstaged changes worth logging.
 
-2. **Read the real changes**, not just the log. Use `git diff --stat <range>` to see what files moved, then inspect diffs of the non-trivial ones. Focus on `coffee_quest/lib/`, `assets/content/`, `pubspec.yaml`, `ios/`, and `.github/`.
+2. **Read the real changes**, not just the log. Use `git diff --stat <range>` to see what files moved, then inspect diffs of the non-trivial ones. Focus on `lib/`, `assets/content/`, `pubspec.yaml`, `ios/`, and `.github/`.
 
 3. **Filter out noise.** Do NOT log: pure refactors, formatting, test-only changes, generated files (`*.g.dart`, `*.freezed.dart`, anything under `build/` or `.dart_tool/`), or work-in-progress that was later reverted in the same range.
 
@@ -30,4 +30,4 @@ vague, e.g. "update other tabs").
 
 - Keep the Keep a Changelog format already in the file.
 - If the range has nothing log-worthy, say so plainly instead of inventing entries.
-- To cut a release (stamp Unreleased with a version + date, bump pubspec, tag), point the user to `node coffee_quest/tool/release.js` — that's a separate step, not this skill's job.
+- To cut a release (stamp Unreleased with a version + date, bump pubspec, tag), point the user to `node tool/release.js` — that's a separate step, not this skill's job.

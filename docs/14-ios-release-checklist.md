@@ -1,8 +1,8 @@
-# Coffee Quest — iOS Release Checklist
+# BrewPath — iOS Release Checklist
 
 ## Overview
 
-This checklist covers everything needed to publish Coffee Quest to the App Store and distribute via TestFlight. Steps are ordered from first-time setup through submission.
+This checklist covers everything needed to publish BrewPath to the App Store and distribute via TestFlight. Steps are ordered from first-time setup through submission.
 
 ---
 
@@ -18,8 +18,8 @@ This checklist covers everything needed to publish Coffee Quest to the App Store
 
 - [ ] Go to Apple Developer Portal → Identifiers → App IDs
 - [ ] Create a new App ID:
-  - Description: `Coffee Quest`
-  - Bundle ID (Explicit): `com.yourcompany.coffeequest`
+  - Description: `BrewPath`
+  - Bundle ID (Explicit): `dev.maximsan.brewPath`
   - Capabilities: none required for MVP
 - [ ] Verify the Bundle ID in Xcode matches: Runner target → General → Bundle Identifier
 
@@ -30,10 +30,10 @@ This checklist covers everything needed to publish Coffee Quest to the App Store
 - [ ] Go to [appstoreconnect.apple.com](https://appstoreconnect.apple.com)
 - [ ] Click + (New App)
   - Platform: iOS
-  - Name: Coffee Quest
+  - Name: BrewPath
   - Primary Language: English
-  - Bundle ID: select `com.yourcompany.coffeequest`
-  - SKU: `COFFEEQUEST001` (any unique string)
+  - Bundle ID: select `dev.maximsan.brewPath`
+  - SKU: `BREWPATH001` (any unique string)
 - [ ] Save the app record
 
 ---
@@ -45,7 +45,7 @@ This checklist covers everything needed to publish Coffee Quest to the App Store
   - [ ] Version: `1.0.0`
   - [ ] Build: `1`
   - [ ] Minimum Deployments: iOS 16.0
-  - [ ] Display Name: Coffee Quest
+  - [ ] Display Name: BrewPath
 - [ ] Runner target → Signing & Capabilities:
   - [ ] Team: select your Apple Developer team
   - [ ] Signing Certificate: iOS Distribution (Xcode will create if missing)
@@ -60,7 +60,7 @@ Open `ios/Runner/Info.plist` and verify these keys exist:
 
 ```xml
 <key>CFBundleDisplayName</key>
-<string>Coffee Quest</string>
+<string>BrewPath</string>
 
 <key>CFBundleShortVersionString</key>
 <string>$(FLUTTER_BUILD_NAME)</string>
@@ -178,7 +178,7 @@ Before submitting for App Review:
 
 **App Store Metadata:**
 
-- [ ] App Name: Coffee Quest (max 30 characters)
+- [ ] App Name: BrewPath (max 30 characters)
 - [ ] Subtitle: (optional, max 30 characters, e.g., "Learn Coffee Fundamentals")
 - [ ] Description: (max 4000 characters — describe the app clearly)
 - [ ] Keywords: (max 100 characters total — comma separated)
@@ -203,7 +203,7 @@ Before submitting for App Review:
 
 **App Privacy:**
 
-- [ ] Declare data collected: Coffee Quest MVP collects no user data — select "We do not collect data from this app"
+- [ ] Declare data collected: BrewPath MVP collects no user data — select "We do not collect data from this app"
 
 **Pricing:**
 
@@ -225,7 +225,7 @@ Increment the build number (`+1`, `+2`, etc.) for every upload to App Store Conn
 ## Definition of Done
 
 - [ ] Apple Developer account is enrolled and agreements accepted
-- [ ] App ID `com.yourcompany.coffeequest` is registered in Developer Portal
+- [ ] App ID `dev.maximsan.brewPath` is registered in Developer Portal
 - [ ] App record is created in App Store Connect
 - [ ] Xcode code signing is configured with a valid Distribution certificate
 - [ ] `Info.plist` has all required keys including `ITSAppUsesNonExemptEncryption = false`

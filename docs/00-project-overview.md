@@ -1,8 +1,8 @@
-# Coffee Quest — Project Overview
+# BrewPath — Project Overview
 
 ## Product Vision
 
-Coffee Quest teaches coffee fundamentals to beginners through short, structured, interactive lessons — the same way Duolingo teaches languages. The app rewards consistency, not mastery. Users finish a session feeling like they learned something concrete and practical, not overwhelmed.
+BrewPath teaches coffee fundamentals to beginners through short, structured, interactive lessons — the same way Duolingo teaches languages. The app rewards consistency, not mastery. Users finish a session feeling like they learned something concrete and practical, not overwhelmed.
 
 ## Value Proposition
 

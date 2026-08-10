@@ -29,7 +29,7 @@ void main() {
     }
 
     // Welcome screen.
-    expect(find.text('COFFEE QUEST'), findsOneWidget);
+    expect(find.text('BREWPATH'), findsOneWidget);
     final plantSeed = find.widgetWithText(FilledButton, 'Plant your seed');
     await tester.ensureVisible(plantSeed);
     await tester.pump();

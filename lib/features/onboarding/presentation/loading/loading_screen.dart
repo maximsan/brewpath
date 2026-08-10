@@ -134,7 +134,7 @@ class _LoadingScreenState extends ConsumerState<LoadingScreen> {
                   bottom: _wordmarkInset,
                   child: Center(
                     child: Text(
-                      'COFFEE QUEST',
+                      'BREWPATH',
                       style: AppTypography.smallcaps().copyWith(
                         letterSpacing: _wordmarkLetterSpacing,
                       ),

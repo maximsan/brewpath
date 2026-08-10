@@ -1,4 +1,4 @@
-# Coffee Quest — CI/CD
+# BrewPath — CI/CD
 
 > **Status (2026-05-21):** The actual workflow shipped in
 > `.github/workflows/ci.yml` differs from the original spec below, which is now
@@ -43,11 +43,6 @@ on:
   push:
     branches: [main]
   pull_request:
-
-# The Flutter app lives in coffee_quest/; the repo root holds only docs.
-defaults:
-  run:
-    working-directory: coffee_quest
 
 env:
   FLUTTER_VERSION: "3.44.0"

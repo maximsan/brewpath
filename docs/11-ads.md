@@ -1,4 +1,4 @@
-# Coffee Quest — Ads
+# BrewPath — Ads
 
 ## Current Status: Disabled for MVP
 

@@ -1,4 +1,4 @@
-# Coffee Quest — Glossary
+# BrewPath — Glossary
 
 A reference for Flutter/Dart concepts used throughout this project, written for developers new to the ecosystem.
 

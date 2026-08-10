@@ -36,7 +36,7 @@ class WelcomeScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SmallcapsLabel('COFFEE QUEST'),
+              const SmallcapsLabel('BREWPATH'),
               const SizedBox(height: AppSpacing.base),
               AspectRatio(
                 aspectRatio: 1,

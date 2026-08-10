@@ -1,4 +1,4 @@
-# Coffee Quest — Firebase
+# BrewPath — Firebase
 
 ## Services In Scope for MVP
 
@@ -15,7 +15,7 @@ Firebase Auth, Firestore, Cloud Functions, and Firebase Storage are **not used i
 ## iOS Setup Steps
 
 - [ ] Create a Firebase project at [console.firebase.google.com](https://console.firebase.google.com) _(manual — user)_
-- [ ] Register an iOS app with bundle ID `com.yourcompany.coffeequest` _(manual — user)_
+- [ ] Register an iOS app with bundle ID `dev.maximsan.brewPath` _(manual — user)_
 - [ ] Download `GoogleService-Info.plist` _(manual — user)_
 - [ ] Place `GoogleService-Info.plist` at `ios/Runner/GoogleService-Info.plist` _(manual — user)_
 - [ ] In Xcode: select Runner target → Build Phases → Copy Bundle Resources → add `GoogleService-Info.plist` _(manual — user)_

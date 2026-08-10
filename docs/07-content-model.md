@@ -1,4 +1,4 @@
-# Coffee Quest — Content Model
+# BrewPath — Content Model
 
 ## Overview
 
