@@ -37,9 +37,15 @@ git add -A -- . ':!.claude/worktrees'
 ```
 
 The `':!<path>'` pathspec excludes a directory from an otherwise-everything add.
-This repo needs it: `.claude/worktrees/` holds full working copies of the repo
-that are untracked but **not** gitignored, so a bare `git add -A` would commit a
-second copy of the entire project.
+`.claude/worktrees/` — which holds full working copies of this repo, 1.3 GB of
+them — is now in `.gitignore`, so the exclusion above is no longer required for
+it. Keep the form in mind for the general case: any large untracked directory
+that is not yet ignored will otherwise be swept in by `git add -A`.
+
+The durable lesson is the other way round: when `git add -A` would capture
+something surprising, **the fix is `.gitignore`, not a habit of remembering a
+pathspec.** A rule the tooling enforces beats one every future commit has to
+recall.
 
 ## Diffing — the trap that matters
 
@@ -114,6 +120,21 @@ blockers only:
 ```bash
 gh api repos/maximsan/brewpath/issues/36 --jq '.issue_dependencies_summary.blocked_by'
 ```
+
+### Before wiring issues as parallel, check for shared files
+
+Native `blocked_by` edges express *logical* dependency. They say nothing about
+two issues editing the same file, and that is a real collision:
+[#36](https://github.com/maximsan/brewpath/issues/36) (bundle fonts) and
+[#37](https://github.com/maximsan/brewpath/issues/37) (two-mood theme) were
+wired as independently takeable, both blocked only by the rename. Both owned
+`lib/shared/theme/app_typography.dart`. Worked concurrently in one tree, they
+became inseparable — #37 resolves fonts by family-name string, which only
+renders if #36's `pubspec.yaml` declaration exists — and had to land as a single
+commit closing both.
+
+Before declaring two tickets parallel, ask which files each will touch. Where
+they overlap, sequence them or accept that they land together.
 
 ## Pull requests
 
