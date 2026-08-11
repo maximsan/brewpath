@@ -70,7 +70,9 @@ of that file:
 
 Run all flutter/dart commands from the repo root. The full command list with
 explanations — plus test and iOS/SPM build notes — lives in
-[`README.md`](README.md).
+[`README.md`](README.md). Git and `gh` workflow, and the commands that
+reproduce each CI job locally, are in
+[`docs/18-git-and-github-workflow.md`](docs/18-git-and-github-workflow.md).
 
 ## Code Conventions
 
