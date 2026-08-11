@@ -15,7 +15,9 @@ SQLite (offline persistence) · Freezed 3 + json_serializable (content models).
 complexity.
 
 Architecture and conventions live in [`CLAUDE.md`](CLAUDE.md); deeper
-design and milestone docs are in [`docs/`](docs/).
+design and milestone docs are in [`docs/`](docs/). Git, `gh` and
+reproduce-CI-locally commands are in
+[`docs/18-git-and-github-workflow.md`](docs/18-git-and-github-workflow.md).
 
 ## Development commands
 
