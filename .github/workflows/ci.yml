@@ -19,6 +19,15 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
           cache: true
+      # Required for formatting, not just for analysis: `dart format` picks its
+      # style from the package's language version, which it can only read via
+      # .dart_tool/package_config.json. Without this step it falls back to the
+      # newest language version and reformats files that are correctly
+      # formatted at the pubspec's 3.8 floor — so the job disagreed with every
+      # local run and with the other two jobs, both of which do resolve.
+      - name: Install dependencies
+        run: flutter pub get
+
       # Scoped to source dirs — `dart format .` would descend into build/
       # (Firebase plugins copy example apps there with broken includes).
       - name: Check formatting
