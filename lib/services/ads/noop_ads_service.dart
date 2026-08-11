@@ -1,4 +1,4 @@
-import 'package:coffee_quest/services/ads/ads_service.dart';
+import 'package:brew_path/services/ads/ads_service.dart';
 
 /// Active ads implementation for the MVP — never loads or shows anything.
 class NoOpAdsService implements AdsService {

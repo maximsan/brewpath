@@ -1,4 +1,4 @@
-import 'package:coffee_quest/core/utils/date_utils.dart';
+import 'package:brew_path/core/utils/date_utils.dart';
 
 /// Result of a streak update.
 class StreakResult {

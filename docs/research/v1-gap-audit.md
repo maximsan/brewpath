@@ -4,7 +4,7 @@ Issue [#8](https://github.com/maximsan/brewpath/issues/8) (child of map #6).
 Design reference: `brew-path/BREWPATH-V1-OVERVIEW.md`, §11 checklist as the spine;
 prototype `brew-path/*.jsx` as tiebreaker. Read-only audit — no source was changed.
 
-**Repo-layout correction:** `CLAUDE.md` says the Flutter app lives in `coffee_quest/`.
+**Repo layout:** the Flutter app is at the repo root.
 It does not. The app is at the **repo root** (`pubspec.yaml`, `lib/`, `assets/`, `test/`
 are all top-level). All paths below are repo-root-relative.
 

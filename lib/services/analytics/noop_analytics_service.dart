@@ -1,4 +1,4 @@
-import 'package:coffee_quest/services/analytics/analytics_service.dart';
+import 'package:brew_path/services/analytics/analytics_service.dart';
 
 /// Inert analytics — the default until Firebase is activated, and the impl
 /// used by all tests.

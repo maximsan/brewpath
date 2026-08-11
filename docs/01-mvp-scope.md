@@ -1,4 +1,4 @@
-# Coffee Quest — MVP Scope
+# BrewPath — MVP Scope
 
 ## Tabs and Features
 

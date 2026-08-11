@@ -1,4 +1,4 @@
-import 'package:coffee_quest/features/companion/domain/companion_reaction.dart';
+import 'package:brew_path/features/companion/domain/companion_reaction.dart';
 import 'package:flutter/foundation.dart';
 
 /// A per-instance trigger for companion reactions. A host screen creates a

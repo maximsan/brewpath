@@ -1,4 +1,4 @@
-import 'package:coffee_quest/features/onboarding/data/onboarding_repository.dart';
+import 'package:brew_path/features/onboarding/data/onboarding_repository.dart';
 
 /// In-memory [OnboardingRepository] stand-in for tests: lets the gate result be
 /// set directly and records `markOnboardingComplete` / `resetOnboarding` calls,

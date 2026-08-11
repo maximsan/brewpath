@@ -19,7 +19,7 @@ Where sources disagree, the disagreement is called out rather than smoothed over
 
 | Fact | Value | Source |
 | --- | --- | --- |
-| Bundle ID | `dev.maximsan.coffeeQuest` | `ios/Runner.xcodeproj/project.pbxproj:396` |
+| Bundle ID | `dev.maximsan.brewPath` | `ios/Runner.xcodeproj/project.pbxproj:396` — renamed from `dev.maximsan.coffeeQuest` by [#41](https://github.com/maximsan/brewpath/issues/41); this document's channel names and entitlement value were updated with it |
 | iOS dependency manager | **Swift Package Manager only — there is no `ios/Podfile`** | `README.md:42-48`; `ls ios/` shows no Podfile; `project.pbxproj` has 8 `XCSwiftPackageProductDependency`/`XCLocalSwiftPackageReference` entries |
 | iOS deployment target | 16.0 | `README.md:46` |
 | Entitlements file | **none exists yet** (`find ios -name '*.entitlements'` → empty) | — |
@@ -223,7 +223,7 @@ which are exactly the ones §3 and §4 depend on.
 Proposed surface — **method names and payload shape only, no implementation**:
 
 ```
-MethodChannel  'dev.maximsan.coffeeQuest/icloud_kv'
+MethodChannel  'dev.maximsan.brewPath/icloud_kv'
   isAvailable()                       -> { available: bool, reason: String? }
       // reason ∈ 'ok' | 'no_entitlement' | 'signed_out'
   getAll()                            -> Map<String, String>
@@ -233,7 +233,7 @@ MethodChannel  'dev.maximsan.coffeeQuest/icloud_kv'
   synchronize()                       -> bool
       // mirrors NSUbiquitousKeyValueStore.synchronize()'s Bool return
 
-EventChannel   'dev.maximsan.coffeeQuest/icloud_kv_events'
+EventChannel   'dev.maximsan.brewPath/icloud_kv_events'
   emits { reason: String, changedKeys: List<String> }
       // reason ∈ 'server' | 'initialSync' | 'accountChange' | 'quotaViolation'
       // — the four NSUbiquitousKeyValueStoreChangeReasonKey constants, all four
@@ -400,7 +400,7 @@ For **key-value storage only**, exactly one entitlement is needed:
 iCloud key-value storage. To add this entitlement to your app, **enable the iCloud
 capability and 'Key-value storage' service in Xcode**"
 (<https://developer.apple.com/documentation/bundleresources/entitlements/com.apple.developer.ubiquity-kvstore-identifier>).
-Conventional value: `$(TeamIdentifierPrefix)dev.maximsan.coffeeQuest`.
+Conventional value: `$(TeamIdentifierPrefix)dev.maximsan.brewPath`.
 
 Notably **not** needed for the KVS route: `com.apple.developer.icloud-container-identifiers`,
 the CloudKit service, and Push Notifications. Choosing CloudKit instead pulls all three in
@@ -423,7 +423,7 @@ fails in CI" incident.
   ID" (<https://developer.apple.com/help/account/identifiers/register-an-app-id/>), and the
   archived QA1713 frames wildcards as "for use with code signing all apps that **do not
   enable app-specific capabilities**"
-  (<https://developer.apple.com/library/archive/qa/qa1713/_index.html>). `dev.maximsan.coffeeQuest`
+  (<https://developer.apple.com/library/archive/qa/qa1713/_index.html>). `dev.maximsan.brewPath`
   is already explicit, so nothing changes here.
 - Enabling the capability invalidates existing profiles: "Enabling a capability will
   **affect provisioning profiles for all eligible platforms**"

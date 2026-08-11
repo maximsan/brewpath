@@ -1,4 +1,4 @@
-# Coffee Quest — Payments
+# BrewPath — Payments
 
 ## Policy
 
@@ -168,9 +168,9 @@ PaymentsService paymentsService(Ref ref) => NoOpPaymentsService();
 
 | Product Type         | ID Convention                          | Example                            |
 | -------------------- | -------------------------------------- | ---------------------------------- |
-| Lifetime unlock      | `com.yourcompany.coffeequest.lifetime` | One-time purchase, no subscription |
-| Monthly subscription | `com.yourcompany.coffeequest.monthly`  | Future option                      |
-| Annual subscription  | `com.yourcompany.coffeequest.annual`   | Future option                      |
+| Lifetime unlock      | `dev.maximsan.brewPath.lifetime` | One-time purchase, no subscription |
+| Monthly subscription | `dev.maximsan.brewPath.monthly`  | Future option                      |
+| Annual subscription  | `dev.maximsan.brewPath.annual`   | Future option                      |
 
 Define these IDs in `lib/core/constants/product_ids.dart` when implementing.
 

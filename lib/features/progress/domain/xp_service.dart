@@ -1,4 +1,4 @@
-import 'package:coffee_quest/core/constants/xp_values.dart';
+import 'package:brew_path/core/constants/xp_values.dart';
 
 /// Domain entry point for XP math. Thin wrapper over the [XpValues] constants —
 /// kept as a class so it can be injected and stubbed in tests.

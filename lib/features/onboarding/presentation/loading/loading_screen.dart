@@ -1,11 +1,11 @@
-import 'package:coffee_quest/features/onboarding/presentation/loading/loading_animation.dart';
-import 'package:coffee_quest/features/onboarding/presentation/loading/wake_sequence_controller.dart';
-import 'package:coffee_quest/features/onboarding/presentation/loading/widgets/pulsing_dots.dart';
-import 'package:coffee_quest/features/onboarding/presentation/loading/widgets/roasty_stage.dart';
-import 'package:coffee_quest/features/onboarding/presentation/onboarding_providers.dart';
-import 'package:coffee_quest/shared/theme/app_colors.dart';
-import 'package:coffee_quest/shared/theme/app_spacing.dart';
-import 'package:coffee_quest/shared/theme/app_typography.dart';
+import 'package:brew_path/features/onboarding/presentation/loading/loading_animation.dart';
+import 'package:brew_path/features/onboarding/presentation/loading/wake_sequence_controller.dart';
+import 'package:brew_path/features/onboarding/presentation/loading/widgets/pulsing_dots.dart';
+import 'package:brew_path/features/onboarding/presentation/loading/widgets/roasty_stage.dart';
+import 'package:brew_path/features/onboarding/presentation/onboarding_providers.dart';
+import 'package:brew_path/shared/theme/app_colors.dart';
+import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/app_typography.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -134,7 +134,7 @@ class _LoadingScreenState extends ConsumerState<LoadingScreen> {
                   bottom: _wordmarkInset,
                   child: Center(
                     child: Text(
-                      'COFFEE QUEST',
+                      'BREWPATH',
                       style: AppTypography.smallcaps().copyWith(
                         letterSpacing: _wordmarkLetterSpacing,
                       ),

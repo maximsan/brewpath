@@ -1,14 +1,14 @@
-import 'package:coffee_quest/features/progress/domain/streak_service.dart';
-import 'package:coffee_quest/features/progress/domain/xp_service.dart';
-import 'package:coffee_quest/services/analytics/analytics_provider.dart';
-import 'package:coffee_quest/services/analytics/analytics_service.dart';
-import 'package:coffee_quest/shared/models/lesson_model.dart';
-import 'package:coffee_quest/shared/repositories/card_repository.dart';
-import 'package:coffee_quest/shared/repositories/content_repository.dart';
-import 'package:coffee_quest/shared/repositories/module_progress_repository.dart';
-import 'package:coffee_quest/shared/repositories/progress_repository.dart';
-import 'package:coffee_quest/shared/repositories/repository_providers.dart';
-import 'package:coffee_quest/shared/repositories/settings_repository.dart';
+import 'package:brew_path/features/progress/domain/streak_service.dart';
+import 'package:brew_path/features/progress/domain/xp_service.dart';
+import 'package:brew_path/services/analytics/analytics_provider.dart';
+import 'package:brew_path/services/analytics/analytics_service.dart';
+import 'package:brew_path/shared/models/lesson_model.dart';
+import 'package:brew_path/shared/repositories/card_repository.dart';
+import 'package:brew_path/shared/repositories/content_repository.dart';
+import 'package:brew_path/shared/repositories/module_progress_repository.dart';
+import 'package:brew_path/shared/repositories/progress_repository.dart';
+import 'package:brew_path/shared/repositories/repository_providers.dart';
+import 'package:brew_path/shared/repositories/settings_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'lesson_completion_service.g.dart';

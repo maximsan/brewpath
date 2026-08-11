@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:coffee_quest/features/companion/presentation/roasty.dart';
-import 'package:coffee_quest/features/onboarding/presentation/loading/loading_animation.dart';
-import 'package:coffee_quest/shared/theme/app_colors.dart';
+import 'package:brew_path/features/companion/presentation/roasty.dart';
+import 'package:brew_path/features/onboarding/presentation/loading/loading_animation.dart';
+import 'package:brew_path/shared/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 /// Hosts Roasty plus the falling water-drop overlay (visible only during

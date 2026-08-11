@@ -1,4 +1,4 @@
-import 'package:coffee_quest/shared/models/lesson_step_model.dart';
+import 'package:brew_path/shared/models/lesson_step_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'lesson_model.freezed.dart';

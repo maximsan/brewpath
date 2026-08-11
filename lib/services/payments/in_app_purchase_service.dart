@@ -9,8 +9,8 @@
 // 5. Deliver entitlement after PurchaseStatus.purchased + verifyPurchase()
 // 6. Subscriptions: server-side receipt validation (not in MVP)
 
-import 'package:coffee_quest/services/payments/payments_service.dart';
-import 'package:coffee_quest/services/payments/store_product.dart';
+import 'package:brew_path/services/payments/payments_service.dart';
+import 'package:brew_path/services/payments/store_product.dart';
 
 /// Real [PaymentsService] backed by `in_app_purchase` (stubbed for now).
 class InAppPurchaseService implements PaymentsService {

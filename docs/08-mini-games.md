@@ -1,4 +1,4 @@
-# Coffee Quest — Mini-Games
+# BrewPath — Mini-Games
 
 ## Overview
 

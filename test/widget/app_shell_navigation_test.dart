@@ -1,5 +1,5 @@
-import 'package:coffee_quest/app/app.dart';
-import 'package:coffee_quest/app/app_router.dart';
+import 'package:brew_path/app/app.dart';
+import 'package:brew_path/app/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -11,12 +11,12 @@ void main() {
   setUp(useInMemoryDatabase);
 
   testWidgets('starts on the Learn tab', (tester) async {
-    await pumpWithProviders(tester, const CoffeeQuestApp());
+    await pumpWithProviders(tester, const BrewPathApp());
     expect(_appBarTitled('Learn'), findsOneWidget);
   });
 
   testWidgets('each destination switches tabs', (tester) async {
-    await pumpWithProviders(tester, const CoffeeQuestApp());
+    await pumpWithProviders(tester, const BrewPathApp());
 
     await tester.tap(find.byIcon(Icons.route_outlined));
     await settleLoaders(tester);
@@ -36,7 +36,7 @@ void main() {
   testWidgets('branch navigator stack is preserved across tab switches', (
     tester,
   ) async {
-    final container = await pumpWithProviders(tester, const CoffeeQuestApp());
+    final container = await pumpWithProviders(tester, const BrewPathApp());
 
     container.read(appRouterProvider).go('/learn/module/module_beans');
     await settleLoaders(tester);

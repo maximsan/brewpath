@@ -151,7 +151,7 @@ Unwired reaction values stay in the enum for future use.
 
 ## Conventions to honor (project rules — non-negotiable)
 
-- Imports inside `lib/` use `package:coffee_quest/…`, never relative `../`.
+- Imports inside `lib/` use `package:brew_path/…`, never relative `../`.
 - After adding/modifying any Freezed model, Riverpod provider, or Drift table:
   `dart run build_runner build` (no `--delete-conflicting-outputs`).
 - Function-style `@riverpod` by default; class-based only when state is mutable
@@ -210,9 +210,9 @@ behavior change** and re-point the two existing consumers. Nothing new yet.
    - `roasty.dart`, `roasty_body.dart`, `roasty_animation.dart`,
      `roasty_faces.dart`, `roasty_particles.dart` → `presentation/`
    Use `git mv` so history is preserved.
-2. Update the `package:coffee_quest/features/onboarding/presentation/widgets/roasty_*`
+2. Update the `package:brew_path/features/onboarding/presentation/widgets/roasty_*`
    imports inside the moved files to the new
-   `package:coffee_quest/features/companion/...` paths.
+   `package:brew_path/features/companion/...` paths.
 3. Re-point the two consumers:
    - `welcome_screen.dart` import → `companion/presentation/roasty.dart` (+ the
      `RoastyState` import → `companion/domain/roasty_state.dart`).

@@ -1,4 +1,4 @@
-import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
+import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

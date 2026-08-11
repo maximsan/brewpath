@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'dart:math' as math;
 
-import 'package:coffee_quest/features/companion/domain/roasty_state.dart';
-import 'package:coffee_quest/features/companion/presentation/roasty_animation.dart';
-import 'package:coffee_quest/features/companion/presentation/roasty_body.dart';
-import 'package:coffee_quest/features/companion/presentation/roasty_faces.dart';
-import 'package:coffee_quest/features/companion/presentation/roasty_particles.dart';
+import 'package:brew_path/features/companion/domain/roasty_state.dart';
+import 'package:brew_path/features/companion/presentation/roasty_animation.dart';
+import 'package:brew_path/features/companion/presentation/roasty_body.dart';
+import 'package:brew_path/features/companion/presentation/roasty_faces.dart';
+import 'package:brew_path/features/companion/presentation/roasty_particles.dart';
 import 'package:flutter/material.dart';
 
 /// Animated Roasty mascot. Reproduces the geometry + per-state animations
-/// from the design bundle (`coffee_quest/brew-path-app/project/roasty.jsx`)
+/// from the design bundle (`brew-path/roasty.jsx`)
 /// using Flutter's Canvas + a single [AnimationController]. Public API:
 /// `Roasty(state: …, size: …, replayKey: …)`. The `replayKey` mimics the
 /// prototype's `key={state + ':' + replayKey}` so one-shot animations

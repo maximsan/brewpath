@@ -1,4 +1,4 @@
-import 'package:coffee_quest/shared/storage/app_database.dart';
+import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:drift/drift.dart';
 
 /// Persisted ledger of which modules have already paid out their

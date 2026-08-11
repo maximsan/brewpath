@@ -1,4 +1,4 @@
-import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
+import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:flutter/material.dart';
 
 /// The left rail of a path node: connector segments above and below a

@@ -23,7 +23,7 @@ abstract class AppColors {
 
   // ── Dark-roast palette (onboarding + mascot screens) ───────────
   // Sourced 1:1 from the design bundle CSS at
-  // coffee_quest/brew-path-app/project/index.html [data-mood="dark-roast"].
+  // brew-path/index.html [data-mood="dark-roast"].
 
   /// Page background for dark-roast screens.
   static const darkRoastBg = Color(0xFF1A130E);

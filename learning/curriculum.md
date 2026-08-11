@@ -1,4 +1,4 @@
-# Coffee Quest — Flutter Learning Curriculum
+# BrewPath — Flutter Learning Curriculum
 
 Two features, built end-to-end **by the learner**, each teaching a different
 slice of the stack. Build order: **B then A** — B adds the favorites feature with
@@ -44,7 +44,7 @@ invalidation.
   `shared/storage/app_database.dart`; bump `schemaVersion`; add the `onUpgrade`
   migration step.
 - ☐ **A2 — Codegen + schema snapshot.** `dart run build_runner build`, then the
-  drift schema `dump`/`generate` workflow documented in `coffee_quest/README.md`.
+  drift schema `dump`/`generate` workflow documented in `README.md`.
 - ☐ **A3 — Repository.** `FavoriteCardRepository` mirroring `card_repository.dart`
   (list IDs, insert-or-ignore toggle, delete-all); register it in
   `repository_providers.dart`.

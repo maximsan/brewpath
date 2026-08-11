@@ -1,11 +1,11 @@
-import 'package:coffee_quest/core/constants/app_strings.dart';
-import 'package:coffee_quest/core/utils/module_icons.dart';
-import 'package:coffee_quest/features/companion/presentation/companion.dart';
-import 'package:coffee_quest/features/companion/presentation/companion_bubble.dart';
-import 'package:coffee_quest/features/companion/presentation/companion_handle.dart';
-import 'package:coffee_quest/features/lessons/domain/lesson_completion_service.dart';
-import 'package:coffee_quest/features/lessons/presentation/lesson_completion_reward.dart';
-import 'package:coffee_quest/shared/models/coffee_card_model.dart';
+import 'package:brew_path/core/constants/app_strings.dart';
+import 'package:brew_path/core/utils/module_icons.dart';
+import 'package:brew_path/features/companion/presentation/companion.dart';
+import 'package:brew_path/features/companion/presentation/companion_bubble.dart';
+import 'package:brew_path/features/companion/presentation/companion_handle.dart';
+import 'package:brew_path/features/lessons/domain/lesson_completion_service.dart';
+import 'package:brew_path/features/lessons/presentation/lesson_completion_reward.dart';
+import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

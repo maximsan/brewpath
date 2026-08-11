@@ -29,7 +29,7 @@
 #
 set -euo pipefail
 
-# Resolve the Flutter project root (coffee_quest/) from this script's location,
+# Resolve the Flutter project root (the repo root) from this script's location,
 # so it works no matter which directory you invoke it from.
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$PROJECT_ROOT"

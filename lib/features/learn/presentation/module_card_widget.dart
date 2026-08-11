@@ -1,6 +1,6 @@
-import 'package:coffee_quest/core/constants/app_strings.dart';
-import 'package:coffee_quest/core/utils/module_icons.dart';
-import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
+import 'package:brew_path/core/constants/app_strings.dart';
+import 'package:brew_path/core/utils/module_icons.dart';
+import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

@@ -1,6 +1,6 @@
-import 'package:coffee_quest/features/companion/domain/companion_mood.dart';
-import 'package:coffee_quest/features/companion/domain/companion_reaction.dart';
-import 'package:coffee_quest/features/companion/domain/roasty_state.dart';
+import 'package:brew_path/features/companion/domain/companion_mood.dart';
+import 'package:brew_path/features/companion/domain/companion_reaction.dart';
+import 'package:brew_path/features/companion/domain/roasty_state.dart';
 
 /// Pure mapping from the high-level companion model (a persistent [mood] plus
 /// an optional transient [reaction]) to the low-level [RoastyState] the

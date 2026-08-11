@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:coffee_quest/features/companion/domain/companion_reaction.dart';
+import 'package:brew_path/features/companion/domain/companion_reaction.dart';
 
 /// Speech-line content for the companion, keyed by `CompanionReaction.name`.
 /// Each key holds a list of interchangeable variants; [lineFor] picks one at

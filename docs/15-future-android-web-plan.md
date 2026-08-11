@@ -1,4 +1,4 @@
-# Coffee Quest — Future Android & Web Plan
+# BrewPath — Future Android & Web Plan
 
 ## What Is Already Portable
 
@@ -33,7 +33,7 @@ The following components require **no changes** to run on Android or Web:
 
 ### Firebase Android
 
-- [ ] Register Android app in Firebase Console with package name `com.yourcompany.coffeequest`
+- [ ] Register Android app in Firebase Console with package name `dev.maximsan.brewPath`
 - [ ] Download `google-services.json`
 - [ ] Place `google-services.json` at `android/app/google-services.json`
 - [ ] Apply Google Services Gradle plugin in `android/build.gradle` and `android/app/build.gradle`
@@ -47,7 +47,7 @@ The following components require **no changes** to run on Android or Web:
 
 ### App Signing — Android
 
-- [ ] Create a keystore file: `keytool -genkey -v -keystore coffee_quest.jks`
+- [ ] Create a keystore file: `keytool -genkey -v -keystore brew_path.jks`
 - [ ] Store keystore in a secure location (NOT in the repo)
 - [ ] Configure signing in `android/app/build.gradle`:
   ```gradle

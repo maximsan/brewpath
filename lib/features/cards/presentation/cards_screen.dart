@@ -1,10 +1,10 @@
-import 'package:coffee_quest/core/constants/app_strings.dart';
-import 'package:coffee_quest/core/widgets/error_view.dart';
-import 'package:coffee_quest/core/widgets/loading_indicator.dart';
-import 'package:coffee_quest/core/widgets/section_header.dart';
-import 'package:coffee_quest/features/cards/domain/cards_providers.dart';
-import 'package:coffee_quest/features/cards/presentation/card_grid_item_widget.dart';
-import 'package:coffee_quest/shared/theme/app_spacing.dart';
+import 'package:brew_path/core/constants/app_strings.dart';
+import 'package:brew_path/core/widgets/error_view.dart';
+import 'package:brew_path/core/widgets/loading_indicator.dart';
+import 'package:brew_path/core/widgets/section_header.dart';
+import 'package:brew_path/features/cards/domain/cards_providers.dart';
+import 'package:brew_path/features/cards/presentation/card_grid_item_widget.dart';
+import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

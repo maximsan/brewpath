@@ -10,7 +10,7 @@
 // 4. fullScreenContentCallback for show/dismiss events
 // 5. Test ad unit IDs in dev; ATT prompt before any ad on iOS 14+
 
-import 'package:coffee_quest/services/ads/ads_service.dart';
+import 'package:brew_path/services/ads/ads_service.dart';
 
 /// Real [AdsService] backed by AdMob (stubbed for now; see docs/11-ads.md).
 class AdMobAdsService implements AdsService {

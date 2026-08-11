@@ -1,6 +1,6 @@
-import 'package:coffee_quest/features/onboarding/presentation/loading/loading_screen.dart';
-import 'package:coffee_quest/shared/repositories/settings_repository.dart';
-import 'package:coffee_quest/shared/storage/app_database.dart';
+import 'package:brew_path/features/onboarding/presentation/loading/loading_screen.dart';
+import 'package:brew_path/shared/repositories/settings_repository.dart';
+import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
@@ -41,8 +41,8 @@ Future<AppDatabase> useInMemoryDatabase() async {
       );
 
   PackageInfo.setMockInitialValues(
-    appName: 'Coffee Quest',
-    packageName: 'dev.maximsan.coffeequest',
+    appName: 'BrewPath',
+    packageName: 'dev.maximsan.brewPath',
     version: '1.0.0',
     buildNumber: '1',
     buildSignature: '',

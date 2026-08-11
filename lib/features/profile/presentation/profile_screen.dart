@@ -1,10 +1,10 @@
-import 'package:coffee_quest/features/profile/domain/settings_providers.dart';
-import 'package:coffee_quest/features/profile/presentation/widgets/preference_tile.dart';
-import 'package:coffee_quest/features/profile/presentation/widgets/premium_card.dart';
-import 'package:coffee_quest/features/profile/presentation/widgets/profile_header.dart';
-import 'package:coffee_quest/features/profile/presentation/widgets/stat_tile.dart';
-import 'package:coffee_quest/features/progress/domain/progress_providers.dart';
-import 'package:coffee_quest/shared/theme/app_spacing.dart';
+import 'package:brew_path/features/profile/domain/settings_providers.dart';
+import 'package:brew_path/features/profile/presentation/widgets/preference_tile.dart';
+import 'package:brew_path/features/profile/presentation/widgets/premium_card.dart';
+import 'package:brew_path/features/profile/presentation/widgets/profile_header.dart';
+import 'package:brew_path/features/profile/presentation/widgets/stat_tile.dart';
+import 'package:brew_path/features/progress/domain/progress_providers.dart';
+import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

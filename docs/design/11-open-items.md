@@ -141,7 +141,7 @@ points are *for*, which the design answers and the app does not.
 | Item | Detail |
 |---|---|
 | **`tools/extract-facts.js` reads a dead field** | Line 86 pulls `L[i].xp`, which is `null` for every lesson — per-lesson points live on the module entries. Harmless, but this reference's own tooling still carries the legacy name |
-| **`CLAUDE.md` points at the wrong app path** | It documents the Flutter app as living in `coffee_quest/`, but `lib/` and `test/` are at the repo root. Package imports still use `package:coffee_quest/…`, so the package name is right and the directory is not. Not corrected here — project instructions are outside this reference's remit |
+| ~~**`CLAUDE.md` points at the wrong app path**~~ **RESOLVED** | It documented the Flutter app as living in `coffee_quest/` while `lib/` and `test/` are at the repo root. Both halves are now fixed: the app was renamed to package `brew_path` ([#41](https://github.com/maximsan/brewpath/issues/41)) and the project instructions were corrected to the real root-relative layout ([#35](https://github.com/maximsan/brewpath/issues/35)). The note that project instructions sit outside this reference's remit still holds — recorded here only because this table raised it |
 
 ## Omission sweep — method and standing result
 

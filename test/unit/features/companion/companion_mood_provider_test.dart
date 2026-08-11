@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:coffee_quest/features/companion/application/companion_providers.dart';
-import 'package:coffee_quest/features/companion/domain/companion_mood.dart';
-import 'package:coffee_quest/features/progress/domain/progress_providers.dart';
+import 'package:brew_path/features/companion/application/companion_providers.dart';
+import 'package:brew_path/features/companion/domain/companion_mood.dart';
+import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

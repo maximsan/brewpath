@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Coffee Quest are recorded here.
+All notable changes to BrewPath are recorded here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 This is the single place to track **major app changes** over time — when you
@@ -24,9 +24,9 @@ Two helpers keep this near-zero effort:
 | When | Do this | What it does |
 | --- | --- | --- |
 | You finished something worth remembering | Run **`/changelog`** in Claude Code | Reads your recent code changes (not commit messages), proposes Added/Changed/Fixed bullets, and — once you approve — writes them into **[Unreleased]** below. |
-| You're shipping a build to TestFlight / App Store | Run **`node coffee_quest/tool/release.js`** | Renames **[Unreleased]** to a dated version heading, opens a fresh empty [Unreleased], bumps the version in `pubspec.yaml`, and (with `--commit`) tags the release. |
+| You're shipping a build to TestFlight / App Store | Run **`node tool/release.js`** | Renames **[Unreleased]** to a dated version heading, opens a fresh empty [Unreleased], bumps the version in `pubspec.yaml`, and (with `--commit`) tags the release. |
 
-`release.js` usage (run from `coffee_quest/`):
+`release.js` usage (run from the repo root):
 
 ```bash
 node tool/release.js                  # 1.0.0+1 → 1.0.0+2   (build number only)

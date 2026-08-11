@@ -1,5 +1,5 @@
-import 'package:coffee_quest/shared/theme/app_colors.dart';
-import 'package:coffee_quest/shared/theme/app_typography.dart';
+import 'package:brew_path/shared/theme/app_colors.dart';
+import 'package:brew_path/shared/theme/app_typography.dart';
 import 'package:flutter/material.dart';
 
 /// IBM Plex Mono uppercase label used for screen breadcrumbs and section

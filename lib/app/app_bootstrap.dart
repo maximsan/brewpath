@@ -1,6 +1,6 @@
-import 'package:coffee_quest/core/config/firebase_flags.dart';
-import 'package:coffee_quest/services/remote_config/firebase_remote_config_service.dart';
-import 'package:coffee_quest/shared/storage/app_database.dart';
+import 'package:brew_path/core/config/firebase_flags.dart';
+import 'package:brew_path/services/remote_config/firebase_remote_config_service.dart';
+import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 /// One-time app initialization (database, and Firebase when enabled).

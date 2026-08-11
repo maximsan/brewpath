@@ -1,4 +1,4 @@
-# Coffee Quest
+# BrewPath
 
 A Duolingo-style mobile app for learning coffee — short lessons and mini-games
 that grow your knowledge (and Roasty, your coffee-bean companion) one cup at a
@@ -14,12 +14,12 @@ SQLite (offline persistence) · Freezed 3 + json_serializable (content models).
 (`dart run dart_code_linter:metrics analyze lib`) for per-function size &
 complexity.
 
-Architecture and conventions live in [`../CLAUDE.md`](../CLAUDE.md); deeper
-design and milestone docs are in [`../docs/`](../docs/).
+Architecture and conventions live in [`CLAUDE.md`](CLAUDE.md); deeper
+design and milestone docs are in [`docs/`](docs/).
 
 ## Development commands
 
-Run all Flutter/Dart commands from `coffee_quest/`.
+Run all Flutter/Dart commands from the repo root.
 
 | Command | What it does |
 | --- | --- |
@@ -108,7 +108,6 @@ version" error. Wipes the stale Swift Package Manager caches so they re-resolve.
 Break-glass only — forces a full re-download (minutes).
 
 ```bash
-cd coffee_quest
 ./tool/reset_ios_spm.sh           # clean caches only
 ./tool/reset_ios_spm.sh --build   # clean, then flutter build ios
 ```
@@ -116,13 +115,12 @@ cd coffee_quest
 ### `tool/release.js` — cut a release
 
 Node script (no dependencies). Run when shipping a build to TestFlight / the App
-Store. Bumps the version in `pubspec.yaml`, stamps `../docs/CHANGELOG.md` with the
+Store. Bumps the version in `pubspec.yaml`, stamps `docs/CHANGELOG.md` with the
 version + date, and (with `--commit`) tags the release. Draft the changelog first
 with the `/changelog` skill. Refuses to run when `[Unreleased]` is empty — pass
 `--allow-empty` for a build-only rebuild.
 
 ```bash
-cd coffee_quest
 node tool/release.js                  # build number only: 1.0.0+1 → 1.0.0+2
 node tool/release.js minor            # → 1.1.0+2
 node tool/release.js minor --commit   # also commits + tags

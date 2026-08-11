@@ -1,4 +1,4 @@
-import 'package:coffee_quest/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 
 /// A speech bubble anchored above any companion [child] (a static or animated

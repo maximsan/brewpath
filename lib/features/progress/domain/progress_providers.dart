@@ -1,5 +1,5 @@
-import 'package:coffee_quest/shared/repositories/repository_providers.dart';
-import 'package:coffee_quest/shared/storage/progress_record.dart';
+import 'package:brew_path/shared/repositories/repository_providers.dart';
+import 'package:brew_path/shared/storage/progress_record.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'progress_providers.g.dart';

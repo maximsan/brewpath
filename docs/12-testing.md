@@ -1,4 +1,4 @@
-# Coffee Quest — Testing
+# BrewPath — Testing
 
 > **Status (2026-05-21):** The persistence layer migrated from Isar to **Drift 2.30.x** in Phase 3. The `progress_repository_test` setup snippet below still shows `Isar.open` — the real test uses `AppDatabase(NativeDatabase.memory())` (no temp dir, no native binary). All listed tests exist and pass; treat the Isar snippet as historical.
 
@@ -288,7 +288,7 @@ flutter test integration_test/smoke_test.dart -d "iPhone 17"
 // integration_test/smoke_test.dart
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:coffee_quest/main.dart' as app;
+import 'package:brew_path/main.dart' as app;
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -339,7 +339,7 @@ ProviderScope(
     crashReportingServiceProvider.overrideWithValue(NoOpCrashReportingService()),
     remoteConfigServiceProvider.overrideWithValue(NoOpRemoteConfigService()),
   ],
-  child: const CoffeeQuestApp(),
+  child: const BrewPathApp(),
 )
 ```
 

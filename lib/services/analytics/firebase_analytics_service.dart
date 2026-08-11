@@ -1,4 +1,4 @@
-import 'package:coffee_quest/services/analytics/analytics_service.dart';
+import 'package:brew_path/services/analytics/analytics_service.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 
 /// Firebase-backed analytics. Wired in `analytics_provider.dart` once
