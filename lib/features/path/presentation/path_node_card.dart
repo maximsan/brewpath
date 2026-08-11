@@ -1,5 +1,6 @@
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
 /// The content panel beside a path node: module icon, title, and progress.
@@ -21,7 +22,7 @@ class PathNodeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
     final module = item.module;
     final locked = item.isLocked;
 
@@ -39,17 +40,13 @@ class PathNodeCard extends StatelessWidget {
                 height: _badgeSize,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: locked
-                      ? colors.surfaceContainerHighest
-                      : colors.primaryContainer,
+                  color: locked ? mood.surface2 : mood.accent,
                   borderRadius: BorderRadius.circular(_badgeRadius),
                 ),
                 child: Icon(
                   locked ? Icons.lock_outline : moduleIcon(module.iconName),
                   size: _iconSize,
-                  color: locked
-                      ? colors.onSurfaceVariant
-                      : colors.onPrimaryContainer,
+                  color: locked ? mood.inkMute : mood.accentInk,
                 ),
               ),
               const SizedBox(width: 12),
@@ -61,9 +58,7 @@ class PathNodeCard extends StatelessWidget {
                     Text(
                       module.title,
                       style: theme.textTheme.titleSmall?.copyWith(
-                        color: locked
-                            ? colors.onSurfaceVariant
-                            : colors.onSurface,
+                        color: locked ? mood.inkMute : mood.ink,
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -75,9 +70,7 @@ class PathNodeCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Icon(
                   item.isComplete ? Icons.check_circle : Icons.chevron_right,
-                  color: item.isComplete
-                      ? colors.primary
-                      : colors.onSurfaceVariant,
+                  color: item.isComplete ? mood.accent : mood.inkMute,
                 ),
               ],
             ],
@@ -101,9 +94,9 @@ class _NodeStatus extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
     final mutedText = theme.textTheme.bodySmall?.copyWith(
-      color: colors.onSurfaceVariant,
+      color: mood.inkMute,
     );
 
     if (item.isLocked) {
@@ -126,8 +119,8 @@ class _NodeStatus extends StatelessWidget {
           value: item.progress,
           minHeight: _barHeight,
           borderRadius: BorderRadius.circular(_barRadius),
-          backgroundColor: colors.surfaceContainerHighest,
-          color: colors.primary,
+          backgroundColor: mood.surface2,
+          color: mood.accent,
         ),
       ],
     );

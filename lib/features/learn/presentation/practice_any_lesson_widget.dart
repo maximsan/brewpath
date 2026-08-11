@@ -1,5 +1,6 @@
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -38,7 +39,7 @@ class _PracticeAnyLessonWidgetState extends State<PracticeAnyLessonWidget> {
       return const _SectionPlaceholder(text: 'No lessons available yet.');
     }
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
     final list = _expanded
         ? widget.lessons
         : widget.lessons.take(_previewCount).toList();
@@ -48,7 +49,7 @@ class _PracticeAnyLessonWidgetState extends State<PracticeAnyLessonWidget> {
       child: Column(
         children: [
           for (var i = 0; i < list.length; i++) ...[
-            if (i > 0) Divider(height: 1, color: colors.outlineVariant),
+            if (i > 0) Divider(height: 1, color: mood.rule),
             _LessonRow(
               entry: list[i],
               completed: widget.completedIds.contains(list[i].lesson.id),
@@ -65,7 +66,7 @@ class _PracticeAnyLessonWidgetState extends State<PracticeAnyLessonWidget> {
                     Icon(
                       _expanded ? Icons.expand_less : Icons.expand_more,
                       size: _iconSm,
-                      color: colors.primary,
+                      color: mood.accent,
                     ),
                     const SizedBox(width: 4),
                     Text(
@@ -73,7 +74,7 @@ class _PracticeAnyLessonWidgetState extends State<PracticeAnyLessonWidget> {
                           ? 'Show fewer'
                           : 'Show all ${widget.lessons.length} lessons',
                       style: theme.textTheme.labelLarge?.copyWith(
-                        color: colors.primary,
+                        color: mood.accent,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -100,32 +101,32 @@ class _LessonRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
     return ListTile(
       leading: Container(
         width: _rowBadgeSize,
         height: _rowBadgeSize,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: colors.primaryContainer,
+          color: mood.accent,
           borderRadius: BorderRadius.circular(_rowBadgeRadius),
         ),
         child: Icon(
           moduleIcon(entry.module.iconName),
           size: _iconSm,
-          color: colors.onPrimaryContainer,
+          color: mood.accentInk,
         ),
       ),
       title: Text(entry.lesson.title),
       subtitle: Text(
         entry.module.title,
         style: theme.textTheme.bodySmall?.copyWith(
-          color: colors.onSurfaceVariant,
+          color: mood.inkMute,
         ),
       ),
       trailing: Icon(
         completed ? Icons.check_circle : Icons.fitness_center,
-        color: completed ? colors.primary : colors.onSurfaceVariant,
+        color: completed ? mood.accent : mood.inkMute,
       ),
       onTap: () => context.go('/learn/practice/lesson/${entry.lesson.id}'),
     );
@@ -147,7 +148,7 @@ class _SectionPlaceholder extends StatelessWidget {
         child: Text(
           text,
           style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
+            color: context.mood.inkMute,
           ),
         ),
       ),

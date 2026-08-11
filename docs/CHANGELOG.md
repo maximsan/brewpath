@@ -44,9 +44,40 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- Two colour moods — **Cupping** (light) and **Dark Roast** (dark) — held as
+  `MoodColors`, a single `ThemeExtension` carrying the design's own 13 token
+  names plus the two background-derived veils. Screens read them through
+  `context.mood`. `AppTheme.cupping` exists and is tested, but the app stays
+  pinned to Dark Roast until the `light | dark | system` preference lands.
+- Fonts are bundled as real Flutter font assets under `assets/fonts/`,
+  replacing the `google_fonts` package and its runtime CDN fetch.
+
 ### Changed
 
+- `AppTheme.lightTheme` is now `AppTheme.darkRoast` — the old name described a
+  `Brightness.dark` theme.
+- App code no longer reads `ColorScheme`; it stays populated purely so stock
+  Material widgets are styled.
+- Text styles take the ambient mood (`AppTypography.body(context.mood)`)
+  instead of defaulting to hard-coded dark-roast ink.
+
 ### Fixed
+
+- The current node on the Path rail drew its play arrow in its own background
+  colour, leaving the glyph invisible. It is an outlined node now, per the
+  design.
+- Correct-answer feedback in the mini-games used a raw Material green instead
+  of the design's `sage`.
+- The loading-screen water drop used two mis-transcribed hexes; both now match
+  the design bundle.
+- Hairlines that resolved to `outlineVariant` painted in full-strength ink
+  rather than the `rule` token.
+
+### Removed
+
+- The 6 unused legacy colour tokens (`coffeeBrown`, `espresso`, `latte`,
+  `cream`, `surface`, `locked`). `AppColors` now holds only mood-invariant
+  literals.
 
 ---
 

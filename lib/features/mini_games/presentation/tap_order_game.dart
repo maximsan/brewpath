@@ -2,6 +2,7 @@ import 'package:brew_path/core/constants/app_strings.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_result.dart';
 import 'package:brew_path/shared/models/lesson_step_model.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
@@ -74,7 +75,7 @@ class _TapOrderGameState extends State<TapOrderGame> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -104,7 +105,7 @@ class _TapOrderGameState extends State<TapOrderGame> {
                 ? 'Correct!'
                 : 'Correct order: ${widget.step.items.join(' → ')}',
             style: TextStyle(
-              color: _correct ? Colors.green.shade600 : colors.error,
+              color: _correct ? mood.sage : mood.berry,
             ),
           ),
           const SizedBox(height: 8),

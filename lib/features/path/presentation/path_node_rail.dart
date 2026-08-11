@@ -1,4 +1,5 @@
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
 /// The left rail of a path node: connector segments above and below a
@@ -26,9 +27,9 @@ class PathNodeRail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final lit = colors.primary;
-    final dim = colors.surfaceContainerHighest;
+    final mood = context.mood;
+    final lit = mood.accent;
+    final dim = mood.surface2;
     final reached = !item.isLocked;
 
     return SizedBox(
@@ -82,7 +83,7 @@ class _NodeCircle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final mood = context.mood;
 
     final (
       Color background,
@@ -91,22 +92,26 @@ class _NodeCircle extends StatelessWidget {
       Border? border,
     ) = switch (item) {
       _ when item.isLocked => (
-        colors.surfaceContainerHighest,
-        colors.onSurfaceVariant,
+        mood.surface2,
+        mood.inkMute,
         Icons.lock_outline,
         null,
       ),
       _ when item.isComplete => (
-        colors.primary,
-        colors.onPrimary,
+        mood.accent,
+        mood.accentInk,
         Icons.check,
         null,
       ),
+      // The current node is an outline, not a fill: the design draws it on
+      // the page canvas (`.lesson-row.current .path-node`). It used to ask
+      // for `primaryContainer`, which resolved to `primary` and painted the
+      // arrow in its own background colour — invisible.
       _ => (
-        colors.primaryContainer,
-        colors.primary,
+        mood.bg,
+        mood.accent,
         Icons.play_arrow,
-        Border.all(color: colors.primary, width: 2),
+        Border.all(color: mood.accent, width: 2),
       ),
     };
 

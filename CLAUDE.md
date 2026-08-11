@@ -77,6 +77,7 @@ reproduce each CI job locally, are in
 ## Code Conventions
 
 - **Imports:** always `package:brew_path/…` within `lib/`; never relative `../` imports
+- **Colours:** read the mood tokens via `context.mood` (`MoodColors`, a `ThemeExtension` with a Cupping and a Dark Roast instance); never `Theme.of(context).colorScheme` — it is populated for stock Material widgets only. Mood-invariant literals live in `AppColors`.
 - **Comments:** TSDoc only for complex logic or third-party integrations; skip self-evident code
 - **Models:** Freezed for all content DTOs; Drift `Table` classes for persisted records
 - **Providers:** function-style `@riverpod` only; class-based `@riverpod` only when state is mutable
@@ -92,7 +93,7 @@ Magic numbers and per-function size/complexity are now **lint-enforced** by
 conventions — follow every rule below on each new or modified file:
 
 - **No magic numbers** (lint-enforced). Extract meaningful or repeated literals
-  to named `static const` or theme tokens (`AppSpacing`, `AppColors`,
+  to named `static const` or theme tokens (`AppSpacing`, `MoodColors`,
   `AppTypography`); only `0`/`1`/`2` inline, with intent names (`_stageSize`),
   never bare numbers in the widget tree.
 - **Descriptive names.** No single-letter identifiers except trivial loop

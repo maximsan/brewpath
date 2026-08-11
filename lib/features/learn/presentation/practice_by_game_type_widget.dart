@@ -1,4 +1,5 @@
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -18,7 +19,7 @@ class PracticeByGameTypeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
     return Wrap(
       spacing: _chipGap,
       runSpacing: _chipGap,
@@ -33,12 +34,12 @@ class PracticeByGameTypeWidget extends StatelessWidget {
               avatar: Icon(
                 _iconFor(key),
                 size: _iconSm,
-                color: enabled ? colors.primary : colors.onSurfaceVariant,
+                color: enabled ? mood.accent : mood.inkMute,
               ),
               label: Text(
                 enabled ? '$label ($count)' : label,
                 style: theme.textTheme.labelLarge?.copyWith(
-                  color: enabled ? colors.onSurface : colors.onSurfaceVariant,
+                  color: enabled ? mood.ink : mood.inkMute,
                 ),
               ),
               onPressed: enabled

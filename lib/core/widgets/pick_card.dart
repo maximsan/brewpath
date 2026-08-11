@@ -1,6 +1,6 @@
-import 'package:brew_path/shared/theme/app_colors.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_typography.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
 /// Bordered selectable tile used on the onboarding goal + brewer screens.
@@ -30,11 +30,10 @@ class PickCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final borderColor = selected
-        ? AppColors.darkRoastAccent
-        : AppColors.darkRoastRule;
+    final mood = context.mood;
+    final borderColor = selected ? mood.accent : mood.rule;
     return Material(
-      color: AppColors.darkRoastSurface,
+      color: mood.surface,
       child: InkWell(
         onTap: onTap,
         child: Container(
@@ -52,9 +51,9 @@ class PickCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: AppTypography.pickTitle()),
+                    Text(title, style: AppTypography.pickTitle(mood)),
                     const SizedBox(height: AppSpacing.xxs),
-                    Text(description, style: AppTypography.bodySm()),
+                    Text(description, style: AppTypography.bodySm(mood)),
                   ],
                 ),
               ),
@@ -78,23 +77,22 @@ class _PickIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mood = context.mood;
     return Container(
       width: _size,
       height: _size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(
-          color: selected ? AppColors.darkRoastAccent : AppColors.darkRoastRule,
-        ),
+        border: Border.all(color: selected ? mood.accent : mood.rule),
       ),
       child: selected
           ? Center(
               child: Container(
                 width: _innerDotSize,
                 height: _innerDotSize,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppColors.darkRoastAccent,
+                  color: mood.accent,
                 ),
               ),
             )

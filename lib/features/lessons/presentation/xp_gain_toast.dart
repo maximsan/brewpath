@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
 /// A transient "+N XP" chip that rises and fades, then removes itself via
@@ -54,7 +55,7 @@ class _XpGainToastState extends State<XpGainToast>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
     final reduceMotion =
         MediaQuery.maybeOf(context)?.disableAnimations ?? false;
     final label = '+${widget.amount} XP';
@@ -82,7 +83,7 @@ class _XpGainToastState extends State<XpGainToast>
         child: Container(
           padding: _padding,
           decoration: BoxDecoration(
-            color: colors.primaryContainer,
+            color: mood.accent,
             borderRadius: BorderRadius.circular(_radius),
           ),
           child: Row(
@@ -91,14 +92,14 @@ class _XpGainToastState extends State<XpGainToast>
               Icon(
                 Icons.bolt,
                 size: _iconSize,
-                color: colors.onPrimaryContainer,
+                color: mood.accentInk,
               ),
               const SizedBox(width: _gap),
               Text(
                 label,
                 semanticsLabel: label,
                 style: theme.textTheme.labelLarge?.copyWith(
-                  color: colors.onPrimaryContainer,
+                  color: mood.accentInk,
                   fontWeight: FontWeight.w700,
                 ),
               ),

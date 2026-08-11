@@ -5,6 +5,7 @@ import 'package:brew_path/features/profile/presentation/widgets/profile_header.d
 import 'package:brew_path/features/profile/presentation/widgets/stat_tile.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -97,7 +98,7 @@ class _SectionTitle extends StatelessWidget {
       text,
       style: theme.textTheme.titleLarge?.copyWith(
         fontWeight: FontWeight.w800,
-        color: theme.colorScheme.onSurface,
+        color: context.mood.ink,
       ),
     );
   }
