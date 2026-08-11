@@ -1,5 +1,5 @@
-import 'package:brew_path/shared/theme/app_colors.dart';
 import 'package:brew_path/shared/theme/app_typography.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
 /// Full-width, square-corner primary CTA used across onboarding. Mirrors the
@@ -25,13 +25,10 @@ class PrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mood = context.mood;
     final enabled = onPressed != null;
-    final background = enabled
-        ? AppColors.darkRoastAccent
-        : AppColors.darkRoastSurface2;
-    final foreground = enabled
-        ? AppColors.darkRoastAccentInk
-        : AppColors.darkRoastInkMute;
+    final background = enabled ? mood.accent : mood.surface2;
+    final foreground = enabled ? mood.accentInk : mood.inkMute;
     return SizedBox(
       width: double.infinity,
       height: _height,
@@ -40,14 +37,17 @@ class PrimaryButton extends StatelessWidget {
         style: FilledButton.styleFrom(
           backgroundColor: background,
           foregroundColor: foreground,
-          disabledBackgroundColor: AppColors.darkRoastSurface2,
-          disabledForegroundColor: AppColors.darkRoastInkMute,
+          disabledBackgroundColor: mood.surface2,
+          disabledForegroundColor: mood.inkMute,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(2)),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16),
         ),
-        child: Text(label, style: AppTypography.button(color: foreground)),
+        child: Text(
+          label,
+          style: AppTypography.button(mood, color: foreground),
+        ),
       ),
     );
   }

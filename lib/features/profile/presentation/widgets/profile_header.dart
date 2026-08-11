@@ -1,3 +1,4 @@
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
 /// Collapsing header for the Profile screen.
@@ -46,7 +47,7 @@ class ProfileHeaderDelegate extends SliverPersistentHeaderDelegate {
     bool overlapsContent,
   ) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
 
     const range = _expanded - _collapsed;
     final t = (shrinkOffset / range).clamp(0.0, 1.0);
@@ -65,14 +66,13 @@ class ProfileHeaderDelegate extends SliverPersistentHeaderDelegate {
     return Stack(
       fit: StackFit.expand,
       children: [
-        // Tinted surface + drop shadow. Use `surfaceContainerHigh` rather
-        // than `surface` so the bar reads as a distinct elevated tone
-        // against the cream page background beneath.
+        // Tinted surface + drop shadow: the raised `surface` tone over the
+        // page `bg` is what makes the bar read as elevated.
         Positioned.fill(
           child: IgnorePointer(
             child: DecoratedBox(
               decoration: BoxDecoration(
-                color: colors.surfaceContainerHigh.withValues(alpha: tintAlpha),
+                color: mood.surface.withValues(alpha: tintAlpha),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(
@@ -105,7 +105,7 @@ class ProfileHeaderDelegate extends SliverPersistentHeaderDelegate {
                       title,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w700,
-                        color: colors.onSurface,
+                        color: mood.ink,
                       ),
                     ),
                   ),
@@ -134,7 +134,7 @@ class ProfileHeaderDelegate extends SliverPersistentHeaderDelegate {
                   title,
                   style: theme.textTheme.displaySmall?.copyWith(
                     fontWeight: FontWeight.w800,
-                    color: colors.onSurface,
+                    color: mood.ink,
                   ),
                 ),
               ),
@@ -169,11 +169,11 @@ class _CircleIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final mood = context.mood;
     return Tooltip(
       message: tooltip,
       child: Material(
-        color: colors.surfaceContainerLowest,
+        color: mood.surface,
         shape: const CircleBorder(),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
@@ -182,7 +182,7 @@ class _CircleIconButton extends StatelessWidget {
           child: SizedBox(
             width: _size,
             height: _size,
-            child: Icon(icon, size: _iconSize, color: colors.onSurface),
+            child: Icon(icon, size: _iconSize, color: mood.ink),
           ),
         ),
       ),

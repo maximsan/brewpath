@@ -1,3 +1,4 @@
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
 /// Square tile used in the "Customize" grid. Has two flavors:
@@ -52,7 +53,7 @@ class PreferenceTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
 
     final content = Padding(
       padding: const EdgeInsets.all(16),
@@ -66,10 +67,10 @@ class PreferenceTile extends StatelessWidget {
                 height: 44,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: colors.primaryContainer,
+                  color: mood.accent,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icon, size: 22, color: colors.onPrimaryContainer),
+                child: Icon(icon, size: 22, color: mood.accentInk),
               ),
               const Spacer(),
               if (_isToggle)
@@ -81,13 +82,13 @@ class PreferenceTile extends StatelessWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: colors.surfaceContainerHigh,
+                    color: mood.surface,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     trailingText!,
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color: colors.onSurfaceVariant,
+                      color: mood.inkMute,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -101,7 +102,7 @@ class PreferenceTile extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w700,
-              color: colors.onSurface,
+              color: mood.ink,
             ),
           ),
           const SizedBox(height: 2),
@@ -110,7 +111,7 @@ class PreferenceTile extends StatelessWidget {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: theme.textTheme.bodySmall?.copyWith(
-              color: colors.onSurfaceVariant,
+              color: mood.inkMute,
             ),
           ),
         ],
@@ -119,11 +120,11 @@ class PreferenceTile extends StatelessWidget {
 
     final shape = RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(20),
-      side: BorderSide(color: colors.outlineVariant),
+      side: BorderSide(color: mood.rule),
     );
 
     return Material(
-      color: colors.surface,
+      color: mood.surface,
       shape: shape,
       clipBehavior: Clip.antiAlias,
       child: _isToggle

@@ -1,4 +1,5 @@
 import 'package:brew_path/shared/models/lesson_model.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -27,7 +28,7 @@ class ModuleLessonCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
     final destination = isCompleted
         ? '/learn/lesson/${lesson.id}?review=true'
         : '/learn/lesson/${lesson.id}';
@@ -55,7 +56,7 @@ class ModuleLessonCardWidget extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: colors.onSurfaceVariant,
+                        color: mood.inkMute,
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -70,7 +71,7 @@ class ModuleLessonCardWidget extends StatelessWidget {
                   child: const Text('Review'),
                 )
               else
-                Icon(Icons.chevron_right, color: colors.onSurfaceVariant),
+                Icon(Icons.chevron_right, color: mood.inkMute),
             ],
           ),
         ),
@@ -92,11 +93,10 @@ class _LessonBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final background = isCompleted ? colors.primary : colors.primaryContainer;
-    final foreground = isCompleted
-        ? colors.onPrimary
-        : colors.onPrimaryContainer;
+    final mood = context.mood;
+    // One fill for both states; the check-vs-number glyph is the distinction.
+    final background = mood.accent;
+    final foreground = mood.accentInk;
 
     return Container(
       width: _size,
@@ -127,16 +127,16 @@ class _XpInline extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(Icons.bolt, size: _iconSize, color: colors.onSurfaceVariant),
+        Icon(Icons.bolt, size: _iconSize, color: mood.inkMute),
         const SizedBox(width: 2),
         Text(
           '+$xp XP',
           style: theme.textTheme.labelSmall?.copyWith(
-            color: colors.onSurfaceVariant,
+            color: mood.inkMute,
             fontWeight: FontWeight.w600,
           ),
         ),

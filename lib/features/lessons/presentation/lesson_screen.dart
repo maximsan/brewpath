@@ -9,6 +9,7 @@ import 'package:brew_path/features/mini_games/presentation/lesson_step_runner.da
 import 'package:brew_path/services/analytics/analytics_provider.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -142,7 +143,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
   Widget _lessonContent(BuildContext context, LessonModel lesson) {
     final step = lesson.steps[_stepIndex];
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -160,7 +161,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: colors.onSurfaceVariant,
+              color: mood.inkMute,
             ),
           ),
           const SizedBox(height: 16),
@@ -188,7 +189,7 @@ class _StepProgress extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
     final progress = total == 0 ? 0.0 : current / total;
 
     return Column(
@@ -200,13 +201,13 @@ class _StepProgress extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: colors.primaryContainer,
+                color: mood.accent,
                 borderRadius: BorderRadius.circular(_pillRadius),
               ),
               child: Text(
                 'Step $current of $total',
                 style: theme.textTheme.labelMedium?.copyWith(
-                  color: colors.onPrimaryContainer,
+                  color: mood.accentInk,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -214,7 +215,7 @@ class _StepProgress extends StatelessWidget {
             Text(
               '${(progress * _percentScale).round()}%',
               style: theme.textTheme.labelMedium?.copyWith(
-                color: colors.onSurfaceVariant,
+                color: mood.inkMute,
               ),
             ),
           ],
@@ -224,8 +225,8 @@ class _StepProgress extends StatelessWidget {
           value: progress,
           minHeight: _progressBarHeight,
           borderRadius: BorderRadius.circular(_progressBarRadius),
-          backgroundColor: colors.surfaceContainerHighest,
-          color: colors.primary,
+          backgroundColor: mood.surface2,
+          color: mood.accent,
         ),
       ],
     );

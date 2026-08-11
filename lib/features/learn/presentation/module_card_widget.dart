@@ -1,6 +1,7 @@
 import 'package:brew_path/core/constants/app_strings.dart';
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -31,7 +32,7 @@ class ModuleCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
     final module = item.module;
     final locked = item.isLocked;
     final complete = item.isComplete;
@@ -48,7 +49,6 @@ class ModuleCardWidget extends StatelessWidget {
               _ModuleBadge(
                 icon: locked ? Icons.lock_outline : moduleIcon(module.iconName),
                 locked: locked,
-                complete: complete,
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -59,9 +59,7 @@ class ModuleCardWidget extends StatelessWidget {
                     Text(
                       module.title,
                       style: theme.textTheme.titleMedium?.copyWith(
-                        color: locked
-                            ? colors.onSurfaceVariant
-                            : colors.onSurface,
+                        color: locked ? mood.inkMute : mood.ink,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -73,7 +71,7 @@ class ModuleCardWidget extends StatelessWidget {
                 const SizedBox(width: 8),
                 Icon(
                   complete ? Icons.check_circle : Icons.chevron_right,
-                  color: complete ? colors.primary : colors.onSurfaceVariant,
+                  color: complete ? mood.accent : mood.inkMute,
                 ),
               ],
             ],
@@ -85,36 +83,22 @@ class ModuleCardWidget extends StatelessWidget {
 }
 
 /// Rounded leading badge whose color signals the module state: muted when
-/// locked, filled `primary` when complete, soft `primaryContainer` otherwise.
+/// locked, accent-filled otherwise. Complete and in-progress share the fill —
+/// the design has no soft accent tone to separate them with.
 class _ModuleBadge extends StatelessWidget {
-  const _ModuleBadge({
-    required this.icon,
-    required this.locked,
-    required this.complete,
-  });
+  const _ModuleBadge({required this.icon, required this.locked});
 
   final IconData icon;
   final bool locked;
-  final bool complete;
 
   static const double _size = 48;
   static const double _radius = 12;
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final Color background;
-    final Color foreground;
-    if (locked) {
-      background = colors.surfaceContainerHighest;
-      foreground = colors.onSurfaceVariant;
-    } else if (complete) {
-      background = colors.primary;
-      foreground = colors.onPrimary;
-    } else {
-      background = colors.primaryContainer;
-      foreground = colors.onPrimaryContainer;
-    }
+    final mood = context.mood;
+    final background = locked ? mood.surface2 : mood.accent;
+    final foreground = locked ? mood.inkMute : mood.accentInk;
 
     return Container(
       width: _size,
@@ -142,9 +126,9 @@ class _ModuleStatus extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
     final mutedText = theme.textTheme.bodySmall?.copyWith(
-      color: colors.onSurfaceVariant,
+      color: mood.inkMute,
     );
 
     if (item.isLocked) {
@@ -165,8 +149,8 @@ class _ModuleStatus extends StatelessWidget {
           value: item.progress,
           minHeight: _barHeight,
           borderRadius: BorderRadius.circular(_barRadius),
-          backgroundColor: colors.surfaceContainerHighest,
-          color: colors.primary,
+          backgroundColor: mood.surface2,
+          color: mood.accent,
         ),
       ],
     );

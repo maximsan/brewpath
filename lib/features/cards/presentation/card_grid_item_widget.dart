@@ -1,5 +1,6 @@
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -21,7 +22,7 @@ class CardGridItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final collected = item.isCollected;
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
 
     return Card(
       margin: EdgeInsets.zero,
@@ -38,9 +39,7 @@ class CardGridItemWidget extends StatelessWidget {
                 height: _badgeSize,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: collected
-                      ? colors.primaryContainer
-                      : colors.surfaceContainerHighest,
+                  color: collected ? mood.accent : mood.surface2,
                   borderRadius: BorderRadius.circular(_badgeRadius),
                 ),
                 child: Icon(
@@ -48,9 +47,7 @@ class CardGridItemWidget extends StatelessWidget {
                       ? moduleIcon(item.card.iconName)
                       : Icons.help_outline,
                   size: _iconSize,
-                  color: collected
-                      ? colors.onPrimaryContainer
-                      : colors.onSurfaceVariant,
+                  color: collected ? mood.accentInk : mood.inkMute,
                 ),
               ),
               const SizedBox(height: 10),
@@ -60,7 +57,7 @@ class CardGridItemWidget extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.titleSmall?.copyWith(
-                  color: collected ? colors.onSurface : colors.onSurfaceVariant,
+                  color: collected ? mood.ink : mood.inkMute,
                 ),
               ),
               if (collected) ...[
@@ -68,7 +65,7 @@ class CardGridItemWidget extends StatelessWidget {
                 Text(
                   item.card.moduleTag,
                   style: theme.textTheme.labelSmall?.copyWith(
-                    color: colors.onSurfaceVariant,
+                    color: mood.inkMute,
                   ),
                 ),
               ],

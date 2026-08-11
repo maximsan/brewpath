@@ -4,6 +4,7 @@ import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
 import 'package:brew_path/features/cards/domain/favorite_cards_provider.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -50,7 +51,7 @@ class _CardDetailBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
     final card = item.card;
     final isFavorite = ref.watch(favoriteCardsProvider).contains(card.id);
 
@@ -63,7 +64,7 @@ class _CardDetailBody extends ConsumerWidget {
             child: Icon(
               item.isCollected ? moduleIcon(card.iconName) : Icons.help_outline,
               size: _iconSize,
-              color: colors.primary,
+              color: mood.accent,
             ),
           ),
           const SizedBox(height: AppSpacing.lg),
@@ -80,7 +81,7 @@ class _CardDetailBody extends ConsumerWidget {
               IconButton(
                 icon: Icon(
                   isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: isFavorite ? colors.error : colors.onSurfaceVariant,
+                  color: isFavorite ? mood.berry : mood.inkMute,
                 ),
                 tooltip: isFavorite ? 'Remove favorite' : 'Add favorite',
                 onPressed: () =>

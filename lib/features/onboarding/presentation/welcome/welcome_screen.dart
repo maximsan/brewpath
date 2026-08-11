@@ -5,9 +5,9 @@ import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
-import 'package:brew_path/shared/theme/app_colors.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_typography.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -23,8 +23,9 @@ class WelcomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final mood = context.mood;
     return Scaffold(
-      backgroundColor: AppColors.darkRoastBg,
+      backgroundColor: mood.bg,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(
@@ -42,8 +43,8 @@ class WelcomeScreen extends ConsumerWidget {
                 aspectRatio: 1,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: AppColors.darkRoastSurface,
-                    border: Border.all(color: AppColors.darkRoastRule),
+                    color: mood.surface,
+                    border: Border.all(color: mood.rule),
                     borderRadius: BorderRadius.circular(_heroFrameRadius),
                   ),
                   clipBehavior: Clip.hardEdge,
@@ -51,20 +52,17 @@ class WelcomeScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: AppSpacing.lg),
-              const SmallcapsLabel(
-                'ROASTY · YOUR COMPANION',
-                color: AppColors.darkRoastAccent,
-              ),
+              SmallcapsLabel('ROASTY · YOUR COMPANION', color: mood.accent),
               const SizedBox(height: 10),
               Text(
                 'Plant your tree.\nGrow with every cup.',
-                style: AppTypography.displayXL(),
+                style: AppTypography.displayXL(mood),
               ),
               const SizedBox(height: AppSpacing.md + 2),
               Text(
                 'Short lessons, real ideas. Roasty stays beside you — '
                 'celebrating small wins as your coffee tree grows.',
-                style: AppTypography.body(color: AppColors.darkRoastInkMute),
+                style: AppTypography.body(mood, color: mood.inkMute),
               ),
               const SizedBox(height: AppSpacing.lg + 4),
               PrimaryButton(

@@ -1,4 +1,5 @@
 import 'package:brew_path/shared/models/lesson_model.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -20,22 +21,22 @@ class TodayCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
     final lesson = today;
 
     return Card(
       margin: EdgeInsets.zero,
-      color: colors.primaryContainer,
+      color: mood.accent,
       child: lesson == null
-          ? _buildCaughtUp(theme, colors)
-          : _buildLesson(context, theme, colors, lesson),
+          ? _buildCaughtUp(theme, mood)
+          : _buildLesson(context, theme, mood, lesson),
     );
   }
 
   Widget _buildLesson(
     BuildContext context,
     ThemeData theme,
-    ColorScheme colors,
+    MoodColors mood,
     LessonModel lesson,
   ) {
     return InkWell(
@@ -52,13 +53,13 @@ class TodayCardWidget extends StatelessWidget {
                 Icon(
                   Icons.local_cafe,
                   size: _iconSm,
-                  color: colors.onPrimaryContainer,
+                  color: mood.accentInk,
                 ),
                 const SizedBox(width: 8),
                 Text(
                   "Today's lesson",
                   style: theme.textTheme.labelMedium?.copyWith(
-                    color: colors.onPrimaryContainer,
+                    color: mood.accentInk,
                     letterSpacing: _heroLetterSpacing,
                   ),
                 ),
@@ -68,7 +69,7 @@ class TodayCardWidget extends StatelessWidget {
             Text(
               lesson.title,
               style: theme.textTheme.titleLarge?.copyWith(
-                color: colors.onPrimaryContainer,
+                color: mood.accentInk,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -78,7 +79,7 @@ class TodayCardWidget extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: colors.onPrimaryContainer.withValues(alpha: _mutedAlpha),
+                color: mood.accentInk.withValues(alpha: _mutedAlpha),
               ),
             ),
             const SizedBox(height: 16),
@@ -99,7 +100,7 @@ class TodayCardWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildCaughtUp(ThemeData theme, ColorScheme colors) {
+  Widget _buildCaughtUp(ThemeData theme, MoodColors mood) {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Row(
@@ -107,7 +108,7 @@ class TodayCardWidget extends StatelessWidget {
           Icon(
             Icons.check_circle,
             size: _iconLg,
-            color: colors.onPrimaryContainer,
+            color: mood.accentInk,
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -118,7 +119,7 @@ class TodayCardWidget extends StatelessWidget {
                 Text(
                   "You're all caught up!",
                   style: theme.textTheme.titleMedium?.copyWith(
-                    color: colors.onPrimaryContainer,
+                    color: mood.accentInk,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -126,7 +127,7 @@ class TodayCardWidget extends StatelessWidget {
                 Text(
                   'No lessons left to study.',
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colors.onPrimaryContainer.withValues(
+                    color: mood.accentInk.withValues(
                       alpha: _mutedAlpha,
                     ),
                   ),
@@ -153,22 +154,22 @@ class _XpPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: colors.onPrimaryContainer.withValues(alpha: _pillAlpha),
+        color: mood.accentInk.withValues(alpha: _pillAlpha),
         borderRadius: BorderRadius.circular(_pillRadius),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.bolt, size: _iconMd, color: colors.onPrimaryContainer),
+          Icon(Icons.bolt, size: _iconMd, color: mood.accentInk),
           const SizedBox(width: 4),
           Text(
             '+$xp XP',
             style: theme.textTheme.labelMedium?.copyWith(
-              color: colors.onPrimaryContainer,
+              color: mood.accentInk,
               fontWeight: FontWeight.w600,
             ),
           ),

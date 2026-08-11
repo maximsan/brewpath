@@ -1,6 +1,7 @@
 import 'package:brew_path/core/constants/app_strings.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_result.dart';
 import 'package:brew_path/shared/models/lesson_step_model.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
 /// Multiple-choice mini-game: pick the correct option.
@@ -43,20 +44,20 @@ class _MultipleChoiceGameState extends State<MultipleChoiceGame> {
     );
   }
 
-  /// Feedback border for an option after the user answers: green for the
-  /// correct option, themed error for the wrong selection, default outline
+  /// Feedback border for an option after the user answers: sage for the
+  /// correct option, berry for the wrong selection, default outline
   /// otherwise. Returns `null` until an answer is locked in.
-  Color? _borderColor(int index, ColorScheme colors) {
+  Color? _borderColor(int index, MoodColors mood) {
     if (!_answered) return null;
-    if (index == widget.step.correctIndex) return Colors.green.shade600;
-    if (index == _selectedIndex) return colors.error;
+    if (index == widget.step.correctIndex) return mood.sage;
+    if (index == _selectedIndex) return mood.berry;
     return null;
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
     final isCorrect = _answered && _selectedIndex == widget.step.correctIndex;
 
     return Column(
@@ -71,8 +72,8 @@ class _MultipleChoiceGameState extends State<MultipleChoiceGame> {
               onPressed: _answered ? null : () => _onOptionTap(i),
               style: OutlinedButton.styleFrom(
                 side: BorderSide(
-                  color: _borderColor(i, colors) ?? colors.outline,
-                  width: _borderColor(i, colors) != null ? 2 : 1,
+                  color: _borderColor(i, mood) ?? mood.rule,
+                  width: _borderColor(i, mood) != null ? 2 : 1,
                 ),
               ),
               child: Text(widget.step.options[i]),

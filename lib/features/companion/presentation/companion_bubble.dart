@@ -1,4 +1,5 @@
 import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
 /// A speech bubble anchored above any companion [child] (a static or animated
@@ -29,7 +30,7 @@ class CompanionBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -42,7 +43,7 @@ class CompanionBubble extends StatelessWidget {
               vertical: AppSpacing.sm,
             ),
             decoration: BoxDecoration(
-              color: colors.surfaceContainerHighest,
+              color: mood.surface2,
               borderRadius: BorderRadius.circular(_radius),
             ),
             child: Text(
@@ -56,7 +57,7 @@ class CompanionBubble extends StatelessWidget {
         // Downward tail pointing at the mascot.
         CustomPaint(
           size: const Size(_tailSize * 2, _tailSize),
-          painter: _BubbleTailPainter(color: colors.surfaceContainerHighest),
+          painter: _BubbleTailPainter(color: mood.surface2),
         ),
         child,
       ],

@@ -1,5 +1,6 @@
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/shared/models/module_model.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
 /// Tinted hero at the top of the module screen: category icon + title +
@@ -18,7 +19,7 @@ class ModuleHeroWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -27,13 +28,13 @@ class ModuleHeroWidget extends StatelessWidget {
           height: _badgeSize,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: colors.primaryContainer,
+            color: mood.accent,
             borderRadius: BorderRadius.circular(_badgeRadius),
           ),
           child: Icon(
             moduleIcon(module.iconName),
             size: _iconSize,
-            color: colors.onPrimaryContainer,
+            color: mood.accentInk,
           ),
         ),
         const SizedBox(width: 16),
@@ -52,7 +53,7 @@ class ModuleHeroWidget extends StatelessWidget {
               Text(
                 module.description,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colors.onSurfaceVariant,
+                  color: mood.inkMute,
                 ),
               ),
             ],

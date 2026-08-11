@@ -13,7 +13,10 @@ class BrewPathApp extends ConsumerWidget {
     final router = ref.watch(appRouterProvider);
     return MaterialApp.router(
       title: 'BrewPath',
-      theme: AppTheme.lightTheme,
+      // Pinned to Dark Roast — the design's default mood. The `light | dark |
+      // system` preference that would also hand `AppTheme.cupping` to
+      // `darkTheme` lands with the theme-preference work.
+      theme: AppTheme.darkRoast,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
     );

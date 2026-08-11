@@ -9,6 +9,7 @@ import 'package:brew_path/features/companion/presentation/companion_handle.dart'
 import 'package:brew_path/features/learn/domain/module_summary_provider.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -69,7 +70,7 @@ class _ModuleSummaryScreenState extends ConsumerState<ModuleSummaryScreen> {
     _fireModuleCompleteOnce();
 
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
     final companion = Companion(handle: _companionHandle);
     final line = _companionLine;
 
@@ -98,7 +99,7 @@ class _ModuleSummaryScreenState extends ConsumerState<ModuleSummaryScreen> {
               summary.module.title,
               textAlign: TextAlign.center,
               style: theme.textTheme.titleMedium?.copyWith(
-                color: colors.onSurfaceVariant,
+                color: mood.inkMute,
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
@@ -106,7 +107,7 @@ class _ModuleSummaryScreenState extends ConsumerState<ModuleSummaryScreen> {
               '+${summary.totalXp} XP',
               textAlign: TextAlign.center,
               style: theme.textTheme.titleLarge?.copyWith(
-                color: colors.primary,
+                color: mood.accent,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -136,7 +137,7 @@ class _EarnedCards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final mood = context.mood;
     return Wrap(
       alignment: WrapAlignment.center,
       spacing: AppSpacing.sm,
@@ -148,12 +149,12 @@ class _EarnedCards extends StatelessWidget {
             height: _badgeSize,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: colors.primaryContainer,
+              color: mood.accent,
               shape: BoxShape.circle,
             ),
             child: Icon(
               moduleIcon(card.iconName),
-              color: colors.onPrimaryContainer,
+              color: mood.accentInk,
               semanticLabel: card.title,
             ),
           ),
