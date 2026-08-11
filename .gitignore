@@ -60,3 +60,7 @@ app.*.map.json
 /brew-path/scratch/
 /brew-path/scraps/
 /brew-path/.thumbnail
+
+# Agent worktrees — full working copies of this repo created by Claude Code.
+# Untracked and large (GBs); never meant to be committed.
+.claude/worktrees/
