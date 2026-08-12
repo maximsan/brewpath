@@ -35,9 +35,9 @@ first, then resume.
 | Navigation        | go_router 17.x                            | `StatefulShellRoute` with 4 branches: `/learn`, `/path`, `/cards`, `/profile`                                                                                                      |
 | Persistence       | Drift (SQLite) 2.33.x                     | Offline-first; tables + `AppDatabase` in `shared/storage/app_database.dart`. Repos map Drift rows ↔ mutable DTOs in `shared/storage/*_record.dart`. (Replaced abandoned Isar 3.x.) |
 | Content models    | Freezed + json_serializable               | Loaded from `assets/content/*.json` at startup                                                                                                                                     |
-| Payments          | `NoOpPaymentsService` stub                | Real `in_app_purchase` deferred                                                                                                                                                   |
-| Ads               | `NoOpAdsService` stub                     | Real AdMob deferred                                                                                                                                                               |
-| Analytics / Crash | Firebase behind abstractions (gated off)  | Inactive until `kUseFirebase` is flipped                                                                                                                                          |
+| Payments          | `NoOpPaymentsService` stub                | Real `in_app_purchase` deferred                                                                                                                                                    |
+| Ads               | `NoOpAdsService` stub                     | Real AdMob deferred                                                                                                                                                                |
+| Analytics / Crash | Firebase behind abstractions (gated off)  | Inactive until `kUseFirebase` is flipped                                                                                                                                           |
 
 ## Critical Rules
 
@@ -70,9 +70,7 @@ of that file:
 
 Run all flutter/dart commands from the repo root. The full command list with
 explanations — plus test and iOS/SPM build notes — lives in
-[`README.md`](README.md). Git and `gh` workflow, and the commands that
-reproduce each CI job locally, are in
-[`docs/18-git-and-github-workflow.md`](docs/18-git-and-github-workflow.md).
+[`README.md`](README.md).
 
 ## Code Conventions
 
