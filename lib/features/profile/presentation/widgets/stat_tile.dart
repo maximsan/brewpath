@@ -1,3 +1,4 @@
+import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -23,7 +24,6 @@ class StatTile extends StatelessWidget {
 
   static const double _cornerRadius = 20;
   static const double _badgeSize = 48;
-  static const double _badgeRadius = 14;
   static const double _iconSize = 24;
 
   @override
@@ -47,7 +47,7 @@ class StatTile extends StatelessWidget {
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: mood.accent,
-              borderRadius: BorderRadius.circular(_badgeRadius),
+              borderRadius: BorderRadius.circular(AppRadii.chrome),
             ),
             child: Icon(
               icon,

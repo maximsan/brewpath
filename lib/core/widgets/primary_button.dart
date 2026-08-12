@@ -1,3 +1,4 @@
+import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_typography.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +41,7 @@ class PrimaryButton extends StatelessWidget {
           disabledBackgroundColor: mood.surface2,
           disabledForegroundColor: mood.inkMute,
           shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(2)),
+            borderRadius: BorderRadius.all(Radius.circular(AppRadii.editorial)),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16),
         ),

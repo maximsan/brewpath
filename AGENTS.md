@@ -81,8 +81,9 @@ Magic numbers and per-function size/complexity are now **lint-enforced** by
 conventions — follow every rule below on each new or modified file:
 
 - **No magic numbers** (lint-enforced). Extract meaningful or repeated literals
-  to named `static const` or theme tokens (`AppSpacing`, `AppColors`,
-  `AppTypography`); only `0`/`1`/`2` inline, with intent names (`_stageSize`),
+  to named `static const` or theme tokens (`AppSpacing`, `AppRadii`,
+  `MoodColors`, `ArtColors`, `OverlayColors`, `AppTypography`); only
+  `0`/`1`/`2` inline, with intent names (`_stageSize`),
   never bare numbers in the widget tree.
 - **Descriptive names.** No single-letter identifiers except trivial loop
   indices (`i`). Animation/controller values are `progress`, not `t`; phase

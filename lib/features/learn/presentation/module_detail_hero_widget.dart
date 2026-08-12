@@ -1,5 +1,6 @@
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/shared/models/module_model.dart';
+import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +14,6 @@ class ModuleHeroWidget extends StatelessWidget {
   final ModuleModel module;
 
   static const double _badgeSize = 56;
-  static const double _badgeRadius = 14;
   static const double _iconSize = 28;
 
   @override
@@ -29,7 +29,7 @@ class ModuleHeroWidget extends StatelessWidget {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: mood.accent,
-            borderRadius: BorderRadius.circular(_badgeRadius),
+            borderRadius: BorderRadius.circular(AppRadii.chrome),
           ),
           child: Icon(
             moduleIcon(module.iconName),

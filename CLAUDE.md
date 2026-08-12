@@ -35,9 +35,9 @@ first, then resume.
 | Navigation        | go_router 17.x                            | `StatefulShellRoute` with 4 branches: `/learn`, `/path`, `/cards`, `/profile`                                                                                                      |
 | Persistence       | Drift (SQLite) 2.33.x                     | Offline-first; tables + `AppDatabase` in `shared/storage/app_database.dart`. Repos map Drift rows ↔ mutable DTOs in `shared/storage/*_record.dart`. (Replaced abandoned Isar 3.x.) |
 | Content models    | Freezed + json_serializable               | Loaded from `assets/content/*.json` at startup                                                                                                                                     |
-| Payments          | `NoOpPaymentsService` stub                | Real `in_app_purchase` deferred                                                                                                                                                   |
-| Ads               | `NoOpAdsService` stub                     | Real AdMob deferred                                                                                                                                                               |
-| Analytics / Crash | Firebase behind abstractions (gated off)  | Inactive until `kUseFirebase` is flipped                                                                                                                                          |
+| Payments          | `NoOpPaymentsService` stub                | Real `in_app_purchase` deferred                                                                                                                                                    |
+| Ads               | `NoOpAdsService` stub                     | Real AdMob deferred                                                                                                                                                                |
+| Analytics / Crash | Firebase behind abstractions (gated off)  | Inactive until `kUseFirebase` is flipped                                                                                                                                           |
 
 ## Critical Rules
 
@@ -70,14 +70,12 @@ of that file:
 
 Run all flutter/dart commands from the repo root. The full command list with
 explanations — plus test and iOS/SPM build notes — lives in
-[`README.md`](README.md). Git and `gh` workflow, and the commands that
-reproduce each CI job locally, are in
-[`docs/18-git-and-github-workflow.md`](docs/18-git-and-github-workflow.md).
+[`README.md`](README.md).
 
 ## Code Conventions
 
 - **Imports:** always `package:brew_path/…` within `lib/`; never relative `../` imports
-- **Colours:** read the mood tokens via `context.mood` (`MoodColors`, a `ThemeExtension` with a Cupping and a Dark Roast instance); never `Theme.of(context).colorScheme` — it is populated for stock Material widgets only. Mood-invariant literals live in `AppColors`.
+- **Colours:** read the mood tokens via `context.mood` (`MoodColors`, a `ThemeExtension` with a Cupping and a Dark Roast instance); never `Theme.of(context).colorScheme` — it is populated for stock Material widgets only. Everything that must **not** flip with the mood is `static const` on an `abstract final class` with no `of(context)` accessor — `ArtColors` (illustration palette), `OverlayColors` (scrim, scrim ink, modal dim), `AppSpacing`, `AppRadii` — so mood-dependence is unrepresentable, and painters can read them with no `BuildContext`. A value that is deliberately off-token goes in the `OffTokens` register with its reason, never as a bare literal.
 - **Comments:** TSDoc only for complex logic or third-party integrations; skip self-evident code
 - **Models:** Freezed for all content DTOs; Drift `Table` classes for persisted records
 - **Providers:** function-style `@riverpod` only; class-based `@riverpod` only when state is mutable
