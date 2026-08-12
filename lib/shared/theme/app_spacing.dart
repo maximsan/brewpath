@@ -1,6 +1,11 @@
-/// Vertical/horizontal spacing stops shared across onboarding screens.
+/// Vertical/horizontal spacing stops shared across the app.
 /// Values match the design-bundle CSS (24-px gutter, 12/14/16/24/32 stops).
-abstract class AppSpacing {
+///
+/// Spacing does not flip with the mood, so this follows the same pattern as
+/// `AppRadii`, `ArtColors` and `OverlayColors`: `static const` on a class that
+/// cannot be extended, implemented or instantiated, and no `of(context)`
+/// accessor — there is nothing here for a mood to vary.
+abstract final class AppSpacing {
   /// 4 px — hairline gaps.
   static const double xxs = 4;
 
