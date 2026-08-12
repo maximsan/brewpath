@@ -1,4 +1,4 @@
-import 'package:brew_path/shared/theme/app_typography.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -24,7 +24,7 @@ abstract class AppTheme {
         scaffoldBackgroundColor: mood.bg,
         colorScheme: _schemeFor(mood, brightness),
         extensions: [mood],
-        textTheme: AppTypography.textTheme(mood),
+        textTheme: AppText.textTheme(mood),
         appBarTheme: AppBarTheme(
           centerTitle: true,
           elevation: 0,

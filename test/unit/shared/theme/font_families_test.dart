@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:brew_path/shared/theme/app_typography.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,25 +10,27 @@ import 'package:flutter_test/flutter_test.dart';
 /// back to the platform font, so the app renders in the wrong typeface with
 /// no signal at all.
 ///
-/// These tests close that gap by comparing what `AppTypography` asks for
+/// These tests close that gap by comparing what `AppText` asks for
 /// against what the pubspec actually declares, in both directions.
 void main() {
   final declaredFamilies = _familiesDeclaredInPubspec();
 
   /// One representative style per family is not enough — a typo in any single
-  /// getter would slip through — so every style `AppTypography` exposes is
-  /// checked.
+  /// getter would slip through — so every step `AppText` exposes is checked, in
+  /// every face that names a family.
   Map<String, TextStyle> stylesFor(MoodColors mood) => {
-    'displayXL': AppTypography.displayXL(mood),
-    'displayLG': AppTypography.displayLG(mood),
-    'displayMD': AppTypography.displayMD(mood),
-    'captionItalic': AppTypography.captionItalic(mood),
-    'body': AppTypography.body(mood),
-    'bodySm': AppTypography.bodySm(mood),
-    'button': AppTypography.button(mood),
-    'pickTitle': AppTypography.pickTitle(mood),
-    'smallcaps': AppTypography.smallcaps(mood),
-    'mono': AppTypography.mono(mood),
+    for (final face in AppFace.values.where((face) => face.family != null)) ...{
+      'hero.${face.name}': AppText.hero(mood: mood, face: face),
+      'display.${face.name}': AppText.display(mood: mood, face: face),
+      'title.${face.name}': AppText.title(mood: mood, face: face),
+      'heading.${face.name}': AppText.heading(mood: mood, face: face),
+      'lead.${face.name}': AppText.lead(mood: mood, face: face),
+      'body.${face.name}': AppText.body(mood: mood, face: face),
+      'support.${face.name}': AppText.support(mood: mood, face: face),
+      'label.${face.name}': AppText.label(mood: mood, face: face),
+      'micro.${face.name}': AppText.micro(mood: mood, face: face),
+    },
+    'headingItalic': AppText.headingItalic(mood: mood),
   };
 
   test('pubspec declares the three families the design stack uses', () {
@@ -47,13 +49,13 @@ void main() {
         expect(
           style.fontFamily,
           isNotNull,
-          reason: 'AppTypography.$name left fontFamily unset',
+          reason: 'AppText.$name left fontFamily unset',
         );
         expect(
           declaredFamilies,
           contains(style.fontFamily),
           reason:
-              'AppTypography.$name asks for "${style.fontFamily}", which '
+              'AppText.$name asks for "${style.fontFamily}", which '
               'no `fonts:` entry in pubspec.yaml declares — it would render '
               'in the platform fallback font instead of failing.',
         );
@@ -62,7 +64,7 @@ void main() {
   }
 
   test('textTheme entries name declared font families', () {
-    final theme = AppTypography.textTheme(MoodColors.darkRoast);
+    final theme = AppText.textTheme(MoodColors.darkRoast);
     for (final style in <TextStyle?>[
       theme.displayLarge,
       theme.displayMedium,
@@ -75,6 +77,38 @@ void main() {
     ]) {
       expect(declaredFamilies, contains(style?.fontFamily));
     }
+  });
+
+  test('every font family named anywhere in lib/ is declared', () {
+    // `AppText` is not the only place a family can be asked for: a
+    // `CustomPainter` builds its own `TextStyle` to hand to a `TextPainter`,
+    // and those were outside this guard until a painter shipped
+    // 'IBMPlexMono' — no such family, so the label had been drawing in the
+    // platform fallback with nothing to signal it.
+    final offenders = <String>[];
+
+    for (final file
+        in Directory('lib')
+            .listSync(recursive: true)
+            .whereType<File>()
+            .where((file) => file.path.endsWith('.dart'))) {
+      for (final match in RegExp(
+        '''fontFamily:\\s*'([^']+)\'''',
+      ).allMatches(file.readAsStringSync())) {
+        final family = match.group(1)!;
+        if (!declaredFamilies.contains(family)) {
+          offenders.add('${file.path} asks for "$family"');
+        }
+      }
+    }
+
+    expect(
+      offenders,
+      isEmpty,
+      reason:
+          'no `fonts:` entry declares these, so they render in the platform '
+          'fallback instead of failing:\n${offenders.join('\n')}',
+    );
   });
 
   test('every declared family is backed by a font file that exists', () {

@@ -1,4 +1,4 @@
-import 'package:brew_path/shared/theme/app_typography.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +19,11 @@ class SmallcapsLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text.toUpperCase(),
-      style: AppTypography.smallcaps(context.mood, color: color),
+      style: AppText.label(
+        mood: context.mood,
+        color: color,
+        face: AppFace.mono,
+      ),
     );
   }
 }

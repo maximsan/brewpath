@@ -1,6 +1,6 @@
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
-import 'package:brew_path/shared/theme/app_typography.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -52,9 +52,12 @@ class PickCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: AppTypography.pickTitle(mood)),
+                    Text(
+                      title,
+                      style: AppText.heading(mood: mood),
+                    ),
                     const SizedBox(height: AppSpacing.xxs),
-                    Text(description, style: AppTypography.bodySm(mood)),
+                    Text(description, style: AppText.support(mood: mood)),
                   ],
                 ),
               ),

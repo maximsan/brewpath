@@ -1,4 +1,4 @@
-import 'package:brew_path/shared/theme/app_typography.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -25,8 +25,8 @@ class LinkButton extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: AppTypography.body(
-          mood,
+        style: AppText.body(
+          mood: mood,
           color: mood.accent,
         ).copyWith(decoration: TextDecoration.none),
       ),
