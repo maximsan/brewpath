@@ -71,6 +71,11 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- CI gained a **changelog job**: a pull request that changes `lib/`,
+  `assets/content/` or `pubspec.yaml` now fails unless it adds an entry here.
+  Generated Dart does not count, and the `no-changelog` label skips the check
+  for refactors, formatting and regenerated output. Runnable locally as
+  `tool/check_changelog.sh`.
 - `AppTheme.lightTheme` is now `AppTheme.darkRoast` — the old name described a
   `Brightness.dark` theme.
 - App code no longer reads `ColorScheme`; it stays populated purely so stock
