@@ -1,3 +1,4 @@
+import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_typography.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -43,7 +44,7 @@ class PickCard extends StatelessWidget {
           ),
           decoration: BoxDecoration(
             border: Border.all(color: borderColor),
-            borderRadius: BorderRadius.circular(2),
+            borderRadius: BorderRadius.circular(AppRadii.editorial),
           ),
           child: Row(
             children: [

@@ -1,5 +1,6 @@
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
+import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -15,7 +16,6 @@ class CardGridItemWidget extends StatelessWidget {
 
   static const double _cornerRadius = 12;
   static const double _badgeSize = 56;
-  static const double _badgeRadius = 14;
   static const double _iconSize = 28;
 
   @override
@@ -40,7 +40,7 @@ class CardGridItemWidget extends StatelessWidget {
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: collected ? mood.accent : mood.surface2,
-                  borderRadius: BorderRadius.circular(_badgeRadius),
+                  borderRadius: BorderRadius.circular(AppRadii.chrome),
                 ),
                 child: Icon(
                   collected
