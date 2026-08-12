@@ -74,3 +74,4 @@ dart_code_linter:
           - lib/shared/theme/app_typography.dart
           - lib/shared/theme/mood_colors.dart
           - lib/shared/theme/art_colors.dart
+          - lib/shared/theme/overlay_colors.dart
