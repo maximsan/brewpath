@@ -199,12 +199,13 @@ one commit makes `git bisect` less useful.
 
 ## Reproducing CI locally
 
-CI is four jobs ([`13-ci-cd.md`](13-ci-cd.md)). Run them in this order before
+CI is five jobs ([`13-ci-cd.md`](13-ci-cd.md)). Run them in this order before
 pushing; they are the same commands the workflow uses.
 
 ```bash
 flutter pub get                                    # required BEFORE format — see below
 
+tool/check_changelog.sh                            # pull-request job; needs origin/main fetched
 dart format --output=none --set-exit-if-changed lib test integration_test
 flutter analyze
 dart run dart_code_linter:metrics analyze lib --set-exit-on-violation-level=warning
@@ -227,6 +228,20 @@ Two things that are easy to get wrong:
 
 `flutter analyze` does **not** cover `dart_code_linter`'s per-function metrics,
 and `flutter test` does **not** run `integration_test/` — those need a device.
+
+### The changelog job
+
+`tool/check_changelog.sh` fails a pull request that changes `lib/`,
+`assets/content/` or `pubspec.yaml` without adding an entry to
+`docs/CHANGELOG.md`. Generated Dart (`*.g.dart`, `*.freezed.dart`) does not
+count as a product change, and touching the changelog is not enough — the diff
+has to add at least one bullet.
+
+When the change genuinely does not belong in the changelog — a pure refactor, a
+formatting pass, test-only work, regenerated output — label the PR
+**`no-changelog`** and the job is skipped rather than failed. Use the label
+rather than an empty entry: a changelog padded with "refactored X" is how it
+stops being read.
 
 ---
 

@@ -9,6 +9,27 @@ env:
   FLUTTER_VERSION: "3.44.1"
 
 jobs:
+  # Pull requests only: the check compares a branch against its base, and by the
+  # time a commit is on main it has already been through it. Skipped entirely
+  # when the PR carries the `no-changelog` label — the escape hatch for
+  # refactors, formatting passes and regenerated output, which the changelog
+  # deliberately does not record.
+  changelog:
+    name: changelog
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'pull_request' &&
+      !contains(github.event.pull_request.labels.*.name, 'no-changelog')
+    steps:
+      # Full history: the check diffs against the merge base, which a shallow
+      # clone does not contain.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Require a changelog entry for product changes
+        run: tool/check_changelog.sh "${{ github.event.pull_request.base.sha }}"
+
   format:
     name: format
     runs-on: ubuntu-latest
