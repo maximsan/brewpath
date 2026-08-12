@@ -77,7 +77,7 @@ reproduce each CI job locally, are in
 ## Code Conventions
 
 - **Imports:** always `package:brew_path/…` within `lib/`; never relative `../` imports
-- **Colours:** read the mood tokens via `context.mood` (`MoodColors`, a `ThemeExtension` with a Cupping and a Dark Roast instance); never `Theme.of(context).colorScheme` — it is populated for stock Material widgets only. Mood-invariant literals live in `AppColors`.
+- **Colours:** read the mood tokens via `context.mood` (`MoodColors`, a `ThemeExtension` with a Cupping and a Dark Roast instance); never `Theme.of(context).colorScheme` — it is populated for stock Material widgets only. Everything that must **not** flip with the mood is `static const` on an `abstract final class` with no `of(context)` accessor — `ArtColors` (illustration palette), `OverlayColors` (scrim, scrim ink, modal dim), `AppSpacing`, `AppRadii` — so mood-dependence is unrepresentable, and painters can read them with no `BuildContext`. A value that is deliberately off-token goes in the `OffTokens` register with its reason, never as a bare literal.
 - **Comments:** TSDoc only for complex logic or third-party integrations; skip self-evident code
 - **Models:** Freezed for all content DTOs; Drift `Table` classes for persisted records
 - **Providers:** function-style `@riverpod` only; class-based `@riverpod` only when state is mutable

@@ -166,7 +166,13 @@ brewpath/                                 # git root — the app lives here
 │       │   ├── card_record.dart                   # Isar @collection: collected card IDs
 │       │   └── settings_record.dart               # Isar @collection: user settings
 │       └── theme/
-│           └── app_colors.dart                    # Named color constants
+│           ├── mood_colors.dart                  # The 13 tokens that flip with the mood
+│           ├── art_colors.dart                   # Illustration palette — never flips
+│           ├── overlay_colors.dart               # Scrim + modal dim — never flip
+│           ├── app_spacing.dart                  # Spacing stops
+│           ├── app_radii.dart                    # Radius languages: editorial / chrome / pill
+│           ├── app_typography.dart               # Type ladder
+│           └── off_token.dart                    # Register of sanctioned off-token values
 │
 ├── assets/
 │   ├── content/
