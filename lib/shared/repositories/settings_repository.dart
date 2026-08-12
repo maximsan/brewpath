@@ -1,5 +1,6 @@
 import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:brew_path/shared/storage/settings_record.dart';
+import 'package:brew_path/shared/theme/app_theme_mode.dart';
 import 'package:drift/drift.dart';
 
 /// Reads/writes the singleton user-settings row via Drift.
@@ -27,6 +28,7 @@ class SettingsRepository {
         onboardingCompleted: row.onboardingCompleted,
         onboardingGoal: row.onboardingGoal,
         onboardingBrewer: row.onboardingBrewer,
+        themeMode: AppThemeMode.fromStorage(row.themeMode),
       );
     }
     return UserSettingsRecord(
@@ -53,6 +55,7 @@ class SettingsRepository {
             onboardingCompleted: Value(settings.onboardingCompleted),
             onboardingGoal: Value(settings.onboardingGoal),
             onboardingBrewer: Value(settings.onboardingBrewer),
+            themeMode: Value(settings.themeMode.storageValue),
           ),
         );
   }
