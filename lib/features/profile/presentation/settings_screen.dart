@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:brew_path/features/onboarding/presentation/onboarding_providers.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
+import 'package:brew_path/features/profile/presentation/widgets/appearance_selector.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -61,6 +62,9 @@ class SettingsScreen extends ConsumerWidget {
               ],
             ),
           ),
+          const SizedBox(height: 24),
+          const _SectionLabel('Appearance'),
+          const AppearanceSelector(),
           const SizedBox(height: 24),
           const _SectionLabel('Onboarding'),
           const _ResetOnboardingTile(),

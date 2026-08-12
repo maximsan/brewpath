@@ -7,6 +7,7 @@ import '../generated/schema.dart';
 import '../generated/schema_v1.dart' show DatabaseAtV1;
 import '../generated/schema_v2.dart' show DatabaseAtV2;
 import '../generated/schema_v3.dart' show DatabaseAtV3;
+import '../generated/schema_v4.dart' show DatabaseAtV4;
 
 /// Drift schema-migration harness coverage.
 ///
@@ -57,7 +58,12 @@ void main() {
 
     // AppDatabase.schemaVersion has advanced; the chained onUpgrade brings a
     // v1 file all the way up to the current version in one open.
-    await verifier.migrateAndValidate(db, 3);
+    //
+    // Targeting `db.schemaVersion` rather than a literal keeps this honest
+    // across future bumps: it asserts the migrated database matches the
+    // committed snapshot for whatever the current version is, and stops the
+    // test going stale the way a hardcoded 3 just did.
+    await verifier.migrateAndValidate(db, db.schemaVersion);
 
     await db.close();
   });
@@ -89,14 +95,54 @@ void main() {
     },
   );
 
-  test('AppDatabase migrates a v2 database to the v3 schema', () async {
+  test('AppDatabase migrates a v2 database to the current schema', () async {
     final connection = await verifier.startAt(2);
     final db = AppDatabase(connection);
 
-    await verifier.migrateAndValidate(db, 3);
+    await verifier.migrateAndValidate(db, db.schemaVersion);
 
     await db.close();
   });
+
+  test('schema v4 database has theme_mode on user_settings', () async {
+    final connection = await verifier.startAt(4);
+    final db = DatabaseAtV4(connection);
+    await db.customSelect('SELECT 1').get();
+
+    expect(db.schemaVersion, 4);
+
+    final columns = await db
+        .customSelect('PRAGMA table_info(user_settings)')
+        .get();
+    expect(
+      columns.map((r) => r.read<String>('name')),
+      contains('theme_mode'),
+    );
+
+    await db.close();
+  });
+
+  test(
+    'AppDatabase migrates a v3 database to v4 and defaults to dark',
+    () async {
+      final connection = await verifier.startAt(3);
+      final db = AppDatabase(connection);
+
+      await verifier.migrateAndValidate(db, db.schemaVersion);
+
+      // The column is added with a default rather than as nullable, so a row
+      // written before v4 reads back as the default mood instead of null.
+      final rows = await db
+          .customSelect(
+            "SELECT dflt_value FROM pragma_table_info('user_settings') "
+            "WHERE name = 'theme_mode'",
+          )
+          .get();
+      expect(rows.single.read<String>('dflt_value'), "'dark'");
+
+      await db.close();
+    },
+  );
 
   // Locks in the idempotency invariant that the schema enforces:
   // `progress_records.lessonId` is UNIQUE, which is what makes

@@ -9,6 +9,11 @@ analyzer:
   exclude:
     - "**/*.g.dart"
     - "**/*.freezed.dart"
+    # Drift schema snapshots, emitted by `drift_dev schema generate` and
+    # committed so migration tests can instantiate historical schemas. The
+    # current generator writes raw `TableInfo`, which trips strict-raw-types;
+    # they are build output, not code we maintain.
+    - "test/generated/**"
     # Build artifacts — SwiftPM/CocoaPods copy plugin sources into build dirs
     # at the package root (build/) and under platform dirs (e.g. ios/build/).
     - "build/**"

@@ -70,6 +70,11 @@ class UserSettings extends Table {
   /// User-selected brewer (e.g. "v60", "aeropress", "not_sure"). Nullable.
   TextColumn get onboardingBrewer => text().nullable()();
 
+  /// Appearance preference — `system` / `light` / `dark`, persisted as the
+  /// enum's storage string. Device-local: never written to the sync snapshot,
+  /// because two devices the same person owns may legitimately differ.
+  TextColumn get themeMode => text().withDefault(const Constant('dark'))();
+
   @override
   Set<Column> get primaryKey => {id};
 }
@@ -89,7 +94,14 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor])
     : super(executor ?? driftDatabase(name: 'coffee_quest'));
 
-  static const int _schemaVersion = 3;
+  /// Schema version that added the onboarding columns to `user_settings`.
+  static const int _onboardingColumnsVersion = 3;
+
+  /// Schema version that added the appearance preference.
+  static const int _themeModeVersion = 4;
+
+  /// The current version is whichever migration landed last.
+  static const int _schemaVersion = _themeModeVersion;
 
   @override
   int get schemaVersion => _schemaVersion;
@@ -106,10 +118,23 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(moduleProgressRecords);
       }
       // v2 → v3: onboarding gate + selection columns on user_settings.
-      if (from < _schemaVersion) {
+      // v2 → v3: onboarding columns on user_settings.
+      //
+      // Guarded by the version these columns landed in, not `_schemaVersion`.
+      // It used to read `from < _schemaVersion`, which was correct only while
+      // 3 was the newest version — bumping the constant would have re-run
+      // these adds for a device already at v3 and failed on the duplicate
+      // column. Each step now names its own version, so the next bump is inert
+      // here.
+      if (from < _onboardingColumnsVersion) {
         await m.addColumn(userSettings, userSettings.onboardingCompleted);
         await m.addColumn(userSettings, userSettings.onboardingGoal);
         await m.addColumn(userSettings, userSettings.onboardingBrewer);
+      }
+
+      // v3 → v4: the appearance preference.
+      if (from < _themeModeVersion) {
+        await m.addColumn(userSettings, userSettings.themeMode);
       }
     },
   );

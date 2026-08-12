@@ -908,6 +908,18 @@ class $UserSettingsTable extends UserSettings
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _themeModeMeta = const VerificationMeta(
+    'themeMode',
+  );
+  @override
+  late final GeneratedColumn<String> themeMode = GeneratedColumn<String>(
+    'theme_mode',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('dark'),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -919,6 +931,7 @@ class $UserSettingsTable extends UserSettings
     onboardingCompleted,
     onboardingGoal,
     onboardingBrewer,
+    themeMode,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1009,6 +1022,12 @@ class $UserSettingsTable extends UserSettings
         ),
       );
     }
+    if (data.containsKey('theme_mode')) {
+      context.handle(
+        _themeModeMeta,
+        themeMode.isAcceptableOrUnknown(data['theme_mode']!, _themeModeMeta),
+      );
+    }
     return context;
   }
 
@@ -1054,6 +1073,10 @@ class $UserSettingsTable extends UserSettings
         DriftSqlType.string,
         data['${effectivePrefix}onboarding_brewer'],
       ),
+      themeMode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}theme_mode'],
+      )!,
     );
   }
 
@@ -1081,6 +1104,11 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
 
   /// User-selected brewer (e.g. "v60", "aeropress", "not_sure"). Nullable.
   final String? onboardingBrewer;
+
+  /// Appearance preference — `system` / `light` / `dark`, persisted as the
+  /// enum's storage string. Device-local: never written to the sync snapshot,
+  /// because two devices the same person owns may legitimately differ.
+  final String themeMode;
   const SettingsRow({
     required this.id,
     required this.hapticsEnabled,
@@ -1091,6 +1119,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     required this.onboardingCompleted,
     this.onboardingGoal,
     this.onboardingBrewer,
+    required this.themeMode,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1110,6 +1139,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     if (!nullToAbsent || onboardingBrewer != null) {
       map['onboarding_brewer'] = Variable<String>(onboardingBrewer);
     }
+    map['theme_mode'] = Variable<String>(themeMode);
     return map;
   }
 
@@ -1130,6 +1160,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
       onboardingBrewer: onboardingBrewer == null && nullToAbsent
           ? const Value.absent()
           : Value(onboardingBrewer),
+      themeMode: Value(themeMode),
     );
   }
 
@@ -1152,6 +1183,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
       ),
       onboardingGoal: serializer.fromJson<String?>(json['onboardingGoal']),
       onboardingBrewer: serializer.fromJson<String?>(json['onboardingBrewer']),
+      themeMode: serializer.fromJson<String>(json['themeMode']),
     );
   }
   @override
@@ -1167,6 +1199,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
       'onboardingCompleted': serializer.toJson<bool>(onboardingCompleted),
       'onboardingGoal': serializer.toJson<String?>(onboardingGoal),
       'onboardingBrewer': serializer.toJson<String?>(onboardingBrewer),
+      'themeMode': serializer.toJson<String>(themeMode),
     };
   }
 
@@ -1180,6 +1213,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     bool? onboardingCompleted,
     Value<String?> onboardingGoal = const Value.absent(),
     Value<String?> onboardingBrewer = const Value.absent(),
+    String? themeMode,
   }) => SettingsRow(
     id: id ?? this.id,
     hapticsEnabled: hapticsEnabled ?? this.hapticsEnabled,
@@ -1196,6 +1230,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     onboardingBrewer: onboardingBrewer.present
         ? onboardingBrewer.value
         : this.onboardingBrewer,
+    themeMode: themeMode ?? this.themeMode,
   );
   SettingsRow copyWithCompanion(UserSettingsCompanion data) {
     return SettingsRow(
@@ -1222,6 +1257,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
       onboardingBrewer: data.onboardingBrewer.present
           ? data.onboardingBrewer.value
           : this.onboardingBrewer,
+      themeMode: data.themeMode.present ? data.themeMode.value : this.themeMode,
     );
   }
 
@@ -1236,7 +1272,8 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
           ..write('lastActivityDate: $lastActivityDate, ')
           ..write('onboardingCompleted: $onboardingCompleted, ')
           ..write('onboardingGoal: $onboardingGoal, ')
-          ..write('onboardingBrewer: $onboardingBrewer')
+          ..write('onboardingBrewer: $onboardingBrewer, ')
+          ..write('themeMode: $themeMode')
           ..write(')'))
         .toString();
   }
@@ -1252,6 +1289,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     onboardingCompleted,
     onboardingGoal,
     onboardingBrewer,
+    themeMode,
   );
   @override
   bool operator ==(Object other) =>
@@ -1265,7 +1303,8 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
           other.lastActivityDate == this.lastActivityDate &&
           other.onboardingCompleted == this.onboardingCompleted &&
           other.onboardingGoal == this.onboardingGoal &&
-          other.onboardingBrewer == this.onboardingBrewer);
+          other.onboardingBrewer == this.onboardingBrewer &&
+          other.themeMode == this.themeMode);
 }
 
 class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
@@ -1278,6 +1317,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
   final Value<bool> onboardingCompleted;
   final Value<String?> onboardingGoal;
   final Value<String?> onboardingBrewer;
+  final Value<String> themeMode;
   const UserSettingsCompanion({
     this.id = const Value.absent(),
     this.hapticsEnabled = const Value.absent(),
@@ -1288,6 +1328,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     this.onboardingCompleted = const Value.absent(),
     this.onboardingGoal = const Value.absent(),
     this.onboardingBrewer = const Value.absent(),
+    this.themeMode = const Value.absent(),
   });
   UserSettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -1299,6 +1340,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     this.onboardingCompleted = const Value.absent(),
     this.onboardingGoal = const Value.absent(),
     this.onboardingBrewer = const Value.absent(),
+    this.themeMode = const Value.absent(),
   }) : hapticsEnabled = Value(hapticsEnabled),
        soundEnabled = Value(soundEnabled),
        totalXp = Value(totalXp),
@@ -1313,6 +1355,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     Expression<bool>? onboardingCompleted,
     Expression<String>? onboardingGoal,
     Expression<String>? onboardingBrewer,
+    Expression<String>? themeMode,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1325,6 +1368,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
         'onboarding_completed': onboardingCompleted,
       if (onboardingGoal != null) 'onboarding_goal': onboardingGoal,
       if (onboardingBrewer != null) 'onboarding_brewer': onboardingBrewer,
+      if (themeMode != null) 'theme_mode': themeMode,
     });
   }
 
@@ -1338,6 +1382,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     Value<bool>? onboardingCompleted,
     Value<String?>? onboardingGoal,
     Value<String?>? onboardingBrewer,
+    Value<String>? themeMode,
   }) {
     return UserSettingsCompanion(
       id: id ?? this.id,
@@ -1349,6 +1394,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
       onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
       onboardingGoal: onboardingGoal ?? this.onboardingGoal,
       onboardingBrewer: onboardingBrewer ?? this.onboardingBrewer,
+      themeMode: themeMode ?? this.themeMode,
     );
   }
 
@@ -1382,6 +1428,9 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     if (onboardingBrewer.present) {
       map['onboarding_brewer'] = Variable<String>(onboardingBrewer.value);
     }
+    if (themeMode.present) {
+      map['theme_mode'] = Variable<String>(themeMode.value);
+    }
     return map;
   }
 
@@ -1396,7 +1445,8 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
           ..write('lastActivityDate: $lastActivityDate, ')
           ..write('onboardingCompleted: $onboardingCompleted, ')
           ..write('onboardingGoal: $onboardingGoal, ')
-          ..write('onboardingBrewer: $onboardingBrewer')
+          ..write('onboardingBrewer: $onboardingBrewer, ')
+          ..write('themeMode: $themeMode')
           ..write(')'))
         .toString();
   }
@@ -2113,6 +2163,7 @@ typedef $$UserSettingsTableCreateCompanionBuilder =
       Value<bool> onboardingCompleted,
       Value<String?> onboardingGoal,
       Value<String?> onboardingBrewer,
+      Value<String> themeMode,
     });
 typedef $$UserSettingsTableUpdateCompanionBuilder =
     UserSettingsCompanion Function({
@@ -2125,6 +2176,7 @@ typedef $$UserSettingsTableUpdateCompanionBuilder =
       Value<bool> onboardingCompleted,
       Value<String?> onboardingGoal,
       Value<String?> onboardingBrewer,
+      Value<String> themeMode,
     });
 
 class $$UserSettingsTableFilterComposer
@@ -2178,6 +2230,11 @@ class $$UserSettingsTableFilterComposer
 
   ColumnFilters<String> get onboardingBrewer => $composableBuilder(
     column: $table.onboardingBrewer,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get themeMode => $composableBuilder(
+    column: $table.themeMode,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -2235,6 +2292,11 @@ class $$UserSettingsTableOrderingComposer
     column: $table.onboardingBrewer,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get themeMode => $composableBuilder(
+    column: $table.themeMode,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$UserSettingsTableAnnotationComposer
@@ -2286,6 +2348,9 @@ class $$UserSettingsTableAnnotationComposer
     column: $table.onboardingBrewer,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get themeMode =>
+      $composableBuilder(column: $table.themeMode, builder: (column) => column);
 }
 
 class $$UserSettingsTableTableManager
@@ -2328,6 +2393,7 @@ class $$UserSettingsTableTableManager
                 Value<bool> onboardingCompleted = const Value.absent(),
                 Value<String?> onboardingGoal = const Value.absent(),
                 Value<String?> onboardingBrewer = const Value.absent(),
+                Value<String> themeMode = const Value.absent(),
               }) => UserSettingsCompanion(
                 id: id,
                 hapticsEnabled: hapticsEnabled,
@@ -2338,6 +2404,7 @@ class $$UserSettingsTableTableManager
                 onboardingCompleted: onboardingCompleted,
                 onboardingGoal: onboardingGoal,
                 onboardingBrewer: onboardingBrewer,
+                themeMode: themeMode,
               ),
           createCompanionCallback:
               ({
@@ -2350,6 +2417,7 @@ class $$UserSettingsTableTableManager
                 Value<bool> onboardingCompleted = const Value.absent(),
                 Value<String?> onboardingGoal = const Value.absent(),
                 Value<String?> onboardingBrewer = const Value.absent(),
+                Value<String> themeMode = const Value.absent(),
               }) => UserSettingsCompanion.insert(
                 id: id,
                 hapticsEnabled: hapticsEnabled,
@@ -2360,6 +2428,7 @@ class $$UserSettingsTableTableManager
                 onboardingCompleted: onboardingCompleted,
                 onboardingGoal: onboardingGoal,
                 onboardingBrewer: onboardingBrewer,
+                themeMode: themeMode,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

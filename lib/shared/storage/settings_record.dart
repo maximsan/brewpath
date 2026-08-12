@@ -1,6 +1,8 @@
 // Mutable DTO — fields are self-describing.
 // ignore_for_file: public_member_api_docs
 
+import 'package:brew_path/shared/theme/app_theme_mode.dart';
+
 /// Mutable DTO for the singleton settings row. Callers (e.g.
 /// LessonCompletionService) mutate fields in place; the repository maps
 /// to/from the Drift companion.
@@ -15,6 +17,7 @@ class UserSettingsRecord {
     this.onboardingCompleted = false,
     this.onboardingGoal,
     this.onboardingBrewer,
+    this.themeMode = AppThemeMode.fallback,
   });
 
   int id;
@@ -26,4 +29,5 @@ class UserSettingsRecord {
   bool onboardingCompleted;
   String? onboardingGoal;
   String? onboardingBrewer;
+  AppThemeMode themeMode;
 }
