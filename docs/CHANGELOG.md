@@ -51,6 +51,23 @@ You can always edit this file by hand instead — the helpers just save effort.
   pinned to Dark Roast until the `light | dark | system` preference lands.
 - Fonts are bundled as real Flutter font assets under `assets/fonts/`,
   replacing the `google_fonts` package and its runtime CDN fetch.
+- Roasty became a **companion subsystem** rather than a loading-screen mascot:
+  a mood + reaction API with a speech bubble and a static (non-animating) mode,
+  speaking lines from the new `assets/content/companion_lines.json`. It now
+  turns up on lesson completion.
+- A floating **points-gain toast** that rises when points are awarded.
+- A **module-summary screen** with a module-complete moment, reached when the
+  last lesson in a module is finished.
+- A **card detail screen**, and **favourite cards** — a card can be saved and
+  read in full.
+- **`learning/`** — a hands-on, learn-by-doing Flutter course for this app: a
+  teaching contract in `README.md` and a `curriculum.md` that marks the current
+  step.
+- **The design source of truth now lives in the repo.** The React prototype is
+  tracked under `brew-path/`, and `docs/design/` is the reference that indexes
+  it — product, scope, design system, information architecture, mechanics,
+  content, components and flows — so app work can be checked against the design
+  without reading the prototype.
 
 ### Changed
 
@@ -60,6 +77,21 @@ You can always edit this file by hand instead — the helpers just save effort.
   Material widgets are styled.
 - Text styles take the ambient mood (`AppTypography.body(context.mood)`)
   instead of defaulting to hard-coded dark-roast ink.
+- **The app is BrewPath.** The Dart package is `brew_path` (was
+  `coffee_quest`), and the name is swept through code, tests, docs and the
+  release tooling.
+- **The Flutter app lives at the git root**, with no nested `coffee_quest/`
+  directory; CI runs from the root. Paths in the released sections below are
+  written against the old layout — they are left as they shipped.
+- Lint stack moved from `flutter_lints` to **`very_good_analysis` +
+  `dart_code_linter`**, with the DCL metrics (complexity, nesting, function
+  size, magic numbers) calibrated to this codebase and CI failing on warnings.
+  The existing code was remediated to satisfy them.
+- `tool/release.sh` was rewritten as **`tool/release.js`**, run with `node`.
+- The design prototype was restructured to the **30-lesson syllabus**, and the
+  `docs/design/` reference regenerated to match it.
+- Dependencies refreshed — `flutter_riverpod` 3.3.2, `riverpod_annotation`
+  4.0.3, and `riverpod_generator` off its `-dev` release onto 4.0.4.
 
 ### Fixed
 
@@ -72,6 +104,9 @@ You can always edit this file by hand instead — the helpers just save effort.
   the design bundle.
 - Hairlines that resolved to `outlineVariant` painted in full-strength ink
   rather than the `rule` token.
+- The CI format job ran `dart format` before `flutter pub get`, so it read the
+  wrong language version and failed on files that were correctly formatted. It
+  had been red on `main` for over a week.
 
 ### Removed
 
