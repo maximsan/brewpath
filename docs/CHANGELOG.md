@@ -47,8 +47,13 @@ You can always edit this file by hand instead — the helpers just save effort.
 - Two colour moods — **Cupping** (light) and **Dark Roast** (dark) — held as
   `MoodColors`, a single `ThemeExtension` carrying the design's own 13 token
   names plus the two background-derived veils. Screens read them through
-  `context.mood`. `AppTheme.cupping` exists and is tested, but the app stays
-  pinned to Dark Roast until the `light | dark | system` preference lands.
+  `context.mood`. Both moods are reachable through the appearance setting
+  below.
+- An **appearance setting** — Light / Dark / System — on Settings, persisted in
+  the settings row and defaulting to Dark. `System` follows the OS live. The
+  preference is read during bootstrap and handed to the first build, so the
+  opening frame is already in the right mood rather than flashing the wrong one
+  and correcting itself.
 - Fonts are bundled as real Flutter font assets under `assets/fonts/`,
   replacing the `google_fonts` package and its runtime CDN fetch.
 - Roasty became a **companion subsystem** rather than a loading-screen mascot:
@@ -127,6 +132,10 @@ You can always edit this file by hand instead — the helpers just save effort.
 - The CI format job ran `dart format` before `flutter pub get`, so it read the
   wrong language version and failed on files that were correctly formatted. It
   had been red on `main` for over a week.
+- A Drift migration step was guarded by `from < _schemaVersion` rather than the
+  version that introduced it, so the next schema bump would have re-run the
+  v2 → v3 column adds on a device already at v3 and failed on the duplicate
+  column. Each step now names its own version.
 
 ### Removed
 
