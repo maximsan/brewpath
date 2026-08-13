@@ -1,4 +1,4 @@
-import 'package:brew_path/core/constants/app_strings.dart';
+import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/section_header.dart';
@@ -19,7 +19,7 @@ class CardsScreen extends ConsumerWidget {
     final cards = ref.watch(cardsWithCollectionProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text(AppStrings.tabCards)),
+      appBar: AppBar(title: const Text(AppLabels.tabCards)),
       body: cards.when(
         loading: () => const LoadingIndicator(),
         error: (e, _) => ErrorView(message: '$e'),

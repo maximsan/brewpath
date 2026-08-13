@@ -1,4 +1,4 @@
-import 'package:brew_path/core/constants/app_strings.dart';
+import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_result.dart';
 import 'package:brew_path/shared/models/lesson_step_model.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -86,7 +86,7 @@ class _MultipleChoiceGameState extends State<MultipleChoiceGame> {
           FilledButton(
             onPressed: _onContinue,
             child: Text(
-              isCorrect ? AppStrings.continueLabel : AppStrings.tryAgainLabel,
+              isCorrect ? AppLabels.continueLabel : AppLabels.tryAgainLabel,
             ),
           ),
         ],
