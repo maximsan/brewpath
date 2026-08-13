@@ -44,6 +44,10 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **`AppRoutes`** — a catalog pairing each route's go_router `name` with its
+  `path` on one entry, so the two can no longer drift apart. The router builds
+  every `GoRoute` from it, replacing sixteen pairs of hardcoded string
+  literals.
 - Two colour moods — **Cupping** (light) and **Dark Roast** (dark) — held as
   `MoodColors`, a single `ThemeExtension` carrying the design's own 13 token
   names plus the two background-derived veils. Screens read them through
@@ -99,6 +103,8 @@ You can always edit this file by hand instead — the helpers just save effort.
   Typeface is a separate axis (`AppFace`), because the design sets one step in
   more than one face — and a slot inside display type can inherit the
   surrounding face instead of asserting its own.
+- `AppStrings` is now **`AppLabels`**, matching what it holds: user-facing
+  labels rather than arbitrary strings.
 - CI gained a **changelog job**: a pull request that changes `lib/`,
   `assets/content/` or `pubspec.yaml` now fails unless it adds an entry here.
   Generated Dart does not count, and the `no-changelog` label skips the check

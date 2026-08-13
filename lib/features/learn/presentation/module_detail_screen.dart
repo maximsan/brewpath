@@ -31,14 +31,20 @@ class ModuleDetailScreen extends ConsumerWidget {
           if (snap.connectionState != ConnectionState.done) {
             return const LoadingIndicator();
           }
-          if (snap.hasError) return ErrorView(message: '${snap.error}');
+
+          if (snap.hasError) {
+            return ErrorView(message: '${snap.error}');
+          }
+
           final (module, lessons) = snap.data!;
           if (module == null) {
             return const ErrorView(message: 'Module not found');
           }
+
           final completedIds =
               completed.asData?.value.map((r) => r.lessonId).toSet() ??
               const <String>{};
+
           return ListView(
             padding: const EdgeInsets.all(16),
             physics: const AlwaysScrollableScrollPhysics(),
@@ -67,13 +73,17 @@ class ModuleDetailScreen extends ConsumerWidget {
   ) async {
     final modules = await repo.getModules();
     final module = modules.where((m) => m.id == moduleId).firstOrNull;
-    if (module == null) return (null, const <LessonModel>[]);
+    if (module == null) {
+      return (null, const <LessonModel>[]);
+    }
+
     final all = await repo.getLessons();
     final byId = {for (final l in all) l.id: l};
     final lessons = [
       for (final id in module.lessonIds)
         if (byId[id] != null) byId[id]!,
     ];
+
     return (module, lessons);
   }
 }

@@ -1,4 +1,4 @@
-import 'package:brew_path/core/constants/app_strings.dart';
+import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/path/presentation/path_node_card.dart';
 import 'package:brew_path/features/path/presentation/path_node_rail.dart';
@@ -33,7 +33,7 @@ class PathModuleNodeWidget extends StatelessWidget {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(
-          const SnackBar(content: Text(AppStrings.lockedModuleMessage)),
+          const SnackBar(content: Text(AppLabels.lockedModuleMessage)),
         );
       return;
     }

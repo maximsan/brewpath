@@ -1,4 +1,4 @@
-import 'package:brew_path/core/constants/app_strings.dart';
+import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/features/companion/presentation/companion.dart';
 import 'package:brew_path/features/companion/presentation/companion_bubble.dart';
@@ -54,7 +54,7 @@ class LessonCompletionBody extends StatelessWidget {
             const SizedBox(height: 32),
             FilledButton(
               onPressed: () => _onContinue(context),
-              child: const Text(AppStrings.continueLabel),
+              child: const Text(AppLabels.continueLabel),
             ),
           ],
         ),

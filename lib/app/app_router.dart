@@ -1,5 +1,6 @@
 import 'package:brew_path/app/analytics_navigator_observer.dart';
 import 'package:brew_path/app/app_shell.dart';
+import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/cards/presentation/card_detail_screen.dart';
 import 'package:brew_path/features/cards/presentation/cards_screen.dart';
 import 'package:brew_path/features/learn/presentation/game_type_practice_screen.dart';
@@ -65,23 +66,23 @@ GoRouter appRouter(Ref ref) {
     ],
     routes: [
       GoRoute(
-        path: '/loading',
-        name: 'loading',
+        path: AppRoutes.loading.path,
+        name: AppRoutes.loading.name,
         builder: (context, state) => const LoadingScreen(),
       ),
       GoRoute(
-        path: '/welcome',
-        name: 'welcome',
+        path: AppRoutes.welcome.path,
+        name: AppRoutes.welcome.name,
         builder: (context, state) => const WelcomeScreen(),
       ),
       GoRoute(
-        path: '/onboarding/goal',
-        name: 'onboardingGoal',
+        path: AppRoutes.onboardingGoal.path,
+        name: AppRoutes.onboardingGoal.name,
         builder: (context, state) => const GoalScreen(),
       ),
       GoRoute(
-        path: '/onboarding/brewer',
-        name: 'onboardingBrewer',
+        path: AppRoutes.onboardingBrewer.path,
+        name: AppRoutes.onboardingBrewer.name,
         builder: (context, state) => const BrewerScreen(),
       ),
       StatefulShellRoute.indexedStack(
@@ -90,13 +91,13 @@ GoRouter appRouter(Ref ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/learn',
-                name: 'learn',
+                path: AppRoutes.learn.path,
+                name: AppRoutes.learn.name,
                 builder: (context, state) => const LearnScreen(),
                 routes: [
                   GoRoute(
-                    path: 'module/:moduleId',
-                    name: 'moduleDetail',
+                    path: AppRoutes.moduleDetail.path,
+                    name: AppRoutes.moduleDetail.name,
                     builder: (context, state) => ModuleDetailScreen(
                       moduleId: state.pathParameters['moduleId']!,
                     ),
@@ -104,8 +105,8 @@ GoRouter appRouter(Ref ref) {
                   // Immersive lesson flow: pushed on the root navigator so it
                   // covers the bottom-nav shell.
                   GoRoute(
-                    path: 'lesson/:lessonId',
-                    name: 'lesson',
+                    path: AppRoutes.lesson.path,
+                    name: AppRoutes.lesson.name,
                     parentNavigatorKey: _rootKey,
                     builder: (context, state) => LessonScreen(
                       lessonId: state.pathParameters['lessonId']!,
@@ -114,8 +115,8 @@ GoRouter appRouter(Ref ref) {
                     ),
                     routes: [
                       GoRoute(
-                        path: 'complete',
-                        name: 'lessonComplete',
+                        path: AppRoutes.lessonComplete.path,
+                        name: AppRoutes.lessonComplete.name,
                         parentNavigatorKey: _rootKey,
                         builder: (context, state) => LessonCompletionScreen(
                           lessonId: state.pathParameters['lessonId']!,
@@ -134,8 +135,8 @@ GoRouter appRouter(Ref ref) {
                   // Module-completion recap, pushed over the shell after the
                   // last lesson's completion screen.
                   GoRoute(
-                    path: 'module-summary/:moduleId',
-                    name: 'moduleSummary',
+                    path: AppRoutes.moduleSummary.path,
+                    name: AppRoutes.moduleSummary.name,
                     parentNavigatorKey: _rootKey,
                     builder: (context, state) => ModuleSummaryScreen(
                       moduleId: state.pathParameters['moduleId']!,
@@ -145,8 +146,8 @@ GoRouter appRouter(Ref ref) {
                   // returns to the Learn tab. Both push on the root navigator
                   // to cover the bottom-nav shell (same as lessons).
                   GoRoute(
-                    path: 'practice/lesson/:lessonId',
-                    name: 'practiceLesson',
+                    path: AppRoutes.practiceLesson.path,
+                    name: AppRoutes.practiceLesson.name,
                     parentNavigatorKey: _rootKey,
                     builder: (context, state) => LessonScreen(
                       lessonId: state.pathParameters['lessonId']!,
@@ -154,8 +155,8 @@ GoRouter appRouter(Ref ref) {
                     ),
                   ),
                   GoRoute(
-                    path: 'practice/game-type/:gameType',
-                    name: 'practiceGameType',
+                    path: AppRoutes.practiceGameType.path,
+                    name: AppRoutes.practiceGameType.name,
                     parentNavigatorKey: _rootKey,
                     builder: (context, state) => GameTypePracticeScreen(
                       gameType: state.pathParameters['gameType']!,
@@ -168,8 +169,8 @@ GoRouter appRouter(Ref ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/path',
-                name: 'path',
+                path: AppRoutes.path.path,
+                name: AppRoutes.path.name,
                 builder: (context, state) => const PathScreen(),
               ),
             ],
@@ -177,13 +178,13 @@ GoRouter appRouter(Ref ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/cards',
-                name: 'cards',
+                path: AppRoutes.cards.path,
+                name: AppRoutes.cards.name,
                 builder: (context, state) => const CardsScreen(),
                 routes: [
                   GoRoute(
-                    path: ':cardId',
-                    name: 'cardDetail',
+                    path: AppRoutes.cardDetail.path,
+                    name: AppRoutes.cardDetail.name,
                     builder: (context, state) => CardDetailScreen(
                       cardId: state.pathParameters['cardId']!,
                     ),
@@ -195,13 +196,13 @@ GoRouter appRouter(Ref ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/profile',
-                name: 'profile',
+                path: AppRoutes.profile.path,
+                name: AppRoutes.profile.name,
                 builder: (context, state) => const ProfileScreen(),
                 routes: [
                   GoRoute(
-                    path: 'settings',
-                    name: 'profileSettings',
+                    path: AppRoutes.profileSettings.path,
+                    name: AppRoutes.profileSettings.name,
                     parentNavigatorKey: _rootKey,
                     builder: (context, state) => const SettingsScreen(),
                   ),

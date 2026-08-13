@@ -10,7 +10,7 @@ part of 'theme_mode_controller.dart';
 // ignore_for_file: type=lint, type=warning
 /// The preference as it stood when the app started.
 ///
-/// Overridden in `main()` with the value [AppBootstrap.initialize] read from
+/// Overridden in `main()` with the value `AppBootstrap.initialize` read from
 /// the database — a phase `main()` already awaits before `runApp`. That is what
 /// makes the appearance **synchronous at the first frame**: the root widget
 /// reads a plain value, not an `AsyncValue`, so there is no loading state to
@@ -23,7 +23,7 @@ final initialThemeModeProvider = InitialThemeModeProvider._();
 
 /// The preference as it stood when the app started.
 ///
-/// Overridden in `main()` with the value [AppBootstrap.initialize] read from
+/// Overridden in `main()` with the value `AppBootstrap.initialize` read from
 /// the database — a phase `main()` already awaits before `runApp`. That is what
 /// makes the appearance **synchronous at the first frame**: the root widget
 /// reads a plain value, not an `AsyncValue`, so there is no loading state to
@@ -36,7 +36,7 @@ final class InitialThemeModeProvider
     with $Provider<AppThemeMode> {
   /// The preference as it stood when the app started.
   ///
-  /// Overridden in `main()` with the value [AppBootstrap.initialize] read from
+  /// Overridden in `main()` with the value `AppBootstrap.initialize` read from
   /// the database — a phase `main()` already awaits before `runApp`. That is what
   /// makes the appearance **synchronous at the first frame**: the root widget
   /// reads a plain value, not an `AsyncValue`, so there is no loading state to
