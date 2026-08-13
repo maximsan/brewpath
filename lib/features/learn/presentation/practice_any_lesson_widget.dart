@@ -1,4 +1,5 @@
 import 'package:brew_path/core/utils/module_icons.dart';
+import 'package:brew_path/core/widgets/icon_badge.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -103,19 +104,11 @@ class _LessonRow extends StatelessWidget {
     final theme = Theme.of(context);
     final mood = context.mood;
     return ListTile(
-      leading: Container(
-        width: _rowBadgeSize,
-        height: _rowBadgeSize,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: mood.accent,
-          borderRadius: BorderRadius.circular(_rowBadgeRadius),
-        ),
-        child: Icon(
-          moduleIcon(entry.module.iconName),
-          size: _iconSm,
-          color: mood.accentInk,
-        ),
+      leading: IconBadge.rounded(
+        icon: moduleIcon(entry.module.iconName),
+        size: _rowBadgeSize,
+        radius: _rowBadgeRadius,
+        iconSize: _iconSm,
       ),
       title: Text(entry.lesson.title),
       subtitle: Text(

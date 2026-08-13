@@ -1,5 +1,6 @@
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
+import 'package:brew_path/core/widgets/icon_badge.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/features/companion/application/companion_providers.dart';
 import 'package:brew_path/features/companion/domain/companion_reaction.dart';
@@ -137,26 +138,16 @@ class _EarnedCards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mood = context.mood;
     return Wrap(
       alignment: WrapAlignment.center,
       spacing: AppSpacing.sm,
       runSpacing: AppSpacing.sm,
       children: [
         for (final card in cards)
-          Container(
-            width: _badgeSize,
-            height: _badgeSize,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: mood.accent,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              moduleIcon(card.iconName),
-              color: mood.accentInk,
-              semanticLabel: card.title,
-            ),
+          IconBadge.circle(
+            icon: moduleIcon(card.iconName),
+            size: _badgeSize,
+            semanticLabel: card.title,
           ),
       ],
     );

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:brew_path/core/widgets/icon_badge.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -57,21 +58,15 @@ class PremiumCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              Container(
-                width: _iconBadgeSize,
-                height: _iconBadgeSize,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: mood.accentInk.withValues(
-                    alpha: _iconBadgeAlpha,
-                  ),
-                  borderRadius: BorderRadius.circular(_cornerRadius),
-                ),
-                child: Icon(
-                  Icons.workspace_premium,
-                  size: _iconSize,
-                  color: mood.accentInk,
-                ),
+              IconBadge.rounded(
+                icon: Icons.workspace_premium,
+                size: _iconBadgeSize,
+                radius: _cornerRadius,
+                iconSize: _iconSize,
+                // Sits on the accent-filled premium card, so the well is a
+                // wash of the card's own ink rather than another accent fill.
+                background: mood.accentInk.withValues(alpha: _iconBadgeAlpha),
+                foreground: mood.accentInk,
               ),
             ],
           ),

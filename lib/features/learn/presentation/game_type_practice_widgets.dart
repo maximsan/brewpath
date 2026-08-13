@@ -1,3 +1,4 @@
+import 'package:brew_path/core/widgets/icon_badge.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -79,19 +80,10 @@ class GameTypeSummary extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: _badgeSize,
-              height: _badgeSize,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: mood.accent,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.fitness_center,
-                size: _iconSize,
-                color: mood.accentInk,
-              ),
+            const IconBadge.circle(
+              icon: Icons.fitness_center,
+              size: _badgeSize,
+              iconSize: _iconSize,
             ),
             const SizedBox(height: 20),
             Text(
