@@ -12,4 +12,9 @@ abstract class AppLabels {
       'Complete the previous module to unlock this one.';
   static const continueLabel = 'Continue';
   static const tryAgainLabel = 'Try Again';
+
+  /// Announced for a finished module. The design signals completion by
+  /// *removing* the trailing chevron and the lesson-count line, which leaves a
+  /// screen reader nothing to read — so the state is carried here instead.
+  static String moduleCompleteSemantics(String title) => '$title, complete';
 }

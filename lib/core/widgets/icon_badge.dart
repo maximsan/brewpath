@@ -10,11 +10,13 @@ import 'package:flutter/material.dart';
 /// almost every badge wants; pass [background] and [foreground] for the few
 /// that signal a state instead (an uncollected card, for example).
 ///
-/// **This is not the badge for progression state.** The progression
-/// indicators — module rows and lesson nodes — still hand-roll their own
-/// fills, and the design has them shedding those: a bare glyph for modules, a
-/// mastery gauge for lessons. Adopting this widget there would make the fill
-/// look deliberate right before it is meant to go away.
+/// **This is not the badge for progression state.** The design has the
+/// progression indicators shedding their fills entirely: module rows became a
+/// bare glyph (`ModuleGlyph`), and lesson nodes are to become a mastery gauge —
+/// a ring filled to the lesson's best-score ratio. The two lesson sites
+/// (`_LessonBadge`, `_NodeCircle`) still hand-roll a fill only because that
+/// gauge is blocked on the schema v4 score change; adopting this widget there
+/// would make the fill look deliberate right before it is meant to go away.
 ///
 /// Sizing is per call site rather than a shared scale, because the design has
 /// no badge ladder to draw one from. Most sites happen to set [iconSize] to

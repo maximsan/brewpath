@@ -73,6 +73,12 @@ class _Connector extends StatelessWidget {
 
 /// The node marker: filled when complete, outlined when current/available,
 /// muted with a lock when locked.
+///
+/// **Interim.** The design draws this as a mastery gauge — a ring on the page
+/// canvas filled to the best-score ratio — rather than a filled state chip.
+/// Building it needs the score stored as `{correct, total}` rather than today's
+/// single `bestScore` int, which lands with the schema v4 change. Until then
+/// the node keeps the fill/outline/lock triple.
 class _NodeCircle extends StatelessWidget {
   const _NodeCircle({required this.item});
 

@@ -1,5 +1,7 @@
-import 'package:brew_path/core/utils/module_icons.dart';
+import 'package:brew_path/core/constants/app_labels.dart';
+import 'package:brew_path/core/widgets/module_glyph.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
+import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -15,9 +17,7 @@ class PathNodeCard extends StatelessWidget {
   final VoidCallback onTap;
 
   static const double _cardRadius = 12;
-  static const double _badgeSize = 40;
-  static const double _badgeRadius = 10;
-  static const double _iconSize = 22;
+  static const double _titleGap = 6;
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +25,7 @@ class PathNodeCard extends StatelessWidget {
     final mood = context.mood;
     final module = item.module;
     final locked = item.isLocked;
+    final complete = item.isComplete;
 
     return Card(
       margin: EdgeInsets.zero,
@@ -35,21 +36,8 @@ class PathNodeCard extends StatelessWidget {
           padding: const EdgeInsets.all(14),
           child: Row(
             children: [
-              Container(
-                width: _badgeSize,
-                height: _badgeSize,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: locked ? mood.surface2 : mood.accent,
-                  borderRadius: BorderRadius.circular(_badgeRadius),
-                ),
-                child: Icon(
-                  locked ? Icons.lock_outline : moduleIcon(module.iconName),
-                  size: _iconSize,
-                  color: locked ? mood.inkMute : mood.accentInk,
-                ),
-              ),
-              const SizedBox(width: 12),
+              ModuleGlyph(iconName: module.iconName, locked: locked),
+              const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -57,21 +45,28 @@ class PathNodeCard extends StatelessWidget {
                   children: [
                     Text(
                       module.title,
+                      semanticsLabel: complete
+                          ? AppLabels.moduleCompleteSemantics(module.title)
+                          : null,
                       style: theme.textTheme.titleSmall?.copyWith(
                         color: locked ? mood.inkMute : mood.ink,
                       ),
                     ),
-                    const SizedBox(height: 6),
-                    _NodeStatus(item: item),
+                    // A finished module goes quiet rather than lighting up: it
+                    // drops both its status line and its trailing chevron,
+                    // which is the design's only completion signal here.
+                    if (!complete) ...[
+                      const SizedBox(height: _titleGap),
+                      _NodeStatus(item: item),
+                    ],
                   ],
                 ),
               ),
-              if (!locked) ...[
-                const SizedBox(width: 8),
-                Icon(
-                  item.isComplete ? Icons.check_circle : Icons.chevron_right,
-                  color: item.isComplete ? mood.accent : mood.inkMute,
-                ),
+              // The rail beside this card already marks a locked module, so the
+              // trailing slot stays empty there rather than doubling the lock.
+              if (!locked && !complete) ...[
+                const SizedBox(width: AppSpacing.xs),
+                Icon(Icons.chevron_right, color: mood.inkMute),
               ],
             ],
           ),
@@ -81,8 +76,9 @@ class PathNodeCard extends StatelessWidget {
   }
 }
 
-/// Progress line under the module title: a `Locked` hint, a `Complete`
-/// label, or a `done / total` count above a slim progress bar.
+/// Progress line under the module title: a `Locked` hint, or a `done / total`
+/// count above a slim progress bar. A complete module has no status line at
+/// all, so this is never built for one.
 class _NodeStatus extends StatelessWidget {
   const _NodeStatus({required this.item});
 
@@ -90,6 +86,7 @@ class _NodeStatus extends StatelessWidget {
 
   static const double _barHeight = 5;
   static const double _barRadius = 3;
+  static const double _labelGap = 6;
 
   @override
   Widget build(BuildContext context) {
@@ -102,9 +99,6 @@ class _NodeStatus extends StatelessWidget {
     if (item.isLocked) {
       return Text('Locked', style: mutedText);
     }
-    if (item.isComplete) {
-      return Text('Complete', style: mutedText);
-    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,7 +108,7 @@ class _NodeStatus extends StatelessWidget {
           '${item.completedCount} / ${item.totalCount} lessons',
           style: mutedText,
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: _labelGap),
         LinearProgressIndicator(
           value: item.progress,
           minHeight: _barHeight,

@@ -1,6 +1,7 @@
 import 'package:brew_path/core/constants/app_labels.dart';
-import 'package:brew_path/core/utils/module_icons.dart';
+import 'package:brew_path/core/widgets/module_glyph.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
+import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -46,11 +47,8 @@ class ModuleCardWidget extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              _ModuleBadge(
-                icon: locked ? Icons.lock_outline : moduleIcon(module.iconName),
-                locked: locked,
-              ),
-              const SizedBox(width: 16),
+              ModuleGlyph(iconName: module.iconName, locked: locked),
+              const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,20 +56,28 @@ class ModuleCardWidget extends StatelessWidget {
                   children: [
                     Text(
                       module.title,
+                      semanticsLabel: complete
+                          ? AppLabels.moduleCompleteSemantics(module.title)
+                          : null,
                       style: theme.textTheme.titleMedium?.copyWith(
                         color: locked ? mood.inkMute : mood.ink,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    _ModuleStatus(item: item),
+                    // A finished module goes quiet rather than lighting up: it
+                    // drops both its status line and its trailing mark, which
+                    // is the design's only completion signal here.
+                    if (!complete) ...[
+                      const SizedBox(height: AppSpacing.xs),
+                      _ModuleStatus(item: item),
+                    ],
                   ],
                 ),
               ),
-              if (!locked) ...[
-                const SizedBox(width: 8),
+              if (!complete) ...[
+                const SizedBox(width: AppSpacing.xs),
                 Icon(
-                  complete ? Icons.check_circle : Icons.chevron_right,
-                  color: complete ? mood.accent : mood.inkMute,
+                  locked ? Icons.lock_outline : Icons.chevron_right,
+                  color: mood.inkMute,
                 ),
               ],
             ],
@@ -82,39 +88,9 @@ class ModuleCardWidget extends StatelessWidget {
   }
 }
 
-/// Rounded leading badge whose color signals the module state: muted when
-/// locked, accent-filled otherwise. Complete and in-progress share the fill —
-/// the design has no soft accent tone to separate them with.
-class _ModuleBadge extends StatelessWidget {
-  const _ModuleBadge({required this.icon, required this.locked});
-
-  final IconData icon;
-  final bool locked;
-
-  static const double _size = 48;
-  static const double _radius = 12;
-
-  @override
-  Widget build(BuildContext context) {
-    final mood = context.mood;
-    final background = locked ? mood.surface2 : mood.accent;
-    final foreground = locked ? mood.inkMute : mood.accentInk;
-
-    return Container(
-      width: _size,
-      height: _size,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(_radius),
-      ),
-      child: Icon(icon, color: foreground),
-    );
-  }
-}
-
-/// Secondary line under the module title: a `Locked` hint, a completion line,
-/// or a `done / total` count above a rounded progress bar.
+/// Secondary line under the module title: a `Locked` hint, or a `done / total`
+/// count above a rounded progress bar. A complete module has no status line at
+/// all, so this is never built for one.
 class _ModuleStatus extends StatelessWidget {
   const _ModuleStatus({required this.item});
 
@@ -122,6 +98,7 @@ class _ModuleStatus extends StatelessWidget {
 
   static const double _barHeight = 6;
   static const double _barRadius = 3;
+  static const double _labelGap = 6;
 
   @override
   Widget build(BuildContext context) {
@@ -135,16 +112,15 @@ class _ModuleStatus extends StatelessWidget {
       return Text('Locked', style: mutedText);
     }
 
-    final label = item.isComplete
-        ? 'All ${item.totalCount} lessons complete'
-        : '${item.completedCount} / ${item.totalCount} lessons';
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(label, style: mutedText),
-        const SizedBox(height: 6),
+        Text(
+          '${item.completedCount} / ${item.totalCount} lessons',
+          style: mutedText,
+        ),
+        const SizedBox(height: _labelGap),
         LinearProgressIndicator(
           value: item.progress,
           minHeight: _barHeight,
