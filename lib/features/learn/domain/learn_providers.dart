@@ -32,8 +32,18 @@ class ModuleWithProgress {
   /// The first module (no `unlockRequirement`) is always unlocked.
   final bool isLocked;
 
-  /// Whether every lesson in the module is complete.
-  bool get isComplete => totalCount > 0 && completedCount >= totalCount;
+  /// Whether the module is finished — every lesson complete **and** the module
+  /// reachable.
+  ///
+  /// A locked module never counts as complete, however its lesson tallies read.
+  /// The two are independent: a content update that adds a lesson to a
+  /// prerequisite re-locks this module without touching its own progress, and
+  /// the design guards the same way (`!locked && lessons.every(...)` in
+  /// `brew-path/screens.jsx`). Without the guard the progression indicators
+  /// signal completion by going quiet, so such a module would render with no
+  /// lock, no status line and no chevron at all.
+  bool get isComplete =>
+      !isLocked && totalCount > 0 && completedCount >= totalCount;
 
   /// Completion fraction in the range 0..1.
   double get progress => totalCount == 0 ? 0 : completedCount / totalCount;
