@@ -1,3 +1,4 @@
+import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/streak_service.dart';
 import 'package:brew_path/features/progress/domain/xp_service.dart';
 import 'package:brew_path/services/analytics/analytics_provider.dart';
@@ -42,12 +43,12 @@ class LessonCompletionResult {
 class LessonReviewResult {
   /// Creates a [LessonReviewResult].
   const LessonReviewResult({
-    required this.bestScore,
+    required this.mastery,
     required this.practiceXpAwarded,
   });
 
-  /// The lesson's best first-try accuracy after this review (0–100).
-  final int bestScore;
+  /// The lesson's best graded result after this review.
+  final MasteryResult mastery;
 
   /// Whether practice XP was granted (false when already practiced today).
   final bool practiceXpAwarded;
@@ -94,12 +95,12 @@ class LessonCompletionService {
   /// Streak calculations.
   final StreakService streakService;
 
-  /// First completion of [lesson]. [score] is the run's first-try accuracy
-  /// (0–100). Awards full lesson XP, the card, streak, and the module bonus —
-  /// each exactly once.
+  /// First completion of [lesson]. [mastery] is the run's graded
+  /// `{correct, total}` result. Awards full lesson XP, the card, streak, and
+  /// the module bonus — each exactly once.
   Future<LessonCompletionResult> completeLesson(
     LessonModel lesson, {
-    required int score,
+    required MasteryResult mastery,
   }) async {
     final existing = await progressRepository.getByLessonId(lesson.id);
     if (existing != null) {
@@ -115,7 +116,7 @@ class LessonCompletionService {
     await progressRepository.saveCompletion(
       lessonId: lesson.id,
       xpEarned: xp,
-      score: score,
+      mastery: mastery,
     );
     await settingsRepository.addXp(xp);
     await analyticsService.logEvent(
@@ -159,21 +160,25 @@ class LessonCompletionService {
 
   /// Re-runs a completed [lesson] for practice. Never re-awards full lesson or
   /// module XP, never collects cards, never touches completion/streak. Updates
-  /// the stored best score upward only, and grants [XpService.practiceXp] at
-  /// most once per lesson per calendar day. [now] is injectable for tests.
+  /// the stored mastery upward only, and grants [XpService.practiceXp] at most
+  /// once per lesson per calendar day. [now] is injectable for tests.
   Future<LessonReviewResult> reviewLesson(
     LessonModel lesson, {
-    required int score,
+    required MasteryResult mastery,
     DateTime? now,
   }) async {
     final record = await progressRepository.getByLessonId(lesson.id);
     if (record == null) {
       // Defensive: review is only ever offered for completed lessons.
-      return const LessonReviewResult(bestScore: 0, practiceXpAwarded: false);
+      return const LessonReviewResult(
+        mastery: MasteryResult.unscored,
+        practiceXpAwarded: false,
+      );
     }
 
     final today = _dateOnly(now ?? DateTime.now());
-    if (score > record.bestScore) record.bestScore = score;
+    // Never downgrade: band rank first, ratio only as a tiebreak.
+    record.mastery = MasteryResult.best(record.mastery, mastery);
 
     var practiceXpAwarded = false;
     final last = record.lastPracticeXpDate;
@@ -194,12 +199,13 @@ class LessonCompletionService {
       parameters: {
         'lesson_id': lesson.id,
         'module_id': lesson.moduleId,
-        'score': score,
+        'correct': mastery.correct,
+        'total': mastery.total,
       },
     );
 
     return LessonReviewResult(
-      bestScore: record.bestScore,
+      mastery: record.mastery,
       practiceXpAwarded: practiceXpAwarded,
     );
   }

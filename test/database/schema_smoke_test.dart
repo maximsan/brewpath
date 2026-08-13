@@ -1,4 +1,5 @@
 import 'package:brew_path/shared/storage/app_database.dart';
+import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:drift_dev/api/migrations_native.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,6 +9,7 @@ import '../generated/schema_v1.dart' show DatabaseAtV1;
 import '../generated/schema_v2.dart' show DatabaseAtV2;
 import '../generated/schema_v3.dart' show DatabaseAtV3;
 import '../generated/schema_v4.dart' show DatabaseAtV4;
+import '../generated/schema_v5.dart' show DatabaseAtV5;
 
 /// Drift schema-migration harness coverage.
 ///
@@ -178,5 +180,64 @@ void main() {
 
     final rows = await db.select(db.progressRecords).get();
     expect(rows.length, 1, reason: 'duplicate must not have been written');
+  });
+
+  test(
+    'schema v5 database replaces best_score with the mastery pair',
+    () async {
+      final connection = await verifier.startAt(5);
+      final db = DatabaseAtV5(connection);
+      final cols = await db
+          .customSelect('PRAGMA table_info(progress_records)')
+          .get();
+      final names = cols.map((r) => r.read<String>('name')).toSet();
+
+      expect(names, containsAll(<String>['correct_count', 'graded_total']));
+      expect(names, isNot(contains('best_score')));
+
+      await db.close();
+    },
+  );
+
+  test('a v4 row carrying a best_score migrates to an unscored pair', () async {
+    // The old percentage is deliberately not converted: it measured first-try
+    // accuracy over all steps with unlimited retries, where grading is one-shot
+    // over graded cards. A legacy row therefore lands on {0, 0} and reads as
+    // unscored — exactly the neutral empty node the design draws for a lesson
+    // finished without a stored score, rather than a fabricated fill.
+    await verifier.testWithDataIntegrity(
+      oldVersion: 4,
+      newVersion: 5,
+      createOld: DatabaseAtV4.new,
+      createNew: DatabaseAtV5.new,
+      openTestedDatabase: AppDatabase.new,
+      createItems: (batch, oldDb) => batch.insert(
+        oldDb.progressRecords,
+        RawValuesInsertable<dynamic>({
+          'lesson_id': const Variable<String>('lesson_legacy'),
+          'is_completed': const Variable<bool>(true),
+          'xp_earned': const Variable<int>(50),
+          'completed_at': Variable<DateTime>(DateTime(2026)),
+          'full_xp_awarded': const Variable<bool>(true),
+          'best_score': const Variable<int>(80),
+        }),
+      ),
+      validateItems: (newDb) async {
+        // The generated snapshot classes cannot map rows onto data classes
+        // ("TableInfo.map in schema verification code"), so read raw columns.
+        final rows = await newDb
+            .customSelect(
+              'SELECT correct_count, graded_total, xp_earned '
+              'FROM progress_records',
+            )
+            .get();
+
+        expect(rows, hasLength(1));
+        expect(rows.single.read<int>('correct_count'), 0);
+        expect(rows.single.read<int>('graded_total'), 0);
+        // The rest of the row survives the table rebuild untouched.
+        expect(rows.single.read<int>('xp_earned'), 50);
+      },
+    );
   });
 }

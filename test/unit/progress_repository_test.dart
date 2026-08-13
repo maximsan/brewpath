@@ -1,3 +1,4 @@
+import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/repositories/card_repository.dart';
 import 'package:brew_path/shared/repositories/module_progress_repository.dart';
 import 'package:brew_path/shared/repositories/progress_repository.dart';
@@ -30,28 +31,44 @@ void main() {
         await repo.saveCompletion(
           lessonId: 'lesson_a',
           xpEarned: 10,
-          score: 80,
+          mastery: const MasteryResult(correct: 4, total: 5),
         );
         final record = await repo.getByLessonId('lesson_a');
         expect(record, isNotNull);
         expect(record!.isCompleted, isTrue);
         expect(record.xpEarned, 10);
         expect(record.fullXpAwarded, isTrue);
-        expect(record.bestScore, 80);
+        expect(record.mastery, const MasteryResult(correct: 4, total: 5));
         expect(record.lastPracticeXpDate, isNull);
       },
     );
 
     test('saveCompletion is idempotent', () async {
-      await repo.saveCompletion(lessonId: 'lesson_a', xpEarned: 10, score: 80);
-      await repo.saveCompletion(lessonId: 'lesson_a', xpEarned: 10, score: 80);
+      await repo.saveCompletion(
+        lessonId: 'lesson_a',
+        xpEarned: 10,
+        mastery: const MasteryResult(correct: 4, total: 5),
+      );
+      await repo.saveCompletion(
+        lessonId: 'lesson_a',
+        xpEarned: 10,
+        mastery: const MasteryResult(correct: 4, total: 5),
+      );
       final all = await repo.getAllCompleted();
       expect(all.length, 1);
     });
 
     test('getAllCompleted returns only completed records', () async {
-      await repo.saveCompletion(lessonId: 'lesson_a', xpEarned: 10, score: 80);
-      await repo.saveCompletion(lessonId: 'lesson_b', xpEarned: 20, score: 90);
+      await repo.saveCompletion(
+        lessonId: 'lesson_a',
+        xpEarned: 10,
+        mastery: const MasteryResult(correct: 4, total: 5),
+      );
+      await repo.saveCompletion(
+        lessonId: 'lesson_b',
+        xpEarned: 20,
+        mastery: const MasteryResult(correct: 9, total: 10),
+      );
       final all = await repo.getAllCompleted();
       expect(all.length, 2);
       expect(all.every((r) => r.isCompleted), isTrue);
@@ -63,17 +80,17 @@ void main() {
         await repo.saveCompletion(
           lessonId: 'lesson_a',
           xpEarned: 10,
-          score: 50,
+          mastery: const MasteryResult(correct: 2, total: 5),
         );
         final record = (await repo.getByLessonId('lesson_a'))!;
         final completedAt = record.completedAt;
 
-        record.bestScore = 90;
+        record.mastery = const MasteryResult(correct: 9, total: 10);
         record.lastPracticeXpDate = DateTime(2026, 5, 22);
         await repo.saveProgress(record);
 
         final updated = (await repo.getByLessonId('lesson_a'))!;
-        expect(updated.bestScore, 90);
+        expect(updated.mastery, const MasteryResult(correct: 9, total: 10));
         expect(updated.lastPracticeXpDate, DateTime(2026, 5, 22));
         expect(updated.isCompleted, isTrue);
         expect(updated.xpEarned, 10);
@@ -82,8 +99,16 @@ void main() {
     );
 
     test('deleteAll wipes every completion record', () async {
-      await repo.saveCompletion(lessonId: 'lesson_a', xpEarned: 10, score: 80);
-      await repo.saveCompletion(lessonId: 'lesson_b', xpEarned: 20, score: 60);
+      await repo.saveCompletion(
+        lessonId: 'lesson_a',
+        xpEarned: 10,
+        mastery: const MasteryResult(correct: 4, total: 5),
+      );
+      await repo.saveCompletion(
+        lessonId: 'lesson_b',
+        xpEarned: 20,
+        mastery: const MasteryResult(correct: 3, total: 5),
+      );
       expect((await repo.getAllCompleted()).length, 2);
 
       await repo.deleteAll();

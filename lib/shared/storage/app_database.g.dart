@@ -85,12 +85,24 @@ class $ProgressRecordsTable extends ProgressRecords
     ),
     defaultValue: const Constant(true),
   );
-  static const VerificationMeta _bestScoreMeta = const VerificationMeta(
-    'bestScore',
+  static const VerificationMeta _correctCountMeta = const VerificationMeta(
+    'correctCount',
   );
   @override
-  late final GeneratedColumn<int> bestScore = GeneratedColumn<int>(
-    'best_score',
+  late final GeneratedColumn<int> correctCount = GeneratedColumn<int>(
+    'correct_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _gradedTotalMeta = const VerificationMeta(
+    'gradedTotal',
+  );
+  @override
+  late final GeneratedColumn<int> gradedTotal = GeneratedColumn<int>(
+    'graded_total',
     aliasedName,
     false,
     type: DriftSqlType.int,
@@ -116,7 +128,8 @@ class $ProgressRecordsTable extends ProgressRecords
     xpEarned,
     completedAt,
     fullXpAwarded,
-    bestScore,
+    correctCount,
+    gradedTotal,
     lastPracticeXpDate,
   ];
   @override
@@ -181,10 +194,22 @@ class $ProgressRecordsTable extends ProgressRecords
         ),
       );
     }
-    if (data.containsKey('best_score')) {
+    if (data.containsKey('correct_count')) {
       context.handle(
-        _bestScoreMeta,
-        bestScore.isAcceptableOrUnknown(data['best_score']!, _bestScoreMeta),
+        _correctCountMeta,
+        correctCount.isAcceptableOrUnknown(
+          data['correct_count']!,
+          _correctCountMeta,
+        ),
+      );
+    }
+    if (data.containsKey('graded_total')) {
+      context.handle(
+        _gradedTotalMeta,
+        gradedTotal.isAcceptableOrUnknown(
+          data['graded_total']!,
+          _gradedTotalMeta,
+        ),
       );
     }
     if (data.containsKey('last_practice_xp_date')) {
@@ -229,9 +254,13 @@ class $ProgressRecordsTable extends ProgressRecords
         DriftSqlType.bool,
         data['${effectivePrefix}full_xp_awarded'],
       )!,
-      bestScore: attachedDatabase.typeMapping.read(
+      correctCount: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
-        data['${effectivePrefix}best_score'],
+        data['${effectivePrefix}correct_count'],
+      )!,
+      gradedTotal: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}graded_total'],
       )!,
       lastPracticeXpDate: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
@@ -258,8 +287,17 @@ class ProgressRow extends DataClass implements Insertable<ProgressRow> {
   /// completion) keep their already-earned status.
   final bool fullXpAwarded;
 
-  /// Best first-try accuracy across all runs, as an integer percentage 0–100.
-  final int bestScore;
+  /// Graded cards answered right in the lesson's best run.
+  ///
+  /// Stored as the pair `correctCount` / `gradedTotal` rather than a
+  /// percentage: the mastery band derives from the wrong-answer count
+  /// (`gradedTotal - correctCount`) and the node gauge fills to the ratio, and
+  /// neither survives being flattened into one number. A row with
+  /// `gradedTotal == 0` holds no score and reads as deliberately neutral.
+  final int correctCount;
+
+  /// Graded cards in the lesson's best run; `0` means unscored.
+  final int gradedTotal;
 
   /// Calendar day practice XP was last awarded for this lesson during review.
   final DateTime? lastPracticeXpDate;
@@ -270,7 +308,8 @@ class ProgressRow extends DataClass implements Insertable<ProgressRow> {
     required this.xpEarned,
     required this.completedAt,
     required this.fullXpAwarded,
-    required this.bestScore,
+    required this.correctCount,
+    required this.gradedTotal,
     this.lastPracticeXpDate,
   });
   @override
@@ -282,7 +321,8 @@ class ProgressRow extends DataClass implements Insertable<ProgressRow> {
     map['xp_earned'] = Variable<int>(xpEarned);
     map['completed_at'] = Variable<DateTime>(completedAt);
     map['full_xp_awarded'] = Variable<bool>(fullXpAwarded);
-    map['best_score'] = Variable<int>(bestScore);
+    map['correct_count'] = Variable<int>(correctCount);
+    map['graded_total'] = Variable<int>(gradedTotal);
     if (!nullToAbsent || lastPracticeXpDate != null) {
       map['last_practice_xp_date'] = Variable<DateTime>(lastPracticeXpDate);
     }
@@ -297,7 +337,8 @@ class ProgressRow extends DataClass implements Insertable<ProgressRow> {
       xpEarned: Value(xpEarned),
       completedAt: Value(completedAt),
       fullXpAwarded: Value(fullXpAwarded),
-      bestScore: Value(bestScore),
+      correctCount: Value(correctCount),
+      gradedTotal: Value(gradedTotal),
       lastPracticeXpDate: lastPracticeXpDate == null && nullToAbsent
           ? const Value.absent()
           : Value(lastPracticeXpDate),
@@ -316,7 +357,8 @@ class ProgressRow extends DataClass implements Insertable<ProgressRow> {
       xpEarned: serializer.fromJson<int>(json['xpEarned']),
       completedAt: serializer.fromJson<DateTime>(json['completedAt']),
       fullXpAwarded: serializer.fromJson<bool>(json['fullXpAwarded']),
-      bestScore: serializer.fromJson<int>(json['bestScore']),
+      correctCount: serializer.fromJson<int>(json['correctCount']),
+      gradedTotal: serializer.fromJson<int>(json['gradedTotal']),
       lastPracticeXpDate: serializer.fromJson<DateTime?>(
         json['lastPracticeXpDate'],
       ),
@@ -332,7 +374,8 @@ class ProgressRow extends DataClass implements Insertable<ProgressRow> {
       'xpEarned': serializer.toJson<int>(xpEarned),
       'completedAt': serializer.toJson<DateTime>(completedAt),
       'fullXpAwarded': serializer.toJson<bool>(fullXpAwarded),
-      'bestScore': serializer.toJson<int>(bestScore),
+      'correctCount': serializer.toJson<int>(correctCount),
+      'gradedTotal': serializer.toJson<int>(gradedTotal),
       'lastPracticeXpDate': serializer.toJson<DateTime?>(lastPracticeXpDate),
     };
   }
@@ -344,7 +387,8 @@ class ProgressRow extends DataClass implements Insertable<ProgressRow> {
     int? xpEarned,
     DateTime? completedAt,
     bool? fullXpAwarded,
-    int? bestScore,
+    int? correctCount,
+    int? gradedTotal,
     Value<DateTime?> lastPracticeXpDate = const Value.absent(),
   }) => ProgressRow(
     id: id ?? this.id,
@@ -353,7 +397,8 @@ class ProgressRow extends DataClass implements Insertable<ProgressRow> {
     xpEarned: xpEarned ?? this.xpEarned,
     completedAt: completedAt ?? this.completedAt,
     fullXpAwarded: fullXpAwarded ?? this.fullXpAwarded,
-    bestScore: bestScore ?? this.bestScore,
+    correctCount: correctCount ?? this.correctCount,
+    gradedTotal: gradedTotal ?? this.gradedTotal,
     lastPracticeXpDate: lastPracticeXpDate.present
         ? lastPracticeXpDate.value
         : this.lastPracticeXpDate,
@@ -372,7 +417,12 @@ class ProgressRow extends DataClass implements Insertable<ProgressRow> {
       fullXpAwarded: data.fullXpAwarded.present
           ? data.fullXpAwarded.value
           : this.fullXpAwarded,
-      bestScore: data.bestScore.present ? data.bestScore.value : this.bestScore,
+      correctCount: data.correctCount.present
+          ? data.correctCount.value
+          : this.correctCount,
+      gradedTotal: data.gradedTotal.present
+          ? data.gradedTotal.value
+          : this.gradedTotal,
       lastPracticeXpDate: data.lastPracticeXpDate.present
           ? data.lastPracticeXpDate.value
           : this.lastPracticeXpDate,
@@ -388,7 +438,8 @@ class ProgressRow extends DataClass implements Insertable<ProgressRow> {
           ..write('xpEarned: $xpEarned, ')
           ..write('completedAt: $completedAt, ')
           ..write('fullXpAwarded: $fullXpAwarded, ')
-          ..write('bestScore: $bestScore, ')
+          ..write('correctCount: $correctCount, ')
+          ..write('gradedTotal: $gradedTotal, ')
           ..write('lastPracticeXpDate: $lastPracticeXpDate')
           ..write(')'))
         .toString();
@@ -402,7 +453,8 @@ class ProgressRow extends DataClass implements Insertable<ProgressRow> {
     xpEarned,
     completedAt,
     fullXpAwarded,
-    bestScore,
+    correctCount,
+    gradedTotal,
     lastPracticeXpDate,
   );
   @override
@@ -415,7 +467,8 @@ class ProgressRow extends DataClass implements Insertable<ProgressRow> {
           other.xpEarned == this.xpEarned &&
           other.completedAt == this.completedAt &&
           other.fullXpAwarded == this.fullXpAwarded &&
-          other.bestScore == this.bestScore &&
+          other.correctCount == this.correctCount &&
+          other.gradedTotal == this.gradedTotal &&
           other.lastPracticeXpDate == this.lastPracticeXpDate);
 }
 
@@ -426,7 +479,8 @@ class ProgressRecordsCompanion extends UpdateCompanion<ProgressRow> {
   final Value<int> xpEarned;
   final Value<DateTime> completedAt;
   final Value<bool> fullXpAwarded;
-  final Value<int> bestScore;
+  final Value<int> correctCount;
+  final Value<int> gradedTotal;
   final Value<DateTime?> lastPracticeXpDate;
   const ProgressRecordsCompanion({
     this.id = const Value.absent(),
@@ -435,7 +489,8 @@ class ProgressRecordsCompanion extends UpdateCompanion<ProgressRow> {
     this.xpEarned = const Value.absent(),
     this.completedAt = const Value.absent(),
     this.fullXpAwarded = const Value.absent(),
-    this.bestScore = const Value.absent(),
+    this.correctCount = const Value.absent(),
+    this.gradedTotal = const Value.absent(),
     this.lastPracticeXpDate = const Value.absent(),
   });
   ProgressRecordsCompanion.insert({
@@ -445,7 +500,8 @@ class ProgressRecordsCompanion extends UpdateCompanion<ProgressRow> {
     required int xpEarned,
     required DateTime completedAt,
     this.fullXpAwarded = const Value.absent(),
-    this.bestScore = const Value.absent(),
+    this.correctCount = const Value.absent(),
+    this.gradedTotal = const Value.absent(),
     this.lastPracticeXpDate = const Value.absent(),
   }) : lessonId = Value(lessonId),
        isCompleted = Value(isCompleted),
@@ -458,7 +514,8 @@ class ProgressRecordsCompanion extends UpdateCompanion<ProgressRow> {
     Expression<int>? xpEarned,
     Expression<DateTime>? completedAt,
     Expression<bool>? fullXpAwarded,
-    Expression<int>? bestScore,
+    Expression<int>? correctCount,
+    Expression<int>? gradedTotal,
     Expression<DateTime>? lastPracticeXpDate,
   }) {
     return RawValuesInsertable({
@@ -468,7 +525,8 @@ class ProgressRecordsCompanion extends UpdateCompanion<ProgressRow> {
       if (xpEarned != null) 'xp_earned': xpEarned,
       if (completedAt != null) 'completed_at': completedAt,
       if (fullXpAwarded != null) 'full_xp_awarded': fullXpAwarded,
-      if (bestScore != null) 'best_score': bestScore,
+      if (correctCount != null) 'correct_count': correctCount,
+      if (gradedTotal != null) 'graded_total': gradedTotal,
       if (lastPracticeXpDate != null)
         'last_practice_xp_date': lastPracticeXpDate,
     });
@@ -481,7 +539,8 @@ class ProgressRecordsCompanion extends UpdateCompanion<ProgressRow> {
     Value<int>? xpEarned,
     Value<DateTime>? completedAt,
     Value<bool>? fullXpAwarded,
-    Value<int>? bestScore,
+    Value<int>? correctCount,
+    Value<int>? gradedTotal,
     Value<DateTime?>? lastPracticeXpDate,
   }) {
     return ProgressRecordsCompanion(
@@ -491,7 +550,8 @@ class ProgressRecordsCompanion extends UpdateCompanion<ProgressRow> {
       xpEarned: xpEarned ?? this.xpEarned,
       completedAt: completedAt ?? this.completedAt,
       fullXpAwarded: fullXpAwarded ?? this.fullXpAwarded,
-      bestScore: bestScore ?? this.bestScore,
+      correctCount: correctCount ?? this.correctCount,
+      gradedTotal: gradedTotal ?? this.gradedTotal,
       lastPracticeXpDate: lastPracticeXpDate ?? this.lastPracticeXpDate,
     );
   }
@@ -517,8 +577,11 @@ class ProgressRecordsCompanion extends UpdateCompanion<ProgressRow> {
     if (fullXpAwarded.present) {
       map['full_xp_awarded'] = Variable<bool>(fullXpAwarded.value);
     }
-    if (bestScore.present) {
-      map['best_score'] = Variable<int>(bestScore.value);
+    if (correctCount.present) {
+      map['correct_count'] = Variable<int>(correctCount.value);
+    }
+    if (gradedTotal.present) {
+      map['graded_total'] = Variable<int>(gradedTotal.value);
     }
     if (lastPracticeXpDate.present) {
       map['last_practice_xp_date'] = Variable<DateTime>(
@@ -537,7 +600,8 @@ class ProgressRecordsCompanion extends UpdateCompanion<ProgressRow> {
           ..write('xpEarned: $xpEarned, ')
           ..write('completedAt: $completedAt, ')
           ..write('fullXpAwarded: $fullXpAwarded, ')
-          ..write('bestScore: $bestScore, ')
+          ..write('correctCount: $correctCount, ')
+          ..write('gradedTotal: $gradedTotal, ')
           ..write('lastPracticeXpDate: $lastPracticeXpDate')
           ..write(')'))
         .toString();
@@ -1747,7 +1811,8 @@ typedef $$ProgressRecordsTableCreateCompanionBuilder =
       required int xpEarned,
       required DateTime completedAt,
       Value<bool> fullXpAwarded,
-      Value<int> bestScore,
+      Value<int> correctCount,
+      Value<int> gradedTotal,
       Value<DateTime?> lastPracticeXpDate,
     });
 typedef $$ProgressRecordsTableUpdateCompanionBuilder =
@@ -1758,7 +1823,8 @@ typedef $$ProgressRecordsTableUpdateCompanionBuilder =
       Value<int> xpEarned,
       Value<DateTime> completedAt,
       Value<bool> fullXpAwarded,
-      Value<int> bestScore,
+      Value<int> correctCount,
+      Value<int> gradedTotal,
       Value<DateTime?> lastPracticeXpDate,
     });
 
@@ -1801,8 +1867,13 @@ class $$ProgressRecordsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get bestScore => $composableBuilder(
-    column: $table.bestScore,
+  ColumnFilters<int> get correctCount => $composableBuilder(
+    column: $table.correctCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get gradedTotal => $composableBuilder(
+    column: $table.gradedTotal,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1851,8 +1922,13 @@ class $$ProgressRecordsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get bestScore => $composableBuilder(
-    column: $table.bestScore,
+  ColumnOrderings<int> get correctCount => $composableBuilder(
+    column: $table.correctCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get gradedTotal => $composableBuilder(
+    column: $table.gradedTotal,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -1895,8 +1971,15 @@ class $$ProgressRecordsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<int> get bestScore =>
-      $composableBuilder(column: $table.bestScore, builder: (column) => column);
+  GeneratedColumn<int> get correctCount => $composableBuilder(
+    column: $table.correctCount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get gradedTotal => $composableBuilder(
+    column: $table.gradedTotal,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<DateTime> get lastPracticeXpDate => $composableBuilder(
     column: $table.lastPracticeXpDate,
@@ -1943,7 +2026,8 @@ class $$ProgressRecordsTableTableManager
                 Value<int> xpEarned = const Value.absent(),
                 Value<DateTime> completedAt = const Value.absent(),
                 Value<bool> fullXpAwarded = const Value.absent(),
-                Value<int> bestScore = const Value.absent(),
+                Value<int> correctCount = const Value.absent(),
+                Value<int> gradedTotal = const Value.absent(),
                 Value<DateTime?> lastPracticeXpDate = const Value.absent(),
               }) => ProgressRecordsCompanion(
                 id: id,
@@ -1952,7 +2036,8 @@ class $$ProgressRecordsTableTableManager
                 xpEarned: xpEarned,
                 completedAt: completedAt,
                 fullXpAwarded: fullXpAwarded,
-                bestScore: bestScore,
+                correctCount: correctCount,
+                gradedTotal: gradedTotal,
                 lastPracticeXpDate: lastPracticeXpDate,
               ),
           createCompanionCallback:
@@ -1963,7 +2048,8 @@ class $$ProgressRecordsTableTableManager
                 required int xpEarned,
                 required DateTime completedAt,
                 Value<bool> fullXpAwarded = const Value.absent(),
-                Value<int> bestScore = const Value.absent(),
+                Value<int> correctCount = const Value.absent(),
+                Value<int> gradedTotal = const Value.absent(),
                 Value<DateTime?> lastPracticeXpDate = const Value.absent(),
               }) => ProgressRecordsCompanion.insert(
                 id: id,
@@ -1972,7 +2058,8 @@ class $$ProgressRecordsTableTableManager
                 xpEarned: xpEarned,
                 completedAt: completedAt,
                 fullXpAwarded: fullXpAwarded,
-                bestScore: bestScore,
+                correctCount: correctCount,
+                gradedTotal: gradedTotal,
                 lastPracticeXpDate: lastPracticeXpDate,
               ),
           withReferenceMapper: (p0) => p0

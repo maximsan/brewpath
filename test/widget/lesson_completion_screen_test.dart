@@ -3,6 +3,7 @@ import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/learn/presentation/module_summary_screen.dart';
 import 'package:brew_path/features/lessons/domain/lesson_completion_service.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_screen.dart';
+import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
@@ -127,7 +128,7 @@ void main() {
           child: _app(
             const LessonCompletionScreen(
               lessonId: 'lesson_where_coffee',
-              score: 100,
+              mastery: MasteryResult(correct: 5, total: 5),
             ),
           ),
         ),
@@ -192,7 +193,7 @@ void main() {
           child: _app(
             const LessonCompletionScreen(
               lessonId: 'lesson_where_coffee',
-              score: 100,
+              mastery: MasteryResult(correct: 5, total: 5),
             ),
           ),
         ),
@@ -252,7 +253,12 @@ void main() {
       'lesson_altitude_quality',
     ]) {
       final lesson = await tester.runAsync(() => content.getLessonById(id));
-      await tester.runAsync(() => service.completeLesson(lesson!, score: 100));
+      await tester.runAsync(
+        () => service.completeLesson(
+          lesson!,
+          mastery: const MasteryResult(correct: 5, total: 5),
+        ),
+      );
     }
 
     await tester.pumpWidget(
@@ -261,7 +267,7 @@ void main() {
         child: _app(
           const LessonCompletionScreen(
             lessonId: 'lesson_green_coffee',
-            score: 100,
+            mastery: MasteryResult(correct: 5, total: 5),
           ),
         ),
       ),
@@ -285,7 +291,7 @@ void main() {
         child: _app(
           const LessonCompletionScreen(
             lessonId: 'lesson_where_coffee',
-            score: 100,
+            mastery: MasteryResult(correct: 5, total: 5),
           ),
         ),
       ),
@@ -313,7 +319,12 @@ void main() {
     final lesson = await tester.runAsync(
       () => content.getLessonById('lesson_where_coffee'),
     );
-    await tester.runAsync(() => service.completeLesson(lesson!, score: 50));
+    await tester.runAsync(
+      () => service.completeLesson(
+        lesson!,
+        mastery: const MasteryResult(correct: 2, total: 5),
+      ),
+    );
 
     await tester.pumpWidget(
       UncontrolledProviderScope(
@@ -322,7 +333,7 @@ void main() {
           const LessonCompletionScreen(
             lessonId: 'lesson_where_coffee',
             review: true,
-            score: 80,
+            mastery: MasteryResult(correct: 4, total: 5),
           ),
         ),
       ),
@@ -330,7 +341,9 @@ void main() {
     await settleLoaders(tester);
 
     expect(find.text('Review complete!'), findsOneWidget);
-    expect(find.text('Best score: 80%'), findsOneWidget); // max(50, 80)
+    // {4,5} is one wrong (Solid); {2,5} is three wrong (Needs Practice).
+    // The better band wins, so the review result replaces the completion's.
+    expect(find.text('Best score: 4 / 5'), findsOneWidget);
     expect(find.text('+2 XP · Practice'), findsOneWidget);
     // A review must not re-award full lesson XP.
     expect(find.textContaining('Lesson complete!'), findsNothing);
@@ -355,11 +368,17 @@ void main() {
       'lesson_altitude_quality',
     ]) {
       final lesson = await tester.runAsync(() => content.getLessonById(id));
-      await tester.runAsync(() => service.completeLesson(lesson!, score: 100));
+      await tester.runAsync(
+        () => service.completeLesson(
+          lesson!,
+          mastery: const MasteryResult(correct: 5, total: 5),
+        ),
+      );
     }
 
     final router = GoRouter(
-      initialLocation: '/learn/lesson/lesson_green_coffee/complete?score=100',
+      initialLocation:
+          '/learn/lesson/lesson_green_coffee/complete?correct=5&total=5',
       routes: [
         GoRoute(
           path: '/learn',
@@ -371,7 +390,12 @@ void main() {
           name: 'lessonComplete',
           builder: (context, state) => LessonCompletionScreen(
             lessonId: state.pathParameters['lessonId']!,
-            score: int.tryParse(state.uri.queryParameters['score'] ?? '') ?? 0,
+            mastery: MasteryResult(
+              correct:
+                  int.tryParse(state.uri.queryParameters['correct'] ?? '') ?? 0,
+              total:
+                  int.tryParse(state.uri.queryParameters['total'] ?? '') ?? 0,
+            ),
           ),
         ),
         GoRoute(

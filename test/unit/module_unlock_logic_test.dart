@@ -1,4 +1,5 @@
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
+import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/repositories/progress_repository.dart';
 import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:drift/native.dart';
@@ -44,12 +45,12 @@ void main() {
     await repo.saveCompletion(
       lessonId: 'lesson_where_coffee',
       xpEarned: 10,
-      score: 100,
+      mastery: const MasteryResult(correct: 5, total: 5),
     );
     await repo.saveCompletion(
       lessonId: 'lesson_arabica_robusta',
       xpEarned: 20,
-      score: 100,
+      mastery: const MasteryResult(correct: 5, total: 5),
     );
 
     final locked = await lockedByModule();
@@ -67,7 +68,11 @@ void main() {
         'lesson_coffee_plant',
         'lesson_altitude_quality',
       ]) {
-        await repo.saveCompletion(lessonId: id, xpEarned: 10, score: 100);
+        await repo.saveCompletion(
+          lessonId: id,
+          xpEarned: 10,
+          mastery: const MasteryResult(correct: 5, total: 5),
+        );
       }
 
       final locked = await lockedByModule();

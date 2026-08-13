@@ -6,6 +6,7 @@ import 'package:brew_path/features/companion/presentation/companion_bubble.dart'
 import 'package:brew_path/features/companion/presentation/companion_handle.dart';
 import 'package:brew_path/features/lessons/domain/lesson_completion_service.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_reward.dart';
+import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -13,12 +14,12 @@ import 'package:go_router/go_router.dart';
 
 /// Presentation for the post-lesson screen: a hero badge, outcome text and any
 /// reward card, then the Continue button. Pure view — it renders the loaded
-/// [LessonCompletionReward] and the run score, and performs no I/O.
+/// [LessonCompletionReward] and the run's graded result, and performs no I/O.
 class LessonCompletionBody extends StatelessWidget {
   /// Creates a [LessonCompletionBody].
   const LessonCompletionBody({
     required this.reward,
-    required this.score,
+    required this.mastery,
     super.key,
     this.companionHandle,
     this.companionLine,
@@ -28,8 +29,8 @@ class LessonCompletionBody extends StatelessWidget {
   /// The loaded reward to render.
   final LessonCompletionReward reward;
 
-  /// First-try accuracy of the run (0–100); shown for practice runs.
-  final int score;
+  /// Graded result of the run; shown for practice runs.
+  final MasteryResult mastery;
 
   /// Drives the celebratory companion on the first-completion path. When null
   /// (review / practice runs) a static badge is shown instead.
@@ -135,7 +136,7 @@ class LessonCompletionBody extends StatelessWidget {
       ),
       const SizedBox(height: 12),
       Text(
-        'Score: $score%',
+        'Score: ${mastery.correct} / ${mastery.total}',
         textAlign: TextAlign.center,
         style: theme.textTheme.titleLarge?.copyWith(
           color: mood.accent,
@@ -168,7 +169,7 @@ class LessonCompletionBody extends StatelessWidget {
       ),
       const SizedBox(height: 12),
       Text(
-        'Best score: ${review.bestScore}%',
+        'Best score: ${review.mastery.correct} / ${review.mastery.total}',
         textAlign: TextAlign.center,
         style: theme.textTheme.titleLarge?.copyWith(
           color: mood.accent,

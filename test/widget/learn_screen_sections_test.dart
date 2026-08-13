@@ -1,4 +1,5 @@
 import 'package:brew_path/app/app.dart';
+import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/repositories/progress_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -54,7 +55,7 @@ void main() {
       await ProgressRepository().saveCompletion(
         lessonId: 'lesson_where_coffee',
         xpEarned: 10,
-        score: 100,
+        mastery: const MasteryResult(correct: 5, total: 5),
       );
 
       await pumpWithProviders(tester, const BrewPathApp());
