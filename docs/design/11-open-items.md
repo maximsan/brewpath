@@ -89,20 +89,36 @@ this whole reference, and had not actually been done until now.
 
 ### The monetization model is not what either codebase implements
 
-**[Product-owner ruling]** *"Free plan: 2 new lessons per day, unlimited mistakes
-and unlimited review; Premium removes the daily limit."*
+**[Product-owner ruling — settled]** Free gets **the first two lessons,
+permanently**; the other thirty are paid. A cap of **two learning/practice
+activities a day** applies to free users, the free Saved cap is **5**, and the
+dictionary is tiered by **depth** rather than by term. Full rules in
+`docs/decisions-1.md` §7–§8, §11–§12; resolved on
+[Monetization shape](https://github.com/maximsan/brewpath/issues/29) and
+[Free-tier practice content](https://github.com/maximsan/brewpath/issues/57).
 
-| | Prototype | Flutter app | Ruling |
+⚠️ **An intermediate _pacing_ ruling — *2 new lessons per day free, Premium
+removes the limit* — was also proposed and then withdrawn.** It is recorded
+because this file stated it as current: on a finite course its value expires
+when the course ends, so a free user who finished would hold the complete
+product while a paying user's benefit evaporated in week three.
+
+| | Prototype | Flutter app | Shipping model |
 |---|---|---|---|
-| Axis | Features (Studio, Atlas) behind a Plus tier | No gate at all — `kAdsEnabled = false`, paywall absent | **Pace** — new lessons per day |
-| Saved shelf | Free cap of 5, Plus lifts it | absent | not the lever any more |
-| Timed unlocks | Rewarded-ad 15-min trial, 24-hour perfect-module gift | absent | meaningless against a per-day counter |
+| Axis | Features (Studio, Atlas) behind a Plus tier | No gate at all — `kAdsEnabled = false`, paywall absent | **Content** — 2 lessons free of 32 |
+| Saved shelf | Free cap of 10, Plus lifts it | absent | free cap **5**, Plus lifts it |
+| Dictionary | fully free | absent | free = short explanation; premium adds the full one; 8 reference terms premium-only |
+| Mini-games | all 7 free | absent | **2 free** (`g-match`, `g-quiz`), 5 premium but visible and lock-marked |
+| Timed unlocks | Rewarded-ad 15-min trial, 24-hour perfect-module gift | absent | ads are v2; the gift is open at [Offers, plans and the paywall pitch](https://github.com/maximsan/brewpath/issues/55) |
 
-**The daily cap is greenfield in both places**, so there is no prototype
-behaviour to port and no "the source wins" to appeal to. What Premium buys
-beyond the cap is **still open**. Until it resolves, [§12](12-checklist.md)'s
-Monetization block should not be turned into issues — it describes the
-superseded axis end to end.
+**Lesson gating is greenfield in both places** — `featureUnlocked` only ever
+took feature keys, and lesson locking is sequential progress — so there is no
+prototype behaviour to port and no "the source wins" to appeal to.
+
+What Premium buys is now settled; what remains open is the **offer** (trial,
+plan structure, paywall copy), tracked separately. [§12](12-checklist.md)'s
+Monetization block still describes the superseded feature axis and should not
+be turned into issues as written.
 
 ### The progression model is materially different
 
