@@ -128,14 +128,20 @@ Small, optional **real-life** tasks. They never block learning, streaks, points,
 ## 5.9 Plus, gating and trials (`gating.jsx`)
 
 > ⚠️ **This whole section describes a superseded model.** The prototype gates
-> **features**; the product-owner ruling gates **pace** — 2 new lessons/day free,
-> Premium lifts the limit ([PRODUCT.md](PRODUCT.md) §11). Everything below is an
-> accurate account of `gating.jsx` and a **poor guide to what to build**. The
-> daily cap exists in neither codebase, so there is nothing to port.
+> **features**; the shipping model gates **content** — the first two lessons are
+> free permanently, the other thirty are paid, with a cap of two learning/practice
+> activities a day ([PRODUCT.md](PRODUCT.md) §11, `docs/decisions-1.md` §7–§8,
+> §11–§12). An intermediate *pacing* ruling (2 new lessons/day) was also proposed
+> and **withdrawn**; do not build to it either. Everything below is an accurate
+> account of `gating.jsx` and a **poor guide to what to build**: lesson gating
+> exists in neither codebase, so there is nothing to port.
+>
+> Settled on [Monetization shape](https://github.com/maximsan/brewpath/issues/29)
+> and [Free-tier practice content](https://github.com/maximsan/brewpath/issues/57).
 
 **Gated feature catalog** (`PLUS_FEATURES`): `dictionary`, `atlas`, `duel`, `saved`, `studio`.
 
-**In v1, `featureUnlocked()` hardcodes `dictionary` and `saved` to always-open** (`app.jsx:388`) — everything that teaches is free, and Saved is a free tier with a soft cap. So the only true v1 gate is **Studio**.
+**In v1, `featureUnlocked()` hardcodes `dictionary` and `saved` to always-open** (`app.jsx:388`), and Saved is a free tier with a soft cap (now **5**, not 10). So **Studio is the only surviving _feature_ gate** — but it is no longer the only gate: **lessons** are now gated by tier, which is the first content gate either codebase has had, and the dictionary is tiered by *depth* rather than by term (free gets the short explanation; premium adds the full one, and the 8 reference terms are premium-only).
 
 - Single funnel: `requestFeature(key)` → open it, or raise `PlusGateSheet`.
 - `FeatureLock` full-screen teaser, 3 styles: `blur` (default), `hard`, `curtain`.

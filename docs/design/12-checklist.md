@@ -93,10 +93,18 @@ staging list that feeds it, not a living board. Nothing ticks these boxes.
 ## Monetization
 
 > ⚠️ **Every line in this block was written against the superseded feature-gating
-> model.** The ruling is **2 new lessons/day free, Premium removes the limit**
-> ([PRODUCT.md](PRODUCT.md) §11), and what Premium buys beyond that is still
-> open. **Do not generate issues from this block** until that resolves — the
-> daily cap is greenfield in both codebases and nothing below describes it.
+> model.** The shipping model is a **content gate**: the first two lessons free
+> permanently, the other thirty paid, plus a cap of two learning/practice
+> activities a day, a free Saved cap of **5**, and a dictionary tiered by depth
+> ([PRODUCT.md](PRODUCT.md) §11, `docs/decisions-1.md` §7–§8, §11–§12). What
+> Premium buys is now **settled** on
+> [Monetization shape](https://github.com/maximsan/brewpath/issues/29); the
+> *offer* — trial, plan shape, paywall copy — is open at
+> [Offers, plans and the paywall pitch](https://github.com/maximsan/brewpath/issues/55).
+>
+> **The lines below still under-describe the work**, because lesson gating is
+> greenfield in both codebases and nothing here covers it. Generate issues from
+> the decisions, not from this block.
 
 - [ ] Paywall with 2 plans, 7-day trial CTA, Restore/Terms/Privacy
 - [ ] StoreKit: purchase, receipt validation, restore, real trial counter
