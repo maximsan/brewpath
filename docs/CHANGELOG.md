@@ -94,6 +94,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- Type collapses to a **nine-step ladder** — `AppText.hero · display · title ·
+  heading · lead · body · support · label · micro` at 56 / 30 / 26 / 19 / 17 /
+  15 / 13 / 11 / 9.5 — replacing `AppTypography`. There is no `fontSize`
+  parameter anywhere in the API: sizes live in one private table, so going
+  off-ladder means editing the ladder rather than passing a number at a call
+  site. The eight off-ladder sizes the app was using are snapped onto it.
+  Typeface is a separate axis (`AppFace`), because the design sets one step in
+  more than one face — and a slot inside display type can inherit the
+  surrounding face instead of asserting its own.
 - `AppStrings` is now **`AppLabels`**, matching what it holds: user-facing
   labels rather than arbitrary strings.
 - CI gained a **changelog job**: a pull request that changes `lib/`,
@@ -143,6 +152,11 @@ You can always edit this file by hand instead — the helpers just save effort.
 - The CI format job ran `dart format` before `flutter pub get`, so it read the
   wrong language version and failed on files that were correctly formatted. It
   had been red on `main` for over a week.
+- Roasty's points burst drew its "+15 XP" label in a font family no `fonts:`
+  entry declares (`IBMPlexMono`, without the spaces). Flutter does not throw on
+  an unknown family, so it had been rendering in the platform fallback with
+  nothing to signal it. The font guard now checks every family named anywhere
+  in `lib/`, not only the ones the type ladder asks for.
 - A Drift migration step was guarded by `from < _schemaVersion` rather than the
   version that introduced it, so the next schema bump would have re-run the
   v2 → v3 column adds on a device already at v3 and failed on the duplicate

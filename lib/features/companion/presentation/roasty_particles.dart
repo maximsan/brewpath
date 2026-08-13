@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty_faces.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:flutter/material.dart';
 
 // The front particle dispatch handles the states with particles and defaults
@@ -160,12 +161,14 @@ void _paintXpBurst(Canvas c, double t) {
     ..color = const Color(0xFFC8843A).withValues(alpha: opacity);
   final rect = Rect.fromLTWH(68, 42 + dy, 64, 24);
   c.drawRRect(RRect.fromRectAndRadius(rect, const Radius.circular(2)), paint);
-  final textStyle = TextStyle(
+  // The label reads off the ladder like any other text; only its colour comes
+  // from the illustration rather than the mood. It previously asked for
+  // 'IBMPlexMono', which no `fonts:` entry declares — Flutter does not throw on
+  // an unknown family, so the burst had been rendering in the platform fallback
+  // font.
+  final textStyle = AppText.support(
     color: const Color(0xFFFBF7EE).withValues(alpha: opacity),
-    fontWeight: FontWeight.w600,
-    fontSize: 13,
-    fontFamily: 'IBMPlexMono',
-    letterSpacing: 1,
+    face: AppFace.mono,
   );
   final tp = TextPainter(
     text: TextSpan(text: '+15 XP', style: textStyle),

@@ -1,5 +1,5 @@
 import 'package:brew_path/shared/theme/app_radii.dart';
-import 'package:brew_path/shared/theme/app_typography.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -47,7 +47,11 @@ class PrimaryButton extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: AppTypography.button(mood, color: foreground),
+          style: AppText.body(
+            mood: mood,
+            color: foreground,
+            face: AppFace.control,
+          ),
         ),
       ),
     );

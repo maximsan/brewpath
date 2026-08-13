@@ -4,7 +4,7 @@ import 'package:brew_path/features/onboarding/presentation/loading/widgets/pulsi
 import 'package:brew_path/features/onboarding/presentation/loading/widgets/roasty_stage.dart';
 import 'package:brew_path/features/onboarding/presentation/onboarding_providers.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
-import 'package:brew_path/shared/theme/app_typography.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -119,7 +119,7 @@ class _LoadingScreenState extends ConsumerState<LoadingScreen> {
                           children: [
                             Text(
                               'Brewing your lesson',
-                              style: AppTypography.captionItalic(mood),
+                              style: AppText.headingItalic(mood: mood),
                             ),
                             const SizedBox(height: AppSpacing.base),
                             const PulsingDots(),
@@ -136,9 +136,14 @@ class _LoadingScreenState extends ConsumerState<LoadingScreen> {
                   child: Center(
                     child: Text(
                       'BREWPATH',
-                      style: AppTypography.smallcaps(mood).copyWith(
-                        letterSpacing: _wordmarkLetterSpacing,
-                      ),
+                      // `.tap-cue` (index.html:1103) is the one mono label the
+                      // design sets at 400 rather than 500, with wider
+                      // tracking — it reads as a cue, not a heading.
+                      style: AppText.label(mood: mood, face: AppFace.mono)
+                          .copyWith(
+                            fontWeight: FontWeight.w400,
+                            letterSpacing: _wordmarkLetterSpacing,
+                          ),
                     ),
                   ),
                 ),

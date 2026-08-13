@@ -4,7 +4,7 @@ import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/onboarding/presentation/goal/goal_controller.dart';
 import 'package:brew_path/features/onboarding/presentation/onboarding_providers.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
-import 'package:brew_path/shared/theme/app_typography.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -88,7 +88,7 @@ class _GoalScreenState extends ConsumerState<GoalScreen> {
               const SizedBox(height: AppSpacing.base),
               Text(
                 'What brings you here?',
-                style: AppTypography.displayMD(mood),
+                style: AppText.title(mood: mood),
               ),
               const SizedBox(height: AppSpacing.lg + 4),
               Expanded(

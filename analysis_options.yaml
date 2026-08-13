@@ -72,7 +72,7 @@ dart_code_linter:
           - lib/features/onboarding/presentation/loading/loading_animation.dart
           - lib/shared/theme/app_spacing.dart
           - lib/shared/theme/app_radii.dart
-          - lib/shared/theme/app_typography.dart
+          - lib/shared/theme/app_text.dart
           - lib/shared/theme/mood_colors.dart
           - lib/shared/theme/art_colors.dart
           - lib/shared/theme/overlay_colors.dart
