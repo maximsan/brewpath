@@ -181,7 +181,7 @@ const SCREEN_ROUTES = {
   'lesson-complete-perfect':{ view: 'lesson-complete', lessonId: 'm1l2', prevPoints: 110, newPoints: 120, result: { correct: 7, total: 7 } },
   'module-complete':{ view: 'module-complete', lessonId: 'm1l3', prevPoints: 110, newPoints: 150 },
   'module-card':    { view: 'module-card',     lessonId: 'm1l3', prevPoints: 110, newPoints: 150 },
-  // ── Active Brew Challenge ──
+  // ── Active Coffee Challenge 
   'module-challenge':    { view: 'module-challenge', lessonId: 'm1l3', prevPoints: 110, newPoints: 150 },
   'today-challenge':     { view: 'app', tab: 'learn', brewToday: 'active' },
   'today-challenge-done':{ view: 'app', tab: 'learn', brewToday: 'completed' },
@@ -625,7 +625,7 @@ function App() {
   const [giftedModules, setGiftedModules]   = useStateA(() => new Set());
   const [giftModule, setGiftModule]         = useStateA(null);
 
-  // ── Active Brew Challenge state ──
+  // ── Active Coffee Challenge state 
   // A single active challenge (activeId + startedAt); a set of completed ids
   // (each unlocks a card stamp). Skipping/expiry just clears the active one —
   // no archive, no penalty. Persisted across refreshes.
@@ -900,7 +900,7 @@ function App() {
   // From ModuleComplete → go to module reward card.
   const continueFromModuleComplete = () => setView('module-card');
 
-  // From ModuleReward → offer the Module Brew Challenge (if any), else advance.
+  // From ModuleReward → offer the Module Coffee Challenge (if any), else advance.
   const continueFromModuleReward = () => {
     const ctx = completedLesson ? window.findLessonContext(completedLesson.id) : null;
     const mod = ctx ? ctx.module : null;
@@ -1023,7 +1023,7 @@ function App() {
     setTimeout(() => setOpenCard(null), 280);
   };
 
-  // ── Active Brew Challenge — derived review state ──
+  // ── Active Coffee Challenge — derived review state 
   // Both of these were once tweaks; they are now route-only, and the keys were
   // removed from TWEAK_DEFAULTS rather than left sitting there unread.
   // brewTodayMode: a screens-overview route can pin the Today card to a state
@@ -1247,7 +1247,7 @@ function App() {
         { label: 'Points earned', value: progression.points + ' pts' },
         { label: 'Lessons completed', value: String(progression.completed.size) },
         { label: 'Cards collected', value: COLLECTION.filter(c => c.earned).length + ' of ' + COLLECTION.length },
-        { label: 'Brew challenges', value: brew.completed.size + ' of ' + window.BREW_TOTAL },
+        { label: 'Coffee challenges', value: brew.completed.size + ' of ' + window.BREW_TOTAL },
         { label: 'Saved items', value: String(savedCount) },
         { label: 'Your coffee tree', value: 'Back to ' + (STAGE_NAMES[0]) },
       ]}

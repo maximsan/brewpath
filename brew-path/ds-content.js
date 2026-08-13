@@ -851,7 +851,7 @@ function renderComponents() {
      </div>`, ['One solid silhouette with a carved crease and <b>no</b> fill state.', 'Points are a quantity, not a level \u2014 partial fill belongs to the gauge alone.', 'On an accent fill it inverts, crease in the fill colour.']));
 
   wrap.append(compRules('Points chip',
-    'The sage points mark. Fires once at the end of a run \u2014 a logged Brew Challenge, a finished lesson, a finished module. Never mid-lesson.',
+    'The sage points mark. Fires once at the end of a run \u2014 a logged Coffee Challenge, a finished lesson, a finished module. Never mid-lesson.',
     `<div style="display:flex;gap:14px;align-items:center;">
        <span class="mono" style="font-size:11px;font-weight:500;letter-spacing:0.1em;color:var(--sage);border:1px solid color-mix(in oklab, var(--sage) 45%, transparent);background:color-mix(in oklab, var(--sage) 10%, transparent);border-radius:999px;padding:3px 9px;">+10 PTS</span>
        <span class="mono" style="font-size:9.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-mute);">rises 12px · fades at 950ms</span>
@@ -920,10 +920,10 @@ function renderComponents() {
       'Scored like an MCQ, so it feeds the lesson\u2019s perfect run \u2014 but the feedback names the cause, never a score.',
     ], 280));
 
-  wrap.append(compRules('Brew challenge card',
+  wrap.append(compRules('Coffee challenge card',
     'Today (below Continue Learning) — the one “go do it with real coffee” prompt.',
     `<div>
-       <div style="${SC}color:var(--accent);display:flex;align-items:center;gap:8px;margin-bottom:28px;">${gBrewCup(15)} BREW CHALLENGE</div>
+       <div style="${SC}color:var(--accent);display:flex;align-items:center;gap:8px;margin-bottom:28px;">${gBrewCup(15)} COFFEE CHALLENGE</div>
        <div class="card" style="position:relative;background:color-mix(in oklab, var(--accent) 6%, var(--surface));border-color:color-mix(in oklab, var(--accent) 28%, var(--rule));">
          <span style="position:absolute;top:14px;right:14px;color:var(--ink-mute);line-height:0;"><svg width="16" height="16" viewBox="0 0 15 15" aria-label="Save for later"><path d="M3 3l9 9M12 3l-9 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
          <div class="ff-display" style="font-size:26px;font-weight:400;line-height:1.1;letter-spacing:-0.01em;padding-right:28px;color:var(--ink);">Name the origin</div>
