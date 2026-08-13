@@ -25,7 +25,7 @@ class LinkButton extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: AppText.body(
+        style: AppText.support(
           mood: mood,
           color: mood.accent,
         ).copyWith(decoration: TextDecoration.none),

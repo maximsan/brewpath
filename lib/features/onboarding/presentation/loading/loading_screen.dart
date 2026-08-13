@@ -136,8 +136,12 @@ class _LoadingScreenState extends ConsumerState<LoadingScreen> {
                   child: Center(
                     child: Text(
                       'BREWPATH',
+                      // `.tap-cue` (index.html:1103) is the one mono label the
+                      // design sets at 400 rather than 500, with wider
+                      // tracking — it reads as a cue, not a heading.
                       style: AppText.label(mood: mood, face: AppFace.mono)
                           .copyWith(
+                            fontWeight: FontWeight.w400,
                             letterSpacing: _wordmarkLetterSpacing,
                           ),
                     ),

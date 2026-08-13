@@ -88,7 +88,7 @@ class _BrewerScreenState extends ConsumerState<BrewerScreen> {
               const SizedBox(height: AppSpacing.base),
               Text(
                 'What do you brew with?',
-                style: AppText.display(mood: mood),
+                style: AppText.title(mood: mood),
               ),
               const SizedBox(height: AppSpacing.lg + 4),
               Expanded(

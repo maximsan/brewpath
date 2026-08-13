@@ -88,7 +88,7 @@ class _GoalScreenState extends ConsumerState<GoalScreen> {
               const SizedBox(height: AppSpacing.base),
               Text(
                 'What brings you here?',
-                style: AppText.display(mood: mood),
+                style: AppText.title(mood: mood),
               ),
               const SizedBox(height: AppSpacing.lg + 4),
               Expanded(
