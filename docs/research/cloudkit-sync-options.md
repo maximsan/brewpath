@@ -85,7 +85,7 @@ Measured, not guessed. Built from the real content IDs in `assets/content/lesson
 (25 lessons, mean ID length 18.7 chars, e.g. `lesson_where_coffee`) and
 `assets/content/cards.json` (17 cards, mean ID length 16.2), with the full v1 field set
 from the ticket: `streak`, `xp`, completed set (15), best-ever `{correct,total}` per
-lesson, `frozenDays`, `freezesSpent`, ~40 prefixed favourite keys, 9 brew challenges,
+lesson, `frozenDays`, `freezesSpent`, ~40 prefixed favourite keys, 9 coffee challenges,
 plus/trial flags, plus `schemaVersion` / `updatedAt` / `deviceId` envelope.
 
 | Payload | Compact JSON | gzipped | % of 1 MB quota |
@@ -372,7 +372,7 @@ This is where the app's shape pays off. Most of the snapshot merges without an a
 | tree stage | **derive, don't sync** | a pure function of merged `xp` + `completed`; syncing it invites disagreement with its own inputs |
 | lifetime `freezesSpent` | **max** | ticket states it is lifetime-cumulative (`brew-path/app.jsx:426` — "how many have ever been spent") |
 | `completed` lesson set | **union** (grow-only set) | a completed lesson never un-completes |
-| brew-challenge state (9) | **max by rank**, per challenge | the prototype already does exactly this for Atlas: `Math.max(cur, targetRank)` at `brew-path/app.jsx:280` |
+| coffee-challenge state (9) | **max by rank**, per challenge | the prototype already does exactly this for Atlas: `Math.max(cur, targetRank)` at `brew-path/app.jsx:280` |
 | `frozenDays` | **union**, then prune to the current week | additive within a week |
 | `favourites` | **LWW on the whole field by `updatedAt`** | ⚠️ **not** monotonic — un-favouriting is a first-class action (`brew-path/app.jsx:257`), so a union would resurrect deleted favourites forever |
 | `streak` / `lastActivityDate` | **max on `lastActivityDate`, then recompute `streak`** | ⚠️ **not** monotonic. Max-wins on `streak` is a real bug: a device that has been offline since a 40-day streak broke would beat a device that correctly reset to 1. Only the activity date is safe to merge |
@@ -550,7 +550,7 @@ reintroducing CocoaPods.
 Formally: on every remote arrival, `merged = mergeSnapshot(local, remote)` where
 
 - **union** — `completed`, `frozenDays` (then prune to current week)
-- **max** — `xp`, `freezesSpent`, per-lesson best mastery (by accuracy ratio), brew-challenge
+- **max** — `xp`, `freezesSpent`, per-lesson best mastery (by accuracy ratio), coffee-challenge
   rank
 - **derive, never sync** — tree stage (from merged `xp` + `completed`); plus/trial (from
   StoreKit 2)
