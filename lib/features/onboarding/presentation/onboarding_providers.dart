@@ -1,5 +1,5 @@
-import 'package:coffee_quest/features/onboarding/data/onboarding_repository.dart';
-import 'package:coffee_quest/shared/repositories/repository_providers.dart';
+import 'package:brew_path/features/onboarding/data/onboarding_repository.dart';
+import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'onboarding_providers.g.dart';

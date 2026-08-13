@@ -1,8 +1,7 @@
-import 'package:coffee_quest/core/constants/app_labels.dart';
-import 'package:coffee_quest/core/constants/app_routes.dart';
-import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
-import 'package:coffee_quest/features/path/presentation/path_node_card.dart';
-import 'package:coffee_quest/features/path/presentation/path_node_rail.dart';
+import 'package:brew_path/core/constants/app_labels.dart';
+import 'package:brew_path/features/learn/domain/learn_providers.dart';
+import 'package:brew_path/features/path/presentation/path_node_card.dart';
+import 'package:brew_path/features/path/presentation/path_node_rail.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -38,10 +37,7 @@ class PathModuleNodeWidget extends StatelessWidget {
         );
       return;
     }
-    context.goNamed(
-      AppRoutes.moduleDetail.name,
-      pathParameters: {'moduleId': item.module.id},
-    );
+    context.go('/learn/module/${item.module.id}');
   }
 
   @override

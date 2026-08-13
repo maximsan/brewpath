@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>BrewPath — Roasty in Motion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #1a1612; color: #EDE6D6;
+    font-family: 'IBM Plex Sans', sans-serif; }
+  .page { padding: 56px 48px 80px; }
+  .head { max-width: 1100px; margin: 0 auto 40px; }
+  .smallcaps { font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: #8C9089; margin-bottom: 12px; }
+  h1 { font-family: 'Fraunces', serif; font-weight: 400; font-size: 42px;
+    line-height: 1.05; letter-spacing: -0.02em; margin: 0; }
+  .sub { color: #8C9089; font-size: 15px; line-height: 1.5; margin-top: 12px; max-width: 540px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 48px 32px; max-width: 1400px; margin: 0 auto; }
+  .frame { display: flex; flex-direction: column; align-items: center; }
+  .label { font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    letter-spacing: 0.18em; text-transform: uppercase; color: #8C9089;
+    margin-top: 16px; text-align: center; }
+  .label .num { color: #D9694C; margin-right: 8px; }
+  .label .name { color: #EDE6D6; font-family: 'Fraunces', serif; font-size: 16px;
+    letter-spacing: -0.01em; text-transform: none; display: block; margin-top: 4px; }
+  .phone-shell { width: 320px; height: 694px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.45); border-radius: 46px;
+    overflow: hidden; background: transparent; }
+  .phone-shell iframe { width: 100%; height: 100%; border: 0;
+    background: transparent; display: block; pointer-events: auto; }
+  a.live { color: #D9694C; text-decoration: none; font-size: 13px;
+    border: 1px solid #232A25; padding: 8px 14px; border-radius: 2px;
+    display: inline-block; }
+  a.live:hover { background: #232A25; }
+  .links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="head">
+      <div class="smallcaps">MASCOT · ANIMATIONS</div>
+      <h1>Roasty, in motion.</h1>
+      <p class="sub">Each tile is a dedicated screen looping one mascot state, Roasty centered. Reactions replay on a beat; ambient states loop continuously.</p>
+      <div class="links">
+        <a class="live" href="screens-overview.html">← Back to all screens</a>
+      </div>
+    </div>
+    <div class="grid" id="animgrid"></div>
+  </div>
+
+  <script>
+    const ANIMS = [
+      ['idle',    'A1', 'Idle'],
+      ['correct', 'A2', 'Correct answer'],
+      ['wrong',   'A3', 'Wrong answer'],
+      ['points',  'A4', 'Points earned'],
+      ['lesson',  'A5', 'Lesson complete'],
+      ['module',  'A6', 'Module complete'],
+      ['card',    'A7', 'Card unlocked'],
+      ['sleep',   'A8', 'Sleeping'],
+      ['awake',   'A9', 'Awake'],
+    ];
+    const animgrid = document.getElementById('animgrid');
+    ANIMS.forEach(([slug, num, name]) => {
+      const cell = document.createElement('div');
+      cell.className = 'frame';
+      cell.innerHTML = `
+        <div class="phone-shell">
+          <iframe src="index.html?screen=anim-${slug}" title="${name}"></iframe>
+        </div>
+        <div class="label"><span class="num">${num}</span>ANIMATION<span class="name">${name}</span></div>
+      `;
+      animgrid.appendChild(cell);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en" data-mood="dark-roast">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>BrewPath — QA Findings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#F4EFE6; --surface:#FBF7EE; --surface-2:#EFE8DA;
+    --ink:#1B1614; --ink-mute:#6B5F54; --rule:#D8CFBF;
+    --accent:#B8533A; --accent-ink:#FBF7EE;
+    --sage:#5F6E55; --warn:#9A5F1C; --berry:#A8362A; --cream:#7A6A54;
+  }
+  [data-mood="dark-roast"] {
+    --bg:#1A130E; --surface:#251B14; --surface-2:#30231A;
+    --ink:#F3E7D2; --ink-mute:#B59E84; --rule:#44321E;
+    --accent:#E07A4F; --accent-ink:#1A130E;
+    --sage:#97A285; --warn:#E6A35C; --berry:#C75450; --cream:#F0DCB8;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    transition: background 300ms ease, color 300ms ease;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { color: var(--ink); }
+  .ff-display { font-family: 'Fraunces', serif; font-optical-sizing: auto; }
+  .mono { font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; }
+
+  /* topbar */
+  .topbar { position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between;
+    padding:18px 40px; background:color-mix(in oklab, var(--bg) 88%, transparent); backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--rule); }
+  .brand { display:flex; align-items:baseline; gap:14px; }
+  .brand .mark { font-family:'Fraunces',serif; font-size:19px; letter-spacing:-0.01em; }
+  .brand .tag { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:var(--ink-mute); }
+  .theme-toggle { display:flex; gap:4px; background:var(--surface); border:1px solid var(--rule); border-radius:999px; padding:4px; }
+  .theme-toggle button { appearance:none; border:none; background:transparent; cursor:pointer; font-family:'IBM Plex Mono',monospace;
+    font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-mute); padding:7px 14px; border-radius:999px; white-space:nowrap; }
+  .theme-toggle button.active { background:var(--accent); color:var(--accent-ink); }
+
+  .wrap { max-width:1320px; margin:0 auto; padding:0 56px 120px; }
+
+  .hero { padding:8px 56px 8px; max-width:1320px; margin:0 auto; }
+  .hero-inner { padding:40px 0 4px; max-width:760px; }
+  .hero .mono { font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent); }
+  .hero h1 { font-family:'Fraunces',serif; font-weight:400; font-size:50px; line-height:1.03; letter-spacing:-0.025em; margin:14px 0 0; }
+  .hero p { color:var(--ink-mute); font-size:16.5px; line-height:1.6; margin:18px 0 0; text-wrap:pretty; max-width:680px; }
+
+  .section { padding:64px 0 0; scroll-margin-top:84px; }
+  .sec-head { max-width:720px; margin-bottom:28px; }
+  .sec-head .eyebrow { font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent); }
+  .sec-head h2 { font-family:'Fraunces',serif; font-weight:400; font-size:34px; letter-spacing:-0.02em; margin:8px 0 0; }
+  .sec-intro { color:var(--ink-mute); font-size:15px; line-height:1.6; margin:12px 0 0; text-wrap:pretty; }
+
+  @media (max-width:900px) {
+    .wrap { padding:0 24px 100px; }
+    .hero, .topbar { padding-left:24px; padding-right:24px; }
+    .hero h1 { font-size:38px; }
+  }
+.fitem{border:1px solid var(--rule);border-radius:2px;padding:16px 18px;margin-top:10px;background:var(--surface)}
+.fhead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.sev{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;padding:3px 8px;border-radius:999px;white-space:nowrap}
+.sev{border:1px solid transparent}
+.sev.fix{color:var(--ink);background:color-mix(in oklab, var(--berry) 20%, var(--surface));border-color:color-mix(in oklab, var(--berry) 45%, var(--rule))}
+.sev.nit{color:var(--ink);background:color-mix(in oklab, var(--warn) 20%, var(--surface));border-color:color-mix(in oklab, var(--warn) 45%, var(--rule))}
+.sev.note{color:var(--ink-mute);border-color:var(--rule)}
+.sev.clean{color:var(--ink);background:color-mix(in oklab, var(--sage) 20%, var(--surface));border-color:color-mix(in oklab, var(--sage) 45%, var(--rule))}
+.sev.done{color:var(--ink);background:color-mix(in oklab, var(--sage) 20%, var(--surface));border-color:color-mix(in oklab, var(--sage) 45%, var(--rule))}
+.fitem.done{border-left:3px solid var(--sage)}
+.fitem.done .ftitle{color:var(--ink-mute)}
+.fixnote{display:block;margin-top:8px;padding-top:8px;border-top:1px solid var(--rule);color:var(--ink)}
+.fixnote b{color:var(--sage)}
+.ftitle{font-weight:500;font-size:15px;flex:1;min-width:220px;color:var(--ink)}
+.floc{font-size:10.5px;color:var(--ink-mute);letter-spacing:.04em}
+.fbody{font-size:13.5px;line-height:1.62;color:var(--ink-mute);margin-top:9px;text-wrap:pretty}
+.fbody b{color:var(--ink);font-weight:500}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+.ctable{width:100%;border-collapse:collapse;margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:11.5px}
+.ctable th{text-align:left;color:var(--ink-mute);font-weight:400;letter-spacing:.1em;text-transform:uppercase;font-size:9px;padding:0 10px 8px 0;border-bottom:1px solid var(--rule)}
+.ctable td{padding:8px 10px 8px 0;border-bottom:1px solid var(--rule);color:var(--ink)}
+.r-ok{color:var(--sage)}.r-weak{color:var(--warn)}.r-fail{color:var(--berry)}
+.ledger{width:100%;border-collapse:collapse;margin-top:6px}
+.ledger th{text-align:left;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-mute);font-weight:400;padding:0 16px 9px 0;border-bottom:1px solid var(--rule)}
+.ledger td{padding:13px 16px 13px 0;border-bottom:1px solid var(--rule);font-size:13.5px;line-height:1.5;color:var(--ink-mute);vertical-align:baseline;text-wrap:pretty}
+.ledger td:first-child{color:var(--ink);font-weight:500;width:31%}
+.ledger td.loc{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.04em;white-space:nowrap;width:17%}
+.ledger tr:last-child td{border-bottom:none}
+.ledger caption{caption-side:top;text-align:left;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--sage);padding:22px 0 8px}
+@media(max-width:760px){.ledger td.loc{display:none}.ledger th:nth-child(2){display:none}}
+.clean-list{display:grid;grid-template-columns:1fr 1fr;gap:0 34px;margin-top:4px}
+@media(max-width:760px){.clean-list{grid-template-columns:1fr}}
+.cl{padding:14px 0;border-bottom:1px solid var(--rule);display:grid;grid-template-columns:1fr auto;gap:10px;align-items:baseline}
+.cl b{font-weight:500;font-size:14.5px;color:var(--ink)}
+.cl span{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;color:var(--sage);white-space:nowrap}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="brand"><span class="mark">BrewPath</span><span class="tag">QA Findings</span></div>
+<div class="theme-toggle" id="theme-toggle"><button data-mood="dark-roast" class="active">Dark roast</button><button data-mood="cupping">Cupping</button></div></div>
+<div class="hero"><div class="hero-inner">
+<div class="mono">CLOSED &#183; 32 LESSONS &#183; 257 LESSON CARDS &#183; 72 TERMS &#183; 104 ROUTES &#183; AUG 2026</div>
+<h1>Nothing is broken in the build.</h1>
+<p>Every mechanical check over the content model, the screen routes, the card and dictionary registries, persistence and destructive-action copy comes back clean. This page is the state of the build, not its history: what holds, what is deferred, what was decided, and the one item still open &#8212; the hairlines want a look on a real phone. What none of it can tell you is whether the course teaches. That pass needs a person, and it is the more valuable one.</p>
+</div></div>
+<div class="wrap"><main>
+<section class="section"><div class="sec-head"><div class="eyebrow">Verified &#183; Aug 2026</div><h2>What holds</h2><p class="sec-intro">Each row is a mechanical check re-run against the current content, with the count it returned.</p></div>
+<table class="ledger"><tr><th>Check</th><th>Result</th></tr>
+<tr><td>Dictionary lesson links resolve to a lesson that teaches the term</td><td>72 terms, 64 pointers &#8212; <span class="mono">dictLessonAudit()</span> returns <span class="mono">[]</span>. The audit now scans only learner-visible copy (<span class="mono">lessonVisibleText</span>): a fill card renders its sentence and <span class="mono">paragraphs[1]</span>, so a term buried in an unrendered field no longer passes. That tightening caught three &#8212; <span class="mono">terroir</span>, <span class="mono">green-coffee</span>, <span class="mono">mouthfeel</span> &#8212; each now named in copy the learner reads. 8 reference-only terms claim no lesson, correctly.</td></tr>
+<tr><td>Every lesson has a collectible card; every card unlocks from a real lesson</td><td>32 / 32, no orphans either direction.</td></tr>
+<tr><td>Every card <span class="mono">kind</span> has bespoke art and a tint</td><td>37 collectibles, 37 distinct kinds &#8212; one per card &#8212; every one with bespoke art in <span class="mono">CARD_ART</span> and a tint in <span class="mono">CARD_TINT</span>. The maps read 38 and 39 because both carry <span class="mono">guide</span>, which belongs to the library list rather than the grid, and <span class="mono">CARD_TINT</span> also tints the five training guides, whose art comes from <span class="mono">TrainingThumb</span>.</td></tr>
+<tr><td>Path order matches defined lessons</td><td>32 path entries, 32 definitions, no drift.</td></tr>
+<tr><td>No two lessons teach the same thing twice</td><td>Scanned course-wide on <span class="mono">kind</span> + <span class="mono">paragraphs</span> + <span class="mono">pairs</span> + <span class="mono">caption</span>: zero byte-identical card bodies. m5l4 and m5l3 sit closest &#8212; ratio and extraction &#8212; and are split by subject.</td></tr>
+<tr><td>m5l7 holds to the Modules 2&#8211;5 review plan</td><td>Distractors stay on topic, and decision sub-labels describe each option rather than telegraphing which is right.</td></tr>
+<tr><td>A card&#8217;s words match wherever the card appears</td><td>42 cards, one source each. Text is authored once and copied out by <span class="mono">syncCardText()</span> for the 37 collectibles and <span class="mono">syncTrainingText()</span> for the 5 guides, so the reward moment and the collection sheet cannot drift apart.</td></tr>
+<tr><td>No two collectible cards share a name</td><td>Distinct across both registries &#8212; 37 collectibles in <span class="mono">COLLECTION</span>, 5 guides in <span class="mono">TRAINING_CARDS</span>, no title used twice. The invariant does not depend on which lists render together.</td></tr>
+<tr><td>Brew challenges</td><td>7 of 32 lessons, by design. m5l7 intentionally has none &#8212; it would ask for a machine the learner does not own.</td></tr>
+</table></section>
+
+<section class="section"><div class="sec-head"><div class="eyebrow">Disposition</div><h2>Deferred, decided, and the one thing still open</h2><p class="sec-intro">Every row in the first table is closed: it either does not render in the v1 cut, or it is a decision already taken. The second table holds the only item still open, and no tooling can close it.</p></div>
+<table class="ledger"><tr><th>Item</th><th>Where</th><th>Disposition</th></tr>
+<tr><td>Tap targets under 44px</td><td class="loc">customize.jsx:556, gating.jsx:193</td><td>Backdrop swatches (28px) and the rewarded-ad close (30px). Neither renders in the v1 cut; both are now reachable for review by setting <span class="mono">Scope</span> to <i>Everything</i> in Tweaks. Fix when the surfaces ship.</td></tr>
+<tr><td>Rewarded ad hardcodes the dark accent</td><td class="loc">gating.jsx:167 &#183; AD_RING</td><td><span class="mono">#E07A4F</span> would be the wrong orange in cupping. v2 surface.</td></tr>
+<tr><td>Accent held at 4.23 in cupping</td><td class="loc">--accent</td><td>Short of 4.5 only as small text on <span class="mono">--bg</span>; passes on <span class="mono">--surface</span> where most of it lives. Moving the one brand colour costs more than it buys.</td></tr>
+<tr><td>Berry at 3.86 in dark roast</td><td class="loc">--berry</td><td>The mirror of the cupping problem, far smaller in scope: it reads as the cross mark, not as text.</td></tr>
+<tr><td>Path expansion lives on a bare global</td><td class="loc">screens.jsx:1281&#8211;1282</td><td><span class="mono">window.__pathExpandedMods</span> mirrors React state so an open module survives navigation. Session scope is deliberate (comment, 1279&#8211;1280); being a <span class="mono">window</span> global is not &#8212; nothing resets it, <span class="mono">wipeProgress()</span> does not clear it, and every screens-overview iframe shares one copy. It cannot render wrongly: <span class="mono">open</span> short-circuits on <span class="mono">!canCollapse</span> (1346). Left as-is &#8212; the fix is state plumbing, not behaviour.</td></tr>
+<tr><td>No deep link into the reward content phase</td><td class="loc">app.jsx:99&#8211;103</td><td>All three reward screens open on <span class="mono">phase: 'roasty'</span> and the routes set only view, lesson and points &#8212; so the content phase, the card preview and the module flip are reachable only by waiting out the animation. Reviewer-facing, not user-facing. A <span class="mono">phase</span> field read as the <span class="mono">useStateR</span> initial value would close it.</td></tr>
+</table>
+<table class="ledger"><caption>Open &#183; needs a device, not a check</caption><tr><th>Item</th><th>Where</th><th>State</th></tr>
+<tr><td>Hairlines below 3:1 in both moods</td><td class="loc">--rule</td><td>Decoration, so not a violation &#8212; but this UI leans on edges to carry structure. <b>Open:</b> wants one look on a real phone at low brightness.</td></tr>
+</table></section>
+
+<section class="section"><div class="sec-head"><div class="eyebrow">Written down late</div><h2>Behaviour the spec described wrongly</h2><p class="sec-intro">Not defects &#8212; the code is right and the description was thin. Recorded here so the next reader does not file them as bugs.</p></div>
+<table class="ledger"><tr><th>Behaviour</th><th>Where</th><th>What actually happens</th></tr>
+<tr><td>All three reward screens are two-phase</td><td class="loc">rewards.jsx:26, 209, 350</td><td>Each opens on <span class="mono">phase: 'roasty'</span> &#8212; a full-screen <span class="mono">RoastyMoment</span> &#8212; and swaps to content on <span class="mono">onDone</span>. Lesson complete and the reward card auto-advance at the <span class="mono">RoastyMoment</span> default of 2000ms (roasty.jsx:724); module complete overrides to 2200ms. The spec described one screen.</td></tr>
+<tr><td>Phase two carries two more states</td><td class="loc">rewards.jsx:27, 210&#8211;211</td><td>Lesson complete has a card-preview overlay (<span class="mono">preview</span>); module complete has a card flip (<span class="mono">flipped</span> plus <span class="mono">half</span>, which toggles at the 410ms midpoint so exactly one face is ever shown). Neither was documented.</td></tr>
+<tr><td>The Path self-prunes as you finish work</td><td class="loc">screens.jsx:1345&#8211;1346</td><td><span class="mono">canCollapse = allDone &amp;&amp; !mod.locked</span>, and a collapsible module defaults closed. In-progress and locked modules cannot be collapsed at all &#8212; so finished work folds into one row and the path stays short. Deliberate; just never written down.</td></tr>
+</table></section>
+
+<section class="section"><div class="sec-head"><div class="eyebrow">Your half</div><h2>What the machine cannot check</h2><p class="sec-intro">Four judgement calls. Each needs the course played, not scanned.</p></div>
+<div class="grid2">
+<div class="fitem"><div class="fhead"><span class="sev note">note</span><span class="ftitle">Is each question worth asking</span><span class="floc mono">judgement</span></div><div class="fbody">A card can be structurally perfect and still test a detail that does not matter, or give its answer away through phrasing. Watch for questions where the correct option is simply the longest or most specific &#8212; the commonest tell in authored quizzes.</div></div>
+<div class="fitem"><div class="fhead"><span class="sev note">note</span><span class="ftitle">Do the explanations teach</span><span class="floc mono">judgement</span></div><div class="fbody">Every graded card has an explanation, but I can only confirm one exists. Whether it explains <i>why</i> the wrong answers are wrong is the difference between a quiz and a lesson.</div></div>
+<div class="fitem"><div class="fhead"><span class="sev note">note</span><span class="ftitle">Pacing</span><span class="floc mono">judgement</span></div><div class="fbody">257 cards across 32 lessons averages about 8 per lesson. Whether a particular lesson drags, or stops before it lands, only shows up when you play it.</div></div>
+<div class="fitem"><div class="fhead"><span class="sev note">note</span><span class="ftitle">Real-device feel</span><span class="floc mono">judgement</span></div><div class="fbody">Safe areas, thumb reach, and whether the drill timers feel generous or stressful. None of it is visible in a desktop preview &#8212; and the open hairline item above wants the same session.</div></div>
+</div></section>
+
+<section class="section"><div class="sec-head"><div class="eyebrow">Contrast</div><h2>Where the palette lands</h2><p class="sec-intro">Measured in both moods, on both backgrounds. Two pairs sit below AA by decision, not oversight &#8212; both are listed above with the reasoning.</p></div>
+<table class="ctable"><tr><th>Pair</th><th>Cupping</th><th>Dark roast</th><th>Where it shows</th></tr>
+<tr><td>warn on bg</td><td class="r-ok">4.55 aa</td><td class="r-ok">8.53 ok</td><td>streak flame, fastest-answer callout</td></tr>
+<tr><td>warn on surface</td><td class="r-ok">4.88 aa</td><td class="r-ok">7.83 ok</td><td>completion glow</td></tr>
+<tr><td>sage on bg</td><td class="r-ok">4.76 aa</td><td class="r-ok">6.84 ok</td><td>correct answers, learned terms</td></tr>
+<tr><td>sage on surface</td><td class="r-ok">5.10 aa</td><td class="r-ok">6.28 ok</td><td>pass marks</td></tr>
+<tr><td>accent on bg</td><td class="r-weak">4.23 held</td><td class="r-ok">6.18 ok</td><td>eyebrows, links, current step</td></tr>
+<tr><td>berry on surface</td><td class="r-ok">6.09 ok</td><td class="r-weak">3.86 held</td><td>wrong answers, the cross mark</td></tr>
+</table></section>
+
+<section class="section"><div class="sec-head"><div class="eyebrow">Clean</div><h2>What came back with nothing wrong</h2><p class="sec-intro">Stated explicitly, because &#8220;no findings&#8221; is a result. These are the checks most likely to be hiding a shipping bug.</p></div>
+<div class="clean-list">
+<div class="cl"><b>Answer keys &#8212; exactly one correct, every card</b><span>58 graded</span></div>
+<div class="cl"><b>Match pairs unique, no side missing</b><span>6 cards</span></div>
+<div class="cl"><b>Every blank&#8217;s answer among its own options</b><span>all concept</span></div>
+<div class="cl"><b>Card stacks and module rewards all present</b><span>5 modules</span></div>
+<div class="cl"><b>Every store registered and cleared at its scope</b><span>7 progress + 2 account</span></div>
+<div class="cl"><b>Every interactive row is a real button</b><span>settings, account</span></div>
+<div class="cl"><b>Every style hook matches something in the build</b><span>whole app</span></div>
+<div class="cl"><b>No literal font sizes outside the tokens</b><span>all screens</span></div>
+<div class="cl"><b>Ampersands only inside a proper name</b><span>whole app</span></div>
+<div class="cl"><b>No double spaces, dot-ellipses or fake em dashes</b><span>1,445 strings</span></div>
+</div></section>
+</main></div>
+<script>(function(){var tg=document.getElementById('theme-toggle');tg.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;document.documentElement.setAttribute('data-mood',b.dataset.mood);tg.querySelectorAll('button').forEach(function(x){x.classList.toggle('active',x===b)})})})();</script>
+</body></html>

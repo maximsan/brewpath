@@ -1,4 +1,4 @@
-# Coffee Quest — Architecture
+# BrewPath — Architecture
 
 ## Layer Overview
 

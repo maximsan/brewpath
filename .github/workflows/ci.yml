@@ -9,6 +9,27 @@ env:
   FLUTTER_VERSION: "3.44.1"
 
 jobs:
+  # Pull requests only: the check compares a branch against its base, and by the
+  # time a commit is on main it has already been through it. Skipped entirely
+  # when the PR carries the `no-changelog` label — the escape hatch for
+  # refactors, formatting passes and regenerated output, which the changelog
+  # deliberately does not record.
+  changelog:
+    name: changelog
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'pull_request' &&
+      !contains(github.event.pull_request.labels.*.name, 'no-changelog')
+    steps:
+      # Full history: the check diffs against the merge base, which a shallow
+      # clone does not contain.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Require a changelog entry for product changes
+        run: tool/check_changelog.sh "${{ github.event.pull_request.base.sha }}"
+
   format:
     name: format
     runs-on: ubuntu-latest
@@ -19,8 +40,15 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
           cache: true
+      # Required for formatting, not just for analysis: `dart format` picks its
+      # style from the package's language version, which it can only read via
+      # .dart_tool/package_config.json. Without this step it falls back to the
+      # newest language version and reformats files that are correctly
+      # formatted at the pubspec's 3.8 floor — so the job disagreed with every
+      # local run and with the other two jobs, both of which do resolve.
       - name: Install dependencies
         run: flutter pub get
+
       # Scoped to source dirs — `dart format .` would descend into build/
       # (Firebase plugins copy example apps there with broken includes).
       - name: Check formatting
@@ -41,10 +69,8 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      # Info-level lints (e.g. public_member_api_docs) report but don't fail CI;
-      # warnings and errors still do. flutter analyze defaults --fatal-infos on.
       - name: Analyze
-        run: flutter analyze --no-fatal-infos
+        run: flutter analyze
 
       # dart_code_linter's per-function metrics (source-lines-of-code,
       # cyclomatic-complexity, nesting, parameter/method counts) aren't surfaced

@@ -1,5 +1,5 @@
-import 'package:coffee_quest/services/remote_config/remote_config_keys.dart';
-import 'package:coffee_quest/services/remote_config/remote_config_service.dart';
+import 'package:brew_path/services/remote_config/remote_config_keys.dart';
+import 'package:brew_path/services/remote_config/remote_config_service.dart';
 
 /// Returns the MVP defaults — the default until Firebase is activated, and the
 /// impl used by tests. Mirrors the defaults the Firebase impl seeds.

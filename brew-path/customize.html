@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>BrewPath — Customize Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #1a1612; color: #EDE6D6;
+    font-family: 'IBM Plex Sans', sans-serif; }
+  .page { padding: 56px 48px 96px; }
+  .head { max-width: 1100px; margin: 0 auto 8px; }
+  .smallcaps { font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: #C98A6A; margin-bottom: 12px; }
+  h1 { font-family: 'Fraunces', serif; font-weight: 400; font-size: 42px;
+    line-height: 1.05; letter-spacing: -0.02em; margin: 0; }
+  .sub { color: #8C9089; font-size: 15px; line-height: 1.55; margin-top: 12px; max-width: 600px; }
+  a.live { color: #D9694C; text-decoration: none; font-size: 13px;
+    border: 1px solid #2A2420; padding: 8px 14px; border-radius: 2px;
+    display: inline-block; margin-top: 18px; }
+  a.live:hover { background: #2A2420; }
+
+  .section { max-width: 1400px; margin: 76px auto 0; }
+  .section-head { max-width: 1100px; margin: 0 0 36px; display: flex;
+    align-items: flex-end; justify-content: space-between; gap: 24px;
+    border-bottom: 1px solid #2A2420; padding-bottom: 20px; }
+  .section-head .ttl { font-family: 'Fraunces', serif; font-weight: 400;
+    font-size: 28px; letter-spacing: -0.01em; margin: 0; }
+  .section-head .meta { font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: #8C9089; white-space: nowrap; }
+  .section-head .desc { color: #8C9089; font-size: 14px; line-height: 1.5;
+    margin: 8px 0 0; max-width: 540px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 52px 32px; max-width: 1400px; margin: 0 auto; }
+  .frame { display: flex; flex-direction: column; align-items: center; }
+  .phone-shell { width: 300px; height: 651px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.45); border-radius: 44px;
+    overflow: hidden; background: transparent; position: relative; }
+  .phone-shell iframe { width: 100%; height: 100%; border: 0;
+    background: transparent; display: block; pointer-events: auto; }
+  .caption { margin-top: 16px; width: 300px; }
+  .caption .row { display: flex; align-items: baseline; gap: 10px; }
+  .caption .num { font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.12em; color: #D9694C; flex-shrink: 0; }
+  .caption .name { font-family: 'Fraunces', serif; font-size: 18px;
+    letter-spacing: -0.01em; color: #EDE6D6; }
+  .caption .how { color: #8C9089; font-size: 13px; line-height: 1.5;
+    margin: 7px 0 0; padding-left: 30px; }
+  .caption .tag { font-family: 'IBM Plex Mono', monospace; font-size: 9.5px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: #6E7368;
+    border: 1px solid #2A2420; border-radius: 999px; padding: 3px 9px;
+    margin-left: auto; flex-shrink: 0; align-self: center; }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="head">
+      <div class="smallcaps">BREWPATH · CUSTOMIZE STUDIO</div>
+      <h1>Make Roasty and your grove yours.</h1>
+      <p class="sub">A self-contained premium flow: hit the paywall, start the trial, and land in the Studio. Dress up Roasty and choose which plant grows in your grove; the mood player is a third door held for the v2 build. Every state is a live frame below; tap inside any to use it.</p>
+      <a class="live" href="screens-overview.html">← Back to all screens</a>
+      <a class="live" href="index.html" style="margin-left:10px;">Open full prototype →</a>
+    </div>
+
+    <div id="sections"></div>
+  </div>
+
+  <script>
+    const SECTIONS = [
+      {
+        title: 'Unlock',
+        meta: '2 STATES · GATE',
+        desc: 'Customization sits behind BrewPath Plus. The paywall teases a dressed-up Roasty and the plan picker; the welcome beat lands right after the trial starts.',
+        games: [
+          ['paywall',      'P1', 'Plus paywall',   'A dressed-up Roasty hero, three headline benefits, and a yearly/monthly picker leading into a 7-day free trial.', 'GATE'],
+          ['plus-welcome', 'P2', 'Welcome to Plus', 'The celebratory confirmation — trial started, everything unlocked, one tap straight into the Studio.', 'WELCOME'],
+        ],
+      },
+      {
+        title: 'Studio hub',
+        meta: '1 STATE · ENTRY',
+        desc: 'The landing once unlocked — each door previews the current look so the user sees their own Roasty and plant before stepping in. Two doors in the v1 cut; the mood player joins in v2.',
+        games: [
+          ['studio', 'S1', 'Studio hub', 'Choose your plant, dress up Roasty, or open the mood player. Reached from Profile once Plus is active.', 'HUB'],
+        ],
+      },
+      {
+        title: 'Customize Roasty',
+        meta: '2 STATES · COMPANION',
+        desc: 'Dress the mascot and watch every reaction. Changes mirror live across the whole app — Home, lessons, onboarding — the moment they’re applied.',
+        games: [
+          ['roasty-studio', 'R1', 'Dress up Roasty', 'A pinned live preview with roast, hat, accessory and sprout pickers. “Surprise me” randomizes; Apply commits the look.', 'DRESS'],
+          ['mood-player',   'R2', 'Mood player',     'Roasty centered on a swappable backdrop; tap a reaction — correct, points earned, sleeping — to see them perform it. Deferred to v2: hidden from navigation in the v1 cut.', 'PLAY · V2'],
+        ],
+      },
+      {
+        title: 'Customize your grove',
+        meta: '1 STATE · GROVE',
+        desc: 'Two axes, not one. A PLANT is which coffee species you own — real plant, own silhouette. LIGHT is what it stands in — mood only, applied over any plant.',
+        games: [
+          ['tree-chooser', 'G1', 'Choose your plant', 'Three species — Arabica, Robusta, Liberica — with a live preview, a plain-language spec strip (home, grows, tastes like) and three lights on top. Arabica free, the other two on Plus: one rule, no third tier.', 'GROVE'],
+        ],
+      },
+    ];
+
+    const root = document.getElementById('sections');
+    SECTIONS.forEach((sec) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'section';
+      wrap.innerHTML = `
+        <div class="section-head">
+          <div>
+            <div class="ttl">${sec.title}</div>
+            <p class="desc">${sec.desc}</p>
+          </div>
+          <div class="meta">${sec.meta}</div>
+        </div>
+        <div class="grid"></div>
+      `;
+      const grid = wrap.querySelector('.grid');
+      sec.games.forEach(([slug, num, name, how, tag]) => {
+        const cell = document.createElement('div');
+        cell.className = 'frame';
+        cell.innerHTML = `
+          <div class="phone-shell">
+            <iframe src="index.html?screen=${slug}" title="${name}" loading="lazy"></iframe>
+          </div>
+          <div class="caption">
+            <div class="row">
+              <span class="num">${num}</span>
+              <span class="name">${name}</span>
+              <span class="tag">${tag}</span>
+            </div>
+            <p class="how">${how}</p>
+          </div>
+        `;
+        grid.appendChild(cell);
+      });
+      root.appendChild(wrap);
+    });
+  </script>
+</body>
+</html>

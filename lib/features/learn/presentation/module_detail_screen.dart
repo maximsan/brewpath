@@ -1,12 +1,12 @@
-import 'package:coffee_quest/core/widgets/error_view.dart';
-import 'package:coffee_quest/core/widgets/loading_indicator.dart';
-import 'package:coffee_quest/core/widgets/section_header.dart';
-import 'package:coffee_quest/features/learn/presentation/module_detail_hero_widget.dart';
-import 'package:coffee_quest/features/learn/presentation/module_lesson_card_widget.dart';
-import 'package:coffee_quest/features/progress/domain/progress_providers.dart';
-import 'package:coffee_quest/shared/models/lesson_model.dart';
-import 'package:coffee_quest/shared/models/module_model.dart';
-import 'package:coffee_quest/shared/repositories/content_repository.dart';
+import 'package:brew_path/core/widgets/error_view.dart';
+import 'package:brew_path/core/widgets/loading_indicator.dart';
+import 'package:brew_path/core/widgets/section_header.dart';
+import 'package:brew_path/features/learn/presentation/module_detail_hero_widget.dart';
+import 'package:brew_path/features/learn/presentation/module_lesson_card_widget.dart';
+import 'package:brew_path/features/progress/domain/progress_providers.dart';
+import 'package:brew_path/shared/models/lesson_model.dart';
+import 'package:brew_path/shared/models/module_model.dart';
+import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

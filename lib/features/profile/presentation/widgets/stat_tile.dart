@@ -1,3 +1,5 @@
+import 'package:brew_path/shared/theme/app_radii.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
 /// Square stat tile used in the "Your progress" grid: a tinted icon badge
@@ -22,19 +24,18 @@ class StatTile extends StatelessWidget {
 
   static const double _cornerRadius = 20;
   static const double _badgeSize = 48;
-  static const double _badgeRadius = 14;
   static const double _iconSize = 24;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
 
     return Container(
       decoration: BoxDecoration(
-        color: colors.surface,
+        color: mood.surface,
         borderRadius: BorderRadius.circular(_cornerRadius),
-        border: Border.all(color: colors.outlineVariant),
+        border: Border.all(color: mood.rule),
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -45,13 +46,13 @@ class StatTile extends StatelessWidget {
             height: _badgeSize,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: colors.primaryContainer,
-              borderRadius: BorderRadius.circular(_badgeRadius),
+              color: mood.accent,
+              borderRadius: BorderRadius.circular(AppRadii.chrome),
             ),
             child: Icon(
               icon,
               size: _iconSize,
-              color: colors.onPrimaryContainer,
+              color: mood.accentInk,
             ),
           ),
           const Spacer(),
@@ -61,7 +62,7 @@ class StatTile extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.w800,
-              color: colors.onSurface,
+              color: mood.ink,
             ),
           ),
           const SizedBox(height: 2),
@@ -70,7 +71,7 @@ class StatTile extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: colors.onSurfaceVariant,
+              color: mood.inkMute,
             ),
           ),
         ],

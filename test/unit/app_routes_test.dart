@@ -1,5 +1,5 @@
-import 'package:coffee_quest/app/app_router.dart';
-import 'package:coffee_quest/core/constants/app_routes.dart';
+import 'package:brew_path/app/app_router.dart';
+import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';

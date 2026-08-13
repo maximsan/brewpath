@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 //
-// release.js — cut a Coffee Quest release.
+// release.js — cut a BrewPath release.
 //
 // Performs the TestFlight/App Store release ritual in one step:
-//   1. Bumps the version in coffee_quest/pubspec.yaml (always bumps the build
+//   1. Bumps the version in pubspec.yaml (always bumps the build
 //      number; optionally bumps the semantic version).
 //   2. Stamps the "## [Unreleased]" section of docs/CHANGELOG.md with the new
 //      version and today's date, and opens a fresh empty Unreleased block.
 //   3. (with --commit) commits both files and creates an annotated git tag.
 //
-// Usage (run from coffee_quest/):
+// Usage (run from the repo root):
 //   node tool/release.js [patch|minor|major|X.Y.Z] [--commit] [--dry-run] [--allow-empty]
 //
 //   (no version arg)   bump build number only           1.0.0+1 -> 1.0.0+2
@@ -29,7 +29,7 @@ const path = require("node:path");
 const { execFileSync } = require("node:child_process");
 
 // Repo-relative paths of the two files a release touches.
-const PUBSPEC_RELATIVE_PATH = "coffee_quest/pubspec.yaml";
+const PUBSPEC_RELATIVE_PATH = "pubspec.yaml";
 const CHANGELOG_RELATIVE_PATH = "docs/CHANGELOG.md";
 
 // Matches the first `version: X.Y.Z+B` line in pubspec.yaml, capturing the

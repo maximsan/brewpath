@@ -1,5 +1,5 @@
-import 'package:coffee_quest/shared/theme/app_colors.dart';
-import 'package:coffee_quest/shared/theme/app_typography.dart';
+import 'package:brew_path/shared/theme/app_typography.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
 /// Text-only accent button (e.g. "Already have progress? Restore"). Mirrors
@@ -16,16 +16,18 @@ class LinkButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mood = context.mood;
     return TextButton(
       onPressed: onPressed,
       style: TextButton.styleFrom(
-        foregroundColor: AppColors.darkRoastAccent,
+        foregroundColor: mood.accent,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       ),
       child: Text(
         label,
         style: AppTypography.body(
-          color: AppColors.darkRoastAccent,
+          mood,
+          color: mood.accent,
         ).copyWith(decoration: TextDecoration.none),
       ),
     );

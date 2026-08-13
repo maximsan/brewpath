@@ -1,11 +1,20 @@
-# Coffee Quest — AGENTS.md
+# BrewPath — AGENTS.md
 
 ## Project Layout
 
+The Flutter app is **at the git root** — there is no nested app directory.
+
 ```
 brewpath/               ← git root, AGENTS.md lives here
-├── coffee_quest/       ← Flutter app; run ALL flutter/dart commands from here
-├── docs/               ← Architecture and task-plan docs
+├── lib/                ← Flutter app source (package: brew_path)
+├── test/               ← unit + widget tests
+├── integration_test/   ← integration tests
+├── assets/             ← bundled content, fonts, images
+├── ios/                ← iOS runner (SPM-only; no Podfile)
+├── tool/               ← release + maintenance scripts
+├── brew-path/          ← design source (React prototype, not built)
+├── docs/               ← architecture, design reference and task-plan docs
+├── learning/           ← hands-on Flutter course for this app
 └── .claude/            ← Claude Code project settings
 ```
 
@@ -30,7 +39,7 @@ brewpath/               ← git root, AGENTS.md lives here
   `Firebase*.instance` from feature code. Activation (real project,
   `flutterfire configure`, plist, flip the flag + three provider one-liners) is a
   manual user step.
-- **Package imports within `lib/`.** Use `package:coffee_quest/…` instead of
+- **Package imports within `lib/`.** Use `package:brew_path/…` instead of
   `../…` for all imports inside the `lib/` directory.
 - **Regenerate after model changes.** Run `dart run build_runner build` whenever
   a Freezed model, Riverpod provider, or Drift table is added or modified.
@@ -45,18 +54,18 @@ of that file:
 
 - **After meaningful work:** run the `/changelog` skill — it drafts Unreleased
   entries from the actual code diffs for review.
-- **At release time:** run `node coffee_quest/tool/release.js` — it stamps the
+- **At release time:** run `node tool/release.js` — it stamps the
   version + date, bumps `pubspec.yaml`, and tags the release.
 
 ## Development commands
 
-Run all flutter/dart commands from `coffee_quest/`. The full command list with
+Run all flutter/dart commands from the repo root. The full command list with
 explanations — plus test and iOS/SPM build notes — lives in
-[`coffee_quest/README.md`](coffee_quest/README.md).
+[`README.md`](README.md).
 
 ## Code Conventions
 
-- **Imports:** always `package:coffee_quest/…` within `lib/`; never relative `../` imports
+- **Imports:** always `package:brew_path/…` within `lib/`; never relative `../` imports
 - **Comments:** TSDoc only for complex logic or third-party integrations; skip self-evident code
 - **Models:** Freezed for all content DTOs; Drift `Table` classes for persisted records
 - **Providers:** function-style `@riverpod` only; class-based `@riverpod` only when state is mutable
@@ -72,8 +81,9 @@ Magic numbers and per-function size/complexity are now **lint-enforced** by
 conventions — follow every rule below on each new or modified file:
 
 - **No magic numbers** (lint-enforced). Extract meaningful or repeated literals
-  to named `static const` or theme tokens (`AppSpacing`, `AppColors`,
-  `AppTypography`); only `0`/`1`/`2` inline, with intent names (`_stageSize`),
+  to named `static const` or theme tokens (`AppSpacing`, `AppRadii`,
+  `MoodColors`, `ArtColors`, `OverlayColors`, `AppTypography`); only
+  `0`/`1`/`2` inline, with intent names (`_stageSize`),
   never bare numbers in the widget tree.
 - **Descriptive names.** No single-letter identifiers except trivial loop
   indices (`i`). Animation/controller values are `progress`, not `t`; phase

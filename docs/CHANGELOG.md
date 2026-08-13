@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Coffee Quest are recorded here.
+All notable changes to BrewPath are recorded here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 This is the single place to track **major app changes** over time — when you
@@ -24,9 +24,9 @@ Two helpers keep this near-zero effort:
 | When | Do this | What it does |
 | --- | --- | --- |
 | You finished something worth remembering | Run **`/changelog`** in Claude Code | Reads your recent code changes (not commit messages), proposes Added/Changed/Fixed bullets, and — once you approve — writes them into **[Unreleased]** below. |
-| You're shipping a build to TestFlight / App Store | Run **`node coffee_quest/tool/release.js`** | Renames **[Unreleased]** to a dated version heading, opens a fresh empty [Unreleased], bumps the version in `pubspec.yaml`, and (with `--commit`) tags the release. |
+| You're shipping a build to TestFlight / App Store | Run **`node tool/release.js`** | Renames **[Unreleased]** to a dated version heading, opens a fresh empty [Unreleased], bumps the version in `pubspec.yaml`, and (with `--commit`) tags the release. |
 
-`release.js` usage (run from `coffee_quest/`):
+`release.js` usage (run from the repo root):
 
 ```bash
 node tool/release.js                  # 1.0.0+1 → 1.0.0+2   (build number only)
@@ -44,9 +44,120 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- A **Favorites screen** — the cards you have saved, reached from a heart in the
+  Cards tab app bar. The list derives from the existing in-memory favourites
+  set rather than storing a second copy, so it stays correct wherever a card is
+  favourited.
+- **`AppRoutes`** — a catalog pairing each route's go_router `name` with its
+  `path` on one entry, so the two can no longer drift apart. The router builds
+  every `GoRoute` from it, replacing sixteen pairs of hardcoded string
+  literals.
+- Two colour moods — **Cupping** (light) and **Dark Roast** (dark) — held as
+  `MoodColors`, a single `ThemeExtension` carrying the design's own 13 token
+  names plus the two background-derived veils. Screens read them through
+  `context.mood`. Both moods are reachable through the appearance setting
+  below.
+- An **appearance setting** — Light / Dark / System — on Settings, persisted in
+  the settings row and defaulting to Dark. `System` follows the OS live. The
+  preference is read during bootstrap and handed to the first build, so the
+  opening frame is already in the right mood rather than flashing the wrong one
+  and correcting itself.
+- Fonts are bundled as real Flutter font assets under `assets/fonts/`,
+  replacing the `google_fonts` package and its runtime CDN fetch.
+- Roasty became a **companion subsystem** rather than a loading-screen mascot:
+  a mood + reaction API with a speech bubble and a static (non-animating) mode,
+  speaking lines from the new `assets/content/companion_lines.json`. It now
+  turns up on lesson completion.
+- A floating **points-gain toast** that rises when points are awarded.
+- A **module-summary screen** with a module-complete moment, reached when the
+  last lesson in a module is finished.
+- A **card detail screen**, and **favourite cards** — a card can be saved and
+  read in full.
+- **`learning/`** — a hands-on, learn-by-doing Flutter course for this app: a
+  teaching contract in `README.md` and a `curriculum.md` that marks the current
+  step.
+- **The design source of truth now lives in the repo.** The React prototype is
+  tracked under `brew-path/`, and `docs/design/` is the reference that indexes
+  it — product, scope, design system, information architecture, mechanics,
+  content, components and flows — so app work can be checked against the design
+  without reading the prototype.
+- The design's 15 illustration colours as `ArtColors` — the roast ramp, the
+  cherry cross-section ramp and the standalone art colours — kept out of the
+  mood system on purpose: a ripe cherry is the same colour in either mood.
+  `ArtColors.roastAt()` gives a continuous point on the roast ramp, so the
+  roast meter reads one colour story shared with every roast drawing.
+- The three fixed overlays as `OverlayColors` (media scrim, its ink, and the
+  modal dim). They are declared identically in both moods in the design, so a
+  modal darkens the page in either one instead of inverting with it.
+- `AppRadii` — the design's two radius languages (2px editorial for cards and
+  buttons, 14px soft chrome for media frames and sheets) plus the 999px pill.
+- `OffTokens`, a register for values deliberately outside the token system,
+  each carrying its reason in code rather than a silenced lint. First entries
+  are the rewarded-ad canvas and its countdown ring, which keeps the Dark Roast
+  accent in both moods because the ad canvas is fixed near-black.
+
 ### Changed
 
+- `AppStrings` is now **`AppLabels`**, matching what it holds: user-facing
+  labels rather than arbitrary strings.
+- CI gained a **changelog job**: a pull request that changes `lib/`,
+  `assets/content/` or `pubspec.yaml` now fails unless it adds an entry here.
+  Generated Dart does not count, and the `no-changelog` label skips the check
+  for refactors, formatting and regenerated output. Runnable locally as
+  `tool/check_changelog.sh`.
+- `AppTheme.lightTheme` is now `AppTheme.darkRoast` — the old name described a
+  `Brightness.dark` theme.
+- App code no longer reads `ColorScheme`; it stays populated purely so stock
+  Material widgets are styled.
+- Text styles take the ambient mood (`AppTypography.body(context.mood)`)
+  instead of defaulting to hard-coded dark-roast ink.
+- **The app is BrewPath.** The Dart package is `brew_path` (was
+  `coffee_quest`), and the name is swept through code, tests, docs and the
+  release tooling.
+- **The Flutter app lives at the git root**, with no nested `coffee_quest/`
+  directory; CI runs from the root. Paths in the released sections below are
+  written against the old layout — they are left as they shipped.
+- Lint stack moved from `flutter_lints` to **`very_good_analysis` +
+  `dart_code_linter`**, with the DCL metrics (complexity, nesting, function
+  size, magic numbers) calibrated to this codebase and CI failing on warnings.
+  The existing code was remediated to satisfy them.
+- `tool/release.sh` was rewritten as **`tool/release.js`**, run with `node`.
+- The design prototype was restructured to the **30-lesson syllabus**, and the
+  `docs/design/` reference regenerated to match it.
+- Dependencies refreshed — `flutter_riverpod` 3.3.2, `riverpod_annotation`
+  4.0.3, and `riverpod_generator` off its `-dev` release onto 4.0.4.
+- Everything that must **not** flip with the mood — illustration colours, fixed
+  overlays, spacing and radii — is now `static const` on an `abstract final
+  class` with no `of(context)` accessor, so mood-dependence cannot be written
+  rather than being merely discouraged. A test enforces it, and the colour and
+  radius tests read `brew-path/index.html` directly, so a value drifting from
+  the design bundle fails the suite.
+
 ### Fixed
+
+- The current node on the Path rail drew its play arrow in its own background
+  colour, leaving the glyph invisible. It is an outlined node now, per the
+  design.
+- Correct-answer feedback in the mini-games used a raw Material green instead
+  of the design's `sage`.
+- The loading-screen water drop used two mis-transcribed hexes; both now match
+  the design bundle.
+- Hairlines that resolved to `outlineVariant` painted in full-strength ink
+  rather than the `rule` token.
+- The CI format job ran `dart format` before `flutter pub get`, so it read the
+  wrong language version and failed on files that were correctly formatted. It
+  had been red on `main` for over a week.
+- A Drift migration step was guarded by `from < _schemaVersion` rather than the
+  version that introduced it, so the next schema bump would have re-run the
+  v2 → v3 column adds on a device already at v3 and failed on the duplicate
+  column. Each step now names its own version.
+
+### Removed
+
+- The 6 unused legacy colour tokens (`coffeeBrown`, `espresso`, `latte`,
+  `cream`, `surface`, `locked`).
+- `AppColors` itself. Its one remaining token, `--cream`, is now
+  `ArtColors.cream` alongside the rest of the illustration palette.
 
 ---
 

@@ -1,5 +1,4 @@
-import 'package:coffee_quest/core/constants/app_routes.dart';
-import 'package:coffee_quest/features/onboarding/presentation/welcome/welcome_screen.dart';
+import 'package:brew_path/features/onboarding/presentation/welcome/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,14 +13,9 @@ void main() {
     final router = GoRouter(
       initialLocation: '/welcome',
       routes: [
-        GoRoute(
-          path: '/welcome',
-          name: AppRoutes.welcome.name,
-          builder: (_, _) => const WelcomeScreen(),
-        ),
+        GoRoute(path: '/welcome', builder: (_, _) => const WelcomeScreen()),
         GoRoute(
           path: '/onboarding/goal',
-          name: AppRoutes.onboardingGoal.name,
           builder: (_, _) => const Scaffold(body: Text('goal-stub')),
         ),
       ],
@@ -36,7 +30,7 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
 
-    expect(find.text('COFFEE QUEST'), findsOneWidget);
+    expect(find.text('BREWPATH'), findsOneWidget);
     expect(find.textContaining('Plant your tree.'), findsOneWidget);
     expect(
       find.widgetWithText(FilledButton, 'Plant your seed'),

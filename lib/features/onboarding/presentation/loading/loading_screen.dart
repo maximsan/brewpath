@@ -1,12 +1,11 @@
-import 'package:coffee_quest/core/constants/app_routes.dart';
-import 'package:coffee_quest/features/onboarding/presentation/loading/loading_animation.dart';
-import 'package:coffee_quest/features/onboarding/presentation/loading/wake_sequence_controller.dart';
-import 'package:coffee_quest/features/onboarding/presentation/loading/widgets/pulsing_dots.dart';
-import 'package:coffee_quest/features/onboarding/presentation/loading/widgets/roasty_stage.dart';
-import 'package:coffee_quest/features/onboarding/presentation/onboarding_providers.dart';
-import 'package:coffee_quest/shared/theme/app_colors.dart';
-import 'package:coffee_quest/shared/theme/app_spacing.dart';
-import 'package:coffee_quest/shared/theme/app_typography.dart';
+import 'package:brew_path/features/onboarding/presentation/loading/loading_animation.dart';
+import 'package:brew_path/features/onboarding/presentation/loading/wake_sequence_controller.dart';
+import 'package:brew_path/features/onboarding/presentation/loading/widgets/pulsing_dots.dart';
+import 'package:brew_path/features/onboarding/presentation/loading/widgets/roasty_stage.dart';
+import 'package:brew_path/features/onboarding/presentation/onboarding_providers.dart';
+import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/app_typography.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -72,11 +71,8 @@ class _LoadingScreenState extends ConsumerState<LoadingScreen> {
   /// (`appRouter`) owns the gate→destination policy and bounces returning
   /// users on to `/learn`, so this screen does not duplicate that decision.
   void _advance() {
-    if (!mounted) {
-      return;
-    }
-
-    context.goNamed(AppRoutes.welcome.name);
+    if (!mounted) return;
+    context.goNamed('welcome');
   }
 
   @override
@@ -94,9 +90,10 @@ class _LoadingScreenState extends ConsumerState<LoadingScreen> {
     }
 
     final phase = _controller.phase;
+    final mood = context.mood;
 
     return Scaffold(
-      backgroundColor: AppColors.darkRoastBg,
+      backgroundColor: mood.bg,
       body: Semantics(
         label: 'Loading your lesson',
         liveRegion: true,
@@ -122,7 +119,7 @@ class _LoadingScreenState extends ConsumerState<LoadingScreen> {
                           children: [
                             Text(
                               'Brewing your lesson',
-                              style: AppTypography.captionItalic(),
+                              style: AppTypography.captionItalic(mood),
                             ),
                             const SizedBox(height: AppSpacing.base),
                             const PulsingDots(),
@@ -138,8 +135,8 @@ class _LoadingScreenState extends ConsumerState<LoadingScreen> {
                   bottom: _wordmarkInset,
                   child: Center(
                     child: Text(
-                      'COFFEE QUEST',
-                      style: AppTypography.smallcaps().copyWith(
+                      'BREWPATH',
+                      style: AppTypography.smallcaps(mood).copyWith(
                         letterSpacing: _wordmarkLetterSpacing,
                       ),
                     ),

@@ -1,6 +1,7 @@
-import 'package:coffee_quest/features/mini_games/domain/mini_game_result.dart';
-import 'package:coffee_quest/shared/models/lesson_step_model.dart';
-import 'package:coffee_quest/shared/theme/app_spacing.dart';
+import 'package:brew_path/features/mini_games/domain/mini_game_result.dart';
+import 'package:brew_path/shared/models/lesson_step_model.dart';
+import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
 /// Match `terms[i]` ↔ `definitions[i]` by dragging. A drop is only accepted
@@ -41,7 +42,7 @@ class _DragDropGameState extends State<DragDropGame> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
     final terms = widget.step.terms;
     final definitions = widget.step.definitions;
 
@@ -64,10 +65,10 @@ class _DragDropGameState extends State<DragDropGame> {
                               label: Text(
                                 terms[i],
                                 style: TextStyle(
-                                  color: colors.onPrimaryContainer,
+                                  color: mood.accentInk,
                                 ),
                               ),
-                              backgroundColor: colors.primaryContainer,
+                              backgroundColor: mood.accent,
                             )
                           : Draggable<int>(
                               data: i,
@@ -100,7 +101,7 @@ class _DragDropGameState extends State<DragDropGame> {
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
                               border: Border.all(
-                                color: done ? colors.primary : colors.outline,
+                                color: done ? mood.accent : mood.rule,
                                 width: done ? 2 : 1,
                               ),
                               borderRadius: BorderRadius.circular(

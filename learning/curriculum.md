@@ -1,4 +1,4 @@
-# Coffee Quest — Flutter Learning Curriculum
+# BrewPath — Flutter Learning Curriculum
 
 Two features, built end-to-end **by the learner**, each teaching a different
 slice of the stack. Build order: **B then A** — B adds the favorites feature with

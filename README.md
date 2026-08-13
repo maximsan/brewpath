@@ -1,4 +1,4 @@
-# Coffee Quest
+# BrewPath
 
 A Duolingo-style mobile app for learning coffee — short lessons and mini-games
 that grow your knowledge (and Roasty, your coffee-bean companion) one cup at a
@@ -14,24 +14,24 @@ SQLite (offline persistence) · Freezed 3 + json_serializable (content models).
 (`dart run dart_code_linter:metrics analyze lib`) for per-function size &
 complexity.
 
-Architecture and conventions live in [`../CLAUDE.md`](../CLAUDE.md); deeper
-design and milestone docs are in [`../docs/`](../docs/).
+Architecture and conventions live in [`CLAUDE.md`](CLAUDE.md); deeper
+design and milestone docs are in [`docs/`](docs/).
 
 ## Development commands
 
-Run all Flutter/Dart commands from `coffee_quest/`.
+Run all Flutter/Dart commands from the repo root.
 
-| Command | What it does |
-| --- | --- |
-| `flutter pub get` | Fetch/refresh dependencies (after editing `pubspec.yaml`). |
-| `dart run build_runner build` | Regenerate code after changing a Freezed model, Riverpod provider, or Drift table. build_runner 2.15 auto-resolves conflicts — the old `--delete-conflicting-outputs` flag is gone. |
-| `dart format lib test integration_test` | Format code. CI fails on unformatted files (`--set-exit-if-changed`). |
-| `flutter analyze` | Static analysis / lints — keep clean before pushing. |
-| `flutter test` | Run the full test suite. |
-| `flutter test test/unit/<file>` | Run a single unit test. |
-| `flutter test test/widget/<file>` | Run a single widget test. |
-| `flutter run -d "iPhone 17"` | Launch on the iOS simulator. |
-| `flutter build ios --release --no-codesign` | Release iOS build without signing (mirrors CI). |
+| Command                                     | What it does                                                                                                                                                                        |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `flutter pub get`                           | Fetch/refresh dependencies (after editing `pubspec.yaml`).                                                                                                                          |
+| `dart run build_runner build`               | Regenerate code after changing a Freezed model, Riverpod provider, or Drift table. build_runner 2.15 auto-resolves conflicts — the old `--delete-conflicting-outputs` flag is gone. |
+| `dart format lib test integration_test`     | Format code. CI fails on unformatted files (`--set-exit-if-changed`).                                                                                                               |
+| `flutter analyze`                           | Static analysis / lints — keep clean before pushing.                                                                                                                                |
+| `flutter test`                              | Run the full test suite.                                                                                                                                                            |
+| `flutter test test/unit/<file>`             | Run a single unit test.                                                                                                                                                             |
+| `flutter test test/widget/<file>`           | Run a single widget test.                                                                                                                                                           |
+| `flutter run -d "iPhone 17"`                | Launch on the iOS simulator.                                                                                                                                                        |
+| `flutter build ios --release --no-codesign` | Release iOS build without signing (mirrors CI).                                                                                                                                     |
 
 ### Tests
 
@@ -59,8 +59,8 @@ Troubleshooting:
 Debug toggles compiled in via `bool.fromEnvironment`. All default to off, so
 release builds are unaffected.
 
-| Flag           | Effect                                                              | Run with                                                    |
-| -------------- | ------------------------------------------------------------------ | ----------------------------------------------------------- |
+| Flag           | Effect                                                             | Run with                                                     |
+| -------------- | ------------------------------------------------------------------ | ------------------------------------------------------------ |
 | `LOOP_LOADING` | Loops the Roasty wake-up forever; disables auto-advance + tap-skip | `flutter run -d "iPhone 17" --dart-define=LOOP_LOADING=true` |
 
 > With **Reduce Motion** enabled, `LOOP_LOADING` holds a static "brewing" frame
@@ -85,13 +85,13 @@ for humans, one for the store.
 `tool/release.js` (below, run with `node`) **always increments `+B`**, and changes
 `X.Y.Z` only when you pass an argument:
 
-| Command | From `1.0.0+3` → | What changed |
-| --- | --- | --- |
-| `release.js` | `1.0.0+4` | build number only |
-| `release.js patch` | `1.0.1+4` | patch + build |
-| `release.js minor` | `1.1.0+4` | minor (patch reset to 0) + build |
-| `release.js major` | `2.0.0+4` | major (minor/patch reset to 0) + build |
-| `release.js 2.3.1` | `2.3.1+4` | explicit version + build |
+| Command            | From `1.0.0+3` → | What changed                           |
+| ------------------ | ---------------- | -------------------------------------- |
+| `release.js`       | `1.0.0+4`        | build number only                      |
+| `release.js patch` | `1.0.1+4`        | patch + build                          |
+| `release.js minor` | `1.1.0+4`        | minor (patch reset to 0) + build       |
+| `release.js major` | `2.0.0+4`        | major (minor/patch reset to 0) + build |
+| `release.js 2.3.1` | `2.3.1+4`        | explicit version + build               |
 
 Pre-launch it's normal to stay on `1.0.0` and bump only the build number across
 TestFlight builds; start moving `X.Y.Z` once you ship user-facing updates.
@@ -108,7 +108,6 @@ version" error. Wipes the stale Swift Package Manager caches so they re-resolve.
 Break-glass only — forces a full re-download (minutes).
 
 ```bash
-cd coffee_quest
 ./tool/reset_ios_spm.sh           # clean caches only
 ./tool/reset_ios_spm.sh --build   # clean, then flutter build ios
 ```
@@ -116,13 +115,12 @@ cd coffee_quest
 ### `tool/release.js` — cut a release
 
 Node script (no dependencies). Run when shipping a build to TestFlight / the App
-Store. Bumps the version in `pubspec.yaml`, stamps `../docs/CHANGELOG.md` with the
+Store. Bumps the version in `pubspec.yaml`, stamps `docs/CHANGELOG.md` with the
 version + date, and (with `--commit`) tags the release. Draft the changelog first
 with the `/changelog` skill. Refuses to run when `[Unreleased]` is empty — pass
 `--allow-empty` for a build-only rebuild.
 
 ```bash
-cd coffee_quest
 node tool/release.js                  # build number only: 1.0.0+1 → 1.0.0+2
 node tool/release.js minor            # → 1.1.0+2
 node tool/release.js minor --commit   # also commits + tags
@@ -136,8 +134,26 @@ Drift schema snapshots (`drift_schemas/`) and generated test helpers
 
 1. Bump `schemaVersion` in `lib/shared/storage/app_database.dart` and add the
    migration in `MigrationStrategy.onUpgrade`.
+
+   ⚠️ **Guard each step by the version it landed in, never by
+   `schemaVersion`.** A step written as `if (from < schemaVersion)` is correct
+   only until the next bump, after which it re-runs on a database that already
+   has those columns and fails on the duplicate. The failure is invisible until
+   someone else changes the schema, so it is found by the person who did not
+   cause it. Name a constant per step — `_onboardingColumnsVersion`,
+   `_themeModeVersion` — and let `schemaVersion` be the latest of them.
 2. `dart run drift_dev schema dump lib/shared/storage/app_database.dart drift_schemas/`
 3. `dart run drift_dev schema generate drift_schemas/ test/generated/`
+
+   This rewrites **every** file in `test/generated/`, not just the new one.
+   Expect no diff on the existing versions: they are generated by the pinned
+   `drift_dev`, so output matches. If they do change, the generator version
+   moved — regenerate them deliberately on their own branch rather than letting
+   the churn ride along with a schema change.
 4. Add a previous→new migration test (see `test/database/schema_smoke_test.dart`
    for the `SchemaVerifier` pattern), then `flutter test`.
+
+   Target `db.schemaVersion`, not a literal version number. `migrateAndValidate`
+   then checks the migrated database against the committed snapshot for whatever
+   the current version is, and the test stops going stale on every bump.
 5. Commit the new snapshot + regenerated helpers with the schema change.

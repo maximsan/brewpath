@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en" data-mood="dark-roast">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>BrewPath — Tree Species Proposal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#F4EFE6;--surface:#FBF7EE;--surface-2:#EFE8DA;--ink:#1B1614;--ink-mute:#6B5F54;--rule:#D8CFBF;--accent:#B8533A;--accent-ink:#FBF7EE;--sage:#5F6E55;--warn:#9A5F1C;--berry:#A8362A}
+  [data-mood="dark-roast"]{--bg:#1A130E;--surface:#251B14;--surface-2:#30231A;--ink:#F3E7D2;--ink-mute:#B59E84;--rule:#44321E;--accent:#E07A4F;--accent-ink:#1A130E;--sage:#97A285;--warn:#E6A35C;--berry:#C75450}
+  *{box-sizing:border-box}html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',sans-serif;-webkit-font-smoothing:antialiased;transition:background 300ms ease,color 300ms ease}
+  a{color:var(--accent);text-decoration:none}a:hover{color:var(--ink)}
+  .ff-display{font-family:'Fraunces',serif;font-optical-sizing:auto}
+  .mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
+  .topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:18px 40px;background:color-mix(in oklab,var(--bg) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--rule)}
+  .brand{display:flex;align-items:baseline;gap:14px}
+  .brand .mark{font-family:'Fraunces',serif;font-size:19px;letter-spacing:-0.01em}
+  .brand .tag{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--ink-mute)}
+  .theme-toggle{display:flex;gap:4px;background:var(--surface);border:1px solid var(--rule);border-radius:999px;padding:4px}
+  .theme-toggle button{appearance:none;border:none;background:transparent;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-mute);padding:7px 14px;border-radius:999px;white-space:nowrap}
+  .theme-toggle button.active{background:var(--accent);color:var(--accent-ink)}
+  .wrap{max-width:1320px;margin:0 auto;padding:0 56px 120px}
+  .hero{padding:8px 56px 8px;max-width:1320px;margin:0 auto}
+  .hero-inner{padding:40px 0 4px;max-width:800px}
+  .hero .mono{font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent)}
+  .hero h1{font-family:'Fraunces',serif;font-weight:400;font-size:50px;line-height:1.03;letter-spacing:-0.025em;margin:14px 0 0}
+  .hero p{color:var(--ink-mute);font-size:16.5px;line-height:1.6;margin:18px 0 0;text-wrap:pretty;max-width:720px}
+  .hero p b{color:var(--ink);font-weight:500}
+  .section{padding:64px 0 0;scroll-margin-top:84px}
+  .sec-head{max-width:760px;margin-bottom:28px}
+  .sec-head .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent)}
+  .sec-head h2{font-family:'Fraunces',serif;font-weight:400;font-size:34px;letter-spacing:-0.02em;margin:8px 0 0}
+  .sec-intro{color:var(--ink-mute);font-size:15px;line-height:1.6;margin:12px 0 0;text-wrap:pretty}
+  .sec-intro b{color:var(--ink);font-weight:500}
+  /* verdict */
+  .verdict{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .vcard{border:1px solid var(--rule);border-radius:2px;padding:20px 22px;background:var(--surface)}
+  .vcard.yes{border-left:3px solid var(--sage)}
+  .vcard.no{border-left:3px solid var(--rule)}
+  .vtag{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;padding:3px 8px;border-radius:999px;border:1px solid var(--rule);color:var(--ink-mute)}
+  .vcard.yes .vtag{color:var(--ink);background:color-mix(in oklab,var(--sage) 20%,var(--surface));border-color:color-mix(in oklab,var(--sage) 45%,var(--rule))}
+  .vcard h3{font-family:'Fraunces',serif;font-weight:400;font-size:22px;letter-spacing:-0.015em;margin:12px 0 0}
+  .vcard p{font-size:13.5px;line-height:1.62;color:var(--ink-mute);margin:9px 0 0;text-wrap:pretty}
+  .vcard p b{color:var(--ink);font-weight:500}
+  /* lineup */
+  .lineup{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px}
+  .plant{border:1px solid var(--rule);border-radius:2px;background:var(--surface);padding:14px;display:flex;flex-direction:column}
+  .plant .art{position:relative;height:170px;display:grid;place-items:center;background:var(--bg);border:1px solid var(--rule);border-radius:2px;overflow:hidden;padding:10px 10px 26px}
+  .plant .art img{position:static;display:block;width:100%;height:134px;max-width:none;max-height:none;object-fit:contain}
+  .silhouette{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
+  .plant .stamp{position:absolute;left:8px;right:8px;bottom:7px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-mute);background:color-mix(in oklab,var(--bg) 80%,transparent);padding:2px 5px;border:1px solid var(--rule)}
+  .plant .species{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-top:13px}
+  .plant .species.other{color:var(--warn)}
+  .plant h4{font-family:'Fraunces',serif;font-weight:400;font-size:21px;letter-spacing:-0.015em;margin:5px 0 0}
+  .plant .latin{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-mute);margin-top:4px;font-style:italic}
+  .plant dl{margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:0}
+  .plant dl div{display:grid;grid-template-columns:auto 1fr;gap:10px;padding:7px 0;border-top:1px solid var(--rule);align-items:baseline}
+  .plant dt{font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-mute);white-space:nowrap}
+  .plant dd{margin:0;font-size:12px;line-height:1.45;color:var(--ink);text-align:right}
+  .plant .tell{font-size:12.5px;line-height:1.55;color:var(--ink-mute);margin-top:12px;padding-top:11px;border-top:1px solid var(--rule);text-wrap:pretty;flex:1}
+  .plant .tell b{color:var(--ink);font-weight:500}
+  .plant .gate{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;margin-top:12px;padding-top:10px;border-top:1px solid var(--rule);color:var(--sage)}
+  .plant .gate.rare{color:var(--berry)}
+  @media(max-width:1180px){.lineup{grid-template-columns:repeat(2,1fr)}}
+  /* two-axis */
+  .axes{display:grid;grid-template-columns:1.15fr 1fr;gap:10px;align-items:start}
+  .panel{border:1px solid var(--rule);border-radius:2px;background:var(--surface);padding:20px 22px}
+  .panel h3{font-family:'Fraunces',serif;font-weight:400;font-size:20px;margin:0;letter-spacing:-0.015em}
+  .panel p{font-size:13.5px;line-height:1.62;color:var(--ink-mute);margin:10px 0 0;text-wrap:pretty}
+  .panel p b{color:var(--ink);font-weight:500}
+  .matrix{width:100%;border-collapse:collapse;margin-top:16px;font-family:'IBM Plex Mono',monospace;font-size:10px}
+  .matrix th{text-align:left;color:var(--ink-mute);font-weight:400;letter-spacing:.1em;text-transform:uppercase;font-size:8.5px;padding:0 8px 8px 0;border-bottom:1px solid var(--rule)}
+  .matrix td{padding:8px 8px 8px 0;border-bottom:1px solid var(--rule);color:var(--ink);letter-spacing:.04em}
+  .matrix td:first-child{color:var(--ink-mute)}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:999px;vertical-align:-1px;margin-right:6px;border:1px solid color-mix(in oklab,var(--ink) 25%,transparent)}
+  /* ledger */
+  .ledger{width:100%;border-collapse:collapse;margin-top:6px}
+  .ledger th{text-align:left;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-mute);font-weight:400;padding:0 16px 9px 0;border-bottom:1px solid var(--rule)}
+  .ledger td{padding:13px 16px 13px 0;border-bottom:1px solid var(--rule);font-size:13.5px;line-height:1.55;color:var(--ink-mute);vertical-align:baseline;text-wrap:pretty}
+  .ledger td:first-child{color:var(--ink);font-weight:500;width:27%}
+  .ledger td b{color:var(--ink);font-weight:500}
+  .ledger td.num{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink);white-space:nowrap;width:13%}
+  .ledger tr:last-child td{border-bottom:none}
+  /* grid2 items */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .fitem{border:1px solid var(--rule);border-radius:2px;padding:16px 18px;background:var(--surface)}
+  .fhead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .ftitle{font-weight:500;font-size:15px;flex:1;min-width:200px;color:var(--ink)}
+  .floc{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;color:var(--ink-mute)}
+  .fbody{font-size:13.5px;line-height:1.62;color:var(--ink-mute);margin-top:9px;text-wrap:pretty}
+  .fbody b{color:var(--ink);font-weight:500}
+  .sev{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;padding:3px 8px;border-radius:999px;white-space:nowrap;border:1px solid var(--rule);color:var(--ink-mute)}
+  .sev.risk{color:var(--ink);background:color-mix(in oklab,var(--warn) 20%,var(--surface));border-color:color-mix(in oklab,var(--warn) 45%,var(--rule))}
+  .sev.win{color:var(--ink);background:color-mix(in oklab,var(--sage) 20%,var(--surface));border-color:color-mix(in oklab,var(--sage) 45%,var(--rule))}
+  .callout{border:1px solid color-mix(in oklab,var(--accent) 40%,var(--rule));border-left:3px solid var(--accent);border-radius:2px;background:color-mix(in oklab,var(--accent) 7%,var(--surface));padding:20px 22px;margin-top:24px}
+  .callout .mono{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+  .callout p{font-size:14.5px;line-height:1.62;color:var(--ink);margin:10px 0 0;text-wrap:pretty;max-width:820px}
+  .steps{counter-reset:s;margin-top:8px}
+  .step{display:grid;grid-template-columns:auto 1fr;gap:16px;padding:15px 0;border-bottom:1px solid var(--rule);align-items:baseline}
+  .step:last-child{border-bottom:none}
+  .step::before{counter-increment:s;content:counter(s,decimal-leading-zero);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;color:var(--accent)}
+  .step b{font-weight:500;font-size:14.5px;color:var(--ink);display:block}.step .mono{display:inline;width:auto;margin:0;font-size:12.5px;line-height:inherit;color:var(--ink)}
+  .step span{font-size:13.5px;line-height:1.6;color:var(--ink-mute);display:block;margin-top:5px;text-wrap:pretty}
+  @media(max-width:900px){.wrap{padding:0 24px 100px}.hero,.topbar{padding-left:24px;padding-right:24px}.hero h1{font-size:38px}.verdict,.axes,.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="brand"><span class="mark">BrewPath</span><span class="tag">Grove &#183; proposal v2</span></div>
+<div class="theme-toggle" id="theme-toggle"><button data-mood="dark-roast" class="active">Dark roast</button><button data-mood="cupping">Cupping</button></div></div>
+
+<div class="hero"><div class="hero-inner">
+<div class="mono">STUDIO &#183; CHOOSE YOUR PLANT &#183; CUSTOMIZE.JSX:27</div>
+<h1>Three species, one rule. Colour survives as the light they stand in.</h1>
+<p>Today&#8217;s five skins are one set of art with five CSS filters on it &#8212; <b>Golden Hour</b> and <b>Moonlit</b> are the same plant under different lighting. That is a paint job. Real species give the same slot a reason to exist: the silhouette changes, the name is real, and the pick teaches something a beginner can use at a shelf. <b>v2 cuts the taxonomy lesson.</b> Arabica, Robusta and Liberica are all species, so the list is parallel with no hierarchy to explain. And there is only one gate in the whole feature: <b>Plus opens the Studio</b>, and all three plants and all four lights come with it.</p>
+</div></div>
+
+<div class="wrap"><main>
+
+<section class="section"><div class="sec-head"><div class="eyebrow">Verdict</div><h2>Two axes, not one</h2><p class="sec-intro">These don&#8217;t compete once you separate what they mean. A plant is <b>which coffee you own</b> &#8212; real species, permanent. Light is <b>what it&#8217;s standing in</b> &#8212; mood, seasonal, free. Three plants &#215; four lights is twelve groves from seven items.</p></div>
+<div class="verdict">
+<div class="vcard yes"><span class="vtag">primary axis</span><h3>Plant &#8212; the species itself</h3><p>Three species with genuinely different <b>silhouettes</b>: Arabica&#8217;s slim tiered frame, Robusta&#8217;s broad bushy leaf, Liberica&#8217;s huge leathery paddles. This is the only version that reads as different at 64&#215;64 in the Studio door <b>without relying on hue</b>, which also makes it the only version that works for colour-blind users and in both moods.</p></div>
+<div class="vcard no"><span class="vtag">secondary axis</span><h3>Light &#8212; the mood on it</h3><p>Keep it, cut it from five to three, and stop calling them plants. <b>Golden Hour, Moonlit, First Frost</b> applied over whatever plant you own &#8212; the filters already work, they cost nothing, and as a modifier they&#8217;re honest. As a standalone &#8220;plant&#8221; they were pretending to be something they aren&#8217;t.</p></div>
+</div>
+<div class="callout"><div class="mono">Why not five, and why not Typica</div><p>Your original instinct was right, minus one item. Arabica / Robusta / Liberica are peers &#8212; three species &#8212; so nothing needs explaining. <b>Typica, Bourbon and Geisha are varieties inside Arabica</b>, so listing them alongside it would have asked a beginner to hold a two-level taxonomy before picking a houseplant. Same reason Excelsa isn&#8217;t a fourth: it&#8217;s generally treated as a form of Liberica, so it belongs inside that entry, not beside it.</p></div>
+</section>
+
+<section class="section"><div class="sec-head"><div class="eyebrow">The lineup</div><h2>The three species a drinker actually meets</h2><p class="sec-intro">Chosen for silhouette contrast first, shelf relevance second. All three come with Plus — <b>the Studio door is the paywall</b>, so there is no second gate inside it and the chooser shows no locks. The footer on each card is an art-pipeline note, not an entitlement. Art shown is the <b>current single tree asset</b> standing in as a layout placeholder — the whole point of the proposal is that these three would not look alike.</p></div>
+<div class="lineup">
+
+<div class="plant"><div class="art"><img src="assets/trees/9.png" alt=""/><span class="stamp">art &#183; slim, tiered branches</span></div>
+<div class="species">Most coffee worldwide</div><h4>Arabica</h4><div class="latin">Coffea arabica</div>
+<dl><div><dt>Home</dt><dd>Ethiopia</dd></div><div><dt>Grows</dt><dd>High and cool</dd></div><div><dt>Tastes like</dt><dd>Sweet, fruity</dd></div></dl>
+<div class="tell">The one you&#8217;ve probably been drinking &#8212; <b>roughly six cups in ten</b>. Tall and slim, glossy leaves on flat tiered branches. Fussy: wants altitude, shade and mild weather.</div>
+<div class="gate">Ships at launch &#183; art exists today</div></div>
+
+<div class="plant"><div class="art"><img src="assets/trees/9.png" alt=""/><span class="stamp">art &#183; bushy, broad leaf, clusters</span></div>
+<div class="species">Espresso &amp; instant</div><h4>Robusta</h4><div class="latin">Coffea canephora</div>
+<dl><div><dt>Home</dt><dd>West Africa &#183; Vietnam</dd></div><div><dt>Grows</dt><dd>Low and warm</dd></div><div><dt>Tastes like</dt><dd>Bold, chocolatey</dd></div></dl>
+<div class="tell">The tough one, and the proof the idea works. <b>Broader and bushier, much larger leaves, cherries in tight clusters.</b> Twice the caffeine, and the reason espresso gets a thick crema.</div>
+<div class="gate">Ships at launch &#183; 7 new frames</div></div>
+
+<div class="plant"><div class="art"><img src="assets/trees/9.png" alt=""/><span class="stamp">art &#183; huge leathery leaves</span></div>
+<div class="species">Rare &#8212; about 1%</div><h4>Liberica</h4><div class="latin">Coffea liberica</div>
+<dl><div><dt>Home</dt><dd>Philippines &#183; Malaysia</dd></div><div><dt>Grows</dt><dd>Low and humid</dd></div><div><dt>Tastes like</dt><dd>Smoky, jackfruit</dd></div></dl>
+<div class="tell">Barely one percent of the world crop. <b>Enormous leathery leaves and the biggest cherries of any coffee</b>, on a tree that can grow twice as tall as the others.</div>
+<div class="gate rare">Later drop &#183; 7 new frames</div></div>
+
+</div>
+</section>
+
+<section class="section"><div class="sec-head"><div class="eyebrow">How they compose</div><h2>Own a plant, choose its light</h2><p class="sec-intro">The Studio door goes from one row to two: <b>Grove</b> (which plant) and <b>Light</b> (how it&#8217;s lit). The second row is the existing filter code, reduced and renamed.</p></div>
+<div class="axes">
+<div class="panel"><h3>The chooser, restructured</h3><p>Live preview on top, then role &#8594; name &#8594; latin binomial &#8594; a three-row strip in <b>plain language</b>: Home, Grows, Tastes like. No altitude figures, no species-vs-variety label. Three plants means <b>full-width rows</b> rather than a grid &#8212; thumbnail, name, and the one thing a beginner wants (what it tastes like), with no odd empty cell.</p><p>Every plant is owned once you&#8217;re past the paywall, so <b>the chooser shows no locks at all</b> — no free-vs-Plus split inside the Studio, and no third &#8220;earned&#8221; tier. Growth still runs all ten stages, seed to harvest; the species changes what the ten stages <b>look like</b>, never how many there are &#8212; so the stage logic and module milestones don&#8217;t move.</p></div>
+<div class="panel"><h3>Light &#8212; three, not five</h3><table class="matrix"><tr><th>Treatment</th><th>Reads as</th><th>Cost</th></tr>
+<tr><td><span class="dot" style="background:#C98A3C"></span>Golden Hour</td><td>Late afternoon sun</td><td>filter</td></tr>
+<tr><td><span class="dot" style="background:#7E93A8"></span>Moonlit</td><td>Cool night</td><td>filter</td></tr>
+<tr><td><span class="dot" style="background:#D9DEE0"></span>First Frost</td><td>Cold morning</td><td>filter</td></tr>
+<tr><td><span class="dot" style="background:#6B7F5A"></span>Daylight</td><td>Default, no filter</td><td>&#8212;</td></tr></table>
+<p style="margin-top:16px">Dropped: <b>Verdant</b> (indistinguishable from default) and <b>Blossom</b> (a pink canopy reads as a bug, not a season).</p></div>
+</div>
+</section>
+
+<section class="section"><div class="sec-head"><div class="eyebrow">The cost</div><h2>The honest art number, and how to not pay it all at once</h2><p class="sec-intro">This is the only real argument against species, so it deserves the real figure. Cutting five plants to three cut it by 40% on its own.</p></div>
+<table class="ledger"><tr><th>Approach</th><th>Frames</th><th>Notes</th></tr>
+<tr><td>Today &#8212; filters</td><td class="num">10</td><td>One plant, five hues. Free, and the reason the skins feel thin.</td></tr>
+<tr><td>Na&#239;ve, three species</td><td class="num">30</td><td>Three plants &#215; ten stages, all bespoke. Correct, and more than this feature is worth up front.</td></tr>
+<tr><td>Shared early stages</td><td class="num">24</td><td>Stages 1&#8211;3 &#8212; bare soil, sprout, two-leaf seedling &#8212; are near-identical across species in life. Share them, <b>diverge from stage 4</b> where leaf shape and branching first read. No perceived loss.</td></tr>
+<tr><td>Staged rollout <b>&#8212; recommended</b></td><td class="num">3 + 7</td><td>Ship <b>Arabica</b> (retag the art you already have) and <b>Robusta</b> (the most visibly different plant) at 17 frames total. That proves the whole idea. <b>Liberica lands later</b> as a live-ops drop.</td></tr>
+</table>
+<div class="callout"><div class="mono">The commercial argument</div><p>A plant drop is a Plus beat &#8212; &#8220;Liberica arrives this month&#8221; is something you can put in a push notification, on the paywall, and in the store screenshots. Recolours are not: nobody resubscribes for a fourth hue. So the art spend buys a retention cadence, not just prettier trees. And if the cadence needs more fuel later, <b>Excelsa, Racemosa and Stenophylla are a &#8220;wild coffees&#8221; set</b> for users who already know the three basics &#8212; not base content a newcomer has to wade through.</p></div>
+</section>
+
+<section class="section"><div class="sec-head"><div class="eyebrow">What else it unlocks</div><h2>Four places a species pays off that a colour can&#8217;t</h2></div>
+<div class="grid2">
+<div class="fitem"><div class="fhead"><span class="sev win">dictionary</span><span class="ftitle">Each plant is already a term</span><span class="floc mono">dictionary-data.jsx</span></div><div class="fbody">Arabica, Robusta and Liberica are the first three entries in any coffee glossary. One content object serves the picker card, the term page and duel questions &#8212; write once, and the spec strip is already dictionary-shaped.</div></div>
+<div class="fitem"><div class="fhead"><span class="sev win">atlas</span><span class="ftitle">Origin &#8594; plant, as a hint</span><span class="floc mono">atlas.jsx</span></div><div class="fbody">Vietnam is a Robusta country; Ethiopia is Arabica&#8217;s home. The Atlas can <b>point at</b> the plant a region grows without gating it &#8212; the connection teaches, the unlock rule would just confuse.</div></div>
+<div class="fitem"><div class="fhead"><span class="sev win">duel</span><span class="ftitle">Free question material</span><span class="floc mono">duel-data.jsx</span></div><div class="fbody">&#8220;Which coffee has about twice the caffeine?&#8221; is a good beginner question, and a player growing a Robusta will get it right because of their own grove. Cosmetics that teach are the thesis of the app.</div></div>
+<div class="fitem"><div class="fhead"><span class="sev win">paywall</span><span class="ftitle">A stronger third bullet</span><span class="floc mono">customize.jsx:158</span></div><div class="fbody">&#8220;Five botanical skins for your growing grove&#8221; &#8594; <b>&#8220;Grow Arabica, Robusta or Liberica &#8212; real coffee species, each its own shape.&#8221;</b> Specific, verifiable, and it sounds like something rather than like a colour setting.</div></div>
+</div>
+</section>
+
+<section class="section"><div class="sec-head"><div class="eyebrow">Risks</div><h2>Four ways this goes wrong</h2></div>
+<div class="grid2">
+<div class="fitem"><div class="fhead"><span class="sev risk">audience</span><span class="ftitle">Don&#8217;t let it become a botany lesson</span></div><div class="fbody">The v1 draft of this proposal failed exactly here: five plants, a species-vs-variety hierarchy, and a third unlock tier. For a beginner the grove should be <b>one decision with three answers</b>. Every field on the card has to survive the question &#8220;would a newcomer care?&#8221; &#8212; which is why altitude figures and binomial ranks came out.</div></div>
+<div class="fitem"><div class="fhead"><span class="sev risk">accuracy</span><span class="ftitle">A wrong plant is worse than a recolour</span></div><div class="fbody">Someone who knows coffee will notice if Liberica&#8217;s leaves aren&#8217;t oversized or Robusta isn&#8217;t bushy. The illustrator needs reference photos per species per stage, and the botanical tell has to be what the drawing exaggerates. <b>Don&#8217;t ship a plant you can&#8217;t draw correctly</b> &#8212; ship two.</div></div>
+<div class="fitem"><div class="fhead"><span class="sev risk">legibility</span><span class="ftitle">Silhouettes must survive 64px</span><span class="floc mono">StudioDoor</span></div><div class="fbody">The Studio door and the milestone thumbnails render tiny. Test all three at 64&#215;64 in both moods before approving art; if two are indistinguishable there, one of them isn&#8217;t earning its slot.</div></div>
+<div class="fitem"><div class="fhead"><span class="sev risk">naming</span><span class="ftitle">&#8220;Skin&#8221; has to go</span><span class="floc mono">TREE_SKINS</span></div><div class="fbody">Internally and in copy. You <b>plant a species</b>; you don&#8217;t skin it. <span class="mono">TREE_VARIETIES</span> and <span class="mono">GROVE_LIGHT</span> keep the two axes from blurring back together six months from now.</div></div>
+</div>
+</section>
+
+<section class="section"><div class="sec-head"><div class="eyebrow">If you want it</div><h2>Order of work</h2></div>
+<div class="steps">
+<div class="step"><div><b>Retag the existing art as Arabica and reduce the lights to three</b><span>No new art. <span class="mono">TREE_SKINS</span> becomes <span class="mono">TREE_VARIETIES</span> (one entry) plus <span class="mono">GROVE_LIGHT</span> (three filters plus Daylight). The Studio door gains a second row. The feature becomes truthful immediately.</span></div></div>
+<div class="step"><div><b>Write the three species objects, art or no art</b><span>Role, name, binomial, home, grows, tastes like, botanical tell, and <span class="mono">drop</span> — a rollout note for the art pipeline, not an entitlement. Shared with the Dictionary. Old saves that stored a single conflated skin id migrate to Arabica plus a light.</span></div></div>
+<div class="step"><div><b>Commission Robusta, stages 4&#8211;10</b><span>Seven frames. The most different-looking plant, so it proves the axis with the least spend. Reuse stages 1&#8211;3.</span></div></div>
+<div class="step"><div><b>Test at 64px, then decide on Liberica</b><span>If Robusta reads clearly against Arabica in the door and the milestone list, commission Liberica as the next drop. If it doesn&#8217;t, you&#8217;ve spent seven frames finding out instead of twenty-four.</span></div></div>
+</div>
+</section>
+
+</main></div>
+<script>
+(function(){
+  var tg=document.getElementById('theme-toggle');
+  tg.addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b) return;
+    document.documentElement.setAttribute('data-mood',b.dataset.mood);
+    tg.querySelectorAll('button').forEach(function(x){x.classList.toggle('active',x===b);});
+  });
+})();
+</script>
+</body>
+</html>

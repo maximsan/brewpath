@@ -1,5 +1,5 @@
-import 'package:coffee_quest/features/onboarding/presentation/loading/loading_animation.dart';
-import 'package:coffee_quest/features/onboarding/presentation/loading/wake_sequence_controller.dart';
+import 'package:brew_path/features/onboarding/presentation/loading/loading_animation.dart';
+import 'package:brew_path/features/onboarding/presentation/loading/wake_sequence_controller.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 

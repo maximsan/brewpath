@@ -1,5 +1,5 @@
-import 'package:coffee_quest/core/constants/app_routes.dart';
-import 'package:coffee_quest/shared/models/lesson_model.dart';
+import 'package:brew_path/shared/models/lesson_model.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -28,21 +28,15 @@ class ModuleLessonCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final lessonParams = {'lessonId': lesson.id};
-    // Completed lessons re-open in review mode; new ones start fresh.
-    final lessonQuery = isCompleted
-        ? const {'review': 'true'}
-        : const <String, String>{};
+    final mood = context.mood;
+    final destination = isCompleted
+        ? '/learn/lesson/${lesson.id}?review=true'
+        : '/learn/lesson/${lesson.id}';
 
     return Card(
       margin: EdgeInsets.zero,
       child: InkWell(
-        onTap: () => context.goNamed(
-          AppRoutes.lesson.name,
-          pathParameters: lessonParams,
-          queryParameters: lessonQuery,
-        ),
+        onTap: () => context.go(destination),
         borderRadius: BorderRadius.circular(_cardRadius),
         child: Padding(
           padding: const EdgeInsets.all(14),
@@ -62,7 +56,7 @@ class ModuleLessonCardWidget extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: colors.onSurfaceVariant,
+                        color: mood.inkMute,
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -73,15 +67,11 @@ class ModuleLessonCardWidget extends StatelessWidget {
               const SizedBox(width: 8),
               if (isCompleted)
                 TextButton(
-                  onPressed: () => context.goNamed(
-                    AppRoutes.lesson.name,
-                    pathParameters: lessonParams,
-                    queryParameters: lessonQuery,
-                  ),
+                  onPressed: () => context.go(destination),
                   child: const Text('Review'),
                 )
               else
-                Icon(Icons.chevron_right, color: colors.onSurfaceVariant),
+                Icon(Icons.chevron_right, color: mood.inkMute),
             ],
           ),
         ),
@@ -103,11 +93,10 @@ class _LessonBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final background = isCompleted ? colors.primary : colors.primaryContainer;
-    final foreground = isCompleted
-        ? colors.onPrimary
-        : colors.onPrimaryContainer;
+    final mood = context.mood;
+    // One fill for both states; the check-vs-number glyph is the distinction.
+    final background = mood.accent;
+    final foreground = mood.accentInk;
 
     return Container(
       width: _size,
@@ -138,16 +127,16 @@ class _XpInline extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(Icons.bolt, size: _iconSize, color: colors.onSurfaceVariant),
+        Icon(Icons.bolt, size: _iconSize, color: mood.inkMute),
         const SizedBox(width: 2),
         Text(
           '+$xp XP',
           style: theme.textTheme.labelSmall?.copyWith(
-            color: colors.onSurfaceVariant,
+            color: mood.inkMute,
             fontWeight: FontWeight.w600,
           ),
         ),

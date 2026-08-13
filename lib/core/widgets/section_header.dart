@@ -1,3 +1,4 @@
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
 /// Small uppercase-weight heading that introduces a list section.
@@ -16,7 +17,7 @@ class SectionHeader extends StatelessWidget {
     return Text(
       title,
       style: theme.textTheme.titleSmall?.copyWith(
-        color: theme.colorScheme.onSurfaceVariant,
+        color: context.mood.inkMute,
       ),
     );
   }

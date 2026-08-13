@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
 /// Hero CTA at the top of the Profile screen. The real in-app purchase flow
@@ -18,10 +19,10 @@ class PremiumCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
 
     return Material(
-      color: colors.primaryContainer,
+      color: mood.accent,
       borderRadius: BorderRadius.circular(_cornerRadius),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -38,16 +39,16 @@ class PremiumCard extends StatelessWidget {
                     Text(
                       'Go Premium',
                       style: theme.textTheme.titleLarge?.copyWith(
-                        color: colors.onPrimaryContainer,
+                        color: mood.accentInk,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
                     const SizedBox(height: 6),
                     Text(
                       'Unlock every module, remove ads, and keep your streak '
-                      'safe with a Coffee Quest subscription.',
+                      'safe with a BrewPath Plus subscription.',
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: colors.onPrimaryContainer.withValues(
+                        color: mood.accentInk.withValues(
                           alpha: _subtitleAlpha,
                         ),
                       ),
@@ -61,7 +62,7 @@ class PremiumCard extends StatelessWidget {
                 height: _iconBadgeSize,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: colors.onPrimaryContainer.withValues(
+                  color: mood.accentInk.withValues(
                     alpha: _iconBadgeAlpha,
                   ),
                   borderRadius: BorderRadius.circular(_cornerRadius),
@@ -69,7 +70,7 @@ class PremiumCard extends StatelessWidget {
                 child: Icon(
                   Icons.workspace_premium,
                   size: _iconSize,
-                  color: colors.onPrimaryContainer,
+                  color: mood.accentInk,
                 ),
               ),
             ],

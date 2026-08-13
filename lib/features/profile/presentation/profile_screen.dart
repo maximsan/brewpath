@@ -1,11 +1,11 @@
-import 'package:coffee_quest/core/constants/app_routes.dart';
-import 'package:coffee_quest/features/profile/domain/settings_providers.dart';
-import 'package:coffee_quest/features/profile/presentation/widgets/preference_tile.dart';
-import 'package:coffee_quest/features/profile/presentation/widgets/premium_card.dart';
-import 'package:coffee_quest/features/profile/presentation/widgets/profile_header.dart';
-import 'package:coffee_quest/features/profile/presentation/widgets/stat_tile.dart';
-import 'package:coffee_quest/features/progress/domain/progress_providers.dart';
-import 'package:coffee_quest/shared/theme/app_spacing.dart';
+import 'package:brew_path/features/profile/domain/settings_providers.dart';
+import 'package:brew_path/features/profile/presentation/widgets/preference_tile.dart';
+import 'package:brew_path/features/profile/presentation/widgets/premium_card.dart';
+import 'package:brew_path/features/profile/presentation/widgets/profile_header.dart';
+import 'package:brew_path/features/profile/presentation/widgets/stat_tile.dart';
+import 'package:brew_path/features/progress/domain/progress_providers.dart';
+import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -32,9 +32,8 @@ class ProfileScreen extends ConsumerWidget {
               pinned: true,
               delegate: ProfileHeaderDelegate(
                 title: 'Profile',
-                onClose: () => context.goNamed(AppRoutes.learn.name),
-                onSettings: () =>
-                    context.goNamed(AppRoutes.profileSettings.name),
+                onClose: () => context.go('/learn'),
+                onSettings: () => context.go('/profile/settings'),
               ),
             ),
             SliverPadding(
@@ -99,7 +98,7 @@ class _SectionTitle extends StatelessWidget {
       text,
       style: theme.textTheme.titleLarge?.copyWith(
         fontWeight: FontWeight.w800,
-        color: theme.colorScheme.onSurface,
+        color: context.mood.ink,
       ),
     );
   }

@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>BrewPath — Module Walkthrough</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #1a1612; color: #EDE6D6;
+    font-family: 'IBM Plex Sans', sans-serif; }
+  .page { padding: 56px 48px 96px; }
+  .head { max-width: 1100px; margin: 0 auto 8px; }
+  .smallcaps { font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: #C98A6A; margin-bottom: 12px; }
+  h1 { font-family: 'Fraunces', serif; font-weight: 400; font-size: 42px;
+    line-height: 1.05; letter-spacing: -0.02em; margin: 0; }
+  .sub { color: #8C9089; font-size: 15px; line-height: 1.55; margin-top: 12px; max-width: 620px; }
+  a.live { color: #D9694C; text-decoration: none; font-size: 13px;
+    border: 1px solid #2A2420; padding: 8px 14px; border-radius: 2px;
+    display: inline-block; margin-top: 18px; }
+  a.live:hover { background: #2A2420; }
+
+  .flow { max-width: 1100px; margin: 30px auto 0; display: flex; flex-wrap: wrap;
+    align-items: center; gap: 10px; font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #8C9089; }
+  .flow .step { color: #EDE6D6; }
+  .flow .arrow { color: #5A554D; }
+
+  .section { max-width: 1400px; margin: 76px auto 0; }
+  .section-head { max-width: 1100px; margin: 0 0 36px; display: flex;
+    align-items: flex-end; justify-content: space-between; gap: 24px;
+    border-bottom: 1px solid #2A2420; padding-bottom: 20px; }
+  .section-head .ttl { font-family: 'Fraunces', serif; font-weight: 400;
+    font-size: 28px; letter-spacing: -0.01em; margin: 0; }
+  .section-head .meta { font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: #8C9089; white-space: nowrap; }
+  .section-head .desc { color: #8C9089; font-size: 14px; line-height: 1.5;
+    margin: 8px 0 0; max-width: 540px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 52px 32px; max-width: 1400px; margin: 0 auto; }
+  .frame { display: flex; flex-direction: column; align-items: center; }
+  .phone-shell { width: 300px; height: 651px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.45); border-radius: 44px;
+    overflow: hidden; background: transparent; position: relative; }
+  .phone-shell iframe { width: 100%; height: 100%; border: 0;
+    background: transparent; display: block; pointer-events: auto; }
+  /* Replay control — a walkthrough testing tool, NOT part of the app design.
+     Sits above the frame so animated screens can be re-triggered on demand. */
+  .replay-btn {
+    position: absolute; top: 14px; right: 14px; z-index: 5;
+    display: inline-flex; align-items: center; gap: 7px;
+    appearance: none; cursor: pointer;
+    background: rgba(20,16,12,0.72); backdrop-filter: blur(6px);
+    color: #EDE6D6; border: 1px solid rgba(217,105,76,0.5);
+    border-radius: 999px; padding: 6px 12px 6px 10px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    transition: background 150ms ease, border-color 150ms ease, opacity 150ms ease;
+  }
+  .replay-btn:hover { background: rgba(30,22,16,0.92); border-color: #D9694C; }
+  .replay-btn svg { width: 13px; height: 13px; display: block; }
+  .replay-btn.spinning svg { animation: replaySpin 500ms cubic-bezier(0.4,0,0.2,1); }
+  @keyframes replaySpin { to { transform: rotate(-360deg); } }
+  .caption { margin-top: 16px; width: 300px; }
+  .caption .row { display: flex; align-items: baseline; gap: 10px; }
+  .caption .num { font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.12em; color: #D9694C; flex-shrink: 0; }
+  .caption .name { font-family: 'Fraunces', serif; font-size: 18px;
+    letter-spacing: -0.01em; color: #EDE6D6; }
+  .caption .how { color: #8C9089; font-size: 13px; line-height: 1.5;
+    margin: 7px 0 0; padding-left: 30px; }
+  .caption .tag { font-family: 'IBM Plex Mono', monospace; font-size: 9.5px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: #6E7368;
+    border: 1px solid #2A2420; border-radius: 999px; padding: 3px 9px;
+    margin-left: auto; flex-shrink: 0; align-self: center; }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="head">
+      <div class="smallcaps">BREWPATH · MODULE WALKTHROUGH</div>
+      <h1>One module, opened to closed.</h1>
+      <p class="sub">A module is a themed run of lessons — “Beans,” “The Grind” — laid out on a path you climb one lesson at a time. This walkthrough follows a module from the Path, into its lesson list, through to the moment the last lesson lands: the module marked complete and the collectible card pressed into your collection. Tap inside any frame to use it.</p>
+      <a class="live" href="screens-overview.html">← Back to all screens</a>
+      <a class="live" href="index.html" style="margin-left:10px;">Open full prototype →</a>
+
+      <div class="flow">
+        <span class="step">Path</span><span class="arrow">→</span>
+        <span class="step">Module</span><span class="arrow">→</span>
+        <span class="step">Complete</span><span class="arrow">→</span>
+        <span class="step">Card</span><span class="arrow">→</span>
+        <span class="step">Next</span>
+      </div>
+    </div>
+
+    <div id="sections"></div>
+  </div>
+
+  <script>
+    const SECTIONS = [
+      {
+        title: 'Find it',
+        meta: '1 STATE · PATH',
+        desc: 'Modules live on the Path — the vertical spine of the curriculum. Each is a cluster of lessons; the current one is where you climb next, later modules wait locked below.',
+        games: [
+          ['path', 'M1', 'Path', 'The curriculum as a climbable spine. Modules are grouped along it, the active lesson marked as the next step, finished ones behind you and locked ones ahead.', 'PATH'],
+        ],
+      },
+      {
+        title: 'Open it',
+        meta: '1 STATE · MODULE',
+        desc: 'Tapping a module opens its overview — the themed set of lessons it contains, threaded in order, with your progress through them shown at a glance.',
+        games: [
+          ['module', 'M2', 'Module overview', 'Module 1 · Beans. The lesson list on a path spine; the current lesson reads “continue”, completed lessons are checked, locked ones wait their turn.', 'MODULE'],
+        ],
+      },
+      {
+        title: 'Close it',
+        meta: '2 STATES · REWARD',
+        desc: 'Finishing the module’s final lesson triggers the module-level reward — distinct from the per-lesson beat. Points are paid lesson by lesson; the module’s own reward is the card — a practical guide pressed into your collection.',
+        games: [
+          ['module-complete', 'M3', 'Module reward',    'The big beat when the last lesson of a module closes — the module marked complete and the collectible card revealed.', 'REWARD', true],
+          ['module-card',     'M4', 'Collectible card', 'The module’s keepsake: a botanical specimen card pressed into your collection, earned only by finishing every lesson in the module.', 'CARD', true],
+        ],
+      },
+      {
+        title: 'What’s next',
+        meta: '1 STATE · CONTINUE',
+        desc: 'After the card, the module can hand off to its optional real-life Brew Challenge before the next module unlocks — the bridge into the challenge flow. “Not now” skips straight ahead.',
+        games: [
+          ['module-challenge', 'M5', 'Brew challenge offer', 'The optional practical task offered at the end of the module. Its own flow from here — “Start” accepts it onto Today, “Not now” advances to the next module.', 'HANDOFF'],
+        ],
+      },
+    ];
+
+    const root = document.getElementById('sections');
+    SECTIONS.forEach((sec) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'section';
+      wrap.innerHTML = `
+        <div class="section-head">
+          <div>
+            <div class="ttl">${sec.title}</div>
+            <p class="desc">${sec.desc}</p>
+          </div>
+          <div class="meta">${sec.meta}</div>
+        </div>
+        <div class="grid"></div>
+      `;
+      const grid = wrap.querySelector('.grid');
+      sec.games.forEach(([slug, num, name, how, tag, anim]) => {
+        const cell = document.createElement('div');
+        cell.className = 'frame';
+        const replay = anim ? `
+            <button class="replay-btn" type="button" title="Replay the animation">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v4h4"/>
+              </svg>
+              Replay
+            </button>` : '';
+        cell.innerHTML = `
+          <div class="phone-shell">
+            ${replay}
+            <iframe src="index.html?screen=${slug}" title="${name}" loading="lazy"></iframe>
+          </div>
+          <div class="caption">
+            <div class="row">
+              <span class="num">${num}</span>
+              <span class="name">${name}</span>
+              <span class="tag">${tag}</span>
+            </div>
+            <p class="how">${how}</p>
+          </div>
+        `;
+        if (anim) {
+          const btn = cell.querySelector('.replay-btn');
+          const iframe = cell.querySelector('iframe');
+          btn.addEventListener('click', () => {
+            iframe.src = iframe.src;
+            btn.classList.remove('spinning');
+            void btn.offsetWidth;
+            btn.classList.add('spinning');
+          });
+        }
+        grid.appendChild(cell);
+      });
+      root.appendChild(wrap);
+    });
+  </script>
+</body>
+</html>

@@ -1,9 +1,12 @@
-import 'package:coffee_quest/core/constants/app_labels.dart';
-import 'package:coffee_quest/core/constants/app_routes.dart';
-import 'package:coffee_quest/core/utils/module_icons.dart';
-import 'package:coffee_quest/features/lessons/domain/lesson_completion_service.dart';
-import 'package:coffee_quest/features/lessons/presentation/lesson_completion_reward.dart';
-import 'package:coffee_quest/shared/models/coffee_card_model.dart';
+import 'package:brew_path/core/constants/app_labels.dart';
+import 'package:brew_path/core/utils/module_icons.dart';
+import 'package:brew_path/features/companion/presentation/companion.dart';
+import 'package:brew_path/features/companion/presentation/companion_bubble.dart';
+import 'package:brew_path/features/companion/presentation/companion_handle.dart';
+import 'package:brew_path/features/lessons/domain/lesson_completion_service.dart';
+import 'package:brew_path/features/lessons/presentation/lesson_completion_reward.dart';
+import 'package:brew_path/shared/models/coffee_card_model.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -16,6 +19,9 @@ class LessonCompletionBody extends StatelessWidget {
     required this.reward,
     required this.score,
     super.key,
+    this.companionHandle,
+    this.companionLine,
+    this.moduleSummaryId,
   });
 
   /// The loaded reward to render.
@@ -23,6 +29,17 @@ class LessonCompletionBody extends StatelessWidget {
 
   /// First-try accuracy of the run (0–100); shown for practice runs.
   final int score;
+
+  /// Drives the celebratory companion on the first-completion path. When null
+  /// (review / practice runs) a static badge is shown instead.
+  final CompanionHandle? companionHandle;
+
+  /// Optional speech line shown in the companion's bubble.
+  final String? companionLine;
+
+  /// When set, Continue routes to the module-summary recap for this module id
+  /// (the lesson just completed its module); otherwise it returns to Learn.
+  final String? moduleSummaryId;
 
   @override
   Widget build(BuildContext context) {
@@ -36,13 +53,22 @@ class LessonCompletionBody extends StatelessWidget {
             ..._content(context),
             const SizedBox(height: 32),
             FilledButton(
-              onPressed: () => context.goNamed(AppRoutes.learn.name),
+              onPressed: () => _onContinue(context),
               child: const Text(AppLabels.continueLabel),
             ),
           ],
         ),
       ),
     );
+  }
+
+  void _onContinue(BuildContext context) {
+    final moduleId = moduleSummaryId;
+    if (moduleId != null) {
+      context.goNamed('moduleSummary', pathParameters: {'moduleId': moduleId});
+    } else {
+      context.go('/learn');
+    }
   }
 
   List<Widget> _content(BuildContext context) {
@@ -58,9 +84,9 @@ class LessonCompletionBody extends StatelessWidget {
     LessonCompletionResult completion,
   ) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
     return [
-      const _HeroBadge(icon: Icons.celebration),
+      _CompletionHero(handle: companionHandle, line: companionLine),
       const SizedBox(height: 20),
       Text(
         'Lesson complete!',
@@ -74,7 +100,7 @@ class LessonCompletionBody extends StatelessWidget {
         '+${completion.lessonXp} XP',
         textAlign: TextAlign.center,
         style: theme.textTheme.titleLarge?.copyWith(
-          color: colors.primary,
+          color: mood.accent,
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -83,7 +109,7 @@ class LessonCompletionBody extends StatelessWidget {
         Text(
           '+${completion.moduleBonusXp} XP · Module complete!',
           textAlign: TextAlign.center,
-          style: theme.textTheme.titleMedium?.copyWith(color: colors.primary),
+          style: theme.textTheme.titleMedium?.copyWith(color: mood.accent),
         ),
       ],
       if (reward.card != null) ...[
@@ -95,7 +121,7 @@ class LessonCompletionBody extends StatelessWidget {
 
   List<Widget> _practiceContent(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
     return [
       const _HeroBadge(icon: Icons.fitness_center),
       const SizedBox(height: 20),
@@ -111,7 +137,7 @@ class LessonCompletionBody extends StatelessWidget {
         'Score: $score%',
         textAlign: TextAlign.center,
         style: theme.textTheme.titleLarge?.copyWith(
-          color: colors.primary,
+          color: mood.accent,
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -120,7 +146,7 @@ class LessonCompletionBody extends StatelessWidget {
         'Practice runs do not change your XP, streak, or progress.',
         textAlign: TextAlign.center,
         style: theme.textTheme.bodyMedium?.copyWith(
-          color: colors.onSurfaceVariant,
+          color: mood.inkMute,
         ),
       ),
     ];
@@ -128,7 +154,7 @@ class LessonCompletionBody extends StatelessWidget {
 
   List<Widget> _reviewContent(BuildContext context, LessonReviewResult review) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
     return [
       const _HeroBadge(icon: Icons.replay),
       const SizedBox(height: 20),
@@ -144,7 +170,7 @@ class LessonCompletionBody extends StatelessWidget {
         'Best score: ${review.bestScore}%',
         textAlign: TextAlign.center,
         style: theme.textTheme.titleLarge?.copyWith(
-          color: colors.primary,
+          color: mood.accent,
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -155,10 +181,37 @@ class LessonCompletionBody extends StatelessWidget {
             : 'Practice XP already earned today',
         textAlign: TextAlign.center,
         style: theme.textTheme.titleMedium?.copyWith(
-          color: colors.onSurfaceVariant,
+          color: mood.inkMute,
         ),
       ),
     ];
+  }
+}
+
+/// The first-completion hero: the celebratory companion (with a speech bubble
+/// when a line is available), falling back to the static badge if no handle is
+/// supplied.
+class _CompletionHero extends StatelessWidget {
+  const _CompletionHero({this.handle, this.line});
+
+  static const double _companionSize = 140;
+
+  final CompanionHandle? handle;
+  final String? line;
+
+  @override
+  Widget build(BuildContext context) {
+    final handle = this.handle;
+    if (handle == null) {
+      return const _HeroBadge(icon: Icons.celebration);
+    }
+    final companion = Companion(handle: handle, size: _companionSize);
+    final line = this.line;
+    return Center(
+      child: line == null
+          ? companion
+          : CompanionBubble(text: line, child: companion),
+    );
   }
 }
 
@@ -173,17 +226,17 @@ class _HeroBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final mood = context.mood;
     return Center(
       child: Container(
         width: _size,
         height: _size,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: colors.primaryContainer,
+          color: mood.accent,
           shape: BoxShape.circle,
         ),
-        child: Icon(icon, size: _iconSize, color: colors.onPrimaryContainer),
+        child: Icon(icon, size: _iconSize, color: mood.accentInk),
       ),
     );
   }
@@ -201,7 +254,7 @@ class _RewardCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
     return Card(
       margin: EdgeInsets.zero,
       child: Padding(
@@ -213,12 +266,12 @@ class _RewardCard extends StatelessWidget {
               height: _badgeSize,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: colors.primaryContainer,
+                color: mood.accent,
                 borderRadius: BorderRadius.circular(_cardRadius),
               ),
               child: Icon(
                 moduleIcon(card.iconName),
-                color: colors.onPrimaryContainer,
+                color: mood.accentInk,
               ),
             ),
             const SizedBox(width: 12),
@@ -232,7 +285,7 @@ class _RewardCard extends StatelessWidget {
                   Text(
                     card.moduleTag,
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: colors.onSurfaceVariant,
+                      color: mood.inkMute,
                     ),
                   ),
                 ],

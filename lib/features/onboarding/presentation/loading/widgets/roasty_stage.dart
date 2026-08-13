@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:coffee_quest/features/onboarding/presentation/loading/loading_animation.dart';
-import 'package:coffee_quest/features/onboarding/presentation/widgets/roasty.dart';
-import 'package:coffee_quest/shared/theme/app_colors.dart';
+import 'package:brew_path/features/companion/presentation/roasty.dart';
+import 'package:brew_path/features/onboarding/presentation/loading/loading_animation.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
 /// Hosts Roasty plus the falling water-drop overlay (visible only during
@@ -114,7 +114,7 @@ class _RoastyStageState extends State<RoastyStage>
                       child: ExcludeSemantics(
                         child: CustomPaint(
                           size: _dropSize,
-                          painter: _DropPainter(),
+                          painter: _DropPainter(context.mood),
                         ),
                       ),
                     ),
@@ -129,9 +129,13 @@ class _RoastyStageState extends State<RoastyStage>
 }
 
 class _DropPainter extends CustomPainter {
+  _DropPainter(this.mood);
+
+  final MoodColors mood;
+
   @override
   void paint(Canvas canvas, Size size) {
-    final fill = Paint()..color = AppColors.darkRoastWaterDrop;
+    final fill = Paint()..color = mood.water;
     final path = Path()
       ..moveTo(7, 0)
       ..cubicTo(9, 6, 13, 10, 13, 14)
@@ -143,8 +147,7 @@ class _DropPainter extends CustomPainter {
       ..cubicTo(1, 10, 5, 6, 7, 0)
       ..close();
     canvas.drawPath(path, fill);
-    final highlight = Paint()
-      ..color = AppColors.darkRoastWaterDropHi.withValues(alpha: 0.7);
+    final highlight = Paint()..color = mood.waterHi.withValues(alpha: 0.7);
     canvas.drawOval(
       Rect.fromCenter(center: const Offset(5, 11), width: 3, height: 4.8),
       highlight,
@@ -152,5 +155,6 @@ class _DropPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _DropPainter oldDelegate) =>
+      oldDelegate.mood != mood;
 }

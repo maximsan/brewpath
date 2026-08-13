@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>BrewPath — Coffee Atlas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #1a1612; color: #EDE6D6;
+    font-family: 'IBM Plex Sans', sans-serif; }
+  .page { padding: 56px 48px 96px; }
+  .head { max-width: 1100px; margin: 0 auto 8px; }
+  .smallcaps { font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: #C98A6A; margin-bottom: 12px; }
+  h1 { font-family: 'Fraunces', serif; font-weight: 400; font-size: 42px;
+    line-height: 1.05; letter-spacing: -0.02em; margin: 0; }
+  .sub { color: #8C9089; font-size: 15px; line-height: 1.55; margin-top: 12px; max-width: 600px; }
+  a.live { color: #D9694C; text-decoration: none; font-size: 13px;
+    border: 1px solid #2A2420; padding: 8px 14px; border-radius: 2px;
+    display: inline-block; margin-top: 18px; }
+  a.live:hover { background: #2A2420; }
+
+  .section { max-width: 1400px; margin: 76px auto 0; }
+  .section-head { max-width: 1100px; margin: 0 0 36px; display: flex;
+    align-items: flex-end; justify-content: space-between; gap: 24px;
+    border-bottom: 1px solid #2A2420; padding-bottom: 20px; }
+  .section-head .ttl { font-family: 'Fraunces', serif; font-weight: 400;
+    font-size: 28px; letter-spacing: -0.01em; margin: 0; }
+  .section-head .meta { font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: #8C9089; white-space: nowrap; }
+  .section-head .desc { color: #8C9089; font-size: 14px; line-height: 1.5;
+    margin: 8px 0 0; max-width: 540px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 52px 32px; max-width: 1400px; margin: 0 auto; }
+  .frame { display: flex; flex-direction: column; align-items: center; }
+  .phone-shell { width: 300px; height: 651px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.45); border-radius: 44px;
+    overflow: hidden; background: transparent; position: relative; }
+  .phone-shell iframe { width: 100%; height: 100%; border: 0;
+    background: transparent; display: block; pointer-events: auto; }
+  .caption { margin-top: 16px; width: 300px; }
+  .caption .row { display: flex; align-items: baseline; gap: 10px; }
+  .caption .num { font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.12em; color: #D9694C; flex-shrink: 0; }
+  .caption .name { font-family: 'Fraunces', serif; font-size: 18px;
+    letter-spacing: -0.01em; color: #EDE6D6; }
+  .caption .how { color: #8C9089; font-size: 13px; line-height: 1.5;
+    margin: 7px 0 0; padding-left: 30px; }
+  .caption .tag { font-family: 'IBM Plex Mono', monospace; font-size: 9.5px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: #6E7368;
+    border: 1px solid #2A2420; border-radius: 999px; padding: 3px 9px;
+    margin-left: auto; flex-shrink: 0; align-self: center; }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="head">
+      <div class="smallcaps">BREWPATH · COFFEE ATLAS</div>
+      <h1>Learn coffee by where it grows.</h1>
+      <p class="sub">An interactive world map of growing origins: tap a country for its profile — flavour, altitude, processing, history — work through short origin activities, and collect passport stamps for every origin you taste or study. Every state is a live frame below. Tap inside any to explore it.</p>
+      <a class="live" href="screens-overview.html">← Back to all screens</a>
+      <a class="live" href="index.html" style="margin-left:10px;">Open full prototype →</a>
+    </div>
+
+    <div id="sections"></div>
+  </div>
+
+  <script>
+    const SECTIONS = [
+      {
+        title: "Map & discovery",
+        meta: "2 STATES · BROWSE",
+        desc: "The Atlas tab — a tappable map of the coffee belt — and the loading beat as an origin profile assembles.",
+        games: [
+          ["atlas","A1","Coffee Atlas · map","The world map of growing origins. Tap any country to open its profile; explored origins are marked.","MAP"],
+          ["atlas-loading","A2","Atlas · loading","A brief assembling state while an origin’s flavour, altitude and history load in.","LOADING"],
+        ],
+      },
+      {
+        title: "Origins",
+        meta: "4 STATES · PROFILE",
+        desc: "A single origin in depth, two profile layouts, the bite-size activities that earn a stamp, and the wider region view.",
+        games: [
+          ["origin","B1","Origin · profile","Full origin profile — flavour wheel, altitude, processing, a short history and notable regions.","PROFILE"],
+          ["origin-tabbed","B2","Origin · tabbed","The same origin in a tabbed layout — Overview / Taste / Regions split across tabs for denser content.","TABBED"],
+          ["atlas-activity","B3","Origin · activity","A short, focused activity for the origin — the interaction that earns its passport stamp.","ACTIVITY"],
+          ["atlas-region","B4","Region overview","Zoom out to a growing region — the origins within it and how their profiles relate.","REGION"],
+        ],
+      },
+      {
+        title: "Passport",
+        meta: "4 STATES · COLLECT",
+        desc: "The collectible spine of the Atlas — a stamp for every origin tasted or studied, and the two ways a stamp is earned.",
+        games: [
+          ["passport","C1","Coffee Passport","Your collected origins as passport stamps — progress across the coffee-growing world at a glance.","PASSPORT"],
+          ["passport-empty","C2","Passport · empty","Pre-collection state — what the passport looks like before any stamp is earned, with a clear first step.","EMPTY"],
+          ["atlas-stamp","C3","Stamp earned · tasted","The reward moment for tasting an origin yourself — a new stamp pressed into the passport.","STAMP"],
+          ["atlas-stamp-lesson","C4","Stamp earned · lesson","The same celebration when a stamp is earned by completing an origin’s lesson rather than a tasting.","STAMP"],
+        ],
+      },
+    ];
+
+    const root = document.getElementById('sections');
+    SECTIONS.forEach((sec) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'section';
+      wrap.innerHTML = `
+        <div class="section-head">
+          <div>
+            <div class="ttl">${sec.title}</div>
+            <p class="desc">${sec.desc}</p>
+          </div>
+          <div class="meta">${sec.meta}</div>
+        </div>
+        <div class="grid"></div>
+      `;
+      const grid = wrap.querySelector('.grid');
+      sec.games.forEach(([slug, num, name, how, tag]) => {
+        const cell = document.createElement('div');
+        cell.className = 'frame';
+        cell.innerHTML = `
+          <div class="phone-shell">
+            <iframe src="index.html?screen=${slug}" title="${name}" loading="lazy"></iframe>
+          </div>
+          <div class="caption">
+            <div class="row">
+              <span class="num">${num}</span>
+              <span class="name">${name}</span>
+              <span class="tag">${tag}</span>
+            </div>
+            <p class="how">${how}</p>
+          </div>
+        `;
+        grid.appendChild(cell);
+      });
+      root.appendChild(wrap);
+    });
+  </script>
+</body>
+</html>

@@ -1,11 +1,12 @@
-import 'package:coffee_quest/core/constants/app_labels.dart';
-import 'package:coffee_quest/core/constants/app_routes.dart';
-import 'package:coffee_quest/core/widgets/error_view.dart';
-import 'package:coffee_quest/core/widgets/loading_indicator.dart';
-import 'package:coffee_quest/core/widgets/section_header.dart';
-import 'package:coffee_quest/features/cards/domain/cards_providers.dart';
-import 'package:coffee_quest/features/cards/presentation/card_grid_item_widget.dart';
-import 'package:coffee_quest/shared/theme/app_spacing.dart';
+import 'package:brew_path/core/constants/app_labels.dart';
+import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/core/widgets/error_view.dart';
+import 'package:brew_path/core/widgets/loading_indicator.dart';
+import 'package:brew_path/core/widgets/section_header.dart';
+import 'package:brew_path/features/cards/domain/cards_providers.dart';
+import 'package:brew_path/features/cards/presentation/card_grid_item_widget.dart';
+import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -101,7 +102,7 @@ class _CollectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
     final total = list.length;
     final collected = list.where((c) => c.isCollected).length;
     final progress = total == 0 ? 0.0 : collected / total;
@@ -119,7 +120,7 @@ class _CollectionHeader extends StatelessWidget {
         Text(
           '$collected of $total cards collected',
           style: theme.textTheme.bodySmall?.copyWith(
-            color: colors.onSurfaceVariant,
+            color: mood.inkMute,
           ),
         ),
         const SizedBox(height: 10),
@@ -127,8 +128,8 @@ class _CollectionHeader extends StatelessWidget {
           value: progress,
           minHeight: AppSpacing.xs,
           borderRadius: BorderRadius.circular(AppSpacing.xxs),
-          backgroundColor: colors.surfaceContainerHighest,
-          color: colors.primary,
+          backgroundColor: mood.surface2,
+          color: mood.accent,
         ),
       ],
     );

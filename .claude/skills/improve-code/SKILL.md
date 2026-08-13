@@ -1,11 +1,11 @@
 ---
 name: improve-code
-description: Use when refactoring or improving a Coffee Quest screen, widget, or feature for testability, structure, and convention-consistency — extracting controllers and pure helpers out of widgets, removing magic numbers, adding unit tests, organizing per-screen folders, wiring debug toggles, or fixing accessibility — all without changing user-visible behavior. Invoke as `/improve-code <path-or-feature>`; defaults to the open file / current selection when no target is given.
+description: Use when refactoring or improving a BrewPath screen, widget, or feature for testability, structure, and convention-consistency — extracting controllers and pure helpers out of widgets, removing magic numbers, adding unit tests, organizing per-screen folders, wiring debug toggles, or fixing accessibility — all without changing user-visible behavior. Invoke as `/improve-code <path-or-feature>`; defaults to the open file / current selection when no target is given.
 ---
 
 # Improve Code Skill
 
-Apply Coffee Quest's refactoring + testability playbook to a screen, widget, or
+Apply BrewPath's refactoring + testability playbook to a screen, widget, or
 feature. Goal: clearer, more testable, convention-consistent code with **no change
 to user-visible behavior**.
 
@@ -14,7 +14,7 @@ current selection.
 
 ## Operating rules
 
-- Run all commands from `coffee_quest/`. After each step run `flutter analyze`
+- Run all commands from the repo root. After each step run `flutter analyze`
   (expect "No issues found!") and `flutter test` (expect green). Do not continue on
   red.
 - Work in small, individually-verifiable steps. For large or structural changes,
@@ -77,7 +77,7 @@ current selection.
 
 ## Conventions
 
-- `package:coffee_quest/…` imports inside `lib/` (never relative `../`).
+- `package:brew_path/…` imports inside `lib/` (never relative `../`).
 - TSDoc only for complex logic / third-party integrations; skip self-evident code.
 - Single source of truth for how-to docs (README); code comments point to it.
 - Navigate by route `name` (`context.goNamed(...)`), never hardcoded paths;

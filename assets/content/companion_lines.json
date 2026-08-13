@@ -1,0 +1,26 @@
+{
+  "lessonComplete": [
+    "Nice brew! Lesson done.",
+    "You're steeping nicely.",
+    "That's the good stuff — keep going.",
+    "Smooth pour. On to the next."
+  ],
+  "moduleComplete": [
+    "Whole module brewed. Proud of you!",
+    "Full pot finished — that's mastery.",
+    "You roasted the whole module. Bravo!"
+  ],
+  "correct": [
+    "Spot on!",
+    "That's it!",
+    "Perfectly extracted."
+  ],
+  "wrong": [
+    "Close — give it another go.",
+    "Not quite, but you've got this."
+  ],
+  "cardEarned": [
+    "A new card for your shelf!",
+    "Fresh card unlocked."
+  ]
+}

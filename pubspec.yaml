@@ -1,5 +1,5 @@
-name: coffee_quest
-description: Coffee Quest — Duolingo-style coffee education app.
+name: brew_path
+description: BrewPath — Duolingo-style coffee education app.
 publish_to: "none"
 version: 1.0.0+3
 
@@ -46,9 +46,6 @@ dependencies:
   # App version string on the Profile screen (Phase 6)
   package_info_plus: ^10.1.0
 
-  # Onboarding typography — fetched from Google's CDN and cached on-device.
-  google_fonts: ^8.1.0
-
   # Welcome-screen hero Variant B (seed-to-tree video). Removed at Step 11 if
   # this variant is not chosen.
   video_player: ^2.9.1
@@ -81,7 +78,27 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/video/
-    # Bundled google_fonts files — picked up automatically by the
-    # google_fonts package's asset-manifest lookup, so the app works offline
-    # (and tests pass without network).
-    - google_fonts/
+
+  # Declared as real font assets rather than fetched at runtime, so there is no
+  # network path to fail on. Weights are limited to what the app renders — the
+  # design's stylesheet also loads Fraunces 300/500 and Plex Sans 600, but those
+  # appear only in its `[data-voice]` exploration variants and in standalone
+  # showcase documents, never in the shipped default. See docs/design and #36.
+  fonts:
+    - family: Fraunces
+      fonts:
+        - asset: assets/fonts/Fraunces-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Fraunces-Italic.ttf
+          weight: 400
+          style: italic
+    - family: IBM Plex Sans
+      fonts:
+        - asset: assets/fonts/IBMPlexSans-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/IBMPlexSans-Medium.ttf
+          weight: 500
+    - family: IBM Plex Mono
+      fonts:
+        - asset: assets/fonts/IBMPlexMono-Medium.ttf
+          weight: 500

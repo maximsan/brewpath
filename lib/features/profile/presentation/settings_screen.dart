@@ -1,8 +1,9 @@
 import 'dart:async';
 
-import 'package:coffee_quest/core/constants/app_routes.dart';
-import 'package:coffee_quest/features/onboarding/presentation/onboarding_providers.dart';
-import 'package:coffee_quest/features/profile/domain/settings_providers.dart';
+import 'package:brew_path/features/onboarding/presentation/onboarding_providers.dart';
+import 'package:brew_path/features/profile/domain/settings_providers.dart';
+import 'package:brew_path/features/profile/presentation/widgets/appearance_selector.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -62,6 +63,9 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 24),
+          const _SectionLabel('Appearance'),
+          const AppearanceSelector(),
+          const SizedBox(height: 24),
           const _SectionLabel('Onboarding'),
           const _ResetOnboardingTile(),
           const SizedBox(height: 24),
@@ -95,7 +99,7 @@ class _SectionLabel extends StatelessWidget {
       child: Text(
         text.toUpperCase(),
         style: theme.textTheme.labelSmall?.copyWith(
-          color: theme.colorScheme.onSurfaceVariant,
+          color: context.mood.inkMute,
           letterSpacing: _letterSpacing,
           fontWeight: FontWeight.w700,
         ),
@@ -109,17 +113,17 @@ class _ResetProgressTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final colors = Theme.of(context).colorScheme;
+    final mood = context.mood;
     return ListTile(
-      leading: Icon(Icons.restart_alt, color: colors.error),
+      leading: Icon(Icons.restart_alt, color: mood.berry),
       title: Text(
         'Reset Progress',
-        style: TextStyle(color: colors.error, fontWeight: FontWeight.w600),
+        style: TextStyle(color: mood.berry, fontWeight: FontWeight.w600),
       ),
       subtitle: const Text(
         'Clear completed lessons, XP, streak, and unlocked cards.',
       ),
-      trailing: Icon(Icons.chevron_right, color: colors.error),
+      trailing: Icon(Icons.chevron_right, color: mood.berry),
       onTap: () => _confirmAndReset(context, ref),
     );
   }
@@ -141,7 +145,7 @@ class _ResetProgressTile extends ConsumerWidget {
           ),
           TextButton(
             style: TextButton.styleFrom(
-              foregroundColor: Theme.of(ctx).colorScheme.error,
+              foregroundColor: ctx.mood.berry,
             ),
             onPressed: () => Navigator.pop(ctx, true),
             child: const Text('Reset'),
@@ -153,15 +157,15 @@ class _ResetProgressTile extends ConsumerWidget {
     if (confirmed != true) return;
     if (!context.mounted) return;
     final messenger = ScaffoldMessenger.of(context);
-    final colors = Theme.of(context).colorScheme;
+    final mood = context.mood;
     await resetProgress(ref);
     messenger
       ..hideCurrentMaterialBanner()
       ..showMaterialBanner(
         MaterialBanner(
           content: const Text('Progress reset.'),
-          leading: Icon(Icons.check_circle, color: colors.primary),
-          backgroundColor: colors.surfaceContainerHigh,
+          leading: Icon(Icons.check_circle, color: mood.accent),
+          backgroundColor: mood.surface,
           actions: [
             TextButton(
               onPressed: messenger.hideCurrentMaterialBanner,
@@ -218,6 +222,6 @@ class _ResetOnboardingTile extends ConsumerWidget {
     await ref.read(onboardingRepositoryProvider).resetOnboarding();
     ref.invalidate(onboardingCompletedProvider);
     if (!context.mounted) return;
-    context.goNamed(AppRoutes.welcome.name);
+    context.go('/welcome');
   }
 }

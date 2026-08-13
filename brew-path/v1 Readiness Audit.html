@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en" data-mood="dark-roast">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>BrewPath — v1 Readiness Audit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#F4EFE6; --surface:#FBF7EE; --surface-2:#EFE8DA;
+    --ink:#1B1614; --ink-mute:#6B5F54; --rule:#D8CFBF;
+    --accent:#B8533A; --accent-ink:#FBF7EE;
+    --sage:#5F6E55; --warn:#9A5F1C; --berry:#A8362A; --cream:#7A6A54;
+  }
+  [data-mood="dark-roast"] {
+    --bg:#1A130E; --surface:#251B14; --surface-2:#30231A;
+    --ink:#F3E7D2; --ink-mute:#B59E84; --rule:#44321E;
+    --accent:#E07A4F; --accent-ink:#1A130E;
+    --sage:#97A285; --warn:#E6A35C; --berry:#C75450; --cream:#F0DCB8;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    transition: background 300ms ease, color 300ms ease;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { color: var(--ink); }
+  .ff-display { font-family: 'Fraunces', serif; font-optical-sizing: auto; }
+  .mono { font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; }
+
+  /* topbar */
+  .topbar { position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between;
+    padding:18px 40px; background:color-mix(in oklab, var(--bg) 88%, transparent); backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--rule); }
+  .brand { display:flex; align-items:baseline; gap:14px; }
+  .brand .mark { font-family:'Fraunces',serif; font-size:19px; letter-spacing:-0.01em; }
+  .brand .tag { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:var(--ink-mute); }
+  .theme-toggle { display:flex; gap:4px; background:var(--surface); border:1px solid var(--rule); border-radius:999px; padding:4px; }
+  .theme-toggle button { appearance:none; border:none; background:transparent; cursor:pointer; font-family:'IBM Plex Mono',monospace;
+    font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-mute); padding:7px 14px; border-radius:999px; white-space:nowrap; }
+  .theme-toggle button.active { background:var(--accent); color:var(--accent-ink); }
+
+  .shell { display:grid; grid-template-columns:210px 1fr; gap:0; max-width:1320px; margin:0 auto; }
+  #nav { position:sticky; top:74px; align-self:start; height:max-content; display:flex; flex-direction:column; gap:2px; padding:48px 0 0 40px; }
+  #nav a { font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--ink-mute); text-decoration:none; padding:8px 12px; border-left:1px solid var(--rule); transition:all 160ms ease; }
+  #nav a:hover { color:var(--ink); }
+  #nav a.active { color:var(--accent); border-left-color:var(--accent); }
+  #main { padding:48px 56px 120px; min-width:0; }
+
+  .hero { padding:8px 56px 8px; max-width:1320px; margin:0 auto; }
+  .hero-inner { padding:40px 0 4px; max-width:760px; }
+  .hero .mono { font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent); }
+  .hero h1 { font-family:'Fraunces',serif; font-weight:400; font-size:50px; line-height:1.03; letter-spacing:-0.025em; margin:14px 0 0; }
+  .hero p { color:var(--ink-mute); font-size:16.5px; line-height:1.6; margin:18px 0 0; text-wrap:pretty; max-width:680px; }
+
+  .section { padding:64px 0 0; scroll-margin-top:84px; }
+  .sec-head { max-width:720px; margin-bottom:28px; }
+  .sec-head .eyebrow { font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent); }
+  .sec-head h2 { font-family:'Fraunces',serif; font-weight:400; font-size:34px; letter-spacing:-0.02em; margin:8px 0 0; }
+  .sec-intro { color:var(--ink-mute); font-size:15px; line-height:1.6; margin:12px 0 0; text-wrap:pretty; }
+
+  /* verdict scorecard */
+  .verdict { display:grid; grid-template-columns:1.3fr 1fr; gap:18px; margin-top:8px; }
+  @media (max-width:780px){ .verdict { grid-template-columns:1fr; } }
+  .vcard { background:var(--surface); border:1px solid var(--rule); border-radius:2px; padding:26px 28px; }
+  .vcard.lead { border-left:3px solid var(--accent); }
+  .vcard .vk { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.16em; text-transform:uppercase; color:var(--ink-mute); }
+  .vcard .vbig { font-family:'Fraunces',serif; font-size:30px; letter-spacing:-0.02em; margin-top:6px; line-height:1.08; }
+  .vcard p { font-size:14px; line-height:1.6; color:var(--ink-mute); margin:12px 0 0; text-wrap:pretty; }
+  .metrics { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .metric { background:var(--surface); border:1px solid var(--rule); border-radius:2px; padding:18px 20px; }
+  .metric .num { font-family:'Fraunces',serif; font-size:34px; letter-spacing:-0.02em; line-height:1; }
+  .metric .num.sage { color:var(--sage); }
+  .metric .num.warn { color:var(--warn); }
+  .metric .lbl { font-size:12.5px; color:var(--ink-mute); line-height:1.45; margin-top:8px; }
+
+  /* finding cards (flag pattern) */
+  .stack { display:flex; flex-direction:column; gap:16px; }
+  .flag { background:var(--surface); border:1px solid var(--rule); border-radius:2px; padding:20px 26px; border-left:3px solid var(--ink-mute); }
+  .flag-note { display:grid; grid-template-columns:104px 1fr; gap:16px; align-items:start; margin-top:14px; }
+  .klabel { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-mute); padding-top:2px; }
+  .klabel.acc { color:var(--accent); }
+  .kval { font-size:14px; line-height:1.6; color:var(--ink); text-wrap:pretty; }
+  .kval b { font-weight:600; }
+
+  /* scope split */
+  .split { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  @media (max-width:780px){ .split { grid-template-columns:1fr; } }
+  .col { background:var(--surface); border:1px solid var(--rule); border-radius:2px; padding:8px 24px 18px; }
+  .col-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding:18px 0 14px; border-bottom:1px solid var(--rule); margin-bottom:4px; }
+  .col-head .ttl { font-family:'Fraunces',serif; font-size:22px; letter-spacing:-0.01em; }
+  .col.ship { border-top:3px solid var(--sage); }
+  .col.defer { border-top:3px solid var(--warn); }
+  .col-head .ct { font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-mute); }
+  .item { padding:15px 0; border-bottom:1px solid var(--rule); }
+  .item:last-child { border-bottom:none; }
+  .item-top { display:flex; align-items:baseline; justify-content:space-between; gap:12px; }
+  .item-name { font-size:15.5px; font-weight:600; color:var(--ink); }
+  .item-ct { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-mute); white-space:nowrap; }
+  .item-why { font-size:13px; line-height:1.55; color:var(--ink-mute); margin-top:5px; text-wrap:pretty; }
+  .dot { display:inline-block; width:7px; height:7px; border-radius:999px; margin-right:9px; vertical-align:middle; }
+  .dot.sage { background:var(--sage); }
+  .dot.warn { background:var(--warn); }
+  .dot.accent { background:var(--accent); }
+  .col.free { border-top:3px solid var(--sage); }
+  .col.plus { border-top:3px solid var(--accent); }
+  .price { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
+  .price .chip { font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.06em; color:var(--ink); border:1px solid var(--rule); background:var(--surface); border-radius:999px; padding:7px 13px; }
+  .price .chip b { color:var(--accent); }
+
+  .note { background:var(--surface-2); border:1px solid var(--rule); border-radius:2px; padding:20px 24px; margin-top:18px; }
+  .note .nk { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.16em; text-transform:uppercase; color:var(--accent); }
+  .note p { font-size:14px; line-height:1.65; color:var(--ink); margin:8px 0 0; text-wrap:pretty; }
+
+  /* sequence list */
+  .seq { counter-reset:step; display:flex; flex-direction:column; gap:12px; }
+  .seq .row { display:grid; grid-template-columns:30px 1fr; gap:16px; align-items:start; background:var(--surface); border:1px solid var(--rule); border-radius:2px; padding:18px 22px; }
+  .seq .row::before { counter-increment:step; content:counter(step); font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--accent); padding-top:1px; }
+  .seq .rt { font-size:15px; font-weight:600; }
+  .seq .rb { font-size:13.5px; line-height:1.55; color:var(--ink-mute); margin-top:4px; text-wrap:pretty; }
+
+  @media (max-width:900px) {
+    .shell { grid-template-columns:1fr; }
+    #nav { display:none; }
+    #main { padding:32px 24px 100px; }
+    .hero, .topbar { padding-left:24px; padding-right:24px; }
+    .hero h1 { font-size:38px; }
+    .flag-note { grid-template-columns:1fr; gap:4px; }
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">
+      <span class="mark">BrewPath</span>
+      <span class="tag">v1 Readiness Audit</span>
+    </div>
+    <div class="theme-toggle" id="theme-toggle">
+      <button data-mood="dark-roast" class="active">Dark roast</button>
+      <button data-mood="cupping">Cupping</button>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="mono">DESIGN REVIEW · SHIP / DEFER · DECISIONS LOCKED · JUNE 2026 · RECONCILED AUG 2026</div>
+      <h1>The scope is set. Time to build v1.</h1>
+      <p>The big calls are locked — Atlas, Duel and the ad layer move to v2; the learning core plus the Dictionary ship; monetization is settled as a generous free tier with a Plus subscription. Every design and content item this review opened is now closed. Three tasks remain: two engineering, one human.</p>
+    </div>
+  </div>
+
+  <div class="shell">
+    <nav id="nav">
+      <a href="#verdict" data-target="verdict">Verdict</a>
+      <a href="#model" data-target="model">Model</a>
+      <a href="#scope" data-target="scope">v1 / v2 scope</a>
+      <a href="#cut" data-target="cut">The v1 cut</a>
+      <a href="#next" data-target="next">What&#8217;s left</a>
+    </nav>
+
+    <main id="main">
+
+      <!-- VERDICT -->
+      <section id="verdict" class="section" style="padding-top:24px;">
+        <div class="sec-head">
+          <div class="eyebrow">Verdict</div>
+          <h2>Strong build, oversized for a first release.</h2>
+          <p class="sec-intro">The learning loop, the visual language, and the component library are genuinely v1-grade. The risk is shipping five products at once — a course, a dictionary, an atlas, an async duel, and a cosmetics store — each pulling content, infra and QA a different way.</p>
+        </div>
+        <div class="verdict">
+          <div class="vcard lead">
+            <div class="vk">Decision</div>
+            <div class="vbig">Ship the learning core + dictionary. Hold Atlas, Duel and ads for v2.</div>
+            <p>Keeps everything that delivers “learn coffee, a little every day,” and drops the two features that need a backend you don’t need yet plus a large second content vertical.</p>
+          </div>
+          <div class="metrics">
+            <div class="metric"><div class="num">~64</div><div class="lbl">screens built across all features today</div></div>
+            <div class="metric"><div class="num sage">~32</div><div class="lbl">screens in the v1 cut</div></div>
+            <div class="metric"><div class="num warn">2</div><div class="lbl">features deferred that need server / SDK work</div></div>
+            <div class="metric"><div class="num sage">2</div><div class="lbl">Plus levers beyond cosmetics — unlimited Saved, and the Studio</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MODEL -->
+      <section id="model" class="section">
+        <div class="sec-head">
+          <div class="eyebrow">The v1 model</div>
+          <h2>Free builds the habit. Plus makes it yours.</h2>
+          <p class="sec-intro">Monetization ships in v1 but never walls the daily loop. Everything that teaches is free; Plus bundles <b>renewable</b> value, not cosmetics alone. The free Saved cap is the bridge — it surfaces the upgrade at peak intent, not at install.</p>
+        </div>
+        <div class="split">
+          <div class="col free">
+            <div class="col-head"><span class="ttl"><span class="dot sage"></span>Free</span><span class="ct">builds the habit</span></div>
+            <div class="item"><div class="item-top"><span class="item-name">All daily lessons &amp; the full path</span></div><div class="item-why">The entire learning core — never gated. This earns the habit before any ask.</div></div>
+            <div class="item"><div class="item-top"><span class="item-name">Coffee Dictionary</span></div><div class="item-why">Full reference, ungated. Everything that teaches is free.</div></div>
+            <div class="item"><div class="item-top"><span class="item-name">Streaks, points &amp; collectible cards</span></div><div class="item-why">Including a <b>perfect-module stamp</b> — an earned mark of mastery, no purchase, no SDK.</div></div>
+            <div class="item"><div class="item-top"><span class="item-name">Saved</span><span class="item-ct">up to 10 items</span></div><div class="item-why">Generous enough that only power users hit the cap — and that user is your highest-intent upgrade prospect.</div></div>
+            <div class="item"><div class="item-top"><span class="item-name">Roasty, default look</span></div><div class="item-why">The companion is fully there from day one; only personalization is held for Plus.</div></div>
+          </div>
+          <div class="col plus">
+            <div class="col-head"><span class="ttl"><span class="dot accent"></span>Plus</span><span class="ct">subscription</span></div>
+            <div class="item"><div class="item-top"><span class="item-name">Unlimited Saved</span><span class="item-ct">the hook</span></div><div class="item-why">The free cap’s natural release. Concrete, renewable value — this turns “cosmetics-only Plus” into a real recurring product.</div></div>
+            <div class="item"><div class="item-top"><span class="item-name">Full personalization Studio</span><span class="item-ct">the face of Plus</span></div><div class="item-why">Dress up Roasty, choose your plant, mood player. The delight the paywall already nails — now the face of Plus, not the whole pitch.</div></div>
+            <div class="price">
+              <span class="chip"><b>Monthly</b> · $4.99</span>
+              <span class="chip"><b>Annual</b> · $29.99 · save 50%</span>
+            </div>
+            <div class="note" style="margin-top:16px;">
+              <div class="nk">Subscription only — and streak stays free</div>
+              <p>Two prices, one product. A Lifetime tier was considered and dropped: a non-renewing plan needs its own receipt, restore and manage-plan states. <b>Streak protection was also cut from the bundle</b> — the streak carries no in-app reward, so selling insurance on it is selling insurance on an item with no value, and repair pitches at the exact moment a user has already lapsed. Streak freeze stays free — and is now <b>earned</b> (one per 7 days, two held, spent automatically) rather than switched on in Settings, so it is felt as a reward instead of hidden as a preference. Cosmetic IAPs and a weekly-goal setting both defer to v2.</p>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- SCOPE -->
+      <section id="scope" class="section">
+        <div class="sec-head">
+          <div class="eyebrow">The split</div>
+          <h2>What ships in v1 — and what waits</h2>
+          <p class="sec-intro">Sorted by one test: does it deliver the core promise, and can it ship without infrastructure you’d build just for it? Screen counts approximate.</p>
+        </div>
+        <div class="split">
+
+          <div class="col ship">
+            <div class="col-head"><span class="ttl"><span class="dot sage"></span>Ship in v1</span><span class="ct">~32 screens</span></div>
+            <div class="item">
+              <div class="item-top"><span class="item-name">App intro</span><span class="item-ct">2 scr</span></div>
+              <div class="item-why">Welcome + Meet Roasty — a warm, wordless-fast introduction to the app and the living-tree metaphor. Content only, no questions, then straight to Today.</div>
+            </div>
+            <div class="item">
+              <div class="item-top"><span class="item-name">Learn + Path + Lesson player</span><span class="item-ct">10 scr</span></div>
+              <div class="item-why">The core loop: daily home, structured path, and a lesson player that runs fourteen card kinds — teaching cards, graded questions, drills and visual guides. This is the product.</div>
+            </div>
+            <div class="item">
+              <div class="item-top"><span class="item-name">Rewards + Collectible cards</span><span class="item-ct">incl. above</span></div>
+              <div class="item-why">Lesson complete, module complete, the collectible card, streak. The reason to come back tomorrow.</div>
+            </div>
+            <div class="item">
+              <div class="item-top"><span class="item-name">Profile + progress + Settings</span><span class="item-ct">7 scr</span></div>
+              <div class="item-why">Profile, the growing tree, streak, settings, account, subscription management.</div>
+            </div>
+            <div class="item">
+              <div class="item-top"><span class="item-name">Coffee Dictionary</span><span class="item-ct">6 scr</span></div>
+              <div class="item-why">Reference that directly supports the lessons — high value, content written, no backend. Keep it.</div>
+            </div>
+            <div class="item">
+              <div class="item-top"><span class="item-name">Plus + Studio + Saved</span><span class="item-ct">4 scr</span></div>
+              <div class="item-why">Paywall, welcome, dress-up Roasty, choose-plant — plus a free Saved tier (10) that becomes the subscription’s most concrete hook.</div>
+            </div>
+          </div>
+
+          <div class="col defer">
+            <div class="col-head"><span class="ttl"><span class="dot warn"></span>Defer to v2</span><span class="ct">~32 screens</span></div>
+            <div class="item">
+              <div class="item-top"><span class="item-name">Onboarding question flow</span><span class="item-ct">6 scr · needs a reader</span></div>
+              <div class="item-why">The personalization questions only — goal, brewer, level, reminders. Deferred because nothing reads the answers yet, so they cost taps and return nothing. In the v1 cut Meet Roasty goes straight to Learn; the screens stay reachable by deep link for review, pinned to the Standard four-question depth v2 will ship. The Welcome + Meet Roasty intro is v1.</div>
+            </div>
+            <div class="item">
+              <div class="item-top"><span class="item-name">Coffee Duel</span><span class="item-ct">13 scr · needs backend</span></div>
+              <div class="item-why">Async social: invites, pending/expired/error, rematch, link resolution, result sync. Needs share + server infra.</div>
+            </div>
+            <div class="item">
+              <div class="item-top"><span class="item-name">Coffee Atlas</span><span class="item-ct">10 scr · needs content</span></div>
+              <div class="item-why">A second content vertical — 15 origins, activities, regions, passport, stamps. As much writing/art as the course.</div>
+            </div>
+            <div class="item">
+              <div class="item-top"><span class="item-name">Rewarded ads + timed trials</span><span class="item-ct">3 scr · needs SDK</span></div>
+              <div class="item-why">Ad video, trial countdowns, the perfect-module gift unlock. Secondary monetization; adds an SDK and a theme break.</div>
+            </div>
+            <div class="item">
+              <div class="item-top"><span class="item-name">Mood player</span><span class="item-ct">1 scr</span></div>
+              <div class="item-why">A delightful extra, not load-bearing. Ships with the rest of Studio depth in v2.</div>
+            </div>
+            <div class="note">
+              <div class="nk">Why defer, not delete</div>
+              <p>Atlas and Duel are the obvious v2 marketing beats — “explore the coffee belt,” “challenge a friend.” Holding them gives v2 a story and v1 a fighting chance at quality. The work is waiting, not wasted.</p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- CUT -->
+      <section id="cut" class="section">
+        <div class="sec-head">
+          <div class="eyebrow">The shape of v1</div>
+          <h2>Four tabs, one clear loop</h2>
+          <p class="sec-intro">With Atlas and Duel held back, the tab bar drops from five to four and the app tightens around the thing it does best.</p>
+        </div>
+        <div class="stack">
+          <div class="flag" style="border-left-color:var(--accent);">
+            <div class="flag-note"><span class="klabel acc">Tabs</span><span class="kval"><b>Today · Path · Cards · Profile.</b> Atlas leaves the tab bar for v2. Saved and the Dictionary stay as the pinned top-right entries; the Duel entry goes with it.</span></div>
+            <div class="flag-note"><span class="klabel acc">Loop</span><span class="kval">Open → today’s lesson → play the cards → earn points + a collectible → streak ticks → tree grows. Dictionary is one tap away. A complete daily product.</span></div>
+            <div class="flag-note"><span class="klabel acc">Result</span><span class="kval">~40% less surface to QA, two fewer infra dependencies, one monetization model, and a v2 roadmap with two finished headline features waiting.</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- NEXT -->
+      <section id="next" class="section">
+        <div class="sec-head">
+          <div class="eyebrow">What&#8217;s left</div>
+          <h2>Two engineering tasks, and one that is yours.</h2>
+          <p class="sec-intro">Three tasks, in the order they block a release.</p>
+        </div>
+
+        <div class="seq" style="margin-top:0;">
+          <div class="row"><div><div class="rt">Wire StoreKit</div><div class="rb">Receipt validation and restore, and swap the frozen trial counter for a real one. The only paid-model work left, and it is engineering — the design side is done.</div></div></div>
+          <div class="row"><div><div class="rt">Gate the dev Tweaks panel out of production</div><div class="rb">A build-time <span class="mono">dev</span> conditional so the panel is absent from the store binary. Its six knobs — Scope, Progress, Restore result, Plus unlocked and the two freeze states — stay useful for QA until then. Scope must ship reading <span class="mono">v1 cut</span>: <i>Everything</i> renders the deferred surfaces for review. Restore result stands in for a store that does not exist yet and retires with StoreKit. Every key is documented at the head of <span class="mono">app.jsx</span>, marked <i>panel</i>, <i>routed</i> or <i>settled</i>; nothing reads a value that has no entry there. One line, owned by whoever wires the release build.</div></div></div>
+          <div class="row"><div><div class="rt">Play the course</div><div class="rb">The machine pass is closed; the judgement pass is not. Whether the explanations teach, whether the pacing holds, and how it reads on a real device — see the open half of <a href="QA Findings.html">QA Findings</a>.</div></div></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    (function(){
+      var tg = document.getElementById('theme-toggle');
+      tg.addEventListener('click', function(e){
+        var b = e.target.closest('button'); if(!b) return;
+        document.documentElement.setAttribute('data-mood', b.dataset.mood);
+        tg.querySelectorAll('button').forEach(function(x){ x.classList.toggle('active', x===b); });
+      });
+      // scroll-spy
+      var links = [].slice.call(document.querySelectorAll('#nav a'));
+      var obs = new IntersectionObserver(function(entries){
+        entries.forEach(function(en){
+          if(en.isIntersecting){ links.forEach(function(l){ l.classList.toggle('active', l.dataset.target===en.target.id); }); }
+        });
+      }, { rootMargin:'-45% 0px -50% 0px' });
+      document.querySelectorAll('.section').forEach(function(s){ obs.observe(s); });
+    })();
+  </script>
+</body>
+</html>

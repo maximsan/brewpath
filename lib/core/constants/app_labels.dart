@@ -3,14 +3,14 @@
 
 /// User-facing string constants.
 abstract class AppLabels {
-  static const appName = 'Coffee Quest';
+  static const appName = 'BrewPath';
   static const tabLearn = 'Learn';
   static const tabPath = 'Path';
   static const tabCards = 'Cards';
   static const tabProfile = 'Profile';
+  static const favorites = 'Favorites';
   static const lockedModuleMessage =
       'Complete the previous module to unlock this one.';
   static const continueLabel = 'Continue';
   static const tryAgainLabel = 'Try Again';
-  static const favorites = 'Favorites';
 }

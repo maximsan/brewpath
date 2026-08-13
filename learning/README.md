@@ -1,7 +1,7 @@
 # Flutter Learning Track — Agent Guide
 
 This folder drives a hands-on, **learn-by-doing** Flutter course built around the
-Coffee Quest app. If the user asks you to "continue the lesson", "continue the
+BrewPath app. If the user asks you to "continue the lesson", "continue the
 Flutter onboarding", or "keep teaching me Flutter", **read this file and
 [`curriculum.md`](curriculum.md) first**, find the step marked 👉 in the
 curriculum, and resume from there following the contract below.
@@ -36,7 +36,7 @@ curriculum, and resume from there following the contract below.
 5. **Be accurate.** Verify claims against the actual code and pub.dev; never
    invent APIs or behavior. If unsure, check before asserting.
 6. **Respect project conventions** in
-   [`../CLAUDE.md`](../CLAUDE.md): `package:coffee_quest/…`
+   [`../CLAUDE.md`](../CLAUDE.md): `package:brew_path/…`
    imports inside `lib/`; no magic numbers (lint-enforced by `dart_code_linter`,
    only `0/1/2` allowed); navigate by route `name` (`context.goNamed(...)`), not
    hardcoded paths; function-style `@riverpod` for derived reads, class-style only

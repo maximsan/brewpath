@@ -1,4 +1,4 @@
-import 'package:coffee_quest/core/constants/app_routes.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -22,7 +22,7 @@ class GameTypeEmptyState extends StatelessWidget {
             Icon(
               Icons.school_outlined,
               size: _iconSize,
-              color: theme.colorScheme.onSurfaceVariant,
+              color: context.mood.inkMute,
             ),
             const SizedBox(height: 16),
             Text(
@@ -35,12 +35,12 @@ class GameTypeEmptyState extends StatelessWidget {
               'Complete a lesson with this game type to unlock practice.',
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+                color: context.mood.inkMute,
               ),
             ),
             const SizedBox(height: 16),
             FilledButton(
-              onPressed: () => context.goNamed(AppRoutes.learn.name),
+              onPressed: () => context.go('/learn'),
               child: const Text('Back to Learn'),
             ),
           ],
@@ -72,7 +72,7 @@ class GameTypeSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -84,13 +84,13 @@ class GameTypeSummary extends StatelessWidget {
               height: _badgeSize,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: colors.primaryContainer,
+                color: mood.accent,
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.fitness_center,
                 size: _iconSize,
-                color: colors.onPrimaryContainer,
+                color: mood.accentInk,
               ),
             ),
             const SizedBox(height: 20),
@@ -104,7 +104,7 @@ class GameTypeSummary extends StatelessWidget {
             Text(
               '$correct / $total first-try correct',
               style: theme.textTheme.titleLarge?.copyWith(
-                color: colors.primary,
+                color: mood.accent,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -113,12 +113,12 @@ class GameTypeSummary extends StatelessWidget {
               'Practice runs do not change your XP, streak, or progress.',
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: colors.onSurfaceVariant,
+                color: mood.inkMute,
               ),
             ),
             const SizedBox(height: 32),
             FilledButton(
-              onPressed: () => context.goNamed(AppRoutes.learn.name),
+              onPressed: () => context.go('/learn'),
               child: const Text('Continue'),
             ),
           ],
@@ -151,7 +151,7 @@ class GameTypeStepProgress extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final mood = context.mood;
     final progress = total == 0 ? 0.0 : current / total;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -162,13 +162,13 @@ class GameTypeStepProgress extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: colors.primaryContainer,
+                color: mood.accent,
                 borderRadius: BorderRadius.circular(_pillRadius),
               ),
               child: Text(
                 'Step $current of $total',
                 style: theme.textTheme.labelMedium?.copyWith(
-                  color: colors.onPrimaryContainer,
+                  color: mood.accentInk,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -176,7 +176,7 @@ class GameTypeStepProgress extends StatelessWidget {
             Text(
               '${(progress * _percentScale).round()}%',
               style: theme.textTheme.labelMedium?.copyWith(
-                color: colors.onSurfaceVariant,
+                color: mood.inkMute,
               ),
             ),
           ],
@@ -186,8 +186,8 @@ class GameTypeStepProgress extends StatelessWidget {
           value: progress,
           minHeight: _barHeight,
           borderRadius: BorderRadius.circular(_barRadius),
-          backgroundColor: colors.surfaceContainerHighest,
-          color: colors.primary,
+          backgroundColor: mood.surface2,
+          color: mood.accent,
         ),
       ],
     );

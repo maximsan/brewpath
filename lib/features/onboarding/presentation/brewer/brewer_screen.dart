@@ -1,12 +1,11 @@
-import 'package:coffee_quest/core/constants/app_routes.dart';
-import 'package:coffee_quest/core/widgets/pick_card.dart';
-import 'package:coffee_quest/core/widgets/primary_button.dart';
-import 'package:coffee_quest/core/widgets/smallcaps_label.dart';
-import 'package:coffee_quest/features/onboarding/presentation/brewer/brewer_controller.dart';
-import 'package:coffee_quest/features/onboarding/presentation/onboarding_providers.dart';
-import 'package:coffee_quest/shared/theme/app_colors.dart';
-import 'package:coffee_quest/shared/theme/app_spacing.dart';
-import 'package:coffee_quest/shared/theme/app_typography.dart';
+import 'package:brew_path/core/widgets/pick_card.dart';
+import 'package:brew_path/core/widgets/primary_button.dart';
+import 'package:brew_path/core/widgets/smallcaps_label.dart';
+import 'package:brew_path/features/onboarding/presentation/brewer/brewer_controller.dart';
+import 'package:brew_path/features/onboarding/presentation/onboarding_providers.dart';
+import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/app_typography.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -54,7 +53,7 @@ class _BrewerScreenState extends ConsumerState<BrewerScreen> {
         await draft.complete();
       },
       onFinished: () {
-        if (mounted) context.goNamed(AppRoutes.learn.name);
+        if (mounted) context.go('/learn');
       },
     )..addListener(_onControllerChanged);
   }
@@ -71,8 +70,9 @@ class _BrewerScreenState extends ConsumerState<BrewerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final mood = context.mood;
     return Scaffold(
-      backgroundColor: AppColors.darkRoastBg,
+      backgroundColor: mood.bg,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(
@@ -86,7 +86,10 @@ class _BrewerScreenState extends ConsumerState<BrewerScreen> {
             children: [
               const SmallcapsLabel('ONBOARDING · 2 OF 2'),
               const SizedBox(height: AppSpacing.base),
-              Text('What do you brew with?', style: AppTypography.displayMD()),
+              Text(
+                'What do you brew with?',
+                style: AppTypography.displayMD(mood),
+              ),
               const SizedBox(height: AppSpacing.lg + 4),
               Expanded(
                 child: ListView.separated(

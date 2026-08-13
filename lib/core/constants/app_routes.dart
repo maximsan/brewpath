@@ -28,6 +28,10 @@ abstract class AppRoutes {
   static const moduleDetail = AppRoute('moduleDetail', 'module/:moduleId');
   static const lesson = AppRoute('lesson', 'lesson/:lessonId');
   static const lessonComplete = AppRoute('lessonComplete', 'complete');
+  static const moduleSummary = AppRoute(
+    'moduleSummary',
+    'module-summary/:moduleId',
+  );
   static const practiceLesson = AppRoute(
     'practiceLesson',
     'practice/lesson/:lessonId',

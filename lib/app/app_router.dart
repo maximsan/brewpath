@@ -1,23 +1,24 @@
-import 'package:coffee_quest/app/analytics_navigator_observer.dart';
-import 'package:coffee_quest/app/app_shell.dart';
-import 'package:coffee_quest/core/constants/app_routes.dart';
-import 'package:coffee_quest/features/cards/presentation/card_detail_screen.dart';
-import 'package:coffee_quest/features/cards/presentation/cards_screen.dart';
-import 'package:coffee_quest/features/cards/presentation/favorites_screen.dart';
-import 'package:coffee_quest/features/learn/presentation/game_type_practice_screen.dart';
-import 'package:coffee_quest/features/learn/presentation/learn_screen.dart';
-import 'package:coffee_quest/features/learn/presentation/module_detail_screen.dart';
-import 'package:coffee_quest/features/lessons/presentation/lesson_completion_screen.dart';
-import 'package:coffee_quest/features/lessons/presentation/lesson_screen.dart';
-import 'package:coffee_quest/features/onboarding/presentation/brewer/brewer_screen.dart';
-import 'package:coffee_quest/features/onboarding/presentation/goal/goal_screen.dart';
-import 'package:coffee_quest/features/onboarding/presentation/loading/loading_screen.dart';
-import 'package:coffee_quest/features/onboarding/presentation/onboarding_providers.dart';
-import 'package:coffee_quest/features/onboarding/presentation/welcome/welcome_screen.dart';
-import 'package:coffee_quest/features/path/presentation/path_screen.dart';
-import 'package:coffee_quest/features/profile/presentation/profile_screen.dart';
-import 'package:coffee_quest/features/profile/presentation/settings_screen.dart';
-import 'package:coffee_quest/services/analytics/analytics_provider.dart';
+import 'package:brew_path/app/analytics_navigator_observer.dart';
+import 'package:brew_path/app/app_shell.dart';
+import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/features/cards/presentation/card_detail_screen.dart';
+import 'package:brew_path/features/cards/presentation/cards_screen.dart';
+import 'package:brew_path/features/cards/presentation/favorites_screen.dart';
+import 'package:brew_path/features/learn/presentation/game_type_practice_screen.dart';
+import 'package:brew_path/features/learn/presentation/learn_screen.dart';
+import 'package:brew_path/features/learn/presentation/module_detail_screen.dart';
+import 'package:brew_path/features/learn/presentation/module_summary_screen.dart';
+import 'package:brew_path/features/lessons/presentation/lesson_completion_screen.dart';
+import 'package:brew_path/features/lessons/presentation/lesson_screen.dart';
+import 'package:brew_path/features/onboarding/presentation/brewer/brewer_screen.dart';
+import 'package:brew_path/features/onboarding/presentation/goal/goal_screen.dart';
+import 'package:brew_path/features/onboarding/presentation/loading/loading_screen.dart';
+import 'package:brew_path/features/onboarding/presentation/onboarding_providers.dart';
+import 'package:brew_path/features/onboarding/presentation/welcome/welcome_screen.dart';
+import 'package:brew_path/features/path/presentation/path_screen.dart';
+import 'package:brew_path/features/profile/presentation/profile_screen.dart';
+import 'package:brew_path/features/profile/presentation/settings_screen.dart';
+import 'package:brew_path/services/analytics/analytics_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -27,19 +28,6 @@ part 'app_router.g.dart';
 final _rootKey = GlobalKey<NavigatorState>();
 
 /// Provides the app's [GoRouter] (rebuilds on onboarding-gate changes).
-///
-/// Adding a route:
-/// 1. Add an [AppRoute] to [AppRoutes] — an absolute `path` for a top-level
-///    route, or a relative segment for one nested under a parent.
-/// 2. Add a [GoRoute] here from `AppRoutes.x.path` / `AppRoutes.x.name`; pass
-///    `parentNavigatorKey: _rootKey` if it should cover the bottom-nav shell.
-/// 3. Navigate via `context.goNamed(AppRoutes.x.name, …)` and assert its
-///    location in `test/unit/app_routes_test.dart`.
-/// 4. New tab? Also add a `NavigationDestination` to [AppShell] in the SAME
-///    order as the branches below (they pair by index), with an `AppLabels`
-///    label.
-/// 5. Visibility for gated/onboarding routes is decided in `redirect`, not on
-///    the [GoRoute].
 @riverpod
 GoRouter appRouter(Ref ref) {
   // Ticks whenever the async onboarding gate resolves; passed to the router
@@ -52,42 +40,26 @@ GoRouter appRouter(Ref ref) {
   });
   return GoRouter(
     navigatorKey: _rootKey,
-    initialLocation: AppRoutes.loading.path,
+    initialLocation: '/loading',
     refreshListenable: refresh,
     // Funnels the root (platform initial route, error-page "Home") to Loading
-    // and gates the rest of the app behind the onboarding flow. Locations are
-    // resolved from route names so this never hardcodes a URL.
+    // and gates the rest of the app behind the onboarding flow.
     redirect: (context, state) {
-      final loadingLocation = state.namedLocation(AppRoutes.loading.name);
-      final welcomeLocation = state.namedLocation(AppRoutes.welcome.name);
-      final goalLocation = state.namedLocation(AppRoutes.onboardingGoal.name);
-      final brewerLocation = state.namedLocation(
-        AppRoutes.onboardingBrewer.name,
-      );
       final path = state.uri.path;
-
       if (path == '/') {
-        return loadingLocation;
+        return '/loading';
       }
-
       final completed = ref.read(onboardingCompletedProvider).value ?? false;
       final isOnboardingRoute =
-          path == loadingLocation ||
-          path == welcomeLocation ||
-          path == goalLocation ||
-          path == brewerLocation;
-
+          path == '/loading' ||
+          path == '/welcome' ||
+          path.startsWith('/onboarding');
       if (!completed && !isOnboardingRoute) {
-        return welcomeLocation;
+        return '/welcome';
       }
-
-      if (completed &&
-          (path == welcomeLocation ||
-              path == goalLocation ||
-              path == brewerLocation)) {
-        return state.namedLocation(AppRoutes.learn.name);
+      if (completed && (path == '/welcome' || path.startsWith('/onboarding'))) {
+        return '/learn';
       }
-
       return null;
     },
     observers: [
@@ -161,6 +133,16 @@ GoRouter appRouter(Ref ref) {
                       ),
                     ],
                   ),
+                  // Module-completion recap, pushed over the shell after the
+                  // last lesson's completion screen.
+                  GoRoute(
+                    path: AppRoutes.moduleSummary.path,
+                    name: AppRoutes.moduleSummary.name,
+                    parentNavigatorKey: _rootKey,
+                    builder: (context, state) => ModuleSummaryScreen(
+                      moduleId: state.pathParameters['moduleId']!,
+                    ),
+                  ),
                   // Practice flows live under /learn so the back button
                   // returns to the Learn tab. Both push on the root navigator
                   // to cover the bottom-nav shell (same as lessons).
@@ -201,6 +183,11 @@ GoRouter appRouter(Ref ref) {
                 name: AppRoutes.cards.name,
                 builder: (context, state) => const CardsScreen(),
                 routes: [
+                  // Declared before `cardDetail`: that route's path is the
+                  // bare `:cardId` parameter, which would otherwise match
+                  // `favorites` and open a card detail for a card that does
+                  // not exist. go_router matches in declaration order, so the
+                  // literal has to come first.
                   GoRoute(
                     path: AppRoutes.favorites.path,
                     name: AppRoutes.favorites.name,

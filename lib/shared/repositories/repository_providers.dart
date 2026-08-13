@@ -1,7 +1,7 @@
-import 'package:coffee_quest/shared/repositories/card_repository.dart';
-import 'package:coffee_quest/shared/repositories/module_progress_repository.dart';
-import 'package:coffee_quest/shared/repositories/progress_repository.dart';
-import 'package:coffee_quest/shared/repositories/settings_repository.dart';
+import 'package:brew_path/shared/repositories/card_repository.dart';
+import 'package:brew_path/shared/repositories/module_progress_repository.dart';
+import 'package:brew_path/shared/repositories/progress_repository.dart';
+import 'package:brew_path/shared/repositories/settings_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'repository_providers.g.dart';

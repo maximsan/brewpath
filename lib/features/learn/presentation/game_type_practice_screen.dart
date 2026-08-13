@@ -1,12 +1,12 @@
-import 'package:coffee_quest/core/widgets/error_view.dart';
-import 'package:coffee_quest/core/widgets/loading_indicator.dart';
-import 'package:coffee_quest/features/learn/domain/learn_providers.dart';
-import 'package:coffee_quest/features/learn/presentation/game_type_practice_widgets.dart';
-import 'package:coffee_quest/features/mini_games/domain/mini_game_result.dart';
-import 'package:coffee_quest/features/mini_games/presentation/lesson_step_runner.dart';
-import 'package:coffee_quest/features/progress/domain/progress_providers.dart';
-import 'package:coffee_quest/shared/models/lesson_step_model.dart';
-import 'package:coffee_quest/shared/repositories/content_repository.dart';
+import 'package:brew_path/core/widgets/error_view.dart';
+import 'package:brew_path/core/widgets/loading_indicator.dart';
+import 'package:brew_path/features/learn/domain/learn_providers.dart';
+import 'package:brew_path/features/learn/presentation/game_type_practice_widgets.dart';
+import 'package:brew_path/features/mini_games/domain/mini_game_result.dart';
+import 'package:brew_path/features/mini_games/presentation/lesson_step_runner.dart';
+import 'package:brew_path/features/progress/domain/progress_providers.dart';
+import 'package:brew_path/shared/models/lesson_step_model.dart';
+import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

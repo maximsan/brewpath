@@ -1,5 +1,5 @@
-import 'package:coffee_quest/features/lessons/domain/lesson_completion_service.dart';
-import 'package:coffee_quest/shared/models/coffee_card_model.dart';
+import 'package:brew_path/features/lessons/domain/lesson_completion_service.dart';
+import 'package:brew_path/shared/models/coffee_card_model.dart';
 
 /// Loaded outcome for the post-lesson screen. Exactly one of [completion] /
 /// [reviewResult] is set for first-completion / review runs; both are null for

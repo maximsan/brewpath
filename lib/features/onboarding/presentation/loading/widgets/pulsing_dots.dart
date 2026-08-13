@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:coffee_quest/features/onboarding/presentation/loading/loading_animation.dart';
-import 'package:coffee_quest/shared/theme/app_colors.dart';
-import 'package:coffee_quest/shared/theme/app_spacing.dart';
+import 'package:brew_path/features/onboarding/presentation/loading/loading_animation.dart';
+import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
 /// Three accent dots that pulse in a staggered loop beneath the loading
@@ -46,27 +46,28 @@ class _PulsingDotsState extends State<PulsingDots>
       animation: _controller,
       builder: (context, _) {
         final progress = _controller.value;
+        final accent = context.mood.accent;
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _dot(pulsingDotOpacity(progress, _dotDelays[0])),
+            _dot(accent, pulsingDotOpacity(progress, _dotDelays[0])),
             const SizedBox(width: _dotGap),
-            _dot(pulsingDotOpacity(progress, _dotDelays[1])),
+            _dot(accent, pulsingDotOpacity(progress, _dotDelays[1])),
             const SizedBox(width: _dotGap),
-            _dot(pulsingDotOpacity(progress, _dotDelays[2])),
+            _dot(accent, pulsingDotOpacity(progress, _dotDelays[2])),
           ],
         );
       },
     );
   }
 
-  Widget _dot(double opacity) {
+  Widget _dot(Color accent, double opacity) {
     return Container(
       width: _dotSize,
       height: _dotSize,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: AppColors.darkRoastAccent.withValues(alpha: opacity),
+        color: accent.withValues(alpha: opacity),
       ),
     );
   }

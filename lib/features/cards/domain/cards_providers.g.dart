@@ -70,12 +70,20 @@ final class CardsWithCollectionProvider
 String _$cardsWithCollectionHash() =>
     r'e90b2194edb08dcedb9d9014f5086725bf05c085';
 
-/// Favorite user cards, derived from the in-memory favorites set.
+/// The cards the user has favourited, in content order.
+///
+/// Derived rather than stored: [favoriteCardsProvider] holds only the set of
+/// ids, so this stays correct when a card is favourited or removed anywhere in
+/// the app without a second source of truth to keep in step.
 
 @ProviderFor(favoriteCardsList)
 final favoriteCardsListProvider = FavoriteCardsListProvider._();
 
-/// Favorite user cards, derived from the in-memory favorites set.
+/// The cards the user has favourited, in content order.
+///
+/// Derived rather than stored: [favoriteCardsProvider] holds only the set of
+/// ids, so this stays correct when a card is favourited or removed anywhere in
+/// the app without a second source of truth to keep in step.
 
 final class FavoriteCardsListProvider
     extends
@@ -87,7 +95,11 @@ final class FavoriteCardsListProvider
     with
         $FutureModifier<List<CoffeeCardModel>>,
         $FutureProvider<List<CoffeeCardModel>> {
-  /// Favorite user cards, derived from the in-memory favorites set.
+  /// The cards the user has favourited, in content order.
+  ///
+  /// Derived rather than stored: [favoriteCardsProvider] holds only the set of
+  /// ids, so this stays correct when a card is favourited or removed anywhere in
+  /// the app without a second source of truth to keep in step.
   FavoriteCardsListProvider._()
     : super(
         from: null,
@@ -115,87 +127,3 @@ final class FavoriteCardsListProvider
 }
 
 String _$favoriteCardsListHash() => r'172ed916dc81cd10f32063bedb6426795d433826';
-
-/// Returns first equal card by Id
-
-@ProviderFor(cardById)
-final cardByIdProvider = CardByIdFamily._();
-
-/// Returns first equal card by Id
-
-final class CardByIdProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<CoffeeCardModel?>,
-          CoffeeCardModel?,
-          FutureOr<CoffeeCardModel?>
-        >
-    with $FutureModifier<CoffeeCardModel?>, $FutureProvider<CoffeeCardModel?> {
-  /// Returns first equal card by Id
-  CardByIdProvider._({
-    required CardByIdFamily super.from,
-    required String super.argument,
-  }) : super(
-         retry: null,
-         name: r'cardByIdProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
-
-  @override
-  String debugGetCreateSourceHash() => _$cardByIdHash();
-
-  @override
-  String toString() {
-    return r'cardByIdProvider'
-        ''
-        '($argument)';
-  }
-
-  @$internal
-  @override
-  $FutureProviderElement<CoffeeCardModel?> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<CoffeeCardModel?> create(Ref ref) {
-    final argument = this.argument as String;
-    return cardById(ref, argument);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is CardByIdProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
-}
-
-String _$cardByIdHash() => r'aed02080a5b28c0c8812171f24d85e8ebbec072c';
-
-/// Returns first equal card by Id
-
-final class CardByIdFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<CoffeeCardModel?>, String> {
-  CardByIdFamily._()
-    : super(
-        retry: null,
-        name: r'cardByIdProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  /// Returns first equal card by Id
-
-  CardByIdProvider call(String cardId) =>
-      CardByIdProvider._(argument: cardId, from: this);
-
-  @override
-  String toString() => r'cardByIdProvider';
-}

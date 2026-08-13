@@ -1,5 +1,5 @@
-import 'package:coffee_quest/features/onboarding/presentation/loading/loading_screen.dart';
-import 'package:coffee_quest/features/onboarding/presentation/onboarding_providers.dart';
+import 'package:brew_path/features/onboarding/presentation/loading/loading_screen.dart';
+import 'package:brew_path/features/onboarding/presentation/onboarding_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -44,7 +44,7 @@ void main() {
 
     // Pump initial frame; brand mark should be on screen.
     await tester.pump();
-    expect(find.text('COFFEE QUEST'), findsOneWidget);
+    expect(find.text('BREWPATH'), findsOneWidget);
 
     // Step through ~6 seconds to cover the full first cycle.
     for (var i = 0; i < 6; i++) {

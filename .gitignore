@@ -52,4 +52,15 @@ app.*.map.json
 # Widget Preview related
 .widget_preview/
 
-task.md
+# BrewPath design prototype — the v1 design source of truth (see docs/agents/domain.md).
+# Source, docs and the 10 production tree PNGs are tracked so tickets can cite them;
+# working captures and reference uploads are not.
+/brew-path/uploads/
+/brew-path/screenshots/
+/brew-path/scratch/
+/brew-path/scraps/
+/brew-path/.thumbnail
+
+# Agent worktrees — full working copies of this repo created by Claude Code.
+# Untracked and large (GBs); never meant to be committed.
+.claude/worktrees/

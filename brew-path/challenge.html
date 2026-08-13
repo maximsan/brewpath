@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>BrewPath — Brew Challenge Walkthrough</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #1a1612; color: #EDE6D6;
+    font-family: 'IBM Plex Sans', sans-serif; }
+  .page { padding: 56px 48px 96px; }
+  .head { max-width: 1100px; margin: 0 auto 8px; }
+  .smallcaps { font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: #C98A6A; margin-bottom: 12px; }
+  h1 { font-family: 'Fraunces', serif; font-weight: 400; font-size: 42px;
+    line-height: 1.05; letter-spacing: -0.02em; margin: 0; }
+  .sub { color: #8C9089; font-size: 15px; line-height: 1.55; margin-top: 12px; max-width: 620px; }
+  a.live { color: #D9694C; text-decoration: none; font-size: 13px;
+    border: 1px solid #2A2420; padding: 8px 14px; border-radius: 2px;
+    display: inline-block; margin-top: 18px; }
+  a.live:hover { background: #2A2420; }
+
+  .flow { max-width: 1100px; margin: 30px auto 0; display: flex; flex-wrap: wrap;
+    align-items: center; gap: 10px; font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #8C9089; }
+  .flow .step { color: #EDE6D6; }
+  .flow .arrow { color: #5A554D; }
+
+  .section { max-width: 1400px; margin: 76px auto 0; }
+  .section-head { max-width: 1100px; margin: 0 0 36px; display: flex;
+    align-items: flex-end; justify-content: space-between; gap: 24px;
+    border-bottom: 1px solid #2A2420; padding-bottom: 20px; }
+  .section-head .ttl { font-family: 'Fraunces', serif; font-weight: 400;
+    font-size: 28px; letter-spacing: -0.01em; margin: 0; }
+  .section-head .meta { font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: #8C9089; white-space: nowrap; }
+  .section-head .desc { color: #8C9089; font-size: 14px; line-height: 1.5;
+    margin: 8px 0 0; max-width: 540px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 52px 32px; max-width: 1400px; margin: 0 auto; }
+  .frame { display: flex; flex-direction: column; align-items: center; }
+  .phone-shell { width: 300px; height: 651px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.45); border-radius: 44px;
+    overflow: hidden; background: transparent; position: relative; }
+  .phone-shell iframe { width: 100%; height: 100%; border: 0;
+    background: transparent; display: block; pointer-events: auto; }
+  /* Replay control — a walkthrough testing tool, NOT part of the app design.
+     Sits above the frame so animated screens can be re-triggered on demand. */
+  .replay-btn {
+    position: absolute; top: 14px; right: 14px; z-index: 5;
+    display: inline-flex; align-items: center; gap: 7px;
+    appearance: none; cursor: pointer;
+    background: rgba(20,16,12,0.72); backdrop-filter: blur(6px);
+    color: #EDE6D6; border: 1px solid rgba(217,105,76,0.5);
+    border-radius: 999px; padding: 6px 12px 6px 10px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    transition: background 150ms ease, border-color 150ms ease, opacity 150ms ease;
+  }
+  .replay-btn:hover { background: rgba(30,22,16,0.92); border-color: #D9694C; }
+  .replay-btn svg { width: 13px; height: 13px; display: block; }
+  .replay-btn.spinning svg { animation: replaySpin 500ms cubic-bezier(0.4,0,0.2,1); }
+  @keyframes replaySpin { to { transform: rotate(-360deg); } }
+  .caption { margin-top: 16px; width: 300px; }
+  .caption .row { display: flex; align-items: baseline; gap: 10px; }
+  .caption .num { font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.12em; color: #D9694C; flex-shrink: 0; }
+  .caption .name { font-family: 'Fraunces', serif; font-size: 18px;
+    letter-spacing: -0.01em; color: #EDE6D6; }
+  .caption .how { color: #8C9089; font-size: 13px; line-height: 1.5;
+    margin: 7px 0 0; padding-left: 30px; }
+  .caption .tag { font-family: 'IBM Plex Mono', monospace; font-size: 9.5px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: #6E7368;
+    border: 1px solid #2A2420; border-radius: 999px; padding: 3px 9px;
+    margin-left: auto; flex-shrink: 0; align-self: center; }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="head">
+      <div class="smallcaps">BREWPATH · BREW CHALLENGE WALKTHROUGH</div>
+      <h1>One brew challenge, start to stamp.</h1>
+      <p class="sub">A Brew Challenge is a small, optional real-life coffee task tied to what you just learned — “taste two origins side by side,” “time your bloom.” This walkthrough follows a single challenge through its whole life: it’s offered when a module wraps, you accept it, it waits on Today, you log how it went, and it leaves a permanent stamp on the collectible card and a filled node on your Path. Tap inside any frame to use it.</p>
+      <a class="live" href="screens-overview.html">← Back to all screens</a>
+      <a class="live" href="index.html" style="margin-left:10px;">Open full prototype →</a>
+
+      <div class="flow">
+        <span class="step">Offer</span><span class="arrow">→</span>
+        <span class="step">Accept</span><span class="arrow">→</span>
+        <span class="step">Log</span><span class="arrow">→</span>
+        <span class="step">Done</span><span class="arrow">→</span>
+        <span class="step">Traces</span>
+      </div>
+    </div>
+
+    <div id="sections"></div>
+  </div>
+
+  <script>
+    const SECTIONS = [
+      {
+        title: 'Offer',
+        meta: '1 STATE · SUGGESTED',
+        desc: 'A challenge is never forced. When a module’s last lesson closes, right after the collectible card, the practical task is offered on its own screen — two buttons only: start it, or not now.',
+        games: [
+          ['module-challenge', 'C1', 'Module Brew Challenge', 'The larger, practical task shown after the module reward card. Framed as an invitation, not an assignment — “Start challenge” accepts it; “Not now” moves on without penalty.', 'OFFER'],
+        ],
+      },
+      {
+        title: 'Accept & wait',
+        meta: '1 STATE · ACTIVE',
+        desc: 'Accepting drops the challenge onto Today, where it sits for 48 hours as your open task. It’s the one active challenge at a time — a gentle prompt each day you open the app.',
+        games: [
+          ['today-challenge', 'C2', 'Active on Today', 'The accepted challenge as a live card on the Today tab — what to do, and a “Log result” button for when you’ve done it. If the window lapses it quietly drops off.', 'ACTIVE'],
+        ],
+      },
+      {
+        title: 'Log the result',
+        meta: '1 STATE · LOG SHEET',
+        desc: 'Tapping “Log result” opens a short, explicitly non-punitive sheet — pick how it went, then mark it done. There’s no wrong answer; the point is that you tried it in real life.',
+        games: [
+          ['today-challenge-log', 'C3', 'Log result sheet', 'A bottom sheet with a few outcome options (nailed it / close / didn’t work out) and a “Mark as done”. Choosing any of them counts the challenge as completed.', 'LOG'],
+        ],
+      },
+      {
+        title: 'Done',
+        meta: '1 STATE · COMPLETED',
+        desc: 'Marking it done presses the stamp and shows a brief confirmation on Today, including the collectible card it just unlocked a mark on. Then Today returns to normal.',
+        games: [
+          ['today-challenge-done', 'C4', 'Challenge done', 'The confirmation beat — the earned stamp, a line of encouragement, and the linked card. Dismiss to clear it from Today.', 'DONE', true],
+        ],
+      },
+      {
+        title: 'Traces it leaves',
+        meta: '4 STATES · PERSISTENT',
+        desc: 'A completed challenge isn’t a one-off — it leaves a permanent record. The linked collectible card gets a “tried in real life” stamp, and the module’s Path node fills in. Before it’s done, both show their locked / open state.',
+        games: [
+          ['card-stamp-locked', 'C5', 'Card · stamp locked',  'The collectible card before the challenge is done — the stamp area shows a dashed, unearned placeholder inviting you to try it for real.', 'CARD'],
+          ['card-stamp',        'C6', 'Card · stamp earned',  'The same card after completion — the “tried in real life” stamp pressed in solid accent ink. This is the mark that should only appear once you’ve actually logged it.', 'CARD'],
+          ['path-challenge-open','C7', 'Path node · open',     'On the Path, each module carries an optional challenge node. Available but not yet done, it reads as an open invitation at the end of the module.', 'PATH'],
+          ['path-challenge',    'C8', 'Path node · completed', 'The same node once the challenge is logged — filled and marked done, part of the module’s finished record on the Path spine.', 'PATH'],
+        ],
+      },
+    ];
+
+    const root = document.getElementById('sections');
+    SECTIONS.forEach((sec) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'section';
+      wrap.innerHTML = `
+        <div class="section-head">
+          <div>
+            <div class="ttl">${sec.title}</div>
+            <p class="desc">${sec.desc}</p>
+          </div>
+          <div class="meta">${sec.meta}</div>
+        </div>
+        <div class="grid"></div>
+      `;
+      const grid = wrap.querySelector('.grid');
+      sec.games.forEach(([slug, num, name, how, tag, anim]) => {
+        const cell = document.createElement('div');
+        cell.className = 'frame';
+        const replay = anim ? `
+            <button class="replay-btn" type="button" title="Replay the animation">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v4h4"/>
+              </svg>
+              Replay
+            </button>` : '';
+        cell.innerHTML = `
+          <div class="phone-shell">
+            ${replay}
+            <iframe src="index.html?screen=${slug}" title="${name}" loading="lazy"></iframe>
+          </div>
+          <div class="caption">
+            <div class="row">
+              <span class="num">${num}</span>
+              <span class="name">${name}</span>
+              <span class="tag">${tag}</span>
+            </div>
+            <p class="how">${how}</p>
+          </div>
+        `;
+        if (anim) {
+          const btn = cell.querySelector('.replay-btn');
+          const iframe = cell.querySelector('iframe');
+          btn.addEventListener('click', () => {
+            iframe.src = iframe.src;
+            btn.classList.remove('spinning');
+            void btn.offsetWidth;
+            btn.classList.add('spinning');
+          });
+        }
+        grid.appendChild(cell);
+      });
+      root.appendChild(wrap);
+    });
+  </script>
+</body>
+</html>
