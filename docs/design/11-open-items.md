@@ -95,7 +95,7 @@ and unlimited review; Premium removes the daily limit."*
 | | Prototype | Flutter app | Ruling |
 |---|---|---|---|
 | Axis | Features (Studio, Atlas) behind a Plus tier | No gate at all — `kAdsEnabled = false`, paywall absent | **Pace** — new lessons per day |
-| Saved shelf | Free cap of 10, Plus lifts it | absent | not the lever any more |
+| Saved shelf | Free cap of 5, Plus lifts it | absent | not the lever any more |
 | Timed unlocks | Rewarded-ad 15-min trial, 24-hour perfect-module gift | absent | meaningless against a per-day counter |
 
 **The daily cap is greenfield in both places**, so there is no prototype

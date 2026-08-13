@@ -136,7 +136,7 @@ it is app-invented and fine.
 |---|---|---|
 | Paywall: 2 plans, 7-day trial CTA, Restore/Terms/Privacy | **missing** | The only surface is a `PremiumCard` opening a "Premium is brewing" `AlertDialog` (`lib/features/profile/presentation/widgets/premium_card.dart:26-27, 80-100`). Its copy also **contradicts the design** — it sells "unlock every module, remove ads, keep your streak safe", where the design makes learning free, ads v2-only, and the streak free forever. |
 | StoreKit: purchase, receipt validation, restore, real trial counter | **missing** | `in_app_purchase: ^3.2.3` is in `pubspec.yaml:36` and `lib/services/payments/in_app_purchase_service.dart` exists, but the wired implementation is `NoOpPaymentsService` (all methods constant/no-op, `noop_payments_service.dart:10-27`). |
-| Saved free cap 10 → gate sheet, removal always allowed | **missing** | No cap, no gate, no Saved screen (see Favourites above). |
+| Saved free cap 5 → gate sheet, removal always allowed | **missing** | No cap, no gate, no Saved screen (see Favourites above). |
 | Studio as the only true v1 gate | **missing** | No `featureUnlocked`/`requestFeature` funnel, no `FeatureLock`, no Studio. |
 | Subscription + Account screens, change plan, cancel | **missing** | — |
 | Plus welcome screen | **missing** | — |
