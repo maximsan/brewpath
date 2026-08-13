@@ -569,7 +569,7 @@ function renderComponents() {
         when: 'Not saved. Sits outside the row\u2019s main tap target so it never steals the open.',
         spec: ['1px --rule', '--ink-mute glyph', 'round'] },
       { label: 'Saved', demo: favBtn(true),
-        when: 'On the Saved shelf. Free users hit a cap of 10 and get the Plus gate instead.',
+        when: 'On the Saved shelf. Free users hit a cap of 5 and get the Plus gate instead.',
         spec: ['--accent border', 'accent fill'] },
     ],
     [

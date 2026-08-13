@@ -107,7 +107,7 @@ The freeze is a **mechanic, not a setting** — there is deliberately no toggle.
 
 - Persisted to `localStorage['cq-favorites']` as a `Set` of prefixed keys: `l:` lesson, `t:` term, `g:` guide, `c:` collectible card.
 - **Only `l:` / `t:` / `g:` count as "Saved"** and appear on the Saved screen or in the header badge. Card favourites do not.
-- **Free cap: 10** (`SAVED_FREE_MAX`). Adding past the cap raises the Plus gate sheet. **Removing is always allowed**, so a capped free user can still curate.
+- **Free cap: 5** (`SAVED_FREE_MAX`). Adding past the cap raises the Plus gate sheet. **Removing is always allowed**, so a capped free user can still curate.
 - Plus lifts the cap. This is the paywall's primary concrete hook.
 - Seed favourites: `l:m1l1`, `c:c1`, `t:arabica`, `t:bloom`, `t:crema`.
 

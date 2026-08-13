@@ -343,7 +343,7 @@ function App() {
 
   // ── Favorites (saved lessons / cards / mini-games), persisted ──
   // Free tier keeps a soft cap on the Saved shelf; Plus lifts it.
-  const SAVED_FREE_MAX = 10;
+  const SAVED_FREE_MAX = 5;
   const [favorites, setFavorites] = useStateA(() => {
     let stored = null;
     try { stored = JSON.parse(localStorage.getItem('cq-favorites')); } catch (e) {}

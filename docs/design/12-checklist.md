@@ -103,7 +103,7 @@ staging list that feeds it, not a living board. Nothing ticks these boxes.
 - [ ] Restore Purchases with all **three** outcomes — restored / nothing to restore / failed — plus pending and error-retry ([§7](07-components.md) 7.3)
 - [ ] Plus entitlement read from **StoreKit, not local state** — after delete + reinstall a paying subscriber must not see a paywall
 - [ ] New account + Restore on the same Apple Account re-applies the subscription; deleted progress does not return
-- [ ] Saved free cap of 10 → gate sheet at the cap, removal always allowed
+- [ ] Saved free cap of 5 → gate sheet at the cap, removal always allowed
 - [ ] Studio as the only true v1 gate
 - [ ] Subscription + Account screens, change plan, cancel (four labels: Cancel trial / Keep trialling / Cancel subscription / Keep Plus)
 - [ ] Plus welcome screen
