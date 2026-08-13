@@ -3,6 +3,7 @@ import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/section_header.dart';
 import 'package:brew_path/features/learn/presentation/module_detail_hero_widget.dart';
 import 'package:brew_path/features/learn/presentation/module_lesson_card_widget.dart';
+import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/models/module_model.dart';
@@ -41,9 +42,16 @@ class ModuleDetailScreen extends ConsumerWidget {
             return const ErrorView(message: 'Module not found');
           }
 
-          final completedIds =
-              completed.asData?.value.map((r) => r.lessonId).toSet() ??
-              const <String>{};
+          final records = completed.asData?.value ?? const [];
+          final completedIds = records.map((r) => r.lessonId).toSet();
+          final masteryById = {
+            for (final record in records) record.lessonId: record.mastery,
+          };
+          // The lesson the user is up to: the first one they have not finished.
+          final currentId = lessons
+              .where((l) => !completedIds.contains(l.id))
+              .firstOrNull
+              ?.id;
 
           return ListView(
             padding: const EdgeInsets.all(16),
@@ -57,8 +65,9 @@ class ModuleDetailScreen extends ConsumerWidget {
                 if (i > 0) const SizedBox(height: 8),
                 ModuleLessonCardWidget(
                   lesson: lessons[i],
-                  index: i + 1,
                   isCompleted: completedIds.contains(lessons[i].id),
+                  isCurrent: lessons[i].id == currentId,
+                  mastery: masteryById[lessons[i].id] ?? MasteryResult.unscored,
                 ),
               ],
             ],

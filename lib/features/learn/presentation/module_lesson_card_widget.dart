@@ -1,3 +1,6 @@
+import 'package:brew_path/core/widgets/bean_gauge.dart';
+import 'package:brew_path/features/learn/presentation/lesson_node_gauge.dart';
+import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -9,19 +12,23 @@ class ModuleLessonCardWidget extends StatelessWidget {
   /// Creates a [ModuleLessonCardWidget].
   const ModuleLessonCardWidget({
     required this.lesson,
-    required this.index,
     required this.isCompleted,
+    required this.isCurrent,
     super.key,
+    this.mastery = MasteryResult.unscored,
   });
 
   /// The lesson to render.
   final LessonModel lesson;
 
-  /// 1-based position of the lesson within its module.
-  final int index;
-
   /// Whether the user has already completed this lesson.
   final bool isCompleted;
+
+  /// Whether this is the lesson the user is up to.
+  final bool isCurrent;
+
+  /// The lesson's best stored result, driving the node's fill.
+  final MasteryResult mastery;
 
   static const double _cardRadius = 12;
 
@@ -42,7 +49,11 @@ class ModuleLessonCardWidget extends StatelessWidget {
           padding: const EdgeInsets.all(14),
           child: Row(
             children: [
-              _LessonBadge(index: index, isCompleted: isCompleted),
+              _LessonBadge(
+                isCompleted: isCompleted,
+                isCurrent: isCurrent,
+                mastery: mastery,
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -80,45 +91,53 @@ class ModuleLessonCardWidget extends StatelessWidget {
   }
 }
 
-/// Numbered/check badge on the leading edge of a lesson card.
+/// The lesson node: a coffee bean on the page canvas, filled to the lesson's
+/// best-score ratio.
 ///
-/// **Interim.** The design draws this as a mastery gauge — a ring on the page
-/// canvas filled to the lesson's best-score ratio, coloured `sage` when scored,
-/// `accent` while current or needing practice, and deliberately `inkMute` and
-/// *empty* when done but unscored. Building it needs the score stored as
-/// `{correct, total}` rather than today's single `bestScore` int, which lands
-/// with the schema v4 change. Until then the badge keeps its filled circle.
+/// The bean *is* the gauge, so mastery reads as "how full" instead of a word in
+/// the margin. Which tone and how full is decided by [lessonNodeGauge]; this
+/// widget only turns that decision into mood colours.
 class _LessonBadge extends StatelessWidget {
-  const _LessonBadge({required this.index, required this.isCompleted});
+  const _LessonBadge({
+    required this.isCompleted,
+    required this.isCurrent,
+    required this.mastery,
+  });
 
-  final int index;
   final bool isCompleted;
+  final bool isCurrent;
+  final MasteryResult mastery;
 
-  static const double _size = 36;
-  static const double _checkIconSize = 20;
+  /// The design's `.path-node`: a 32-px well in the page canvas colour, so the
+  /// bean sits on `bg` rather than on the card's surface. The bean inside keeps
+  /// [BeanGauge]'s own default, which is the design's 20 px.
+  static const double _nodeSize = 32;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final mood = context.mood;
-    // One fill for both states; the check-vs-number glyph is the distinction.
-    final background = mood.accent;
-    final foreground = mood.accentInk;
+    final gauge = lessonNodeGauge(
+      isComplete: isCompleted,
+      isCurrent: isCurrent,
+      mastery: mastery,
+    );
+    final color = switch (gauge.tone) {
+      LessonNodeTone.muted => mood.inkMute,
+      LessonNodeTone.accent => mood.accent,
+      LessonNodeTone.sage => mood.sage,
+    };
 
     return Container(
-      width: _size,
-      height: _size,
+      width: _nodeSize,
+      height: _nodeSize,
       alignment: Alignment.center,
-      decoration: BoxDecoration(color: background, shape: BoxShape.circle),
-      child: isCompleted
-          ? Icon(Icons.check, size: _checkIconSize, color: foreground)
-          : Text(
-              '$index',
-              style: theme.textTheme.titleSmall?.copyWith(
-                color: foreground,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
+      decoration: BoxDecoration(color: mood.bg, shape: BoxShape.circle),
+      child: BeanGauge(
+        fill: gauge.fill,
+        color: color,
+        muted: mood.inkMute,
+        ink: mood.ink,
+      ),
     );
   }
 }
