@@ -1,5 +1,6 @@
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/utils/module_icons.dart';
+import 'package:brew_path/core/widgets/icon_badge.dart';
 import 'package:brew_path/features/companion/presentation/companion.dart';
 import 'package:brew_path/features/companion/presentation/companion_bubble.dart';
 import 'package:brew_path/features/companion/presentation/companion_handle.dart';
@@ -226,18 +227,8 @@ class _HeroBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mood = context.mood;
     return Center(
-      child: Container(
-        width: _size,
-        height: _size,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: mood.accent,
-          shape: BoxShape.circle,
-        ),
-        child: Icon(icon, size: _iconSize, color: mood.accentInk),
-      ),
+      child: IconBadge.circle(icon: icon, size: _size, iconSize: _iconSize),
     );
   }
 }
@@ -261,18 +252,10 @@ class _RewardCard extends StatelessWidget {
         padding: const EdgeInsets.all(14),
         child: Row(
           children: [
-            Container(
-              width: _badgeSize,
-              height: _badgeSize,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: mood.accent,
-                borderRadius: BorderRadius.circular(_cardRadius),
-              ),
-              child: Icon(
-                moduleIcon(card.iconName),
-                color: mood.accentInk,
-              ),
+            IconBadge.rounded(
+              icon: moduleIcon(card.iconName),
+              size: _badgeSize,
+              radius: _cardRadius,
             ),
             const SizedBox(width: 12),
             Expanded(

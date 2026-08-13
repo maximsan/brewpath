@@ -1,4 +1,4 @@
-import 'package:brew_path/shared/theme/app_radii.dart';
+import 'package:brew_path/core/widgets/icon_badge.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -41,19 +41,10 @@ class StatTile extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: _badgeSize,
-            height: _badgeSize,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: mood.accent,
-              borderRadius: BorderRadius.circular(AppRadii.chrome),
-            ),
-            child: Icon(
-              icon,
-              size: _iconSize,
-              color: mood.accentInk,
-            ),
+          IconBadge.rounded(
+            icon: icon,
+            size: _badgeSize,
+            iconSize: _iconSize,
           ),
           const Spacer(),
           Text(

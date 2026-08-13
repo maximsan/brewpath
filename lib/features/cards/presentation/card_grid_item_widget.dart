@@ -1,6 +1,6 @@
 import 'package:brew_path/core/utils/module_icons.dart';
+import 'package:brew_path/core/widgets/icon_badge.dart';
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
-import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -34,21 +34,14 @@ class CardGridItemWidget extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                width: _badgeSize,
-                height: _badgeSize,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: collected ? mood.accent : mood.surface2,
-                  borderRadius: BorderRadius.circular(AppRadii.chrome),
-                ),
-                child: Icon(
-                  collected
-                      ? moduleIcon(item.card.iconName)
-                      : Icons.help_outline,
-                  size: _iconSize,
-                  color: collected ? mood.accentInk : mood.inkMute,
-                ),
+              IconBadge.rounded(
+                icon: collected
+                    ? moduleIcon(item.card.iconName)
+                    : Icons.help_outline,
+                size: _badgeSize,
+                iconSize: _iconSize,
+                background: collected ? mood.accent : mood.surface2,
+                foreground: collected ? mood.accentInk : mood.inkMute,
               ),
               const SizedBox(height: 10),
               Text(

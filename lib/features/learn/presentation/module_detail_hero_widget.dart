@@ -1,6 +1,6 @@
 import 'package:brew_path/core/utils/module_icons.dart';
+import 'package:brew_path/core/widgets/icon_badge.dart';
 import 'package:brew_path/shared/models/module_model.dart';
-import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -23,19 +23,10 @@ class ModuleHeroWidget extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          width: _badgeSize,
-          height: _badgeSize,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: mood.accent,
-            borderRadius: BorderRadius.circular(AppRadii.chrome),
-          ),
-          child: Icon(
-            moduleIcon(module.iconName),
-            size: _iconSize,
-            color: mood.accentInk,
-          ),
+        IconBadge.rounded(
+          icon: moduleIcon(module.iconName),
+          size: _badgeSize,
+          iconSize: _iconSize,
         ),
         const SizedBox(width: 16),
         Expanded(

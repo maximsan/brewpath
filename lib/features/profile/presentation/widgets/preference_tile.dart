@@ -1,3 +1,4 @@
+import 'package:brew_path/core/widgets/icon_badge.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -31,6 +32,10 @@ class PreferenceTile extends StatelessWidget {
   }) : _value = null,
        _onChanged = null;
 
+  static const double _badgeSize = 44;
+  static const double _badgeRadius = 12;
+  static const double _iconSize = 22;
+
   /// Leading icon.
   final IconData icon;
 
@@ -62,15 +67,11 @@ class PreferenceTile extends StatelessWidget {
         children: [
           Row(
             children: [
-              Container(
-                width: 44,
-                height: 44,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: mood.accent,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(icon, size: 22, color: mood.accentInk),
+              IconBadge.rounded(
+                icon: icon,
+                size: _badgeSize,
+                radius: _badgeRadius,
+                iconSize: _iconSize,
               ),
               const Spacer(),
               if (_isToggle)
