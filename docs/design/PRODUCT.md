@@ -42,9 +42,12 @@ you do. A searchable coffee dictionary sits one tap away and links back into the
 lessons. And every so often the app asks you to go and actually brew something
 and taste the difference.
 
-**Free gives you two new lessons a day**, with unlimited mistakes and unlimited
-review. Premium removes the daily limit. Nothing that teaches is locked — the
-free plan slows you down, it never shuts you out.
+**Free gives you the first two lessons**, permanently, with unlimited replay —
+plus the whole glossary at a glance, practice on what you have unlocked, and the
+streak. Premium unlocks the remaining thirty, lifts the two-activity daily cap,
+and adds unlimited Saved and both Studios. The free tier is a **preview**: it
+shows you the shape of the course and lets you keep the habit, but the course
+itself is what you buy.
 
 ## 2. Who it's for, and what the project says it is
 
@@ -323,31 +326,52 @@ self-conscious about a coffee-hobby app, that's worth a conversation.
 
 ## 11. Making it yours, and what you pay for
 
-> ### ⚠️ This section was rewritten. The model changed.
+> ### ⚠️ This section was rewritten twice. The model changed, then changed again.
 >
-> **[Recorded — product-owner ruling]** The free/paid axis is now **pacing, not
-> features**:
+> **[Recorded — product-owner ruling]** The free/paid axis is **content, not
+> pacing and not features**:
 >
-> > **Free plan: 2 new lessons per day, unlimited mistakes and unlimited review.
-> > Premium removes the daily limit.**
+> > **Free: the first two lessons, permanently, plus practice on unlocked
+> > material and at most two learning/practice activities per day. Premium:
+> > the remaining thirty lessons, no daily cap, unlimited Saved, both Studios.**
 >
-> Everything below the ruling is either still-true detail or explicitly marked
-> as superseded. The old model — everything free, Plus buys an unlimited Saved
-> shelf and the Studio — is **no longer what ships**, and this document described
-> it as current until now.
+> Two superseded models are recorded here so neither is re-derived. **The
+> original** — everything free, Plus buys an unlimited Saved shelf and the
+> Studio — went first. **A pacing model** then replaced it (*2 new lessons/day
+> free; Premium removes the limit*) and is **also withdrawn**. Settled on
+> [Monetization shape](https://github.com/maximsan/brewpath/issues/29); full
+> rules in `docs/decisions-1.md` §7, §8, §11 and §12.
 
 ### What the ruling means
 
-**A throughput cap on a finite course converts on impatience, not lockout.** At
-two a day a free user finishes the whole course in about two weeks. They are
-never denied anything — only slowed. That is a materially different pitch from
-the old model, where a free user simply never saw the Studio.
+**A pacing cap could not sustain a subscription on a finite course.** That is
+why it was withdrawn. At two new lessons a day a free user finishes all
+thirty-two in about sixteen days — after which *"no daily limit on new lessons"*
+is worth nothing, forever, because there are no more lessons. A free user who
+finished would hold the complete product while a paying user's benefit evaporated
+in week three. A content gate has no such shape: Premium buys thirty lessons,
+which do not expire on a schedule and cannot be reached by waiting.
 
-**It is greenfield in both codebases.** The prototype has never gated lesson
-throughput — its paid layer gates *features* (Studio, Atlas) behind a trial. The
-Flutter app has no gate at all. So there is no prototype behaviour to port and no
-"the source wins" to appeal to: this is an invention, and the design reference
-says so.
+**The daily cap survives, doing a different job.** With only two lessons ever
+free it cannot pace a course; what it caps is **practice volume** — two
+activities a day on two lessons' worth of material.
+
+**This is a preview tier, not a generous free tier**, and the pitch has to be
+written for that. Measured against current content, a free user reaches **2 of
+32 lessons · 2 of 37 collectibles · 1 of 12 brew challenges · tree stage ~1 of
+10**. The earlier positioning — *"everything that teaches is free"* — is no
+longer true of this product.
+
+**It is greenfield in both codebases.** Neither has ever gated a lesson by tier:
+`featureUnlocked` only ever took feature keys (Studio, Atlas, dictionary, Saved,
+Duel), and lesson locking is sequential progress. The Flutter app has no gate at
+all. So there is no prototype behaviour to port and no "the source wins" to
+appeal to: this is an invention, and the design reference says so.
+
+**In v1 the feature axis has nearly dissolved.** Of the five `PLUS_FEATURES`,
+the dictionary and Saved are free, Atlas and Duel are v2, and **Studio is the
+only survivor** — while **lessons become the first content gate either codebase
+has had**.
 
 ### Still open
 
