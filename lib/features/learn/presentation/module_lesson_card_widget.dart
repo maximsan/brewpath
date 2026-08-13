@@ -81,6 +81,13 @@ class ModuleLessonCardWidget extends StatelessWidget {
 }
 
 /// Numbered/check badge on the leading edge of a lesson card.
+///
+/// **Interim.** The design draws this as a mastery gauge — a ring on the page
+/// canvas filled to the lesson's best-score ratio, coloured `sage` when scored,
+/// `accent` while current or needing practice, and deliberately `inkMute` and
+/// *empty* when done but unscored. Building it needs the score stored as
+/// `{correct, total}` rather than today's single `bestScore` int, which lands
+/// with the schema v4 change. Until then the badge keeps its filled circle.
 class _LessonBadge extends StatelessWidget {
   const _LessonBadge({required this.index, required this.isCompleted});
 
