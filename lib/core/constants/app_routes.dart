@@ -42,7 +42,6 @@ abstract class AppRoutes {
   );
   static const path = AppRoute('path', '/path');
   static const cards = AppRoute('cards', '/cards');
-  static const favorites = AppRoute('favorites', 'favorites');
   static const cardDetail = AppRoute('cardDetail', ':cardId');
   static const profile = AppRoute('profile', '/profile');
   static const profileSettings = AppRoute('profileSettings', 'settings');

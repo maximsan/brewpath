@@ -3,7 +3,6 @@ import 'package:brew_path/app/app_shell.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/cards/presentation/card_detail_screen.dart';
 import 'package:brew_path/features/cards/presentation/cards_screen.dart';
-import 'package:brew_path/features/cards/presentation/favorites_screen.dart';
 import 'package:brew_path/features/learn/presentation/game_type_practice_screen.dart';
 import 'package:brew_path/features/learn/presentation/learn_screen.dart';
 import 'package:brew_path/features/learn/presentation/module_detail_screen.dart';
@@ -183,16 +182,6 @@ GoRouter appRouter(Ref ref) {
                 name: AppRoutes.cards.name,
                 builder: (context, state) => const CardsScreen(),
                 routes: [
-                  // Declared before `cardDetail`: that route's path is the
-                  // bare `:cardId` parameter, which would otherwise match
-                  // `favorites` and open a card detail for a card that does
-                  // not exist. go_router matches in declaration order, so the
-                  // literal has to come first.
-                  GoRoute(
-                    path: AppRoutes.favorites.path,
-                    name: AppRoutes.favorites.name,
-                    builder: (context, state) => const FavoritesScreen(),
-                  ),
                   GoRoute(
                     path: AppRoutes.cardDetail.path,
                     name: AppRoutes.cardDetail.name,

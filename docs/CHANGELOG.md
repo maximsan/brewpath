@@ -44,10 +44,6 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
-- A **Favorites screen** — the cards you have saved, reached from a heart in the
-  Cards tab app bar. The list derives from the existing in-memory favourites
-  set rather than storing a second copy, so it stays correct wherever a card is
-  favourited.
 - **`AppRoutes`** — a catalog pairing each route's go_router `name` with its
   `path` on one entry, so the two can no longer drift apart. The router builds
   every `GoRoute` from it, replacing sixteen pairs of hardcoded string

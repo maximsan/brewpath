@@ -1,4 +1,3 @@
-import 'package:brew_path/features/cards/domain/favorite_cards_provider.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
@@ -37,17 +36,4 @@ Future<List<CardWithCollection>> cardsWithCollection(Ref ref) async {
             CardWithCollection(card: c, isCollected: collected.contains(c.id)),
       )
       .toList();
-}
-
-/// The cards the user has favourited, in content order.
-///
-/// Derived rather than stored: [favoriteCardsProvider] holds only the set of
-/// ids, so this stays correct when a card is favourited or removed anywhere in
-/// the app without a second source of truth to keep in step.
-@riverpod
-Future<List<CoffeeCardModel>> favoriteCardsList(Ref ref) async {
-  final favorites = ref.watch(favoriteCardsProvider);
-  final cards = await ref.watch(contentRepositoryProvider).getCards();
-
-  return cards.where((card) => favorites.contains(card.id)).toList();
 }

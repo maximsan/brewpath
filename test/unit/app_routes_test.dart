@@ -41,7 +41,6 @@ void main() {
     expect(locationOf(AppRoutes.learn.name), '/learn');
     expect(locationOf(AppRoutes.path.name), '/path');
     expect(locationOf(AppRoutes.cards.name), '/cards');
-    expect(locationOf(AppRoutes.favorites.name), '/cards/favorites');
     expect(locationOf(AppRoutes.profile.name), '/profile');
     expect(locationOf(AppRoutes.profileSettings.name), '/profile/settings');
   });

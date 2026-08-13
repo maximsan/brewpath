@@ -1,5 +1,4 @@
 import 'package:brew_path/core/constants/app_labels.dart';
-import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/section_header.dart';
@@ -9,7 +8,6 @@ import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 /// Cards tab: a grid of collectible coffee cards (locked until earned).
 class CardsScreen extends ConsumerWidget {
@@ -21,16 +19,7 @@ class CardsScreen extends ConsumerWidget {
     final cards = ref.watch(cardsWithCollectionProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(AppLabels.tabCards),
-        actions: [
-          IconButton(
-            onPressed: () => context.goNamed(AppRoutes.favorites.name),
-            icon: const Icon(Icons.favorite),
-            tooltip: AppLabels.favorites,
-          ),
-        ],
-      ),
+      appBar: AppBar(title: const Text(AppLabels.tabCards)),
       body: cards.when(
         loading: () => const LoadingIndicator(),
         error: (e, _) => ErrorView(message: '$e'),
