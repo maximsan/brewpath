@@ -13,7 +13,7 @@
 8. **Streak & freeze** — earn/spend/derive, week strip, share
 9. **Learn / Path / Cards / Profile tabs**
 10. **Coffee Dictionary** — incl. the three-state model and the reference-only path
-11. **Brew Challenges**
+11. **Coffee Challenges**
 12. **Mini-games** (7)
 13. **Plus, paywall & StoreKit**
 14. **Studio & personalization** — two-axis grove, migration, Roasty options

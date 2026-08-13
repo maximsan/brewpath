@@ -6,10 +6,10 @@
 ## Tabs (v1)
 | Tab | Screen | Content |
 |---|---|---|
-| **Today** (tab id `learn`) | `LearnTab` | Date header, freeze-save notice, Continue Learning card, active Brew Challenge, saved challenges, Practice Again (collapsible: Lessons, Mini-games) |
-| **Path** | `PathTab` | Vertical module path with lesson nodes, mastery bean fill, brew-challenge nodes, and the four named coming-soon modules (`ComingSoonPath`) |
+| **Today** (tab id `learn`) | `LearnTab` | Date header, freeze-save notice, Continue Learning card, active Coffee Challenge, saved challenges, Practice Again (collapsible: Lessons, Mini-games) |
+| **Path** | `PathTab` | Vertical module path with lesson nodes, mastery bean fill, coffee-challenge nodes, and the four named coming-soon modules (`ComingSoonPath`) |
 | **Cards** | `CardsTab` | Collectible card grid; tap → `CardSheet` |
-| **Profile** | `ProfileTab` | Tree hero, streak card + week strip, points line, mastery rollup, brew-challenge stat, Studio card, Saved card, joined date |
+| **Profile** | `ProfileTab` | Tree hero, streak card + week strip, points line, mastery rollup, coffee-challenge stat, Studio card, Saved card, joined date |
 
 ## Global header (`AppHeader`)
 Pinned top-right: **Saved** (with count badge, lock badge if gated) and **Dictionary**. Profile variant swaps in a gear → Settings. Duel entry is present but `showDuel={!isV1}`.
@@ -68,7 +68,7 @@ record to check the change against.
 **What would have to be decided before any of them is buildable:** how many
 lessons each holds, in what order, which existing dictionary terms they claim
 (the Espresso category already carries 7 terms, three of which now point at
-`m5l7`), which collectibles and brew challenges they add, and whether "Coffee
+`m5l7`), which collectibles and coffee challenges they add, and whether "Coffee
 Tasting" absorbs the parked Taste module wholesale or re-authors it. None of
 that exists yet.
 
@@ -89,7 +89,7 @@ gating rule keeps *unauthored* modules locked; this component advertises
 > existing Taste module is parked intact. **Two lessons have been pulled forward
 > into v1:**
 > - "Choosing your first grinder" (`m4l7`) out of **Brewing Gear**, into Grind. Espresso grinders stay with Espresso Basics.
-> - "Espresso, in one small cup" (`m5l7`) out of **Espresso Basics**, into Brew. It is a single orientation lesson — 6 cards, no brew challenge, because a challenge would ask for a machine the learner does not own.
+> - "Espresso, in one small cup" (`m5l7`) out of **Espresso Basics**, into Brew. It is a single orientation lesson — 6 cards, no coffee challenge, because a challenge would ask for a machine the learner does not own.
 >
 > Both are deliberate one-lesson previews of a v2 module. A third would stop
 > reading as a preview and start reading as a broken promise about what
@@ -104,7 +104,7 @@ gating rule keeps *unauthored* modules locked; this component advertises
 **Lesson cards (open a lesson at a given card kind)** — `card-predict`, `card-concept`, `card-flavor`, `card-mcq`, `card-multi`, `card-match`, `card-slider`, `card-sequence`, `card-decision`, `card-recall`, `card-visual`, `card-anatomy`, `card-bagpick`, `card-tastefix`, `card-practical`, `card-training`
 **Mini-games** — `game-intro`, `game-flavor`, `game-quiz`, `game-bagpick`, `game-tastefix`, `game-calibrate`, `game-sequence`
 **Rewards** — `lesson-complete`, `lesson-complete-weak`, `lesson-complete-perfect`, `module-complete`, `module-card`, `module-challenge`
-**Brew Challenge** — `today-challenge`, `today-challenge-done`, `today-nochallenge`, `today-challenge-log`, `path-challenge`, `path-challenge-open`, `card-stamp`, `card-stamp-locked`
+**Coffee Challenge** — `today-challenge`, `today-challenge-done`, `today-nochallenge`, `today-challenge-log`, `path-challenge`, `path-challenge-open`, `card-stamp`, `card-stamp-locked`
 **Progress** — `streak`, `tree`
 **Cards** — `cardsheet`
 **Settings** — `settings`, `about`, `help`, `account`, `subscription`

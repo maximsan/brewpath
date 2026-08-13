@@ -33,7 +33,7 @@ destinations. Collapsing those leaves roughly **44 distinct v1 destinations**.
 | Profile + progress + Settings | Profile, tree, streak, settings, about, help, account, subscription. |
 | Coffee Dictionary | Home, term, term-locked, term-reference, term-of-day, flashcards, vocab game, peek sheet. |
 | Plus + Studio + Saved | Paywall, Plus welcome, Studio hub, tree chooser, Roasty studio, Saved shelf. |
-| Brew Challenge | Today card (3 states), log sheet, recap sheet, module challenge screen, path nodes, card stamps. |
+| Coffee Challenge | Today card (3 states), log sheet, recap sheet, module challenge screen, path nodes, card stamps. |
 
 ## Deferred to v2 (built, but switched off)
 | Feature | Routes | Why deferred |

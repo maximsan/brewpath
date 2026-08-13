@@ -58,7 +58,7 @@ staging list that feeds it, not a living board. Nothing ticks these boxes.
 - [ ] Cherry cross-section (`CherrySection`) as both a lesson visual and a training card
 - [ ] `RoastBean` progress + counter + save-lesson
 - [ ] Term auto-linkification → peek sheet
-- [ ] Points rules: +10 first completion only (per-lesson value), +5 first brew-challenge completion, 0 for replays, no perfect bonus, no mid-lesson toast ([§5](05-mechanics.md) 5.1)
+- [ ] Points rules: +10 first completion only (per-lesson value), +5 first coffee-challenge completion, 0 for replays, no perfect bonus, no mid-lesson toast ([§5](05-mechanics.md) 5.1)
 - [ ] Mastery: best-ever percentage, `MASTERY_PASS = 0.8`, three states, never downgrades
 - [ ] Review-confirm sheet + no-points review mode
 - [ ] Reward routing incl. "next lesson only if authored" fallback
@@ -87,7 +87,7 @@ staging list that feeds it, not a living board. Nothing ticks these boxes.
 - [ ] Saved screen: three groups (terms · lessons · guides), each hidden when empty, plus the "study as flashcards" row
 - [ ] 37 collectible cards + 5 training guides, all with bespoke art (**art complete — port, don't draw**)
 - [ ] 7 mini-games with content banks
-- [ ] 12 brew challenges
+- [ ] 12 coffee challenges
 - [ ] Studio: 3 species × 4 light treatments, 8 training guides, Roasty option tables
 
 ## Monetization

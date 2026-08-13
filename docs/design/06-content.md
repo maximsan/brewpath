@@ -235,7 +235,7 @@ five unlabelled bags from `BAGPICK_ROUNDS`.
 
 Each has a blurb + 3 how-to-play steps + its own content bank (`MINI_GAME_CONTENT`). Surfaced under Learn → "Practice again → Mini-games", where the row leads with the *lesson* name and the game name becomes the eyebrow.
 
-## 6.6 Brew Challenges — 12
+## 6.6 Coffee Challenges — 12
 
 | id | Type | Title | Effort |
 |---|---|---|---|

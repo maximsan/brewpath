@@ -818,7 +818,7 @@ function LearnTab({ freezeSaved = false, freezesHeld = 0, nextFreezeIn = 7, onDi
           )}
         </div>
 
-        {/* 2 · Active Brew Challenge — below Continue Learning, above Up Next */}
+        {/* 2 · Active Coffee Challenge — below Continue Learning, above Up Next */}
         {brewChallenge && brewMode && window.ActiveBrewCard && (
           <window.ActiveBrewCard challenge={brewChallenge} mode={brewMode} autoHide={brewAutoHide} showPoints={brewPointsAwarded}
             onLog={onBrewLog} onSkip={onBrewSkip} onDismiss={onBrewDismiss} onOpenCard={onBrewCard}/>
@@ -1288,7 +1288,7 @@ function PathTab({ onLesson, brewCompleted, brewActiveId, brewSaved, brewPathMod
           if (!isActive && !allDone) {
             return <CompactModuleRow key={mod.id} mod={mod} prereq={prereq}/>;
           }
-          // Module Brew Challenge — the only challenge shown on Path.
+          // Module Coffee Challenge — the only challenge shown on Path.
           const moduleChallenge = window.brewForModule ? window.brewForModule(mod.id) : null;
           let challengeState = 'locked';
           if (moduleChallenge) {
@@ -1385,7 +1385,7 @@ function PathTab({ onLesson, brewCompleted, brewActiveId, brewSaved, brewPathMod
                     ) : null}
                   </button>
                   {(() => {
-                    // Lesson Brew Challenge sub-row: only once the lesson is done
+                    // Lesson Coffee Challenge sub-row: only once the lesson is done
                     // and the challenge is in play (active / saved / completed).
                     const lc = window.brewForLesson ? window.brewForLesson(lesson.id) : null;
                     if (!lc || !isComplete) return null;
@@ -2514,7 +2514,7 @@ function ProfileTab({ state, brewDone, brewTotal, frozenDays, onOpenStreak, onOp
           );
         })()}
 
-        {/* Brew Challenges — single lightweight progress stat */}
+        {/* Coffee Challenges — single lightweight progress stat */}
         {window.BrewChallengeStat && (
           <div className="px-24" style={{ paddingTop: 12 }}>
             <window.BrewChallengeStat done={brewDone || 0} total={brewTotal || 0} onOpen={onOpenBrew}/>

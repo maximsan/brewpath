@@ -8,14 +8,14 @@
 The 4–7 question personalization flow exists in full (`onboarding.jsx`) but `isV1` skips it. When re-enabled it locks to the **Standard** 4-question depth: goal → brewer → commitment → experience. Two flow *directions* are built and tweakable: `guided` (Roasty speaks on every question) and `fieldguide` (quiet, editorial; Roasty only bookends).
 
 ## 7.2 The daily loop
-Open → Today shows the current lesson → Begin lesson → play 6–11 cards → **+10 pts** → streak ticks → tree may advance a stage → collectible card unlocks → optional Brew Challenge offered → next lesson or back to Path.
+Open → Today shows the current lesson → Begin lesson → play 6–11 cards → **+10 pts** → streak ticks → tree may advance a stage → collectible card unlocks → optional Coffee Challenge offered → next lesson or back to Path.
 
 ## 7.3 Lesson → reward routing (`app.jsx`)
 1. Record best-ever result (never downgrade). Runs for replays too.
 2. If review mode → return to origin, no points, no reward screen. **Stop.**
 3. If perfect → remember for the (v2) perfect-module gift.
 4. Award the lesson's `points` (10), mark complete.
-5. If last lesson in module → `module-complete` → `module-card` (collectible) → module Brew Challenge offer (if any) → *(v2: perfect-module gift)* → next module's first lesson **if authored**, else Path.
+5. If last lesson in module → `module-complete` → `module-card` (collectible) → module Coffee Challenge offer (if any) → *(v2: perfect-module gift)* → next module's first lesson **if authored**, else Path.
 6. Otherwise → `lesson-complete` → Continue → next lesson **if authored**, else Path.
 
 ### Every reward screen is two phases, not one
@@ -34,7 +34,7 @@ in front of it.
 
 **Phase two of `lesson-complete` shows:** score, mastery state, animated tree
 from→to stage, points payout, streak-freeze-earned row (suppressed at the cap),
-the collectible-card link, brew-challenge suggestion, Practice again, Continue.
+the collectible-card link, coffee-challenge suggestion, Practice again, Continue.
 
 **And three interactions the old linear description omitted:**
 
@@ -58,7 +58,7 @@ is where the daily loop stops having a next step. See [PRODUCT.md](PRODUCT.md)
 ## 7.4 Replay / review
 Tapping a completed lesson raises a `ConfirmSheet` stating explicitly: *Points and streak → No change*, length, last completed. Confirm → review mode.
 
-## 7.5 Brew Challenge lifecycle
+## 7.5 Coffee Challenge lifecycle
 Offered at lesson/module complete → Start (active, 48h) **or** Save for later → sits on Today → Log Result (pick a reaction) → **+5 pts first time** → stamp pressed onto the collectible card, Path node fills → recap sheet available afterwards → optional unlimited replay.
 
 ## 7.6 Dictionary

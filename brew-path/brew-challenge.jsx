@@ -1,9 +1,9 @@
-// brew-challenge.jsx — Active Brew Challenge feature.
-// A Brew Challenge is a small, optional real-life coffee task tied to a lesson
+// brew-challenge.jsx — Active Coffee Challenge feature.
+// A Coffee Challenge is a small, optional real-life coffee task tied to a lesson
 // or module. It never blocks learning, streaks, points, cards, or progress.
 // This file owns: the challenge content model + lookups, the "challenge stamp"
 // mark, the Today card (active / completed), the Log Result sheet, the lesson-
-// completion suggestion block, and the full Module Brew Challenge screen.
+// completion suggestion block, and the full Module Coffee Challenge screen.
 
 // ───────────────────────────────────────────────────────────
 // CONTENT MODEL
@@ -212,7 +212,7 @@ function BrewActions({ primaryLabel, secondaryLabel, onPrimary, onSecondary, inl
 window.BrewActions = BrewActions;
 
 // ───────────────────────────────────────────────────────────
-// TODAY · ACTIVE BREW CHALLENGE CARD
+// TODAY · ACTIVE COFFEE CHALLENGE CARD
 // Placed below "Continue Learning", above "Up Next in Module".
 // mode: 'active'  → live task with Log Result / Skip
 //       'completed' → brief confirmation with the earned stamp + dismiss
@@ -281,7 +281,7 @@ function ActiveBrewCard({ challenge, mode, onLog, onSkip, onDismiss, onOpenCard,
   return (
     <div className="px-24" style={{ paddingTop: 28 }}>
       <div className="smallcaps" style={{ marginBottom: 28, color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: 8 }}>
-        <BrewCup size={15} color="var(--accent)"/> BREW CHALLENGE
+        <BrewCup size={15} color="var(--accent)"/> COFFEE CHALLENGE
       </div>
       <div className="card" style={{ background: accentTint, borderColor: accentRule, position: 'relative' }}>
         <button onClick={onSkip} aria-label="Save for later" style={{
@@ -473,7 +473,7 @@ function ChallengeSuggestion({ challenge, state, realState, onStart, onNotNow })
       padding: 20, background: 'color-mix(in oklab, var(--accent) 7%, var(--surface))',
     }}>
       <div className="smallcaps" style={{ color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-        <BrewCup size={16} color="var(--accent)"/> BREW CHALLENGE UNLOCKED
+        <BrewCup size={16} color="var(--accent)"/> COFFEE CHALLENGE UNLOCKED
       </div>
       <h3 className="ff-display" style={{ fontSize: 'var(--t-heading)', fontWeight: 400, lineHeight: 1.12, letterSpacing: '-0.01em', margin: 0, color: 'var(--ink)' }}>{challenge.title}</h3>
       <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: '8px 0 14px', textWrap: 'pretty' }}>{challenge.instruction}</p>
@@ -485,7 +485,7 @@ function ChallengeSuggestion({ challenge, state, realState, onStart, onNotNow })
 window.ChallengeSuggestion = ChallengeSuggestion;
 
 // ───────────────────────────────────────────────────────────
-// MODULE BREW CHALLENGE SCREEN — the larger, practical final task shown after
+// MODULE COFFEE CHALLENGE SCREEN — the larger, practical final task shown after
 // the module reward card. Optional. Two buttons: Start / Not Now.
 // state: 'suggested' | 'started' | 'dismissed'
 // ───────────────────────────────────────────────────────────
@@ -499,7 +499,7 @@ function ModuleChallengeScreen({ module, challenge, onStart, onNotNow, onBack })
   const notNow = () => { setState('dismissed'); setTimeout(() => onNotNow(), 850); };
 
   return (
-    <div className="screen" data-screen-label="Module Brew Challenge" style={{ background: 'var(--bg)' }}>
+    <div className="screen" data-screen-label="Module Coffee Challenge" style={{ background: 'var(--bg)' }}>
       <div aria-hidden="true" style={{
         position: 'absolute', inset: 0, pointerEvents: 'none',
         background: 'radial-gradient(ellipse at 50% 26%, color-mix(in oklab, var(--accent) 14%, transparent) 0%, transparent 58%)',
@@ -514,7 +514,7 @@ function ModuleChallengeScreen({ module, challenge, onStart, onNotNow, onBack })
       <div className="scroll" style={{ paddingTop: 92, paddingBottom: 28, display: 'flex', flexDirection: 'column', position: 'relative' }}>
         <div className="px-24" style={{ textAlign: 'center' }}>
           <div className="smallcaps" style={{ color: 'var(--accent)', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-            <BrewCup size={15} color="var(--accent)"/> MODULE BREW CHALLENGE
+            <BrewCup size={15} color="var(--accent)"/> MODULE COFFEE CHALLENGE
           </div>
           <h1 className="ff-display" style={{ fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.06, letterSpacing: '-0.02em', margin: '12px 0 0', color: 'var(--ink)', textWrap: 'pretty' }}>{challenge.title}</h1>
         </div>
@@ -697,7 +697,7 @@ function SavedBrewList({ saved, activeId, completed, onStart, onRemove }) {
 window.SavedBrewList = SavedBrewList;
 
 // ───────────────────────────────────────────────────────────
-// PROFILE · BREW CHALLENGES STAT — one lightweight progress row.
+// PROFILE · COFFEE CHALLENGES STAT — one lightweight progress row.
 // ───────────────────────────────────────────────────────────
 function BrewChallengeStat({ done, total, onOpen }) {
   const frac = total ? Math.max(0.02, Math.min(1, done / total)) : 0;
@@ -710,7 +710,7 @@ function BrewChallengeStat({ done, total, onOpen }) {
                   cursor: onOpen ? 'pointer' : 'default' }}>
       <div style={{ minWidth: 0, width: '100%' }}>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 10 }}>
-          <span className="smallcaps">BREW CHALLENGES</span>
+          <span className="smallcaps">COFFEE CHALLENGES</span>
           <span className="ff-mono" style={{ fontSize: 'var(--t-label)', letterSpacing: '0.06em', color: 'var(--ink-mute)', whiteSpace: 'nowrap' }}>{done} / {total}</span>
         </div>
         <div style={{ height: 8, background: 'var(--bg)', borderRadius: 999, overflow: 'hidden', marginTop: 12 }}>

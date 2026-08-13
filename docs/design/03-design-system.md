@@ -144,7 +144,7 @@ state, its demo, when it applies, and its token spec):
 |---|---|
 | Forms & input | Form row · Slider · Search field · Segmented control · Settings / nav row |
 | Dictionary | Term entry header · Pronunciation chip · Related chips · Knowledge check · Labelled block · In practice block · Sources list · Dictionary quick chips · Term peek sheet |
-| Progress & reward | Mastery rollup · Points mark · Points chip · Sequence row · Brew challenge card |
+| Progress & reward | Mastery rollup · Points mark · Points chip · Sequence row · Coffee challenge card |
 | Layout & chrome | Card or section · **Empty state** · Screen top bar · Header buttons · Sticky action bar · Scrims and dims · Media frame · Media overlay button |
 | Sheets | Bottom sheet · Result sheet |
 | Plus & gating | Lock affordances · Plus gate sheet · Rewarded ad |

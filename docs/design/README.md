@@ -53,8 +53,8 @@ places where the product genuinely has not decided something.
 | 2 | [Scope](02-scope.md) | v1 vs v2 counted by route; the tab bar |
 | 3 | [Design system](03-design-system.md) | Colour, type, radius, elevation, theming, Roasty, icons — **and the index of the 57 components specified in `Design System.html`** |
 | 4 | [Information architecture](04-information-architecture.md) | Tabs, header, **the four coming-soon modules shown to users**, the 104-route list |
-| 5 | [Mechanics](05-mechanics.md) | Points · mastery · tree · streak & freeze · gating · collectibles · Saved · brew challenges · Plus & trials · persistence · frozen values |
-| 6 | [Content](06-content.md) | Course · card kinds · collectibles · dictionary · mini-games · brew challenges · Studio · settings |
+| 5 | [Mechanics](05-mechanics.md) | Points · mastery · tree · streak & freeze · gating · collectibles · Saved · coffee challenges · Plus & trials · persistence · frozen values |
+| 6 | [Content](06-content.md) | Course · card kinds · collectibles · dictionary · mini-games · coffee challenges · Studio · settings |
 | 7 | [Components](07-components.md) | Every exported component, its states and options, and its design-system binding |
 | 8 | [Flows](08-flows.md) | First run · daily loop · reward routing · replay · challenges · dictionary · paywall |
 | 9 | [Deferred — v2](09-deferred-v2.md) | Atlas · Duel · ads & trials · onboarding questions · mood player · Liberica art |
@@ -102,7 +102,7 @@ node docs/design/tools/extract-facts.js path/to/brew-path
 It prints JSON covering: module/lesson/card counts and per-lesson breakdown,
 card-kind histogram, graded totals, collectible groups and duplicate titles,
 `CARD_ART` / `CARD_TINT` coverage, dictionary totals by category and
-reference-only terms, `dictLessonAudit()` results, mini-games, brew challenges,
+reference-only terms, `dictLessonAudit()` results, mini-games, coffee challenges,
 route keys, asset folder counts, and per-file line counts.
 
 **The sections whose numbers it owns** — re-derive rather than hand-edit:

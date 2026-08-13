@@ -13,7 +13,7 @@ longer appears in the source; treat it as a legacy name.
 - **+10 points, flat, for a first lesson completion.** The value is per-lesson data (`MODULES[].lessons[].points`, currently 10 for all 32) with a `|| 10` fallback in `app.jsx:760` — so it is tunable per lesson without touching code.
 - **Replays pay 0.** A completed lesson opens through a review-confirm sheet; review mode grants no points and skips the reward screens entirely.
 - **Perfect earns no bonus.** ⚠️ Earlier versions of this reference justified this with the quote *"mastery is the reward there"*, attributed to the source. **That phrase exists in no file in the prototype** — it was inherited from an earlier draft of this document and repeated as if sourced. The rule is verified in code; the justification for it is not written down anywhere.
-- **+5 points for the first completion of a Brew Challenge** (`app.jsx:605`). Replays pay 0.
+- **+5 points for the first completion of a Coffee Challenge** (`app.jsx:605`). Replays pay 0.
 - Points are **effort/habit only**. They do not drive the tree, unlocks, or mastery.
 - Mid-lesson correct answers show **no points toast** — feedback is purely qualitative (Roasty reacts). Points appear only on the result screen.
 
@@ -101,7 +101,7 @@ The freeze is a **mechanic, not a setting** — there is deliberately no toggle.
 - ⚠️ **Only the *first* locked card is rendered in the Cards grid.** `CardsTab` (`screens.jsx:1471`) draws every earned card, then the single card at `firstLockedIdx` as a teaser, and `return null`s the rest. The grid is not "earned cards plus silhouettes" — it is earned cards plus exactly one. A "{n} more to collect" footer stands in for the remainder.
 - **Training guides are a separate registry now.** They were moved out of `COLLECTION` into `TRAINING_CARDS`, so the collectible count *is* 37 — the old filter-at-render workaround is gone. Guides surface inside lessons (`TrainingCard`) and on the Saved shelf under `g:` keys.
 - **Card copy is not stored on the collectible.** `syncCardText()` copies title/summary/fact/meta from the lesson's own `reward` (or `MODULE_REWARDS`) at load; `syncTrainingText()` does the same for guides. One card, one text — see [§6](06-content.md) 6.3.
-- A card can carry a **Brew Challenge stamp** — a permanent "I tried this for real" mark pressed onto the card once the linked challenge is logged.
+- A card can carry a **Coffee Challenge stamp** — a permanent "I tried this for real" mark pressed onto the card once the linked challenge is logged.
 
 ## 5.7 Saved shelf / favorites
 
@@ -111,7 +111,7 @@ The freeze is a **mechanic, not a setting** — there is deliberately no toggle.
 - Plus lifts the cap. This is the paywall's primary concrete hook.
 - Seed favourites: `l:m1l1`, `c:c1`, `t:arabica`, `t:bloom`, `t:crema`.
 
-## 5.8 Brew Challenges (`brew-challenge.jsx`)
+## 5.8 Coffee Challenges (`brew-challenge.jsx`)
 
 Small, optional **real-life** tasks. They never block learning, streaks, points, cards or progress.
 
@@ -258,7 +258,7 @@ Points earned · Lessons completed · Your coffee tree → Back to SEED.**
 Two consequences, both live at the time:
 
 1. **The persistence effect threw.** It runs `[...brew.saved]` on every `brew` change; the spread of `undefined` raises a TypeError. Inside a `try/catch`, so no crash — but `cq-brew` was **never written**, and the pre-reset saved queue stayed in localStorage. **On the next launch the parked challenges came back.** A silent reset failure.
-2. **`brew.saved.has(ch.id)` was called unguarded.** After a reset, completing any lesson with a brew challenge threw for real.
+2. **`brew.saved.has(ch.id)` was called unguarded.** After a reset, completing any lesson with a coffee challenge threw for real.
 
 `SavedBrewList` guards it (`saved ? [...saved] : []`), which is why the Today
 list looked correct and hid the problem.
