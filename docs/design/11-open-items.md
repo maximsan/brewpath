@@ -18,7 +18,7 @@ routes (the 104th, `card-flavor`, arrived after).
 | **A card's words match wherever it appears** | 42 card entries, one source each — `syncCardText()` for the 37 collectibles, `syncTrainingText()` for the 5 guides |
 | **No two collectible cards share a name** | Distinct across both registries; the invariant no longer depends on which lists render together |
 | Path order matches defined lessons | 32 entries, 32 definitions, no drift |
-| Brew challenges | 7 of 32 lessons, by design |
+| Coffee challenges | 7 of 32 lessons, by design |
 
 ## Still open — accepted or v2-only
 | Item | Where | Disposition |
@@ -58,7 +58,7 @@ routes (the 104th, `card-flavor`, arrived after).
 | **Privacy + Terms exist in two places** — About and the paywall | `settings.jsx:279`, `customize.jsx` | Must resolve to the same URLs. Only the paywall pair was documented |
 | **`brew.saved` is dropped on Reset Progress, not emptied** — becomes `undefined` | `app.jsx:958` | ✅ **Fixed by the `ACCOUNT_STORES` registry.** `cq-brew` resets via `EMPTY_BREW()` (`app.jsx:241`), which carries `saved: new Set()`, so a partial `brew` can no longer be constructed. Was: the persist effect threw on `[...undefined]`, swallowed by its `try/catch`, `cq-brew` never rewritten — parked challenges returned on next launch. See [§5](05-mechanics.md) 5.12 |
 | **`freezesSpent` is not cleared by Reset Progress** although the streak rules say it is | `app.jsx:958` | ✅ **Fixed by the registry** — the keyless `progress` row clears `frozenDays`, `freezesSpent` and `freezeNoticeSeen` together. [#17](https://github.com/maximsan/brewpath/issues/17) removes the class on the Flutter side by deriving `freezesSpent` from the active-day set. See [§5](05-mechanics.md) 5.12 |
-| **The reset confirm sheet's itemised loss list is incomplete** — 4 lines, omits brew challenges, collectibles, mastery and the Saved shelf | `app.jsx:1077` | Copy claims an itemised summary of what will be lost; it lists streak, points, lessons and the tree only. Extend the lines or soften the claim — the fix direction is *say more*, not *clear less* |
+| **The reset confirm sheet's itemised loss list is incomplete** — 4 lines, omits coffee challenges, collectibles, mastery and the Saved shelf | `app.jsx:1077` | Copy claims an itemised summary of what will be lost; it lists streak, points, lessons and the tree only. Extend the lines or soften the claim — the fix direction is *say more*, not *clear less* |
 | **Delete Account still ships copy promising a 30-day restore** | `screens.jsx` delete `ConfirmSheet` | ✅ **Resolved by decision (Aug 2026): deletion is permanent, no recovery period.** The open question is closed; the **copy is not** — the body must be rewritten to state immediacy and irreversibility. Porting the current string verbatim ships a promise the product does not honour |
 | **Deletion does not clear `brew`, the Saved shelf, or Studio config** | `app.jsx:1016` | ✅ **Fixed by the registry.** `deleteAccount` runs `wipeStores(['progress', 'account'])` — `cq-brew` and `cq-favorites` are `progress`-scoped, `cq-custom` (Plus, trial, grove, Roasty) is `account`-scoped, so all three now go. "Everything in it" means everything |
 | **`ConfirmSheet` cannot render the approved delete copy** | `settings.jsx:52` | `body` is a single `<p>{body}</p>`. The approved copy is **two paragraphs** on two different subjects and must not run together. Component change required before the copy can ship |
@@ -114,7 +114,7 @@ naming difference on the surface and three genuine disagreements underneath.
 | Lesson reward | **Flat 10**, identical for every lesson | **10 × step count** — a long lesson pays several times a short one | `lib/core/constants/xp_values.dart` — `forLesson(stepCount) => stepCount * perStep` |
 | Module completion | **No bonus at all** | **+25** | `XpValues.moduleCompletionBonus` |
 | Replay / practice | **Zero, always** | **+2 per run**, capped once per lesson per day | `XpValues.practiceXp` |
-| Brew challenge | +5 on first completion | Not implemented | — |
+| Coffee challenge | +5 on first completion | Not implemented | — |
 | Mascot state name | `points` | `RoastyState.xp` | `lib/features/companion/domain/roasty_state.dart` |
 | User-facing label | "points" | "+N XP", "Total XP" | `today_card_widget.dart`, `module_lesson_card_widget.dart` |
 

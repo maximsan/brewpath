@@ -141,7 +141,7 @@ if (!out.miniGames.length) {
 }
 out.miniGameRaw = mg.slice(0, 2500);
 
-// ── Brew challenges ───────────────────────────────────────────────────────
+// ── Coffee challenges ─────────────────────────────────────────────────────
 const brew = read('brew-challenge.jsx');
 out.brewChallenges = [...brew.matchAll(/id:\s*'(bc-[^']+)',\s*type:\s*'([^']+)'[\s\S]*?title:\s*'([^']*)'[\s\S]*?effort:\s*'([^']*)'/g)]
   .map((m) => ({ id: m[1], type: m[2], title: m[3], effort: m[4] }));

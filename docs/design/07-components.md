@@ -57,7 +57,7 @@ is easy to miss when reading it as "the stats screen".
 | 3 | **Streak card** | `CURRENT STREAK` | **button** → `onOpenStreak` (Streak screen) | always. Embeds `WeekStrip size="sm"` with `frozen` + `streak`. The comment is explicit that the card is *a preview of that screen, so it cannot invent its own glyph* — it reuses the mark from the Streak screen's ring |
 | 4 | Points line | — | **not tappable** | always. A quiet centred line: `PointsBean` + "{n} lesson/lessons · {n} points" |
 | 5 | **Mastery rollup** | `LESSON PROGRESS` | **button** → `onPractice` — deep-links to the Path to practise weak lessons | **only when `playedLessons.length > 0`** — hidden for a brand-new user |
-| 6 | **Brew challenges** | — | `BrewChallengeStat` → `onOpenBrew` (7.4) | when the component exists |
+| 6 | **Coffee challenges** | — | `BrewChallengeStat` → `onOpenBrew` (7.4) | when the component exists |
 | 7 | **Studio card** | "Dress up Roasty" / "Hats, outfits and your plant" | **button** → `onOpenCustomize` | always. `PlusPill` when `lock('studio')` |
 | 8 | **Duel card** | "Challenge a friend" / "Quick head-to-head quizzes" | **button** → `onOpenDuel('hub')` | **`showDuel` only — v2.** `PlusPill` when `lock('duel')` |
 | 9 | **Saved card** | "Your favorites" / "{n} saved to revisit" | **button** → `onOpenSaved` | always. `PlusPill` when `lock('saved')` |
@@ -184,7 +184,7 @@ third confirm label, **"Try again"**.
 
 ---
 
-## 7.4 Brew Challenges
+## 7.4 Coffee Challenges
 
 13 exported components in `brew-challenge.jsx`. [§5](05-mechanics.md) covers the rules; this is
 the surface inventory.
@@ -352,7 +352,7 @@ review."*
 |---|---|---|
 | Freeze-save notice | **✕ button** → `onDismissFreeze` (`aria-label="Dismiss"`) | `freezeSaved`. Carries `freezesHeld` and `nextFreezeIn` |
 | Continue Learning | **primary button** → `onLesson(curLesson.id)` | a current lesson exists |
-| Active brew challenge | `ActiveBrewCard` → `onBrewLog` · `onBrewSkip` · `onBrewDismiss` · `onBrewCard` (7.4) | `brewChallenge` |
+| Active coffee challenge | `ActiveBrewCard` → `onBrewLog` · `onBrewSkip` · `onBrewDismiss` · `onBrewCard` (7.4) | `brewChallenge` |
 | Saved challenges | `SavedBrewList` → `onBrewAction(ch, 'available')` · `onBrewUnsave` | the queue is non-empty **and** each entry's source lesson is reached |
 | **Duel card** | **button** → `onOpenDuel('hub')` | **`showDuel` only — v2** |
 | Practice again | per row: **`isGame ? onGame(it) : onLesson(it.id)`** | collapsible; groups Lessons and Mini-games |

@@ -260,7 +260,7 @@ Everything in the dictionary is free.
 will dip into rather than read. Twenty-six of them are one-liners with no depth,
 which is a visible quality gradient if anyone goes looking.
 
-## 8. Brew challenges — getting off the screen
+## 8. Coffee challenges — getting off the screen
 
 Twelve small real-world tasks. One capstone per module, plus a few attached to
 the most hands-on lessons.
@@ -407,7 +407,7 @@ confirmation screen being unmissable.
 ## 13. What ships now, and what's waiting
 
 **In the first version:** the lessons, the dictionary, the plant, streaks,
-collectible cards, brew challenges, the games, the paid tier and the Studio.
+collectible cards, coffee challenges, the games, the paid tier and the Studio.
 Four tabs: Today, your Path, your Cards, your Profile.
 
 **Built but switched off:**
