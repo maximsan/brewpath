@@ -74,11 +74,14 @@ class _Connector extends StatelessWidget {
 /// The node marker: filled when complete, outlined when current/available,
 /// muted with a lock when locked.
 ///
-/// **Interim.** The design draws this as a mastery gauge — a ring on the page
-/// canvas filled to the best-score ratio — rather than a filled state chip.
-/// Building it needs the score stored as `{correct, total}` rather than today's
-/// single `bestScore` int, which lands with the schema v4 change. Until then
-/// the node keeps the fill/outline/lock triple.
+/// **Not a mastery gauge, deliberately.** #46 grouped this with the lesson
+/// node, but it takes a [ModuleWithProgress]: the app's Path lists *modules*,
+/// where the design's Path lists modules with expandable lesson rows and hangs
+/// the bean gauge off those rows. A module has no `{correct, total}` to fill a
+/// bean with, and the design gives module rows no gauge at all — so the fill
+/// here stays a plain state marker rather than inventing a rule the design
+/// does not have. The gauge lives on `_LessonBadge`, which is a real lesson
+/// node.
 class _NodeCircle extends StatelessWidget {
   const _NodeCircle({required this.item});
 
