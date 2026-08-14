@@ -1,4 +1,5 @@
 import 'package:brew_path/app/app.dart';
+import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/repositories/card_repository.dart';
 import 'package:brew_path/shared/repositories/progress_repository.dart';
 import 'package:brew_path/shared/repositories/settings_repository.dart';
@@ -56,7 +57,7 @@ void main() {
     await ProgressRepository().saveCompletion(
       lessonId: 'lesson_a',
       xpEarned: 30,
-      score: 80,
+      mastery: const MasteryResult(correct: 4, total: 5),
     );
     await CardRepository().collectCard('card_a');
     final settings = await SettingsRepository().getSettings();
@@ -81,7 +82,7 @@ void main() {
     await ProgressRepository().saveCompletion(
       lessonId: 'lesson_a',
       xpEarned: 30,
-      score: 80,
+      mastery: const MasteryResult(correct: 4, total: 5),
     );
     await CardRepository().collectCard('card_a');
     final settings = await SettingsRepository().getSettings();

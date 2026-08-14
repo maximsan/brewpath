@@ -78,12 +78,14 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
       case MiniGameCorrect():
         if (_attempt == 0) _firstTryCorrectCount++;
         if (_stepIndex + 1 >= lesson.steps.length) {
-          // Mastery = first-try accuracy as a percentage (0–100).
-          final score = (100 * _firstTryCorrectCount / lesson.steps.length)
-              .round();
+          // The graded pair travels whole. Rounding it to a percentage here
+          // would destroy the wrong-answer count the mastery band derives
+          // from — `{4,5}` and `{18,20}` both read 80%+ but earn different
+          // bands, and only the pair can tell them apart.
           context.go(
             '/learn/lesson/${lesson.id}/complete'
-            '?review=${widget.review}&practice=${widget.practice}&score=$score',
+            '?review=${widget.review}&practice=${widget.practice}'
+            '&correct=$_firstTryCorrectCount&total=${lesson.steps.length}',
           );
         } else {
           setState(() {

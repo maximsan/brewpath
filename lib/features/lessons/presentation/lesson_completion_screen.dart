@@ -8,6 +8,7 @@ import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/lessons/domain/lesson_completion_service.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_body.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_reward.dart';
+import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
@@ -19,7 +20,7 @@ class LessonCompletionScreen extends ConsumerStatefulWidget {
   /// Creates a [LessonCompletionScreen].
   const LessonCompletionScreen({
     required this.lessonId,
-    required this.score,
+    required this.mastery,
     super.key,
     this.review = false,
     this.practice = false,
@@ -28,8 +29,8 @@ class LessonCompletionScreen extends ConsumerStatefulWidget {
   /// Id of the completed lesson.
   final String lessonId;
 
-  /// First-try accuracy of the run that reached this screen (0–100).
-  final int score;
+  /// Graded result of the run that reached this screen.
+  final MasteryResult mastery;
 
   /// Whether the run was a review of an already-completed lesson.
   final bool review;
@@ -78,7 +79,7 @@ class _LessonCompletionScreenState
     if (widget.review) {
       final reviewResult = await ref
           .read(lessonCompletionServiceProvider)
-          .reviewLesson(lesson, score: widget.score);
+          .reviewLesson(lesson, mastery: widget.mastery);
       // A review changes nothing else; only practice XP affects a shell tab.
       if (reviewResult.practiceXpAwarded) {
         ref.invalidate(totalXpProvider);
@@ -88,7 +89,7 @@ class _LessonCompletionScreenState
 
     final completion = await ref
         .read(lessonCompletionServiceProvider)
-        .completeLesson(lesson, score: widget.score);
+        .completeLesson(lesson, mastery: widget.mastery);
 
     // The Learn, Cards, and Profile screens live in the indexed-stack shell and
     // stay mounted while this screen covers them, so every completion-derived
@@ -148,7 +149,7 @@ class _LessonCompletionScreenState
     final moduleCompleted = reward.completion?.moduleCompleted ?? false;
     return LessonCompletionBody(
       reward: reward,
-      score: widget.score,
+      mastery: widget.mastery,
       companionHandle: firstCompletion ? _companionHandle : null,
       companionLine: firstCompletion ? _companionLine : null,
       moduleSummaryId: moduleCompleted ? _moduleId : null,

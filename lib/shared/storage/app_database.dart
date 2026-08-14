@@ -23,8 +23,17 @@ class ProgressRecords extends Table {
   /// completion) keep their already-earned status.
   BoolColumn get fullXpAwarded => boolean().withDefault(const Constant(true))();
 
-  /// Best first-try accuracy across all runs, as an integer percentage 0–100.
-  IntColumn get bestScore => integer().withDefault(const Constant(0))();
+  /// Graded cards answered right in the lesson's best run.
+  ///
+  /// Stored as the pair `correctCount` / `gradedTotal` rather than a
+  /// percentage: the mastery band derives from the wrong-answer count
+  /// (`gradedTotal - correctCount`) and the node gauge fills to the ratio, and
+  /// neither survives being flattened into one number. A row with
+  /// `gradedTotal == 0` holds no score and reads as deliberately neutral.
+  IntColumn get correctCount => integer().withDefault(const Constant(0))();
+
+  /// Graded cards in the lesson's best run; `0` means unscored.
+  IntColumn get gradedTotal => integer().withDefault(const Constant(0))();
 
   /// Calendar day practice XP was last awarded for this lesson during review.
   DateTimeColumn get lastPracticeXpDate => dateTime().nullable()();
@@ -100,8 +109,12 @@ class AppDatabase extends _$AppDatabase {
   /// Schema version that added the appearance preference.
   static const int _themeModeVersion = 4;
 
+  /// Schema version that replaced the `bestScore` percentage with the
+  /// `{correctCount, gradedTotal}` pair.
+  static const int _masteryPairVersion = 5;
+
   /// The current version is whichever migration landed last.
-  static const int _schemaVersion = _themeModeVersion;
+  static const int _schemaVersion = _masteryPairVersion;
 
   @override
   int get schemaVersion => _schemaVersion;
@@ -113,9 +126,14 @@ class AppDatabase extends _$AppDatabase {
       // v1 → v2: review/mastery columns + the module-XP ledger table.
       if (from < 2) {
         await m.addColumn(progressRecords, progressRecords.fullXpAwarded);
-        await m.addColumn(progressRecords, progressRecords.bestScore);
         await m.addColumn(progressRecords, progressRecords.lastPracticeXpDate);
         await m.createTable(moduleProgressRecords);
+        // This step also added `bestScore`, which no longer exists on the
+        // table. Adding it here is not merely unnecessary but unexpressible —
+        // the column is gone from the Dart definition. Skipping it is safe
+        // because the v4 → v5 step below recreates this table from the current
+        // definition, which drops `best_score` on databases old enough to have
+        // it and never wants it on databases that skipped straight past.
       }
       // v2 → v3: onboarding gate + selection columns on user_settings.
       // v2 → v3: onboarding columns on user_settings.
@@ -135,6 +153,30 @@ class AppDatabase extends _$AppDatabase {
       // v3 → v4: the appearance preference.
       if (from < _themeModeVersion) {
         await m.addColumn(userSettings, userSettings.themeMode);
+      }
+
+      // v4 → v5: `bestScore` gives way to the `{correctCount, gradedTotal}`
+      // pair. Recreating the table both adds the new columns and drops the old
+      // one; no `columnTransformer` converts anything, because the old value
+      // *cannot* be converted — it measured first-try accuracy across all
+      // steps with unlimited retries, where grading is one-shot over graded
+      // cards. Existing rows land on the pair's zero default and so read as
+      // unscored, which is exactly the neutral state the design draws for a
+      // lesson finished without a stored score.
+      if (from < _masteryPairVersion) {
+        await m.alterTable(
+          TableMigration(
+            progressRecords,
+            // Declared as new so the copy step takes their defaults rather
+            // than selecting them out of the old table, where they do not
+            // exist yet. Everything else copies across by name, and
+            // `best_score` is dropped by omission from the new definition.
+            newColumns: [
+              progressRecords.correctCount,
+              progressRecords.gradedTotal,
+            ],
+          ),
+        );
       }
     },
   );

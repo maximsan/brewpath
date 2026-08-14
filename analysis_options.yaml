@@ -63,6 +63,12 @@ dart_code_linter:
         severity: warning
         allowed: [0, 1, 2]
         exclude:
+          # The coffee-bean gauge: an SVG path transcribed coordinate-for-
+          # coordinate from `brew-path/flavor-wheel.jsx`. Naming each bezier
+          # control point would invent twelve constants that mean nothing on
+          # their own and would hide the one property that matters — that the
+          # numbers still match the design source exactly.
+          - lib/core/widgets/bean_gauge.dart
           - lib/features/companion/presentation/roasty.dart
           - lib/features/companion/presentation/roasty_animation.dart
           - lib/features/companion/presentation/roasty_body.dart

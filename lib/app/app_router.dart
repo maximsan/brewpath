@@ -17,6 +17,7 @@ import 'package:brew_path/features/onboarding/presentation/welcome/welcome_scree
 import 'package:brew_path/features/path/presentation/path_screen.dart';
 import 'package:brew_path/features/profile/presentation/profile_screen.dart';
 import 'package:brew_path/features/profile/presentation/settings_screen.dart';
+import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/services/analytics/analytics_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -123,11 +124,18 @@ GoRouter appRouter(Ref ref) {
                           review: state.uri.queryParameters['review'] == 'true',
                           practice:
                               state.uri.queryParameters['practice'] == 'true',
-                          score:
-                              int.tryParse(
-                                state.uri.queryParameters['score'] ?? '',
-                              ) ??
-                              0,
+                          mastery: MasteryResult(
+                            correct:
+                                int.tryParse(
+                                  state.uri.queryParameters['correct'] ?? '',
+                                ) ??
+                                0,
+                            total:
+                                int.tryParse(
+                                  state.uri.queryParameters['total'] ?? '',
+                                ) ??
+                                0,
+                          ),
                         ),
                       ),
                     ],

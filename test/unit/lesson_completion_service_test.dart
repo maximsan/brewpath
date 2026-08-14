@@ -1,5 +1,6 @@
 import 'package:brew_path/core/constants/xp_values.dart';
 import 'package:brew_path/features/lessons/domain/lesson_completion_service.dart';
+import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/streak_service.dart';
 import 'package:brew_path/features/progress/domain/xp_service.dart';
 import 'package:brew_path/services/analytics/noop_analytics_service.dart';
@@ -55,7 +56,10 @@ void main() {
       'first completion persists progress, XP, card, streak and score',
       () async {
         final lesson = (await content.getLessonById('lesson_where_coffee'))!;
-        final result = await service.completeLesson(lesson, score: 80);
+        final result = await service.completeLesson(
+          lesson,
+          mastery: const MasteryResult(correct: 4, total: 5),
+        );
 
         // lesson_where_coffee has 5 steps × 10 XP each = 50.
         expect(result.lessonXp, 50);
@@ -68,14 +72,20 @@ void main() {
         final record = (await progress.getByLessonId('lesson_where_coffee'))!;
         expect(record.isCompleted, isTrue);
         expect(record.fullXpAwarded, isTrue);
-        expect(record.bestScore, 80);
+        expect(record.mastery, const MasteryResult(correct: 4, total: 5));
       },
     );
 
     test('replaying a completed lesson is idempotent', () async {
       final lesson = (await content.getLessonById('lesson_where_coffee'))!;
-      await service.completeLesson(lesson, score: 80);
-      final replay = await service.completeLesson(lesson, score: 80);
+      await service.completeLesson(
+        lesson,
+        mastery: const MasteryResult(correct: 4, total: 5),
+      );
+      final replay = await service.completeLesson(
+        lesson,
+        mastery: const MasteryResult(correct: 4, total: 5),
+      );
 
       expect(replay.lessonXp, 50);
       expect(replay.moduleBonusXp, 0);
@@ -96,7 +106,7 @@ void main() {
         ]) {
           last = await service.completeLesson(
             (await content.getLessonById(id))!,
-            score: 100,
+            mastery: const MasteryResult(correct: 5, total: 5),
           );
         }
 
@@ -122,7 +132,7 @@ void main() {
       ]) {
         await service.completeLesson(
           (await content.getLessonById(id))!,
-          score: 100,
+          mastery: const MasteryResult(correct: 5, total: 5),
         );
       }
     }
@@ -131,12 +141,15 @@ void main() {
       'review does not reset completion, lesson XP, or the earned card',
       () async {
         final lesson = (await content.getLessonById('lesson_where_coffee'))!;
-        await service.completeLesson(lesson, score: 60);
+        await service.completeLesson(
+          lesson,
+          mastery: const MasteryResult(correct: 3, total: 5),
+        );
         final before = (await progress.getByLessonId(lesson.id))!;
 
         await service.reviewLesson(
           lesson,
-          score: 80,
+          mastery: const MasteryResult(correct: 4, total: 5),
           now: DateTime(2026, 5, 22),
         );
 
@@ -151,10 +164,17 @@ void main() {
 
     test('review never re-awards full lesson XP', () async {
       final lesson = (await content.getLessonById('lesson_where_coffee'))!;
-      await service.completeLesson(lesson, score: 50);
+      await service.completeLesson(
+        lesson,
+        mastery: const MasteryResult(correct: 2, total: 5),
+      );
       final afterCompletion = await totalXp(); // 5 steps × 10 = 50
 
-      await service.reviewLesson(lesson, score: 50, now: DateTime(2026, 5, 22));
+      await service.reviewLesson(
+        lesson,
+        mastery: const MasteryResult(correct: 2, total: 5),
+        now: DateTime(2026, 5, 22),
+      );
 
       // Review adds only practice XP — never the full lesson XP again.
       expect(await totalXp(), afterCompletion + XpValues.practiceXp);
@@ -171,7 +191,7 @@ void main() {
         final lesson = (await content.getLessonById('lesson_where_coffee'))!;
         await service.reviewLesson(
           lesson,
-          score: 100,
+          mastery: const MasteryResult(correct: 5, total: 5),
           now: DateTime(2026, 5, 22),
         );
 
@@ -182,40 +202,55 @@ void main() {
 
     test('review improves the stored best score', () async {
       final lesson = (await content.getLessonById('lesson_where_coffee'))!;
-      await service.completeLesson(lesson, score: 40);
+      await service.completeLesson(
+        lesson,
+        mastery: const MasteryResult(correct: 2, total: 5),
+      );
 
       final result = await service.reviewLesson(
         lesson,
-        score: 90,
+        mastery: const MasteryResult(correct: 9, total: 10),
         now: DateTime(2026, 5, 22),
       );
 
-      expect(result.bestScore, 90);
-      expect((await progress.getByLessonId(lesson.id))!.bestScore, 90);
+      expect(result.mastery, const MasteryResult(correct: 9, total: 10));
+      expect(
+        (await progress.getByLessonId(lesson.id))!.mastery,
+        const MasteryResult(correct: 9, total: 10),
+      );
     });
 
     test('review never lowers the stored best score', () async {
       final lesson = (await content.getLessonById('lesson_where_coffee'))!;
-      await service.completeLesson(lesson, score: 90);
+      await service.completeLesson(
+        lesson,
+        mastery: const MasteryResult(correct: 9, total: 10),
+      );
 
       final result = await service.reviewLesson(
         lesson,
-        score: 30,
+        mastery: const MasteryResult(correct: 1, total: 5),
         now: DateTime(2026, 5, 22),
       );
 
-      expect(result.bestScore, 90);
-      expect((await progress.getByLessonId(lesson.id))!.bestScore, 90);
+      expect(result.mastery, const MasteryResult(correct: 9, total: 10));
+      expect(
+        (await progress.getByLessonId(lesson.id))!.mastery,
+        const MasteryResult(correct: 9, total: 10),
+      );
     });
 
     test('practice XP is granted at most once per lesson per day', () async {
       final lesson = (await content.getLessonById('lesson_where_coffee'))!;
-      await service.completeLesson(lesson, score: 50);
+      await service.completeLesson(
+        lesson,
+        mastery: const MasteryResult(correct: 2, total: 5),
+      );
       final base = await totalXp(); // 5 steps × 10 = 50
 
       final first = await service.reviewLesson(
         lesson,
-        score: 50,
+        mastery: const MasteryResult(correct: 2, total: 5),
         now: DateTime(2026, 5, 22, 9),
       );
       expect(first.practiceXpAwarded, isTrue);
@@ -224,7 +259,7 @@ void main() {
       // Same calendar day → no further practice XP.
       final sameDay = await service.reviewLesson(
         lesson,
-        score: 50,
+        mastery: const MasteryResult(correct: 2, total: 5),
         now: DateTime(2026, 5, 22, 20),
       );
       expect(sameDay.practiceXpAwarded, isFalse);
@@ -233,7 +268,7 @@ void main() {
       // Next calendar day → practice XP again.
       final nextDay = await service.reviewLesson(
         lesson,
-        score: 50,
+        mastery: const MasteryResult(correct: 2, total: 5),
         now: DateTime(2026, 5, 23, 8),
       );
       expect(nextDay.practiceXpAwarded, isTrue);

@@ -1,4 +1,5 @@
 import 'package:brew_path/features/learn/domain/module_summary_provider.dart';
+import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/models/lesson_step_model.dart';
@@ -71,8 +72,16 @@ void main() {
 
     // Complete both lessons (40 + 30 XP) and collect the l1 card.
     final progress = container.read(progressRepositoryProvider);
-    await progress.saveCompletion(lessonId: 'l1', xpEarned: 40, score: 100);
-    await progress.saveCompletion(lessonId: 'l2', xpEarned: 30, score: 100);
+    await progress.saveCompletion(
+      lessonId: 'l1',
+      xpEarned: 40,
+      mastery: const MasteryResult(correct: 5, total: 5),
+    );
+    await progress.saveCompletion(
+      lessonId: 'l2',
+      xpEarned: 30,
+      mastery: const MasteryResult(correct: 5, total: 5),
+    );
     await container.read(cardRepositoryProvider).collectCard('c1');
 
     final summary = await container.read(
