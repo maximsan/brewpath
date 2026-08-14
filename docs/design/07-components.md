@@ -350,7 +350,7 @@ review."*
 
 | Block | Action | Renders when |
 |---|---|---|
-| Freeze-save notice | **✕ button** → `onDismissFreeze` (`aria-label="Dismiss"`) | `freezeSaved`. Carries `freezesHeld` and `nextFreezeIn` |
+| Freeze-save notice | **✕ button** → `onDismissFreeze` (`aria-label="Dismiss"`) | `freezeSaved`. Carries `freezesHeld` and `nextFreezeIn`. ⚠️ **Both changed shape** under [Streak freeze](https://github.com/maximsan/brewpath/issues/58): `freezesHeld` is now `0 \| 1`, and **`nextFreezeIn` has no value while a freeze is held**, because accrual stops until one is spent. The component needs that null state — the prototype's copy assumes a countdown always exists |
 | Continue Learning | **primary button** → `onLesson(curLesson.id)` | a current lesson exists |
 | Active coffee challenge | `ActiveBrewCard` → `onBrewLog` · `onBrewSkip` · `onBrewDismiss` · `onBrewCard` (7.4) | `brewChallenge` |
 | Saved challenges | `SavedBrewList` → `onBrewAction(ch, 'available')` · `onBrewUnsave` | the queue is non-empty **and** each entry's source lesson is reached |

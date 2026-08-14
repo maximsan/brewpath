@@ -545,7 +545,7 @@ so they stop too. Mastery caps out. The collection completes at thirty-seven.
 There is nothing left that pays.
 
 **The streak is the exception, and that is the problem.** It is the one mechanic
-designed for an indefinite horizon — earned freezes, a two-freeze cap, carefully
+designed for an indefinite horizon — earned freezes, a one-freeze cap, carefully
 reassuring recovery copy, and an explicit decision that it stays free forever.
 All of that assumes a tomorrow with something in it. The course does not have
 one.

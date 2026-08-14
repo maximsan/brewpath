@@ -300,7 +300,7 @@ Both destructive actions use a `danger` `ConfirmSheet`.
 > [§5](05-mechanics.md) 5.12.
 
 **Help FAQ — 4 entries** (`FAQ_ITEMS`, `settings.jsx:619`). The answers are load-bearing spec, not filler:
-1. *How does my streak work?* — restates the 7-day earn, 2-freeze cap, automatic spend, and "nothing to switch on".
+1. *How does my streak work?* — restates the 7-day earn, freeze cap, automatic spend, and "nothing to switch on". ⚠️ **The shipped string is now wrong twice over** and must be rewritten before it ports: the cap is **1, not 2** ([Streak freeze](https://github.com/maximsan/brewpath/issues/58)), and *"finish at least one lesson a day"* understates the qualifying rule, which also accepts a completed replay, two different mini-games, the Vocab game, Flashcards and Keep Sharp ([The streak's qualifying-activity rule](https://github.com/maximsan/brewpath/issues/33)).
 2. *How does my tree grow?* — "tracks the core course only … ten stages from bare seed to full harvest", points don't grow it, never shrinks except on reset.
 3. *What do I get with Plus?* — unlimited Saved (free keeps 10) and the Studio; **learning content is always free, and so is your streak**.
 4. *Can I learn offline?* — "modules you've opened are kept on your phone. Progress syncs the next time you're online." **This is an offline requirement, not just copy.**

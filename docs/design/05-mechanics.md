@@ -52,7 +52,13 @@ Best-ever **never downgrades** on a worse replay. A replay *can* improve mastery
 
 The freeze is a **mechanic, not a setting** — there is deliberately no toggle.
 
-> **What is and is not implemented.** The freeze system is real code, not a
+> **What is and is not implemented.** ⚠️ **`FREEZE_CAP = 2` below is the
+> prototype's constant, not the shipping value — the cap is 1.** And the
+> lifecycle around it has **never executed**: `setFreezesSpent` is called only in
+> reset paths, so no freeze has ever been earned or spent here. Read this block
+> as "what the code contains", not "what has been observed to work".
+>
+> The freeze system is real code, not a
 > sketch: `FREEZE_EARN_DAYS = 7`, `FREEZE_CAP = 2`, the derived held count, the
 > `nextFreezeIn` countdown, the `frozenDays` / `freezesSpent` split, the
 > save-notice trigger, and the week strip's streak-derived fill all execute.
@@ -283,6 +289,11 @@ Invisible immediately (streak is `0`, so `clamp(0..2, floor(0/7) − freezesSpen
 is `0` either way) and surfacing later: once the user rebuilt a 7-day streak, held
 freezes were `1 − freezesSpent`, so a user who had spent two freezes before
 resetting **could not earn one again until day 21**, with nothing explaining why.
+
+> **Historical arithmetic — cap 2.** This worked example predates the cap moving
+> to **1**, where holding two spent freezes is unreachable. It is left as written
+> because it documents a *fixed* defect and its reasoning; the shipping rules are
+> in 5.4.
 
 **Fixed by the registry:** the keyless `progress` row clears `frozenDays`,
 `freezesSpent` and `freezeNoticeSeen` together, so the doc and the code now agree.
