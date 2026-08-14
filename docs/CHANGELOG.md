@@ -44,6 +44,13 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- The **lesson node is a mastery gauge** — a coffee bean that fills to your
+  best score on that lesson, so how well you know it reads as "how full"
+  instead of a number in the margin. A lesson you finished before scores were
+  recorded stays a deliberately neutral empty bean rather than claiming a
+  mastery it never measured.
+- **`ModuleGlyph`** — one implementation of the bare module glyph the Learn and
+  Path rows both draw.
 - **`AppRoutes`** — a catalog pairing each route's go_router `name` with its
   `path` on one entry, so the two can no longer drift apart. The router builds
   every `GoRoute` from it, replacing sixteen pairs of hardcoded string
@@ -94,6 +101,17 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **Module rows no longer signal completion with colour.** The filled accent
+  square gives way to a bare glyph — muted when locked, accent otherwise — and
+  a finished module goes quiet instead of lighting up, dropping its trailing
+  chevron and its lesson-count line. Completion is announced to screen readers,
+  which would otherwise hear nothing once both markers are gone.
+- **A lesson's score is stored as `{correct, total}`, not a percentage.**
+  Mastery bands on the number of wrong answers — 0 perfect, 1 solid, 2+ needs
+  practice — because the design's 80% pass mark is unreachable in 14 of 31
+  lessons, where a single mistake dropped a learner straight to "needs
+  practice". Existing rows are not converted: the old percentage measured a
+  different thing, so they read as unscored rather than inventing a result.
 - Type collapses to a **nine-step ladder** — `AppText.hero · display · title ·
   heading · lead · body · support · label · micro` at 56 / 30 / 26 / 19 / 17 /
   15 / 13 / 11 / 9.5 — replacing `AppTypography`. There is no `fontSize`
@@ -140,6 +158,10 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- A locked module could read as complete when its own lessons were all
+  finished but a prerequisite had regressed — for instance after a content
+  update adds a lesson. It now reads as locked, which also corrects the Path's
+  completed-module count.
 - The current node on the Path rail drew its play arrow in its own background
   colour, leaving the glyph invisible. It is an outlined node now, per the
   design.
