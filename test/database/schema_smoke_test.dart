@@ -10,6 +10,7 @@ import '../generated/schema_v2.dart' show DatabaseAtV2;
 import '../generated/schema_v3.dart' show DatabaseAtV3;
 import '../generated/schema_v4.dart' show DatabaseAtV4;
 import '../generated/schema_v5.dart' show DatabaseAtV5;
+import '../generated/schema_v6.dart' show DatabaseAtV6;
 
 /// Drift schema-migration harness coverage.
 ///
@@ -237,6 +238,62 @@ void main() {
         expect(rows.single.read<int>('graded_total'), 0);
         // The rest of the row survives the table rebuild untouched.
         expect(rows.single.read<int>('xp_earned'), 50);
+      },
+    );
+  });
+
+  test('schema v6 database adds the progress-snapshot table', () async {
+    final connection = await verifier.startAt(6);
+    final db = DatabaseAtV6(connection);
+    await db.customSelect('SELECT 1').get();
+
+    expect(db.schemaVersion, 6);
+    expect(
+      db.allTables.map((t) => t.actualTableName).toSet(),
+      contains('progress_snapshots'),
+    );
+
+    await db.close();
+  });
+
+  test('a v5 database upgrades to v6 keeping its rows', () async {
+    // Upgrading from the *currently shipped* version, not from a fresh
+    // database: developer devices sit on v5, and a migration only ever
+    // exercised on an empty database proves nothing about the one case that
+    // can lose data.
+    await verifier.testWithDataIntegrity(
+      oldVersion: 5,
+      newVersion: 6,
+      createOld: DatabaseAtV5.new,
+      createNew: DatabaseAtV6.new,
+      openTestedDatabase: AppDatabase.new,
+      createItems: (batch, oldDb) => batch.insert(
+        oldDb.progressRecords,
+        RawValuesInsertable<dynamic>({
+          'lesson_id': const Variable<String>('lesson_before_v6'),
+          'is_completed': const Variable<bool>(true),
+          'xp_earned': const Variable<int>(10),
+          'completed_at': Variable<DateTime>(DateTime(2026)),
+          'correct_count': const Variable<int>(4),
+          'graded_total': const Variable<int>(5),
+        }),
+      ),
+      validateItems: (newDb) async {
+        // The v6 step is additive, so the existing row is untouched…
+        final rows = await newDb
+            .customSelect(
+              'SELECT correct_count, graded_total FROM progress_records',
+            )
+            .get();
+        expect(rows, hasLength(1));
+        expect(rows.single.read<int>('correct_count'), 4);
+        expect(rows.single.read<int>('graded_total'), 5);
+
+        // …and the new table exists and is empty.
+        final snapshots = await newDb
+            .customSelect('SELECT COUNT(*) AS n FROM progress_snapshots')
+            .get();
+        expect(snapshots.single.read<int>('n'), 0);
       },
     );
   });
