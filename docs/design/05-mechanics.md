@@ -68,9 +68,11 @@ The freeze is a **mechanic, not a setting** — there is deliberately no toggle.
 > Treat that second quote as a spec line, not a caveat — it names the exact bug
 > a naive port would introduce.
 
-- Earn: **1 freeze per 7 consecutive days**, cap **2 held**.
-- `freezesHeld = clamp(0..2, floor(streak / 7) - freezesSpent)` — derived, so it can never drift.
-- Spent **automatically** when a day is missed. The streak survives; the day renders as covered in the week strip.
+- ⚠️ **The freeze rules changed. Do not port the prototype's.** `docs/decisions-1.md` §10 ships whole, and it **disagrees with the prototype on the cap and the accrual** — settled at [Streak freeze: §10 now rules nine behaviours](https://github.com/maximsan/brewpath/issues/58), which corrects [Streak and freeze](https://github.com/maximsan/brewpath/issues/17).
+  - **Cap is 1 held, not 2.** The prototype's `freezesHeld = clamp(0..2, …)` is superseded.
+  - **No accrual while holding one** — a user sitting on an unspent freeze earns nothing toward the next.
+  - **7 fresh days after each use** — the counter restarts on spend rather than continuing.
+  - Spent **automatically** when a day is missed. The streak survives; the day renders as covered in the week strip.
 - Two deliberately-separate facts:
   - `frozenDays` — which days of *this week* a freeze covered. Presentational, clears on week rollover.
   - `freezesSpent` — lifetime count. Drives held count. **Intended to clear on Reset Progress; in the prototype it does not** — see 5.12.
@@ -79,7 +81,7 @@ The freeze is a **mechanic, not a setting** — there is deliberately no toggle.
 - Week strip filled days **derive from the streak**, clipped to week start (fixed defect: they used to be hardcoded Mon–Fri and could lie).
 - Streak is **free forever** — paid streak protection was explicitly dropped.
 - `StreakScreen` + `ShareStreakSheet` (share targets) exist.
-- **A qualifying day is "finish at least one lesson"** (stated in the Help FAQ). ⚠️ **Whether a *replay* qualifies is not stated anywhere** — and after the 32nd lesson there are no new ones, so the answer decides whether a streak can survive past the course. See [PRODUCT.md](PRODUCT.md) §15.
+- **A qualifying day is one completed lesson *or* one completed practice activity.** ✅ **Settled by product-owner ruling** (`docs/decisions-1.md`, Aug 2026) and recorded at [The streak's qualifying-activity rule](https://github.com/maximsan/brewpath/issues/33). **A completed lesson replay counts**, once it reaches the final card — which is what lets a streak survive past lesson 32. Also qualifying: **two *different* standalone mini-games in the same local calendar day** (one run is not enough, and the same game twice counts once — the anti-farm rule from [Mini-games](https://github.com/maximsan/brewpath/issues/22), upheld at [Mini-game streak unit](https://github.com/maximsan/brewpath/issues/59)), the Vocab game, Flashcards after reviewing every card in the selected set, and the Keep Sharp recommendation — which inherits its underlying activity's completion rule rather than defining one. **Not qualifying:** Coffee Challenges (their completion can be passed by skipping or picking arbitrarily), Term of the Day, reading dictionary entries, browsing Saved or Coffee Cards, Roasty/Tree customization, and anything started but not finished. The streak advances **at most once per local calendar day** — the first qualifying completion protects it and further activity that day adds nothing. No minimum score, and subscription status never decides whether a completed accessible activity qualifies. ⚠️ The Help FAQ string still says *"finish at least one lesson a day"* and now understates the rule — see 6.8.
 - **Dev-panel simulation:** two toggles stand in for the states the frozen clock can't produce — *Freeze covered Thursday* and *Freeze earned this lesson*.
 
 ## 5.5 Progression gating (`data.jsx`)
