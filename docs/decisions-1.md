@@ -77,14 +77,23 @@ Free users may replay either free mini-game as often as they want, using materia
 
 After Foundations:
 
-Today recommends one existing practice activity.
+Today recommends one existing practice type: mini-games, vocab game, flashcards, or a lesson replay.
 Recommendations use only completed and accessible material.
 Selection should use a simple rotation and avoid unnecessary adaptive complexity.
 The recommendation remains stable for that day.
-Completing its normal round completes Keep Sharp.
+Completing Keep Sharp means meeting that type's own streak rule; for mini-games that means two different games.
 Another qualifying activity may protect the streak even if the recommendation is not completed.
 Keep Sharp does not grant repeat points, grow the Coffee Tree, or change course progress.
 Completion only needs animated Roasty and a short supporting phrase.
+
+> **Agent note — added 14 Aug 2026. Not the product owner's words.**
+>
+> Two lines above were **sharpened, not changed in meaning**, on [Keep Sharp](https://github.com/maximsan/brewpath/issues/56).
+>
+> - *"Today recommends one existing practice **activity**"* → **type**, with the four named. §1 already says Keep Sharp recommends a *kind* of practice rather than one specific item; naming the four removes the reading where Today suggests a single mini-game by name.
+> - *"Completing its **normal round** completes Keep Sharp"* → the type's own streak rule, stated. This is the line that was actually missing. "Normal round" is unambiguous for flashcards and vocab, but a normal round of mini-games is **one** game — and §3/§5 require **two different** games to mark a day active. Item-level wording would let Keep Sharp report itself complete while the user's streak breaks, which is the one outcome a daily recommendation must never produce.
+>
+> ⚠️ **An earlier revision of this note proposed swapping "activity" for "format" throughout. That was withdrawn.** "Activity" is used precisely everywhere else in this document — §2, §3, §4, §5 and §8 all mean one unit of work counting toward the streak and the daily cap, and §5 says so outright (*"Each completed standalone mini-game counts as one activity"*). It is **"format"** that is overloaded: §1 and §3 use it for a kind of practice, while §5 uses it for an individual game (*"Two mini-games formats are included with free access"*). The swap would have traded a precise word for an ambiguous one.
 
 7. Free preview
 
