@@ -54,6 +54,13 @@ first, then resume.
   a Freezed model, Riverpod provider, or Drift table is added or modified.
   (build_runner 2.15 auto-resolves conflicts; the old
   `--delete-conflicting-outputs` flag was removed.)
+- **`brew-path/` is read-only.** It is the design source the app is built
+  *against*, so an edit there moves the thing we are measuring ourselves by. The
+  only writable file is
+  [`brew-path/BREWPATH-V1-OVERVIEW.md`](brew-path/BREWPATH-V1-OVERVIEW.md).
+  Findings about the prototype — "this is wrong", "do not port this" — go in the
+  issue that owns them or in [`docs/design/`](docs/design/README.md), never as an
+  annotation in the source.
 
 ## Change History
 
