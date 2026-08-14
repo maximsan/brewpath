@@ -44,6 +44,12 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- The progress snapshot is now **stored**, so what a learner earns survives
+  closing the app. It lives as a single row rather than a table per thing —
+  progress arrives from another device as one whole object, and taking it apart
+  to store it is where the subtle merge bugs live. Writing it does not touch
+  appearance, sound or haptics, which stay on the device and survive every
+  wipe.
 - The **progress snapshot** — one versioned value holding everything the
   learner has earned, split into what **Reset Progress** clears and what only
   **Delete Account** clears. The two halves are separate types, so a reset
