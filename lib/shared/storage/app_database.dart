@@ -88,8 +88,38 @@ class UserSettings extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// The learner's whole progress state, as one JSON value in one row.
+///
+/// One row, one blob, deliberately. A merged snapshot arrives from the outside
+/// as a *whole object*, so decomposing it back into normalised rows would put
+/// merge semantics in a second place no test of the merge can reach — and the
+/// obvious SQL is wrong there in the direction that looks right: an
+/// insert-or-ignore resurrects every removed favourite forever, and an upsert
+/// on the best result turns never-downgrade into plain last-writer-wins.
+///
+/// The relational benefits are not there to collect either: a dozen fields, no
+/// joins, no ordering, no range queries, one writer, and every read is a set
+/// membership test against something already in memory.
+@DataClassName('SnapshotRow')
+class ProgressSnapshots extends Table {
+  IntColumn get id => integer()();
+
+  /// The snapshot, encoded. Unknown keys ride along inside it untouched, so a
+  /// build that has never heard of a field still writes it back.
+  TextColumn get payload => text()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 @DriftDatabase(
-  tables: [ProgressRecords, CardRecords, UserSettings, ModuleProgressRecords],
+  tables: [
+    ProgressRecords,
+    CardRecords,
+    UserSettings,
+    ModuleProgressRecords,
+    ProgressSnapshots,
+  ],
 )
 class AppDatabase extends _$AppDatabase {
   /// Production opens a platform DB via drift_flutter; tests pass
@@ -113,8 +143,17 @@ class AppDatabase extends _$AppDatabase {
   /// `{correctCount, gradedTotal}` pair.
   static const int _masteryPairVersion = 5;
 
+  /// Schema version that added the progress-snapshot row.
+  ///
+  /// ⚠️ **v6, not v4 or v5.** Every source decision says "schema v4,
+  /// destructive"; that was true when written and has been overtaken twice —
+  /// the appearance preference took 4 and the mastery pair took 5. A version
+  /// regression breaks Drift's own migration check outright, so the number is
+  /// read from what has actually shipped rather than from the decision text.
+  static const int _snapshotRowVersion = 6;
+
   /// The current version is whichever migration landed last.
-  static const int _schemaVersion = _masteryPairVersion;
+  static const int _schemaVersion = _snapshotRowVersion;
 
   @override
   int get schemaVersion => _schemaVersion;
@@ -177,6 +216,17 @@ class AppDatabase extends _$AppDatabase {
             ],
           ),
         );
+      }
+
+      // v5 → v6: the progress-snapshot row.
+      //
+      // Purely additive here, on purpose. The normalised progress tables this
+      // row replaces are still read by the XP, streak and card layers, and a
+      // column cannot be dropped while something reads it — so the drop lands
+      // with the rewrite that replaces those readers, not with the table that
+      // will eventually make them redundant.
+      if (from < _snapshotRowVersion) {
+        await m.createTable(progressSnapshots);
       }
     },
   );
