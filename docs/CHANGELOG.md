@@ -44,6 +44,21 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- The **progress snapshot** — one versioned value holding everything the
+  learner has earned, split into what **Reset Progress** clears and what only
+  **Delete Account** clears. The two halves are separate types, so a reset
+  cannot quietly forget a field the way the prototype's once did, and a field
+  that fits neither scope will not compile.
+- **`mergeSnapshot()`** — the pure function that joins two devices' progress.
+  No database, no clock, no network, so every conflict case is testable without
+  a device. It is proved to converge — merging in either order, in any
+  grouping, or re-merging the same payload twice all reach the same state —
+  against four hundred generated snapshots per property rather than
+  hand-picked examples.
+- Progress written by a **newer version of the app survives a round trip
+  through an older one**, instead of being silently dropped the next time the
+  older build saves.
+
 - The **lesson node is a mastery gauge** — a coffee bean that fills to your
   best score on that lesson, so how well you know it reads as "how full"
   instead of a number in the margin. A lesson you finished before scores were
@@ -158,6 +173,12 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- A lesson's **best result could disagree between two devices, permanently**.
+  Two different scores can share a mastery band _and_ a percentage — three
+  wrong out of six is the same 50% as two out of four — and the old comparison
+  had no answer for that, so each device would keep its own and neither would
+  ever win. Best results now settle on fewer wrong answers, and on the longer
+  run when even that ties.
 - A locked module could read as complete when its own lessons were all
   finished but a prerequisite had regressed — for instance after a content
   update adds a lesson. It now reads as locked, which also corrects the Path's
