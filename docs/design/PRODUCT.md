@@ -545,7 +545,7 @@ so they stop too. Mastery caps out. The collection completes at thirty-seven.
 There is nothing left that pays.
 
 **The streak is the exception, and that is the problem.** It is the one mechanic
-designed for an indefinite horizon — earned freezes, a two-freeze cap, carefully
+designed for an indefinite horizon — earned freezes, a one-freeze cap, carefully
 reassuring recovery copy, and an explicit decision that it stays free forever.
 All of that assumes a tomorrow with something in it. The course does not have
 one.
@@ -567,15 +567,32 @@ real-world form. That is a porting note, not a gap.
 **The actual gap is narrower and sharper:** *does a replay count as the day's
 lesson?*
 
-> **⚠️ Note added after this section was written.** The project **has** decided
-> this — [Streak and freeze](https://github.com/maximsan/brewpath/issues/17)
-> ruled that a day is active when a **structured activity** completes: a lesson
-> run *including replays*, a mini-game, or a dictionary drill; not app-open or
-> browsing. It named this exact day-33 failure as one of the bugs it fixed.
+> ## ✅ Decided — August 2026
 >
-> The wording below is **deliberately left standing by product-owner call** — the
-> topic is queued for review rather than settled by whichever side was written
-> last. Read the argument, but know the decision exists.
+> **A completed replay counts.** Product-owner ruling (`docs/decisions-1.md`),
+> recorded at [The streak's qualifying-activity
+> rule](https://github.com/maximsan/brewpath/issues/33). This confirms [Streak
+> and freeze](https://github.com/maximsan/brewpath/issues/17), which had already
+> ruled that a day is active when a structured activity completes.
+>
+> **And the answer to the section below is not one of the four options — it is C
+> plus D's ending.** After Foundations, the Today recommendation becomes **Keep
+> Sharp**: one existing practice activity, chosen by simple rotation from
+> completed and accessible material, stable for the day. Finishing Foundations
+> gets **a proper ending and celebration**. Options **A and B are ruled out by
+> name** — *"additional modules and the Atlas/Dictionary are possible future
+> expansions, not the solution to post-course retention."* Both surfaces are
+> specified at [Keep Sharp](https://github.com/maximsan/brewpath/issues/56),
+> which also carries the trap that *"course is complete"* is permanently true
+> under derivation, so the celebration needs an acknowledgement marker or it
+> re-fires on every launch.
+>
+> ⚠️ **The argument below is left standing because its reasoning is still
+> load-bearing** — particularly the objection that a replay-fed streak measures
+> app-opening rather than learning. That cost was accepted knowingly, and Keep
+> Sharp's no-points, no-tree, no-progress framing is the concession to it. But
+> one premise the argument leans on **is false**: see the correction under
+> option C.
 
 During the course it does not matter — there is always a new lesson.
 **After the last lesson it is the whole question:**
@@ -599,7 +616,7 @@ rather than more of the same. *Same objection, larger number.*
 **C. Make daily practice the loop after the course. [My recommendation]** The
 pieces already exist and are not wired together:
 
-- Seven mini-games with **generated** content banks — they do not run out
+- Seven mini-games with ~~**generated** content banks — they do not run out~~ ⚠️ **This is false, and it was the load-bearing premise of this option.** `MINI_GAME_CONTENT` (`lesson.jsx:1022`) is **authored, finite and small** — *"Content is authored here, one homogeneous set per game id."* Measured: `g-quiz` 6 rounds, `g-bagpick` 6, and `g-match` / `g-flavor` / `g-tastefix` / `g-calibrate` / `g-sequence` 5 each — **37 rounds in total**. The only randomness is Fisher–Yates over *choice display order*: the same rounds, reshuffled. A user practising daily exhausts every round in under a week. C was still chosen, so **the practice pool is now known to need authoring** — tracked at [Free-tier practice variety](https://github.com/maximsan/brewpath/issues/66), which measures the free-tier slice at **11 rounds**, and at [Keep Sharp](https://github.com/maximsan/brewpath/issues/56)
 - A vocab quiz with a deck picker and configurable round length
 - Flashcards over saved terms
 - A Term of the Day that is already deterministic by date
@@ -632,13 +649,14 @@ running on fumes.
 
 The answer changes things already decided:
 
-- **The streak's design rationale** assumes an open-ended horizon it does not have. If the answer is D, the freeze mechanic is over-engineered for a five-week run.
-- **The monetization model** now gates *pace* (§11). On a finite course that sharpens the question rather than softening it: at two lessons a day a free user finishes in about two weeks, a paying one faster still, and then **both** arrive at the same empty tomorrow. A subscription whose only lever is speed has nothing left to sell the moment the content runs out.
-- **The coming-soon modules** stop being a marketing tease and become load-bearing.
+- **The streak's design rationale** assumes an open-ended horizon it does not have. ✅ **Resolved:** Keep Sharp supplies the horizon, so the freeze mechanic keeps its purpose — and the freeze itself was **tightened** rather than retired: cap **1**, no accrual while holding, 7 fresh days after each use. See [Streak freeze: §10 now rules nine behaviours](https://github.com/maximsan/brewpath/issues/58).
+- ~~**The monetization model** now gates *pace* (§11).~~ ✅ **Superseded — the axis is now content, not pace.** The same product-owner ruling states *"free access is limited by content, not by waiting"*: two preview lessons, permanently replayable, and waiting unlocks nothing. A daily activity cap survives but now covers **practice as well as lessons**. Resolved at [Monetization shape](https://github.com/maximsan/brewpath/issues/29); the pieces are split across [Offers, plans and the paywall pitch](https://github.com/maximsan/brewpath/issues/55), [The free daily activity allowance](https://github.com/maximsan/brewpath/issues/65) and [Saved shelf](https://github.com/maximsan/brewpath/issues/60). **This also dissolves the objection in this bullet** — a subscription whose only lever was speed had nothing to sell once content ran out; one that sells the course itself does.
+- **The coming-soon modules** stop being a marketing tease and become load-bearing. ✅ **Reversed** — they are explicitly *not* the retention answer.
 
-**Recommendation: decide C or D explicitly before building.** Both are
-defensible; drifting into A by default is the only bad outcome, because it means
-paying for content forever to postpone a question nobody asked.
+~~**Recommendation: decide C or D explicitly before building.**~~ ✅ **Decided:
+C's practice loop plus D's ending** — see the block under *"The one rule that
+decides it"*. The warning against drifting into A held: A and B were ruled out by
+name rather than by neglect.
 
 ---
 
