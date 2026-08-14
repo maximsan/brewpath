@@ -92,16 +92,39 @@ class MasteryResult {
 
   /// The better of two results, for the never-downgrade rule.
   ///
-  /// **Band rank first, [ratio] only as a tiebreak.** Ratio alone downgrades
-  /// across changing denominators: `{18,20}` is 90% but two wrong (Needs
-  /// Practice), while `{4,5}` is 80% but one wrong (Solid) — comparing ratios
-  /// would pick the worse badge. A scored result always beats an unscored one.
+  /// **Band rank first, [ratio] second, [correct] third.** A scored result
+  /// always beats an unscored one.
+  ///
+  /// Ratio alone downgrades across changing denominators: `{18,20}` is 90% but
+  /// two wrong (Needs Practice), while `{4,5}` is 80% but one wrong (Solid) —
+  /// comparing ratios would pick the worse badge.
+  ///
+  /// **Band, then ratio, then fewer [wrong], then larger [total] — and all four
+  /// are needed to make this a total order.**
+  ///
+  /// This is the comparator a two-device merge runs, so a tie it cannot break
+  /// is not a cosmetic wobble: each device keeps its own pair and the field
+  /// never converges. Two keys are not enough, because
+  /// [MasteryBand.needsPractice] lumps every wrong count from two upward:
+  ///
+  /// - `{2,4}` and `{3,6}` share a band *and* a ratio of 0.50
+  /// - `{0,2}` and `{0,7}` share a band, a ratio of 0.00 *and* a [correct] of 0
+  ///
+  /// **Fewer wrong wins**, because the band is itself defined on the wrong
+  /// count — ordering within a band on the same axis keeps the two consistent,
+  /// where "more correct" would rank `{3,6}` above `{2,4}` despite it holding
+  /// one more mistake. [total] settles the last case, `{3,3}` against `{5,5}`:
+  /// equally flawless, so the longer run is the better result.
   static MasteryResult best(MasteryResult a, MasteryResult b) {
     if (!a.isScored) return b;
     if (!b.isScored) return a;
     final byBand = a.band!.rank.compareTo(b.band!.rank);
     if (byBand != 0) return byBand > 0 ? a : b;
-    return a.ratio >= b.ratio ? a : b;
+    final byRatio = a.ratio.compareTo(b.ratio);
+    if (byRatio != 0) return byRatio > 0 ? a : b;
+    final byWrong = b.wrong.compareTo(a.wrong);
+    if (byWrong != 0) return byWrong > 0 ? a : b;
+    return a.total >= b.total ? a : b;
   }
 
   @override

@@ -101,6 +101,43 @@ void main() {
       expect(MasteryResult.best(a, b), MasteryResult.best(b, a));
     });
 
+    test('is order-independent when band AND ratio tie', () {
+      // The `2+` band lumps every wrong count from two upward, so two results
+      // can share a band *and* a ratio while being different pairs. Band-then-
+      // ratio has no answer here, and each device would keep its own — a field
+      // that never converges.
+      final a = _r(2, 4); // 2 wrong, needs practice, 0.50
+      final b = _r(3, 6); // 3 wrong, needs practice, 0.50
+      expect(a.band, b.band);
+      expect(a.ratio, b.ratio);
+      expect(MasteryResult.best(a, b), MasteryResult.best(b, a));
+    });
+
+    test('a tie on band and ratio prefers fewer wrong', () {
+      expect(MasteryResult.best(_r(2, 4), _r(3, 6)), _r(2, 4));
+    });
+
+    test('is order-independent when band, ratio AND correct all tie', () {
+      // Both score zero, so `correct` cannot separate them either.
+      final a = _r(0, 2);
+      final b = _r(0, 7);
+      expect(a.band, b.band);
+      expect(a.ratio, b.ratio);
+      expect(a.correct, b.correct);
+      expect(MasteryResult.best(a, b), MasteryResult.best(b, a));
+      expect(
+        MasteryResult.best(a, b),
+        _r(0, 2),
+        reason: 'two wrong beats seven',
+      );
+    });
+
+    test('two flawless runs prefer the longer one', () {
+      // Same band, same ratio, same zero wrong — only length separates them.
+      expect(MasteryResult.best(_r(3, 3), _r(5, 5)), _r(5, 5));
+      expect(MasteryResult.best(_r(5, 5), _r(3, 3)), _r(5, 5));
+    });
+
     test('two unscored results stay unscored', () {
       expect(
         MasteryResult.best(
