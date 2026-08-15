@@ -53,6 +53,10 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  # Test-only: extract_content_test.dart builds scratch paths for the
+  # subprocess run. Already resolved transitively; declared so the direct
+  # import is legitimate.
+  path: ^1.9.0
   integration_test:
     sdk: flutter
 
@@ -75,6 +79,10 @@ flutter:
   uses-material-design: true
   assets:
     - assets/content/
+    # Written by tool/extract_content.js from the brew-path prototype. Listed
+    # separately because a directory entry bundles its own files only, not
+    # those of its subdirectories.
+    - assets/content/generated/
     - assets/images/
     - assets/icons/
     - assets/video/
