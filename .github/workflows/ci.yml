@@ -66,6 +66,14 @@ jobs:
           channel: stable
           cache: true
 
+      # extract_content_test.dart shells out to `node`. The runner ships a Node
+      # already, but pinning it makes the dependency explicit rather than an
+      # accident of the image — and the script takes no npm packages, so there
+      # is nothing to install.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
       - name: Install dependencies
         run: flutter pub get
 
