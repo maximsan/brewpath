@@ -1,5 +1,5 @@
 import 'package:brew_path/core/constants/app_labels.dart';
-import 'package:brew_path/features/mini_games/domain/mini_game_result.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
 import 'package:brew_path/shared/models/lesson_step_model.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -9,13 +9,21 @@ import 'package:flutter/material.dart';
 /// Tap-order mini-game: tap items into the correct sequence.
 class TapOrderGame extends StatefulWidget {
   /// Creates a [TapOrderGame].
-  const TapOrderGame({required this.step, required this.onResult, super.key});
+  const TapOrderGame({
+    required this.step,
+    required this.onSolved,
+    required this.onContinue,
+    super.key,
+  });
 
   /// The tap-order step's content/config.
   final TapOrderStep step;
 
-  /// Called with the [MiniGameResult] when answered.
-  final void Function(MiniGameResult) onResult;
+  /// Fired once, only when the answer is correct.
+  final CardSolved onSolved;
+
+  /// Fired when the learner moves on.
+  final CardAdvance onContinue;
 
   @override
   State<TapOrderGame> createState() => _TapOrderGameState();
@@ -54,22 +62,8 @@ class _TapOrderGameState extends State<TapOrderGame> {
       _pool.remove(item);
       if (_selected.length == widget.step.items.length) _answered = true;
     });
-  }
-
-  void _reset() {
-    setState(() {
-      _selected.clear();
-      _pool = _shuffledPool();
-      _answered = false;
-    });
-  }
-
-  void _onContinue() {
-    widget.onResult(
-      _correct
-          ? const MiniGameCorrect()
-          : MiniGameIncorrect(hint: widget.step.explanation),
-    );
+    // Latched above, so this can only ever fire once.
+    if (_answered && _correct) widget.onSolved();
   }
 
   @override
@@ -111,29 +105,10 @@ class _TapOrderGameState extends State<TapOrderGame> {
           const SizedBox(height: 8),
           Text(widget.step.explanation),
           const SizedBox(height: 16),
-          if (_correct)
-            FilledButton(
-              onPressed: _onContinue,
-              child: const Text(AppLabels.continueLabel),
-            )
-          else
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: _reset,
-                    child: const Text('Reset'),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: FilledButton(
-                    onPressed: _onContinue,
-                    child: const Text(AppLabels.tryAgainLabel),
-                  ),
-                ),
-              ],
-            ),
+          FilledButton(
+            onPressed: widget.onContinue,
+            child: const Text(AppLabels.continueLabel),
+          ),
         ],
       ],
     );

@@ -4,7 +4,6 @@ import 'package:brew_path/core/constants/xp_values.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/features/lessons/presentation/xp_gain_toast.dart';
-import 'package:brew_path/features/mini_games/domain/mini_game_result.dart';
 import 'package:brew_path/features/mini_games/presentation/lesson_step_runner.dart';
 import 'package:brew_path/services/analytics/analytics_provider.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
@@ -49,8 +48,7 @@ class LessonScreen extends ConsumerStatefulWidget {
 
 class _LessonScreenState extends ConsumerState<LessonScreen> {
   int _stepIndex = 0;
-  int _attempt = 0; // bumped on a wrong answer to remount the step fresh
-  int _firstTryCorrectCount = 0; // steps cleared on the first attempt
+  int _correctCount = 0; // steps answered correctly — there is no second try
   bool _started = false; // ensures lesson_started fires exactly once
   int _xpToastSeq = 0; // bumped per correct step to restart the toast
   bool _xpToastVisible = false;
@@ -73,31 +71,30 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
     });
   }
 
-  void _onResult(LessonModel lesson, MiniGameResult result) {
-    switch (result) {
-      case MiniGameCorrect():
-        if (_attempt == 0) _firstTryCorrectCount++;
-        if (_stepIndex + 1 >= lesson.steps.length) {
-          // The graded pair travels whole. Rounding it to a percentage here
-          // would destroy the wrong-answer count the mastery band derives
-          // from — `{4,5}` and `{18,20}` both read 80%+ but earn different
-          // bands, and only the pair can tell them apart.
-          context.go(
-            '/learn/lesson/${lesson.id}/complete'
-            '?review=${widget.review}&practice=${widget.practice}'
-            '&correct=$_firstTryCorrectCount&total=${lesson.steps.length}',
-          );
-        } else {
-          setState(() {
-            _stepIndex++;
-            _attempt = 0;
-            _xpToastSeq++; // float a per-step "+XP" toast on advance
-            _xpToastVisible = true;
-          });
-        }
-      case MiniGameIncorrect():
-        setState(() => _attempt++); // retry the same step
+  /// The only outcome signal a step sends. A wrong answer says nothing — it
+  /// has already shown the learner what it needed to, inside the step.
+  void _onSolved() {
+    setState(() {
+      _correctCount++;
+      _xpToastSeq++; // float a "+XP" toast for the correct answer
+      _xpToastVisible = true;
+    });
+  }
+
+  void _onContinue(LessonModel lesson) {
+    if (_stepIndex + 1 < lesson.steps.length) {
+      setState(() => _stepIndex++);
+      return;
     }
+    // The graded pair travels whole. Rounding it to a percentage here would
+    // destroy the wrong-answer count the mastery band derives from — `{4,5}`
+    // and `{18,20}` both read 80%+ but earn different bands, and only the pair
+    // can tell them apart.
+    context.go(
+      '/learn/lesson/${lesson.id}/complete'
+      '?review=${widget.review}&practice=${widget.practice}'
+      '&correct=$_correctCount&total=${lesson.steps.length}',
+    );
   }
 
   @override
@@ -170,9 +167,10 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
           _StepProgress(current: _stepIndex + 1, total: lesson.steps.length),
           const SizedBox(height: 24),
           LessonStepRunner(
-            key: ValueKey('${_stepIndex}_$_attempt'),
+            key: ValueKey(_stepIndex),
             step: step,
-            onResult: (r) => _onResult(lesson, r),
+            onSolved: _onSolved,
+            onContinue: () => _onContinue(lesson),
           ),
         ],
       ),

@@ -1,5 +1,5 @@
 import 'package:brew_path/core/constants/app_labels.dart';
-import 'package:brew_path/features/mini_games/domain/mini_game_result.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
 import 'package:brew_path/shared/models/lesson_step_model.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -9,15 +9,19 @@ class MultipleChoiceGame extends StatefulWidget {
   /// Creates a [MultipleChoiceGame].
   const MultipleChoiceGame({
     required this.step,
-    required this.onResult,
+    required this.onSolved,
+    required this.onContinue,
     super.key,
   });
 
   /// The multiple-choice step's content/config.
   final MultipleChoiceStep step;
 
-  /// Called with the [MiniGameResult] when answered.
-  final void Function(MiniGameResult) onResult;
+  /// Fired once, only when the answer is correct.
+  final CardSolved onSolved;
+
+  /// Fired when the learner moves on.
+  final CardAdvance onContinue;
 
   @override
   State<MultipleChoiceGame> createState() => _MultipleChoiceGameState();
@@ -33,15 +37,8 @@ class _MultipleChoiceGameState extends State<MultipleChoiceGame> {
       _selectedIndex = index;
       _answered = true;
     });
-  }
-
-  void _onContinue() {
-    final isCorrect = _selectedIndex == widget.step.correctIndex;
-    widget.onResult(
-      isCorrect
-          ? const MiniGameCorrect()
-          : MiniGameIncorrect(hint: widget.step.explanation),
-    );
+    // Latched above, so this can only ever fire once.
+    if (index == widget.step.correctIndex) widget.onSolved();
   }
 
   /// Feedback border for an option after the user answers: sage for the
@@ -58,7 +55,6 @@ class _MultipleChoiceGameState extends State<MultipleChoiceGame> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final mood = context.mood;
-    final isCorrect = _answered && _selectedIndex == widget.step.correctIndex;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -84,10 +80,8 @@ class _MultipleChoiceGameState extends State<MultipleChoiceGame> {
           Text(widget.step.explanation),
           const SizedBox(height: 16),
           FilledButton(
-            onPressed: _onContinue,
-            child: Text(
-              isCorrect ? AppLabels.continueLabel : AppLabels.tryAgainLabel,
-            ),
+            onPressed: widget.onContinue,
+            child: const Text(AppLabels.continueLabel),
           ),
         ],
       ],
