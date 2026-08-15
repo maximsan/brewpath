@@ -2,6 +2,7 @@ import 'package:brew_path/shared/repositories/card_repository.dart';
 import 'package:brew_path/shared/repositories/module_progress_repository.dart';
 import 'package:brew_path/shared/repositories/progress_repository.dart';
 import 'package:brew_path/shared/repositories/settings_repository.dart';
+import 'package:brew_path/shared/storage/account_wipe.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'repository_providers.g.dart';
@@ -22,3 +23,7 @@ SettingsRepository settingsRepository(Ref ref) => SettingsRepository();
 @riverpod
 ModuleProgressRepository moduleProgressRepository(Ref ref) =>
     ModuleProgressRepository();
+
+/// Provides the [AccountWipe] — Reset Progress and Delete Account.
+@riverpod
+AccountWipe accountWipe(Ref ref) => AccountWipe();

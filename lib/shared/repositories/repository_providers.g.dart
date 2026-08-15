@@ -212,3 +212,49 @@ final class ModuleProgressRepositoryProvider
 
 String _$moduleProgressRepositoryHash() =>
     r'eafb9246d02209699e8ab5734d3ca30f3e56914b';
+
+/// Provides the [AccountWipe] — Reset Progress and Delete Account.
+
+@ProviderFor(accountWipe)
+final accountWipeProvider = AccountWipeProvider._();
+
+/// Provides the [AccountWipe] — Reset Progress and Delete Account.
+
+final class AccountWipeProvider
+    extends $FunctionalProvider<AccountWipe, AccountWipe, AccountWipe>
+    with $Provider<AccountWipe> {
+  /// Provides the [AccountWipe] — Reset Progress and Delete Account.
+  AccountWipeProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'accountWipeProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$accountWipeHash();
+
+  @$internal
+  @override
+  $ProviderElement<AccountWipe> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  AccountWipe create(Ref ref) {
+    return accountWipe(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AccountWipe value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AccountWipe>(value),
+    );
+  }
+}
+
+String _$accountWipeHash() => r'3a77396bcc8732faaebcbf002a5b63b711bd3cc4';
