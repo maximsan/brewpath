@@ -58,6 +58,12 @@ dart_code_linter:
     # hashCode each restate all 13 by definition, so number-of-parameters (5)
     # and source-lines-of-code (90) measure the token count, not complexity.
     - lib/shared/theme/mood_colors.dart
+    # A flat sealed union with one factory per authored card kind. Its method
+    # count (15) is the kind count (14) plus fromJson, so number-of-methods (12)
+    # measures the prototype's content design rather than anything about this
+    # file. Splitting the union to satisfy the metric would forfeit the exhaustive
+    # switch that makes an unhandled kind a compile error.
+    - lib/shared/models/content/content_card.dart
   rules:
     - no-magic-number:
         severity: warning
