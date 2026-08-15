@@ -44,6 +44,22 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Bundled content is now generated from the prototype rather than
+  hand-copied.** `node tool/extract_content.js` reads five banks — modules,
+  lessons, collectibles, dictionary terms and brew challenges — out of
+  `brew-path/`, checks the whole cross-reference graph, and only then writes
+  `assets/content/generated/`. On any violation it names the offending card and
+  the broken reference, writes **nothing**, and exits non-zero, so a run can
+  never leave a stale mixture of old and new files behind. Brew challenges are
+  extracted for the validator's sake rather than the app's: no screen reads them
+  yet, but their 31 lesson, module and collectible pointers are edges the graph
+  would otherwise never check.
+- **`ContentCard`** — one sealed union covering every authored lesson-card kind,
+  so an unhandled kind is a compile error instead of a blank card. The graded
+  kinds carry a `Gradable` marker, which lets scoring take a list that *cannot*
+  contain an ungraded card — the shape of the bug that once let the prototype's
+  mastery exceed 100%. The extractor publishes which kinds it grades and a test
+  asserts the union agrees, so the two languages cannot drift apart.
 - The progress snapshot is now **stored**, so what a learner earns survives
   closing the app. It lives as a single row rather than a table per thing —
   progress arrives from another device as one whole object, and taking it apart
