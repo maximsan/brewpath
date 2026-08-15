@@ -201,7 +201,7 @@ Behavioural consequences, all in `dictionary.jsx`:
 - `TermDetail` swaps the "WHERE YOU'LL LEARN IT" lesson card for a **`REFERENCE ONLY`** block reading *"No lesson covers this one — it's here for when you meet it on a bag or a menu."* Stated plainly rather than dropped, because a silent gap reads as a bug and a false link reads as a lie.
 - Route `term-reference` deep-links the state (seeded with `masl`).
 
-**The 8 reference-only terms:** `masl` · `washing-station` · `wet-hulled` · `tds` · `cold-brew` · `cupping` · `gooseneck` · `sca` · `origin-boards`.
+**The 8 reference-only terms:** `masl` · `wet-hulled` · `tds` · `cold-brew` · `cupping` · `gooseneck` · `sca` · `origin-boards`.
 
 **Learned state**: a term is "learned" once its source lesson is complete; plus a 6-term demo seed. `dictLessonAudit()` returns `[]` — every non-reference term's `lesson` pointer resolves to a lesson that actually teaches it.
 
