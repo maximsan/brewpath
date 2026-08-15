@@ -13,7 +13,11 @@ void main() {
       MaterialApp(
         home: Scaffold(
           body: SingleChildScrollView(
-            child: LessonStepRunner(step: step, onResult: (_) {}),
+            child: LessonStepRunner(
+              step: step,
+              onSolved: () {},
+              onContinue: () {},
+            ),
           ),
         ),
       ),

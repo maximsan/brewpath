@@ -1,4 +1,3 @@
-import 'package:brew_path/features/mini_games/domain/mini_game_result.dart';
 import 'package:brew_path/features/mini_games/presentation/slider_game.dart';
 import 'package:brew_path/shared/models/lesson_step_model.dart';
 import 'package:flutter/material.dart';
@@ -16,21 +15,25 @@ const _step = SliderStep(
 );
 
 void main() {
-  testWidgets('value in target range emits MiniGameCorrect', (tester) async {
-    MiniGameResult? result;
+  testWidgets('a value inside the target range reports success once', (
+    tester,
+  ) async {
+    var solved = 0;
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body: SliderGame(step: _step, onResult: (r) => result = r),
+          body: SliderGame(
+            step: _step,
+            onSolved: () => solved++,
+            onContinue: () {},
+          ),
         ),
       ),
     );
 
     await tester.tap(find.text('Check'));
     await tester.pumpAndSettle();
-    await tester.tap(find.byType(FilledButton)); // Continue
-    await tester.pumpAndSettle();
 
-    expect(result, isA<MiniGameCorrect>());
+    expect(solved, 1);
   });
 }

@@ -1,0 +1,302 @@
+import 'package:brew_path/features/lessons/presentation/cards/content_card_view.dart';
+import 'package:brew_path/shared/models/content/card_parts.dart';
+import 'package:brew_path/shared/models/content/content_card.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+/// Counts what crossed the card boundary. The whole contract is here: success
+/// is reported at most once and only when earned, and continue is separate.
+class _Signals {
+  int solved = 0;
+  int advanced = 0;
+}
+
+const _mcq = ContentCard.mcq(
+  prompt: 'What is a coffee bean?',
+  choices: [
+    Choice(text: 'A seed', isCorrect: true),
+    Choice(text: 'A legume'),
+  ],
+  explanation: 'It is the seed of a fruit.',
+);
+
+const _recall = ContentCard.recall(
+  label: 'BEFORE YOU GO',
+  question: 'What is it really?',
+  choices: [
+    Choice(text: 'The seed of a cherry', isCorrect: true),
+    Choice(text: 'A dried leaf'),
+  ],
+  explanation: 'Botanically a seed.',
+  takeaway: 'Coffee is fruit.',
+);
+
+const _decision = ContentCard.decision(
+  label: 'AT THE SHELF',
+  title: 'Old bag or fresh',
+  scenario: 'Your coffee tastes flat.',
+  question: 'What do you change?',
+  options: [
+    DecisionOption(
+      text: 'Buy fresh',
+      subtitle: 'Roasted 3 days ago',
+      isCorrect: true,
+    ),
+    DecisionOption(text: 'Grind finer', subtitle: 'Opened 2 months ago'),
+  ],
+  rightExplanation: 'Fresh beans do more than any adjustment.',
+  wrongExplanation: 'Grinding finer cannot restore lost aromatics.',
+  note: 'Freshness first.',
+);
+
+const _predict = ContentCard.predict(
+  label: 'LESSON 1',
+  title: 'What coffee actually is',
+  body: 'Coffee starts on a tree.',
+  question: 'A coffee bean is really the ___',
+  options: ['Seed', 'Skin'],
+  answer: 'Seed',
+  hold: 'Hold that thought.',
+);
+
+const _concept = ContentCard.concept(
+  label: 'CONCEPT',
+  title: 'The cherry, the seed',
+  fill: [
+    ConceptFillPart.literal('A coffee '),
+    ConceptFillPart.blank(
+      answer: 'seed',
+      options: ['seed', 'skin'],
+      label: 'What it is',
+    ),
+    ConceptFillPart.literal(' of a fruit.'),
+  ],
+  paragraphs: ['Coffee plants grow cherries.'],
+  meta: [
+    ['LOOKS LIKE', 'cherry'],
+    ['ACTUALLY IS', 'seed'],
+  ],
+);
+
+Widget _host(ContentCard card, _Signals signals, {int nonce = 1}) =>
+    MaterialApp(
+      home: Scaffold(
+        body: SingleChildScrollView(
+          child: contentCardView(
+            card,
+            nonce: nonce,
+            cardIndex: 0,
+            onSolved: () => signals.solved++,
+            onContinue: () => signals.advanced++,
+          ),
+        ),
+      ),
+    );
+
+Future<void> _tapText(WidgetTester tester, String text) async {
+  await tester.tap(find.text(text));
+  await tester.pumpAndSettle();
+}
+
+Finder get _continueButton => find.widgetWithText(FilledButton, 'Continue');
+
+bool _continueEnabled(WidgetTester tester) =>
+    tester.widget<FilledButton>(_continueButton).onPressed != null;
+
+void main() {
+  group('every renderer', () {
+    final cards = <String, ContentCard>{
+      'predict': _predict,
+      'concept': _concept,
+      'mcq': _mcq,
+      'decision': _decision,
+      'recall': _recall,
+    };
+
+    for (final entry in cards.entries) {
+      testWidgets('${entry.key} renders and gates continue on its latch', (
+        tester,
+      ) async {
+        final signals = _Signals();
+        await tester.pumpWidget(_host(entry.value, signals));
+
+        expect(_continueButton, findsOneWidget);
+        expect(
+          _continueEnabled(tester),
+          isFalse,
+          reason: '${entry.key} let the learner past an unanswered card',
+        );
+        expect(signals.solved, 0);
+      });
+    }
+  });
+
+  group('graded cards report success once, and only when earned', () {
+    testWidgets('mcq fires onSolved for the right answer', (tester) async {
+      final signals = _Signals();
+      await tester.pumpWidget(_host(_mcq, signals));
+
+      await _tapText(tester, 'A seed');
+
+      expect(signals.solved, 1);
+      expect(_continueEnabled(tester), isTrue);
+      expect(find.text('It is the seed of a fruit.'), findsOneWidget);
+    });
+
+    testWidgets('mcq stays silent on a wrong answer', (tester) async {
+      final signals = _Signals();
+      await tester.pumpWidget(_host(_mcq, signals));
+
+      await _tapText(tester, 'A legume');
+
+      expect(signals.solved, 0);
+      // Still explains itself, and still lets the learner move on.
+      expect(find.text('It is the seed of a fruit.'), findsOneWidget);
+      expect(_continueEnabled(tester), isTrue);
+    });
+
+    testWidgets('recall fires once and shows its takeaway', (tester) async {
+      final signals = _Signals();
+      await tester.pumpWidget(_host(_recall, signals));
+
+      await _tapText(tester, 'The seed of a cherry');
+
+      expect(signals.solved, 1);
+      expect(find.text('Coffee is fruit.'), findsOneWidget);
+    });
+
+    testWidgets('decision reads its wrong answer its own way', (tester) async {
+      final signals = _Signals();
+      await tester.pumpWidget(_host(_decision, signals));
+
+      await _tapText(tester, 'Grind finer');
+
+      expect(signals.solved, 0);
+      expect(
+        find.text('Grinding finer cannot restore lost aromatics.'),
+        findsOneWidget,
+      );
+      expect(
+        find.text('Fresh beans do more than any adjustment.'),
+        findsNothing,
+      );
+    });
+
+    testWidgets('decision reads its right answer its own way', (tester) async {
+      final signals = _Signals();
+      await tester.pumpWidget(_host(_decision, signals));
+
+      await _tapText(tester, 'Buy fresh');
+
+      expect(signals.solved, 1);
+      expect(
+        find.text('Fresh beans do more than any adjustment.'),
+        findsOneWidget,
+      );
+      expect(
+        find.text('Grinding finer cannot restore lost aromatics.'),
+        findsNothing,
+      );
+    });
+  });
+
+  group('a card cannot be returned to an unanswered state', () {
+    testWidgets('a second tap changes nothing', (tester) async {
+      final signals = _Signals();
+      await tester.pumpWidget(_host(_mcq, signals));
+
+      await _tapText(tester, 'A seed');
+      await _tapText(tester, 'A legume');
+
+      expect(signals.solved, 1, reason: 'success was reported twice');
+      expect(_continueEnabled(tester), isTrue);
+    });
+
+    testWidgets('there is no retry affordance anywhere', (tester) async {
+      final signals = _Signals();
+      await tester.pumpWidget(_host(_mcq, signals));
+      await _tapText(tester, 'A legume');
+
+      expect(find.textContaining('Try Again'), findsNothing);
+      expect(find.textContaining('Reset'), findsNothing);
+    });
+  });
+
+  group('ungraded cards', () {
+    testWidgets('predict holds its answer back rather than marking it', (
+      tester,
+    ) async {
+      final signals = _Signals();
+      await tester.pumpWidget(_host(_predict, signals));
+
+      await _tapText(tester, 'Skin');
+
+      // Wrong by the card's own answer, but nothing says so — the recall card
+      // at the end of the lesson is what resolves it.
+      expect(signals.solved, 0);
+      expect(find.text('Hold that thought.'), findsOneWidget);
+      expect(_continueEnabled(tester), isTrue);
+    });
+
+    testWidgets('concept resolves a blank to its authored answer', (
+      tester,
+    ) async {
+      final signals = _Signals();
+      await tester.pumpWidget(_host(_concept, signals));
+
+      expect(_continueEnabled(tester), isFalse);
+      // Tap the *wrong* word: the sentence still resolves correctly, which is
+      // the whole point of the fill card.
+      await _tapText(tester, 'skin');
+
+      // 'seed' also appears in the meta table, so look inside the sentence.
+      expect(
+        find.descendant(of: find.byType(Wrap), matching: find.text('seed')),
+        findsOneWidget,
+      );
+      expect(find.text('skin'), findsNothing);
+      expect(signals.solved, 0);
+      expect(_continueEnabled(tester), isTrue);
+    });
+  });
+
+  testWidgets('continue reports separately from success', (tester) async {
+    final signals = _Signals();
+    await tester.pumpWidget(_host(_mcq, signals));
+
+    await _tapText(tester, 'A seed');
+    expect(signals.advanced, 0);
+
+    await tester.tap(_continueButton);
+    await tester.pumpAndSettle();
+    expect(signals.advanced, 1);
+    expect(signals.solved, 1);
+  });
+
+  testWidgets('a different attempt orders the choices differently', (
+    tester,
+  ) async {
+    List<String> optionOrder() => tester
+        .widgetList<Text>(
+          find.descendant(
+            of: find.byType(OutlinedButton),
+            matching: find.byType(Text),
+          ),
+        )
+        .map((text) => text.data ?? '')
+        .toList();
+
+    await tester.pumpWidget(_host(_mcq, _Signals(), nonce: 100));
+    final first = optionOrder();
+
+    // Walk attempts until the order moves — a seeded shuffle is allowed to
+    // repeat, but it must not be pinned to one arrangement.
+    var moved = false;
+    for (var nonce = 101; nonce < 111 && !moved; nonce++) {
+      await tester.pumpWidget(_host(_mcq, _Signals(), nonce: nonce));
+      await tester.pumpAndSettle();
+      moved = optionOrder().join() != first.join();
+    }
+    expect(moved, isTrue, reason: 'choice order never changed across attempts');
+  });
+}
