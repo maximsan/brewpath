@@ -59,6 +59,10 @@ dev_dependencies:
   # Deterministic timer control for unit tests
   fake_async: ^1.3.3
 
+  # Scratch paths for the extractor's subprocess test. Already resolved
+  # transitively; declared so the direct import is legitimate.
+  path: ^1.9.0
+
   # Code generation
   build_runner: ^2.15.0
   # riverpod_generator / freezed: analyzer-12 support ships on the -dev line
@@ -75,6 +79,10 @@ flutter:
   uses-material-design: true
   assets:
     - assets/content/
+    # Written by tool/extract_content.js from the brew-path prototype. Listed
+    # separately because a directory entry bundles its own files only, not
+    # those of its subdirectories.
+    - assets/content/generated/
     - assets/images/
     - assets/icons/
     - assets/video/

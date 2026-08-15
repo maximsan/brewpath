@@ -112,6 +112,24 @@ Break-glass only — forces a full re-download (minutes).
 ./tool/reset_ios_spm.sh --build   # clean, then flutter build ios
 ```
 
+### `tool/extract_content.js` — regenerate bundled content
+
+Node script (no dependencies). Run after the `brew-path/` prototype's authored
+content changes. Reads five banks — modules, lessons, collectibles, dictionary
+terms and brew challenges — validates the whole cross-reference graph, and only
+then writes `assets/content/generated/`.
+
+Validating and refusing to write is the point: on any violation it names the
+offending card and the broken reference, writes **nothing**, and exits non-zero,
+so a run can never leave a stale mixture of old and new files behind. Its output
+is generated — regenerate it, never hand-edit it. `brew-path/` is opened for
+reading only.
+
+```bash
+node tool/extract_content.js                          # the usual run
+node tool/extract_content.js --source DIR --out DIR   # used by the tests
+```
+
 ### `tool/release.js` — cut a release
 
 Node script (no dependencies). Run when shipping a build to TestFlight / the App
