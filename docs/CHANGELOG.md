@@ -44,6 +44,17 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The first five card renderers**, and the boundary they answer across —
+  `predict`, `concept`, `mcq`, `decision` and `recall`, which are the eight
+  cards of the first lesson and 185 of the course's 257. A graded card reports
+  success and nothing else: a wrong answer raises its reaction inside the card,
+  never through a callback, because nothing in the app consumes an incorrect
+  signal.
+- **Choice order is now shuffled from a seed** that is derived on every render
+  and never stored. One nonce per lesson attempt, each card mixing in its own
+  index — so a replay moves the answers, and a learner cannot pass a lesson by
+  remembering where the right option sat.
+
 - **Bundled content is now generated from the prototype rather than
   hand-copied.** `node tool/extract_content.js` reads five banks — modules,
   lessons, collectibles, dictionary terms and brew challenges — out of
@@ -137,6 +148,12 @@ You can always edit this file by hand instead — the helpers just save effort.
   accent in both moods because the ad canvas is fixed near-black.
 
 ### Changed
+
+- **Retry is gone.** A card latches irreversibly the moment the learner commits,
+  and continuing is gated on that latch — no card offers a way back to an
+  unanswered state, and the Try Again and Reset controls are removed. "How many
+  did you get right" now has exactly one reading, so *first-try correct* is
+  simply *correct*.
 
 - **Reset Progress now clears what it says it clears, and a wipe reaches the
   learner's other device.** Reset wipes every progress field outright instead
