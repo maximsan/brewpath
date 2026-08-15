@@ -74,8 +74,10 @@ class ProgressSnapshot {
   /// The snapshot schema version this build writes.
   static const currentVersion = 1;
 
-  /// A snapshot holding nothing — a fresh install, and the shape Reset and
-  /// Delete publish as a tombstone.
+  /// A snapshot holding nothing — a fresh install. Reset and Delete publish a
+  /// tombstone of this shape but never this value: theirs carries the next
+  /// [resetGeneration] and a stamped envelope, which is what a second device
+  /// reads it by.
   static const empty = ProgressSnapshot();
 
   static const _knownKeys = {

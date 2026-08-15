@@ -2,6 +2,7 @@ import 'package:brew_path/features/cards/domain/cards_providers.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
+import 'package:brew_path/shared/storage/account_wipe.dart';
 import 'package:brew_path/shared/storage/settings_record.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -42,16 +43,15 @@ Future<String> appVersion(Ref ref) async {
   return '${info.version}+${info.buildNumber}';
 }
 
-/// Wipes all locally persisted user progress — completed lessons, module XP
-/// ledger, collected cards, and the XP / streak / lastActivity fields on the
-/// settings singleton — while preserving haptics, sound, and static content.
-/// Takes a [WidgetRef] (not a provider [Ref]) so the caller's lifetime owns
-/// the reads and invalidations across this async work.
+/// Wipes the learner's progress and rebuilds the screens that showed it.
+///
+/// *What* a reset clears belongs to [AccountWipe] — it publishes the tombstone
+/// the second device reads, and clears the stores this app still keeps
+/// alongside it. Only the invalidations are here, because only the widget layer
+/// knows what was on screen. Takes a [WidgetRef] (not a provider [Ref]) so the
+/// caller's lifetime owns the reads and invalidations across this async work.
 Future<void> resetProgress(WidgetRef ref) async {
-  await ref.read(progressRepositoryProvider).deleteAll();
-  await ref.read(moduleProgressRepositoryProvider).deleteAll();
-  await ref.read(cardRepositoryProvider).deleteAll();
-  await ref.read(settingsRepositoryProvider).resetProgress();
+  await ref.read(accountWipeProvider).resetProgress();
 
   ref.invalidate(totalXpProvider);
   ref.invalidate(streakProvider);

@@ -78,4 +78,13 @@ class SettingsRepository {
       ..lastActivityDate = null;
     await saveSettings(settings);
   }
+
+  /// Deletes the singleton row, so reads fall back to first-launch defaults.
+  ///
+  /// **Delete Account only.** This row is the device-local store — appearance,
+  /// haptics, sound and the onboarding answers — which a progress reset keeps
+  /// deliberately. Delete is the one wipe it does not survive.
+  Future<void> deleteAll() async {
+    await _db.delete(_db.userSettings).go();
+  }
 }
