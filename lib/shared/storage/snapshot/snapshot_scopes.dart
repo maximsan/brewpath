@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_codec.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
@@ -255,6 +257,46 @@ class ClearedByDeleteOnly {
         unknown: unknownKeys(json, _knownKeys),
       );
 
+  /// The uncustomised state, stamped to **win** the merge that carries a
+  /// deletion to the other device. This is what Delete writes.
+  ///
+  /// Not [empty]: these fields merge last-writer-wins rather than by reset
+  /// generation, and [empty] stamps them at the epoch — so an unstamped
+  /// account tombstone loses to any grove the other device still holds, and the
+  /// deletion is walked back by the very peer it was published to.
+  ///
+  /// The stamp is one past the newest write [current] already holds rather than
+  /// [at] itself, because the wall clock is not reliably the maximum: the
+  /// stored snapshot can carry a grove stamped *later* than this device reads,
+  /// from a peer that synced ahead or from plain skew, and the raw clock then
+  /// loses to the exact value the wipe exists to erase. It cannot dominate a
+  /// write this device has never seen — no last-writer-wins field can — but it
+  /// dominates every one it has.
+  ///
+  /// A named constructor rather than a stamp applied at the call site, so the
+  /// wipe is written where the fields are: a field added to this scope is
+  /// declared here, next to the two it joins, rather than in a caller nobody
+  /// editing this class would think to open.
+  factory ClearedByDeleteOnly.clearedAfter(
+    ClearedByDeleteOnly current, {
+    required int at,
+    required String deviceId,
+  }) {
+    final stamp = max(at, current._latestStamp + 1);
+    return ClearedByDeleteOnly(
+      grove: Timestamped(
+        value: Grove.initial,
+        updatedAt: stamp,
+        writerId: deviceId,
+      ),
+      companion: Timestamped(
+        value: CompanionConfig.initial,
+        updatedAt: stamp,
+        writerId: deviceId,
+      ),
+    );
+  }
+
   static const _initialGrove = Timestamped<Grove>(
     value: Grove.initial,
     updatedAt: epochMillis,
@@ -264,7 +306,8 @@ class ClearedByDeleteOnly {
     updatedAt: epochMillis,
   );
 
-  /// The zero state, and what Delete writes.
+  /// The zero state a fresh install starts from. Delete writes
+  /// [ClearedByDeleteOnly.clearedAfter] instead, for the reason recorded there.
   static const empty = ClearedByDeleteOnly();
 
   static const _knownKeys = {'grove', 'companion'};
@@ -297,6 +340,9 @@ class ClearedByDeleteOnly {
   @override
   int get hashCode =>
       Object.hash(grove, companion, Object.hashAllUnordered(unknown.keys));
+
+  /// The newest write this scope holds, from whichever device made it.
+  int get _latestStamp => max(grove.updatedAt, companion.updatedAt);
 }
 
 bool _playsEqual(Map<int, Set<String>> a, Map<int, Set<String>> b) {
