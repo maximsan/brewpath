@@ -122,6 +122,14 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **Reset Progress now clears what it says it clears, and a wipe reaches the
+  learner's other device.** Reset wipes every progress field outright instead
+  of relying on it recalculating to zero, and keeps the grove, the companion
+  and every device-local preference. Both wipes publish an empty snapshot at
+  the next reset generation rather than removing the stored one — a record that
+  simply vanished reads elsewhere as a fresh install, and that device would
+  hand the deleted progress straight back. Delete Account is the same mechanism
+  at full scope, plus the device-local settings; its screen is still to come.
 - **Module rows no longer signal completion with colour.** The filled accent
   square gives way to a bare glyph — muted when locked, accent otherwise — and
   a finished module goes quiet instead of lighting up, dropping its trailing
