@@ -116,7 +116,7 @@ The freeze is a **mechanic, not a setting** — there is deliberately no toggle.
 - Persisted to `localStorage['cq-favorites']` as a `Set` of prefixed keys: `l:` lesson, `t:` term, `g:` guide, `c:` collectible card.
 - **Only `l:` / `t:` / `g:` count as "Saved"** and appear on the Saved screen or in the header badge. Card favourites do not.
 - **Free cap: 5** (`SAVED_FREE_MAX`). Adding past the cap raises the Plus gate sheet. **Removing is always allowed**, so a capped free user can still curate.
-- Plus lifts the cap. This is the paywall's primary concrete hook.
+- BrewPath Plus lifts the cap. This is the paywall's primary concrete hook.
 - Seed favourites: `l:m1l1`, `c:c1`, `t:arabica`, `t:bloom`, `t:crema`.
 
 ## 5.8 Coffee Challenges (`brew-challenge.jsx`)
@@ -149,7 +149,7 @@ Small, optional **real-life** tasks. They never block learning, streaks, points,
 
 **Gated feature catalog** (`PLUS_FEATURES`): `dictionary`, `atlas`, `duel`, `saved`, `studio`.
 
-**In v1, `featureUnlocked()` hardcodes `dictionary` and `saved` to always-open** (`app.jsx:388`), and Saved is a free tier with a soft cap (now **5**, not 10). So **Studio is the only surviving _feature_ gate** — but it is no longer the only gate: **lessons** are now gated by tier, which is the first content gate either codebase has had, and the dictionary is tiered by *depth* rather than by term (free gets the short explanation; premium adds the full one, and the 8 reference terms are premium-only).
+**In v1, `featureUnlocked()` hardcodes `dictionary` and `saved` to always-open** (`app.jsx:388`), and Saved is a free tier with a soft cap (now **5**, not 10). So **Studio is the only surviving _feature_ gate** — but it is no longer the only gate: **lessons** are now gated by tier, which is the first content gate either codebase has had, and the dictionary is tiered by *depth* rather than by term (free gets the short explanation; Plus adds the full one, and the 8 reference terms are Plus-only).
 
 - Single funnel: `requestFeature(key)` → open it, or raise `PlusGateSheet`.
 - `FeatureLock` full-screen teaser, 3 styles: `blur` (default), `hard`, `curtain`.

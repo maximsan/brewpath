@@ -99,7 +99,7 @@ dictionary is tiered by **depth** rather than by term. Full rules in
 [Monetization shape](https://github.com/maximsan/brewpath/issues/29) and
 [Free-tier practice content](https://github.com/maximsan/brewpath/issues/57).
 
-⚠️ **An intermediate _pacing_ ruling — *2 new lessons per day free, Premium
+⚠️ **An intermediate _pacing_ ruling — *2 new lessons per day free, Plus
 removes the limit* — was also proposed and then withdrawn.** It is recorded
 because this file stated it as current: on a finite course its value expires
 when the course ends, so a free user who finished would hold the complete
@@ -107,17 +107,17 @@ product while a paying user's benefit evaporated in week three.
 
 | | Prototype | Flutter app | Shipping model |
 |---|---|---|---|
-| Axis | Features (Studio, Atlas) behind a Plus tier | No gate at all — `kAdsEnabled = false`, paywall absent | **Content** — 2 lessons free of 32 |
+| Axis | Features (Studio, Atlas) behind a BrewPath Plus tier | No gate at all — `kAdsEnabled = false`, paywall absent | **Content** — 2 lessons free of 32 |
 | Saved shelf | Free cap of 10, Plus lifts it | absent | free cap **5**, Plus lifts it |
-| Dictionary | fully free | absent | free = short explanation; premium adds the full one; 8 reference terms premium-only |
-| Mini-games | all 7 free | absent | **2 free** (`g-match`, `g-quiz`), 5 premium but visible and lock-marked. ⚠️ **That pair is load-bearing, not arbitrary** — the streak needs *two different* mini-games in a day ([#59](https://github.com/maximsan/brewpath/issues/59)), and these are exactly two, so **cutting or swapping either free format breaks the free mini-game streak path entirely** ([#57](https://github.com/maximsan/brewpath/issues/57), [#66](https://github.com/maximsan/brewpath/issues/66)) |
+| Dictionary | fully free | absent | free = short explanation; Plus adds the full one; 8 reference terms Plus-only |
+| Mini-games | all 7 free | absent | **2 free** (`g-match`, `g-quiz`), 5 Plus-locked but visible. ⚠️ **That pair is load-bearing, not arbitrary** — the streak needs *two different* mini-games in a day ([#59](https://github.com/maximsan/brewpath/issues/59)), and these are exactly two, so **cutting or swapping either free format breaks the free mini-game streak path entirely** ([#57](https://github.com/maximsan/brewpath/issues/57), [#66](https://github.com/maximsan/brewpath/issues/66)) |
 | Timed unlocks | Rewarded-ad 15-min trial, 24-hour perfect-module gift | absent | ads are v2; the gift is open at [Offers, plans and the paywall pitch](https://github.com/maximsan/brewpath/issues/55) |
 
 **Lesson gating is greenfield in both places** — `featureUnlocked` only ever
 took feature keys, and lesson locking is sequential progress — so there is no
 prototype behaviour to port and no "the source wins" to appeal to.
 
-What Premium buys is now settled; what remains open is the **offer** (trial,
+What Plus buys is now settled; what remains open is the **offer** (trial,
 plan structure, paywall copy), tracked separately. [§12](12-checklist.md)'s
 Monetization block still describes the superseded feature axis and should not
 be turned into issues as written.
