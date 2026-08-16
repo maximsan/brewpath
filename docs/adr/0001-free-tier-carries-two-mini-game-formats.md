@@ -28,10 +28,20 @@ topic mapping onto the two free lessons rather than chosen
 corresponds.
 
 The consequence nobody wrote down: **the free tier contains exactly the two
-formats the streak rule requires, and not one more.** The course is finite and
-the tree is a completed trophy no future content moves, so practice is the only
-recurring activity either a finished learner or a free learner has. For the free
-learner, that path runs entirely through those two games.
+formats the streak rule requires, and not one more.**
+
+This is not the free learner's *only* streak path, and an earlier framing that
+said so was superseded:
+[#33](https://github.com/maximsan/brewpath/issues/33) settled that **one**
+qualifying completion protects the day, and that a completed lesson replay, a
+Vocab round and a Flashcard session each qualify alone. Mini-games are the
+single activity needing two, so they are also the *most expensive* path — two
+runs spend a free learner's whole daily allowance where a replay spends one.
+
+What the pair protects is the only non-lesson path that stays varied: two
+different games are eleven distinct rounds, against the same two lessons
+replayed daily. Remove one format and a free learner's practice collapses back
+onto content they have already finished.
 
 ## Decision
 
@@ -47,8 +57,8 @@ re-picking which lessons are free.
 ## Consequences
 
 **Easy.** A free learner has a daily reason to open the app that costs no
-content and no new authoring. The streak stops depending on a finite syllabus,
-which is what makes it survive lesson 32 for everyone.
+content and no new authoring, and a learner past lesson 32 has a practice path
+that is not re-walking what they already know.
 
 **Hard.** The invariant is invisible from every surface that could break it.
 Cutting a free format, swapping one, or re-picking the free lesson pair without
@@ -56,11 +66,12 @@ re-deriving the mapping each removes the free streak path silently — the tier
 documents do not mention the streak, and the streak documents do not mention the
 tier. This record is the join.
 
-**Also load-bearing from the other side.** The daily activity allowance caps a
-free user at two activities per day
-([#65](https://github.com/maximsan/brewpath/issues/65)), which is exactly what a
-streak day costs. Lowering that cap below two breaks the same property without
-touching mini-games at all.
+**Also load-bearing from the other side.** The daily allowance caps a free user
+at two activities per day
+([#65](https://github.com/maximsan/brewpath/issues/65)), and two mini-games
+spend both. Lowering that cap below two removes the mini-game path outright,
+without touching mini-games at all — the free learner would keep a streak only
+through the single-activity routes.
 
 **Revisit if** the streak drops the distinctness requirement — it was reversed
 once and restored ([#59](https://github.com/maximsan/brewpath/issues/59)) — if
