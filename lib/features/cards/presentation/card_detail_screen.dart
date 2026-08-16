@@ -2,7 +2,6 @@ import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
-import 'package:brew_path/features/cards/domain/favorite_cards_provider.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Detail view for a single collectible card, reached from the Cards grid via
 /// the `cardDetail` route. Renders the card's icon, title, description and
-/// category, and lets the user favorite it.
+/// category.
 class CardDetailScreen extends ConsumerWidget {
   /// Creates a [CardDetailScreen] for the card identified by [cardId].
   const CardDetailScreen({required this.cardId, super.key});
@@ -41,7 +40,7 @@ class CardDetailScreen extends ConsumerWidget {
   }
 }
 
-class _CardDetailBody extends ConsumerWidget {
+class _CardDetailBody extends StatelessWidget {
   const _CardDetailBody({required this.item});
 
   static const double _iconSize = 96;
@@ -49,11 +48,10 @@ class _CardDetailBody extends ConsumerWidget {
   final CardWithCollection item;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final mood = context.mood;
     final card = item.card;
-    final isFavorite = ref.watch(favoriteCardsProvider).contains(card.id);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(AppSpacing.lg),
@@ -68,26 +66,11 @@ class _CardDetailBody extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.lg),
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  card.title,
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              IconButton(
-                icon: Icon(
-                  isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: isFavorite ? mood.berry : mood.inkMute,
-                ),
-                tooltip: isFavorite ? 'Remove favorite' : 'Add favorite',
-                onPressed: () =>
-                    ref.read(favoriteCardsProvider.notifier).toggle(card.id),
-              ),
-            ],
+          Text(
+            card.title,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
           ),
           const SizedBox(height: AppSpacing.xs),
           Text(card.moduleTag, style: theme.textTheme.labelLarge),
