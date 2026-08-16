@@ -5,6 +5,7 @@ const { validateCourse } = require("./validate/course");
 const { validateCollectibles } = require("./validate/collectibles");
 const { validateTerms } = require("./validate/terms");
 const { validateChallenges } = require("./validate/challenges");
+const { validateMiniGames } = require("./validate/mini_games");
 
 /**
  * Validates the whole cross-reference graph before a single file is written.
@@ -27,6 +28,7 @@ function validate(banks) {
   validateCollectibles(banks, index, report);
   validateTerms(banks, index, report);
   validateChallenges(banks, index, report);
+  validateMiniGames(banks, index, report);
 
   return errors;
 }
@@ -39,6 +41,7 @@ function indexOf(banks) {
     collectibleIds: new Set(banks.collectibles.map((card) => card.id)),
     termIds: new Set(banks.terms.map((term) => term.id)),
     categoryIds: new Set(banks.categories.map((category) => category.id)),
+    helpKinds: new Set(Object.keys(banks.cardKindHelp)),
   };
 }
 

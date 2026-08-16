@@ -33,14 +33,13 @@
  *
  * ## The register: what is not here, what is joined, and where a rule bends
  *
- * - **Mini-games are deferred.** `MINI_GAME_CONTENT` is not a self-contained
- *   literal: one of its seven entries is a getter reading
+ * - **Mini-game content is deferred** (#112 owns it). `MINI_GAME_CONTENT` is
+ *   not a self-contained literal: one of its seven entries is a getter reading
  *   `window.BAGPICK_ROUNDS`, which `bean-anatomy.jsx` defines. Slice-and-evaluate
- *   hands back an empty array for that game unless a `window` is assembled from
- *   a fourth file in the right order first. That needs a different mechanism,
- *   and no mini-game surface exists yet to justify building it. `MINI_GAMES` and
- *   `CARD_KIND_HELP` would extract fine and are held back with it rather than
- *   split across two changes.
+ *   hands back an empty array for that game unless a `window` carrying that
+ *   file's declaration is assembled first, so it waits on that mechanism. The
+ *   catalog (`MINI_GAMES`) and the help map (`CARD_KIND_HELP`) are plain
+ *   literals and are emitted.
  * - **`MODULE_REWARDS` is read as a sixth declaration** and joined onto each
  *   module as `reward`, mirroring how a lesson carries its own. Without it the
  *   five module Field Guide collectibles have no words at all, since a
@@ -91,6 +90,8 @@ function main(argv) {
   const data = read("data.jsx");
   const dictionary = read("dictionary-data.jsx");
   const challenges = read("brew-challenge.jsx");
+  const screens = read("screens.jsx");
+  const lesson = read("lesson.jsx");
 
   // A declaration that has been renamed or reformatted past recognition is as
   // much a refusal as a broken reference, and reports the same way: reading on
@@ -113,6 +114,8 @@ function main(argv) {
         "BREW_CHALLENGES",
         "brew-challenge.jsx",
       ),
+      miniGames: evaluateDeclaration(screens, "MINI_GAMES", "screens.jsx"),
+      cardKindHelp: evaluateDeclaration(lesson, "CARD_KIND_HELP", "lesson.jsx"),
     };
   } catch (error) {
     fail([error.message]);
@@ -132,6 +135,8 @@ function main(argv) {
     bank("collectibles", "data.jsx", banks.collectibles),
     bank("dictionary_terms", "dictionary-data.jsx", banks.terms),
     bank("brew_challenges", "brew-challenge.jsx", banks.challenges),
+    bank("mini_games", "screens.jsx", banks.miniGames),
+    bank("card_kind_help", "lesson.jsx", helpToList(banks.cardKindHelp)),
   ]);
 }
 
@@ -142,6 +147,15 @@ function main(argv) {
  */
 function keyedToList(keyed) {
   return Object.entries(keyed).map(([id, value]) => ({ id, ...value }));
+}
+
+/**
+ * `CARD_KIND_HELP` is keyed by card kind and its entries carry no kind of
+ * their own. Flattening restores the key as `kind` — the field name every card
+ * already uses for the same value.
+ */
+function helpToList(help) {
+  return Object.entries(help).map(([kind, entry]) => ({ kind, ...entry }));
 }
 
 /** Joins each module's Field Guide words on from `MODULE_REWARDS`. */
@@ -165,7 +179,7 @@ function bank(name, sourceFile, items, extra = {}) {
   };
 }
 
-/** Only reached once validation has passed, so a run writes all five or none. */
+/** Only reached once validation has passed, so a run writes every bank or none. */
 function writeBanks(out, banks) {
   fs.mkdirSync(out, { recursive: true });
   for (const { name, payload } of banks) {

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -12,9 +13,15 @@ const _prototype = 'prototype';
 /// Where a normal run writes — the output that ships in the bundle.
 const _committed = 'assets/content/generated';
 
-/// The three files a run reads. Copied into a scratch directory so a broken
+/// The five files a run reads. Copied into a scratch directory so a broken
 /// reference can be seeded without touching `prototype/`, which is read-only.
-const _sourceFiles = ['data.jsx', 'dictionary-data.jsx', 'brew-challenge.jsx'];
+const _sourceFiles = [
+  'data.jsx',
+  'dictionary-data.jsx',
+  'brew-challenge.jsx',
+  'screens.jsx',
+  'lesson.jsx',
+];
 
 const _expectedBanks = [
   'modules.json',
@@ -22,7 +29,15 @@ const _expectedBanks = [
   'collectibles.json',
   'dictionary_terms.json',
   'brew_challenges.json',
+  'mini_games.json',
+  'card_kind_help.json',
 ];
+
+/// Every format in the prototype's mini-game catalog.
+const _formatCount = 7;
+
+/// Every authored entry in the prototype's card-kind help map.
+const _helpKindCount = 10;
 
 ProcessResult _run(String source, String out) => Process.runSync('node', [
   _script,
@@ -50,12 +65,15 @@ void main() {
     return source;
   }
 
-  void breakReference(String source, String from, String to) {
-    final file = File(p.join(source, 'brew-challenge.jsx'));
+  void seedCorruption(String source, String fileName, String from, String to) {
+    final file = File(p.join(source, fileName));
     final patched = file.readAsStringSync().replaceFirst(from, to);
     expect(patched, isNot(file.readAsStringSync()), reason: 'seed did nothing');
     file.writeAsStringSync(patched);
   }
+
+  void breakReference(String source, String from, String to) =>
+      seedCorruption(source, 'brew-challenge.jsx', from, to);
 
   test('a clean run writes every bank', () {
     final out = dir('out');
@@ -118,6 +136,94 @@ void main() {
 
     expect(result.exitCode, isNot(0));
     expect(result.stderr.toString(), contains('cM1-renamed'));
+    expect(Directory(out).listSync(), isEmpty);
+  });
+
+  test('the catalog carries all seven formats and the help map is emitted', () {
+    final out = dir('out');
+
+    expect(_run(_prototype, out).exitCode, 0);
+
+    final catalog =
+        jsonDecode(File(p.join(out, 'mini_games.json')).readAsStringSync())
+            as Map<String, dynamic>;
+    expect((catalog['items'] as List).length, _formatCount);
+
+    final help =
+        jsonDecode(File(p.join(out, 'card_kind_help.json')).readAsStringSync())
+            as Map<String, dynamic>;
+    expect((help['items'] as List).length, _helpKindCount);
+  });
+
+  test('a catalog format whose kind has no help entry is refused', () {
+    final source = seededSource();
+    seedCorruption(
+      source,
+      'screens.jsx',
+      "id: 'g-match', kind: 'match'",
+      "id: 'g-match', kind: 'matchless'",
+    );
+    final out = dir('out');
+
+    final result = _run(source, out);
+
+    expect(result.exitCode, isNot(0));
+    expect(result.stderr.toString(), contains('g-match'));
+    expect(result.stderr.toString(), contains('matchless'));
+    expect(Directory(out).listSync(), isEmpty);
+  });
+
+  test('a duplicated catalog format id is refused by name', () {
+    final source = seededSource();
+    seedCorruption(
+      source,
+      'screens.jsx',
+      "id: 'g-flavor', kind: 'flavor'",
+      "id: 'g-match', kind: 'flavor'",
+    );
+    final out = dir('out');
+
+    final result = _run(source, out);
+
+    expect(result.exitCode, isNot(0));
+    expect(result.stderr.toString(), contains('g-match'));
+    expect(result.stderr.toString(), contains('duplicates'));
+    expect(Directory(out).listSync(), isEmpty);
+  });
+
+  test('a renamed catalog declaration is refused by name', () {
+    final source = seededSource();
+    seedCorruption(
+      source,
+      'screens.jsx',
+      'const MINI_GAMES =',
+      'const MINI_GAMES_X =',
+    );
+    final out = dir('out');
+
+    final result = _run(source, out);
+
+    expect(result.exitCode, isNot(0));
+    expect(result.stderr.toString(), contains('MINI_GAMES'));
+    expect(result.stderr.toString(), contains('screens.jsx'));
+    expect(Directory(out).listSync(), isEmpty);
+  });
+
+  test('a renamed help declaration is refused by name', () {
+    final source = seededSource();
+    seedCorruption(
+      source,
+      'lesson.jsx',
+      'const CARD_KIND_HELP =',
+      'const CARD_KIND_HELP_X =',
+    );
+    final out = dir('out');
+
+    final result = _run(source, out);
+
+    expect(result.exitCode, isNot(0));
+    expect(result.stderr.toString(), contains('CARD_KIND_HELP'));
+    expect(result.stderr.toString(), contains('lesson.jsx'));
     expect(Directory(out).listSync(), isEmpty);
   });
 
