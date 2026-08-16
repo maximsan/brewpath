@@ -63,3 +63,8 @@ curriculum, and resume from there following the contract below.
    bottom of that file.
 3. Continue under the teaching contract above. When a step is finished, tick its
    box, move 👉 to the next step, and append a dated log entry.
+
+## Reference
+
+- [`glossary.md`](glossary.md) — Flutter/Dart concepts used throughout this
+  project, explained for developers new to the ecosystem.

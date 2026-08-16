@@ -76,7 +76,7 @@ abstract class AdsService {
 
 ```dart
 // lib/services/ads/noop_ads_service.dart
-import '../../docs/ads_service.dart';
+import 'package:brew_path/services/ads/ads_service.dart';
 
 class NoOpAdsService implements AdsService {
   @override
@@ -120,7 +120,7 @@ class NoOpAdsService implements AdsService {
 //
 // See: https://pub.dev/packages/google_mobile_ads
 
-import '../../docs/ads_service.dart';
+import 'package:brew_path/services/ads/ads_service.dart';
 
 class AdMobAdsService implements AdsService {
   @override
@@ -152,10 +152,10 @@ class AdMobAdsService implements AdsService {
 ```dart
 // lib/services/ads/ads_provider.dart
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../docs/ads_service.dart';
-import '../../docs/noop_ads_service.dart';
+import 'package:brew_path/services/ads/ads_service.dart';
+import 'package:brew_path/services/ads/noop_ads_service.dart';
 
-part '../../docs/ads_provider.g.dart';
+part 'ads_provider.g.dart';
 
 @riverpod
 AdsService adsService(Ref ref) => NoOpAdsService();
@@ -245,25 +245,8 @@ lib/core/constants/
 
 ---
 
-## Steps
+## Status
 
-- [x] Create `lib/services/ads/ads_service.dart`
-- [x] Create `lib/services/ads/noop_ads_service.dart`
-- [x] Create `lib/services/ads/admob_ads_service.dart`
-- [x] Create `lib/services/ads/ads_provider.dart`
-- [x] Create `lib/core/constants/ad_unit_ids.dart` with test IDs
-- [x] Run `build_runner` to generate provider file
-- [x] Verify `NoOpAdsService` is active in `ads_provider.dart`
-- [x] Confirm no ads appear anywhere in the app during MVP testing
-
----
-
-## Definition of Done
-
-- [x] `AdsService` abstract interface exists
-- [x] `NoOpAdsService` is the active provider in MVP
-- [x] `AdMobAdsService` stub exists with `UnimplementedError` guards
-- [x] `ads_provider.dart` compiles and resolves to `NoOpAdsService`
-- [x] No ad banner, interstitial, or rewarded ad appears anywhere in MVP
-- [x] Ad unit ID constants file exists with test IDs for future use
-- [x] Future implementation checklist is complete and stored in this doc
+All scaffolding above exists in `lib/services/ads/` with `NoOpAdsService`
+active and test IDs in `lib/core/constants/ad_unit_ids.dart`. Remaining work is
+the Future Implementation Checklist, done when AdMob integration lands.

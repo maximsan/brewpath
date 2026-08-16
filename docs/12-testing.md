@@ -1,6 +1,7 @@
 # BrewPath — Testing
 
-> **Status (2026-05-21):** The persistence layer migrated from Isar to **Drift 2.30.x** in Phase 3. The `progress_repository_test` setup snippet below still shows `Isar.open` — the real test uses `AppDatabase(NativeDatabase.memory())` (no temp dir, no native binary). All listed tests exist and pass; treat the Isar snippet as historical.
+> **Status:** The persistence layer uses **Drift 2.33.x** (migrated from Isar in
+> Phase 3); test setups use `AppDatabase(NativeDatabase.memory())`.
 
 ---
 
@@ -159,7 +160,7 @@ void main() {
 ### progress_repository_test.dart
 
 ```dart
-// Uses a real Isar instance opened in a temp directory
+// Uses an in-memory Drift database — no temp dir, no native binary
 // Tests:
 // - saveCompletion writes a ProgressRecord
 // - saveCompletion is idempotent (second call same lessonId does nothing)
@@ -167,14 +168,13 @@ void main() {
 // - getByLessonId returns the record after saveCompletion
 // - getAllCompleted returns only completed records
 
-setUp(() async {
-  final dir = await Directory.systemTemp.createTemp();
-  final isar = await Isar.open(IsarService.schemas, directory: dir.path);
-  IsarService.instance = isar;
+setUp(() {
+  db = AppDatabase(NativeDatabase.memory());
+  AppDatabaseService.instance = db;
 });
 
 tearDown(() async {
-  await IsarService.instance.close(deleteFromDisk: true);
+  await db.close();
 });
 ```
 

@@ -82,7 +82,7 @@ Services (analytics, crash reporting, remote config, ads, payments) are injected
 lib/app/app_router.dart
 ```
 
-All named route constants live in `lib/core/constants/route_names.dart`.
+All named route constants live in `lib/core/constants/app_routes.dart`.
 
 ---
 
@@ -119,25 +119,16 @@ This means:
 
 ---
 
-## Local Persistence Strategy — Drift 2.30.x
+## Local Persistence Strategy — Drift 2.33.x
 
-**Why Drift (SQLite) over Isar:** Isar 3.x development stalled and Isar 4 dropped its generator before reaching parity. Drift is actively maintained by the Flutter community, runs on SQLite (mature, ubiquitous, supported on iOS/Android/macOS/web), generates type-safe queries from `Table` definitions, and runs in-memory in tests via `NativeDatabase.memory()`. Tables: `ProgressRecords`, `CardRecords`, `UserSettings`.
+**Why Drift (SQLite) over Isar:** Isar 3.x development stalled and Isar 4 dropped its generator before reaching parity. Drift is actively maintained by the Flutter community, runs on SQLite (mature, ubiquitous, supported on iOS/Android/macOS/web), generates type-safe queries from `Table` definitions, and runs in-memory in tests via `NativeDatabase.memory()`. Tables: `ProgressRecords`, `ModuleProgressRecords`, `CardRecords`, `UserSettings`, `ProgressSnapshots`.
 
-**Drift is not exposed directly to features.** All access goes through repository classes in `shared/repositories/`.
+**Drift is not exposed directly to features.** All access goes through repository classes in `shared/repositories/` — one per table (`ProgressRepository`, `ModuleProgressRepository`, `CardRepository`, `SettingsRepository`, `SnapshotRepository`), each mapping Drift rows ↔ mutable DTOs in `shared/storage/*_record.dart`, plus `ContentRepository` for the bundled asset banks.
 
 ```
 AppDatabaseService (shared/storage/app_database.dart)
   └── exposes the singleton AppDatabase via .instance
   └── repositories read it lazily — no constructor wiring
-
-ProgressRepository (shared/repositories/progress_repository.dart)
-  └── reads/writes ProgressRecord (mutable DTO ↔ Drift row)
-
-CardRepository (shared/repositories/card_repository.dart)
-  └── reads/writes CardRecord
-
-SettingsRepository (shared/repositories/settings_repository.dart)
-  └── reads/writes UserSettingsRecord (singleton row id=1)
 ```
 
 ---

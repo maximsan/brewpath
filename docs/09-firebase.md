@@ -49,7 +49,7 @@ abstract class AnalyticsService {
 ```dart
 // lib/services/analytics/firebase_analytics_service.dart
 import 'package:firebase_analytics/firebase_analytics.dart';
-import '../../docs/analytics_service.dart';
+import 'package:brew_path/services/analytics/analytics_service.dart';
 
 class FirebaseAnalyticsService implements AnalyticsService {
   final _analytics = FirebaseAnalytics.instance;
@@ -72,7 +72,7 @@ class FirebaseAnalyticsService implements AnalyticsService {
 
 ```dart
 // lib/services/analytics/noop_analytics_service.dart
-import '../../docs/analytics_service.dart';
+import 'package:brew_path/services/analytics/analytics_service.dart';
 
 class NoOpAnalyticsService implements AnalyticsService {
   @override
@@ -91,10 +91,10 @@ class NoOpAnalyticsService implements AnalyticsService {
 ```dart
 // lib/services/analytics/analytics_provider.dart
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../docs/analytics_service.dart';
-import '../../docs/firebase_analytics_service.dart';
+import 'package:brew_path/services/analytics/analytics_service.dart';
+import 'package:brew_path/services/analytics/firebase_analytics_service.dart';
 
-part '../../docs/analytics_provider.g.dart';
+part 'analytics_provider.g.dart';
 
 @riverpod
 AnalyticsService analyticsService(Ref ref) => FirebaseAnalyticsService();
@@ -143,7 +143,7 @@ abstract class CrashReportingService {
 ```dart
 // lib/services/crash_reporting/firebase_crashlytics_service.dart
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import '../../docs/crash_reporting_service.dart';
+import 'package:brew_path/services/crash_reporting/crash_reporting_service.dart';
 
 class FirebaseCrashlyticsService implements CrashReportingService {
   final _crashlytics = FirebaseCrashlytics.instance;
@@ -213,7 +213,7 @@ abstract class RemoteConfigKeys {
 ```dart
 // lib/services/remote_config/firebase_remote_config_service.dart
 import 'package:firebase_remote_config/firebase_remote_config.dart';
-import '../../docs/remote_config_service.dart';
+import 'package:brew_path/services/remote_config/remote_config_service.dart';
 
 class FirebaseRemoteConfigService implements RemoteConfigService {
   final _config = FirebaseRemoteConfig.instance;
@@ -254,37 +254,15 @@ class FirebaseRemoteConfigService implements RemoteConfigService {
 
 ---
 
-## Steps
+## Status
 
-- [ ] Create Firebase project and register iOS app _(manual — user)_
-- [ ] Download and place `GoogleService-Info.plist` _(manual — user)_
-- [ ] Run `flutterfire configure` and commit `firebase_options.dart` _(manual — user)_
-- [ ] Enable Crashlytics and Remote Config in Firebase Console _(manual — user)_
-- [x] Create `lib/services/analytics/analytics_service.dart`
-- [x] Create `lib/services/analytics/firebase_analytics_service.dart`
-- [x] Create `lib/services/analytics/noop_analytics_service.dart`
-- [x] Create `lib/services/analytics/analytics_provider.dart`
-- [x] Create `lib/services/crash_reporting/crash_reporting_service.dart`
-- [x] Create `lib/services/crash_reporting/firebase_crashlytics_service.dart`
-- [x] Create `lib/services/crash_reporting/crash_reporting_provider.dart`
-- [x] Create `lib/services/remote_config/remote_config_service.dart`
-- [x] Create `lib/services/remote_config/remote_config_keys.dart`
-- [x] Create `lib/services/remote_config/firebase_remote_config_service.dart`
-- [x] Create `lib/services/remote_config/remote_config_provider.dart`
-- [x] Add Flutter and platform error handlers in `main.dart`
-- [x] Call `fetchAndActivate()` in `AppBootstrap`
-- [x] Run `build_runner` to generate provider `.g.dart` files
-- [ ] Verify: Crashlytics receives a test crash (trigger `FirebaseCrashlytics.instance.crash()` once, then remove) _(manual — user)_
-- [ ] Verify: Analytics events appear in Firebase Console (DebugView) _(manual — user)_
+All service scaffolding above exists under `lib/services/` (interfaces,
+Firebase and No-Op implementations, providers, error handlers), gated off
+behind `kUseFirebase == false`. Remaining activation work is manual (user):
 
----
-
-## Definition of Done
-
-- [x] All three services (Analytics, Crashlytics, Remote Config) have abstract interfaces
-- [x] All three have Firebase implementations and No-Op test implementations
-- [x] All Firebase SDK calls are behind service abstractions — no direct `FirebaseAnalytics.instance` calls in feature code
-- [x] Global error handlers are wired in `main.dart`
-- [x] Remote Config fetches defaults and remote values at startup
-- [x] `NoOpAnalyticsService` is used in all widget and unit tests (via Riverpod override)
-- [ ] Test crash confirmed received in Firebase Crashlytics console _(manual — user)_
+- [ ] Create Firebase project and register iOS app
+- [ ] Download and place `GoogleService-Info.plist`
+- [ ] Run `flutterfire configure` and commit `firebase_options.dart`
+- [ ] Enable Crashlytics and Remote Config in Firebase Console
+- [ ] Flip `kUseFirebase` and the provider one-liners (see `CLAUDE.md`)
+- [ ] Verify: a test crash reaches Crashlytics; events appear in DebugView
