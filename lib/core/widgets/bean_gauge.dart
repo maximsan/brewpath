@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 ///
 /// The bean **is** the gauge: mastery reads as "how full" rather than as a
 /// word in the margin. Geometry is transcribed from
-/// `brew-path/flavor-wheel.jsx`: a 24×24 box holding an ellipse of rx 7.5 /
+/// `prototype/flavor-wheel.jsx`: a 24×24 box holding an ellipse of rx 7.5 /
 /// ry 9.5 tilted −18°, a fill clipped to that ellipse and grown from the
 /// bottom, and a wavy centre crease.
 ///

@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// The design's nine-step ladder, transcribed from the `--t-*` block in
-/// `brew-path/index.html`. Nothing sits off it: a size that is not here cannot
+/// `prototype/index.html`. Nothing sits off it: a size that is not here cannot
 /// be asked for, because no step carries it and the API takes no `fontSize`.
 const _ladder = <String, double>{
   'hero': 56,
@@ -43,7 +43,7 @@ void main() {
     });
 
     test('still matches the design bundle', () {
-      final css = File('brew-path/index.html').readAsStringSync();
+      final css = File('prototype/index.html').readAsStringSync();
       final declared = <String, double>{};
       for (final match in RegExp(
         r'--t-([a-z]+):\s*([0-9.]+)px',

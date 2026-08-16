@@ -1,6 +1,8 @@
-# BrewPath — project rules
+# BrewPath — course content rules
 
-## Course content
+What makes a good card, for anyone — agent or human — authoring or porting
+course content. (This file lived at `brew-path/CLAUDE.md` — the prototype
+folder's old name — until Aug 2026.)
 
 **No two cards in a row may share an answer.** Check the whole lesson, not just
 adjacent pairs: if two cards resolve to the same choice ("switch to Arabica",

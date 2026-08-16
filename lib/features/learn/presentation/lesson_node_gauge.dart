@@ -54,7 +54,7 @@ class LessonNodeGauge {
 
 /// Maps a lesson's progression state onto its node gauge.
 ///
-/// Ported from the design's lesson row (`brew-path/screens.jsx`): the bean
+/// Ported from the design's lesson row (`prototype/screens.jsx`): the bean
 /// *is* the gauge, so mastery reads as "how full" instead of a word in the
 /// margin.
 ///

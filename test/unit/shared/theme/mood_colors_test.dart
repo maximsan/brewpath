@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Hexes transcribed from the design bundle CSS
-/// (`brew-path/index.html` — `:root` for Cupping, `[data-mood="dark-roast"]`
+/// (`prototype/index.html` — `:root` for Cupping, `[data-mood="dark-roast"]`
 /// for Dark Roast). Any drift between these and [MoodColors] is a bug in the
 /// app, never in the table.
 const _cuppingSpec = <String, Color>{

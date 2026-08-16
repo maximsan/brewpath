@@ -17,7 +17,7 @@ import 'package:flutter/painting.dart';
 /// background.
 ///
 /// Values are transcribed from the design bundle CSS
-/// (`brew-path/index.html`). `color-mix(in oklab, X n%, transparent)` scales
+/// (`prototype/index.html`). `color-mix(in oklab, X n%, transparent)` scales
 /// only the alpha channel, so each is its literal at that opacity.
 abstract final class OverlayColors {
   /// Opacity of [scrim] — the design's `color-mix(… #1B1614 58%, transparent)`.

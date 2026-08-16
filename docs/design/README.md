@@ -1,7 +1,7 @@
 # BrewPath — v1 design reference
 
 A complete, source-derived description of the BrewPath design prototype that
-lives in [`brew-path/`](../../brew-path/): every screen, rule, content item,
+lives in [`prototype/`](../../prototype/): every screen, rule, content item,
 component state, asset and open decision.
 
 ## Two layers — start with the right one
@@ -19,10 +19,10 @@ no code in it. The numbered files exist for the moment someone actually builds
 this.
 
 **The rule this reference is written under:** everything here is read out of the
-prototype source, not invented. Where the prototype and the design documents
-disagree, **the source wins and the discrepancy is flagged** rather than
-smoothed. The ⚠️ blocks are the most valuable part of these files — they mark
-places where the product genuinely has not decided something.
+prototype source, not invented. Precedence on conflict and the fix-on-contact
+rule live in the [doc map](../README.md). The ⚠️ blocks are the most valuable
+part of these files — they mark places where the product genuinely has not
+decided something.
 
 > **Derived at `880b9d4` + staged design changes (Aug 2026).** Countable facts
 > come from [`tools/extract-facts.js`](tools/extract-facts.js), not from prose.
@@ -40,7 +40,7 @@ places where the product genuinely has not decided something.
 | Find a specific screen in the prototype | [§0 How to read the prototype](00-reading-the-prototype.md) |
 | Implement a rule correctly (points, streak, tree, gating) | [§5 Mechanics](05-mechanics.md) |
 | Know what a component does in every state | [§7 Components](07-components.md) |
-| Know what a component should *look* like | **`brew-path/Design System.html`** — indexed in [§3](03-design-system.md), not reproduced here |
+| Know what a component should *look* like | **`prototype/Design System.html`** — indexed in [§3](03-design-system.md), not reproduced here |
 | Find what's undecided or broken | [§11 Open items](11-open-items.md) |
 | Start building | [§11](11-open-items.md) to see what is still undecided, then [§12 Checklist](12-checklist.md) and [§13 Epics](13-epics.md) |
 
@@ -96,7 +96,7 @@ irrelevant to any one question.
 node docs/design/tools/extract-facts.js | less
 
 # or against an explicit prototype directory
-node docs/design/tools/extract-facts.js path/to/brew-path
+node docs/design/tools/extract-facts.js path/to/prototype
 ```
 
 It prints JSON covering: module/lesson/card counts and per-lesson breakdown,
@@ -118,7 +118,7 @@ reading the diffs, not running a script.
 
 ## Conventions
 
-- **Source paths are relative to `brew-path/`.** `app.jsx` means `brew-path/app.jsx`.
+- **Source paths are relative to `prototype/`.** `app.jsx` means `prototype/app.jsx`.
 - **Line references** (`app.jsx:172`) were accurate at the derivation commit and drift fast. Treat them as a starting point for a search, not an address.
 - **⚠️** marks a genuine contradiction, undecided question, or trap — not a nice-to-know.
 - **✅** marks something previously flagged that has since been closed.
@@ -126,7 +126,7 @@ reading the diffs, not running a script.
 
 ## Related
 
-- [`brew-path/Design System.html`](../../brew-path/Design%20System.html) — the component specification. Authoritative for anything visual.
-- [`brew-path/v1 Readiness Audit.html`](../../brew-path/v1%20Readiness%20Audit.html) — the scope decision record. Note that it does **not** cover the four coming-soon modules ([§4](04-information-architecture.md)).
-- [`brew-path/QA Findings.html`](../../brew-path/QA%20Findings.html) — the QA record, re-verified Aug 2026.
+- [`prototype/Design System.html`](../../prototype/Design%20System.html) — the component specification. Authoritative for anything visual.
+- [`prototype/v1 Readiness Audit.html`](../../prototype/v1%20Readiness%20Audit.html) — the scope decision record. Note that it does **not** cover the four coming-soon modules ([§4](04-information-architecture.md)).
+- [`prototype/QA Findings.html`](../../prototype/QA%20Findings.html) — the QA record, re-verified Aug 2026.
 - [`docs/CHANGELOG.md`](../CHANGELOG.md) — the Flutter app's change history, which this reference is meant to be diffed against.

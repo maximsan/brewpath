@@ -2,7 +2,7 @@
 
 ## Current Status: Disabled for MVP
 
-AdMob is **intentionally disabled** for MVP runtime (Phases 1–7).
+AdMob is **intentionally disabled** until ads go live (no phase attached — the build milestones completed without it).
 
 - `google_mobile_ads` is **not** an active dependency in `pubspec.yaml`.
 - `GADApplicationIdentifier` is **not** present in `ios/Runner/Info.plist`.
@@ -13,7 +13,7 @@ AdMob is **intentionally disabled** for MVP runtime (Phases 1–7).
 
 ## Future AdMob Setup
 
-Steps to re-enable AdMob in Phase 8:
+Steps to enable AdMob when ads go live:
 
 1. **Add dependency** — uncomment `google_mobile_ads` in `pubspec.yaml` and run `flutter pub get`.
 2. **Add App ID to Info.plist** — add `GADApplicationIdentifier` with the AdMob App ID:
@@ -76,7 +76,7 @@ abstract class AdsService {
 
 ```dart
 // lib/services/ads/noop_ads_service.dart
-import '../../docs/ads_service.dart';
+import 'package:brew_path/services/ads/ads_service.dart';
 
 class NoOpAdsService implements AdsService {
   @override
@@ -120,7 +120,7 @@ class NoOpAdsService implements AdsService {
 //
 // See: https://pub.dev/packages/google_mobile_ads
 
-import '../../docs/ads_service.dart';
+import 'package:brew_path/services/ads/ads_service.dart';
 
 class AdMobAdsService implements AdsService {
   @override
@@ -152,10 +152,10 @@ class AdMobAdsService implements AdsService {
 ```dart
 // lib/services/ads/ads_provider.dart
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../docs/ads_service.dart';
-import '../../docs/noop_ads_service.dart';
+import 'package:brew_path/services/ads/ads_service.dart';
+import 'package:brew_path/services/ads/noop_ads_service.dart';
 
-part '../../docs/ads_provider.g.dart';
+part 'ads_provider.g.dart';
 
 @riverpod
 AdsService adsService(Ref ref) => NoOpAdsService();
@@ -184,6 +184,10 @@ abstract class AdUnitIds {
 ---
 
 ## Future Ad Placement Strategy
+
+> ⚠️ **Speculative — no ruling behind this table.** `docs/decisions.md` contains
+> no ads decision, and a rewarded-XP path would interact with the daily-cap and
+> streak economy (§8–§10) in ways nobody has ruled on. Decide there first.
 
 | Placement                                       | Type         | Trigger                                       |
 | ----------------------------------------------- | ------------ | --------------------------------------------- |
@@ -245,25 +249,8 @@ lib/core/constants/
 
 ---
 
-## Steps
+## Status
 
-- [x] Create `lib/services/ads/ads_service.dart`
-- [x] Create `lib/services/ads/noop_ads_service.dart`
-- [x] Create `lib/services/ads/admob_ads_service.dart`
-- [x] Create `lib/services/ads/ads_provider.dart`
-- [x] Create `lib/core/constants/ad_unit_ids.dart` with test IDs
-- [x] Run `build_runner` to generate provider file
-- [x] Verify `NoOpAdsService` is active in `ads_provider.dart`
-- [x] Confirm no ads appear anywhere in the app during MVP testing
-
----
-
-## Definition of Done
-
-- [x] `AdsService` abstract interface exists
-- [x] `NoOpAdsService` is the active provider in MVP
-- [x] `AdMobAdsService` stub exists with `UnimplementedError` guards
-- [x] `ads_provider.dart` compiles and resolves to `NoOpAdsService`
-- [x] No ad banner, interstitial, or rewarded ad appears anywhere in MVP
-- [x] Ad unit ID constants file exists with test IDs for future use
-- [x] Future implementation checklist is complete and stored in this doc
+All scaffolding above exists in `lib/services/ads/` with `NoOpAdsService`
+active and test IDs in `lib/core/constants/ad_unit_ids.dart`. Remaining work is
+the Future Implementation Checklist, done when AdMob integration lands.

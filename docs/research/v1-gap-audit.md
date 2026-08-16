@@ -1,8 +1,19 @@
 # BrewPath v1 — gap audit of the Flutter app
 
+> **📸 Point-in-time snapshot (2026-07-29) — do not cite as current state.**
+> This audit was consumed into the parity map
+> ([#6](https://github.com/maximsan/brewpath/issues/6) /
+> [#8](https://github.com/maximsan/brewpath/issues/8)) and the app has moved
+> substantially since (mastery is a `{correct, total}` pair at schema v5, the
+> progress snapshot landed at v6, streak rules are ruled in
+> `../decisions.md`, …). For what is true *now*, read the issues and the code;
+> this file records what the gap looked like when the issues were cut.
+
 Issue [#8](https://github.com/maximsan/brewpath/issues/8) (child of map #6).
-Design reference: `brew-path/BREWPATH-V1-OVERVIEW.md`, §11 checklist as the spine;
-prototype `brew-path/*.jsx` as tiebreaker. Read-only audit — no source was changed.
+Design reference: the since-removed `BREWPATH-V1-OVERVIEW.md`, its **§11 checklist**
+as the spine (the audit's section numbering below follows it; that checklist is
+`docs/design/12-checklist.md` in today's numbering);
+prototype `prototype/*.jsx` as tiebreaker. Read-only audit — no source was changed.
 
 **Repo layout:** the Flutter app is at the repo root.
 It does not. The app is at the **repo root** (`pubspec.yaml`, `lib/`, `assets/`, `test/`
@@ -114,7 +125,7 @@ it is app-invented and fine.
 | Line | Verdict | Evidence |
 |---|---|---|
 | Earn 1 per 7 days, cap 2, spend automatically | **missing** | No freeze concept. `StreakService.onLessonCompleted` returns `1` on any gap ≥ 2 (`lib/features/progress/domain/streak_service.dart:41-43`). |
-| Derived held count (never drifts) | **missing** | Nothing to derive. (Prototype rule confirmed at `brew-path/app.jsx:432-433`.) |
+| Derived held count (never drifts) | **missing** | Nothing to derive. (Prototype rule confirmed at `prototype/app.jsx:432-433`.) |
 | Week strip derived from real streak | **missing** | No week strip; the streak surfaces only as a number tile (`lib/features/profile/presentation/profile_screen.dart:129-133`). |
 | One-time dismissible save notice | **missing** | — |
 | Streak screen + share sheet | **missing** | No `/streak` route (`lib/app/app_router.dart` has 13 routes total). |

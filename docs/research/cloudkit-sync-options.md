@@ -370,11 +370,11 @@ This is where the app's shape pays off. Most of the snapshot merges without an a
 | `xp` | **max** | monotonic; only ever awarded, never revoked |
 | best-ever mastery `{correct,total}` per lesson | **max by accuracy ratio**, tie-break higher `total` | "best-ever" is monotonic by definition |
 | tree stage | **derive, don't sync** | a pure function of merged `xp` + `completed`; syncing it invites disagreement with its own inputs |
-| lifetime `freezesSpent` | **max** | ticket states it is lifetime-cumulative (`brew-path/app.jsx:426` — "how many have ever been spent") |
+| lifetime `freezesSpent` | **max** | ticket states it is lifetime-cumulative (`prototype/app.jsx:426` — "how many have ever been spent") |
 | `completed` lesson set | **union** (grow-only set) | a completed lesson never un-completes |
-| coffee-challenge state (9) | **max by rank**, per challenge | the prototype already does exactly this for Atlas: `Math.max(cur, targetRank)` at `brew-path/app.jsx:280` |
+| coffee-challenge state (9) | **max by rank**, per challenge | the prototype already does exactly this for Atlas: `Math.max(cur, targetRank)` at `prototype/app.jsx:280` |
 | `frozenDays` | **union**, then prune to the current week | additive within a week |
-| `favourites` | **LWW on the whole field by `updatedAt`** | ⚠️ **not** monotonic — un-favouriting is a first-class action (`brew-path/app.jsx:257`), so a union would resurrect deleted favourites forever |
+| `favourites` | **LWW on the whole field by `updatedAt`** | ⚠️ **not** monotonic — un-favouriting is a first-class action (`prototype/app.jsx:257`), so a union would resurrect deleted favourites forever |
 | `streak` / `lastActivityDate` | **max on `lastActivityDate`, then recompute `streak`** | ⚠️ **not** monotonic. Max-wins on `streak` is a real bug: a device that has been offline since a 40-day streak broke would beat a device that correctly reset to 1. Only the activity date is safe to merge |
 | plus / trial flags | **don't sync** | StoreKit 2 on-device verification is authoritative (map #6: "StoreKit 2 verifies on-device"). Syncing an entitlement flag through an unencrypted, user-writable store is a piracy vector |
 

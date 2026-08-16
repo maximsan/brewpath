@@ -7,13 +7,13 @@ import 'package:path/path.dart' as p;
 /// under test is the process contract: what it writes, and what it refuses to
 /// write. Node is a CI dependency; `flutter test` stays the only test command.
 const _script = 'tool/extract_content.js';
-const _prototype = 'brew-path';
+const _prototype = 'prototype';
 
 /// Where a normal run writes — the output that ships in the bundle.
 const _committed = 'assets/content/generated';
 
 /// The three files a run reads. Copied into a scratch directory so a broken
-/// reference can be seeded without touching `brew-path/`, which is read-only.
+/// reference can be seeded without touching `prototype/`, which is read-only.
 const _sourceFiles = ['data.jsx', 'dictionary-data.jsx', 'brew-challenge.jsx'];
 
 const _expectedBanks = [
@@ -68,7 +68,7 @@ void main() {
     );
   });
 
-  // Without this, a rename in `brew-path/` stays green until someone happens to
+  // Without this, a rename in `prototype/` stays green until someone happens to
   // rerun the extractor: every other test here reads the committed output, so
   // the committed output is what they keep agreeing with. The script's output
   // is deterministic, so byte equality is the whole check.

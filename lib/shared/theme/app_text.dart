@@ -75,7 +75,7 @@ enum _Rung {
 /// asked for: the sizes live in one private table, so going off-ladder means
 /// editing the ladder — visible in a diff and in review — rather than passing a
 /// number at a call site where nobody will see it. Sizes are transcribed from
-/// the `--t-*` block of the design bundle (`brew-path/index.html`).
+/// the `--t-*` block of the design bundle (`prototype/index.html`).
 ///
 /// Size and face are separate axes; see [AppFace]. Each step defaults to the
 /// face the design most often sets it in, and any step accepts any face.

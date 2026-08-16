@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// The overlays that stay fixed, transcribed from the design bundle CSS
-/// (`brew-path/index.html`). `--veil` / `--veil-strong` are *not* here: they
+/// (`prototype/index.html`). `--veil` / `--veil-strong` are *not* here: they
 /// are the page background pulled over the page, so they follow the mood and
 /// live on `MoodColors` instead.
 const _spec = <String, Color>{
@@ -72,7 +72,7 @@ void main() {
     // Comments are stripped first: the bundle explains --dim-modal in prose
     // that names the very tokens being parsed, and would be read as a value.
     final css = File(
-      'brew-path/index.html',
+      'prototype/index.html',
     ).readAsStringSync().replaceAll(RegExp(r'/\*.*?\*/', dotAll: true), '');
     final declarations = <String, Set<String>>{};
     for (final match in RegExp(

@@ -1,6 +1,6 @@
 # Gap-analysis checklist
 
-> Part of the [BrewPath v1 design reference](README.md). All source paths are relative to `brew-path/`.
+> Part of the [BrewPath v1 design reference](README.md). All source paths are relative to `prototype/`.
 
 **What this file is.** A flat, complete list of the work required to bring the
 Flutter app up to the prototype. It exists so the whole build can be seen at
@@ -96,7 +96,7 @@ staging list that feeds it, not a living board. Nothing ticks these boxes.
 > model.** The shipping model is a **content gate**: the first two lessons free
 > permanently, the other thirty paid, plus a cap of two learning/practice
 > activities a day, a free Saved cap of **5**, and a dictionary tiered by depth
-> ([PRODUCT.md](PRODUCT.md) §11, `docs/decisions-1.md` §7–§8, §11–§12). What
+> ([PRODUCT.md](PRODUCT.md) §11, `docs/decisions.md` §7–§8, §11–§12). What
 > Premium buys is now **settled** on
 > [Monetization shape](https://github.com/maximsan/brewpath/issues/29); the
 > *offer* — trial, plan shape, paywall copy — is open at

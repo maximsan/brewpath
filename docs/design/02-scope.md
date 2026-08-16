@@ -1,6 +1,6 @@
 # Scope: what ships in v1
 
-> Part of the [BrewPath v1 design reference](README.md). All source paths are relative to `brew-path/`.
+> Part of the [BrewPath v1 design reference](README.md). All source paths are relative to `prototype/`.
 
 
 Locked in `v1 Readiness Audit.html` (June 2026, reconciled July 2026) and enforced by `isV1` in code.
