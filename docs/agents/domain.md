@@ -11,7 +11,7 @@ This is a **single-context** repo: one `CONTEXT.md` and one `docs/adr/` at the r
 
 If any of these files don't exist, **proceed silently**. Don't flag their absence; don't suggest creating them upfront. The producer skill (`/grill-with-docs`) creates them lazily when terms or decisions actually get resolved.
 
-Until `CONTEXT.md` exists, [`docs/17-glossary.md`](../17-glossary.md) is the closest thing to a domain glossary this repo has — read it in the same slot.
+(For Flutter/Dart *technology* concepts — not domain terms — the learner's primer is [`learning/glossary.md`](../../learning/glossary.md).)
 
 ## File structure
 
