@@ -44,6 +44,13 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The extractor now emits the mini-game banks** — the seven-format catalog
+  and the card-kind help map join the five existing banks, through the same
+  validate-and-refuse-to-write pass. Two new checks: catalog format ids are
+  unique, and every format's kind has a how-to-play help entry, so a mini-game
+  surface can never ship a game whose "?" drawer is missing. The rounds
+  themselves (`MINI_GAME_CONTENT`) still wait on the cross-file mechanism
+  (#112).
 - **The first five card renderers**, and the boundary they answer across —
   `predict`, `concept`, `mcq`, `decision` and `recall`, which are the eight
   cards of the first lesson and 185 of the course's 257. A graded card reports
