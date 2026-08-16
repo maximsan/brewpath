@@ -10,7 +10,9 @@
 > this file records what the gap looked like when the issues were cut.
 
 Issue [#8](https://github.com/maximsan/brewpath/issues/8) (child of map #6).
-Design reference: `docs/design/` (at the time, the since-removed `BREWPATH-V1-OVERVIEW.md`), §12 checklist as the spine;
+Design reference: the since-removed `BREWPATH-V1-OVERVIEW.md`, its **§11 checklist**
+as the spine (the audit's section numbering below follows it; that checklist is
+`docs/design/12-checklist.md` in today's numbering);
 prototype `prototype/*.jsx` as tiebreaker. Read-only audit — no source was changed.
 
 **Repo layout:** the Flutter app is at the repo root.

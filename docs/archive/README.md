@@ -10,7 +10,7 @@ each file was, why it went, and where its subject lives now.
 | `00-project-overview.md` | Original vision doc; superseded by the design reference. | `docs/design/PRODUCT.md` |
 | `01-mvp-scope.md` | Original scope; superseded by the derived scope doc and the product rulings. | `docs/design/02-scope.md`, `docs/decisions.md` |
 | `03-project-scaffold.md` | One-time scaffold steps; the project is built. | The repository itself; `CLAUDE.md` |
-| `04-folder-structure.md` | Described the original Isar 3.x persistence design. | `CLAUDE.md` (Project Layout), the repository itself |
+| `04-folder-structure.md` | Original `lib/` folder-structure spec, written around the Isar 3.x design; the tree it prescribed drifted from the one that got built. | `CLAUDE.md` (Project Layout), the repository itself |
 | `05-dependencies.md` | Dependency snapshot drifted from reality. | `pubspec.yaml` |
 | `06-local-persistence.md` | Designed for Isar; the app migrated to Drift. | `docs/02-architecture.md`, `lib/shared/storage/app_database.dart` |
 | `07-content-model.md` | Original content-model spec; the models and banks now exist. | Freezed models under `lib/`, `assets/content/generated/`, `docs/design/06-content.md` |
