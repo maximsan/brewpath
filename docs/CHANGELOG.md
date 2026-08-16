@@ -254,6 +254,11 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Removed
 
+- **Favouriting a collectible card.** The heart on the card detail screen, and
+  the in-memory store behind it, are gone. The design has no card favouriting
+  at all — only lessons, dictionary terms and training guides are saveable, and
+  they belong to the Saved shelf, which this was never part of. It was the last
+  remnant of the card-favourites screen already dropped earlier.
 - The 6 unused legacy colour tokens (`coffeeBrown`, `espresso`, `latte`,
   `cream`, `surface`, `locked`).
 - `AppColors` itself. Its one remaining token, `--cream`, is now
