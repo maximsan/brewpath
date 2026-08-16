@@ -39,7 +39,7 @@ class ModuleWithProgress {
   /// The two are independent: a content update that adds a lesson to a
   /// prerequisite re-locks this module without touching its own progress, and
   /// the design guards the same way (`!locked && lessons.every(...)` in
-  /// `brew-path/screens.jsx`). Without the guard the progression indicators
+  /// `prototype/screens.jsx`). Without the guard the progression indicators
   /// signal completion by going quiet, so such a module would render with no
   /// lock, no status line and no chevron at all.
   bool get isComplete =>

@@ -1,6 +1,6 @@
 # Core logic and mechanics
 
-> Part of the [BrewPath v1 design reference](README.md). All source paths are relative to `brew-path/`.
+> Part of the [BrewPath v1 design reference](README.md). All source paths are relative to `prototype/`.
 
 
 This is the part most likely to be missing or wrong in an implementation. Every rule below is enforced in code.

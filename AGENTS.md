@@ -12,7 +12,7 @@ brewpath/               ← git root, AGENTS.md lives here
 ├── assets/             ← bundled content, fonts, images
 ├── ios/                ← iOS runner (SPM-only; no Podfile)
 ├── tool/               ← release + maintenance scripts
-├── brew-path/          ← design source (React prototype, not built)
+├── prototype/          ← design source (React prototype, not built)
 ├── docs/               ← architecture, design reference and task-plan docs
 ├── learning/           ← hands-on Flutter course for this app
 └── .claude/            ← Claude Code project settings

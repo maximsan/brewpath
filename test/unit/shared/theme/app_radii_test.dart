@@ -18,7 +18,7 @@ void main() {
   });
 
   test('--r is still 14px in the design bundle', () {
-    final css = File('brew-path/index.html').readAsStringSync();
+    final css = File('prototype/index.html').readAsStringSync();
     final declared = RegExp(r'--r:\s*(\d+)px').firstMatch(css)?.group(1);
 
     expect(

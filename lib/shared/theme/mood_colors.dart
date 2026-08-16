@@ -16,7 +16,7 @@ import 'package:flutter/material.dart';
 /// `Theme.of(context).extension<MoodColors>()`.
 ///
 /// Values are transcribed 1:1 from the design bundle CSS
-/// (`brew-path/index.html`).
+/// (`prototype/index.html`).
 @immutable
 class MoodColors extends ThemeExtension<MoodColors> {
   /// Creates a mood's colour tokens.

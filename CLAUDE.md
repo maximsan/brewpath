@@ -12,7 +12,7 @@ brewpath/               ← git root, CLAUDE.md lives here
 ├── assets/             ← bundled content, fonts, images
 ├── ios/                ← iOS runner (SPM-only; no Podfile)
 ├── tool/               ← release + maintenance scripts
-├── brew-path/          ← design source (React prototype, not built)
+├── prototype/          ← design source (React prototype, not built)
 ├── docs/               ← architecture, design reference and task-plan docs
 ├── learning/           ← hands-on Flutter course for this app
 └── .claude/            ← Claude Code project settings
@@ -54,10 +54,10 @@ first, then resume.
   a Freezed model, Riverpod provider, or Drift table is added or modified.
   (build_runner 2.15 auto-resolves conflicts; the old
   `--delete-conflicting-outputs` flag was removed.)
-- **`brew-path/` is read-only.** It is the design source the app is built
+- **`prototype/` is read-only.** It is the design source the app is built
   *against*, so an edit there moves the thing we are measuring ourselves by. The
   only writable file is
-  [`brew-path/BREWPATH-V1-OVERVIEW.md`](brew-path/BREWPATH-V1-OVERVIEW.md).
+  [`prototype/BREWPATH-V1-OVERVIEW.md`](prototype/BREWPATH-V1-OVERVIEW.md).
   Findings about the prototype — "this is wrong", "do not port this" — go in the
   issue that owns them or in [`docs/design/`](docs/design/README.md), never as an
   annotation in the source.

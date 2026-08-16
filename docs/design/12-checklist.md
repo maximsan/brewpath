@@ -1,6 +1,6 @@
 # Gap-analysis checklist
 
-> Part of the [BrewPath v1 design reference](README.md). All source paths are relative to `brew-path/`.
+> Part of the [BrewPath v1 design reference](README.md). All source paths are relative to `prototype/`.
 
 **What this file is.** A flat, complete list of the work required to bring the
 Flutter app up to the prototype. It exists so the whole build can be seen at

@@ -1,6 +1,6 @@
 # Content inventory
 
-> Part of the [BrewPath v1 design reference](README.md). All source paths are relative to `brew-path/`.
+> Part of the [BrewPath v1 design reference](README.md). All source paths are relative to `prototype/`.
 
 
 ## 6.1 Course — 5 modules, 32 lessons, 257 cards
@@ -323,7 +323,7 @@ Both destructive actions use a `danger` `ConfirmSheet`.
 ## 6.9 The content rulebook (`CLAUDE.md`)
 
 **New, and it closes a long-standing gap.** Until now the reference said nobody
-had written down what makes a question good. `brew-path/CLAUDE.md` now does —
+had written down what makes a question good. `prototype/CLAUDE.md` now does —
 seven rules, all about the course content rather than the code:
 
 | Rule | What it forbids |

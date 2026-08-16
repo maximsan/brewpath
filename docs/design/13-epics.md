@@ -1,6 +1,6 @@
 # Suggested epics
 
-> Part of the [BrewPath v1 design reference](README.md). All source paths are relative to `brew-path/`.
+> Part of the [BrewPath v1 design reference](README.md). All source paths are relative to `prototype/`.
 
 
 1. **Design foundation** — tokens (theme + illustration), typography, theming, iconography, sheet primitives

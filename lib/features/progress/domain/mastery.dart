@@ -10,7 +10,7 @@ import 'package:flutter/foundation.dart';
 /// The three mastery states a scored lesson can hold.
 ///
 /// The keys, labels and ordering come from the design's `LESSON_STATES`
-/// (`brew-path/data.jsx`); only the *derivation* differs — see
+/// (`prototype/data.jsx`); only the *derivation* differs — see
 /// [MasteryResult.band].
 enum MasteryBand {
   /// Two or more wrong answers.

@@ -83,7 +83,7 @@ the untracked worktree copies. A plain `grep -r` hits all of them and reports
 matches in files you must not edit.
 
 `-z` / `-0` pair up to handle paths containing spaces (this repo has some, e.g.
-`brew-path/Coffee Tree.html`). On macOS, `sed -i` takes a mandatory backup
+`prototype/Coffee Tree.html`). On macOS, `sed -i` takes a mandatory backup
 suffix — `sed -i ''` means "no backup".
 
 ### Search case-insensitively when sweeping a name
