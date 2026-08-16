@@ -35,7 +35,7 @@ decided something.
 | If you want to… | Read |
 |---|---|
 | **Discuss the product conceptually — what to keep, change or drop** | [**PRODUCT.md**](PRODUCT.md) — the whole app in plain language, no code. **Start at §14–15** if you want the arguments rather than the description |
-| Understand the product in 30 seconds | [§1 Product](01-product.md) |
+| Understand the product in 30 seconds | [PRODUCT.md §1](PRODUCT.md) |
 | Know what ships in v1 and what doesn't | [§2 Scope](02-scope.md) |
 | Find a specific screen in the prototype | [§0 How to read the prototype](00-reading-the-prototype.md) |
 | Implement a rule correctly (points, streak, tree, gating) | [§5 Mechanics](05-mechanics.md) |
@@ -49,7 +49,7 @@ decided something.
 | § | File | Contents |
 |---|---|---|
 | 0 | [How to read the prototype](00-reading-the-prototype.md) | File map, deep links, what was deleted and why |
-| 1 | [Product](01-product.md) | One paragraph |
+| 1 | [Product](01-product.md) | → [PRODUCT.md](PRODUCT.md) §1 (one owner, no copy) |
 | 2 | [Scope](02-scope.md) | v1 vs v2 counted by route; the tab bar |
 | 3 | [Design system](03-design-system.md) | Colour, type, radius, elevation, theming, Roasty, icons — **and the index of the 57 components specified in `Design System.html`** |
 | 4 | [Information architecture](04-information-architecture.md) | Tabs, header, **the four coming-soon modules shown to users**, the 104-route list |

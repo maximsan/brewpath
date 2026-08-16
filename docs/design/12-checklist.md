@@ -97,7 +97,7 @@ staging list that feeds it, not a living board. Nothing ticks these boxes.
 > permanently, the other thirty paid, plus a cap of two learning/practice
 > activities a day, a free Saved cap of **5**, and a dictionary tiered by depth
 > ([PRODUCT.md](PRODUCT.md) §11, `docs/decisions.md` §7–§8, §11–§12). What
-> Premium buys is now **settled** on
+> **BrewPath Plus** buys is now **settled** on
 > [Monetization shape](https://github.com/maximsan/brewpath/issues/29); the
 > *offer* — trial, plan shape, paywall copy — is open at
 > [Offers, plans and the paywall pitch](https://github.com/maximsan/brewpath/issues/55).
