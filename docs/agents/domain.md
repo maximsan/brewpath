@@ -8,10 +8,13 @@ This is a **single-context** repo: one `CONTEXT.md` and one `docs/adr/` at the r
 
 - **`CONTEXT.md`** at the repo root — the domain glossary.
 - **`docs/adr/`** — read ADRs that touch the area you're about to work in.
+- **`docs/decisions.md`** — the frozen ledger of pre-Aug-2026 product rulings;
+  most glossary terms `§`-cite it. Precedence between sources:
+  [`docs/README.md`](../README.md).
 
 If any of these files don't exist, **proceed silently**. Don't flag their absence; don't suggest creating them upfront. The producer skill (`/grill-with-docs`) creates them lazily when terms or decisions actually get resolved.
 
-Until `CONTEXT.md` exists, [`docs/17-glossary.md`](../17-glossary.md) is the closest thing to a domain glossary this repo has — read it in the same slot.
+(For Flutter/Dart *technology* concepts — not domain terms — the learner's primer is [`learning/glossary.md`](../../learning/glossary.md).)
 
 ## File structure
 
@@ -19,8 +22,7 @@ Until `CONTEXT.md` exists, [`docs/17-glossary.md`](../17-glossary.md) is the clo
 /
 ├── CONTEXT.md
 ├── docs/adr/
-│   ├── 0001-drift-over-isar.md
-│   └── 0002-firebase-behind-abstractions.md
+│   └── NNNN-kebab-case-title.md   (one file per recorded decision)
 └── lib/
 ```
 
@@ -34,4 +36,4 @@ If the concept you need isn't in the glossary yet, that's a signal — either yo
 
 If your output contradicts an existing ADR, surface it explicitly rather than silently overriding:
 
-> _Contradicts ADR-0002 (Firebase behind abstractions) — but worth reopening because…_
+> _Contradicts ADR-NNNN (its title) — but worth reopening because…_

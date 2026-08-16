@@ -1,4 +1,13 @@
-BrewPath — confirmed product decisions
+# BrewPath — confirmed product decisions
+
+> **❄️ Frozen — 2026-08-16.** This file is a historical ledger and never grows
+> again, not even agent notes. New rulings — product and engineering alike —
+> are recorded as ADRs in [`docs/adr/`](adr/README.md); the argument happens in
+> the owning issue, the record lands there. The `§` numbering below is stable
+> and stays citable. (This file was `docs/decisions-1.md` until Aug 2026 —
+> links in older issues use that name. The paid tier has since been named
+> **BrewPath Plus** ([#30](https://github.com/maximsan/brewpath/issues/30));
+> read "premium" below as Plus — the wording stays as the owner spoke it.)
 
 1. Foundations and ongoing practice
    Beginner Foundations is a finite five-module beginner course.
@@ -246,6 +255,6 @@ Each section mapped onto [BrewPath v1 parity](https://github.com/maximsan/brewpa
 ### Consequences recorded elsewhere
 
 - **The daily allowance is no longer derivable.** §8 counts _activities_, not lessons. Vocab rounds, flashcard sessions and Keep Sharp completions are recorded nowhere today — [amendment on Sync scope](https://github.com/maximsan/brewpath/issues/14#issuecomment-5277335296).
-- **`SAVED_FREE_MAX` moves 10 → 5** in `brew-path/app.jsx`, and the v1 audit's monetization section is now wrong in four places (_"never walls the daily loop"_, _"everything that teaches is free"_, _"All daily lessons & the full path… never gated"_, _"Saved up to 10"_).
+- **`SAVED_FREE_MAX` moves 10 → 5** in `prototype/app.jsx`, and the v1 audit's monetization section is now wrong in four places (_"never walls the daily loop"_, _"everything that teaches is free"_, _"All daily lessons & the full path… never gated"_, _"Saved up to 10"_).
 - **Free tier is a demo tier**, measured: **2 of 32 lessons · 2 of 37 collectibles · 1 of 12 coffee challenges · tree stage ~1 of 10**. A deliberate strategy change, but it means the audit's _"Free builds the habit"_ positioning no longer describes the product.
 - **Keep Sharp is paid-only in practice** — a free user never finishes Foundations, so never reaches it.

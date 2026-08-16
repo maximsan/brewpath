@@ -44,7 +44,7 @@ and taste the difference.
 
 **Free gives you the first two lessons**, permanently, with unlimited replay —
 plus the whole glossary at a glance, practice on what you have unlocked, and the
-streak. Premium unlocks the remaining thirty, lifts the two-activity daily cap,
+streak. **BrewPath Plus** unlocks the remaining thirty, lifts the two-activity daily cap,
 and adds unlimited Saved and both Studios. The free tier is a **preview**: it
 shows you the shape of the course and lets you keep the habit, but the course
 itself is what you buy.
@@ -55,7 +55,7 @@ itself is what you buy.
 little every day"** — and that line is the test the scope decisions were made
 against. Two more positions are written down:
 
-- **"Free builds the habit. Plus makes it yours."** The monetization model in six words.
+- **"Free builds the habit. Plus makes it yours."** The monetization model in six words — **since superseded** by the content-gate ruling (§11); kept here because it shaped the design.
 - **"Cosmetics that teach are the thesis of the app."** Written to justify making the plant three real coffee species rather than three colour filters — the personalization is supposed to leave you knowing something.
 
 **[Recorded]** The audience is addressed indirectly but consistently as a
@@ -147,12 +147,17 @@ event every three lessons.
 
 ### The streak — whether you're still here
 
-One lesson a day keeps it alive. Every seven days you earn a **streak freeze**,
-and you can hold two. Miss a day and one is spent automatically — you aren't
-asked, you aren't warned, the streak survives, and the app tells you afterwards
-in a reassuring tone. The freeze is a mechanic, not a setting; there's no toggle,
-because the design position is that someone coming back after a miss is the most
-fragile user in the app and shouldn't be handed a decision.
+One qualifying activity a day keeps it alive — a lesson, a completed replay, a
+vocab round, a flashcard review, or two different mini-games
+(`docs/decisions.md` §2–3). Seven qualifying days in a row earn a **streak
+freeze**, and you can hold one. Miss a day and it is spent automatically — you
+aren't asked, you aren't warned, the streak survives, and the app tells you
+afterwards in a reassuring tone. The freeze is a mechanic, not a setting;
+there's no toggle, because the design position is that someone coming back
+after a miss is the most fragile user in the app and shouldn't be handed a
+decision. (The prototype showed a two-freeze cap and lesson-only qualifying;
+both were superseded by ruling — cap **1**, no accrual while holding, seven
+fresh days after each spend, `docs/decisions.md` §10.)
 
 **[Recorded]** Streak protection is **free forever**. It was considered as a paid
 feature and rejected, because *"the streak carries no in-app reward, so selling
@@ -326,31 +331,22 @@ self-conscious about a coffee-hobby app, that's worth a conversation.
 
 ## 11. Making it yours, and what you pay for
 
-> ### ⚠️ This section was rewritten twice. The model changed, then changed again.
->
-> **[Recorded — product-owner ruling]** The free/paid axis is **content, not
-> pacing and not features**:
->
-> > **Free: the first two lessons, permanently, plus practice on unlocked
-> > material and at most two learning/practice activities per day. Premium:
-> > the remaining thirty lessons, no daily cap, unlimited Saved, both Studios.**
->
-> Two superseded models are recorded here so neither is re-derived. **The
-> original** — everything free, Plus buys an unlimited Saved shelf and the
-> Studio — went first. **A pacing model** then replaced it (*2 new lessons/day
-> free; Premium removes the limit*) and is **also withdrawn**. Settled on
-> [Monetization shape](https://github.com/maximsan/brewpath/issues/29); full
-> rules in `docs/decisions-1.md` §7, §8, §11 and §12.
+**[Recorded — product-owner ruling]** The free/paid axis is **content, not
+pacing and not features**. Free: the first two lessons, permanently, with
+unlimited replay, plus practice on unlocked material — at most two
+learning/practice activities per day. Plus: the remaining thirty lessons, no
+daily cap, unlimited Saved, and both Studios. Settled on
+[Monetization shape](https://github.com/maximsan/brewpath/issues/29); full
+rules in `docs/decisions.md` §7, §8, §11 and §12.
 
-### What the ruling means
+### Why the axis is content
 
-**A pacing cap could not sustain a subscription on a finite course.** That is
-why it was withdrawn. At two new lessons a day a free user finishes all
-thirty-two in about sixteen days — after which *"no daily limit on new lessons"*
-is worth nothing, forever, because there are no more lessons. A free user who
-finished would hold the complete product while a paying user's benefit evaporated
-in week three. A content gate has no such shape: Premium buys thirty lessons,
-which do not expire on a schedule and cannot be reached by waiting.
+**A pacing cap could not sustain a subscription on a finite course.** At two
+new lessons a day a free user finishes all thirty-two in about sixteen days —
+after which *"no daily limit on new lessons"* is worth nothing, forever,
+because there are no more lessons. A content gate has no such shape: Plus
+buys thirty lessons, which do not expire on a schedule and cannot be reached by
+waiting.
 
 **The daily cap survives, doing a different job.** With only two lessons ever
 free it cannot pace a course; what it caps is **practice volume** — two
@@ -358,30 +354,38 @@ activities a day on two lessons' worth of material.
 
 **This is a preview tier, not a generous free tier**, and the pitch has to be
 written for that. Measured against current content, a free user reaches **2 of
-32 lessons · 2 of 37 collectibles · 1 of 12 brew challenges · tree stage ~1 of
-10**. The earlier positioning — *"everything that teaches is free"* — is no
-longer true of this product.
+32 lessons · 2 of 37 collectibles · 1 of 12 coffee challenges · tree stage ~1
+of 10**. The earlier positioning — *"everything that teaches is free"* — is not
+true of this product.
 
-**It is greenfield in both codebases.** Neither has ever gated a lesson by tier:
-`featureUnlocked` only ever took feature keys (Studio, Atlas, dictionary, Saved,
-Duel), and lesson locking is sequential progress. The Flutter app has no gate at
-all. So there is no prototype behaviour to port and no "the source wins" to
-appeal to: this is an invention, and the design reference says so.
+**It is greenfield in both codebases.** Neither has ever gated a lesson by
+tier: `featureUnlocked` only ever took feature keys (Studio, Atlas, dictionary,
+Saved, Duel), and lesson locking is sequential progress. There is no prototype
+behaviour to port and no "the source wins" to appeal to: this is an invention,
+and the design reference says so.
 
 **In v1 the feature axis has nearly dissolved.** Of the five `PLUS_FEATURES`,
 the dictionary and Saved are free, Atlas and Duel are v2, and **Studio is the
 only survivor** — while **lessons become the first content gate either codebase
 has had**.
 
-### Still open
+### What Plus buys — ruled
 
-**What Premium buys beyond the daily limit.** Only the cap lifted, or the cap
-*plus* the feature set — Studio, cosmetics, and whatever else? Unresolved, and it
-decides whether the prototype's timed-unlock machinery (a rewarded-ad trial, a
-perfect-module gift) survives at all. Both grant *timed access to features*, and
-neither means anything against a per-day lesson counter.
+The cap *plus* the feature set: access beyond the preview, the daily limit
+removed, unlimited Saved, and both Studios (`docs/decisions.md` §11). Free
+users keep up to five Saved items. **Still open:** whether the prototype's
+timed-unlock machinery (a rewarded-ad trial, a perfect-module gift) survives —
+both grant *timed access to features*, which now has only the Studios to act
+on.
 
-### Superseded — kept because the reasoning is still worth reading
+<details>
+<summary><b>Superseded — two earlier models, kept so neither is re-derived</b></summary>
+
+**The original model** — everything free, Plus buys an unlimited Saved shelf
+and the Studio — went first. **A pacing model** then replaced it (*2 new
+lessons/day free; Plus removes the limit*) and is also withdrawn: a free
+user who finished the course would hold the complete product while a paying
+user's benefit evaporated in week three.
 
 The old model was argued carefully, and the arguments are instructive even now
 that the conclusion has moved:
@@ -394,6 +398,8 @@ that the conclusion has moved:
 
 - **A lifetime tier** — a non-renewing plan needs its own receipt, restore and manage-plan states.
 - **Paid streak protection** — *"the streak carries no in-app reward, so selling insurance on it is selling insurance on an item with no value, and repair pitches at the exact moment a user has already lapsed."*
+
+</details>
 
 ### What the Studio is, regardless of what it costs
 
@@ -438,7 +444,7 @@ Four tabs: Today, your Path, your Cards, your Profile.
 
 - **The Coffee Atlas** — a second content area covering fifteen coffee-growing countries, with a world map, regional deep-dives and a passport you stamp as you explore. It's fully designed. It was deferred because it needs as much writing and illustration as the entire course, and doing it badly would be worse than not doing it.
 - **Coffee Duel** — head-to-head quizzes against a friend, played asynchronously. Also fully designed. Deferred because it needs server infrastructure, invitations, and link handling that nothing else in the app requires.
-- **Rewarded video ads** that unlock the Studio temporarily. Needs an ad provider, and sits awkwardly with the "everything that teaches is free" position.
+- **Rewarded video ads** that unlock the Studio temporarily. Needs an ad provider, and sat awkwardly with the since-withdrawn "everything that teaches is free" position; whether it survives the content-gate model at all is the open remnant of §11.
 - **A personalisation questionnaire at signup** — asking your goal, your brewing method, how much time you have. Fully built, but nothing in the app currently reads the answers, so it would be four screens of friction that change nothing.
 - **A "mood player"** where you tap emotions and watch Roasty react.
 
@@ -468,26 +474,24 @@ the conclusion.
 
 ## 14. The questions actually worth arguing about
 
-Everything above is decided and built. These aren't — and each is tagged so you
-can see whether you would be arguing with the project or with me.
+The questions that were, or still are, worth arguing about — each carries its
+current status, and each is tagged so you can see whether you would be arguing
+with the project or with me.
 
-**1. What the app is on day 33. [Derived]** The course is finite and the habit
-engine is not. Sharper under the pacing model (§11), which sells speed toward an
-ending. See §15.
+**1. What the app is on day 33. [Decided]** The course is finite and the habit
+engine is not. Answered — Keep Sharp plus a real ending. See §15.
 
 **2. The four coming-soon modules. [Recorded gap]** Espresso Basics, Milk Drinks,
 Brewing Gear, Coffee Tasting are shown to every user with nothing behind them —
-no plan, no scope, no mention in the scope document. **They are also the
-implicit answer to §15**, which makes "no lesson list, no scope, no rationale"
-more serious than a documentation gap: it means the retention plan is four words
-in a component.
+no plan, no scope, no mention in the scope document. They are explicitly *not*
+the retention answer (§15), which leaves them a promise on the main screen with
+no plan behind it — a smaller problem than it was, but still a promise.
 
-**3. What Premium buys beyond the daily limit. [Recorded — open]** The pacing
-ruling fixed the free side and left the paid side unresolved: cap-lifted only, or
-cap plus features? It also decides whether the prototype's timed-unlock
-machinery survives, since none of it means anything against a per-day counter.
-My earlier question here — *"is the free tier too generous to convert?"* — was
-posed against the superseded model and no longer applies.
+**3. What Plus buys. [Recorded — mostly ruled]** The benefit set is ruled:
+content plus the cap lifted, unlimited Saved, both Studios (§11,
+`docs/decisions.md` §11). Still open: whether the prototype's timed-unlock
+machinery (rewarded-ad trial, perfect-module gift) survives, with only the
+Studios left for it to act on.
 
 **4. Is v1 too thin? [My reading — the project decided the opposite]** The audit's
 verdict was "oversized for a first release". I think the reverse risk went
@@ -529,134 +533,101 @@ reference exists to enable.
 
 ## 15. What the app is on day 33
 
-**[Derived]** This is not in any project document, and it is the largest thing
-missing from the product as designed.
+**[Derived, then decided]** The course is finite and the habit engine is not.
+This section states the arithmetic that forced a decision, and the decision.
 
 ### The arithmetic
 
 Thirty-two lessons, one a day, is **about five weeks**. After that the Today
-screen shows a state that exists in the build and is easy to miss:
-
-> **ALL CAUGHT UP** — "You've finished every lesson available."
+screen shows **ALL CAUGHT UP** — *"You've finished every lesson available."*
 
 **Every reward system terminates within the same few weeks.** The plant reaches
-HARVEST and stops. Points come only from first completions and twelve challenges,
-so they stop too. Mastery caps out. The collection completes at thirty-seven.
-There is nothing left that pays.
+HARVEST and stops. Points come only from first completions and twelve
+challenges, so they stop too. Mastery caps out. The collection completes at
+thirty-seven. **The streak is the exception** — the one mechanic designed for
+an indefinite horizon, with earned freezes and carefully reassuring recovery
+copy — and it needs a tomorrow with something in it.
 
-**The streak is the exception, and that is the problem.** It is the one mechanic
-designed for an indefinite horizon — earned freezes, a one-freeze cap, carefully
-reassuring recovery copy, and an explicit decision that it stays free forever.
-All of that assumes a tomorrow with something in it. The course does not have
-one.
+### The answer — decided August 2026
 
-### The one rule that decides it
+**After Foundations, the daily loop is Keep Sharp, and the course gets a real
+ending.** [Recorded — product-owner ruling, `docs/decisions.md` §1 and §6.]
 
-**Correction to an earlier draft of this section:** the streak rules are *not*
-missing. They are designed in full and largely implemented — earn one freeze per
-seven days, hold at most two, spend automatically on a miss, keep "this week's
-covered days" separate from "freezes ever spent" (with a comment explaining the
-shipped bug that separation fixed), derive the week strip from the real streak,
-and suppress the earn notice at the cap. The Help FAQ states the qualifying
-condition plainly: **"finish at least one lesson a day to keep it alive."**
+- **A completed replay counts toward the streak.** Ruled at [The streak's
+  qualifying-activity rule](https://github.com/maximsan/brewpath/issues/33),
+  confirming [Streak and freeze](https://github.com/maximsan/brewpath/issues/17):
+  a day is active when a structured activity completes — a lesson, a replay, a
+  vocab round, a flashcard review, or two different mini-games.
+- **Keep Sharp** replaces the Today recommendation once Foundations is done:
+  one existing practice type, chosen by simple rotation from completed and
+  accessible material, stable for the day. No points, no tree growth, no course
+  progress — practice reinforces and maintains the streak, nothing else.
+  Specified at [Keep Sharp](https://github.com/maximsan/brewpath/issues/56),
+  which also carries the trap that *"course is complete"* is permanently true
+  under derivation, so the completion celebration needs an acknowledgement
+  marker or it re-fires on every launch.
+- **Finishing Foundations gets a proper ending and celebration** — the course
+  is allowed to end well rather than dying quietly at "all caught up".
+- **More content is explicitly not the retention answer.** *"Additional modules
+  and the Atlas/Dictionary are possible future expansions, not the solution to
+  post-course retention."* — ruled by name, not by neglect.
 
-What is unwired is only the clock — the prototype's date is frozen, so nothing
-advances the streak, and the source says so while specifying the correct
-real-world form. That is a porting note, not a gap.
+### What the answer costs, stated honestly
 
-**The actual gap is narrower and sharper:** *does a replay count as the day's
-lesson?*
+- **A replay-fed streak measures opening the app, not learning.** That cost was
+  accepted knowingly; Keep Sharp's no-points, no-tree, no-progress framing is
+  the concession to it.
+- **The practice pool is authored, finite and small.** `MINI_GAME_CONTENT`
+  (`lesson.jsx:1022`) holds **37 rounds total** across seven games; the only
+  randomness is display-order shuffling. A daily practiser exhausts it in under
+  a week, and the free-tier slice is **11 rounds** — so the pool is known to
+  need authoring, tracked at [Free-tier practice
+  variety](https://github.com/maximsan/brewpath/issues/66).
+- **A drill is not a lesson.** Day 40 is quieter than day 4, and the copy has
+  to be honest that the user has moved from learning to keeping sharp.
 
-> ## ✅ Decided — August 2026
->
-> **A completed replay counts.** Product-owner ruling (`docs/decisions-1.md`),
-> recorded at [The streak's qualifying-activity
-> rule](https://github.com/maximsan/brewpath/issues/33). This confirms [Streak
-> and freeze](https://github.com/maximsan/brewpath/issues/17), which had already
-> ruled that a day is active when a structured activity completes.
->
-> **And the answer to the section below is not one of the four options — it is C
-> plus D's ending.** After Foundations, the Today recommendation becomes **Keep
-> Sharp**: one existing practice activity, chosen by simple rotation from
-> completed and accessible material, stable for the day. Finishing Foundations
-> gets **a proper ending and celebration**. Options **A and B are ruled out by
-> name** — *"additional modules and the Atlas/Dictionary are possible future
-> expansions, not the solution to post-course retention."* Both surfaces are
-> specified at [Keep Sharp](https://github.com/maximsan/brewpath/issues/56),
-> which also carries the trap that *"course is complete"* is permanently true
-> under derivation, so the celebration needs an acknowledgement marker or it
-> re-fires on every launch.
->
-> ⚠️ **The argument below is left standing because its reasoning is still
-> load-bearing** — particularly the objection that a replay-fed streak measures
-> app-opening rather than learning. That cost was accepted knowingly, and Keep
-> Sharp's no-points, no-tree, no-progress framing is the concession to it. But
-> one premise the argument leans on **is false**: see the correction under
-> option C.
+It also fixes a smaller thing: mastery previously had no ongoing home — it was
+computed, displayed once, and did nothing. Practice as the post-course loop
+turns mastery from a readout into a driver, which is what the four-system split
+was for.
 
-During the course it does not matter — there is always a new lesson.
-**After the last lesson it is the whole question:**
+### What the decision changed elsewhere
 
-- **If only new lessons qualify,** every user's streak dies the day after they finish the course. The freeze mechanic buys two days and then stops. A system built with real care for the returning user ends by punishing the user who completed everything.
-- **If replays qualify,** the streak survives — but it now measures opening the app, not learning, and the points/mastery separation that the whole progress model rests on gets quietly undermined at the exact moment it stops being observable.
+- **The streak freeze was tightened** rather than retired: cap **1**, no
+  accrual while holding, 7 fresh days after each spend. See [Streak
+  freeze](https://github.com/maximsan/brewpath/issues/58).
+- **The monetization objection dissolved.** A subscription whose only lever was
+  speed had nothing to sell once content ran out; one that sells the course
+  itself (§11) does.
+- **The coming-soon modules are not load-bearing.** They stay a future
+  expansion, not the retention plan.
 
-Neither is obviously right, and it is a one-line rule with five weeks of runway
-before anyone notices.
+<details>
+<summary><b>Superseded — the four options as originally argued</b></summary>
 
-### Four ways out
+The original analysis posed the question as *does a replay count as the day's
+lesson?* — noting that if only new lessons qualified, every streak would die
+the day after the course ended, and if replays qualified, the streak would
+survive but measure app-opening. It then weighed four ways out:
 
-**A. Ship more course.** The four coming-soon modules add perhaps twenty-five
-lessons — call it four more weeks. *This is the current implicit plan, and it
-only moves the problem.* Finite content is finite; day 33 becomes day 90.
+- **A. Ship more course** — four coming-soon modules, perhaps four more weeks.
+  Only moves the problem; day 33 becomes day 90.
+- **B. Ship the Atlas** — a genuine second content vertical. Same objection,
+  larger number.
+- **C. Make daily practice the loop** *(the recommendation, and the choice)* —
+  assemble the existing pieces (mini-games, vocab quiz, flashcards, Term of the
+  Day, mastery data) into a daily drill. One premise of the argument was
+  **false**: the mini-game banks were described as *generated — they do not run
+  out*, when they are authored and finite (37 rounds, measured). C was chosen
+  anyway, with the authoring cost now on the books.
+- **D. Let it end well** *(chosen in part)* — build a real ending and let the
+  streak retire with dignity. The ruling takes D's ending alongside C's loop.
 
-**B. Ship the Atlas.** Fifteen origins with activities, already designed, already
-built, explicitly held as v2's headline. It is a genuine second content vertical
-rather than more of the same. *Same objection, larger number.*
+An earlier draft also claimed the streak rules were missing entirely; they were
+in fact designed in full — only the clock was unwired, the prototype's date
+being frozen. That was a porting note, not a gap.
 
-**C. Make daily practice the loop after the course. [My recommendation]** The
-pieces already exist and are not wired together:
-
-- Seven mini-games with ~~**generated** content banks — they do not run out~~ ⚠️ **This is false, and it was the load-bearing premise of this option.** `MINI_GAME_CONTENT` (`lesson.jsx:1022`) is **authored, finite and small** — *"Content is authored here, one homogeneous set per game id."* Measured: `g-quiz` 6 rounds, `g-bagpick` 6, and `g-match` / `g-flavor` / `g-tastefix` / `g-calibrate` / `g-sequence` 5 each — **37 rounds in total**. The only randomness is Fisher–Yates over *choice display order*: the same rounds, reshuffled. A user practising daily exhausts every round in under a week. C was still chosen, so **the practice pool is now known to need authoring** — tracked at [Free-tier practice variety](https://github.com/maximsan/brewpath/issues/66), which measures the free-tier slice at **11 rounds**, and at [Keep Sharp](https://github.com/maximsan/brewpath/issues/56)
-- A vocab quiz with a deck picker and configurable round length
-- Flashcards over saved terms
-- A Term of the Day that is already deterministic by date
-- Mastery data that already knows which lessons are weak, surfaced on Profile and deep-linking into practice
-
-Assembled, that is a **daily drill** — today's term, a round of the game matching
-your weakest lesson, a challenge suggestion — that never exhausts, needs **no new
-authored content**, and gives the streak something legitimate to eat.
-
-It also fixes a smaller thing: mastery currently has no ongoing home. It is
-computed, displayed once, and then does nothing. Making practice the post-course
-loop turns mastery from a readout into a driver — which is what the four-system
-split was for.
-
-**The cost, stated honestly:** a drill is not a lesson. Day 40 would be quieter
-than day 4, and the app would have to be honest that you have moved from learning
-to keeping sharp. That is a different product promise and the copy would have to
-say so.
-
-**D. Let it end well. [My reading]** Accept that this is a five-week course,
-build a real ending — a finished plant, a completed collection, a genuine
-send-off — and let the streak retire with dignity instead of dying quietly at
-"all caught up". Then bring people back with a *release*, not a habit.
-
-This is the option nobody takes and it is not obviously wrong. A course that
-ends cleanly and is remembered fondly may be worth more than a habit loop
-running on fumes.
-
-### Why it matters beyond retention
-
-The answer changes things already decided:
-
-- **The streak's design rationale** assumes an open-ended horizon it does not have. ✅ **Resolved:** Keep Sharp supplies the horizon, so the freeze mechanic keeps its purpose — and the freeze itself was **tightened** rather than retired: cap **1**, no accrual while holding, 7 fresh days after each use. See [Streak freeze: §10 now rules nine behaviours](https://github.com/maximsan/brewpath/issues/58).
-- ~~**The monetization model** now gates *pace* (§11).~~ ✅ **Superseded — the axis is now content, not pace.** The same product-owner ruling states *"free access is limited by content, not by waiting"*: two preview lessons, permanently replayable, and waiting unlocks nothing. A daily activity cap survives but now covers **practice as well as lessons**. Resolved at [Monetization shape](https://github.com/maximsan/brewpath/issues/29); the pieces are split across [Offers, plans and the paywall pitch](https://github.com/maximsan/brewpath/issues/55), [The free daily activity allowance](https://github.com/maximsan/brewpath/issues/65) and [Saved shelf](https://github.com/maximsan/brewpath/issues/60). **This also dissolves the objection in this bullet** — a subscription whose only lever was speed had nothing to sell once content ran out; one that sells the course itself does.
-- **The coming-soon modules** stop being a marketing tease and become load-bearing. ✅ **Reversed** — they are explicitly *not* the retention answer.
-
-~~**Recommendation: decide C or D explicitly before building.**~~ ✅ **Decided:
-C's practice loop plus D's ending** — see the block under *"The one rule that
-decides it"*. The warning against drifting into A held: A and B were ruled out by
-name rather than by neglect.
+</details>
 
 ---
 

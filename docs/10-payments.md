@@ -2,7 +2,7 @@
 
 ## Policy
 
-There is **no real paywall or purchase flow in MVP**. The payments layer exists only as a placeholder so monetization can be added later without architectural changes.
+There is **no real purchase flow in MVP** — the payments layer is a placeholder so monetization can be added later without architectural changes. (The *product* model is decided — a content-gated **BrewPath Plus** tier, `docs/decisions.md` §7/§11 — this doc covers only the deferred StoreKit implementation.)
 
 The abstraction is established now so that:
 
@@ -69,9 +69,9 @@ class StoreProduct {
 
 ```dart
 // lib/services/payments/noop_payments_service.dart
-import 'dart:async';
-import '../../docs/payments_service.dart';
-import '../../docs/store_product.dart';
+
+import 'package:brew_path/services/payments/payments_service.dart';
+import 'package:brew_path/services/payments/store_product.dart';
 
 class NoOpPaymentsService implements PaymentsService {
   @override
@@ -113,8 +113,8 @@ class NoOpPaymentsService implements PaymentsService {
 //
 // See: https://pub.dev/packages/in_app_purchase
 
-import '../../docs/payments_service.dart';
-import '../../docs/store_product.dart';
+import 'package:brew_path/services/payments/payments_service.dart';
+import 'package:brew_path/services/payments/store_product.dart';
 
 class InAppPurchaseService implements PaymentsService {
   @override
@@ -152,10 +152,10 @@ class InAppPurchaseService implements PaymentsService {
 ```dart
 // lib/services/payments/payments_provider.dart
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../docs/payments_service.dart';
-import '../../docs/noop_payments_service.dart';
+import 'package:brew_path/services/payments/payments_service.dart';
+import 'package:brew_path/services/payments/noop_payments_service.dart';
 
-part '../../docs/payments_provider.g.dart';
+part 'payments_provider.g.dart';
 
 @riverpod
 PaymentsService paymentsService(Ref ref) => NoOpPaymentsService();
@@ -166,11 +166,14 @@ PaymentsService paymentsService(Ref ref) => NoOpPaymentsService();
 
 ## Product IDs Convention
 
-| Product Type         | ID Convention                          | Example                            |
-| -------------------- | -------------------------------------- | ---------------------------------- |
-| Lifetime unlock      | `dev.maximsan.brewPath.lifetime` | One-time purchase, no subscription |
-| Monthly subscription | `dev.maximsan.brewPath.monthly`  | Future option                      |
-| Annual subscription  | `dev.maximsan.brewPath.annual`   | Future option                      |
+| Product Type         | ID Convention                   |
+| -------------------- | ------------------------------- |
+| Monthly subscription | `dev.maximsan.brewPath.monthly` |
+| Annual subscription  | `dev.maximsan.brewPath.annual`  |
+
+A lifetime (non-renewing) tier was **considered and dropped** — a non-renewing
+plan needs its own receipt, restore and manage-plan states
+(`docs/decisions.md`, `docs/design/PRODUCT.md` §11).
 
 Define these IDs in `lib/core/constants/product_ids.dart` when implementing.
 
@@ -185,7 +188,7 @@ When payments are ready to go live:
 - [ ] Replace `NoOpPaymentsService` with `InAppPurchaseService` in `payments_provider.dart`
 - [ ] Implement `InAppPurchaseService` with StoreKit 2 integration via `in_app_purchase` package
 - [ ] Implement receipt validation (at minimum client-side; server-side for subscriptions)
-- [ ] Add entitlement check at app startup — gate premium content if `hasActiveEntitlement()` returns false
+- [ ] Add entitlement check at app startup — gate Plus content if `hasActiveEntitlement()` returns false
 - [ ] Build paywall screen at `lib/features/paywall/presentation/paywall_screen.dart`
 - [ ] Add a Restore Purchases button to Profile tab
 - [ ] Test in sandbox environment with a sandbox Apple ID
@@ -208,24 +211,8 @@ lib/services/payments/
 
 ---
 
-## Steps
+## Status
 
-- [x] Create `lib/services/payments/payments_service.dart`
-- [x] Create `lib/services/payments/store_product.dart`
-- [x] Create `lib/services/payments/noop_payments_service.dart`
-- [x] Create `lib/services/payments/in_app_purchase_service.dart`
-- [x] Create `lib/services/payments/payments_provider.dart`
-- [x] Run `build_runner` to generate provider file
-- [x] Verify `NoOpPaymentsService` is active in `payments_provider.dart`
-- [x] Confirm no feature code calls `in_app_purchase` directly
-
----
-
-## Definition of Done
-
-- [x] `PaymentsService` abstract interface exists
-- [x] `NoOpPaymentsService` is the active provider in MVP
-- [x] `InAppPurchaseService` stub exists with `UnimplementedError` guards
-- [x] `payments_provider.dart` compiles and resolves to `NoOpPaymentsService`
-- [x] No feature screen shows a real purchase button or price in MVP
-- [x] Future implementation checklist is complete and stored in this doc
+All scaffolding above exists in `lib/services/payments/` with
+`NoOpPaymentsService` active. Remaining work is the Future Implementation
+Checklist, done when real StoreKit integration lands.

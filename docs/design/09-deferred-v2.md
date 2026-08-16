@@ -1,6 +1,6 @@
 # Deferred features — detail (for v2 tickets)
 
-> Part of the [BrewPath v1 design reference](README.md). All source paths are relative to `brew-path/`.
+> Part of the [BrewPath v1 design reference](README.md). All source paths are relative to `prototype/`.
 
 
 ## Coffee Atlas (`atlas*.jsx`, ~1,600 lines, 10 screens)

@@ -1,6 +1,6 @@
 # Information architecture
 
-> Part of the [BrewPath v1 design reference](README.md). All source paths are relative to `brew-path/`.
+> Part of the [BrewPath v1 design reference](README.md). All source paths are relative to `prototype/`.
 
 
 ## Tabs (v1)
@@ -40,13 +40,13 @@ array in the component, not in `data.jsx`:
 
 > ### ⚠️ Those seven lines are the entire specification
 >
-> **Searched: every `.html`, `.js`, `.jsx` and `.md` in `brew-path/`, and the
+> **Searched: every `.html`, `.js`, `.jsx` and `.md` in `prototype/`, and the
 > whole repository.** The strings "Espresso Basics", "Milk Drinks", "Brewing
 > Gear" and "Coffee Tasting" appear in exactly **one** place —
 > `screens.jsx:1147–1152`, the array above. (Two other hits are false positives:
 > `dictionary-data.jsx` cites an external Perfect Daily Grind article *titled*
-> "Espresso Basics", and `docs/17-glossary.md` uses "coffee tasting" as a common
-> noun.)
+> "Espresso Basics", and `learning/glossary.md` uses "coffee tasting" as a
+> common noun.)
 >
 > There is **no** lesson list, card count, ordering, learning objective, scope
 > estimate, or written rationale for any of the four. Anywhere.

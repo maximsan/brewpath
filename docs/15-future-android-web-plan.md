@@ -25,11 +25,10 @@ The following components require **no changes** to run on Android or Web:
 ### Build System
 
 - [ ] Add Android platform: `flutter create --platforms android .` from project root
-- [ ] Set `minSdkVersion` in `android/app/build.gradle`:
-  ```gradle
-  minSdk = 21  // Android 5.0+
-  ```
-- [ ] Set `targetSdkVersion` to current Android API level (35 as of 2026)
+- [ ] Set `minSdkVersion` / `targetSdkVersion` in `android/app/build.gradle`
+      to whatever the Firebase plugins and Google Play require **at sprint
+      time** — hardcoded API levels in a someday-doc are guaranteed to rot, so
+      none are recorded here
 
 ### Firebase Android
 
@@ -82,31 +81,17 @@ The following components require **no changes** to run on Android or Web:
 
 ### Android CI Matrix Addition
 
-Add to `.github/workflows/ci.yml`:
+Add an `android-build` job to `.github/workflows/ci.yml` by **cloning the
+shape of the existing `ios-build` job** (same checkout / flutter-action /
+`pub get` steps, same pinned `FLUTTER_VERSION` env — no build_runner step,
+generated files are committed). The only Android deltas:
 
-```yaml
-android-build:
-  name: Android Build Validation
-  runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v4
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: "3.22.0"
-        channel: stable
-        cache: true
-    - name: Install dependencies
-      run: flutter pub get
-    - name: Generate code
-      run: dart run build_runner build --delete-conflicting-outputs
-    - name: Write google-services.json
-      env:
-        GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
-      run: echo "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
-    - name: Build Android APK
-      run: flutter build apk --debug
-```
+- write `android/app/google-services.json` from a `GOOGLE_SERVICES_JSON`
+  secret (only once Firebase is active)
+- build with `flutter build apk --debug`
+
+(An earlier revision embedded a full YAML template here; it rotted against the
+real workflow — the live `ci.yml` is the only template worth cloning.)
 
 ---
 
@@ -122,8 +107,7 @@ android-build:
 The app already uses **Drift (SQLite)**, which **supports Flutter Web** via Drift's
 WASM backend — so the persistence layer does **not** need replacing for web. (This
 was the main blocker under the old Isar design; the Phase 3 move to Drift resolved
-it.) The repository interfaces (`ProgressRepository`, `CardRepository`,
-`SettingsRepository`) stay unchanged.
+it.) The repository layer (`lib/shared/repositories/`) stays unchanged.
 
 - [ ] Bundle the web assets (`sqlite3.wasm` + `drift_worker.js` under `web/`) per
       the Drift "Web" docs

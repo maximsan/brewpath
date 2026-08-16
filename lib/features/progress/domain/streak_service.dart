@@ -15,9 +15,10 @@ class StreakResult {
   final DateTime lastActivityDate;
 }
 
-/// Pure streak rule (per `docs/01-mvp-scope.md`): the streak counts consecutive
-/// calendar days with at least one completed lesson and resets after any missed
-/// day. No multipliers or bonuses in the MVP.
+/// Pure streak rule (per `docs/decisions.md` §2): the streak counts
+/// consecutive calendar days with at least one qualifying completion and resets
+/// after any missed day. This service currently implements the lesson path
+/// only. No multipliers or bonuses in the MVP.
 class StreakService {
   /// Creates a [StreakService].
   const StreakService();

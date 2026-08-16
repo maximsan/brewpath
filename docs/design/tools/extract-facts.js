@@ -1,10 +1,10 @@
 /**
- * Dumps every countable fact BREWPATH-V1-OVERVIEW.md asserts, read out of the
+ * Dumps every countable fact the design reference (docs/design/) asserts, read out of the
  * prototype source. Throwaway: re-run it after any design change to re-derive
  * the doc's numbers instead of trusting them.
  *
  *   node docs/design/tools/extract-facts.js            # from the repo root
- *   node extract-facts.js ../../../brew-path           # from this directory
+ *   node extract-facts.js ../../../prototype           # from this directory
  *
  * Data files are plain JS that assign onto `window`; they are evaluated in a
  * VM with a stub `window`. Files carrying JSX are read as text instead.
@@ -13,10 +13,10 @@ const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 
-const DEFAULT_ROOT = path.resolve(__dirname, '..', '..', '..', 'brew-path');
+const DEFAULT_ROOT = path.resolve(__dirname, '..', '..', '..', 'prototype');
 const ROOT = process.argv[2] ? path.resolve(process.argv[2]) : DEFAULT_ROOT;
 if (!fs.existsSync(path.join(ROOT, 'data.jsx'))) {
-  console.error(`No data.jsx under ${ROOT} — pass the brew-path directory as argv[2].`);
+  console.error(`No data.jsx under ${ROOT} — pass the prototype directory as argv[2].`);
   process.exit(1);
 }
 const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8');

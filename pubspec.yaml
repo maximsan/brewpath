@@ -79,7 +79,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/content/
-    # Written by tool/extract_content.js from the brew-path prototype. Listed
+    # Written by tool/extract_content.js from the prototype source. Listed
     # separately because a directory entry bundles its own files only, not
     # those of its subdirectories.
     - assets/content/generated/

@@ -18,7 +18,7 @@ import 'package:flutter/painting.dart';
 /// thread one through.
 ///
 /// Values are transcribed 1:1 from the design bundle CSS
-/// (`brew-path/index.html`, the `--art-*` / `--cream` block); the drift guard in
+/// (`prototype/index.html`, the `--art-*` / `--cream` block); the drift guard in
 /// `test/unit/shared/theme/art_colors_test.dart` keeps them there.
 ///
 /// Colours that *do* flip with the mood live on `MoodColors`; overlays that

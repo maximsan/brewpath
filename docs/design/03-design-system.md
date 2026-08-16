@@ -1,6 +1,6 @@
 # Design system
 
-> Part of the [BrewPath v1 design reference](README.md). All source paths are relative to `brew-path/`.
+> Part of the [BrewPath v1 design reference](README.md). All source paths are relative to `prototype/`.
 
 
 ## Color tokens (two moods, one system)

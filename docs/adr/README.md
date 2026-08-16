@@ -1,5 +1,10 @@
 # Architecture Decision Records
 
+**The one home for new decisions, product and engineering alike** — the
+argument happens in the owning issue, the record lands here. (Rulings made
+before Aug 2026 live in the frozen [`docs/decisions.md`](../decisions.md)
+ledger and are not migrated.)
+
 One file per decision, named `NNNN-kebab-case-title.md` with a zero-padded
 sequential number (`0001-…`, `0002-…`). Numbers are never reused, and a
 superseded ADR is kept in place with its status updated rather than deleted.

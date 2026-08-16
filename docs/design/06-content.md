@@ -1,6 +1,6 @@
 # Content inventory
 
-> Part of the [BrewPath v1 design reference](README.md). All source paths are relative to `brew-path/`.
+> Part of the [BrewPath v1 design reference](README.md). All source paths are relative to `prototype/`.
 
 
 ## 6.1 Course — 5 modules, 32 lessons, 257 cards
@@ -302,7 +302,7 @@ Both destructive actions use a `danger` `ConfirmSheet`.
 **Help FAQ — 4 entries** (`FAQ_ITEMS`, `settings.jsx:619`). The answers are load-bearing spec, not filler:
 1. *How does my streak work?* — restates the 7-day earn, freeze cap, automatic spend, and "nothing to switch on". ⚠️ **The shipped string is now wrong twice over** and must be rewritten before it ports: the cap is **1, not 2** ([Streak freeze](https://github.com/maximsan/brewpath/issues/58)), and *"finish at least one lesson a day"* understates the qualifying rule, which also accepts a completed replay, two different mini-games, the Vocab game, Flashcards and Keep Sharp ([The streak's qualifying-activity rule](https://github.com/maximsan/brewpath/issues/33)).
 2. *How does my tree grow?* — "tracks the core course only … ten stages from bare seed to full harvest", points don't grow it, never shrinks except on reset.
-3. *What do I get with Plus?* — unlimited Saved (free keeps 10) and the Studio; **learning content is always free, and so is your streak**.
+3. *What do I get with Plus?* — unlimited Saved (free keeps 10) and the Studio; **learning content is always free, and so is your streak**. ⚠️ **This shipped string is now wrong three ways** and must be rewritten before it ports: the free Saved cap is **5, not 10**, learning content is a **2-of-32 preview**, not free, and the benefit set is content + cap removal + unlimited Saved + both Studios (`docs/decisions.md` §7, §8, §11; [Monetization shape](https://github.com/maximsan/brewpath/issues/29)). Only *"your streak is free"* survives.
 4. *Can I learn offline?* — "modules you've opened are kept on your phone. Progress syncs the next time you're online." **This is an offline requirement, not just copy.**
 
 **About screen** (`A FIELD GUIDE TO COFFEE`) — **6 rows, not a static page**:
@@ -323,7 +323,7 @@ Both destructive actions use a `danger` `ConfirmSheet`.
 ## 6.9 The content rulebook (`CLAUDE.md`)
 
 **New, and it closes a long-standing gap.** Until now the reference said nobody
-had written down what makes a question good. `brew-path/CLAUDE.md` now does —
+had written down what makes a question good. `docs/design/content-rules.md` now does —
 seven rules, all about the course content rather than the code:
 
 | Rule | What it forbids |

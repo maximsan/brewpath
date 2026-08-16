@@ -41,7 +41,7 @@ Services (analytics, crash reporting, remote config, ads, payments) are injected
 - `@riverpod` annotation (riverpod_generator) for code generation
 - `Notifier` for synchronous state (e.g., current tab, UI toggles)
 - `AsyncNotifier` for async state (e.g., loading lessons from Drift, loading content from assets)
-- `Provider` for pure computed values (e.g., total XP derived from progress records)
+- `Provider` for pure computed values (e.g., total points derived from progress records)
 - Providers scoped per feature — no global god-provider
 
 **No ChangeNotifier, no BLoC, no setState in business logic screens.**
@@ -61,28 +61,31 @@ Services (analytics, crash reporting, remote config, ads, payments) are injected
 
 **Why go_router:** Flutter team–maintained, declarative, URL-based routing. Required for future web portability. Deep link support with minimal extra work.
 
-### Shell Route Structure
+### Route Structure
+
+Top-level (outside the shell): `/loading`, `/welcome`, `/onboarding/goal`,
+`/onboarding/brewer`. The router's `redirect` owns the onboarding gate —
+screens never duplicate gate→destination decisions (a CLAUDE.md rule).
 
 ```
-/ (AppShell — bottom nav)
-├── /learn              (LearnScreen)
-│   └── /learn/module/:moduleId        (ModuleDetailScreen)
-│       └── /learn/lesson/:lessonId    (LessonScreen)
-├── /path               (PathScreen)
-├── /cards              (CardsScreen)
-│   └── /cards/:cardId                 (CardDetailScreen)
-└── /profile            (ProfileScreen)
+/ (AppShell — StatefulShellRoute, bottom nav)
+├── /learn                                  (LearnScreen)
+│   ├── module/:moduleId                    (ModuleDetailScreen)
+│   ├── lesson/:lessonId                    (LessonScreen — root navigator, covers the shell)
+│   │   └── complete                        (LessonCompletionScreen)
+│   ├── module-summary/:moduleId            (ModuleSummaryScreen)
+│   ├── practice/lesson/:lessonId           (LessonScreen, practice mode)
+│   └── practice/game-type/:gameType        (GameTypePracticeScreen)
+├── /path                                   (PathScreen)
+├── /cards                                  (CardsScreen)
+│   └── :cardId                             (CardDetailScreen)
+└── /profile                                (ProfileScreen)
+    └── settings                            (SettingsScreen)
 ```
 
-`AppShell` is a `StatefulShellRoute` — it preserves tab scroll position and state when switching tabs.
-
-### Route Definition Location
-
-```
-lib/app/app_router.dart
-```
-
-All named route constants live in `lib/core/constants/route_names.dart`.
+The catalog of every route (name + path) is
+`lib/core/constants/app_routes.dart` — **regenerate this diagram from it, don't
+edit the diagram alone**; the router itself is `lib/app/app_router.dart`.
 
 ---
 
@@ -105,12 +108,14 @@ abstract class AnalyticsService {
   Future<void> logScreen(String screenName);
 }
 
-// Concrete implementation
+// Concrete implementations
 class FirebaseAnalyticsService implements AnalyticsService { ... }
+class NoOpAnalyticsService implements AnalyticsService { ... }
 
-// Provider
+// Provider — wired to the No-Op while kUseFirebase == false; activation
+// swaps this one line (see lib/services/analytics/analytics_provider.dart)
 @riverpod
-AnalyticsService analyticsService(Ref ref) => FirebaseAnalyticsService();
+AnalyticsService analyticsService(Ref ref) => const NoOpAnalyticsService();
 ```
 
 This means:
@@ -119,25 +124,16 @@ This means:
 
 ---
 
-## Local Persistence Strategy — Drift 2.30.x
+## Local Persistence Strategy — Drift 2.33.x
 
-**Why Drift (SQLite) over Isar:** Isar 3.x development stalled and Isar 4 dropped its generator before reaching parity. Drift is actively maintained by the Flutter community, runs on SQLite (mature, ubiquitous, supported on iOS/Android/macOS/web), generates type-safe queries from `Table` definitions, and runs in-memory in tests via `NativeDatabase.memory()`. Tables: `ProgressRecords`, `CardRecords`, `UserSettings`.
+**Why Drift (SQLite) over Isar:** Isar 3.x development stalled and Isar 4 dropped its generator before reaching parity. Drift is actively maintained by the Flutter community, runs on SQLite (mature, ubiquitous, supported on iOS/Android/macOS/web), generates type-safe queries from `Table` definitions, and runs in-memory in tests via `NativeDatabase.memory()`. Tables: `ProgressRecords`, `ModuleProgressRecords`, `CardRecords`, `UserSettings`, `ProgressSnapshots`.
 
-**Drift is not exposed directly to features.** All access goes through repository classes in `shared/repositories/`.
+**Drift is not exposed directly to features.** All access goes through repository classes in `shared/repositories/` — one per table (`ProgressRepository`, `ModuleProgressRepository`, `CardRepository`, `SettingsRepository`, `SnapshotRepository`), each mapping Drift rows ↔ mutable DTOs in `shared/storage/*_record.dart`, plus `ContentRepository` for the bundled asset banks.
 
 ```
 AppDatabaseService (shared/storage/app_database.dart)
   └── exposes the singleton AppDatabase via .instance
   └── repositories read it lazily — no constructor wiring
-
-ProgressRepository (shared/repositories/progress_repository.dart)
-  └── reads/writes ProgressRecord (mutable DTO ↔ Drift row)
-
-CardRepository (shared/repositories/card_repository.dart)
-  └── reads/writes CardRecord
-
-SettingsRepository (shared/repositories/settings_repository.dart)
-  └── reads/writes UserSettingsRecord (singleton row id=1)
 ```
 
 ---
@@ -166,12 +162,6 @@ This keeps widgets pure and tests clean.
 
 ---
 
-## Definition of Done
+## Still open (manual — user)
 
-- [x] Architecture diagram is understood by the developer
-- [x] Riverpod provider pattern is established and documented
-- [x] go_router shell route structure is finalized
-- [x] Drift repository pattern is established (no raw Drift access in feature code)
-- [x] All services (analytics, crash, remote config, ads, payments) have abstract interfaces
-- [ ] Offline-first behavior is confirmed on Simulator with Airplane Mode
-- [x] Analytics events are never in widget `build` methods
+- [ ] Offline-first behavior confirmed on Simulator with Airplane Mode

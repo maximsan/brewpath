@@ -1,6 +1,6 @@
 # Component & state inventory
 
-> Part of the [BrewPath v1 design reference](README.md). All source paths are relative to `brew-path/`.
+> Part of the [BrewPath v1 design reference](README.md). All source paths are relative to `prototype/`.
 
 [§5](05-mechanics.md) gives the **rules**. [§6](06-content.md) gives the **content**. This section
 gives the **surfaces** — every exported component, the states it can be in, and

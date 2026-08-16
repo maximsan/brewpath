@@ -49,7 +49,7 @@ abstract class AnalyticsService {
 ```dart
 // lib/services/analytics/firebase_analytics_service.dart
 import 'package:firebase_analytics/firebase_analytics.dart';
-import '../../docs/analytics_service.dart';
+import 'package:brew_path/services/analytics/analytics_service.dart';
 
 class FirebaseAnalyticsService implements AnalyticsService {
   final _analytics = FirebaseAnalytics.instance;
@@ -72,7 +72,7 @@ class FirebaseAnalyticsService implements AnalyticsService {
 
 ```dart
 // lib/services/analytics/noop_analytics_service.dart
-import '../../docs/analytics_service.dart';
+import 'package:brew_path/services/analytics/analytics_service.dart';
 
 class NoOpAnalyticsService implements AnalyticsService {
   @override
@@ -91,13 +91,14 @@ class NoOpAnalyticsService implements AnalyticsService {
 ```dart
 // lib/services/analytics/analytics_provider.dart
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../docs/analytics_service.dart';
-import '../../docs/firebase_analytics_service.dart';
+import 'package:brew_path/services/analytics/analytics_service.dart';
+import 'package:brew_path/services/analytics/noop_analytics_service.dart';
 
-part '../../docs/analytics_provider.g.dart';
+part 'analytics_provider.g.dart';
 
+// No-Op while kUseFirebase == false; activation swaps this one line.
 @riverpod
-AnalyticsService analyticsService(Ref ref) => FirebaseAnalyticsService();
+AnalyticsService analyticsService(Ref ref) => const NoOpAnalyticsService();
 ```
 
 ---
@@ -106,22 +107,28 @@ AnalyticsService analyticsService(Ref ref) => FirebaseAnalyticsService();
 
 All event names use `snake_case`. Parameters are also `snake_case` string keys with `String`, `int`, or `double` values (Firebase Analytics limitation).
 
-| Event Name              | When Fired                          | Parameters                                                  |
-| ----------------------- | ----------------------------------- | ----------------------------------------------------------- |
-| `screen_view`           | On screen navigation                | `screen_name: String`                                       |
-| `lesson_started`        | User taps Start on a lesson         | `lesson_id: String`, `module_id: String`                    |
-| `lesson_completed`      | Lesson completion confirmed         | `lesson_id: String`, `module_id: String`, `xp_earned: int`  |
-| `lesson_step_correct`   | Mini-game step answered correctly   | `lesson_id: String`, `step_index: int`, `game_type: String` |
-| `lesson_step_incorrect` | Mini-game step answered incorrectly | `lesson_id: String`, `step_index: int`, `game_type: String` |
-| `card_unlocked`         | Coffee Card earned                  | `card_id: String`, `lesson_id: String`                      |
-| `module_unlocked`       | Module unlocked                     | `module_id: String`                                         |
-| `xp_earned`             | XP awarded                          | `amount: int`, `source: String`                             |
+The events that actually fire (source of truth:
+`lib/features/lessons/domain/lesson_completion_service.dart` and
+`lib/features/lessons/presentation/lesson_screen.dart` — regenerate this table
+from them):
+
+| Event Name         | When Fired                            |
+| ------------------ | ------------------------------------- |
+| `lesson_started`   | User starts a lesson                  |
+| `lesson_completed` | First-time lesson completion          |
+| `lesson_reviewed`  | Completed replay / practice run       |
+| `card_unlocked`    | Coffee Card earned                    |
+| `module_unlocked`  | Next module unlocked                  |
+| `xp_earned`        | Points awarded (`source`: lesson, practice, module_bonus) |
+
+Screen views are not a `logEvent` — they flow through
+`AnalyticsService.logScreen` via `lib/app/analytics_navigator_observer.dart`,
+wired into go_router.
 
 ### Where Events Are Fired
 
-- `screen_view` → call in `initState` or via `RouteObserver`, never in `build()`
-- Lesson events → call from `LessonCompletionService` (domain layer), not from widgets
-- Card/module unlock events → call from `LessonCompletionService` after persistence writes
+- Screen views → the navigator observer, never in `build()`
+- Lesson/card/module events → `LessonCompletionService` (domain layer) after persistence writes, not from widgets
 
 ---
 
@@ -143,7 +150,7 @@ abstract class CrashReportingService {
 ```dart
 // lib/services/crash_reporting/firebase_crashlytics_service.dart
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import '../../docs/crash_reporting_service.dart';
+import 'package:brew_path/services/crash_reporting/crash_reporting_service.dart';
 
 class FirebaseCrashlyticsService implements CrashReportingService {
   final _crashlytics = FirebaseCrashlytics.instance;
@@ -163,22 +170,21 @@ class FirebaseCrashlyticsService implements CrashReportingService {
 
 ### Global Error Wiring in main.dart
 
-Add after `WidgetsFlutterBinding.ensureInitialized()` and before `runApp()`:
+Both handlers are wired in `lib/main.dart` — **gated**, so a Firebase-less
+build keeps Flutter's default error reporting:
 
 ```dart
-// Catch Flutter framework errors
-FlutterError.onError = (errorDetails) {
-  FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-};
-
-// Catch async errors outside Flutter
-PlatformDispatcher.instance.onError = (error, stack) {
-  FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-  return true;
-};
+// Installed only once Firebase is active (lib/main.dart)
+if (kUseFirebase) {
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+  PlatformDispatcher.instance.onError = (error, stack) {
+    unawaited(
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true),
+    );
+    return true;
+  };
+}
 ```
-
-- [x] Add both error handlers in `main.dart` before `runApp()`
 
 ---
 
@@ -213,7 +219,7 @@ abstract class RemoteConfigKeys {
 ```dart
 // lib/services/remote_config/firebase_remote_config_service.dart
 import 'package:firebase_remote_config/firebase_remote_config.dart';
-import '../../docs/remote_config_service.dart';
+import 'package:brew_path/services/remote_config/remote_config_service.dart';
 
 class FirebaseRemoteConfigService implements RemoteConfigService {
   final _config = FirebaseRemoteConfig.instance;
@@ -254,37 +260,11 @@ class FirebaseRemoteConfigService implements RemoteConfigService {
 
 ---
 
-## Steps
+## Status
 
-- [ ] Create Firebase project and register iOS app _(manual — user)_
-- [ ] Download and place `GoogleService-Info.plist` _(manual — user)_
-- [ ] Run `flutterfire configure` and commit `firebase_options.dart` _(manual — user)_
-- [ ] Enable Crashlytics and Remote Config in Firebase Console _(manual — user)_
-- [x] Create `lib/services/analytics/analytics_service.dart`
-- [x] Create `lib/services/analytics/firebase_analytics_service.dart`
-- [x] Create `lib/services/analytics/noop_analytics_service.dart`
-- [x] Create `lib/services/analytics/analytics_provider.dart`
-- [x] Create `lib/services/crash_reporting/crash_reporting_service.dart`
-- [x] Create `lib/services/crash_reporting/firebase_crashlytics_service.dart`
-- [x] Create `lib/services/crash_reporting/crash_reporting_provider.dart`
-- [x] Create `lib/services/remote_config/remote_config_service.dart`
-- [x] Create `lib/services/remote_config/remote_config_keys.dart`
-- [x] Create `lib/services/remote_config/firebase_remote_config_service.dart`
-- [x] Create `lib/services/remote_config/remote_config_provider.dart`
-- [x] Add Flutter and platform error handlers in `main.dart`
-- [x] Call `fetchAndActivate()` in `AppBootstrap`
-- [x] Run `build_runner` to generate provider `.g.dart` files
-- [ ] Verify: Crashlytics receives a test crash (trigger `FirebaseCrashlytics.instance.crash()` once, then remove) _(manual — user)_
-- [ ] Verify: Analytics events appear in Firebase Console (DebugView) _(manual — user)_
-
----
-
-## Definition of Done
-
-- [x] All three services (Analytics, Crashlytics, Remote Config) have abstract interfaces
-- [x] All three have Firebase implementations and No-Op test implementations
-- [x] All Firebase SDK calls are behind service abstractions — no direct `FirebaseAnalytics.instance` calls in feature code
-- [x] Global error handlers are wired in `main.dart`
-- [x] Remote Config fetches defaults and remote values at startup
-- [x] `NoOpAnalyticsService` is used in all widget and unit tests (via Riverpod override)
-- [ ] Test crash confirmed received in Firebase Crashlytics console _(manual — user)_
+All service scaffolding above exists under `lib/services/` (interfaces,
+Firebase and No-Op implementations, providers, error handlers), gated off
+behind `kUseFirebase == false`. Remaining activation work is manual (user):
+the **iOS Setup Steps** checklist at the top of this doc, then flip
+`kUseFirebase` + the provider one-liners (see `CLAUDE.md`), then verify a test
+crash reaches Crashlytics and events appear in DebugView.
