@@ -32,6 +32,12 @@ brewpath/               ← git root, AGENTS.md lives here
 
 ## Critical Rules
 
+- **Doc map and source precedence: [`docs/README.md`](docs/README.md).** Read
+  it before resolving any documentation conflict; doc changes must leave every
+  inbound link and reference resolving.
+- **`prototype/` is entirely read-only.** Findings about it go in the owning
+  issue or [`docs/design/`](docs/design/README.md), never as annotations in the
+  source.
 - **Firebase is gated off.** The `firebase_*` deps and service code exist, but
   stay **inactive** behind `kUseFirebase` in `lib/core/config/firebase_flags.dart`
   (currently `false`). All Firebase access is behind the `AnalyticsService` /

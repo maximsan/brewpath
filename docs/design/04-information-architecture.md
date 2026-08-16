@@ -45,8 +45,8 @@ array in the component, not in `data.jsx`:
 > Gear" and "Coffee Tasting" appear in exactly **one** place —
 > `screens.jsx:1147–1152`, the array above. (Two other hits are false positives:
 > `dictionary-data.jsx` cites an external Perfect Daily Grind article *titled*
-> "Espresso Basics", and `docs/17-glossary.md` uses "coffee tasting" as a common
-> noun.)
+> "Espresso Basics", and `learning/glossary.md` uses "coffee tasting" as a
+> common noun.)
 >
 > There is **no** lesson list, card count, ordering, learning objective, scope
 > estimate, or written rationale for any of the four. Anywhere.

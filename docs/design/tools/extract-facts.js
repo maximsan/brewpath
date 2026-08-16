@@ -1,5 +1,5 @@
 /**
- * Dumps every countable fact BREWPATH-V1-OVERVIEW.md asserts, read out of the
+ * Dumps every countable fact the design reference (docs/design/) asserts, read out of the
  * prototype source. Throwaway: re-run it after any design change to re-derive
  * the doc's numbers instead of trusting them.
  *

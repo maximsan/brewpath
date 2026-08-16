@@ -21,8 +21,12 @@ this.
 **The rule this reference is written under:** everything here is read out of the
 prototype source, not invented. Where the prototype and the design documents
 disagree, **the source wins and the discrepancy is flagged** rather than
-smoothed. The ⚠️ blocks are the most valuable part of these files — they mark
-places where the product genuinely has not decided something.
+smoothed — except where a product ruling (`docs/adr/`, `docs/decisions.md`)
+overrides the prototype; the full precedence rule lives in the
+[doc map](../README.md). These files are agent-derived and verified **on
+contact**: fix a discrepancy in the same PR that finds it. The ⚠️ blocks are
+the most valuable part of these files — they mark places where the product
+genuinely has not decided something.
 
 > **Derived at `880b9d4` + staged design changes (Aug 2026).** Countable facts
 > come from [`tools/extract-facts.js`](tools/extract-facts.js), not from prose.

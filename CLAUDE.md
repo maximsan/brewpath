@@ -41,6 +41,10 @@ first, then resume.
 
 ## Critical Rules
 
+- **Doc map and source precedence: [`docs/README.md`](docs/README.md).** Read
+  it before resolving any documentation conflict. Any doc change must leave
+  every link, path, name and `§`-reference that touches it still resolving —
+  verified in the same PR.
 - **Firebase is gated off.** The `firebase_*` deps and service code exist, but
   stay **inactive** behind `kUseFirebase` in `lib/core/config/firebase_flags.dart`
   (currently `false`). All Firebase access is behind the `AnalyticsService` /
@@ -54,13 +58,12 @@ first, then resume.
   a Freezed model, Riverpod provider, or Drift table is added or modified.
   (build_runner 2.15 auto-resolves conflicts; the old
   `--delete-conflicting-outputs` flag was removed.)
-- **`prototype/` is read-only.** It is the design source the app is built
-  *against*, so an edit there moves the thing we are measuring ourselves by. The
-  only writable file is
-  [`prototype/BREWPATH-V1-OVERVIEW.md`](prototype/BREWPATH-V1-OVERVIEW.md).
-  Findings about the prototype — "this is wrong", "do not port this" — go in the
-  issue that owns them or in [`docs/design/`](docs/design/README.md), never as an
-  annotation in the source.
+- **`prototype/` is entirely read-only.** It is the design source the app is
+  built *against*, so an edit there moves the thing we are measuring ourselves
+  by. Findings about the prototype — "this is wrong", "do not port this" — go in
+  the issue that owns them or in [`docs/design/`](docs/design/README.md), never
+  as an annotation in the source. Rules for authoring course content live in
+  [`docs/design/content-rules.md`](docs/design/content-rules.md).
 
 ## Change History
 
