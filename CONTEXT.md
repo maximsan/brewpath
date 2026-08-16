@@ -40,7 +40,7 @@ What Keep Sharp recommends (§6,
 
 **Format** (mini-game):
 An individual mini-game variant (e.g. `g-match`, `g-quiz`). Two formats are
-free; the rest are premium (§5,
+free; the rest need Plus (§5,
 [ADR-0001](docs/adr/0001-free-tier-carries-two-mini-game-formats.md)).
 _Avoid_: using "format" for a practice type or an activity
 
@@ -87,6 +87,13 @@ The ten-stage plant that is the single picture of course progress. Grows only
 on first-time lesson completions; only a deliberate reset returns it to seed.
 _Avoid_: plant (in code and rulings; "plant" is fine in user-facing prose)
 
+## Tiers
+
+**BrewPath Plus**:
+The paid tier ("Plus" after first mention; what it includes:
+`docs/decisions.md` §11, [#30](https://github.com/maximsan/brewpath/issues/30)).
+_Avoid_: Premium
+
 ## Dictionary
 
 **Lesson term**:
@@ -94,7 +101,7 @@ A dictionary term taught by a lesson. Browsable by everyone; free access gets
 the short explanation (§12).
 
 **Reference term**:
-A dictionary term no lesson teaches. Premium-only; absent from free search,
+A dictionary term no lesson teaches. Plus-only; absent from free search,
 categories, Term of the Day, flashcards and mini-games (§12,
 [#57](https://github.com/maximsan/brewpath/issues/57); the count is derived,
 not fixed — re-derive rather than quote).

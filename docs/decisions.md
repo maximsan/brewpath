@@ -5,7 +5,9 @@
 > are recorded as ADRs in [`docs/adr/`](adr/README.md); the argument happens in
 > the owning issue, the record lands there. The `§` numbering below is stable
 > and stays citable. (This file was `docs/decisions-1.md` until Aug 2026 —
-> links in older issues use that name.)
+> links in older issues use that name. The paid tier has since been named
+> **BrewPath Plus** ([#30](https://github.com/maximsan/brewpath/issues/30));
+> read "premium" below as Plus — the wording stays as the owner spoke it.)
 
 1. Foundations and ongoing practice
    Beginner Foundations is a finite five-module beginner course.

@@ -2,7 +2,7 @@
 
 ## Policy
 
-There is **no real purchase flow in MVP** — the payments layer is a placeholder so monetization can be added later without architectural changes. (The *product* model is decided — content-gated premium, `docs/decisions.md` §7/§11 — this doc covers only the deferred StoreKit implementation.)
+There is **no real purchase flow in MVP** — the payments layer is a placeholder so monetization can be added later without architectural changes. (The *product* model is decided — a content-gated **BrewPath Plus** tier, `docs/decisions.md` §7/§11 — this doc covers only the deferred StoreKit implementation.)
 
 The abstraction is established now so that:
 
@@ -188,7 +188,7 @@ When payments are ready to go live:
 - [ ] Replace `NoOpPaymentsService` with `InAppPurchaseService` in `payments_provider.dart`
 - [ ] Implement `InAppPurchaseService` with StoreKit 2 integration via `in_app_purchase` package
 - [ ] Implement receipt validation (at minimum client-side; server-side for subscriptions)
-- [ ] Add entitlement check at app startup — gate premium content if `hasActiveEntitlement()` returns false
+- [ ] Add entitlement check at app startup — gate Plus content if `hasActiveEntitlement()` returns false
 - [ ] Build paywall screen at `lib/features/paywall/presentation/paywall_screen.dart`
 - [ ] Add a Restore Purchases button to Profile tab
 - [ ] Test in sandbox environment with a sandbox Apple ID

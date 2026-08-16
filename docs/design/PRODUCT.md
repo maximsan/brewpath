@@ -44,7 +44,7 @@ and taste the difference.
 
 **Free gives you the first two lessons**, permanently, with unlimited replay —
 plus the whole glossary at a glance, practice on what you have unlocked, and the
-streak. Premium unlocks the remaining thirty, lifts the two-activity daily cap,
+streak. **BrewPath Plus** unlocks the remaining thirty, lifts the two-activity daily cap,
 and adds unlimited Saved and both Studios. The free tier is a **preview**: it
 shows you the shape of the course and lets you keep the habit, but the course
 itself is what you buy.
@@ -334,7 +334,7 @@ self-conscious about a coffee-hobby app, that's worth a conversation.
 **[Recorded — product-owner ruling]** The free/paid axis is **content, not
 pacing and not features**. Free: the first two lessons, permanently, with
 unlimited replay, plus practice on unlocked material — at most two
-learning/practice activities per day. Premium: the remaining thirty lessons, no
+learning/practice activities per day. Plus: the remaining thirty lessons, no
 daily cap, unlimited Saved, and both Studios. Settled on
 [Monetization shape](https://github.com/maximsan/brewpath/issues/29); full
 rules in `docs/decisions.md` §7, §8, §11 and §12.
@@ -344,7 +344,7 @@ rules in `docs/decisions.md` §7, §8, §11 and §12.
 **A pacing cap could not sustain a subscription on a finite course.** At two
 new lessons a day a free user finishes all thirty-two in about sixteen days —
 after which *"no daily limit on new lessons"* is worth nothing, forever,
-because there are no more lessons. A content gate has no such shape: Premium
+because there are no more lessons. A content gate has no such shape: Plus
 buys thirty lessons, which do not expire on a schedule and cannot be reached by
 waiting.
 
@@ -369,7 +369,7 @@ the dictionary and Saved are free, Atlas and Duel are v2, and **Studio is the
 only survivor** — while **lessons become the first content gate either codebase
 has had**.
 
-### What Premium buys — ruled
+### What Plus buys — ruled
 
 The cap *plus* the feature set: access beyond the preview, the daily limit
 removed, unlimited Saved, and both Studios (`docs/decisions.md` §11). Free
@@ -383,7 +383,7 @@ on.
 
 **The original model** — everything free, Plus buys an unlimited Saved shelf
 and the Studio — went first. **A pacing model** then replaced it (*2 new
-lessons/day free; Premium removes the limit*) and is also withdrawn: a free
+lessons/day free; Plus removes the limit*) and is also withdrawn: a free
 user who finished the course would hold the complete product while a paying
 user's benefit evaporated in week three.
 
@@ -487,7 +487,7 @@ no plan, no scope, no mention in the scope document. They are explicitly *not*
 the retention answer (§15), which leaves them a promise on the main screen with
 no plan behind it — a smaller problem than it was, but still a promise.
 
-**3. What Premium buys. [Recorded — mostly ruled]** The benefit set is ruled:
+**3. What Plus buys. [Recorded — mostly ruled]** The benefit set is ruled:
 content plus the cap lifted, unlimited Saved, both Studios (§11,
 `docs/decisions.md` §11). Still open: whether the prototype's timed-unlock
 machinery (rewarded-ad trial, perfect-module gift) survives, with only the
