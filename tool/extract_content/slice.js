@@ -73,15 +73,17 @@ function compiles(text, filename, name) {
 /**
  * Slices `name` out of `source` and evaluates it in a bare context.
  *
- * The context is empty on purpose: these declarations are self-contained
- * literals, and anything reaching outside them is a dependency this mechanism
- * cannot honour — it should fail loudly here rather than yield a silently empty
- * value. (`MINI_GAME_CONTENT` is exactly that case, which is why mini-games are
- * not one of the banks; see the header of `extract_content.js`.)
+ * The context is empty by default and on purpose: these declarations are
+ * self-contained literals, and anything reaching outside them is a dependency
+ * this mechanism cannot honour — it should fail loudly here rather than yield
+ * a silently empty value. A caller that must honour such a dependency
+ * assembles the globals itself and passes them as `seed` — the deliberate,
+ * named exception (`MINI_GAME_CONTENT`'s `window.BAGPICK_ROUNDS` is the one
+ * case; see the header of `extract_content.js`).
  */
-function evaluateDeclaration(source, name, filename) {
+function evaluateDeclaration(source, name, filename, seed = {}) {
   const text = sliceDeclaration(source, name, filename);
-  const context = vm.createContext({});
+  const context = vm.createContext({ ...seed });
   vm.runInContext(`${text}\n;globalThis.__extracted = ${name};`, context, {
     filename: `${filename} (${name})`,
   });
