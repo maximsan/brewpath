@@ -32,20 +32,10 @@ closing — if you use `Refs`, the issue needs closing by hand.
 
 ## Staging with exclusions
 
-```bash
-git add -A -- . ':!.claude/worktrees'
-```
-
-The `':!<path>'` pathspec excludes a directory from an otherwise-everything add.
-`.claude/worktrees/` — which holds full working copies of this repo, 1.3 GB of
-them — is now in `.gitignore`, so the exclusion above is no longer required for
-it. Keep the form in mind for the general case: any large untracked directory
-that is not yet ignored will otherwise be swept in by `git add -A`.
-
-The durable lesson is the other way round: when `git add -A` would capture
-something surprising, **the fix is `.gitignore`, not a habit of remembering a
-pathspec.** A rule the tooling enforces beats one every future commit has to
-recall.
+When `git add -A` would capture something surprising, **the fix is
+`.gitignore`, not a habit of remembering an exclusion pathspec** — a rule the
+tooling enforces beats one every future commit has to recall. (For a one-off:
+`git add -A -- . ':!<path>'`.)
 
 ## Diffing — the trap that matters
 
@@ -199,7 +189,7 @@ one commit makes `git bisect` less useful.
 
 ## Reproducing CI locally
 
-CI is five jobs ([`13-ci-cd.md`](13-ci-cd.md)). Run them in this order before
+CI is four jobs ([`13-ci-cd.md`](13-ci-cd.md)). Run them in this order before
 pushing; they are the same commands the workflow uses.
 
 ```bash

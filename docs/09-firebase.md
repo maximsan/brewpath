@@ -92,12 +92,13 @@ class NoOpAnalyticsService implements AnalyticsService {
 // lib/services/analytics/analytics_provider.dart
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:brew_path/services/analytics/analytics_service.dart';
-import 'package:brew_path/services/analytics/firebase_analytics_service.dart';
+import 'package:brew_path/services/analytics/noop_analytics_service.dart';
 
 part 'analytics_provider.g.dart';
 
+// No-Op while kUseFirebase == false; activation swaps this one line.
 @riverpod
-AnalyticsService analyticsService(Ref ref) => FirebaseAnalyticsService();
+AnalyticsService analyticsService(Ref ref) => const NoOpAnalyticsService();
 ```
 
 ---
@@ -106,22 +107,28 @@ AnalyticsService analyticsService(Ref ref) => FirebaseAnalyticsService();
 
 All event names use `snake_case`. Parameters are also `snake_case` string keys with `String`, `int`, or `double` values (Firebase Analytics limitation).
 
-| Event Name              | When Fired                          | Parameters                                                  |
-| ----------------------- | ----------------------------------- | ----------------------------------------------------------- |
-| `screen_view`           | On screen navigation                | `screen_name: String`                                       |
-| `lesson_started`        | User taps Start on a lesson         | `lesson_id: String`, `module_id: String`                    |
-| `lesson_completed`      | Lesson completion confirmed         | `lesson_id: String`, `module_id: String`, `xp_earned: int`  |
-| `lesson_step_correct`   | Mini-game step answered correctly   | `lesson_id: String`, `step_index: int`, `game_type: String` |
-| `lesson_step_incorrect` | Mini-game step answered incorrectly | `lesson_id: String`, `step_index: int`, `game_type: String` |
-| `card_unlocked`         | Coffee Card earned                  | `card_id: String`, `lesson_id: String`                      |
-| `module_unlocked`       | Module unlocked                     | `module_id: String`                                         |
-| `xp_earned`             | XP awarded                          | `amount: int`, `source: String`                             |
+The events that actually fire (source of truth:
+`lib/features/lessons/domain/lesson_completion_service.dart` and
+`lib/features/lessons/presentation/lesson_screen.dart` — regenerate this table
+from them):
+
+| Event Name         | When Fired                            |
+| ------------------ | ------------------------------------- |
+| `lesson_started`   | User starts a lesson                  |
+| `lesson_completed` | First-time lesson completion          |
+| `lesson_reviewed`  | Completed replay / practice run       |
+| `card_unlocked`    | Coffee Card earned                    |
+| `module_unlocked`  | Next module unlocked                  |
+| `xp_earned`        | Points awarded (`source`: lesson, practice, module_bonus) |
+
+Screen views are not a `logEvent` — they flow through
+`AnalyticsService.logScreen` via `lib/app/analytics_navigator_observer.dart`,
+wired into go_router.
 
 ### Where Events Are Fired
 
-- `screen_view` → call in `initState` or via `RouteObserver`, never in `build()`
-- Lesson events → call from `LessonCompletionService` (domain layer), not from widgets
-- Card/module unlock events → call from `LessonCompletionService` after persistence writes
+- Screen views → the navigator observer, never in `build()`
+- Lesson/card/module events → `LessonCompletionService` (domain layer) after persistence writes, not from widgets
 
 ---
 
@@ -163,22 +170,21 @@ class FirebaseCrashlyticsService implements CrashReportingService {
 
 ### Global Error Wiring in main.dart
 
-Add after `WidgetsFlutterBinding.ensureInitialized()` and before `runApp()`:
+Both handlers are wired in `lib/main.dart` — **gated**, so a Firebase-less
+build keeps Flutter's default error reporting:
 
 ```dart
-// Catch Flutter framework errors
-FlutterError.onError = (errorDetails) {
-  FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-};
-
-// Catch async errors outside Flutter
-PlatformDispatcher.instance.onError = (error, stack) {
-  FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-  return true;
-};
+// Installed only once Firebase is active (lib/main.dart)
+if (kUseFirebase) {
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+  PlatformDispatcher.instance.onError = (error, stack) {
+    unawaited(
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true),
+    );
+    return true;
+  };
+}
 ```
-
-- [x] Add both error handlers in `main.dart` before `runApp()`
 
 ---
 
@@ -259,10 +265,6 @@ class FirebaseRemoteConfigService implements RemoteConfigService {
 All service scaffolding above exists under `lib/services/` (interfaces,
 Firebase and No-Op implementations, providers, error handlers), gated off
 behind `kUseFirebase == false`. Remaining activation work is manual (user):
-
-- [ ] Create Firebase project and register iOS app
-- [ ] Download and place `GoogleService-Info.plist`
-- [ ] Run `flutterfire configure` and commit `firebase_options.dart`
-- [ ] Enable Crashlytics and Remote Config in Firebase Console
-- [ ] Flip `kUseFirebase` and the provider one-liners (see `CLAUDE.md`)
-- [ ] Verify: a test crash reaches Crashlytics; events appear in DebugView
+the **iOS Setup Steps** checklist at the top of this doc, then flip
+`kUseFirebase` + the provider one-liners (see `CLAUDE.md`), then verify a test
+crash reaches Crashlytics and events appear in DebugView.

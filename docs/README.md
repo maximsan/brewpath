@@ -39,10 +39,8 @@ the same PR that found it.
 
 ## How decisions are made
 
-The argument happens in the owning GitHub issue; the record lands in
-`docs/adr/` as a new `NNNN-` file linking that issue. `docs/decisions.md` is
-frozen history and never grows — a superseded decision gets a new ADR and a
-status flip on the old one, never an edit.
+See [`docs/adr/README.md`](adr/README.md) — it owns the process. In one line:
+argue in the owning issue, record as a new ADR; the frozen ledger never grows.
 
 ## Doc changes must leave every reference correct
 

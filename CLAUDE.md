@@ -55,9 +55,8 @@ first, then resume.
 - **Package imports within `lib/`.** Use `package:brew_path/…` instead of
   `../…` for all imports inside the `lib/` directory.
 - **Regenerate after model changes.** Run `dart run build_runner build` whenever
-  a Freezed model, Riverpod provider, or Drift table is added or modified.
-  (build_runner 2.15 auto-resolves conflicts; the old
-  `--delete-conflicting-outputs` flag was removed.)
+  a Freezed model, Riverpod provider, or Drift table is added or modified
+  (flags and behaviour: README _Development commands_).
 - **`prototype/` is entirely read-only.** It is the design source the app is
   built *against*, so an edit there moves the thing we are measuring ourselves
   by. Findings about the prototype — "this is wrong", "do not port this" — go in
@@ -91,7 +90,7 @@ explanations — plus test and iOS/SPM build notes — lives in
 - **Providers:** function-style `@riverpod` only; class-based `@riverpod` only when state is mutable
 - **Tests:** unit tests in `test/unit/`; widget tests in `test/widget/`; integration tests in `integration_test/`
 - **No print statements** — use `debugPrint` only in development guards; never in production paths
-- **Lints:** `very_good_analysis` baseline + `riverpod_lint` and `dart_code_linter` active via the `plugins:` block in `analysis_options.yaml` (native analysis_server_plugins — not `custom_lint`)
+- **Lints:** see `analysis_options.yaml` (the config is the truth) and the README _Toolchain_ paragraph
 
 ## Code Quality Rules
 
@@ -101,8 +100,9 @@ Magic numbers and per-function size/complexity are now **lint-enforced** by
 conventions — follow every rule below on each new or modified file:
 
 - **No magic numbers** (lint-enforced). Extract meaningful or repeated literals
-  to named `static const` or theme tokens (`AppSpacing`, `MoodColors`,
-  `AppTypography`); only `0`/`1`/`2` inline, with intent names (`_stageSize`),
+  to named `static const` or theme tokens (`AppSpacing`, `AppRadii`,
+  `MoodColors`, `ArtColors`, `OverlayColors`, `AppTypography`); only
+  `0`/`1`/`2` inline, with intent names (`_stageSize`),
   never bare numbers in the widget tree.
 - **Descriptive names.** No single-letter identifiers except trivial loop
   indices (`i`). Animation/controller values are `progress`, not `t`; phase

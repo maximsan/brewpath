@@ -33,11 +33,13 @@ brewpath/               ← git root, AGENTS.md lives here
 ## Critical Rules
 
 - **Doc map and source precedence: [`docs/README.md`](docs/README.md).** Read
-  it before resolving any documentation conflict; doc changes must leave every
-  inbound link and reference resolving.
+  it before resolving any documentation conflict. Any doc change must leave
+  every link, path, name and `§`-reference that touches it still resolving —
+  verified in the same PR.
 - **`prototype/` is entirely read-only.** Findings about it go in the owning
   issue or [`docs/design/`](docs/design/README.md), never as annotations in the
-  source.
+  source. Rules for authoring course content live in
+  [`docs/design/content-rules.md`](docs/design/content-rules.md).
 - **Firebase is gated off.** The `firebase_*` deps and service code exist, but
   stay **inactive** behind `kUseFirebase` in `lib/core/config/firebase_flags.dart`
   (currently `false`). All Firebase access is behind the `AnalyticsService` /
@@ -48,9 +50,8 @@ brewpath/               ← git root, AGENTS.md lives here
 - **Package imports within `lib/`.** Use `package:brew_path/…` instead of
   `../…` for all imports inside the `lib/` directory.
 - **Regenerate after model changes.** Run `dart run build_runner build` whenever
-  a Freezed model, Riverpod provider, or Drift table is added or modified.
-  (build_runner 2.15 auto-resolves conflicts; the old
-  `--delete-conflicting-outputs` flag was removed.)
+  a Freezed model, Riverpod provider, or Drift table is added or modified
+  (flags and behaviour: README _Development commands_).
 
 ## Change History
 
@@ -77,7 +78,7 @@ explanations — plus test and iOS/SPM build notes — lives in
 - **Providers:** function-style `@riverpod` only; class-based `@riverpod` only when state is mutable
 - **Tests:** unit tests in `test/unit/`; widget tests in `test/widget/`; integration tests in `integration_test/`
 - **No print statements** — use `debugPrint` only in development guards; never in production paths
-- **Lints:** `very_good_analysis` baseline + `riverpod_lint` and `dart_code_linter` active via the `plugins:` block in `analysis_options.yaml` (native analysis_server_plugins — not `custom_lint`)
+- **Lints:** see `analysis_options.yaml` (the config is the truth) and the README _Toolchain_ paragraph
 
 ## Code Quality Rules
 
@@ -109,3 +110,10 @@ conventions — follow every rule below on each new or modified file:
   _Run-time flags_ table.
 - **Loading/empty/error states** get `Semantics` labels and respect
   `MediaQuery.disableAnimations` (reduced motion).
+
+## Agent skills
+
+Issue tracker (`gh` on `maximsan/brewpath`):
+[`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md). Triage labels:
+[`docs/agents/triage-labels.md`](docs/agents/triage-labels.md). Domain docs
+(`CONTEXT.md` + `docs/adr/`): [`docs/agents/domain.md`](docs/agents/domain.md).

@@ -42,8 +42,8 @@ This checklist covers everything needed to publish BrewPath to the App Store and
 
 - [ ] Open `ios/Runner.xcworkspace` in Xcode (always use `.xcworkspace`, not `.xcodeproj`)
 - [ ] Runner target → General:
-  - [ ] Version: `1.0.0`
-  - [ ] Build: `1`
+  - [ ] Version and Build: taken from the **current** `pubspec.yaml` `version:`
+        (never hardcode — the build number only moves forward)
   - [ ] Minimum Deployments: iOS 16.0
   - [ ] Display Name: BrewPath
 - [ ] Runner target → Signing & Capabilities:
@@ -188,7 +188,7 @@ Before submitting for App Review:
 
 **Screenshots:**
 
-- [ ] At minimum: iPhone 6.9" (iPhone 17 Max) and iPhone 6.5" (iPhone 13 Pro Max)
+- [ ] At minimum: the two display sizes App Store Connect currently requires (check the current list — device classes churn yearly)
 - [ ] Screenshots: 3–10 per device size
 - [ ] Can be from Simulator with `File → Take Screenshot`
 
@@ -213,10 +213,10 @@ Before submitting for App Review:
 
 ## 12. Version and Build Number Policy
 
-| Field   | Location                            | MVP Value                            |
-| ------- | ----------------------------------- | ------------------------------------ |
-| Version | `pubspec.yaml` → `version: 1.0.0+1` | `1.0.0` (CFBundleShortVersionString) |
-| Build   | `pubspec.yaml` → `version: 1.0.0+1` | `1` (CFBundleVersion)                |
+| Field   | Location                          | Maps to                        |
+| ------- | --------------------------------- | ------------------------------ |
+| Version | `pubspec.yaml` → `version: X.Y.Z+N` | `X.Y.Z` (CFBundleShortVersionString) |
+| Build   | `pubspec.yaml` → `version: X.Y.Z+N` | `N` (CFBundleVersion)          |
 
 Increment the build number (`+1`, `+2`, etc.) for every upload to App Store Connect. The version string (`1.0.0`) changes only for user-facing releases.
 

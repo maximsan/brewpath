@@ -2,7 +2,7 @@
 
 ## Current Status: Disabled for MVP
 
-AdMob is **intentionally disabled** for MVP runtime (Phases 1–7).
+AdMob is **intentionally disabled** until ads go live (no phase attached — the build milestones completed without it).
 
 - `google_mobile_ads` is **not** an active dependency in `pubspec.yaml`.
 - `GADApplicationIdentifier` is **not** present in `ios/Runner/Info.plist`.
@@ -13,7 +13,7 @@ AdMob is **intentionally disabled** for MVP runtime (Phases 1–7).
 
 ## Future AdMob Setup
 
-Steps to re-enable AdMob in Phase 8:
+Steps to enable AdMob when ads go live:
 
 1. **Add dependency** — uncomment `google_mobile_ads` in `pubspec.yaml` and run `flutter pub get`.
 2. **Add App ID to Info.plist** — add `GADApplicationIdentifier` with the AdMob App ID:
@@ -184,6 +184,10 @@ abstract class AdUnitIds {
 ---
 
 ## Future Ad Placement Strategy
+
+> ⚠️ **Speculative — no ruling behind this table.** `docs/decisions.md` contains
+> no ads decision, and a rewarded-XP path would interact with the daily-cap and
+> streak economy (§8–§10) in ways nobody has ruled on. Decide there first.
 
 | Placement                                       | Type         | Trigger                                       |
 | ----------------------------------------------- | ------------ | --------------------------------------------- |

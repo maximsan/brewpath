@@ -159,7 +159,7 @@ Small, optional **real-life** tasks. They never block learning, streaks, points,
 **Pricing:** Yearly **$29.99/yr** (`$2.50/mo`, "SAVE 50%", default selection) · Monthly **$4.99/mo**. CTA: "Start 7-day free trial", subtitle "Free for 7 days, then … · cancel anytime". Paywall carries **Restore purchases / Terms / Privacy** links (store-review requirement). The same two plans are duplicated as `PLAN_OPTS` in `settings.jsx:384` for the change-plan sheet — **two sources for one price list**, worth unifying on the way in.
 
 **Plus benefits as sold on the paywall:**
-1. Unlimited Saved — keep every lesson, term and guide past the free shelf of 10
+1. Unlimited Saved — keep every lesson, term and guide past the free shelf of 10 ⚠️ *(shipped copy still says 10 — `prototype/customize.jsx:134`, `settings.jsx:631` — while the constant and the ruling say **5**; the copy fix is owed on port)*
 2. Dress up Roasty — hats, glasses, scarves, roast level
 3. Choose your plant — species + light ([§6.7](06-content.md))
 4. *(v2)* Mood player

@@ -45,11 +45,9 @@ free; the rest are premium (§5,
 _Avoid_: using "format" for a practice type or an activity
 
 **Qualifying activity**:
-An activity whose completion protects the streak for that local calendar day.
-The first one counts; further activity that day adds nothing (§2–3,
-[#33](https://github.com/maximsan/brewpath/issues/33)). Mini-games qualify
-only as **two different** formats completed in the same day (§5,
-[#59](https://github.com/maximsan/brewpath/issues/59)).
+An activity whose completion protects the streak for that local calendar day
+(§2–3, [#33](https://github.com/maximsan/brewpath/issues/33); mini-game
+specifics: §5, [#59](https://github.com/maximsan/brewpath/issues/59)).
 
 **Streak**:
 Consecutive local calendar days each holding a qualifying completion. Advances
@@ -57,22 +55,18 @@ at most once per day; derived from the stored set of active days
 ([#17](https://github.com/maximsan/brewpath/issues/17)).
 
 **Streak freeze**:
-Earned after seven qualifying days in a row; at most one held; spent
-automatically on a missed day, preserving but not increasing the streak; seven
-fresh days to earn the next (§10,
-[#58](https://github.com/maximsan/brewpath/issues/58)). Derived, never stored.
-Free for all users, forever.
+An earned, automatically spent token that preserves the streak across one
+missed day. Free for all users; full mechanics in §10,
+[#58](https://github.com/maximsan/brewpath/issues/58).
 
 **Keep Sharp**:
-The Today recommendation after Foundations: one practice type, chosen by
-simple rotation over completed and accessible material, stable for the day. No
-points, no tree growth, no course progress (§1, §6,
+The Today recommendation after Foundations: one practice type for the day,
+rewarding nothing but the streak (§1, §6,
 [#56](https://github.com/maximsan/brewpath/issues/56)).
 
 **Daily activity allowance**:
-The free tier's cap: at most two full activities per local calendar day (§8,
-[#65](https://github.com/maximsan/brewpath/issues/65)). Coffee Challenges and
-passive browsing don't consume it.
+The free tier's per-day cap on full activities (§8,
+[#65](https://github.com/maximsan/brewpath/issues/65)).
 _Avoid_: daily cap on lessons (it caps practice volume, not course pace)
 
 ## Progress
@@ -100,9 +94,10 @@ A dictionary term taught by a lesson. Browsable by everyone; free access gets
 the short explanation (§12).
 
 **Reference term**:
-A term no lesson teaches — 8 of the 72. Premium-only; absent from free search,
+A dictionary term no lesson teaches. Premium-only; absent from free search,
 categories, Term of the Day, flashcards and mini-games (§12,
-[#57](https://github.com/maximsan/brewpath/issues/57)).
+[#57](https://github.com/maximsan/brewpath/issues/57); the count is derived,
+not fixed — re-derive rather than quote).
 _Avoid_: "not yet learned" (a reference term can never become Learned)
 
 ## Sync and storage

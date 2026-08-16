@@ -14,7 +14,8 @@ SQLite (offline persistence) · Freezed 3 + json_serializable (content models).
 (`dart run dart_code_linter:metrics analyze lib`) for per-function size &
 complexity.
 
-Architecture and conventions live in [`CLAUDE.md`](CLAUDE.md); deeper
+Architecture and conventions live in [`CLAUDE.md`](CLAUDE.md); the doc map and
+source-precedence rules are at [`docs/README.md`](docs/README.md), and deeper
 design and milestone docs are in [`docs/`](docs/).
 
 ## Development commands
@@ -114,8 +115,8 @@ Break-glass only — forces a full re-download (minutes).
 
 ### `tool/extract_content.js` — regenerate bundled content
 
-Node script (no dependencies). Run after the `prototype/` prototype's authored
-content changes. Reads five banks — modules, lessons, collectibles, dictionary
+Node script (no dependencies). Run after the design prototype's (`prototype/`)
+authored content changes. Reads five banks — modules, lessons, collectibles, dictionary
 terms and brew challenges — validates the whole cross-reference graph, and only
 then writes `assets/content/generated/`.
 

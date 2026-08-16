@@ -55,7 +55,7 @@ itself is what you buy.
 little every day"** — and that line is the test the scope decisions were made
 against. Two more positions are written down:
 
-- **"Free builds the habit. Plus makes it yours."** The monetization model in six words.
+- **"Free builds the habit. Plus makes it yours."** The monetization model in six words — **since superseded** by the content-gate ruling (§11); kept here because it shaped the design.
 - **"Cosmetics that teach are the thesis of the app."** Written to justify making the plant three real coffee species rather than three colour filters — the personalization is supposed to leave you knowing something.
 
 **[Recorded]** The audience is addressed indirectly but consistently as a
@@ -147,12 +147,17 @@ event every three lessons.
 
 ### The streak — whether you're still here
 
-One lesson a day keeps it alive. Every seven days you earn a **streak freeze**,
-and you can hold two. Miss a day and one is spent automatically — you aren't
-asked, you aren't warned, the streak survives, and the app tells you afterwards
-in a reassuring tone. The freeze is a mechanic, not a setting; there's no toggle,
-because the design position is that someone coming back after a miss is the most
-fragile user in the app and shouldn't be handed a decision.
+One qualifying activity a day keeps it alive — a lesson, a completed replay, a
+vocab round, a flashcard review, or two different mini-games
+(`docs/decisions.md` §2–3). Seven qualifying days in a row earn a **streak
+freeze**, and you can hold one. Miss a day and it is spent automatically — you
+aren't asked, you aren't warned, the streak survives, and the app tells you
+afterwards in a reassuring tone. The freeze is a mechanic, not a setting;
+there's no toggle, because the design position is that someone coming back
+after a miss is the most fragile user in the app and shouldn't be handed a
+decision. (The prototype showed a two-freeze cap and lesson-only qualifying;
+both were superseded by ruling — cap **1**, no accrual while holding, seven
+fresh days after each spend, `docs/decisions.md` §10.)
 
 **[Recorded]** Streak protection is **free forever**. It was considered as a paid
 feature and rejected, because *"the streak carries no in-app reward, so selling
@@ -439,7 +444,7 @@ Four tabs: Today, your Path, your Cards, your Profile.
 
 - **The Coffee Atlas** — a second content area covering fifteen coffee-growing countries, with a world map, regional deep-dives and a passport you stamp as you explore. It's fully designed. It was deferred because it needs as much writing and illustration as the entire course, and doing it badly would be worse than not doing it.
 - **Coffee Duel** — head-to-head quizzes against a friend, played asynchronously. Also fully designed. Deferred because it needs server infrastructure, invitations, and link handling that nothing else in the app requires.
-- **Rewarded video ads** that unlock the Studio temporarily. Needs an ad provider, and sits awkwardly with the "everything that teaches is free" position.
+- **Rewarded video ads** that unlock the Studio temporarily. Needs an ad provider, and sat awkwardly with the since-withdrawn "everything that teaches is free" position; whether it survives the content-gate model at all is the open remnant of §11.
 - **A personalisation questionnaire at signup** — asking your goal, your brewing method, how much time you have. Fully built, but nothing in the app currently reads the answers, so it would be four screens of friction that change nothing.
 - **A "mood player"** where you tap emotions and watch Roasty react.
 
