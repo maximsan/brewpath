@@ -1,6 +1,11 @@
 # Hand the new lessons to Claude Design
 
-The course grows from 15 lessons to 30. Paste the blocks below **in order**. Each is self-contained JavaScript, already validated.
+> **✅ CONSUMED — do not paste again.** The prototype already carries this
+> content (`prototype/data.jsx` holds the expanded course; verified 2026-08-16),
+> and `prototype/` is read-only. Kept deliberately as history (see its adding
+> commit). Note the course later grew beyond this handoff's 30 lessons — the
+> live count comes from `node docs/design/tools/extract-facts.js`, not from
+> this file. Paste the blocks below **in order**. Each is self-contained JavaScript, already validated.
 
 > **Why this order.** Step 1 switches the app to the 30-lesson course, so lessons 2–7 come immediately after: a module stays **locked** until its first lesson exists in `LESSONS`, and Roasting's first lesson is one of them. Once steps 1–7 are in, everything is reachable and you can paste steps 8–16 one at a time and look at each lesson as it lands.
 

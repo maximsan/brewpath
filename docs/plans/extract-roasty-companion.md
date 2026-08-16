@@ -1,5 +1,9 @@
 # Plan: Extract Roasty into a reusable Companion subsystem
 
+> **✅ COMPLETE (2026-06-23) — do not execute.** All five phases landed (see the
+> progress log below); the code under `lib/features/companion/` is the truth
+> and `docs/CHANGELOG.md` records the work. Kept as the execution history.
+
 > **Executor instructions**: This is a multi-phase plan. Phases are ordered and
 > mostly sequential — finish and verify a phase before starting the next, and
 > tick its checkboxes. The plan is resumable: the "Progress log" near the top is

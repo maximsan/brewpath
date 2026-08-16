@@ -1,5 +1,14 @@
 # BrewPath v1 — gap audit of the Flutter app
 
+> **📸 Point-in-time snapshot (2026-07-29) — do not cite as current state.**
+> This audit was consumed into the parity map
+> ([#6](https://github.com/maximsan/brewpath/issues/6) /
+> [#8](https://github.com/maximsan/brewpath/issues/8)) and the app has moved
+> substantially since (mastery is a `{correct, total}` pair at schema v5, the
+> progress snapshot landed at v6, streak rules are ruled in
+> `../decisions.md`, …). For what is true *now*, read the issues and the code;
+> this file records what the gap looked like when the issues were cut.
+
 Issue [#8](https://github.com/maximsan/brewpath/issues/8) (child of map #6).
 Design reference: `docs/design/` (at the time, the since-removed `BREWPATH-V1-OVERVIEW.md`), §12 checklist as the spine;
 prototype `prototype/*.jsx` as tiebreaker. Read-only audit — no source was changed.
