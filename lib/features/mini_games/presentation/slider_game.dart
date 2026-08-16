@@ -1,5 +1,5 @@
 import 'package:brew_path/core/constants/app_labels.dart';
-import 'package:brew_path/features/mini_games/domain/mini_game_result.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
 import 'package:brew_path/shared/models/lesson_step_model.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -7,13 +7,21 @@ import 'package:flutter/material.dart';
 /// Slider mini-game: the user drags a value into the target range.
 class SliderGame extends StatefulWidget {
   /// Creates a [SliderGame].
-  const SliderGame({required this.step, required this.onResult, super.key});
+  const SliderGame({
+    required this.step,
+    required this.onSolved,
+    required this.onContinue,
+    super.key,
+  });
 
   /// The slider step's content/config.
   final SliderStep step;
 
-  /// Called with the [MiniGameResult] when the user answers.
-  final void Function(MiniGameResult) onResult;
+  /// Fired once, only when the answer is correct.
+  final CardSolved onSolved;
+
+  /// Fired when the learner moves on.
+  final CardAdvance onContinue;
 
   @override
   State<SliderGame> createState() => _SliderGameState();
@@ -28,14 +36,8 @@ class _SliderGameState extends State<SliderGame> {
 
   void _onCheck() {
     setState(() => _answered = true);
-  }
-
-  void _onContinue() {
-    widget.onResult(
-      _inRange
-          ? const MiniGameCorrect()
-          : MiniGameIncorrect(hint: widget.step.explanation),
-    );
+    // Latched above, so this can only ever fire once.
+    if (_inRange) widget.onSolved();
   }
 
   @override
@@ -83,10 +85,8 @@ class _SliderGameState extends State<SliderGame> {
           Text(widget.step.explanation),
           const SizedBox(height: 16),
           FilledButton(
-            onPressed: _onContinue,
-            child: Text(
-              _inRange ? AppLabels.continueLabel : AppLabels.tryAgainLabel,
-            ),
+            onPressed: widget.onContinue,
+            child: const Text(AppLabels.continueLabel),
           ),
         ],
       ],

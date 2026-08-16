@@ -1,4 +1,4 @@
-import 'package:brew_path/features/mini_games/domain/mini_game_result.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
 import 'package:brew_path/shared/models/lesson_step_model.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -9,13 +9,21 @@ import 'package:flutter/material.dart';
 /// with no penalty. Auto-completes when every term is correctly placed.
 class DragDropGame extends StatefulWidget {
   /// Creates a [DragDropGame].
-  const DragDropGame({required this.step, required this.onResult, super.key});
+  const DragDropGame({
+    required this.step,
+    required this.onSolved,
+    required this.onContinue,
+    super.key,
+  });
 
   /// The drag-drop step's content/config.
   final DragDropStep step;
 
-  /// Called with the [MiniGameResult] when the user answers.
-  final void Function(MiniGameResult) onResult;
+  /// Fired once, only when the answer is correct.
+  final CardSolved onSolved;
+
+  /// Fired when the learner moves on.
+  final CardAdvance onContinue;
 
   @override
   State<DragDropGame> createState() => _DragDropGameState();
@@ -34,7 +42,10 @@ class _DragDropGameState extends State<DragDropGame> {
     setState(() => _placed[definitionIndex] = termIndex);
     if (_allMatched) {
       WidgetsBinding.instance.addPostFrameCallback(
-        (_) => widget.onResult(const MiniGameCorrect()),
+        (_) {
+          widget.onSolved();
+          widget.onContinue();
+        },
       );
     }
   }

@@ -2,7 +2,6 @@ import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/learn/presentation/game_type_practice_widgets.dart';
-import 'package:brew_path/features/mini_games/domain/mini_game_result.dart';
 import 'package:brew_path/features/mini_games/presentation/lesson_step_runner.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/shared/models/lesson_step_model.dart';
@@ -31,8 +30,7 @@ class _GameTypePracticeScreenState
   late final Future<List<LessonStepModel>> _stepsFuture = _loadSteps();
 
   int _stepIndex = 0;
-  int _attempt = 0;
-  int _firstTryCorrectCount = 0;
+  int _correctCount = 0; // there is no second try, so this is simply correct
 
   Future<List<LessonStepModel>> _loadSteps() async {
     final content = ref.read(contentRepositoryProvider);
@@ -50,21 +48,13 @@ class _GameTypePracticeScreenState
     return steps;
   }
 
-  void _onResult(int total, MiniGameResult result) {
-    switch (result) {
-      case MiniGameCorrect():
-        if (_attempt == 0) _firstTryCorrectCount++;
-        if (_stepIndex + 1 >= total) {
-          setState(() => _stepIndex = total); // sentinel: finished
-        } else {
-          setState(() {
-            _stepIndex++;
-            _attempt = 0;
-          });
-        }
-      case MiniGameIncorrect():
-        setState(() => _attempt++);
-    }
+  void _onSolved() => _correctCount++;
+
+  void _onContinue(int total) {
+    setState(() {
+      // total is the sentinel for "finished".
+      _stepIndex = _stepIndex + 1 >= total ? total : _stepIndex + 1;
+    });
   }
 
   @override
@@ -83,7 +73,7 @@ class _GameTypePracticeScreenState
           if (steps.isEmpty) return const GameTypeEmptyState();
           if (_stepIndex >= steps.length) {
             return GameTypeSummary(
-              correct: _firstTryCorrectCount,
+              correct: _correctCount,
               total: steps.length,
             );
           }
@@ -107,9 +97,10 @@ class _GameTypePracticeScreenState
                 ),
                 const SizedBox(height: 24),
                 LessonStepRunner(
-                  key: ValueKey('${_stepIndex}_$_attempt'),
+                  key: ValueKey(_stepIndex),
                   step: steps[_stepIndex],
-                  onResult: (r) => _onResult(steps.length, r),
+                  onSolved: _onSolved,
+                  onContinue: () => _onContinue(steps.length),
                 ),
               ],
             ),

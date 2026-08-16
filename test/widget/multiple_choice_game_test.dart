@@ -1,4 +1,3 @@
-import 'package:brew_path/features/mini_games/domain/mini_game_result.dart';
 import 'package:brew_path/features/mini_games/presentation/multiple_choice_game.dart';
 import 'package:brew_path/shared/models/lesson_step_model.dart';
 import 'package:flutter/material.dart';
@@ -11,20 +10,23 @@ const _step = MultipleChoiceStep(
   explanation: 'Coffee grows in the tropics.',
 );
 
-Future<MiniGameResult?> _play(WidgetTester tester, String option) async {
-  MiniGameResult? result;
+/// Answers the step and reports how many times success crossed the boundary.
+Future<int> _solvedBy(WidgetTester tester, String option) async {
+  var solved = 0;
   await tester.pumpWidget(
     MaterialApp(
       home: Scaffold(
-        body: MultipleChoiceGame(step: _step, onResult: (r) => result = r),
+        body: MultipleChoiceGame(
+          step: _step,
+          onSolved: () => solved++,
+          onContinue: () {},
+        ),
       ),
     ),
   );
   await tester.tap(find.text(option));
   await tester.pumpAndSettle();
-  await tester.tap(find.byType(FilledButton)); // Continue / Try Again
-  await tester.pumpAndSettle();
-  return result;
+  return solved;
 }
 
 void main() {
@@ -32,7 +34,11 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body: MultipleChoiceGame(step: _step, onResult: (_) {}),
+          body: MultipleChoiceGame(
+            step: _step,
+            onSolved: () {},
+            onContinue: () {},
+          ),
         ),
       ),
     );
@@ -40,13 +46,34 @@ void main() {
     expect(find.text('Tropics'), findsOneWidget);
   });
 
-  testWidgets('correct answer emits MiniGameCorrect', (tester) async {
-    final result = await _play(tester, 'Tropics');
-    expect(result, isA<MiniGameCorrect>());
+  testWidgets('a correct answer reports success once', (tester) async {
+    expect(await _solvedBy(tester, 'Tropics'), 1);
   });
 
-  testWidgets('wrong answer emits MiniGameIncorrect', (tester) async {
-    final result = await _play(tester, 'Poles');
-    expect(result, isA<MiniGameIncorrect>());
+  testWidgets('a wrong answer reports nothing', (tester) async {
+    expect(await _solvedBy(tester, 'Poles'), 0);
+  });
+
+  testWidgets('continue is separate from success', (tester) async {
+    var advanced = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: MultipleChoiceGame(
+            step: _step,
+            onSolved: () {},
+            onContinue: () => advanced++,
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Poles'));
+    await tester.pumpAndSettle();
+    expect(advanced, 0);
+
+    await tester.tap(find.byType(FilledButton));
+    await tester.pumpAndSettle();
+    expect(advanced, 1);
   });
 }

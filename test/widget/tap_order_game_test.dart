@@ -1,4 +1,3 @@
-import 'package:brew_path/features/mini_games/domain/mini_game_result.dart';
 import 'package:brew_path/features/mini_games/presentation/tap_order_game.dart';
 import 'package:brew_path/shared/models/lesson_step_model.dart';
 import 'package:flutter/material.dart';
@@ -11,14 +10,16 @@ const _step = TapOrderStep(
 );
 
 void main() {
-  testWidgets('tapping items in correct order emits MiniGameCorrect', (
-    tester,
-  ) async {
-    MiniGameResult? result;
+  testWidgets('the correct order reports success once', (tester) async {
+    var solved = 0;
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body: TapOrderGame(step: _step, onResult: (r) => result = r),
+          body: TapOrderGame(
+            step: _step,
+            onSolved: () => solved++,
+            onContinue: () {},
+          ),
         ),
       ),
     );
@@ -28,9 +29,6 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    await tester.tap(find.byType(FilledButton)); // Continue
-    await tester.pumpAndSettle();
-
-    expect(result, isA<MiniGameCorrect>());
+    expect(solved, 1);
   });
 }
