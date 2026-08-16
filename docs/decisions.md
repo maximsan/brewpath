@@ -1,4 +1,11 @@
-BrewPath — confirmed product decisions
+# BrewPath — confirmed product decisions
+
+> **❄️ Frozen — 2026-08-16.** This file is a historical ledger and never grows
+> again, not even agent notes. New rulings — product and engineering alike —
+> are recorded as ADRs in [`docs/adr/`](adr/README.md); the argument happens in
+> the owning issue, the record lands there. The `§` numbering below is stable
+> and stays citable. (This file was `docs/decisions-1.md` until Aug 2026 —
+> links in older issues use that name.)
 
 1. Foundations and ongoing practice
    Beginner Foundations is a finite five-module beginner course.
