@@ -33,13 +33,16 @@
  *
  * ## The register: what is not here, what is joined, and where a rule bends
  *
- * - **Mini-game content is deferred** (#112 owns it). `MINI_GAME_CONTENT` is
- *   not a self-contained literal: one of its seven entries is a getter reading
- *   `window.BAGPICK_ROUNDS`, which `bean-anatomy.jsx` defines. Slice-and-evaluate
- *   hands back an empty array for that game unless a `window` carrying that
- *   file's declaration is assembled first, so it waits on that mechanism. The
- *   catalog (`MINI_GAMES`) and the help map (`CARD_KIND_HELP`) are plain
- *   literals and are emitted.
+ * - **`MINI_GAME_CONTENT` is the one seeded evaluation.** One of its seven
+ *   entries is a getter reading `window.BAGPICK_ROUNDS`, which
+ *   `bean-anatomy.jsx` defines — so that declaration is evaluated first and
+ *   handed in as the `window`. Evaluated bare, the getter yields an empty
+ *   game with nothing to signal it; the same silence is why a format with no
+ *   rounds is a validation failure, never a pass.
+ * - **`quiz` is graded here but is not a `ContentCard` kind.** True/false
+ *   rounds exist only in mini-games, so their boolean-answer check lives with
+ *   the mini-game validation — the graded-kinds set the lessons bank
+ *   publishes, the one the Dart union asserts against, stays unchanged.
  * - **`MODULE_REWARDS` is read as a sixth declaration** and joined onto each
  *   module as `reward`, mirroring how a lesson carries its own. Without it the
  *   five module Field Guide collectibles have no words at all, since a
@@ -92,12 +95,18 @@ function main(argv) {
   const challenges = read("brew-challenge.jsx");
   const screens = read("screens.jsx");
   const lesson = read("lesson.jsx");
+  const anatomy = read("bean-anatomy.jsx");
 
   // A declaration that has been renamed or reformatted past recognition is as
   // much a refusal as a broken reference, and reports the same way: reading on
   // would be guessing, and a stack trace is a worse answer.
   let banks;
   try {
+    const bagpickRounds = evaluateDeclaration(
+      anatomy,
+      "BAGPICK_ROUNDS",
+      "bean-anatomy.jsx",
+    );
     banks = {
       modules: evaluateDeclaration(data, "MODULES", "data.jsx"),
       lessons: evaluateDeclaration(data, "LESSONS", "data.jsx"),
@@ -116,6 +125,14 @@ function main(argv) {
       ),
       miniGames: evaluateDeclaration(screens, "MINI_GAMES", "screens.jsx"),
       cardKindHelp: evaluateDeclaration(lesson, "CARD_KIND_HELP", "lesson.jsx"),
+      // The seed is the assembled `window`; the spread reads every entry, so
+      // the bagpick getter resolves once, here, and the bank holds real rounds
+      // rather than a live property.
+      miniGameContent: {
+        ...evaluateDeclaration(lesson, "MINI_GAME_CONTENT", "lesson.jsx", {
+          window: { BAGPICK_ROUNDS: bagpickRounds },
+        }),
+      },
     };
   } catch (error) {
     fail([error.message]);
@@ -137,6 +154,13 @@ function main(argv) {
     bank("brew_challenges", "brew-challenge.jsx", banks.challenges),
     bank("mini_games", "screens.jsx", banks.miniGames),
     bank("card_kind_help", "lesson.jsx", helpToList(banks.cardKindHelp)),
+    // Two sources, honestly: the bagpick rounds in this bank are authored in
+    // `bean-anatomy.jsx`, and the envelope's provenance should say so.
+    bank(
+      "mini_game_content",
+      "lesson.jsx + bean-anatomy.jsx",
+      contentToList(banks.miniGameContent),
+    ),
   ]);
 }
 
@@ -156,6 +180,14 @@ function keyedToList(keyed) {
  */
 function helpToList(help) {
   return Object.entries(help).map(([kind, entry]) => ({ kind, ...entry }));
+}
+
+/**
+ * `MINI_GAME_CONTENT` is keyed by format id, each value that game's rounds.
+ * Flattening restores the key as `id` beside the rounds it owns.
+ */
+function contentToList(content) {
+  return Object.entries(content).map(([id, rounds]) => ({ id, rounds }));
 }
 
 /** Joins each module's Field Guide words on from `MODULE_REWARDS`. */

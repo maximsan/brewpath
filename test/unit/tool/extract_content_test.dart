@@ -13,7 +13,7 @@ const _prototype = 'prototype';
 /// Where a normal run writes — the output that ships in the bundle.
 const _committed = 'assets/content/generated';
 
-/// The five files a run reads. Copied into a scratch directory so a broken
+/// The six files a run reads. Copied into a scratch directory so a broken
 /// reference can be seeded without touching `prototype/`, which is read-only.
 const _sourceFiles = [
   'data.jsx',
@@ -21,6 +21,7 @@ const _sourceFiles = [
   'brew-challenge.jsx',
   'screens.jsx',
   'lesson.jsx',
+  'bean-anatomy.jsx',
 ];
 
 const _expectedBanks = [
@@ -31,7 +32,13 @@ const _expectedBanks = [
   'brew_challenges.json',
   'mini_games.json',
   'card_kind_help.json',
+  'mini_game_content.json',
 ];
+
+/// The entry whose rounds live in `bean-anatomy.jsx` behind a `window` getter —
+/// the one game that comes back silently empty unless the extractor assembles
+/// the cross-file dependency before evaluating.
+const _bagpickFormatId = 'g-bagpick';
 
 /// Every format in the prototype's mini-game catalog.
 const _formatCount = 7;
@@ -74,6 +81,19 @@ void main() {
 
   void breakReference(String source, String from, String to) =>
       seedCorruption(source, 'brew-challenge.jsx', from, to);
+
+  /// The refusal contract every corruption test asserts: non-zero exit, the
+  /// named culprits on stderr, and nothing written.
+  void expectRefusal(String source, {required List<String> naming}) {
+    final out = dir('out');
+    final result = _run(source, out);
+
+    expect(result.exitCode, isNot(0));
+    for (final name in naming) {
+      expect(result.stderr.toString(), contains(name));
+    }
+    expect(Directory(out).listSync(), isEmpty);
+  }
 
   test('a clean run writes every bank', () {
     final out = dir('out');
@@ -130,13 +150,8 @@ void main() {
   test('a challenge pointing at a renamed collectible fails the run', () {
     final source = seededSource();
     breakReference(source, "cardId: 'cM1'", "cardId: 'cM1-renamed'");
-    final out = dir('out');
 
-    final result = _run(source, out);
-
-    expect(result.exitCode, isNot(0));
-    expect(result.stderr.toString(), contains('cM1-renamed'));
-    expect(Directory(out).listSync(), isEmpty);
+    expectRefusal(source, naming: ['cM1-renamed']);
   });
 
   test('the catalog carries all seven formats and the help map is emitted', () {
@@ -163,14 +178,8 @@ void main() {
       "id: 'g-match', kind: 'match'",
       "id: 'g-match', kind: 'matchless'",
     );
-    final out = dir('out');
 
-    final result = _run(source, out);
-
-    expect(result.exitCode, isNot(0));
-    expect(result.stderr.toString(), contains('g-match'));
-    expect(result.stderr.toString(), contains('matchless'));
-    expect(Directory(out).listSync(), isEmpty);
+    expectRefusal(source, naming: ['g-match', 'matchless']);
   });
 
   test('a duplicated catalog format id is refused by name', () {
@@ -181,14 +190,8 @@ void main() {
       "id: 'g-flavor', kind: 'flavor'",
       "id: 'g-match', kind: 'flavor'",
     );
-    final out = dir('out');
 
-    final result = _run(source, out);
-
-    expect(result.exitCode, isNot(0));
-    expect(result.stderr.toString(), contains('g-match'));
-    expect(result.stderr.toString(), contains('duplicates'));
-    expect(Directory(out).listSync(), isEmpty);
+    expectRefusal(source, naming: ['g-match', 'duplicates']);
   });
 
   test('a renamed catalog declaration is refused by name', () {
@@ -199,14 +202,8 @@ void main() {
       'const MINI_GAMES =',
       'const MINI_GAMES_X =',
     );
-    final out = dir('out');
 
-    final result = _run(source, out);
-
-    expect(result.exitCode, isNot(0));
-    expect(result.stderr.toString(), contains('MINI_GAMES'));
-    expect(result.stderr.toString(), contains('screens.jsx'));
-    expect(Directory(out).listSync(), isEmpty);
+    expectRefusal(source, naming: ['MINI_GAMES', 'screens.jsx']);
   });
 
   test('a renamed help declaration is refused by name', () {
@@ -217,14 +214,94 @@ void main() {
       'const CARD_KIND_HELP =',
       'const CARD_KIND_HELP_X =',
     );
+
+    expectRefusal(source, naming: ['CARD_KIND_HELP', 'lesson.jsx']);
+  });
+
+  test('every format carries non-empty rounds, bagpick included', () {
     final out = dir('out');
 
-    final result = _run(source, out);
+    expect(_run(_prototype, out).exitCode, 0);
 
-    expect(result.exitCode, isNot(0));
-    expect(result.stderr.toString(), contains('CARD_KIND_HELP'));
-    expect(result.stderr.toString(), contains('lesson.jsx'));
-    expect(Directory(out).listSync(), isEmpty);
+    final content =
+        jsonDecode(
+              File(p.join(out, 'mini_game_content.json')).readAsStringSync(),
+            )
+            as Map<String, dynamic>;
+    final items = (content['items'] as List).cast<Map<String, dynamic>>();
+    expect(items.length, _formatCount);
+    for (final item in items) {
+      expect(
+        item['rounds'] as List,
+        isNotEmpty,
+        reason: "format '${item['id']}' extracted with no rounds",
+      );
+    }
+
+    final bagpick = items.singleWhere((item) => item['id'] == _bagpickFormatId);
+    expect(bagpick['rounds'] as List, isNotEmpty);
+  });
+
+  test('a format whose rounds come back empty is refused by name', () {
+    final source = seededSource();
+    seedCorruption(
+      source,
+      'lesson.jsx',
+      "get 'g-bagpick'() { return window.BAGPICK_ROUNDS || []; },",
+      "'g-bagpick': [],",
+    );
+
+    expectRefusal(source, naming: [_bagpickFormatId, 'has no rounds']);
+  });
+
+  test('renaming the bagpick rounds declaration is refused by name', () {
+    final source = seededSource();
+    seedCorruption(
+      source,
+      'bean-anatomy.jsx',
+      'const BAGPICK_ROUNDS =',
+      'const BAGPICK_ROUNDS_X =',
+    );
+
+    expectRefusal(source, naming: ['BAGPICK_ROUNDS', 'bean-anatomy.jsx']);
+  });
+
+  test('a quiz round whose answer is not a boolean is refused', () {
+    final source = seededSource();
+    seedCorruption(
+      source,
+      'lesson.jsx',
+      "answer: true, explain: 'True — it is the seed of the coffee cherry.'",
+      "answer: 'yes', explain: 'True — it is the seed of the coffee cherry.'",
+    );
+
+    expectRefusal(source, naming: ['g-quiz', 'not true or false']);
+  });
+
+  test(
+    'a format missing from the content bank is refused in both directions',
+    () {
+      final source = seededSource();
+      seedCorruption(source, 'lesson.jsx', "'g-match': [", "'g-matchx': [");
+
+      expectRefusal(
+        source,
+        naming: [
+          "format 'g-match': has no entry",
+          "content 'g-matchx': matches no catalog format",
+        ],
+      );
+    },
+  );
+
+  test('a round whose kind lost its help entry is refused per round', () {
+    final source = seededSource();
+    seedCorruption(source, 'lesson.jsx', '  tastefix: {', '  tastefixx: {');
+
+    expectRefusal(
+      source,
+      naming: ["content 'g-tastefix' round 1", 'no help entry'],
+    );
   });
 
   test('a run never writes into the prototype', () {
