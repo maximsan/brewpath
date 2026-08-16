@@ -12,6 +12,12 @@ Issues and PRDs for this repo live as GitHub issues on `maximsan/brewpath`. Use 
 - **Close**: `gh issue close <number> --comment "..."`. If the issue settled a
   decision, record it as an ADR before closing — the flow is in
   [`docs/adr/README.md`](../adr/README.md).
+- **A decision ticket's resolution must name where the build lives** — an
+  existing build ticket, a new one created at close time, or an explicit "no
+  code owed." A decision closed without a build pointer is unfinished: closing
+  a decision means *decided*, and only a merged PR on a build ticket means
+  *shipped*. Where no open build ticket owns the work yet, the closed decision
+  carries the `needs-build` label until one does.
 
 Infer the repo from `git remote -v` — `gh` does this automatically when run inside a clone.
 
