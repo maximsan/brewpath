@@ -97,18 +97,17 @@ class _CourseCompletionScreenState
     if (!lessons.hasValue || !cards.hasValue || !streak.hasValue) {
       return const Scaffold(body: LoadingIndicator());
     }
-    final lessonCount = lessons.value?.length ?? 0;
-    final cardCount = cards.value?.length ?? 0;
-    final streakDays = streak.value ?? 0;
+    final stats = (
+      lessons: lessons.value?.length ?? 0,
+      cards: cards.value?.length ?? 0,
+      streak: streak.value ?? 0,
+    );
     _companionLine ??= ref
         .watch(companionLinesProvider)
         .asData
         ?.value
         .lineFor(CompanionReaction.courseComplete);
     _celebrateOnce();
-
-    final companion = Companion(handle: _companionHandle);
-    final line = _companionLine;
 
     return Scaffold(
       body: SafeArea(
@@ -120,81 +119,90 @@ class _CourseCompletionScreenState
               child: Center(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.all(AppSpacing.lg),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Center(
-                        child: line == null
-                            ? companion
-                            : CompanionBubble(text: line, child: companion),
-                      ),
-                      const SizedBox(height: AppSpacing.lg),
-                      Text(
-                        'Course complete',
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          color: mood.inkMute,
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.xs),
-                      Semantics(
-                        header: true,
-                        child: Text(
-                          'You finished Beginner Foundations',
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.headlineMedium?.copyWith(
-                            color: mood.ink,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.lg),
-                      Semantics(
-                        label:
-                            'What you did: $lessonCount lessons completed, '
-                            '$cardCount cards collected, '
-                            'a $streakDays day streak.',
-                        child: Column(
-                          children: [
-                            _StatRow(
-                              label: 'Lessons completed',
-                              value: '$lessonCount',
-                            ),
-                            _StatRow(
-                              label: 'Cards collected',
-                              value: '$cardCount',
-                            ),
-                            _StatRow(label: 'Day streak', value: '$streakDays'),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                  child: _celebration(theme, mood, stats),
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.lg,
-                0,
-                AppSpacing.lg,
-                AppSpacing.lg,
-              ),
-              child: SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: _handOffToKeepSharp,
-                  child: const Text('Start Keep Sharp'),
-                ),
-              ),
-            ),
+            _handOffButton(),
           ],
         ),
       ),
     );
   }
+
+  Widget _celebration(ThemeData theme, MoodColors mood, _Stats stats) {
+    final companion = Companion(handle: _companionHandle);
+    final line = _companionLine;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Center(
+          child: line == null
+              ? companion
+              : CompanionBubble(text: line, child: companion),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        Text(
+          'Course complete',
+          textAlign: TextAlign.center,
+          style: theme.textTheme.labelLarge?.copyWith(color: mood.inkMute),
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        Semantics(
+          header: true,
+          child: Text(
+            'You finished Beginner Foundations',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.headlineMedium?.copyWith(
+              color: mood.ink,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        _statsSummary(stats),
+      ],
+    );
+  }
+
+  Widget _statsSummary(_Stats stats) {
+    return Semantics(
+      label:
+          'What you did: ${stats.lessons} lessons completed, '
+          '${stats.cards} cards collected, '
+          'a ${stats.streak} day streak.',
+      child: Column(
+        children: [
+          _StatRow(label: 'Lessons completed', value: '${stats.lessons}'),
+          _StatRow(label: 'Cards collected', value: '${stats.cards}'),
+          _StatRow(label: 'Day streak', value: '${stats.streak}'),
+        ],
+      ),
+    );
+  }
+
+  Widget _handOffButton() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        0,
+        AppSpacing.lg,
+        AppSpacing.lg,
+      ),
+      child: SizedBox(
+        width: double.infinity,
+        child: FilledButton(
+          onPressed: _handOffToKeepSharp,
+          child: const Text('Start Keep Sharp'),
+        ),
+      ),
+    );
+  }
 }
+
+/// The three derived completion stats, travelling together.
+typedef _Stats = ({int lessons, int cards, int streak});
 
 class _StatRow extends StatelessWidget {
   const _StatRow({required this.label, required this.value});
