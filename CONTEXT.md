@@ -107,6 +107,18 @@ categories, Term of the Day, flashcards and mini-games (§12,
 not fixed — re-derive rather than quote).
 _Avoid_: "not yet learned" (a reference term can never become Learned)
 
+**Term of the Day**:
+A pure `(date, tier)` pick over the terms carrying a full explanation — zero
+storage, and free and Plus rotate different pools, so not the same term for
+everyone (§12, [#20](https://github.com/maximsan/brewpath/issues/20),
+[#57](https://github.com/maximsan/brewpath/issues/57)). Surfaces on Dictionary
+Home only
+([ADR-0002](docs/adr/0002-term-of-the-day-ships-on-dictionary-home-only.md));
+never a qualifying activity
+([#33](https://github.com/maximsan/brewpath/issues/33)).
+_Avoid_: a Learn-tab or Today surface (the prototype's Learn-tab hook is dead
+code; ruled out)
+
 ## Sync and storage
 
 **Progress snapshot**:
