@@ -27,6 +27,11 @@ RoastyState _reactionState(CompanionReaction reaction) {
       return RoastyState.lesson;
     case CompanionReaction.moduleComplete:
       return RoastyState.module;
+    // The skin has no dedicated course pose; the module celebration is its
+    // biggest, so the course moment borrows it. Add a pose and split when one
+    // exists (same shape as the happy→idle note above).
+    case CompanionReaction.courseComplete:
+      return RoastyState.module;
     case CompanionReaction.xpGained:
       return RoastyState.xp;
     case CompanionReaction.cardEarned:

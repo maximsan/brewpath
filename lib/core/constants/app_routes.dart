@@ -25,6 +25,7 @@ abstract class AppRoutes {
     '/onboarding/brewer',
   );
   static const learn = AppRoute('learn', '/learn');
+  static const courseComplete = AppRoute('courseComplete', '/course-complete');
   static const moduleDetail = AppRoute('moduleDetail', 'module/:moduleId');
   static const lesson = AppRoute('lesson', 'lesson/:lessonId');
   static const lessonComplete = AppRoute('lessonComplete', 'complete');

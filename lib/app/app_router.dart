@@ -3,6 +3,8 @@ import 'package:brew_path/app/app_shell.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/cards/presentation/card_detail_screen.dart';
 import 'package:brew_path/features/cards/presentation/cards_screen.dart';
+import 'package:brew_path/features/learn/domain/course_completion_providers.dart';
+import 'package:brew_path/features/learn/presentation/course_completion_screen.dart';
 import 'package:brew_path/features/learn/presentation/game_type_practice_screen.dart';
 import 'package:brew_path/features/learn/presentation/learn_screen.dart';
 import 'package:brew_path/features/learn/presentation/module_detail_screen.dart';
@@ -38,6 +40,11 @@ GoRouter appRouter(Ref ref) {
   ref.listen<AsyncValue<bool>>(onboardingCompletedProvider, (prev, next) {
     refresh.value++;
   });
+  // Same shape for the course-completion gate: the redirect reads the last
+  // resolved value; this tick re-runs it when the derivation lands.
+  ref.listen<AsyncValue<bool>>(courseCompletionDueProvider, (prev, next) {
+    refresh.value++;
+  });
   return GoRouter(
     navigatorKey: _rootKey,
     initialLocation: '/loading',
@@ -60,6 +67,14 @@ GoRouter appRouter(Ref ref) {
       if (completed && (path == '/welcome' || path.startsWith('/onboarding'))) {
         return '/learn';
       }
+      // The one-off completion moment intercepts arrival at Today only — the
+      // ending presents where the course lived, and never hijacks another
+      // tab. Presenting the screen writes the ack, which flips the gate off.
+      final completionDue =
+          ref.read(courseCompletionDueProvider).value ?? false;
+      if (completed && completionDue && path == AppRoutes.learn.path) {
+        return AppRoutes.courseComplete.path;
+      }
       return null;
     },
     observers: [
@@ -75,6 +90,12 @@ GoRouter appRouter(Ref ref) {
         path: AppRoutes.welcome.path,
         name: AppRoutes.welcome.name,
         builder: (context, state) => const WelcomeScreen(),
+      ),
+      // Root-level so the ending covers the whole screen — no shell, no tabs.
+      GoRoute(
+        path: AppRoutes.courseComplete.path,
+        name: AppRoutes.courseComplete.name,
+        builder: (context, state) => const CourseCompletionScreen(),
       ),
       GoRoute(
         path: AppRoutes.onboardingGoal.path,

@@ -5,6 +5,8 @@
 /// there is nothing to clear on reset. Ruled in #56; build shape in #120.
 library;
 
+import 'package:brew_path/core/utils/date_utils.dart';
+
 /// The four practice types Keep Sharp rotates over, in canonical order.
 ///
 /// The declaration order **is** the rotation order; `keepSharpPick` indexes
@@ -45,12 +47,9 @@ PracticeType? keepSharpPick({
   return null;
 }
 
-/// Index of [date]'s local calendar day. Consecutive local days map to
-/// consecutive integers, and every moment of one day maps to the same one.
-int keepSharpDayNumber(DateTime date) {
-  final localMidnight = DateTime(date.year, date.month, date.day);
-  return localMidnight.millisecondsSinceEpoch ~/ Duration.millisecondsPerDay;
-}
+/// Index of [date]'s local calendar day — [epochDay]'s scheme, so the
+/// rotation and the snapshot's day-valued fields agree on what "a day" is.
+int keepSharpDayNumber(DateTime date) => epochDay(date);
 
 /// The day's pick from a list of concrete entry points (a game type to open,
 /// a lesson to replay). Same day number as the rotation, so the CTA's target
