@@ -22,5 +22,10 @@
   "cardEarned": [
     "A new card for your shelf!",
     "Fresh card unlocked."
+  ],
+  "courseComplete": [
+    "Every lesson. Every module. You finished the whole course!",
+    "From first crack to final cup — you did it all.",
+    "That's the entire Foundations course. Extraordinary brewing!"
   ]
 }

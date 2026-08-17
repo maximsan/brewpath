@@ -44,6 +44,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The Foundations ending** — finishing the course now lands on a one-off,
+  full-screen completion moment: Roasty celebrating, "You finished Beginner
+  Foundations", what you actually did (lessons completed, cards collected,
+  your streak), then a hand-off into Keep Sharp. It fires exactly once, gated
+  by a key in the snapshot's acks map — only Reset Progress re-arms it — and
+  new content landing later flips Today back to Continue Learning with no
+  second celebration. Nothing is paid out: no points, no tree growth, no 38th
+  card. The router owns the presentation; reduced motion renders it
+  statically.
 - **Keep Sharp** — a finished learner's Today card now recommends one practice
   type for the day instead of dead-ending at "all caught up". The pick is a
   simple fixed rotation derived purely from the date (stable all day, storing

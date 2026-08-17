@@ -40,8 +40,12 @@ class KeepSharpRecommendation {
 @riverpod
 Future<KeepSharpRecommendation?> keepSharpRecommendation(Ref ref) async {
   final day = keepSharpDayNumber(DateTime.now());
-  final counts = await ref.watch(gameTypePracticeCountsProvider.future);
-  final completed = await ref.watch(completedLessonsProvider.future);
+  // Watches before awaits: a mid-flight rebuild must not reach a watch
+  // across an async gap on a disposed ref.
+  final countsFuture = ref.watch(gameTypePracticeCountsProvider.future);
+  final completedFuture = ref.watch(completedLessonsProvider.future);
+  final counts = await countsFuture;
+  final completed = await completedFuture;
 
   final playableGameTypes = [
     for (final (key, _) in gameTypeLabels)

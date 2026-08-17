@@ -258,3 +258,56 @@ final class AccountWipeProvider
 }
 
 String _$accountWipeHash() => r'3a77396bcc8732faaebcbf002a5b63b711bd3cc4';
+
+/// Provides the [SnapshotRepository].
+
+@ProviderFor(snapshotRepository)
+final snapshotRepositoryProvider = SnapshotRepositoryProvider._();
+
+/// Provides the [SnapshotRepository].
+
+final class SnapshotRepositoryProvider
+    extends
+        $FunctionalProvider<
+          SnapshotRepository,
+          SnapshotRepository,
+          SnapshotRepository
+        >
+    with $Provider<SnapshotRepository> {
+  /// Provides the [SnapshotRepository].
+  SnapshotRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'snapshotRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$snapshotRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<SnapshotRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  SnapshotRepository create(Ref ref) {
+    return snapshotRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(SnapshotRepository value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<SnapshotRepository>(value),
+    );
+  }
+}
+
+String _$snapshotRepositoryHash() =>
+    r'93a9fe008652c6c4bb29f85cd883ad2ca783f66b';

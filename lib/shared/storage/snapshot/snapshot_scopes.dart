@@ -168,6 +168,31 @@ class ClearedByReset {
   /// with this build's, instead of re-attaching them after the wipe.
   final Map<String, dynamic> unknown;
 
+  /// Whether the one-off moment named [key] has been acknowledged.
+  bool hasAck(String key) => acks.containsKey(key);
+
+  /// A copy with [key] acknowledged on [day]. The one write the app performs
+  /// on this scope so far — a deliberate monotonic add rather than a general
+  /// `copyWith`, because every field here is monotonic and an arbitrary
+  /// replace is exactly the operation this scope's design rules out.
+  ClearedByReset withAck(String key, int day) => ClearedByReset(
+    completedLessons: completedLessons,
+    bestResults: bestResults,
+    activeDays: activeDays,
+    acks: {...acks, key: day},
+    ownedCollectibles: ownedCollectibles,
+    completedModules: completedModules,
+    treeStage: treeStage,
+    challengesCompleted: challengesCompleted,
+    learnedTerms: learnedTerms,
+    challengeReactions: challengeReactions,
+    miniGamePlays: miniGamePlays,
+    challengesSaved: challengesSaved,
+    activeChallenge: activeChallenge,
+    favourites: favourites,
+    unknown: unknown,
+  );
+
   /// This scope's JSON form, with unrecognised keys written back verbatim.
   Map<String, dynamic> toJson() => {
     ...unknown,
