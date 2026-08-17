@@ -44,6 +44,13 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Keep Sharp** — a finished learner's Today card now recommends one practice
+  type for the day instead of dead-ending at "all caught up". The pick is a
+  simple fixed rotation derived purely from the date (stable all day, storing
+  nothing), it skips types with no surface or no material, and the card states
+  the type's own completion rule — mini-games say "play two different games" —
+  so doing what Today asks always protects the streak. The old copy promising
+  future modules is gone.
 - **The mini-game rounds are extracted too** — `MINI_GAME_CONTENT` joins as
   the eighth and final bank. Its bagpick entry reads its rounds from a second
   prototype file through a `window` getter, the one dependency the extractor's
