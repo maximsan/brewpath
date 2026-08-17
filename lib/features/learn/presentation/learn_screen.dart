@@ -2,6 +2,7 @@ import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/section_header.dart';
+import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/learn/presentation/module_card_widget.dart';
 import 'package:brew_path/features/learn/presentation/practice_any_lesson_widget.dart';
@@ -19,6 +20,7 @@ class LearnScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final today = ref.watch(todayLessonProvider);
+    final keepSharp = ref.watch(keepSharpRecommendationProvider);
     final modules = ref.watch(modulesWithProgressProvider);
     final allLessons = ref.watch(allLessonsWithModuleProvider);
     final gameTypeCounts = ref.watch(gameTypePracticeCountsProvider);
@@ -33,7 +35,10 @@ class LearnScreen extends ConsumerWidget {
           padding: const EdgeInsets.all(16),
           physics: const AlwaysScrollableScrollPhysics(),
           children: [
-            TodayCardWidget(today: today.asData?.value),
+            TodayCardWidget(
+              today: today.asData?.value,
+              keepSharp: keepSharp.asData?.value,
+            ),
             const SizedBox(height: 24),
             const SectionHeader('Practice any lesson'),
             const SizedBox(height: 12),

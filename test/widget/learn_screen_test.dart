@@ -1,4 +1,5 @@
 import 'package:brew_path/core/constants/app_labels.dart';
+import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/learn/presentation/learn_screen.dart';
 import 'package:brew_path/features/learn/presentation/module_card_widget.dart';
@@ -70,6 +71,7 @@ Future<void> _pumpLearn(WidgetTester tester) async {
       overrides: [
         modulesWithProgressProvider.overrideWith((ref) async => _modules),
         todayLessonProvider.overrideWith((ref) async => _todayLesson),
+        keepSharpRecommendationProvider.overrideWith((ref) async => null),
       ],
       child: const MaterialApp(home: LearnScreen()),
     ),

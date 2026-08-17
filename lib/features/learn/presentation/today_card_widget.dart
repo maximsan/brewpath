@@ -1,22 +1,29 @@
+import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
+import 'package:brew_path/features/learn/presentation/keep_sharp_card_body.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 /// Hero card for the day's primary action. Renders the next lesson with a
-/// prominent `Start` CTA, or a friendly caught-up state when nothing is due.
+/// prominent `Start` CTA, or — when every available lesson is done — the
+/// Keep Sharp recommendation for the day.
 class TodayCardWidget extends StatelessWidget {
   /// Creates a [TodayCardWidget].
-  const TodayCardWidget({required this.today, super.key});
+  const TodayCardWidget({required this.today, this.keepSharp, super.key});
 
   /// The lesson due today, or `null` when the user is caught up.
   final LessonModel? today;
+
+  /// The day's Keep Sharp pick, shown when [today] is null. Null means no
+  /// registered practice type has material (the quiet degenerate state).
+  final KeepSharpRecommendation? keepSharp;
 
   static const double _heroRadius = 12;
   static const double _heroLetterSpacing = 0.6;
   static const double _mutedAlpha = 0.8;
   static const double _iconSm = 18;
-  static const double _iconLg = 40;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +35,7 @@ class TodayCardWidget extends StatelessWidget {
       margin: EdgeInsets.zero,
       color: mood.accent,
       child: lesson == null
-          ? _buildCaughtUp(theme, mood)
+          ? KeepSharpCardBody(recommendation: keepSharp)
           : _buildLesson(context, theme, mood, lesson),
     );
   }
@@ -40,7 +47,10 @@ class TodayCardWidget extends StatelessWidget {
     LessonModel lesson,
   ) {
     return InkWell(
-      onTap: () => context.go('/learn/lesson/${lesson.id}'),
+      onTap: () => context.goNamed(
+        AppRoutes.lesson.name,
+        pathParameters: {'lessonId': lesson.id},
+      ),
       borderRadius: BorderRadius.circular(_heroRadius),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -88,7 +98,10 @@ class TodayCardWidget extends StatelessWidget {
                 _XpPill(xp: lesson.xpReward),
                 const Spacer(),
                 FilledButton.icon(
-                  onPressed: () => context.go('/learn/lesson/${lesson.id}'),
+                  onPressed: () => context.goNamed(
+                    AppRoutes.lesson.name,
+                    pathParameters: {'lessonId': lesson.id},
+                  ),
                   icon: const Icon(Icons.play_arrow),
                   label: const Text('Start'),
                 ),
@@ -96,46 +109,6 @@ class TodayCardWidget extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildCaughtUp(ThemeData theme, MoodColors mood) {
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Row(
-        children: [
-          Icon(
-            Icons.check_circle,
-            size: _iconLg,
-            color: mood.accentInk,
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "You're all caught up!",
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    color: mood.accentInk,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'No lessons left to study.',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: mood.accentInk.withValues(
-                      alpha: _mutedAlpha,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }
