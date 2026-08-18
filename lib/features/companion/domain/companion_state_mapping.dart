@@ -32,6 +32,10 @@ RoastyState _reactionState(CompanionReaction reaction) {
     // exists (same shape as the happy→idle note above).
     case CompanionReaction.courseComplete:
       return RoastyState.module;
+    // A day's practice earns the lesson-sized celebration, one notch below
+    // the module pose the course moments use.
+    case CompanionReaction.keepSharpComplete:
+      return RoastyState.lesson;
     case CompanionReaction.xpGained:
       return RoastyState.xp;
     case CompanionReaction.cardEarned:

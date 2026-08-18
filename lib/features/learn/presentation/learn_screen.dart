@@ -21,6 +21,7 @@ class LearnScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final today = ref.watch(todayLessonProvider);
     final keepSharp = ref.watch(keepSharpRecommendationProvider);
+    final keepSharpDone = ref.watch(keepSharpAcknowledgedTodayProvider);
     final modules = ref.watch(modulesWithProgressProvider);
     final allLessons = ref.watch(allLessonsWithModuleProvider);
     final gameTypeCounts = ref.watch(gameTypePracticeCountsProvider);
@@ -38,6 +39,7 @@ class LearnScreen extends ConsumerWidget {
             TodayCardWidget(
               today: today.asData?.value,
               keepSharp: keepSharp.asData?.value,
+              keepSharpDone: keepSharpDone.asData?.value ?? false,
             ),
             const SizedBox(height: 24),
             const SectionHeader('Practice any lesson'),
