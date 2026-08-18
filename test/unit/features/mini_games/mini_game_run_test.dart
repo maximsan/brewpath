@@ -93,8 +93,9 @@ void main() {
   });
 
   group('playableMiniGameIds', () {
-    test('g-quiz plays; the formats without renderers do not', () {
-      expect(playableMiniGameIds, contains('g-quiz'));
+    test('the free pair plays; the formats without renderers do not', () {
+      // Two different games make a streak day, so this pair is load-bearing.
+      expect(playableMiniGameIds, containsAll(['g-quiz', 'g-match']));
       expect(playableMiniGameIds, isNot(contains('g-bagpick')));
     });
   });

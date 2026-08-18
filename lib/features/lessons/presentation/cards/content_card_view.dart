@@ -3,6 +3,8 @@ import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart
 import 'package:brew_path/features/lessons/presentation/cards/choice_list.dart';
 import 'package:brew_path/features/lessons/presentation/cards/concept_card_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/graded_picker.dart';
+import 'package:brew_path/features/lessons/presentation/cards/match_board.dart';
+import 'package:brew_path/features/lessons/presentation/cards/match_board_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/predict_card_view.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
@@ -15,10 +17,11 @@ import 'package:flutter/widgets.dart';
 /// function until the kind is handled, which is the guarantee the union was
 /// chosen for.
 ///
-/// Six kinds render today: the five lesson kinds that are the eight cards of
-/// the first lesson and 185 of the course's 257, plus `quiz`, which only
-/// mini-games author. The rest return null rather than a placeholder,
-/// so a host meets an honest absence instead of a card that pretends.
+/// Seven kinds render today: the five lesson kinds that are the eight cards
+/// of the first lesson and 185 of the course's 257, plus `quiz` and
+/// `match`, which the free mini-game pair needs. The rest return null rather
+/// than a placeholder, so a host meets an honest absence instead of a card
+/// that pretends.
 ///
 /// [nonce] identifies the lesson attempt and [cardIndex] the card's place in
 /// it; together they seed the choice order. See `card_seed.dart` for why
@@ -87,10 +90,18 @@ Widget? contentCardView(
       onSolved: onSolved,
       onContinue: onContinue,
     ),
+    final MatchCard match => MatchBoardView(
+      prompt: match.prompt,
+      // Both sides are seeded from the card's own seed, so a replay moves the
+      // facts and the answers together rather than leaving either fixed.
+      pairs: shuffledBySeed(match.pairs, seed),
+      targets: shuffledBySeed(matchTargets(match.pairs), seed),
+      onSolved: onSolved,
+      onContinue: onContinue,
+    ),
     VisualCard() ||
     PracticalCard() ||
     MultiCard() ||
-    MatchCard() ||
     SequenceCard() ||
     SliderCard() ||
     TastefixCard() ||

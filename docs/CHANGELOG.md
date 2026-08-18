@@ -48,6 +48,15 @@ You can always edit this file by hand instead — the helpers just save effort.
   showing the stage the learner has reached, announced to screen readers. A
   fresh install shows the seed. Note that nothing advances the stage yet, so
   every tree currently sits at seed; growing it is tracked separately.
+- **The match board plays — the free mini-game pair is complete.** *Match the
+  facts* joins *True or false*, so a free learner has the two different games
+  a streak day needs. Read a fact, tap where it belongs; a wrong placement
+  says so and leaves the fact in play, because the board is finished by
+  clearing it. The card pays its single success signal **only on a board
+  cleared without a wrong drop**, so a scrappy board still finishes the run
+  and still scores nothing. The renderer lives in the shared card layer with
+  no knowledge of its host, ready for the lesson player to pick up when it
+  moves onto the card union.
 - **Mini-games are playable — True or false plays end to end.** Learn gains a
   Mini-games group listing all seven formats from the extracted catalog (the
   game's name leads, the topic it drills is the eyebrow), and `g-quiz` runs

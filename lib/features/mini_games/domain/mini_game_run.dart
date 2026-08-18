@@ -16,7 +16,7 @@ const double _celebrationMark = 0.8;
 /// join by joining this set as their sibling slices land. Keeping it a
 /// registry rather than a card-kind lookup means a format is playable only
 /// when someone says so, not incidentally because its kind happens to render.
-const Set<String> playableMiniGameIds = {'g-quiz'};
+const Set<String> playableMiniGameIds = {'g-quiz', 'g-match'};
 
 /// Mints the nonce for one run. One draw per run, held for its duration and
 /// never stored — see `card_seed.dart` for why storing it would defeat the
