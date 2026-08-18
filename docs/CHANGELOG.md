@@ -57,6 +57,18 @@ You can always edit this file by hand instead — the helpers just save effort.
   and still scores nothing. The renderer lives in the shared card layer with
   no knowledge of its host, ready for the lesson player to pick up when it
   moves onto the card union.
+- **The snapshot now records what the daily allowance counts.** A new
+  `dailyActivity` field holds, per local day, the completions a free user's
+  two-activity cap is measured against. Each entry is **one completion**, not
+  one kind of one: two vocab rounds — or two replays of the same lesson —
+  count as two, which a set keyed on activity type would have quietly
+  collapsed into one. It merges by union per day, so two devices offline with
+  one completion each converge on two rather than losing one, and it prunes to
+  the last couple of days on a best-effort basis because nothing reads further
+  back. `miniGamePlays` folds into it: the two-different-mini-games streak
+  rule now derives from the distinct game ids among a day's entries, unchanged
+  in meaning — two runs of one game still count once for the streak while
+  costing two against the allowance.
 - **Mini-games are playable — True or false plays end to end.** Learn gains a
   Mini-games group listing all seven formats from the extracted catalog (the
   game's name leads, the topic it drills is the eyebrow), and `g-quiz` runs

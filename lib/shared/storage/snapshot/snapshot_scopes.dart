@@ -18,6 +18,12 @@ import 'package:flutter/foundation.dart';
 ///
 /// Every field here is **monotonic**. The only non-monotonic operation on the
 /// whole snapshot is Reset, which is why the reset generation exists.
+///
+/// `dailyActivity` will eventually shrink too — pruning drops days nothing
+/// reads — but that trim belongs to whichever code first *appends* an event,
+/// not here and not to the repository: a store that silently returns
+/// something other than what it was handed is a worse bargain than a record
+/// that grows a little. See `daily_activity.dart`.
 @immutable
 class ClearedByReset {
   /// Creates a [ClearedByReset].
@@ -32,7 +38,7 @@ class ClearedByReset {
     this.challengesCompleted = const {},
     this.learnedTerms = const {},
     this.challengeReactions = const {},
-    this.miniGamePlays = const {},
+    this.dailyActivity = const {},
     this.challengesSaved = _emptyIds,
     this.activeChallenge = _noActiveChallenge,
     this.favourites = _emptyIds,
@@ -52,7 +58,7 @@ class ClearedByReset {
     challengesCompleted: stringSetFromJson(json['challengesCompleted']),
     learnedTerms: stringSetFromJson(json['learnedTerms']),
     challengeReactions: reactionMapFromJson(json['challengeReactions']),
-    miniGamePlays: playsFromJson(json['miniGamePlays']),
+    dailyActivity: dayEntriesFromJson(json['dailyActivity']),
     challengesSaved: stampedSetFromJson(json['challengesSaved']),
     activeChallenge: stampedChallengeFromJson(json['activeChallenge']),
     favourites: stampedSetFromJson(json['favourites']),
@@ -82,7 +88,7 @@ class ClearedByReset {
     'challengesCompleted',
     'learnedTerms',
     'challengeReactions',
-    'miniGamePlays',
+    'dailyActivity',
     'challengesSaved',
     'activeChallenge',
     'favourites',
@@ -140,12 +146,19 @@ class ClearedByReset {
   /// Challenge id → the reaction logged for it, most recent winning.
   final Map<String, ChallengeReaction> challengeReactions;
 
-  /// Day → the distinct mini-games completed on it.
+  /// Day → the completion events on it, as the free daily allowance counts
+  /// them.
   ///
-  /// A **set** of ids rather than a count, because two different mini-games in
-  /// a day protect the streak and a counter cannot merge: two devices offline
-  /// with one play each give 1 under max and 2-then-4 under sum on redelivery.
-  final Map<int, Set<String>> miniGamePlays;
+  /// Each entry is **one completion**, not one kind of completion: a set keyed
+  /// on type collapses two vocab rounds into one mark, and the cap must see
+  /// two (#65). It supersedes `miniGamePlays`, whose day-keyed set of game ids
+  /// this generalises — the two-different-games streak rule now derives from
+  /// the distinct game ids among a day's entries, unchanged in meaning.
+  ///
+  /// Meant to be pruned to the last couple of days once something writes it —
+  /// best-effort, since a union merge with a peer still holding older days
+  /// re-adds them, which is harmless because nothing reads beyond today.
+  final Map<int, Set<String>> dailyActivity;
 
   /// Challenges parked for later. Removal is a first-class action, so this is
   /// last-writer-wins rather than a union that would resurrect every unsave.
@@ -175,18 +188,23 @@ class ClearedByReset {
   /// on this scope so far — a deliberate monotonic add rather than a general
   /// `copyWith`, because every field here is monotonic and an arbitrary
   /// replace is exactly the operation this scope's design rules out.
-  ClearedByReset withAck(String key, int day) => ClearedByReset(
+  ClearedByReset withAck(String key, int day) =>
+      _copy(acks: {...acks, key: day});
+
+  /// The one hand-listed copy this scope needs. Private, so a field added to
+  /// the scope has a single place to be forgotten.
+  ClearedByReset _copy({Map<String, int>? acks}) => ClearedByReset(
     completedLessons: completedLessons,
     bestResults: bestResults,
     activeDays: activeDays,
-    acks: {...acks, key: day},
+    acks: acks ?? this.acks,
     ownedCollectibles: ownedCollectibles,
     completedModules: completedModules,
     treeStage: treeStage,
     challengesCompleted: challengesCompleted,
     learnedTerms: learnedTerms,
     challengeReactions: challengeReactions,
-    miniGamePlays: miniGamePlays,
+    dailyActivity: dailyActivity,
     challengesSaved: challengesSaved,
     activeChallenge: activeChallenge,
     favourites: favourites,
@@ -206,7 +224,7 @@ class ClearedByReset {
     'challengesCompleted': sortedList(challengesCompleted),
     'learnedTerms': sortedList(learnedTerms),
     'challengeReactions': reactionMapToJson(challengeReactions),
-    'miniGamePlays': playsToJson(miniGamePlays),
+    'dailyActivity': dayEntriesToJson(dailyActivity),
     'challengesSaved': challengesSaved.toJson(sortedList),
     'activeChallenge': activeChallenge.toJson((held) => held?.toJson()),
     'favourites': favourites.toJson(sortedList),
@@ -226,7 +244,7 @@ class ClearedByReset {
           setEquals(other.challengesCompleted, challengesCompleted) &&
           setEquals(other.learnedTerms, learnedTerms) &&
           mapEquals(other.challengeReactions, challengeReactions) &&
-          _playsEqual(other.miniGamePlays, miniGamePlays) &&
+          _dayEntriesEqual(other.dailyActivity, dailyActivity) &&
           other.challengesSaved == challengesSaved &&
           other.activeChallenge == activeChallenge &&
           other.favourites == favourites &&
@@ -244,7 +262,7 @@ class ClearedByReset {
     Object.hashAllUnordered(challengesCompleted),
     Object.hashAllUnordered(learnedTerms),
     Object.hashAllUnordered(challengeReactions.keys),
-    Object.hashAllUnordered(miniGamePlays.keys),
+    Object.hashAllUnordered(dailyActivity.keys),
     challengesSaved,
     activeChallenge,
     favourites,
@@ -370,7 +388,7 @@ class ClearedByDeleteOnly {
   int get _latestStamp => max(grove.updatedAt, companion.updatedAt);
 }
 
-bool _playsEqual(Map<int, Set<String>> a, Map<int, Set<String>> b) {
+bool _dayEntriesEqual(Map<int, Set<String>> a, Map<int, Set<String>> b) {
   if (a.length != b.length) return false;
   for (final entry in a.entries) {
     final other = b[entry.key];

@@ -1,6 +1,6 @@
 import 'dart:math';
-
 import 'package:brew_path/features/progress/domain/mastery.dart';
+import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
 import 'package:brew_path/shared/storage/snapshot/progress_snapshot.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_scopes.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
@@ -41,6 +41,9 @@ class SnapshotGen {
   static const _stamps = [1000, 2000, 3000];
 
   static const _dayRange = 6;
+
+  /// Tiny on purpose: entries must repeat across two generated snapshots.
+  static const _tokenPool = 4;
   static const _maxTreeStage = 10;
   static const _maxGraded = 7;
   static const _maxGeneration = 3;
@@ -67,7 +70,7 @@ class SnapshotGen {
     challengesCompleted: _subset(_challenges),
     learnedTerms: _subset(_terms),
     challengeReactions: _reactions(),
-    miniGamePlays: _plays(),
+    dailyActivity: _dailyActivity(),
     challengesSaved: _stampedSet(_challenges),
     activeChallenge: _stampedChallenge(),
     favourites: _stampedSet(_lessons.map((id) => 'l:$id').toList()),
@@ -136,10 +139,30 @@ class SnapshotGen {
         ),
   };
 
-  Map<int, Set<String>> _plays() => {
+  /// Days of completion events, in the real encoding.
+  ///
+  /// Tokens come from the seeded generator over a deliberately tiny pool, for
+  /// the same reason the ids and days do: two generated snapshots must share
+  /// entries, or the union merge is never tested against anything to union.
+  /// Minting real tokens here would make every entry globally unique and the
+  /// merge laws vacuous over this field.
+  Map<int, Set<String>> _dailyActivity() => {
     for (var day = 0; day < _dayRange; day++)
-      if (_rng.nextBool()) day: _subset(_games),
+      if (_rng.nextBool())
+        day: {
+          for (final game in _subset(_games))
+            activityEntry(
+              type: ActivityType.miniGame,
+              token: _token(),
+              subject: game,
+            ),
+          if (_rng.nextBool())
+            activityEntry(type: ActivityType.vocab, token: _token()),
+        },
   };
+
+  /// One of a handful of tokens, so repeats are common.
+  String _token() => 't${_rng.nextInt(_tokenPool)}';
 
   Timestamped<Set<String>> _stampedSet(List<String> pool) => Timestamped(
     value: _subset(pool),

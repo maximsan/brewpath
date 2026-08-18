@@ -38,8 +38,8 @@ const _loaded = ProgressSnapshot(
     challengeReactions: {
       'bc-m1': ChallengeReaction(reaction: 'Sharper', at: 3),
     },
-    miniGamePlays: {
-      4: {'g-match'},
+    dailyActivity: {
+      4: {'miniGame:g-match:1-1'},
     },
     challengesSaved: Timestamped(
       value: {'bc-m1'},

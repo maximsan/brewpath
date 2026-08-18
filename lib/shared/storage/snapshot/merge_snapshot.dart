@@ -83,9 +83,9 @@ ClearedByReset _joinProgress(ProgressSnapshot local, ProgressSnapshot remote) {
       b.challengeReactions,
       _laterReaction,
     ),
-    miniGamePlays: _mergeMap(
-      a.miniGamePlays,
-      b.miniGamePlays,
+    dailyActivity: _mergeMap(
+      a.dailyActivity,
+      b.dailyActivity,
       (mine, theirs) => {...mine, ...theirs},
     ),
     challengesSaved: _lastWriterWins(a.challengesSaved, b.challengesSaved),

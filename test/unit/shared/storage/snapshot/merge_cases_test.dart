@@ -1,4 +1,5 @@
 import 'package:brew_path/features/progress/domain/mastery.dart';
+import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
 import 'package:brew_path/shared/storage/snapshot/merge_snapshot.dart';
 import 'package:brew_path/shared/storage/snapshot/progress_snapshot.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_scopes.dart';
@@ -101,29 +102,80 @@ void main() {
     });
   });
 
-  group('miniGamePlays — a set per day, never a counter', () {
+  group('dailyActivity — a set per day, never a counter', () {
     test('two devices each playing one game that day combine to two', () {
       // A counter cannot express this: max gives 1, and sum double-counts on
-      // redelivery. The union of ids is exactly right.
+      // redelivery. The union of events is exactly right.
+      final mine = activityEntry(
+        type: ActivityType.miniGame,
+        token: 'phone-1',
+        subject: 'g-match',
+      );
+      final theirs = activityEntry(
+        type: ActivityType.miniGame,
+        token: 'tablet-1',
+        subject: 'g-quiz',
+      );
       final phone = _snap(
-        progress: const ClearedByReset(
-          miniGamePlays: {
-            4: {'g-match'},
+        progress: ClearedByReset(
+          dailyActivity: {
+            4: {mine},
           },
         ),
       );
       final tablet = _snap(
         deviceId: 'tablet',
-        progress: const ClearedByReset(
-          miniGamePlays: {
-            4: {'g-quiz'},
+        progress: ClearedByReset(
+          dailyActivity: {
+            4: {theirs},
           },
         ),
       );
 
       final merged = mergeSnapshot(phone, tablet);
 
-      expect(merged.clearedByReset.miniGamePlays[4], {'g-match', 'g-quiz'});
+      expect(merged.clearedByReset.dailyActivity[4], {mine, theirs});
+      expect(
+        distinctMiniGameIds(merged.clearedByReset.dailyActivity[4]!),
+        {'g-match', 'g-quiz'},
+        reason: 'the streak rule survives the move off miniGamePlays',
+      );
+    });
+
+    // Two runs of one game: two against the allowance, one for the streak.
+    test('repeat runs of one game merge to two events but one game id', () {
+      final first = activityEntry(
+        type: ActivityType.miniGame,
+        token: 'phone-1',
+        subject: 'g-quiz',
+      );
+      final second = activityEntry(
+        type: ActivityType.miniGame,
+        token: 'tablet-1',
+        subject: 'g-quiz',
+      );
+      final phone = _snap(
+        progress: ClearedByReset(
+          dailyActivity: {
+            4: {first},
+          },
+        ),
+      );
+      final tablet = _snap(
+        deviceId: 'tablet',
+        progress: ClearedByReset(
+          dailyActivity: {
+            4: {second},
+          },
+        ),
+      );
+
+      final merged = mergeSnapshot(phone, tablet);
+
+      expect(merged.clearedByReset.dailyActivity[4], hasLength(2));
+      expect(distinctMiniGameIds(merged.clearedByReset.dailyActivity[4]!), {
+        'g-quiz',
+      });
     });
   });
 
