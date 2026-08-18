@@ -44,6 +44,17 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Mini-games are playable — True or false plays end to end.** Learn gains a
+  Mini-games group listing all seven formats from the extracted catalog (the
+  game's name leads, the topic it drills is the eyebrow), and `g-quiz` runs
+  the whole way: intro with how-to-play, six rounds one at a time with a
+  progress strip and immediate feedback, then a results screen with the score,
+  the companion's reaction and Play again. Both the round order and each
+  round's choice order are seeded per run from a nonce minted at the start and
+  never stored, so a replay cannot be passed by memorising positions. Nothing
+  about a run is written anywhere — no points, no tree growth, no cards, no
+  progress. Formats whose renderers are not built yet are listed but do not
+  navigate.
 - **Keep Sharp acknowledges the day's practice** — when the recommended
   practice type meets its own completion rule (for a replay, one completed
   replay today), the Today card swaps the recommendation for an animated

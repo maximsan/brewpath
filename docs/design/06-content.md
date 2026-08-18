@@ -233,7 +233,7 @@ Three are new (`g-bagpick`, `g-calibrate`, `g-sequence`), and the catalogue now
 covers every drillable card kind rather than a sample of them. `g-bagpick` runs
 five unlabelled bags from `BAGPICK_ROUNDS`.
 
-Each has a blurb + 3 how-to-play steps + its own content bank (`MINI_GAME_CONTENT`). Surfaced under Learn → "Practice again → Mini-games", where the row leads with the *lesson* name and the game name becomes the eyebrow.
+Each has a blurb + 3 how-to-play steps + its own content bank (`MINI_GAME_CONTENT`). Surfaced under Learn → "Practice again → Mini-games", where the row leads with the *game* name and the topic it drills (`sub`) becomes the eyebrow, with the time estimate (`meta`) trailing.
 
 ## 6.6 Coffee Challenges — 12
 

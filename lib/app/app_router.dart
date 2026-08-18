@@ -11,6 +11,8 @@ import 'package:brew_path/features/learn/presentation/module_detail_screen.dart'
 import 'package:brew_path/features/learn/presentation/module_summary_screen.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_screen.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_screen.dart';
+import 'package:brew_path/features/mini_games/presentation/mini_game_intro_screen.dart';
+import 'package:brew_path/features/mini_games/presentation/mini_game_player_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/brewer/brewer_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/goal/goal_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/loading/loading_screen.dart';
@@ -190,6 +192,24 @@ GoRouter appRouter(Ref ref) {
                     builder: (context, state) => GameTypePracticeScreen(
                       gameType: state.pathParameters['gameType']!,
                     ),
+                  ),
+                  GoRoute(
+                    path: AppRoutes.miniGameIntro.path,
+                    name: AppRoutes.miniGameIntro.name,
+                    parentNavigatorKey: _rootKey,
+                    builder: (context, state) => MiniGameIntroScreen(
+                      formatId: state.pathParameters['gameId']!,
+                    ),
+                    routes: [
+                      GoRoute(
+                        path: AppRoutes.miniGamePlay.path,
+                        name: AppRoutes.miniGamePlay.name,
+                        parentNavigatorKey: _rootKey,
+                        builder: (context, state) => MiniGamePlayerScreen(
+                          formatId: state.pathParameters['gameId']!,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

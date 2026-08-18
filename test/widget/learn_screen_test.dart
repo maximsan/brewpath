@@ -60,8 +60,9 @@ const _todayLesson = LessonModel(
 
 Future<void> _pumpLearn(WidgetTester tester) async {
   // Tall surface so the lazy `ListView` builds all 5 module cards at once —
-  // the hero card no longer leaves room for them in the default 600px height.
-  tester.view.physicalSize = const Size(400, 1600);
+  // the hero card and the practice sections above them leave no room in the
+  // default 600px height.
+  tester.view.physicalSize = const Size(400, 2400);
   tester.view.devicePixelRatio = 1.0;
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);

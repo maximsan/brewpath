@@ -8,6 +8,8 @@ import 'package:brew_path/features/learn/presentation/module_card_widget.dart';
 import 'package:brew_path/features/learn/presentation/practice_any_lesson_widget.dart';
 import 'package:brew_path/features/learn/presentation/practice_by_game_type_widget.dart';
 import 'package:brew_path/features/learn/presentation/today_card_widget.dart';
+import 'package:brew_path/features/mini_games/domain/mini_game_providers.dart';
+import 'package:brew_path/features/mini_games/presentation/mini_games_catalog_widget.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,6 +27,7 @@ class LearnScreen extends ConsumerWidget {
     final modules = ref.watch(modulesWithProgressProvider);
     final allLessons = ref.watch(allLessonsWithModuleProvider);
     final gameTypeCounts = ref.watch(gameTypePracticeCountsProvider);
+    final miniGames = ref.watch(miniGameFormatsProvider);
     final completedLessons = ref.watch(completedLessonsProvider);
 
     return Scaffold(
@@ -51,6 +54,12 @@ class LearnScreen extends ConsumerWidget {
                       .map((r) => r.lessonId)
                       .toSet() ??
                   const {},
+            ),
+            const SizedBox(height: 24),
+            const SectionHeader('Mini-games'),
+            const SizedBox(height: 12),
+            MiniGamesCatalogWidget(
+              formats: miniGames.asData?.value ?? const [],
             ),
             const SizedBox(height: 24),
             const SectionHeader('Practice by game type'),

@@ -71,6 +71,10 @@ ContentCard _$ContentCardFromJson(
           return FlavorCard.fromJson(
             json
           );
+                case 'quiz':
+          return QuizCard.fromJson(
+            json
+          );
         
           default:
             throw CheckedFromJsonException(
@@ -129,7 +133,7 @@ extension ContentCardPatterns on ContentCard {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( PredictCard value)?  predict,TResult Function( ConceptCard value)?  concept,TResult Function( VisualCard value)?  visual,TResult Function( PracticalCard value)?  practical,TResult Function( McqCard value)?  mcq,TResult Function( MultiCard value)?  multi,TResult Function( RecallCard value)?  recall,TResult Function( DecisionCard value)?  decision,TResult Function( MatchCard value)?  match,TResult Function( SequenceCard value)?  sequence,TResult Function( SliderCard value)?  slider,TResult Function( TastefixCard value)?  tastefix,TResult Function( BagpickCard value)?  bagpick,TResult Function( FlavorCard value)?  flavor,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( PredictCard value)?  predict,TResult Function( ConceptCard value)?  concept,TResult Function( VisualCard value)?  visual,TResult Function( PracticalCard value)?  practical,TResult Function( McqCard value)?  mcq,TResult Function( MultiCard value)?  multi,TResult Function( RecallCard value)?  recall,TResult Function( DecisionCard value)?  decision,TResult Function( MatchCard value)?  match,TResult Function( SequenceCard value)?  sequence,TResult Function( SliderCard value)?  slider,TResult Function( TastefixCard value)?  tastefix,TResult Function( BagpickCard value)?  bagpick,TResult Function( FlavorCard value)?  flavor,TResult Function( QuizCard value)?  quiz,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case PredictCard() when predict != null:
@@ -146,7 +150,8 @@ return sequence(_that);case SliderCard() when slider != null:
 return slider(_that);case TastefixCard() when tastefix != null:
 return tastefix(_that);case BagpickCard() when bagpick != null:
 return bagpick(_that);case FlavorCard() when flavor != null:
-return flavor(_that);case _:
+return flavor(_that);case QuizCard() when quiz != null:
+return quiz(_that);case _:
   return orElse();
 
 }
@@ -164,7 +169,7 @@ return flavor(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( PredictCard value)  predict,required TResult Function( ConceptCard value)  concept,required TResult Function( VisualCard value)  visual,required TResult Function( PracticalCard value)  practical,required TResult Function( McqCard value)  mcq,required TResult Function( MultiCard value)  multi,required TResult Function( RecallCard value)  recall,required TResult Function( DecisionCard value)  decision,required TResult Function( MatchCard value)  match,required TResult Function( SequenceCard value)  sequence,required TResult Function( SliderCard value)  slider,required TResult Function( TastefixCard value)  tastefix,required TResult Function( BagpickCard value)  bagpick,required TResult Function( FlavorCard value)  flavor,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( PredictCard value)  predict,required TResult Function( ConceptCard value)  concept,required TResult Function( VisualCard value)  visual,required TResult Function( PracticalCard value)  practical,required TResult Function( McqCard value)  mcq,required TResult Function( MultiCard value)  multi,required TResult Function( RecallCard value)  recall,required TResult Function( DecisionCard value)  decision,required TResult Function( MatchCard value)  match,required TResult Function( SequenceCard value)  sequence,required TResult Function( SliderCard value)  slider,required TResult Function( TastefixCard value)  tastefix,required TResult Function( BagpickCard value)  bagpick,required TResult Function( FlavorCard value)  flavor,required TResult Function( QuizCard value)  quiz,}){
 final _that = this;
 switch (_that) {
 case PredictCard():
@@ -181,7 +186,8 @@ return sequence(_that);case SliderCard():
 return slider(_that);case TastefixCard():
 return tastefix(_that);case BagpickCard():
 return bagpick(_that);case FlavorCard():
-return flavor(_that);}
+return flavor(_that);case QuizCard():
+return quiz(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -195,7 +201,7 @@ return flavor(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( PredictCard value)?  predict,TResult? Function( ConceptCard value)?  concept,TResult? Function( VisualCard value)?  visual,TResult? Function( PracticalCard value)?  practical,TResult? Function( McqCard value)?  mcq,TResult? Function( MultiCard value)?  multi,TResult? Function( RecallCard value)?  recall,TResult? Function( DecisionCard value)?  decision,TResult? Function( MatchCard value)?  match,TResult? Function( SequenceCard value)?  sequence,TResult? Function( SliderCard value)?  slider,TResult? Function( TastefixCard value)?  tastefix,TResult? Function( BagpickCard value)?  bagpick,TResult? Function( FlavorCard value)?  flavor,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( PredictCard value)?  predict,TResult? Function( ConceptCard value)?  concept,TResult? Function( VisualCard value)?  visual,TResult? Function( PracticalCard value)?  practical,TResult? Function( McqCard value)?  mcq,TResult? Function( MultiCard value)?  multi,TResult? Function( RecallCard value)?  recall,TResult? Function( DecisionCard value)?  decision,TResult? Function( MatchCard value)?  match,TResult? Function( SequenceCard value)?  sequence,TResult? Function( SliderCard value)?  slider,TResult? Function( TastefixCard value)?  tastefix,TResult? Function( BagpickCard value)?  bagpick,TResult? Function( FlavorCard value)?  flavor,TResult? Function( QuizCard value)?  quiz,}){
 final _that = this;
 switch (_that) {
 case PredictCard() when predict != null:
@@ -212,7 +218,8 @@ return sequence(_that);case SliderCard() when slider != null:
 return slider(_that);case TastefixCard() when tastefix != null:
 return tastefix(_that);case BagpickCard() when bagpick != null:
 return bagpick(_that);case FlavorCard() when flavor != null:
-return flavor(_that);case _:
+return flavor(_that);case QuizCard() when quiz != null:
+return quiz(_that);case _:
   return null;
 
 }
@@ -229,7 +236,7 @@ return flavor(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String label,  String title,  String body,  String question,  List<String> options, @JsonKey(name: 'a')  String answer,  String hold)?  predict,TResult Function( String label,  String title, @ConceptFillConverter()  List<ConceptFillPart> fill,  List<String> paragraphs,  List<List<String>> meta)?  concept,TResult Function( String label,  String title,  String variant,  String caption,  bool? mergeHeader,  bool? captionTop)?  visual,TResult Function( String tag,  String title,  List<String> paragraphs,  String note)?  practical,TResult Function( String prompt,  List<Choice> choices, @JsonKey(name: 'explain')  String explanation)?  mcq,TResult Function( String prompt,  List<Choice> choices, @JsonKey(name: 'explain')  String explanation)?  multi,TResult Function( String label,  String question,  List<Choice> choices, @JsonKey(name: 'explain')  String explanation, @JsonKey(name: 'line')  String takeaway)?  recall,TResult Function( String label,  String title,  String scenario,  String question,  List<DecisionOption> options, @JsonKey(name: 'right')  String rightExplanation, @JsonKey(name: 'wrong')  String wrongExplanation,  String? note)?  decision,TResult Function( String prompt,  List<MatchPair> pairs)?  match,TResult Function( String prompt,  List<SequenceItem> items)?  sequence,TResult Function( String prompt,  String leftLabel,  String rightLabel,  double target,  double tolerance,  List<String> scale,  String feedback)?  slider,TResult Function( List<String> tags,  String prompt,  String scenario,  List<Choice> choices, @JsonKey(name: 'explain')  String explanation)?  tastefix,TResult Function( String bag,  String origin,  String prompt,  BagpickBean bean,  List<String> options,  String answer,  String tell,  List<BagpickCue> cues, @JsonKey(name: 'explain')  String explanation)?  bagpick,TResult Function( String clue,  String prompt,  List<Choice> choices,  int answer, @JsonKey(name: 'explain')  String explanation)?  flavor,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String label,  String title,  String body,  String question,  List<String> options, @JsonKey(name: 'a')  String answer,  String hold)?  predict,TResult Function( String label,  String title, @ConceptFillConverter()  List<ConceptFillPart> fill,  List<String> paragraphs,  List<List<String>> meta)?  concept,TResult Function( String label,  String title,  String variant,  String caption,  bool? mergeHeader,  bool? captionTop)?  visual,TResult Function( String tag,  String title,  List<String> paragraphs,  String note)?  practical,TResult Function( String prompt,  List<Choice> choices, @JsonKey(name: 'explain')  String explanation)?  mcq,TResult Function( String prompt,  List<Choice> choices, @JsonKey(name: 'explain')  String explanation)?  multi,TResult Function( String label,  String question,  List<Choice> choices, @JsonKey(name: 'explain')  String explanation, @JsonKey(name: 'line')  String takeaway)?  recall,TResult Function( String label,  String title,  String scenario,  String question,  List<DecisionOption> options, @JsonKey(name: 'right')  String rightExplanation, @JsonKey(name: 'wrong')  String wrongExplanation,  String? note)?  decision,TResult Function( String prompt,  List<MatchPair> pairs)?  match,TResult Function( String prompt,  List<SequenceItem> items)?  sequence,TResult Function( String prompt,  String leftLabel,  String rightLabel,  double target,  double tolerance,  List<String> scale,  String feedback)?  slider,TResult Function( List<String> tags,  String prompt,  String scenario,  List<Choice> choices, @JsonKey(name: 'explain')  String explanation)?  tastefix,TResult Function( String bag,  String origin,  String prompt,  BagpickBean bean,  List<String> options,  String answer,  String tell,  List<BagpickCue> cues, @JsonKey(name: 'explain')  String explanation)?  bagpick,TResult Function( String clue,  String prompt,  List<Choice> choices,  int answer, @JsonKey(name: 'explain')  String explanation)?  flavor,TResult Function( String statement,  bool answer, @JsonKey(name: 'explain')  String explanation)?  quiz,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case PredictCard() when predict != null:
 return predict(_that.label,_that.title,_that.body,_that.question,_that.options,_that.answer,_that.hold);case ConceptCard() when concept != null:
@@ -245,7 +252,8 @@ return sequence(_that.prompt,_that.items);case SliderCard() when slider != null:
 return slider(_that.prompt,_that.leftLabel,_that.rightLabel,_that.target,_that.tolerance,_that.scale,_that.feedback);case TastefixCard() when tastefix != null:
 return tastefix(_that.tags,_that.prompt,_that.scenario,_that.choices,_that.explanation);case BagpickCard() when bagpick != null:
 return bagpick(_that.bag,_that.origin,_that.prompt,_that.bean,_that.options,_that.answer,_that.tell,_that.cues,_that.explanation);case FlavorCard() when flavor != null:
-return flavor(_that.clue,_that.prompt,_that.choices,_that.answer,_that.explanation);case _:
+return flavor(_that.clue,_that.prompt,_that.choices,_that.answer,_that.explanation);case QuizCard() when quiz != null:
+return quiz(_that.statement,_that.answer,_that.explanation);case _:
   return orElse();
 
 }
@@ -263,7 +271,7 @@ return flavor(_that.clue,_that.prompt,_that.choices,_that.answer,_that.explanati
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String label,  String title,  String body,  String question,  List<String> options, @JsonKey(name: 'a')  String answer,  String hold)  predict,required TResult Function( String label,  String title, @ConceptFillConverter()  List<ConceptFillPart> fill,  List<String> paragraphs,  List<List<String>> meta)  concept,required TResult Function( String label,  String title,  String variant,  String caption,  bool? mergeHeader,  bool? captionTop)  visual,required TResult Function( String tag,  String title,  List<String> paragraphs,  String note)  practical,required TResult Function( String prompt,  List<Choice> choices, @JsonKey(name: 'explain')  String explanation)  mcq,required TResult Function( String prompt,  List<Choice> choices, @JsonKey(name: 'explain')  String explanation)  multi,required TResult Function( String label,  String question,  List<Choice> choices, @JsonKey(name: 'explain')  String explanation, @JsonKey(name: 'line')  String takeaway)  recall,required TResult Function( String label,  String title,  String scenario,  String question,  List<DecisionOption> options, @JsonKey(name: 'right')  String rightExplanation, @JsonKey(name: 'wrong')  String wrongExplanation,  String? note)  decision,required TResult Function( String prompt,  List<MatchPair> pairs)  match,required TResult Function( String prompt,  List<SequenceItem> items)  sequence,required TResult Function( String prompt,  String leftLabel,  String rightLabel,  double target,  double tolerance,  List<String> scale,  String feedback)  slider,required TResult Function( List<String> tags,  String prompt,  String scenario,  List<Choice> choices, @JsonKey(name: 'explain')  String explanation)  tastefix,required TResult Function( String bag,  String origin,  String prompt,  BagpickBean bean,  List<String> options,  String answer,  String tell,  List<BagpickCue> cues, @JsonKey(name: 'explain')  String explanation)  bagpick,required TResult Function( String clue,  String prompt,  List<Choice> choices,  int answer, @JsonKey(name: 'explain')  String explanation)  flavor,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String label,  String title,  String body,  String question,  List<String> options, @JsonKey(name: 'a')  String answer,  String hold)  predict,required TResult Function( String label,  String title, @ConceptFillConverter()  List<ConceptFillPart> fill,  List<String> paragraphs,  List<List<String>> meta)  concept,required TResult Function( String label,  String title,  String variant,  String caption,  bool? mergeHeader,  bool? captionTop)  visual,required TResult Function( String tag,  String title,  List<String> paragraphs,  String note)  practical,required TResult Function( String prompt,  List<Choice> choices, @JsonKey(name: 'explain')  String explanation)  mcq,required TResult Function( String prompt,  List<Choice> choices, @JsonKey(name: 'explain')  String explanation)  multi,required TResult Function( String label,  String question,  List<Choice> choices, @JsonKey(name: 'explain')  String explanation, @JsonKey(name: 'line')  String takeaway)  recall,required TResult Function( String label,  String title,  String scenario,  String question,  List<DecisionOption> options, @JsonKey(name: 'right')  String rightExplanation, @JsonKey(name: 'wrong')  String wrongExplanation,  String? note)  decision,required TResult Function( String prompt,  List<MatchPair> pairs)  match,required TResult Function( String prompt,  List<SequenceItem> items)  sequence,required TResult Function( String prompt,  String leftLabel,  String rightLabel,  double target,  double tolerance,  List<String> scale,  String feedback)  slider,required TResult Function( List<String> tags,  String prompt,  String scenario,  List<Choice> choices, @JsonKey(name: 'explain')  String explanation)  tastefix,required TResult Function( String bag,  String origin,  String prompt,  BagpickBean bean,  List<String> options,  String answer,  String tell,  List<BagpickCue> cues, @JsonKey(name: 'explain')  String explanation)  bagpick,required TResult Function( String clue,  String prompt,  List<Choice> choices,  int answer, @JsonKey(name: 'explain')  String explanation)  flavor,required TResult Function( String statement,  bool answer, @JsonKey(name: 'explain')  String explanation)  quiz,}) {final _that = this;
 switch (_that) {
 case PredictCard():
 return predict(_that.label,_that.title,_that.body,_that.question,_that.options,_that.answer,_that.hold);case ConceptCard():
@@ -279,7 +287,8 @@ return sequence(_that.prompt,_that.items);case SliderCard():
 return slider(_that.prompt,_that.leftLabel,_that.rightLabel,_that.target,_that.tolerance,_that.scale,_that.feedback);case TastefixCard():
 return tastefix(_that.tags,_that.prompt,_that.scenario,_that.choices,_that.explanation);case BagpickCard():
 return bagpick(_that.bag,_that.origin,_that.prompt,_that.bean,_that.options,_that.answer,_that.tell,_that.cues,_that.explanation);case FlavorCard():
-return flavor(_that.clue,_that.prompt,_that.choices,_that.answer,_that.explanation);}
+return flavor(_that.clue,_that.prompt,_that.choices,_that.answer,_that.explanation);case QuizCard():
+return quiz(_that.statement,_that.answer,_that.explanation);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -293,7 +302,7 @@ return flavor(_that.clue,_that.prompt,_that.choices,_that.answer,_that.explanati
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String label,  String title,  String body,  String question,  List<String> options, @JsonKey(name: 'a')  String answer,  String hold)?  predict,TResult? Function( String label,  String title, @ConceptFillConverter()  List<ConceptFillPart> fill,  List<String> paragraphs,  List<List<String>> meta)?  concept,TResult? Function( String label,  String title,  String variant,  String caption,  bool? mergeHeader,  bool? captionTop)?  visual,TResult? Function( String tag,  String title,  List<String> paragraphs,  String note)?  practical,TResult? Function( String prompt,  List<Choice> choices, @JsonKey(name: 'explain')  String explanation)?  mcq,TResult? Function( String prompt,  List<Choice> choices, @JsonKey(name: 'explain')  String explanation)?  multi,TResult? Function( String label,  String question,  List<Choice> choices, @JsonKey(name: 'explain')  String explanation, @JsonKey(name: 'line')  String takeaway)?  recall,TResult? Function( String label,  String title,  String scenario,  String question,  List<DecisionOption> options, @JsonKey(name: 'right')  String rightExplanation, @JsonKey(name: 'wrong')  String wrongExplanation,  String? note)?  decision,TResult? Function( String prompt,  List<MatchPair> pairs)?  match,TResult? Function( String prompt,  List<SequenceItem> items)?  sequence,TResult? Function( String prompt,  String leftLabel,  String rightLabel,  double target,  double tolerance,  List<String> scale,  String feedback)?  slider,TResult? Function( List<String> tags,  String prompt,  String scenario,  List<Choice> choices, @JsonKey(name: 'explain')  String explanation)?  tastefix,TResult? Function( String bag,  String origin,  String prompt,  BagpickBean bean,  List<String> options,  String answer,  String tell,  List<BagpickCue> cues, @JsonKey(name: 'explain')  String explanation)?  bagpick,TResult? Function( String clue,  String prompt,  List<Choice> choices,  int answer, @JsonKey(name: 'explain')  String explanation)?  flavor,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String label,  String title,  String body,  String question,  List<String> options, @JsonKey(name: 'a')  String answer,  String hold)?  predict,TResult? Function( String label,  String title, @ConceptFillConverter()  List<ConceptFillPart> fill,  List<String> paragraphs,  List<List<String>> meta)?  concept,TResult? Function( String label,  String title,  String variant,  String caption,  bool? mergeHeader,  bool? captionTop)?  visual,TResult? Function( String tag,  String title,  List<String> paragraphs,  String note)?  practical,TResult? Function( String prompt,  List<Choice> choices, @JsonKey(name: 'explain')  String explanation)?  mcq,TResult? Function( String prompt,  List<Choice> choices, @JsonKey(name: 'explain')  String explanation)?  multi,TResult? Function( String label,  String question,  List<Choice> choices, @JsonKey(name: 'explain')  String explanation, @JsonKey(name: 'line')  String takeaway)?  recall,TResult? Function( String label,  String title,  String scenario,  String question,  List<DecisionOption> options, @JsonKey(name: 'right')  String rightExplanation, @JsonKey(name: 'wrong')  String wrongExplanation,  String? note)?  decision,TResult? Function( String prompt,  List<MatchPair> pairs)?  match,TResult? Function( String prompt,  List<SequenceItem> items)?  sequence,TResult? Function( String prompt,  String leftLabel,  String rightLabel,  double target,  double tolerance,  List<String> scale,  String feedback)?  slider,TResult? Function( List<String> tags,  String prompt,  String scenario,  List<Choice> choices, @JsonKey(name: 'explain')  String explanation)?  tastefix,TResult? Function( String bag,  String origin,  String prompt,  BagpickBean bean,  List<String> options,  String answer,  String tell,  List<BagpickCue> cues, @JsonKey(name: 'explain')  String explanation)?  bagpick,TResult? Function( String clue,  String prompt,  List<Choice> choices,  int answer, @JsonKey(name: 'explain')  String explanation)?  flavor,TResult? Function( String statement,  bool answer, @JsonKey(name: 'explain')  String explanation)?  quiz,}) {final _that = this;
 switch (_that) {
 case PredictCard() when predict != null:
 return predict(_that.label,_that.title,_that.body,_that.question,_that.options,_that.answer,_that.hold);case ConceptCard() when concept != null:
@@ -309,7 +318,8 @@ return sequence(_that.prompt,_that.items);case SliderCard() when slider != null:
 return slider(_that.prompt,_that.leftLabel,_that.rightLabel,_that.target,_that.tolerance,_that.scale,_that.feedback);case TastefixCard() when tastefix != null:
 return tastefix(_that.tags,_that.prompt,_that.scenario,_that.choices,_that.explanation);case BagpickCard() when bagpick != null:
 return bagpick(_that.bag,_that.origin,_that.prompt,_that.bean,_that.options,_that.answer,_that.tell,_that.cues,_that.explanation);case FlavorCard() when flavor != null:
-return flavor(_that.clue,_that.prompt,_that.choices,_that.answer,_that.explanation);case _:
+return flavor(_that.clue,_that.prompt,_that.choices,_that.answer,_that.explanation);case QuizCard() when quiz != null:
+return quiz(_that.statement,_that.answer,_that.explanation);case _:
   return null;
 
 }
@@ -1557,6 +1567,83 @@ as String,prompt: null == prompt ? _self.prompt : prompt // ignore: cast_nullabl
 as String,choices: null == choices ? _self._choices : choices // ignore: cast_nullable_to_non_nullable
 as List<Choice>,answer: null == answer ? _self.answer : answer // ignore: cast_nullable_to_non_nullable
 as int,explanation: null == explanation ? _self.explanation : explanation // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class QuizCard implements ContentCard, Gradable {
+  const QuizCard({required this.statement, required this.answer, @JsonKey(name: 'explain') required this.explanation, final  String? $type}): $type = $type ?? 'quiz';
+  factory QuizCard.fromJson(Map<String, dynamic> json) => _$QuizCardFromJson(json);
+
+ final  String statement;
+ final  bool answer;
+@JsonKey(name: 'explain') final  String explanation;
+
+@JsonKey(name: 'kind')
+final String $type;
+
+
+/// Create a copy of ContentCard
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$QuizCardCopyWith<QuizCard> get copyWith => _$QuizCardCopyWithImpl<QuizCard>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$QuizCardToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is QuizCard&&(identical(other.statement, statement) || other.statement == statement)&&(identical(other.answer, answer) || other.answer == answer)&&(identical(other.explanation, explanation) || other.explanation == explanation));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,statement,answer,explanation);
+
+@override
+String toString() {
+  return 'ContentCard.quiz(statement: $statement, answer: $answer, explanation: $explanation)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $QuizCardCopyWith<$Res> implements $ContentCardCopyWith<$Res> {
+  factory $QuizCardCopyWith(QuizCard value, $Res Function(QuizCard) _then) = _$QuizCardCopyWithImpl;
+@useResult
+$Res call({
+ String statement, bool answer,@JsonKey(name: 'explain') String explanation
+});
+
+
+
+
+}
+/// @nodoc
+class _$QuizCardCopyWithImpl<$Res>
+    implements $QuizCardCopyWith<$Res> {
+  _$QuizCardCopyWithImpl(this._self, this._then);
+
+  final QuizCard _self;
+  final $Res Function(QuizCard) _then;
+
+/// Create a copy of ContentCard
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? statement = null,Object? answer = null,Object? explanation = null,}) {
+  return _then(QuizCard(
+statement: null == statement ? _self.statement : statement // ignore: cast_nullable_to_non_nullable
+as String,answer: null == answer ? _self.answer : answer // ignore: cast_nullable_to_non_nullable
+as bool,explanation: null == explanation ? _self.explanation : explanation // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }

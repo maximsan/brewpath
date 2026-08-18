@@ -15,8 +15,9 @@ import 'package:flutter/widgets.dart';
 /// function until the kind is handled, which is the guarantee the union was
 /// chosen for.
 ///
-/// Five kinds render today: they are the eight cards of the first lesson and
-/// 185 of the course's 257. The rest return null rather than a placeholder,
+/// Six kinds render today: the five lesson kinds that are the eight cards of
+/// the first lesson and 185 of the course's 257, plus `quiz`, which only
+/// mini-games author. The rest return null rather than a placeholder,
 /// so a host meets an honest absence instead of a card that pretends.
 ///
 /// [nonce] identifies the lesson attempt and [cardIndex] the card's place in
@@ -77,6 +78,15 @@ Widget? contentCardView(
       onSolved: onSolved,
       onContinue: onContinue,
     ),
+    final QuizCard quiz => GradedPicker(
+      options: shuffledBySeed(_quizOptions(quiz), seed),
+      copy: PickerCopy(
+        prompt: quiz.statement,
+        explain: ({required wasCorrect}) => quiz.explanation,
+      ),
+      onSolved: onSolved,
+      onContinue: onContinue,
+    ),
     VisualCard() ||
     PracticalCard() ||
     MultiCard() ||
@@ -88,6 +98,14 @@ Widget? contentCardView(
     FlavorCard() => null,
   };
 }
+
+/// True and False, marked from the statement's own answer. The pair is
+/// seeded like every other card's choices, so a run cannot be passed by
+/// learning that True always sits first.
+List<ChoiceOption> _quizOptions(QuizCard card) => [
+  ChoiceOption(text: 'True', isCorrect: card.answer),
+  ChoiceOption(text: 'False', isCorrect: !card.answer),
+];
 
 List<ChoiceOption> _fromChoices(List<Choice> choices) => [
   for (final choice in choices)

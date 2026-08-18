@@ -20,7 +20,8 @@ abstract class Gradable {}
 
 /// A single card in a lesson, discriminated on its `kind` key.
 ///
-/// The 14 variants are the kinds the prototype actually authors. `intro` and
+/// The 15 variants are the kinds the prototype actually authors —
+/// 14 lesson kinds plus `quiz`, which only mini-games use. `intro` and
 /// `takeaway` are absent on purpose: renderers for them survive in the
 /// prototype but no card uses either, having been superseded by `predict` and
 /// `recall`.
@@ -167,6 +168,19 @@ sealed class ContentCard with _$ContentCard {
     required int answer,
     @JsonKey(name: 'explain') required String explanation,
   }) = FlavorCard;
+
+  /// True or false, one statement at a time.
+  ///
+  /// Unique to mini-games: no lesson authors this kind, which is why it is
+  /// absent from the graded kinds the extractor publishes in the lessons bank
+  /// (that set exists to cross-check *lesson* cards). It is graded all the
+  /// same — a run counts its successes.
+  @Implements<Gradable>()
+  const factory ContentCard.quiz({
+    required String statement,
+    required bool answer,
+    @JsonKey(name: 'explain') required String explanation,
+  }) = QuizCard;
 
   /// Creates a [ContentCard] from decoded JSON, dispatching on `kind`.
   factory ContentCard.fromJson(Map<String, dynamic> json) =>

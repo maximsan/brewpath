@@ -23,7 +23,8 @@ bool isGraded(ContentCard card) => switch (card) {
   SliderCard() ||
   TastefixCard() ||
   BagpickCard() ||
-  FlavorCard() => true,
+  FlavorCard() ||
+  QuizCard() => true,
 };
 
 /// The graded cards among [cards] — the denominator a mastery score divides by.
