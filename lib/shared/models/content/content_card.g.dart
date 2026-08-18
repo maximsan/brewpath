@@ -297,3 +297,17 @@ Map<String, dynamic> _$FlavorCardToJson(FlavorCard instance) =>
       'explain': instance.explanation,
       'kind': instance.$type,
     };
+
+QuizCard _$QuizCardFromJson(Map<String, dynamic> json) => QuizCard(
+  statement: json['statement'] as String,
+  answer: json['answer'] as bool,
+  explanation: json['explain'] as String,
+  $type: json['kind'] as String?,
+);
+
+Map<String, dynamic> _$QuizCardToJson(QuizCard instance) => <String, dynamic>{
+  'statement': instance.statement,
+  'answer': instance.answer,
+  'explain': instance.explanation,
+  'kind': instance.$type,
+};

@@ -107,6 +107,23 @@ void main() {
     expect(marked, emitted.toSet());
   });
 
+  // `quiz` is the one variant no lesson authors, so the bank-driven checks
+  // above never reach it — it arrives only in the mini-game content bank.
+  test('a quiz round deserializes and is graded', () {
+    final card = ContentCard.fromJson(const {
+      'kind': 'quiz',
+      'statement': 'A coffee bean is the seed of a fruit',
+      'answer': true,
+      'explain': 'True — it is the seed of the coffee cherry.',
+    });
+
+    expect(card, isA<QuizCard>());
+    expect(card, isA<Gradable>());
+    expect(isGraded(card), isTrue);
+    expect((card as QuizCard).answer, isTrue);
+    expect(card.explanation, 'True — it is the seed of the coffee cherry.');
+  });
+
   test('gradedCards keeps the graded cards and drops the rest', () {
     final parsed = cards.map(ContentCard.fromJson).toList();
     final graded = gradedCards(parsed);

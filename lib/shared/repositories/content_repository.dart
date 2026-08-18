@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:brew_path/shared/models/coffee_card_model.dart';
+import 'package:brew_path/shared/models/content/content_card.dart';
+import 'package:brew_path/shared/models/content/mini_game_format.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/models/module_model.dart';
 import 'package:flutter/services.dart';
@@ -13,6 +15,8 @@ class ContentRepository {
   List<ModuleModel>? _modules;
   List<LessonModel>? _lessons;
   List<CoffeeCardModel>? _cards;
+  List<MiniGameFormat>? _miniGames;
+  Map<String, List<ContentCard>>? _miniGameRounds;
 
   /// Loads and caches all modules from bundled JSON.
   Future<List<ModuleModel>> getModules() async {
@@ -41,10 +45,57 @@ class ContentRepository {
     return _cards!;
   }
 
+  /// Loads and caches the mini-game catalog, in the order the bank lists it.
+  Future<List<MiniGameFormat>> getMiniGameFormats() async {
+    _miniGames ??= await _loadBank(
+      'assets/content/generated/mini_games.json',
+      MiniGameFormat.fromJson,
+    );
+    return _miniGames!;
+  }
+
+  /// The rounds authored for [formatId], or empty when the bank has none.
+  ///
+  /// The extractor refuses to write a format with no rounds, so an empty list
+  /// here means the id itself is unknown rather than the game being empty.
+  Future<List<ContentCard>> getMiniGameRounds(String formatId) async {
+    _miniGameRounds ??= await _loadRounds();
+    return _miniGameRounds![formatId] ?? const [];
+  }
+
+  Future<Map<String, List<ContentCard>>> _loadRounds() async {
+    final raw = await rootBundle.loadString(
+      'assets/content/generated/mini_game_content.json',
+    );
+    final items =
+        (jsonDecode(raw) as Map<String, dynamic>)['items'] as List<dynamic>;
+    return {
+      for (final item in items.cast<Map<String, dynamic>>())
+        item['id'] as String: [
+          for (final round in (item['rounds'] as List<dynamic>))
+            ContentCard.fromJson(round as Map<String, dynamic>),
+        ],
+    };
+  }
+
   /// Returns the lesson with [id], or null if none exists.
   Future<LessonModel?> getLessonById(String id) async {
     final lessons = await getLessons();
     return lessons.where((l) => l.id == id).firstOrNull;
+  }
+
+  /// Reads a generated bank, whose items sit inside the extractor's envelope
+  /// rather than at the top level the hand-written assets use.
+  Future<List<T>> _loadBank<T>(
+    String assetPath,
+    T Function(Map<String, dynamic>) fromJson,
+  ) async {
+    final raw = await rootBundle.loadString(assetPath);
+    final items =
+        (jsonDecode(raw) as Map<String, dynamic>)['items'] as List<dynamic>;
+    return [
+      for (final item in items.cast<Map<String, dynamic>>()) fromJson(item),
+    ];
   }
 
   Future<List<T>> _load<T>(
