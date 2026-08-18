@@ -294,6 +294,81 @@ void main() {
     expectRefusal(source, naming: ['robusta', 'origin']);
   });
 
+  test('the rollout note survives extraction, unread by anything', () {
+    final out = dir('out');
+    expect(_run(_prototype, out).exitCode, 0);
+
+    // Emitted because the extractor renames and drops nothing. Nothing in the
+    // app may gate on it — all three species ship — but losing it silently
+    // would mean the bank no longer mirrors its source.
+    for (final variety in _items(out, 'grove_varieties.json')) {
+      expect(variety['drop'], isA<String>(), reason: "${variety['id']}");
+    }
+  });
+
+  test('a light filter carrying junk outside its terms is refused', () {
+    final source = seededSource();
+    seedCorruption(
+      source,
+      'customize.jsx',
+      "filter: 'saturate(0.5) brightness(1.12) contrast(0.94)'",
+      "filter: 'saturate(0.5) garbage junk'",
+    );
+
+    expectRefusal(source, naming: ['frost', 'garbage junk']);
+  });
+
+  test('a filter argument that is not a value is refused', () {
+    final source = seededSource();
+    seedCorruption(
+      source,
+      'customize.jsx',
+      "filter: 'saturate(0.5) brightness(1.12) contrast(0.94)'",
+      "filter: 'saturate(abc)'",
+    );
+
+    expectRefusal(source, naming: ['frost', 'abc']);
+  });
+
+  test('a filter primitive the app cannot compose is refused', () {
+    final source = seededSource();
+    seedCorruption(
+      source,
+      'customize.jsx',
+      "filter: 'saturate(0.5) brightness(1.12) contrast(0.94)'",
+      "filter: 'blur(2px)'",
+    );
+
+    expectRefusal(source, naming: ['frost', 'blur']);
+  });
+
+  test('a fifth light is refused — the count is the decision', () {
+    final source = seededSource();
+    seedCorruption(
+      source,
+      'customize.jsx',
+      "  { id: 'frost',",
+      "  { id: 'dusk', name: 'Dusk', note: 'Late', swatch: '#333', "
+          "filter: 'brightness(0.9)' },\n  { id: 'frost',",
+    );
+
+    expectRefusal(source, naming: ['grove lights', '5']);
+  });
+
+  test('a species missing a field the model requires is refused', () {
+    final source = seededSource();
+    // Dropped entirely rather than emptied: `leaf` is legitimately empty on
+    // Arabica, so only absence is the failure.
+    seedCorruption(
+      source,
+      'customize.jsx',
+      "shape: 'scale(1.2, 0.9)', leaf:",
+      "shape: 'scale(1.2, 0.9)', leafless:",
+    );
+
+    expectRefusal(source, naming: ['robusta', 'leaf']);
+  });
+
   test('a catalog format whose kind has no help entry is refused', () {
     final source = seededSource();
     seedCorruption(

@@ -42,21 +42,30 @@ const CANDIDATE_END = /^[\]}];/gm;
  * never match, and only a real literal definition can.
  */
 const DECLARATION_FORMS = [
-  (name) => new RegExp(`^const\\s+${name}\\s*=`, "m"),
-  (name) => new RegExp(`^window\\.${name}\\s*=\\s*[[{]`, "m"),
+  { assignsOntoWindow: false, of: (name) => new RegExp(`^const\\s+${name}\\s*=`, "m") },
+  {
+    assignsOntoWindow: true,
+    of: (name) => new RegExp(`^window\\.${name}\\s*=\\s*[[{]`, "m"),
+  },
 ];
 
+/**
+ * Returns the match and which form produced it. The form is carried rather
+ * than re-derived from the sliced text later: inferring it back from a
+ * `window.` prefix happens to work only because these patterns are anchored,
+ * and that is a coincidence to rest a read-back on.
+ */
 const declarationStart = (source, name) => {
   for (const form of DECLARATION_FORMS) {
-    const match = form(name).exec(source);
-    if (match) return match;
+    const match = form.of(name).exec(source);
+    if (match) return { match, assignsOntoWindow: form.assignsOntoWindow };
   }
   return null;
 };
 
 /**
  * Returns the source text of `name`'s declaration, from the keyword through the
- * closing semicolon.
+ * closing semicolon, and which form declared it.
  *
  * @throws if the declaration is absent, or if no candidate end compiles — both
  *   mean the prototype moved, and reading on would be guessing.
@@ -66,13 +75,14 @@ function sliceDeclaration(source, name, filename) {
   if (!opening) {
     throw new Error(`${filename}: no top-level declaration of \`${name}\``);
   }
-  const start = opening.index;
+  const { assignsOntoWindow } = opening;
+  const start = opening.match.index;
 
   for (const end of source.matchAll(CANDIDATE_END)) {
     const stop = end.index + end[0].length;
     if (stop <= start) continue;
     const text = source.slice(start, stop);
-    if (compiles(text, filename, name)) return text;
+    if (compiles(text, filename, name)) return { text, assignsOntoWindow };
   }
   throw new Error(
     `${filename}: found \`${name}\` but no slice of it parses — the prototype's ` +
@@ -101,14 +111,22 @@ function compiles(text, filename, name) {
  * case; see the header of `extract_content.js`).
  */
 function evaluateDeclaration(source, name, filename, seed = {}) {
-  const text = sliceDeclaration(source, name, filename);
+  const { text, assignsOntoWindow } = sliceDeclaration(source, name, filename);
 
   // The `window.NAME = [...]` form leaves no local binding to read back, so the
   // object has to exist before the slice runs and is where the value comes
-  // from afterwards. It is supplied for that form only: a `const` bank that
-  // reaches for a global still meets the bare context and fails loudly, which
-  // is the guarantee this evaluation is built on.
-  const assignsOntoWindow = text.startsWith("window.");
+  // from afterwards. A `const` bank still meets the bare context, so it keeps
+  // failing loudly on any global it reaches for.
+  //
+  // The residual, stated rather than left to be discovered: inside the window
+  // form that object exists, so a bank of that form reaching for some *other*
+  // `window` property reads `undefined` instead of throwing. `guardShape`
+  // catches only a wholly empty result, not a nested one. Both grove banks are
+  // self-contained literals today; a future one that is not would need the
+  // same explicit seeding `MINI_GAME_CONTENT` gets.
+  //
+  // `seed` is spread last so a caller-supplied `window` wins over the empty
+  // one — the order `MINI_GAME_CONTENT`'s cross-file getter depends on.
   const context = vm.createContext(
     assignsOntoWindow ? { window: {}, ...seed } : { ...seed },
   );

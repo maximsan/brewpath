@@ -41,6 +41,18 @@ const VARIETY_COPY = [
 const LIGHT_COPY = ["name", "note", "swatch"];
 
 /**
+ * Fields that must be *present* but may legitimately be empty — Arabica's
+ * treatment is empty by definition, and Daylight's filter with it.
+ *
+ * Checked separately from copy because the Dart models take all of these as
+ * required strings: a prototype edit dropping the key entirely would pass a
+ * non-empty check that never runs and then throw at app startup, which is the
+ * failure this bank's validation exists to move forward to build time.
+ */
+const VARIETY_PRESENT = ["shape", "leaf", "drop"];
+const LIGHT_PRESENT = ["filter"];
+
+/**
  * The CSS filter primitives the app knows how to turn into a colour matrix.
  * A filter naming anything else would compose to something the Flutter side
  * silently drops, so it is refused here instead.
@@ -55,6 +67,13 @@ const FILTER_PRIMITIVES = new Set([
 
 const FILTER_TERM = /([a-z-]+)\(([^)]*)\)/g;
 
+/**
+ * A filter argument: a number, optionally with the one unit the chains use.
+ * Checked because `saturate(abc)` is not a filter the app can compose, and a
+ * chain is only as parseable as its weakest argument.
+ */
+const FILTER_ARGUMENT = /^-?\d+(\.\d+)?(deg|%)?$/;
+
 function validateGrove(banks, index, report) {
   validateCount("grove varieties", banks.groveVarieties, VARIETY_COUNT, report);
   validateCount("grove lights", banks.groveLights, LIGHT_COUNT, report);
@@ -67,6 +86,7 @@ function validateGrove(banks, index, report) {
     }
     varietyIds.add(variety.id);
     requireCopy(variety, VARIETY_COPY, where, report);
+    requirePresent(variety, VARIETY_PRESENT, where, report);
 
     // Arabica is the ten shipped frames as drawn. Any treatment on it would
     // mean no variety renders the real art, and the other two are defined as
@@ -90,6 +110,7 @@ function validateGrove(banks, index, report) {
     }
     lightIds.add(light.id);
     requireCopy(light, LIGHT_COPY, where, report);
+    requirePresent(light, LIGHT_PRESENT, where, report);
     validateFilter(light.filter, `${where} filter`, report);
   }
 }
@@ -113,23 +134,49 @@ function requireCopy(entry, fields, where, report) {
   }
 }
 
-/**
- * An empty filter is the identity and always allowed; anything present must be
- * a chain of primitives the app can compose.
- */
-function validateFilter(filter, where, report) {
-  if (filter === undefined || filter === null || filter.trim() === "") return;
-
-  const terms = [...String(filter).matchAll(FILTER_TERM)];
-  if (terms.length === 0) {
-    report(where, `is '${filter}', which parses to no filter terms`);
-    return;
-  }
-  for (const [, primitive] of terms) {
-    if (!FILTER_PRIMITIVES.has(primitive)) {
-      report(where, `uses '${primitive}', which the app cannot compose`);
+function requirePresent(entry, fields, where, report) {
+  for (const field of fields) {
+    if (typeof entry[field] !== "string") {
+      report(where, `is missing its ${field} field entirely`);
     }
   }
 }
 
-module.exports = { validateGrove, VARIETY_COUNT, LIGHT_COUNT };
+/**
+ * An empty filter is the identity and always allowed; anything present must be
+ * a chain of primitives the app can compose, and nothing else.
+ *
+ * "Nothing else" is the part worth stating: checking only that the recognised
+ * terms are recognised lets `saturate(0.5) junk` through, because the junk
+ * simply is not a term. The whole string has to be accounted for, so what
+ * survives removing every term must be blank.
+ */
+function validateFilter(filter, where, report) {
+  if (filter === undefined || filter === null) return;
+  if (typeof filter !== "string") {
+    report(where, `is ${JSON.stringify(filter)}, which is not a filter string`);
+    return;
+  }
+  if (filter.trim() === "") return;
+
+  const terms = [...filter.matchAll(FILTER_TERM)];
+  if (terms.length === 0) {
+    report(where, `is '${filter}', which parses to no filter terms`);
+    return;
+  }
+  for (const [, primitive, argument] of terms) {
+    if (!FILTER_PRIMITIVES.has(primitive)) {
+      report(where, `uses '${primitive}', which the app cannot compose`);
+    }
+    if (!FILTER_ARGUMENT.test(argument.trim())) {
+      report(where, `passes '${argument}' to ${primitive}, which is not a value`);
+    }
+  }
+
+  const unaccounted = filter.replace(FILTER_TERM, "").trim();
+  if (unaccounted !== "") {
+    report(where, `carries '${unaccounted}', which is not part of any filter term`);
+  }
+}
+
+module.exports = { validateGrove };
