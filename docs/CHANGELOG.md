@@ -44,6 +44,13 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The grove's two axes leave the prototype** — the extractor now emits the
+  three coffee species (Arabica, Robusta, Liberica, each with its binomial,
+  origin, growing conditions, cup profile and the tell describing the plant)
+  and the four lights (Daylight, Golden Hour, Moonlit, First Frost), and the
+  app loads both. Nothing renders them yet; the Studio chooser is a later
+  slice. The counts are checked exactly — a fourth species stops the build,
+  because three is a product ruling rather than a content list that grows.
 - **The Coffee Tree grows.** Finishing a lesson for the first time advances the
   stored stage, so the one picture of course progress finally moves: a fresh
   install is a seed, finishing Foundations reaches the tenth stage, and replays
