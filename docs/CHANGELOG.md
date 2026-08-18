@@ -44,6 +44,13 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The Coffee Tree grows.** Finishing a lesson for the first time advances the
+  stored stage, so the one picture of course progress finally moves: a fresh
+  install is a seed, finishing Foundations reaches the tenth stage, and replays
+  and practice grow nothing. The stage is stored as the *outcome* rather than
+  recomputed from a lesson count, and it is written raise-only — so adding
+  lessons to the course later can never walk a finished learner's tree back
+  down, and a stage reached on one device survives the merge with another.
 - **The Coffee Tree stands** — the Profile tab now opens on the tree itself,
   showing the stage the learner has reached, announced to screen readers. A
   fresh install shows the seed. Note that nothing advances the stage yet, so

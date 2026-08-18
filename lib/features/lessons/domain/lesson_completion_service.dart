@@ -1,5 +1,6 @@
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/streak_service.dart';
+import 'package:brew_path/features/progress/domain/tree_growth.dart';
 import 'package:brew_path/features/progress/domain/xp_service.dart';
 import 'package:brew_path/services/analytics/analytics_provider.dart';
 import 'package:brew_path/services/analytics/analytics_service.dart';
@@ -10,6 +11,7 @@ import 'package:brew_path/shared/repositories/module_progress_repository.dart';
 import 'package:brew_path/shared/repositories/progress_repository.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/repositories/settings_repository.dart';
+import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'lesson_completion_service.g.dart';
@@ -66,6 +68,7 @@ class LessonCompletionService {
     required this.cardRepository,
     required this.contentRepository,
     required this.moduleProgressRepository,
+    required this.snapshotRepository,
     required this.analyticsService,
     required this.xpService,
     required this.streakService,
@@ -85,6 +88,9 @@ class LessonCompletionService {
 
   /// Per-module "bonus awarded" ledger.
   final ModuleProgressRepository moduleProgressRepository;
+
+  /// The progress snapshot, which holds the Coffee Tree's stage.
+  final SnapshotRepository snapshotRepository;
 
   /// Analytics sink.
   final AnalyticsService analyticsService;
@@ -143,6 +149,8 @@ class LessonCompletionService {
       ..streakDays = streak.streakDays
       ..lastActivityDate = streak.lastActivityDate;
     await settingsRepository.saveSettings(settings);
+
+    await _growTree();
 
     final moduleBonus = await _maybeAwardModuleBonus(lesson);
 
@@ -246,6 +254,30 @@ class LessonCompletionService {
     return bonus;
   }
 
+  /// Advances the Coffee Tree to the stage this completion has earned.
+  ///
+  /// Only reached on a first completion — a replay returns before this — so
+  /// replays and practice grow nothing. The write is raise-only, so a course
+  /// that grows later cannot take a stage back, and a stage already reached on
+  /// another device survives the merge by the same rule.
+  Future<void> _growTree() async {
+    final completed = await progressRepository.getAllCompleted();
+    final lessons = await contentRepository.getLessons();
+    final stage = treeStageForProgress(
+      completed: completed.length,
+      total: lessons.length,
+    );
+
+    final snapshot = await snapshotRepository.read();
+    if (stage <= snapshot.clearedByReset.treeStage) return;
+    await snapshotRepository.write(
+      snapshot.copyWith(
+        updatedAt: DateTime.now().millisecondsSinceEpoch,
+        clearedByReset: snapshot.clearedByReset.withTreeStageAtLeast(stage),
+      ),
+    );
+  }
+
   /// Strips the time component so practice XP is gated per calendar day.
   DateTime _dateOnly(DateTime d) => DateTime(d.year, d.month, d.day);
 }
@@ -259,6 +291,7 @@ LessonCompletionService lessonCompletionService(Ref ref) =>
       cardRepository: ref.watch(cardRepositoryProvider),
       contentRepository: ref.watch(contentRepositoryProvider),
       moduleProgressRepository: ref.watch(moduleProgressRepositoryProvider),
+      snapshotRepository: ref.watch(snapshotRepositoryProvider),
       analyticsService: ref.watch(analyticsServiceProvider),
       xpService: const XpService(),
       streakService: const StreakService(),

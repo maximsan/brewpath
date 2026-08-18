@@ -1,3 +1,5 @@
+import 'package:brew_path/features/progress/domain/tree_growth.dart';
+import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/storage/progress_record.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -28,16 +30,23 @@ Future<List<ProgressRecord>> completedLessons(Ref ref) =>
 Future<List<String>> collectedCards(Ref ref) =>
     ref.watch(cardRepositoryProvider).getAllCollectedCardIds();
 
-/// Highest tree stage ever reached, as the stored snapshot holds it.
+/// Highest tree stage ever reached: `max(stored, derived)`, as the field has
+/// always described itself.
 ///
-/// The stored half only. `ClearedByReset.treeStage` describes itself as read
-/// `max(stored, derived)`, but nothing in the app writes the field or derives
-/// a stage yet, so the max would be over one operand — see #150. Deriving from
-/// the completed-lesson count to fill the gap is precisely the
-/// growing-the-course-shrinks-the-tree bug that field's doc warns against, so
-/// this reads what is stored and nothing more.
+/// The stored half is written by first-time lesson completion and never goes
+/// down. The derived half is what the *current* course size implies, and it
+/// is here to heal a learner whose stored stage predates the writer — taking
+/// the max is what stops it doing harm, because a grown course derives lower
+/// for the same learner and the stored floor wins.
 @riverpod
 Future<int> treeStage(Ref ref) async {
   final snapshot = await ref.watch(snapshotRepositoryProvider).read();
-  return snapshot.clearedByReset.treeStage;
+  final completed = await ref.watch(completedLessonsProvider.future);
+  final lessons = await ref.watch(contentRepositoryProvider).getLessons();
+  final derived = treeStageForProgress(
+    completed: completed.length,
+    total: lessons.length,
+  );
+  final stored = snapshot.clearedByReset.treeStage;
+  return stored > derived ? stored : derived;
 }
