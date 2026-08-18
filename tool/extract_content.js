@@ -49,6 +49,13 @@
  *   collectible stores identity only.
  * - **`DICT_CATEGORIES` is read but not emitted.** It validates every term's
  *   `cat` pointer; no dictionary surface exists in the app yet.
+ * - **The grove's two banks are assigned straight onto `window`.**
+ *   `customize.jsx` declares `TREE_VARIETIES` and `GROVE_LIGHT` with no local
+ *   binding, so the slicer accepts that form too and reads the value back off
+ *   the object. Their counts — three species, four lights — are checked
+ *   exactly, because both are closed product rulings rather than lists that
+ *   grow. Each variety's `drop` is emitted but read by nothing: all three
+ *   species ship, and a rollout note must not be able to re-defer that.
  * - **`TRAINING_CARDS` is not a bank.** Its words live in `practical.jsx`
  *   (`TRAINING`), a file this mechanism does not read. It joins when the guides
  *   get a surface.
@@ -96,6 +103,7 @@ function main(argv) {
   const screens = read("screens.jsx");
   const lesson = read("lesson.jsx");
   const anatomy = read("bean-anatomy.jsx");
+  const customize = read("customize.jsx");
 
   // A declaration that has been renamed or reformatted past recognition is as
   // much a refusal as a broken reference, and reports the same way: reading on
@@ -133,6 +141,12 @@ function main(argv) {
           window: { BAGPICK_ROUNDS: bagpickRounds },
         }),
       },
+      groveVarieties: evaluateDeclaration(
+        customize,
+        "TREE_VARIETIES",
+        "customize.jsx",
+      ),
+      groveLights: evaluateDeclaration(customize, "GROVE_LIGHT", "customize.jsx"),
     };
   } catch (error) {
     fail([error.message]);
@@ -161,6 +175,11 @@ function main(argv) {
       "lesson.jsx + bean-anatomy.jsx",
       contentToList(banks.miniGameContent),
     ),
+    // Two banks rather than one with a second list bolted on: the axes are
+    // orthogonal and co-equal — any light applies over any plant — so neither
+    // is the other's auxiliary data, and each validates on its own terms.
+    bank("grove_varieties", "customize.jsx", banks.groveVarieties),
+    bank("grove_lights", "customize.jsx", banks.groveLights),
   ]);
 }
 
