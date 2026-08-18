@@ -28,12 +28,31 @@ const vm = require("node:vm");
 const CANDIDATE_END = /^[\]}];/gm;
 
 /**
- * Deliberately matches `const` alone. Every bank is declared that way, and the
- * files also carry `window.NAME = NAME;` re-export lines that a looser pattern
- * matches instead — anchoring on the re-export makes a renamed declaration fail
- * with a report about formatting when the truth is that it was renamed.
+ * The two forms a bank is declared in, tried in order.
+ *
+ * `const NAME =` is how most of the prototype declares a bank, and it is
+ * matched alone rather than loosely: the same files carry `window.NAME = NAME;`
+ * re-export lines, and anchoring on one of those makes a *renamed* declaration
+ * fail with a report about formatting when the truth is that it was renamed.
+ *
+ * `window.NAME = [` is the grove's form — `customize.jsx` assigns its two banks
+ * straight onto `window` with no local binding, so requiring `const` would
+ * report them as absent. Anchoring on the opening bracket is what keeps the
+ * re-export exclusion intact: a re-export assigns a bare identifier, so it can
+ * never match, and only a real literal definition can.
  */
-const declarationStart = (name) => new RegExp(`^const\\s+${name}\\s*=`, "m");
+const DECLARATION_FORMS = [
+  (name) => new RegExp(`^const\\s+${name}\\s*=`, "m"),
+  (name) => new RegExp(`^window\\.${name}\\s*=\\s*[[{]`, "m"),
+];
+
+const declarationStart = (source, name) => {
+  for (const form of DECLARATION_FORMS) {
+    const match = form(name).exec(source);
+    if (match) return match;
+  }
+  return null;
+};
 
 /**
  * Returns the source text of `name`'s declaration, from the keyword through the
@@ -43,7 +62,7 @@ const declarationStart = (name) => new RegExp(`^const\\s+${name}\\s*=`, "m");
  *   mean the prototype moved, and reading on would be guessing.
  */
 function sliceDeclaration(source, name, filename) {
-  const opening = declarationStart(name).exec(source);
+  const opening = declarationStart(source, name);
   if (!opening) {
     throw new Error(`${filename}: no top-level declaration of \`${name}\``);
   }
@@ -83,8 +102,19 @@ function compiles(text, filename, name) {
  */
 function evaluateDeclaration(source, name, filename, seed = {}) {
   const text = sliceDeclaration(source, name, filename);
-  const context = vm.createContext({ ...seed });
-  vm.runInContext(`${text}\n;globalThis.__extracted = ${name};`, context, {
+
+  // The `window.NAME = [...]` form leaves no local binding to read back, so the
+  // object has to exist before the slice runs and is where the value comes
+  // from afterwards. It is supplied for that form only: a `const` bank that
+  // reaches for a global still meets the bare context and fails loudly, which
+  // is the guarantee this evaluation is built on.
+  const assignsOntoWindow = text.startsWith("window.");
+  const context = vm.createContext(
+    assignsOntoWindow ? { window: {}, ...seed } : { ...seed },
+  );
+  const readBack = assignsOntoWindow ? `window.${name}` : name;
+
+  vm.runInContext(`${text}\n;globalThis.__extracted = ${readBack};`, context, {
     filename: `${filename} (${name})`,
   });
   return guardShape(context.__extracted, name, filename);
