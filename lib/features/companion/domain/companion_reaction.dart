@@ -20,6 +20,9 @@ enum CompanionReaction {
   /// Foundations itself was completed — the course's one-off ending.
   courseComplete,
 
+  /// Today's Keep Sharp recommendation met its own completion rule.
+  keepSharpComplete,
+
   /// XP was gained (not companion-driven in v1 — a plain XP toast handles it).
   xpGained,
 

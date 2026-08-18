@@ -44,6 +44,13 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Keep Sharp acknowledges the day's practice** — when the recommended
+  practice type meets its own completion rule (for a replay, one completed
+  replay today), the Today card swaps the recommendation for an animated
+  Roasty and a short phrase. That is the whole reward: no repeat points, no
+  tree growth. The state is derived each day from what the activity layer
+  already records and stored nowhere; mini-game drill runs leave no record
+  yet, so that recommendation does not acknowledge until they do.
 - **The Foundations ending** — finishing the course now lands on a one-off,
   full-screen completion moment: Roasty celebrating, "You finished Beginner
   Foundations", what you actually did (lessons completed, cards collected,

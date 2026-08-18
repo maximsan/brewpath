@@ -11,7 +11,12 @@ import 'package:go_router/go_router.dart';
 /// Keep Sharp recommendation for the day.
 class TodayCardWidget extends StatelessWidget {
   /// Creates a [TodayCardWidget].
-  const TodayCardWidget({required this.today, this.keepSharp, super.key});
+  const TodayCardWidget({
+    required this.today,
+    this.keepSharp,
+    this.keepSharpDone = false,
+    super.key,
+  });
 
   /// The lesson due today, or `null` when the user is caught up.
   final LessonModel? today;
@@ -19,6 +24,9 @@ class TodayCardWidget extends StatelessWidget {
   /// The day's Keep Sharp pick, shown when [today] is null. Null means no
   /// registered practice type has material (the quiet degenerate state).
   final KeepSharpRecommendation? keepSharp;
+
+  /// Whether today's recommendation already met its own completion rule.
+  final bool keepSharpDone;
 
   static const double _heroRadius = 12;
   static const double _heroLetterSpacing = 0.6;
@@ -35,7 +43,10 @@ class TodayCardWidget extends StatelessWidget {
       margin: EdgeInsets.zero,
       color: mood.accent,
       child: lesson == null
-          ? KeepSharpCardBody(recommendation: keepSharp)
+          ? KeepSharpCardBody(
+              recommendation: keepSharp,
+              acknowledged: keepSharpDone,
+            )
           : _buildLesson(context, theme, mood, lesson),
     );
   }

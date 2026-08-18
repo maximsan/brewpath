@@ -1,5 +1,6 @@
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp.dart';
+import 'package:brew_path/features/learn/domain/keep_sharp_completion.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -75,4 +76,27 @@ Future<KeepSharpRecommendation?> keepSharpRecommendation(Ref ref) async {
     // Gated out by builtPracticeSurfaces until their surfaces register.
     PracticeType.vocabGame || PracticeType.flashcards => null,
   };
+}
+
+/// Whether today's recommendation has met its own completion rule — derived
+/// per-day from what the activity layer already records, stored nowhere.
+///
+/// Drill (mini-game) runs are recorded nowhere today, so that input is
+/// honestly zero and a mini-games recommendation never acknowledges; the gap
+/// is reported on #120 rather than patched with a new counter here.
+@riverpod
+Future<bool> keepSharpAcknowledgedToday(Ref ref) async {
+  final recommendationFuture = ref.watch(
+    keepSharpRecommendationProvider.future,
+  );
+  final completedFuture = ref.watch(completedLessonsProvider.future);
+  final recommendation = await recommendationFuture;
+  final completed = await completedFuture;
+  if (recommendation == null) return false;
+
+  return keepSharpRuleMet(
+    recommendation.type,
+    distinctGamesToday: 0,
+    replayedToday: anyReplayToday(completed, DateTime.now()),
+  );
 }

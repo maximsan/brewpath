@@ -72,6 +72,9 @@ Future<void> _pumpLearn(WidgetTester tester) async {
         modulesWithProgressProvider.overrideWith((ref) async => _modules),
         todayLessonProvider.overrideWith((ref) async => _todayLesson),
         keepSharpRecommendationProvider.overrideWith((ref) async => null),
+        keepSharpAcknowledgedTodayProvider.overrideWith(
+          (ref) async => false,
+        ),
       ],
       child: const MaterialApp(home: LearnScreen()),
     ),
