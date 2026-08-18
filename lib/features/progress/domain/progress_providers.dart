@@ -27,3 +27,17 @@ Future<List<ProgressRecord>> completedLessons(Ref ref) =>
 @riverpod
 Future<List<String>> collectedCards(Ref ref) =>
     ref.watch(cardRepositoryProvider).getAllCollectedCardIds();
+
+/// Highest tree stage ever reached, as the stored snapshot holds it.
+///
+/// The stored half only. `ClearedByReset.treeStage` describes itself as read
+/// `max(stored, derived)`, but nothing in the app writes the field or derives
+/// a stage yet, so the max would be over one operand — see #150. Deriving from
+/// the completed-lesson count to fill the gap is precisely the
+/// growing-the-course-shrinks-the-tree bug that field's doc warns against, so
+/// this reads what is stored and nothing more.
+@riverpod
+Future<int> treeStage(Ref ref) async {
+  final snapshot = await ref.watch(snapshotRepositoryProvider).read();
+  return snapshot.clearedByReset.treeStage;
+}
