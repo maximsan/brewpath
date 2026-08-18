@@ -44,6 +44,10 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The Coffee Tree stands** — the Profile tab now opens on the tree itself,
+  showing the stage the learner has reached, announced to screen readers. A
+  fresh install shows the seed. Note that nothing advances the stage yet, so
+  every tree currently sits at seed; growing it is tracked separately.
 - **Mini-games are playable — True or false plays end to end.** Learn gains a
   Mini-games group listing all seven formats from the extracted catalog (the
   game's name leads, the topic it drills is the eyebrow), and `g-quiz` runs

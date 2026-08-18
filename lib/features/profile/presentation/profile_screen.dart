@@ -4,11 +4,16 @@ import 'package:brew_path/features/profile/presentation/widgets/premium_card.dar
 import 'package:brew_path/features/profile/presentation/widgets/profile_header.dart';
 import 'package:brew_path/features/profile/presentation/widgets/stat_tile.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
+import 'package:brew_path/features/progress/presentation/coffee_tree.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+/// Gap between the Profile's stacked sections. Off the `AppSpacing` scale by
+/// one notch — the design sets this page's section rhythm at 28.
+const double _sectionGap = 28;
 
 /// Profile tab: progress stats, the premium CTA, and preferences.
 class ProfileScreen extends ConsumerWidget {
@@ -22,6 +27,7 @@ class ProfileScreen extends ConsumerWidget {
     final lessons = ref.watch(completedLessonsProvider);
     final cards = ref.watch(collectedCardsProvider);
     final settings = ref.watch(settingsControllerProvider);
+    final treeStage = ref.watch(treeStageProvider);
 
     return Scaffold(
       body: SafeArea(
@@ -40,8 +46,16 @@ class ProfileScreen extends ConsumerWidget {
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
               sliver: SliverList.list(
                 children: [
+                  Center(
+                    child: treeStage.when(
+                      data: (stage) => CoffeeTree(stage: stage),
+                      loading: CoffeeTreePlaceholder.new,
+                      error: (_, _) => const CoffeeTreePlaceholder(),
+                    ),
+                  ),
+                  const SizedBox(height: _sectionGap),
                   const PremiumCard(),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: _sectionGap),
                   const _SectionTitle('Your progress'),
                   const SizedBox(height: 12),
                   _StatsGrid(
@@ -50,7 +64,7 @@ class ProfileScreen extends ConsumerWidget {
                     lessonsCompleted: lessons.asData?.value.length ?? 0,
                     cardsCollected: cards.asData?.value.length ?? 0,
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: _sectionGap),
                   const _SectionTitle('Customize'),
                   const SizedBox(height: 12),
                   _CustomizeGrid(

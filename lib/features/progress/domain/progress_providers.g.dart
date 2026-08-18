@@ -173,3 +173,62 @@ final class CollectedCardsProvider
 }
 
 String _$collectedCardsHash() => r'3af5e2e1b76e38bda84b804b5a114b3cd9874c13';
+
+/// Highest tree stage ever reached, as the stored snapshot holds it.
+///
+/// The stored half only. `ClearedByReset.treeStage` describes itself as read
+/// `max(stored, derived)`, but nothing in the app writes the field or derives
+/// a stage yet, so the max would be over one operand — see #150. Deriving from
+/// the completed-lesson count to fill the gap is precisely the
+/// growing-the-course-shrinks-the-tree bug that field's doc warns against, so
+/// this reads what is stored and nothing more.
+
+@ProviderFor(treeStage)
+final treeStageProvider = TreeStageProvider._();
+
+/// Highest tree stage ever reached, as the stored snapshot holds it.
+///
+/// The stored half only. `ClearedByReset.treeStage` describes itself as read
+/// `max(stored, derived)`, but nothing in the app writes the field or derives
+/// a stage yet, so the max would be over one operand — see #150. Deriving from
+/// the completed-lesson count to fill the gap is precisely the
+/// growing-the-course-shrinks-the-tree bug that field's doc warns against, so
+/// this reads what is stored and nothing more.
+
+final class TreeStageProvider
+    extends $FunctionalProvider<AsyncValue<int>, int, FutureOr<int>>
+    with $FutureModifier<int>, $FutureProvider<int> {
+  /// Highest tree stage ever reached, as the stored snapshot holds it.
+  ///
+  /// The stored half only. `ClearedByReset.treeStage` describes itself as read
+  /// `max(stored, derived)`, but nothing in the app writes the field or derives
+  /// a stage yet, so the max would be over one operand — see #150. Deriving from
+  /// the completed-lesson count to fill the gap is precisely the
+  /// growing-the-course-shrinks-the-tree bug that field's doc warns against, so
+  /// this reads what is stored and nothing more.
+  TreeStageProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'treeStageProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$treeStageHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<int> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<int> create(Ref ref) {
+    return treeStage(ref);
+  }
+}
+
+String _$treeStageHash() => r'9e01df709be6a8fd655606a9d036d2050a24a675';
