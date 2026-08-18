@@ -84,6 +84,9 @@ flutter:
     # those of its subdirectories.
     - assets/content/generated/
     - assets/images/
+    # The Coffee Tree's ten stage frames — the prototype's shipped raster art,
+    # one set shared by every grove variety (#136).
+    - assets/images/trees/
     - assets/icons/
     - assets/video/
 
