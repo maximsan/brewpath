@@ -52,10 +52,9 @@ String _$totalXpHash() => r'9d152d22babc01660d17d3b49a7aba3eeabc930f';
 /// was built — which is why the streak surfaces recompute on resume rather
 /// than trusting a value computed before midnight.
 ///
-/// The day set is the union of the stored `activeDays` and the days the
-/// activity record still qualifies. The record is pruned to the last couple of
-/// days, so the union can only confirm the recent end of the set; what it buys
-/// is a day whose entries arrived from a peer without their mark.
+/// The day set it folds is assembled by [streakDaySet], which also backfills
+/// a learner whose completions predate the day set — see it for why the three
+/// sources are unioned rather than ranked.
 
 @ProviderFor(streakStatus)
 final streakStatusProvider = StreakStatusProvider._();
@@ -66,10 +65,9 @@ final streakStatusProvider = StreakStatusProvider._();
 /// was built — which is why the streak surfaces recompute on resume rather
 /// than trusting a value computed before midnight.
 ///
-/// The day set is the union of the stored `activeDays` and the days the
-/// activity record still qualifies. The record is pruned to the last couple of
-/// days, so the union can only confirm the recent end of the set; what it buys
-/// is a day whose entries arrived from a peer without their mark.
+/// The day set it folds is assembled by [streakDaySet], which also backfills
+/// a learner whose completions predate the day set — see it for why the three
+/// sources are unioned rather than ranked.
 
 final class StreakStatusProvider
     extends
@@ -85,10 +83,9 @@ final class StreakStatusProvider
   /// was built — which is why the streak surfaces recompute on resume rather
   /// than trusting a value computed before midnight.
   ///
-  /// The day set is the union of the stored `activeDays` and the days the
-  /// activity record still qualifies. The record is pruned to the last couple of
-  /// days, so the union can only confirm the recent end of the set; what it buys
-  /// is a day whose entries arrived from a peer without their mark.
+  /// The day set it folds is assembled by [streakDaySet], which also backfills
+  /// a learner whose completions predate the day set — see it for why the three
+  /// sources are unioned rather than ranked.
   StreakStatusProvider._()
     : super(
         from: null,
@@ -115,7 +112,7 @@ final class StreakStatusProvider
   }
 }
 
-String _$streakStatusHash() => r'2401850c081024335c5948faf7d7305ddd30be6d';
+String _$streakStatusHash() => r'5b298d97dad584941244f0cf8167574ce979517a';
 
 /// The user's current streak in days.
 
