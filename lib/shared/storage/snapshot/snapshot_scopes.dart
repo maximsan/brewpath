@@ -191,23 +191,8 @@ class ClearedByReset {
   /// Raise-only, which is the whole contract: the tree never shrinks, so
   /// growing the course — which lowers what the stage derivation returns for
   /// the same learner — cannot take a stage back.
-  ClearedByReset withTreeStageAtLeast(int stage) => ClearedByReset(
-    completedLessons: completedLessons,
-    bestResults: bestResults,
-    activeDays: activeDays,
-    acks: acks,
-    ownedCollectibles: ownedCollectibles,
-    completedModules: completedModules,
-    treeStage: stage > treeStage ? stage : treeStage,
-    challengesCompleted: challengesCompleted,
-    learnedTerms: learnedTerms,
-    challengeReactions: challengeReactions,
-    miniGamePlays: miniGamePlays,
-    challengesSaved: challengesSaved,
-    activeChallenge: activeChallenge,
-    favourites: favourites,
-    unknown: unknown,
-  );
+  ClearedByReset withTreeStageAtLeast(int stage) =>
+      _copy(treeStage: stage > treeStage ? stage : treeStage);
 
   /// Whether the one-off moment named [key] has been acknowledged.
   bool hasAck(String key) => acks.containsKey(key);
@@ -219,25 +204,31 @@ class ClearedByReset {
   ClearedByReset withAck(String key, int day) =>
       _copy(acks: {...acks, key: day});
 
-  /// The one hand-listed copy this scope needs. Private, so a field added to
-  /// the scope has a single place to be forgotten.
-  ClearedByReset _copy({Map<String, int>? acks}) => ClearedByReset(
-    completedLessons: completedLessons,
-    bestResults: bestResults,
-    activeDays: activeDays,
-    acks: acks ?? this.acks,
-    ownedCollectibles: ownedCollectibles,
-    completedModules: completedModules,
-    treeStage: treeStage,
-    challengesCompleted: challengesCompleted,
-    learnedTerms: learnedTerms,
-    challengeReactions: challengeReactions,
-    dailyActivity: dailyActivity,
-    challengesSaved: challengesSaved,
-    activeChallenge: activeChallenge,
-    favourites: favourites,
-    unknown: unknown,
-  );
+  /// The one hand-listed copy this scope needs.
+  ///
+  /// Private, and the *only* place fields are listed: every writer above goes
+  /// through it. A second hand-listed copy is how this class breaks — one
+  /// landed beside a field rename in #150/#104 and left `main` uncompilable —
+  /// so a new writer takes a parameter here rather than spelling the scope out
+  /// again.
+  ClearedByReset _copy({Map<String, int>? acks, int? treeStage}) =>
+      ClearedByReset(
+        completedLessons: completedLessons,
+        bestResults: bestResults,
+        activeDays: activeDays,
+        acks: acks ?? this.acks,
+        ownedCollectibles: ownedCollectibles,
+        completedModules: completedModules,
+        treeStage: treeStage ?? this.treeStage,
+        challengesCompleted: challengesCompleted,
+        learnedTerms: learnedTerms,
+        challengeReactions: challengeReactions,
+        dailyActivity: dailyActivity,
+        challengesSaved: challengesSaved,
+        activeChallenge: activeChallenge,
+        favourites: favourites,
+        unknown: unknown,
+      );
 
   /// This scope's JSON form, with unrecognised keys written back verbatim.
   Map<String, dynamic> toJson() => {

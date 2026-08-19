@@ -300,6 +300,12 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **One field list for the progress scope.** Two writers each copied the
+  snapshot's progress scope field by field, so a change that renamed a field
+  updated one and left the other naming something gone. Both now share a
+  single private copy, and a test drives each over a fully populated scope: a
+  forgotten field fails a test rather than silently dropping the progress the
+  other write was not about.
 - A lesson's **best result could disagree between two devices, permanently**.
   Two different scores can share a mastery band _and_ a percentage — three
   wrong out of six is the same 50% as two out of four — and the old comparison
