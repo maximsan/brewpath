@@ -6,7 +6,6 @@ import 'package:brew_path/features/companion/presentation/companion_celebration.
 import 'package:brew_path/features/lessons/domain/lesson_completion_service.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_reward.dart';
-import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +17,6 @@ class LessonCompletionBody extends StatelessWidget {
   /// Creates a [LessonCompletionBody].
   const LessonCompletionBody({
     required this.reward,
-    required this.mastery,
     super.key,
     this.celebrating = false,
     this.moduleSummaryId,
@@ -26,9 +24,6 @@ class LessonCompletionBody extends StatelessWidget {
 
   /// The loaded reward to render.
   final LessonCompletionReward reward;
-
-  /// Graded result of the run; shown for practice runs.
-  final MasteryResult mastery;
 
   /// Whether this is a first completion, which is what earns the celebrating
   /// companion. A review or practice run shows a static badge instead.
@@ -66,10 +61,13 @@ class LessonCompletionBody extends StatelessWidget {
 
   List<Widget> _content(BuildContext context) {
     final reviewResult = reward.reviewResult;
-    final completion = reward.completion;
     if (reviewResult != null) return _reviewContent(context, reviewResult);
+    final completion = reward.completion;
     if (completion != null) return _completionContent(context, completion);
-    return _practiceContent(context);
+    // Unreachable: every run now finishes as a first completion or a replay.
+    // Total rather than thrown — a bare card is a better failure than a crash
+    // on the screen that exists to celebrate finishing something.
+    return const [];
   }
 
   List<Widget> _completionContent(
@@ -109,39 +107,6 @@ class LessonCompletionBody extends StatelessWidget {
         const SizedBox(height: 24),
         _RewardCard(card: reward.card!),
       ],
-    ];
-  }
-
-  List<Widget> _practiceContent(BuildContext context) {
-    final theme = Theme.of(context);
-    final mood = context.mood;
-    return [
-      const _HeroBadge(icon: Icons.fitness_center),
-      const SizedBox(height: 20),
-      Text(
-        'Practice complete!',
-        textAlign: TextAlign.center,
-        style: theme.textTheme.headlineSmall?.copyWith(
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-      const SizedBox(height: 12),
-      Text(
-        'Score: ${mastery.correct} / ${mastery.total}',
-        textAlign: TextAlign.center,
-        style: theme.textTheme.titleLarge?.copyWith(
-          color: mood.accent,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-      const SizedBox(height: 4),
-      Text(
-        'Practice runs do not change your XP, streak, or progress.',
-        textAlign: TextAlign.center,
-        style: theme.textTheme.bodyMedium?.copyWith(
-          color: mood.inkMute,
-        ),
-      ),
     ];
   }
 

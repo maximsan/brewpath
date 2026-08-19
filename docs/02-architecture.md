@@ -74,7 +74,6 @@ screens never duplicate gate→destination decisions (a CLAUDE.md rule).
 │   ├── lesson/:lessonId                    (LessonScreen — root navigator, covers the shell)
 │   │   └── complete                        (LessonCompletionScreen)
 │   ├── module-summary/:moduleId            (ModuleSummaryScreen)
-│   ├── practice/lesson/:lessonId           (LessonScreen, practice mode)
 │   └── mini-game/:gameId                   (MiniGameIntroScreen)
 │       └── play                            (MiniGamePlayerScreen)
 ├── /path                                   (PathScreen)

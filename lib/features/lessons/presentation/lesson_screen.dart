@@ -26,7 +26,6 @@ class LessonScreen extends ConsumerStatefulWidget {
     required this.lessonId,
     super.key,
     this.review = false,
-    this.practice = false,
   });
 
   /// Id of the lesson to play.
@@ -35,12 +34,6 @@ class LessonScreen extends ConsumerStatefulWidget {
   /// Whether this run is a review of an already-completed lesson. Carried
   /// through to the completion screen so it skips re-awarding XP.
   final bool review;
-
-  /// Whether this run is a pure practice repetition launched from the Learn
-  /// tab's "Practice Any Lesson" section. Practice runs never call
-  /// completeLesson or reviewLesson — no XP, no card, no streak, no module
-  /// bonus, no DB writes. Takes precedence over [review].
-  final bool practice;
 
   @override
   ConsumerState<LessonScreen> createState() => _LessonScreenState();
@@ -90,7 +83,6 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
       lessonCompletion(
         lesson.id,
         review: widget.review,
-        practice: widget.practice,
         correct: _correctCount,
         total: lesson.steps.length,
       ),
