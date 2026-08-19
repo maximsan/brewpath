@@ -195,6 +195,47 @@ void main() {
     });
   });
 
+  group('boundaries', () {
+    test('the first ever qualifying day reads 1', () {
+      final status = derive(run(0, 1), today: 0);
+
+      expect(status.streak, 1);
+      expect(status.freezeHeld, isFalse);
+      expect(status.daysToNextFreeze, freezeEarnDays - 1);
+      expect(status.frozenDays, isEmpty);
+    });
+
+    test('a spend landing on the most recent completed day', () {
+      // Seven days, yesterday missed and covered, today not yet active. The
+      // freeze is spent on the newest day the fold is allowed to judge.
+      final status = derive(run(0, 7), today: 8);
+
+      expect(status.frozenDays, {day0 + 7});
+      expect(status.streak, 7);
+    });
+
+    test('a multi-year history folds without walking every day', () {
+      // Five years of dormancy, then a fortnight back. The fold walks the set
+      // and not the calendar, so the dormant span costs nothing — and the
+      // long silence must not leave a freeze or a streak behind it.
+      const fiveYears = 365 * 5;
+      final status = derive({
+        ...run(0, 30),
+        ...run(fiveYears, 14),
+      }, today: fiveYears + 13);
+
+      expect(status.streak, 14);
+      expect(status.freezeHeld, isTrue, reason: 'earned inside the fortnight');
+      expect(
+        status.freezesSpent,
+        1,
+        reason:
+            'the freeze held after the first run covered the first day '
+            'of the silence, and the second ended the streak',
+      );
+    });
+  });
+
   group('an empty history', () {
     test('no active days at all derive the idle status', () {
       expect(derive(const {}, today: 0), StreakStatus.idle);
