@@ -213,22 +213,22 @@ class ClearedByReset {
   /// again.
   ClearedByReset _copy({Map<String, int>? acks, int? treeStage}) =>
       ClearedByReset(
-    completedLessons: completedLessons,
-    bestResults: bestResults,
-    activeDays: activeDays,
-    acks: acks ?? this.acks,
-    ownedCollectibles: ownedCollectibles,
-    completedModules: completedModules,
-    treeStage: treeStage ?? this.treeStage,
-    challengesCompleted: challengesCompleted,
-    learnedTerms: learnedTerms,
-    challengeReactions: challengeReactions,
-    dailyActivity: dailyActivity,
-    challengesSaved: challengesSaved,
-    activeChallenge: activeChallenge,
-    favourites: favourites,
-    unknown: unknown,
-  );
+        completedLessons: completedLessons,
+        bestResults: bestResults,
+        activeDays: activeDays,
+        acks: acks ?? this.acks,
+        ownedCollectibles: ownedCollectibles,
+        completedModules: completedModules,
+        treeStage: treeStage ?? this.treeStage,
+        challengesCompleted: challengesCompleted,
+        learnedTerms: learnedTerms,
+        challengeReactions: challengeReactions,
+        dailyActivity: dailyActivity,
+        challengesSaved: challengesSaved,
+        activeChallenge: activeChallenge,
+        favourites: favourites,
+        unknown: unknown,
+      );
 
   /// This scope's JSON form, with unrecognised keys written back verbatim.
   Map<String, dynamic> toJson() => {
