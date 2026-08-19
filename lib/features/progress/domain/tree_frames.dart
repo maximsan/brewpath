@@ -11,6 +11,10 @@ library;
 /// How many stages the shipped art covers.
 const int treeStageCount = 10;
 
+/// What a fresh install stores: no growth yet. It renders as the seed frame,
+/// the same picture a deliberately reset tree shows.
+const int freshTreeStage = 0;
+
 /// The first stage with a frame: the seed.
 const int _seedStage = 1;
 

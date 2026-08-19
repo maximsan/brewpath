@@ -129,6 +129,11 @@ class ClearedByReset {
   /// and re-deriving the stage looks correct and ships the bug: at `31/36` the
   /// derivation still returns stage 9, so growing the course shrinks a finished
   /// learner's tree.
+  ///
+  /// Both halves exist now (#150). First completion writes the stage here,
+  /// raise-only; the read takes the max with the stage the *current* course
+  /// implies, which heals a learner whose stored value predates the writer
+  /// without ever letting a grown course lower one.
   final int treeStage;
 
   /// Brew challenges completed at least once.
@@ -167,6 +172,29 @@ class ClearedByReset {
   /// them here also means Reset clears a newer build's progress fields along
   /// with this build's, instead of re-attaching them after the wipe.
   final Map<String, dynamic> unknown;
+
+  /// A copy with the tree grown to at least [stage].
+  ///
+  /// Raise-only, which is the whole contract: the tree never shrinks, so
+  /// growing the course — which lowers what the stage derivation returns for
+  /// the same learner — cannot take a stage back.
+  ClearedByReset withTreeStageAtLeast(int stage) => ClearedByReset(
+    completedLessons: completedLessons,
+    bestResults: bestResults,
+    activeDays: activeDays,
+    acks: acks,
+    ownedCollectibles: ownedCollectibles,
+    completedModules: completedModules,
+    treeStage: stage > treeStage ? stage : treeStage,
+    challengesCompleted: challengesCompleted,
+    learnedTerms: learnedTerms,
+    challengeReactions: challengeReactions,
+    miniGamePlays: miniGamePlays,
+    challengesSaved: challengesSaved,
+    activeChallenge: activeChallenge,
+    favourites: favourites,
+    unknown: unknown,
+  );
 
   /// Whether the one-off moment named [key] has been acknowledged.
   bool hasAck(String key) => acks.containsKey(key);

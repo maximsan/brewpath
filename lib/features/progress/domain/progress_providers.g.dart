@@ -174,38 +174,38 @@ final class CollectedCardsProvider
 
 String _$collectedCardsHash() => r'3af5e2e1b76e38bda84b804b5a114b3cd9874c13';
 
-/// Highest tree stage ever reached, as the stored snapshot holds it.
+/// Highest tree stage ever reached: `max(stored, derived)`, as the field has
+/// always described itself.
 ///
-/// The stored half only. `ClearedByReset.treeStage` describes itself as read
-/// `max(stored, derived)`, but nothing in the app writes the field or derives
-/// a stage yet, so the max would be over one operand — see #150. Deriving from
-/// the completed-lesson count to fill the gap is precisely the
-/// growing-the-course-shrinks-the-tree bug that field's doc warns against, so
-/// this reads what is stored and nothing more.
+/// The stored half is written by first-time lesson completion and never goes
+/// down. The derived half is what the *current* course size implies, and it
+/// is here to heal a learner whose stored stage predates the writer — taking
+/// the max is what stops it doing harm, because a grown course derives lower
+/// for the same learner and the stored floor wins.
 
 @ProviderFor(treeStage)
 final treeStageProvider = TreeStageProvider._();
 
-/// Highest tree stage ever reached, as the stored snapshot holds it.
+/// Highest tree stage ever reached: `max(stored, derived)`, as the field has
+/// always described itself.
 ///
-/// The stored half only. `ClearedByReset.treeStage` describes itself as read
-/// `max(stored, derived)`, but nothing in the app writes the field or derives
-/// a stage yet, so the max would be over one operand — see #150. Deriving from
-/// the completed-lesson count to fill the gap is precisely the
-/// growing-the-course-shrinks-the-tree bug that field's doc warns against, so
-/// this reads what is stored and nothing more.
+/// The stored half is written by first-time lesson completion and never goes
+/// down. The derived half is what the *current* course size implies, and it
+/// is here to heal a learner whose stored stage predates the writer — taking
+/// the max is what stops it doing harm, because a grown course derives lower
+/// for the same learner and the stored floor wins.
 
 final class TreeStageProvider
     extends $FunctionalProvider<AsyncValue<int>, int, FutureOr<int>>
     with $FutureModifier<int>, $FutureProvider<int> {
-  /// Highest tree stage ever reached, as the stored snapshot holds it.
+  /// Highest tree stage ever reached: `max(stored, derived)`, as the field has
+  /// always described itself.
   ///
-  /// The stored half only. `ClearedByReset.treeStage` describes itself as read
-  /// `max(stored, derived)`, but nothing in the app writes the field or derives
-  /// a stage yet, so the max would be over one operand — see #150. Deriving from
-  /// the completed-lesson count to fill the gap is precisely the
-  /// growing-the-course-shrinks-the-tree bug that field's doc warns against, so
-  /// this reads what is stored and nothing more.
+  /// The stored half is written by first-time lesson completion and never goes
+  /// down. The derived half is what the *current* course size implies, and it
+  /// is here to heal a learner whose stored stage predates the writer — taking
+  /// the max is what stops it doing harm, because a grown course derives lower
+  /// for the same learner and the stored floor wins.
   TreeStageProvider._()
     : super(
         from: null,
@@ -231,4 +231,4 @@ final class TreeStageProvider
   }
 }
 
-String _$treeStageHash() => r'9e01df709be6a8fd655606a9d036d2050a24a675';
+String _$treeStageHash() => r'b0c44f97033fd2ac052c14d89e26465c313f17f8';

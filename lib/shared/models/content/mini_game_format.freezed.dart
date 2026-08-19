@@ -15,7 +15,10 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$MiniGameFormat {
 
- String get id; String get kind; String get title;@JsonKey(name: 'sub') String get topic;@JsonKey(name: 'meta') String get duration; String get blurb; List<String> get steps;
+ String get id;/// The card kind its rounds carry. Unread today — the player dispatches
+/// on the round's own kind — and kept because the extractor renames and
+/// drops nothing, so the model mirrors the bank.
+ String get kind; String get title;@JsonKey(name: 'sub') String get topic;@JsonKey(name: 'meta') String get duration; String get blurb; List<String> get steps;
 /// Create a copy of MiniGameFormat
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -219,6 +222,9 @@ class _MiniGameFormat implements MiniGameFormat {
   factory _MiniGameFormat.fromJson(Map<String, dynamic> json) => _$MiniGameFormatFromJson(json);
 
 @override final  String id;
+/// The card kind its rounds carry. Unread today — the player dispatches
+/// on the round's own kind — and kept because the extractor renames and
+/// drops nothing, so the model mirrors the bank.
 @override final  String kind;
 @override final  String title;
 @override@JsonKey(name: 'sub') final  String topic;

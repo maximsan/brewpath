@@ -2,6 +2,7 @@ import 'package:brew_path/core/constants/xp_values.dart';
 import 'package:brew_path/features/lessons/domain/lesson_completion_service.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/streak_service.dart';
+import 'package:brew_path/features/progress/domain/tree_frames.dart';
 import 'package:brew_path/features/progress/domain/xp_service.dart';
 import 'package:brew_path/services/analytics/noop_analytics_service.dart';
 import 'package:brew_path/shared/repositories/card_repository.dart';
@@ -9,6 +10,7 @@ import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/module_progress_repository.dart';
 import 'package:brew_path/shared/repositories/progress_repository.dart';
 import 'package:brew_path/shared/repositories/settings_repository.dart';
+import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -23,6 +25,7 @@ void main() {
   late SettingsRepository settings;
   late CardRepository cards;
   late ModuleProgressRepository moduleProgress;
+  late SnapshotRepository snapshots;
 
   setUp(() async {
     db = AppDatabase(NativeDatabase.memory());
@@ -33,12 +36,14 @@ void main() {
     settings = SettingsRepository();
     cards = CardRepository();
     moduleProgress = ModuleProgressRepository();
+    snapshots = SnapshotRepository();
     service = LessonCompletionService(
       progressRepository: progress,
       settingsRepository: settings,
       cardRepository: cards,
       contentRepository: content,
       moduleProgressRepository: moduleProgress,
+      snapshotRepository: snapshots,
       analyticsService: const NoOpAnalyticsService(),
       xpService: const XpService(),
       streakService: const StreakService(),
@@ -273,6 +278,89 @@ void main() {
       );
       expect(nextDay.practiceXpAwarded, isTrue);
       expect(await totalXp(), base + 2 * XpValues.practiceXp);
+    });
+  });
+  group('the Coffee Tree grows', () {
+    Future<int> storedStage() async =>
+        (await snapshots.read()).clearedByReset.treeStage;
+
+    test('a fresh install is at seed, with nothing completed', () async {
+      expect(await storedStage(), freshTreeStage);
+    });
+
+    test('a first completion advances the stored stage', () async {
+      final lessons = await content.getLessons();
+
+      await service.completeLesson(
+        lessons.first,
+        mastery: const MasteryResult(correct: 1, total: 1),
+      );
+
+      expect(await storedStage(), greaterThan(freshTreeStage));
+    });
+
+    test('a replay grows nothing', () async {
+      final lessons = await content.getLessons();
+      await service.completeLesson(
+        lessons.first,
+        mastery: const MasteryResult(correct: 1, total: 1),
+      );
+      final afterFirst = await storedStage();
+
+      await service.completeLesson(
+        lessons.first,
+        mastery: const MasteryResult(correct: 1, total: 1),
+      );
+
+      expect(await storedStage(), afterFirst);
+    });
+
+    test('finishing every lesson reaches the last stage', () async {
+      final lessons = await content.getLessons();
+      for (final lesson in lessons) {
+        await service.completeLesson(
+          lesson,
+          mastery: const MasteryResult(correct: 1, total: 1),
+        );
+      }
+
+      expect(await storedStage(), treeStageCount);
+    });
+
+    // The stage is stored as the outcome, so a course that grows later cannot
+    // walk a learner's tree back down.
+    test('a stage already reached is never lowered by a later write', () async {
+      final lessons = await content.getLessons();
+      final snapshot = await snapshots.read();
+      await snapshots.write(
+        snapshot.copyWith(
+          clearedByReset: snapshot.clearedByReset.withTreeStageAtLeast(
+            treeStageCount,
+          ),
+        ),
+      );
+
+      await service.completeLesson(
+        lessons.first,
+        mastery: const MasteryResult(correct: 1, total: 1),
+      );
+
+      expect(await storedStage(), treeStageCount);
+    });
+
+    test('the stage survives a restart', () async {
+      final lessons = await content.getLessons();
+      await service.completeLesson(
+        lessons.first,
+        mastery: const MasteryResult(correct: 1, total: 1),
+      );
+      final grown = await storedStage();
+
+      // A new repository over the same store is what a relaunch looks like.
+      expect(
+        (await SnapshotRepository().read()).clearedByReset.treeStage,
+        grown,
+      );
     });
   });
 }
