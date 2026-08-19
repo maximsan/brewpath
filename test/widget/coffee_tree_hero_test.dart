@@ -1,8 +1,11 @@
 import 'package:brew_path/app/app.dart';
+import 'package:brew_path/features/progress/domain/color_matrix.dart';
 import 'package:brew_path/features/progress/presentation/coffee_tree.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:brew_path/shared/storage/snapshot/progress_snapshot.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_scopes.dart';
+import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
+import 'package:brew_path/shared/storage/snapshot/timestamped.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -84,6 +87,64 @@ void main() {
     await openProfile(tester);
 
     expect(heroAssetName(tester), 'assets/images/trees/10.png');
+  });
+
+  testWidgets('the default grove paints the real art, unwrapped', (
+    tester,
+  ) async {
+    await openProfile(tester);
+
+    // Arabica in Daylight is the shipped illustration as drawn, so neither
+    // wrapper should be in the tree at all.
+    expect(
+      find.descendant(
+        of: find.byType(CoffeeTree),
+        matching: find.byType(ColorFiltered),
+      ),
+      findsNothing,
+    );
+  });
+
+  testWidgets('a planted grove visibly changes the hero', (tester) async {
+    await tester.runAsync(
+      () => SnapshotRepository().write(
+        const ProgressSnapshot(
+          clearedByReset: ClearedByReset(treeStage: 7),
+          clearedByDeleteOnly: ClearedByDeleteOnly(
+            grove: Timestamped(
+              value: Grove(variety: 'robusta', light: 'moonlit'),
+              updatedAt: 1,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await openProfile(tester);
+
+    // Same frame, wearing Robusta's silhouette under Moonlit.
+    expect(heroAssetName(tester), 'assets/images/trees/7.png');
+
+    // Robusta is wider than it is tall: scale(1.2, 0.9).
+    final scaled = tester.widget<Transform>(
+      find.descendant(
+        of: find.byType(CoffeeTree),
+        matching: find.byType(Transform),
+      ),
+    );
+    expect(scaled.transform.storage[0], closeTo(1.2, 1e-9));
+    expect(scaled.transform.storage[5], closeTo(0.9, 1e-9));
+
+    final tinted = tester.widget<ColorFiltered>(
+      find.descendant(
+        of: find.byType(CoffeeTree),
+        matching: find.byType(ColorFiltered),
+      ),
+    );
+    expect(
+      tinted.colorFilter,
+      isNot(const ColorFilter.matrix(identityColorMatrix)),
+    );
   });
 
   testWidgets('the hero announces its stage to screen readers', (tester) async {

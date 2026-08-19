@@ -1,3 +1,4 @@
+import 'package:brew_path/features/progress/domain/grove_treatment.dart';
 import 'package:brew_path/features/progress/domain/tree_growth.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
@@ -49,4 +50,22 @@ Future<int> treeStage(Ref ref) async {
   );
   final stored = snapshot.clearedByReset.treeStage;
   return stored > derived ? stored : derived;
+}
+
+/// The planted grove, resolved against the banks into one matrix and one scale.
+///
+/// Joined here rather than in the widget so the tree stays ignorant of species
+/// and lights: it receives a treatment, not a pair of ids to look up.
+@riverpod
+Future<GroveTreatment> groveTreatment(Ref ref) async {
+  final snapshot = await ref.watch(snapshotRepositoryProvider).read();
+  final content = ref.watch(contentRepositoryProvider);
+  final grove = snapshot.clearedByDeleteOnly.grove.value;
+
+  return groveTreatmentFor(
+    varieties: await content.getGroveVarieties(),
+    lights: await content.getGroveLights(),
+    variety: grove.variety,
+    light: grove.light,
+  );
 }
