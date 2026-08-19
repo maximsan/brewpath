@@ -44,6 +44,14 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The planted grove shows on the tree.** The species you own and the light
+  it stands in now compose over the Coffee Tree: the plant's silhouette as a
+  scale, its leaf tone and the light as a single colour filter. A grove synced
+  from another device shows on the Profile hero without the Studio existing
+  yet. Arabica in Daylight is painted as the untouched illustration rather
+  than through a filter that happens to change nothing, and a stored species
+  this build has never heard of falls back to the default instead of failing
+  to draw.
 - **Two different mini-games now mark the day.** A run that reaches its
   results records itself on the day's activity, and the second *different*
   game of a local day marks that day active — the anti-farm rule, so one run
