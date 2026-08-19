@@ -1,4 +1,4 @@
-import 'package:brew_path/core/utils/date_utils.dart';
+import 'package:brew_path/features/progress/domain/activity_recorder.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
 
@@ -15,25 +15,9 @@ Future<void> recordMiniGameRun(
   SnapshotRepository repository,
   String formatId,
   DateTime now,
-) async {
-  final snapshot = await repository.read();
-  final day = epochDay(now);
-  final entry = activityEntry(
-    type: ActivityType.miniGame,
-    token: mintActivityToken(),
-    subject: formatId,
-  );
-
-  final progress = snapshot.clearedByReset;
-  final dayEntries = {...?progress.dailyActivity[day], entry};
-  await repository.write(
-    snapshot.copyWith(
-      updatedAt: now.millisecondsSinceEpoch,
-      clearedByReset: progress.withActivity(
-        day,
-        entry,
-        marksDay: miniGamesMarkTheDay(dayEntries),
-      ),
-    ),
-  );
-}
+) => recordActivity(
+  repository,
+  type: ActivityType.miniGame,
+  subject: formatId,
+  now: now,
+);

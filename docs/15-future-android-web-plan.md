@@ -11,7 +11,7 @@ The following components require **no changes** to run on Android or Web:
 | go_router navigation | Yes | Has built-in URL strategy for web |
 | Content models (Freezed) | Yes | Pure Dart |
 | ContentRepository (JSON assets) | Yes | `rootBundle` works everywhere |
-| XpService, StreakService | Yes | Pure Dart |
+| XpService, the streak engine | Yes | Pure Dart |
 | LessonCompletionService | Yes | Pure Dart |
 | Mini-game widgets | Yes | Standard Flutter widgets |
 | All feature screens | Yes | Material widgets work on Android and web |

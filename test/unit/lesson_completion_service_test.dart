@@ -1,7 +1,7 @@
 import 'package:brew_path/core/constants/xp_values.dart';
+import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/lessons/domain/lesson_completion_service.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
-import 'package:brew_path/features/progress/domain/streak_service.dart';
 import 'package:brew_path/features/progress/domain/tree_frames.dart';
 import 'package:brew_path/features/progress/domain/xp_service.dart';
 import 'package:brew_path/services/analytics/noop_analytics_service.dart';
@@ -12,6 +12,7 @@ import 'package:brew_path/shared/repositories/progress_repository.dart';
 import 'package:brew_path/shared/repositories/settings_repository.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:brew_path/shared/storage/app_database.dart';
+import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -46,7 +47,6 @@ void main() {
       snapshotRepository: snapshots,
       analyticsService: const NoOpAnalyticsService(),
       xpService: const XpService(),
-      streakService: const StreakService(),
     );
   });
 
@@ -55,6 +55,17 @@ void main() {
   });
 
   Future<int> totalXp() async => (await settings.getSettings()).totalXp;
+
+  /// The snapshot's day set — what the streak is derived from. Nothing stores
+  /// a streak count any more, so this is the whole record a completion leaves.
+  Future<Set<int>> activeDays() async =>
+      (await snapshots.read()).clearedByReset.activeDays;
+
+  Future<Set<String>> entriesToday() async =>
+      (await snapshots.read()).clearedByReset.dailyActivity[epochDay(
+        DateTime.now(),
+      )] ??
+      const {};
 
   group('completeLesson', () {
     test(
@@ -72,7 +83,11 @@ void main() {
         expect(result.moduleCompleted, isFalse);
         expect(await totalXp(), 50);
         expect(await cards.isCardCollected('card_where_coffee'), isTrue);
-        expect((await settings.getSettings()).streakDays, 1);
+        expect(await activeDays(), {epochDay(DateTime.now())});
+        expect(
+          (await entriesToday()).map((e) => parseActivityEntry(e).type),
+          [ActivityType.lesson],
+        );
 
         final record = (await progress.getByLessonId('lesson_where_coffee'))!;
         expect(record.isCompleted, isTrue);
@@ -166,6 +181,52 @@ void main() {
         expect(await cards.isCardCollected('card_where_coffee'), isTrue);
       },
     );
+
+    test('a completed replay marks its day active (§3)', () async {
+      final lesson = (await content.getLessonById('lesson_where_coffee'))!;
+      await service.completeLesson(
+        lesson,
+        mastery: const MasteryResult(correct: 3, total: 5),
+      );
+      final replayDay = DateTime(2026, 5, 22, 9);
+
+      await service.reviewLesson(
+        lesson,
+        mastery: const MasteryResult(correct: 4, total: 5),
+        now: replayDay,
+      );
+
+      expect(await activeDays(), contains(epochDay(replayDay)));
+    });
+
+    test('a second replay the same day does not qualify it twice', () async {
+      final lesson = (await content.getLessonById('lesson_where_coffee'))!;
+      await service.completeLesson(
+        lesson,
+        mastery: const MasteryResult(correct: 3, total: 5),
+      );
+      final replayDay = DateTime(2026, 5, 22, 9);
+
+      for (var round = 0; round < 2; round++) {
+        await service.reviewLesson(
+          lesson,
+          mastery: const MasteryResult(correct: 4, total: 5),
+          now: replayDay,
+        );
+      }
+
+      final snapshot = (await snapshots.read()).clearedByReset;
+      expect(
+        snapshot.dailyActivity[epochDay(replayDay)],
+        hasLength(2),
+        reason: 'the free allowance counts two completions',
+      );
+      expect(
+        snapshot.activeDays.where((day) => day == epochDay(replayDay)),
+        hasLength(1),
+        reason: 'a day is a day — the streak advances once (§2)',
+      );
+    });
 
     test('review never re-awards full lesson XP', () async {
       final lesson = (await content.getLessonById('lesson_where_coffee'))!;
