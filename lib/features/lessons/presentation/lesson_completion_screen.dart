@@ -1,6 +1,7 @@
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
+import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/lessons/domain/lesson_completion_service.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_body.dart';
@@ -20,7 +21,6 @@ class LessonCompletionScreen extends ConsumerStatefulWidget {
     required this.mastery,
     super.key,
     this.review = false,
-    this.practice = false,
   });
 
   /// Id of the completed lesson.
@@ -32,10 +32,6 @@ class LessonCompletionScreen extends ConsumerStatefulWidget {
   /// Whether the run was a review of an already-completed lesson.
   final bool review;
 
-  /// Whether the run was a pure practice repetition (no XP, no DB writes).
-  /// Takes precedence over [review].
-  final bool practice;
-
   @override
   ConsumerState<LessonCompletionScreen> createState() =>
       _LessonCompletionScreenState();
@@ -46,10 +42,11 @@ class _LessonCompletionScreenState
   late final Future<LessonCompletionReward> _future = _completeAndLoad();
   String? _moduleId;
 
-  /// Persists the run exactly once. First completion awards full XP/cards;
-  /// review only updates mastery and may grant practice XP; practice runs
-  /// from the Learn-tab practice section write nothing at all. Every path is
-  /// idempotent, so a rebuild or revisit will not double-award anything.
+  /// Persists the run exactly once. First completion awards full points and
+  /// the card; a replay updates mastery upward, may grant practice points, and
+  /// marks the day (§3). Every path is idempotent, so a rebuild or revisit
+  /// will not double-award anything — and every path records, which is why the
+  /// write-nothing practice mode is gone.
   Future<LessonCompletionReward> _completeAndLoad() async {
     final content = ref.read(contentRepositoryProvider);
     final lesson = await content.getLessonById(widget.lessonId);
@@ -58,19 +55,19 @@ class _LessonCompletionScreenState
     }
     _moduleId = lesson.moduleId;
 
-    if (widget.practice) {
-      // Pure practice — no service call, no XP, no card, no streak. Just
-      // display a summary using the run's score.
-      return const LessonCompletionReward();
-    }
-
     if (widget.review) {
       final reviewResult = await ref
           .read(lessonCompletionServiceProvider)
           .reviewLesson(lesson, mastery: widget.mastery);
-      // A completed replay protects the day (§3), so the streak surfaces have
-      // to look again even when the once-a-day practice XP did not pay.
+      // A completed replay protects the day (§3), so everything derived from
+      // it has to look again — even when the once-a-day practice XP did not
+      // pay. The Learn tab is covered by the run rather than replaced, so it
+      // never rebuilds on its own, and the card would go on asking for a
+      // replay the learner had just finished.
       ref.invalidate(streakStatusProvider);
+      ref.invalidate(completedLessonsProvider);
+      ref.invalidate(keepSharpAcknowledgedTodayProvider);
+      ref.invalidate(keepSharpRecommendationProvider);
       if (reviewResult.practiceXpAwarded) {
         ref.invalidate(totalXpProvider);
       }
@@ -131,7 +128,6 @@ class _LessonCompletionScreenState
     final moduleCompleted = reward.completion?.moduleCompleted ?? false;
     return LessonCompletionBody(
       reward: reward,
-      mastery: widget.mastery,
       celebrating: firstCompletion,
       moduleSummaryId: moduleCompleted ? _moduleId : null,
     );
