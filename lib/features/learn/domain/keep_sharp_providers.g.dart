@@ -62,14 +62,14 @@ final class KeepSharpRecommendationProvider
 }
 
 String _$keepSharpRecommendationHash() =>
-    r'b6dc3cefc480db33471ac6a74736798717784313';
+    r'4a53640a7e0b275b3735648bbc7ea053ede1e01f';
 
 /// Whether today's recommendation has met its own completion rule — derived
 /// per-day from what the activity layer already records, stored nowhere.
 ///
-/// Drill (mini-game) runs are recorded nowhere today, so that input is
-/// honestly zero and a mini-games recommendation never acknowledges; the gap
-/// is reported on #120 rather than patched with a new counter here.
+/// Mini-game runs record themselves on the day's activity (#126), so the
+/// two-different-games rule reads the distinct game ids among today's entries
+/// — the same record the streak's qualifying day derives from.
 
 @ProviderFor(keepSharpAcknowledgedToday)
 final keepSharpAcknowledgedTodayProvider =
@@ -78,9 +78,9 @@ final keepSharpAcknowledgedTodayProvider =
 /// Whether today's recommendation has met its own completion rule — derived
 /// per-day from what the activity layer already records, stored nowhere.
 ///
-/// Drill (mini-game) runs are recorded nowhere today, so that input is
-/// honestly zero and a mini-games recommendation never acknowledges; the gap
-/// is reported on #120 rather than patched with a new counter here.
+/// Mini-game runs record themselves on the day's activity (#126), so the
+/// two-different-games rule reads the distinct game ids among today's entries
+/// — the same record the streak's qualifying day derives from.
 
 final class KeepSharpAcknowledgedTodayProvider
     extends $FunctionalProvider<AsyncValue<bool>, bool, FutureOr<bool>>
@@ -88,9 +88,9 @@ final class KeepSharpAcknowledgedTodayProvider
   /// Whether today's recommendation has met its own completion rule — derived
   /// per-day from what the activity layer already records, stored nowhere.
   ///
-  /// Drill (mini-game) runs are recorded nowhere today, so that input is
-  /// honestly zero and a mini-games recommendation never acknowledges; the gap
-  /// is reported on #120 rather than patched with a new counter here.
+  /// Mini-game runs record themselves on the day's activity (#126), so the
+  /// two-different-games rule reads the distinct game ids among today's entries
+  /// — the same record the streak's qualifying day derives from.
   KeepSharpAcknowledgedTodayProvider._()
     : super(
         from: null,
@@ -117,4 +117,4 @@ final class KeepSharpAcknowledgedTodayProvider
 }
 
 String _$keepSharpAcknowledgedTodayHash() =>
-    r'f2bb7014de16ee6dd99ea64b092b0990523a8939';
+    r'd1ace2b863df4a0c45731e737e635f633b852b55';

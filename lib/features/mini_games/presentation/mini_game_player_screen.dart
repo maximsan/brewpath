@@ -1,12 +1,16 @@
+import 'dart:async';
+
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/features/lessons/presentation/cards/content_card_view.dart';
+import 'package:brew_path/features/mini_games/domain/mini_game_completion.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_providers.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_run.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_results_view.dart';
 import 'package:brew_path/features/mini_games/presentation/round_progress_strip.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
+import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -37,12 +41,30 @@ class _MiniGamePlayerScreenState extends ConsumerState<MiniGamePlayerScreen> {
   int _nonce = mintRunNonce();
   int _index = 0;
   int _score = 0;
+  bool _recorded = false;
 
   void _onSolved() => _score++;
 
   void _onContinue() => setState(() => _index++);
 
+  /// A finished run records that it happened — once, and only on reaching the
+  /// results. An abandoned run never gets here, so it writes nothing.
+  void _recordRunOnce() {
+    if (_recorded) return;
+    _recorded = true;
+    unawaited(
+      recordMiniGameRun(
+        ref.read(snapshotRepositoryProvider),
+        widget.formatId,
+        DateTime.now(),
+      ),
+    );
+  }
+
   void _playAgain() => setState(() {
+    // A fresh run is a fresh completion: playing the same game twice leaves
+    // two entries, which the day's rule counts as one game.
+    _recorded = false;
     _nonce = mintRunNonce();
     _index = 0;
     _score = 0;
@@ -100,6 +122,7 @@ class _MiniGamePlayerScreenState extends ConsumerState<MiniGamePlayerScreen> {
 
     final played = roundsForRun(bank, _nonce);
     if (_index >= played.length) {
+      _recordRunOnce();
       return MiniGameResultsView(
         score: _score,
         total: played.length,

@@ -1,8 +1,11 @@
 import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp_completion.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
+import 'package:brew_path/shared/repositories/repository_providers.dart';
+import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'keep_sharp_providers.g.dart';
@@ -81,22 +84,29 @@ Future<KeepSharpRecommendation?> keepSharpRecommendation(Ref ref) async {
 /// Whether today's recommendation has met its own completion rule — derived
 /// per-day from what the activity layer already records, stored nowhere.
 ///
-/// Drill (mini-game) runs are recorded nowhere today, so that input is
-/// honestly zero and a mini-games recommendation never acknowledges; the gap
-/// is reported on #120 rather than patched with a new counter here.
+/// Mini-game runs record themselves on the day's activity (#126), so the
+/// two-different-games rule reads the distinct game ids among today's entries
+/// — the same record the streak's qualifying day derives from.
 @riverpod
 Future<bool> keepSharpAcknowledgedToday(Ref ref) async {
   final recommendationFuture = ref.watch(
     keepSharpRecommendationProvider.future,
   );
   final completedFuture = ref.watch(completedLessonsProvider.future);
+  final snapshotFuture = ref.watch(snapshotRepositoryProvider).read();
+  final snapshot = await snapshotFuture;
   final recommendation = await recommendationFuture;
   final completed = await completedFuture;
   if (recommendation == null) return false;
 
+  final today = epochDay(DateTime.now());
+  final distinctGamesToday = distinctMiniGameIds(
+    snapshot.clearedByReset.dailyActivity[today] ?? const {},
+  ).length;
+
   return keepSharpRuleMet(
     recommendation.type,
-    distinctGamesToday: 0,
+    distinctGamesToday: distinctGamesToday,
     replayedToday: anyReplayToday(completed, DateTime.now()),
   );
 }

@@ -106,6 +106,18 @@ Set<String> distinctMiniGameIds(Iterable<String> entries) {
   return ids;
 }
 
+/// How many *different* mini-games mark a day (§5, #59).
+const int miniGamesPerQualifyingDay = 2;
+
+/// Whether a day's [entries] qualify it on mini-games alone.
+///
+/// Two different completed games. One run is not enough, the same game twice
+/// counts once, and a third different game adds nothing — the anti-farm rule,
+/// derived from what is stored rather than stored as a flag, so changing it
+/// needs no migration.
+bool miniGamesMarkTheDay(Iterable<String> entries) =>
+    distinctMiniGameIds(entries).length >= miniGamesPerQualifyingDay;
+
 /// Drops days nothing will read again.
 ///
 /// **Not wired yet, deliberately.** Nothing writes an activity event in this

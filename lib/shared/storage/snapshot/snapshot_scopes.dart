@@ -194,6 +194,24 @@ class ClearedByReset {
   ClearedByReset withTreeStageAtLeast(int stage) =>
       _copy(treeStage: stage > treeStage ? stage : treeStage);
 
+  /// A copy recording [entry] as a completion on [day], and marking the day
+  /// active when [marksDay].
+  ///
+  /// Both halves move together because they are one event: the entry is what
+  /// happened, the active day is what it earned. Both are unions, so a device
+  /// that already knew either loses nothing.
+  ClearedByReset withActivity(
+    int day,
+    String entry, {
+    required bool marksDay,
+  }) => _copy(
+    dailyActivity: {
+      ...dailyActivity,
+      day: {...?dailyActivity[day], entry},
+    },
+    activeDays: marksDay ? {...activeDays, day} : activeDays,
+  );
+
   /// Whether the one-off moment named [key] has been acknowledged.
   bool hasAck(String key) => acks.containsKey(key);
 
@@ -211,24 +229,28 @@ class ClearedByReset {
   /// landed beside a field rename in #150/#104 and left `main` uncompilable —
   /// so a new writer takes a parameter here rather than spelling the scope out
   /// again.
-  ClearedByReset _copy({Map<String, int>? acks, int? treeStage}) =>
-      ClearedByReset(
-        completedLessons: completedLessons,
-        bestResults: bestResults,
-        activeDays: activeDays,
-        acks: acks ?? this.acks,
-        ownedCollectibles: ownedCollectibles,
-        completedModules: completedModules,
-        treeStage: treeStage ?? this.treeStage,
-        challengesCompleted: challengesCompleted,
-        learnedTerms: learnedTerms,
-        challengeReactions: challengeReactions,
-        dailyActivity: dailyActivity,
-        challengesSaved: challengesSaved,
-        activeChallenge: activeChallenge,
-        favourites: favourites,
-        unknown: unknown,
-      );
+  ClearedByReset _copy({
+    Map<String, int>? acks,
+    int? treeStage,
+    Map<int, Set<String>>? dailyActivity,
+    Set<int>? activeDays,
+  }) => ClearedByReset(
+    completedLessons: completedLessons,
+    bestResults: bestResults,
+    activeDays: activeDays ?? this.activeDays,
+    acks: acks ?? this.acks,
+    ownedCollectibles: ownedCollectibles,
+    completedModules: completedModules,
+    treeStage: treeStage ?? this.treeStage,
+    challengesCompleted: challengesCompleted,
+    learnedTerms: learnedTerms,
+    challengeReactions: challengeReactions,
+    dailyActivity: dailyActivity ?? this.dailyActivity,
+    challengesSaved: challengesSaved,
+    activeChallenge: activeChallenge,
+    favourites: favourites,
+    unknown: unknown,
+  );
 
   /// This scope's JSON form, with unrecognised keys written back verbatim.
   Map<String, dynamic> toJson() => {
