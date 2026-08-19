@@ -44,6 +44,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Two different mini-games now mark the day.** A run that reaches its
+  results records itself on the day's activity, and the second *different*
+  game of a local day marks that day active — the anti-farm rule, so one run
+  is not enough and the same game twice counts once while still costing two
+  against the daily allowance. The mark is derived from what is stored rather
+  than stored as a flag, and it merges by union, so two devices offline with
+  one game each converge on a qualifying day. An abandoned run records
+  nothing. Keep Sharp reads the same record, so a mini-games recommendation
+  finally acknowledges itself.
 - **The grove's two axes leave the prototype** — the extractor now emits the
   three coffee species (Arabica, Robusta, Liberica, each with its binomial,
   origin, growing conditions, cup profile and the tell describing the plant)

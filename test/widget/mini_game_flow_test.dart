@@ -11,6 +11,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../support/widget_harness.dart';
+
 MiniGameFormat _format(String id, String title, {String topic = 'TOPIC'}) =>
     MiniGameFormat(
       id: id,
@@ -175,6 +177,10 @@ Future<void> _clearBoard(
 }
 
 void main() {
+  // A finished run now records itself on the snapshot, so the flow needs a
+  // store to write into.
+  setUp(useInMemoryDatabase);
+
   testWidgets('the catalog lists seven name-led rows in catalog order', (
     tester,
   ) async {
