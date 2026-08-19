@@ -44,6 +44,14 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Keep Sharp's replay button opens a replay that counts.** On a day the card
+  recommends replaying a lesson, Start now opens it the same way the course
+  path does, so reaching the final card records the day and protects the
+  streak. It used to open a mode that recorded nothing, which meant a learner
+  past Foundations could do exactly what Today asked, every day, and still lose
+  their streak. The card is told to look again on return, so it acknowledges
+  the practice instead of still asking for it.
+
 - **Keep Sharp's mini-games button opens a mini-game.** On a day the card says
   *"play two different games today"*, Start now lands on one of the authored
   games — and skips any already played today, so pressing Start twice reaches
@@ -290,6 +298,13 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **"Practice any lesson" lists the lessons you have finished** — and
+  replaying one from there counts, exactly as replaying it from the course path
+  does. It used to list all 32 lessons including ones never unlocked, running
+  them in a mode that recorded nothing; the design has always described this
+  section as completed work to revisit. Renamed to *Practice a finished
+  lesson* to say so.
+
 - **Opening a lesson is expressed once.** Four places built lesson URLs by
   hand — path segments spelled out, the replay and practice flags appended as
   query strings — so renaming a route compiled perfectly and broke at the tap.
@@ -431,6 +446,13 @@ You can always edit this file by hand instead — the helpers just save effort.
   column. Each step now names its own version.
 
 ### Removed
+
+- **Practice mode.** A third way to finish a lesson that deliberately recorded
+  nothing — no score, no points, no streak. It existed for the practice list
+  and Keep Sharp's replay button, and both now open a real replay, so whether
+  a completed replay counts no longer depends on which list it was started
+  from. There is no remaining way to reach a lesson's final card and have it
+  count for nothing.
 
 - **Practice by game type.** The cross-lesson drill — pick a question kind, get
   every step of that kind scraped out of the lessons you happened to finish —
