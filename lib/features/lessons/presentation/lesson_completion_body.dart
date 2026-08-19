@@ -4,12 +4,12 @@ import 'package:brew_path/core/widgets/icon_badge.dart';
 import 'package:brew_path/features/companion/domain/companion_reaction.dart';
 import 'package:brew_path/features/companion/presentation/companion_celebration.dart';
 import 'package:brew_path/features/lessons/domain/lesson_completion_service.dart';
+import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_reward.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 /// Presentation for the post-lesson screen: a hero badge, outcome text and any
 /// reward card, then the Continue button. Pure view — it renders the loaded
@@ -61,11 +61,7 @@ class LessonCompletionBody extends StatelessWidget {
 
   void _onContinue(BuildContext context) {
     final moduleId = moduleSummaryId;
-    if (moduleId != null) {
-      context.goNamed('moduleSummary', pathParameters: {'moduleId': moduleId});
-    } else {
-      context.go('/learn');
-    }
+    context.goTo(moduleId != null ? moduleSummary(moduleId) : learnTab);
   }
 
   List<Widget> _content(BuildContext context) {
