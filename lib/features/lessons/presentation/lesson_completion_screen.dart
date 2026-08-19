@@ -1,9 +1,6 @@
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
-import 'package:brew_path/features/companion/application/companion_providers.dart';
-import 'package:brew_path/features/companion/domain/companion_reaction.dart';
-import 'package:brew_path/features/companion/presentation/companion_handle.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/lessons/domain/lesson_completion_service.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_body.dart';
@@ -47,16 +44,7 @@ class LessonCompletionScreen extends ConsumerStatefulWidget {
 class _LessonCompletionScreenState
     extends ConsumerState<LessonCompletionScreen> {
   late final Future<LessonCompletionReward> _future = _completeAndLoad();
-  final CompanionHandle _companionHandle = CompanionHandle();
-  String? _companionLine;
   String? _moduleId;
-  bool _reacted = false;
-
-  @override
-  void dispose() {
-    _companionHandle.dispose();
-    super.dispose();
-  }
 
   /// Persists the run exactly once. First completion awards full XP/cards;
   /// review only updates mastery and may grant practice XP; practice runs
@@ -138,31 +126,12 @@ class _LessonCompletionScreenState
     if (snap.hasError) return ErrorView(message: '${snap.error}');
     final reward = snap.data!;
     final firstCompletion = reward.completion != null;
-    if (firstCompletion) {
-      _companionLine ??= ref
-          .watch(companionLinesProvider)
-          .asData
-          ?.value
-          .lineFor(CompanionReaction.lessonComplete);
-      _fireLessonCompleteOnce();
-    }
     final moduleCompleted = reward.completion?.moduleCompleted ?? false;
     return LessonCompletionBody(
       reward: reward,
       mastery: widget.mastery,
-      companionHandle: firstCompletion ? _companionHandle : null,
-      companionLine: firstCompletion ? _companionLine : null,
+      celebrating: firstCompletion,
       moduleSummaryId: moduleCompleted ? _moduleId : null,
     );
-  }
-
-  /// Fires the lesson-complete reaction a single time, after the first frame so
-  /// the companion is mounted and schedules its own auto-revert.
-  void _fireLessonCompleteOnce() {
-    if (_reacted) return;
-    _reacted = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _companionHandle.react(CompanionReaction.lessonComplete);
-    });
   }
 }

@@ -2,11 +2,8 @@ import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/icon_badge.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
-import 'package:brew_path/features/companion/application/companion_providers.dart';
 import 'package:brew_path/features/companion/domain/companion_reaction.dart';
-import 'package:brew_path/features/companion/presentation/companion.dart';
-import 'package:brew_path/features/companion/presentation/companion_bubble.dart';
-import 'package:brew_path/features/companion/presentation/companion_handle.dart';
+import 'package:brew_path/features/companion/presentation/companion_celebration.dart';
 import 'package:brew_path/features/learn/domain/module_summary_provider.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -30,24 +27,6 @@ class ModuleSummaryScreen extends ConsumerStatefulWidget {
 }
 
 class _ModuleSummaryScreenState extends ConsumerState<ModuleSummaryScreen> {
-  final CompanionHandle _companionHandle = CompanionHandle();
-  String? _companionLine;
-  bool _reacted = false;
-
-  @override
-  void dispose() {
-    _companionHandle.dispose();
-    super.dispose();
-  }
-
-  void _fireModuleCompleteOnce() {
-    if (_reacted) return;
-    _reacted = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _companionHandle.react(CompanionReaction.moduleComplete);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final summary = ref.watch(moduleSummaryProvider(widget.moduleId));
@@ -63,17 +42,8 @@ class _ModuleSummaryScreenState extends ConsumerState<ModuleSummaryScreen> {
   }
 
   Widget _buildSummary(ModuleSummary summary) {
-    _companionLine ??= ref
-        .watch(companionLinesProvider)
-        .asData
-        ?.value
-        .lineFor(CompanionReaction.moduleComplete);
-    _fireModuleCompleteOnce();
-
     final theme = Theme.of(context);
     final mood = context.mood;
-    final companion = Companion(handle: _companionHandle);
-    final line = _companionLine;
 
     return Center(
       child: SingleChildScrollView(
@@ -82,10 +52,10 @@ class _ModuleSummaryScreenState extends ConsumerState<ModuleSummaryScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Center(
-              child: line == null
-                  ? companion
-                  : CompanionBubble(text: line, child: companion),
+            const Center(
+              child: CompanionCelebration(
+                reaction: CompanionReaction.moduleComplete,
+              ),
             ),
             const SizedBox(height: AppSpacing.lg),
             Text(

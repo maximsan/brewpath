@@ -1,9 +1,8 @@
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/icon_badge.dart';
-import 'package:brew_path/features/companion/presentation/companion.dart';
-import 'package:brew_path/features/companion/presentation/companion_bubble.dart';
-import 'package:brew_path/features/companion/presentation/companion_handle.dart';
+import 'package:brew_path/features/companion/domain/companion_reaction.dart';
+import 'package:brew_path/features/companion/presentation/companion_celebration.dart';
 import 'package:brew_path/features/lessons/domain/lesson_completion_service.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_reward.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
@@ -21,8 +20,7 @@ class LessonCompletionBody extends StatelessWidget {
     required this.reward,
     required this.mastery,
     super.key,
-    this.companionHandle,
-    this.companionLine,
+    this.celebrating = false,
     this.moduleSummaryId,
   });
 
@@ -32,12 +30,9 @@ class LessonCompletionBody extends StatelessWidget {
   /// Graded result of the run; shown for practice runs.
   final MasteryResult mastery;
 
-  /// Drives the celebratory companion on the first-completion path. When null
-  /// (review / practice runs) a static badge is shown instead.
-  final CompanionHandle? companionHandle;
-
-  /// Optional speech line shown in the companion's bubble.
-  final String? companionLine;
+  /// Whether this is a first completion, which is what earns the celebrating
+  /// companion. A review or practice run shows a static badge instead.
+  final bool celebrating;
 
   /// When set, Continue routes to the module-summary recap for this module id
   /// (the lesson just completed its module); otherwise it returns to Learn.
@@ -88,7 +83,7 @@ class LessonCompletionBody extends StatelessWidget {
     final theme = Theme.of(context);
     final mood = context.mood;
     return [
-      _CompletionHero(handle: companionHandle, line: companionLine),
+      _CompletionHero(celebrating: celebrating),
       const SizedBox(height: 20),
       Text(
         'Lesson complete!',
@@ -194,25 +189,20 @@ class LessonCompletionBody extends StatelessWidget {
 /// when a line is available), falling back to the static badge if no handle is
 /// supplied.
 class _CompletionHero extends StatelessWidget {
-  const _CompletionHero({this.handle, this.line});
+  const _CompletionHero({this.celebrating = false});
 
   static const double _companionSize = 140;
 
-  final CompanionHandle? handle;
-  final String? line;
+  final bool celebrating;
 
   @override
   Widget build(BuildContext context) {
-    final handle = this.handle;
-    if (handle == null) {
-      return const _HeroBadge(icon: Icons.celebration);
-    }
-    final companion = Companion(handle: handle, size: _companionSize);
-    final line = this.line;
-    return Center(
-      child: line == null
-          ? companion
-          : CompanionBubble(text: line, child: companion),
+    if (!celebrating) return const _HeroBadge(icon: Icons.celebration);
+    return const Center(
+      child: CompanionCelebration(
+        reaction: CompanionReaction.lessonComplete,
+        size: _companionSize,
+      ),
     );
   }
 }
