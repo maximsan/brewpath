@@ -6,11 +6,6 @@ DateTime dateOnly(DateTime d) => DateTime(d.year, d.month, d.day);
 bool isSameDay(DateTime a, DateTime b) =>
     a.year == b.year && a.month == b.month && a.day == b.day;
 
-/// Whole-calendar-day difference from [from] to [to] (positive when [to] is
-/// later). Time-of-day is ignored.
-int dayGap(DateTime from, DateTime to) =>
-    dateOnly(to).difference(dateOnly(from)).inDays;
-
 /// [d]'s local calendar day as an integer day index — the day scheme the
 /// snapshot's `activeDays` and `acks` store, and the Keep Sharp rotation
 /// turns on. Consecutive local days map to consecutive integers.
