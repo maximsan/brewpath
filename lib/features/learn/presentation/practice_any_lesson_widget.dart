@@ -11,15 +11,11 @@ class PracticeAnyLessonWidget extends StatefulWidget {
   /// Creates a [PracticeAnyLessonWidget].
   const PracticeAnyLessonWidget({
     required this.lessons,
-    required this.completedIds,
     super.key,
   });
 
   /// Every lesson (with its module) available to practice.
   final List<LessonWithModule> lessons;
-
-  /// Ids of lessons the user has already completed.
-  final Set<String> completedIds;
 
   @override
   State<PracticeAnyLessonWidget> createState() =>
@@ -51,10 +47,7 @@ class _PracticeAnyLessonWidgetState extends State<PracticeAnyLessonWidget> {
         children: [
           for (var i = 0; i < list.length; i++) ...[
             if (i > 0) Divider(height: 1, color: mood.rule),
-            _LessonRow(
-              entry: list[i],
-              completed: widget.completedIds.contains(list[i].lesson.id),
-            ),
+            _LessonRow(entry: list[i]),
           ],
           if (widget.lessons.length > _previewCount)
             InkWell(
@@ -90,11 +83,9 @@ class _PracticeAnyLessonWidgetState extends State<PracticeAnyLessonWidget> {
 }
 
 class _LessonRow extends StatelessWidget {
-  const _LessonRow({required this.entry, required this.completed});
+  const _LessonRow({required this.entry});
 
   final LessonWithModule entry;
-  final bool completed;
-
   static const double _rowBadgeSize = 36;
   static const double _rowBadgeRadius = 10;
   static const double _iconSm = 18;
@@ -117,11 +108,11 @@ class _LessonRow extends StatelessWidget {
           color: mood.inkMute,
         ),
       ),
-      trailing: Icon(
-        completed ? Icons.check_circle : Icons.fitness_center,
-        color: completed ? mood.accent : mood.inkMute,
-      ),
-      onTap: () => context.goTo(lessonPractice(entry.lesson.id)),
+      trailing: Icon(Icons.check_circle, color: mood.accent),
+      // A replay, not a throwaway run: reaching the final card records the day
+      // (§3), exactly as replaying from the course path does. Where the learner
+      // started it has never been what decides whether it counts.
+      onTap: () => context.goTo(lessonReplay(entry.lesson.id)),
     );
   }
 }

@@ -49,8 +49,8 @@ Future<void> _pump(
                 Text('game ${state.pathParameters['gameId']}'),
           ),
           GoRoute(
-            path: AppRoutes.practiceLesson.path,
-            name: AppRoutes.practiceLesson.name,
+            path: AppRoutes.lesson.path,
+            name: AppRoutes.lesson.name,
             builder: (_, state) =>
                 Text('replay ${state.pathParameters['lessonId']}'),
           ),
@@ -107,7 +107,7 @@ void main() {
   ) async {
     final replay = KeepSharpRecommendation(
       type: PracticeType.lessonReplay,
-      destination: lessonPractice('lesson_where_coffee'),
+      destination: lessonReplay('lesson_where_coffee'),
     );
     await _pump(tester, keepSharp: replay);
 

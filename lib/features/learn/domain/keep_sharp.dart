@@ -124,7 +124,7 @@ KeepSharpResolution? keepSharpResolutionFor({
     ),
     PracticeType.lessonReplay => (
       type: pick,
-      destination: lessonPractice(
+      destination: lessonReplay(
         keepSharpDailyChoice(dayNumber, completedLessonIds),
       ),
     ),

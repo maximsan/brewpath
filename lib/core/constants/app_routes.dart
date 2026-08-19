@@ -33,10 +33,6 @@ abstract class AppRoutes {
     'moduleSummary',
     'module-summary/:moduleId',
   );
-  static const practiceLesson = AppRoute(
-    'practiceLesson',
-    'practice/lesson/:lessonId',
-  );
   static const miniGameIntro = AppRoute('miniGameIntro', 'mini-game/:gameId');
   static const miniGamePlay = AppRoute('miniGamePlay', 'play');
   static const path = AppRoute('path', '/path');

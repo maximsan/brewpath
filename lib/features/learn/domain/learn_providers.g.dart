@@ -99,16 +99,29 @@ final class TodayLessonProvider
 
 String _$todayLessonHash() => r'874e4a4903c7e12c16470cd2b56c2772a6d24b81';
 
-/// Flat ordered list of every lesson, joined with its module so the Learn
-/// screen can group them without re-querying.
+/// The lessons the learner has **finished**, in course order, each joined with
+/// its module so the Learn screen can group them without re-querying.
+///
+/// Finished only, which the design has always said: the prototype titles this
+/// section *"Completed work to revisit"* and builds it from the completed set
+/// (`screens.jsx:864`), and ADR-0004 calls the group `Lessons` inside the
+/// practice section. Listing every lesson — the app's previous behaviour — put
+/// modules the learner has not unlocked one tap from being played.
 
-@ProviderFor(allLessonsWithModule)
-final allLessonsWithModuleProvider = AllLessonsWithModuleProvider._();
+@ProviderFor(completedLessonsWithModule)
+final completedLessonsWithModuleProvider =
+    CompletedLessonsWithModuleProvider._();
 
-/// Flat ordered list of every lesson, joined with its module so the Learn
-/// screen can group them without re-querying.
+/// The lessons the learner has **finished**, in course order, each joined with
+/// its module so the Learn screen can group them without re-querying.
+///
+/// Finished only, which the design has always said: the prototype titles this
+/// section *"Completed work to revisit"* and builds it from the completed set
+/// (`screens.jsx:864`), and ADR-0004 calls the group `Lessons` inside the
+/// practice section. Listing every lesson — the app's previous behaviour — put
+/// modules the learner has not unlocked one tap from being played.
 
-final class AllLessonsWithModuleProvider
+final class CompletedLessonsWithModuleProvider
     extends
         $FunctionalProvider<
           AsyncValue<List<LessonWithModule>>,
@@ -118,21 +131,27 @@ final class AllLessonsWithModuleProvider
     with
         $FutureModifier<List<LessonWithModule>>,
         $FutureProvider<List<LessonWithModule>> {
-  /// Flat ordered list of every lesson, joined with its module so the Learn
-  /// screen can group them without re-querying.
-  AllLessonsWithModuleProvider._()
+  /// The lessons the learner has **finished**, in course order, each joined with
+  /// its module so the Learn screen can group them without re-querying.
+  ///
+  /// Finished only, which the design has always said: the prototype titles this
+  /// section *"Completed work to revisit"* and builds it from the completed set
+  /// (`screens.jsx:864`), and ADR-0004 calls the group `Lessons` inside the
+  /// practice section. Listing every lesson — the app's previous behaviour — put
+  /// modules the learner has not unlocked one tap from being played.
+  CompletedLessonsWithModuleProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'allLessonsWithModuleProvider',
+        name: r'completedLessonsWithModuleProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$allLessonsWithModuleHash();
+  String debugGetCreateSourceHash() => _$completedLessonsWithModuleHash();
 
   @$internal
   @override
@@ -142,9 +161,9 @@ final class AllLessonsWithModuleProvider
 
   @override
   FutureOr<List<LessonWithModule>> create(Ref ref) {
-    return allLessonsWithModule(ref);
+    return completedLessonsWithModule(ref);
   }
 }
 
-String _$allLessonsWithModuleHash() =>
-    r'139550831d84efbe1ace4a758117f9db8e52c788';
+String _$completedLessonsWithModuleHash() =>
+    r'3393110394f9a8db8e6844e5e6fa57bb67c57257';

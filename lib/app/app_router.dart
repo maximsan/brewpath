@@ -134,7 +134,6 @@ GoRouter appRouter(Ref ref) {
                     builder: (context, state) => LessonScreen(
                       lessonId: state.pathParameters['lessonId']!,
                       review: state.uri.queryParameters['review'] == 'true',
-                      practice: state.uri.queryParameters['practice'] == 'true',
                     ),
                     routes: [
                       GoRoute(
@@ -144,8 +143,6 @@ GoRouter appRouter(Ref ref) {
                         builder: (context, state) => LessonCompletionScreen(
                           lessonId: state.pathParameters['lessonId']!,
                           review: state.uri.queryParameters['review'] == 'true',
-                          practice:
-                              state.uri.queryParameters['practice'] == 'true',
                           mastery: MasteryResult(
                             correct:
                                 int.tryParse(
@@ -175,15 +172,6 @@ GoRouter appRouter(Ref ref) {
                   // Practice flows live under /learn so the back button
                   // returns to the Learn tab. Both push on the root navigator
                   // to cover the bottom-nav shell (same as lessons).
-                  GoRoute(
-                    path: AppRoutes.practiceLesson.path,
-                    name: AppRoutes.practiceLesson.name,
-                    parentNavigatorKey: _rootKey,
-                    builder: (context, state) => LessonScreen(
-                      lessonId: state.pathParameters['lessonId']!,
-                      practice: true,
-                    ),
-                  ),
                   GoRoute(
                     path: AppRoutes.miniGameIntro.path,
                     name: AppRoutes.miniGameIntro.name,

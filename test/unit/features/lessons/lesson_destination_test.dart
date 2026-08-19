@@ -33,11 +33,6 @@ GoRouter buildRouter() => GoRouter(
           ],
         ),
         GoRoute(
-          path: AppRoutes.practiceLesson.path,
-          name: AppRoutes.practiceLesson.name,
-          builder: (_, _) => const SizedBox.shrink(),
-        ),
-        GoRoute(
           path: AppRoutes.moduleSummary.path,
           name: AppRoutes.moduleSummary.name,
           builder: (_, _) => const SizedBox.shrink(),
@@ -68,26 +63,12 @@ void main() {
       );
     });
 
-    test('a run that records nothing', () {
-      expect(
-        locationOf(lessonPractice('m1l1')),
-        '/learn/practice/lesson/m1l1',
-      );
-    });
-
     test('the completion screen carries the mode and the graded pair', () {
       expect(
         locationOf(
-          lessonCompletion(
-            'm1l1',
-            review: false,
-            practice: false,
-            correct: 4,
-            total: 5,
-          ),
+          lessonCompletion('m1l1', review: false, correct: 4, total: 5),
         ),
-        '/learn/lesson/m1l1/complete'
-        '?review=false&practice=false&correct=4&total=5',
+        '/learn/lesson/m1l1/complete?review=false&correct=4&total=5',
       );
     });
 
@@ -109,30 +90,18 @@ void main() {
       // count the mastery band derives from.
       expect(
         locationOf(
-          lessonCompletion(
-            'm1l1',
-            review: false,
-            practice: false,
-            correct: 18,
-            total: 20,
-          ),
+          lessonCompletion('m1l1', review: false, correct: 18, total: 20),
         ),
         contains('correct=18&total=20'),
       );
     });
 
-    test('a replay says so, and a practice run says so', () {
+    test('a replay says so', () {
       expect(
         locationOf(
-          lessonCompletion(
-            'm1l1',
-            review: true,
-            practice: false,
-            correct: 1,
-            total: 1,
-          ),
+          lessonCompletion('m1l1', review: true, correct: 1, total: 1),
         ),
-        contains('review=true&practice=false'),
+        contains('review=true'),
       );
     });
   });
@@ -157,7 +126,6 @@ void main() {
       for (final destination in [
         lessonStart('m1l1'),
         lessonReplay('m1l1'),
-        lessonPractice('m1l1'),
         moduleSummary('m1'),
         learnTab,
       ]) {

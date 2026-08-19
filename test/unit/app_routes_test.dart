@@ -58,13 +58,6 @@ void main() {
       '/learn/lesson/l1',
     );
     expect(
-      locationOf(
-        AppRoutes.practiceLesson.name,
-        pathParameters: {'lessonId': 'l1'},
-      ),
-      '/learn/practice/lesson/l1',
-    );
-    expect(
       locationOf(AppRoutes.cardDetail.name, pathParameters: {'cardId': 'c1'}),
       '/cards/c1',
     );

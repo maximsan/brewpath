@@ -9,7 +9,6 @@ import 'package:brew_path/features/learn/presentation/practice_any_lesson_widget
 import 'package:brew_path/features/learn/presentation/today_card_widget.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_providers.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_games_catalog_widget.dart';
-import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -24,9 +23,8 @@ class LearnScreen extends ConsumerWidget {
     final keepSharp = ref.watch(keepSharpRecommendationProvider);
     final keepSharpDone = ref.watch(keepSharpAcknowledgedTodayProvider);
     final modules = ref.watch(modulesWithProgressProvider);
-    final allLessons = ref.watch(allLessonsWithModuleProvider);
+    final finishedLessons = ref.watch(completedLessonsWithModuleProvider);
     final miniGames = ref.watch(miniGameFormatsProvider);
-    final completedLessons = ref.watch(completedLessonsProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text(AppLabels.tabLearn)),
@@ -43,15 +41,10 @@ class LearnScreen extends ConsumerWidget {
               keepSharpDone: keepSharpDone.asData?.value ?? false,
             ),
             const SizedBox(height: 24),
-            const SectionHeader('Practice any lesson'),
+            const SectionHeader('Practice a finished lesson'),
             const SizedBox(height: 12),
             PracticeAnyLessonWidget(
-              lessons: allLessons.asData?.value ?? const [],
-              completedIds:
-                  completedLessons.asData?.value
-                      .map((r) => r.lessonId)
-                      .toSet() ??
-                  const {},
+              lessons: finishedLessons.asData?.value ?? const [],
             ),
             const SizedBox(height: 24),
             const SectionHeader('Mini-games'),

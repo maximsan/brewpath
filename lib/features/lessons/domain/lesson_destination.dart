@@ -65,9 +65,6 @@ class RouteDestination {
 /// The query key carrying whether a run is a replay of a finished lesson.
 const String _reviewFlag = 'review';
 
-/// The query key carrying whether a run records nothing at all.
-const String _practiceFlag = 'practice';
-
 /// Playing a lesson for the first time. A finished run banks everything.
 RouteDestination lessonStart(String lessonId) => RouteDestination(
   name: AppRoutes.lesson.name,
@@ -82,12 +79,6 @@ RouteDestination lessonReplay(String lessonId) => RouteDestination(
   queryParams: const {_reviewFlag: 'true'},
 );
 
-/// Running a lesson with nothing recorded at all.
-RouteDestination lessonPractice(String lessonId) => RouteDestination(
-  name: AppRoutes.practiceLesson.name,
-  pathParams: {'lessonId': lessonId},
-);
-
 /// The completion screen for a finished run.
 ///
 /// The graded pair travels **whole**. Rounding it to a percentage here would
@@ -96,7 +87,6 @@ RouteDestination lessonPractice(String lessonId) => RouteDestination(
 RouteDestination lessonCompletion(
   String lessonId, {
   required bool review,
-  required bool practice,
   required int correct,
   required int total,
 }) => RouteDestination(
@@ -104,7 +94,6 @@ RouteDestination lessonCompletion(
   pathParams: {'lessonId': lessonId},
   queryParams: {
     _reviewFlag: '$review',
-    _practiceFlag: '$practice',
     'correct': '$correct',
     'total': '$total',
   },

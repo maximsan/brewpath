@@ -1,4 +1,6 @@
 import 'package:brew_path/app/app.dart';
+import 'package:brew_path/features/progress/domain/mastery.dart';
+import 'package:brew_path/shared/repositories/progress_repository.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -26,12 +28,48 @@ void main() {
 
     for (final section in const [
       "Today's lesson",
-      'Practice any lesson',
+      'Practice a finished lesson',
       'Mini-games',
       'Modules',
     ]) {
       expect(find.text(section), findsOneWidget, reason: section);
     }
+  });
+
+  testWidgets('the practice section lists only finished lessons', (
+    tester,
+  ) async {
+    // The design has always said so — the prototype titles this section
+    // "Completed work to revisit" and builds it from the completed set. The
+    // app used to list all 32, putting a locked module one tap from playable.
+    useTallViewport(tester);
+    await ProgressRepository().saveCompletion(
+      lessonId: 'lesson_where_coffee',
+      xpEarned: 10,
+      mastery: const MasteryResult(correct: 5, total: 5),
+    );
+
+    await pumpWithProviders(tester, const BrewPathApp());
+
+    expect(find.text('Where Coffee Comes From'), findsWidgets);
+    // Deliberately the *third* lesson: the second becomes today's lesson once
+    // the first is done, so it would show in the Today card either way.
+    expect(
+      find.text('What Green Coffee Is'),
+      findsNothing,
+      reason: 'unfinished lessons are not practice material',
+    );
+  });
+
+  testWidgets('a learner who has finished nothing sees an empty section', (
+    tester,
+  ) async {
+    useTallViewport(tester);
+
+    await pumpWithProviders(tester, const BrewPathApp());
+
+    expect(find.text('Practice a finished lesson'), findsOneWidget);
+    expect(find.text('No lessons available yet.'), findsOneWidget);
   });
 
   testWidgets('no section offers practice by game type', (tester) async {
