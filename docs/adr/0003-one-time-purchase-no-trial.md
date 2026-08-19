@@ -53,3 +53,7 @@ on how BrewPath charges.
   beating it on 90-day revenue per user without elevated refunds or review
   damage; Keep Sharp showing multi-month practice would independently supply
   the renewable value that makes a recurring charge honest.
+- **No trial in any arm** (owner ruling, Aug 2026): the free content is the
+  trial. §7's principle — free access limited by content, not by waiting —
+  applies across the whole experiment, so subscription and hybrid arms carry
+  no intro free week either.
