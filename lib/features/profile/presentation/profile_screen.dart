@@ -3,6 +3,7 @@ import 'package:brew_path/features/profile/presentation/widgets/preference_tile.
 import 'package:brew_path/features/profile/presentation/widgets/premium_card.dart';
 import 'package:brew_path/features/profile/presentation/widgets/profile_header.dart';
 import 'package:brew_path/features/profile/presentation/widgets/stat_tile.dart';
+import 'package:brew_path/features/progress/domain/grove_treatment.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/presentation/coffee_tree.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -28,6 +29,7 @@ class ProfileScreen extends ConsumerWidget {
     final cards = ref.watch(collectedCardsProvider);
     final settings = ref.watch(settingsControllerProvider);
     final treeStage = ref.watch(treeStageProvider);
+    final grove = ref.watch(groveTreatmentProvider);
 
     return Scaffold(
       body: SafeArea(
@@ -48,7 +50,13 @@ class ProfileScreen extends ConsumerWidget {
                 children: [
                   Center(
                     child: treeStage.when(
-                      data: (stage) => CoffeeTree(stage: stage),
+                      data: (stage) => CoffeeTree(
+                        stage: stage,
+                        // A grove still loading paints the real art rather
+                        // than blocking the tree on it.
+                        treatment:
+                            grove.asData?.value ?? GroveTreatment.identity,
+                      ),
                       loading: CoffeeTreePlaceholder.new,
                       error: (_, _) => const CoffeeTreePlaceholder(),
                     ),

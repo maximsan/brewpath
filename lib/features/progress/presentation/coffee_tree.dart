@@ -1,20 +1,30 @@
+import 'package:brew_path/features/progress/domain/grove_treatment.dart';
 import 'package:brew_path/features/progress/domain/tree_frames.dart';
 import 'package:flutter/material.dart';
 
-/// The Coffee Tree, rendered as the single still frame for [stage].
+/// The Coffee Tree, rendered as the single still frame for [stage], wearing
+/// the grove [treatment].
 ///
-/// Deliberately decides nothing: the stage arrives from the caller, and the
-/// grove treatment — variety silhouette and light — composes over this widget
-/// in a later slice (#139). Motion stays out until the #88 port lands, so a
-/// still frame is the whole contract and reduced motion is satisfied by
-/// construction.
+/// Deliberately decides nothing: both the stage and the treatment arrive from
+/// the caller, and the treatment is already reduced to a matrix and a scale, so
+/// this widget knows nothing about species or lights. Motion stays out until
+/// the #88 port lands, so a still frame is the whole contract and reduced
+/// motion is satisfied by construction.
 class CoffeeTree extends StatelessWidget {
   /// Creates a [CoffeeTree].
-  const CoffeeTree({required this.stage, this.size = defaultSize, super.key});
+  const CoffeeTree({
+    required this.stage,
+    this.treatment = GroveTreatment.identity,
+    this.size = defaultSize,
+    super.key,
+  });
 
   /// Highest tree stage ever reached, as the snapshot stores it. Values
   /// outside the shipped frames clamp to seed and full growth.
   final int stage;
+
+  /// The planted species' silhouette and the light it stands in, composed.
+  final GroveTreatment treatment;
 
   /// Square edge the frame renders at.
   final double size;
@@ -24,12 +34,25 @@ class CoffeeTree extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Image.asset(
+    final frame = Image.asset(
       treeStageAsset(stage),
       width: size,
       height: size,
       fit: BoxFit.contain,
       semanticLabel: treeStageLabel(stage),
+    );
+
+    // Arabica in Daylight is the real art, so it is painted with neither
+    // wrapper rather than through a matrix that happens to be the identity.
+    if (treatment.isIdentity) return frame;
+
+    return Transform.scale(
+      scaleX: treatment.silhouette.scaleX,
+      scaleY: treatment.silhouette.scaleY,
+      child: ColorFiltered(
+        colorFilter: ColorFilter.matrix(treatment.colorMatrix),
+        child: frame,
+      ),
     );
   }
 }

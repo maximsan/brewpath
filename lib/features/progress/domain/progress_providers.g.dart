@@ -232,3 +232,56 @@ final class TreeStageProvider
 }
 
 String _$treeStageHash() => r'b0c44f97033fd2ac052c14d89e26465c313f17f8';
+
+/// The planted grove, resolved against the banks into one matrix and one scale.
+///
+/// Joined here rather than in the widget so the tree stays ignorant of species
+/// and lights: it receives a treatment, not a pair of ids to look up.
+
+@ProviderFor(groveTreatment)
+final groveTreatmentProvider = GroveTreatmentProvider._();
+
+/// The planted grove, resolved against the banks into one matrix and one scale.
+///
+/// Joined here rather than in the widget so the tree stays ignorant of species
+/// and lights: it receives a treatment, not a pair of ids to look up.
+
+final class GroveTreatmentProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<GroveTreatment>,
+          GroveTreatment,
+          FutureOr<GroveTreatment>
+        >
+    with $FutureModifier<GroveTreatment>, $FutureProvider<GroveTreatment> {
+  /// The planted grove, resolved against the banks into one matrix and one scale.
+  ///
+  /// Joined here rather than in the widget so the tree stays ignorant of species
+  /// and lights: it receives a treatment, not a pair of ids to look up.
+  GroveTreatmentProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'groveTreatmentProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$groveTreatmentHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<GroveTreatment> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<GroveTreatment> create(Ref ref) {
+    return groveTreatment(ref);
+  }
+}
+
+String _$groveTreatmentHash() => r'10d2583fea378ddaccfb0e25020882e62f7897a9';
