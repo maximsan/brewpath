@@ -2,11 +2,8 @@ import 'dart:async';
 
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
-import 'package:brew_path/features/companion/application/companion_providers.dart';
 import 'package:brew_path/features/companion/domain/companion_reaction.dart';
-import 'package:brew_path/features/companion/presentation/companion.dart';
-import 'package:brew_path/features/companion/presentation/companion_bubble.dart';
-import 'package:brew_path/features/companion/presentation/companion_handle.dart';
+import 'package:brew_path/features/companion/presentation/companion_celebration.dart';
 import 'package:brew_path/features/learn/domain/course_completion_providers.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
@@ -33,10 +30,6 @@ class CourseCompletionScreen extends ConsumerStatefulWidget {
 
 class _CourseCompletionScreenState
     extends ConsumerState<CourseCompletionScreen> {
-  final CompanionHandle _companionHandle = CompanionHandle();
-  String? _companionLine;
-  bool _celebrated = false;
-
   @override
   void initState() {
     super.initState();
@@ -48,20 +41,6 @@ class _CourseCompletionScreenState
         if (mounted) ref.invalidate(courseCompletionAckedProvider);
       }),
     );
-  }
-
-  @override
-  void dispose() {
-    _companionHandle.dispose();
-    super.dispose();
-  }
-
-  void _celebrateOnce() {
-    if (_celebrated) return;
-    _celebrated = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _companionHandle.react(CompanionReaction.courseComplete);
-    });
   }
 
   /// The redirect reads the gate's last *resolved* value, so navigating
@@ -102,13 +81,6 @@ class _CourseCompletionScreenState
       cards: cards.value?.length ?? 0,
       streak: streak.value ?? 0,
     );
-    _companionLine ??= ref
-        .watch(companionLinesProvider)
-        .asData
-        ?.value
-        .lineFor(CompanionReaction.courseComplete);
-    _celebrateOnce();
-
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -131,16 +103,14 @@ class _CourseCompletionScreenState
   }
 
   Widget _celebration(ThemeData theme, MoodColors mood, _Stats stats) {
-    final companion = Companion(handle: _companionHandle);
-    final line = _companionLine;
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Center(
-          child: line == null
-              ? companion
-              : CompanionBubble(text: line, child: companion),
+        const Center(
+          child: CompanionCelebration(
+            reaction: CompanionReaction.courseComplete,
+          ),
         ),
         const SizedBox(height: AppSpacing.lg),
         Text(

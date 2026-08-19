@@ -1,6 +1,5 @@
 import 'package:brew_path/features/companion/domain/companion_reaction.dart';
-import 'package:brew_path/features/companion/presentation/companion.dart';
-import 'package:brew_path/features/companion/presentation/companion_handle.dart';
+import 'package:brew_path/features/companion/presentation/companion_celebration.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_run.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -11,7 +10,7 @@ import 'package:flutter/material.dart';
 /// Nothing here is written anywhere — no points, no tree growth, no cards, no
 /// progress. The score exists for the length of this screen and then it is
 /// gone, which is what makes a mini-game replayable without inflating anything.
-class MiniGameResultsView extends StatefulWidget {
+class MiniGameResultsView extends StatelessWidget {
   /// Creates a [MiniGameResultsView].
   const MiniGameResultsView({
     required this.score,
@@ -33,47 +32,15 @@ class MiniGameResultsView extends StatefulWidget {
   /// Returns the learner where they came from.
   final VoidCallback onDone;
 
-  @override
-  State<MiniGameResultsView> createState() => _MiniGameResultsViewState();
-}
-
-class _MiniGameResultsViewState extends State<MiniGameResultsView> {
-  final CompanionHandle _companionHandle = CompanionHandle();
-  bool _reacted = false;
-
   static const double _companionSize = 120;
-
-  @override
-  void dispose() {
-    _companionHandle.dispose();
-    super.dispose();
-  }
-
-  void _reactOnce() {
-    if (_reacted) return;
-    _reacted = true;
-    final celebratory = isCelebratoryRun(
-      score: widget.score,
-      total: widget.total,
-    );
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      _companionHandle.react(
-        celebratory
-            ? CompanionReaction.moduleComplete
-            : CompanionReaction.lessonComplete,
-      );
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final mood = context.mood;
-    _reactOnce();
     final encouragement = runEncouragement(
-      score: widget.score,
-      total: widget.total,
+      score: score,
+      total: total,
     );
 
     return SafeArea(
@@ -85,18 +52,24 @@ class _MiniGameResultsViewState extends State<MiniGameResultsView> {
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 child: Semantics(
                   label:
-                      'Run complete. You scored ${widget.score} '
-                      'out of ${widget.total}. $encouragement',
+                      'Run complete. You scored $score '
+                      'out of $total. $encouragement',
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Companion(
-                        handle: _companionHandle,
+                      // The score decides the pose: the module-sized
+                      // celebration at or above the mark, the lesson-sized one
+                      // below. No line — the encouragement below says it.
+                      CompanionCelebration(
+                        reaction: isCelebratoryRun(score: score, total: total)
+                            ? CompanionReaction.moduleComplete
+                            : CompanionReaction.lessonComplete,
                         size: _companionSize,
+                        builder: (context, companion, line) => companion,
                       ),
                       const SizedBox(height: AppSpacing.lg),
                       Text(
-                        '${widget.score} / ${widget.total}',
+                        '$score / $total',
                         style: theme.textTheme.displaySmall?.copyWith(
                           color: mood.ink,
                           fontWeight: FontWeight.w700,
@@ -128,7 +101,7 @@ class _MiniGameResultsViewState extends State<MiniGameResultsView> {
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(
-                    onPressed: widget.onPlayAgain,
+                    onPressed: onPlayAgain,
                     child: const Text('Play again'),
                   ),
                 ),
@@ -136,7 +109,7 @@ class _MiniGameResultsViewState extends State<MiniGameResultsView> {
                 SizedBox(
                   width: double.infinity,
                   child: TextButton(
-                    onPressed: widget.onDone,
+                    onPressed: onDone,
                     child: const Text('Done'),
                   ),
                 ),
