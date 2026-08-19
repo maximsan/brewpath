@@ -1,5 +1,5 @@
 import 'package:brew_path/app/app.dart';
-import 'package:brew_path/features/progress/domain/grove_treatment.dart';
+import 'package:brew_path/features/progress/domain/color_matrix.dart';
 import 'package:brew_path/features/progress/presentation/coffee_tree.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:brew_path/shared/storage/snapshot/progress_snapshot.dart';

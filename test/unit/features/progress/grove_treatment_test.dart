@@ -1,3 +1,4 @@
+import 'package:brew_path/features/progress/domain/color_matrix.dart';
 import 'package:brew_path/features/progress/domain/grove_treatment.dart';
 import 'package:brew_path/shared/models/content/grove_light.dart';
 import 'package:brew_path/shared/models/content/grove_variety.dart';
@@ -50,7 +51,22 @@ const _moonlit = GroveLight(
   filter: 'saturate(0.6) hue-rotate(150deg) brightness(0.96) contrast(1.06)',
 );
 
-const List<GroveVariety> _varieties = [_arabica, _robusta];
+const _liberica = GroveVariety(
+  id: 'liberica',
+  name: 'Liberica',
+  latin: 'Coffea liberica',
+  share: '<1%',
+  use: 'Local brews',
+  origin: 'Philippines',
+  grows: 'Low and humid',
+  cup: 'Smoky',
+  tell: 'Enormous leathery leaves.',
+  shape: 'scale(1.1, 1.12)',
+  leaf: 'saturate(0.95) hue-rotate(6deg) brightness(0.96)',
+  drop: 'later',
+);
+
+const List<GroveVariety> _varieties = [_arabica, _robusta, _liberica];
 const List<GroveLight> _lights = [_daylight, _moonlit];
 
 /// Flutter's colour matrices are 4 rows of 5.
@@ -199,6 +215,46 @@ void main() {
       expect(treatment.isIdentity, isFalse);
     });
 
+    test('Liberica is taller than it is wide, and tinted cooler', () {
+      final treatment = groveTreatmentFor(
+        varieties: _varieties,
+        lights: _lights,
+        variety: 'liberica',
+        light: 'daylight',
+      );
+
+      // The decided scale: fractionally wider, noticeably taller.
+      expect(treatment.silhouette, const GroveSilhouette(1.1, 1.12));
+      expect(
+        treatment.silhouette.scaleY,
+        greaterThan(treatment.silhouette.scaleX),
+      );
+      // Its leaf tone applies even under the unfiltered light.
+      expect(treatment.colorMatrix, isNot(identityColorMatrix));
+    });
+
+    test('the three species differ from each other on both channels', () {
+      GroveTreatment of(String variety) => groveTreatmentFor(
+        varieties: _varieties,
+        lights: _lights,
+        variety: variety,
+        light: 'daylight',
+      );
+
+      final arabica = of('arabica');
+      final robusta = of('robusta');
+      final liberica = of('liberica');
+
+      // #24 binds these to read apart without relying on hue alone, so the
+      // silhouettes must be distinct and not only the tones.
+      expect(arabica.silhouette, isNot(robusta.silhouette));
+      expect(arabica.silhouette, isNot(liberica.silhouette));
+      expect(robusta.silhouette, isNot(liberica.silhouette));
+
+      expect(arabica.colorMatrix, isNot(robusta.colorMatrix));
+      expect(robusta.colorMatrix, isNot(liberica.colorMatrix));
+    });
+
     test('a light changes the tint without touching the silhouette', () {
       final day = groveTreatmentFor(
         varieties: _varieties,
@@ -247,6 +303,24 @@ void main() {
 
       expect(treatment.silhouette, GroveSilhouette.unscaled);
       expect(treatment.colorMatrix, identityColorMatrix);
+    });
+
+    test('equality and hashCode agree, so a Set holds one entry', () {
+      // The pair has to stay consistent: an epsilon in `==` with an exact
+      // hash would let two "equal" treatments land in different buckets.
+      GroveTreatment robustaAtMoonlit() => groveTreatmentFor(
+        varieties: _varieties,
+        lights: _lights,
+        variety: 'robusta',
+        light: 'moonlit',
+      );
+
+      final first = robustaAtMoonlit();
+      final second = robustaAtMoonlit();
+
+      expect(first, second);
+      expect(first.hashCode, second.hashCode);
+      expect({first, second}, hasLength(1));
     });
 
     test('an empty bank still yields a renderable treatment', () {
