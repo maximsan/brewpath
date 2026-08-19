@@ -38,6 +38,19 @@ void main() {
     await progress.saveProgress(record);
   }
 
+  /// Midday, [back] whole calendar days ago.
+  ///
+  /// Built by field arithmetic from a fixed hour, never by subtracting a
+  /// `Duration` from `DateTime.now()`. Both alternatives are time-dependent:
+  /// subtracting hours crosses midnight when the suite runs just after it, and
+  /// subtracting whole days lands on the wrong day across a DST boundary. The
+  /// provider reads the real clock for *today*, so the anchor has to be real —
+  /// only the time of day is pinned.
+  DateTime daysAgo(int back) {
+    final today = DateTime.now();
+    return DateTime(today.year, today.month, today.day - back, 12);
+  }
+
   Future<int> streak() async {
     final container = ProviderContainer();
     addTearDown(container.dispose);
@@ -49,9 +62,8 @@ void main() {
   });
 
   test('completions recorded before the day set existed still count', () async {
-    final now = DateTime.now();
     for (var back = 0; back < 3; back++) {
-      await completedOn('l$back', now.subtract(Duration(days: back)));
+      await completedOn('l$back', daysAgo(back));
     }
 
     // Nothing has ever written the day set on this install.
@@ -63,23 +75,22 @@ void main() {
   });
 
   test('two completions on one day are still one day', () async {
-    final now = DateTime.now();
-    await completedOn('l1', now);
-    await completedOn('l2', now.subtract(const Duration(hours: 2)));
+    final today = daysAgo(0);
+    await completedOn('l1', today);
+    await completedOn('l2', DateTime(today.year, today.month, today.day, 8));
 
     expect(await streak(), 1);
   });
 
   test('a gap in the backfilled history still breaks the streak', () async {
-    final now = DateTime.now();
-    await completedOn('l1', now);
-    await completedOn('l2', now.subtract(const Duration(days: 3)));
+    await completedOn('l1', daysAgo(0));
+    await completedOn('l2', daysAgo(3));
 
     expect(await streak(), 1, reason: 'the fold reads it like any other set');
   });
 
   test('a reset clears the completions, so nothing is resurrected', () async {
-    await completedOn('l1', DateTime.now());
+    await completedOn('l1', daysAgo(0));
     expect(await streak(), 1);
 
     // What `AccountWipe` does to the legacy tables.
@@ -89,9 +100,8 @@ void main() {
   });
 
   test('the backfilled day earns toward a freeze like any other', () async {
-    final now = DateTime.now();
     for (var back = 0; back < 7; back++) {
-      await completedOn('l$back', now.subtract(Duration(days: back)));
+      await completedOn('l$back', daysAgo(back));
     }
 
     final container = ProviderContainer();
