@@ -24,23 +24,32 @@ for both types anyway.
 
 ## Decision
 
-v1 sells a **single non-consumable purchase** unlocking BrewPath Plus. No
-trial, no subscription SKUs. The paywall leads with the course (the remaining
-lessons), then practice depth, then the Studios, and carries Restore / Terms /
-Privacy.
+**What v1 ships:** a **single non-consumable purchase** unlocking BrewPath
+Plus. No trial, no subscription SKUs. The paywall leads with the course (the
+remaining lessons), then practice depth, then the Studios, and carries
+Restore / Terms / Privacy.
+
+**What stays open:** the monetization **model itself is not finally decided.**
+A post-launch experiment shows **different paywalls to different users** —
+one-time (this baseline) vs subscription (monthly + yearly) vs hybrid — and
+the data picks the model. The owner's stated expectation (Aug 2026) is that
+**hybrid or subscription wins** on revenue; the skepticism in Context is the
+counter-hypothesis the experiment exists to test, not a verdict. This ADR
+records the launch configuration and the baseline arm, not a terminal ruling
+on how BrewPath charges.
 
 ## Consequences
 
 - `PlanSheet`, the renewal/change-plan/cancel half of `SubscriptionScreen`,
   `TRIAL_DAYS`, `trialDaysLeft` and `TrialBadge` do not port; the map's
   no-clock warning stops applying to monetization.
-- **This is the baseline of a planned post-launch experiment, not a terminal
-  ruling** (product-owner direction, Aug 2026 — recorded on
-  [#164](https://github.com/maximsan/brewpath/issues/164)): one-time only vs
-  subscription (monthly + yearly) vs hybrid, likely via RevenueCat. The build
-  therefore keeps **entitlement, acquisition and paywall UI separated**
-  ([#176](https://github.com/maximsan/brewpath/issues/176)) so switching models
-  is configuration, not a rewrite of access logic.
-- **Revisit if** post-launch data beats the baseline on 90-day revenue without
-  elevated refunds, or Keep Sharp engagement shows multi-month practice — the
-  renewable value that would make a recurring charge honest.
+- The experiment (likely via RevenueCat) requires the build to keep
+  **entitlement, acquisition and paywall UI separated**
+  ([#176](https://github.com/maximsan/brewpath/issues/176)) — and because arms
+  run **concurrently per user**, not sequentially, the seam must support
+  stable per-user paywall assignment, with any arm's purchase honored by the
+  same entitlement forever, even after the experiment ends.
+- **The experiment resolves the model.** The bar for moving off the baseline:
+  beating it on 90-day revenue per user without elevated refunds or review
+  damage; Keep Sharp showing multi-month practice would independently supply
+  the renewable value that makes a recurring charge honest.
