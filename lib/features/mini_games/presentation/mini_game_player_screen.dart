@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
+import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
 import 'package:brew_path/features/lessons/presentation/cards/content_card_view.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_completion.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_providers.dart';
@@ -59,9 +60,15 @@ class _MiniGamePlayerScreenState extends ConsumerState<MiniGamePlayerScreen> {
         widget.formatId,
         DateTime.now(),
       ).then((_) {
-        // The second different game of the day marks it, and the streak is
-        // derived — so the surfaces showing it have to be told to look again.
-        if (mounted) ref.invalidate(streakStatusProvider);
+        if (!mounted) return;
+        // The second different game of the day marks it, and both readers are
+        // derived — so each has to be told to look again. The Learn tab is
+        // *covered* by this run rather than replaced, so it never rebuilds on
+        // its own and the card would otherwise still be asking for a game the
+        // learner just played.
+        ref.invalidate(streakStatusProvider);
+        ref.invalidate(keepSharpAcknowledgedTodayProvider);
+        ref.invalidate(keepSharpRecommendationProvider);
       }),
     );
   }
