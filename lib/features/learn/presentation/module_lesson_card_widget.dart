@@ -1,10 +1,10 @@
 import 'package:brew_path/core/widgets/bean_gauge.dart';
 import 'package:brew_path/features/learn/presentation/lesson_node_gauge.dart';
+import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 /// A lesson row in the module's lesson list. Completed lessons re-open in
 /// review mode and expose a `Review` action; new lessons start fresh.
@@ -36,14 +36,16 @@ class ModuleLessonCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final mood = context.mood;
+    // A finished lesson reopens as a replay, which records the day (§3); an
+    // unfinished one opens for real.
     final destination = isCompleted
-        ? '/learn/lesson/${lesson.id}?review=true'
-        : '/learn/lesson/${lesson.id}';
+        ? lessonReplay(lesson.id)
+        : lessonStart(lesson.id);
 
     return Card(
       margin: EdgeInsets.zero,
       child: InkWell(
-        onTap: () => context.go(destination),
+        onTap: () => context.goTo(destination),
         borderRadius: BorderRadius.circular(_cardRadius),
         child: Padding(
           padding: const EdgeInsets.all(14),
@@ -78,7 +80,7 @@ class ModuleLessonCardWidget extends StatelessWidget {
               const SizedBox(width: 8),
               if (isCompleted)
                 TextButton(
-                  onPressed: () => context.go(destination),
+                  onPressed: () => context.goTo(destination),
                   child: const Text('Review'),
                 )
               else

@@ -281,6 +281,14 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **Opening a lesson is expressed once.** Four places built lesson URLs by
+  hand — path segments spelled out, the replay and practice flags appended as
+  query strings — so renaming a route compiled perfectly and broke at the tap.
+  Each way of opening a lesson is now a named destination carrying its own
+  mode, and no caller spells a path out. Nothing changes for the learner: every
+  destination resolves to the exact URL its string produced, which is what the
+  tests assert.
+
 - **Finishing a lesson records a day, not a number.** A first completion and a
   completed replay both write themselves onto the day's activity record and
   mark the day active; the streak is folded back out of that set wherever it

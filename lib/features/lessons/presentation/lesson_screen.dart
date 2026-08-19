@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:brew_path/core/constants/xp_values.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
+import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/features/lessons/presentation/xp_gain_toast.dart';
 import 'package:brew_path/features/mini_games/presentation/lesson_step_runner.dart';
 import 'package:brew_path/services/analytics/analytics_provider.dart';
@@ -11,7 +12,6 @@ import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 const double _pillRadius = 20;
 const int _percentScale = 100;
@@ -86,14 +86,14 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
       setState(() => _stepIndex++);
       return;
     }
-    // The graded pair travels whole. Rounding it to a percentage here would
-    // destroy the wrong-answer count the mastery band derives from — `{4,5}`
-    // and `{18,20}` both read 80%+ but earn different bands, and only the pair
-    // can tell them apart.
-    context.go(
-      '/learn/lesson/${lesson.id}/complete'
-      '?review=${widget.review}&practice=${widget.practice}'
-      '&correct=$_correctCount&total=${lesson.steps.length}',
+    context.goTo(
+      lessonCompletion(
+        lesson.id,
+        review: widget.review,
+        practice: widget.practice,
+        correct: _correctCount,
+        total: lesson.steps.length,
+      ),
     );
   }
 

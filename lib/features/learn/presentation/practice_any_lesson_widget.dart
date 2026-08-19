@@ -1,9 +1,9 @@
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/icon_badge.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
+import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 /// Browse-all section that lists every lesson grouped by its module, so the
 /// user can pick any lesson to practice without first opening a module.
@@ -121,7 +121,7 @@ class _LessonRow extends StatelessWidget {
         completed ? Icons.check_circle : Icons.fitness_center,
         color: completed ? mood.accent : mood.inkMute,
       ),
-      onTap: () => context.go('/learn/practice/lesson/${entry.lesson.id}'),
+      onTap: () => context.goTo(lessonPractice(entry.lesson.id)),
     );
   }
 }
