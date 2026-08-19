@@ -13,9 +13,11 @@ final DateTime friday = DateTime(2026, 8, 21, 14, 30);
 int dayOf(DateTime date) => epochDay(date);
 
 List<StreakDayMark> marksFor(Set<int> activeDays, StreakStatus status) =>
-    weekStrip(activeDays: activeDays, status: status, today: friday)
-        .map((cell) => cell.mark)
-        .toList();
+    weekStrip(
+      activeDays: activeDays,
+      status: status,
+      today: friday,
+    ).map((cell) => cell.mark).toList();
 
 void main() {
   final monday = DateTime(2026, 8, 17);
@@ -120,8 +122,10 @@ void main() {
         frozenDays: {week[2]},
       );
 
-      expect(marksFor({week[0], week[1], week[3]}, status)[2],
-          StreakDayMark.frozen);
+      expect(
+        marksFor({week[0], week[1], week[3]}, status)[2],
+        StreakDayMark.frozen,
+      );
     });
   });
 

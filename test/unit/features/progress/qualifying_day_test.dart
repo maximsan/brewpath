@@ -9,15 +9,21 @@ String entryOf(ActivityType type, String token, {String subject = ''}) =>
 void main() {
   group('one completion is enough (§3)', () {
     test('a new lesson', () {
-      expect(dayQualifies({entryOf(ActivityType.lesson, 'a', subject: 'm1l1')}),
-          isTrue);
+      expect(
+        dayQualifies({entryOf(ActivityType.lesson, 'a', subject: 'm1l1')}),
+        isTrue,
+      );
     });
 
-    test('a completed replay — the rule that lets a streak outlive the course',
-        () {
-      expect(dayQualifies({entryOf(ActivityType.replay, 'a', subject: 'm1l1')}),
-          isTrue);
-    });
+    test(
+      'a completed replay — the rule that lets a streak outlive the course',
+      () {
+        expect(
+          dayQualifies({entryOf(ActivityType.replay, 'a', subject: 'm1l1')}),
+          isTrue,
+        );
+      },
+    );
 
     test('a vocab round', () {
       expect(dayQualifies({entryOf(ActivityType.vocab, 'a')}), isTrue);

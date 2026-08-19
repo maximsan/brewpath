@@ -287,6 +287,16 @@ You can always edit this file by hand instead — the helpers just save effort.
   is shown. Replays qualify every time, which is the rule that lets a streak
   outlive the last authored lesson. The settings row's `streakDays` and
   `lastActivityDate` are no longer written or read.
+- **An existing learner's streak survives the move.** The day set the streak
+  folds over is gathered from three sources at read time — the stored day set,
+  the days the activity record still qualifies, and the days of every recorded
+  first completion. The third is the backfill: an install that finished
+  lessons before anything wrote a day has a full history and an empty day set,
+  and without it the update would silently read every one of those streaks as
+  zero. It is a union, so it can only ever add a day, and a read-time one, so
+  there is no migration to half-apply. Reset clears the completion records
+  along with the day set, so it cannot resurrect a streak the learner asked to
+  be rid of.
 - **One writer for a completed activity.** Lessons, replays and mini-game runs
   now go through the same record-a-completion path, so the qualifying question
   is asked once and a surface that registers later — vocab, flashcards —

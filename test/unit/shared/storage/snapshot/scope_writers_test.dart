@@ -28,16 +28,22 @@ void main() {
     const today = 20300;
 
     test('records the entry and marks the day when told to', () {
-      final after = populated.withActivity(today, 'lesson:tok:m1l1',
-          marksDay: true);
+      final after = populated.withActivity(
+        today,
+        'lesson:tok:m1l1',
+        marksDay: true,
+      );
 
       expect(after.dailyActivity[today], contains('lesson:tok:m1l1'));
       expect(after.activeDays, contains(today));
     });
 
     test('records without marking when the day does not qualify', () {
-      final after = populated.withActivity(today, 'miniGame:tok:g-quiz',
-          marksDay: false);
+      final after = populated.withActivity(
+        today,
+        'miniGame:tok:g-quiz',
+        marksDay: false,
+      );
 
       expect(after.dailyActivity[today], hasLength(1));
       expect(after.activeDays.contains(today), isFalse);
