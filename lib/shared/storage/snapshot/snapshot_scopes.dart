@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:brew_path/features/progress/domain/mastery.dart';
+import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_codec.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
 import 'package:brew_path/shared/storage/snapshot/timestamped.dart';
@@ -200,15 +201,21 @@ class ClearedByReset {
   /// Both halves move together because they are one event: the entry is what
   /// happened, the active day is what it earned. Both are unions, so a device
   /// that already knew either loses nothing.
+  ///
+  /// The activity record is **pruned here**, against [day] — the only place it
+  /// is rebuilt, which is where `pruneDailyActivity` says the trim belongs.
+  /// Best-effort by design: a peer still holding an older day re-adds it under
+  /// the union merge, which is harmless because nothing reads back that far.
+  /// `activeDays` is never pruned — the streak folds over the whole history.
   ClearedByReset withActivity(
     int day,
     String entry, {
     required bool marksDay,
   }) => _copy(
-    dailyActivity: {
+    dailyActivity: pruneDailyActivity({
       ...dailyActivity,
       day: {...?dailyActivity[day], entry},
-    },
+    }, today: day),
     activeDays: marksDay ? {...activeDays, day} : activeDays,
   );
 
