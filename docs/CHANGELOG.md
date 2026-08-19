@@ -44,6 +44,34 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The streak runs on its real rules.** One pure module now folds the stored
+  set of active calendar days into everything the streak needs — the day
+  count, the freeze, the days a freeze covered and the week strip — and every
+  one of those is derived on read rather than stored, so nothing about a
+  streak can drift or be inflated by two devices. The rules are §10's, whole:
+  a freeze is earned after **seven** qualifying days in a row, at most **one**
+  is held, it is spent automatically on the first missed day, a covered day
+  preserves the streak without raising it and earns nothing toward the next
+  freeze, accrual pauses entirely while one is held, and after a spend it
+  takes seven *new* days in a row to earn another. Miss two days running and
+  the freeze covers the first while the second still ends the run. Freezes
+  are free for everyone — there is no parameter a paid tier could arrive
+  through. An unfinished today is never counted a miss, so the streak does not
+  break at midnight for someone who has not practised yet.
+- **What counts as a day, in one place.** A lesson, a completed replay, a
+  vocab round or a flashcard review each protect the day on their own; two
+  **different** mini-games do it together. The first qualifying completion
+  protects the day and nothing after it counts twice. The rule is written as
+  an exhaustive switch over the activity types, so §4's exclusions — Coffee
+  Challenges, Term of the Day, reading, browsing, customising — are impossible
+  to write rather than merely unlisted.
+- **The week strip's seven cells** derive straight from the day set: in the
+  set it is done, covered by a freeze it is frozen, otherwise empty. The
+  prototype instead counted back `streak` cells from today, which silently
+  drops a genuinely active day whenever a freeze covers one inside the visible
+  week — a defect that cannot exist here. Nothing renders the strip yet; the
+  surfaces are a separate slice.
+
 - **The planted grove shows on the tree.** The species you own and the light
   it stands in now compose over the Coffee Tree: the plant's silhouette as a
   scale, its leaf tone and the light as a single colour filter. A grove synced
@@ -253,6 +281,19 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **Finishing a lesson records a day, not a number.** A first completion and a
+  completed replay both write themselves onto the day's activity record and
+  mark the day active; the streak is folded back out of that set wherever it
+  is shown. Replays qualify every time, which is the rule that lets a streak
+  outlive the last authored lesson. The settings row's `streakDays` and
+  `lastActivityDate` are no longer written or read.
+- **One writer for a completed activity.** Lessons, replays and mini-game runs
+  now go through the same record-a-completion path, so the qualifying question
+  is asked once and a surface that registers later — vocab, flashcards —
+  inherits the rule rather than restating it. The activity record also
+  finally **prunes on write** to the last couple of days, as it was always
+  documented to; the day set the streak folds over is never pruned.
+
 - **Retry is gone.** A card latches irreversibly the moment the learner commits,
   and continuing is gated on that latch — no card offers a way back to an
   unanswered state, and the Try Again and Reset controls are removed. "How many
@@ -363,6 +404,12 @@ You can always edit this file by hand instead — the helpers just save effort.
   column. Each step now names its own version.
 
 ### Removed
+
+- **`StreakService`.** It advanced a stored counter off a stored last-activity
+  date, counted lessons only, and hard-reset on any gap — no freeze, no
+  replays, no practice, and a shape that cannot merge across two devices. Its
+  own doc comment admitted the gap. Replaced by the derivation above, not
+  adapted.
 
 - **Favouriting a collectible card.** The heart on the card detail screen, and
   the in-memory store behind it, are gone. The design has no card favouriting
