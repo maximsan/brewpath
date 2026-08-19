@@ -28,32 +28,61 @@ const vm = require("node:vm");
 const CANDIDATE_END = /^[\]}];/gm;
 
 /**
- * Deliberately matches `const` alone. Every bank is declared that way, and the
- * files also carry `window.NAME = NAME;` re-export lines that a looser pattern
- * matches instead — anchoring on the re-export makes a renamed declaration fail
- * with a report about formatting when the truth is that it was renamed.
+ * The two forms a bank is declared in, tried in order.
+ *
+ * `const NAME =` is how most of the prototype declares a bank, and it is
+ * matched alone rather than loosely: the same files carry `window.NAME = NAME;`
+ * re-export lines, and anchoring on one of those makes a *renamed* declaration
+ * fail with a report about formatting when the truth is that it was renamed.
+ *
+ * `window.NAME = [` is the grove's form — `customize.jsx` assigns its two banks
+ * straight onto `window` with no local binding, so requiring `const` would
+ * report them as absent. Anchoring on the opening bracket is what keeps the
+ * re-export exclusion intact: a re-export assigns a bare identifier, so it can
+ * never match, and only a real literal definition can.
  */
-const declarationStart = (name) => new RegExp(`^const\\s+${name}\\s*=`, "m");
+const DECLARATION_FORMS = [
+  { assignsOntoWindow: false, of: (name) => new RegExp(`^const\\s+${name}\\s*=`, "m") },
+  {
+    assignsOntoWindow: true,
+    of: (name) => new RegExp(`^window\\.${name}\\s*=\\s*[[{]`, "m"),
+  },
+];
+
+/**
+ * Returns the match and which form produced it. The form is carried rather
+ * than re-derived from the sliced text later: inferring it back from a
+ * `window.` prefix happens to work only because these patterns are anchored,
+ * and that is a coincidence to rest a read-back on.
+ */
+const declarationStart = (source, name) => {
+  for (const form of DECLARATION_FORMS) {
+    const match = form.of(name).exec(source);
+    if (match) return { match, assignsOntoWindow: form.assignsOntoWindow };
+  }
+  return null;
+};
 
 /**
  * Returns the source text of `name`'s declaration, from the keyword through the
- * closing semicolon.
+ * closing semicolon, and which form declared it.
  *
  * @throws if the declaration is absent, or if no candidate end compiles — both
  *   mean the prototype moved, and reading on would be guessing.
  */
 function sliceDeclaration(source, name, filename) {
-  const opening = declarationStart(name).exec(source);
+  const opening = declarationStart(source, name);
   if (!opening) {
     throw new Error(`${filename}: no top-level declaration of \`${name}\``);
   }
-  const start = opening.index;
+  const { assignsOntoWindow } = opening;
+  const start = opening.match.index;
 
   for (const end of source.matchAll(CANDIDATE_END)) {
     const stop = end.index + end[0].length;
     if (stop <= start) continue;
     const text = source.slice(start, stop);
-    if (compiles(text, filename, name)) return text;
+    if (compiles(text, filename, name)) return { text, assignsOntoWindow };
   }
   throw new Error(
     `${filename}: found \`${name}\` but no slice of it parses — the prototype's ` +
@@ -82,9 +111,28 @@ function compiles(text, filename, name) {
  * case; see the header of `extract_content.js`).
  */
 function evaluateDeclaration(source, name, filename, seed = {}) {
-  const text = sliceDeclaration(source, name, filename);
-  const context = vm.createContext({ ...seed });
-  vm.runInContext(`${text}\n;globalThis.__extracted = ${name};`, context, {
+  const { text, assignsOntoWindow } = sliceDeclaration(source, name, filename);
+
+  // The `window.NAME = [...]` form leaves no local binding to read back, so the
+  // object has to exist before the slice runs and is where the value comes
+  // from afterwards. A `const` bank still meets the bare context, so it keeps
+  // failing loudly on any global it reaches for.
+  //
+  // The residual, stated rather than left to be discovered: inside the window
+  // form that object exists, so a bank of that form reaching for some *other*
+  // `window` property reads `undefined` instead of throwing. `guardShape`
+  // catches only a wholly empty result, not a nested one. Both grove banks are
+  // self-contained literals today; a future one that is not would need the
+  // same explicit seeding `MINI_GAME_CONTENT` gets.
+  //
+  // `seed` is spread last so a caller-supplied `window` wins over the empty
+  // one — the order `MINI_GAME_CONTENT`'s cross-file getter depends on.
+  const context = vm.createContext(
+    assignsOntoWindow ? { window: {}, ...seed } : { ...seed },
+  );
+  const readBack = assignsOntoWindow ? `window.${name}` : name;
+
+  vm.runInContext(`${text}\n;globalThis.__extracted = ${readBack};`, context, {
     filename: `${filename} (${name})`,
   });
   return guardShape(context.__extracted, name, filename);

@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
+import 'package:brew_path/shared/models/content/grove_light.dart';
+import 'package:brew_path/shared/models/content/grove_variety.dart';
 import 'package:brew_path/shared/models/content/mini_game_format.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/models/module_model.dart';
@@ -17,6 +19,8 @@ class ContentRepository {
   List<CoffeeCardModel>? _cards;
   List<MiniGameFormat>? _miniGames;
   Map<String, List<ContentCard>>? _miniGameRounds;
+  List<GroveVariety>? _groveVarieties;
+  List<GroveLight>? _groveLights;
 
   /// Loads and caches all modules from bundled JSON.
   Future<List<ModuleModel>> getModules() async {
@@ -52,6 +56,24 @@ class ContentRepository {
       MiniGameFormat.fromJson,
     );
     return _miniGames!;
+  }
+
+  /// Loads and caches the grove's species, in the order the chooser lists them.
+  Future<List<GroveVariety>> getGroveVarieties() async {
+    _groveVarieties ??= await _loadBank(
+      'assets/content/generated/grove_varieties.json',
+      GroveVariety.fromJson,
+    );
+    return _groveVarieties!;
+  }
+
+  /// Loads and caches the grove's lights, in picker order.
+  Future<List<GroveLight>> getGroveLights() async {
+    _groveLights ??= await _loadBank(
+      'assets/content/generated/grove_lights.json',
+      GroveLight.fromJson,
+    );
+    return _groveLights!;
   }
 
   /// The rounds authored for [formatId], or empty when the bank has none.

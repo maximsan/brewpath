@@ -22,6 +22,7 @@ const _sourceFiles = [
   'screens.jsx',
   'lesson.jsx',
   'bean-anatomy.jsx',
+  'customize.jsx',
 ];
 
 const _expectedBanks = [
@@ -33,6 +34,8 @@ const _expectedBanks = [
   'mini_games.json',
   'card_kind_help.json',
   'mini_game_content.json',
+  'grove_varieties.json',
+  'grove_lights.json',
 ];
 
 /// The entry whose rounds live in `bean-anatomy.jsx` behind a `window` getter —
@@ -45,6 +48,20 @@ const _formatCount = 7;
 
 /// Every authored entry in the prototype's card-kind help map.
 const _helpKindCount = 10;
+
+/// The grove's two axes, both decided and closed: three coffee species, four
+/// lights. A count that moves means the decision moved, so the extractor
+/// refuses rather than shipping a chooser the ruling does not describe.
+const _varietyCount = 3;
+const _lightCount = 4;
+
+/// The `items` list of a written bank, decoded.
+List<Map<String, dynamic>> _items(String out, String bank) {
+  final payload =
+      jsonDecode(File(p.join(out, bank)).readAsStringSync())
+          as Map<String, dynamic>;
+  return (payload['items'] as List).cast<Map<String, dynamic>>();
+}
 
 ProcessResult _run(String source, String out) => Process.runSync('node', [
   _script,
@@ -168,6 +185,188 @@ void main() {
         jsonDecode(File(p.join(out, 'card_kind_help.json')).readAsStringSync())
             as Map<String, dynamic>;
     expect((help['items'] as List).length, _helpKindCount);
+  });
+
+  test('the grove carries three species and four lights', () {
+    final out = dir('out');
+
+    expect(_run(_prototype, out).exitCode, 0);
+
+    final varieties = _items(out, 'grove_varieties.json');
+    expect(varieties.length, _varietyCount);
+    expect(
+      varieties.map((variety) => variety['id']),
+      containsAll(<String>['arabica', 'robusta', 'liberica']),
+    );
+
+    final lights = _items(out, 'grove_lights.json');
+    expect(lights.length, _lightCount);
+    // The bank is the id vocabulary's authority: these are the ids that ship,
+    // against the camel-cased ones the snapshot doc once named.
+    expect(
+      lights.map((light) => light['id']),
+      containsAll(<String>['daylight', 'goldenhour', 'moonlit', 'frost']),
+    );
+  });
+
+  test('every species carries the copy the chooser renders', () {
+    final out = dir('out');
+    expect(_run(_prototype, out).exitCode, 0);
+
+    for (final variety in _items(out, 'grove_varieties.json')) {
+      for (final field in const [
+        'name',
+        'latin',
+        'share',
+        'use',
+        'origin',
+        'grows',
+        'cup',
+        'tell',
+      ]) {
+        expect(
+          variety[field],
+          isA<String>().having((copy) => copy.isNotEmpty, 'non-empty', isTrue),
+          reason: "${variety['id']} has no $field",
+        );
+      }
+    }
+  });
+
+  test('Arabica is the identity treatment — the unfiltered real art', () {
+    final out = dir('out');
+    expect(_run(_prototype, out).exitCode, 0);
+
+    final arabica = _items(
+      out,
+      'grove_varieties.json',
+    ).firstWhere((variety) => variety['id'] == 'arabica');
+
+    expect(arabica['leaf'], isEmpty);
+    expect(arabica['shape'], anyOf(isEmpty, 'none'));
+  });
+
+  test('a grove declaration lost to a rename is refused by name', () {
+    final source = seededSource();
+    seedCorruption(
+      source,
+      'customize.jsx',
+      'window.TREE_VARIETIES =',
+      'window.TREE_VARIETIES_X =',
+    );
+
+    expectRefusal(source, naming: ['TREE_VARIETIES', 'customize.jsx']);
+  });
+
+  test('a fourth species is refused — the count is the decision', () {
+    final source = seededSource();
+    seedCorruption(source, 'customize.jsx', "  { id: 'liberica'", """
+  { id: 'excelsa', name: 'Excelsa', latin: 'Coffea excelsa', share: '<1%', use: 'Blends',
+    origin: 'Chad', grows: 'Low', cup: 'Tart, fruity',
+    tell: 'A fourth species nobody decided to ship.',
+    shape: 'none', leaf: '', drop: 'later' },
+  { id: 'liberica'""");
+
+    expectRefusal(source, naming: ['grove varieties', '4']);
+  });
+
+  test('a duplicated species id is refused by name', () {
+    final source = seededSource();
+    seedCorruption(
+      source,
+      'customize.jsx',
+      "{ id: 'robusta'",
+      "{ id: 'arabica'",
+    );
+
+    expectRefusal(source, naming: ['arabica', 'duplicates']);
+  });
+
+  test('a species that lost its copy is refused by field', () {
+    final source = seededSource();
+    seedCorruption(
+      source,
+      'customize.jsx',
+      "origin: 'West Africa · Vietnam'",
+      "origin: ''",
+    );
+
+    expectRefusal(source, naming: ['robusta', 'origin']);
+  });
+
+  test('the rollout note survives extraction, unread by anything', () {
+    final out = dir('out');
+    expect(_run(_prototype, out).exitCode, 0);
+
+    // Emitted because the extractor renames and drops nothing. Nothing in the
+    // app may gate on it — all three species ship — but losing it silently
+    // would mean the bank no longer mirrors its source.
+    for (final variety in _items(out, 'grove_varieties.json')) {
+      expect(variety['drop'], isA<String>(), reason: "${variety['id']}");
+    }
+  });
+
+  test('a light filter carrying junk outside its terms is refused', () {
+    final source = seededSource();
+    seedCorruption(
+      source,
+      'customize.jsx',
+      "filter: 'saturate(0.5) brightness(1.12) contrast(0.94)'",
+      "filter: 'saturate(0.5) garbage junk'",
+    );
+
+    expectRefusal(source, naming: ['frost', 'garbage junk']);
+  });
+
+  test('a filter argument that is not a value is refused', () {
+    final source = seededSource();
+    seedCorruption(
+      source,
+      'customize.jsx',
+      "filter: 'saturate(0.5) brightness(1.12) contrast(0.94)'",
+      "filter: 'saturate(abc)'",
+    );
+
+    expectRefusal(source, naming: ['frost', 'abc']);
+  });
+
+  test('a filter primitive the app cannot compose is refused', () {
+    final source = seededSource();
+    seedCorruption(
+      source,
+      'customize.jsx',
+      "filter: 'saturate(0.5) brightness(1.12) contrast(0.94)'",
+      "filter: 'blur(2px)'",
+    );
+
+    expectRefusal(source, naming: ['frost', 'blur']);
+  });
+
+  test('a fifth light is refused — the count is the decision', () {
+    final source = seededSource();
+    seedCorruption(
+      source,
+      'customize.jsx',
+      "  { id: 'frost',",
+      "  { id: 'dusk', name: 'Dusk', note: 'Late', swatch: '#333', "
+          "filter: 'brightness(0.9)' },\n  { id: 'frost',",
+    );
+
+    expectRefusal(source, naming: ['grove lights', '5']);
+  });
+
+  test('a species missing a field the model requires is refused', () {
+    final source = seededSource();
+    // Dropped entirely rather than emptied: `leaf` is legitimately empty on
+    // Arabica, so only absence is the failure.
+    seedCorruption(
+      source,
+      'customize.jsx',
+      "shape: 'scale(1.2, 0.9)', leaf:",
+      "shape: 'scale(1.2, 0.9)', leafless:",
+    );
+
+    expectRefusal(source, naming: ['robusta', 'leaf']);
   });
 
   test('a catalog format whose kind has no help entry is refused', () {

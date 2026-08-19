@@ -110,7 +110,10 @@ class Grove {
   /// `arabica` · `robusta` · `liberica`.
   final String variety;
 
-  /// `daylight` · `goldenHour` · `moonlit` · `firstFrost`.
+  /// `daylight` · `goldenhour` · `moonlit` · `frost`.
+  ///
+  /// The generated grove bank is these ids' authority. This comment once named
+  /// `goldenHour` and `firstFrost`, which never shipped on either side.
   final String light;
 
   /// This grove's JSON form.
