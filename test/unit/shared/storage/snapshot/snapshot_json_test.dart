@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
 import 'package:brew_path/shared/storage/snapshot/progress_snapshot.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_scopes.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -60,5 +61,67 @@ void main() {
     expect(tombstone.clearedByReset, ClearedByReset.empty);
     expect(tombstone.clearedByDeleteOnly, ClearedByDeleteOnly.empty);
     expect(tombstone.resetGeneration, 4);
+  });
+  group('dailyActivity — the record the allowance counts', () {
+    test('survives the JSON round trip, day keys and all', () {
+      final entry = activityEntry(
+        type: ActivityType.miniGame,
+        token: 't1',
+        subject: 'g-quiz',
+      );
+      final snapshot = ProgressSnapshot(
+        clearedByReset: ClearedByReset(
+          dailyActivity: {
+            20300: {entry},
+          },
+        ),
+      );
+
+      final decoded = ProgressSnapshot.fromJson(
+        jsonDecode(jsonEncode(snapshot.toJson())) as Map<String, dynamic>,
+      );
+
+      expect(decoded.clearedByReset.dailyActivity, {
+        20300: {entry},
+      });
+    });
+
+    // The field arrived after this snapshot shape shipped, so an older
+    // payload has to decode without it rather than fail.
+    test('a snapshot written before the field decodes as empty', () {
+      final older = {
+        'version': ProgressSnapshot.currentVersion,
+        'clearedByReset': {
+          'completedLessons': {'m1l1': 4},
+        },
+      };
+
+      final decoded = ProgressSnapshot.fromJson(older);
+
+      expect(decoded.clearedByReset.dailyActivity, isEmpty);
+      expect(decoded.clearedByReset.completedLessons, {'m1l1': 4});
+    });
+
+    // `miniGamePlays` is superseded, and no shipped code path ever wrote it.
+    // A payload that still carries it must not lose it either: it rides the
+    // unknown-key passthrough back to whichever peer still reads it.
+    test('a superseded miniGamePlays payload is carried, not dropped', () {
+      final older = {
+        'version': ProgressSnapshot.currentVersion,
+        'clearedByReset': {
+          'miniGamePlays': {
+            '4': ['g-match'],
+          },
+        },
+      };
+
+      final round = ProgressSnapshot.fromJson(older).toJson();
+      final progress = round['clearedByReset']! as Map<String, dynamic>;
+
+      expect(progress['miniGamePlays'], {
+        '4': ['g-match'],
+      });
+      expect(progress['dailyActivity'], isEmpty);
+    });
   });
 }

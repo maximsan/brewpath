@@ -74,9 +74,9 @@ Map<String, dynamic> reactionMapToJson(
   for (final entry in reactions.entries) entry.key: entry.value.toJson(),
 };
 
-/// Reads a `day → played game ids` map. JSON object keys are always strings,
+/// Reads a `day → entries` map. JSON object keys are always strings,
 /// so the day is parsed back and unparseable keys are dropped.
-Map<int, Set<String>> playsFromJson(Object? raw) {
+Map<int, Set<String>> dayEntriesFromJson(Object? raw) {
   if (raw is! Map) return const {};
   final parsed = <int, Set<String>>{};
   for (final entry in raw.entries) {
@@ -86,9 +86,9 @@ Map<int, Set<String>> playsFromJson(Object? raw) {
   return parsed;
 }
 
-/// Writes a `day → played game ids` map.
-Map<String, dynamic> playsToJson(Map<int, Set<String>> plays) => {
-  for (final entry in plays.entries) '${entry.key}': sortedList(entry.value),
+/// Writes a `day → entries` map.
+Map<String, dynamic> dayEntriesToJson(Map<int, Set<String>> byDay) => {
+  for (final entry in byDay.entries) '${entry.key}': sortedList(entry.value),
 };
 
 /// Reads a set of ids.
