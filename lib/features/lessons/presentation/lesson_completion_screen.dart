@@ -68,7 +68,9 @@ class _LessonCompletionScreenState
       final reviewResult = await ref
           .read(lessonCompletionServiceProvider)
           .reviewLesson(lesson, mastery: widget.mastery);
-      // A review changes nothing else; only practice XP affects a shell tab.
+      // A completed replay protects the day (§3), so the streak surfaces have
+      // to look again even when the once-a-day practice XP did not pay.
+      ref.invalidate(streakStatusProvider);
       if (reviewResult.practiceXpAwarded) {
         ref.invalidate(totalXpProvider);
       }
@@ -88,7 +90,7 @@ class _LessonCompletionScreenState
     ref.invalidate(todayLessonProvider);
     ref.invalidate(modulesWithProgressProvider);
     ref.invalidate(totalXpProvider);
-    ref.invalidate(streakProvider);
+    ref.invalidate(streakStatusProvider);
     ref.invalidate(completedLessonsProvider);
     ref.invalidate(collectedCardsProvider);
     // `cardsWithCollectionProvider` no longer chains through

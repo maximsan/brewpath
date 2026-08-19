@@ -1,4 +1,8 @@
+import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/progress/domain/grove_treatment.dart';
+import 'package:brew_path/features/progress/domain/qualifying_day.dart';
+import 'package:brew_path/features/progress/domain/streak_engine.dart';
+import 'package:brew_path/features/progress/domain/streak_status.dart';
 import 'package:brew_path/features/progress/domain/tree_growth.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
@@ -14,12 +18,34 @@ Future<int> totalXp(Ref ref) async {
   return settings.totalXp;
 }
 
+/// The streak, the freeze and the covered days, derived from the snapshot.
+///
+/// Read against `DateTime.now()`, so it is only as fresh as the last time it
+/// was built — which is why the streak surfaces recompute on resume rather
+/// than trusting a value computed before midnight.
+///
+/// The day set is the union of the stored `activeDays` and the days the
+/// activity record still qualifies. The record is pruned to the last couple of
+/// days, so the union can only confirm the recent end of the set; what it buys
+/// is a day whose entries arrived from a peer without their mark.
+@riverpod
+Future<StreakStatus> streakStatus(Ref ref) async {
+  final snapshot = await ref.watch(snapshotRepositoryProvider).read();
+  final progress = snapshot.clearedByReset;
+
+  return deriveStreak(
+    activeDays: {
+      ...progress.activeDays,
+      ...qualifyingDays(progress.dailyActivity),
+    },
+    today: epochDay(DateTime.now()),
+  );
+}
+
 /// The user's current streak in days.
 @riverpod
-Future<int> streak(Ref ref) async {
-  final settings = await ref.watch(settingsRepositoryProvider).getSettings();
-  return settings.streakDays;
-}
+Future<int> streak(Ref ref) async =>
+    (await ref.watch(streakStatusProvider.future)).streak;
 
 /// All of the user's completed-lesson records.
 @riverpod

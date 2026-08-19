@@ -46,6 +46,77 @@ final class TotalXpProvider
 
 String _$totalXpHash() => r'9d152d22babc01660d17d3b49a7aba3eeabc930f';
 
+/// The streak, the freeze and the covered days, derived from the snapshot.
+///
+/// Read against `DateTime.now()`, so it is only as fresh as the last time it
+/// was built — which is why the streak surfaces recompute on resume rather
+/// than trusting a value computed before midnight.
+///
+/// The day set is the union of the stored `activeDays` and the days the
+/// activity record still qualifies. The record is pruned to the last couple of
+/// days, so the union can only confirm the recent end of the set; what it buys
+/// is a day whose entries arrived from a peer without their mark.
+
+@ProviderFor(streakStatus)
+final streakStatusProvider = StreakStatusProvider._();
+
+/// The streak, the freeze and the covered days, derived from the snapshot.
+///
+/// Read against `DateTime.now()`, so it is only as fresh as the last time it
+/// was built — which is why the streak surfaces recompute on resume rather
+/// than trusting a value computed before midnight.
+///
+/// The day set is the union of the stored `activeDays` and the days the
+/// activity record still qualifies. The record is pruned to the last couple of
+/// days, so the union can only confirm the recent end of the set; what it buys
+/// is a day whose entries arrived from a peer without their mark.
+
+final class StreakStatusProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<StreakStatus>,
+          StreakStatus,
+          FutureOr<StreakStatus>
+        >
+    with $FutureModifier<StreakStatus>, $FutureProvider<StreakStatus> {
+  /// The streak, the freeze and the covered days, derived from the snapshot.
+  ///
+  /// Read against `DateTime.now()`, so it is only as fresh as the last time it
+  /// was built — which is why the streak surfaces recompute on resume rather
+  /// than trusting a value computed before midnight.
+  ///
+  /// The day set is the union of the stored `activeDays` and the days the
+  /// activity record still qualifies. The record is pruned to the last couple of
+  /// days, so the union can only confirm the recent end of the set; what it buys
+  /// is a day whose entries arrived from a peer without their mark.
+  StreakStatusProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'streakStatusProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$streakStatusHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<StreakStatus> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<StreakStatus> create(Ref ref) {
+    return streakStatus(ref);
+  }
+}
+
+String _$streakStatusHash() => r'2401850c081024335c5948faf7d7305ddd30be6d';
+
 /// The user's current streak in days.
 
 @ProviderFor(streak)
@@ -82,7 +153,7 @@ final class StreakProvider
   }
 }
 
-String _$streakHash() => r'eb7a2c35c7e2f7624444b1e6ad37e22bf96500bb';
+String _$streakHash() => r'261493eb16a2e61df9df93a16935627a6b845256';
 
 /// All of the user's completed-lesson records.
 
