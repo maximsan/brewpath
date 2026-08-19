@@ -1,3 +1,4 @@
+import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/models/module_model.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
@@ -93,8 +94,8 @@ Future<LessonModel?> todayLesson(Ref ref) async {
   return null;
 }
 
-/// One row per lesson plus its owning module — used by the Learn screen's
-/// "Practice Any Lesson" section to render a grouped, all-lessons list.
+/// One row per lesson plus its owning module, for the Learn screen's practice
+/// section.
 class LessonWithModule {
   /// Creates a [LessonWithModule].
   const LessonWithModule({required this.lesson, required this.module});
@@ -106,24 +107,29 @@ class LessonWithModule {
   final ModuleModel module;
 }
 
-/// Flat ordered list of every lesson, joined with its module so the Learn
-/// screen can group them without re-querying.
+/// The lessons the learner has **finished**, in course order, each joined with
+/// its module so the Learn screen can group them without re-querying.
+///
+/// Finished only, which the design has always said: the prototype titles this
+/// section *"Completed work to revisit"* and builds it from the completed set
+/// (`screens.jsx:864`), and ADR-0004 calls the group `Lessons` inside the
+/// practice section. Listing every lesson — the app's previous behaviour — put
+/// modules the learner has not unlocked one tap from being played.
 @riverpod
-Future<List<LessonWithModule>> allLessonsWithModule(Ref ref) async {
+Future<List<LessonWithModule>> completedLessonsWithModule(Ref ref) async {
   final content = ref.watch(contentRepositoryProvider);
+  final completed = await ref.watch(completedLessonsProvider.future);
+  final finished = {for (final record in completed) record.lessonId};
+  if (finished.isEmpty) return const [];
+
   final modules = await content.getModules();
   final lessons = await content.getLessons();
-  final byId = {for (final l in lessons) l.id: l};
+  final byId = {for (final lesson in lessons) lesson.id: lesson};
 
-  final out = <LessonWithModule>[];
-  for (final module in modules) {
-    for (final lessonId in module.lessonIds) {
-      final lesson = byId[lessonId];
-      if (lesson != null) {
-        out.add(LessonWithModule(lesson: lesson, module: module));
-      }
-    }
-  }
-
-  return out;
+  return [
+    for (final module in modules)
+      for (final lessonId in module.lessonIds)
+        if (finished.contains(lessonId) && byId[lessonId] != null)
+          LessonWithModule(lesson: byId[lessonId]!, module: module),
+  ];
 }
