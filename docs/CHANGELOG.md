@@ -44,6 +44,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Keep Sharp's mini-games button opens a mini-game.** On a day the card says
+  *"play two different games today"*, Start now lands on one of the authored
+  games — and skips any already played today, so pressing Start twice reaches
+  two different ones and the day is marked. It used to open the cross-lesson
+  practice drill, which is not a mini-game and recorded nothing, so following
+  the card could never satisfy the card or protect the streak. The card is also
+  told to look again when a run finishes, so it acknowledges the practice on
+  return instead of still asking for it.
+
 - **The streak runs on its real rules.** One pure module now folds the stored
   set of active calendar days into everything the streak needs — the day
   count, the freeze, the days a freeze covered and the week strip — and every
@@ -422,6 +431,15 @@ You can always edit this file by hand instead — the helpers just save effort.
   column. Each step now names its own version.
 
 ### Removed
+
+- **Practice by game type.** The cross-lesson drill — pick a question kind, get
+  every step of that kind scraped out of the lessons you happened to finish —
+  and its section on the Learn tab are gone, along with its route and the
+  provider counting its material. The design has no such screen: it was empty
+  on day one, different for every learner, assembled from leftovers rather
+  than authored, and it wrote nothing. The seven authored mini-games cover the
+  same ground with hand-written rounds. Its last caller was Keep Sharp, which
+  now opens a real game.
 
 - **`StreakService`.** It advanced a stored counter off a stored last-activity
   date, counted lessons only, and hard-reset on any gap — no freeze, no
