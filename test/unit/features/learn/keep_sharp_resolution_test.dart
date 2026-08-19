@@ -145,7 +145,7 @@ void main() {
       )!.destination;
 
       expect(
-        const ['m1l1', 'm1l2'].map(lessonPractice),
+        const ['m1l1', 'm1l2'].map(lessonReplay),
         contains(destination),
       );
     });
