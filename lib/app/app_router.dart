@@ -5,7 +5,6 @@ import 'package:brew_path/features/cards/presentation/card_detail_screen.dart';
 import 'package:brew_path/features/cards/presentation/cards_screen.dart';
 import 'package:brew_path/features/learn/domain/course_completion_providers.dart';
 import 'package:brew_path/features/learn/presentation/course_completion_screen.dart';
-import 'package:brew_path/features/learn/presentation/game_type_practice_screen.dart';
 import 'package:brew_path/features/learn/presentation/learn_screen.dart';
 import 'package:brew_path/features/learn/presentation/module_detail_screen.dart';
 import 'package:brew_path/features/learn/presentation/module_summary_screen.dart';
@@ -183,14 +182,6 @@ GoRouter appRouter(Ref ref) {
                     builder: (context, state) => LessonScreen(
                       lessonId: state.pathParameters['lessonId']!,
                       practice: true,
-                    ),
-                  ),
-                  GoRoute(
-                    path: AppRoutes.practiceGameType.path,
-                    name: AppRoutes.practiceGameType.name,
-                    parentNavigatorKey: _rootKey,
-                    builder: (context, state) => GameTypePracticeScreen(
-                      gameType: state.pathParameters['gameType']!,
                     ),
                   ),
                   GoRoute(

@@ -60,6 +60,5 @@ Future<void> resetProgress(WidgetRef ref) async {
   ref.invalidate(cardsWithCollectionProvider);
   ref.invalidate(modulesWithProgressProvider);
   ref.invalidate(todayLessonProvider);
-  ref.invalidate(gameTypePracticeCountsProvider);
   ref.invalidate(settingsControllerProvider);
 }

@@ -1,6 +1,4 @@
-import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
-import 'package:brew_path/shared/models/lesson_step_model.dart';
 import 'package:brew_path/shared/models/module_model.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
@@ -129,49 +127,3 @@ Future<List<LessonWithModule>> allLessonsWithModule(Ref ref) async {
 
   return out;
 }
-
-/// How many practiceable steps the user currently has for each game type,
-/// counting only steps that live in lessons the user has completed. Drives
-/// the enabled state of the "Practice by Game Type" chips on the Learn screen.
-@riverpod
-Future<Map<String, int>> gameTypePracticeCounts(Ref ref) async {
-  final content = ref.watch(contentRepositoryProvider);
-  final completed = await ref.watch(completedLessonsProvider.future);
-  final completedIds = completed.map((r) => r.lessonId).toSet();
-  if (completedIds.isEmpty) return const {};
-
-  final lessons = await content.getLessons();
-  final counts = <String, int>{};
-  for (final lesson in lessons) {
-    if (!completedIds.contains(lesson.id)) continue;
-    for (final step in lesson.steps) {
-      final key = stepTypeKey(step);
-      counts[key] = (counts[key] ?? 0) + 1;
-    }
-  }
-  return counts;
-}
-
-/// String discriminator that mirrors the JSON `type` field used by Drift /
-/// Freezed serialization. Kept centralized so practice flows and selection
-/// widgets can refer to one place.
-String stepTypeKey(LessonStepModel step) => switch (step) {
-  MultipleChoiceStep() => 'multiple_choice',
-  DragDropStep() => 'drag_drop',
-  SliderStep() => 'slider',
-  TapOrderStep() => 'tap_order',
-};
-
-/// Ordered list of the four supported game-type discriminators paired with
-/// their user-facing labels. Stable ordering so the Learn-tab chip row is
-/// predictable across rebuilds.
-const gameTypeLabels = <(String, String)>[
-  ('multiple_choice', 'Multiple Choice'),
-  ('drag_drop', 'Matching'),
-  ('tap_order', 'Ordering'),
-  ('slider', 'Slider'),
-];
-
-/// Returns the user-facing label for a game-type [key].
-String gameTypeDisplayName(String key) =>
-    gameTypeLabels.firstWhere((e) => e.$1 == key, orElse: () => (key, key)).$2;

@@ -65,13 +65,6 @@ void main() {
       '/learn/practice/lesson/l1',
     );
     expect(
-      locationOf(
-        AppRoutes.practiceGameType.name,
-        pathParameters: {'gameType': 'slider'},
-      ),
-      '/learn/practice/game-type/slider',
-    );
-    expect(
       locationOf(AppRoutes.cardDetail.name, pathParameters: {'cardId': 'c1'}),
       '/cards/c1',
     );
