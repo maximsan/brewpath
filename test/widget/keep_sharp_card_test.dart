@@ -4,6 +4,8 @@ import 'package:brew_path/features/companion/domain/companion_lines.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
 import 'package:brew_path/features/learn/presentation/today_card_widget.dart';
+import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
+import 'package:brew_path/features/mini_games/domain/mini_game_destination.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,8 +13,7 @@ import 'package:go_router/go_router.dart';
 
 final _miniGames = KeepSharpRecommendation(
   type: PracticeType.miniGames,
-  routeName: AppRoutes.practiceGameType.name,
-  pathParams: const {'gameType': 'multiple_choice'},
+  destination: miniGameRun('g-quiz'),
 );
 
 /// Pumps the card inside a real router so the CTA's named navigation can be
@@ -42,10 +43,10 @@ Future<void> _pump(
         ),
         routes: [
           GoRoute(
-            path: AppRoutes.practiceGameType.path,
-            name: AppRoutes.practiceGameType.name,
+            path: AppRoutes.miniGameIntro.path,
+            name: AppRoutes.miniGameIntro.name,
             builder: (_, state) =>
-                Text('practice ${state.pathParameters['gameType']}'),
+                Text('game ${state.pathParameters['gameId']}'),
           ),
           GoRoute(
             path: AppRoutes.practiceLesson.path,
@@ -98,7 +99,7 @@ void main() {
     await tester.tap(find.text('Start'));
     await tester.pumpAndSettle();
 
-    expect(find.text('practice multiple_choice'), findsOneWidget);
+    expect(find.text('game g-quiz'), findsOneWidget);
   });
 
   testWidgets('a replay recommendation shows its rule and routes to a replay', (
@@ -106,8 +107,7 @@ void main() {
   ) async {
     final replay = KeepSharpRecommendation(
       type: PracticeType.lessonReplay,
-      routeName: AppRoutes.practiceLesson.name,
-      pathParams: const {'lessonId': 'lesson_where_coffee'},
+      destination: lessonPractice('lesson_where_coffee'),
     );
     await _pump(tester, keepSharp: replay);
 

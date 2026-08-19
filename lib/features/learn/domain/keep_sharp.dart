@@ -6,13 +6,17 @@
 library;
 
 import 'package:brew_path/core/utils/date_utils.dart';
+import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
+import 'package:brew_path/features/mini_games/domain/mini_game_destination.dart';
+import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
 
 /// The four practice types Keep Sharp rotates over, in canonical order.
 ///
 /// The declaration order **is** the rotation order; `keepSharpPick` indexes
 /// into [values] directly.
 enum PracticeType {
-  /// Standalone game rounds (currently the game-type practice drills).
+  /// Standalone mini-games — the authored formats, played from their own
+  /// intro. Two different ones mark the day (§5, #59).
   miniGames,
 
   /// The vocabulary game. No surface yet; registers when built.
@@ -83,3 +87,73 @@ KeepSharpCopy keepSharpCopyFor(PracticeType type) => switch (type) {
     rule: "Finish a replay of any lesson you've completed.",
   ),
 };
+
+/// The day's resolution: which practice type, and the one screen its CTA opens.
+typedef KeepSharpResolution = ({
+  PracticeType type,
+  RouteDestination destination,
+});
+
+/// The whole recommendation, as a function of the day and the learner's
+/// material. No clock, no storage, no widgets — the caller supplies the day.
+///
+/// **Eligibility is the type's own rule, asked of the material.** Mini-games
+/// need [miniGamesPerQualifyingDay] playable formats, because that is what the
+/// card's rule demands; a card must never ask for something the learner's
+/// material makes impossible.
+KeepSharpResolution? keepSharpResolutionFor({
+  required int dayNumber,
+  required List<String> playableFormatIds,
+  required Set<String> formatsPlayedToday,
+  required List<String> completedLessonIds,
+}) {
+  final eligible = {
+    if (playableFormatIds.length >= miniGamesPerQualifyingDay)
+      PracticeType.miniGames,
+    if (completedLessonIds.isNotEmpty) PracticeType.lessonReplay,
+  }.intersection(builtPracticeSurfaces);
+
+  final pick = keepSharpPick(dayNumber: dayNumber, eligible: eligible);
+  return switch (pick) {
+    null => null,
+    PracticeType.miniGames => (
+      type: pick,
+      destination: miniGameRun(
+        _nextUnplayed(dayNumber, playableFormatIds, formatsPlayedToday),
+      ),
+    ),
+    PracticeType.lessonReplay => (
+      type: pick,
+      destination: lessonPractice(
+        keepSharpDailyChoice(dayNumber, completedLessonIds),
+      ),
+    ),
+    // Gated out by `builtPracticeSurfaces` until their surfaces register.
+    PracticeType.vocabGame || PracticeType.flashcards => null,
+  };
+}
+
+/// The day's game, skipping any already played today.
+///
+/// Skipping is what makes the card honest. The rule is "two different games",
+/// so a pick that stayed fixed all day would send the learner back into the
+/// game they just finished, and pressing Start twice could never satisfy the
+/// card — this ticket's own defect, one layer down.
+///
+/// Once every playable format has been played the rule is already met and the
+/// card stops offering a CTA; the fall back to the full list exists because
+/// [keepSharpDailyChoice] indexes modulo length and an empty list would throw.
+String _nextUnplayed(
+  int dayNumber,
+  List<String> playable,
+  Set<String> playedToday,
+) {
+  final remaining = [
+    for (final id in playable)
+      if (!playedToday.contains(id)) id,
+  ];
+  return keepSharpDailyChoice(
+    dayNumber,
+    remaining.isEmpty ? playable : remaining,
+  );
+}

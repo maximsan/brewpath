@@ -8,18 +8,24 @@ part of 'keep_sharp_providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Derives the day's recommendation: eligibility (a registered surface with
-/// material) feeds the pure rotation, and the CTA's concrete entry point is
-/// the same day's [keepSharpDailyChoice] so it, too, is stable all day and
-/// stores nothing. Null when no registered type has material.
+/// Derives the day's recommendation: the learner's material feeds the pure
+/// rotation, which returns the type and the one screen its CTA opens. Null
+/// when no registered type has material.
+///
+/// The reads are the material the rule is asked of: which formats are playable,
+/// which the learner already played today, and which lessons they have
+/// finished. Every decision made from them lives in [keepSharpResolutionFor].
 
 @ProviderFor(keepSharpRecommendation)
 final keepSharpRecommendationProvider = KeepSharpRecommendationProvider._();
 
-/// Derives the day's recommendation: eligibility (a registered surface with
-/// material) feeds the pure rotation, and the CTA's concrete entry point is
-/// the same day's [keepSharpDailyChoice] so it, too, is stable all day and
-/// stores nothing. Null when no registered type has material.
+/// Derives the day's recommendation: the learner's material feeds the pure
+/// rotation, which returns the type and the one screen its CTA opens. Null
+/// when no registered type has material.
+///
+/// The reads are the material the rule is asked of: which formats are playable,
+/// which the learner already played today, and which lessons they have
+/// finished. Every decision made from them lives in [keepSharpResolutionFor].
 
 final class KeepSharpRecommendationProvider
     extends
@@ -31,10 +37,13 @@ final class KeepSharpRecommendationProvider
     with
         $FutureModifier<KeepSharpRecommendation?>,
         $FutureProvider<KeepSharpRecommendation?> {
-  /// Derives the day's recommendation: eligibility (a registered surface with
-  /// material) feeds the pure rotation, and the CTA's concrete entry point is
-  /// the same day's [keepSharpDailyChoice] so it, too, is stable all day and
-  /// stores nothing. Null when no registered type has material.
+  /// Derives the day's recommendation: the learner's material feeds the pure
+  /// rotation, which returns the type and the one screen its CTA opens. Null
+  /// when no registered type has material.
+  ///
+  /// The reads are the material the rule is asked of: which formats are playable,
+  /// which the learner already played today, and which lessons they have
+  /// finished. Every decision made from them lives in [keepSharpResolutionFor].
   KeepSharpRecommendationProvider._()
     : super(
         from: null,
@@ -62,7 +71,7 @@ final class KeepSharpRecommendationProvider
 }
 
 String _$keepSharpRecommendationHash() =>
-    r'b6dc3cefc480db33471ac6a74736798717784313';
+    r'cb8a56151aaadd240e21e0e190e1d56ec058a237';
 
 /// Whether today's recommendation has met its own completion rule — derived
 /// per-day from what the activity layer already records, stored nowhere.

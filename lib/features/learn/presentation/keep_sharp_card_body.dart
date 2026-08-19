@@ -2,10 +2,10 @@ import 'package:brew_path/features/companion/domain/companion_reaction.dart';
 import 'package:brew_path/features/companion/presentation/companion_celebration.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
+import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 /// The Keep Sharp state of the Today card: one recommended practice type for
 /// the day, the type's own completion rule, and a CTA to its surface. Once
@@ -138,10 +138,7 @@ class KeepSharpCardBody extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.sm),
           FilledButton(
-            onPressed: () => context.goNamed(
-              recommended.routeName,
-              pathParameters: recommended.pathParams,
-            ),
+            onPressed: () => context.goTo(recommended.destination),
             child: const Text('Start'),
           ),
         ],
