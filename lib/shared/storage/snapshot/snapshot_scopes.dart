@@ -202,7 +202,7 @@ class ClearedByReset {
     challengesCompleted: challengesCompleted,
     learnedTerms: learnedTerms,
     challengeReactions: challengeReactions,
-    miniGamePlays: miniGamePlays,
+    dailyActivity: dailyActivity,
     challengesSaved: challengesSaved,
     activeChallenge: activeChallenge,
     favourites: favourites,
