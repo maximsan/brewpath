@@ -394,10 +394,10 @@ that the conclusion has moved:
 - The ten-item Saved cap was **deliberately calibrated**: *"generous enough that only power users hit the cap — and that user is your highest-intent upgrade prospect."* The free tier was the **bridge** that *"surfaces the upgrade at peak intent, not at install."*
 - Unlimited Saved was **the hook** — *"concrete, renewable value — this turns 'cosmetics-only Plus' into a real recurring product."* The Studio was *"the face of Plus, not the whole pitch."*
 
-**Two things were considered and dropped**, and these rulings stand:
+**Two things were considered and dropped:**
 
-- **A lifetime tier** — a non-renewing plan needs its own receipt, restore and manage-plan states.
-- **Paid streak protection** — *"the streak carries no in-app reward, so selling insurance on it is selling insurance on an item with no value, and repair pitches at the exact moment a user has already lapsed."*
+- **A lifetime tier** — a non-renewing plan needs its own receipt, restore and manage-plan states. ⚠️ **Superseded**: v1 now sells *exactly this* — a single one-time purchase, with the subscriptions dropped instead ([#55](https://github.com/maximsan/brewpath/issues/55), [ADR-0003](../adr/0003-one-time-purchase-no-trial.md)). What stays rejected is lifetime as a *third SKU beside two subscriptions*; standing alone it is less state, not more.
+- **Paid streak protection** — *"the streak carries no in-app reward, so selling insurance on it is selling insurance on an item with no value, and repair pitches at the exact moment a user has already lapsed."* This ruling stands.
 
 </details>
 

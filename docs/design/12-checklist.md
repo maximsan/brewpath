@@ -106,7 +106,7 @@ staging list that feeds it, not a living board. Nothing ticks these boxes.
 > greenfield in both codebases and nothing here covers it. Generate issues from
 > the decisions, not from this block.
 
-- [ ] Paywall with 2 plans, 7-day trial CTA, Restore/Terms/Privacy
+- [ ] Paywall: single one-time purchase, no trial ([ADR-0003](../adr/0003-one-time-purchase-no-trial.md)), Restore/Terms/Privacy
 - [ ] StoreKit: purchase, receipt validation, restore, real trial counter
 - [ ] Restore Purchases with all **three** outcomes — restored / nothing to restore / failed — plus pending and error-retry ([§7](07-components.md) 7.3)
 - [ ] Plus entitlement read from **StoreKit, not local state** — after delete + reinstall a paying subscriber must not see a paywall

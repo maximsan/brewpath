@@ -2,7 +2,7 @@
 
 ## Policy
 
-There is **no real purchase flow in MVP** — the payments layer is a placeholder so monetization can be added later without architectural changes. (The *product* model is decided — a content-gated **BrewPath Plus** tier, `docs/decisions.md` §7/§11 — this doc covers only the deferred StoreKit implementation.)
+There is **no real purchase flow in MVP** — the payments layer is a placeholder so monetization can be added later without architectural changes. (The *product* model is decided — a content-gated **BrewPath Plus** tier sold as a single one-time purchase, `docs/decisions.md` §7/§11, [ADR-0003](adr/0003-one-time-purchase-no-trial.md) — this doc covers only the deferred StoreKit implementation.)
 
 The abstraction is established now so that:
 
@@ -107,9 +107,8 @@ class NoOpPaymentsService implements PaymentsService {
 // 1. Call InAppPurchase.instance.isAvailable() on init
 // 2. Listen to InAppPurchase.instance.purchaseStream
 // 3. Call InAppPurchase.instance.queryProductDetails(productIds)
-// 4. Call InAppPurchase.instance.buyNonConsumable() or buyConsumable()
+// 4. Call InAppPurchase.instance.buyNonConsumable()
 // 5. Deliver entitlement after PurchaseStatus.purchased + verifyPurchase()
-// 6. For subscriptions: verify receipt server-side (not in MVP)
 //
 // See: https://pub.dev/packages/in_app_purchase
 
@@ -166,16 +165,19 @@ PaymentsService paymentsService(Ref ref) => NoOpPaymentsService();
 
 ## Product IDs Convention
 
-| Product Type         | ID Convention                   |
-| -------------------- | ------------------------------- |
-| Monthly subscription | `dev.maximsan.brewPath.monthly` |
-| Annual subscription  | `dev.maximsan.brewPath.annual`  |
+| Product Type                | ID Convention                |
+| --------------------------- | ---------------------------- |
+| One-time purchase (Plus)    | `dev.maximsan.brewPath.plus` |
 
-A lifetime (non-renewing) tier was **considered and dropped** — a non-renewing
-plan needs its own receipt, restore and manage-plan states
-(`docs/decisions.md`, `docs/design/PRODUCT.md` §11).
+v1 sells a **single non-consumable** unlocking Plus — no trial, no
+subscription SKUs
+([ADR-0003](adr/0003-one-time-purchase-no-trial.md)). This is the *baseline*
+of a planned post-launch experiment (one-time vs subscription vs hybrid), so
+entitlement, acquisition and paywall UI stay separated
+([#176](https://github.com/maximsan/brewpath/issues/176)) and the SKU list is
+config, not code.
 
-Define these IDs in `lib/core/constants/product_ids.dart` when implementing.
+Define the ID in `lib/core/constants/product_ids.dart` when implementing.
 
 ---
 
@@ -186,15 +188,18 @@ When payments are ready to go live:
 - [ ] Register products in App Store Connect → In-App Purchases
 - [ ] Enable In-App Purchase capability in Xcode → Runner target → Signing & Capabilities
 - [ ] Replace `NoOpPaymentsService` with `InAppPurchaseService` in `payments_provider.dart`
-- [ ] Implement `InAppPurchaseService` with StoreKit 2 integration via `in_app_purchase` package
-- [ ] Implement receipt validation (at minimum client-side; server-side for subscriptions)
+- [ ] Implement `InAppPurchaseService` with StoreKit 2 integration via `in_app_purchase` package — `buyNonConsumable` only
+- [ ] Implement client-side receipt validation (server-side only if the monetization experiment brings subscriptions back)
 - [ ] Add entitlement check at app startup — gate Plus content if `hasActiveEntitlement()` returns false
 - [ ] Build paywall screen at `lib/features/paywall/presentation/paywall_screen.dart`
 - [ ] Add a Restore Purchases button to Profile tab
 - [ ] Test in sandbox environment with a sandbox Apple ID
 - [ ] Handle edge cases: purchase interrupted, StoreKit unavailable, already purchased
 
-**If subscription receipt validation becomes complex:** Consider `purchases_flutter` (RevenueCat SDK) as an alternative to manual receipt validation. Only introduce it if `in_app_purchase` proves insufficient.
+**RevenueCat** (`purchases_flutter`) is the likely vehicle for the post-launch
+monetization experiment ([#176](https://github.com/maximsan/brewpath/issues/176)
+— model switching, paywall metrics). Don't introduce it for v1's single
+non-consumable; the decision belongs to the experiment.
 
 ---
 
