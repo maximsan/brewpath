@@ -187,6 +187,32 @@ Future<void> saveActiveChallengeForLater(
   );
 }
 
+/// Parks [id] for later without touching whatever is in play.
+///
+/// The lesson-complete offer's *Save for later*: the learner is parking a
+/// challenge they never started, so clearing Today would throw away a
+/// different challenge they are part-way through.
+Future<void> saveChallengeForLater(
+  SnapshotRepository repository, {
+  required String id,
+  required DateTime now,
+}) async {
+  final snapshot = await repository.read();
+  final progress = snapshot.clearedByReset;
+  final at = now.millisecondsSinceEpoch;
+
+  await repository.write(
+    snapshot.copyWith(
+      updatedAt: at,
+      clearedByReset: progress.withChallengesSaved(
+        parkChallenge(progress.challengesSaved.value, id),
+        at: at,
+        writerId: snapshot.deviceId,
+      ),
+    ),
+  );
+}
+
 /// Takes [id] out of the queue entirely.
 Future<void> unsaveChallenge(
   SnapshotRepository repository, {

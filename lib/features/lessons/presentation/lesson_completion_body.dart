@@ -1,6 +1,7 @@
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/icon_badge.dart';
+import 'package:brew_path/features/challenges/presentation/challenge_suggestion.dart';
 import 'package:brew_path/features/companion/domain/companion_reaction.dart';
 import 'package:brew_path/features/companion/presentation/companion_celebration.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
@@ -16,6 +17,7 @@ import 'package:flutter/material.dart';
 class LessonCompletionBody extends StatelessWidget {
   /// Creates a [LessonCompletionBody].
   const LessonCompletionBody({
+    required this.lessonId,
     required this.reward,
     super.key,
     this.celebrating = false,
@@ -23,6 +25,10 @@ class LessonCompletionBody extends StatelessWidget {
   });
 
   /// The loaded reward to render.
+  /// The lesson that was just finished.
+  final String lessonId;
+
+  /// What the run recorded, plus any card it unlocked.
   final LessonCompletionReward reward;
 
   /// Whether this is a first completion, which is what earns the celebrating
@@ -43,6 +49,9 @@ class LessonCompletionBody extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             ..._content(context),
+            // Nothing at all when the lesson carries no challenge, which is
+            // twenty of the thirty-two — the widget renders no gap of its own.
+            ChallengeSuggestion(lessonId: lessonId),
             const SizedBox(height: 32),
             FilledButton(
               onPressed: () => _onContinue(context),

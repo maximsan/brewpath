@@ -1,4 +1,5 @@
 import 'package:brew_path/core/constants/app_labels.dart';
+import 'package:brew_path/features/challenges/presentation/path_challenge_node.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/path/presentation/path_node_card.dart';
 import 'package:brew_path/features/path/presentation/path_node_rail.dart';
@@ -51,7 +52,14 @@ class PathModuleNodeWidget extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: EdgeInsets.only(bottom: isLast ? 0 : _cardBottomGap),
-              child: PathNodeCard(item: item, onTap: () => _onTap(context)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  PathNodeCard(item: item, onTap: () => _onTap(context)),
+                  PathChallengeNode(moduleId: item.module.id),
+                ],
+              ),
             ),
           ),
         ],
