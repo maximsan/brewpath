@@ -21,9 +21,28 @@ import 'package:integration_test/integration_test.dart';
 /// off-screen. Nothing here may continue when a step did not happen, and a
 /// failure names the screen it could not reach.
 ///
-/// The three tests share one app install and run in order: the first completes
-/// onboarding, the second proves it persisted to real storage across a
-/// relaunch, the third opens real content.
+/// Two tests, sharing one app install and run in order: the first completes
+/// onboarding, the second relaunches to prove it persisted to real storage and
+/// then opens authored content. **Two launches, not three** — each `app.main()`
+/// opens another database over the same file, and drift is explicit that
+/// concurrent instances race.
+/// How long each real-time pump waits before looking again.
+const Duration _pumpInterval = Duration(milliseconds: 40);
+
+/// Every string actually on screen, for a failure message.
+///
+/// A walk that only says what it wanted makes the reader guess what it got.
+/// Every hour lost on this suite was spent re-running it to find that out.
+String _visibleText(WidgetTester tester) {
+  final seen = tester
+      .widgetList<Text>(find.byType(Text).hitTestable())
+      .map((text) => text.data)
+      .whereType<String>()
+      .where((label) => label.trim().isNotEmpty)
+      .toSet();
+  return seen.isEmpty ? '(nothing)' : seen.join(' | ');
+}
+
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
@@ -40,22 +59,31 @@ void main() {
   /// tree well before it is on screen, so waiting for existence hands back a
   /// widget whose centre is off the right-hand edge and every tap misses it —
   /// silently, as a warning rather than a failure.
+  ///
+  /// The [budget] is deliberately generous. A cold CI runner is several times
+  /// slower than a warm laptop, and the third launch in a process is the
+  /// slowest of all — an eight-second budget passed locally and failed on the
+  /// first real run. Nothing is lost by waiting: a genuine hang still fails
+  /// here in seconds rather than at the job's cap, which is the whole point of
+  /// bounding it per step.
   Future<void> pumpUntil(
     WidgetTester tester,
     Finder target, {
     required String describe,
     bool present = true,
-    int attempts = 200,
+    Duration budget = const Duration(seconds: 30),
   }) async {
     final ready = present ? target.hitTestable() : target;
+    final attempts = budget.inMilliseconds ~/ _pumpInterval.inMilliseconds;
     for (var attempt = 0; attempt < attempts; attempt++) {
       if (ready.evaluate().isNotEmpty == present) return;
-      await tester.runAsync(
-        () => Future<void>.delayed(const Duration(milliseconds: 40)),
-      );
+      await tester.runAsync(() => Future<void>.delayed(_pumpInterval));
       await tester.pump();
     }
-    fail('never reached: $describe');
+    fail(
+      'never reached: $describe (waited ${budget.inSeconds}s)\n'
+      'on screen: ${_visibleText(tester)}',
+    );
   }
 
   /// Waits for [target] to be tappable, then taps it.
@@ -153,13 +181,22 @@ void main() {
     );
   });
 
-  testWidgets('a returning launch skips onboarding entirely', (tester) async {
-    // The real assertion is about **storage**: the answers the previous test
-    // gave were written to an on-disk database, and a fresh process reads them
-    // back. Nothing else in the repo exercises that — every widget test seeds
-    // the flag in memory instead.
+  testWidgets('a returning launch skips onboarding and opens real content', (
+    tester,
+  ) async {
+    // **One relaunch, and everything a second launch has to prove.**
+    //
+    // Each `app.main()` builds another `AppDatabase` over the same file, and
+    // drift says plainly what that costs: "race conditions will occur and might
+    // corrupt the database". Two launches are fine; a third is not — split
+    // across three tests this passed only when the simulator still held an
+    // onboarded install from an earlier run, and failed on every clean one.
+    // Merging the two is not a shortcut, it is the fix.
     await launch(tester);
 
+    // Storage: the answers the previous test gave were written to an on-disk
+    // database, and a fresh process reads them back. Nothing else in the repo
+    // exercises that — every widget test seeds the flag in memory instead.
     await pumpUntil(
       tester,
       find.text("Today's lesson"),
@@ -170,40 +207,31 @@ void main() {
       findsNothing,
       reason: 'onboarding persisted, so it must not be offered again',
     );
-  });
 
-  testWidgets('authored content opens from the bundle as it ships', (
-    tester,
-  ) async {
+    // Content: authored material loads from the bundle as it ships, and the
+    // immersive flow opens over the shell.
+    //
     // Deliberately stops at the first step. Playing a lesson through is five
     // steps across three interaction kinds, and the widget suite already
     // drives each of them properly — re-driving them here bought brittleness
-    // and nothing else. This test used to answer one question and expect a
+    // and nothing else. This used to answer one question and expect a
     // five-step lesson to be finished.
-    //
-    // What remains is the part only this suite can prove: content loads from
-    // the bundle as it ships, and the immersive flow opens over the shell.
-    //
-    // Launches for itself. Each `testWidgets` gets a fresh tree, so leaning on
-    // the previous test to have left the app mounted is exactly the kind of
-    // unstated assumption that let this suite rot.
-    await launch(tester);
-
+    // Opened by the card's own control, never by a lesson title. Hardcoding
+    // authored copy is what broke the walk in the first place, and it broke
+    // again here: this asked for "Where Coffee Comes From" while the course
+    // now opens on "What coffee actually is".
     await tapWhenReady(
       tester,
-      find.text('Where Coffee Comes From'),
+      find.widgetWithText(FilledButton, 'Start'),
       describe: "today's lesson card",
     );
 
+    // `Step 1 of N` is the proof the bundle loaded: N is the lesson's own step
+    // count, so it cannot be rendered without real authored content behind it.
     await pumpUntil(
       tester,
       find.textContaining('Step 1 of'),
-      describe: "today's lesson",
-    );
-    expect(
-      find.textContaining('In which region'),
-      findsOneWidget,
-      reason: 'the step body came from the bundled content, not a fixture',
+      describe: "today's lesson opening on its first step",
     );
   });
 }
