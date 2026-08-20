@@ -9,5 +9,9 @@ abstract class XpValues {
   /// lesson per calendar day.
   static const int practiceXp = 2;
 
+  /// Granted the first time a Coffee Challenge is logged. Replays pay nothing:
+  /// points measure what a learner has covered, not how often they repeat it.
+  static const int challengeCompletion = 5;
+
   static int forLesson(int stepCount) => stepCount * perStep;
 }

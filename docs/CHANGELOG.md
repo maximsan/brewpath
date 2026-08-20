@@ -44,6 +44,21 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **A brew can be logged, and it pays.** The Coffee Challenge card on Today now
+  carries a Log Result button, and it opens the app's first bottom sheet: the
+  challenge's own question — *WHICH CUP WON?* — above the outcomes it authors,
+  with **Mark as done disabled until one is picked**. Every authored reaction
+  asserts the brew happened, so logging without one would record a claim the
+  learner never made. Dismissing the sheet writes nothing; looking is free.
+
+  Logging pays **five points the first time and nothing on a replay**, records
+  the outcome as text rather than a position, and hands off to a recap where
+  Roasty celebrates and offers to brew it again. A replay re-asks the question
+  and replaces the old answer, so the record is what the learner last found.
+
+  A Coffee Challenge still records nothing toward the streak or the daily
+  allowance, and grows no tree — it is not an activity, it is a real cup.
+
 - **Coffee Challenges reach the app.** The twelve real-world brews the course
   authors now load, and the one that asks you to go and make coffee can be put
   in play. Finish every lesson of a module and its capstone is offered on the
