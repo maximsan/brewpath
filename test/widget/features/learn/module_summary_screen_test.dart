@@ -10,24 +10,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const _module = ModuleModel(
-  id: 'module_beans',
-  title: 'Beans',
-  description: '',
-  iconName: 'beans',
-  lessonIds: ['l1'],
-);
+import '../../../support/content_fixtures.dart';
 
-const _card = CoffeeCardModel(
-  id: 'c1',
-  title: 'First Card',
-  description: '',
-  moduleTag: 'Beans',
-  iconName: 'beans',
-  lessonId: 'l1',
-);
+final ModuleModel _module = testModule(lessonIds: const ['m1l1']);
+final CoffeeCardModel _card = testCoffeeCard(title: 'First Card');
 
-const _summary = ModuleSummary(
+final _summary = ModuleSummary(
   module: _module,
   earnedCards: [_card],
   totalXp: 75,

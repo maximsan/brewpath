@@ -2,12 +2,14 @@ import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/shared/models/module_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const _module = ModuleModel(
-  id: 'module_roast',
+import '../../../support/content_fixtures.dart';
+
+final ModuleModel _module = testModule(
+  id: 'm3',
+  n: 3,
   title: 'Roasting',
-  description: 'Desc',
-  iconName: 'ic_roast',
-  lessonIds: ['l1', 'l2'],
+  iconName: 'roasting',
+  lessonIds: const ['m3l1', 'm3l2'],
 );
 
 ModuleWithProgress _item({

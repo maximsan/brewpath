@@ -3,27 +3,13 @@ import 'package:brew_path/core/widgets/bean_gauge.dart';
 import 'package:brew_path/features/learn/presentation/module_lesson_card_widget.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
-import 'package:brew_path/shared/models/lesson_step_model.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const _lesson = LessonModel(
-  id: 'lesson_where_coffee',
-  moduleId: 'module_beans',
-  title: 'Where coffee grows',
-  summary: 'Intro',
-  xpReward: 10,
-  cardId: 'card_where_coffee',
-  steps: [
-    LessonStepModel.multipleChoice(
-      question: 'Q',
-      options: ['a', 'b'],
-      correctIndex: 0,
-      explanation: 'E',
-    ),
-  ],
-);
+import '../support/content_fixtures.dart';
+
+final LessonModel _lesson = testLesson(title: 'Where coffee grows');
 
 Future<void> _pump(
   WidgetTester tester, {

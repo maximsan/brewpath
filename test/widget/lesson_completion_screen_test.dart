@@ -7,7 +7,6 @@ import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
-import 'package:brew_path/shared/models/lesson_step_model.dart';
 import 'package:brew_path/shared/models/module_model.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +14,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../support/content_fixtures.dart';
 import '../support/widget_harness.dart';
 
 // In-memory content used to override `contentRepositoryProvider` for these
@@ -24,63 +24,30 @@ import '../support/widget_harness.dart';
 // never get pumped, and `tester.runAsync` waits for them forever. Feeding
 // the providers in-memory data dodges the bundle entirely.
 
-const _emptyStep = LessonStepModel.multipleChoice(
-  question: 'Q',
-  options: ['a', 'b'],
-  correctIndex: 0,
-  explanation: 'E',
-);
-
-LessonModel _lesson(String id, {String? cardId}) => LessonModel(
-  id: id,
-  moduleId: 'module_beans',
-  title: id,
-  summary: '',
-  xpReward: 50,
-  cardId: cardId,
-  steps: const [_emptyStep, _emptyStep, _emptyStep, _emptyStep, _emptyStep],
-);
-
 final _testLessons = <LessonModel>[
-  _lesson('lesson_where_coffee', cardId: 'card_where_coffee'),
-  _lesson('lesson_arabica_robusta'),
-  _lesson('lesson_green_coffee'),
-  _lesson('lesson_coffee_plant'),
-  _lesson('lesson_altitude_quality'),
+  for (var index = 1; index <= 5; index++)
+    testLesson(id: 'm1l$index', title: 'm1l$index'),
 ];
 
-const _testModule = ModuleModel(
-  id: 'module_beans',
-  title: 'Beans',
-  description: '',
-  iconName: 'beans',
-  lessonIds: [
-    'lesson_where_coffee',
-    'lesson_arabica_robusta',
-    'lesson_green_coffee',
-    'lesson_coffee_plant',
-    'lesson_altitude_quality',
-  ],
+final ModuleModel _testModule = testModule(
+  lessonIds: [for (final lesson in _testLessons) lesson.id],
 );
 
-const _testCard = CoffeeCardModel(
-  id: 'card_where_coffee',
-  title: 'Where Coffee Comes From',
-  description: '',
-  moduleTag: 'Beans',
-  iconName: 'beans',
-  lessonId: 'lesson_where_coffee',
-);
+final CoffeeCardModel _testCard = testCoffeeCard();
 
 class _FakeContent extends ContentRepository {
   @override
-  Future<List<ModuleModel>> getModules() async => const [_testModule];
+  Future<List<ModuleModel>> getModules() async => [_testModule];
 
   @override
   Future<List<LessonModel>> getLessons() async => _testLessons;
 
   @override
-  Future<List<CoffeeCardModel>> getCards() async => const [_testCard];
+  Future<List<CoffeeCardModel>> getCards() async => [_testCard];
+
+  @override
+  Future<CoffeeCardModel?> getCardForLesson(String lessonId) async =>
+      lessonId == _testCard.lessonId ? _testCard : null;
 
   @override
   Future<LessonModel?> getLessonById(String id) async =>
@@ -120,14 +87,14 @@ void main() {
       final before = await tester.runAsync(
         () => container.read(todayLessonProvider.future),
       );
-      expect(before?.id, 'lesson_where_coffee');
+      expect(before?.id, 'm1l1');
 
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
           child: _app(
             const LessonCompletionScreen(
-              lessonId: 'lesson_where_coffee',
+              lessonId: 'm1l1',
               mastery: MasteryResult(correct: 5, total: 5),
             ),
           ),
@@ -141,8 +108,8 @@ void main() {
       final after = await tester.runAsync(
         () => container.read(todayLessonProvider.future),
       );
-      expect(after?.id, 'lesson_arabica_robusta');
-      expect(after?.id, isNot('lesson_where_coffee'));
+      expect(after?.id, 'm1l2');
+      expect(after?.id, isNot('m1l1'));
     },
   );
 
@@ -192,7 +159,7 @@ void main() {
           container: container,
           child: _app(
             const LessonCompletionScreen(
-              lessonId: 'lesson_where_coffee',
+              lessonId: 'm1l1',
               mastery: MasteryResult(correct: 5, total: 5),
             ),
           ),
@@ -200,9 +167,9 @@ void main() {
       );
       await settleLoaders(tester);
       expect(find.text('Lesson complete!'), findsOneWidget);
-      // First lesson of module_beans — 5 steps × 10 XP each. Module bonus
+      // First lesson of m1 — the flat ten it authors. Module bonus
       // doesn't fire yet because the rest of the module is still uncompleted.
-      expect(find.text('+50 XP'), findsOneWidget);
+      expect(find.text('+10 XP'), findsOneWidget);
       expect(find.textContaining('Module complete!'), findsNothing);
 
       // The completion invalidated each provider, so they now resolve to the
@@ -219,10 +186,10 @@ void main() {
       final cardsAfter = await tester.runAsync(
         () => container.read(collectedCardsProvider.future),
       );
-      expect(xpAfter, 50); // lesson_where_coffee has 5 steps × 10 XP
+      expect(xpAfter, 10); // m1l1 pays the flat ten it authors
       expect(streakAfter, 1);
       expect(lessonsAfter, hasLength(1));
-      expect(cardsAfter, contains('card_where_coffee'));
+      expect(cardsAfter, contains('c1'));
     },
   );
 
@@ -247,10 +214,10 @@ void main() {
     final content = container.read(contentRepositoryProvider);
     final service = container.read(lessonCompletionServiceProvider);
     for (final id in const [
-      'lesson_where_coffee',
-      'lesson_arabica_robusta',
-      'lesson_coffee_plant',
-      'lesson_altitude_quality',
+      'm1l1',
+      'm1l2',
+      'm1l4',
+      'm1l5',
     ]) {
       final lesson = await tester.runAsync(() => content.getLessonById(id));
       await tester.runAsync(
@@ -266,7 +233,7 @@ void main() {
         container: container,
         child: _app(
           const LessonCompletionScreen(
-            lessonId: 'lesson_green_coffee',
+            lessonId: 'm1l3',
             mastery: MasteryResult(correct: 5, total: 5),
           ),
         ),
@@ -275,7 +242,7 @@ void main() {
     await settleLoaders(tester);
 
     expect(find.text('Lesson complete!'), findsOneWidget);
-    expect(find.text('+50 XP'), findsOneWidget); // lesson_green_coffee, 5 steps
+    expect(find.text('+10 XP'), findsOneWidget); // lesson_green_coffee, 5 steps
     expect(find.text('+25 XP · Module complete!'), findsOneWidget);
   });
 
@@ -290,7 +257,7 @@ void main() {
         container: container,
         child: _app(
           const LessonCompletionScreen(
-            lessonId: 'lesson_where_coffee',
+            lessonId: 'm1l1',
             mastery: MasteryResult(correct: 5, total: 5),
           ),
         ),
@@ -317,7 +284,7 @@ void main() {
     final content = container.read(contentRepositoryProvider);
     final service = container.read(lessonCompletionServiceProvider);
     final lesson = await tester.runAsync(
-      () => content.getLessonById('lesson_where_coffee'),
+      () => content.getLessonById('m1l1'),
     );
     await tester.runAsync(
       () => service.finishLesson(
@@ -333,7 +300,7 @@ void main() {
           // No `review` flag: the screen derives the path from the progress
           // store, so a finished lesson reached this way *is* a replay (#188).
           const LessonCompletionScreen(
-            lessonId: 'lesson_where_coffee',
+            lessonId: 'm1l1',
             mastery: MasteryResult(correct: 4, total: 5),
           ),
         ),
@@ -363,10 +330,10 @@ void main() {
     final content = container.read(contentRepositoryProvider);
     final service = container.read(lessonCompletionServiceProvider);
     for (final id in const [
-      'lesson_where_coffee',
-      'lesson_arabica_robusta',
-      'lesson_coffee_plant',
-      'lesson_altitude_quality',
+      'm1l1',
+      'm1l2',
+      'm1l4',
+      'm1l5',
     ]) {
       final lesson = await tester.runAsync(() => content.getLessonById(id));
       await tester.runAsync(
@@ -378,8 +345,7 @@ void main() {
     }
 
     final router = GoRouter(
-      initialLocation:
-          '/learn/lesson/lesson_green_coffee/complete?correct=5&total=5',
+      initialLocation: '/learn/lesson/m1l3/complete?correct=5&total=5',
       routes: [
         GoRoute(
           path: '/learn',

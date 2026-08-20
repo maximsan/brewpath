@@ -1,13 +1,18 @@
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
+import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/progress_repository.dart';
 import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// Module unlock logic lives in `modulesWithProgressProvider`: a module is
-/// locked when its `unlockRequirement` module is not fully complete.
+/// Module unlock lives in `modulesWithProgressProvider`: the first module is
+/// always open, and every later one waits on the module before it.
+///
+/// The rule reads the module's **position**, not a flag in the bank — the
+/// bank's `locked` is one imaginary learner's demo state, and honouring it
+/// would lock four modules for everyone.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -28,58 +33,47 @@ void main() {
     return {for (final m in modules) m.module.id: m.isLocked};
   }
 
-  test('first module (no unlockRequirement) is always unlocked', () async {
-    final locked = await lockedByModule();
-    expect(locked['module_beans'], isFalse);
-  });
+  /// The lessons a module holds, asked of the course rather than restated.
+  Future<List<String>> lessonsOf(String moduleId) async {
+    final modules = await ContentRepository().getModules();
+    return modules.firstWhere((m) => m.id == moduleId).lessonIds;
+  }
 
-  test('a module is locked while its required module is incomplete', () async {
-    final locked = await lockedByModule();
-    expect(locked['module_processing'], isTrue);
-    expect(locked['module_roast'], isTrue);
-  });
-
-  test('partially completing the required module keeps it locked', () async {
+  Future<void> complete(Iterable<String> lessonIds) async {
     final repo = ProgressRepository();
-    // module_beans has 5 lessons — complete only 2.
-    await repo.saveCompletion(
-      lessonId: 'lesson_where_coffee',
-      xpEarned: 10,
-      mastery: const MasteryResult(correct: 5, total: 5),
-    );
-    await repo.saveCompletion(
-      lessonId: 'lesson_arabica_robusta',
-      xpEarned: 20,
-      mastery: const MasteryResult(correct: 5, total: 5),
-    );
+    for (final id in lessonIds) {
+      await repo.saveCompletion(
+        lessonId: id,
+        xpEarned: 10,
+        mastery: const MasteryResult(correct: 5, total: 5),
+      );
+    }
+  }
 
-    final locked = await lockedByModule();
-    expect(locked['module_processing'], isTrue);
+  test('the first module is always unlocked', () async {
+    expect((await lockedByModule())['m1'], isFalse);
   });
 
-  test(
-    'completing every lesson of the required module unlocks the next',
-    () async {
-      final repo = ProgressRepository();
-      for (final id in const [
-        'lesson_where_coffee',
-        'lesson_arabica_robusta',
-        'lesson_green_coffee',
-        'lesson_coffee_plant',
-        'lesson_altitude_quality',
-      ]) {
-        await repo.saveCompletion(
-          lessonId: id,
-          xpEarned: 10,
-          mastery: const MasteryResult(correct: 5, total: 5),
-        );
-      }
+  test('a module is locked while the one before it is incomplete', () async {
+    final locked = await lockedByModule();
+    expect(locked['m2'], isTrue);
+    expect(locked['m3'], isTrue);
+  });
 
-      final locked = await lockedByModule();
-      expect(locked['module_beans'], isFalse);
-      expect(locked['module_processing'], isFalse);
-      // module_roast stays locked — its requirement (processing) isn't done.
-      expect(locked['module_roast'], isTrue);
-    },
-  );
+  test('partially completing the module before keeps it locked', () async {
+    final beans = await lessonsOf('m1');
+    await complete(beans.take(2));
+
+    expect((await lockedByModule())['m2'], isTrue);
+  });
+
+  test('completing every lesson of a module unlocks the next', () async {
+    await complete(await lessonsOf('m1'));
+
+    final locked = await lockedByModule();
+    expect(locked['m1'], isFalse);
+    expect(locked['m2'], isFalse);
+    // m3 stays locked — m2 is not done.
+    expect(locked['m3'], isTrue);
+  });
 }

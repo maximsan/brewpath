@@ -7,6 +7,9 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'learn_providers.g.dart';
 
+/// The position of the module every learner starts unlocked.
+const int _firstModule = 1;
+
 /// A module paired with its derived completion state. Not persisted or
 /// serialized — purely a read-side view value for the Learn screen.
 class ModuleWithProgress {
@@ -60,17 +63,29 @@ Future<List<ModuleWithProgress>> modulesWithProgress(Ref ref) async {
 
   bool moduleComplete(ModuleModel m) =>
       m.lessonIds.isNotEmpty && m.lessonIds.every(completedIds.contains);
-  final completeById = {for (final m in modules) m.id: moduleComplete(m)};
+  final completeByPosition = {for (final m in modules) m.n: moduleComplete(m)};
 
   return modules.map((m) {
-    final req = m.unlockRequirement;
     return ModuleWithProgress(
       module: m,
       completedCount: m.lessonIds.where(completedIds.contains).length,
       totalCount: m.lessonIds.length,
-      isLocked: req != null && !(completeById[req] ?? false),
+      isLocked: !_isReached(m, completeByPosition),
     );
   }).toList();
+}
+
+/// Whether [module] has been reached: the first one always, and every later
+/// one once the module before it is complete.
+///
+/// **Derived from position, not read from the bank.** The modules bank carries
+/// a `locked` flag, but it is the prototype's demo state — one imaginary
+/// learner's progress — so honouring it would lock four modules for everyone
+/// forever. The chain it replaces said the same thing by naming a prerequisite
+/// module; `n` says it without a second id to keep in step.
+bool _isReached(ModuleModel module, Map<int, bool> completeByPosition) {
+  if (module.n <= _firstModule) return true;
+  return completeByPosition[module.n - 1] ?? false;
 }
 
 /// The next uncompleted lesson in order, or null if all are complete.

@@ -101,7 +101,10 @@ class LessonCompletionService {
     required MasteryResult mastery,
     required DateTime now,
   }) async {
-    final xp = xpService.calculateLessonXp(lesson.steps.length);
+    // What the lesson itself authors, flat. The old per-step formula had no
+    // input left once steps became cards: a lesson's card count is a shape of
+    // its teaching, not a measure of what finishing it is worth.
+    final xp = lesson.points;
     await progressRepository.saveCompletion(
       lessonId: lesson.id,
       xpEarned: xp,
@@ -113,12 +116,12 @@ class LessonCompletionService {
       parameters: {'amount': xp, 'source': 'lesson'},
     );
 
-    final cardId = lesson.cardId;
-    if (cardId != null) {
-      await cardRepository.collectCard(cardId);
+    final card = await contentRepository.getCardForLesson(lesson.id);
+    if (card != null) {
+      await cardRepository.collectCard(card.id);
       await analyticsService.logEvent(
         'card_unlocked',
-        parameters: {'card_id': cardId, 'lesson_id': lesson.id},
+        parameters: {'card_id': card.id, 'lesson_id': lesson.id},
       );
     }
 
@@ -234,8 +237,9 @@ class LessonCompletionService {
       parameters: {'amount': bonus, 'source': 'module_bonus'},
     );
 
-    // Completing this module unlocks any module gated on it.
-    for (final next in modules.where((m) => m.unlockRequirement == module.id)) {
+    // Completing this module unlocks the one after it. Modules open in course
+    // order, so the module gated on this one is the one at the next position.
+    for (final next in modules.where((m) => m.n == module.n + 1)) {
       await analyticsService.logEvent(
         'module_unlocked',
         parameters: {'module_id': next.id},

@@ -8,7 +8,7 @@ import '../support/widget_harness.dart';
 void main() {
   setUp(useInMemoryDatabase);
 
-  testWidgets('shows all 17 cards, all locked for a fresh user', (
+  testWidgets('shows every collectible, all locked for a fresh user', (
     tester,
   ) async {
     await pumpWithProviders(tester, const BrewPathApp());

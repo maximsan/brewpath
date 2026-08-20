@@ -15,7 +15,17 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$LessonModel {
 
- String get id; String get moduleId; String get title; String get summary; int get xpReward; List<LessonStepModel> get steps; String? get cardId;
+ String get id;/// The module that owns this lesson.
+///
+/// **Injected by the content layer, not authored.** A lesson record carries
+/// only [moduleLabel], a display string; ownership lives in the modules
+/// bank's own lesson list, so the repository resolves it once on load
+/// rather than every reader parsing an id out of a label.
+ String get moduleId;/// The eyebrow the design prints above the lesson — `MODULE 1 · BEANS`.
+ String get moduleLabel; String get title;/// What finishing this lesson pays, the first time only. Flat and
+/// authored — never derived from how many cards the lesson happens to run.
+ int get points;/// The lesson's own estimate, in minutes.
+ int get time; List<ContentCard> get cards; ContentReward get reward;
 /// Create a copy of LessonModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +38,16 @@ $LessonModelCopyWith<LessonModel> get copyWith => _$LessonModelCopyWithImpl<Less
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LessonModel&&(identical(other.id, id) || other.id == id)&&(identical(other.moduleId, moduleId) || other.moduleId == moduleId)&&(identical(other.title, title) || other.title == title)&&(identical(other.summary, summary) || other.summary == summary)&&(identical(other.xpReward, xpReward) || other.xpReward == xpReward)&&const DeepCollectionEquality().equals(other.steps, steps)&&(identical(other.cardId, cardId) || other.cardId == cardId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LessonModel&&(identical(other.id, id) || other.id == id)&&(identical(other.moduleId, moduleId) || other.moduleId == moduleId)&&(identical(other.moduleLabel, moduleLabel) || other.moduleLabel == moduleLabel)&&(identical(other.title, title) || other.title == title)&&(identical(other.points, points) || other.points == points)&&(identical(other.time, time) || other.time == time)&&const DeepCollectionEquality().equals(other.cards, cards)&&(identical(other.reward, reward) || other.reward == reward));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,moduleId,title,summary,xpReward,const DeepCollectionEquality().hash(steps),cardId);
+int get hashCode => Object.hash(runtimeType,id,moduleId,moduleLabel,title,points,time,const DeepCollectionEquality().hash(cards),reward);
 
 @override
 String toString() {
-  return 'LessonModel(id: $id, moduleId: $moduleId, title: $title, summary: $summary, xpReward: $xpReward, steps: $steps, cardId: $cardId)';
+  return 'LessonModel(id: $id, moduleId: $moduleId, moduleLabel: $moduleLabel, title: $title, points: $points, time: $time, cards: $cards, reward: $reward)';
 }
 
 
@@ -48,11 +58,11 @@ abstract mixin class $LessonModelCopyWith<$Res>  {
   factory $LessonModelCopyWith(LessonModel value, $Res Function(LessonModel) _then) = _$LessonModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String moduleId, String title, String summary, int xpReward, List<LessonStepModel> steps, String? cardId
+ String id, String moduleId, String moduleLabel, String title, int points, int time, List<ContentCard> cards, ContentReward reward
 });
 
 
-
+$ContentRewardCopyWith<$Res> get reward;
 
 }
 /// @nodoc
@@ -65,19 +75,29 @@ class _$LessonModelCopyWithImpl<$Res>
 
 /// Create a copy of LessonModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? moduleId = null,Object? title = null,Object? summary = null,Object? xpReward = null,Object? steps = null,Object? cardId = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? moduleId = null,Object? moduleLabel = null,Object? title = null,Object? points = null,Object? time = null,Object? cards = null,Object? reward = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,moduleId: null == moduleId ? _self.moduleId : moduleId // ignore: cast_nullable_to_non_nullable
+as String,moduleLabel: null == moduleLabel ? _self.moduleLabel : moduleLabel // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,summary: null == summary ? _self.summary : summary // ignore: cast_nullable_to_non_nullable
-as String,xpReward: null == xpReward ? _self.xpReward : xpReward // ignore: cast_nullable_to_non_nullable
-as int,steps: null == steps ? _self.steps : steps // ignore: cast_nullable_to_non_nullable
-as List<LessonStepModel>,cardId: freezed == cardId ? _self.cardId : cardId // ignore: cast_nullable_to_non_nullable
-as String?,
+as String,points: null == points ? _self.points : points // ignore: cast_nullable_to_non_nullable
+as int,time: null == time ? _self.time : time // ignore: cast_nullable_to_non_nullable
+as int,cards: null == cards ? _self.cards : cards // ignore: cast_nullable_to_non_nullable
+as List<ContentCard>,reward: null == reward ? _self.reward : reward // ignore: cast_nullable_to_non_nullable
+as ContentReward,
   ));
 }
-
+/// Create a copy of LessonModel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ContentRewardCopyWith<$Res> get reward {
+  
+  return $ContentRewardCopyWith<$Res>(_self.reward, (value) {
+    return _then(_self.copyWith(reward: value));
+  });
+}
 }
 
 
@@ -159,10 +179,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String moduleId,  String title,  String summary,  int xpReward,  List<LessonStepModel> steps,  String? cardId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String moduleId,  String moduleLabel,  String title,  int points,  int time,  List<ContentCard> cards,  ContentReward reward)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _LessonModel() when $default != null:
-return $default(_that.id,_that.moduleId,_that.title,_that.summary,_that.xpReward,_that.steps,_that.cardId);case _:
+return $default(_that.id,_that.moduleId,_that.moduleLabel,_that.title,_that.points,_that.time,_that.cards,_that.reward);case _:
   return orElse();
 
 }
@@ -180,10 +200,10 @@ return $default(_that.id,_that.moduleId,_that.title,_that.summary,_that.xpReward
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String moduleId,  String title,  String summary,  int xpReward,  List<LessonStepModel> steps,  String? cardId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String moduleId,  String moduleLabel,  String title,  int points,  int time,  List<ContentCard> cards,  ContentReward reward)  $default,) {final _that = this;
 switch (_that) {
 case _LessonModel():
-return $default(_that.id,_that.moduleId,_that.title,_that.summary,_that.xpReward,_that.steps,_that.cardId);case _:
+return $default(_that.id,_that.moduleId,_that.moduleLabel,_that.title,_that.points,_that.time,_that.cards,_that.reward);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -200,10 +220,10 @@ return $default(_that.id,_that.moduleId,_that.title,_that.summary,_that.xpReward
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String moduleId,  String title,  String summary,  int xpReward,  List<LessonStepModel> steps,  String? cardId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String moduleId,  String moduleLabel,  String title,  int points,  int time,  List<ContentCard> cards,  ContentReward reward)?  $default,) {final _that = this;
 switch (_that) {
 case _LessonModel() when $default != null:
-return $default(_that.id,_that.moduleId,_that.title,_that.summary,_that.xpReward,_that.steps,_that.cardId);case _:
+return $default(_that.id,_that.moduleId,_that.moduleLabel,_that.title,_that.points,_that.time,_that.cards,_that.reward);case _:
   return null;
 
 }
@@ -215,22 +235,33 @@ return $default(_that.id,_that.moduleId,_that.title,_that.summary,_that.xpReward
 @JsonSerializable()
 
 class _LessonModel implements LessonModel {
-  const _LessonModel({required this.id, required this.moduleId, required this.title, required this.summary, required this.xpReward, required final  List<LessonStepModel> steps, this.cardId}): _steps = steps;
+  const _LessonModel({required this.id, required this.moduleId, required this.moduleLabel, required this.title, required this.points, required this.time, required final  List<ContentCard> cards, required this.reward}): _cards = cards;
   factory _LessonModel.fromJson(Map<String, dynamic> json) => _$LessonModelFromJson(json);
 
 @override final  String id;
+/// The module that owns this lesson.
+///
+/// **Injected by the content layer, not authored.** A lesson record carries
+/// only [moduleLabel], a display string; ownership lives in the modules
+/// bank's own lesson list, so the repository resolves it once on load
+/// rather than every reader parsing an id out of a label.
 @override final  String moduleId;
+/// The eyebrow the design prints above the lesson — `MODULE 1 · BEANS`.
+@override final  String moduleLabel;
 @override final  String title;
-@override final  String summary;
-@override final  int xpReward;
- final  List<LessonStepModel> _steps;
-@override List<LessonStepModel> get steps {
-  if (_steps is EqualUnmodifiableListView) return _steps;
+/// What finishing this lesson pays, the first time only. Flat and
+/// authored — never derived from how many cards the lesson happens to run.
+@override final  int points;
+/// The lesson's own estimate, in minutes.
+@override final  int time;
+ final  List<ContentCard> _cards;
+@override List<ContentCard> get cards {
+  if (_cards is EqualUnmodifiableListView) return _cards;
   // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_steps);
+  return EqualUnmodifiableListView(_cards);
 }
 
-@override final  String? cardId;
+@override final  ContentReward reward;
 
 /// Create a copy of LessonModel
 /// with the given fields replaced by the non-null parameter values.
@@ -245,16 +276,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LessonModel&&(identical(other.id, id) || other.id == id)&&(identical(other.moduleId, moduleId) || other.moduleId == moduleId)&&(identical(other.title, title) || other.title == title)&&(identical(other.summary, summary) || other.summary == summary)&&(identical(other.xpReward, xpReward) || other.xpReward == xpReward)&&const DeepCollectionEquality().equals(other._steps, _steps)&&(identical(other.cardId, cardId) || other.cardId == cardId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LessonModel&&(identical(other.id, id) || other.id == id)&&(identical(other.moduleId, moduleId) || other.moduleId == moduleId)&&(identical(other.moduleLabel, moduleLabel) || other.moduleLabel == moduleLabel)&&(identical(other.title, title) || other.title == title)&&(identical(other.points, points) || other.points == points)&&(identical(other.time, time) || other.time == time)&&const DeepCollectionEquality().equals(other._cards, _cards)&&(identical(other.reward, reward) || other.reward == reward));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,moduleId,title,summary,xpReward,const DeepCollectionEquality().hash(_steps),cardId);
+int get hashCode => Object.hash(runtimeType,id,moduleId,moduleLabel,title,points,time,const DeepCollectionEquality().hash(_cards),reward);
 
 @override
 String toString() {
-  return 'LessonModel(id: $id, moduleId: $moduleId, title: $title, summary: $summary, xpReward: $xpReward, steps: $steps, cardId: $cardId)';
+  return 'LessonModel(id: $id, moduleId: $moduleId, moduleLabel: $moduleLabel, title: $title, points: $points, time: $time, cards: $cards, reward: $reward)';
 }
 
 
@@ -265,11 +296,11 @@ abstract mixin class _$LessonModelCopyWith<$Res> implements $LessonModelCopyWith
   factory _$LessonModelCopyWith(_LessonModel value, $Res Function(_LessonModel) _then) = __$LessonModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String moduleId, String title, String summary, int xpReward, List<LessonStepModel> steps, String? cardId
+ String id, String moduleId, String moduleLabel, String title, int points, int time, List<ContentCard> cards, ContentReward reward
 });
 
 
-
+@override $ContentRewardCopyWith<$Res> get reward;
 
 }
 /// @nodoc
@@ -282,20 +313,30 @@ class __$LessonModelCopyWithImpl<$Res>
 
 /// Create a copy of LessonModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? moduleId = null,Object? title = null,Object? summary = null,Object? xpReward = null,Object? steps = null,Object? cardId = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? moduleId = null,Object? moduleLabel = null,Object? title = null,Object? points = null,Object? time = null,Object? cards = null,Object? reward = null,}) {
   return _then(_LessonModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,moduleId: null == moduleId ? _self.moduleId : moduleId // ignore: cast_nullable_to_non_nullable
+as String,moduleLabel: null == moduleLabel ? _self.moduleLabel : moduleLabel // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,summary: null == summary ? _self.summary : summary // ignore: cast_nullable_to_non_nullable
-as String,xpReward: null == xpReward ? _self.xpReward : xpReward // ignore: cast_nullable_to_non_nullable
-as int,steps: null == steps ? _self._steps : steps // ignore: cast_nullable_to_non_nullable
-as List<LessonStepModel>,cardId: freezed == cardId ? _self.cardId : cardId // ignore: cast_nullable_to_non_nullable
-as String?,
+as String,points: null == points ? _self.points : points // ignore: cast_nullable_to_non_nullable
+as int,time: null == time ? _self.time : time // ignore: cast_nullable_to_non_nullable
+as int,cards: null == cards ? _self._cards : cards // ignore: cast_nullable_to_non_nullable
+as List<ContentCard>,reward: null == reward ? _self.reward : reward // ignore: cast_nullable_to_non_nullable
+as ContentReward,
   ));
 }
 
-
+/// Create a copy of LessonModel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ContentRewardCopyWith<$Res> get reward {
+  
+  return $ContentRewardCopyWith<$Res>(_self.reward, (value) {
+    return _then(_self.copyWith(reward: value));
+  });
+}
 }
 
 // dart format on

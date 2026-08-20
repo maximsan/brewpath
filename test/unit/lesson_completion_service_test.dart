@@ -18,6 +18,16 @@ import 'package:brew_path/shared/storage/snapshot/snapshot_scopes.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+/// The lessons a module holds, asked of the course rather than restated here —
+/// a roster spelled out in a test goes stale the first time content grows.
+Future<List<String>> _moduleLessonIds(
+  ContentRepository content,
+  String moduleId,
+) async {
+  final modules = await content.getModules();
+  return modules.firstWhere((m) => m.id == moduleId).lessonIds;
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -78,7 +88,7 @@ void main() {
     test(
       'a finished lesson reached as a fresh run still records its day',
       () async {
-        final lesson = (await content.getLessonById('lesson_where_coffee'))!;
+        final lesson = (await content.getLessonById('m1l1'))!;
         await service.finishLesson(
           lesson,
           mastery: const MasteryResult(correct: 3, total: 5),
@@ -103,7 +113,7 @@ void main() {
     );
 
     test('and is recorded as a replay, not a first completion', () async {
-      final lesson = (await content.getLessonById('lesson_where_coffee'))!;
+      final lesson = (await content.getLessonById('m1l1'))!;
       await service.finishLesson(
         lesson,
         mastery: const MasteryResult(correct: 3, total: 5),
@@ -129,26 +139,26 @@ void main() {
       'first completion persists progress, XP, card, streak and score',
       () async {
         final at = DateTime(2026, 8, 20, 12);
-        final lesson = (await content.getLessonById('lesson_where_coffee'))!;
+        final lesson = (await content.getLessonById('m1l1'))!;
         final result = await service.finishLesson(
           lesson,
           mastery: const MasteryResult(correct: 4, total: 5),
           now: at,
         );
 
-        // lesson_where_coffee has 5 steps × 10 XP each = 50.
-        expect(result.lessonXp, 50);
+        // A lesson pays the flat ten it authors.
+        expect(result.lessonXp, 10);
         expect(result.moduleBonusXp, 0);
         expect(result.moduleCompleted, isFalse);
-        expect(await totalXp(), 50);
-        expect(await cards.isCardCollected('card_where_coffee'), isTrue);
+        expect(await totalXp(), 10);
+        expect(await cards.isCardCollected('c1'), isTrue);
         expect(await activeDays(), {epochDay(at)});
         expect(
           (await entriesOn(at)).map((e) => parseActivityEntry(e).type),
           [ActivityType.lesson],
         );
 
-        final record = (await progress.getByLessonId('lesson_where_coffee'))!;
+        final record = (await progress.getByLessonId('m1l1'))!;
         expect(record.isCompleted, isTrue);
         expect(record.fullXpAwarded, isTrue);
         expect(record.mastery, const MasteryResult(correct: 4, total: 5));
@@ -156,7 +166,7 @@ void main() {
     );
 
     test('replaying a completed lesson re-awards nothing', () async {
-      final lesson = (await content.getLessonById('lesson_where_coffee'))!;
+      final lesson = (await content.getLessonById('m1l1'))!;
       await service.finishLesson(
         lesson,
         mastery: const MasteryResult(correct: 4, total: 5),
@@ -173,20 +183,14 @@ void main() {
       // A replay is worth the once-a-day practice reward and nothing else.
       // The old contract reported the lesson's *previously banked* points here
       // and recorded nothing at all, which is the defect #188 closed.
-      expect(await totalXp(), 50 + XpValues.practiceXp);
+      expect(await totalXp(), 10 + XpValues.practiceXp);
     });
 
     test(
       'finishing every lesson in a module awards the module bonus once',
       () async {
         late LessonFinishResult last;
-        for (final id in const [
-          'lesson_where_coffee',
-          'lesson_arabica_robusta',
-          'lesson_green_coffee',
-          'lesson_coffee_plant',
-          'lesson_altitude_quality',
-        ]) {
+        for (final id in await _moduleLessonIds(content, 'm1')) {
           last = await service.finishLesson(
             (await content.getLessonById(id))!,
             mastery: const MasteryResult(correct: 5, total: 5),
@@ -195,24 +199,18 @@ void main() {
 
         expect(last.moduleBonusXp, 25);
         expect(last.moduleCompleted, isTrue);
-        // 5 lessons × 5 steps × 10 XP = 250, plus the 25 module bonus.
-        expect(await totalXp(), 275);
-        expect(await moduleProgress.isModuleXpAwarded('module_beans'), isTrue);
+        // Seven lessons at a flat ten, plus the 25 module bonus.
+        expect(await totalXp(), 95);
+        expect(await moduleProgress.isModuleXpAwarded('m1'), isTrue);
       },
     );
   });
 
   group('finishing a lesson again', () {
-    /// Completes every lesson of `module_beans`, leaving the module fully done
+    /// Completes every lesson of `m1`, leaving the module fully done
     /// and its completion bonus already paid out.
     Future<void> completeBeansModule() async {
-      for (final id in const [
-        'lesson_where_coffee',
-        'lesson_arabica_robusta',
-        'lesson_green_coffee',
-        'lesson_coffee_plant',
-        'lesson_altitude_quality',
-      ]) {
+      for (final id in await _moduleLessonIds(content, 'm1')) {
         await service.finishLesson(
           (await content.getLessonById(id))!,
           mastery: const MasteryResult(correct: 5, total: 5),
@@ -223,7 +221,7 @@ void main() {
     test(
       'review does not reset completion, lesson XP, or the earned card',
       () async {
-        final lesson = (await content.getLessonById('lesson_where_coffee'))!;
+        final lesson = (await content.getLessonById('m1l1'))!;
         await service.finishLesson(
           lesson,
           mastery: const MasteryResult(correct: 3, total: 5),
@@ -241,12 +239,12 @@ void main() {
         expect(after.xpEarned, before.xpEarned);
         expect(after.completedAt, before.completedAt);
         expect(after.fullXpAwarded, isTrue);
-        expect(await cards.isCardCollected('card_where_coffee'), isTrue);
+        expect(await cards.isCardCollected('c1'), isTrue);
       },
     );
 
     test('a completed replay marks its day active (§3)', () async {
-      final lesson = (await content.getLessonById('lesson_where_coffee'))!;
+      final lesson = (await content.getLessonById('m1l1'))!;
       await service.finishLesson(
         lesson,
         mastery: const MasteryResult(correct: 3, total: 5),
@@ -263,7 +261,7 @@ void main() {
     });
 
     test('a second replay the same day does not qualify it twice', () async {
-      final lesson = (await content.getLessonById('lesson_where_coffee'))!;
+      final lesson = (await content.getLessonById('m1l1'))!;
       await service.finishLesson(
         lesson,
         mastery: const MasteryResult(correct: 3, total: 5),
@@ -292,12 +290,12 @@ void main() {
     });
 
     test('review never re-awards full lesson XP', () async {
-      final lesson = (await content.getLessonById('lesson_where_coffee'))!;
+      final lesson = (await content.getLessonById('m1l1'))!;
       await service.finishLesson(
         lesson,
         mastery: const MasteryResult(correct: 2, total: 5),
       );
-      final afterCompletion = await totalXp(); // 5 steps × 10 = 50
+      final afterCompletion = await totalXp(); // the lesson's flat ten
 
       await service.finishLesson(
         lesson,
@@ -313,11 +311,11 @@ void main() {
       'reviewing inside a completed module re-awards no module XP',
       () async {
         await completeBeansModule();
-        // 5 lessons × 5 steps × 10 XP = 250, plus the 25 module bonus.
-        expect(await totalXp(), 275);
-        expect(await moduleProgress.isModuleXpAwarded('module_beans'), isTrue);
+        // Seven lessons at a flat ten, plus the 25 module bonus.
+        expect(await totalXp(), 95);
+        expect(await moduleProgress.isModuleXpAwarded('m1'), isTrue);
 
-        final lesson = (await content.getLessonById('lesson_where_coffee'))!;
+        final lesson = (await content.getLessonById('m1l1'))!;
         await service.finishLesson(
           lesson,
           mastery: const MasteryResult(correct: 5, total: 5),
@@ -325,12 +323,12 @@ void main() {
         );
 
         // 275 + 2 practice XP — the 25 module bonus is not granted again.
-        expect(await totalXp(), 275 + XpValues.practiceXp);
+        expect(await totalXp(), 95 + XpValues.practiceXp);
       },
     );
 
     test('review improves the stored best score', () async {
-      final lesson = (await content.getLessonById('lesson_where_coffee'))!;
+      final lesson = (await content.getLessonById('m1l1'))!;
       await service.finishLesson(
         lesson,
         mastery: const MasteryResult(correct: 2, total: 5),
@@ -350,7 +348,7 @@ void main() {
     });
 
     test('review never lowers the stored best score', () async {
-      final lesson = (await content.getLessonById('lesson_where_coffee'))!;
+      final lesson = (await content.getLessonById('m1l1'))!;
       await service.finishLesson(
         lesson,
         mastery: const MasteryResult(correct: 9, total: 10),
@@ -370,12 +368,12 @@ void main() {
     });
 
     test('practice XP is granted at most once per lesson per day', () async {
-      final lesson = (await content.getLessonById('lesson_where_coffee'))!;
+      final lesson = (await content.getLessonById('m1l1'))!;
       await service.finishLesson(
         lesson,
         mastery: const MasteryResult(correct: 2, total: 5),
       );
-      final base = await totalXp(); // 5 steps × 10 = 50
+      final base = await totalXp(); // the lesson's flat ten
 
       final first = await service.finishLesson(
         lesson,

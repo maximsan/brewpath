@@ -6,23 +6,41 @@ part of 'module_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+_ModuleLesson _$ModuleLessonFromJson(Map<String, dynamic> json) =>
+    _ModuleLesson(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      points: (json['points'] as num).toInt(),
+      time: (json['time'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$ModuleLessonToJson(_ModuleLesson instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'title': instance.title,
+      'points': instance.points,
+      'time': instance.time,
+    };
+
 _ModuleModel _$ModuleModelFromJson(Map<String, dynamic> json) => _ModuleModel(
   id: json['id'] as String,
+  n: (json['n'] as num).toInt(),
+  label: json['label'] as String,
+  iconName: json['glyph'] as String,
   title: json['title'] as String,
-  description: json['description'] as String,
-  iconName: json['iconName'] as String,
-  lessonIds: (json['lessonIds'] as List<dynamic>)
-      .map((e) => e as String)
+  lessons: (json['lessons'] as List<dynamic>)
+      .map((e) => ModuleLesson.fromJson(e as Map<String, dynamic>))
       .toList(),
-  unlockRequirement: json['unlockRequirement'] as String?,
+  reward: ContentReward.fromJson(json['reward'] as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$ModuleModelToJson(_ModuleModel instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'n': instance.n,
+      'label': instance.label,
+      'glyph': instance.iconName,
       'title': instance.title,
-      'description': instance.description,
-      'iconName': instance.iconName,
-      'lessonIds': instance.lessonIds,
-      'unlockRequirement': instance.unlockRequirement,
+      'lessons': instance.lessons,
+      'reward': instance.reward,
     };

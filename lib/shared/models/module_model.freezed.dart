@@ -13,9 +13,285 @@ part of 'module_model.dart';
 T _$identity<T>(T value) => value;
 
 /// @nodoc
+mixin _$ModuleLesson {
+
+ String get id; String get title; int get points; int get time;
+/// Create a copy of ModuleLesson
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ModuleLessonCopyWith<ModuleLesson> get copyWith => _$ModuleLessonCopyWithImpl<ModuleLesson>(this as ModuleLesson, _$identity);
+
+  /// Serializes this ModuleLesson to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ModuleLesson&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.points, points) || other.points == points)&&(identical(other.time, time) || other.time == time));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,title,points,time);
+
+@override
+String toString() {
+  return 'ModuleLesson(id: $id, title: $title, points: $points, time: $time)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ModuleLessonCopyWith<$Res>  {
+  factory $ModuleLessonCopyWith(ModuleLesson value, $Res Function(ModuleLesson) _then) = _$ModuleLessonCopyWithImpl;
+@useResult
+$Res call({
+ String id, String title, int points, int time
+});
+
+
+
+
+}
+/// @nodoc
+class _$ModuleLessonCopyWithImpl<$Res>
+    implements $ModuleLessonCopyWith<$Res> {
+  _$ModuleLessonCopyWithImpl(this._self, this._then);
+
+  final ModuleLesson _self;
+  final $Res Function(ModuleLesson) _then;
+
+/// Create a copy of ModuleLesson
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? points = null,Object? time = null,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,points: null == points ? _self.points : points // ignore: cast_nullable_to_non_nullable
+as int,time: null == time ? _self.time : time // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [ModuleLesson].
+extension ModuleLessonPatterns on ModuleLesson {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _ModuleLesson value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _ModuleLesson() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _ModuleLesson value)  $default,){
+final _that = this;
+switch (_that) {
+case _ModuleLesson():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _ModuleLesson value)?  $default,){
+final _that = this;
+switch (_that) {
+case _ModuleLesson() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  int points,  int time)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _ModuleLesson() when $default != null:
+return $default(_that.id,_that.title,_that.points,_that.time);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  int points,  int time)  $default,) {final _that = this;
+switch (_that) {
+case _ModuleLesson():
+return $default(_that.id,_that.title,_that.points,_that.time);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  int points,  int time)?  $default,) {final _that = this;
+switch (_that) {
+case _ModuleLesson() when $default != null:
+return $default(_that.id,_that.title,_that.points,_that.time);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _ModuleLesson implements ModuleLesson {
+  const _ModuleLesson({required this.id, required this.title, required this.points, required this.time});
+  factory _ModuleLesson.fromJson(Map<String, dynamic> json) => _$ModuleLessonFromJson(json);
+
+@override final  String id;
+@override final  String title;
+@override final  int points;
+@override final  int time;
+
+/// Create a copy of ModuleLesson
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ModuleLessonCopyWith<_ModuleLesson> get copyWith => __$ModuleLessonCopyWithImpl<_ModuleLesson>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$ModuleLessonToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ModuleLesson&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.points, points) || other.points == points)&&(identical(other.time, time) || other.time == time));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,title,points,time);
+
+@override
+String toString() {
+  return 'ModuleLesson(id: $id, title: $title, points: $points, time: $time)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ModuleLessonCopyWith<$Res> implements $ModuleLessonCopyWith<$Res> {
+  factory _$ModuleLessonCopyWith(_ModuleLesson value, $Res Function(_ModuleLesson) _then) = __$ModuleLessonCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, String title, int points, int time
+});
+
+
+
+
+}
+/// @nodoc
+class __$ModuleLessonCopyWithImpl<$Res>
+    implements _$ModuleLessonCopyWith<$Res> {
+  __$ModuleLessonCopyWithImpl(this._self, this._then);
+
+  final _ModuleLesson _self;
+  final $Res Function(_ModuleLesson) _then;
+
+/// Create a copy of ModuleLesson
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? points = null,Object? time = null,}) {
+  return _then(_ModuleLesson(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,points: null == points ? _self.points : points // ignore: cast_nullable_to_non_nullable
+as int,time: null == time ? _self.time : time // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
 mixin _$ModuleModel {
 
- String get id; String get title; String get description; String get iconName; List<String> get lessonIds; String? get unlockRequirement;
+ String get id;/// The module's position in the course, 1-based. The unlock rule reads
+/// this: module *n* opens when module *n − 1* is complete.
+ int get n;/// The eyebrow the design prints above a lesson — `MODULE 1 · BEANS`.
+ String get label;/// The module's glyph name, resolved to an icon by `moduleIcon`.
+@JsonKey(name: 'glyph') String get iconName; String get title; List<ModuleLesson> get lessons; ContentReward get reward;
 /// Create a copy of ModuleModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +304,16 @@ $ModuleModelCopyWith<ModuleModel> get copyWith => _$ModuleModelCopyWithImpl<Modu
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ModuleModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.iconName, iconName) || other.iconName == iconName)&&const DeepCollectionEquality().equals(other.lessonIds, lessonIds)&&(identical(other.unlockRequirement, unlockRequirement) || other.unlockRequirement == unlockRequirement));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ModuleModel&&(identical(other.id, id) || other.id == id)&&(identical(other.n, n) || other.n == n)&&(identical(other.label, label) || other.label == label)&&(identical(other.iconName, iconName) || other.iconName == iconName)&&(identical(other.title, title) || other.title == title)&&const DeepCollectionEquality().equals(other.lessons, lessons)&&(identical(other.reward, reward) || other.reward == reward));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,description,iconName,const DeepCollectionEquality().hash(lessonIds),unlockRequirement);
+int get hashCode => Object.hash(runtimeType,id,n,label,iconName,title,const DeepCollectionEquality().hash(lessons),reward);
 
 @override
 String toString() {
-  return 'ModuleModel(id: $id, title: $title, description: $description, iconName: $iconName, lessonIds: $lessonIds, unlockRequirement: $unlockRequirement)';
+  return 'ModuleModel(id: $id, n: $n, label: $label, iconName: $iconName, title: $title, lessons: $lessons, reward: $reward)';
 }
 
 
@@ -48,11 +324,11 @@ abstract mixin class $ModuleModelCopyWith<$Res>  {
   factory $ModuleModelCopyWith(ModuleModel value, $Res Function(ModuleModel) _then) = _$ModuleModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String title, String description, String iconName, List<String> lessonIds, String? unlockRequirement
+ String id, int n, String label,@JsonKey(name: 'glyph') String iconName, String title, List<ModuleLesson> lessons, ContentReward reward
 });
 
 
-
+$ContentRewardCopyWith<$Res> get reward;
 
 }
 /// @nodoc
@@ -65,18 +341,28 @@ class _$ModuleModelCopyWithImpl<$Res>
 
 /// Create a copy of ModuleModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? description = null,Object? iconName = null,Object? lessonIds = null,Object? unlockRequirement = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? n = null,Object? label = null,Object? iconName = null,Object? title = null,Object? lessons = null,Object? reward = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String,n: null == n ? _self.n : n // ignore: cast_nullable_to_non_nullable
+as int,label: null == label ? _self.label : label // ignore: cast_nullable_to_non_nullable
 as String,iconName: null == iconName ? _self.iconName : iconName // ignore: cast_nullable_to_non_nullable
-as String,lessonIds: null == lessonIds ? _self.lessonIds : lessonIds // ignore: cast_nullable_to_non_nullable
-as List<String>,unlockRequirement: freezed == unlockRequirement ? _self.unlockRequirement : unlockRequirement // ignore: cast_nullable_to_non_nullable
-as String?,
+as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,lessons: null == lessons ? _self.lessons : lessons // ignore: cast_nullable_to_non_nullable
+as List<ModuleLesson>,reward: null == reward ? _self.reward : reward // ignore: cast_nullable_to_non_nullable
+as ContentReward,
   ));
 }
-
+/// Create a copy of ModuleModel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ContentRewardCopyWith<$Res> get reward {
+  
+  return $ContentRewardCopyWith<$Res>(_self.reward, (value) {
+    return _then(_self.copyWith(reward: value));
+  });
+}
 }
 
 
@@ -158,10 +444,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String description,  String iconName,  List<String> lessonIds,  String? unlockRequirement)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  int n,  String label, @JsonKey(name: 'glyph')  String iconName,  String title,  List<ModuleLesson> lessons,  ContentReward reward)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ModuleModel() when $default != null:
-return $default(_that.id,_that.title,_that.description,_that.iconName,_that.lessonIds,_that.unlockRequirement);case _:
+return $default(_that.id,_that.n,_that.label,_that.iconName,_that.title,_that.lessons,_that.reward);case _:
   return orElse();
 
 }
@@ -179,10 +465,10 @@ return $default(_that.id,_that.title,_that.description,_that.iconName,_that.less
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String description,  String iconName,  List<String> lessonIds,  String? unlockRequirement)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  int n,  String label, @JsonKey(name: 'glyph')  String iconName,  String title,  List<ModuleLesson> lessons,  ContentReward reward)  $default,) {final _that = this;
 switch (_that) {
 case _ModuleModel():
-return $default(_that.id,_that.title,_that.description,_that.iconName,_that.lessonIds,_that.unlockRequirement);case _:
+return $default(_that.id,_that.n,_that.label,_that.iconName,_that.title,_that.lessons,_that.reward);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -199,10 +485,10 @@ return $default(_that.id,_that.title,_that.description,_that.iconName,_that.less
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String description,  String iconName,  List<String> lessonIds,  String? unlockRequirement)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  int n,  String label, @JsonKey(name: 'glyph')  String iconName,  String title,  List<ModuleLesson> lessons,  ContentReward reward)?  $default,) {final _that = this;
 switch (_that) {
 case _ModuleModel() when $default != null:
-return $default(_that.id,_that.title,_that.description,_that.iconName,_that.lessonIds,_that.unlockRequirement);case _:
+return $default(_that.id,_that.n,_that.label,_that.iconName,_that.title,_that.lessons,_that.reward);case _:
   return null;
 
 }
@@ -213,22 +499,27 @@ return $default(_that.id,_that.title,_that.description,_that.iconName,_that.less
 /// @nodoc
 @JsonSerializable()
 
-class _ModuleModel implements ModuleModel {
-  const _ModuleModel({required this.id, required this.title, required this.description, required this.iconName, required final  List<String> lessonIds, this.unlockRequirement}): _lessonIds = lessonIds;
+class _ModuleModel extends ModuleModel {
+  const _ModuleModel({required this.id, required this.n, required this.label, @JsonKey(name: 'glyph') required this.iconName, required this.title, required final  List<ModuleLesson> lessons, required this.reward}): _lessons = lessons,super._();
   factory _ModuleModel.fromJson(Map<String, dynamic> json) => _$ModuleModelFromJson(json);
 
 @override final  String id;
+/// The module's position in the course, 1-based. The unlock rule reads
+/// this: module *n* opens when module *n − 1* is complete.
+@override final  int n;
+/// The eyebrow the design prints above a lesson — `MODULE 1 · BEANS`.
+@override final  String label;
+/// The module's glyph name, resolved to an icon by `moduleIcon`.
+@override@JsonKey(name: 'glyph') final  String iconName;
 @override final  String title;
-@override final  String description;
-@override final  String iconName;
- final  List<String> _lessonIds;
-@override List<String> get lessonIds {
-  if (_lessonIds is EqualUnmodifiableListView) return _lessonIds;
+ final  List<ModuleLesson> _lessons;
+@override List<ModuleLesson> get lessons {
+  if (_lessons is EqualUnmodifiableListView) return _lessons;
   // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_lessonIds);
+  return EqualUnmodifiableListView(_lessons);
 }
 
-@override final  String? unlockRequirement;
+@override final  ContentReward reward;
 
 /// Create a copy of ModuleModel
 /// with the given fields replaced by the non-null parameter values.
@@ -243,16 +534,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ModuleModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.iconName, iconName) || other.iconName == iconName)&&const DeepCollectionEquality().equals(other._lessonIds, _lessonIds)&&(identical(other.unlockRequirement, unlockRequirement) || other.unlockRequirement == unlockRequirement));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ModuleModel&&(identical(other.id, id) || other.id == id)&&(identical(other.n, n) || other.n == n)&&(identical(other.label, label) || other.label == label)&&(identical(other.iconName, iconName) || other.iconName == iconName)&&(identical(other.title, title) || other.title == title)&&const DeepCollectionEquality().equals(other._lessons, _lessons)&&(identical(other.reward, reward) || other.reward == reward));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,description,iconName,const DeepCollectionEquality().hash(_lessonIds),unlockRequirement);
+int get hashCode => Object.hash(runtimeType,id,n,label,iconName,title,const DeepCollectionEquality().hash(_lessons),reward);
 
 @override
 String toString() {
-  return 'ModuleModel(id: $id, title: $title, description: $description, iconName: $iconName, lessonIds: $lessonIds, unlockRequirement: $unlockRequirement)';
+  return 'ModuleModel(id: $id, n: $n, label: $label, iconName: $iconName, title: $title, lessons: $lessons, reward: $reward)';
 }
 
 
@@ -263,11 +554,11 @@ abstract mixin class _$ModuleModelCopyWith<$Res> implements $ModuleModelCopyWith
   factory _$ModuleModelCopyWith(_ModuleModel value, $Res Function(_ModuleModel) _then) = __$ModuleModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String title, String description, String iconName, List<String> lessonIds, String? unlockRequirement
+ String id, int n, String label,@JsonKey(name: 'glyph') String iconName, String title, List<ModuleLesson> lessons, ContentReward reward
 });
 
 
-
+@override $ContentRewardCopyWith<$Res> get reward;
 
 }
 /// @nodoc
@@ -280,19 +571,29 @@ class __$ModuleModelCopyWithImpl<$Res>
 
 /// Create a copy of ModuleModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? description = null,Object? iconName = null,Object? lessonIds = null,Object? unlockRequirement = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? n = null,Object? label = null,Object? iconName = null,Object? title = null,Object? lessons = null,Object? reward = null,}) {
   return _then(_ModuleModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String,n: null == n ? _self.n : n // ignore: cast_nullable_to_non_nullable
+as int,label: null == label ? _self.label : label // ignore: cast_nullable_to_non_nullable
 as String,iconName: null == iconName ? _self.iconName : iconName // ignore: cast_nullable_to_non_nullable
-as String,lessonIds: null == lessonIds ? _self._lessonIds : lessonIds // ignore: cast_nullable_to_non_nullable
-as List<String>,unlockRequirement: freezed == unlockRequirement ? _self.unlockRequirement : unlockRequirement // ignore: cast_nullable_to_non_nullable
-as String?,
+as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,lessons: null == lessons ? _self._lessons : lessons // ignore: cast_nullable_to_non_nullable
+as List<ModuleLesson>,reward: null == reward ? _self.reward : reward // ignore: cast_nullable_to_non_nullable
+as ContentReward,
   ));
 }
 
-
+/// Create a copy of ModuleModel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ContentRewardCopyWith<$Res> get reward {
+  
+  return $ContentRewardCopyWith<$Res>(_self.reward, (value) {
+    return _then(_self.copyWith(reward: value));
+  });
+}
 }
 
 // dart format on

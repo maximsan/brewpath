@@ -8,7 +8,6 @@ import 'package:brew_path/features/lessons/presentation/lesson_completion_body.d
 import 'package:brew_path/features/lessons/presentation/lesson_completion_reward.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
-import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -72,12 +71,9 @@ class _LessonCompletionScreenState
     // `collectedCardsProvider`, so invalidate it explicitly.
     ref.invalidate(cardsWithCollectionProvider);
 
-    CoffeeCardModel? card;
-    final cardId = lesson.cardId;
-    if (!result.isReplay && cardId != null) {
-      final cards = await content.getCards();
-      card = cards.where((c) => c.id == cardId).firstOrNull;
-    }
+    final card = result.isReplay
+        ? null
+        : await content.getCardForLesson(lesson.id);
     return LessonCompletionReward(result: result, card: card);
   }
 

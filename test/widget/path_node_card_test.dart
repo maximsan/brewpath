@@ -7,12 +7,14 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const _module = ModuleModel(
-  id: 'module_brewing',
-  title: 'Brewing',
-  description: 'Desc',
-  iconName: 'ic_brewing',
-  lessonIds: ['l1', 'l2'],
+import '../support/content_fixtures.dart';
+
+final ModuleModel _module = testModule(
+  id: 'm5',
+  n: 5,
+  title: 'Brew',
+  iconName: 'brewing',
+  lessonIds: const ['m5l1', 'm5l2'],
 );
 
 ModuleWithProgress _item({required int done, required bool locked}) =>
@@ -125,7 +127,7 @@ void main() {
       expect(find.text('Complete'), findsNothing);
       expect(find.textContaining('lessons'), findsNothing);
       expect(find.byType(LinearProgressIndicator), findsNothing);
-      expect(find.text('Brewing'), findsOneWidget);
+      expect(find.text(_module.title), findsOneWidget);
     });
   });
 }

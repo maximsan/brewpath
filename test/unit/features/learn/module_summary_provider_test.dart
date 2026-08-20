@@ -2,60 +2,29 @@ import 'package:brew_path/features/learn/domain/module_summary_provider.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
-import 'package:brew_path/shared/models/lesson_step_model.dart';
 import 'package:brew_path/shared/models/module_model.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/content_fixtures.dart';
 import '../../../support/widget_harness.dart';
 
-const _step = LessonStepModel.multipleChoice(
-  question: 'Q',
-  options: ['a', 'b'],
-  correctIndex: 0,
-  explanation: 'E',
-);
-
-LessonModel _lesson(String id, {String? cardId}) => LessonModel(
-  id: id,
-  moduleId: 'module_beans',
-  title: id,
-  summary: '',
-  xpReward: 50,
-  cardId: cardId,
-  steps: const [_step],
-);
-
-const _module = ModuleModel(
-  id: 'module_beans',
-  title: 'Beans',
-  description: '',
-  iconName: 'beans',
-  lessonIds: ['l1', 'l2'],
-);
-
-const _card = CoffeeCardModel(
-  id: 'c1',
-  title: 'First Card',
-  description: '',
-  moduleTag: 'Beans',
-  iconName: 'beans',
-  lessonId: 'l1',
-);
+final ModuleModel _module = testModule();
+final CoffeeCardModel _card = testCoffeeCard();
 
 class _FakeContent extends ContentRepository {
   @override
-  Future<List<ModuleModel>> getModules() async => const [_module];
+  Future<List<ModuleModel>> getModules() async => [_module];
 
   @override
-  Future<List<CoffeeCardModel>> getCards() async => const [_card];
+  Future<List<CoffeeCardModel>> getCards() async => [_card];
 
   @override
   Future<List<LessonModel>> getLessons() async => [
-    _lesson('l1'),
-    _lesson('l2'),
+    testLesson(),
+    testLesson(id: 'm1l2', title: 'm1l2'),
   ];
 }
 
@@ -70,25 +39,25 @@ void main() {
     );
     addTearDown(container.dispose);
 
-    // Complete both lessons (40 + 30 XP) and collect the l1 card.
+    // Complete both lessons (40 + 30 XP) and collect the m1l1 card.
     final progress = container.read(progressRepositoryProvider);
     await progress.saveCompletion(
-      lessonId: 'l1',
+      lessonId: 'm1l1',
       xpEarned: 40,
       mastery: const MasteryResult(correct: 5, total: 5),
     );
     await progress.saveCompletion(
-      lessonId: 'l2',
+      lessonId: 'm1l2',
       xpEarned: 30,
       mastery: const MasteryResult(correct: 5, total: 5),
     );
     await container.read(cardRepositoryProvider).collectCard('c1');
 
     final summary = await container.read(
-      moduleSummaryProvider('module_beans').future,
+      moduleSummaryProvider('m1').future,
     );
 
-    expect(summary.module.id, 'module_beans');
+    expect(summary.module.id, 'm1');
     expect(summary.earnedCards.map((c) => c.id), ['c1']);
     // 40 + 30 lesson XP + 25 module bonus.
     expect(summary.totalXp, 95);
