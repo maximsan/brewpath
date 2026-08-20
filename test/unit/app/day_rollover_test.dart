@@ -1,5 +1,5 @@
+import 'package:brew_path/app/day_rollover.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
-import 'package:brew_path/features/progress/domain/day_rollover.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Proves the rollover decision is a change of *local calendar day*, not

@@ -1,6 +1,6 @@
+import 'package:brew_path/app/day_rollover.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
-import 'package:brew_path/features/progress/domain/day_rollover.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,6 +27,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// It wraps the app rather than a tab because all four shell tabs stay mounted:
 /// a learner who resumes on Profile must get the same recompute as one who
 /// resumes on Learn.
+///
+/// It lives in `app/` rather than beside `ChallengeExpiryWatcher` in a feature
+/// folder because it spans two of them — progress and learn — and belongs to
+/// neither. The day it turns on is the app's, not a feature's.
 class DayRolloverWatcher extends ConsumerStatefulWidget {
   /// Creates a [DayRolloverWatcher].
   const DayRolloverWatcher({
@@ -68,10 +72,17 @@ class _DayRolloverWatcherState extends ConsumerState<DayRolloverWatcher> {
   }
 
   void _refreshIfDayChanged() {
+    if (!mounted) return;
     final now = widget.clock();
     if (!dayHasRolledOver(lastSeenDay: _lastSeenDay, now: now)) return;
     _lastSeenDay = epochDay(now);
-    if (!mounted) return;
+    // Every day surface is named here, including `keepSharpAcknowledgedToday`,
+    // which today also rebuilds on its own because it watches the
+    // recommendation. Leaning on that edge would make this widget's
+    // correctness depend on another feature's internal wiring — and the day
+    // it were rewired, the surface would go quietly stale, which is the exact
+    // defect this widget exists to end. One idempotent call is the cheaper
+    // half of that trade.
     ref
       ..invalidate(streakStatusProvider)
       ..invalidate(keepSharpRecommendationProvider)

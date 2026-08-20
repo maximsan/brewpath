@@ -95,6 +95,10 @@ void main() {
     await container.read(keepSharpAcknowledgedTodayProvider.future);
     expect(streakBuilds, 2, reason: 'the streak is folded against a new today');
     expect(recommendationBuilds, 2, reason: 'the rotation moved on');
+    // In production this one would also rebuild via its watch on the
+    // recommendation. The stubs here have no such edge — which is the point:
+    // it proves the watcher refreshes this surface itself, rather than
+    // inheriting it from wiring that lives in another feature.
     expect(
       acknowledgedBuilds,
       2,
