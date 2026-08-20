@@ -407,6 +407,14 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **Finishing a lesson counts however you got there.** Whether a run was a
+  first completion or a replay used to be read off the URL, and a finished
+  lesson opened without the replay marker produced a run that recorded
+  nothing — no day, no mastery, no points. The app now decides from what the
+  learner has actually done, so a deep link or a hand-typed address cannot
+  cost a streak day, and there is no longer a flag for a caller to get wrong.
+  What each path pays is unchanged.
+
 - **One field list for the progress scope.** Two writers each copied the
   snapshot's progress scope field by field, so a change that renamed a field
   updated one and left the other naming something gone. Both now share a
