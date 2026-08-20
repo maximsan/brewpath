@@ -52,23 +52,16 @@ void main() {
   );
 
   group('each destination resolves to the URL it replaced', () {
-    test('starting a lesson', () {
-      expect(locationOf(lessonStart('m1l1')), '/learn/lesson/m1l1');
+    test('opening a lesson — one URL, whatever the learner has done', () {
+      expect(locationOf(lessonRun('m1l1')), '/learn/lesson/m1l1');
     });
 
-    test('replaying a finished lesson', () {
-      expect(
-        locationOf(lessonReplay('m1l1')),
-        '/learn/lesson/m1l1?review=true',
-      );
-    });
-
-    test('the completion screen carries the mode and the graded pair', () {
+    test('the completion screen carries the graded pair', () {
       expect(
         locationOf(
-          lessonCompletion('m1l1', review: false, correct: 4, total: 5),
+          lessonCompletion('m1l1', correct: 4, total: 5),
         ),
-        '/learn/lesson/m1l1/complete?review=false&correct=4&total=5',
+        '/learn/lesson/m1l1/complete?correct=4&total=5',
       );
     });
 
@@ -90,42 +83,39 @@ void main() {
       // count the mastery band derives from.
       expect(
         locationOf(
-          lessonCompletion('m1l1', review: false, correct: 18, total: 20),
+          lessonCompletion('m1l1', correct: 18, total: 20),
         ),
         contains('correct=18&total=20'),
       );
     });
 
-    test('a replay says so', () {
-      expect(
-        locationOf(
-          lessonCompletion('m1l1', review: true, correct: 1, total: 1),
-        ),
-        contains('review=true'),
-      );
+    test('no lesson URL carries a mode', () {
+      // The defect #188 closed: the run's path came off the URL, so a caller
+      // could assert one thing while the progress store said another.
+      for (final destination in [
+        lessonRun('m1l1'),
+        lessonCompletion('m1l1', correct: 1, total: 1),
+      ]) {
+        expect(destination.queryParams.keys, isNot(contains('review')));
+      }
     });
   });
 
   group('the value itself', () {
-    test('two destinations for the same route and lesson are equal', () {
-      expect(lessonReplay('m1l1'), lessonReplay('m1l1'));
-      expect(lessonReplay('m1l1').hashCode, lessonReplay('m1l1').hashCode);
-    });
-
-    test('a replay is not the same destination as a fresh start', () {
-      expect(lessonReplay('m1l1'), isNot(lessonStart('m1l1')));
+    test('two destinations for the same lesson are equal', () {
+      expect(lessonRun('m1l1'), lessonRun('m1l1'));
+      expect(lessonRun('m1l1').hashCode, lessonRun('m1l1').hashCode);
     });
 
     test('the lesson id is part of the identity', () {
-      expect(lessonStart('m1l1'), isNot(lessonStart('m1l2')));
+      expect(lessonRun('m1l1'), isNot(lessonRun('m1l2')));
     });
 
     test('no destination names a path', () {
       // The failure this module exists to prevent: a route renamed in
       // `AppRoutes` while a caller keeps sending learners to the old URL.
       for (final destination in [
-        lessonStart('m1l1'),
-        lessonReplay('m1l1'),
+        lessonRun('m1l1'),
         moduleSummary('m1'),
         learnTab,
       ]) {

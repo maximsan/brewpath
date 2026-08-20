@@ -5,9 +5,9 @@
 /// against a string literal and fails at the tap, which is exactly the failure
 /// `AppRoutes` exists to make impossible.
 ///
-/// Each destination below is a **mode**, not a path: the flags that decide what
-/// a finished run records travel with the route rather than beside it, so a
-/// caller cannot pick a destination and forget the flag that gives it meaning.
+/// No destination below carries a mode. What a finished run records is derived
+/// from the progress store, so the only thing a lesson URL has to say is which
+/// lesson — and the graded pair the completion screen renders.
 library;
 
 import 'package:brew_path/core/constants/app_routes.dart';
@@ -62,21 +62,15 @@ class RouteDestination {
   String toString() => 'RouteDestination($name, $pathParams, $queryParams)';
 }
 
-/// The query key carrying whether a run is a replay of a finished lesson.
-const String _reviewFlag = 'review';
-
-/// Playing a lesson for the first time. A finished run banks everything.
-RouteDestination lessonStart(String lessonId) => RouteDestination(
+/// Opening a lesson. **One destination, no mode.**
+///
+/// What a finished run pays is not the caller's to say: the service resolves
+/// first completion versus replay from the progress store, so there is no flag
+/// here for a caller to get wrong and no URL that can disagree with what the
+/// learner has actually done (#188).
+RouteDestination lessonRun(String lessonId) => RouteDestination(
   name: AppRoutes.lesson.name,
   pathParams: {'lessonId': lessonId},
-);
-
-/// Replaying a lesson already finished. A finished run updates mastery upward,
-/// pays practice points once a day, and marks the day active (§3).
-RouteDestination lessonReplay(String lessonId) => RouteDestination(
-  name: AppRoutes.lesson.name,
-  pathParams: {'lessonId': lessonId},
-  queryParams: const {_reviewFlag: 'true'},
 );
 
 /// The completion screen for a finished run.
@@ -86,17 +80,12 @@ RouteDestination lessonReplay(String lessonId) => RouteDestination(
 /// `{18,20}` both read 80%, and only the pair tells them apart.
 RouteDestination lessonCompletion(
   String lessonId, {
-  required bool review,
   required int correct,
   required int total,
 }) => RouteDestination(
   name: AppRoutes.lessonComplete.name,
   pathParams: {'lessonId': lessonId},
-  queryParams: {
-    _reviewFlag: '$review',
-    'correct': '$correct',
-    'total': '$total',
-  },
+  queryParams: {'correct': '$correct', 'total': '$total'},
 );
 
 /// The module recap shown after the last lesson of a module.

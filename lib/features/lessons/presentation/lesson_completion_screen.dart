@@ -20,7 +20,6 @@ class LessonCompletionScreen extends ConsumerStatefulWidget {
     required this.lessonId,
     required this.mastery,
     super.key,
-    this.review = false,
   });
 
   /// Id of the completed lesson.
@@ -28,9 +27,6 @@ class LessonCompletionScreen extends ConsumerStatefulWidget {
 
   /// Graded result of the run that reached this screen.
   final MasteryResult mastery;
-
-  /// Whether the run was a review of an already-completed lesson.
-  final bool review;
 
   @override
   ConsumerState<LessonCompletionScreen> createState() =>
@@ -55,52 +51,34 @@ class _LessonCompletionScreenState
     }
     _moduleId = lesson.moduleId;
 
-    if (widget.review) {
-      final reviewResult = await ref
-          .read(lessonCompletionServiceProvider)
-          .reviewLesson(lesson, mastery: widget.mastery);
-      // A completed replay protects the day (§3), so everything derived from
-      // it has to look again — even when the once-a-day practice XP did not
-      // pay. The Learn tab is covered by the run rather than replaced, so it
-      // never rebuilds on its own, and the card would go on asking for a
-      // replay the learner had just finished.
-      ref.invalidate(streakStatusProvider);
-      ref.invalidate(completedLessonsProvider);
-      ref.invalidate(keepSharpAcknowledgedTodayProvider);
-      ref.invalidate(keepSharpRecommendationProvider);
-      if (reviewResult.practiceXpAwarded) {
-        ref.invalidate(totalXpProvider);
-      }
-      return LessonCompletionReward(reviewResult: reviewResult);
-    }
-
-    final completion = await ref
+    final result = await ref
         .read(lessonCompletionServiceProvider)
-        .completeLesson(lesson, mastery: widget.mastery);
+        .finishLesson(lesson, mastery: widget.mastery);
 
-    // The Learn, Cards, and Profile screens live in the indexed-stack shell and
-    // stay mounted while this screen covers them, so every completion-derived
-    // provider must be invalidated explicitly — otherwise "Today's lesson" and
-    // module progress keep showing the just-finished lesson, and the profile's
-    // Total XP / streak / lesson & card counts keep showing pre-completion
-    // values, when the user returns.
+    // The Learn, Cards and Profile screens live in the indexed-stack shell and
+    // stay mounted while this screen covers them, so nothing derived from the
+    // run rebuilds on its own. Every one of these is invalidated on both
+    // paths: a replay moves the streak and the Keep Sharp card exactly as a
+    // first completion does, and the run that pays nothing still records a day.
     ref.invalidate(todayLessonProvider);
     ref.invalidate(modulesWithProgressProvider);
     ref.invalidate(totalXpProvider);
     ref.invalidate(streakStatusProvider);
     ref.invalidate(completedLessonsProvider);
     ref.invalidate(collectedCardsProvider);
+    ref.invalidate(keepSharpAcknowledgedTodayProvider);
+    ref.invalidate(keepSharpRecommendationProvider);
     // `cardsWithCollectionProvider` no longer chains through
     // `collectedCardsProvider`, so invalidate it explicitly.
     ref.invalidate(cardsWithCollectionProvider);
 
     CoffeeCardModel? card;
     final cardId = lesson.cardId;
-    if (cardId != null) {
+    if (!result.isReplay && cardId != null) {
       final cards = await content.getCards();
       card = cards.where((c) => c.id == cardId).firstOrNull;
     }
-    return LessonCompletionReward(completion: completion, card: card);
+    return LessonCompletionReward(result: result, card: card);
   }
 
   @override
@@ -124,12 +102,10 @@ class _LessonCompletionScreenState
     }
     if (snap.hasError) return ErrorView(message: '${snap.error}');
     final reward = snap.data!;
-    final firstCompletion = reward.completion != null;
-    final moduleCompleted = reward.completion?.moduleCompleted ?? false;
     return LessonCompletionBody(
       reward: reward,
-      celebrating: firstCompletion,
-      moduleSummaryId: moduleCompleted ? _moduleId : null,
+      celebrating: !reward.result.isReplay,
+      moduleSummaryId: reward.result.moduleCompleted ? _moduleId : null,
     );
   }
 }

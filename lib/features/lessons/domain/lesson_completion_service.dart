@@ -1,4 +1,5 @@
 import 'package:brew_path/core/utils/date_utils.dart';
+import 'package:brew_path/features/lessons/domain/lesson_finish_result.dart';
 import 'package:brew_path/features/progress/domain/activity_recorder.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/tree_growth.dart';
@@ -13,55 +14,20 @@ import 'package:brew_path/shared/repositories/progress_repository.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/repositories/settings_repository.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
+import 'package:brew_path/shared/storage/progress_record.dart';
 import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'lesson_completion_service.g.dart';
 
-/// Outcome of [LessonCompletionService.completeLesson] — the XP actually
-/// banked, split so the completion screen can show the module-completion bonus
-/// separately from the lesson's own reward.
-class LessonCompletionResult {
-  /// Creates a [LessonCompletionResult].
-  const LessonCompletionResult({
-    required this.lessonXp,
-    required this.moduleBonusXp,
-  });
-
-  /// XP awarded for finishing the lesson itself.
-  final int lessonXp;
-
-  /// XP awarded for completing the lesson's module, or `0` when the module is
-  /// not yet fully complete.
-  final int moduleBonusXp;
-
-  /// Whether finishing this lesson also completed its module.
-  bool get moduleCompleted => moduleBonusXp > 0;
-
-  /// Total XP banked by this completion.
-  int get totalXp => lessonXp + moduleBonusXp;
-}
-
-/// Outcome of [LessonCompletionService.reviewLesson] — a review never re-awards
-/// full lesson or module XP; it only updates mastery and may grant practice XP.
-class LessonReviewResult {
-  /// Creates a [LessonReviewResult].
-  const LessonReviewResult({
-    required this.mastery,
-    required this.practiceXpAwarded,
-  });
-
-  /// The lesson's best graded result after this review.
-  final MasteryResult mastery;
-
-  /// Whether practice XP was granted (false when already practiced today).
-  final bool practiceXpAwarded;
-}
-
 /// Orchestrates everything that happens when a lesson finishes: persist
-/// progress, award XP, unlock the lesson's card, advance the streak, and grant
-/// bonus once every lesson in the module is done. Idempotent — replaying a
-/// completed lesson is a no-op so XP and cards are never double-counted.
+/// progress, award points, unlock the lesson's card, mark the day, and grant
+/// the module bonus once every lesson in it is done.
+///
+/// **Not idempotent, and must not be.** Replaying a finished lesson records
+/// the day again, moves mastery upward and may pay the once-a-day practice
+/// reward — a replay is a real activity (§3), not a no-op. What *is* paid at
+/// most once is the lesson's own reward: points, the card, the module bonus.
 class LessonCompletionService {
   /// Creates a [LessonCompletionService].
   const LessonCompletionService({
@@ -99,23 +65,42 @@ class LessonCompletionService {
   /// XP calculations.
   final XpService xpService;
 
-  /// First completion of [lesson]. [mastery] is the run's graded
-  /// `{correct, total}` result. Awards full lesson XP, the card, streak, and
-  /// the module bonus — each exactly once.
-  Future<LessonCompletionResult> completeLesson(
+  /// Finishes [lesson] — the one way a run that reached the final card is
+  /// recorded. [mastery] is the run's graded `{correct, total}` result.
+  ///
+  /// **Which path it takes is derived, never asserted by the caller.** A
+  /// lesson with a completion record is a replay; one without is a first
+  /// completion. That fact already lives in the progress store, and asking the
+  /// caller to supply it instead is what let the two disagree: a finished
+  /// lesson reached without the replay marker used to return here having
+  /// recorded nothing at all (#188).
+  ///
+  /// Both paths record the day. There is no branch through a finished run that
+  /// writes nothing.
+  ///
+  /// [now] fixes the calendar day this run is recorded against and the
+  /// practice-reward ledger it is compared to — the two decisions a test needs
+  /// to pin. Row-level write stamps still read the clock directly.
+  Future<LessonFinishResult> finishLesson(
     LessonModel lesson, {
     required MasteryResult mastery,
+    DateTime? now,
   }) async {
+    final at = now ?? DateTime.now();
     final existing = await progressRepository.getByLessonId(lesson.id);
-    if (existing != null) {
-      // Replay: nothing is re-awarded. Report the lesson's previously banked
-      // XP so a revisited completion screen still shows a consistent figure.
-      return LessonCompletionResult(
-        lessonXp: existing.xpEarned,
-        moduleBonusXp: 0,
-      );
-    }
+    // The record travels rather than being looked up again: a second read
+    // could return null after Reset Progress landed between the two awaits,
+    // and an invariant re-derived is an invariant that can fail.
+    return existing == null
+        ? _firstCompletion(lesson, mastery: mastery, now: at)
+        : _replay(lesson, existing, mastery: mastery, now: at);
+  }
 
+  Future<LessonFinishResult> _firstCompletion(
+    LessonModel lesson, {
+    required MasteryResult mastery,
+    required DateTime now,
+  }) async {
     final xp = xpService.calculateLessonXp(lesson.steps.length);
     await progressRepository.saveCompletion(
       lessonId: lesson.id,
@@ -141,7 +126,7 @@ class LessonCompletionService {
       snapshotRepository,
       type: ActivityType.lesson,
       subject: lesson.id,
-      now: DateTime.now(),
+      now: now,
     );
 
     await _growTree();
@@ -157,28 +142,26 @@ class LessonCompletionService {
       },
     );
 
-    return LessonCompletionResult(lessonXp: xp, moduleBonusXp: moduleBonus);
+    return LessonFinishResult(
+      isReplay: false,
+      lessonXp: xp,
+      moduleBonusXp: moduleBonus,
+      mastery: mastery,
+      practiceXpAwarded: false,
+    );
   }
 
-  /// Re-runs a completed [lesson] for practice. Never re-awards full lesson or
-  /// module XP, never collects cards, never touches completion/streak. Updates
-  /// the stored mastery upward only, and grants [XpService.practiceXp] at most
-  /// once per lesson per calendar day. [now] is injectable for tests.
-  Future<LessonReviewResult> reviewLesson(
-    LessonModel lesson, {
+  /// A replay of an already-finished [lesson]. Never re-awards lesson or
+  /// module XP, never collects a card, never grows the tree. Updates the
+  /// stored mastery upward only, grants [XpService.practiceXp] at most once
+  /// per lesson per calendar day, and records the day every time (§3).
+  Future<LessonFinishResult> _replay(
+    LessonModel lesson,
+    ProgressRecord record, {
     required MasteryResult mastery,
-    DateTime? now,
+    required DateTime now,
   }) async {
-    final record = await progressRepository.getByLessonId(lesson.id);
-    if (record == null) {
-      // Defensive: review is only ever offered for completed lessons.
-      return const LessonReviewResult(
-        mastery: MasteryResult.unscored,
-        practiceXpAwarded: false,
-      );
-    }
-
-    final at = now ?? DateTime.now();
+    final at = now;
     final today = dateOnly(at);
     // Never downgrade: band rank first, ratio only as a tiebreak.
     record.mastery = MasteryResult.best(record.mastery, mastery);
@@ -216,7 +199,10 @@ class LessonCompletionService {
       },
     );
 
-    return LessonReviewResult(
+    return LessonFinishResult(
+      isReplay: true,
+      lessonXp: 0,
+      moduleBonusXp: 0,
       mastery: record.mastery,
       practiceXpAwarded: practiceXpAwarded,
     );
@@ -260,8 +246,8 @@ class LessonCompletionService {
 
   /// Advances the Coffee Tree to the stage this completion has earned.
   ///
-  /// Only reached on a first completion — a replay returns before this — so
-  /// replays and practice grow nothing. The write is raise-only, so a course
+  /// Only called from the first-completion path, so replays grow nothing. The
+  /// write is raise-only, so a course
   /// that grows later cannot take a stage back, and a stage already reached on
   /// another device survives the merge by the same rule.
   Future<void> _growTree() async {

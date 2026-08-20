@@ -3,8 +3,8 @@ import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/icon_badge.dart';
 import 'package:brew_path/features/companion/domain/companion_reaction.dart';
 import 'package:brew_path/features/companion/presentation/companion_celebration.dart';
-import 'package:brew_path/features/lessons/domain/lesson_completion_service.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
+import 'package:brew_path/features/lessons/domain/lesson_finish_result.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_reward.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -59,20 +59,15 @@ class LessonCompletionBody extends StatelessWidget {
     context.goTo(moduleId != null ? moduleSummary(moduleId) : learnTab);
   }
 
-  List<Widget> _content(BuildContext context) {
-    final reviewResult = reward.reviewResult;
-    if (reviewResult != null) return _reviewContent(context, reviewResult);
-    final completion = reward.completion;
-    if (completion != null) return _completionContent(context, completion);
-    // Unreachable: every run now finishes as a first completion or a replay.
-    // Total rather than thrown — a bare card is a better failure than a crash
-    // on the screen that exists to celebrate finishing something.
-    return const [];
-  }
+  /// Total by construction: the run was a first completion or a replay, and
+  /// the service already decided which.
+  List<Widget> _content(BuildContext context) => reward.result.isReplay
+      ? _replayContent(context, reward.result)
+      : _completionContent(context, reward.result);
 
   List<Widget> _completionContent(
     BuildContext context,
-    LessonCompletionResult completion,
+    LessonFinishResult completion,
   ) {
     final theme = Theme.of(context);
     final mood = context.mood;
@@ -110,7 +105,7 @@ class LessonCompletionBody extends StatelessWidget {
     ];
   }
 
-  List<Widget> _reviewContent(BuildContext context, LessonReviewResult review) {
+  List<Widget> _replayContent(BuildContext context, LessonFinishResult review) {
     final theme = Theme.of(context);
     final mood = context.mood;
     return [
