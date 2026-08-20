@@ -4,6 +4,7 @@ import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/section_header.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/challenges/presentation/active_challenge_card.dart';
+import 'package:brew_path/features/challenges/presentation/saved_challenges_list.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/learn/presentation/module_card_widget.dart';
@@ -50,6 +51,7 @@ class LearnScreen extends ConsumerWidget {
               const SizedBox(height: 12),
               ActiveChallengeCard(challenge: challenge),
             ],
+            const SavedChallengesList(),
             const SizedBox(height: 24),
             const SectionHeader('Practice a finished lesson'),
             const SizedBox(height: 12),

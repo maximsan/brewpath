@@ -228,6 +228,23 @@ class ClearedByReset {
   ClearedByReset withAck(String key, int day) =>
       _copy(acks: {...acks, key: day});
 
+  /// A copy with the parked queue replaced by [saved].
+  ///
+  /// Last-writer-wins rather than a union, because removal is a first-class
+  /// action here: unioning the queue would resurrect every challenge the
+  /// learner ever dismissed, from any device that still remembered it.
+  ClearedByReset withChallengesSaved(
+    Set<String> saved, {
+    required int at,
+    required String writerId,
+  }) => _copy(
+    challengesSaved: Timestamped(
+      value: saved,
+      updatedAt: at,
+      writerId: writerId,
+    ),
+  );
+
   /// A copy recording that [id] was logged with [reaction] on [day].
   ///
   /// Both halves move together because they are one event: the completion is
@@ -279,6 +296,7 @@ class ClearedByReset {
     Timestamped<ActiveChallenge?>? activeChallenge,
     Set<String>? challengesCompleted,
     Map<String, ChallengeReaction>? challengeReactions,
+    Timestamped<Set<String>>? challengesSaved,
   }) => ClearedByReset(
     completedLessons: completedLessons,
     bestResults: bestResults,
@@ -291,7 +309,7 @@ class ClearedByReset {
     learnedTerms: learnedTerms,
     challengeReactions: challengeReactions ?? this.challengeReactions,
     dailyActivity: dailyActivity ?? this.dailyActivity,
-    challengesSaved: challengesSaved,
+    challengesSaved: challengesSaved ?? this.challengesSaved,
     activeChallenge: activeChallenge ?? this.activeChallenge,
     favourites: favourites,
     unknown: unknown,

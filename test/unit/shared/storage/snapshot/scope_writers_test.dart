@@ -150,4 +150,72 @@ void main() {
       expect(after.challengeReactions, populated.challengeReactions);
     });
   });
+
+  group('withChallengesSaved', () {
+    const at = 1700000000000;
+
+    test('replaces the queue and changes nothing else', () {
+      final after = populated.withChallengesSaved(
+        const {'bc-m4'},
+        at: at,
+        writerId: 'device-a',
+      );
+
+      expect(after.challengesSaved.value, {'bc-m4'});
+      expect(after.challengesSaved.updatedAt, at);
+      expect(
+        after.toJson()..remove('challengesSaved'),
+        populated.toJson()..remove('challengesSaved'),
+      );
+    });
+
+    test('an empty queue is a value, not an absence', () {
+      // Removal is first-class here, which is why the field is
+      // last-writer-wins: a union would resurrect every dismissal.
+      final after = populated.withChallengesSaved(
+        const {},
+        at: at,
+        writerId: 'device-a',
+      );
+
+      expect(after.challengesSaved.value, isEmpty);
+      expect(after.challengesSaved.updatedAt, at);
+    });
+  });
+
+  test('withChallengeLogged records the brew and its outcome', () {
+    final after = populated.withChallengeLogged(
+      'bc-m4',
+      reaction: 'Preferred 1:15',
+      day: 20300,
+    );
+
+    expect(after.challengesCompleted, contains('bc-m4'));
+    expect(after.challengeReactions['bc-m4']?.reaction, 'Preferred 1:15');
+    expect(after.challengeReactions['bc-m4']?.at, 20300);
+    expect(
+      after.toJson()
+        ..remove('challengesCompleted')
+        ..remove('challengeReactions'),
+      populated.toJson()
+        ..remove('challengesCompleted')
+        ..remove('challengeReactions'),
+    );
+  });
+
+  test('withChallengeLogged replaces an earlier outcome for the same id', () {
+    final first = populated.withChallengeLogged(
+      'bc-m4',
+      reaction: 'Preferred 1:15',
+      day: 20300,
+    );
+    final second = first.withChallengeLogged(
+      'bc-m4',
+      reaction: 'Hard to tell',
+      day: 20301,
+    );
+
+    expect(second.challengeReactions['bc-m4']?.reaction, 'Hard to tell');
+    expect(second.challengesCompleted.where((id) => id == 'bc-m4').length, 1);
+  });
 }

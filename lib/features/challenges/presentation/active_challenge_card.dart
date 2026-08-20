@@ -31,12 +31,25 @@ class ActiveChallengeCard extends ConsumerWidget {
   /// Dismissing the log sheet resolves null and writes nothing — looking is
   /// free, and only a picked outcome is a claim that the brew happened.
   Future<void> _log(BuildContext context, WidgetRef ref) async {
-    final reaction = await showChallengeLogSheet(
+    final result = await showChallengeLogSheet(
       context: context,
       challenge: challenge,
     );
-    if (reaction == null || !context.mounted) return;
+    if (result == null || !context.mounted) return;
 
+    if (result is ChallengeSavedForLater) {
+      await saveActiveChallengeForLater(
+        ref.read(snapshotRepositoryProvider),
+        id: challenge.id,
+        now: DateTime.now(),
+      );
+      ref
+        ..invalidate(activeChallengeProvider)
+        ..invalidate(savedChallengesProvider);
+      return;
+    }
+
+    final reaction = (result as ChallengeLogged).reaction;
     final points = await logChallenge(
       ref.read(snapshotRepositoryProvider),
       ref.read(settingsRepositoryProvider),
@@ -49,6 +62,7 @@ class ActiveChallengeCard extends ConsumerWidget {
     ref
       ..invalidate(activeChallengeProvider)
       ..invalidate(completedChallengesProvider)
+      ..invalidate(savedChallengesProvider)
       ..invalidate(totalXpProvider);
 
     final choice = await showChallengeRecapSheet(
@@ -63,7 +77,9 @@ class ActiveChallengeCard extends ConsumerWidget {
       id: challenge.id,
       now: DateTime.now(),
     );
-    ref.invalidate(activeChallengeProvider);
+    ref
+      ..invalidate(activeChallengeProvider)
+      ..invalidate(savedChallengesProvider);
   }
 
   @override

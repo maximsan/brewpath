@@ -74,7 +74,7 @@ void main() {
   });
 
   testWidgets('resolves with the outcome the learner picked', (tester) async {
-    String? result;
+    ChallengeLogResult? result;
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.darkRoast,
@@ -101,11 +101,11 @@ void main() {
     await tester.tap(find.text('Mark as done'));
     await tester.pumpAndSettle();
 
-    expect(result, 'Preferred 1:17');
+    expect((result! as ChallengeLogged).reaction, 'Preferred 1:17');
   });
 
   testWidgets('dismissing resolves with nothing at all', (tester) async {
-    String? result;
+    ChallengeLogResult? result;
     var resolved = false;
     await tester.pumpWidget(
       MaterialApp(
@@ -159,5 +159,37 @@ void main() {
     expect(find.text('Bag didn’t say'), findsOneWidget);
     expect(find.text('Hard to tell'), findsNothing);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('save for later is a different answer from logging', (
+    tester,
+  ) async {
+    ChallengeLogResult? result;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.darkRoast,
+        home: Builder(
+          builder: (context) => Scaffold(
+            body: Center(
+              child: ElevatedButton(
+                onPressed: () async => result = await showChallengeLogSheet(
+                  context: context,
+                  challenge: testChallenge(),
+                ),
+                child: const Text('open'),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+
+    // Available without picking anything: parking is not a claim about a brew.
+    await tester.tap(find.text('Save for later'));
+    await tester.pumpAndSettle();
+
+    expect(result, isA<ChallengeSavedForLater>());
   });
 }

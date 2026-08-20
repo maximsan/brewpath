@@ -2,6 +2,7 @@ import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/challenges/domain/challenge_bank.dart';
 import 'package:brew_path/features/challenges/domain/challenge_completion.dart';
 import 'package:brew_path/features/challenges/domain/challenge_lifecycle.dart';
+import 'package:brew_path/features/challenges/domain/challenge_parking.dart';
 import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
@@ -42,6 +43,62 @@ Future<Set<String>> completedChallenges(Ref ref) async {
   return (await snapshots.read()).clearedByReset.challengesCompleted;
 }
 
+/// Whether [challenge] has been earned by the learner's own progress.
+Future<bool> _isOfferable(
+  BrewChallenge challenge,
+  ContentRepository content,
+  Set<String> completedLessonIds,
+) async {
+  final modules = await content.getModules();
+  final module = modules.where((m) => m.id == challenge.moduleId).firstOrNull;
+  if (module == null) return false;
+
+  return challengeOfferable(
+    challenge: challenge,
+    moduleLessonIds: module.lessonIds.toSet(),
+    completedLessonIds: completedLessonIds,
+  );
+}
+
+/// The challenges waiting in the saved queue, in bank order.
+///
+/// Excludes whatever is in play and anything already logged, and drops any
+/// challenge whose lesson the learner has not reached — a queue advertising
+/// work locked behind content is worse than an empty one.
+@riverpod
+Future<List<BrewChallenge>> savedChallenges(Ref ref) async {
+  final snapshots = ref.watch(snapshotRepositoryProvider);
+  final content = ref.watch(contentRepositoryProvider);
+  final progressRepo = ref.watch(progressRepositoryProvider);
+  final bank = await ref.watch(challengeBankProvider.future);
+  final nowMillis = DateTime.now().millisecondsSinceEpoch;
+
+  final progress = (await snapshots.read()).clearedByReset;
+  final completedLessons = await progressRepo.getAllCompleted();
+  final completedLessonIds = {
+    for (final record in completedLessons) record.lessonId,
+  };
+
+  final offerable = <String>{};
+  for (final challenge in bank) {
+    if (await _isOfferable(challenge, content, completedLessonIds)) {
+      offerable.add(challenge.id);
+    }
+  }
+
+  final visible = visibleSavedChallenges(
+    saved: progress.challengesSaved.value,
+    activeId: liveChallengeId(
+      progress.activeChallenge.value,
+      nowMillis: nowMillis,
+    ),
+    completed: progress.challengesCompleted,
+    bankOrder: [for (final challenge in bank) challenge.id],
+    isOfferable: offerable.contains,
+  );
+  return [for (final id in visible) challengeById(bank, id)!];
+}
+
 /// The capstone [moduleId] offers, or null when it has none or is unearned.
 @riverpod
 Future<BrewChallenge?> moduleChallengeOffer(Ref ref, String moduleId) async {
@@ -52,25 +109,22 @@ Future<BrewChallenge?> moduleChallengeOffer(Ref ref, String moduleId) async {
   final challenge = challengeForModule(bank, moduleId);
   if (challenge == null) return null;
 
-  final modules = await content.getModules();
-  final module = modules.where((m) => m.id == moduleId).firstOrNull;
-  if (module == null) return null;
-
   final completed = await progress.getAllCompleted();
-  final offerable = challengeOfferable(
-    challenge: challenge,
-    moduleLessonIds: module.lessonIds.toSet(),
-    completedLessonIds: {for (final record in completed) record.lessonId},
+  final offerable = await _isOfferable(
+    challenge,
+    content,
+    {for (final record in completed) record.lessonId},
   );
   return offerable ? challenge : null;
 }
 
-/// Puts [id] in play, and returns the challenge it displaced, if any.
+/// Puts [id] in play, parking whatever it displaced.
 ///
-/// A free function the caller invalidates around, matching every other write
-/// on this snapshot. The displaced id is **returned rather than parked** —
-/// parking is the saved queue's write, and this build has no queue yet, so
-/// surfacing it here is what lets that land without touching the lifecycle.
+/// Returns the challenge that was pushed out, if any. Starting a second
+/// challenge is not a way to abandon the first: the learner asked for it, so
+/// it goes into the queue rather than out of existence. Taking [id] itself out
+/// of the queue is part of the same write — a challenge cannot be both waiting
+/// and in play.
 Future<String?> startChallenge(
   SnapshotRepository repository, {
   required String id,
@@ -78,25 +132,122 @@ Future<String?> startChallenge(
 }) async {
   final snapshot = await repository.read();
   final progress = snapshot.clearedByReset;
+  final at = now.millisecondsSinceEpoch;
 
   final start = startChallengeTransition(
     id: id,
     current: progress.activeChallenge.value,
     completed: progress.challengesCompleted,
-    nowMillis: now.millisecondsSinceEpoch,
+    nowMillis: at,
   );
+
+  var saved = unparkChallenge(progress.challengesSaved.value, id);
+  final displaced = start.displaced;
+  if (displaced != null) saved = parkChallenge(saved, displaced);
 
   await repository.write(
     snapshot.copyWith(
-      updatedAt: now.millisecondsSinceEpoch,
-      clearedByReset: progress.withActiveChallenge(
-        start.active,
-        at: now.millisecondsSinceEpoch,
+      updatedAt: at,
+      clearedByReset: progress
+          .withChallengesSaved(saved, at: at, writerId: snapshot.deviceId)
+          .withActiveChallenge(
+            start.active,
+            at: at,
+            writerId: snapshot.deviceId,
+          ),
+    ),
+  );
+  return displaced;
+}
+
+/// Parks the challenge in play for later, clearing Today.
+///
+/// "Save for later" is not a penalty and not an archive — it is the learner
+/// saying *not now*, which the queue is for.
+Future<void> saveActiveChallengeForLater(
+  SnapshotRepository repository, {
+  required String id,
+  required DateTime now,
+}) async {
+  final snapshot = await repository.read();
+  final progress = snapshot.clearedByReset;
+  final at = now.millisecondsSinceEpoch;
+
+  await repository.write(
+    snapshot.copyWith(
+      updatedAt: at,
+      clearedByReset: progress
+          .withChallengesSaved(
+            parkChallenge(progress.challengesSaved.value, id),
+            at: at,
+            writerId: snapshot.deviceId,
+          )
+          .withActiveChallenge(null, at: at, writerId: snapshot.deviceId),
+    ),
+  );
+}
+
+/// Takes [id] out of the queue entirely.
+Future<void> unsaveChallenge(
+  SnapshotRepository repository, {
+  required String id,
+  required DateTime now,
+}) async {
+  final snapshot = await repository.read();
+  final progress = snapshot.clearedByReset;
+  final at = now.millisecondsSinceEpoch;
+
+  await repository.write(
+    snapshot.copyWith(
+      updatedAt: at,
+      clearedByReset: progress.withChallengesSaved(
+        unparkChallenge(progress.challengesSaved.value, id),
+        at: at,
         writerId: snapshot.deviceId,
       ),
     ),
   );
-  return start.displaced;
+}
+
+/// Parks a challenge whose window has run out, and clears the stale pair.
+///
+/// **Writes nothing when nothing has lapsed**, which is what lets this run on
+/// every app open and resume without churning the stamp. Fixes the defect the
+/// design shipped: the pair was never cleared, so a challenge that expired
+/// months ago would keep syncing between devices as the active one forever.
+Future<bool> parkExpiredChallenge(
+  SnapshotRepository repository, {
+  required DateTime now,
+}) async {
+  final snapshot = await repository.read();
+  final progress = snapshot.clearedByReset;
+  final at = now.millisecondsSinceEpoch;
+
+  final park = expiryPark(
+    active: progress.activeChallenge.value,
+    saved: progress.challengesSaved.value,
+    completed: progress.challengesCompleted,
+    nowMillis: at,
+  );
+  if (park == null) return false;
+
+  await repository.write(
+    snapshot.copyWith(
+      updatedAt: at,
+      clearedByReset: progress
+          .withChallengesSaved(
+            park.saved,
+            at: at,
+            writerId: snapshot.deviceId,
+          )
+          .withActiveChallenge(
+            park.active,
+            at: at,
+            writerId: snapshot.deviceId,
+          ),
+    ),
+  );
+  return true;
 }
 
 /// Records that [id] was brewed, with the outcome the learner reported.
@@ -132,6 +283,11 @@ Future<int> logChallenge(
       updatedAt: at,
       clearedByReset: progress
           .withChallengeLogged(id, reaction: reaction, day: epochDay(now))
+          .withChallengesSaved(
+            unparkChallenge(progress.challengesSaved.value, id),
+            at: at,
+            writerId: snapshot.deviceId,
+          )
           .withActiveChallenge(null, at: at, writerId: snapshot.deviceId),
     ),
   );
