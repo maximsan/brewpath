@@ -36,7 +36,8 @@ did, and every listed snippet had drifted from the real APIs).
 
 Run: `flutter test` (everything), `flutter test test/unit/` etc. per directory,
 `flutter test integration_test/smoke_test.dart -d <simulator>` for the smoke
-test (a few seconds, plus the Xcode build).
+test (a few seconds of testing; the Xcode build dominates, and is
+several times slower on a cold CI runner than locally).
 
 > **The smoke suite is the only thing that boots the real app**, and it is the
 > reason to keep it. Everything under `flutter test` runs against in-memory
@@ -45,6 +46,16 @@ test (a few seconds, plus the Xcode build).
 > pubspec does not bundle, and an unregistered plugin are invisible to all of
 > it. `iOS build` proves the app links, never that it boots. Onboarding has no
 > other coverage at all.
+>
+> **Never landmark on authored copy.** Lesson titles, card text and questions
+> move with the content; open the Today card by its own `Start` control and
+> prove content loaded with `Step 1 of N`, whose `N` is the lesson's real step
+> count. Hardcoding a lesson title is what broke this walk twice.
+>
+> **Two launches, never three.** Each `app.main()` opens another `AppDatabase`
+> over the same file, and drift is explicit that concurrent instances race. A
+> third launch passes only when the simulator still holds an onboarded install
+> from a previous run — green locally, red on every clean one.
 >
 > **Every step of the walk must assert.** It rotted for months because three
 > did not: a skip guarded by an `if` that no-opped when its copy changed, a

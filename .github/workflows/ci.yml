@@ -136,10 +136,11 @@ jobs:
     name: smoke (simulator)
     runs-on: macos-latest
     if: github.event_name == 'push'
-    # The failure that hid this suite was a hang, not an error — one test
-    # waiting forever on an infinite animation. A run that takes more than a
-    # few minutes has already failed, whatever it eventually reports.
-    timeout-minutes: 20
+    # A backstop, not the real guard. Each step of the walk bounds its own wait
+    # and fails in seconds, so a hang is caught there; this only exists so a
+    # wedged runner cannot burn an hour. The cold Xcode build is most of the
+    # job — around fifteen minutes — so the cap has to clear that comfortably.
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
 

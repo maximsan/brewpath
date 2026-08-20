@@ -505,7 +505,8 @@ You can always edit this file by hand instead — the helpers just save effort.
   green while the one suite that boots the real app was broken. It is the only
   thing that exercises a real on-disk database, the asset bundle as it ships,
   and the platform plugins; onboarding has no other coverage at all. A run is
-  now a few seconds rather than the ten minutes a hang disguised it as, and a
+  now a few seconds of actual testing rather than the ten minutes a hang
+  disguised it as — the job itself is dominated by the cold Xcode build — and a
   macOS job runs it on every push to main.
 
 - **Your streak is right when you come back the next day.** The streak, the
