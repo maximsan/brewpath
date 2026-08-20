@@ -508,6 +508,15 @@ You can always edit this file by hand instead — the helpers just save effort.
   now a few seconds rather than the ten minutes a hang disguised it as, and a
   macOS job runs it on every push to main.
 
+- **Your streak is right when you come back the next day.** The streak, the
+  freeze you are holding and the Keep Sharp recommendation are all worked out
+  for *today* — and the app never worked them out again when you returned from
+  the background. Leave it open overnight and it greeted you with yesterday's
+  streak until something else happened to refresh it. It now recomputes them
+  when you come back on a new day, and only then: an ordinary switch away and
+  back changes nothing. An app left in the foreground across midnight still
+  waits for your next tap.
+
 - **Finishing a lesson counts however you got there.** Whether a run was a
   first completion or a replay used to be read off the URL, and a finished
   lesson opened without the replay marker produced a run that recorded
