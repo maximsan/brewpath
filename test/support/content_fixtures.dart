@@ -6,6 +6,7 @@
 library;
 
 import 'package:brew_path/shared/models/coffee_card_model.dart';
+import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/models/content/content_reward.dart';
@@ -105,4 +106,33 @@ ContentCard testUnplayableCard() => const ContentCard.practical(
   title: 'Brew a cup',
   paragraphs: ['Go and make one.'],
   note: 'No renderer draws this kind yet.',
+);
+
+/// A Coffee Challenge. Defaults to a lesson-scoped record naming no lesson —
+/// the shape the bank allows but the rules refuse to earn.
+BrewChallenge testChallenge({
+  String id = 'bc-m1',
+  ChallengeScope scope = ChallengeScope.lesson,
+  String moduleId = 'm1',
+  String cardId = 'cM1',
+  String title = 'Two cups, two ratios',
+  String effort = 'Next brews · 5 min',
+  String prompt = 'WHICH CUP WON?',
+  List<String> reactions = const [
+    'Preferred 1:15',
+    'Preferred 1:17',
+    'Hard to tell',
+  ],
+  String? lessonId,
+}) => BrewChallenge(
+  id: id,
+  scope: scope,
+  moduleId: moduleId,
+  cardId: cardId,
+  title: title,
+  instruction: 'Brew the same coffee twice at two different ratios.',
+  effort: effort,
+  prompt: prompt,
+  reactions: reactions,
+  lessonId: lessonId,
 );

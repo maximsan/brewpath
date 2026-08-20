@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:brew_path/shared/models/coffee_card_model.dart';
+import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:brew_path/shared/models/content/collectible.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/models/content/grove_light.dart';
@@ -29,6 +30,7 @@ class ContentRepository {
   Map<String, List<ContentCard>>? _miniGameRounds;
   List<GroveVariety>? _groveVarieties;
   List<GroveLight>? _groveLights;
+  List<BrewChallenge>? _challenges;
 
   /// Loads and caches the five modules, in course order.
   Future<List<ModuleModel>> getModules() async {
@@ -72,6 +74,15 @@ class ContentRepository {
   Future<CoffeeCardModel?> getCardForLesson(String lessonId) async {
     final cards = await getCards();
     return cards.where((card) => card.lessonId == lessonId).firstOrNull;
+  }
+
+  /// Loads and caches the twelve Coffee Challenges, in bank order.
+  Future<List<BrewChallenge>> getBrewChallenges() async {
+    _challenges ??= await _loadBank(
+      'assets/content/generated/brew_challenges.json',
+      BrewChallenge.fromJson,
+    );
+    return _challenges!;
   }
 
   /// Loads and caches the mini-game catalog, in the order the bank lists it.
