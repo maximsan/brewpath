@@ -1,6 +1,7 @@
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
+import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/lessons/domain/lesson_completion_service.dart';
@@ -70,6 +71,10 @@ class _LessonCompletionScreenState
     // `cardsWithCollectionProvider` no longer chains through
     // `collectedCardsProvider`, so invalidate it explicitly.
     ref.invalidate(cardsWithCollectionProvider);
+    // A finished lesson can unlock a Coffee Challenge, and Today and Profile
+    // stay mounted behind this screen — so neither would notice on its own.
+    ref.invalidate(savedChallengesProvider);
+    ref.invalidate(completedChallengesProvider);
 
     final card = result.isReplay
         ? null
@@ -99,6 +104,7 @@ class _LessonCompletionScreenState
     if (snap.hasError) return ErrorView(message: '${snap.error}');
     final reward = snap.data!;
     return LessonCompletionBody(
+      lessonId: widget.lessonId,
       reward: reward,
       celebrating: !reward.result.isReplay,
       moduleSummaryId: reward.result.moduleCompleted ? _moduleId : null,

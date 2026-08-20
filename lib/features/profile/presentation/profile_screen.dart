@@ -1,3 +1,4 @@
+import 'package:brew_path/features/challenges/presentation/challenge_stat_row.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:brew_path/features/profile/presentation/widgets/preference_tile.dart';
 import 'package:brew_path/features/profile/presentation/widgets/premium_card.dart';
@@ -72,6 +73,8 @@ class ProfileScreen extends ConsumerWidget {
                     lessonsCompleted: lessons.asData?.value.length ?? 0,
                     cardsCollected: cards.asData?.value.length ?? 0,
                   ),
+                  const SizedBox(height: AppSpacing.sm),
+                  const ChallengeStatRow(),
                   const SizedBox(height: _sectionGap),
                   const _SectionTitle('Customize'),
                   const SizedBox(height: 12),

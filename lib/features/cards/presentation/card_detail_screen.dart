@@ -2,6 +2,7 @@ import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
+import 'package:brew_path/features/challenges/presentation/card_stamp_section.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -76,6 +77,7 @@ class _CardDetailBody extends StatelessWidget {
           Text(card.moduleTag, style: theme.textTheme.labelLarge),
           const SizedBox(height: AppSpacing.md),
           Text(card.description, style: theme.textTheme.bodyLarge),
+          CardStampSection(cardId: card.id, isCollected: item.isCollected),
         ],
       ),
     );

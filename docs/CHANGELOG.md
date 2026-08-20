@@ -44,6 +44,19 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Coffee Challenges show up everywhere they belong.** Finish a lesson that
+  carries one and the completion screen offers it — start it there, or park it
+  for later without leaving the celebration. Finish a module and its capstone
+  appears on the Path, reading *Challenge*, *Saved*, *Active* or *Done*. Open a
+  collectible you have earned and its challenge is stamped on the card, brewed
+  or not. Profile gains a *Coffee Challenges* row counting how many of the
+  course's brews you have made.
+
+  The twenty lessons that carry **no** challenge are the point of the work:
+  their completion screen is unchanged, down to the pixel — no gap, no divider,
+  no placeholder where an offer would have been. That is the common case, and
+  it has to look like nothing was ever missing.
+
 - **Park, don't drop.** A Coffee Challenge you asked for is never lost. The log
   sheet gains **Save for later**, starting a second challenge parks the first
   rather than discarding it, and — the case that used to lose work silently — a
