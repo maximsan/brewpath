@@ -1,6 +1,7 @@
 import 'package:brew_path/core/constants/xp_values.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/lessons/domain/lesson_completion_service.dart';
+import 'package:brew_path/features/lessons/domain/lesson_finish_result.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/tree_frames.dart';
 import 'package:brew_path/features/progress/domain/xp_service.dart';
@@ -62,16 +63,18 @@ void main() {
   Future<Set<int>> activeDays() async =>
       (await snapshots.read()).clearedByReset.activeDays;
 
-  Future<Set<String>> entriesToday() async =>
-      (await snapshots.read()).clearedByReset.dailyActivity[epochDay(
-        DateTime.now(),
-      )] ??
+  Future<Set<String>> entriesOn(DateTime when) async =>
+      (await snapshots.read()).clearedByReset.dailyActivity[epochDay(when)] ??
       const {};
 
   // The defect #188 closes: which path a run takes must come from the progress
   // store, never from the caller. Before this, a finished lesson reached
   // without the replay marker returned before recording anything at all.
   group('the path is derived, not asserted by the caller', () {
+    // Pinned, so a run started before midnight and asserted after it cannot
+    // fail — the bug class this file already shipped once.
+    final at = DateTime(2026, 8, 20, 12);
+
     test(
       'a finished lesson reached as a fresh run still records its day',
       () async {
@@ -79,6 +82,7 @@ void main() {
         await service.finishLesson(
           lesson,
           mastery: const MasteryResult(correct: 3, total: 5),
+          now: at,
         );
         // Wipe the day set, keeping the completion record: the state a learner
         // is in the day after finishing, opening the lesson again.
@@ -91,9 +95,10 @@ void main() {
         await service.finishLesson(
           lesson,
           mastery: const MasteryResult(correct: 4, total: 5),
+          now: at,
         );
 
-        expect(await activeDays(), {epochDay(DateTime.now())});
+        expect(await activeDays(), {epochDay(at)});
       },
     );
 
@@ -102,77 +107,33 @@ void main() {
       await service.finishLesson(
         lesson,
         mastery: const MasteryResult(correct: 3, total: 5),
+        now: at,
       );
 
       final second = await service.finishLesson(
         lesson,
         mastery: const MasteryResult(correct: 4, total: 5),
+        now: at,
       );
 
       expect(second.isReplay, isTrue);
       expect(
-        (await entriesToday()).map((e) => parseActivityEntry(e).type),
+        (await entriesOn(at)).map((e) => parseActivityEntry(e).type),
         containsAll([ActivityType.lesson, ActivityType.replay]),
       );
     });
-
-    test('and re-awards nothing', () async {
-      final lesson = (await content.getLessonById('lesson_where_coffee'))!;
-      await service.finishLesson(
-        lesson,
-        mastery: const MasteryResult(correct: 5, total: 5),
-      );
-      final bankedOnce = await totalXp();
-
-      await service.finishLesson(
-        lesson,
-        mastery: const MasteryResult(correct: 5, total: 5),
-      );
-
-      expect(
-        await totalXp(),
-        bankedOnce + XpValues.practiceXp,
-        reason: 'practice points only — no lesson XP, no card, no bonus',
-      );
-    });
-
-    test('and moves stored mastery upward only', () async {
-      final lesson = (await content.getLessonById('lesson_where_coffee'))!;
-      await service.finishLesson(
-        lesson,
-        mastery: const MasteryResult(correct: 5, total: 5),
-      );
-
-      await service.finishLesson(
-        lesson,
-        mastery: const MasteryResult(correct: 1, total: 5),
-      );
-
-      final record = (await progress.getByLessonId(lesson.id))!;
-      expect(record.mastery, const MasteryResult(correct: 5, total: 5));
-    });
-
-    test('a lesson never finished before is a first completion', () async {
-      final lesson = (await content.getLessonById('lesson_where_coffee'))!;
-
-      final result = await service.finishLesson(
-        lesson,
-        mastery: const MasteryResult(correct: 4, total: 5),
-      );
-
-      expect(result.isReplay, isFalse);
-      expect(await cards.isCardCollected('card_where_coffee'), isTrue);
-    });
   });
 
-  group('completeLesson', () {
+  group('finishing a lesson for the first time', () {
     test(
       'first completion persists progress, XP, card, streak and score',
       () async {
+        final at = DateTime(2026, 8, 20, 12);
         final lesson = (await content.getLessonById('lesson_where_coffee'))!;
         final result = await service.finishLesson(
           lesson,
           mastery: const MasteryResult(correct: 4, total: 5),
+          now: at,
         );
 
         // lesson_where_coffee has 5 steps × 10 XP each = 50.
@@ -181,9 +142,9 @@ void main() {
         expect(result.moduleCompleted, isFalse);
         expect(await totalXp(), 50);
         expect(await cards.isCardCollected('card_where_coffee'), isTrue);
-        expect(await activeDays(), {epochDay(DateTime.now())});
+        expect(await activeDays(), {epochDay(at)});
         expect(
-          (await entriesToday()).map((e) => parseActivityEntry(e).type),
+          (await entriesOn(at)).map((e) => parseActivityEntry(e).type),
           [ActivityType.lesson],
         );
 
@@ -241,7 +202,7 @@ void main() {
     );
   });
 
-  group('reviewLesson', () {
+  group('finishing a lesson again', () {
     /// Completes every lesson of `module_beans`, leaving the module fully done
     /// and its completion bonus already paid out.
     Future<void> completeBeansModule() async {

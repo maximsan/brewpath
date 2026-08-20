@@ -56,7 +56,7 @@ void main() {
       expect(locationOf(lessonRun('m1l1')), '/learn/lesson/m1l1');
     });
 
-    test('the completion screen carries the mode and the graded pair', () {
+    test('the completion screen carries the graded pair', () {
       expect(
         locationOf(
           lessonCompletion('m1l1', correct: 4, total: 5),
@@ -97,7 +97,6 @@ void main() {
         lessonCompletion('m1l1', correct: 1, total: 1),
       ]) {
         expect(destination.queryParams.keys, isNot(contains('review')));
-        expect(destination.queryParams.keys, isNot(contains('practice')));
       }
     });
   });
