@@ -254,7 +254,7 @@ void main() {
     ]) {
       final lesson = await tester.runAsync(() => content.getLessonById(id));
       await tester.runAsync(
-        () => service.completeLesson(
+        () => service.finishLesson(
           lesson!,
           mastery: const MasteryResult(correct: 5, total: 5),
         ),
@@ -320,7 +320,7 @@ void main() {
       () => content.getLessonById('lesson_where_coffee'),
     );
     await tester.runAsync(
-      () => service.completeLesson(
+      () => service.finishLesson(
         lesson!,
         mastery: const MasteryResult(correct: 2, total: 5),
       ),
@@ -330,9 +330,10 @@ void main() {
       UncontrolledProviderScope(
         container: container,
         child: _app(
+          // No `review` flag: the screen derives the path from the progress
+          // store, so a finished lesson reached this way *is* a replay (#188).
           const LessonCompletionScreen(
             lessonId: 'lesson_where_coffee',
-            review: true,
             mastery: MasteryResult(correct: 4, total: 5),
           ),
         ),
@@ -369,7 +370,7 @@ void main() {
     ]) {
       final lesson = await tester.runAsync(() => content.getLessonById(id));
       await tester.runAsync(
-        () => service.completeLesson(
+        () => service.finishLesson(
           lesson!,
           mastery: const MasteryResult(correct: 5, total: 5),
         ),

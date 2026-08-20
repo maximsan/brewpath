@@ -59,20 +59,15 @@ class LessonCompletionBody extends StatelessWidget {
     context.goTo(moduleId != null ? moduleSummary(moduleId) : learnTab);
   }
 
-  List<Widget> _content(BuildContext context) {
-    final reviewResult = reward.reviewResult;
-    if (reviewResult != null) return _reviewContent(context, reviewResult);
-    final completion = reward.completion;
-    if (completion != null) return _completionContent(context, completion);
-    // Unreachable: every run now finishes as a first completion or a replay.
-    // Total rather than thrown — a bare card is a better failure than a crash
-    // on the screen that exists to celebrate finishing something.
-    return const [];
-  }
+  /// Total by construction: the run was a first completion or a replay, and
+  /// the service already decided which.
+  List<Widget> _content(BuildContext context) => reward.result.isReplay
+      ? _replayContent(context, reward.result)
+      : _completionContent(context, reward.result);
 
   List<Widget> _completionContent(
     BuildContext context,
-    LessonCompletionResult completion,
+    LessonFinishResult completion,
   ) {
     final theme = Theme.of(context);
     final mood = context.mood;
@@ -110,7 +105,7 @@ class LessonCompletionBody extends StatelessWidget {
     ];
   }
 
-  List<Widget> _reviewContent(BuildContext context, LessonReviewResult review) {
+  List<Widget> _replayContent(BuildContext context, LessonFinishResult review) {
     final theme = Theme.of(context);
     final mood = context.mood;
     return [
