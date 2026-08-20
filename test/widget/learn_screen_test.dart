@@ -3,6 +3,7 @@ import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/learn/presentation/learn_screen.dart';
 import 'package:brew_path/features/learn/presentation/module_card_widget.dart';
+import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -24,7 +25,7 @@ final _modules = <ModuleWithProgress>[
     ),
 ];
 
-final _todayLesson = testLesson(title: 'Where coffee grows');
+final LessonModel _todayLesson = testLesson(title: 'Where coffee grows');
 
 Future<void> _pumpLearn(WidgetTester tester) async {
   // Tall surface so the lazy `ListView` builds all 5 module cards at once —

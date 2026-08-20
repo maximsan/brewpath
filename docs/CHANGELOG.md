@@ -44,6 +44,40 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The app teaches Foundations.** The course is now the real thirty-two-lesson
+  syllabus the design authors — five modules, its own card vocabulary, its own
+  ids — read from the generated banks. The twenty-five hand-authored lessons
+  that shipped before Foundations existed are gone, and with them the second
+  way to play a lesson: the step player and its four game widgets have no
+  callers left. Opening the app lands on *What coffee actually is*, which plays
+  its eight cards through the real renderers, banks ten points and awards *The
+  Coffee Cherry*. Choice order is reseeded on every attempt and never stored,
+  so a lesson cannot be passed by remembering the right answer was third.
+
+  A card's words now live in exactly one place. Collectibles carry no text of
+  their own — a card's title, summary and fact are read from the reward of the
+  lesson or module that unlocks it, resolved by following the collectible's own
+  pointer back to its source. Which module owns a lesson is resolved the same
+  way, from the module's lesson list rather than parsed out of a display label.
+
+  A missing, malformed or empty content bank now fails loudly instead of
+  yielding a course with nothing in it. The banks ship inside the app, so any of
+  those is a build defect, and an empty course that loads cleanly is the failure
+  nobody notices until a learner opens a tab and finds it bare.
+
+### Changed
+
+- **A lesson pays the flat ten it authors**, rather than ten per step. The
+  per-step formula lost its input when steps became cards: how many cards a
+  lesson runs is a shape of its teaching, not a measure of what finishing it is
+  worth. The per-correct-answer points toast goes with it — it showed the full
+  lesson award on every right answer, which was never what a card paid.
+
+- **Modules unlock by position.** A module opens when the one before it is
+  complete, derived from its place in the course. The bank ships a `locked`
+  flag, but it is the prototype's demo state — one imaginary learner's progress
+  — and honouring it would have left four modules shut for everyone.
+
 - **Keep Sharp's replay button opens a replay that counts.** On a day the card
   recommends replaying a lesson, Start now opens it the same way the course
   path does, so reaching the final card records the day and protects the

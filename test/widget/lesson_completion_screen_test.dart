@@ -5,18 +5,16 @@ import 'package:brew_path/features/lessons/domain/lesson_completion_service.dart
 import 'package:brew_path/features/lessons/presentation/lesson_completion_screen.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
+import 'package:brew_path/shared/models/coffee_card_model.dart';
+import 'package:brew_path/shared/models/lesson_model.dart';
+import 'package:brew_path/shared/models/module_model.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:brew_path/shared/models/coffee_card_model.dart';
-import 'package:brew_path/shared/models/lesson_model.dart';
-import 'package:brew_path/shared/models/module_model.dart';
-
 import '../support/content_fixtures.dart';
-
 import '../support/widget_harness.dart';
 
 // In-memory content used to override `contentRepositoryProvider` for these
@@ -31,11 +29,11 @@ final _testLessons = <LessonModel>[
     testLesson(id: 'm1l$index', title: 'm1l$index'),
 ];
 
-final _testModule = testModule(
+final ModuleModel _testModule = testModule(
   lessonIds: [for (final lesson in _testLessons) lesson.id],
 );
 
-final _testCard = testCoffeeCard(title: 'The Coffee Cherry');
+final CoffeeCardModel _testCard = testCoffeeCard();
 
 class _FakeContent extends ContentRepository {
   @override

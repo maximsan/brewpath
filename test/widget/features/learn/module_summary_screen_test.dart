@@ -4,14 +4,16 @@ import 'package:brew_path/features/companion/presentation/companion.dart';
 import 'package:brew_path/features/learn/domain/module_summary_provider.dart';
 import 'package:brew_path/features/learn/presentation/module_summary_screen.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
+import 'package:brew_path/shared/models/coffee_card_model.dart';
+import 'package:brew_path/shared/models/module_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/content_fixtures.dart';
 
-final _module = testModule(lessonIds: const ['m1l1']);
-final _card = testCoffeeCard(title: 'First Card');
+final ModuleModel _module = testModule(lessonIds: const ['m1l1']);
+final CoffeeCardModel _card = testCoffeeCard(title: 'First Card');
 
 final _summary = ModuleSummary(
   module: _module,

@@ -299,4 +299,123 @@ void main() {
     }
     expect(moved, isTrue, reason: 'choice order never changed across attempts');
   });
+
+  group('hasRenderer agrees with what contentCardView actually builds', () {
+    // Two exhaustive switches over the same sealed union. Adding a kind breaks
+    // both, but nothing stops the two from disagreeing about a kind they both
+    // already handle — which would either strand a playable card or drop a
+    // drawable one out of a lesson silently.
+    const cases = <String, ContentCard>{
+      'predict': ContentCard.predict(
+        label: 'LESSON 1',
+        title: 'T',
+        body: 'B',
+        question: 'Q',
+        options: ['a', 'b'],
+        answer: 'a',
+        hold: 'H',
+      ),
+      'concept': ContentCard.concept(
+        label: 'CONCEPT',
+        title: 'T',
+        fill: [FillLiteral('x')],
+        paragraphs: ['p'],
+        meta: [],
+      ),
+      'mcq': _mcq,
+      'recall': ContentCard.recall(
+        label: 'BEFORE YOU GO',
+        question: 'Q',
+        choices: [Choice(text: 'a', isCorrect: true)],
+        explanation: 'E',
+        takeaway: 'L',
+      ),
+      'decision': ContentCard.decision(
+        label: 'AT THE SHELF',
+        title: 'T',
+        scenario: 'S',
+        question: 'Q',
+        options: [DecisionOption(text: 'a', isCorrect: true)],
+        rightExplanation: 'R',
+        wrongExplanation: 'W',
+      ),
+      'quiz': ContentCard.quiz(
+        statement: 'S',
+        answer: true,
+        explanation: 'E',
+      ),
+      'match': ContentCard.match(
+        prompt: 'P',
+        pairs: [MatchPair(left: 'l', right: 'r')],
+      ),
+      'visual': ContentCard.visual(
+        label: 'L',
+        title: 'T',
+        variant: 'v',
+        caption: 'C',
+      ),
+      'practical': ContentCard.practical(
+        tag: 'TRY IT',
+        title: 'T',
+        paragraphs: ['p'],
+        note: 'N',
+      ),
+      'multi': ContentCard.multi(
+        prompt: 'P',
+        choices: [Choice(text: 'a', isCorrect: true)],
+        explanation: 'E',
+      ),
+      'sequence': ContentCard.sequence(
+        prompt: 'P',
+        items: [SequenceItem(label: 'a', order: 1)],
+      ),
+      'slider': ContentCard.slider(
+        prompt: 'P',
+        leftLabel: 'l',
+        rightLabel: 'r',
+        target: 1,
+        tolerance: 1,
+        scale: ['a', 'b'],
+        feedback: 'F',
+      ),
+      'tastefix': ContentCard.tastefix(
+        tags: ['t'],
+        prompt: 'P',
+        scenario: 'S',
+        choices: [Choice(text: 'a', isCorrect: true)],
+        explanation: 'E',
+      ),
+      'bagpick': ContentCard.bagpick(
+        bag: 'B',
+        origin: 'O',
+        prompt: 'P',
+        bean: BagpickBean(body: '#000', crease: '#111', mottle: 1, chaff: true),
+        options: ['a', 'b'],
+        answer: 'a',
+        tell: 'T',
+        cues: [BagpickCue(id: 'c', label: 'L', text: 'X')],
+        explanation: 'E',
+      ),
+      'flavor': ContentCard.flavor(
+        clue: 'C',
+        prompt: 'P',
+        choices: [Choice(text: 'a', isCorrect: true)],
+        answer: 0,
+        explanation: 'E',
+      ),
+    };
+
+    for (final entry in cases.entries) {
+      test(entry.key, () {
+        final built = contentCardView(
+          entry.value,
+          nonce: 1,
+          cardIndex: 0,
+          onSolved: () {},
+          onContinue: () {},
+        );
+        expect(hasRenderer(entry.value), built != null);
+      });
+    }
+  });
 }

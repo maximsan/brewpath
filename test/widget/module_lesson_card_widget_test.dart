@@ -2,13 +2,14 @@ import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/widgets/bean_gauge.dart';
 import 'package:brew_path/features/learn/presentation/module_lesson_card_widget.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
+import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../support/content_fixtures.dart';
 
-final _lesson = testLesson(title: 'Where coffee grows');
+final LessonModel _lesson = testLesson(title: 'Where coffee grows');
 
 Future<void> _pump(
   WidgetTester tester, {

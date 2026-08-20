@@ -3,13 +3,14 @@ import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/widgets/module_glyph.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/learn/presentation/module_card_widget.dart';
+import 'package:brew_path/shared/models/module_model.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../support/content_fixtures.dart';
 
-final _module = testModule(
+final ModuleModel _module = testModule(
   id: 'm3',
   n: 3,
   title: 'Roasting',

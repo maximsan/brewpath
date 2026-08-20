@@ -1,9 +1,10 @@
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
+import 'package:brew_path/shared/models/module_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/content_fixtures.dart';
 
-final _module = testModule(
+final ModuleModel _module = testModule(
   id: 'm3',
   n: 3,
   title: 'Roasting',

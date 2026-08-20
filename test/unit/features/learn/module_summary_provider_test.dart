@@ -11,8 +11,8 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../../support/content_fixtures.dart';
 import '../../../support/widget_harness.dart';
 
-final _module = testModule(lessonIds: const ['m1l1', 'm1l2']);
-final _card = testCoffeeCard();
+final ModuleModel _module = testModule();
+final CoffeeCardModel _card = testCoffeeCard();
 
 class _FakeContent extends ContentRepository {
   @override
