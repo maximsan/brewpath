@@ -32,11 +32,27 @@ did, and every listed snippet had drifted from the real APIs).
 | `test/unit/tool/` | The content extractor (shells out to `node tool/extract_content.js`) |
 | `test/database/` | Schema smoke + migration tests over the real Drift schema history (`drift_schemas/`) |
 | `test/widget/` | Screens, games, shell navigation, shared widgets |
-| `integration_test/` | The smoke flow — boots through onboarding (loading → welcome → goal → brewer) into Learn |
+| `integration_test/` | The smoke flow — boots through onboarding (loading → welcome → goal → brewer) into Learn, proves it persisted across a relaunch, and opens authored content |
 
 Run: `flutter test` (everything), `flutter test test/unit/` etc. per directory,
 `flutter test integration_test/smoke_test.dart -d <simulator>` for the smoke
-test.
+test (a few seconds, plus the Xcode build).
+
+> **The smoke suite is the only thing that boots the real app**, and it is the
+> reason to keep it. Everything under `flutter test` runs against in-memory
+> Drift, a cleared `rootBundle` and an onboarding flag the harness seeds to
+> `true` — so a migration that fails on a real on-disk database, an asset the
+> pubspec does not bundle, and an unregistered plugin are invisible to all of
+> it. `iOS build` proves the app links, never that it boots. Onboarding has no
+> other coverage at all.
+>
+> **Every step of the walk must assert.** It rotted for months because three
+> did not: a skip guarded by an `if` that no-opped when its copy changed, a
+> landmark two screens both render, and taps dispatched at a page still
+> sliding in from off-screen. All three failed silently. A step that cannot
+> fail is not a step — and `pumpAndSettle` is banned here, because Roasty
+> idles forever and waiting on it is what disguised the breakage as a
+> ten-minute job. CI runs it on **main only** ([13](13-ci-cd.md)).
 
 ---
 

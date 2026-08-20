@@ -407,6 +407,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **The smoke suite runs again, and CI now notices when it does not.** All
+  three integration tests had been failing since the app rename, and nothing
+  ran them — `flutter test` covers `test/` only, so every pull request stayed
+  green while the one suite that boots the real app was broken. It is the only
+  thing that exercises a real on-disk database, the asset bundle as it ships,
+  and the platform plugins; onboarding has no other coverage at all. A run is
+  now a few seconds rather than the ten minutes a hang disguised it as, and a
+  macOS job runs it on every push to main.
+
 - **Finishing a lesson counts however you got there.** Whether a run was a
   first completion or a replay used to be read off the URL, and a finished
   lesson opened without the replay marker produced a run that recorded
