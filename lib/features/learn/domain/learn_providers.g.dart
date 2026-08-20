@@ -53,7 +53,7 @@ final class ModulesWithProgressProvider
 }
 
 String _$modulesWithProgressHash() =>
-    r'4edce864510a70fd09058fc8405de592533acde4';
+    r'45160b369ab85aeae0c66800ddabbe5556c04d4a';
 
 /// The next uncompleted lesson in order, or null if all are complete.
 

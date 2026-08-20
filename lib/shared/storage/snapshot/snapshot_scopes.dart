@@ -222,12 +222,29 @@ class ClearedByReset {
   /// Whether the one-off moment named [key] has been acknowledged.
   bool hasAck(String key) => acks.containsKey(key);
 
-  /// A copy with [key] acknowledged on [day]. The one write the app performs
-  /// on this scope so far — a deliberate monotonic add rather than a general
-  /// `copyWith`, because every field here is monotonic and an arbitrary
-  /// replace is exactly the operation this scope's design rules out.
+  /// A copy with [key] acknowledged on [day]. A deliberate monotonic add
+  /// rather than a general `copyWith`, because every field here is monotonic
+  /// and an arbitrary replace is exactly the operation this scope rules out.
   ClearedByReset withAck(String key, int day) =>
       _copy(acks: {...acks, key: day});
+
+  /// A copy with [challenge] as the one Coffee Challenge in play, or with none.
+  ///
+  /// Last-writer-wins, so the stamp travels with the value: only one challenge
+  /// is ever active, and clearing it is a write in its own right rather than
+  /// an absence — a challenge that has run out of time has to be able to say
+  /// so to the other device.
+  ClearedByReset withActiveChallenge(
+    ActiveChallenge? challenge, {
+    required int at,
+    required String writerId,
+  }) => _copy(
+    activeChallenge: Timestamped(
+      value: challenge,
+      updatedAt: at,
+      writerId: writerId,
+    ),
+  );
 
   /// The one hand-listed copy this scope needs.
   ///
@@ -241,6 +258,7 @@ class ClearedByReset {
     int? treeStage,
     Map<int, Set<String>>? dailyActivity,
     Set<int>? activeDays,
+    Timestamped<ActiveChallenge?>? activeChallenge,
   }) => ClearedByReset(
     completedLessons: completedLessons,
     bestResults: bestResults,
@@ -254,7 +272,7 @@ class ClearedByReset {
     challengeReactions: challengeReactions,
     dailyActivity: dailyActivity ?? this.dailyActivity,
     challengesSaved: challengesSaved,
-    activeChallenge: activeChallenge,
+    activeChallenge: activeChallenge ?? this.activeChallenge,
     favourites: favourites,
     unknown: unknown,
   );

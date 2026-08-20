@@ -1,6 +1,7 @@
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/section_header.dart';
+import 'package:brew_path/features/challenges/presentation/module_challenge_section.dart';
 import 'package:brew_path/features/learn/presentation/module_detail_hero_widget.dart';
 import 'package:brew_path/features/learn/presentation/module_lesson_card_widget.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
@@ -70,6 +71,7 @@ class ModuleDetailScreen extends ConsumerWidget {
                   mastery: masteryById[lessons[i].id] ?? MasteryResult.unscored,
                 ),
               ],
+              ModuleChallengeSection(moduleId: moduleId),
             ],
           );
         },
