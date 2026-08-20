@@ -1,4 +1,5 @@
 import 'package:brew_path/features/progress/domain/tree_frames.dart';
+import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../support/snapshot_generators.dart';
@@ -90,5 +91,63 @@ void main() {
     final grown = populated.withTreeStageAtLeast(treeStageCount);
 
     expect(grown.withTreeStageAtLeast(1).treeStage, treeStageCount);
+  });
+
+  group('withActiveChallenge', () {
+    const at = 1700000000000;
+
+    test('puts a challenge in play and changes nothing else', () {
+      final after = populated.withActiveChallenge(
+        const ActiveChallenge(id: 'bc-m2', startedAt: at),
+        at: at,
+        writerId: 'device-a',
+      );
+
+      expect(after.activeChallenge.value?.id, 'bc-m2');
+      expect(
+        after.toJson()..remove('activeChallenge'),
+        populated.toJson()..remove('activeChallenge'),
+      );
+    });
+
+    test('carries the stamp and the writer onto the field', () {
+      final after = populated.withActiveChallenge(
+        const ActiveChallenge(id: 'bc-m2', startedAt: at),
+        at: at,
+        writerId: 'device-a',
+      );
+
+      expect(after.activeChallenge.updatedAt, at);
+      expect(after.activeChallenge.writerId, 'device-a');
+    });
+
+    test('clearing is a write, not an absence', () {
+      // A challenge that has run out of time has to be able to say so to the
+      // other device; an unstamped null would lose the merge to a stale pair.
+      final after = populated.withActiveChallenge(
+        null,
+        at: at,
+        writerId: 'device-a',
+      );
+
+      expect(after.activeChallenge.value, isNull);
+      expect(after.activeChallenge.updatedAt, at);
+      expect(
+        after.toJson()..remove('activeChallenge'),
+        populated.toJson()..remove('activeChallenge'),
+      );
+    });
+
+    test('leaves the completed set and the saved queue alone', () {
+      final after = populated.withActiveChallenge(
+        const ActiveChallenge(id: 'bc-m2', startedAt: at),
+        at: at,
+        writerId: 'device-a',
+      );
+
+      expect(after.challengesCompleted, populated.challengesCompleted);
+      expect(after.challengesSaved, populated.challengesSaved);
+      expect(after.challengeReactions, populated.challengeReactions);
+    });
   });
 }

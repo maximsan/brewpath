@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:brew_path/shared/models/content/collectible.dart';
@@ -9,8 +7,8 @@ import 'package:brew_path/shared/models/content/grove_variety.dart';
 import 'package:brew_path/shared/models/content/mini_game_format.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/models/module_model.dart';
+import 'package:brew_path/shared/repositories/bank_loader.dart';
 import 'package:brew_path/shared/repositories/content_assembly.dart';
-import 'package:flutter/services.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'content_repository.g.dart';
@@ -34,7 +32,7 @@ class ContentRepository {
 
   /// Loads and caches the five modules, in course order.
   Future<List<ModuleModel>> getModules() async {
-    _modules ??= await _loadBank(
+    _modules ??= await loadBank(
       'assets/content/generated/modules.json',
       ModuleModel.fromJson,
     );
@@ -45,7 +43,7 @@ class ContentRepository {
   /// the id of the module that claims it.
   Future<List<LessonModel>> getLessons() async {
     _lessons ??= assembleLessons(
-      await _loadRecords('assets/content/generated/lessons.json'),
+      await loadBankRecords('assets/content/generated/lessons.json'),
       await getModules(),
     );
     return _lessons!;
@@ -55,7 +53,7 @@ class ContentRepository {
   /// module that awards it.
   Future<List<CoffeeCardModel>> getCards() async {
     _cards ??= assembleCards(
-      collectibles: await _loadBank(
+      collectibles: await loadBank(
         'assets/content/generated/collectibles.json',
         Collectible.fromJson,
       ),
@@ -78,7 +76,7 @@ class ContentRepository {
 
   /// Loads and caches the twelve Coffee Challenges, in bank order.
   Future<List<BrewChallenge>> getBrewChallenges() async {
-    _challenges ??= await _loadBank(
+    _challenges ??= await loadBank(
       'assets/content/generated/brew_challenges.json',
       BrewChallenge.fromJson,
     );
@@ -87,7 +85,7 @@ class ContentRepository {
 
   /// Loads and caches the mini-game catalog, in the order the bank lists it.
   Future<List<MiniGameFormat>> getMiniGameFormats() async {
-    _miniGames ??= await _loadBank(
+    _miniGames ??= await loadBank(
       'assets/content/generated/mini_games.json',
       MiniGameFormat.fromJson,
     );
@@ -96,7 +94,7 @@ class ContentRepository {
 
   /// Loads and caches the grove's species, in the order the chooser lists them.
   Future<List<GroveVariety>> getGroveVarieties() async {
-    _groveVarieties ??= await _loadBank(
+    _groveVarieties ??= await loadBank(
       'assets/content/generated/grove_varieties.json',
       GroveVariety.fromJson,
     );
@@ -105,7 +103,7 @@ class ContentRepository {
 
   /// Loads and caches the grove's lights, in picker order.
   Future<List<GroveLight>> getGroveLights() async {
-    _groveLights ??= await _loadBank(
+    _groveLights ??= await loadBank(
       'assets/content/generated/grove_lights.json',
       GroveLight.fromJson,
     );
@@ -122,7 +120,7 @@ class ContentRepository {
   }
 
   Future<Map<String, List<ContentCard>>> _loadRounds() async {
-    final items = await _loadRecords(
+    final items = await loadBankRecords(
       'assets/content/generated/mini_game_content.json',
     );
     return {
@@ -138,53 +136,6 @@ class ContentRepository {
   Future<LessonModel?> getLessonById(String id) async {
     final lessons = await getLessons();
     return lessons.where((l) => l.id == id).firstOrNull;
-  }
-
-  /// Reads a generated bank and parses each of its records.
-  Future<List<T>> _loadBank<T>(
-    String assetPath,
-    T Function(Map<String, dynamic>) fromJson,
-  ) async {
-    final records = await _loadRecords(assetPath);
-    try {
-      return [for (final record in records) fromJson(record)];
-    } on Object catch (error) {
-      throw ContentFormatException(
-        '$assetPath holds an unreadable record: '
-        '$error',
-      );
-    }
-  }
-
-  /// The raw records inside a generated bank's envelope.
-  ///
-  /// A bank that is missing, malformed, or empty throws. The banks are bundled
-  /// with the app, so any of those is a build defect — and an empty course that
-  /// loads cleanly is the one failure nobody notices until a learner opens a
-  /// tab with nothing in it.
-  Future<List<Map<String, dynamic>>> _loadRecords(String assetPath) async {
-    final String raw;
-    try {
-      raw = await rootBundle.loadString(assetPath);
-    } on Object catch (error) {
-      throw ContentFormatException('$assetPath could not be read: $error');
-    }
-
-    final Object? decoded;
-    try {
-      decoded = jsonDecode(raw);
-    } on FormatException catch (error) {
-      throw ContentFormatException('$assetPath is not valid JSON: $error');
-    }
-
-    if (decoded is! Map<String, dynamic>) {
-      throw ContentFormatException('$assetPath is not a bank envelope');
-    }
-    final items = decoded['items'];
-    if (items is! List || items.isEmpty) {
-      throw ContentFormatException('$assetPath carries no items');
-    }
-    return items.cast<Map<String, dynamic>>();
   }
 }
 

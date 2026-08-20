@@ -44,6 +44,20 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Coffee Challenges reach the app.** The twelve real-world brews the course
+  authors now load, and the one that asks you to go and make coffee can be put
+  in play. Finish every lesson of a module and its capstone is offered on the
+  module screen — *Two cups, two ratios* after Beans — and starting it puts a
+  Coffee Challenge card on Today, beside the day's lesson rather than instead
+  of it: what to learn next and what to go and brew are two questions, and a
+  learner can have both open at once.
+
+  A challenge stays in play for forty-eight hours of **elapsed time**, not
+  until midnight — "next brews" is a duration, not a day — and at exactly
+  forty-eight hours it is still live, because the boundary belongs to the
+  learner. Past that it leaves Today. Nothing is logged or rewarded yet; that
+  is the next step.
+
 - **The app teaches Foundations.** The course is now the real thirty-two-lesson
   syllabus the design authors — five modules, its own card vocabulary, its own
   ids — read from the generated banks. The twenty-five hand-authored lessons

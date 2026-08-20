@@ -2,6 +2,8 @@ import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/section_header.dart';
+import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
+import 'package:brew_path/features/challenges/presentation/active_challenge_card.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/learn/presentation/module_card_widget.dart';
@@ -25,6 +27,7 @@ class LearnScreen extends ConsumerWidget {
     final modules = ref.watch(modulesWithProgressProvider);
     final finishedLessons = ref.watch(completedLessonsWithModuleProvider);
     final miniGames = ref.watch(miniGameFormatsProvider);
+    final challenge = ref.watch(activeChallengeProvider).asData?.value;
 
     return Scaffold(
       appBar: AppBar(title: const Text(AppLabels.tabLearn)),
@@ -40,6 +43,13 @@ class LearnScreen extends ConsumerWidget {
               keepSharp: keepSharp.asData?.value,
               keepSharpDone: keepSharpDone.asData?.value ?? false,
             ),
+            // The brew in play sits under the day's lesson: a sibling card,
+            // because what to learn and what to go and make are two questions
+            // and a learner can have both open at once.
+            if (challenge != null) ...[
+              const SizedBox(height: 12),
+              ActiveChallengeCard(challenge: challenge),
+            ],
             const SizedBox(height: 24),
             const SectionHeader('Practice a finished lesson'),
             const SizedBox(height: 12),
