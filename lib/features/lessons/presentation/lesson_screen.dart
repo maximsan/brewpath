@@ -25,15 +25,10 @@ class LessonScreen extends ConsumerStatefulWidget {
   const LessonScreen({
     required this.lessonId,
     super.key,
-    this.review = false,
   });
 
   /// Id of the lesson to play.
   final String lessonId;
-
-  /// Whether this run is a review of an already-completed lesson. Carried
-  /// through to the completion screen so it skips re-awarding XP.
-  final bool review;
 
   @override
   ConsumerState<LessonScreen> createState() => _LessonScreenState();
@@ -82,7 +77,6 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
     context.goTo(
       lessonCompletion(
         lesson.id,
-        review: widget.review,
         correct: _correctCount,
         total: lesson.steps.length,
       ),

@@ -1,10 +1,9 @@
-import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
 import 'package:brew_path/features/learn/presentation/keep_sharp_card_body.dart';
+import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 /// Hero card for the day's primary action. Renders the next lesson with a
 /// prominent `Start` CTA, or — when every available lesson is done — the
@@ -58,10 +57,7 @@ class TodayCardWidget extends StatelessWidget {
     LessonModel lesson,
   ) {
     return InkWell(
-      onTap: () => context.goNamed(
-        AppRoutes.lesson.name,
-        pathParameters: {'lessonId': lesson.id},
-      ),
+      onTap: () => context.goTo(lessonRun(lesson.id)),
       borderRadius: BorderRadius.circular(_heroRadius),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -109,10 +105,7 @@ class TodayCardWidget extends StatelessWidget {
                 _XpPill(xp: lesson.xpReward),
                 const Spacer(),
                 FilledButton.icon(
-                  onPressed: () => context.goNamed(
-                    AppRoutes.lesson.name,
-                    pathParameters: {'lessonId': lesson.id},
-                  ),
+                  onPressed: () => context.goTo(lessonRun(lesson.id)),
                   icon: const Icon(Icons.play_arrow),
                   label: const Text('Start'),
                 ),

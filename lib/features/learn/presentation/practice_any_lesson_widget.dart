@@ -112,7 +112,7 @@ class _LessonRow extends StatelessWidget {
       // A replay, not a throwaway run: reaching the final card records the day
       // (§3), exactly as replaying from the course path does. Where the learner
       // started it has never been what decides whether it counts.
-      onTap: () => context.goTo(lessonReplay(entry.lesson.id)),
+      onTap: () => context.goTo(lessonRun(entry.lesson.id)),
     );
   }
 }

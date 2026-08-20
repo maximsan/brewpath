@@ -6,8 +6,9 @@ import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// A lesson row in the module's lesson list. Completed lessons re-open in
-/// review mode and expose a `Review` action; new lessons start fresh.
+/// A lesson row in the module's lesson list. Completed lessons expose a
+/// `Review` action; what a finished run pays is decided by the service, not by
+/// the row that opened it.
 class ModuleLessonCardWidget extends StatelessWidget {
   /// Creates a [ModuleLessonCardWidget].
   const ModuleLessonCardWidget({
@@ -36,11 +37,7 @@ class ModuleLessonCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final mood = context.mood;
-    // A finished lesson reopens as a replay, which records the day (§3); an
-    // unfinished one opens for real.
-    final destination = isCompleted
-        ? lessonReplay(lesson.id)
-        : lessonStart(lesson.id);
+    final destination = lessonRun(lesson.id);
 
     return Card(
       margin: EdgeInsets.zero,

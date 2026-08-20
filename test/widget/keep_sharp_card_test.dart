@@ -107,7 +107,7 @@ void main() {
   ) async {
     final replay = KeepSharpRecommendation(
       type: PracticeType.lessonReplay,
-      destination: lessonReplay('lesson_where_coffee'),
+      destination: lessonRun('lesson_where_coffee'),
     );
     await _pump(tester, keepSharp: replay);
 
