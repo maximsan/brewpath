@@ -23,6 +23,9 @@ enum CompanionReaction {
   /// Today's Keep Sharp recommendation met its own completion rule.
   keepSharpComplete,
 
+  /// A Coffee Challenge was logged — a real brew, made away from the app.
+  challengeComplete,
+
   /// XP was gained (not companion-driven in v1 — a plain XP toast handles it).
   xpGained,
 

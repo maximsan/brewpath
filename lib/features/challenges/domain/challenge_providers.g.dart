@@ -110,6 +110,51 @@ final class ActiveChallengeProvider
 
 String _$activeChallengeHash() => r'3ba853c312826500e6f1193a6f69c6e3cfe28b8d';
 
+/// Every challenge the learner has logged at least once.
+
+@ProviderFor(completedChallenges)
+final completedChallengesProvider = CompletedChallengesProvider._();
+
+/// Every challenge the learner has logged at least once.
+
+final class CompletedChallengesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<Set<String>>,
+          Set<String>,
+          FutureOr<Set<String>>
+        >
+    with $FutureModifier<Set<String>>, $FutureProvider<Set<String>> {
+  /// Every challenge the learner has logged at least once.
+  CompletedChallengesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'completedChallengesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$completedChallengesHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<Set<String>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<Set<String>> create(Ref ref) {
+    return completedChallenges(ref);
+  }
+}
+
+String _$completedChallengesHash() =>
+    r'2467e35ae3c7023fe8fee777732928b15c86483a';
+
 /// The capstone [moduleId] offers, or null when it has none or is unearned.
 
 @ProviderFor(moduleChallengeOffer)

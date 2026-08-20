@@ -36,6 +36,10 @@ RoastyState _reactionState(CompanionReaction reaction) {
     // the module pose the course moments use.
     case CompanionReaction.keepSharpComplete:
       return RoastyState.lesson;
+    // A brew logged is one day's real-world work — the same size of moment as
+    // a lesson, and a notch below the module pose the course moments use.
+    case CompanionReaction.challengeComplete:
+      return RoastyState.lesson;
     case CompanionReaction.xpGained:
       return RoastyState.xp;
     case CompanionReaction.cardEarned:

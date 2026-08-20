@@ -1,8 +1,11 @@
+import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/challenges/domain/challenge_bank.dart';
+import 'package:brew_path/features/challenges/domain/challenge_completion.dart';
 import 'package:brew_path/features/challenges/domain/challenge_lifecycle.dart';
 import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
+import 'package:brew_path/shared/repositories/settings_repository.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -30,6 +33,13 @@ Future<BrewChallenge?> activeChallenge(Ref ref) async {
   final stored = (await snapshots.read()).clearedByReset.activeChallenge.value;
   final id = liveChallengeId(stored, nowMillis: nowMillis);
   return id == null ? null : challengeById(await bank, id);
+}
+
+/// Every challenge the learner has logged at least once.
+@riverpod
+Future<Set<String>> completedChallenges(Ref ref) async {
+  final snapshots = ref.watch(snapshotRepositoryProvider);
+  return (await snapshots.read()).clearedByReset.challengesCompleted;
 }
 
 /// The capstone [moduleId] offers, or null when it has none or is unearned.
@@ -87,4 +97,45 @@ Future<String?> startChallenge(
     ),
   );
   return start.displaced;
+}
+
+/// Records that [id] was brewed, with the outcome the learner reported.
+///
+/// One write. The completion, the reaction and clearing the active pair are a
+/// single event, so they land together or not at all — a challenge recorded as
+/// done while still sitting on Today is a state nothing else knows how to read.
+///
+/// Returns the points paid: the flat award on a first completion, and zero on
+/// every replay.
+///
+/// **Records nothing toward the streak or the daily allowance.** A Coffee
+/// Challenge is not an activity — its completion can be reported without the
+/// app being able to tell — and that exclusion is structural rather than a
+/// branch that could be forgotten here.
+Future<int> logChallenge(
+  SnapshotRepository repository,
+  SettingsRepository settings, {
+  required String id,
+  required String reaction,
+  required DateTime now,
+}) async {
+  final snapshot = await repository.read();
+  final progress = snapshot.clearedByReset;
+  final payout = challengePayout(
+    id: id,
+    completed: progress.challengesCompleted,
+  );
+  final at = now.millisecondsSinceEpoch;
+
+  await repository.write(
+    snapshot.copyWith(
+      updatedAt: at,
+      clearedByReset: progress
+          .withChallengeLogged(id, reaction: reaction, day: epochDay(now))
+          .withActiveChallenge(null, at: at, writerId: snapshot.deviceId),
+    ),
+  );
+
+  if (payout > 0) await settings.addXp(payout);
+  return payout;
 }

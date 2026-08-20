@@ -228,6 +228,24 @@ class ClearedByReset {
   ClearedByReset withAck(String key, int day) =>
       _copy(acks: {...acks, key: day});
 
+  /// A copy recording that [id] was logged with [reaction] on [day].
+  ///
+  /// Both halves move together because they are one event: the completion is
+  /// what happened, the reaction is what it said. The completed set is a union
+  /// — a brew never un-happens — while the reaction map keeps the newest
+  /// answer per challenge, so a replay replaces what the last one said.
+  ClearedByReset withChallengeLogged(
+    String id, {
+    required String reaction,
+    required int day,
+  }) => _copy(
+    challengesCompleted: {...challengesCompleted, id},
+    challengeReactions: {
+      ...challengeReactions,
+      id: ChallengeReaction(reaction: reaction, at: day),
+    },
+  );
+
   /// A copy with [challenge] as the one Coffee Challenge in play, or with none.
   ///
   /// Last-writer-wins, so the stamp travels with the value: only one challenge
@@ -259,6 +277,8 @@ class ClearedByReset {
     Map<int, Set<String>>? dailyActivity,
     Set<int>? activeDays,
     Timestamped<ActiveChallenge?>? activeChallenge,
+    Set<String>? challengesCompleted,
+    Map<String, ChallengeReaction>? challengeReactions,
   }) => ClearedByReset(
     completedLessons: completedLessons,
     bestResults: bestResults,
@@ -267,9 +287,9 @@ class ClearedByReset {
     ownedCollectibles: ownedCollectibles,
     completedModules: completedModules,
     treeStage: treeStage ?? this.treeStage,
-    challengesCompleted: challengesCompleted,
+    challengesCompleted: challengesCompleted ?? this.challengesCompleted,
     learnedTerms: learnedTerms,
-    challengeReactions: challengeReactions,
+    challengeReactions: challengeReactions ?? this.challengeReactions,
     dailyActivity: dailyActivity ?? this.dailyActivity,
     challengesSaved: challengesSaved,
     activeChallenge: activeChallenge ?? this.activeChallenge,

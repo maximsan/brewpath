@@ -64,6 +64,13 @@ dart_code_linter:
     # file. Splitting the union to satisfy the metric would forfeit the exhaustive
     # switch that makes an unhandled kind a compile error.
     - lib/shared/models/content/content_card.dart
+    # The progress scope's one hand-listed copy. Its parameter count is, by
+    # design, the number of fields that have a writer — the class deliberately
+    # exposes no general `copyWith`, because an arbitrary replace is the one
+    # operation a scope of monotonic fields must not offer. Splitting `_copy`
+    # would mean a second hand-listed copy of every field, which is exactly
+    # the duplication that once left `main` uncompilable.
+    - lib/shared/storage/snapshot/snapshot_scopes.dart
   rules:
     - no-magic-number:
         severity: warning
