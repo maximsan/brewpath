@@ -3,17 +3,18 @@ import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/widgets/module_glyph.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/learn/presentation/module_card_widget.dart';
-import 'package:brew_path/shared/models/module_model.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const _module = ModuleModel(
-  id: 'module_roast',
+import '../support/content_fixtures.dart';
+
+final _module = testModule(
+  id: 'm3',
+  n: 3,
   title: 'Roasting',
-  description: 'Desc',
-  iconName: 'ic_roast',
-  lessonIds: ['l1', 'l2'],
+  iconName: 'roasting',
+  lessonIds: const ['m3l1', 'm3l2'],
 );
 
 ModuleWithProgress _item({required int done, required bool locked}) =>

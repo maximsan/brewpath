@@ -3,60 +3,28 @@ import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/learn/presentation/learn_screen.dart';
 import 'package:brew_path/features/learn/presentation/module_card_widget.dart';
-import 'package:brew_path/shared/models/lesson_model.dart';
-import 'package:brew_path/shared/models/lesson_step_model.dart';
-import 'package:brew_path/shared/models/module_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-ModuleModel _module(String id, {String? unlock}) => ModuleModel(
-  id: id,
-  title: 'Title $id',
-  description: 'Desc $id',
-  iconName: 'ic_beans',
-  lessonIds: const ['l1', 'l2'],
-  unlockRequirement: unlock,
-);
+import '../support/content_fixtures.dart';
 
 /// First module unlocked, the next four locked — mirrors a fresh user.
 final _modules = <ModuleWithProgress>[
-  ModuleWithProgress(
-    module: _module('module_beans'),
-    completedCount: 0,
-    totalCount: 2,
-    isLocked: false,
-  ),
-  for (final id in const [
-    'module_processing',
-    'module_roast',
-    'module_brewing',
-    'module_taste',
-  ])
+  for (var position = 1; position <= 5; position++)
     ModuleWithProgress(
-      module: _module(id, unlock: 'prev'),
+      module: testModule(
+        id: 'm$position',
+        n: position,
+        title: 'Title m$position',
+      ),
       completedCount: 0,
       totalCount: 2,
-      isLocked: true,
+      isLocked: position > 1,
     ),
 ];
 
-const _todayLesson = LessonModel(
-  id: 'lesson_where_coffee',
-  moduleId: 'module_beans',
-  title: 'Where coffee grows',
-  summary: 'Intro',
-  xpReward: 10,
-  cardId: 'card_where_coffee',
-  steps: [
-    LessonStepModel.multipleChoice(
-      question: 'Q',
-      options: ['a', 'b'],
-      correctIndex: 0,
-      explanation: 'E',
-    ),
-  ],
-);
+final _todayLesson = testLesson(title: 'Where coffee grows');
 
 Future<void> _pumpLearn(WidgetTester tester) async {
   // Tall surface so the lazy `ListView` builds all 5 module cards at once —

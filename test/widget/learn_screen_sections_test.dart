@@ -44,18 +44,18 @@ void main() {
     // app used to list all 32, putting a locked module one tap from playable.
     useTallViewport(tester);
     await ProgressRepository().saveCompletion(
-      lessonId: 'lesson_where_coffee',
+      lessonId: 'm1l1',
       xpEarned: 10,
       mastery: const MasteryResult(correct: 5, total: 5),
     );
 
     await pumpWithProviders(tester, const BrewPathApp());
 
-    expect(find.text('Where Coffee Comes From'), findsWidgets);
+    expect(find.text('What coffee actually is'), findsWidgets);
     // Deliberately the *third* lesson: the second becomes today's lesson once
     // the first is done, so it would show in the Today card either way.
     expect(
-      find.text('What Green Coffee Is'),
+      find.text('What origin means'),
       findsNothing,
       reason: 'unfinished lessons are not practice material',
     );
