@@ -13,6 +13,7 @@ import 'package:brew_path/shared/repositories/settings_repository.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
+import 'package:brew_path/shared/storage/snapshot/snapshot_scopes.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -67,12 +68,109 @@ void main() {
       )] ??
       const {};
 
+  // The defect #188 closes: which path a run takes must come from the progress
+  // store, never from the caller. Before this, a finished lesson reached
+  // without the replay marker returned before recording anything at all.
+  group('the path is derived, not asserted by the caller', () {
+    test(
+      'a finished lesson reached as a fresh run still records its day',
+      () async {
+        final lesson = (await content.getLessonById('lesson_where_coffee'))!;
+        await service.finishLesson(
+          lesson,
+          mastery: const MasteryResult(correct: 3, total: 5),
+        );
+        // Wipe the day set, keeping the completion record: the state a learner
+        // is in the day after finishing, opening the lesson again.
+        await snapshots.write(
+          (await snapshots.read()).copyWith(
+            clearedByReset: ClearedByReset.empty,
+          ),
+        );
+
+        await service.finishLesson(
+          lesson,
+          mastery: const MasteryResult(correct: 4, total: 5),
+        );
+
+        expect(await activeDays(), {epochDay(DateTime.now())});
+      },
+    );
+
+    test('and is recorded as a replay, not a first completion', () async {
+      final lesson = (await content.getLessonById('lesson_where_coffee'))!;
+      await service.finishLesson(
+        lesson,
+        mastery: const MasteryResult(correct: 3, total: 5),
+      );
+
+      final second = await service.finishLesson(
+        lesson,
+        mastery: const MasteryResult(correct: 4, total: 5),
+      );
+
+      expect(second.isReplay, isTrue);
+      expect(
+        (await entriesToday()).map((e) => parseActivityEntry(e).type),
+        containsAll([ActivityType.lesson, ActivityType.replay]),
+      );
+    });
+
+    test('and re-awards nothing', () async {
+      final lesson = (await content.getLessonById('lesson_where_coffee'))!;
+      await service.finishLesson(
+        lesson,
+        mastery: const MasteryResult(correct: 5, total: 5),
+      );
+      final bankedOnce = await totalXp();
+
+      await service.finishLesson(
+        lesson,
+        mastery: const MasteryResult(correct: 5, total: 5),
+      );
+
+      expect(
+        await totalXp(),
+        bankedOnce + XpValues.practiceXp,
+        reason: 'practice points only — no lesson XP, no card, no bonus',
+      );
+    });
+
+    test('and moves stored mastery upward only', () async {
+      final lesson = (await content.getLessonById('lesson_where_coffee'))!;
+      await service.finishLesson(
+        lesson,
+        mastery: const MasteryResult(correct: 5, total: 5),
+      );
+
+      await service.finishLesson(
+        lesson,
+        mastery: const MasteryResult(correct: 1, total: 5),
+      );
+
+      final record = (await progress.getByLessonId(lesson.id))!;
+      expect(record.mastery, const MasteryResult(correct: 5, total: 5));
+    });
+
+    test('a lesson never finished before is a first completion', () async {
+      final lesson = (await content.getLessonById('lesson_where_coffee'))!;
+
+      final result = await service.finishLesson(
+        lesson,
+        mastery: const MasteryResult(correct: 4, total: 5),
+      );
+
+      expect(result.isReplay, isFalse);
+      expect(await cards.isCardCollected('card_where_coffee'), isTrue);
+    });
+  });
+
   group('completeLesson', () {
     test(
       'first completion persists progress, XP, card, streak and score',
       () async {
         final lesson = (await content.getLessonById('lesson_where_coffee'))!;
-        final result = await service.completeLesson(
+        final result = await service.finishLesson(
           lesson,
           mastery: const MasteryResult(correct: 4, total: 5),
         );
@@ -96,27 +194,31 @@ void main() {
       },
     );
 
-    test('replaying a completed lesson is idempotent', () async {
+    test('replaying a completed lesson re-awards nothing', () async {
       final lesson = (await content.getLessonById('lesson_where_coffee'))!;
-      await service.completeLesson(
+      await service.finishLesson(
         lesson,
         mastery: const MasteryResult(correct: 4, total: 5),
       );
-      final replay = await service.completeLesson(
+      final replay = await service.finishLesson(
         lesson,
         mastery: const MasteryResult(correct: 4, total: 5),
       );
 
-      expect(replay.lessonXp, 50);
+      expect(replay.isReplay, isTrue);
+      expect(replay.lessonXp, 0, reason: 'the lesson pays once, ever');
       expect(replay.moduleBonusXp, 0);
       expect((await progress.getAllCompleted()).length, 1);
-      expect(await totalXp(), 50);
+      // A replay is worth the once-a-day practice reward and nothing else.
+      // The old contract reported the lesson's *previously banked* points here
+      // and recorded nothing at all, which is the defect #188 closed.
+      expect(await totalXp(), 50 + XpValues.practiceXp);
     });
 
     test(
       'finishing every lesson in a module awards the module bonus once',
       () async {
-        late LessonCompletionResult last;
+        late LessonFinishResult last;
         for (final id in const [
           'lesson_where_coffee',
           'lesson_arabica_robusta',
@@ -124,7 +226,7 @@ void main() {
           'lesson_coffee_plant',
           'lesson_altitude_quality',
         ]) {
-          last = await service.completeLesson(
+          last = await service.finishLesson(
             (await content.getLessonById(id))!,
             mastery: const MasteryResult(correct: 5, total: 5),
           );
@@ -150,7 +252,7 @@ void main() {
         'lesson_coffee_plant',
         'lesson_altitude_quality',
       ]) {
-        await service.completeLesson(
+        await service.finishLesson(
           (await content.getLessonById(id))!,
           mastery: const MasteryResult(correct: 5, total: 5),
         );
@@ -161,13 +263,13 @@ void main() {
       'review does not reset completion, lesson XP, or the earned card',
       () async {
         final lesson = (await content.getLessonById('lesson_where_coffee'))!;
-        await service.completeLesson(
+        await service.finishLesson(
           lesson,
           mastery: const MasteryResult(correct: 3, total: 5),
         );
         final before = (await progress.getByLessonId(lesson.id))!;
 
-        await service.reviewLesson(
+        await service.finishLesson(
           lesson,
           mastery: const MasteryResult(correct: 4, total: 5),
           now: DateTime(2026, 5, 22),
@@ -184,13 +286,13 @@ void main() {
 
     test('a completed replay marks its day active (§3)', () async {
       final lesson = (await content.getLessonById('lesson_where_coffee'))!;
-      await service.completeLesson(
+      await service.finishLesson(
         lesson,
         mastery: const MasteryResult(correct: 3, total: 5),
       );
       final replayDay = DateTime(2026, 5, 22, 9);
 
-      await service.reviewLesson(
+      await service.finishLesson(
         lesson,
         mastery: const MasteryResult(correct: 4, total: 5),
         now: replayDay,
@@ -201,14 +303,14 @@ void main() {
 
     test('a second replay the same day does not qualify it twice', () async {
       final lesson = (await content.getLessonById('lesson_where_coffee'))!;
-      await service.completeLesson(
+      await service.finishLesson(
         lesson,
         mastery: const MasteryResult(correct: 3, total: 5),
       );
       final replayDay = DateTime(2026, 5, 22, 9);
 
       for (var round = 0; round < 2; round++) {
-        await service.reviewLesson(
+        await service.finishLesson(
           lesson,
           mastery: const MasteryResult(correct: 4, total: 5),
           now: replayDay,
@@ -230,13 +332,13 @@ void main() {
 
     test('review never re-awards full lesson XP', () async {
       final lesson = (await content.getLessonById('lesson_where_coffee'))!;
-      await service.completeLesson(
+      await service.finishLesson(
         lesson,
         mastery: const MasteryResult(correct: 2, total: 5),
       );
       final afterCompletion = await totalXp(); // 5 steps × 10 = 50
 
-      await service.reviewLesson(
+      await service.finishLesson(
         lesson,
         mastery: const MasteryResult(correct: 2, total: 5),
         now: DateTime(2026, 5, 22),
@@ -255,7 +357,7 @@ void main() {
         expect(await moduleProgress.isModuleXpAwarded('module_beans'), isTrue);
 
         final lesson = (await content.getLessonById('lesson_where_coffee'))!;
-        await service.reviewLesson(
+        await service.finishLesson(
           lesson,
           mastery: const MasteryResult(correct: 5, total: 5),
           now: DateTime(2026, 5, 22),
@@ -268,12 +370,12 @@ void main() {
 
     test('review improves the stored best score', () async {
       final lesson = (await content.getLessonById('lesson_where_coffee'))!;
-      await service.completeLesson(
+      await service.finishLesson(
         lesson,
         mastery: const MasteryResult(correct: 2, total: 5),
       );
 
-      final result = await service.reviewLesson(
+      final result = await service.finishLesson(
         lesson,
         mastery: const MasteryResult(correct: 9, total: 10),
         now: DateTime(2026, 5, 22),
@@ -288,12 +390,12 @@ void main() {
 
     test('review never lowers the stored best score', () async {
       final lesson = (await content.getLessonById('lesson_where_coffee'))!;
-      await service.completeLesson(
+      await service.finishLesson(
         lesson,
         mastery: const MasteryResult(correct: 9, total: 10),
       );
 
-      final result = await service.reviewLesson(
+      final result = await service.finishLesson(
         lesson,
         mastery: const MasteryResult(correct: 1, total: 5),
         now: DateTime(2026, 5, 22),
@@ -308,13 +410,13 @@ void main() {
 
     test('practice XP is granted at most once per lesson per day', () async {
       final lesson = (await content.getLessonById('lesson_where_coffee'))!;
-      await service.completeLesson(
+      await service.finishLesson(
         lesson,
         mastery: const MasteryResult(correct: 2, total: 5),
       );
       final base = await totalXp(); // 5 steps × 10 = 50
 
-      final first = await service.reviewLesson(
+      final first = await service.finishLesson(
         lesson,
         mastery: const MasteryResult(correct: 2, total: 5),
         now: DateTime(2026, 5, 22, 9),
@@ -323,7 +425,7 @@ void main() {
       expect(await totalXp(), base + XpValues.practiceXp);
 
       // Same calendar day → no further practice XP.
-      final sameDay = await service.reviewLesson(
+      final sameDay = await service.finishLesson(
         lesson,
         mastery: const MasteryResult(correct: 2, total: 5),
         now: DateTime(2026, 5, 22, 20),
@@ -332,7 +434,7 @@ void main() {
       expect(await totalXp(), base + XpValues.practiceXp);
 
       // Next calendar day → practice XP again.
-      final nextDay = await service.reviewLesson(
+      final nextDay = await service.finishLesson(
         lesson,
         mastery: const MasteryResult(correct: 2, total: 5),
         now: DateTime(2026, 5, 23, 8),
@@ -352,7 +454,7 @@ void main() {
     test('a first completion advances the stored stage', () async {
       final lessons = await content.getLessons();
 
-      await service.completeLesson(
+      await service.finishLesson(
         lessons.first,
         mastery: const MasteryResult(correct: 1, total: 1),
       );
@@ -362,13 +464,13 @@ void main() {
 
     test('a replay grows nothing', () async {
       final lessons = await content.getLessons();
-      await service.completeLesson(
+      await service.finishLesson(
         lessons.first,
         mastery: const MasteryResult(correct: 1, total: 1),
       );
       final afterFirst = await storedStage();
 
-      await service.completeLesson(
+      await service.finishLesson(
         lessons.first,
         mastery: const MasteryResult(correct: 1, total: 1),
       );
@@ -379,7 +481,7 @@ void main() {
     test('finishing every lesson reaches the last stage', () async {
       final lessons = await content.getLessons();
       for (final lesson in lessons) {
-        await service.completeLesson(
+        await service.finishLesson(
           lesson,
           mastery: const MasteryResult(correct: 1, total: 1),
         );
@@ -401,7 +503,7 @@ void main() {
         ),
       );
 
-      await service.completeLesson(
+      await service.finishLesson(
         lessons.first,
         mastery: const MasteryResult(correct: 1, total: 1),
       );
@@ -411,7 +513,7 @@ void main() {
 
     test('the stage survives a restart', () async {
       final lessons = await content.getLessons();
-      await service.completeLesson(
+      await service.finishLesson(
         lessons.first,
         mastery: const MasteryResult(correct: 1, total: 1),
       );

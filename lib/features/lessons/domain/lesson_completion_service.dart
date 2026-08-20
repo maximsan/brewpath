@@ -18,44 +18,48 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'lesson_completion_service.g.dart';
 
-/// Outcome of [LessonCompletionService.completeLesson] — the XP actually
-/// banked, split so the completion screen can show the module-completion bonus
-/// separately from the lesson's own reward.
-class LessonCompletionResult {
-  /// Creates a [LessonCompletionResult].
-  const LessonCompletionResult({
+/// Outcome of finishing a lesson — which path the run actually took, and what
+/// it paid.
+///
+/// **One type for both**, because the caller no longer chooses between them:
+/// the service resolves first completion versus replay from the progress store
+/// and reports what it did. A shape with a branch per path would put the
+/// question back in the caller's hands, which is the defect (#188).
+class LessonFinishResult {
+  /// Creates a [LessonFinishResult].
+  const LessonFinishResult({
+    required this.isReplay,
     required this.lessonXp,
     required this.moduleBonusXp,
-  });
-
-  /// XP awarded for finishing the lesson itself.
-  final int lessonXp;
-
-  /// XP awarded for completing the lesson's module, or `0` when the module is
-  /// not yet fully complete.
-  final int moduleBonusXp;
-
-  /// Whether finishing this lesson also completed its module.
-  bool get moduleCompleted => moduleBonusXp > 0;
-
-  /// Total XP banked by this completion.
-  int get totalXp => lessonXp + moduleBonusXp;
-}
-
-/// Outcome of [LessonCompletionService.reviewLesson] — a review never re-awards
-/// full lesson or module XP; it only updates mastery and may grant practice XP.
-class LessonReviewResult {
-  /// Creates a [LessonReviewResult].
-  const LessonReviewResult({
     required this.mastery,
     required this.practiceXpAwarded,
   });
 
-  /// The lesson's best graded result after this review.
+  /// Whether the lesson had already been finished before this run.
+  ///
+  /// Derived from the progress store, so it reports what happened rather than
+  /// what the caller believed. The completion screen renders on it.
+  final bool isReplay;
+
+  /// Points awarded for finishing the lesson itself. Zero on a replay.
+  final int lessonXp;
+
+  /// Points awarded for completing the lesson's module, or zero — on a replay,
+  /// and on a first completion that did not finish the module.
+  final int moduleBonusXp;
+
+  /// The lesson's best stored result after this run. On a replay this is the
+  /// never-downgraded best, which may be better than the run just played.
   final MasteryResult mastery;
 
-  /// Whether practice XP was granted (false when already practiced today).
+  /// Whether the once-a-day practice reward paid. Only ever true on a replay.
   final bool practiceXpAwarded;
+
+  /// Whether finishing this lesson also completed its module.
+  bool get moduleCompleted => moduleBonusXp > 0;
+
+  /// Total points banked by this run.
+  int get totalXp => lessonXp + moduleBonusXp;
 }
 
 /// Orchestrates everything that happens when a lesson finishes: persist
@@ -99,23 +103,34 @@ class LessonCompletionService {
   /// XP calculations.
   final XpService xpService;
 
-  /// First completion of [lesson]. [mastery] is the run's graded
-  /// `{correct, total}` result. Awards full lesson XP, the card, streak, and
-  /// the module bonus — each exactly once.
-  Future<LessonCompletionResult> completeLesson(
+  /// Finishes [lesson] — the one way a run that reached the final card is
+  /// recorded. [mastery] is the run's graded `{correct, total}` result.
+  ///
+  /// **Which path it takes is derived, never asserted by the caller.** A
+  /// lesson with a completion record is a replay; one without is a first
+  /// completion. That fact already lives in the progress store, and asking the
+  /// caller to supply it instead is what let the two disagree: a finished
+  /// lesson reached without the replay marker used to return here having
+  /// recorded nothing at all (#188).
+  ///
+  /// Both paths record the day. There is no branch through a finished run that
+  /// writes nothing.
+  Future<LessonFinishResult> finishLesson(
     LessonModel lesson, {
     required MasteryResult mastery,
+    DateTime? now,
   }) async {
     final existing = await progressRepository.getByLessonId(lesson.id);
-    if (existing != null) {
-      // Replay: nothing is re-awarded. Report the lesson's previously banked
-      // XP so a revisited completion screen still shows a consistent figure.
-      return LessonCompletionResult(
-        lessonXp: existing.xpEarned,
-        moduleBonusXp: 0,
-      );
-    }
+    return existing == null
+        ? _firstCompletion(lesson, mastery: mastery, now: now ?? DateTime.now())
+        : _replay(lesson, mastery: mastery, now: now ?? DateTime.now());
+  }
 
+  Future<LessonFinishResult> _firstCompletion(
+    LessonModel lesson, {
+    required MasteryResult mastery,
+    required DateTime now,
+  }) async {
     final xp = xpService.calculateLessonXp(lesson.steps.length);
     await progressRepository.saveCompletion(
       lessonId: lesson.id,
@@ -141,7 +156,7 @@ class LessonCompletionService {
       snapshotRepository,
       type: ActivityType.lesson,
       subject: lesson.id,
-      now: DateTime.now(),
+      now: now,
     );
 
     await _growTree();
@@ -157,28 +172,28 @@ class LessonCompletionService {
       },
     );
 
-    return LessonCompletionResult(lessonXp: xp, moduleBonusXp: moduleBonus);
+    return LessonFinishResult(
+      isReplay: false,
+      lessonXp: xp,
+      moduleBonusXp: moduleBonus,
+      mastery: mastery,
+      practiceXpAwarded: false,
+    );
   }
 
-  /// Re-runs a completed [lesson] for practice. Never re-awards full lesson or
-  /// module XP, never collects cards, never touches completion/streak. Updates
-  /// the stored mastery upward only, and grants [XpService.practiceXp] at most
-  /// once per lesson per calendar day. [now] is injectable for tests.
-  Future<LessonReviewResult> reviewLesson(
+  /// A replay of an already-finished [lesson]. Never re-awards lesson or
+  /// module XP, never collects a card, never grows the tree. Updates the
+  /// stored mastery upward only, grants [XpService.practiceXp] at most once
+  /// per lesson per calendar day, and records the day every time (§3).
+  Future<LessonFinishResult> _replay(
     LessonModel lesson, {
     required MasteryResult mastery,
-    DateTime? now,
+    required DateTime now,
   }) async {
-    final record = await progressRepository.getByLessonId(lesson.id);
-    if (record == null) {
-      // Defensive: review is only ever offered for completed lessons.
-      return const LessonReviewResult(
-        mastery: MasteryResult.unscored,
-        practiceXpAwarded: false,
-      );
-    }
-
-    final at = now ?? DateTime.now();
+    // Non-null by construction: `finishLesson` routes here only when a record
+    // exists, which is the whole point — the store decides, not the caller.
+    final record = (await progressRepository.getByLessonId(lesson.id))!;
+    final at = now;
     final today = dateOnly(at);
     // Never downgrade: band rank first, ratio only as a tiebreak.
     record.mastery = MasteryResult.best(record.mastery, mastery);
@@ -216,7 +231,10 @@ class LessonCompletionService {
       },
     );
 
-    return LessonReviewResult(
+    return LessonFinishResult(
+      isReplay: true,
+      lessonXp: 0,
+      moduleBonusXp: 0,
       mastery: record.mastery,
       practiceXpAwarded: practiceXpAwarded,
     );
