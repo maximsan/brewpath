@@ -155,6 +155,64 @@ final class CompletedChallengesProvider
 String _$completedChallengesHash() =>
     r'2467e35ae3c7023fe8fee777732928b15c86483a';
 
+/// The challenges waiting in the saved queue, in bank order.
+///
+/// Excludes whatever is in play and anything already logged, and drops any
+/// challenge whose lesson the learner has not reached — a queue advertising
+/// work locked behind content is worse than an empty one.
+
+@ProviderFor(savedChallenges)
+final savedChallengesProvider = SavedChallengesProvider._();
+
+/// The challenges waiting in the saved queue, in bank order.
+///
+/// Excludes whatever is in play and anything already logged, and drops any
+/// challenge whose lesson the learner has not reached — a queue advertising
+/// work locked behind content is worse than an empty one.
+
+final class SavedChallengesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<BrewChallenge>>,
+          List<BrewChallenge>,
+          FutureOr<List<BrewChallenge>>
+        >
+    with
+        $FutureModifier<List<BrewChallenge>>,
+        $FutureProvider<List<BrewChallenge>> {
+  /// The challenges waiting in the saved queue, in bank order.
+  ///
+  /// Excludes whatever is in play and anything already logged, and drops any
+  /// challenge whose lesson the learner has not reached — a queue advertising
+  /// work locked behind content is worse than an empty one.
+  SavedChallengesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'savedChallengesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$savedChallengesHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<BrewChallenge>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<BrewChallenge>> create(Ref ref) {
+    return savedChallenges(ref);
+  }
+}
+
+String _$savedChallengesHash() => r'13fce43c195c1b64a2087698f563c5c5a66959d8';
+
 /// The capstone [moduleId] offers, or null when it has none or is unearned.
 
 @ProviderFor(moduleChallengeOffer)
@@ -216,7 +274,7 @@ final class ModuleChallengeOfferProvider
 }
 
 String _$moduleChallengeOfferHash() =>
-    r'a598bffb44b5fa14efc087b14ad4e20b595d5cf3';
+    r'752d8e6a56ef38fec222a25ae0a6bc8438b3e347';
 
 /// The capstone [moduleId] offers, or null when it has none or is unearned.
 

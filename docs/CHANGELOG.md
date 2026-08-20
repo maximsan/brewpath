@@ -44,6 +44,22 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Park, don't drop.** A Coffee Challenge you asked for is never lost. The log
+  sheet gains **Save for later**, starting a second challenge parks the first
+  rather than discarding it, and — the case that used to lose work silently — a
+  challenge whose forty-eight hours run out now moves into a *Saved challenges*
+  list on Today instead of simply vanishing. Each row starts its brew again or
+  drops it for good.
+
+  The expiry check runs on app open and on resume, with no timer: a window
+  measured in elapsed time only needs looking at when the app can act on it. It
+  writes **nothing** when nothing has lapsed, so repeating it changes nothing —
+  including on a second device, which computes the identical result.
+
+  This also fixes a real defect carried over from the design: the active
+  challenge was never cleared when its window ran out, so a challenge expired
+  months ago would keep syncing between devices as the one in play.
+
 - **A brew can be logged, and it pays.** The Coffee Challenge card on Today now
   carries a Log Result button, and it opens the app's first bottom sheet: the
   challenge's own question — *WHICH CUP WON?* — above the outcomes it authors,

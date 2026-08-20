@@ -8,18 +8,36 @@ import 'package:flutter/material.dart';
 
 const double _promptLetterSpacing = 0.6;
 
-/// What the learner chose to report, or null when they closed the sheet.
+/// What the learner did with the sheet.
 ///
-/// Dismissal and logging are different events, and a null here is what keeps
-/// "I looked at this" from being recorded as "I brewed it".
-typedef ChallengeLogResult = String?;
+/// Three outcomes, and only one of them is a claim that the brew happened.
+/// Dismissal resolves null: "I looked at this" must never be recorded as
+/// "I brewed it".
+sealed class ChallengeLogResult {
+  const ChallengeLogResult();
+}
 
-/// Opens the log sheet for [challenge] and resolves with the outcome picked,
-/// or null when the learner dismissed it.
-Future<ChallengeLogResult> showChallengeLogSheet({
+/// The learner reported an outcome.
+class ChallengeLogged extends ChallengeLogResult {
+  /// Creates a [ChallengeLogged].
+  const ChallengeLogged(this.reaction);
+
+  /// The outcome they picked, as authored.
+  final String reaction;
+}
+
+/// The learner parked it for later.
+class ChallengeSavedForLater extends ChallengeLogResult {
+  /// Creates a [ChallengeSavedForLater].
+  const ChallengeSavedForLater();
+}
+
+/// Opens the log sheet for [challenge], resolving with what the learner did,
+/// or null when they dismissed it.
+Future<ChallengeLogResult?> showChallengeLogSheet({
   required BuildContext context,
   required BrewChallenge challenge,
-}) => showChallengeSheet<String>(
+}) => showChallengeSheet<ChallengeLogResult>(
   context: context,
   label: 'Log your result for ${challenge.title}',
   builder: (context) => _LogSheetBody(challenge: challenge),
@@ -80,9 +98,20 @@ class _LogSheetBodyState extends State<_LogSheetBody> {
           // asserts the brew happened, so logging without one would record a
           // claim the learner never made.
           onPressed: canLogResult(_picked)
-              ? () => Navigator.of(context).pop(_picked)
+              ? () => Navigator.of(
+                  context,
+                ).pop(ChallengeLogged(_picked!))
               : null,
           child: const Text('Mark as done'),
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        TextButton(
+          // Not a penalty and not an archive — the learner saying *not now*,
+          // which is exactly what the queue is for.
+          onPressed: () => Navigator.of(
+            context,
+          ).pop(const ChallengeSavedForLater()),
+          child: const Text('Save for later'),
         ),
       ],
     );
