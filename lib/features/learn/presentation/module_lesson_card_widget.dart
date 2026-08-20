@@ -62,7 +62,9 @@ class ModuleLessonCardWidget extends StatelessWidget {
                     Text(lesson.title, style: theme.textTheme.titleSmall),
                     const SizedBox(height: 4),
                     Text(
-                      lesson.summary,
+                      // Inside its own module the label would repeat the
+                      // header, so the row carries the lesson's own estimate.
+                      '~${lesson.time} min',
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.bodySmall?.copyWith(
@@ -70,7 +72,7 @@ class ModuleLessonCardWidget extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 6),
-                    _XpInline(xp: lesson.xpReward),
+                    _XpInline(xp: lesson.points),
                   ],
                 ),
               ),

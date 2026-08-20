@@ -110,6 +110,46 @@ Widget? contentCardView(
   };
 }
 
+/// Whether [card] can be drawn today.
+///
+/// The same partition as [contentCardView]'s final arm, stated separately so a
+/// host can decide what to play *before* it builds anything. Both switches are
+/// exhaustive over the sealed union, so a new kind breaks both at once and
+/// neither can quietly drift out of step with the other — a unit test pins the
+/// two together for the cases that exist now.
+bool hasRenderer(ContentCard card) => switch (card) {
+  PredictCard() ||
+  ConceptCard() ||
+  McqCard() ||
+  RecallCard() ||
+  DecisionCard() ||
+  QuizCard() ||
+  MatchCard() => true,
+  VisualCard() ||
+  PracticalCard() ||
+  MultiCard() ||
+  SequenceCard() ||
+  SliderCard() ||
+  TastefixCard() ||
+  BagpickCard() ||
+  FlavorCard() => false,
+};
+
+/// The cards of [cards] that can actually be played, in authored order.
+///
+/// Eight of the fifteen kinds have no renderer yet, and they are scattered
+/// through thirty of the thirty-two lessons. Filtering here keeps every lesson
+/// finishable instead of stranding the learner on a card that cannot draw
+/// itself; the alternative — a placeholder that says so — puts unfinished
+/// scaffolding in front of a learner on the way to the next real card.
+///
+/// This is a temporary shape. It disappears on its own as the remaining
+/// renderers land, without a caller changing.
+List<ContentCard> playableCards(List<ContentCard> cards) => [
+  for (final card in cards)
+    if (hasRenderer(card)) card,
+];
+
 /// True and False, marked from the statement's own answer. The pair is
 /// seeded like every other card's choices, so a run cannot be passed by
 /// learning that True always sits first.

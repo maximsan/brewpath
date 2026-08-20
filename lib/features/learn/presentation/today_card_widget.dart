@@ -92,7 +92,9 @@ class TodayCardWidget extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              lesson.summary,
+              // Where in the course this sits. The lessons bank authors no
+              // blurb, and the module label is what the design prints here.
+              lesson.moduleLabel,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.bodyMedium?.copyWith(
@@ -102,7 +104,7 @@ class TodayCardWidget extends StatelessWidget {
             const SizedBox(height: 16),
             Row(
               children: [
-                _XpPill(xp: lesson.xpReward),
+                _XpPill(xp: lesson.points),
                 const Spacer(),
                 FilledButton.icon(
                   onPressed: () => context.goTo(lessonRun(lesson.id)),
