@@ -1,7 +1,6 @@
 import 'package:brew_path/app/day_rollover.dart';
+import 'package:brew_path/app/day_surfaces.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
-import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
-import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -76,17 +75,7 @@ class _DayRolloverWatcherState extends ConsumerState<DayRolloverWatcher> {
     final now = widget.clock();
     if (!dayHasRolledOver(lastSeenDay: _lastSeenDay, now: now)) return;
     _lastSeenDay = epochDay(now);
-    // Every day surface is named here, including `keepSharpAcknowledgedToday`,
-    // which today also rebuilds on its own because it watches the
-    // recommendation. Leaning on that edge would make this widget's
-    // correctness depend on another feature's internal wiring — and the day
-    // it were rewired, the surface would go quietly stale, which is the exact
-    // defect this widget exists to end. One idempotent call is the cheaper
-    // half of that trade.
-    ref
-      ..invalidate(streakStatusProvider)
-      ..invalidate(keepSharpRecommendationProvider)
-      ..invalidate(keepSharpAcknowledgedTodayProvider);
+    invalidateDaySurfaces(ref);
   }
 
   @override
