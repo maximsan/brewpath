@@ -67,13 +67,13 @@ void main() {
       final settings = await repository.getSettings();
       settings
         ..themeMode = AppThemeMode.system
-        ..totalXp = 120;
+        ..streakDays = 12;
       await repository.saveSettings(settings);
 
       await repository.resetProgress();
 
       final after = await repository.getSettings();
-      expect(after.totalXp, 0, reason: 'progress should be wiped');
+      expect(after.streakDays, 0, reason: 'progress should be wiped');
       expect(
         after.themeMode,
         AppThemeMode.system,

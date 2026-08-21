@@ -9,13 +9,13 @@ part of 'module_summary_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 /// Builds the [ModuleSummary] for [moduleId] by joining content (module +
-/// cards) with persisted progress (completed lessons, collected cards).
+/// cards) with persisted progress (collected cards).
 
 @ProviderFor(moduleSummary)
 final moduleSummaryProvider = ModuleSummaryFamily._();
 
 /// Builds the [ModuleSummary] for [moduleId] by joining content (module +
-/// cards) with persisted progress (completed lessons, collected cards).
+/// cards) with persisted progress (collected cards).
 
 final class ModuleSummaryProvider
     extends
@@ -26,7 +26,7 @@ final class ModuleSummaryProvider
         >
     with $FutureModifier<ModuleSummary>, $FutureProvider<ModuleSummary> {
   /// Builds the [ModuleSummary] for [moduleId] by joining content (module +
-  /// cards) with persisted progress (completed lessons, collected cards).
+  /// cards) with persisted progress (collected cards).
   ModuleSummaryProvider._({
     required ModuleSummaryFamily super.from,
     required String super.argument,
@@ -71,10 +71,10 @@ final class ModuleSummaryProvider
   }
 }
 
-String _$moduleSummaryHash() => r'8b9eaad98e144651460badfbc9d3dad0af1ca913';
+String _$moduleSummaryHash() => r'5743ce0b0964448561564a177b38e104a3ebf3f8';
 
 /// Builds the [ModuleSummary] for [moduleId] by joining content (module +
-/// cards) with persisted progress (completed lessons, collected cards).
+/// cards) with persisted progress (collected cards).
 
 final class ModuleSummaryFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<ModuleSummary>, String> {
@@ -88,7 +88,7 @@ final class ModuleSummaryFamily extends $Family
       );
 
   /// Builds the [ModuleSummary] for [moduleId] by joining content (module +
-  /// cards) with persisted progress (completed lessons, collected cards).
+  /// cards) with persisted progress (collected cards).
 
   ModuleSummaryProvider call(String moduleId) =>
       ModuleSummaryProvider._(argument: moduleId, from: this);

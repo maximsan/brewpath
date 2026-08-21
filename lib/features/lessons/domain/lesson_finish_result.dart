@@ -2,6 +2,7 @@
 library;
 
 import 'package:brew_path/features/progress/domain/mastery.dart';
+import 'package:brew_path/shared/models/coffee_card_model.dart';
 
 /// Outcome of finishing a lesson — which path the run actually took, and what
 /// it paid.
@@ -14,10 +15,10 @@ class LessonFinishResult {
   /// Creates a [LessonFinishResult].
   const LessonFinishResult({
     required this.isReplay,
-    required this.lessonXp,
-    required this.moduleBonusXp,
+    required this.pointsEarned,
     required this.mastery,
-    required this.practiceXpAwarded,
+    this.moduleCompleted = false,
+    this.moduleCard,
   });
 
   /// Whether the lesson had already been finished before this run.
@@ -26,20 +27,30 @@ class LessonFinishResult {
   /// what the caller believed. The completion screen renders on it.
   final bool isReplay;
 
-  /// Points awarded for finishing the lesson itself. Zero on a replay.
-  final int lessonXp;
-
-  /// Points awarded for completing the lesson's module, or zero — on a replay,
-  /// and on a first completion that did not finish the module.
-  final int moduleBonusXp;
+  /// Points awarded for finishing the lesson itself — the flat value the
+  /// lesson authors. Zero on a replay, and the only payout a lesson makes.
+  final int pointsEarned;
 
   /// The lesson's best stored result after this run. On a replay this is the
   /// never-downgraded best, which may be better than the run just played.
   final MasteryResult mastery;
 
-  /// Whether the once-a-day practice reward paid. Only ever true on a replay.
-  final bool practiceXpAwarded;
+  /// Whether finishing this lesson was the last lesson its module needed.
+  ///
+  /// **Its own fact, never inferred from a reward.** It used to read
+  /// `moduleBonusXp > 0`, and replacing that with `moduleCard != null` would
+  /// only swap one payout proxy for another: a module whose Field Guide card
+  /// went missing from the bank would silently stop routing to its recap, and
+  /// the screen would report the module unfinished because a *content* lookup
+  /// came back empty. Completing a module and being handed a card for it are
+  /// two different things, so they are two fields.
+  final bool moduleCompleted;
 
-  /// Whether finishing this lesson also completed its module.
-  bool get moduleCompleted => moduleBonusXp > 0;
+  /// The Field Guide card handed over because this run closed its module, or
+  /// null when it did not — or when the module awards none.
+  ///
+  /// **The module's whole reward.** Module completion used to bank a bonus and
+  /// show a number; the design pays nothing for a module, because what waits
+  /// at the moment is this collectible (§5.1, #16).
+  final CoffeeCardModel? moduleCard;
 }

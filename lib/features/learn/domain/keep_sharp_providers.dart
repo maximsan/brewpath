@@ -79,21 +79,19 @@ Future<bool> keepSharpAcknowledgedToday(Ref ref) async {
   final recommendationFuture = ref.watch(
     keepSharpRecommendationProvider.future,
   );
-  final completedFuture = ref.watch(completedLessonsProvider.future);
   final snapshotFuture = ref.watch(snapshotRepositoryProvider).read();
   final snapshot = await snapshotFuture;
   final recommendation = await recommendationFuture;
-  final completed = await completedFuture;
   if (recommendation == null) return false;
 
   final today = epochDay(DateTime.now());
-  final distinctGamesToday = distinctMiniGameIds(
-    snapshot.clearedByReset.dailyActivity[today] ?? const {},
-  ).length;
+  // One read, feeding both rules: replays and mini-game runs are entries on
+  // the same day record, so neither needs a source of its own.
+  final entriesToday = snapshot.clearedByReset.dailyActivity[today] ?? const {};
 
   return keepSharpRuleMet(
     recommendation.type,
-    distinctGamesToday: distinctGamesToday,
-    replayedToday: anyReplayToday(completed, DateTime.now()),
+    distinctGamesToday: distinctMiniGameIds(entriesToday).length,
+    replayedToday: anyReplayToday(entriesToday),
   );
 }

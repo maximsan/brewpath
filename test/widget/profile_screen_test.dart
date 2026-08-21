@@ -36,7 +36,7 @@ void main() {
 
     // 2x2 stats grid.
     expect(find.byType(StatTile), findsNWidgets(4));
-    expect(find.text('Total XP'), findsOneWidget);
+    expect(find.text('Total points'), findsOneWidget);
     expect(find.text('Day streak'), findsOneWidget);
     expect(find.text('Lessons'), findsOneWidget);
     // "Cards" also appears as the bottom-nav tab label — scope to the tile.

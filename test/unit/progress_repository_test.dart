@@ -178,13 +178,6 @@ void main() {
       expect(settings.lastActivityDate, isNull);
     });
 
-    test('addXp accumulates correctly', () async {
-      await repo.addXp(10);
-      await repo.addXp(20);
-      final settings = await repo.getSettings();
-      expect(settings.totalXp, 30);
-    });
-
     test('saveSettings persists changes', () async {
       final settings = await repo.getSettings();
       settings.hapticsEnabled = false;
@@ -198,7 +191,6 @@ void main() {
       settings
         ..hapticsEnabled = false
         ..soundEnabled = false
-        ..totalXp = 123
         ..streakDays = 4
         ..lastActivityDate = DateTime(2026, 5, 20);
       await repo.saveSettings(settings);
@@ -206,7 +198,9 @@ void main() {
       await repo.resetProgress();
 
       final after = await repo.getSettings();
-      expect(after.totalXp, 0);
+      // `totalXp` is not reset here and is not expected to be: the points
+      // total is derived from the completions a reset clears, so this row
+      // holds no counter to zero (#160).
       expect(after.streakDays, 0);
       expect(after.lastActivityDate, isNull);
       // Preferences are preserved across reset.

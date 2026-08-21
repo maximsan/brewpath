@@ -92,17 +92,20 @@ class LessonCompletionBody extends StatelessWidget {
       ),
       const SizedBox(height: 12),
       Text(
-        '+${completion.lessonXp} XP',
+        '+${completion.pointsEarned} PTS',
         textAlign: TextAlign.center,
         style: theme.textTheme.titleLarge?.copyWith(
           color: mood.accent,
           fontWeight: FontWeight.w700,
         ),
       ),
+      // One number, ever. Closing a module used to add a second — a bonus that
+      // double-counted the lessons already paid for. What the module gives is
+      // the Field Guide card below (§5.1, #16).
       if (completion.moduleCompleted) ...[
         const SizedBox(height: 4),
         Text(
-          '+${completion.moduleBonusXp} XP · Module complete!',
+          'Module complete!',
           textAlign: TextAlign.center,
           style: theme.textTheme.titleMedium?.copyWith(color: mood.accent),
         ),
@@ -110,6 +113,10 @@ class LessonCompletionBody extends StatelessWidget {
       if (reward.card != null) ...[
         const SizedBox(height: 24),
         _RewardCard(card: reward.card!),
+      ],
+      if (completion.moduleCard != null) ...[
+        const SizedBox(height: 12),
+        _RewardCard(card: completion.moduleCard!),
       ],
     ];
   }
@@ -134,16 +141,6 @@ class LessonCompletionBody extends StatelessWidget {
         style: theme.textTheme.titleLarge?.copyWith(
           color: mood.accent,
           fontWeight: FontWeight.w700,
-        ),
-      ),
-      const SizedBox(height: 4),
-      Text(
-        review.practiceXpAwarded
-            ? '+2 XP · Practice'
-            : 'Practice XP already earned today',
-        textAlign: TextAlign.center,
-        style: theme.textTheme.titleMedium?.copyWith(
-          color: mood.inkMute,
         ),
       ),
     ];

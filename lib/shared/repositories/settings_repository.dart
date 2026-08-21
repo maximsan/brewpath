@@ -60,20 +60,15 @@ class SettingsRepository {
         );
   }
 
-  /// Adds [xp] to the user's running total and persists it.
-  Future<void> addXp(int xp) async {
-    final settings = await getSettings();
-    settings.totalXp += xp;
-    await saveSettings(settings);
-  }
-
   /// Resets every user-progress field on the singleton settings row while
   /// preserving the user's haptics and sound preferences. Used by the Profile
   /// "Reset Progress" action.
   Future<void> resetProgress() async {
     final settings = await getSettings();
+    // `totalXp` is deliberately absent: the points total is derived from the
+    // completions this reset clears, so there is no counter left to zero. The
+    // column survives only until the destructive rebuild drops it (#79).
     settings
-      ..totalXp = 0
       ..streakDays = 0
       ..lastActivityDate = null;
     await saveSettings(settings);

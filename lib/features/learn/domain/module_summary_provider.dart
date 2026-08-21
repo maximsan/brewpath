@@ -1,4 +1,3 @@
-import 'package:brew_path/core/constants/xp_values.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/models/module_model.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
@@ -7,14 +6,19 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'module_summary_provider.g.dart';
 
-/// Recap data for a finished module: the module, the cards the user has earned
-/// within it, and the total XP banked (per-lesson XP plus the bonus).
+/// Recap data for a finished module: the module, its Field Guide card, and the
+/// lesson cards the learner earned within it.
+///
+/// **No points total.** It used to carry the module's summed lesson points plus
+/// a completion bonus, and the recap screen led with that number. The module
+/// pays nothing (§5.1, #16), and the number it showed double-counted lessons
+/// already paid — so the field is gone rather than computed and ignored.
 class ModuleSummary {
   /// Creates a [ModuleSummary].
   const ModuleSummary({
     required this.module,
     required this.earnedCards,
-    required this.totalXp,
+    this.fieldGuide,
   });
 
   /// The completed module.
@@ -23,12 +27,13 @@ class ModuleSummary {
   /// Collected cards whose lesson belongs to [module].
   final List<CoffeeCardModel> earnedCards;
 
-  /// XP banked for the module: summed lesson XP plus the completion bonus.
-  final int totalXp;
+  /// The module's own Field Guide card — the recap's reward — or null when it
+  /// has not been collected.
+  final CoffeeCardModel? fieldGuide;
 }
 
 /// Builds the [ModuleSummary] for [moduleId] by joining content (module +
-/// cards) with persisted progress (completed lessons, collected cards).
+/// cards) with persisted progress (collected cards).
 @riverpod
 Future<ModuleSummary> moduleSummary(Ref ref, String moduleId) async {
   final content = ref.watch(contentRepositoryProvider);
@@ -46,15 +51,13 @@ Future<ModuleSummary> moduleSummary(Ref ref, String moduleId) async {
       )
       .toList();
 
-  final progress = ref.watch(progressRepositoryProvider);
-  final completed = await progress.getAllCompleted();
-  final lessonXp = completed
-      .where((r) => lessonIds.contains(r.lessonId))
-      .fold<int>(0, (sum, r) => sum + r.xpEarned);
+  final fieldGuide = await content.getCardForModule(moduleId);
 
   return ModuleSummary(
     module: module,
     earnedCards: earnedCards,
-    totalXp: lessonXp + XpValues.moduleCompletionBonus,
+    fieldGuide: fieldGuide != null && collectedIds.contains(fieldGuide.id)
+        ? fieldGuide
+        : null,
   );
 }

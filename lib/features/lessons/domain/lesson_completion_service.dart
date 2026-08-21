@@ -1,18 +1,16 @@
-import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/lessons/domain/lesson_finish_result.dart';
 import 'package:brew_path/features/progress/domain/activity_recorder.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/tree_growth.dart';
-import 'package:brew_path/features/progress/domain/xp_service.dart';
 import 'package:brew_path/services/analytics/analytics_provider.dart';
 import 'package:brew_path/services/analytics/analytics_service.dart';
+import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
+import 'package:brew_path/shared/models/module_model.dart';
 import 'package:brew_path/shared/repositories/card_repository.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
-import 'package:brew_path/shared/repositories/module_progress_repository.dart';
 import 'package:brew_path/shared/repositories/progress_repository.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
-import 'package:brew_path/shared/repositories/settings_repository.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:brew_path/shared/storage/progress_record.dart';
 import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
@@ -21,31 +19,30 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'lesson_completion_service.g.dart';
 
 /// Orchestrates everything that happens when a lesson finishes: persist
-/// progress, award points, unlock the lesson's card, mark the day, and grant
-/// the module bonus once every lesson in it is done.
+/// progress, award points, unlock the lesson's card, mark the day, and hand
+/// over the module's Field Guide card once every lesson in it is done.
+///
+/// **Two payouts exist and neither is here by the run's choice** (§5.1, #16):
+/// a lesson's first completion pays the flat ten it authors, and nothing a
+/// lesson can do pays anything else. No module bonus, no practice reward, no
+/// per-step drip.
 ///
 /// **Not idempotent, and must not be.** Replaying a finished lesson records
-/// the day again, moves mastery upward and may pay the once-a-day practice
-/// reward — a replay is a real activity (§3), not a no-op. What *is* paid at
-/// most once is the lesson's own reward: points, the card, the module bonus.
+/// the day again and moves mastery upward — a replay is a real activity (§3),
+/// not a no-op. What *is* done at most once is the lesson's own reward: the
+/// points, its card, and the Field Guide card the module hands over.
 class LessonCompletionService {
   /// Creates a [LessonCompletionService].
   const LessonCompletionService({
     required this.progressRepository,
-    required this.settingsRepository,
     required this.cardRepository,
     required this.contentRepository,
-    required this.moduleProgressRepository,
     required this.snapshotRepository,
     required this.analyticsService,
-    required this.xpService,
   });
 
   /// Lesson-completion records.
   final ProgressRepository progressRepository;
-
-  /// User settings (XP, streak, preferences).
-  final SettingsRepository settingsRepository;
 
   /// Collected coffee cards.
   final CardRepository cardRepository;
@@ -53,17 +50,11 @@ class LessonCompletionService {
   /// Content (modules and lessons).
   final ContentRepository contentRepository;
 
-  /// Per-module "bonus awarded" ledger.
-  final ModuleProgressRepository moduleProgressRepository;
-
   /// The progress snapshot, which holds the Coffee Tree's stage.
   final SnapshotRepository snapshotRepository;
 
   /// Analytics sink.
   final AnalyticsService analyticsService;
-
-  /// XP calculations.
-  final XpService xpService;
 
   /// Finishes [lesson] — the one way a run that reached the final card is
   /// recorded. [mastery] is the run's graded `{correct, total}` result.
@@ -78,9 +69,9 @@ class LessonCompletionService {
   /// Both paths record the day. There is no branch through a finished run that
   /// writes nothing.
   ///
-  /// [now] fixes the calendar day this run is recorded against and the
-  /// practice-reward ledger it is compared to — the two decisions a test needs
-  /// to pin. Row-level write stamps still read the clock directly.
+  /// [now] fixes the calendar day this run is recorded against — the decision
+  /// a test needs to pin. Row-level write stamps still read the clock
+  /// directly.
   Future<LessonFinishResult> finishLesson(
     LessonModel lesson, {
     required MasteryResult mastery,
@@ -104,26 +95,24 @@ class LessonCompletionService {
     // What the lesson itself authors, flat. The old per-step formula had no
     // input left once steps became cards: a lesson's card count is a shape of
     // its teaching, not a measure of what finishing it is worth.
-    final xp = lesson.points;
+    final points = lesson.points;
+    // Recorded on the completion, and only there. The running total used to be
+    // banked into a settings counter alongside this row; it is now summed off
+    // these rows on read, so there is no second copy to drift.
     await progressRepository.saveCompletion(
       lessonId: lesson.id,
-      xpEarned: xp,
+      xpEarned: points,
       mastery: mastery,
     );
-    await settingsRepository.addXp(xp);
     await analyticsService.logEvent(
-      'xp_earned',
-      parameters: {'amount': xp, 'source': 'lesson'},
+      'points_earned',
+      parameters: {'amount': points, 'source': 'lesson'},
     );
 
-    final card = await contentRepository.getCardForLesson(lesson.id);
-    if (card != null) {
-      await cardRepository.collectCard(card.id);
-      await analyticsService.logEvent(
-        'card_unlocked',
-        parameters: {'card_id': card.id, 'lesson_id': lesson.id},
-      );
-    }
+    await _collect(
+      await contentRepository.getCardForLesson(lesson.id),
+      source: {'lesson_id': lesson.id},
+    );
 
     await recordActivity(
       snapshotRepository,
@@ -134,30 +123,40 @@ class LessonCompletionService {
 
     await _growTree();
 
-    final moduleBonus = await _maybeAwardModuleBonus(lesson);
+    final module = await _maybeCompletedModule(lesson);
+    final moduleCard = module == null ? null : await _awardFieldGuide(module);
 
     await analyticsService.logEvent(
       'lesson_completed',
       parameters: {
         'lesson_id': lesson.id,
         'module_id': lesson.moduleId,
-        'xp_earned': xp,
+        'points_earned': points,
       },
     );
 
     return LessonFinishResult(
       isReplay: false,
-      lessonXp: xp,
-      moduleBonusXp: moduleBonus,
+      pointsEarned: points,
       mastery: mastery,
-      practiceXpAwarded: false,
+      moduleCompleted: module != null,
+      moduleCard: moduleCard,
     );
   }
 
-  /// A replay of an already-finished [lesson]. Never re-awards lesson or
-  /// module XP, never collects a card, never grows the tree. Updates the
-  /// stored mastery upward only, grants [XpService.practiceXp] at most once
-  /// per lesson per calendar day, and records the day every time (§3).
+  /// A replay of an already-finished [lesson]. **Pays nothing** — no lesson
+  /// points, no module reward, no practice reward — collects no card and grows
+  /// nothing. Updates the stored mastery upward only, and records the day
+  /// every time (§3).
+  ///
+  /// A replay used to pay two points, capped per lesson per calendar day. That
+  /// broke §5.1's *replays pay 0* outright, and the cap scaled with the course:
+  /// at thirty-two lessons it paid sixty-four a day for pure repetition against
+  /// three hundred and twenty for learning everything, so five days of replays
+  /// out-earned the whole course (#16).
+  ///
+  /// What a replay is still worth is real: it can lift mastery, and it protects
+  /// the day.
   Future<LessonFinishResult> _replay(
     LessonModel lesson,
     ProgressRecord record, {
@@ -165,26 +164,12 @@ class LessonCompletionService {
     required DateTime now,
   }) async {
     final at = now;
-    final today = dateOnly(at);
     // Never downgrade: band rank first, ratio only as a tiebreak.
     record.mastery = MasteryResult.best(record.mastery, mastery);
 
-    var practiceXpAwarded = false;
-    final last = record.lastPracticeXpDate;
-    if (last == null || dateOnly(last) != today) {
-      practiceXpAwarded = true;
-      record.lastPracticeXpDate = today;
-      await settingsRepository.addXp(xpService.practiceXp);
-      await analyticsService.logEvent(
-        'xp_earned',
-        parameters: {'amount': xpService.practiceXp, 'source': 'practice'},
-      );
-    }
-
     await progressRepository.saveProgress(record);
     // A replay that reaches the final card protects the day (§3) — the rule
-    // that lets a streak outlive the last authored lesson. It qualifies every
-    // time; the once-a-day practice XP above is a separate ledger.
+    // that lets a streak outlive the last authored lesson.
     await recordActivity(
       snapshotRepository,
       type: ActivityType.replay,
@@ -204,48 +189,70 @@ class LessonCompletionService {
 
     return LessonFinishResult(
       isReplay: true,
-      lessonXp: 0,
-      moduleBonusXp: 0,
+      pointsEarned: 0,
       mastery: record.mastery,
-      practiceXpAwarded: practiceXpAwarded,
     );
   }
 
-  /// Awards the module-completion bonus when [lesson] was the last unfinished
-  /// lesson of its module. Guarded by a persisted per-module ledger so the
-  /// bonus is granted at most once. Returns the bonus XP granted, or `0`.
-  Future<int> _maybeAwardModuleBonus(LessonModel lesson) async {
-    if (await moduleProgressRepository.isModuleXpAwarded(lesson.moduleId)) {
-      return 0;
-    }
-
+  /// The module [lesson] just completed, or null when it left one unfinished.
+  ///
+  /// Answers only *"did this close a module?"* — deliberately separate from
+  /// what closing one is worth, so the recap's routing never depends on a
+  /// reward lookup succeeding.
+  Future<ModuleModel?> _maybeCompletedModule(LessonModel lesson) async {
     final modules = await contentRepository.getModules();
-    final matches = modules.where((m) => m.id == lesson.moduleId);
-    if (matches.isEmpty) return 0;
-    final module = matches.first;
+    final module = modules
+        .where((candidate) => candidate.id == lesson.moduleId)
+        .firstOrNull;
+    if (module == null) return null;
 
     final completed = await progressRepository.getAllCompleted();
-    final completedIds = completed.map((r) => r.lessonId).toSet();
-    final allDone = module.lessonIds.every(completedIds.contains);
-    if (!allDone) return 0;
+    final completedIds = completed.map((record) => record.lessonId).toSet();
+    return module.lessonIds.every(completedIds.contains) ? module : null;
+  }
 
-    final bonus = xpService.moduleCompletionBonus;
-    await settingsRepository.addXp(bonus);
-    await moduleProgressRepository.markModuleXpAwarded(module.id);
-    await analyticsService.logEvent(
-      'xp_earned',
-      parameters: {'amount': bonus, 'source': 'module_bonus'},
-    );
+  /// Hands over [module]'s Field Guide card and reports the module after it as
+  /// unlocked. Returns the card, or null when the bank names none.
+  ///
+  /// **This is the module moment's whole reward.** It used to bank a bonus of
+  /// twenty-five, guarded by a persisted per-module ledger so it could only pay
+  /// once. The design pays nothing for a module — a bonus double-counts lessons
+  /// already paid — and what actually waits at the moment is this collectible,
+  /// one of five that no path in the app had ever collected (§5.1, #16).
+  ///
+  /// **No ledger guards it, because the card is its own ledger.** Collecting a
+  /// card already held is a no-op, where paying a bonus twice was not, so the
+  /// idempotence the old ledger bought is now a property of the thing awarded.
+  Future<CoffeeCardModel?> _awardFieldGuide(ModuleModel module) async {
+    final card = await contentRepository.getCardForModule(module.id);
+    await _collect(card, source: {'module_id': module.id});
 
     // Completing this module unlocks the one after it. Modules open in course
     // order, so the module gated on this one is the one at the next position.
+    final modules = await contentRepository.getModules();
     for (final next in modules.where((m) => m.n == module.n + 1)) {
       await analyticsService.logEvent(
         'module_unlocked',
         parameters: {'module_id': next.id},
       );
     }
-    return bonus;
+    return card;
+  }
+
+  /// Collects [card] and reports it, or does nothing when there is no card.
+  ///
+  /// [source] names what awarded it — a lesson or a module — which is the only
+  /// difference between the two award paths.
+  Future<void> _collect(
+    CoffeeCardModel? card, {
+    required Map<String, Object> source,
+  }) async {
+    if (card == null) return;
+    await cardRepository.collectCard(card.id);
+    await analyticsService.logEvent(
+      'card_unlocked',
+      parameters: {'card_id': card.id, ...source},
+    );
   }
 
   /// Advances the Coffee Tree to the stage this completion has earned.
@@ -278,11 +285,8 @@ class LessonCompletionService {
 LessonCompletionService lessonCompletionService(Ref ref) =>
     LessonCompletionService(
       progressRepository: ref.watch(progressRepositoryProvider),
-      settingsRepository: ref.watch(settingsRepositoryProvider),
       cardRepository: ref.watch(cardRepositoryProvider),
       contentRepository: ref.watch(contentRepositoryProvider),
-      moduleProgressRepository: ref.watch(moduleProgressRepositoryProvider),
       snapshotRepository: ref.watch(snapshotRepositoryProvider),
       analyticsService: ref.watch(analyticsServiceProvider),
-      xpService: const XpService(),
     );

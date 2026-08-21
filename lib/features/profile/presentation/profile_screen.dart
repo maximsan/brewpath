@@ -24,7 +24,7 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final xp = ref.watch(totalXpProvider);
+    final points = ref.watch(totalPointsProvider);
     final streak = ref.watch(streakProvider);
     final lessons = ref.watch(completedLessonsProvider);
     final cards = ref.watch(collectedCardsProvider);
@@ -68,7 +68,7 @@ class ProfileScreen extends ConsumerWidget {
                   const _SectionTitle('Your progress'),
                   const SizedBox(height: 12),
                   _StatsGrid(
-                    xp: xp.asData?.value ?? 0,
+                    points: points.asData?.value ?? 0,
                     streakDays: streak.asData?.value ?? 0,
                     lessonsCompleted: lessons.asData?.value.length ?? 0,
                     cardsCollected: cards.asData?.value.length ?? 0,
@@ -131,13 +131,13 @@ class _SectionTitle extends StatelessWidget {
 
 class _StatsGrid extends StatelessWidget {
   const _StatsGrid({
-    required this.xp,
+    required this.points,
     required this.streakDays,
     required this.lessonsCompleted,
     required this.cardsCollected,
   });
 
-  final int xp;
+  final int points;
   final int streakDays;
   final int lessonsCompleted;
   final int cardsCollected;
@@ -151,7 +151,7 @@ class _StatsGrid extends StatelessWidget {
       mainAxisSpacing: AppSpacing.sm,
       crossAxisSpacing: AppSpacing.sm,
       children: [
-        StatTile(icon: Icons.bolt, label: 'Total XP', value: '$xp'),
+        StatTile(icon: Icons.bolt, label: 'Total points', value: '$points'),
         StatTile(
           icon: Icons.local_fire_department,
           label: 'Day streak',

@@ -122,37 +122,19 @@ plan structure, paywall copy), tracked separately. [§12](12-checklist.md)'s
 Monetization block still describes the superseded feature axis and should not
 be turned into issues as written.
 
-### The progression model is materially different
+### ~~The progression model is materially different~~ **RESOLVED**
 
-The app is still built on **XP**; the design settled on **points**. That is a
-naming difference on the surface and three genuine disagreements underneath.
+The app was built on **XP** and paid for things the design does not — a module
+bonus, and a per-day reward for replaying — where the design settled on
+**points**, paid flat and only on a first completion. The sharpest divergence
+the gap audit found.
 
-| Rule | This design | The Flutter app | Where |
-|---|---|---|---|
-| Lesson reward | **Flat 10**, identical for every lesson | **10 × step count** — a long lesson pays several times a short one | `lib/core/constants/xp_values.dart` — `forLesson(stepCount) => stepCount * perStep` |
-| Module completion | **No bonus at all** | **+25** | `XpValues.moduleCompletionBonus` |
-| Replay / practice | **Zero, always** | **+2 per run**, capped once per lesson per day | `XpValues.practiceXp` |
-| Coffee challenge | +5 on first completion | Not implemented | — |
-| Mascot state name | `points` | `RoastyState.xp` | `lib/features/companion/domain/roasty_state.dart` |
-| User-facing label | "points" | "+N XP", "Total XP" | `today_card_widget.dart`, `module_lesson_card_widget.dart` |
-
-**The practice-XP conflict is the one that matters.** [§5](05-mechanics.md) 5.1
-is explicit that replays pay nothing, and the reason is structural: points
-measure showing up, mastery measures knowing it, and a replay is supposed to
-improve the second without touching the first. Paying 2 XP per practice run
-reintroduces exactly the grind incentive that separation exists to prevent.
-
-The app also already carries the copy *"Practice runs do not change your XP,
-streak, or progress"* (`game_type_practice_widgets.dart`) while granting practice
-XP — so the app currently contradicts itself, independently of the design.
-
-**Variable-vs-flat is the second.** Scaling by lesson length means a learner is
-paid for volume rather than attendance. Whether that is wrong depends on what
-points are *for*, which the design answers and the app does not.
-
-> **Neither model is self-evidently right — this needs a decision, not a fix.**
-> The design's position is argued; the app's may simply predate it. See
-> [PRODUCT.md](PRODUCT.md) §14 for the product framing.
+Ruled in the design's favour wholesale at
+[#16](https://github.com/maximsan/brewpath/issues/16), which records the
+disagreement rule by rule, and built at
+[#160](https://github.com/maximsan/brewpath/issues/160). What ships is
+[§5](05-mechanics.md) 5.1 as written: **+10** for a lesson's first completion,
+**+5** for a Coffee Challenge's, **zero** for everything else.
 
 ### Smaller
 

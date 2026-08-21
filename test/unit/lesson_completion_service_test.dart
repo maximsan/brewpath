@@ -1,16 +1,13 @@
-import 'package:brew_path/core/constants/xp_values.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/lessons/domain/lesson_completion_service.dart';
 import 'package:brew_path/features/lessons/domain/lesson_finish_result.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/tree_frames.dart';
-import 'package:brew_path/features/progress/domain/xp_service.dart';
 import 'package:brew_path/services/analytics/noop_analytics_service.dart';
+import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/repositories/card_repository.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
-import 'package:brew_path/shared/repositories/module_progress_repository.dart';
 import 'package:brew_path/shared/repositories/progress_repository.dart';
-import 'package:brew_path/shared/repositories/settings_repository.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
@@ -28,6 +25,13 @@ Future<List<String>> _moduleLessonIds(
   return modules.firstWhere((m) => m.id == moduleId).lessonIds;
 }
 
+/// The real course with every module's Field Guide card removed from the bank.
+class _NoFieldGuideContent extends ContentRepository {
+  @override
+  Future<List<CoffeeCardModel>> getCards() async =>
+      (await super.getCards()).where((card) => card.lessonId != null).toList();
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -35,9 +39,7 @@ void main() {
   late LessonCompletionService service;
   late ContentRepository content;
   late ProgressRepository progress;
-  late SettingsRepository settings;
   late CardRepository cards;
-  late ModuleProgressRepository moduleProgress;
   late SnapshotRepository snapshots;
 
   setUp(() async {
@@ -46,19 +48,14 @@ void main() {
 
     content = ContentRepository();
     progress = ProgressRepository();
-    settings = SettingsRepository();
     cards = CardRepository();
-    moduleProgress = ModuleProgressRepository();
     snapshots = SnapshotRepository();
     service = LessonCompletionService(
       progressRepository: progress,
-      settingsRepository: settings,
       cardRepository: cards,
       contentRepository: content,
-      moduleProgressRepository: moduleProgress,
       snapshotRepository: snapshots,
       analyticsService: const NoOpAnalyticsService(),
-      xpService: const XpService(),
     );
   });
 
@@ -66,7 +63,11 @@ void main() {
     await db.close();
   });
 
-  Future<int> totalXp() async => (await settings.getSettings()).totalXp;
+  /// What the learner has banked, summed off the completion records the way
+  /// the derived total does. Nothing stores a running counter any more, so
+  /// this is the whole ledger a lesson leaves behind.
+  Future<int> bankedPoints() async => (await progress.getAllCompleted())
+      .fold<int>(0, (sum, record) => sum + record.xpEarned);
 
   /// The snapshot's day set — what the streak is derived from. Nothing stores
   /// a streak count any more, so this is the whole record a completion leaves.
@@ -136,7 +137,7 @@ void main() {
 
   group('finishing a lesson for the first time', () {
     test(
-      'first completion persists progress, XP, card, streak and score',
+      'first completion persists progress, points, card, streak and score',
       () async {
         final at = DateTime(2026, 8, 20, 12);
         final lesson = (await content.getLessonById('m1l1'))!;
@@ -147,10 +148,10 @@ void main() {
         );
 
         // A lesson pays the flat ten it authors.
-        expect(result.lessonXp, 10);
-        expect(result.moduleBonusXp, 0);
+        expect(result.pointsEarned, 10);
         expect(result.moduleCompleted, isFalse);
-        expect(await totalXp(), 10);
+        expect(result.moduleCard, isNull);
+        expect(await bankedPoints(), 10);
         expect(await cards.isCardCollected('c1'), isTrue);
         expect(await activeDays(), {epochDay(at)});
         expect(
@@ -160,7 +161,6 @@ void main() {
 
         final record = (await progress.getByLessonId('m1l1'))!;
         expect(record.isCompleted, isTrue);
-        expect(record.fullXpAwarded, isTrue);
         expect(record.mastery, const MasteryResult(correct: 4, total: 5));
       },
     );
@@ -177,38 +177,112 @@ void main() {
       );
 
       expect(replay.isReplay, isTrue);
-      expect(replay.lessonXp, 0, reason: 'the lesson pays once, ever');
-      expect(replay.moduleBonusXp, 0);
+      expect(replay.pointsEarned, 0, reason: 'the lesson pays once, ever');
       expect((await progress.getAllCompleted()).length, 1);
-      // A replay is worth the once-a-day practice reward and nothing else.
-      // The old contract reported the lesson's *previously banked* points here
-      // and recorded nothing at all, which is the defect #188 closed.
-      expect(await totalXp(), 10 + XpValues.practiceXp);
+      // Nothing at all. Replays used to pay a once-a-day practice reward,
+      // which §5.1's "replays pay 0" never allowed and which was farmable
+      // past the whole course's worth in five days (#16).
+      expect(await bankedPoints(), 10);
     });
 
     test(
-      'finishing every lesson in a module awards the module bonus once',
+      'finishing every lesson in a module pays for the lessons and no more',
       () async {
+        final ids = await _moduleLessonIds(content, 'm1');
         late LessonFinishResult last;
-        for (final id in await _moduleLessonIds(content, 'm1')) {
+        for (final id in ids) {
           last = await service.finishLesson(
             (await content.getLessonById(id))!,
             mastery: const MasteryResult(correct: 5, total: 5),
           );
         }
 
-        expect(last.moduleBonusXp, 25);
         expect(last.moduleCompleted, isTrue);
-        // Seven lessons at a flat ten, plus the 25 module bonus.
-        expect(await totalXp(), 95);
-        expect(await moduleProgress.isModuleXpAwarded('m1'), isTrue);
+        // The lessons, at a flat ten each. The module itself pays nothing —
+        // a bonus double-counts lessons already paid, which re-couples points
+        // to structure after the design separated them (§5.1, #16).
+        expect(await bankedPoints(), ids.length * 10);
       },
     );
+
+    test('finishing a module hands over its Field Guide card', () async {
+      final ids = await _moduleLessonIds(content, 'm1');
+      late LessonFinishResult last;
+      for (final id in ids) {
+        last = await service.finishLesson(
+          (await content.getLessonById(id))!,
+          mastery: const MasteryResult(correct: 5, total: 5),
+        );
+      }
+
+      final fieldGuide = await content.getCardForModule('m1');
+      expect(fieldGuide, isNotNull);
+      expect(last.moduleCard?.id, fieldGuide!.id);
+      expect(await cards.isCardCollected(fieldGuide.id), isTrue);
+    });
+
+    test('a module part-finished hands over no Field Guide card', () async {
+      final ids = await _moduleLessonIds(content, 'm1');
+      final result = await service.finishLesson(
+        (await content.getLessonById(ids.first))!,
+        mastery: const MasteryResult(correct: 5, total: 5),
+      );
+
+      final fieldGuide = (await content.getCardForModule('m1'))!;
+      expect(result.moduleCard, isNull);
+      expect(await cards.isCardCollected(fieldGuide.id), isFalse);
+    });
+
+    test('a module with no Field Guide card still reads as complete', () async {
+      // `moduleCompleted` is its own fact, not "a reward was handed over". A
+      // content bank missing a module's card must not make the app report the
+      // module unfinished — that would silently cost the recap its routing.
+      final bare = _NoFieldGuideContent();
+      final service = LessonCompletionService(
+        progressRepository: progress,
+        cardRepository: cards,
+        contentRepository: bare,
+        snapshotRepository: snapshots,
+        analyticsService: const NoOpAnalyticsService(),
+      );
+
+      late LessonFinishResult last;
+      for (final id in await _moduleLessonIds(bare, 'm1')) {
+        last = await service.finishLesson(
+          (await bare.getLessonById(id))!,
+          mastery: const MasteryResult(correct: 5, total: 5),
+        );
+      }
+
+      expect(last.moduleCompleted, isTrue);
+      expect(last.moduleCard, isNull);
+    });
+
+    test('replaying the module-closing lesson re-hands nothing', () async {
+      final ids = await _moduleLessonIds(content, 'm1');
+      for (final id in ids) {
+        await service.finishLesson(
+          (await content.getLessonById(id))!,
+          mastery: const MasteryResult(correct: 5, total: 5),
+        );
+      }
+      final banked = await bankedPoints();
+
+      final replay = await service.finishLesson(
+        (await content.getLessonById(ids.last))!,
+        mastery: const MasteryResult(correct: 5, total: 5),
+        now: DateTime(2026, 5, 22),
+      );
+
+      expect(replay.moduleCompleted, isFalse);
+      expect(replay.moduleCard, isNull);
+      expect(await bankedPoints(), banked);
+    });
   });
 
   group('finishing a lesson again', () {
-    /// Completes every lesson of `m1`, leaving the module fully done
-    /// and its completion bonus already paid out.
+    /// Completes every lesson of `m1`, leaving the module fully done and its
+    /// Field Guide card already handed over.
     Future<void> completeBeansModule() async {
       for (final id in await _moduleLessonIds(content, 'm1')) {
         await service.finishLesson(
@@ -219,7 +293,7 @@ void main() {
     }
 
     test(
-      'review does not reset completion, lesson XP, or the earned card',
+      'review does not reset completion, banked points, or the earned card',
       () async {
         final lesson = (await content.getLessonById('m1l1'))!;
         await service.finishLesson(
@@ -238,7 +312,6 @@ void main() {
         expect(after.isCompleted, isTrue);
         expect(after.xpEarned, before.xpEarned);
         expect(after.completedAt, before.completedAt);
-        expect(after.fullXpAwarded, isTrue);
         expect(await cards.isCardCollected('c1'), isTrue);
       },
     );
@@ -289,13 +362,13 @@ void main() {
       );
     });
 
-    test('review never re-awards full lesson XP', () async {
+    test('review adds nothing to what the lesson banked', () async {
       final lesson = (await content.getLessonById('m1l1'))!;
       await service.finishLesson(
         lesson,
         mastery: const MasteryResult(correct: 2, total: 5),
       );
-      final afterCompletion = await totalXp(); // the lesson's flat ten
+      final afterCompletion = await bankedPoints(); // the lesson's flat ten
 
       await service.finishLesson(
         lesson,
@@ -303,29 +376,22 @@ void main() {
         now: DateTime(2026, 5, 22),
       );
 
-      // Review adds only practice XP — never the full lesson XP again.
-      expect(await totalXp(), afterCompletion + XpValues.practiceXp);
+      expect(await bankedPoints(), afterCompletion);
     });
 
-    test(
-      'reviewing inside a completed module re-awards no module XP',
-      () async {
-        await completeBeansModule();
-        // Seven lessons at a flat ten, plus the 25 module bonus.
-        expect(await totalXp(), 95);
-        expect(await moduleProgress.isModuleXpAwarded('m1'), isTrue);
+    test('reviewing inside a completed module pays nothing', () async {
+      await completeBeansModule();
+      final banked = await bankedPoints();
 
-        final lesson = (await content.getLessonById('m1l1'))!;
-        await service.finishLesson(
-          lesson,
-          mastery: const MasteryResult(correct: 5, total: 5),
-          now: DateTime(2026, 5, 22),
-        );
+      final lesson = (await content.getLessonById('m1l1'))!;
+      await service.finishLesson(
+        lesson,
+        mastery: const MasteryResult(correct: 5, total: 5),
+        now: DateTime(2026, 5, 22),
+      );
 
-        // 275 + 2 practice XP — the 25 module bonus is not granted again.
-        expect(await totalXp(), 95 + XpValues.practiceXp);
-      },
-    );
+      expect(await bankedPoints(), banked);
+    });
 
     test('review improves the stored best score', () async {
       final lesson = (await content.getLessonById('m1l1'))!;
@@ -366,42 +432,8 @@ void main() {
         const MasteryResult(correct: 9, total: 10),
       );
     });
-
-    test('practice XP is granted at most once per lesson per day', () async {
-      final lesson = (await content.getLessonById('m1l1'))!;
-      await service.finishLesson(
-        lesson,
-        mastery: const MasteryResult(correct: 2, total: 5),
-      );
-      final base = await totalXp(); // the lesson's flat ten
-
-      final first = await service.finishLesson(
-        lesson,
-        mastery: const MasteryResult(correct: 2, total: 5),
-        now: DateTime(2026, 5, 22, 9),
-      );
-      expect(first.practiceXpAwarded, isTrue);
-      expect(await totalXp(), base + XpValues.practiceXp);
-
-      // Same calendar day → no further practice XP.
-      final sameDay = await service.finishLesson(
-        lesson,
-        mastery: const MasteryResult(correct: 2, total: 5),
-        now: DateTime(2026, 5, 22, 20),
-      );
-      expect(sameDay.practiceXpAwarded, isFalse);
-      expect(await totalXp(), base + XpValues.practiceXp);
-
-      // Next calendar day → practice XP again.
-      final nextDay = await service.finishLesson(
-        lesson,
-        mastery: const MasteryResult(correct: 2, total: 5),
-        now: DateTime(2026, 5, 23, 8),
-      );
-      expect(nextDay.practiceXpAwarded, isTrue);
-      expect(await totalXp(), base + 2 * XpValues.practiceXp);
-    });
   });
+
   group('the Coffee Tree grows', () {
     Future<int> storedStage() async =>
         (await snapshots.read()).clearedByReset.treeStage;

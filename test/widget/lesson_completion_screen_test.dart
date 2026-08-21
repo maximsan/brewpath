@@ -35,6 +35,15 @@ final ModuleModel _testModule = testModule(
 
 final CoffeeCardModel _testCard = testCoffeeCard();
 
+/// The module's own collectible — what the module moment hands over now that
+/// it pays no bonus (§5.1, #16).
+final CoffeeCardModel _testFieldGuide = testCoffeeCard(
+  id: 'fg1',
+  title: 'Beans Field Guide',
+  lessonId: null,
+  moduleId: 'm1',
+);
+
 class _FakeContent extends ContentRepository {
   @override
   Future<List<ModuleModel>> getModules() async => [_testModule];
@@ -43,7 +52,10 @@ class _FakeContent extends ContentRepository {
   Future<List<LessonModel>> getLessons() async => _testLessons;
 
   @override
-  Future<List<CoffeeCardModel>> getCards() async => [_testCard];
+  Future<List<CoffeeCardModel>> getCards() async => [
+    _testCard,
+    _testFieldGuide,
+  ];
 
   @override
   Future<CoffeeCardModel?> getCardForLesson(String lessonId) async =>
@@ -117,7 +129,7 @@ void main() {
   // LessonCompletionScreen must invalidate every completion-derived provider —
   // otherwise their stats keep showing pre-completion values.
   testWidgets(
-    'completing a lesson refreshes Total XP, streak, lessons and cards',
+    'completing a lesson refreshes the points total, streak, lessons and cards',
     (tester) async {
       final container = _buildContainer();
       addTearDown(container.dispose);
@@ -126,7 +138,7 @@ void main() {
       // completion, so the test observes the invalidation triggered by
       // LessonCompletionScreen rather than an unrelated fresh recompute.
       final subs = [
-        container.listen(totalXpProvider, (_, _) {}),
+        container.listen(totalPointsProvider, (_, _) {}),
         container.listen(streakProvider, (_, _) {}),
         container.listen(completedLessonsProvider, (_, _) {}),
         container.listen(collectedCardsProvider, (_, _) {}),
@@ -137,8 +149,8 @@ void main() {
         }
       });
 
-      final xpBefore = await tester.runAsync(
-        () => container.read(totalXpProvider.future),
+      final pointsBefore = await tester.runAsync(
+        () => container.read(totalPointsProvider.future),
       );
       final streakBefore = await tester.runAsync(
         () => container.read(streakProvider.future),
@@ -149,7 +161,7 @@ void main() {
       final cardsBefore = await tester.runAsync(
         () => container.read(collectedCardsProvider.future),
       );
-      expect(xpBefore, 0);
+      expect(pointsBefore, 0);
       expect(streakBefore, 0);
       expect(lessonsBefore, isEmpty);
       expect(cardsBefore, isEmpty);
@@ -167,15 +179,15 @@ void main() {
       );
       await settleLoaders(tester);
       expect(find.text('Lesson complete!'), findsOneWidget);
-      // First lesson of m1 — the flat ten it authors. Module bonus
-      // doesn't fire yet because the rest of the module is still uncompleted.
-      expect(find.text('+10 XP'), findsOneWidget);
+      // First lesson of m1 — the flat ten it authors. The module moment does
+      // not fire yet because the rest of the module is still uncompleted.
+      expect(find.text('+10 PTS'), findsOneWidget);
       expect(find.textContaining('Module complete!'), findsNothing);
 
       // The completion invalidated each provider, so they now resolve to the
       // post-completion state instead of the stale pre-completion values.
-      final xpAfter = await tester.runAsync(
-        () => container.read(totalXpProvider.future),
+      final pointsAfter = await tester.runAsync(
+        () => container.read(totalPointsProvider.future),
       );
       final streakAfter = await tester.runAsync(
         () => container.read(streakProvider.future),
@@ -186,17 +198,17 @@ void main() {
       final cardsAfter = await tester.runAsync(
         () => container.read(collectedCardsProvider.future),
       );
-      expect(xpAfter, 10); // m1l1 pays the flat ten it authors
+      expect(pointsAfter, 10); // m1l1 pays the flat ten it authors
       expect(streakAfter, 1);
       expect(lessonsAfter, hasLength(1));
       expect(cardsAfter, contains('c1'));
     },
   );
 
-  // Finishing the last lesson of a module banks the lesson XP *plus* a 25 XP
-  // module-completion bonus. The completion screen must surface that bonus so
-  // the displayed XP reconciles with the profile total.
-  testWidgets('completion screen shows the module-completion bonus', (
+  // Finishing the last lesson of a module pays the lesson's flat ten and
+  // nothing more. What the module gives is its Field Guide card, so the screen
+  // must show one number and one extra card — never a second number.
+  testWidgets('completion screen shows the module Field Guide, not a bonus', (
     tester,
   ) async {
     final container = _buildContainer();
@@ -210,7 +222,7 @@ void main() {
 
     // Finish every other lesson of module_beans directly via the service so
     // the screen below completes the *last* remaining lesson and triggers the
-    // module bonus.
+    // module moment.
     final content = container.read(contentRepositoryProvider);
     final service = container.read(lessonCompletionServiceProvider);
     for (final id in const [
@@ -242,8 +254,14 @@ void main() {
     await settleLoaders(tester);
 
     expect(find.text('Lesson complete!'), findsOneWidget);
-    expect(find.text('+10 XP'), findsOneWidget); // lesson_green_coffee, 5 steps
-    expect(find.text('+25 XP · Module complete!'), findsOneWidget);
+    // One number, and it is the lesson's. The bonus this replaced added a
+    // second — twenty-five for the module, double-counting lessons already
+    // paid for (#16).
+    expect(find.text('+10 PTS'), findsOneWidget);
+    expect(find.text('Module complete!'), findsOneWidget);
+    expect(find.textContaining('+25'), findsNothing);
+    // The module's reward is the card.
+    expect(find.text('Beans Field Guide'), findsOneWidget);
   });
 
   // The first-completion path shows the celebratory companion in place of the
@@ -269,9 +287,10 @@ void main() {
     expect(find.byType(Companion), findsOneWidget);
   });
 
-  // Review mode never re-awards full lesson XP; it shows the best score and
-  // grants practice XP on the first review of the day.
-  testWidgets('review mode shows best score and practice XP', (tester) async {
+  // Review mode pays nothing at all — not the lesson's points, and not the
+  // per-day practice reward it used to grant (§5.1, #16). It shows the best
+  // score and no number.
+  testWidgets('review mode shows best score and pays nothing', (tester) async {
     final container = _buildContainer();
     addTearDown(container.dispose);
 
@@ -312,8 +331,11 @@ void main() {
     // {4,5} is one wrong (Solid); {2,5} is three wrong (Needs Practice).
     // The better band wins, so the review result replaces the completion's.
     expect(find.text('Best score: 4 / 5'), findsOneWidget);
-    expect(find.text('+2 XP · Practice'), findsOneWidget);
-    // A review must not re-award full lesson XP.
+    // No payout line of any kind: the screen used to read '+2 PTS · Practice'
+    // or 'Practice points already earned today'.
+    expect(find.textContaining('PTS'), findsNothing);
+    expect(find.textContaining('Practice'), findsNothing);
+    // A review must not re-award the lesson's points.
     expect(find.textContaining('Lesson complete!'), findsNothing);
   });
 

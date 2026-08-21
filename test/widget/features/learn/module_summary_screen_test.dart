@@ -14,11 +14,17 @@ import '../../../support/content_fixtures.dart';
 
 final ModuleModel _module = testModule(lessonIds: const ['m1l1']);
 final CoffeeCardModel _card = testCoffeeCard(title: 'First Card');
+final CoffeeCardModel _fieldGuide = testCoffeeCard(
+  id: 'fg1',
+  title: 'Beans Field Guide',
+  lessonId: null,
+  moduleId: 'm1',
+);
 
 final _summary = ModuleSummary(
   module: _module,
   earnedCards: [_card],
-  totalXp: 75,
+  fieldGuide: _fieldGuide,
 );
 
 Widget _app(Widget home) => MaterialApp(
@@ -30,30 +36,55 @@ Widget _app(Widget home) => MaterialApp(
 );
 
 void main() {
-  testWidgets('renders the companion, total XP and earned cards', (
+  Widget harness(ModuleSummary summary) => ProviderScope(
+    overrides: [
+      moduleSummaryProvider('module_beans').overrideWith((ref) => summary),
+      streakProvider.overrideWith((ref) => 0),
+      companionLinesProvider.overrideWith(
+        (ref) => CompanionLines.fromJson(const {
+          'moduleComplete': ['Whole module brewed!'],
+        }),
+      ),
+    ],
+    child: _app(const ModuleSummaryScreen(moduleId: 'module_beans')),
+  );
+
+  testWidgets('renders the companion, Field Guide and earned cards', (
     tester,
   ) async {
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          moduleSummaryProvider('module_beans').overrideWith((ref) => _summary),
-          streakProvider.overrideWith((ref) => 0),
-          companionLinesProvider.overrideWith(
-            (ref) => CompanionLines.fromJson(const {
-              'moduleComplete': ['Whole module brewed!'],
-            }),
-          ),
-        ],
-        child: _app(const ModuleSummaryScreen(moduleId: 'module_beans')),
-      ),
-    );
+    await tester.pumpWidget(harness(_summary));
     await tester.pump();
 
     expect(find.text('Module complete!'), findsOneWidget);
     expect(find.text('Beans'), findsOneWidget);
-    expect(find.text('+75 XP'), findsOneWidget);
     expect(find.byType(Companion), findsOneWidget);
+    expect(find.text('Beans Field Guide'), findsOneWidget);
+    expect(find.text('Field Guide unlocked'), findsOneWidget);
     // The earned card surfaces as a badge with its title as the semantic label.
     expect(find.bySemanticsLabel('First Card'), findsOneWidget);
+  });
+
+  testWidgets('shows no points line — the module pays nothing', (
+    tester,
+  ) async {
+    await tester.pumpWidget(harness(_summary));
+    await tester.pump();
+
+    // The recap used to lead with the module's summed lesson points plus a
+    // bonus of twenty-five. The module pays nothing (§5.1, #16).
+    expect(find.textContaining('PTS'), findsNothing);
+    expect(find.textContaining('XP'), findsNothing);
+  });
+
+  testWidgets('omits the Field Guide when it has not been collected', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      harness(ModuleSummary(module: _module, earnedCards: [_card])),
+    );
+    await tester.pump();
+
+    expect(find.text('Field Guide unlocked'), findsNothing);
+    expect(find.text('Module complete!'), findsOneWidget);
   });
 }
