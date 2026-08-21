@@ -52,14 +52,18 @@ Best-ever **never downgrades** on a worse replay. A replay *can* improve mastery
 
 The freeze is a **mechanic, not a setting** — there is deliberately no toggle.
 
-> **What is and is not implemented.** ⚠️ **`FREEZE_CAP = 2` below is the
-> prototype's constant, not the shipping value — the cap is 1.** And the
-> lifecycle around it has **never executed**: `setFreezesSpent` is called only in
+> **What is and is not implemented.** The **visible** freeze surfaces now match
+> the ruled §10 set — the one-off authorized edit
+> ([#196](https://github.com/maximsan/brewpath/issues/196)): `FREEZE_CAP = 1`,
+> the `FreezeTokens` pips deleted (the status line and the week strip's
+> `FreezeMark` carry the state), a single-branch save notice, and the streak
+> screen's Roasty beat playing once per session instead of on every open. The
+> lifecycle has still **never executed**: `setFreezesSpent` is called only in
 > reset paths, so no freeze has ever been earned or spent here. Read this block
 > as "what the code contains", not "what has been observed to work".
 >
 > The freeze system is real code, not a
-> sketch: `FREEZE_EARN_DAYS = 7`, `FREEZE_CAP = 2`, the derived held count, the
+> sketch: `FREEZE_EARN_DAYS = 7`, `FREEZE_CAP = 1`, the derived held count, the
 > `nextFreezeIn` countdown, the `frozenDays` / `freezesSpent` split, the
 > save-notice trigger, and the week strip's streak-derived fill all execute.
 >
@@ -74,16 +78,15 @@ The freeze is a **mechanic, not a setting** — there is deliberately no toggle.
 > Treat that second quote as a spec line, not a caveat — it names the exact bug
 > a naive port would introduce.
 
-- ⚠️ **The freeze rules changed. Do not port the prototype's.** `docs/decisions.md` §10 ships whole, and it **disagrees with the prototype on the cap and the accrual** — settled at [Streak freeze: §10 now rules nine behaviours](https://github.com/maximsan/brewpath/issues/58), which corrects [Streak and freeze](https://github.com/maximsan/brewpath/issues/17).
-  - **Cap is 1 held, not 2.** The prototype's `freezesHeld = clamp(0..2, …)` is superseded.
-  - **No accrual while holding one** — a user sitting on an unspent freeze earns nothing toward the next.
-  - **7 fresh days after each use** — the counter restarts on spend rather than continuing.
-  - Spent **automatically** when a day is missed. The streak survives; the day renders as covered in the week strip.
+- ⚠️ **Do not port the prototype's freeze *derivation*.** `docs/decisions.md` §10 ships whole — settled at [Streak freeze: §10 now rules nine behaviours](https://github.com/maximsan/brewpath/issues/58), which corrects [Streak and freeze](https://github.com/maximsan/brewpath/issues/17). The visible surfaces match it since [#196](https://github.com/maximsan/brewpath/issues/196), but the underlying math is still #17's, unported on purpose (it never executes — the clock is frozen):
+  - `freezesHeld = clamp(0..1, floor(streak / 7) − spent)` re-grants from the streak total; §10 requires **no accrual while holding** and **7 fresh days after each use**.
+  - `nextFreezeIn = 7 − streak % 7` counts from the streak modulo, not from the post-spend run.
+  - Ruled behaviour, unchanged: spent **automatically** when a day is missed. The streak survives; the day renders as covered in the week strip.
 - Two deliberately-separate facts:
   - `frozenDays` — which days of *this week* a freeze covered. Presentational, clears on week rollover.
-  - `freezesSpent` — lifetime count. Drives held count. **Intended to clear on Reset Progress; in the prototype it does not** — see 5.12.
+  - `freezesSpent` — lifetime count. Drives held count. Clears on Reset Progress via the keyless registry row — see 5.12.
   (Conflating them was a shipped bug: spent freezes silently refunded themselves weekly.)
-- The **save notice** shows once on the Learn tab after a freeze covers a miss, then is dismissible. Framing is reassurance first, cost second — "someone returning after a miss is the most fragile user in the app."
+- The **save notice** shows once on the Learn tab after a freeze covers a miss, then is dismissible. Framing is reassurance first, cost second — "someone returning after a miss is the most fragile user in the app." Under cap 1 its copy has one branch — *"You'll earn another in 7 days"* (the *"N still held"* branch was dead code, deleted in #196).
 - Week strip filled days **derive from the streak**, clipped to week start (fixed defect: they used to be hardcoded Mon–Fri and could lie).
 - Streak is **free forever** — paid streak protection was explicitly dropped.
 - `StreakScreen` + `ShareStreakSheet` (share targets) exist.
