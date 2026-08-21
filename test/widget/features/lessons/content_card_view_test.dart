@@ -351,7 +351,7 @@ void main() {
       'visual': ContentCard.visual(
         label: 'L',
         title: 'T',
-        variant: 'v',
+        subject: 'v',
         caption: 'C',
       ),
       'practical': ContentCard.practical(

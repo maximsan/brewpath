@@ -44,8 +44,23 @@ const _expectedBanks = [
 /// the cross-file dependency before evaluating.
 const _bagpickFormatId = 'g-bagpick';
 
-/// Every format in the prototype's mini-game catalog.
-const _formatCount = 7;
+/// The seven mini-games that shipped before the catalog grew.
+///
+/// **Frozen ids, not a count.** ADR-0005 grows the catalog to roughly a dozen
+/// games and keeps these seven, because they are persisted in stored day-sets
+/// and cannot be renumbered. Asserting a size instead would fail the next time
+/// a game is authored (#162) while proving nothing about the ids that matter —
+/// the mistake this repo has already made with the points ceiling and the
+/// collectible count.
+const _frozenGameIds = <String>[
+  'g-match',
+  'g-flavor',
+  'g-quiz',
+  'g-bagpick',
+  'g-tastefix',
+  'g-calibrate',
+  'g-sequence',
+];
 
 /// Every authored entry in the prototype's card-kind help map.
 const _helpKindCount = 10;
@@ -207,7 +222,7 @@ void main() {
     expectRefusal(source, naming: ['cM1-renamed']);
   });
 
-  test('the catalog carries all seven formats and the help map is emitted', () {
+  test('the catalog keeps every frozen game id and emits the help map', () {
     final out = dir('out');
 
     expect(_run(_prototype, out).exitCode, 0);
@@ -215,7 +230,16 @@ void main() {
     final catalog =
         jsonDecode(File(p.join(out, 'mini_games.json')).readAsStringSync())
             as Map<String, dynamic>;
-    expect((catalog['items'] as List).length, _formatCount);
+    final ids = (catalog['items'] as List)
+        .cast<Map<String, dynamic>>()
+        .map((game) => game['id'])
+        .toList();
+    expect(
+      ids,
+      containsAll(_frozenGameIds),
+      reason: 'a frozen id is persisted in stored day-sets and cannot be lost',
+    );
+    expect(ids.toSet(), hasLength(ids.length), reason: 'ids are unique');
 
     final help =
         jsonDecode(File(p.join(out, 'card_kind_help.json')).readAsStringSync())
@@ -453,7 +477,7 @@ void main() {
     expectRefusal(source, naming: ['CARD_KIND_HELP', 'lesson.jsx']);
   });
 
-  test('every format carries non-empty rounds, bagpick included', () {
+  test('every game carries non-empty rounds, bagpick included', () {
     final out = dir('out');
 
     expect(_run(_prototype, out).exitCode, 0);
@@ -464,7 +488,18 @@ void main() {
             )
             as Map<String, dynamic>;
     final items = (content['items'] as List).cast<Map<String, dynamic>>();
-    expect(items.length, _formatCount);
+    // The two banks describe the same catalog, whatever its size: a game in
+    // the catalog with no rounds is the failure worth catching.
+    final catalog =
+        jsonDecode(File(p.join(out, 'mini_games.json')).readAsStringSync())
+            as Map<String, dynamic>;
+    expect(
+      items.map((item) => item['id']).toSet(),
+      (catalog['items'] as List)
+          .cast<Map<String, dynamic>>()
+          .map((game) => game['id'])
+          .toSet(),
+    );
     for (final item in items) {
       expect(
         item['rounds'] as List,

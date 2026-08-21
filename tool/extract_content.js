@@ -163,7 +163,7 @@ function main(argv) {
     banks = {
       modules: evaluateDeclaration(data, "MODULES", "data.jsx"),
       lessons: evaluateDeclaration(data, "LESSONS", "data.jsx"),
-      collectibles: evaluateDeclaration(data, "COLLECTION", "data.jsx"),
+      collectibles: evaluateDeclaration(data, "COLLECTIBLES", "data.jsx"),
       rewards: evaluateDeclaration(data, "MODULE_REWARDS", "data.jsx"),
       terms: evaluateDeclaration(dictionary, "DICT_TERMS", "dictionary-data.jsx"),
       categories: evaluateDeclaration(

@@ -10,6 +10,8 @@
       "label": "BEANS",
       "title": "Beans",
       "glyph": "beans",
+      "art": "assets/modules/m1-beans.png",
+      "artPos": "50% 42%",
       "locked": false,
       "lessons": [
         {
@@ -75,6 +77,8 @@
       "label": "PROCESSING",
       "title": "Processing",
       "glyph": "processing",
+      "art": "assets/modules/m2-processing.png",
+      "artPos": "50% 62%",
       "locked": true,
       "lessons": [
         {
@@ -133,6 +137,8 @@
       "label": "ROASTING",
       "title": "Roasting",
       "glyph": "roasting",
+      "art": "assets/modules/m3-roasting.png",
+      "artPos": "50% 28%",
       "locked": true,
       "lessons": [
         {
@@ -191,6 +197,8 @@
       "label": "GRIND",
       "title": "Grind",
       "glyph": "grind",
+      "art": "assets/modules/m4-grind.png",
+      "artPos": "50% 42%",
       "locked": true,
       "lessons": [
         {
@@ -249,6 +257,8 @@
       "label": "BREW",
       "title": "Brew",
       "glyph": "brewing",
+      "art": "assets/modules/m5-brew.png",
+      "artPos": "50% 56%",
       "locked": true,
       "lessons": [
         {

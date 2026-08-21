@@ -34,7 +34,7 @@
       "unlock": {
         "module": "m1"
       },
-      "kind": "guideBeans"
+      "kind": "fieldGuideBeans"
     },
     {
       "id": "c-m2l1",
@@ -138,7 +138,7 @@
       "unlock": {
         "module": "m2"
       },
-      "kind": "guideProcess"
+      "kind": "fieldGuideProcess"
     },
     {
       "id": "cM3",
@@ -146,7 +146,7 @@
       "unlock": {
         "module": "m3"
       },
-      "kind": "guideRoast"
+      "kind": "fieldGuideRoast"
     },
     {
       "id": "cM4",
@@ -154,7 +154,7 @@
       "unlock": {
         "module": "m4"
       },
-      "kind": "guideGrind"
+      "kind": "fieldGuideGrind"
     },
     {
       "id": "cM5",
@@ -162,7 +162,7 @@
       "unlock": {
         "module": "m5"
       },
-      "kind": "guideBrew"
+      "kind": "fieldGuideBrew"
     },
     {
       "id": "c-m1l4",
