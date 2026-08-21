@@ -1,17 +1,13 @@
 import 'package:brew_path/features/learn/domain/keep_sharp.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp_completion.dart';
-import 'package:brew_path/features/progress/domain/mastery.dart';
-import 'package:brew_path/shared/storage/progress_record.dart';
+import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-ProgressRecord _record({DateTime? practicedAt}) => ProgressRecord(
-  lessonId: 'm1l1',
-  isCompleted: true,
-  xpEarned: 10,
-  completedAt: DateTime(2026, 8, 2),
-  mastery: const MasteryResult(correct: 1, total: 1),
-  lastPracticeXpDate: practicedAt,
-);
+/// One day's entries, minted the way the activity layer mints them.
+Set<String> _entries(List<(ActivityType, String)> completions) => {
+  for (final (type, subject) in completions)
+    activityEntry(type: type, token: mintActivityToken(), subject: subject),
+};
 
 void main() {
   group('keepSharpRuleMet', () {
@@ -66,22 +62,50 @@ void main() {
   });
 
   group('anyReplayToday', () {
-    final now = DateTime(2026, 8, 18, 14);
-
-    test('a practice stamp from today counts', () {
-      final records = [_record(practicedAt: DateTime(2026, 8, 18, 9))];
-
-      expect(anyReplayToday(records, now), isTrue);
+    test("a replay among the day's entries counts", () {
+      expect(
+        anyReplayToday(_entries([(ActivityType.replay, 'm1l1')])),
+        isTrue,
+      );
     });
 
-    test("yesterday's practice does not", () {
-      final records = [_record(practicedAt: DateTime(2026, 8, 17, 23))];
-
-      expect(anyReplayToday(records, now), isFalse);
+    test('a day holding no entries at all does not', () {
+      expect(anyReplayToday(const {}), isFalse);
     });
 
-    test('a never-practiced record does not', () {
-      expect(anyReplayToday([_record()], now), isFalse);
+    test('a first completion is not a replay', () {
+      expect(
+        anyReplayToday(_entries([(ActivityType.lesson, 'm1l1')])),
+        isFalse,
+      );
+    });
+
+    test('another practice type on the same day is not a replay', () {
+      expect(
+        anyReplayToday(
+          _entries([
+            (ActivityType.miniGame, 'g-quiz'),
+            (ActivityType.lesson, 'm1l2'),
+          ]),
+        ),
+        isFalse,
+      );
+    });
+
+    test('a replay alongside other work still counts', () {
+      expect(
+        anyReplayToday(
+          _entries([
+            (ActivityType.miniGame, 'g-quiz'),
+            (ActivityType.replay, 'm1l1'),
+          ]),
+        ),
+        isTrue,
+      );
+    });
+
+    test('an entry naming a type this build does not know is inert', () {
+      expect(anyReplayToday({'seance:token-1:m1l1'}), isFalse);
     });
   });
 }
