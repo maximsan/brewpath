@@ -6,7 +6,7 @@
 /// is testable without staging an asset.
 ///
 /// Why the app refuses a mismatch rather than coping with one, and what would
-/// end the arrangement, is ADR-0005.
+/// end the arrangement, is ADR-0006.
 library;
 
 import 'package:brew_path/shared/repositories/content_assembly.dart';

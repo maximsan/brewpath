@@ -172,18 +172,28 @@ as their checks re-run — no rebase needed.
 ### Merging
 
 ```bash
-gh pr merge 42 --repo maximsan/brewpath --merge --delete-branch
+gh pr merge 42 --repo maximsan/brewpath --squash --delete-branch
 ```
 
 | Flag | Result |
 | --- | --- |
-| `--merge` | keeps every commit, adds a merge commit |
 | `--squash` | collapses the branch into one commit |
+| `--merge` | keeps every commit, adds a merge commit |
 | `--rebase` | replays commits onto the base, no merge commit |
 
-Prefer `--merge` when the branch's commits map to separate issues — the split is
-information a future reader wants, and squashing a large mechanical change into
-one commit makes `git bisect` less useful.
+**`--squash` is the norm.** One PR becomes one commit on `main`, titled with the
+PR title and its `(#number)`, so the history reads as a list of shipped changes
+rather than of working steps. The branch's own commits stay in the PR, which is
+where the step-by-step belongs.
+
+Two consequences worth knowing, because both look alarming and are not:
+
+- **A branch's commit SHAs never appear on `main`.** After a squash merge,
+  `git log origin/main..your-branch` still lists them — the branch looks
+  unmerged when its content shipped. Compare content (`git diff origin/main
+  your-branch -- <paths>`), not commits, before deleting anything.
+- **`git branch -d` warns** that the branch is not merged, for the same reason.
+  Confirm the content landed, then delete it.
 
 ---
 

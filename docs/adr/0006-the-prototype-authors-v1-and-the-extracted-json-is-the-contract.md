@@ -1,4 +1,4 @@
-# ADR-0005: The prototype authors v1, and the extracted JSON is the versioned contract
+# ADR-0006: The prototype authors v1, and the extracted JSON is the versioned contract
 
 - **Status:** accepted
 - **Date:** 2026-08-21

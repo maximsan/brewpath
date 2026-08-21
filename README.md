@@ -132,7 +132,7 @@ to read. Before changing what the extractor emits, read _Bumping the schema
 version_ in the script's header — a rename or a change of meaning is breaking
 even when the shape is unchanged, and the number has to move on both the
 JavaScript and the Dart side. Why the prototype authors content at all, and what
-would end that, is [ADR-0005](docs/adr/0005-the-prototype-authors-v1-and-the-extracted-json-is-the-contract.md).
+would end that, is [ADR-0006](docs/adr/0006-the-prototype-authors-v1-and-the-extracted-json-is-the-contract.md).
 
 ```bash
 node tool/extract_content.js                          # the usual run
