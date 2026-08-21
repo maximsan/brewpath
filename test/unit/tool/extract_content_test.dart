@@ -158,8 +158,13 @@ void main() {
   });
 
   // The version is written in JavaScript and read in Dart, which cannot share a
-  // constant. This is what makes bumping one side alone a failing test here
-  // rather than a refusal on a learner's device.
+  // constant, so bumping one side alone has to fail here rather than on a
+  // learner's device.
+  //
+  // Strictly this is implied by the two tests above — byte-identical committed
+  // output, and a fresh run stamped with the Dart constant. It is kept for what
+  // it buys on failure: it needs no `node`, and it names the disagreement
+  // instead of reporting a diff in a 233KB file.
   test('the committed banks carry the version this build reads', () {
     for (final bank in _expectedBanks) {
       expect(

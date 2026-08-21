@@ -117,7 +117,7 @@ Break-glass only — forces a full re-download (minutes).
 
 Node script (no dependencies). Run after the design prototype's (`prototype/`)
 authored content changes. Writes ten banks — modules, lessons, collectibles,
-dictionary terms, brew challenges, mini games, card-kind help, mini-game
+dictionary terms, Coffee Challenges, mini games, card-kind help, mini-game
 content, grove varieties and grove lights — validating the whole
 cross-reference graph first, and only then writing `assets/content/generated/`.
 

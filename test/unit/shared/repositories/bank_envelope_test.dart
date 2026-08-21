@@ -72,38 +72,55 @@ void main() {
     });
 
     test('the refusal names the asset and both versions', () {
-      Object? thrown;
-      try {
-        bankRecords(envelope(version: 99), assetPath: asset);
-      } on ContentFormatException catch (error) {
-        thrown = error;
-      }
-
       // Whoever reads this line has to tell, without opening anything, whether
-      // the bank is stale or the app is.
+      // the bank is stale or the app is. Asserted as whole phrases: a bare
+      // match on the number would pass on a message that printed any stray 1.
       expect(
-        '$thrown',
-        allOf(
-          contains(asset),
-          contains('99'),
-          contains('$contentSchemaVersion'),
+        () => bankRecords(envelope(version: 99), assetPath: asset),
+        throwsA(
+          isA<ContentFormatException>().having(
+            (error) => error.message,
+            'message',
+            allOf(
+              contains(asset),
+              contains('carries schemaVersion 99'),
+              contains('this build reads schemaVersion $contentSchemaVersion'),
+            ),
+          ),
         ),
       );
     });
 
-    test('an unstamped bank throws rather than defaulting', () {
+    test('an unstamped bank is refused, and says so in those words', () {
       // This is exactly the output that shipped before the version existed, so
       // absence has to fail — treating it as "probably fine" would wave through
-      // the one case the version was added to catch.
+      // the one case the version was added to catch. It is also the refusal a
+      // genuinely stale build produces, so the wording is worth pinning.
       expect(
         () => bankRecords(envelope(version: null), assetPath: asset),
-        throwsA(isA<ContentFormatException>()),
+        throwsA(
+          isA<ContentFormatException>().having(
+            (error) => error.message,
+            'message',
+            contains('carries no schemaVersion'),
+          ),
+        ),
       );
     });
 
     test('a version that is not a number throws', () {
       expect(
         () => bankRecords(envelope(version: '1'), assetPath: asset),
+        throwsA(isA<ContentFormatException>()),
+      );
+    });
+
+    test('a version that decoded as a double throws', () {
+      // `1.0 == 1` is true of Dart's numbers, so without a type check this
+      // would pass while the string '1' above is refused — an inconsistency
+      // that would only ever show up in a hand-edited bank.
+      expect(
+        () => bankRecords(envelope(version: 1.0), assetPath: asset),
         throwsA(isA<ContentFormatException>()),
       );
     });
