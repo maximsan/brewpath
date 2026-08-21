@@ -56,6 +56,7 @@ sealed class ContentCard with _$ContentCard {
   const factory ContentCard.visual({
     required String label,
     required String title,
+
     /// The axis this guide names — `roast`, `grind`, `variety` — and the value
     /// its `g:` save key carries.
     ///

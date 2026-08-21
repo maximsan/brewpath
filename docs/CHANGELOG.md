@@ -44,6 +44,17 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The practice catalog nearly doubles — 7 mini-games become 13.** Six new
+  games join the seven that shipped, each pairing an existing mechanic with a
+  course topic it suits: a second match on washed versus natural, a quiz on
+  roast basics, origin signatures on flavour, espresso on taste-fix, a
+  grind-by-brewer calibration and a V60 sequence.
+
+  The original seven keep their ids. They are written into stored day-sets, so
+  renumbering them would silently rewrite what a learner already played.
+
+  The Coffee Dictionary gains a term and another full explanation.
+
 - **The bundled content now states which contract it satisfies.** Every
   generated bank carries a schema version, the extractor stamps it, and the app
   refuses a bank it was not built to read — naming the file and both versions
