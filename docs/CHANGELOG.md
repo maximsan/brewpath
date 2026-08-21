@@ -142,9 +142,11 @@ You can always edit this file by hand instead — the helpers just save effort.
   course. Under the free plan's two-new-lessons-a-day cap, grinding replays was
   strictly the faster route to a bigger number.
 
-  **Totals therefore fall by roughly fivefold. That is the intent, not a
-  regression.** Replays are not left unrewarded — one can still lift mastery,
-  and one still protects the streak.
+  **A finished course therefore banks 380 rather than 505 — about a quarter
+  less, and more than that for anyone who had been replaying, because the
+  practice reward had no ceiling. That is the intent, not a regression.**
+  Replays are not left unrewarded — one can still lift mastery, and one still
+  protects the streak.
 
 - **The points total is derived, never stored.** It used to be a counter on the
   settings row that every payout incremented. Both of its inputs were already

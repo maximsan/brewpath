@@ -124,35 +124,17 @@ be turned into issues as written.
 
 ### ~~The progression model is materially different~~ **RESOLVED**
 
-The app was built on **XP**; the design settled on **points**. That was a naming
-difference on the surface and three genuine disagreements underneath — the
-sharpest divergence the gap audit found.
+The app was built on **XP** and paid for things the design does not — a module
+bonus, and a per-day reward for replaying — where the design settled on
+**points**, paid flat and only on a first completion. The sharpest divergence
+the gap audit found.
 
-**Ruled in the design's favour, wholesale, and built.**
-[#16](https://github.com/maximsan/brewpath/issues/16) adopted §5.1 as written
-and [#160](https://github.com/maximsan/brewpath/issues/160) shipped it. The
-table below is kept as the **superseded** state, so the disagreement stays
-legible rather than being rediscovered.
-
-| Rule | This design | The app before #160 | Now |
-|---|---|---|---|
-| Lesson reward | **Flat 10**, identical for every lesson | **10 × step count** — a long lesson paid several times a short one | Flat, and read off the lesson's own authored `points` |
-| Module completion | **No bonus at all** | **+25** | No bonus. The module moment hands over its **Field Guide card**, which nothing had ever collected |
-| Replay / practice | **Zero, always** | **+2 per run**, capped once per lesson per day | Zero |
-| Coffee challenge | +5 on first completion | Not implemented | +5 on first completion |
-| Mascot state name | `points` | `RoastyState.xp` | Unchanged — #16 ruled internal keys stay, matching the design's own source, which is still `state.xp` |
-| User-facing label | "points" | "+N XP", "Total XP" | "+N PTS" on reward surfaces, "points" in prose; a test fails if *XP* returns |
-
-**Why the practice payout was the one that mattered.** [§5](05-mechanics.md) 5.1
-is explicit that replays pay nothing, and the reason is structural: points
-measure showing up, mastery measures knowing it, and a replay is supposed to
-improve the second without touching the first. The cap was *per lesson per
-day*, so it scaled with the course — at thirty-two lessons it paid 64/day for
-pure repetition against 320 for learning everything.
-
-The app also carried the copy *"Practice runs do not change your XP, streak, or
-progress"* while granting practice XP, so it contradicted itself independently
-of the design.
+Ruled in the design's favour wholesale at
+[#16](https://github.com/maximsan/brewpath/issues/16), which records the
+disagreement rule by rule, and built at
+[#160](https://github.com/maximsan/brewpath/issues/160). What ships is
+[§5](05-mechanics.md) 5.1 as written: **+10** for a lesson's first completion,
+**+5** for a Coffee Challenge's, **zero** for everything else.
 
 ### Smaller
 
