@@ -3,6 +3,11 @@
 - **Status:** accepted
 - **Date:** 2026-08-16
 
+> **Vocabulary note (2026-08-20):** "format" here means what
+> [ADR-0005](0005-mini-games-are-many-games-per-kind-gated-by-topic.md) later
+> named a **game**. The invariant below survives and is restated there in the
+> new Kind/Game vocabulary.
+
 ## Context
 
 Three decisions, each sound alone, together create an invariant that no single
