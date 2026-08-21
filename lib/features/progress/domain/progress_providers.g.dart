@@ -79,8 +79,8 @@ String _$totalPointsHash() => r'23c4d5de9b6d4b471eeec26efd78d5fc7adf278a';
 /// The streak, the freeze and the covered days, derived from the snapshot.
 ///
 /// Read against `DateTime.now()`, so it is only as fresh as the last time it
-/// was built — which is why the streak surfaces recompute on resume rather
-/// than trusting a value computed before midnight.
+/// was built — which is why `DayRolloverWatcher` invalidates this on a resume
+/// that crossed midnight, rather than letting a value computed before it stand.
 ///
 /// The day set it folds is assembled by [streakDaySet], which also backfills
 /// a learner whose completions predate the day set — see it for why the three
@@ -92,8 +92,8 @@ final streakStatusProvider = StreakStatusProvider._();
 /// The streak, the freeze and the covered days, derived from the snapshot.
 ///
 /// Read against `DateTime.now()`, so it is only as fresh as the last time it
-/// was built — which is why the streak surfaces recompute on resume rather
-/// than trusting a value computed before midnight.
+/// was built — which is why `DayRolloverWatcher` invalidates this on a resume
+/// that crossed midnight, rather than letting a value computed before it stand.
 ///
 /// The day set it folds is assembled by [streakDaySet], which also backfills
 /// a learner whose completions predate the day set — see it for why the three
@@ -110,8 +110,8 @@ final class StreakStatusProvider
   /// The streak, the freeze and the covered days, derived from the snapshot.
   ///
   /// Read against `DateTime.now()`, so it is only as fresh as the last time it
-  /// was built — which is why the streak surfaces recompute on resume rather
-  /// than trusting a value computed before midnight.
+  /// was built — which is why `DayRolloverWatcher` invalidates this on a resume
+  /// that crossed midnight, rather than letting a value computed before it stand.
   ///
   /// The day set it folds is assembled by [streakDaySet], which also backfills
   /// a learner whose completions predate the day set — see it for why the three

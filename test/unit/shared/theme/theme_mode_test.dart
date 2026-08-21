@@ -1,4 +1,7 @@
+import 'package:brew_path/features/progress/domain/mastery.dart';
+import 'package:brew_path/shared/repositories/progress_repository.dart';
 import 'package:brew_path/shared/repositories/settings_repository.dart';
+import 'package:brew_path/shared/storage/account_wipe.dart';
 import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:brew_path/shared/theme/app_theme_mode.dart';
 import 'package:brew_path/shared/theme/theme_mode_controller.dart';
@@ -65,17 +68,21 @@ void main() {
 
     test('is preserved by Reset Progress', () async {
       final settings = await repository.getSettings();
-      settings
-        ..themeMode = AppThemeMode.system
-        ..streakDays = 12;
+      settings.themeMode = AppThemeMode.system;
       await repository.saveSettings(settings);
+      // A completion, so the reset has something to clear and this test cannot
+      // pass on a wipe that did nothing.
+      await ProgressRepository().saveCompletion(
+        lessonId: 'm1l1',
+        xpEarned: 10,
+        mastery: const MasteryResult(correct: 4, total: 5),
+      );
 
-      await repository.resetProgress();
+      await AccountWipe(deviceId: 'test-device').resetProgress();
 
-      final after = await repository.getSettings();
-      expect(after.streakDays, 0, reason: 'progress should be wiped');
+      expect(await ProgressRepository().getAllCompleted(), isEmpty);
       expect(
-        after.themeMode,
+        (await repository.getSettings()).themeMode,
         AppThemeMode.system,
         reason: 'appearance is device-local, not progress',
       );

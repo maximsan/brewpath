@@ -35,7 +35,6 @@ Future<AppDatabase> useInMemoryDatabase() async {
           hapticsEnabled: true,
           soundEnabled: true,
           totalXp: 0,
-          streakDays: 0,
           onboardingCompleted: const Value(true),
         ),
       );

@@ -172,10 +172,8 @@ void main() {
     test('getSettings returns defaults on first call', () async {
       final settings = await repo.getSettings();
       expect(settings.totalXp, 0);
-      expect(settings.streakDays, 0);
       expect(settings.hapticsEnabled, isTrue);
       expect(settings.soundEnabled, isTrue);
-      expect(settings.lastActivityDate, isNull);
     });
 
     test('saveSettings persists changes', () async {
@@ -186,26 +184,10 @@ void main() {
       expect(updated.hapticsEnabled, isFalse);
     });
 
-    test('resetProgress zeros progress fields and keeps preferences', () async {
-      final settings = await repo.getSettings();
-      settings
-        ..hapticsEnabled = false
-        ..soundEnabled = false
-        ..streakDays = 4
-        ..lastActivityDate = DateTime(2026, 5, 20);
-      await repo.saveSettings(settings);
-
-      await repo.resetProgress();
-
-      final after = await repo.getSettings();
-      // `totalXp` is not reset here and is not expected to be: the points
-      // total is derived from the completions a reset clears, so this row
-      // holds no counter to zero (#160).
-      expect(after.streakDays, 0);
-      expect(after.lastActivityDate, isNull);
-      // Preferences are preserved across reset.
-      expect(after.hapticsEnabled, isFalse);
-      expect(after.soundEnabled, isFalse);
-    });
+    // There is deliberately no reset test here any more. `resetProgress` on
+    // this repository existed to zero `streakDays` and `lastActivityDate`, and
+    // both are gone — the streak derives from the day set. That a progress
+    // reset preserves what the learner chose is proved where the reset now
+    // lives, in `account_wipe_test.dart`.
   });
 }

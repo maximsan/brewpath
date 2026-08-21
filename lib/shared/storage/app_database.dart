@@ -80,8 +80,6 @@ class UserSettings extends Table {
   /// completion rows and the snapshot's logged challenges (#160) — a counter is
   /// a second copy of a derivable fact. Dropped by #79.
   IntColumn get totalXp => integer()();
-  IntColumn get streakDays => integer()();
-  DateTimeColumn get lastActivityDate => dateTime().nullable()();
 
   /// Whether the user has completed the post-install onboarding flow.
   /// Defaults to `false` so rows migrated from schema v2 force the gate.
@@ -168,8 +166,17 @@ class AppDatabase extends _$AppDatabase {
   /// read from what has actually shipped rather than from the decision text.
   static const int _snapshotRowVersion = 6;
 
+  /// Schema version that dropped `streakDays` and `lastActivityDate`.
+  ///
+  /// The v5 → v6 step below said the drop "lands with the rewrite that replaces
+  /// those readers, not with the table that will eventually make them
+  /// redundant". That rewrite has landed: the streak is a fold over the
+  /// snapshot's active-day set, `StreakService` is deleted, and nothing has
+  /// advanced these two columns since.
+  static const int _dropStreakColumnsVersion = 7;
+
   /// The current version is whichever migration landed last.
-  static const int _schemaVersion = _snapshotRowVersion;
+  static const int _schemaVersion = _dropStreakColumnsVersion;
 
   @override
   int get schemaVersion => _schemaVersion;
@@ -243,6 +250,19 @@ class AppDatabase extends _$AppDatabase {
       // will eventually make them redundant.
       if (from < _snapshotRowVersion) {
         await m.createTable(progressSnapshots);
+      }
+
+      // v6 → v7: `streakDays` and `lastActivityDate` are dropped, which is the
+      // drop the step above deferred. Both are dead: the streak derives from
+      // the snapshot's active-day set, and nothing has written a non-zero value
+      // to either column since that landed.
+      //
+      // Nothing is converted, because there is nothing to convert — the values
+      // on disk are `0` and `NULL`, and the real history they once approximated
+      // lives in the day set. Recreating the table drops them by omission from
+      // the current definition, the same way `best_score` went at v5.
+      if (from < _dropStreakColumnsVersion) {
+        await m.alterTable(TableMigration(userSettings));
       }
     },
   );

@@ -23,8 +23,6 @@ class SettingsRepository {
         hapticsEnabled: row.hapticsEnabled,
         soundEnabled: row.soundEnabled,
         totalXp: row.totalXp,
-        streakDays: row.streakDays,
-        lastActivityDate: row.lastActivityDate,
         onboardingCompleted: row.onboardingCompleted,
         onboardingGoal: row.onboardingGoal,
         onboardingBrewer: row.onboardingBrewer,
@@ -35,8 +33,6 @@ class SettingsRepository {
       hapticsEnabled: true,
       soundEnabled: true,
       totalXp: 0,
-      streakDays: 0,
-      lastActivityDate: null,
     );
   }
 
@@ -50,28 +46,12 @@ class SettingsRepository {
             hapticsEnabled: settings.hapticsEnabled,
             soundEnabled: settings.soundEnabled,
             totalXp: settings.totalXp,
-            streakDays: settings.streakDays,
-            lastActivityDate: Value(settings.lastActivityDate),
             onboardingCompleted: Value(settings.onboardingCompleted),
             onboardingGoal: Value(settings.onboardingGoal),
             onboardingBrewer: Value(settings.onboardingBrewer),
             themeMode: Value(settings.themeMode.storageValue),
           ),
         );
-  }
-
-  /// Resets every user-progress field on the singleton settings row while
-  /// preserving the user's haptics and sound preferences. Used by the Profile
-  /// "Reset Progress" action.
-  Future<void> resetProgress() async {
-    final settings = await getSettings();
-    // `totalXp` is deliberately absent: the points total is derived from the
-    // completions this reset clears, so there is no counter left to zero. The
-    // column survives only until the destructive rebuild drops it (#79).
-    settings
-      ..streakDays = 0
-      ..lastActivityDate = null;
-    await saveSettings(settings);
   }
 
   /// Deletes the singleton row, so reads fall back to first-launch defaults.
