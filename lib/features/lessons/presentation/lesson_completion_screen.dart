@@ -13,7 +13,8 @@ import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Post-lesson screen: shows earned XP and any unlocked card, then routes back.
+/// Post-lesson screen: shows the points earned and any unlocked card, then
+/// routes back.
 class LessonCompletionScreen extends ConsumerStatefulWidget {
   /// Creates a [LessonCompletionScreen].
   const LessonCompletionScreen({
@@ -38,10 +39,11 @@ class _LessonCompletionScreenState
   late final Future<LessonCompletionReward> _future = _completeAndLoad();
   String? _moduleId;
 
-  /// Persists the run exactly once. First completion awards full points and
-  /// the card; a replay updates mastery upward, may grant practice points, and
-  /// marks the day (§3). Every path is idempotent, so a rebuild or revisit
-  /// will not double-award anything — and every path records, which is why the
+  /// Persists the run exactly once. A first completion pays the lesson's flat
+  /// ten and hands over its card, plus the module's Field Guide card where the
+  /// run closed one; a replay pays nothing, updates mastery upward and marks
+  /// the day (§3). Every path is idempotent, so a rebuild or revisit will not
+  /// double-award anything — and every path records, which is why the
   /// write-nothing practice mode is gone.
   Future<LessonCompletionReward> _completeAndLoad() async {
     final content = ref.read(contentRepositoryProvider);
@@ -62,7 +64,7 @@ class _LessonCompletionScreenState
     // first completion does, and the run that pays nothing still records a day.
     ref.invalidate(todayLessonProvider);
     ref.invalidate(modulesWithProgressProvider);
-    ref.invalidate(totalXpProvider);
+    ref.invalidate(totalPointsProvider);
     ref.invalidate(streakStatusProvider);
     ref.invalidate(completedLessonsProvider);
     ref.invalidate(collectedCardsProvider);

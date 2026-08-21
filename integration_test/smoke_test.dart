@@ -5,7 +5,7 @@ import 'package:integration_test/integration_test.dart';
 
 /// End-to-end smoke flow:
 ///   1. cold-launch → onboarding (loading → welcome → goal → brewer → learn),
-///   2. complete today's lesson → see XP on Profile.
+///   2. complete today's lesson → see the ten points on Profile.
 ///
 /// Assumes a clean install (no prior progress). The onboarding gate sends
 /// new users through /welcome on first run.
@@ -70,7 +70,7 @@ void main() {
     expect(find.text("Today's lesson"), findsOneWidget);
   });
 
-  testWidgets("play today's lesson, complete, see XP on Profile", (
+  testWidgets("play today's lesson, complete, see points on Profile", (
     tester,
   ) async {
     // Open today's lesson from the card (its subtitle is the lesson title).
@@ -86,18 +86,18 @@ void main() {
     await tester.tap(find.widgetWithText(FilledButton, 'Continue'));
     await tester.pumpAndSettle();
 
-    // Completion screen shows the XP reward.
+    // Completion screen shows the flat ten the lesson authors.
     expect(find.text('Lesson complete!'), findsOneWidget);
-    expect(find.textContaining('XP'), findsWidgets);
+    expect(find.text('+10 PTS'), findsOneWidget);
 
     // Continue back to the Learn tab.
     await tester.tap(find.widgetWithText(FilledButton, 'Continue'));
     await tester.pumpAndSettle();
 
-    // Profile tab now reflects the earned XP.
+    // Profile tab now reflects the points earned.
     await tester.tap(find.byIcon(Icons.person_outline));
     await tester.pumpAndSettle();
-    expect(find.text('Total XP'), findsOneWidget);
+    expect(find.text('Total points'), findsOneWidget);
     expect(find.text('10'), findsOneWidget);
   });
 }

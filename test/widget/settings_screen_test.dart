@@ -60,9 +60,6 @@ void main() {
       mastery: const MasteryResult(correct: 4, total: 5),
     );
     await CardRepository().collectCard('card_a');
-    final settings = await SettingsRepository().getSettings();
-    settings.totalXp = 30;
-    await SettingsRepository().saveSettings(settings);
 
     await openSettings(tester);
 
@@ -75,7 +72,8 @@ void main() {
     expect(find.text('Reset all progress?'), findsNothing);
     expect((await ProgressRepository().getAllCompleted()).length, 1);
     expect((await CardRepository().getAllCollectedCardIds()).length, 1);
-    expect((await SettingsRepository().getSettings()).totalXp, 30);
+    // The payout survives on the record the total is summed off.
+    expect((await ProgressRepository().getAllCompleted()).single.xpEarned, 30);
   });
 
   testWidgets('confirming Reset wipes all progress', (tester) async {
@@ -87,7 +85,6 @@ void main() {
     await CardRepository().collectCard('card_a');
     final settings = await SettingsRepository().getSettings();
     settings
-      ..totalXp = 30
       ..streakDays = 3
       ..hapticsEnabled = false;
     await SettingsRepository().saveSettings(settings);
@@ -102,7 +99,6 @@ void main() {
     expect(await ProgressRepository().getAllCompleted(), isEmpty);
     expect(await CardRepository().getAllCollectedCardIds(), isEmpty);
     final after = await SettingsRepository().getSettings();
-    expect(after.totalXp, 0);
     expect(after.streakDays, 0);
     // Preferences are preserved.
     expect(after.hapticsEnabled, isFalse);

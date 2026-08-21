@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:brew_path/features/companion/domain/companion_reaction.dart';
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty_faces.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -151,6 +152,17 @@ void _paintConfetti(Canvas c, double t) {
   }
 }
 
+/// Placeholder label for the reward burst.
+///
+/// ⚠️ **Not a payout, and not read from one.** The design's burst takes the
+/// amount as an argument (`roasty.jsx:575` renders `+{pointsAmount} PTS`); this
+/// pose has no caller to take one from — [CompanionReaction.xpGained] is fired
+/// by nothing — so the burst is unreachable illustration awaiting the reward
+/// moment that will wire it. A lesson's payout is per-lesson data, so this
+/// constant must not become the source of one: whatever wires this pose passes
+/// the real value in and deletes this.
+const String _burstPlaceholderLabel = '+10 PTS';
+
 void _paintXpBurst(Canvas c, double t) {
   final phase = t;
   final dy = -50 * phase;
@@ -171,7 +183,7 @@ void _paintXpBurst(Canvas c, double t) {
     face: AppFace.mono,
   );
   final tp = TextPainter(
-    text: TextSpan(text: '+15 XP', style: textStyle),
+    text: TextSpan(text: _burstPlaceholderLabel, style: textStyle),
     textDirection: TextDirection.ltr,
     textAlign: TextAlign.center,
   )..layout(minWidth: 64, maxWidth: 64);

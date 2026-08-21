@@ -72,7 +72,7 @@ class ModuleLessonCardWidget extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 6),
-                    _XpInline(xp: lesson.points),
+                    _PointsInline(points: lesson.points),
                   ],
                 ),
               ),
@@ -143,11 +143,11 @@ class _LessonBadge extends StatelessWidget {
   }
 }
 
-/// Inline `+N XP` label shown beneath each lesson row.
-class _XpInline extends StatelessWidget {
-  const _XpInline({required this.xp});
+/// Inline `+N PTS` label shown beneath each lesson row.
+class _PointsInline extends StatelessWidget {
+  const _PointsInline({required this.points});
 
-  final int xp;
+  final int points;
 
   static const double _iconSize = 14;
 
@@ -161,7 +161,7 @@ class _XpInline extends StatelessWidget {
         Icon(Icons.bolt, size: _iconSize, color: mood.inkMute),
         const SizedBox(width: 2),
         Text(
-          '+$xp XP',
+          '+$points PTS',
           style: theme.textTheme.labelSmall?.copyWith(
             color: mood.inkMute,
             fontWeight: FontWeight.w600,

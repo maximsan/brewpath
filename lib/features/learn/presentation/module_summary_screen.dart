@@ -13,7 +13,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 /// Celebratory recap shown after a module's final lesson: the companion plays
-/// its module-complete moment, with the module's total XP and earned cards.
+/// its module-complete moment, with the module's Field Guide card and the
+/// lesson cards earned along the way.
 class ModuleSummaryScreen extends ConsumerStatefulWidget {
   /// Creates a [ModuleSummaryScreen].
   const ModuleSummaryScreen({required this.moduleId, super.key});
@@ -73,15 +74,12 @@ class _ModuleSummaryScreenState extends ConsumerState<ModuleSummaryScreen> {
                 color: mood.inkMute,
               ),
             ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              '+${summary.totalXp} XP',
-              textAlign: TextAlign.center,
-              style: theme.textTheme.titleLarge?.copyWith(
-                color: mood.accent,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
+            // No points line. The module pays nothing (§5.1, #16); the reward
+            // this moment always had is the Field Guide card below.
+            if (summary.fieldGuide != null) ...[
+              const SizedBox(height: AppSpacing.lg),
+              _FieldGuideReward(card: summary.fieldGuide!),
+            ],
             if (summary.earnedCards.isNotEmpty) ...[
               const SizedBox(height: AppSpacing.lg),
               _EarnedCards(cards: summary.earnedCards),
@@ -94,6 +92,45 @@ class _ModuleSummaryScreenState extends ConsumerState<ModuleSummaryScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// The module's own reward, given its own billing above the lesson cards.
+class _FieldGuideReward extends StatelessWidget {
+  const _FieldGuideReward({required this.card});
+
+  static const double _badgeSize = 72;
+
+  final CoffeeCardModel card;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final mood = context.mood;
+    return Column(
+      children: [
+        IconBadge.circle(
+          icon: moduleIcon(card.iconName),
+          size: _badgeSize,
+          semanticLabel: card.title,
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        Text(
+          card.title,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.titleMedium?.copyWith(
+            color: mood.accent,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.xxs),
+        Text(
+          'Field Guide unlocked',
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodySmall?.copyWith(color: mood.inkMute),
+        ),
+      ],
     );
   }
 }

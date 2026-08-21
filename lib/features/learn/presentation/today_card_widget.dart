@@ -104,7 +104,7 @@ class TodayCardWidget extends StatelessWidget {
             const SizedBox(height: 16),
             Row(
               children: [
-                _XpPill(xp: lesson.points),
+                _PointsPill(points: lesson.points),
                 const Spacer(),
                 FilledButton.icon(
                   onPressed: () => context.goTo(lessonRun(lesson.id)),
@@ -120,11 +120,11 @@ class TodayCardWidget extends StatelessWidget {
   }
 }
 
-/// Compact `+XP` reward chip shown on the hero card.
-class _XpPill extends StatelessWidget {
-  const _XpPill({required this.xp});
+/// Compact `+PTS` reward chip shown on the hero card.
+class _PointsPill extends StatelessWidget {
+  const _PointsPill({required this.points});
 
-  final int xp;
+  final int points;
 
   static const double _pillRadius = 20;
   static const double _pillAlpha = 0.12;
@@ -146,7 +146,7 @@ class _XpPill extends StatelessWidget {
           Icon(Icons.bolt, size: _iconMd, color: mood.accentInk),
           const SizedBox(width: 4),
           Text(
-            '+$xp XP',
+            '+$points PTS',
             style: theme.textTheme.labelMedium?.copyWith(
               color: mood.accentInk,
               fontWeight: FontWeight.w600,

@@ -121,7 +121,7 @@ class _ResetProgressTile extends ConsumerWidget {
         style: TextStyle(color: mood.berry, fontWeight: FontWeight.w600),
       ),
       subtitle: const Text(
-        'Clear completed lessons, XP, streak, and unlocked cards.',
+        'Clear completed lessons, points, streak, and unlocked cards.',
       ),
       trailing: Icon(Icons.chevron_right, color: mood.berry),
       onTap: () => _confirmAndReset(context, ref),
@@ -134,7 +134,7 @@ class _ResetProgressTile extends ConsumerWidget {
       builder: (ctx) => AlertDialog(
         title: const Text('Reset all progress?'),
         content: const Text(
-          'This will remove your completed lessons, XP, streak, '
+          'This will remove your completed lessons, points, streak, '
           'unlocked cards, and all local progress. '
           'This action cannot be undone.',
         ),
@@ -202,7 +202,7 @@ class _ResetOnboardingTile extends ConsumerWidget {
         title: const Text('Restart onboarding?'),
         content: const Text(
           "You'll go back through the Welcome screen and pick your goal and "
-          'brewer again. Your XP, streak, and collected cards stay as they '
+          'brewer again. Your points, streak, and collected cards stay as they '
           'are.',
         ),
         actions: [
