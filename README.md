@@ -183,4 +183,19 @@ Drift schema snapshots (`drift_schemas/`) and generated test helpers
    Target `db.schemaVersion`, not a literal version number. `migrateAndValidate`
    then checks the migrated database against the committed snapshot for whatever
    the current version is, and the test stops going stale on every bump.
+
+   ⚠️ **`testWithDataIntegrity` cannot do that, so retarget its `newVersion`
+   and `createNew` to the version you just added.** It takes the target as a
+   literal and a snapshot class, while `openTestedDatabase` is the real
+   `AppDatabase` — which always migrates as far as it goes. A test left pointing
+   at the previous version fails with "Schema does not match" the moment a new
+   one exists, naming the columns you changed, and it reads like your migration
+   is broken when it is the assertion that is stale. The existing ones are
+   deliberately aimed at the current version for this reason.
+
+   Prefer removing a column by recreating the table (`TableMigration` with the
+   column omitted from the current definition), and cover it with a
+   data-integrity test that seeds the **other** columns and asserts they
+   survive — a recreate that copies the wrong set silently resets whatever it
+   missed.
 5. Commit the new snapshot + regenerated helpers with the schema change.
