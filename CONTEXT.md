@@ -38,11 +38,23 @@ A kind of practice: mini-games, vocab game, flashcards, or lesson replay.
 What Keep Sharp recommends (§6,
 [#56](https://github.com/maximsan/brewpath/issues/56)).
 
-**Format** (mini-game):
-An individual mini-game variant (e.g. `g-match`, `g-quiz`). Two formats are
-free; the rest need Plus (§5,
+**Kind** (mini-game):
+A mini-game mechanic (match, quiz, bagpick, …) — the code's `kind` field.
+Several games can share one kind
+([#190](https://github.com/maximsan/brewpath/issues/190)).
+
+**Game** (mini-game):
+One catalog entry: a kind, exactly one course topic, and a bank of rounds,
+under a persistent id. What the streak, the daily allowance and tier gating
+count; free iff its topic's module is unlocked
+([ADR-0005](docs/adr/0005-mini-games-are-many-games-per-kind-gated-by-topic.md);
+free-pair invariant:
 [ADR-0001](docs/adr/0001-free-tier-carries-two-mini-game-formats.md)).
-_Avoid_: using "format" for a practice type or an activity
+_Avoid_: "format" for mini-games — it meant both kind and game and caused two
+corrections; retired at [#190](https://github.com/maximsan/brewpath/issues/190)
+
+**Round** (mini-game):
+One board or question inside a game's bank. A run plays the whole bank.
 
 **Qualifying activity**:
 An activity whose completion protects the streak for that local calendar day
