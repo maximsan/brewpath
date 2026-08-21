@@ -125,6 +125,38 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **Points pay flat ten, once — and nothing else pays.** The whole system is
+  now two rules: ten for a lesson's first completion, five for a Coffee
+  Challenge's. Replays, perfect runs, module completion, practice and
+  mini-games all pay zero.
+
+  Two payouts are gone. The **module-completion bonus** of twenty-five paid for
+  lessons it had already paid for, re-coupling points to course structure after
+  the design deliberately separated them — the module moment keeps its
+  celebration and now hands over its **Field Guide card**, which is what always
+  waited there. Five of the thirty-seven collectibles had never been reachable
+  in the app; they are now. The **per-day practice reward** of two points broke
+  *replays pay zero* outright and scaled with the course: at thirty-two lessons
+  it paid sixty-four a day for pure repetition against three hundred and twenty
+  for learning everything, so five days of replaying out-earned the entire
+  course. Under the free plan's two-new-lessons-a-day cap, grinding replays was
+  strictly the faster route to a bigger number.
+
+  **Totals therefore fall by roughly fivefold. That is the intent, not a
+  regression.** Replays are not left unrewarded — one can still lift mastery,
+  and one still protects the streak.
+
+- **The points total is derived, never stored.** It used to be a counter on the
+  settings row that every payout incremented. Both of its inputs were already
+  persisted, so it is now summed from them on read: a counter is a second copy
+  of a derivable fact, and Reset Progress no longer needs a rule of its own.
+
+- **The currency is called points everywhere a learner can read it.** Twelve
+  strings said *XP* — the profile stat, both lesson previews, both result
+  screens, the reset and settings copy, and a label painted into the mascot's
+  reward burst. The glossary has ruled *points* since the beginning and lists
+  *XP* under _Avoid_; a test now fails if the word comes back.
+
 - **A lesson pays the flat ten it authors**, rather than ten per step. The
   per-step formula lost its input when steps became cards: how many cards a
   lesson runs is a shape of its teaching, not a measure of what finishing it is

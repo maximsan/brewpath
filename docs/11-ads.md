@@ -186,13 +186,13 @@ abstract class AdUnitIds {
 ## Future Ad Placement Strategy
 
 > ⚠️ **Speculative — no ruling behind this table.** `docs/decisions.md` contains
-> no ads decision, and a rewarded-XP path would interact with the daily-cap and
+> no ads decision, and a rewarded-points path would interact with the daily-cap and
 > streak economy (§8–§10) in ways nobody has ruled on. Decide there first.
 
 | Placement                                       | Type         | Trigger                                       |
 | ----------------------------------------------- | ------------ | --------------------------------------------- |
 | Between module completion and next module start | Interstitial | After module completion screen CTA            |
-| Optional extra XP                               | Rewarded     | Button on Profile or lesson completion screen |
+| Optional extra points                           | Rewarded     | Button on Profile or lesson completion screen |
 | Never inside an active lesson                   | —            | Hard rule                                     |
 | Never on first launch                           | —            | User onboarding protection                    |
 

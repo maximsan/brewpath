@@ -9,9 +9,9 @@
 
 | Layer       | Tool                     | What is tested                                                                           |
 | ----------- | ------------------------ | ---------------------------------------------------------------------------------------- |
-| Unit        | `flutter_test`           | Business logic, XP calc, streak logic, card unlock, module unlock, repository read/write |
+| Unit        | `flutter_test`           | Business logic, points rules, streak logic, card unlock, module unlock, repository read/write |
 | Widget      | `flutter_test`           | Mini-game widgets, lesson step runner, tab navigation, screen rendering                  |
-| Integration | `integration_test` (SDK) | Full smoke flow: launch → start lesson → complete → see XP                               |
+| Integration | `integration_test` (SDK) | Full smoke flow: launch → start lesson → complete → see points                           |
 
 **Mocking strategy:** Use Riverpod `ProviderScope` overrides to inject test doubles. Avoid `mockito` for domain logic — prefer real implementations with `AppDatabase(NativeDatabase.memory())` (an in-memory Drift database).
 
@@ -25,7 +25,7 @@ did, and every listed snippet had drifted from the real APIs).
 
 | Directory | What lives there |
 |---|---|
-| `test/unit/` (top level) | Domain + repository logic: XP, streak, lesson completion, module unlock, routes, monetization stubs, no-op services, content + progress + module-progress repositories |
+| `test/unit/` (top level) | Domain + repository logic: points, streak, lesson completion, module unlock, routes, monetization stubs, no-op services, content + progress + module-progress repositories |
 | `test/unit/features/` | Per-feature domain tests (onboarding, companion, learn, lessons, progress) |
 | `test/unit/shared/theme/` | The token suite — mood colours, art colours, overlays, radii, text — including drift guards against the prototype's palette |
 | `test/unit/shared/storage/` + `storage/snapshot/` | Drift records, the progress-snapshot merge laws, JSON round-trips, account wipe + tombstones |

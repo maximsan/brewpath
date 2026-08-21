@@ -122,37 +122,37 @@ plan structure, paywall copy), tracked separately. [§12](12-checklist.md)'s
 Monetization block still describes the superseded feature axis and should not
 be turned into issues as written.
 
-### The progression model is materially different
+### ~~The progression model is materially different~~ **RESOLVED**
 
-The app is still built on **XP**; the design settled on **points**. That is a
-naming difference on the surface and three genuine disagreements underneath.
+The app was built on **XP**; the design settled on **points**. That was a naming
+difference on the surface and three genuine disagreements underneath — the
+sharpest divergence the gap audit found.
 
-| Rule | This design | The Flutter app | Where |
+**Ruled in the design's favour, wholesale, and built.**
+[#16](https://github.com/maximsan/brewpath/issues/16) adopted §5.1 as written
+and [#160](https://github.com/maximsan/brewpath/issues/160) shipped it. The
+table below is kept as the **superseded** state, so the disagreement stays
+legible rather than being rediscovered.
+
+| Rule | This design | The app before #160 | Now |
 |---|---|---|---|
-| Lesson reward | **Flat 10**, identical for every lesson | **10 × step count** — a long lesson pays several times a short one | `lib/core/constants/xp_values.dart` — `forLesson(stepCount) => stepCount * perStep` |
-| Module completion | **No bonus at all** | **+25** | `XpValues.moduleCompletionBonus` |
-| Replay / practice | **Zero, always** | **+2 per run**, capped once per lesson per day | `XpValues.practiceXp` |
-| Coffee challenge | +5 on first completion | Not implemented | — |
-| Mascot state name | `points` | `RoastyState.xp` | `lib/features/companion/domain/roasty_state.dart` |
-| User-facing label | "points" | "+N XP", "Total XP" | `today_card_widget.dart`, `module_lesson_card_widget.dart` |
+| Lesson reward | **Flat 10**, identical for every lesson | **10 × step count** — a long lesson paid several times a short one | Flat, and read off the lesson's own authored `points` |
+| Module completion | **No bonus at all** | **+25** | No bonus. The module moment hands over its **Field Guide card**, which nothing had ever collected |
+| Replay / practice | **Zero, always** | **+2 per run**, capped once per lesson per day | Zero |
+| Coffee challenge | +5 on first completion | Not implemented | +5 on first completion |
+| Mascot state name | `points` | `RoastyState.xp` | Unchanged — #16 ruled internal keys stay, matching the design's own source, which is still `state.xp` |
+| User-facing label | "points" | "+N XP", "Total XP" | "+N PTS" on reward surfaces, "points" in prose; a test fails if *XP* returns |
 
-**The practice-XP conflict is the one that matters.** [§5](05-mechanics.md) 5.1
+**Why the practice payout was the one that mattered.** [§5](05-mechanics.md) 5.1
 is explicit that replays pay nothing, and the reason is structural: points
 measure showing up, mastery measures knowing it, and a replay is supposed to
-improve the second without touching the first. Paying 2 XP per practice run
-reintroduces exactly the grind incentive that separation exists to prevent.
+improve the second without touching the first. The cap was *per lesson per
+day*, so it scaled with the course — at thirty-two lessons it paid 64/day for
+pure repetition against 320 for learning everything.
 
-The app also already carries the copy *"Practice runs do not change your XP,
-streak, or progress"* (`game_type_practice_widgets.dart`) while granting practice
-XP — so the app currently contradicts itself, independently of the design.
-
-**Variable-vs-flat is the second.** Scaling by lesson length means a learner is
-paid for volume rather than attendance. Whether that is wrong depends on what
-points are *for*, which the design answers and the app does not.
-
-> **Neither model is self-evidently right — this needs a decision, not a fix.**
-> The design's position is argued; the app's may simply predate it. See
-> [PRODUCT.md](PRODUCT.md) §14 for the product framing.
+The app also carried the copy *"Practice runs do not change your XP, streak, or
+progress"* while granting practice XP, so it contradicted itself independently
+of the design.
 
 ### Smaller
 
