@@ -118,3 +118,73 @@ jobs:
 
       - name: Verify build artifact
         run: ls -la build/ios/iphoneos/Runner.app
+
+  # Push to main only. The suite needs a booted simulator, which is macOS-only
+  # and costs a runner minute or two to start — too much to pay on every PR
+  # push, and unnecessary, because what it guards against is *rot* rather than
+  # a specific regression.
+  #
+  # It is the only job that runs the app rather than compiling it. Everything
+  # under `flutter test` uses in-memory Drift, a cleared asset bundle and a
+  # seeded onboarding flag, so a migration that fails on a real database, an
+  # asset the pubspec does not bundle, and an unregistered plugin are all
+  # invisible to it. `iOS build` proves the app links, never that it boots.
+  #
+  # This job exists because the suite spent months failing while every PR
+  # stayed green: nothing ran it, so nobody knew (#187).
+  smoke:
+    name: smoke (simulator)
+    runs-on: macos-latest
+    if: github.event_name == 'push'
+    # A backstop, not the real guard. Each step of the walk bounds its own wait
+    # and fails in seconds, so a hang is caught there; this only exists so a
+    # wedged runner cannot burn an hour. The cold Xcode build is most of the
+    # job — around fifteen minutes — so the cap has to clear that comfortably.
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      # Whichever iPhone the runner image ships — pinning a model would break
+      # every time GitHub rolls the image forward.
+      - name: Boot an iPhone simulator
+        run: |
+          UDID=$(xcrun simctl list devices available --json | python3 -c "
+          import json, sys
+          runtimes = json.load(sys.stdin)['devices']
+          for runtime, devices in runtimes.items():
+              if 'iOS' not in runtime:
+                  continue
+              for device in devices:
+                  if device.get('isAvailable') and device['name'].startswith('iPhone'):
+                      print(device['udid'])
+                      sys.exit(0)
+          sys.exit('no available iPhone simulator on this runner')
+          ")
+          echo "Booting $UDID"
+          # `|| true`: already-booted is reported as an error, and is fine.
+          xcrun simctl boot "$UDID" || true
+          # A bounded poll rather than `simctl bootstatus`, which hangs
+          # indefinitely on some states — the one failure mode this whole
+          # ticket is about not shipping again.
+          for _ in $(seq 1 30); do
+            if xcrun simctl list devices | grep -q "$UDID.*Booted"; then
+              echo "Booted"
+              echo "SIMULATOR_UDID=$UDID" >> "$GITHUB_ENV"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "simulator $UDID never reached Booted"
+          exit 1
+
+      - name: Smoke test
+        run: flutter test integration_test/smoke_test.dart -d "$SIMULATOR_UDID"

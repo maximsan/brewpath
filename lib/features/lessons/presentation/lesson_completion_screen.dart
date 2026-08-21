@@ -1,8 +1,8 @@
+import 'package:brew_path/app/day_surfaces.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
-import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/lessons/domain/lesson_completion_service.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_body.dart';
@@ -62,14 +62,12 @@ class _LessonCompletionScreenState
     // run rebuilds on its own. Every one of these is invalidated on both
     // paths: a replay moves the streak and the Keep Sharp card exactly as a
     // first completion does, and the run that pays nothing still records a day.
+    invalidateDaySurfaces(ref);
     ref.invalidate(todayLessonProvider);
     ref.invalidate(modulesWithProgressProvider);
     ref.invalidate(totalPointsProvider);
-    ref.invalidate(streakStatusProvider);
     ref.invalidate(completedLessonsProvider);
     ref.invalidate(collectedCardsProvider);
-    ref.invalidate(keepSharpAcknowledgedTodayProvider);
-    ref.invalidate(keepSharpRecommendationProvider);
     // `cardsWithCollectionProvider` no longer chains through
     // `collectedCardsProvider`, so invalidate it explicitly.
     ref.invalidate(cardsWithCollectionProvider);

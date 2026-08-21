@@ -531,6 +531,25 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **The smoke suite runs again, and CI now notices when it does not.** All
+  three integration tests had been failing since the app rename, and nothing
+  ran them — `flutter test` covers `test/` only, so every pull request stayed
+  green while the one suite that boots the real app was broken. It is the only
+  thing that exercises a real on-disk database, the asset bundle as it ships,
+  and the platform plugins; onboarding has no other coverage at all. A run is
+  now a few seconds of actual testing rather than the ten minutes a hang
+  disguised it as — the job itself is dominated by the cold Xcode build — and a
+  macOS job runs it on every push to main.
+
+- **Your streak is right when you come back the next day.** The streak, the
+  freeze you are holding and the Keep Sharp recommendation are all worked out
+  for *today* — and the app never worked them out again when you returned from
+  the background. Leave it open overnight and it greeted you with yesterday's
+  streak until something else happened to refresh it. It now recomputes them
+  when you come back on a new day, and only then: an ordinary switch away and
+  back changes nothing. An app left in the foreground across midnight still
+  waits for your next tap.
+
 - **Finishing a lesson counts however you got there.** Whether a run was a
   first completion or a replay used to be read off the URL, and a finished
   lesson opened without the replay marker produced a run that recorded
