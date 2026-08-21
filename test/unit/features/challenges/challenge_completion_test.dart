@@ -1,4 +1,4 @@
-import 'package:brew_path/core/constants/xp_values.dart';
+import 'package:brew_path/core/constants/points_values.dart';
 import 'package:brew_path/features/challenges/domain/challenge_completion.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -20,7 +20,7 @@ void main() {
     test('pays the flat award the first time', () {
       expect(
         challengePayout(id: 'bc-m1', completed: const {}),
-        XpValues.challengeCompletion,
+        PointsValues.challengeCompletion,
       );
     });
 
@@ -33,7 +33,7 @@ void main() {
     test('is unaffected by other challenges being done', () {
       expect(
         challengePayout(id: 'bc-m1', completed: const {'bc-m2', 'bc-m3'}),
-        XpValues.challengeCompletion,
+        PointsValues.challengeCompletion,
       );
     });
   });

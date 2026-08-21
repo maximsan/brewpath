@@ -6,7 +6,6 @@ import 'package:brew_path/features/challenges/domain/challenge_parking.dart';
 import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
-import 'package:brew_path/shared/repositories/settings_repository.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -290,8 +289,7 @@ Future<bool> parkExpiredChallenge(
 /// app being able to tell — and that exclusion is structural rather than a
 /// branch that could be forgotten here.
 Future<int> logChallenge(
-  SnapshotRepository repository,
-  SettingsRepository settings, {
+  SnapshotRepository repository, {
   required String id,
   required String reaction,
   required DateTime now,
@@ -318,6 +316,7 @@ Future<int> logChallenge(
     ),
   );
 
-  if (payout > 0) await settings.addXp(payout);
+  // The payout is not banked anywhere: a logged challenge's id in the
+  // completed set above *is* the record, and the total is summed off it.
   return payout;
 }

@@ -1,3 +1,4 @@
+import 'package:brew_path/core/constants/points_values.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/progress/domain/grove_treatment.dart';
 import 'package:brew_path/features/progress/domain/streak_day_set.dart';
@@ -11,11 +12,29 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'progress_providers.g.dart';
 
-/// The user's total XP.
+/// The learner's points total — **derived, never stored**.
+///
+/// Two payouts exist and both already leave a record: a lesson's flat ten is
+/// written onto its completion row, and a challenge's five is implied by its id
+/// sitting in the completed set. Summing them here means the total cannot drift
+/// from what was actually earned, and Reset Progress needs no rule of its own —
+/// clearing the completions clears the total by construction.
+///
+/// It used to be a counter on the settings row that every payout incremented.
+/// A counter is a second copy of a derivable fact, and the fact it copied was
+/// computed under rules the app no longer plays (#16).
 @riverpod
-Future<int> totalXp(Ref ref) async {
-  final settings = await ref.watch(settingsRepositoryProvider).getSettings();
-  return settings.totalXp;
+Future<int> totalPoints(Ref ref) async {
+  final completed = await ref.watch(completedLessonsProvider.future);
+  final snapshot = await ref.watch(snapshotRepositoryProvider).read();
+
+  final fromLessons = completed.fold<int>(
+    0,
+    (sum, record) => sum + record.xpEarned,
+  );
+  final challengesLogged = snapshot.clearedByReset.challengesCompleted.length;
+
+  return fromLessons + challengesLogged * PointsValues.challengeCompletion;
 }
 
 /// The streak, the freeze and the covered days, derived from the snapshot.

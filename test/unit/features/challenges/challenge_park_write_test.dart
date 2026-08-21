@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:brew_path/features/challenges/domain/challenge_lifecycle.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
-import 'package:brew_path/shared/repositories/settings_repository.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_scopes.dart';
@@ -15,7 +14,6 @@ void main() {
 
   late AppDatabase db;
   late SnapshotRepository snapshots;
-  late SettingsRepository settings;
 
   final at = DateTime(2026, 8, 20, 12);
   final pastWindow = at.add(challengeWindow).add(const Duration(minutes: 1));
@@ -24,7 +22,6 @@ void main() {
     db = AppDatabase(NativeDatabase.memory());
     AppDatabaseService.instance = db;
     snapshots = SnapshotRepository();
-    settings = SettingsRepository();
   });
 
   tearDown(() => db.close());
@@ -59,7 +56,6 @@ void main() {
       await startChallenge(snapshots, id: 'bc-m1', now: at);
       await logChallenge(
         snapshots,
-        settings,
         id: 'bc-m1',
         reaction: 'Preferred 1:15',
         now: at,
@@ -87,7 +83,6 @@ void main() {
     await startChallenge(snapshots, id: 'bc-m1', now: at);
     await logChallenge(
       snapshots,
-      settings,
       id: 'bc-m1',
       reaction: 'Hard to tell',
       now: at,
@@ -146,7 +141,6 @@ void main() {
       await startChallenge(snapshots, id: 'bc-m1', now: at);
       await logChallenge(
         snapshots,
-        settings,
         id: 'bc-m1',
         reaction: 'Preferred 1:15',
         now: at,

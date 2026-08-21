@@ -1,7 +1,7 @@
 /// What logging a Coffee Challenge is worth, and what it records.
 library;
 
-import 'package:brew_path/core/constants/xp_values.dart';
+import 'package:brew_path/core/constants/points_values.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
 
 /// Whether logging [id] is its first completion.
@@ -22,7 +22,7 @@ int challengePayout({
   required String id,
   required Set<String> completed,
 }) => isFirstCompletion(id: id, completed: completed)
-    ? XpValues.challengeCompletion
+    ? PointsValues.challengeCompletion
     : 0;
 
 /// Whether the done action may fire yet.

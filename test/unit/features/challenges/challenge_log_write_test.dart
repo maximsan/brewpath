@@ -1,6 +1,5 @@
-import 'package:brew_path/core/constants/xp_values.dart';
+import 'package:brew_path/core/constants/points_values.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
-import 'package:brew_path/shared/repositories/settings_repository.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_scopes.dart';
@@ -13,7 +12,6 @@ void main() {
 
   late AppDatabase db;
   late SnapshotRepository snapshots;
-  late SettingsRepository settings;
 
   // Pinned, so a run started before midnight and asserted after it cannot fail.
   final at = DateTime(2026, 8, 20, 12);
@@ -22,7 +20,6 @@ void main() {
     db = AppDatabase(NativeDatabase.memory());
     AppDatabaseService.instance = db;
     snapshots = SnapshotRepository();
-    settings = SettingsRepository();
   });
 
   tearDown(() => db.close());
@@ -36,22 +33,25 @@ void main() {
     DateTime? now,
   }) => logChallenge(
     snapshots,
-    settings,
     id: id,
     reaction: reaction,
     now: now ?? at,
   );
 
-  Future<int> totalXp() async => (await settings.getSettings()).totalXp;
+  /// What the logged challenges are worth, counted the way the derived total
+  /// counts them — off the completed set, which is the only record kept.
+  Future<int> bankedPoints() async =>
+      (await progress()).challengesCompleted.length *
+      PointsValues.challengeCompletion;
 
   test('a first log records the brew, its outcome, and pays', () async {
     final paid = await log();
     final after = await progress();
 
-    expect(paid, XpValues.challengeCompletion);
+    expect(paid, PointsValues.challengeCompletion);
     expect(after.challengesCompleted, contains('bc-m1'));
     expect(after.challengeReactions['bc-m1']?.reaction, 'Preferred 1:15');
-    expect(await totalXp(), XpValues.challengeCompletion);
+    expect(await bankedPoints(), PointsValues.challengeCompletion);
   });
 
   test('logging clears the challenge from Today', () async {
@@ -75,7 +75,7 @@ void main() {
     );
 
     expect(paid, 0);
-    expect(await totalXp(), XpValues.challengeCompletion);
+    expect(await bankedPoints(), PointsValues.challengeCompletion);
     expect(
       (await progress()).challengeReactions['bc-m1']?.reaction,
       'Hard to tell',
@@ -86,7 +86,7 @@ void main() {
     await log();
     await log(id: 'bc-m2', reaction: 'Called it');
 
-    expect(await totalXp(), XpValues.challengeCompletion * 2);
+    expect(await bankedPoints(), PointsValues.challengeCompletion * 2);
     expect(
       (await progress()).challengesCompleted,
       containsAll(<String>['bc-m1', 'bc-m2']),

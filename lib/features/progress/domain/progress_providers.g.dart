@@ -8,30 +8,60 @@ part of 'progress_providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// The user's total XP.
+/// The learner's points total — **derived, never stored**.
+///
+/// Two payouts exist and both already leave a record: a lesson's flat ten is
+/// written onto its completion row, and a challenge's five is implied by its id
+/// sitting in the completed set. Summing them here means the total cannot drift
+/// from what was actually earned, and Reset Progress needs no rule of its own —
+/// clearing the completions clears the total by construction.
+///
+/// It used to be a counter on the settings row that every payout incremented.
+/// A counter is a second copy of a derivable fact, and the fact it copied was
+/// computed under rules the app no longer plays (#16).
 
-@ProviderFor(totalXp)
-final totalXpProvider = TotalXpProvider._();
+@ProviderFor(totalPoints)
+final totalPointsProvider = TotalPointsProvider._();
 
-/// The user's total XP.
+/// The learner's points total — **derived, never stored**.
+///
+/// Two payouts exist and both already leave a record: a lesson's flat ten is
+/// written onto its completion row, and a challenge's five is implied by its id
+/// sitting in the completed set. Summing them here means the total cannot drift
+/// from what was actually earned, and Reset Progress needs no rule of its own —
+/// clearing the completions clears the total by construction.
+///
+/// It used to be a counter on the settings row that every payout incremented.
+/// A counter is a second copy of a derivable fact, and the fact it copied was
+/// computed under rules the app no longer plays (#16).
 
-final class TotalXpProvider
+final class TotalPointsProvider
     extends $FunctionalProvider<AsyncValue<int>, int, FutureOr<int>>
     with $FutureModifier<int>, $FutureProvider<int> {
-  /// The user's total XP.
-  TotalXpProvider._()
+  /// The learner's points total — **derived, never stored**.
+  ///
+  /// Two payouts exist and both already leave a record: a lesson's flat ten is
+  /// written onto its completion row, and a challenge's five is implied by its id
+  /// sitting in the completed set. Summing them here means the total cannot drift
+  /// from what was actually earned, and Reset Progress needs no rule of its own —
+  /// clearing the completions clears the total by construction.
+  ///
+  /// It used to be a counter on the settings row that every payout incremented.
+  /// A counter is a second copy of a derivable fact, and the fact it copied was
+  /// computed under rules the app no longer plays (#16).
+  TotalPointsProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'totalXpProvider',
+        name: r'totalPointsProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$totalXpHash();
+  String debugGetCreateSourceHash() => _$totalPointsHash();
 
   @$internal
   @override
@@ -40,11 +70,11 @@ final class TotalXpProvider
 
   @override
   FutureOr<int> create(Ref ref) {
-    return totalXp(ref);
+    return totalPoints(ref);
   }
 }
 
-String _$totalXpHash() => r'9d152d22babc01660d17d3b49a7aba3eeabc930f';
+String _$totalPointsHash() => r'23c4d5de9b6d4b471eeec26efd78d5fc7adf278a';
 
 /// The streak, the freeze and the covered days, derived from the snapshot.
 ///

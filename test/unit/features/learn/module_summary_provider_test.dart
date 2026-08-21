@@ -1,5 +1,4 @@
 import 'package:brew_path/features/learn/domain/module_summary_provider.dart';
-import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/models/module_model.dart';
@@ -13,13 +12,19 @@ import '../../../support/widget_harness.dart';
 
 final ModuleModel _module = testModule();
 final CoffeeCardModel _card = testCoffeeCard();
+final CoffeeCardModel _fieldGuide = testCoffeeCard(
+  id: 'fg1',
+  title: 'Beans Field Guide',
+  lessonId: null,
+  moduleId: 'm1',
+);
 
 class _FakeContent extends ContentRepository {
   @override
   Future<List<ModuleModel>> getModules() async => [_module];
 
   @override
-  Future<List<CoffeeCardModel>> getCards() async => [_card];
+  Future<List<CoffeeCardModel>> getCards() async => [_card, _fieldGuide];
 
   @override
   Future<List<LessonModel>> getLessons() async => [
@@ -31,35 +36,41 @@ class _FakeContent extends ContentRepository {
 void main() {
   setUp(useInMemoryDatabase);
 
-  test('joins earned cards and sums module XP plus the bonus', () async {
+  /// A container over the fake course, with the real repositories behind it.
+  ProviderContainer harness() {
     final container = ProviderContainer(
       overrides: [
         contentRepositoryProvider.overrideWith((ref) => _FakeContent()),
       ],
     );
     addTearDown(container.dispose);
+    return container;
+  }
 
-    // Complete both lessons (40 + 30 XP) and collect the m1l1 card.
-    final progress = container.read(progressRepositoryProvider);
-    await progress.saveCompletion(
-      lessonId: 'm1l1',
-      xpEarned: 40,
-      mastery: const MasteryResult(correct: 5, total: 5),
-    );
-    await progress.saveCompletion(
-      lessonId: 'm1l2',
-      xpEarned: 30,
-      mastery: const MasteryResult(correct: 5, total: 5),
-    );
-    await container.read(cardRepositoryProvider).collectCard('c1');
+  test('joins the lesson cards the learner has actually collected', () async {
+    final container = harness();
+    await container.read(cardRepositoryProvider).collectCard(_card.id);
 
-    final summary = await container.read(
-      moduleSummaryProvider('m1').future,
-    );
+    final summary = await container.read(moduleSummaryProvider('m1').future);
 
     expect(summary.module.id, 'm1');
-    expect(summary.earnedCards.map((c) => c.id), ['c1']);
-    // 40 + 30 lesson XP + 25 module bonus.
-    expect(summary.totalXp, 95);
+    expect(summary.earnedCards.map((c) => c.id), [_card.id]);
+  });
+
+  test('carries the Field Guide card once it has been collected', () async {
+    final container = harness();
+    await container.read(cardRepositoryProvider).collectCard(_fieldGuide.id);
+
+    final summary = await container.read(moduleSummaryProvider('m1').future);
+
+    expect(summary.fieldGuide?.id, _fieldGuide.id);
+    // It is the module's own reward, not one of the lesson cards.
+    expect(summary.earnedCards, isEmpty);
+  });
+
+  test('carries no Field Guide card before it is collected', () async {
+    final summary = await harness().read(moduleSummaryProvider('m1').future);
+
+    expect(summary.fieldGuide, isNull);
   });
 }

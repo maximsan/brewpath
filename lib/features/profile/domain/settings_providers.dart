@@ -53,7 +53,7 @@ Future<String> appVersion(Ref ref) async {
 Future<void> resetProgress(WidgetRef ref) async {
   await ref.read(accountWipeProvider).resetProgress();
 
-  ref.invalidate(totalXpProvider);
+  ref.invalidate(totalPointsProvider);
   ref.invalidate(streakStatusProvider);
   ref.invalidate(completedLessonsProvider);
   ref.invalidate(collectedCardsProvider);

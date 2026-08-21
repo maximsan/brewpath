@@ -52,7 +52,6 @@ class ActiveChallengeCard extends ConsumerWidget {
     final reaction = (result as ChallengeLogged).reaction;
     final points = await logChallenge(
       ref.read(snapshotRepositoryProvider),
-      ref.read(settingsRepositoryProvider),
       id: challenge.id,
       reaction: reaction,
       now: DateTime.now(),
@@ -63,7 +62,7 @@ class ActiveChallengeCard extends ConsumerWidget {
       ..invalidate(activeChallengeProvider)
       ..invalidate(completedChallengesProvider)
       ..invalidate(savedChallengesProvider)
-      ..invalidate(totalXpProvider);
+      ..invalidate(totalPointsProvider);
 
     final choice = await showChallengeRecapSheet(
       context: context,

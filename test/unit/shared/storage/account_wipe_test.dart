@@ -134,7 +134,9 @@ void main() {
       await wipe.resetProgress();
 
       final after = await settings.getSettings();
-      expect(after.totalXp, 0);
+      // `totalXp` is not among them. The points total is derived from the
+      // completions this reset clears, so the column is dead weight waiting on
+      // the destructive rebuild (#79) rather than a field to zero.
       expect(after.streakDays, 0);
       expect(after.lastActivityDate, isNull);
     });
