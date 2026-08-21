@@ -1,6 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter_test/flutter_test.dart';
+
+import '../support/dart_sources.dart';
 
 /// The glossary rules **points** and lists *XP* and *score* under _Avoid_
 /// (`CONTEXT.md`), and §5.1 is explicit that the currency is points "throughout
@@ -17,31 +17,10 @@ import 'package:flutter_test/flutter_test.dart';
 /// renamed without a migration the destructive rebuild (#79) owns; renaming
 /// them is not what this rule is protecting.
 void main() {
-  /// Every Dart source file under `lib/`.
-  Iterable<File> libSources() => Directory('lib')
-      .listSync(recursive: true)
-      .whereType<File>()
-      .where((file) => file.path.endsWith('.dart'))
-      // Generated code mirrors identifiers, which this rule does not police.
-      .where((file) => !file.path.endsWith('.g.dart'))
-      .where((file) => !file.path.endsWith('.freezed.dart'));
-
-  /// Single- and double-quoted string literals in [source].
-  ///
-  /// Deliberately crude: it over-collects rather than under-collects, because a
-  /// literal this misses is a literal the rule stops protecting.
-  Iterable<String> stringLiterals(String source) sync* {
-    final pattern = RegExp("'([^'\\n]*)'|\"([^\"\\n]*)\"");
-    for (final match in pattern.allMatches(source)) {
-      yield match.group(1) ?? match.group(2) ?? '';
-    }
-  }
-
   test('no user-facing string says XP', () {
     final offenders = <String>[];
-    for (final file in libSources()) {
-      final source = file.readAsStringSync();
-      for (final literal in stringLiterals(source)) {
+    for (final file in dartSourcesUnder('lib')) {
+      for (final literal in stringLiteralsIn(file.readAsStringSync())) {
         if (RegExp(r'\bXP\b').hasMatch(literal)) {
           offenders.add('${file.path}: "$literal"');
         }

@@ -20,8 +20,6 @@ Duration roastyDuration(RoastyState state) {
       return const Duration(milliseconds: 1100); // jump one-shot
     case RoastyState.module:
       return const Duration(milliseconds: 900); // grow one-shot
-    case RoastyState.xp:
-      return const Duration(milliseconds: 1300); // xp rise one-shot
     case RoastyState.card:
       return const Duration(milliseconds: 1600); // shimmer loop
     case RoastyState.sleep:
@@ -49,7 +47,6 @@ bool roastyLoops(RoastyState state) {
     case RoastyState.wrong:
     case RoastyState.lesson:
     case RoastyState.module:
-    case RoastyState.xp:
     case RoastyState.awake:
       return false;
   }

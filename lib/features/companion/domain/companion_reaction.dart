@@ -2,8 +2,11 @@
 /// discrete app event. A reaction plays its (non-looping) animation, then the
 /// companion reverts to its current `CompanionMood`.
 ///
-/// Some values are defined for completeness but are intentionally not wired to
-/// a call site yet (see `docs/plans/extract-roasty-companion.md`).
+/// Whether the values marked unwired below ever ship — and what they would
+/// displace on screens that already celebrate — is open on
+/// [#219](https://github.com/maximsan/brewpath/issues/219). A points-earned
+/// value was deleted rather than wired (#212): it stated a payout no rule
+/// produced.
 enum CompanionReaction {
   /// Right answer (unwired in v1 — inline mini-game feedback handles it).
   correct,
@@ -25,9 +28,6 @@ enum CompanionReaction {
 
   /// A Coffee Challenge was logged — a real brew, made away from the app.
   challengeComplete,
-
-  /// XP was gained (not companion-driven in v1 — a plain XP toast handles it).
-  xpGained,
 
   /// A collectible card was earned (unwired in v1 — card screen has no mascot).
   cardEarned,

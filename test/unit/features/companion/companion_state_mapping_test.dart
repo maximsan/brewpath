@@ -34,7 +34,6 @@ void main() {
         CompanionReaction.wrong: RoastyState.wrong,
         CompanionReaction.lessonComplete: RoastyState.lesson,
         CompanionReaction.moduleComplete: RoastyState.module,
-        CompanionReaction.xpGained: RoastyState.xp,
         CompanionReaction.cardEarned: RoastyState.card,
       };
       for (final entry in expected.entries) {

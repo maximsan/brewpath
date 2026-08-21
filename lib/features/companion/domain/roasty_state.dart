@@ -10,7 +10,6 @@ enum RoastyState {
   wrong,
   lesson,
   module,
-  xp,
   card,
   sleep,
   awake,

@@ -15,8 +15,6 @@ void paintRoastyFace(Canvas canvas, RoastyState state) {
       _paintWrongFace(canvas);
     case RoastyState.module:
       _paintModuleFace(canvas);
-    case RoastyState.xp:
-      _paintXpFace(canvas);
     case RoastyState.card:
       _paintCardFace(canvas);
     case RoastyState.sleep:
@@ -155,27 +153,6 @@ void _paintModuleFace(Canvas c) {
     Rect.fromCenter(center: const Offset(100, 185), width: 16, height: 18),
     _pupil,
   );
-}
-
-void _paintXpFace(Canvas c) {
-  // open left eye, winking right eye
-  _paintEyeOpen(c, 80, 148);
-  final wink = Path()
-    ..moveTo(110, 148)
-    ..quadraticBezierTo(120, 142, 130, 148);
-  c.drawPath(wink, _mouthStroke..strokeWidth = 3);
-  c.drawOval(
-    Rect.fromCenter(center: const Offset(68, 170), width: 12, height: 6),
-    _cheek,
-  );
-  c.drawOval(
-    Rect.fromCenter(center: const Offset(132, 170), width: 12, height: 6),
-    _cheek,
-  );
-  final mouth = Path()
-    ..moveTo(90, 180)
-    ..quadraticBezierTo(100, 188, 113, 178);
-  c.drawPath(mouth, _mouthStroke);
 }
 
 void _paintCardFace(Canvas c) {
