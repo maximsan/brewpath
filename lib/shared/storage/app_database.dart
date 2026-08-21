@@ -18,9 +18,12 @@ class ProgressRecords extends Table {
   IntColumn get xpEarned => integer()();
   DateTimeColumn get completedAt => dateTime()();
 
-  /// Whether full lesson XP has already been awarded. Defaults to `true` so
-  /// rows migrated from schema v1 (which were created only on first
-  /// completion) keep their already-earned status.
+  /// Whether the lesson's full payout has already been awarded.
+  ///
+  /// ⚠️ **Dead: always `true`.** A completion row only ever exists once the
+  /// lesson has paid, so the flag never distinguished anything. Dropped by the
+  /// destructive rebuild (#79); a column cannot go while the mapper round-trips
+  /// it.
   BoolColumn get fullXpAwarded => boolean().withDefault(const Constant(true))();
 
   /// Graded cards answered right in the lesson's best run.
@@ -35,12 +38,19 @@ class ProgressRecords extends Table {
   /// Graded cards in the lesson's best run; `0` means unscored.
   IntColumn get gradedTotal => integer().withDefault(const Constant(0))();
 
-  /// Calendar day practice XP was last awarded for this lesson during review.
+  /// Calendar day the per-day practice reward was last paid for this lesson.
+  ///
+  /// ⚠️ **Dead: nothing writes it.** The reward was retired with #160 —
+  /// replays pay zero (§5.1). Keep Sharp's "was a lesson replayed today?"
+  /// derivation used to read this stamp and now reads the day's activity
+  /// entries instead, so no rule depends on it. Dropped by #79.
   DateTimeColumn get lastPracticeXpDate => dateTime().nullable()();
 }
 
-/// One row per module whose module-completion XP has been awarded. `moduleId`
-/// is unique so the bonus is granted at most once per module.
+/// One row per module whose module-completion bonus was awarded. `moduleId` is
+/// unique so the bonus was granted at most once per module.
+///
+/// ⚠️ **Dead table** — see `ModuleProgressRepository`. Dropped by #79.
 @DataClassName('ModuleProgressRow')
 class ModuleProgressRecords extends Table {
   IntColumn get id => integer().autoIncrement()();
@@ -63,6 +73,12 @@ class UserSettings extends Table {
   IntColumn get id => integer()();
   BoolColumn get hapticsEnabled => boolean()();
   BoolColumn get soundEnabled => boolean()();
+
+  /// The learner's running points total.
+  ///
+  /// ⚠️ **Dead: nothing reads or writes it.** The total is derived from the
+  /// completion rows and the snapshot's logged challenges (#160) — a counter is
+  /// a second copy of a derivable fact. Dropped by #79.
   IntColumn get totalXp => integer()();
   IntColumn get streakDays => integer()();
   DateTimeColumn get lastActivityDate => dateTime().nullable()();

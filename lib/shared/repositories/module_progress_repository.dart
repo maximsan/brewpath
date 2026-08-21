@@ -2,7 +2,14 @@ import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:drift/drift.dart';
 
 /// Persisted ledger of which modules have already paid out their
-/// module-completion XP, so the bonus is granted at most once per module.
+/// module-completion bonus, so it was granted at most once per module.
+///
+/// ⚠️ **Dead. Nothing reads or writes it any more.** The bonus it guarded was
+/// retired with #160 — a module pays nothing, and what the module moment hands
+/// over is its Field Guide card, which needs no ledger because collecting a
+/// card already held is a no-op. Kept only so the account wipe can still clear
+/// rows written by an earlier build; the table goes with the destructive
+/// rebuild (#79).
 class ModuleProgressRepository {
   AppDatabase get _db => AppDatabaseService.instance;
 
