@@ -9,6 +9,13 @@ One file per decision, named `NNNN-kebab-case-title.md` with a zero-padded
 sequential number (`0001-…`, `0002-…`). Numbers are never reused, and a
 superseded ADR is kept in place with its status updated rather than deleted.
 
+**Take the next number from `origin/main`, not from your branch.** Two branches
+cut at the same time will both pick the same "next" number, and neither PR can
+see the other — which is how two ADR-0005s once landed. A test enforces the
+rule: numbers must be unique, run from `0001` with no gaps, and match the
+`# ADR-NNNN:` heading inside the file. If it fails after a rebase, the fix is to
+renumber the record that landed **second** and update every link to it.
+
 Each record follows this shape:
 
 ```markdown

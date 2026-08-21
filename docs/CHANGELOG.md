@@ -51,7 +51,7 @@ You can always edit this file by hand instead — the helpers just save effort.
   verbatim, so a rename used to surface as a blank inside a lesson at the card
   that needed it; it is now a refusal at startup, where a build can catch it.
   What counts as a breaking change is written in the extractor's header, and
-  [ADR-0005](adr/0005-the-prototype-authors-v1-and-the-extracted-json-is-the-contract.md)
+  [ADR-0006](adr/0006-the-prototype-authors-v1-and-the-extracted-json-is-the-contract.md)
   records why the prototype still authors the course and what would end that.
 
 - **Coffee Challenges show up everywhere they belong.** Finish a lesson that
