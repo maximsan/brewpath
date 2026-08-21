@@ -31,10 +31,6 @@ void main() {
         const Duration(milliseconds: 900),
       );
       expect(
-        roastyDuration(RoastyState.xp),
-        const Duration(milliseconds: 1300),
-      );
-      expect(
         roastyDuration(RoastyState.card),
         const Duration(milliseconds: 1600),
       );
@@ -59,7 +55,6 @@ void main() {
         RoastyState.wrong,
         RoastyState.lesson,
         RoastyState.module,
-        RoastyState.xp,
         RoastyState.awake,
       ]) {
         expect(roastyLoops(state), isFalse, reason: '$state should not loop');
@@ -71,7 +66,6 @@ void main() {
     test('states without a translation animation return zero', () {
       for (final state in const [
         RoastyState.card,
-        RoastyState.xp,
         RoastyState.module,
         RoastyState.sleep,
         RoastyState.awake,

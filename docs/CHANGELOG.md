@@ -610,6 +610,19 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Removed
 
+- **Roasty's points-earned pose is gone.** It painted a rising chip reading a
+  hardcoded payout — a number no rule produced. #16 ruled that literal dropped;
+  the points rework renumbered it from `+15 XP` to `+10 PTS` instead, fixing the
+  word and keeping the defect.
+
+  Deleting rather than wiring it: the pose was unreachable — nothing in the app
+  ever fired the reaction that selects it — and the lesson result screen already
+  plays its own celebration, so a second one is a decision about what it
+  displaces, not a cleanup. A points moment, if ever wanted, gets authored
+  against a screen chosen for it and reads the real payout.
+
+  A test now fails if any companion source states a points amount again.
+
 - **The last two fields of the old streak engine are gone from the database.**
   `streakDays` and `lastActivityDate` sat on the settings row long after the
   streak moved onto the day set it derives from — read, written back and zeroed

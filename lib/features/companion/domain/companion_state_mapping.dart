@@ -40,8 +40,6 @@ RoastyState _reactionState(CompanionReaction reaction) {
     // a lesson, and a notch below the module pose the course moments use.
     case CompanionReaction.challengeComplete:
       return RoastyState.lesson;
-    case CompanionReaction.xpGained:
-      return RoastyState.xp;
     case CompanionReaction.cardEarned:
       return RoastyState.card;
   }

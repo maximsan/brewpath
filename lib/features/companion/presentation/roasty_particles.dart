@@ -1,9 +1,7 @@
 import 'dart:math' as math;
 
-import 'package:brew_path/features/companion/domain/companion_reaction.dart';
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty_faces.dart';
-import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:flutter/material.dart';
 
 // The front particle dispatch handles the states with particles and defaults
@@ -20,8 +18,8 @@ void paintRoastyParticlesBack(Canvas canvas, RoastyState state, double t) {
   }
 }
 
-/// Particle layer painted in front of the bean body (sparkles, confetti, xp
-/// burst, wrong badge, sleep zzz).
+/// Particle layer painted in front of the bean body (sparkles, confetti,
+/// wrong badge, sleep zzz).
 void paintRoastyParticlesFront(Canvas canvas, RoastyState state, double t) {
   switch (state) {
     case RoastyState.correct:
@@ -29,8 +27,6 @@ void paintRoastyParticlesFront(Canvas canvas, RoastyState state, double t) {
     case RoastyState.lesson:
     case RoastyState.module:
       _paintConfetti(canvas, t);
-    case RoastyState.xp:
-      _paintXpBurst(canvas, t);
     case RoastyState.wrong:
       _paintWrongBadge(canvas);
     case RoastyState.sleep:
@@ -150,44 +146,6 @@ void _paintConfetti(Canvas c, double t) {
     }
     c.restore();
   }
-}
-
-/// Placeholder label for the reward burst.
-///
-/// ⚠️ **Not a payout, and not read from one.** The design's burst takes the
-/// amount as an argument (`roasty.jsx:575` renders `+{pointsAmount} PTS`); this
-/// pose has no caller to take one from — [CompanionReaction.xpGained] is fired
-/// by nothing — so the burst is unreachable illustration awaiting the reward
-/// moment that will wire it. A lesson's payout is per-lesson data, so this
-/// constant must not become the source of one: whatever wires this pose passes
-/// the real value in and deletes this.
-const String _burstPlaceholderLabel = '+10 PTS';
-
-void _paintXpBurst(Canvas c, double t) {
-  final phase = t;
-  final dy = -50 * phase;
-  final opacity = phase < 0.2
-      ? phase / 0.2
-      : (1 - phase).clamp(0, 1).toDouble();
-  final paint = Paint()
-    ..color = const Color(0xFFC8843A).withValues(alpha: opacity);
-  final rect = Rect.fromLTWH(68, 42 + dy, 64, 24);
-  c.drawRRect(RRect.fromRectAndRadius(rect, const Radius.circular(2)), paint);
-  // The label reads off the ladder like any other text; only its colour comes
-  // from the illustration rather than the mood. It previously asked for
-  // 'IBMPlexMono', which no `fonts:` entry declares — Flutter does not throw on
-  // an unknown family, so the burst had been rendering in the platform fallback
-  // font.
-  final textStyle = AppText.support(
-    color: const Color(0xFFFBF7EE).withValues(alpha: opacity),
-    face: AppFace.mono,
-  );
-  final tp = TextPainter(
-    text: TextSpan(text: _burstPlaceholderLabel, style: textStyle),
-    textDirection: TextDirection.ltr,
-    textAlign: TextAlign.center,
-  )..layout(minWidth: 64, maxWidth: 64);
-  tp.paint(c, Offset(68, 47 + dy));
 }
 
 void _paintWrongBadge(Canvas c) {
