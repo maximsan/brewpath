@@ -29,6 +29,9 @@
     --rule:      #D8CFBF;
     --accent:    #B8533A;
     --accent-ink:#FBF7EE;
+    /* Accent used as TEXT: raw --accent is only ~4.3:1 on paper, so small accent
+       labels use this darkened mix. Glyphs and borders keep full --accent. */
+    --accent-text: color-mix(in oklab, var(--accent) 62%, var(--ink));
     --sage:      #5F6E55;
     --warn:      #9A5F1C;
     --berry:     #A8362A;
@@ -43,6 +46,7 @@
     --rule:      #44321E;
     --accent:    #E07A4F;
     --accent-ink:#1A130E;
+    --accent-text: color-mix(in oklab, var(--accent) 62%, var(--ink));
     --sage:      #97A285;
     --warn:      #E6A35C;
     --berry:     #C75450;
@@ -96,7 +100,7 @@
   .screen { position: absolute; inset: 0; display: flex; flex-direction: column; background: var(--bg); }
   .topbar {
     position: absolute; top: 54px; left: 0; right: 0; padding: 12px 20px;
-    display: grid; grid-template-columns: 32px 1fr 32px; align-items: center;
+    display: grid; grid-template-columns: 32px 1fr auto; align-items: center;
     z-index: 10; background: transparent;
   }
   .icon-btn {
@@ -109,7 +113,7 @@
   }
   .scroll {
     flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch;
-    padding-top: 104px; padding-bottom: 28px;
+    padding-top: 100px; padding-bottom: 20px;
   }
   .scroll::-webkit-scrollbar { display: none; }
   .home-indicator {
@@ -128,7 +132,7 @@
 
   /* ── Hero tree stage ── */
   .tree-hero {
-    position: relative; width: 258px; height: 258px; margin: 4px auto 0;
+    position: relative; width: 194px; height: 194px; margin: 0 auto;
     display: flex; align-items: center; justify-content: center;
   }
   .tree-ground {
@@ -172,25 +176,16 @@
   }
 
   .stage-name {
-    font-family: 'Fraunces', serif; font-size: 34px; font-weight: 400; line-height: 1.05;
-    letter-spacing: -0.02em; margin: 6px 0 0; color: var(--ink); text-align: center;
+    font-family: 'Fraunces', serif; font-size: 30px; font-weight: 400; line-height: 1.05;
+    letter-spacing: -0.02em; margin: 2px 0 0; color: var(--ink); text-align: center;
     transition: opacity 240ms ease;
   }
-
-  /* ── Progress ── */
-  .prog-track { height: 8px; background: var(--surface-2); border-radius: 999px; overflow: hidden; }
-  .prog-fill  { height: 100%; width: 0%; background: var(--accent); border-radius: 999px;
-    transition: width 900ms cubic-bezier(0.2,0.9,0.3,1); }
-  .ladder { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; }
-  .ladder span { height: 4px; border-radius: 999px; background: var(--surface-2);
-    transition: background 500ms ease; }
-  .ladder span.on { background: var(--accent); }
 
   /* ── Milestone timeline ── */
   .milestones { display: flex; flex-direction: column; }
   .ms-row {
     position: relative; display: grid; grid-template-columns: 46px 1fr auto;
-    align-items: center; gap: 14px; padding: 14px 4px 14px 0;
+    align-items: center; gap: 14px; padding: 11px 4px 11px 0;
     border-bottom: 1px solid var(--rule);
   }
   .ms-row:last-child { border-bottom: none; }
@@ -207,7 +202,11 @@
   }
   .ms-thumb img { width: 86%; height: 86%; object-fit: contain; }
   .ms-row.done .ms-thumb { border-color: var(--sage); }
-  .ms-row.locked { opacity: 0.4; }
+  /* Locked rows are distinguished by colour and a flattened thumb, never by
+     opacity — a dimmed row is an unreadable row, and the map is the content. */
+  .ms-row.locked .ms-mod { color: var(--ink-mute); font-weight: 400; }
+  .ms-row.locked .ms-thumb { background: var(--surface-2); }
+  .ms-row.locked .ms-thumb img { opacity: 0.45; filter: grayscale(1); }
   .ms-row.next .ms-thumb {
     border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent);
   }
@@ -223,7 +222,7 @@
     text-transform: uppercase; white-space: nowrap; color: var(--ink-mute);
   }
   .ms-row.done .ms-tag { color: var(--sage); }
-  .ms-row.next .ms-tag { color: var(--accent); font-weight: 600; }
+  .ms-row.next .ms-tag { color: var(--accent-text); font-weight: 600; }
   .ms-check {
     display: inline-flex; align-items: center; justify-content: center; gap: 5px;
   }
@@ -238,20 +237,20 @@
     background: var(--accent); color: var(--accent-ink); border-radius: var(--r); padding: 16px 24px;
   }
   .btn-primary:disabled { opacity: 0.4; cursor: default; }
-  .reset-link {
-    display: inline-block; margin-top: 14px; width: 100%; text-align: center;
-    font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.12em;
-    text-transform: uppercase; color: var(--ink-mute); background: transparent; border: none; cursor: pointer;
+  /* Demo controls live in the top bar so the whole growth story fits one screen. */
+  .demo-ctl { display: flex; align-items: center; gap: 6px; justify-self: end; }
+  .ctl {
+    position: relative; appearance: none; cursor: pointer; width: 34px; height: 34px; border-radius: 999px;
+    display: grid; place-items: center; background: var(--surface);
+    border: 1px solid var(--rule); color: var(--ink);
+    transition: transform 120ms ease, opacity 120ms ease, border-color 120ms ease;
   }
-  .reset-link:hover { color: var(--ink); }
+  /* 34px circle, 44px target — the ring stays small without shrinking the tap area. */
+  .ctl::after { content: ''; position: absolute; inset: -5px; border-radius: 999px; }
+  .ctl:active { transform: scale(0.94); }
+  .ctl.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .ctl:disabled { opacity: 0.35; cursor: default; }
 
-  .points-chip {
-    display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px;
-    border: 1px solid var(--rule); border-radius: 999px;
-    font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--ink);
-    letter-spacing: 0.04em;
-  }
-  .points-chip b { color: var(--accent); font-weight: 500; }
   .caption { color: rgba(255,255,255,0.4); font-family: 'IBM Plex Mono', monospace;
     font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; }
 
@@ -280,14 +279,17 @@
           <svg width="18" height="18" viewBox="0 0 18 18"><path d="M11 3 L5 9 L11 15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
         <div class="title">Coffee Tree</div>
-        <div></div>
+        <div class="demo-ctl">
+          <button class="ctl" id="resetBtn" title="Reset growth" aria-label="Reset growth">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2.6 8a5.4 5.4 0 1 0 1.9-4.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M2.2 2.2v2.6h2.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="ctl primary" id="growBtn" title="Grow" aria-label="Grow">
+            <svg width="14" height="14" viewBox="0 0 14 14"><path d="M4 2.6 L11.2 7 L4 11.4 Z" fill="currentColor"/></svg>
+          </button>
+        </div>
       </div>
 
       <div class="scroll">
-        <div class="px-24" style="text-align:center;">
-          <div class="smallcaps" style="color:var(--accent);">YOUR COFFEE TREE</div>
-        </div>
-
         <div class="tree-hero" id="treeHero">
           <div class="tree-ground"></div>
           <div class="glow-ring" id="glow"></div>
@@ -297,38 +299,17 @@
 
         <h1 class="stage-name" id="stageName">Seed</h1>
         <div style="text-align:center; margin-top:8px;">
-          <span class="smallcaps" id="stageCount">STAGE 1 OF 6</span>
-        </div>
-
-        <div style="display:flex; justify-content:center; margin-top:14px;">
-          <span class="points-chip"><b id="pointsNow">0</b> OF 5 MODULES</span>
-        </div>
-
-        <div class="px-24" style="padding-top:26px;">
-          <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;">
-            <span class="smallcaps" id="progLabel">NEXT · FINISH BEANS</span>
-            <span class="ff-mono" id="progModules" style="font-size:12px; color:var(--ink-mute); letter-spacing:0.08em;">0 / 5 MODULES</span>
-          </div>
-          <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
-          <div class="ladder" id="ladder" style="margin-top:14px;">
-            <span></span><span></span><span></span><span></span><span></span><span></span>
-          </div>
-        </div>
-
-        <div class="px-24" style="padding-top:30px;">
-          <div class="smallcaps" style="margin-bottom:6px;">GROWTH MILESTONES</div>
-          <div class="milestones" id="milestones"></div>
-        </div>
-
-        <div class="px-24" style="padding-top:22px;">
-          <p style="margin:0; font-size:14px; line-height:1.5; color:var(--ink-mute); text-wrap:pretty;">
-            Every module you finish feeds your tree. It grows in six stages, from bare seed to a full canopy of ripe cherries — a living record of everything you've learned.
-          </p>
+          <span class="smallcaps" id="stageCount">STAGE 1 OF 10 · NOT STARTED</span>
         </div>
 
         <div class="px-24" style="padding-top:24px;">
-          <button class="btn btn-primary" id="growBtn">Finish Beans</button>
-          <button class="reset-link" id="resetBtn">Reset growth</button>
+          <div class="milestones" id="milestones"></div>
+        </div>
+
+        <div class="px-24" style="padding-top:16px; padding-bottom:8px;">
+          <p style="margin:0; font-size:14px; line-height:1.5; color:var(--ink-mute); text-wrap:pretty;">
+            Each module grows the tree twice — once at its halfway point, once when you finish it. Brew is the exception: its one step is the harvest.
+          </p>
         </div>
       </div>
     </div>
@@ -339,21 +320,42 @@
   <div class="caption">BREWPATH · GROWTH JOURNEY · iPhone 15</div>
 </div>
 
+<script src="data.jsx"></script>
 <script>
 (function(){
-  // Six growth stages, one per completed module. Stage 0 is the bare
-  // seed you start with; each of the five modules, once finished, grows the tree
-  // to the next visibly distinct stage. Asset frames 1/2/4/6/8/10 are chosen so
-  // every step is a clear jump — sprout → buds → green cherries → ripening → harvest.
-  var STAGES = [
-    { asset: 1,  name: 'Seed',   module: null,         label: 'BEFORE YOU BEGIN' },
-    { asset: 2,  name: 'Sprout',  module: 'Beans',      label: 'FIRST TWO LEAVES' },
-    { asset: 4,  name: 'Budding',  module: 'Processing', label: 'BRANCHES & BUDS' },
-    { asset: 6,  name: 'In Flower', module: 'Roasting',   label: 'CHERRIES SET' },
-    { asset: 8,  name: 'Ripening', module: 'Grind',      label: 'TURNING ORANGE' },
-    { asset: 10, name: 'Harvest', module: 'Brew',       label: 'FULL RED CANOPY' },
-  ];
-  var STORE = 'cq-tree-modules';
+  // Real data, one source of truth: module names and lesson counts come from
+  // data.jsx (window.MODULES), and the stage mapping from window.TREE_THRESHOLDS /
+  // window.treeStageFromCore — the same functions the app uses. Nothing about the
+  // growth curve is restated here.
+  // Frame names: window.STAGE_NAMES lives in flavor-wheel.jsx, which needs React,
+  // so this page carries the same list as a fallback.
+  var STAGE_NAMES = (window.STAGE_NAMES && window.STAGE_NAMES.length
+    ? window.STAGE_NAMES
+    : ['SEED','SPROUT','SAPLING','BUDDING','FLOWERING',
+       'GREEN CHERRY','TURNING','RIPENING','NEAR HARVEST','HARVEST']
+  ).map(function(n){ return n.charAt(0) + n.slice(1).toLowerCase(); });
+  var MODS = window.MODULES || [];
+  var THRESHOLDS = window.TREE_THRESHOLDS || [];
+  var TOTAL = window.CORE_TOTAL || 0;
+
+  // One entry per growth event, derived: the lesson count that triggers it, the
+  // module it falls in, and whether it is that module's halfway or completion.
+  var STEPS = THRESHOLDS.map(function(done){
+    var at = 0, mod = MODS[0];
+    for (var i = 0; i < MODS.length; i++){
+      var size = MODS[i].lessons.length;
+      if (done <= at + size) { mod = MODS[i]; break; }
+      at += size;
+    }
+    return { done: done, stage: window.treeStageFromCore(done), mod: mod,
+             kind: done === at + mod.lessons.length ? 'done' : 'mid' };
+  });
+  // Each module's own span of stages, read back off the derived steps.
+  var MOD_SPAN = MODS.map(function(m){
+    var mine = STEPS.filter(function(s){ return s.mod === m; });
+    return { mod: m, first: mine[0].stage, last: mine[mine.length - 1].stage, steps: mine.length };
+  });
+  var STORE = 'cq-tree-steps';
 
   var base = document.getElementById('treeBase');
   var next = document.getElementById('treeNext');
@@ -361,74 +363,68 @@
   var hero = document.getElementById('treeHero');
   var stageName = document.getElementById('stageName');
   var stageCount = document.getElementById('stageCount');
-  var pointsNow = document.getElementById('pointsNow');
-  var progLabel = document.getElementById('progLabel');
-  var progModules = document.getElementById('progModules');
-  var progFill = document.getElementById('progFill');
-  var ladderSpans = document.getElementById('ladder').children;
   var msWrap = document.getElementById('milestones');
   var growBtn = document.getElementById('growBtn');
   var resetBtn = document.getElementById('resetBtn');
 
-  // completed = number of modules finished (0..5) → current stage index.
   function read(){
     var n = parseInt(localStorage.getItem(STORE) || '0', 10);
-    return isNaN(n) ? 0 : Math.max(0, Math.min(5, n));
+    return isNaN(n) ? 0 : Math.max(0, Math.min(STEPS.length, n));
   }
   function write(n){ try { localStorage.setItem(STORE, String(n)); } catch(e){} }
 
-  var completed = read();
+  var step = read();
   var animating = false;
 
+  function stageOf(s){ return s === 0 ? 1 : STEPS[s - 1].stage; }
   function check(color){
     return '<svg width="13" height="13" viewBox="0 0 13 13"><path d="M2.5 7 L5 9.5 L10.5 3.5" fill="none" stroke="'+color+'" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   }
+  function statusLine(){
+    var where;
+    if (step === 0) where = 'NOT STARTED';
+    else if (step === STEPS.length) where = 'COURSE COMPLETE';
+    else {
+      var last = STEPS[step - 1];
+      where = last.kind === 'mid'
+        ? 'HALFWAY THROUGH ' + last.mod.title.toUpperCase()
+        : last.mod.title.toUpperCase() + ' COMPLETE';
+    }
+    return 'STAGE ' + stageOf(step) + ' OF 10 · ' + where;
+  }
+  function nextLabel(){
+    if (step >= STEPS.length) return 'Fully grown — harvest ready';
+    var nx = STEPS[step];
+    return nx.kind === 'mid' ? 'Reach halfway in ' + nx.mod.title : 'Finish ' + nx.mod.title;
+  }
 
   function renderMilestones(){
-    var html = '';
-    for (var i = 1; i < STAGES.length; i++){
-      var st = STAGES[i];
-      var done = i <= completed;
-      var isNext = i === completed + 1;
+    var reached = stageOf(step);
+    var nextMod = step < STEPS.length ? STEPS[step].mod : null;
+    msWrap.innerHTML = MOD_SPAN.map(function(sp){
+      var done = reached >= sp.last;
+      var isNext = !done && sp.mod === nextMod;
       var cls = done ? 'done' : (isNext ? 'next' : 'locked');
-      var tag = done
-        ? '<span class="ms-check">'+check('var(--sage)')+' GROWN</span>'
-        : (isNext ? 'NEXT' : 'LOCKED');
-      html += '<div class="ms-row '+cls+'">'
-        + '<div class="ms-thumb"><img src="assets/trees/'+st.asset+'.png" alt=""></div>'
-        + '<div><div class="ms-mod">'+st.module+'</div>'
-        + '<div class="ms-sub">'+st.name+' · '+st.label+'</div></div>'
-        + '<div class="ms-tag">'+tag+'</div>'
-        + '</div>';
-    }
-    msWrap.innerHTML = html;
+      var tag = done ? '<span class="ms-check">'+check('var(--sage)')+' GROWN</span>'
+                     : (isNext ? 'NEXT' : 'LOCKED');
+      var span = (sp.steps > 1 ? 'STAGES ' + sp.first + '–' + sp.last : 'STAGE ' + sp.last)
+        + ' · ' + sp.mod.lessons.length + ' LESSONS';
+      return '<div class="ms-row '+cls+'">'
+        + '<div class="ms-thumb"><img src="assets/trees/'+sp.last+'.png" alt=""></div>'
+        + '<div><div class="ms-mod">'+sp.mod.title+'</div><div class="ms-sub">'+span+'</div></div>'
+        + '<div class="ms-tag">'+tag+'</div></div>';
+    }).join('');
   }
 
   function paintStatic(){
-    var st = STAGES[completed];
-    base.src = 'assets/trees/' + st.asset + '.png';
-    stageName.textContent = st.name;
-    stageCount.textContent = 'STAGE ' + (completed + 1) + ' OF 6';
-    pointsNow.textContent = completed;
-
-    for (var i = 0; i < ladderSpans.length; i++){
-      ladderSpans[i].classList.toggle('on', i <= completed);
-    }
-
-    if (completed >= 5){
-      progLabel.textContent = 'FULLY GROWN';
-      progModules.textContent = '5 / 5 MODULES';
-      progFill.style.width = '100%';
-      growBtn.textContent = 'Fully grown — harvest ready';
-      growBtn.disabled = true;
-    } else {
-      var nx = STAGES[completed + 1];
-      progLabel.textContent = 'NEXT · FINISH ' + nx.module.toUpperCase();
-      progModules.textContent = completed + ' / 5 MODULES';
-      progFill.style.width = ((completed / 5) * 100) + '%';
-      growBtn.textContent = 'Finish ' + nx.module;
-      growBtn.disabled = false;
-    }
+    var s = stageOf(step);
+    base.src = 'assets/trees/' + s + '.png';
+    stageName.textContent = STAGE_NAMES[s - 1];
+    stageCount.textContent = statusLine();
+    growBtn.title = nextLabel();
+    growBtn.setAttribute('aria-label', nextLabel());
+    growBtn.disabled = step >= STEPS.length;
+    resetBtn.disabled = step === 0;
     renderMilestones();
   }
 
@@ -450,21 +446,18 @@
   }
 
   function grow(){
-    if (animating || completed >= 5) return;
+    if (animating || step >= STEPS.length) return;
     animating = true;
     growBtn.disabled = true;
 
-    var from = STAGES[completed];
-    completed += 1;
-    var to = STAGES[completed];
-    write(completed);
+    step += 1;
+    write(step);
+    var s = stageOf(step);
 
-    // Prep the incoming frame on top, hidden.
-    next.src = 'assets/trees/' + to.asset + '.png';
+    next.src = 'assets/trees/' + s + '.png';
     next.style.opacity = '0';
     base.classList.remove('tree-sway');
 
-    // Cross-fade base → next.
     requestAnimationFrame(function(){
       next.style.transition = 'opacity 620ms ease';
       base.style.transition = 'opacity 620ms ease';
@@ -472,41 +465,19 @@
       base.style.opacity = '0';
     });
 
-    // Fade the stage name out/in.
     stageName.style.opacity = '0';
 
-    // Glow + leaves + count-up begin mid-fade.
     setTimeout(function(){
       glow.classList.remove('go'); void glow.offsetWidth; glow.classList.add('go');
       spawnLeaves();
       hero.classList.remove('tree-bounce'); void hero.offsetWidth; hero.classList.add('tree-bounce');
-
-      // Advance the module count.
-      pointsNow.textContent = completed;
-
-      stageName.textContent = to.name;
+      stageName.textContent = STAGE_NAMES[s - 1];
       stageName.style.opacity = '1';
-      stageCount.textContent = 'STAGE ' + (completed + 1) + ' OF 6';
+      stageCount.textContent = statusLine();
     }, 260);
 
-    // Progress bar + ladder advance.
     setTimeout(function(){
-      for (var i = 0; i < ladderSpans.length; i++) ladderSpans[i].classList.toggle('on', i <= completed);
-      if (completed >= 5){
-        progLabel.textContent = 'FULLY GROWN';
-        progModules.textContent = '5 / 5 MODULES';
-        progFill.style.width = '100%';
-      } else {
-        var nx = STAGES[completed + 1];
-        progLabel.textContent = 'NEXT · FINISH ' + nx.module.toUpperCase();
-        progModules.textContent = completed + ' / 5 MODULES';
-        progFill.style.width = ((completed / 5) * 100) + '%';
-      }
-    }, 300);
-
-    // Settle: swap the base to the new frame, reset next, re-enable.
-    setTimeout(function(){
-      base.src = 'assets/trees/' + to.asset + '.png';
+      base.src = 'assets/trees/' + s + '.png';
       base.style.transition = 'none';
       base.style.opacity = '1';
       next.style.transition = 'none';
@@ -514,8 +485,10 @@
       base.classList.add('tree-sway');
       hero.classList.remove('tree-bounce');
       renderMilestones();
-      if (completed >= 5){ growBtn.textContent = 'Fully grown — harvest ready'; growBtn.disabled = true; }
-      else { var nx = STAGES[completed + 1]; growBtn.textContent = 'Finish ' + nx.module; growBtn.disabled = false; }
+      growBtn.title = nextLabel();
+      growBtn.setAttribute('aria-label', nextLabel());
+      growBtn.disabled = step >= STEPS.length;
+      resetBtn.disabled = false;
       animating = false;
     }, 900);
   }
@@ -523,7 +496,7 @@
   growBtn.addEventListener('click', grow);
   resetBtn.addEventListener('click', function(){
     if (animating) return;
-    completed = 0; write(0);
+    step = 0; write(0);
     base.style.transition = 'none'; base.style.opacity = '1'; base.classList.add('tree-sway');
     next.style.opacity = '0';
     stageName.style.opacity = '1';

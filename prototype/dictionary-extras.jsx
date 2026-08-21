@@ -1,6 +1,6 @@
-// dictionary-extras.jsx — Term of the Day, saved-term Flashcards, Vocab mini-game.
+// dictionary-extras.jsx — Term of the Day, saved-term Flashcards, Guess the term.
 // Loaded after dictionary.jsx, before app.jsx.
-// The two Practice screens (Flashcards, Vocab game) share the app's standard
+// The two Practice screens (Flashcards, Guess the term) share the app's standard
 // drill chrome: a lesson-topbar with the roasting-bean counter — the same
 // pattern MiniGamePlayer uses — and a Roasty results screen at the end.
 
@@ -9,8 +9,8 @@ const { useState: useStateX, useEffect: useEffectX, useRef: useRefX } = React;
 // ════════════════════════════════════════════════════════════
 // TERM OF THE DAY
 // ════════════════════════════════════════════════════════════
-function TermOfDayScreen({ onOpenFull, isFav, onToggleFav, onClose }) {
-  const term = window.dictTermOfDay ? window.dictTermOfDay() : null;
+function TermOfDayScreen({ pool, full = true, onUnlock, onOpenFull, isFav, onToggleFav, onClose }) {
+  const term = window.dictTermOfDay ? window.dictTermOfDay(null, pool) : null;
   const cat = term ? (window.DICT_CAT_BY_ID || {})[term.cat] : null;
   const today = new Date(2026, 5, 18);
   const dateStr = today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
@@ -49,7 +49,9 @@ function TermOfDayScreen({ onOpenFull, isFav, onToggleFav, onClose }) {
         <div style={{ flex: 1, minHeight: 24 }}></div>
 
         <div className="px-24" style={{ position: 'sticky', bottom: 0, paddingTop: 16, paddingBottom: 24, background: 'linear-gradient(to top, var(--bg) 74%, transparent)' }}>
-          <button className="btn btn-primary" onClick={() => onOpenFull(term.id)}>Read the full entry</button>
+          {/* The label promises the FULL entry, so for a free user the tap
+              raises the purchase gate — it must never deliver the short one. */}
+          <button className="btn btn-primary" onClick={() => full ? onOpenFull(term.id) : (onUnlock && onUnlock())}>Read the full entry</button>
           <div style={{ marginTop: 10 }}>
             <a className="btn btn-ghost" href="#" style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }} onClick={(e) => { e.preventDefault(); onClose(); }}>Back</a>
           </div>
@@ -113,9 +115,12 @@ function DrillResults({ roastyState, kicker, big, bigSub, note, msg, primaryLabe
 // ════════════════════════════════════════════════════════════
 // FLASHCARDS — saved terms, flippable deck with a finish state
 // ════════════════════════════════════════════════════════════
-function FlashcardsScreen({ favorites, onOpenTerm, onBrowse, onClose }) {
+function FlashcardsScreen({ favorites, pool, full = true, onOpenTerm, onBrowse, onClose }) {
   const favs = favorites || new Set();
-  const allDeck = (window.DICT_TERMS || []).filter(t => favs.has('t:' + t.id));
+  // Free tier: the deck is saved ∩ accessible — a stale favorite outside the
+  // free set (older prototype state) must never flash its definition.
+  const poolIds = pool ? new Set(pool.map(t => t.id)) : null;
+  const allDeck = (window.DICT_TERMS || []).filter(t => favs.has('t:' + t.id) && (!poolIds || poolIds.has(t.id)));
   const [order, setOrder] = useStateX(() => allDeck.map((_, i) => i));
   const [pos, setPos] = useStateX(0);
   const [flipped, setFlipped] = useStateX(false);
@@ -143,7 +148,6 @@ function FlashcardsScreen({ favorites, onOpenTerm, onBrowse, onClose }) {
         <DrillTopbar onClose={onClose} total={0}/>
         <div className="scroll" style={{ paddingTop: 134, paddingBottom: 32, display: 'flex', flexDirection: 'column' }}>
           <div className="px-24">
-            <div className="smallcaps" style={{ marginBottom: 10 }}>STUDY</div>
             <h1 className="ff-display" style={{ fontSize: 'var(--t-display)', fontWeight: 400, letterSpacing: '-0.02em', margin: 0, color: 'var(--ink)' }}>Flashcards</h1>
           </div>
           <div className="px-24" style={{ paddingTop: 60, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
@@ -219,7 +223,7 @@ function FlashcardsScreen({ favorites, onOpenTerm, onBrowse, onClose }) {
       <DrillTopbar onClose={onClose} pos={pos} total={total} right={shuffleBtn}/>
       <div className="scroll" style={{ paddingTop: 134, paddingBottom: 24, display: 'flex', flexDirection: 'column' }}>
         <div className="px-24">
-          <div className="smallcaps">STUDY · {total} SAVED {total === 1 ? 'TERM' : 'TERMS'}</div>
+          <div className="smallcaps">{total} SAVED {total === 1 ? 'TERM' : 'TERMS'}</div>
         </div>
 
         {/* the card — real 3D flip */}
@@ -254,12 +258,17 @@ function FlashcardsScreen({ favorites, onOpenTerm, onBrowse, onClose }) {
             </div>
           </button>
 
-          <div style={{ display: 'flex', alignItems: 'stretch', gap: 10, paddingTop: 16 }}>
+          {/* The entry link is the card's continuation, not deck chrome: it sits
+              directly under the card and only exists once the definition is
+              showing — a link to "more" before the reveal would undercut recall.
+              Height is reserved so the flip never shifts the nav row. */}
+          <div style={{ textAlign: 'center', paddingTop: 8, opacity: flipped ? 1 : 0, pointerEvents: flipped ? 'auto' : 'none', transition: 'opacity 200ms ease 140ms' }} aria-hidden={!flipped}>
+            <button className="btn btn-link" tabIndex={flipped ? 0 : -1} onClick={() => onOpenTerm(term.id)}>{full ? 'View full entry →' : 'View entry →'}</button>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'stretch', gap: 10, paddingTop: 8 }}>
             <button className="btn btn-ghost" style={{ width: 'auto', flex: 1, padding: '16px 24px' }} disabled={pos === 0} onClick={() => go(-1)}>‹ Prev</button>
             <button className="btn btn-primary" style={{ width: 'auto', flex: 1 }} onClick={() => go(1)}>{pos >= total - 1 ? 'Finish' : 'Next ›'}</button>
-          </div>
-          <div style={{ textAlign: 'center', paddingTop: 6 }}>
-            <button className="btn btn-link" onClick={() => onOpenTerm(term.id)}>View full entry →</button>
           </div>
         </div>
       </div>
@@ -268,13 +277,15 @@ function FlashcardsScreen({ favorites, onOpenTerm, onBrowse, onClose }) {
 }
 
 // ════════════════════════════════════════════════════════════
-// VOCAB MINI-GAME — definition → guess the term
+// GUESS THE TERM — definition → term
 // ════════════════════════════════════════════════════════════
 // Questions come from `pool` (saved terms or the whole glossary); distractors
-// always come from the full glossary, preferring the answer's own category
-// (2 of 3) so wrong choices stay plausible.
-function buildVocabRounds(n, pool) {
-  const all = (window.DICT_TERMS || []).filter(t => t.short);
+// come from `allSrc` — the widest set the player may see (free tier passes its
+// accessible terms so nothing outside the free set appears, even as a wrong
+// answer) — preferring the answer's own category (2 of 3) so wrong choices
+// stay plausible.
+function buildVocabRounds(n, pool, allSrc) {
+  const all = (allSrc && allSrc.length >= 4) ? allSrc : (window.DICT_TERMS || []).filter(t => t.short);
   const src = (pool && pool.length >= 4) ? pool : all;
   const picks = [...src].sort(() => Math.random() - 0.5).slice(0, Math.min(n, src.length));
   return picks.map(answer => {
@@ -296,9 +307,11 @@ function writeMisses(set) {
   try { localStorage.setItem(VOCAB_MISS_KEY, JSON.stringify([...set])); } catch (e) {}
 }
 
-function VocabGameScreen({ favorites, onClose, onOpenTerm }) {
+function VocabGameScreen({ favorites, pool: limitPool, onClose, onOpenTerm }) {
   const favs = favorites || new Set();
-  const glossary = (window.DICT_TERMS || []).filter(t => t.short);
+  // Free tier plays over its accessible terms only — questions AND distractors.
+  const limited = !!(limitPool && limitPool.length);
+  const glossary = (limited ? limitPool : (window.DICT_TERMS || [])).filter(t => t.short);
   const savedPool = glossary.filter(t => favs.has('t:' + t.id));
   const canSaved = savedPool.length >= VOCAB_MIN_SAVED;
   const [misses, setMisses] = useStateX(readMisses);
@@ -324,24 +337,40 @@ function VocabGameScreen({ favorites, onClose, onOpenTerm }) {
   const activeLen = len <= activePool.length ? len : (fits.length ? Math.max(...fits) : null);
   const start = () => {
     const pool = activePool;
-    setRounds(buildVocabRounds(Math.min(activeLen || len, pool.length), pool));
+    setRounds(buildVocabRounds(Math.min(activeLen || len, pool.length), pool, glossary));
     setI(0); setPicked(null); setScore(0); setLogged(0); setDone(false); setPhase('play');
   };
   const restart = start;
 
   // ── round setup ──
+  if (phase === 'setup' && limited && glossary.length < 4) {
+    // Free pool too small to build honest rounds (4 choices each). Never pad
+    // from the full glossary — point back at lessons instead.
+    return (
+      <div className="screen" data-screen-label="Guess the term" style={{ background: 'var(--bg)' }}>
+        <DrillTopbar onClose={onClose} total={0}/>
+        <div className="scroll" style={{ paddingTop: 110, paddingBottom: 28 }}>
+          <div className="px-24">
+            <h1 className="ff-display" style={{ fontSize: 'var(--t-display)', fontWeight: 400, letterSpacing: '-0.02em', margin: 0, color: 'var(--ink)' }}>Guess the term</h1>
+            <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.55, color: 'var(--ink-mute)', margin: '12px 0 0', textWrap: 'pretty' }}>
+              The game draws on terms your lessons have taught — it needs at least four. Play a lesson or two and come back.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
   if (phase === 'setup') {
     const pool = activePool;
     // On-system selection: the global .pick-card component (Fraunces title,
     // 2px radius, selected = accent border + inset stroke — never a fill).
     const dim = (disabled) => disabled ? { opacity: 0.45, cursor: 'default' } : { cursor: 'pointer' };
     return (
-      <div className="screen" data-screen-label="Vocab game setup" style={{ background: 'var(--bg)' }}>
+      <div className="screen" data-screen-label="Guess the term setup" style={{ background: 'var(--bg)' }}>
         <DrillTopbar onClose={onClose} total={0}/>
         <div className="scroll" style={{ paddingTop: 110, paddingBottom: 28, display: 'flex', flexDirection: 'column' }}>
           <div className="px-24">
-            <div className="smallcaps" style={{ marginBottom: 10 }}>PRACTICE</div>
-            <h1 className="ff-display" style={{ fontSize: 'var(--t-display)', fontWeight: 400, letterSpacing: '-0.02em', margin: 0, color: 'var(--ink)' }}>Vocab game</h1>
+            <h1 className="ff-display" style={{ fontSize: 'var(--t-display)', fontWeight: 400, letterSpacing: '-0.02em', margin: 0, color: 'var(--ink)' }}>Guess the term</h1>
             <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.55, color: 'var(--ink-mute)', margin: '12px 0 0', textWrap: 'pretty' }}>Read a definition, pick the term. Choose your deck and how long a round you want.</p>
           </div>
           <div className="px-24" style={{ paddingTop: 26 }}>
@@ -349,7 +378,7 @@ function VocabGameScreen({ favorites, onClose, onOpenTerm }) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {[
                 { id: 'saved', title: 'Saved terms', note: canSaved ? 'The terms you\u2019ve bookmarked' : 'Save ' + VOCAB_MIN_SAVED + '+ terms to unlock', count: savedPool.length, disabled: !canSaved },
-                { id: 'all', title: 'Whole glossary', note: 'Every term in the dictionary', count: glossary.length, disabled: false },
+                { id: 'all', title: limited ? 'Your terms' : 'Whole glossary', note: limited ? 'Every term your lessons have taught' : 'Every term in the dictionary', count: glossary.length, disabled: false },
                 { id: 'misses', title: 'Review misses', note: canMisses ? 'Terms you’ve missed before' : 'Miss a few first', count: missPool.length, disabled: !canMisses },
               ].map(d => (
                 <div key={d.id} className={'pick-card' + (activeDeck === d.id ? ' selected' : '')} style={dim(d.disabled)} onClick={() => !d.disabled && setDeck(d.id)}>
@@ -402,11 +431,11 @@ function VocabGameScreen({ favorites, onClose, onOpenTerm }) {
       : 'Worth another pass. Try again?';
     const tail = logged > 0 ? ' The ' + logged + (logged === 1 ? ' term you missed was' : ' terms you missed were') + ' added to your review deck.' : '';
     return (
-      <div className="screen" data-screen-label="Vocab game" style={{ background: 'var(--bg)' }}>
+      <div className="screen" data-screen-label="Guess the term" style={{ background: 'var(--bg)' }}>
         <DrillTopbar onClose={onClose} pos={rounds.length - 1} total={rounds.length} done/>
         <DrillResults
           roastyState={pct >= 80 ? 'module' : 'correct'}
-          kicker="VOCAB GAME"
+          kicker="GUESS THE TERM"
           big={score} bigSub={'/ ' + rounds.length}
           note="TERMS MATCHED"
           msg={msg + tail}
@@ -434,7 +463,7 @@ function VocabGameScreen({ favorites, onClose, onOpenTerm }) {
   };
 
   return (
-    <div className="screen" data-screen-label="Vocab game" style={{ background: 'var(--bg)' }}>
+    <div className="screen" data-screen-label="Guess the term" style={{ background: 'var(--bg)' }}>
       <DrillTopbar onClose={onClose} pos={i} total={rounds.length}/>
       <div className="scroll" style={{ paddingTop: 134, paddingBottom: 28, display: 'flex', flexDirection: 'column' }}>
         <div key={i} className="fade-up" style={{ flex: '1 0 auto', display: 'flex', flexDirection: 'column' }}>

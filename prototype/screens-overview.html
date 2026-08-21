@@ -104,6 +104,11 @@
       ['learn',            '04',  'Today'],
       ['today-challenge',  '04a', 'Today · Coffee challenge'],
       ['today-challenge-done','04b','Today · Challenge done'],
+      ['today-keepsharp',  '04c', 'Today · Keep Sharp'],
+      ['today-keepsharp-games', '04d', 'Keep Sharp · Mini-games'],
+      ['today-keepsharp-flash', '04e', 'Keep Sharp · Flashcards'],
+      ['today-keepsharp-replay','04f', 'Keep Sharp · Replay'],
+      ['today-keepsharp-quiet', '04g', 'Keep Sharp · Quiet'],
       ['path',             '05',  'Path'],
       ['path-challenge',    '05c', 'Path · Module challenge'],
       ['module',           '05b', 'Module'],
@@ -120,8 +125,8 @@
       ['settings',         '08c', 'Settings'],
       ['about',            '08j', 'About'],
       ['account',          '08k', 'Account & sync'],
-      ['subscription',     '08l', 'Subscription'],
-      ['rewarded-ad',      '08m', 'Rewarded ad · trial'],
+      ['subscription',     '08l', 'Purchases'],
+      ['rewarded-ad',      '08m', 'Rewarded ad · preview'],
       ['roasty-gift',      '08n', 'Perfect-module gift'],
       ['studio',           '08f', 'Customize Studio'],
       ['lesson',           '09',  'Lesson player'],
@@ -142,13 +147,14 @@
       ['module-complete',  '11',  'Module reward'],
       ['module-card',      '12',  'Collectible card'],
       ['module-challenge', '12a', 'Module Coffee Challenge'],
+      ['course-complete',  '12b', 'Course complete · Foundations'],
       ['streak',           '13',  'Streak'],
       ['duel',             'E',   'Coffee Duel'],
     ];
     const grid = document.getElementById('grid');
 
     // Screens deferred out of the v1 cut (see the v1 Readiness Audit): the two
-    // backend/content features, the rewarded-ad + gift trial layer.
+    // backend/content features, the rewarded-ad + gift preview layer.
     const V2_SCREENS = new Set(['atlas', 'rewarded-ad', 'roasty-gift', 'duel']);
 
     // Native lazy-loading defers offscreen iframes without depending on

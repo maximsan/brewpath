@@ -1,9 +1,14 @@
-// gating.jsx — the Plus paywall layer.
+// gating.jsx — the Foundations ENTITLEMENT layer.
+// Owns what a lock looks like and how a gate raises — never how Foundations is
+// sold. Prices, plans and selling copy live in monetization.jsx (the config
+// under experiment: onetime | subscription | hybrid); this file reads the
+// active model for its CTA/footer strings only. Access checks stay boolean
+// (isPlus / featureUnlocked in app.jsx) whatever the model.
 //   • PLUS_FEATURES        — catalog of gated surfaces
 //   • LockGlyph / LockBadge / TrialBadge — small affordances
 //   • PlusGateSheet        — bottom sheet shown when a free user taps a lock
-//   • RewardedAdScreen     — simulated rewarded video → grants a short trial
-//   • RoastyGiftScreen     — perfect-module reward → temporary Studio unlock
+//   • RewardedAdScreen     — v2: simulated rewarded video → short PREVIEW
+//   • RoastyGiftScreen     — v2: perfect-module reward → temporary Studio preview
 //   • FeatureLock          — full-screen teaser lock (blur / hard / curtain)
 // Loaded after duel.jsx, before app.jsx.
 
@@ -11,15 +16,25 @@ const { useState: useStateG, useEffect: useEffectG, useRef: useRefG } = React;
 
 // The gated surfaces, with copy used by the sheet / locks.
 const PLUS_FEATURES = {
-  dictionary: { label: 'Coffee Dictionary', blurb: 'Every coffee term defined — plus Term of the Day and flashcards.' },
+  course:     { label: 'Foundations',       items: ['Modules 2–5, every lesson', 'The five premium practice formats', 'The complete Dictionary', 'Unlimited Saved', 'The Studio'],
+                note: 'All of Module 1 stays free.',
+                blurb: 'The rest of the course, and everything around it.' },
+  games:      { label: 'Practice formats',  blurb: 'The five palate-training formats, included with Foundations.',
+                items: ['Name the flavor notes', 'Read the green bean', 'Fix the cup', 'Dial it in', 'Put it in order'],
+                note: 'True or false, Match the facts, Flashcards and Guess the Term stay free.' },
+  dictionary: { label: 'Full Dictionary',   blurb: 'Every coffee term with its full entry — browse, search and Term of the Day across the whole glossary. Included with Foundations.' },
   atlas:      { label: 'Coffee Atlas',      blurb: 'Travel the coffee belt, explore origins and collect passport stamps.' },
   duel:       { label: 'Coffee Duel',       blurb: 'Challenge a friend to a quick, head-to-head coffee quiz.' },
-  saved:      { label: 'Favorites',         blurb: 'Your free shelf is full. Plus keeps unlimited lessons, terms and guides together for review.' },
-  studio:     { label: 'Studio',            blurb: 'Dress up Roasty and choose which plant grows in your grove.' },
+  saved:      { label: 'Unlimited Saved',   blurb: 'Your free shelf of 5 is full. Keep saving every lesson, term and guide — without a cap.' },
+  studio:     { label: 'Studio',            blurb: 'Dress up Roasty and choose which plant grows in your grove. Included with Foundations.' },
 };
 
-const TRIAL_AD_MIN  = 15;        // a rewarded-ad trial lasts 15 minutes
-const TRIAL_GIFT_MIN = 24 * 60;  // the perfect-module gift lasts 24 hours
+// The lifetime price — legacy alias (store.jsx reads it); monetization.jsx owns
+// all plans and prices. Entitlement logic in this file stays model-agnostic.
+const FOUNDATIONS_PRICE = (window.getPlan ? window.getPlan('lifetime').price : '$49.99');
+
+const TRIAL_AD_MIN  = 15;        // a rewarded-ad PREVIEW lasts 15 minutes (v2)
+const TRIAL_GIFT_MIN = 24 * 60;  // the perfect-module gift preview lasts 24 hours (v2)
 
 // ── glyphs ───────────────────────────────────────────────────
 function LockGlyph({ size = 14, color = 'currentColor', sw = 1.6 }) {
@@ -44,18 +59,18 @@ function LockBadge() {
   );
 }
 
-// "PLUS" pill — reused on profile cards and sheets.
+// "FOUNDATIONS" pill — labels a purchase-gated entry on cards and sheets.
 function PlusPill() {
   return (
     <span className="ff-mono" style={{
       fontSize: 'var(--t-micro)', letterSpacing: '0.16em', color: 'var(--accent)',
       border: '1px solid color-mix(in oklab, var(--accent) 45%, var(--rule))',
       borderRadius: 999, padding: '2px 7px', textTransform: 'uppercase', whiteSpace: 'nowrap',
-    }}>PLUS</span>
+    }}>FOUNDATIONS</span>
   );
 }
 
-// Live "TRIAL · 14:32" countdown shown while a temporary unlock is active.
+// Live "Preview · 14:32" countdown shown while a temporary unlock is active (v2).
 function TrialBadge({ until, floating = true }) {
   const [, force] = useStateG(0);
   useEffectG(() => {
@@ -80,7 +95,7 @@ function TrialBadge({ until, floating = true }) {
       boxShadow: '0 2px 10px rgba(0,0,0,0.18)',
     }}>
       <span style={{ width: 6, height: 6, borderRadius: 999, background: 'var(--accent)' }}/>
-      Free trial · {txt} left
+      Preview · {txt} left
     </span>
   );
   if (!floating) return inner;
@@ -91,11 +106,22 @@ function TrialBadge({ until, floating = true }) {
   );
 }
 
-// ── PLUS GATE SHEET ──────────────────────────────────────────
-// Shown when a free user taps any locked feature. Two paths out:
-// upgrade to Plus, or watch a short ad to try this one feature free.
-function PlusGateSheet({ featureKey, open, onClose, onUpgrade, onWatchAd, showAd = true }) {
-  const f = PLUS_FEATURES[featureKey] || { label: 'This feature', blurb: '' };
+// ── PURCHASE GATE SHEET ──────────────────────────────────────
+// Shown when a free user taps any locked surface. One real path out — buy
+// Foundations once — plus, in v2 only, a rewarded-ad preview of the feature.
+function PlusGateSheet({ featureKey, game, open, onClose, onUpgrade, onWatchAd, showAd = true }) {
+  // A locked mini-game gates on the MODULE that teaches its topic — a targeted
+  // course pitch at peak intent, not the generic formats list. Falls back to
+  // the static catalog when no game rode in (e.g. a routed gate).
+  const gmod = featureKey === 'games' && game && game.mod
+    ? (window.MODULES || []).find(m => m.id === game.mod) : null;
+  const f = gmod
+    ? { label: game.title,
+        // Eyebrow already says "Taught in Module N" — the blurb pitches the
+        // module itself, never restates the lock.
+        blurb: (((window.MODULE_REWARDS || {})[gmod.id] || {}).summary || `Unlock Foundations to take Module ${gmod.n} — the game opens with it.`) }
+    : (PLUS_FEATURES[featureKey] || { label: 'This feature', blurb: '' });
+  const mon = window.getMonetization();
   return (
     <>
       {/* Interrupt layer: the gate can fire from inside another sheet (saving a
@@ -114,16 +140,35 @@ function PlusGateSheet({ featureKey, open, onClose, onUpgrade, onWatchAd, showAd
               <LockGlyph size={18}/>
             </span>
             <div>
-              <div className="smallcaps" style={{ color: 'var(--accent)' }}>PLUS FEATURE</div>
-              <div className="ff-display" style={{ fontSize: 'var(--t-heading)', fontWeight: 400, letterSpacing: '-0.01em', color: 'var(--ink)', lineHeight: 1.05, marginTop: 2 }}>{f.label}</div>
+              {/* The whole product can't be "part of" itself — the eyebrow renders
+                  only when the gated feature is narrower than Foundations. */}
+              {gmod && (
+                <div className="smallcaps" style={{ color: 'var(--accent)', marginBottom: 6 }}>TAUGHT IN {gmod.label}</div>
+              )}
+              <div className="ff-display" style={{ fontSize: 'var(--t-heading)', fontWeight: 400, letterSpacing: '-0.01em', color: 'var(--ink)', lineHeight: 1.05 }}>{f.label}</div>
             </div>
           </div>
 
-          <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.55, color: 'var(--ink-mute)', margin: '0 0 20px', textWrap: 'pretty' }}>
+          {/* With an items list the blurb is skipped — the list says WHAT; a
+              summary sentence above it would only paraphrase it. */}
+          {!f.items && <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.55, color: 'var(--ink-mute)', margin: '0 0 20px', textWrap: 'pretty' }}>
             {f.blurb}
-          </p>
+          </p>}
+          {/* Multi-item purchases list their contents as rows — the paywall's
+              benefit grammar, compacted for a sheet — instead of a prose run-on. */}
+          {f.items && (
+            <div style={{ margin: '8px 0 20px' }}>
+              {f.items.map((b, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0' }}>
+                  <svg width="13" height="13" viewBox="0 0 15 15" style={{ flexShrink: 0 }}><path d="M3 8 L6.2 11 L12 4" fill="none" stroke="var(--accent)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  <span style={{ fontSize: 'var(--t-support)', color: 'var(--ink)' }}>{b}</span>
+                </div>
+              ))}
+              {f.note && <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: '8px 0 0', textWrap: 'pretty' }}>{f.note}</p>}
+            </div>
+          )}
 
-          <button className="btn btn-primary" onClick={onUpgrade}>Unlock Plus — 7-day free trial</button>
+          <button className="btn btn-primary" onClick={onUpgrade}>{mon.gateCta}</button>
 
           {showAd && (<>
           <button onClick={onWatchAd} style={{
@@ -136,20 +181,24 @@ function PlusGateSheet({ featureKey, open, onClose, onUpgrade, onWatchAd, showAd
               <circle cx="10" cy="10" r="8" stroke="var(--accent)" strokeWidth="1.5"/>
               <path d="M8.2 6.8 L13.4 10 L8.2 13.2 Z" fill="var(--accent)"/>
             </svg>
-            <span style={{ fontSize: 'var(--t-body)', fontWeight: 500 }}>Watch a short ad — try {TRIAL_AD_MIN} min free</span>
+            <span style={{ fontSize: 'var(--t-body)', fontWeight: 500 }}>Watch a short ad — preview {TRIAL_AD_MIN} min free</span>
           </button>
           </>)}
           <div style={{ marginTop: showAd ? 8 : 10 }}>
             <a className="btn btn-ghost" href="#" style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }} onClick={(e) => { e.preventDefault(); onClose(); }}>Not now</a>
           </div>
+          {/* Footer caption — the DS gate sheet closes on a centered micro line
+              under the actions; purchase facts live here, never in the stack. */}
+          <div className="ff-mono" style={{ marginTop: 14, textAlign: 'center', fontSize: 'var(--t-micro)', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-mute)' }}>{mon.gateFooter}</div>
         </div>
       </div>
     </>
   );
 }
 
-// ── REWARDED AD SCREEN ───────────────────────────────────────
-// A simulated rewarded video. Counts down, then grants the trial.
+// ── REWARDED AD SCREEN (v2) ──────────────────────────────────
+// A simulated rewarded video. Counts down, then grants a short preview —
+// never a trial of the purchase; the purchase itself has no trial.
 function RewardedAdScreen({ featureKey, minutes = TRIAL_AD_MIN, onClaim, onClose }) {
   const f = PLUS_FEATURES[featureKey] || { label: 'this feature' };
   const TOTAL = 6;
@@ -233,7 +282,7 @@ function RewardedAdScreen({ featureKey, minutes = TRIAL_AD_MIN, onClaim, onClose
           </div>
           {done ? (
             <button className="btn btn-primary" style={{ marginTop: 16 }} onClick={onClaim}>
-              Claim {minutes} min free
+              Claim {minutes} min preview
             </button>
           ) : (
             <div className="ff-mono" style={{
@@ -327,10 +376,10 @@ function LockCard({ featureKey, onUnlock, glass, showAd = true }) {
       <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: '10px auto 20px', maxWidth: 260, textWrap: 'pretty' }}>
         {f.blurb}
       </p>
-      <button className="btn btn-primary" onClick={onUnlock}>Unlock Plus</button>
+      <button className="btn btn-primary" onClick={onUnlock}>Unlock Foundations</button>
       {showAd && (
         <p className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.06em', color: 'var(--ink-mute)', textTransform: 'uppercase', margin: '12px 0 0' }}>
-          Or watch a short ad to try
+          Or watch a short ad to preview
         </p>
       )}
     </div>
@@ -378,6 +427,7 @@ function FeatureLock({ featureKey, style = 'blur', preview, onUnlock, showAd = t
 }
 
 window.PLUS_FEATURES = PLUS_FEATURES;
+window.FOUNDATIONS_PRICE = FOUNDATIONS_PRICE;
 window.TRIAL_AD_MIN = TRIAL_AD_MIN;
 window.TRIAL_GIFT_MIN = TRIAL_GIFT_MIN;
 window.LockGlyph = LockGlyph;

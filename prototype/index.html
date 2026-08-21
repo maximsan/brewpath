@@ -31,6 +31,9 @@
     --rule:      #D8CFBF;
     --accent:    #B8533A;
     --accent-ink:#FBF7EE;
+    /* Accent used as TEXT: raw --accent lands at ~4.3:1 on paper, so small
+       accent labels use this darkened mix instead (AA at 11px). */
+    --accent-text: color-mix(in oklab, var(--accent) 62%, var(--ink));
     --sage:      #5F6E55;
     --warn:      #9A5F1C;
     --berry:     #A8362A;
@@ -57,6 +60,7 @@
     --rule:      #44321E;
     --accent:    #E07A4F;
     --accent-ink:#1A130E;
+    --accent-text: color-mix(in oklab, var(--accent) 62%, var(--ink));
     --sage:      #97A285;
     --warn:      #E6A35C;
     --berry:     #C75450;
@@ -226,6 +230,10 @@
     text-transform: uppercase;
     color: var(--ink-mute);
   }
+  /* Whole-row tap target (Practice Again). The row is the button, not the icon. */
+  .tap-row { transition: background 120ms ease; }
+  .tap-row:active { background: var(--surface-2); }
+  @media (hover: hover) { .tap-row:hover { background: color-mix(in oklab, var(--surface-2) 60%, transparent); } }
   .smallcaps-mono {
     font-family: 'IBM Plex Mono', monospace;
     font-size: var(--t-label);
@@ -1170,12 +1178,14 @@
   })();
 </script>
 <script type="text/babel" src="flavor-wheel.jsx"></script>
+<script type="text/babel" src="monetization.jsx"></script>
 <script type="text/babel" src="data.jsx"></script>
 <script type="text/babel" src="brew-challenge.jsx"></script>
 <script type="text/babel" src="dictionary-data.jsx"></script>
 <script type="text/babel" src="roasty.jsx"></script>
 <script type="text/babel" src="settings.jsx"></script>
 <script type="text/babel" src="screens.jsx"></script>
+<script type="text/babel" src="guide.jsx"></script>
 <script type="text/babel" src="onboarding.jsx"></script>
 <script type="text/babel" src="bean-anatomy.jsx"></script>
 <script type="text/babel" src="lesson.jsx"></script>
@@ -1183,6 +1193,7 @@
 <script type="text/babel" src="practical.jsx"></script>
 <script type="text/babel" src="rewards.jsx"></script>
 <script type="text/babel" src="customize.jsx"></script>
+<script type="text/babel" src="store.jsx"></script>
 <script type="text/babel" src="library.jsx"></script>
 <script type="text/babel" src="dictionary.jsx"></script>
 <script type="text/babel" src="dictionary-extras.jsx"></script>

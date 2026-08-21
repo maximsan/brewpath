@@ -98,8 +98,18 @@ const DICT_TERMS = [
     sources: [{ label: 'World Coffee Research — Arabica Catalog', url: 'https://varieties.worldcoffeeresearch.org/arabica' }] },
 
   { id: 'cherry', term: 'Coffee Cherry', cat: 'beans', aliases: ['cherry', 'cherries', 'coffee cherry'],
-    short: 'The fruit of the coffee plant. Each cherry holds two seeds — the “beans” we roast.',
-    related: ['arabica', 'bean-belt'], lesson: 'm1l1' },
+    short: 'The fruit of the coffee plant. Each cherry usually holds two seeds — the “beans” we roast.',
+    related: ['arabica', 'bean-belt', 'peaberry'], lesson: 'm1l1' },
+
+  { id: 'peaberry', term: 'Peaberry', pron: 'PEE-beh-ree', cat: 'beans', aliases: ['peaberry', 'peaberries', 'pea berry', 'caracolillo'],
+    short: 'A single round seed from a cherry that grew only one — sorted into its own lot, and priced as if that were a grade.',
+    deep: 'A cherry normally sets two seeds that flatten against each other. When only one of the two ovules is fertilised, the lone seed grows with nothing to press it flat, so it comes out small, round and dense. It happens in roughly 5% of cherries, on the same branches as everything else — it is not a variety, and nobody can plant it. Mills sieve peaberries out because round, dense beans move and take heat differently in a roaster, which is a real reason to keep them apart and a poor reason to expect a better cup.',
+    example: '“Tanzania Peaberry” names the shape of the bean in the bag, not a cupping score.',
+    related: ['cherry', 'cultivar', 'specialty'], lesson: 'm1l5',
+    sources: [{ label: 'James Hoffmann — The World Atlas of Coffee' }, { label: 'Perfect Daily Grind — What Are Peaberry Coffee Beans?', url: 'https://perfectdailygrind.com/2020/03/what-are-peaberry-coffee-beans-the-myths-the-reality/' }],
+    check: { q: 'A peaberry forms when…',
+      choices: [{ t: 'Only one of the cherry’s two seeds is fertilised', correct: true }, { t: 'A farmer plants the peaberry variety' }, { t: 'A bean cracks in half during roasting' }],
+      explain: 'One seed, nothing to flatten it, so it grows round. It is chance inside an ordinary cherry — which is why a peaberry lot has to be sieved out rather than grown.' } },
   { id: 'bean-belt', term: 'Bean Belt', cat: 'beans', aliases: ['bean belt'],
     short: 'The band around the equator, roughly 25°N to 25°S, where coffee grows best.',
     related: ['cherry', 'terroir'], lesson: 'm1l1' },
@@ -525,8 +535,12 @@ function learnedTermSet(completedSet) {
 }
 
 // "Term of the day" — deterministic pick among full terms, rotating by date.
-function dictTermOfDay(date) {
-  const full = DICT_TERMS.filter(t => t.check); // full entries only
+function dictTermOfDay(date, pool) {
+  // Free tier passes its accessible pool so the pick never exposes a term
+  // outside it; an explicitly empty pool means "nothing to pick" (null), and
+  // no pool at all means every full entry.
+  if (pool && !pool.length) return null;
+  const full = (pool && pool.length) ? pool : DICT_TERMS.filter(t => t.check); // full entries only
   const d = date || new Date(2026, 5, 18); // frozen demo date
   const dayNum = Math.floor((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())) / 86400000);
   return full[((dayNum % full.length) + full.length) % full.length];

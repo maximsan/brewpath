@@ -36,7 +36,7 @@ const COLORS = [
   ['--water',      'Water',              'Water itself, wherever it is drawn as an object rather than a diagram — the loading screen’s drop, the bloom. The one cool token; never an action, never a status. --water-hi is its highlight.', '#5C93B8', '#7FB4D6'],
   ['--scrim',      'Media scrim',        'The tint behind a control that sits on video or photography. The one token that is identical in both moods — media does not invert with the theme, so its scrim must not either. --scrim-ink is the glyph on top.', '#1B1614 58%', '#1B1614 58%'],
   ['--dim-modal',  'Modal dim',          'Behind a bottom sheet — the app’s one blocking overlay. Also mood-independent: a modal must darken in both moods, so it never binds to --ink. Paired with a 5px backdrop blur.', '#0E0A07 62%', '#0E0A07 62%'],
-  ['--veil',       'Veil',               'A soft wash over content that is still meant to be seen — the Plus feature lock. This one does follow the mood, because it is the page background pulled over the page. --veil-strong (82%) is the near-opaque step for a cover that only hints at what is under it.', 'bg 38%', 'bg 38%'],
+  ['--veil',       'Veil',               'A soft wash over content that is still meant to be seen — the Foundations feature lock. This one does follow the mood, because it is the page background pulled over the page. --veil-strong (82%) is the near-opaque step for a cover that only hints at what is under it.', 'bg 38%', 'bg 38%'],
 ];
 
 // Literal coffee, for illustration and data art only. These do NOT flip with
@@ -476,7 +476,7 @@ function renderComponents() {
     ], 150));
 
   wrap.append(compStates('MCQ choice',
-    'Every multiple-choice row \u2014 lesson cards, mini-games, the dictionary knowledge check and the vocab game.',
+    'Every multiple-choice row \u2014 lesson cards, mini-games, the dictionary knowledge check and Guess the term.',
     [
       { label: 'Default', demo: '<div class="mcq-choice">A seed inside a fruit</div>',
         when: 'Unanswered and tappable.',
@@ -569,7 +569,7 @@ function renderComponents() {
         when: 'Not saved. Sits outside the row\u2019s main tap target so it never steals the open.',
         spec: ['1px --rule', '--ink-mute glyph', 'round'] },
       { label: 'Saved', demo: favBtn(true),
-        when: 'On the Saved shelf. Free users hit a cap of 5 and get the Plus gate instead.',
+        when: 'On the Saved shelf. Free users hit a cap of 5 and get the purchase gate instead.',
         spec: ['--accent border', 'accent fill'] },
     ],
     [
@@ -673,16 +673,12 @@ function renderComponents() {
   wrap.append(compStates('Term of the Day',
     'One term surfaced each day \u2014 the dictionary\u2019s daily hook.',
     [
-      { label: 'Large', demo: '<div style="width:100%;max-width:250px;border-radius:16px;border:1px solid color-mix(in oklab, var(--accent) 24%, var(--rule));background:linear-gradient(158deg, color-mix(in oklab, var(--accent) 13%, var(--surface)) 0%, var(--surface) 62%);padding:16px;box-shadow:0 14px 34px rgba(0,0,0,0.18);"><div style="font-family:\'IBM Plex Sans\',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);">Term of the day</div><div class="ff-display" style="font-size:26px;line-height:1.04;color:var(--ink);margin-top:10px;">Crema</div><div class="mono" style="font-size:11px;color:var(--ink-mute);margin-top:6px;">KREH-muh</div><div class="mono" style="font-size:9.5px;letter-spacing:0.16em;text-transform:uppercase;color:var(--accent);margin-top:12px;">Open entry \u2192</div></div>',
-        when: 'Dictionary home \u2014 the lead of the page.',
+      { label: 'Lead card', demo: '<div style="width:100%;max-width:250px;border-radius:16px;border:1px solid color-mix(in oklab, var(--accent) 24%, var(--rule));background:linear-gradient(158deg, color-mix(in oklab, var(--accent) 13%, var(--surface)) 0%, var(--surface) 62%);padding:16px;box-shadow:0 14px 34px rgba(0,0,0,0.18);"><div style="font-family:\'IBM Plex Sans\',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);">Term of the day</div><div class="ff-display" style="font-size:26px;line-height:1.04;color:var(--ink);margin-top:10px;">Crema</div><div class="mono" style="font-size:11px;color:var(--ink-mute);margin-top:6px;">KREH-muh</div><div class="mono" style="font-size:9.5px;letter-spacing:0.16em;text-transform:uppercase;color:var(--accent);margin-top:12px;">Open entry \u2192</div></div>',
+        when: 'Dictionary home \u2014 the lead of the page, its only placement.',
         spec: ['accent 13% gradient', 'shadow 0 14px 34px', 'radius 16'] },
-      { label: 'Compact', demo: '<div style="width:100%;max-width:250px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:14px 16px;"><span style="width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:color-mix(in oklab, var(--accent) 10%, var(--surface));"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" style="color:var(--accent);"><path d="M5.5 8 H16 V12 a4 4 0 0 1 -4 4 H9.5 a4 4 0 0 1 -4 -4 Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M16 9 h2 a2 2 0 0 1 0 4 h-2" stroke="currentColor" stroke-width="1.6"/></svg></span><span><span style="font-family:\'IBM Plex Sans\',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);display:block;">Term of the day</span><span style="display:block;font-size:15px;font-weight:500;color:var(--ink);margin-top:3px;">Crema</span></span><svg width="8" height="13" viewBox="0 0 8 13" fill="none"><path d="M1.5 1.5 L6.5 6.5 L1.5 11.5" stroke="var(--ink-mute)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>',
-        when: 'Today \u2014 one row among the day\u2019s other prompts.',
-        spec: ['40px accent tile', 'chevron', 'radius 14'] },
     ],
     [
-      'Same label and same term in both \u2014 only the weight in the page changes.',
-      'The large card is the <b>one</b> place a gradient and a soft shadow are allowed on a content surface.',
+      'The lead card is the <b>one</b> place a gradient and a soft shadow are allowed on a content surface.',
     ], 280));
 
   wrap.append(compRules('Knowledge check',
@@ -739,7 +735,7 @@ function renderComponents() {
     'Dictionary home, directly under the search field.',
     `<div style="display:flex;gap:10px;">
        <span style="flex:1;background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:11px 14px;display:flex;align-items:center;gap:10px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="color:var(--accent);"><rect x="3" y="6" width="14" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M7 9.5h6M7 12.5h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9 4.5h9a2 2 0 0 1 2 2v9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity="0.5"/></svg><span style="font-size:13px;font-weight:500;color:var(--ink);">Flashcards</span><span class="mono" style="font-size:9.5px;color:var(--ink-mute);margin-left:auto;">12</span></span>
-       <span style="flex:1;background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:11px 14px;display:flex;align-items:center;gap:10px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="color:var(--accent);"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.6"/><path d="M9.5 9.8a2.5 2.5 0 1 1 3.2 2.4c-.5.2-.7.6-.7 1.1v.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="16.3" r="0.9" fill="currentColor"/></svg><span style="font-size:13px;font-weight:500;color:var(--ink);">Vocab game</span></span>
+       <span style="flex:1;background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:11px 14px;display:flex;align-items:center;gap:10px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="color:var(--accent);"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.6"/><path d="M9.5 9.8a2.5 2.5 0 1 1 3.2 2.4c-.5.2-.7.6-.7 1.1v.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="16.3" r="0.9" fill="currentColor"/></svg><span style="font-size:13px;font-weight:500;color:var(--ink);">Guess the term</span></span>
      </div>`, ['Two equal chips: accent glyph, label, and a mono count when there is a number.', 'Shortcuts, not features \u2014 the same games live in Learn, so these never carry a badge or a lock.']));
 
   wrap.append(compRules('Term peek sheet',
@@ -750,7 +746,7 @@ function renderComponents() {
          <span style="width:36px;height:36px;border-radius:999px;flex-shrink:0;display:grid;place-items:center;border:1px solid color-mix(in oklab, var(--sage) 55%, var(--rule));background:color-mix(in oklab, var(--sage) 12%, var(--surface));"><svg width="13" height="13" viewBox="0 0 10 10" fill="none"><path d="M1.5 5.2 L4 7.6 L8.5 2.6" stroke="var(--sage)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
          <span style="width:36px;height:36px;border-radius:999px;border:1px solid var(--rule);display:grid;place-items:center;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M5 3.5 H15 V17 L10 13.5 L5 17 Z" stroke="var(--ink-mute)" stroke-width="1.5" stroke-linejoin="round"/></svg></span>
        </div>
-       <p style="font-size:13px;line-height:1.45;color:var(--ink);margin:12px 0 0;">The fruit of the coffee plant. Each cherry holds two seeds — the “beans” we roast.</p>
+       <p style="font-size:13px;line-height:1.45;color:var(--ink);margin:12px 0 0;">The fruit of the coffee plant. Each cherry usually holds two seeds — the “beans” we roast.</p>
        <div class="mono" style="font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-mute);margin:18px 0 16px;">Related</div>
        <div style="display:flex;gap:8px;">
          <span style="background:var(--surface);border:1px solid var(--rule);border-radius:999px;padding:8px 14px;display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--ink);">Arabica <span style="width:5px;height:5px;border-radius:999px;background:var(--sage);"></span></span>
@@ -832,7 +828,7 @@ function renderComponents() {
      </div>`, ['A two-segment bar over the whole lesson count: sage solid, accent needs-practice, remainder empty.', 'Two numbers, never a third.', 'Tapping deep-links to the Path to practise the weak ones.']));
 
   wrap.append(compStates('Roast meter',
-    'The top bar of any run of questions \u2014 a lesson, a mini-game, flashcards, the vocab game.',
+    'The top bar of any run of questions \u2014 a lesson, a mini-game, flashcards, Guess the term.',
     [
       { label: 'First', demo: drillMeterDemo(1, 8), when: 'Opening question \u2014 raw green bean.', spec: ['--art-roast-light'] },
       { label: 'Mid-run', demo: drillMeterDemo(4, 8), when: 'Halfway \u2014 the bean has taken colour.', spec: ['ramp interpolated'] },
@@ -921,22 +917,42 @@ function renderComponents() {
     ], 280));
 
   wrap.append(compRules('Coffee challenge card',
-    'Today (below Continue Learning) — the one “go do it with real coffee” prompt.',
+    'Today, below the lead card (Continue Learning — or Keep Sharp once the course is finished) — the one “go do it with real coffee” prompt.',
     `<div>
-       <div style="${SC}color:var(--accent);display:flex;align-items:center;gap:8px;margin-bottom:28px;">${gBrewCup(15)} COFFEE CHALLENGE</div>
+       <div style="${SC}color:var(--accent);display:flex;align-items:center;gap:8px;margin-bottom:28px;">${gBrewCup(15)} OPTIONAL COFFEE CHALLENGE</div>
        <div class="card" style="position:relative;background:color-mix(in oklab, var(--accent) 6%, var(--surface));border-color:color-mix(in oklab, var(--accent) 28%, var(--rule));">
-         <span style="position:absolute;top:14px;right:14px;color:var(--ink-mute);line-height:0;"><svg width="16" height="16" viewBox="0 0 15 15" aria-label="Save for later"><path d="M3 3l9 9M12 3l-9 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
-         <div class="ff-display" style="font-size:26px;font-weight:400;line-height:1.1;letter-spacing:-0.01em;padding-right:28px;color:var(--ink);">Name the origin</div>
-         <p style="font-size:15px;line-height:1.5;color:var(--ink-mute);margin:10px 0 0;text-wrap:pretty;">Next time you open a bag, find the country it was grown in — and say it out loud.</p>
-         <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:20px;">
-           <div style="display:flex;flex-direction:column;gap:8px;">
-             <div class="mono" style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-mute);">NEXT BAG YOU OPEN</div>
-             <div class="mono" style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-mute);">~2 MIN</div>
-           </div>
-           <div class="btn-primary" style="width:auto;min-width:132px;padding:12px 22px;font-size:13px;text-align:center;box-sizing:border-box;flex-shrink:0;">Log Result</div>
+         <div style="display:grid;grid-template-columns:1fr auto;align-items:start;gap:12px;">
+           <div class="ff-display" style="font-size:26px;font-weight:400;line-height:1.1;letter-spacing:-0.01em;color:var(--ink);">Name the origin</div>
+           <span style="color:var(--ink-mute);width:38px;height:38px;display:grid;place-items:center;margin:-8px -6px 0 0;border-radius:999px;border:1px solid color-mix(in oklab, var(--accent) 28%, var(--rule));background:var(--surface);"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.25" stroke="currentColor" stroke-width="1.5"/><path d="M10 6.2V10l3 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
          </div>
+         <p style="font-size:15px;line-height:1.5;color:var(--ink-mute);margin:10px 0 0;text-wrap:pretty;">Next time you open a bag, find the country it was grown in — and say it out loud.</p>
+         <div class="mono" style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-mute);margin-top:14px;">NEXT BAG YOU OPEN · ~2 MIN</div>
+         <div class="btn-primary" style="width:100%;margin-top:18px;padding:14px 24px;text-align:center;box-sizing:border-box;background:transparent;color:color-mix(in oklab, var(--accent) 62%, var(--ink));box-shadow:inset 0 0 0 1.5px var(--accent);">Log result</div>
        </div>
-     </div>`, ['The section kicker with the cup mark sits <b>outside</b> the card.', 'Accent-tinted surface, accent hairline; title 26, instruction 15.', 'Trigger and estimate are two mono lines against a primary Log Result.', 'The corner X saves for later \u2014 it never deletes.', 'Never scored: completion is self-reported.']));
+     </div>`, ['The section kicker with the cup mark sits <b>outside</b> the card, and says <b>Optional</b> \u2014 it must not read as a second required task.', 'Accent-tinted surface, accent hairline; title 26, instruction 15.', 'Trigger and estimate join on one mono line; the CTA is full-width below \u2014 the same left-rail geometry as the lead card. While today\u2019s lesson is unfinished, Log result is outlined \u2014 Begin lesson keeps the only filled orange action.', 'Postpone is the <b>clock</b> in the round hairline button chrome (FavButton’s), top-right — tap slides the card to For Later, it never deletes. Never the bookmark: that glyph is the Favorites toggle and lands elsewhere. The clock also marks the For Later row.', 'Never scored: completion is self-reported.']));
+
+  wrap.append(compRules('Keep Sharp card',
+    'Today’s lead card once every lesson is done (allCaughtUp) — what a finished learner is offered instead of a dead end.',
+    `<div>
+       <div style="${SC}margin-bottom:28px;">ALL CAUGHT UP</div>
+       <div class="card" style="background:var(--accent);border-color:var(--accent);color:var(--accent-ink);">
+         <div style="${SC}color:var(--accent-ink);display:inline-flex;align-items:center;gap:7px;"><svg width="10" height="13" viewBox="0 0 11 14" aria-hidden="true"><path d="M6.6 0.5 L1 8 H4.6 L4 13.5 L10 5.6 H6.1 Z" fill="currentColor"/></svg> KEEP SHARP</div>
+         <div style="display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;margin-top:14px;">
+           <div>
+             <div class="ff-display" style="font-size:26px;font-weight:400;line-height:1.1;letter-spacing:-0.01em;color:var(--accent-ink);">Guess the term</div>
+             <p style="font-size:15px;line-height:1.5;color:var(--accent-ink);opacity:0.82;margin:8px 0 0;text-wrap:pretty;">Finish one guessing round.</p>
+           </div>
+           ${roastyArt('idle', 64)}
+         </div>
+         <div style="margin-top:18px;height:47px;border-radius:14px;background:var(--accent-ink);color:var(--accent);display:grid;place-items:center;font-size:15px;font-weight:500;">Start</div>
+       </div>
+     </div>`,
+    ['A <b>state</b> of the lead card, not a new surface. The section eyebrow above it stays ALL CAUGHT UP; the state reverts to Continue Learning by itself when new lessons ship. Free users never reach it.',
+     'One practice <b>type</b> per local calendar day — Mini-games → Guess the term → Flashcards → Replay a lesson, <span class="mono">epochDay % 4</span>, zero storage. A type with no material advances to the next in order; only Flashcards can be empty.',
+     'The rule line is <b>verbatim</b> the rule the streak judges (decisions §5/§6) — the card recommends a type, never an item, so doing exactly what Today asks can never lose the streak.',
+     'The one card that inverts: accent surface, accent-ink text and bolt eyebrow, ink-on-accent <b>Start</b> into the type’s surface.',
+     'No progress chrome — no MODULE n, no counts, no ~N MIN — and it grants nothing: the streak is the only reward.',
+     'Quiet state (no eligible type): eyebrow kept, body “Practice anything below to keep your streak alive.” — no CTA, and never a promise of future modules.']));
 
   wrap.append(compRules('Card or section',
     'The decision every screen block faces: a bordered card, or a labelled section in the page flow.',
@@ -944,21 +960,21 @@ function renderComponents() {
        <div>
          <div style="${SMALLCAPS}margin-bottom:7px;">CARD</div>
          <div style="border:1px solid color-mix(in oklab, var(--accent) 30%, var(--rule));border-radius:2px;padding:14px;background:linear-gradient(160deg, color-mix(in oklab, var(--accent) 12%, var(--surface)) 0%, var(--surface) 62%);">
-           <div style="${SMALLCAPS}color:var(--accent);">BREWPATH PLUS</div>
-           <div class="ff-display" style="font-size:19px;color:var(--ink);margin-top:8px;">$29.99/yr</div>
-           <div style="font-size:12px;color:var(--ink-mute);margin-top:4px;">Renews 18 Jun 2027</div>
+           <div style="${SMALLCAPS}color:var(--accent);">FOUNDATIONS</div>
+           <div class="ff-display" style="font-size:19px;color:var(--ink);margin-top:8px;">Purchased 8 May 2026</div>
+           <div style="font-size:12px;color:var(--ink-mute);margin-top:4px;">One-time purchase · $49.99 · permanent access</div>
          </div>
        </div>
        <div>
          <div style="${SMALLCAPS}margin-bottom:7px;">SECTION</div>
-         <div style="${SMALLCAPS}margin-bottom:4px;">FREE PLAN</div>
-         <div style="font-size:14px;color:var(--ink);padding:12px 0;">Every lesson and the dictionary, included.</div>
+         <div style="${SMALLCAPS}margin-bottom:4px;">FREE</div>
+         <div style="font-size:14px;color:var(--ink);padding:12px 0;">All of Module 1, two practice formats, a shelf of 5.</div>
        </div>
      </div>`,
-    ['A card is a <b>container for facts</b> — a price, a renewal date, a countdown. Given facts, it earns its border.',
+    ['A card is a <b>container for facts</b> — a purchase date, a price, a countdown. Given facts, it earns its border.',
      'With nothing to hold, drop the card, not the content: use the screen’s own grammar — smallcaps label, then rows at 16px 0. A bordered box with one line in it reads as a render failure, not restraint.',
-     'Never let a container change weight between states of one screen. The Subscription screen keeps its card only where there is billing; free uses the same section shape as MANAGE and WITH PLUS below it.',
-     'The display slot states a <b>value</b>. If a state has no value to show, it has no display line — it must never be filled with an absence (“No subscription”).']));
+     'Never let a container change weight between states of one screen. The Purchases screen keeps its card only where there is a purchase; free uses the same section shape as the labelled sections below it.',
+     'The display slot states a <b>value</b>. If a state has no value to show, it has no display line — it must never be filled with an absence (“No purchases”).']));
 
   wrap.append(compRules('Empty state',
     'A filter with no matches, a passport with no stamps, a Saved shelf before anything is saved.',
@@ -970,13 +986,33 @@ function renderComponents() {
      </div>`, ['Always three parts: a muted glyph, one Fraunces line, a ghost button that clears the cause.', 'Never an apology, and never an illustration the user cannot act on.']));
 
   wrap.append(compRules('Roasty, the companion',
-    'Loading screens, lesson and module completion, correct and wrong answers, the gift and duel moments.',
+    'Loading screens, lesson, module and course completion, correct and wrong answers, the gift and duel moments.',
     `<div style="display:flex;align-items:center;gap:16px;">
        ${roastyArt('idle', 54)}
        ${roastyArt('correct', 54)}
        ${roastyArt('wrong', 54)}
        <a href="Mascot - Roasty.html" style="font-size:13px;color:var(--accent);">Open the Roasty study →</a>
      </div>`, ['One shape, eleven states: idle, card, lesson, module, correct, wrong, sleep, gift, duel win/loss, tasting.', 'He reacts, he never instructs \u2014 copy carries the teaching.', 'Full state sheet and motion specs live in the Mascot study file.']));
+
+  wrap.append(compRules('Course complete moment',
+    'Full-screen, fired ONCE when the last of the 32 lessons lands — after the final reward chain, before Learn. The hand-off into Keep Sharp.',
+    `<div style="max-width:290px;margin:0 auto;text-align:center;">
+       <div style="position:relative;display:inline-block;background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:10px 14px;font-size:13px;line-height:1.45;color:var(--ink);">Beans to brew — you did the whole thing.</div>
+       <div style="display:flex;justify-content:center;margin-top:10px;">${roastyArt('module', 84)}</div>
+       <div class="ff-display" style="font-size:26px;font-weight:600;letter-spacing:-0.02em;line-height:1.08;color:var(--ink);margin-top:10px;">You finished Foundations</div>
+       <div style="text-align:left;margin-top:12px;">
+         <div style="display:grid;grid-template-columns:1fr auto;align-items:baseline;padding:10px 2px;border-bottom:1px solid var(--rule);"><span style="${SC}">Lessons completed</span><span class="mono" style="font-size:15px;font-weight:500;color:var(--ink);">32</span></div>
+         <div style="display:grid;grid-template-columns:1fr auto;align-items:baseline;padding:10px 2px;border-bottom:1px solid var(--rule);"><span style="${SC}">Cards collected</span><span class="mono" style="font-size:15px;font-weight:500;color:var(--ink);">37</span></div>
+         <div style="display:grid;grid-template-columns:1fr auto;align-items:baseline;padding:10px 2px;"><span style="${SC}">Day streak</span><span class="mono" style="font-size:15px;font-weight:500;color:var(--ink);">7</span></div>
+       </div>
+       <div style="margin-top:14px;height:44px;border-radius:14px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:15px;font-weight:500;">Start Keep Sharp</div>
+     </div>`,
+    ['Fires exactly once: the ack is written on <b>presentation</b>, not dismissal — a force-quit mid-celebration still counts as seen. Reset progress re-arms it.',
+     'Bigger than Module Complete by <b>anatomy</b>, not scale: the spoken bubble, the ledger and the hand-off exist on no other beat — and it never auto-dismisses; the CTA is the only exit.',
+     'It grants nothing: no points, no tree growth, no 38th card. The celebration is the content.',
+     'No eyebrow — the headline carries the verb, so a COURSE COMPLETE label above it said the same thing twice. Recorded drift from the shipped build, which shows both.',
+     'Ledger rows: smallcaps label left, mono value right, hairlines <b>between</b> rows only.',
+     'Reduced motion: every entrance settles instantly (the passport-stamp treatment).']));
 
   // ── Chrome & navigation ────────────────────────────────────
   wrap.append(compSubhead('Chrome and navigation', 'Frames every screen'));
@@ -1000,7 +1036,7 @@ function renderComponents() {
   ));
 
   wrap.append(compRules('Bottom sheet',
-    'The app\u2019s one modal pattern \u2014 Share, Reset confirm, Daily reminder, Billing cycle, the Plus gate, and the dictionary & atlas peeks.',
+    'The app\u2019s one modal pattern \u2014 Share, Reset confirm, Daily reminder, the purchase gate, and the dictionary & atlas peeks.',
     sheetDemo(),
     [
       'Rises from the bottom over a 40% scrim: 36px handle, then content.',
@@ -1013,7 +1049,7 @@ function renderComponents() {
     `<div style="max-width:300px;background:var(--bg);border:1px solid var(--rule);border-radius:14px;padding:18px;">
        <div style="${SMALLCAPS}margin-bottom:8px;">NOTHING TO RESTORE</div>
        <div class="ff-display" style="font-size:19px;color:var(--ink);line-height:1.1;">No purchase on this Apple ID.</div>
-       <p style="font-size:13px;line-height:1.5;color:var(--ink-mute);margin:10px 0 16px;">If you bought Plus with a different Apple ID, sign in with that one and try again.</p>
+       <p style="font-size:13px;line-height:1.5;color:var(--ink-mute);margin:10px 0 16px;">If you bought Foundations with a different Apple ID, sign in with that one and try again.</p>
        <div class="btn-primary" style="text-align:center;box-sizing:border-box;">Done</div>
      </div>`,
     ['The confirm sheet with <b>one</b> action instead of two — there is nothing to cancel, only to acknowledge. Same shell, same type ramp.',
@@ -1029,7 +1065,7 @@ function renderComponents() {
         when: 'Every ordinary sheet \u2014 peek, share, confirm, reminder, card, log, recap.',
         spec: ['scrim 95', 'sheet 96'] },
       { label: 'Interrupt layer', demo: '<div style="width:100%;max-width:220px;position:relative;"><div style="height:24px;border:1px solid var(--rule);border-bottom:none;border-radius:14px 14px 0 0;background:var(--surface);opacity:0.5;margin:0 12px;"></div><div style="height:34px;border:1px solid var(--accent);border-bottom:none;border-radius:14px 14px 0 0;background:var(--surface);display:grid;place-items:center;margin-top:-6px;"><span style="width:34px;height:3px;border-radius:999px;background:var(--accent);"></span></div></div>',
-        when: 'The Plus gate only \u2014 it can be raised from inside another sheet, e.g. saving a term past the free cap.',
+        when: 'The purchase gate only \u2014 it can be raised from inside another sheet, e.g. saving a term past the free cap.',
         spec: ['scrim 97', 'sheet 98'] },
     ],
     [
@@ -1046,7 +1082,7 @@ function renderComponents() {
        </div>`).join('')}
      </div>`,
     ['<b>--dim-modal</b> · blocking. Behind a bottom sheet, with a 5px blur. The content behind is unavailable, so it recedes completely and the sheet owns the screen.',
-     '<b>--veil</b> · teasing. Over content the user is meant to keep reading — the Plus feature lock. Light enough that the screen behind stays legible; that legibility <i>is</i> the pitch.',
+     '<b>--veil</b> · teasing. Over content the user is meant to keep reading — the Foundations feature lock. Light enough that the screen behind stays legible; that legibility <i>is</i> the pitch.',
      '<b>--veil-strong</b> · covering. A near-opaque wash when a panel takes over a screen but should still show its outline underneath.',
      '<b>--scrim</b> · separating. Only behind a control sitting on media. It is the only one of the four that is not full-screen.',
      'Weight follows intent, never taste: blocking &gt; covering &gt; teasing &gt; separating. If two overlays look alike, one of them is describing the wrong relationship.',
@@ -1080,7 +1116,7 @@ function renderComponents() {
     ]));
 
   wrap.append(compRules('Settings / nav row',
-    'ONE component (NavRow, settings.jsx) behind every settings row in the app \u2014 Settings, About, Account and sync, Help and support, Subscription. SettingsRow is an alias of it, not a second copy.',
+    'ONE component (NavRow, settings.jsx) behind every settings row in the app \u2014 Settings, About, Account and sync, Help and support, Purchases. SettingsRow is an alias of it, not a second copy.',
     settingsRowDemo(), ['Label left; the right takes a mono value, then a chevron (internal), arrow (external) or toggle.', 'Hairline between rows.', 'Destructive rows take berry, never accent.',
       'A row that fires a <b>network call</b> has a pending state: the label swaps to the present participle (“Restoring…”), drops to ink-mute, the chevron becomes a spinner and taps are refused until it settles. Never leave a row looking tappable while it is working.',
       'Rows are the register for a settings <b>action</b>. A quiet mono link is for purchase surfaces; a primary button is for the one thing a screen is for. Restore purchases is a row in Settings and a link on the paywall — same action, different surface.',
@@ -1411,8 +1447,8 @@ function lockBadgeDemo() {
 function affordancesDemo() {
   return `<div class="afford-row">
     <div class="afford">
-      <span class="plus-pill">PLUS</span>
-      <span class="cap">PLUS PILL</span>
+      <span class="plus-pill">FOUNDATIONS</span>
+      <span class="cap">FOUNDATIONS PILL</span>
     </div>
     <div class="afford">
       <span style="width:34px;height:34px;border-radius:999px;display:grid;place-items:center;background:color-mix(in oklab,var(--accent) 13%,var(--surface));color:var(--accent);">${gLockGlyph(17, 1.7)}</span>
@@ -1423,8 +1459,8 @@ function affordancesDemo() {
       <span class="cap">LOCK BADGE</span>
     </div>
     <div class="afford">
-      <span class="trial-pill"><span class="dot"></span>Free trial · 12:30 left</span>
-      <span class="cap">TRIAL COUNTDOWN</span>
+      <span class="trial-pill"><span class="dot"></span>Preview · 12:30 left</span>
+      <span class="cap">PREVIEW COUNTDOWN · V2</span>
     </div>
   </div>`;
 }
@@ -1434,15 +1470,15 @@ function gateSheetDemo() {
     <div style="width:40px;height:4px;border-radius:999px;background:var(--rule);margin:0 auto 16px;"></div>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
       <span style="width:40px;height:40px;border-radius:999px;flex-shrink:0;display:grid;place-items:center;background:color-mix(in oklab,var(--accent) 13%,var(--surface));color:var(--accent);">${gLockGlyph(18, 1.7)}</span>
-      <div style="text-align:left;"><div style="${SMALLCAPS}">PLUS FEATURE</div><div class="ff-display" style="font-size:19px;color:var(--ink);line-height:1.05;margin-top:2px;">Coffee Atlas</div></div>
+      <div style="text-align:left;"><div style="${SMALLCAPS}">PART OF FOUNDATIONS</div><div class="ff-display" style="font-size:19px;color:var(--ink);line-height:1.05;margin-top:2px;">Coffee Atlas</div></div>
     </div>
-    <p style="font-size:13px;line-height:1.5;color:var(--ink-mute);margin:0 0 18px;text-wrap:pretty;">Travel the coffee belt, explore origins and collect passport stamps. It’s part of BrewPath Plus.</p>
-    <div class="btn-primary" style="text-align:center;box-sizing:border-box;">Unlock Plus — 7-day free trial</div>
+    <p style="font-size:13px;line-height:1.5;color:var(--ink-mute);margin:0 0 18px;text-wrap:pretty;">Travel the coffee belt, explore origins and collect passport stamps. Included with Foundations — one purchase, yours for good.</p>
+    <div class="btn-primary" style="text-align:center;box-sizing:border-box;">Unlock Foundations — $49.99</div>
     <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:10px;border:1px solid var(--rule);border-radius:2px;padding:13px 16px;color:var(--ink);">
       <svg width="18" height="18" viewBox="0 0 20 20" fill="none" style="flex-shrink:0;"><circle cx="10" cy="10" r="8" stroke="var(--accent)" stroke-width="1.5"/><path d="M8.2 6.8 L13.4 10 L8.2 13.2 Z" fill="var(--accent)"/></svg>
-      <span style="font-size:13px;font-weight:500;">Watch a short ad — try 15 min free</span>
+      <span style="font-size:13px;font-weight:500;">Watch a short ad — preview 15 min free</span>
     </div>
-    <div style="${SMALLCAPS}color:var(--ink-mute);text-align:center;margin-top:14px;">One ad unlocks Coffee Atlas for 15 minutes</div>
+    <div style="${SMALLCAPS}color:var(--ink-mute);text-align:center;margin-top:14px;">ONE-TIME PURCHASE · YOURS TO KEEP</div>
   </div>`;
 }
 
@@ -1464,8 +1500,8 @@ function adDemo() {
     </div>
     <div style="background:#161210;border-top:1px solid rgba(255,255,255,0.08);padding:16px 20px 20px;text-align:center;margin-top:14px;">
       <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:5px;">YOUR REWARD</div>
-      <div class="ff-display" style="font-size:19px;color:#fff;line-height:1.1;">15 minutes of Coffee Atlas</div>
-      <div style="margin-top:12px;height:34px;border-radius:2px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:13px;font-weight:500;">Claim 15 min free</div>
+      <div class="ff-display" style="font-size:19px;color:#fff;line-height:1.1;">15-minute preview of Coffee Atlas</div>
+      <div style="margin-top:12px;height:34px;border-radius:2px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:13px;font-weight:500;">Claim 15 min preview</div>
     </div>
   </div>`;
 }
@@ -1483,7 +1519,7 @@ function lockFauxPreview() {
 function miniLockCard(glass) {
   return `<div style="width:84%;max-width:208px;border-radius:14px;padding:16px 14px;text-align:center;background:${glass ? 'color-mix(in oklab,var(--surface) 82%,transparent)' : 'var(--surface)'};border:1px solid var(--rule);box-shadow:0 18px 40px rgba(0,0,0,0.28);${glass ? 'backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);' : ''}">
     <span style="width:38px;height:38px;border-radius:999px;margin:0 auto;display:grid;place-items:center;background:color-mix(in oklab,var(--accent) 14%,var(--surface));color:var(--accent);">${gLockGlyph(18, 1.8)}</span>
-    <div style="${SMALLCAPS}margin-top:10px;">PLUS FEATURE</div>
+    <div style="${SMALLCAPS}margin-top:10px;">PART OF FOUNDATIONS</div>
     <div class="ff-display" style="font-size:19px;color:var(--ink);margin-top:3px;line-height:1.1;">Coffee Atlas</div>
     <div style="margin-top:12px;height:30px;border-radius:2px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:13px;font-weight:500;">Unlock</div>
   </div>`;
@@ -1506,20 +1542,42 @@ function lockMini(kind) {
   return `<div><div class="lock-mini">${inner}</div><div class="lock-mini-cap">${caps[kind]}</div></div>`;
 }
 
+function monetizationModelsDemo() {
+  const arms = [
+    ['BASELINE · SHIPS', 'One-time purchase', 'Lifetime $49.99', 'Buy once, keep forever. One plan, so the paywall shows no picker — a picker of one is dead UI.'],
+    ['EXPERIMENT', 'Subscription only', 'Monthly $3.99 · Yearly $23.99', 'Access while subscribed. Tests whether recurring revenue outperforms lifetime.'],
+    ['EXPERIMENT · PRIMARY', 'Hybrid', 'Monthly $3.99 · Yearly $23.99 · Lifetime $49.99', 'The user picks the model they prefer. Primary candidate to test against the baseline.'],
+  ];
+  return '<div style="display:flex;flex-direction:column;">' + arms.map(function (a, i) {
+    return '<div style="padding:13px 0;' + (i < arms.length - 1 ? 'border-bottom:1px solid var(--rule);' : '') + '">' +
+      '<div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;">' +
+        '<span style="font-size:13.5px;font-weight:500;color:var(--ink);">' + a[1] + '</span>' +
+        '<span class="mono" style="font-size:9px;letter-spacing:0.12em;color:' + (i === 0 ? 'var(--sage)' : 'var(--accent)') + ';">' + a[0] + '</span>' +
+      '</div>' +
+      '<div class="mono" style="font-size:10.5px;letter-spacing:0.06em;color:var(--ink);margin-top:5px;">' + a[2] + '</div>' +
+      '<div style="font-size:12.5px;line-height:1.5;color:var(--ink-mute);margin-top:4px;text-wrap:pretty;">' + a[3] + '</div>' +
+    '</div>';
+  }).join('') + '</div>';
+}
+
 function renderGating() {
   const wrap = el('div', { class: 'comp-grid' });
 
+  wrap.append(compRules('Monetization models',
+    'Three pricing arms under experiment. One config (monetization.jsx) owns plans, prices and every selling string; the Tweaks panel switches the live model.',
+    monetizationModelsDemo(), ['<b>Separation contract:</b> the model owns HOW Foundations is sold — plans, CTAs, footers, receipts. It never owns WHAT is unlocked: entitlement is a boolean every gate reads, so switching arms rewrites zero access logic.', 'The paywall renders a <b>plan picker only when the model offers a choice</b>; yearly carries the value badge and is the default pick.', 'The owned card on Purchases renders from the <b>plan that granted the entitlement</b>, not the live model — a lifetime owner keeps their receipt if the arm flips.', 'Whatever the arm, the product is called <b>Foundations</b> and free keeps all of Module 1, the four free practice formats and a Saved shelf of 5.']));
+
   wrap.append(compRules('Lock affordances',
-    'Anywhere a Plus surface is referenced for a free user — header icons, profile cards, list rows, and the live trial countdown.',
-    affordancesDemo(), ['Accent is the Plus colour.', 'The PLUS pill labels a gated entry; the lock badge pins to a header icon.', 'The trial pill counts down a temporary unlock \u2014 the only moving element.', 'Never gate with a grey-out alone: always pair a lock mark with a way in.']));
+    'Anywhere a purchase-gated surface is referenced for a free user — header icons, profile cards, list rows, path modules, and the live preview countdown (v2).',
+    affordancesDemo(), ['Accent is the purchase colour.', 'The FOUNDATIONS pill labels a gated entry; the lock badge pins to a header icon.', 'The preview pill counts down a temporary ad unlock (v2) \u2014 the only moving element. A preview is never a trial of the purchase; the purchase has no trial.', 'Never gate with a grey-out alone: always pair a lock mark with a way in.']));
 
-  wrap.append(compRules('Plus gate sheet',
-    'The bottom sheet shown the moment a free user taps any locked feature.',
-    gateSheetDemo(), ['Two ways out, never a dead end: upgrade (primary) or watch one ad (ghost).', 'Lead with the feature\u2019s name and its one-line value, never the price.', '\u201cNot now\u201d is always present.', 'Interrupt layer (97 / 98) \u2014 the gate is usually raised from inside another sheet.', 'Upgrading closes the sheet that raised it, so the paywall lands clean.']));
+  wrap.append(compRules('Purchase gate sheet',
+    'The bottom sheet shown the moment a free user taps any locked surface.',
+    gateSheetDemo(), ['One real way out: unlock Foundations at a stated price, never a trial. The CTA and closing caption come from the active monetization model \u2014 the demo shows the one-time baseline. The ad preview (ghost) joins in v2.', 'Lead with the feature\u2019s name and its one-line value; the price lives on the button, stated plainly.', '\u201cNot now\u201d is always present.', 'The sheet closes on ONE centered micro caption \u2014 the model\u2019s purchase facts (baseline: \u201cOne-time purchase \u00b7 yours to keep\u201d) \u2014 under the actions, never between them.', 'Interrupt layer (97 / 98) \u2014 the gate is usually raised from inside another sheet.', 'Purchasing closes the sheet that raised it, so the paywall lands clean.']));
 
-  wrap.append(compRules('Rewarded ad',
-    'The simulated rewarded video reached from the gate sheet’s “watch an ad” path.',
-    adDemo(), ['Full-bleed dark \u2014 the one place the app leaves its warm theme.', 'Close stays de-emphasised until the countdown ring completes.', 'The reward is restated before the claim.']));
+  wrap.append(compRules('Rewarded ad (v2)',
+    'The simulated rewarded video reached from the gate sheet’s “watch an ad” path — deferred to v2 with the ad layer.',
+    adDemo(), ['Full-bleed dark \u2014 the one place the app leaves its warm theme.', 'Close stays de-emphasised until the countdown ring completes.', 'The reward is a timed PREVIEW of one surface, restated before the claim \u2014 never “free” access language that could read as a trial of the purchase.']));
 
   const treat = el('div', { class: 'panel comp comp-wide' },
     el('div', { class: 'panel-head' },
@@ -1530,14 +1588,14 @@ function renderGating() {
       el('div', { class: 'lock-mini-grid', html: lockMini('blur') + lockMini('hard') + lockMini('curtain') }),
     ),
     el('div', { class: 'kv' },
-      el('div', null, el('span', { class: 'mono klabel' }, 'WHERE'), el('span', { class: 'kval' }, 'Wraps a whole gated surface for a free user — in v1 that is Dictionary, Saved and Studio; Atlas and Duel are built against the same treatment and land with them in v2. One style is chosen per surface.')),
+      el('div', null, el('span', { class: 'mono klabel' }, 'WHERE'), el('span', { class: 'kval' }, 'Wraps a whole gated surface for a free user — in v1 that is the Studio; the course path, practice formats and Dictionary limit themselves inline instead of wrapping. Atlas and Duel are built against the same treatment and land in v2. One style is chosen per surface.')),
       el('div', null, el('span', { class: 'mono klabel' }, 'RULE'), el('span', { class: 'kval' }, 'Blur teases the real screen behind frosted glass (glass lock card); hard shows an opaque panel with no preview (solid card); curtain keeps the top of the screen legible and raises a gradient curtain with the card at the bottom. Lower the curtain for content worth previewing, go hard when a preview gives the value away.')),
     ),
   );
   wrap.append(treat);
 
-  return section('plus', 'Monetization', 'Plus and paywall',
-    'The gating layer that turns free users into Plus members — the lock affordances, the upgrade-or-watch-an-ad sheet, the rewarded ad, and the three ways a whole feature can be locked. Every lock offers a way in; none is a dead end.',
+  return section('plus', 'Monetization', 'Foundations and the purchase gate',
+    'The gating layer around Foundations. The shipping baseline is a one-time purchase — bought once, kept forever — with two experiment arms (subscription-only, and hybrid) switchable in the prototype; plans and selling copy live in one config, and entitlement logic never changes with the arm. Every lock names the product, states its price plainly, and offers a way in; none is a dead end. Free keeps all of Module 1, four practice formats (True or false, Match the facts, Flashcards, Guess the Term), lesson-earned dictionary terms and a Saved shelf of 5; Modules 2–5 are Foundations.',
     wrap);
 }
 
@@ -1595,7 +1653,8 @@ function renderFlags() {
 // Every interactive card kind in the app, in the order a lesson uses them.
 // cue    — the game-cue phrase above the question (null = no cue, no "?" drawer)
 // scored — does a right answer pay points / count toward a score?
-// game   — the mini-game id this kind is also published as, if any.
+// game   — the first (frozen-id) game published on this kind, if any; the full
+//          catalog — several games per kind — lives in the access table below.
 const GAME_KINDS = [
   ['predict',  null,                            false, null,
    'The opening guess, made before anything is taught. Ungraded by design \u2014 a wrong guess is the point.'],
@@ -1640,17 +1699,18 @@ function gameInventory() {
       el('span', { class: 'mono', style: 'font-size:11.5px;color:var(--accent);' }, kind),
       el('span', null,
         el('span', { style: 'font-size:13px;line-height:1.5;color:var(--ink-mute);display:block;text-wrap:pretty;' }, what),
-        el('span', { class: 'mono', style: 'font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-mute);display:block;margin-top:5px;opacity:' + (cue ? '0.8' : '0.45') + ';' },
+        el('span', { class: 'mono', style: 'font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-mute);display:block;margin-top:5px;' },
           cue ? 'CUE \u00b7 ' + cue : 'NO CUE')),
       el('span', { style: 'font-size:12.5px;color:' + (scored ? 'var(--sage)' : 'var(--ink-mute)') + ';' }, scored ? 'Yes' : 'No'),
-      el('span', { class: 'mono', style: 'font-size:10.5px;color:' + (game ? 'var(--ink)' : 'var(--ink-mute)') + ';opacity:' + (game ? '1' : '0.45') + ';' }, game || '\u2014')));
+      el('span', { class: 'mono', style: 'font-size:10.5px;color:' + (game ? 'var(--ink)' : 'var(--ink-mute)') + ';' }, game || '\u2014')));
   return el('div', { class: 'panel comp states' },
     el('div', { class: 'panel-head' }, el('div', { class: 'ff-display comp-title' }, 'Game inventory')),
     el('p', { class: 'comp-purpose' },
-      'Every interactive card kind, in the order a lesson uses them. Fifteen kinds; eleven are scored; seven are also published as standalone mini-games. If a kind is not on this list it does not exist \u2014 add it here before building it.'),
+      'Every interactive card kind, in the order a lesson uses them. Fifteen kinds; eleven are scored; seven are also published as mini-game KINDS \u2014 each can carry several games. If a kind is not on this list it does not exist \u2014 add it here before building it.'),
     el('div', null, head, rows),
     el('ul', { class: 'rules' }, [
       'A kind is promoted to a <b>mini-game</b> only if all three hold: it is <b>self-scoring</b>, a whole round can be <b>one kind</b>, and it is a <b>skill that improves with reps</b>.',
+      'A kind is the mechanic; a <b>game</b> is one catalog entry \u2014 the kind plus exactly one course topic and its own 5\u20137-round bank, with a persistent id (<span class="mono">g-&lt;kind&gt;-&lt;topic&gt;</span>; the original seven ids are frozen in stored day-sets). Two games of one kind are two <b>different</b> games.',
       'predict, concept, visual and practical fail the first test; decision and recall fail the third \u2014 recall is bound to the guess made earlier in its own lesson.',
       'Mini-games never touch lesson points or progression. Lesson cards always do.',
       'A mini-game is <b>course-wide practice</b>, never a replay of one lesson \u2014 it carries no lesson id, and its Practice Again row leads with the game name over a topic eyebrow.',
@@ -1659,11 +1719,11 @@ function gameInventory() {
 }
 
 function roundLengthDemo() {
-  const rows = [['g-match', 5], ['g-flavor', 5], ['g-quiz', 6], ['g-bagpick', 5], ['g-tastefix', 5], ['g-calibrate', 5], ['g-sequence', 5]];
+  const rows = [['g-match', 5], ['g-match-washed-natural', 5], ['g-flavor', 5], ['g-flavor-origin-signatures', 7], ['g-quiz', 6], ['g-quiz-roast-basics', 6], ['g-bagpick', 5], ['g-tastefix', 5], ['g-tastefix-espresso', 5], ['g-calibrate', 5], ['g-calibrate-grind-brewer', 5], ['g-sequence', 5], ['g-sequence-v60', 5]];
   return '<div style="display:flex;flex-direction:column;gap:9px;font-family:\'IBM Plex Mono\',monospace;font-size:11px;color:var(--ink-mute);">' +
     rows.map(function (r) {
       var pips = '';
-      for (var i = 0; i < 6; i++) {
+      for (var i = 0; i < 7; i++) {
         pips += '<span style="width:14px;height:6px;border-radius:999px;border:1px solid var(--rule);background:' +
           (i < r[1] ? 'var(--accent)' : 'var(--surface-2)') + ';"></span>';
       }
@@ -1672,10 +1732,138 @@ function roundLengthDemo() {
     }).join('') + '</div>';
 }
 
+// ── ACCESS TIERS ───────────────────────────────────────────
+// Every published game and who can play it. Tier DERIVES FROM TOPIC: a game
+// is free iff the module that teaches its topic is unlocked (free tier =
+// Module 1) — today that opens exactly the two M1-topic games. New games take
+// paid-module topics, so the free catalog widens only if what's unlocked widens.
+const ACCESS_COLS = 'display:grid;grid-template-columns:150px 110px 92px 1fr;gap:14px;';
+
+const GAME_ACCESS = [
+  ['Match the facts', 'g-match', 1, 'Recall',
+   'Topic: Arabica vs Robusta (M1). Retrieves a relationship rather than recognising a familiar string.'],
+  ['Washed vs Natural', 'g-match-washed-natural', 0, 'Recall',
+   'Topic: processing (M2). Which process left this in the cup \u2014 step, trait or shelf cue.'],
+  ['True or false', 'g-quiz', 1, 'Recognition',
+   'Topic: coffee basics (M1). Statements are the cheapest content in the course to author at volume \u2014 which is what keeping a daily format fresh actually costs.'],
+  ['Roast basics', 'g-quiz-roast-basics', 0, 'Recognition',
+   'Topic: roasting (M3). Myth-forward true-or-false \u2014 caffeine, oil, freshness, first crack.'],
+  ['Name the flavor notes', 'g-flavor', 0, 'Palate', 'Topic: tasting notes (M5). Sensory judgement.'],
+  ['Name the origin', 'g-flavor-origin-signatures', 1, 'Palate', 'Topic: origin signatures (M1). A deliberate free taste of the palate tier \u2014 on free-module material.'],
+  ['Read the green bean', 'g-bagpick', 0, 'Palate', 'Topic: washed, honey or natural (M2). Sensory judgement. The one single-game kind.'],
+  ['Fix the cup', 'g-tastefix', 0, 'Palate', 'Topic: dialing in by taste (M4). Sensory judgement \u2014 diagnose, then correct.'],
+  ['Fix the shot', 'g-tastefix-espresso', 0, 'Palate', 'Topic: espresso dial-in (M5). Read the stream and the sip; fixes cut every way \u2014 finer, coarser, prep, ratio, beans.'],
+  ['Dial it in', 'g-calibrate', 0, 'Calibration', 'Topic: grind, ratio, water, time (M4). Numeric judgement against a tolerance.'],
+  ['Set the grind', 'g-calibrate-grind-brewer', 0, 'Calibration', 'Topic: grind & brewer (M4). Contact time sets the grind \u2014 dial each brewer to its spot.'],
+  ['Put it in order', 'g-sequence', 0, 'Ordering', 'Topic: bean to cup \u2014 tiered by its furthest material (M5). Reconstructs a process end to end.'],
+  ['Pour-over, in order', 'g-sequence-v60', 0, 'Ordering', 'Topic: the V60 recipe (M5). Five taught orderings, rinse to drawdown.'],
+];
+
+function tierChip(free) {
+  const c = free ? 'var(--sage)' : 'var(--accent)';
+  return el('span', { class: 'mono', style: 'font-size:9.5px;font-weight:500;letter-spacing:0.1em;padding:3px 7px;border-radius:999px;white-space:nowrap;justify-self:start;color:' + c + ';border:1px solid color-mix(in oklab, ' + c + ' 45%, transparent);background:color-mix(in oklab, ' + c + ' 8%, transparent);' }, free ? 'FREE' : 'FOUNDATIONS');
+}
+
+function accessInventory() {
+  const head = el('div', { style: ACCESS_COLS + 'padding:0 0 10px;border-bottom:1px solid var(--rule);' },
+    ['Mini-game', 'Tier', 'Axis', 'Why it sits there'].map(h =>
+      el('span', { class: 'mono', style: 'font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-mute);' }, h)));
+  const rows = GAME_ACCESS.map(([title, id, free, axis, why]) =>
+    el('div', { style: ACCESS_COLS + 'padding:13px 0;border-bottom:1px solid var(--rule);align-items:start;' },
+      el('span', null,
+        el('span', { style: 'font-size:13px;color:var(--ink);display:block;' }, title),
+        el('span', { class: 'mono', style: 'font-size:9.5px;letter-spacing:0.1em;color:var(--ink-mute);display:block;margin-top:4px;' }, id)),
+      tierChip(free),
+      el('span', { class: 'mono', style: 'font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:' + (free ? 'var(--ink)' : 'var(--ink-mute)') + ';' }, axis),
+      el('span', { style: 'font-size:12.5px;line-height:1.5;color:var(--ink-mute);text-wrap:pretty;' }, why)));
+  return el('div', { class: 'panel comp states' },
+    el('div', { class: 'panel-head' }, el('div', { class: 'ff-display comp-title' }, 'Free and premium formats')),
+    el('p', { class: 'comp-purpose' },
+      'Who can play what. The full catalog \u2014 13 games over 7 kinds, grouped by kind in fixed order \u2014 is always listed; the list is the upsell, so a locked game has to be understandable before it is bought.'),
+    el('div', null, head, rows),
+    el('ul', { class: 'rules' }, [
+      '<b>Show every game, always.</b> A locked one keeps its name, its topic eyebrow and a <b>legible static preview</b>. Never blur it, never hide it, never leave it as a bare padlock \u2014 a user cannot want what they cannot read.',
+      '<b>Tier derives from topic:</b> a game is free iff its topic\u2019s module is unlocked \u2014 today True or false, Match the facts and Name the origin, the three M1-topic games. The free list is <b>derived, never hand-kept</b>.',
+      'The free set is deliberately <b>one recognition, one recall, one palate</b> format \u2014 the origin game is a free taste of the palate tier on free-module material. Two of the same axis would be the same exercise twice.',
+      'Premium is a <b>tier with a sentence</b>, not a leftover: everything gated asks for a sensory, numeric or ordering judgement \u2014 or drills paid-module material. <b>Free tests what you know; Foundations trains your palate.</b>',
+      'Tapping a locked game opens <span class="mono">PlusGateSheet</span> led by <b>\u201cTaught in Module N\u201d</b> \u2014 a targeted course pitch naming the module that teaches its topic, never a generic upgrade screen. <b>In v1 the sheet is upgrade-only</b> (<span class="mono">showAd={false}</span>): no advertising ships in v1.',
+      '<b>New games take paid-module topics</b> unless a free taster is the point; the free catalog widens only if what\u2019s unlocked widens.',
+      '<b>Pipeline (documented, not scheduled):</b> flavor \u00b7 second M5 tasting topic; sequence \u00b7 AeroPress, Clever and drip-packet recipes \u2014 these wait on lessons that teach them (a game has no module to gate on until its material exists in the course).',
+    ].map(r => el('li', { html: r }))));
+}
+
+// ── DAILY PRACTICE PAIR ────────────────────────────────────
+// The chip is the whole feature's UI. Three states, one line of copy each.
+function pairChipDemo() {
+  const states = [
+    [0, 'Nothing played yet', 'DAILY PRACTICE \u00b7 0 OF 2 FORMATS', 'Play both free formats today to earn a practice activity.', 'var(--ink-mute)'],
+    [1, 'One format done \u2014 the only state that names midnight', 'DAILY PRACTICE \u00b7 1 OF 2 FORMATS', 'One more format to earn today\u2019s practice \u00b7 resets at midnight', 'var(--accent)'],
+    [2, 'Pair earned', 'DAILY PRACTICE \u00b7 EARNED', 'Practice done for today \u00b7 1 more activity available', 'var(--sage)'],
+  ];
+  return '<div style="display:flex;flex-direction:column;gap:20px;">' + states.map(function (s) {
+    var pips = '';
+    for (var i = 0; i < 2; i++) {
+      pips += '<span style="width:20px;height:6px;border-radius:999px;border:1px solid ' +
+        (i < s[0] ? 'transparent' : 'var(--rule)') + ';background:' + (i < s[0] ? s[4] : 'var(--surface-2)') + ';"></span>';
+    }
+    return '<div>' +
+      '<div class="mono" style="font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:9px;">' + s[1] + '</div>' +
+      '<div style="display:flex;align-items:center;gap:10px;">' +
+        '<span class="mono" style="font-size:10.5px;font-weight:500;letter-spacing:0.14em;color:' + s[4] + ';">' + s[2] + '</span>' +
+        '<span style="display:flex;gap:4px;align-items:center;">' + pips + '</span>' +
+      '</div>' +
+      '<div style="font-size:12.5px;line-height:1.5;color:var(--ink-mute);margin-top:6px;text-wrap:pretty;">' + s[3] + '</div>' +
+    '</div>';
+  }).join('') + '</div>';
+}
+
+// The two places a non-counting run is announced. Both sit BEFORE the tap.
+function repeatNoticeDemo() {
+  return '<div style="display:flex;flex-direction:column;gap:22px;">' +
+    '<div>' +
+      '<div class="mono" style="font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:9px;">Practice Again row \u00b7 meta slot</div>' +
+      '<div style="display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px;max-width:320px;">' +
+        '<span><span class="mono" style="font-size:9.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-mute);display:block;">COFFEE BASICS</span>' +
+        '<span style="font-size:13px;font-weight:500;color:var(--ink);">True or false</span></span>' +
+        '<span class="mono" style="font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-mute);">DONE TODAY</span>' +
+      '</div>' +
+    '</div>' +
+    '<div>' +
+      '<div class="mono" style="font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:9px;">Game intro \u00b7 directly above Play</div>' +
+      '<div style="max-width:320px;">' +
+        '<div style="font-size:12.5px;line-height:1.5;color:var(--ink-mute);text-wrap:pretty;">Already played today \u2014 this round is practice only and won\u2019t count toward your daily activity.</div>' +
+        '<div style="margin-top:12px;height:44px;border-radius:12px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:13px;font-weight:500;">Play</div>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
 function renderGames() {
   const wrap = el('div', { class: 'comp-grid' });
 
   wrap.append(gameInventory());
+
+  wrap.append(accessInventory());
+
+  wrap.append(compRules('Daily practice pair',
+    'How a free user turns mini-games into one of their two daily activities. The chip is the whole feature \u2014 there is no separate screen.',
+    pairChipDemo(),
+    ['<b>Playing is never rationed.</b> Both free formats are unlimited, any time of day. The daily budget caps <b>credit</b>, not practice \u2014 opening a game never debits an activity.',
+     '<b>One of each is a pair.</b> Completing both free formats on the same local calendar day earns <b>one</b> standalone practice activity, and debits one of the free user\u2019s two dailies <b>at the moment the second format finishes</b>. Order does not matter.',
+     '<b>Twice through one format is not a pair</b> \u2014 it is the same exercise repeated, and it earns nothing. Announced before the round, never after: see <i>Repeat and ad rounds</i>.',
+     '<b>Nothing carries over.</b> Both halves must land on the same local day; the chip resets at local midnight. Midnight is named in the <b>1-of-2 state only</b> \u2014 at 0-of-2 there is nothing at risk and at earned it is already banked, so saying it in all three turns it into a disclaimer nobody reads.',
+     '<b>A round is never resumed.</b> Leaving mid-round discards it; the next open is a fresh round. That is what makes \u201ccompleted on the same day\u201d unambiguous \u2014 no round can straddle midnight.',
+     '<b>Completion is per format, and it is the round\u2019s own end state:</b> True or false = all six answered; Match = board cleared. Match qualifies for the pair even with a misdrop \u2014 only a <b>clean</b> board scores. A daily obligation must not hinge on a perfect run.',
+     'The pair is <b>practice</b>: like every mini-game it pays no lesson points and moves no progression.',
+     '<b>Any remaining count is counting activities, never formats.</b> In the earned state the pips are both full, so a bare \u201c1 left\u201d beside them reads as one format still to play \u2014 name the unit (\u201c1 more activity available\u201d) or leave the number out.']));
+
+  wrap.append(compRules('Repeat rounds',
+    'The round that does not count, and where the app says so. The notice sits before the tap that starts the round \u2014 announced in advance reads as generous, discovered afterwards reads as a trick.',
+    repeatNoticeDemo(),
+    ['A format already completed today shows <span class="mono">DONE TODAY</span> in its Practice Again <span class="mono">meta</span> slot, in place of the duration.',
+     'Its intro screen carries one line directly above <b>Play</b>. The round stays fully playable \u2014 this is a label, not a lock.',
+     '<b>Never move the notice to the results screen.</b>',
+     '<b>v2 \u00b7 ad-unlocked rounds.</b> No advertising ships in v1, so there is no ad path to label yet. When rewarded ads arrive: an ad-unlocked premium round is <b>practice only</b> and can never serve as half of a pair \u2014 if it could, every gated format would become a conditional free format, \u201ctwo fixed free formats\u201d would stop being true, and the upsell would argue against itself. Same line, same placement, shown <b>before</b> the ad rolls so nobody watches thirty seconds expecting credit.']));
 
   wrap.append(compRules('Card cue',
     'Above the question on every scored card \u2014 in a lesson and in a mini-game alike.',

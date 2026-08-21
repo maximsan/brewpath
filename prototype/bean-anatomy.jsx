@@ -1,7 +1,7 @@
 // bean-anatomy.jsx — the six layers of a coffee cherry, and the blind-bag
 // challenge that uses them.
 //
-//   1. CherrySection  — interactive cross-section reference (TRAINING.anatomy),
+//   1. CherrySection  — interactive cross-section reference (VISUAL_GUIDE_CONTENT.anatomy),
 //                       so it also lands in Cards / Saved like the other guides.
 //   2. GreenBean      — a green (unroasted) seed drawn from process cues:
 //                       body colour, centre-cut colour, mottling, chaff.
@@ -33,7 +33,7 @@ const CHERRY_LAYERS = [
     note: 'A tissue-thin membrane. Most of it flakes off in the roaster as chaff; the rest stays packed in the bean’s centre crease.' },
   { n: '06', name: 'Seed', latin: 'endosperm', fill: 'var(--art-cherry-seed)', r: 45,
     fate: 'This is your coffee',
-    note: 'The bean. Two per cherry, pressed flat face to flat face — which is why one side is domed and one is creased.' },
+    note: 'The bean. Two per cherry, pressed flat face to flat face — which is why one side is domed and one is creased. About one cherry in twenty sets only one seed, which grows round instead: a peaberry.' },
 ];
 
 // Cross-section of a cherry: concentric layers you can tap, with the layer list
