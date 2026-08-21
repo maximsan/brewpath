@@ -76,8 +76,6 @@ void main() {
         hapticsEnabled: false,
         soundEnabled: false,
         totalXp: 50,
-        streakDays: 3,
-        lastActivityDate: DateTime(2026, 8, 14),
         onboardingCompleted: true,
         onboardingGoal: 'brew_better',
         onboardingBrewer: 'v60',
@@ -130,15 +128,19 @@ void main() {
       expect(after.onboardingBrewer, 'v60');
     });
 
-    test('clears the progress fields still living on that row', () async {
+    test('leaves the settings row alone entirely', () async {
+      // There is nothing left on it for a reset to zero: the streak derives
+      // from the day set this wipe empties, and the points total from the
+      // completions it clears. What remains is what the learner chose, and the
+      // preference test above is what guards it.
+      final before = await settings.getSettings();
+
       await wipe.resetProgress();
 
       final after = await settings.getSettings();
-      // `totalXp` is not among them. The points total is derived from the
-      // completions this reset clears, so the column is dead weight waiting on
-      // the destructive rebuild (#79) rather than a field to zero.
-      expect(after.streakDays, 0);
-      expect(after.lastActivityDate, isNull);
+      expect(after.totalXp, before.totalXp);
+      expect(after.themeMode, before.themeMode);
+      expect(after.onboardingCompleted, before.onboardingCompleted);
     });
 
     test('clears the tables the snapshot has not replaced yet', () async {

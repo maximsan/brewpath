@@ -610,6 +610,14 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Removed
 
+- **The last two fields of the old streak engine are gone from the database.**
+  `streakDays` and `lastActivityDate` sat on the settings row long after the
+  streak moved onto the day set it derives from — read, written back and zeroed
+  by a reset, but never advanced by anything. Schema v7 drops both, and the
+  progress reset stops touching the settings row at all: everything it used to
+  clear there is now derived from what the reset already empties. What is left
+  on that row is what the learner *chose*, which a reset keeps.
+
 - **Practice mode.** A third way to finish a lesson that deliberately recorded
   nothing — no score, no points, no streak. It existed for the practice list
   and Keep Sharp's replay button, and both now open a real replay, so whether

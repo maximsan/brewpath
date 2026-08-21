@@ -46,8 +46,12 @@ class AccountWipe {
       resetTombstone(stored, at: _clock(), deviceId: deviceId),
     );
 
+    // The settings row is deliberately untouched. Everything a reset used to
+    // zero there is gone: the streak derives from the day set this wipe just
+    // emptied, and the points total derives from the completions it cleared.
+    // What is left on that row is what the learner *chose*, which a progress
+    // reset keeps.
     await _clearLegacyTables();
-    await _settings.resetProgress();
   }
 
   /// The same mechanism at full scope, plus the device-local table.

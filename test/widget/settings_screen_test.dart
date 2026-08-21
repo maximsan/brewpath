@@ -84,9 +84,7 @@ void main() {
     );
     await CardRepository().collectCard('card_a');
     final settings = await SettingsRepository().getSettings();
-    settings
-      ..streakDays = 3
-      ..hapticsEnabled = false;
+    settings.hapticsEnabled = false;
     await SettingsRepository().saveSettings(settings);
 
     await openSettings(tester);
@@ -99,7 +97,6 @@ void main() {
     expect(await ProgressRepository().getAllCompleted(), isEmpty);
     expect(await CardRepository().getAllCollectedCardIds(), isEmpty);
     final after = await SettingsRepository().getSettings();
-    expect(after.streakDays, 0);
     // Preferences are preserved.
     expect(after.hapticsEnabled, isFalse);
 

@@ -11,6 +11,7 @@ import '../generated/schema_v3.dart' show DatabaseAtV3;
 import '../generated/schema_v4.dart' show DatabaseAtV4;
 import '../generated/schema_v5.dart' show DatabaseAtV5;
 import '../generated/schema_v6.dart' show DatabaseAtV6;
+import '../generated/schema_v7.dart' show DatabaseAtV7;
 
 /// Drift schema-migration harness coverage.
 ///
@@ -206,11 +207,18 @@ void main() {
     // over graded cards. A legacy row therefore lands on {0, 0} and reads as
     // unscored — exactly the neutral empty node the design draws for a lesson
     // finished without a stored score, rather than a fabricated fill.
+    //
+    // Targeted at the *current* version rather than at 5. `openTestedDatabase`
+    // is the real `AppDatabase`, which always migrates as far as it goes, so a
+    // run validated against the v5 snapshot starts failing the moment a v6
+    // exists. The conversion under test is unchanged by the later steps, so
+    // asserting it after the full chain proves the same thing and keeps
+    // proving it. **A schema bump means retargeting this and the test below.**
     await verifier.testWithDataIntegrity(
       oldVersion: 4,
-      newVersion: 5,
+      newVersion: 7,
       createOld: DatabaseAtV4.new,
-      createNew: DatabaseAtV5.new,
+      createNew: DatabaseAtV7.new,
       openTestedDatabase: AppDatabase.new,
       createItems: (batch, oldDb) => batch.insert(
         oldDb.progressRecords,
@@ -256,44 +264,120 @@ void main() {
     await db.close();
   });
 
-  test('a v5 database upgrades to v6 keeping its rows', () async {
-    // Upgrading from the *currently shipped* version, not from a fresh
-    // database: developer devices sit on v5, and a migration only ever
-    // exercised on an empty database proves nothing about the one case that
-    // can lose data.
+  test(
+    'a v5 database upgrades to the current schema keeping its rows',
+    () async {
+      // Upgrading from a populated older database, not a fresh one: a migration
+      // only ever exercised on an empty database proves nothing about the one
+      // case that can lose data. Targeted at the current version for the reason
+      // given on the test above.
+      await verifier.testWithDataIntegrity(
+        oldVersion: 5,
+        newVersion: 7,
+        createOld: DatabaseAtV5.new,
+        createNew: DatabaseAtV7.new,
+        openTestedDatabase: AppDatabase.new,
+        createItems: (batch, oldDb) => batch.insert(
+          oldDb.progressRecords,
+          RawValuesInsertable<dynamic>({
+            'lesson_id': const Variable<String>('lesson_before_v6'),
+            'is_completed': const Variable<bool>(true),
+            'xp_earned': const Variable<int>(10),
+            'completed_at': Variable<DateTime>(DateTime(2026)),
+            'correct_count': const Variable<int>(4),
+            'graded_total': const Variable<int>(5),
+          }),
+        ),
+        validateItems: (newDb) async {
+          // The v6 step is additive, so the existing row is untouched…
+          final rows = await newDb
+              .customSelect(
+                'SELECT correct_count, graded_total FROM progress_records',
+              )
+              .get();
+          expect(rows, hasLength(1));
+          expect(rows.single.read<int>('correct_count'), 4);
+          expect(rows.single.read<int>('graded_total'), 5);
+
+          // …and the new table exists and is empty.
+          final snapshots = await newDb
+              .customSelect('SELECT COUNT(*) AS n FROM progress_snapshots')
+              .get();
+          expect(snapshots.single.read<int>('n'), 0);
+        },
+      );
+    },
+  );
+
+  test('schema v7 database has dropped the dead streak columns', () async {
+    final connection = await verifier.startAt(7);
+    final db = DatabaseAtV7(connection);
+    await db.customSelect('SELECT 1').get();
+
+    expect(db.schemaVersion, 7);
+
+    final columns = await db
+        .customSelect('PRAGMA table_info(user_settings)')
+        .get();
+    final names = columns.map((r) => r.read<String>('name')).toSet();
+    expect(names, isNot(contains('streak_days')));
+    expect(names, isNot(contains('last_activity_date')));
+    // The row still holds what the learner chose.
+    expect(
+      names,
+      containsAll(<String>['theme_mode', 'haptics_enabled', 'total_xp']),
+    );
+
+    await db.close();
+  });
+
+  test('a v6 database upgrades to v7 keeping what the learner chose', () async {
+    // The one case that can lose data. Dropping a column means recreating the
+    // table, and a recreate that copied the wrong set would silently reset a
+    // learner's appearance and onboarding answers — which survive a reset by
+    // design, so nothing else would catch it.
     await verifier.testWithDataIntegrity(
-      oldVersion: 5,
-      newVersion: 6,
-      createOld: DatabaseAtV5.new,
-      createNew: DatabaseAtV6.new,
+      oldVersion: 6,
+      newVersion: 7,
+      createOld: DatabaseAtV6.new,
+      createNew: DatabaseAtV7.new,
       openTestedDatabase: AppDatabase.new,
       createItems: (batch, oldDb) => batch.insert(
-        oldDb.progressRecords,
-        RawValuesInsertable<dynamic>({
-          'lesson_id': const Variable<String>('lesson_before_v6'),
-          'is_completed': const Variable<bool>(true),
-          'xp_earned': const Variable<int>(10),
-          'completed_at': Variable<DateTime>(DateTime(2026)),
-          'correct_count': const Variable<int>(4),
-          'graded_total': const Variable<int>(5),
+        oldDb.userSettings,
+        const RawValuesInsertable<dynamic>({
+          'id': Variable<int>(1),
+          'haptics_enabled': Variable<bool>(false),
+          'sound_enabled': Variable<bool>(false),
+          'total_xp': Variable<int>(120),
+          // The two being dropped, carrying the values a real device holds:
+          // zero and null, because nothing has advanced them since the streak
+          // moved onto the day set.
+          'streak_days': Variable<int>(0),
+          'last_activity_date': Variable<DateTime>(null),
+          'onboarding_completed': Variable<bool>(true),
+          'onboarding_goal': Variable<String>('brew_better'),
+          'onboarding_brewer': Variable<String>('v60'),
+          'theme_mode': Variable<String>('light'),
         }),
       ),
       validateItems: (newDb) async {
-        // The v6 step is additive, so the existing row is untouched…
         final rows = await newDb
             .customSelect(
-              'SELECT correct_count, graded_total FROM progress_records',
+              'SELECT total_xp, haptics_enabled, sound_enabled, '
+              'onboarding_completed, onboarding_goal, onboarding_brewer, '
+              'theme_mode FROM user_settings',
             )
             .get();
-        expect(rows, hasLength(1));
-        expect(rows.single.read<int>('correct_count'), 4);
-        expect(rows.single.read<int>('graded_total'), 5);
 
-        // …and the new table exists and is empty.
-        final snapshots = await newDb
-            .customSelect('SELECT COUNT(*) AS n FROM progress_snapshots')
-            .get();
-        expect(snapshots.single.read<int>('n'), 0);
+        expect(rows, hasLength(1));
+        final row = rows.single;
+        expect(row.read<String>('theme_mode'), 'light');
+        expect(row.read<String>('onboarding_goal'), 'brew_better');
+        expect(row.read<String>('onboarding_brewer'), 'v60');
+        expect(row.read<bool>('onboarding_completed'), true);
+        expect(row.read<bool>('haptics_enabled'), false);
+        expect(row.read<bool>('sound_enabled'), false);
+        expect(row.read<int>('total_xp'), 120);
       },
     );
   });

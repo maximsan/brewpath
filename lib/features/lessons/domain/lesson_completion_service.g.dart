@@ -59,4 +59,4 @@ final class LessonCompletionServiceProvider
 }
 
 String _$lessonCompletionServiceHash() =>
-    r'22452013f72ad6ec4f0353d2994d90c0452f0e29';
+    r'1436d933ae44cefc504822224587a91968189281';
