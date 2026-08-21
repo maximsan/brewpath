@@ -16,10 +16,11 @@ part 'content_repository.g.dart';
 /// Loads Foundations — modules, lessons and collectibles — from the generated
 /// banks the extractor writes out of the design.
 ///
-/// Two joins live here and nowhere else: a lesson's owning **module**, and the
-/// **card** a lesson awards. Both are reverse lookups the banks do not store
-/// directly, and both would otherwise be open-coded at every call site with a
-/// slightly different answer.
+/// Three joins live here and nowhere else: a lesson's owning **module**, the
+/// **card** a lesson awards, and the **Field Guide card** a module awards. All
+/// three are reverse lookups the banks do not store directly, and all three
+/// would otherwise be open-coded at every call site with a slightly different
+/// answer.
 class ContentRepository {
   List<ModuleModel>? _modules;
   List<LessonModel>? _lessons;
@@ -72,6 +73,21 @@ class ContentRepository {
   Future<CoffeeCardModel?> getCardForLesson(String lessonId) async {
     final cards = await getCards();
     return cards.where((card) => card.lessonId == lessonId).firstOrNull;
+  }
+
+  /// The Field Guide card [moduleId] awards, or null when no collectible names
+  /// it.
+  ///
+  /// Matched on the collectible's **own** module pointer, not on the module a
+  /// card's lesson happens to belong to — every one of the thirty-two lesson
+  /// cards also carries an owning module, so a match on that would hand back a
+  /// lesson card for whichever lesson sorted first. A card awarded by a module
+  /// is the one with no lesson behind it.
+  Future<CoffeeCardModel?> getCardForModule(String moduleId) async {
+    final cards = await getCards();
+    return cards
+        .where((card) => card.lessonId == null && card.moduleId == moduleId)
+        .firstOrNull;
   }
 
   /// Loads and caches the twelve Coffee Challenges, in bank order.

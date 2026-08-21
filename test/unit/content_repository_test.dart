@@ -121,6 +121,25 @@ void main() {
       }
     });
 
+    test('award exactly one Field Guide card to every module', () async {
+      final modules = await repo.getModules();
+      for (final module in modules) {
+        expect(
+          await repo.getCardForModule(module.id),
+          isNotNull,
+          reason: '${module.id} awards no card',
+        );
+      }
+    });
+
+    test('name the module, not a lesson, on a Field Guide card', () async {
+      final card = await repo.getCardForModule('m1');
+
+      expect(card, isNotNull);
+      expect(card!.moduleId, 'm1');
+      expect(card.lessonId, isNull);
+    });
+
     test('have no duplicate ids', () async {
       final cards = await repo.getCards();
       final ids = cards.map((c) => c.id).toList();
