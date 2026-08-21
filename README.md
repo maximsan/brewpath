@@ -116,15 +116,23 @@ Break-glass only — forces a full re-download (minutes).
 ### `tool/extract_content.js` — regenerate bundled content
 
 Node script (no dependencies). Run after the design prototype's (`prototype/`)
-authored content changes. Reads five banks — modules, lessons, collectibles, dictionary
-terms and brew challenges — validates the whole cross-reference graph, and only
-then writes `assets/content/generated/`.
+authored content changes. Writes ten banks — modules, lessons, collectibles,
+dictionary terms, Coffee Challenges, mini games, card-kind help, mini-game
+content, grove varieties and grove lights — validating the whole
+cross-reference graph first, and only then writing `assets/content/generated/`.
 
 Validating and refusing to write is the point: on any violation it names the
 offending card and the broken reference, writes **nothing**, and exits non-zero,
 so a run can never leave a stale mixture of old and new files behind. Its output
 is generated — regenerate it, never hand-edit it. `prototype/` is opened for
 reading only.
+
+Every bank carries a `schemaVersion`, and the app refuses one it was not built
+to read. Before changing what the extractor emits, read _Bumping the schema
+version_ in the script's header — a rename or a change of meaning is breaking
+even when the shape is unchanged, and the number has to move on both the
+JavaScript and the Dart side. Why the prototype authors content at all, and what
+would end that, is [ADR-0005](docs/adr/0005-the-prototype-authors-v1-and-the-extracted-json-is-the-contract.md).
 
 ```bash
 node tool/extract_content.js                          # the usual run

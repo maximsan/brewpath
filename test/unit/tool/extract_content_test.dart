@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:brew_path/shared/repositories/bank_envelope.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 
@@ -55,13 +56,14 @@ const _helpKindCount = 10;
 const _varietyCount = 3;
 const _lightCount = 4;
 
+/// A written bank's whole envelope, decoded.
+Map<String, dynamic> _envelope(String out, String bank) =>
+    jsonDecode(File(p.join(out, bank)).readAsStringSync())
+        as Map<String, dynamic>;
+
 /// The `items` list of a written bank, decoded.
-List<Map<String, dynamic>> _items(String out, String bank) {
-  final payload =
-      jsonDecode(File(p.join(out, bank)).readAsStringSync())
-          as Map<String, dynamic>;
-  return (payload['items'] as List).cast<Map<String, dynamic>>();
-}
+List<Map<String, dynamic>> _items(String out, String bank) =>
+    (_envelope(out, bank)['items'] as List).cast<Map<String, dynamic>>();
 
 ProcessResult _run(String source, String out) => Process.runSync('node', [
   _script,
@@ -137,6 +139,40 @@ void main() {
         File(p.join(out, bank)).readAsStringSync(),
         File(p.join(_committed, bank)).readAsStringSync(),
         reason: '$bank is stale — rerun `node $_script`',
+      );
+    }
+  });
+
+  test('every written bank is stamped with the schema version', () {
+    final out = dir('out');
+
+    expect(_run(_prototype, out).exitCode, 0);
+
+    for (final bank in _expectedBanks) {
+      expect(
+        _envelope(out, bank)['schemaVersion'],
+        contentSchemaVersion,
+        reason: '$bank went out unstamped',
+      );
+    }
+  });
+
+  // The version is written in JavaScript and read in Dart, which cannot share a
+  // constant, so bumping one side alone has to fail here rather than on a
+  // learner's device.
+  //
+  // Strictly this is implied by the two tests above — byte-identical committed
+  // output, and a fresh run stamped with the Dart constant. It is kept for what
+  // it buys on failure: it needs no `node`, and it names the disagreement
+  // instead of reporting a diff in a 233KB file.
+  test('the committed banks carry the version this build reads', () {
+    for (final bank in _expectedBanks) {
+      expect(
+        _envelope(_committed, bank)['schemaVersion'],
+        contentSchemaVersion,
+        reason:
+            '$bank disagrees with contentSchemaVersion — bump SCHEMA_VERSION '
+            'in $_script and rerun it, or bump the Dart constant to match',
       );
     }
   });
