@@ -14,8 +14,11 @@ import '../../../support/content_fixtures.dart';
 
 final ModuleModel _module = testModule(lessonIds: const ['m1l1']);
 final CoffeeCardModel _card = testCoffeeCard(title: 'First Card');
-final CoffeeCardModel _fieldGuide = testCoffeeCard(
-  id: 'fg1',
+// The title is the one the bundled bank actually ships. A card's name is
+// authored content and stays as authored; Module Reward is the category,
+// not the title (CONTEXT.md).
+final CoffeeCardModel _moduleReward = testCoffeeCard(
+  id: 'cM1',
   title: 'Beans Field Guide',
   lessonId: null,
   moduleId: 'm1',
@@ -24,7 +27,7 @@ final CoffeeCardModel _fieldGuide = testCoffeeCard(
 final _summary = ModuleSummary(
   module: _module,
   earnedCards: [_card],
-  fieldGuide: _fieldGuide,
+  moduleReward: _moduleReward,
 );
 
 Widget _app(Widget home) => MaterialApp(
@@ -49,7 +52,7 @@ void main() {
     child: _app(const ModuleSummaryScreen(moduleId: 'module_beans')),
   );
 
-  testWidgets('renders the companion, Field Guide and earned cards', (
+  testWidgets('renders the companion, Module Reward and earned cards', (
     tester,
   ) async {
     await tester.pumpWidget(harness(_summary));
@@ -59,7 +62,7 @@ void main() {
     expect(find.text('Beans'), findsOneWidget);
     expect(find.byType(Companion), findsOneWidget);
     expect(find.text('Beans Field Guide'), findsOneWidget);
-    expect(find.text('Field Guide unlocked'), findsOneWidget);
+    expect(find.text('Reward unlocked'), findsOneWidget);
     // The earned card surfaces as a badge with its title as the semantic label.
     expect(find.bySemanticsLabel('First Card'), findsOneWidget);
   });
@@ -76,7 +79,7 @@ void main() {
     expect(find.textContaining('XP'), findsNothing);
   });
 
-  testWidgets('omits the Field Guide when it has not been collected', (
+  testWidgets('omits the Module Reward when it has not been collected', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -84,7 +87,7 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('Field Guide unlocked'), findsNothing);
+    expect(find.text('Reward unlocked'), findsNothing);
     expect(find.text('Module complete!'), findsOneWidget);
   });
 }

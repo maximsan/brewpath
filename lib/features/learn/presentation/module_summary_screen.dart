@@ -13,7 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 /// Celebratory recap shown after a module's final lesson: the companion plays
-/// its module-complete moment, with the module's Field Guide card and the
+/// its module-complete moment, with the module's Module Reward card and the
 /// lesson cards earned along the way.
 class ModuleSummaryScreen extends ConsumerStatefulWidget {
   /// Creates a [ModuleSummaryScreen].
@@ -75,10 +75,10 @@ class _ModuleSummaryScreenState extends ConsumerState<ModuleSummaryScreen> {
               ),
             ),
             // No points line. The module pays nothing (§5.1, #16); the reward
-            // this moment always had is the Field Guide card below.
-            if (summary.fieldGuide != null) ...[
+            // this moment always had is the Module Reward card below.
+            if (summary.moduleReward != null) ...[
               const SizedBox(height: AppSpacing.lg),
-              _FieldGuideReward(card: summary.fieldGuide!),
+              _ModuleRewardCard(card: summary.moduleReward!),
             ],
             if (summary.earnedCards.isNotEmpty) ...[
               const SizedBox(height: AppSpacing.lg),
@@ -97,8 +97,8 @@ class _ModuleSummaryScreenState extends ConsumerState<ModuleSummaryScreen> {
 }
 
 /// The module's own reward, given its own billing above the lesson cards.
-class _FieldGuideReward extends StatelessWidget {
-  const _FieldGuideReward({required this.card});
+class _ModuleRewardCard extends StatelessWidget {
+  const _ModuleRewardCard({required this.card});
 
   static const double _badgeSize = 72;
 
@@ -126,7 +126,14 @@ class _FieldGuideReward extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.xxs),
         Text(
-          'Field Guide unlocked',
+          // Borrowed from the design's card-unlock beat, where
+          // `ModuleRewardCardScreen` pairs the eyebrow REWARD UNLOCKED with
+          // "You earned a card." The app has no dedicated reward screen, so
+          // the words land as a caption on the recap rather than as that
+          // eyebrow — the same phrase in a different slot, not the same
+          // element. What it is *not* is the glossary term: "Module Reward"
+          // names the thing, and was never the sentence shown over it.
+          'Reward unlocked',
           textAlign: TextAlign.center,
           style: theme.textTheme.bodySmall?.copyWith(color: mood.inkMute),
         ),

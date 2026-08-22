@@ -12,8 +12,11 @@ import '../../../support/widget_harness.dart';
 
 final ModuleModel _module = testModule();
 final CoffeeCardModel _card = testCoffeeCard();
-final CoffeeCardModel _fieldGuide = testCoffeeCard(
-  id: 'fg1',
+// The title is the one the bundled bank actually ships. A card's name is
+// authored content and stays as authored; Module Reward is the category,
+// not the title (CONTEXT.md).
+final CoffeeCardModel _moduleReward = testCoffeeCard(
+  id: 'cM1',
   title: 'Beans Field Guide',
   lessonId: null,
   moduleId: 'm1',
@@ -24,7 +27,7 @@ class _FakeContent extends ContentRepository {
   Future<List<ModuleModel>> getModules() async => [_module];
 
   @override
-  Future<List<CoffeeCardModel>> getCards() async => [_card, _fieldGuide];
+  Future<List<CoffeeCardModel>> getCards() async => [_card, _moduleReward];
 
   @override
   Future<List<LessonModel>> getLessons() async => [
@@ -57,20 +60,20 @@ void main() {
     expect(summary.earnedCards.map((c) => c.id), [_card.id]);
   });
 
-  test('carries the Field Guide card once it has been collected', () async {
+  test('carries the Module Reward card once it has been collected', () async {
     final container = harness();
-    await container.read(cardRepositoryProvider).collectCard(_fieldGuide.id);
+    await container.read(cardRepositoryProvider).collectCard(_moduleReward.id);
 
     final summary = await container.read(moduleSummaryProvider('m1').future);
 
-    expect(summary.fieldGuide?.id, _fieldGuide.id);
+    expect(summary.moduleReward?.id, _moduleReward.id);
     // It is the module's own reward, not one of the lesson cards.
     expect(summary.earnedCards, isEmpty);
   });
 
-  test('carries no Field Guide card before it is collected', () async {
+  test('carries no Module Reward card before it is collected', () async {
     final summary = await harness().read(moduleSummaryProvider('m1').future);
 
-    expect(summary.fieldGuide, isNull);
+    expect(summary.moduleReward, isNull);
   });
 }

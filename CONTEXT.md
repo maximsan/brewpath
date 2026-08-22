@@ -29,7 +29,10 @@ one per lesson, one per module. No rarity, no duplicates.
 One of the five collectible cards awarded for completing a whole module
 (Beans · Processing · Roasting · Grind · Brew). Part of the thirty-seven, and
 shown in the Cards grid.
-_Avoid_: Field Guide (renamed; the code already said `MODULE_REWARDS`)
+_Avoid_: Field Guide **as the name for the category** (renamed; the code
+already said `MODULE_REWARDS`). The five cards keep their authored titles —
+*Beans Field Guide* and its siblings — the way a book keeps its name: those
+are what the cards are *called*, not what they *are*.
 
 **Visual guide**:
 One of the eight illustrated references the course teaches — roast, grind,

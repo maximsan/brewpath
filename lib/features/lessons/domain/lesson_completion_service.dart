@@ -20,7 +20,7 @@ part 'lesson_completion_service.g.dart';
 
 /// Orchestrates everything that happens when a lesson finishes: persist
 /// progress, award points, unlock the lesson's card, mark the day, and hand
-/// over the module's Field Guide card once every lesson in it is done.
+/// over the module's Module Reward card once every lesson in it is done.
 ///
 /// **Two payouts exist and neither is here by the run's choice** (§5.1, #16):
 /// a lesson's first completion pays the flat ten it authors, and nothing a
@@ -30,7 +30,7 @@ part 'lesson_completion_service.g.dart';
 /// **Not idempotent, and must not be.** Replaying a finished lesson records
 /// the day again and moves mastery upward — a replay is a real activity (§3),
 /// not a no-op. What *is* done at most once is the lesson's own reward: the
-/// points, its card, and the Field Guide card the module hands over.
+/// points, its card, and the Module Reward card the module hands over.
 class LessonCompletionService {
   /// Creates a [LessonCompletionService].
   const LessonCompletionService({
@@ -124,7 +124,7 @@ class LessonCompletionService {
     await _growTree();
 
     final module = await _maybeCompletedModule(lesson);
-    final moduleCard = module == null ? null : await _awardFieldGuide(module);
+    final moduleCard = module == null ? null : await _awardModuleReward(module);
 
     await analyticsService.logEvent(
       'lesson_completed',
@@ -211,8 +211,8 @@ class LessonCompletionService {
     return module.lessonIds.every(completedIds.contains) ? module : null;
   }
 
-  /// Hands over [module]'s Field Guide card and reports the module after it as
-  /// unlocked. Returns the card, or null when the bank names none.
+  /// Hands over [module]'s Module Reward card and reports the module after
+  /// it as unlocked. Returns the card, or null when the bank names none.
   ///
   /// **This is the module moment's whole reward.** It used to bank a bonus of
   /// twenty-five, guarded by a persisted per-module ledger so it could only pay
@@ -223,7 +223,7 @@ class LessonCompletionService {
   /// **No ledger guards it, because the card is its own ledger.** Collecting a
   /// card already held is a no-op, where paying a bonus twice was not, so the
   /// idempotence the old ledger bought is now a property of the thing awarded.
-  Future<CoffeeCardModel?> _awardFieldGuide(ModuleModel module) async {
+  Future<CoffeeCardModel?> _awardModuleReward(ModuleModel module) async {
     final card = await contentRepository.getCardForModule(module.id);
     await _collect(card, source: {'module_id': module.id});
 

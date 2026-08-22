@@ -146,6 +146,23 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **The module collectible is a Module Reward, not a Field Guide.** The
+  glossary settled the name when the visual-guides ruling landed, days after
+  the module moment shipped under the older one — so the recap read
+  "Field Guide unlocked" for a card the design calls a Module Reward.
+
+  It now reads **"Reward unlocked"** — the words the design uses when a card
+  is unlocked, borrowed into the recap's caption because the app has no
+  dedicated reward screen to put them on as an eyebrow. What they are not is
+  the glossary term: "Module Reward" names the thing, and was never the
+  sentence shown over it.
+
+  **The five cards keep their titles.** "Beans Field Guide" and its siblings
+  are what those cards are *called*; Module Reward is what they *are*. The
+  glossary now says so, so the next sweep does not reopen it. The collectible
+  `kind` values stay `fieldGuide*` for a different reason: they are the
+  read-only design source's wire vocabulary, not copy.
+
 - **Points pay flat ten, once — and nothing else pays.** The whole system is
   now two rules: ten for a lesson's first completion, five for a Coffee
   Challenge's. Replays, perfect runs, module completion, practice and

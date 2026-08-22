@@ -39,14 +39,14 @@ class LessonFinishResult {
   ///
   /// **Its own fact, never inferred from a reward.** It used to read
   /// `moduleBonusXp > 0`, and replacing that with `moduleCard != null` would
-  /// only swap one payout proxy for another: a module whose Field Guide card
+  /// only swap one payout proxy for another: a module whose Module Reward card
   /// went missing from the bank would silently stop routing to its recap, and
   /// the screen would report the module unfinished because a *content* lookup
   /// came back empty. Completing a module and being handed a card for it are
   /// two different things, so they are two fields.
   final bool moduleCompleted;
 
-  /// The Field Guide card handed over because this run closed its module, or
+  /// The Module Reward card handed over because this run closed its module, or
   /// null when it did not — or when the module awards none.
   ///
   /// **The module's whole reward.** Module completion used to bank a bonus and
