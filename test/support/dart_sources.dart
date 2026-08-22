@@ -1,7 +1,7 @@
 /// Reading the app's own source as test input.
 ///
-/// Two guards scan it for strings the product rules forbid — the points
-/// vocabulary sweep and the companion's no-payout rule — and both need the same
+/// Two guards scan it for strings the product rules forbid — the glossary's
+/// ruled-out terms and the companion's no-payout rule — and both need the same
 /// two things: which files count as hand-written source, and what the string
 /// literals in one are. Kept here because the second copy is what shows which
 /// parts are shared.

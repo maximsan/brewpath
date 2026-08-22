@@ -37,9 +37,11 @@ final CoffeeCardModel _testCard = testCoffeeCard();
 
 /// The module's own collectible — what the module moment hands over now that
 /// it pays no bonus (§5.1, #16).
+// The title is the one the bundled bank actually ships. The card's *words*
+// are authored content, which this rename does not reach — see #228.
 final CoffeeCardModel _testModuleReward = testCoffeeCard(
-  id: 'fg1',
-  title: 'Beans Module Reward',
+  id: 'cM1',
+  title: 'Beans Field Guide',
   lessonId: null,
   moduleId: 'm1',
 );
@@ -207,9 +209,8 @@ void main() {
 
   // Finishing the last lesson of a module pays the lesson's flat ten and
   // nothing more. What the module gives is its Module Reward card, so the
-  // screen
-  // must show one number and one extra card — never a second number.
-  testWidgets('completion screen shows the module Module Reward, not a bonus', (
+  // screen must show one number and one extra card — never a second number.
+  testWidgets('completion screen shows the Module Reward card, not a bonus', (
     tester,
   ) async {
     final container = _buildContainer();
@@ -262,7 +263,7 @@ void main() {
     expect(find.text('Module complete!'), findsOneWidget);
     expect(find.textContaining('+25'), findsNothing);
     // The module's reward is the card.
-    expect(find.text('Beans Module Reward'), findsOneWidget);
+    expect(find.text('Beans Field Guide'), findsOneWidget);
   });
 
   // The first-completion path shows the celebratory companion in place of the

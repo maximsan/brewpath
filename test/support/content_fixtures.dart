@@ -37,7 +37,7 @@ ModuleModel testModule({
     for (final lessonId in lessonIds)
       ModuleLesson(id: lessonId, title: lessonId, points: 10, time: 3),
   ],
-  reward: testReward(title: '$title Module Reward'),
+  reward: testReward(title: '$title Field Guide'),
 );
 
 /// A lesson carrying [cards], defaulting to one ungraded and one graded.

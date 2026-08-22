@@ -44,18 +44,6 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
-- **The module collectible is a Module Reward, not a Field Guide.** The
-  glossary settled the name when the visual-guides ruling landed, days after
-  the module moment shipped under the older one — so the recap read
-  "Field Guide unlocked" for a card the design calls a Module Reward.
-
-  It now reads **"Reward unlocked"**, which is the design's own eyebrow for
-  that moment. The glossary term names the thing; it was never the sentence
-  shown over it.
-
-  The collectible `kind` values in the content banks still read `fieldGuide*`.
-  That is the prototype's wire vocabulary, and the prototype is read-only.
-
 - **The practice catalog nearly doubles — 7 mini-games become 13.** Six new
   games join the seven that shipped, each pairing an existing mechanic with a
   course topic it suits: a second match on washed versus natural, a quiz on
@@ -157,6 +145,21 @@ You can always edit this file by hand instead — the helpers just save effort.
   nobody notices until a learner opens a tab and finds it bare.
 
 ### Changed
+
+- **The module collectible is a Module Reward, not a Field Guide.** The
+  glossary settled the name when the visual-guides ruling landed, days after
+  the module moment shipped under the older one — so the recap read
+  "Field Guide unlocked" for a card the design calls a Module Reward.
+
+  It now reads **"Reward unlocked"**, which is the design's own eyebrow for
+  that moment. The glossary term names the thing; it was never the sentence
+  shown over it.
+
+  **The five card titles still say it.** "Beans Field Guide" and its four
+  siblings are authored in the read-only design source, so the recap reads
+  "Beans Field Guide" above "Reward unlocked" until that source changes —
+  tracked separately. The collectible `kind` values stay `fieldGuide*` for the
+  same reason: wire vocabulary, not copy.
 
 - **Points pay flat ten, once — and nothing else pays.** The whole system is
   now two rules: ten for a lesson's first completion, five for a Coffee

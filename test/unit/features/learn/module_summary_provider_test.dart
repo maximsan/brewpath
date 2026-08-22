@@ -12,9 +12,11 @@ import '../../../support/widget_harness.dart';
 
 final ModuleModel _module = testModule();
 final CoffeeCardModel _card = testCoffeeCard();
+// The title is the one the bundled bank actually ships. The card's *words*
+// are authored content, which this rename does not reach — see #228.
 final CoffeeCardModel _moduleReward = testCoffeeCard(
-  id: 'fg1',
-  title: 'Beans Module Reward',
+  id: 'cM1',
+  title: 'Beans Field Guide',
   lessonId: null,
   moduleId: 'm1',
 );

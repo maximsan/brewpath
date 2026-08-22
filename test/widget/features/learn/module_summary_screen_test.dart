@@ -14,9 +14,11 @@ import '../../../support/content_fixtures.dart';
 
 final ModuleModel _module = testModule(lessonIds: const ['m1l1']);
 final CoffeeCardModel _card = testCoffeeCard(title: 'First Card');
+// The title is the one the bundled bank actually ships. The card's *words*
+// are authored content, which this rename does not reach — see #228.
 final CoffeeCardModel _moduleReward = testCoffeeCard(
-  id: 'fg1',
-  title: 'Beans Module Reward',
+  id: 'cM1',
+  title: 'Beans Field Guide',
   lessonId: null,
   moduleId: 'm1',
 );
@@ -58,7 +60,7 @@ void main() {
     expect(find.text('Module complete!'), findsOneWidget);
     expect(find.text('Beans'), findsOneWidget);
     expect(find.byType(Companion), findsOneWidget);
-    expect(find.text('Beans Module Reward'), findsOneWidget);
+    expect(find.text('Beans Field Guide'), findsOneWidget);
     expect(find.text('Reward unlocked'), findsOneWidget);
     // The earned card surfaces as a badge with its title as the semantic label.
     expect(find.bySemanticsLabel('First Card'), findsOneWidget);
