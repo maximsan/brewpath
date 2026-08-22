@@ -49,6 +49,7 @@ dependencies:
   # Welcome-screen hero Variant B (seed-to-tree video). Removed at Step 11 if
   # this variant is not chosen.
   video_player: ^2.9.1
+  showcaseview: ^5.1.0
 
 dev_dependencies:
   flutter_test:

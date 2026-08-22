@@ -44,6 +44,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The Tour.** A first launch that reaches the Learn tab now asks "Quick tour?"
+  — four spotlight stops, auto-scrolled in order: the Today card and the daily
+  loop, the practice area (replays and mini-games, as one idea), the finite
+  module list, and the bottom tab bar. Each stop explains a *mechanic* rather
+  than naming a widget, and the Tour says nothing about Plus or locks. Answering
+  the intro either way writes `tourSeen`, so the offer is made once and
+  abandoning the Tour halfway never re-arms it. Scrim and tooltip come from the
+  app's tokens in both moods, and reduced motion turns the spotlight's movement,
+  its scale-in and the auto-scroll into cuts.
 - **The Tour has somewhere to remember itself.** A `tourSeen` bit on the
   settings row (schema v8), written once when the learner answers the Tour's
   intro and read to decide whether the Tour auto-runs at all. It fate-shares
