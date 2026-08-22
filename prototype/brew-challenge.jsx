@@ -217,7 +217,18 @@ window.BrewActions = BrewActions;
 // mode: 'active'  → live task with Log Result / Skip
 //       'completed' → brief confirmation with the earned stamp + dismiss
 // ───────────────────────────────────────────────────────────
-function ActiveBrewCard({ challenge, mode, onLog, onSkip, onDismiss, onOpenCard, autoHide = true, showPoints = true }) {
+// Postpone glyph — a clock, deliberately NOT the bookmark: the bookmark is the
+// app-wide Favorites toggle and lands elsewhere. "Later" is temporal.
+function LaterClock({ size = 18, color = 'currentColor' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <circle cx="10" cy="10" r="7.25" stroke={color} strokeWidth="1.5"/>
+      <path d="M10 6.2V10l3 2" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+function ActiveBrewCard({ challenge, mode, onLog, onSkip, onDismiss, onOpenCard, autoHide = true, showPoints = true, lessonPending = false }) {
   // Completed is a transient confirmation, not a pinned card: it lingers a few
   // seconds, fades, and clears itself. The lasting record is the Path node +
   // card stamp. The ✕ remains for immediate dismissal.
@@ -232,6 +243,14 @@ function ActiveBrewCard({ challenge, mode, onLog, onSkip, onDismiss, onOpenCard,
   if (!challenge) return null;
   const accentTint = 'color-mix(in oklab, var(--accent) 8%, var(--surface))';
   const accentRule = 'color-mix(in oklab, var(--accent) 30%, var(--rule))';
+  // Small mono metadata sits on a tinted card at 11px — pull it toward --ink so it
+  // clears 4.5:1 in both moods rather than resting at the muted default.
+  const metaInk = 'color-mix(in oklab, var(--ink-mute) 62%, var(--ink))';
+  // Postpone: slide the card away immediately (no confirm ceremony), then hand
+  // off to onSkip which parks it under For Later.
+  const [parking, setParking] = React.useState(false);
+  React.useEffect(() => { setParking(false); }, [challenge && challenge.id]);
+  const onPostpone = () => { if (parking) return; setParking(true); setTimeout(() => { onSkip && onSkip(); setParking(false); }, 240); };
 
   if (mode === 'completed') {
     const card = challenge.cardId && window.findCard && window.findCard(challenge.cardId);
@@ -243,8 +262,9 @@ function ActiveBrewCard({ challenge, mode, onLog, onSkip, onDismiss, onOpenCard,
           opacity: leaving ? 0 : 1, transition: 'opacity 0.7s ease',
         }}>
           <button onClick={onDismiss} aria-label="Dismiss" style={{
-            position: 'absolute', top: 12, right: 12, appearance: 'none', border: 'none',
-            background: 'transparent', cursor: 'pointer', color: 'var(--ink-mute)', padding: 4,
+            position: 'absolute', top: 0, right: 0, appearance: 'none', border: 'none',
+            background: 'transparent', cursor: 'pointer', color: 'var(--ink-mute)',
+            width: 44, height: 44, display: 'grid', placeItems: 'center', padding: 0,
           }}>
             <svg width="15" height="15" viewBox="0 0 15 15"><path d="M3 3l9 9M12 3l-9 9" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg>
           </button>
@@ -280,34 +300,43 @@ function ActiveBrewCard({ challenge, mode, onLog, onSkip, onDismiss, onOpenCard,
   // mode === 'active'
   return (
     <div className="px-24" style={{ paddingTop: 28 }}>
-      <div className="smallcaps" style={{ marginBottom: 28, color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: 8 }}>
-        <BrewCup size={15} color="var(--accent)"/> COFFEE CHALLENGE
+      <div className="smallcaps" style={{ marginBottom: 28, color: 'var(--accent-text)', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <BrewCup size={15} color="var(--accent)" aria-hidden="true"/> OPTIONAL COFFEE CHALLENGE
       </div>
-      <div className="card" style={{ background: accentTint, borderColor: accentRule, position: 'relative' }}>
-        <button onClick={onSkip} aria-label="Save for later" style={{
-          position: 'absolute', top: 14, right: 14, appearance: 'none', border: 'none',
-          background: 'transparent', cursor: 'pointer', color: 'var(--ink-mute)', padding: 4, lineHeight: 0,
-        }}>
-          <svg width="16" height="16" viewBox="0 0 15 15"><path d="M3 3l9 9M12 3l-9 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-        </button>
-        <h2 className="ff-display" style={{ fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.1, letterSpacing: '-0.01em', margin: 0, paddingRight: 28, color: 'var(--ink)' }}>{challenge.title}</h2>
-        <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: '10px 0 0', textWrap: 'pretty' }}>{challenge.instruction}</p>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, marginTop: 20 }}>
-          {(() => {
-            const segs = challenge.effort.split('·').map(s => s.trim());
-            const timeSeg = segs.find(s => /min/i.test(s));
-            const trigger = segs.find(s => !/min/i.test(s));
-            return (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {trigger && <div className="ff-mono" style={{ fontSize: 'var(--t-label)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--ink-mute)' }}>{trigger}</div>}
-                {timeSeg && (
-                  <div className="ff-mono" style={{ fontSize: 'var(--t-label)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--ink-mute)' }}>~{timeSeg}</div>
-                )}
-              </div>
-            );
-          })()}
-          <button className="btn btn-primary" onClick={onLog} style={{ flexShrink: 0, width: 'auto', minWidth: 132, padding: '12px 22px', fontSize: 'var(--t-support)' }}>Log Result</button>
+      <div className="card" role="group" aria-label={'Optional coffee challenge: ' + challenge.title} style={{ background: accentTint, borderColor: accentRule, position: 'relative', opacity: parking ? 0 : 1, transform: parking ? 'translateX(28px)' : 'none', transition: 'opacity 220ms ease, transform 220ms ease' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', alignItems: 'start', gap: 12 }}>
+          {/* One step below the lesson title (26px): the challenge stays optional. */}
+          <h2 className="ff-display" style={{ fontSize: 22, fontWeight: 400, lineHeight: 1.15, letterSpacing: '-0.01em', margin: 0, color: 'var(--ink)' }}>{challenge.title}</h2>
+          {/* Postpone control (settled in review): clock in the app's round hairline
+              button chrome (same as FavButton) so it reads as tappable. Tap slides
+              the card away immediately; it lands under For Later, it is not deleted.
+              Never the bookmark (that glyph = Favorites, a different destination). */}
+          <button onClick={onPostpone} aria-label={'Save “' + challenge.title + '” for later'} style={{
+            appearance: 'none', cursor: 'pointer', width: 38, height: 38, margin: '-8px -6px -8px 0', padding: 0,
+            display: 'grid', placeItems: 'center', borderRadius: 999,
+            border: '1px solid ' + accentRule, background: 'var(--surface)', color: 'var(--ink-mute)',
+          }}><LaterClock size={18}/></button>
         </div>
+        <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: '10px 0 0', textWrap: 'pretty' }}>{challenge.instruction}</p>
+        {/* Same geometry as the Continue Learning card: one mono meta line on the
+            left rail, full-width CTA below — not a stacked meta + right-hung button. */}
+        {(() => {
+          const segs = challenge.effort.split('·').map(s => s.trim());
+          const timeSeg = segs.find(s => /min/i.test(s));
+          const trigger = segs.find(s => !/min/i.test(s));
+          const line = [trigger, timeSeg && '~' + timeSeg].filter(Boolean).join(' · ');
+          return (
+            <div className="ff-mono" aria-label={[trigger, timeSeg && 'about ' + timeSeg].filter(Boolean).join(', ')} style={{ fontSize: 'var(--t-label)', letterSpacing: '0.14em', textTransform: 'uppercase', color: metaInk, marginTop: 14 }}>
+              <span aria-hidden="true">{line}</span>
+            </div>
+          );
+        })()}
+        {/* While today's lesson is still unfinished, Begin lesson owns the only filled
+            orange action; the challenge is optional, so it takes the outlined rank. */}
+        <button className="btn btn-primary" onClick={onLog} aria-label={'Log result for “' + challenge.title + '”'} style={{
+          width: '100%', marginTop: 18, padding: '14px 24px',
+          ...(lessonPending ? { background: 'transparent', color: 'var(--accent-text)', boxShadow: 'inset 0 0 0 1.5px var(--accent)' } : null),
+        }}>Log result</button>
       </div>
     </div>
   );
@@ -462,7 +491,7 @@ function ChallengeSuggestion({ challenge, state, realState, onStart, onNotNow })
         <div style={{ fontSize: 'var(--t-support)', lineHeight: 1.4, color: 'var(--ink)' }}>
           {started
             ? <>Added to <strong>Today</strong>. Log it whenever you next brew.</>
-            : <>Saved — find it under <strong>Saved challenges</strong> on Today, or on the Path.</>}
+            : <>Kept under <strong>For Later</strong> on Today, and on the Path.</>}
         </div>
       </div>
     );
@@ -607,7 +636,7 @@ function PathChallengeNode({ challenge, state, onAction }) {
   const time = effortBits[effortBits.length - 1] || '';
   const kicker =
     done || active ? 'CHALLENGE' :
-    saved ? 'SAVED CHALLENGE' :
+    saved ? 'FOR LATER' :
     'CHALLENGE · ' + time;
   const pill =
     done ? { cls: 'done', body: <><svg width="11" height="11" viewBox="0 0 12 12"><path d="M2 6.5l2.5 2.5L10 3.5" fill="none" stroke="var(--sage)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>Done</> } :
@@ -641,11 +670,14 @@ function PathChallengeNode({ challenge, state, onAction }) {
 window.PathChallengeNode = PathChallengeNode;
 
 // ───────────────────────────────────────────────────────────
-// TODAY · SAVED CHALLENGES — the queue of challenges parked with
-// "Save for later". Excludes the currently active one and any already
-// completed. Each row starts the challenge or removes it from the queue.
+// TODAY · FOR LATER — the queue of challenges parked with "Save for later".
+// Collapsed to a single "For Later · n" row by default so it never competes
+// with today's lesson; taps open it. Excludes the currently active one and any
+// already completed. Starting one from here makes it the single active
+// challenge (the current active one moves back into this list).
 // ───────────────────────────────────────────────────────────
 function SavedBrewList({ saved, activeId, completed, onStart, onRemove }) {
+  const [open, setOpen] = React.useState(false);
   const ids = saved ? [...saved].filter(id => id !== activeId && !(completed && completed.has(id))) : [];
   if (ids.length === 0) return null;
   // Only surface a saved challenge once its source lesson has actually been
@@ -662,35 +694,48 @@ function SavedBrewList({ saved, activeId, completed, onStart, onRemove }) {
   if (items.length === 0) return null;
   const accentTint = 'color-mix(in oklab, var(--accent) 6%, var(--surface))';
   const accentRule = 'color-mix(in oklab, var(--accent) 24%, var(--rule))';
+  const metaInk = 'color-mix(in oklab, var(--ink-mute) 62%, var(--ink))';
   return (
-    <div className="px-24" style={{ paddingTop: 28 }}>
-      <div className="smallcaps" style={{ marginBottom: 16, color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: 8 }}>
-        <BrewCup size={15} color="var(--accent)"/> SAVED CHALLENGES
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+    <div className="px-24" style={{ paddingTop: 24 }}>
+      <button onClick={() => setOpen(o => !o)} aria-expanded={open}
+        aria-label={'For later, ' + items.length + ' challenge' + (items.length === 1 ? '' : 's')} style={{
+        width: '100%', minHeight: 44, appearance: 'none', border: 'none', background: 'transparent',
+        cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        gap: 10, padding: '4px 0',
+      }}>
+        <span className="smallcaps" aria-hidden="true" style={{ color: 'var(--accent-text)', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <LaterClock size={15} color="var(--accent)"/> FOR LATER · {items.length}
+        </span>
+        <svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true" style={{ color: 'var(--ink-mute)', flexShrink: 0, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 240ms cubic-bezier(.4,0,.2,1)' }}>
+          <path d="M5 8 L10 13 L15 8" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </button>
+      {open && (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, paddingTop: 12 }}>
         {items.map(ch => (
+          // No cup glyph per row — the section header already carries the mark.
           <div key={ch.id} style={{
-            display: 'grid', gridTemplateColumns: 'auto 1fr auto auto', alignItems: 'center', gap: 12,
-            background: accentTint, border: '1px solid ' + accentRule, borderRadius: 14, padding: '13px 14px',
+            display: 'grid', gridTemplateColumns: '1fr auto auto', alignItems: 'center', gap: 12,
+            background: accentTint, border: '1px solid ' + accentRule, borderRadius: 14, padding: '13px 8px 13px 14px',
           }}>
-            <BrewCup size={20} color="var(--accent)"/>
             <div style={{ minWidth: 0 }}>
               <div style={{ fontSize: 'var(--t-body)', fontWeight: 500, color: 'var(--ink)', lineHeight: 1.2, textWrap: 'pretty' }}>{ch.title}</div>
-              <div className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-mute)', marginTop: 4 }}>{ch.effort}</div>
+              <div className="ff-mono" style={{ fontSize: 'var(--t-label)', letterSpacing: '0.12em', textTransform: 'uppercase', color: metaInk, marginTop: 4 }}>{ch.effort}</div>
             </div>
-            <button onClick={() => onStart && onStart(ch)} className="ff-ui" style={{
-              appearance: 'none', border: 'none', cursor: 'pointer', background: 'var(--accent)', color: 'var(--accent-ink)',
-              borderRadius: 12, padding: '8px 14px', fontSize: 'var(--t-support)', fontWeight: 500,
+            <button onClick={() => onStart && onStart(ch)} className="ff-ui" aria-label={'Start “' + ch.title + '”'} style={{
+              appearance: 'none', border: '1.5px solid var(--accent)', cursor: 'pointer', background: 'transparent', color: 'var(--accent-text)',
+              borderRadius: 12, padding: '0 14px', minHeight: 44, fontSize: 'var(--t-support)', fontWeight: 500,
             }}>Start</button>
-            <button onClick={() => onRemove && onRemove(ch.id)} aria-label="Remove from saved" style={{
+            <button onClick={() => onRemove && onRemove(ch.id)} aria-label={'Remove ' + ch.title} style={{
               appearance: 'none', border: 'none', background: 'transparent', cursor: 'pointer',
-              color: 'var(--ink-mute)', padding: 6, lineHeight: 0,
+              color: 'var(--ink-mute)', width: 44, height: 44, display: 'grid', placeItems: 'center', padding: 0,
             }}>
-              <svg width="14" height="14" viewBox="0 0 15 15"><path d="M3 3l9 9M12 3l-9 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+              <svg width="14" height="14" viewBox="0 0 15 15" aria-hidden="true"><path d="M3 3l9 9M12 3l-9 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
             </button>
           </div>
         ))}
       </div>
+      )}
     </div>
   );
 }

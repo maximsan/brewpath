@@ -153,6 +153,10 @@
       <div class="mono">DESIGN REVIEW · SHIP / DEFER · DECISIONS LOCKED · JUNE 2026 · RECONCILED AUG 2026</div>
       <h1>The scope is set. Time to build v1.</h1>
       <p>The big calls are locked — Atlas, Duel and the ad layer move to v2; the learning core plus the Dictionary ship; monetization is settled as a generous free tier with a Plus subscription. Every design and content item this review opened is now closed. Three tasks remain: two engineering, one human.</p>
+      <div style="margin-top:22px;border:1px solid color-mix(in oklab, var(--accent) 40%, var(--rule));border-radius:2px;padding:18px 20px;background:color-mix(in oklab, var(--accent) 8%, var(--surface));">
+        <div class="mono" style="color:var(--accent);">AMENDMENT · AUG 2026 · SUPERSEDES “THE V1 MODEL” BELOW</div>
+        <p style="margin:10px 0 0;"><b>Monetization pivoted from subscription to one-time purchase.</b> The Plus subscription (monthly/yearly, 7-day trial) is dropped. v1 sells one product: <b>Foundations</b>, a one-time purchase at <b>$19.99</b> with permanent access — no trial, nothing renews. The purchase contains Modules 2–5 (with their Brew Challenges and cards), every practice format, the complete Dictionary, unlimited Saved, and the Studio (Roasty + grove customization). Free keeps <b>all of Module 1</b> — its lessons, challenges and module test — plus Flashcards and Guess the Term (both streak-eligible), short entries for lesson-earned dictionary terms, a Saved shelf of 5, and all progress systems on accessible content. <i>(Amended again 18 Aug: the free taster widened from the first two lessons to the whole of Module 1. Amended 19 Aug: True or false and Match the facts join the free tier as the free mini-game pair, per the DS access-tier table; the five palate/ordering formats remain in Foundations. Monetization experiments planned — one-time purchase stays the shipping baseline; a subscription-only arm and a hybrid arm (subscribe or buy outright, the primary test candidate) are now switchable in the prototype via Tweaks → Purchases → Model. Paywall presentation is config-driven (monetization.jsx); entitlement logic is model-agnostic by contract.)</i> Future substantial courses (Advanced Brewing, Espresso, Coffee Origins) sell separately as one-time purchases; the Courses catalogue stays hidden until a second course exists. Fixes and improvements to a purchased course remain included. The subscription copy in the Model section below stands as the historical record of the decision this amendment replaces.</p>
+      </div>
     </div>
   </div>
 
@@ -194,6 +198,7 @@
         <div class="sec-head">
           <div class="eyebrow">The v1 model</div>
           <h2>Free builds the habit. Plus makes it yours.</h2>
+          <p class="sec-intro" style="color:var(--accent);"><b>Superseded by the Aug 2026 amendment above</b> — kept as the record of the subscription-era decision.</p>
           <p class="sec-intro">Monetization ships in v1 but never walls the daily loop. Everything that teaches is free; Plus bundles <b>renewable</b> value, not cosmetics alone. The free Saved cap is the bridge — it surfaces the upgrade at peak intent, not at install.</p>
         </div>
         <div class="split">
@@ -202,7 +207,7 @@
             <div class="item"><div class="item-top"><span class="item-name">All daily lessons &amp; the full path</span></div><div class="item-why">The entire learning core — never gated. This earns the habit before any ask.</div></div>
             <div class="item"><div class="item-top"><span class="item-name">Coffee Dictionary</span></div><div class="item-why">Full reference, ungated. Everything that teaches is free.</div></div>
             <div class="item"><div class="item-top"><span class="item-name">Streaks, points &amp; collectible cards</span></div><div class="item-why">Including a <b>perfect-module stamp</b> — an earned mark of mastery, no purchase, no SDK.</div></div>
-            <div class="item"><div class="item-top"><span class="item-name">Saved</span><span class="item-ct">up to 5 items</span></div><div class="item-why">Generous enough that only power users hit the cap — and that user is your highest-intent upgrade prospect.</div></div>
+            <div class="item"><div class="item-top"><span class="item-name">Saved</span><span class="item-ct">up to 10 items</span></div><div class="item-why">Generous enough that only power users hit the cap — and that user is your highest-intent upgrade prospect.</div></div>
             <div class="item"><div class="item-top"><span class="item-name">Roasty, default look</span></div><div class="item-why">The companion is fully there from day one; only personalization is held for Plus.</div></div>
           </div>
           <div class="col plus">

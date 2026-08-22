@@ -209,8 +209,8 @@ function LessonPlayer({ lessonId, onClose, onComplete, isFav, onToggleFav, onTer
           {card.kind === 'recall'   && window.RecallCard && <window.RecallCard card={card} onContinue={advance} onCorrect={countCorrect} prediction={prediction}/>}
           {card.kind === 'concept'  && <ConceptCard card={card} onContinue={advance} onTermTap={onTermTap}/>}
           {card.kind === 'visual'    && window.VisualLessonCard && <window.VisualLessonCard card={card} onContinue={advance}
-            saved={!!(favorites && favorites.has('g:' + card.variant))}
-            onToggleSave={onToggleFavKey ? () => onToggleFavKey('g:' + card.variant) : null}/>}
+            saved={!!(favorites && favorites.has('g:' + card.visualGuide))}
+            onToggleSave={onToggleFavKey ? () => onToggleFavKey('g:' + card.visualGuide) : null}/>}
           {card.kind === 'tastefix'  && window.TasteFixCard && <window.TasteFixCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
           {card.kind === 'bagpick'   && window.BagPickCard && <window.BagPickCard card={card} onContinue={advance} onCorrect={countCorrect}/>}
           {card.kind === 'practical' && window.PracticalCard && <window.PracticalCard card={card} onContinue={advance}/>}
@@ -1061,6 +1061,79 @@ const MINI_GAME_CONTENT = {
         { l: 'Standard in Italian espresso blends', r: 'Robusta' },
       ] },
   ],
+  // Washed vs Natural — which process left this in the cup? Only 'match'
+  // cards. Splits 3:1, 1:3, 2:3, 3:1, 1:3 — never even; majority side varies.
+  'g-match-washed-natural': [
+    { kind: 'match', prompt: 'Match each step to its process',
+      pairs: [
+        { l: 'Fruit stripped off before drying', r: 'Washed' },
+        { l: 'Mucilage loosened in tanks', r: 'Washed' },
+        { l: 'Needs plenty of water', r: 'Washed' },
+        { l: 'Dried whole inside the cherry', r: 'Natural' },
+      ] },
+    { kind: 'match', prompt: 'Which process put this in the cup?',
+      pairs: [
+        { l: 'Berry and tropical-fruit sweetness', r: 'Natural' },
+        { l: 'Heavier, syrupy body', r: 'Natural' },
+        { l: 'Suits water-scarce regions', r: 'Natural' },
+        { l: 'Crisp, transparent flavours', r: 'Washed' },
+      ] },
+    { kind: 'match', prompt: 'Pair each trait with its process',
+      pairs: [
+        { l: 'Longest days on the drying bed', r: 'Natural' },
+        { l: 'Risk of boozy, over-fermented lots', r: 'Natural' },
+        { l: 'Fruit sugars soak into the seed', r: 'Natural' },
+        { l: 'Consistent lot to lot', r: 'Washed' },
+        { l: 'Shows variety and place most clearly', r: 'Washed' },
+      ] },
+    { kind: 'match', prompt: 'Match each cue to its process',
+      pairs: [
+        { l: 'Acidity leads the cup', r: 'Washed' },
+        { l: 'Needs a wet mill nearby', r: 'Washed' },
+        { l: 'The safer bet for a roaster', r: 'Washed' },
+        { l: 'Turned by hand so the fruit never molds', r: 'Natural' },
+      ] },
+    { kind: 'match', prompt: 'Which process does each belong to?',
+      pairs: [
+        { l: 'Blueberry notes in some Ethiopian lots', r: 'Natural' },
+        { l: 'No washing station needed', r: 'Natural' },
+        { l: 'Wilder, less predictable cup', r: 'Natural' },
+        { l: 'Cleaner cup, fewer surprises', r: 'Washed' },
+      ] },
+  ],
+  // Name the origin — read the cup, call the place. Only 'flavor' cards.
+  // FREE (M1 topic: origin signatures, m1l3/m1l6). Signatures are tendencies,
+  // so one round's honest answer is "could be almost anywhere".
+  'g-flavor-origin-signatures': [
+    { kind: 'flavor', clue: 'Perfumed and tea-like — jasmine on the nose, lemon in the sip',
+      prompt: 'Name the origin',
+      choices: [{ t: 'Ethiopia' }, { t: 'Brazil' }, { t: 'Sumatra' }, { t: 'Colombia' }],
+      answer: 0, explain: 'Floral-and-citrus is the classic Ethiopian signature — high, cool slopes and heirloom varieties keep the cup light and perfumed.' },
+    { kind: 'flavor', clue: 'Soft and round — milk chocolate, hazelnut, hardly any acidity',
+      prompt: 'Name the origin',
+      choices: [{ t: 'Kenya' }, { t: 'Ethiopia' }, { t: 'Brazil' }, { t: 'Sumatra' }],
+      answer: 2, explain: 'Sweet, nutty and low-acid is Brazil’s tendency — much of it grows lower and warmer than the East African cups, so it ripens fast and soft.' },
+    { kind: 'flavor', clue: 'Blackcurrant depth with a bright, juicy snap',
+      prompt: 'Name the origin',
+      choices: [{ t: 'Brazil' }, { t: 'Kenya' }, { t: 'Colombia' }, { t: 'Sumatra' }],
+      answer: 1, explain: 'Bright reads as Ethiopia to many — but Ethiopia goes floral and lemony. Dark fruit with that juicy acidity is Kenya’s calling card.' },
+    { kind: 'flavor', clue: 'Heavy body, earthy and herbal — forest floor after rain',
+      prompt: 'Name the origin',
+      choices: [{ t: 'Sumatra' }, { t: 'Colombia' }, { t: 'Kenya' }, { t: 'Ethiopia' }],
+      answer: 0, explain: 'Earthy, herbal weight is the Sumatra signature — wet-hulled processing leaves a cup unlike anywhere else’s.' },
+    { kind: 'flavor', clue: 'Caramel-sweet and even — nothing shouts, everything agrees',
+      prompt: 'Name the origin',
+      choices: [{ t: 'Brazil' }, { t: 'Sumatra' }, { t: 'Kenya' }, { t: 'Colombia' }],
+      answer: 3, explain: 'Balance with caramel sweetness is Colombia’s tendency. Brazil is the common confusion — it leans nuttier and flatter; Colombia keeps a gentle brightness.' },
+    { kind: 'flavor', clue: 'Chocolate, a touch of citrus, medium body — a solid, friendly cup',
+      prompt: 'Name the origin',
+      choices: [{ t: 'Colombia' }, { t: 'Almost anywhere' }, { t: 'Guatemala' }, { t: 'Brazil' }],
+      answer: 1, explain: 'Chocolate-with-mild-citrus is the most common profile in coffee — Brazil, Colombia, Guatemala and a dozen others all land there. Signatures are tendencies: a cup with no distinctive tell doesn’t owe you a country, and picking one anyway is reading the label, not the cup.' },
+    { kind: 'flavor', clue: 'Citrus for sure — but light and perfumed, no dark fruit anywhere',
+      prompt: 'Name the origin',
+      choices: [{ t: 'Kenya' }, { t: 'Brazil' }, { t: 'Ethiopia' }, { t: 'Colombia' }],
+      answer: 2, explain: 'The same trap cut the other way: citrus alone isn’t Kenya. Without blackcurrant depth, perfumed citrus points back to Ethiopia.' },
+  ],
   // Name the flavor notes — tasting. Only 'flavor' cards.
   'g-flavor': [
     { kind: 'flavor', clue: 'A sharp, tangy brightness that makes your mouth water',
@@ -1093,11 +1166,28 @@ const MINI_GAME_CONTENT = {
     { kind: 'quiz', statement: 'Espresso beans are a special species grown only for espresso',
       answer: false, explain: 'False — espresso is a brewing method, not a species. Any bean can be pulled as espresso.' },
     { kind: 'quiz', statement: 'A coffee cherry usually contains two seeds',
-      answer: true, explain: 'True — two flat-faced seeds sit pressed together inside each cherry.' },
+      answer: true, explain: 'True — two flat-faced seeds sit pressed together inside each cherry. Roughly one in twenty grows a single round seed instead: a peaberry.' },
     { kind: 'quiz', statement: 'Robusta has less caffeine than Arabica',
       answer: false, explain: 'False — Robusta has almost twice the caffeine of Arabica.' },
     { kind: 'quiz', statement: 'Dark roasts always have far more caffeine than light roasts',
       answer: false, explain: 'False — roast level barely changes caffeine; by volume light roasts can edge ahead.' },
+  ],
+  // Roast basics — true or false, myth-forward. Only 'quiz' cards.
+  // Binary answers can't both avoid repeats AND avoid alternation; this order
+  // (F T T F T F) keeps runs ≤ 2 and breaks the alternating pattern.
+  'g-quiz-roast-basics': [
+    { kind: 'quiz', statement: 'Dark roasts pack far more caffeine than light roasts',
+      answer: false, explain: 'False — roasting barely touches caffeine. It trades origin acidity for roast flavour, not stimulant for strength.' },
+    { kind: 'quiz', statement: 'Beans get bigger but lighter as they roast',
+      answer: true, explain: 'True — heat drives water out while steam pressure puffs the bean up. Lighter in weight, larger in size.' },
+    { kind: 'quiz', statement: 'Light roasts keep more of the origin’s own flavour',
+      answer: true, explain: 'True — the further a roast goes, the more roast flavour replaces what the farm put in.' },
+    { kind: 'quiz', statement: 'Shiny, oily beans are a sign of a fresh roast',
+      answer: false, explain: 'False — surface oil means a dark roast, an aging bag, or both. Freshness is on the roast date, not the shine.' },
+    { kind: 'quiz', statement: 'First crack is the landmark — light roasts stop soon after it',
+      answer: true, explain: 'True — the pop around 195–205 °C marks the start of drinkable roast levels; light roasts end shortly past it, dark roasts push on toward second crack.' },
+    { kind: 'quiz', statement: 'Coffee tastes best brewed the day it was roasted',
+      answer: false, explain: 'False — fresh-roasted beans are still venting CO₂, which fights the water. Most coffee peaks a few days to a month after roasting.' },
   ],
   // Blind bag — call the process from the look of the green bean. Only 'bagpick'
   // cards. The rounds are authored next to the bag artwork in bean-anatomy.jsx,
@@ -1131,6 +1221,35 @@ const MINI_GAME_CONTENT = {
       prompt: 'Nothing tastes wrong — it just tastes like nothing. What first?',
       choices: [{ t: 'Buy a fresher bag', correct: true }, { t: 'Grind finer' }, { t: 'Use hotter water' }, { t: 'Add more coffee' }],
       explain: 'Flat and lifeless is staling, not extraction. No dial-in puts back aromatics that have already gone — start with fresher beans.' },
+  ],
+  // Fix the shot — espresso dial-in (M5: The Shot). Only 'tastefix' cards.
+  // Correct answers cut every way: finer, coarser, prep, ratio, beans.
+  'g-tastefix-espresso': [
+    { kind: 'tastefix', tags: ['SOUR', 'GUSHING'],
+      scenario: 'The shot ran 18 seconds and poured pale and fast.',
+      prompt: 'It tastes sharp and thin. What first?',
+      choices: [{ t: 'Grind finer', correct: true }, { t: 'Grind coarser' }, { t: 'Tamp harder' }, { t: 'Use less coffee' }],
+      explain: 'A fast, pale, sour shot is under-extraction at espresso speed. Finer grounds add resistance and buy the water time. Tamping harder is the classic wrong move — tamp pressure barely changes flow once the bed is compact.' },
+    { kind: 'tastefix', tags: ['SPRAYING', 'UNEVEN'],
+      scenario: 'Grind unchanged since yesterday’s good shots.',
+      prompt: 'The stream spits sideways and the cup tastes sour AND bitter at once. What first?',
+      choices: [{ t: 'Level and redistribute the bed', correct: true }, { t: 'Grind finer' }, { t: 'Raise the brew pressure' }, { t: 'Pull a shorter shot' }],
+      explain: 'Sour and bitter together is channeling — water racing through cracks while over-working the rest. That’s a prep fault, not a grind fault: grinding finer just channels harder.' },
+    { kind: 'tastefix', tags: ['BITTER', 'DRIPPING'],
+      scenario: 'The shot took 45 seconds and came out in slow drips.',
+      prompt: 'Dry, harsh, lingering finish. What first?',
+      choices: [{ t: 'Grind coarser', correct: true }, { t: 'Grind finer' }, { t: 'Use cooler water' }, { t: 'Tamp lighter' }],
+      explain: 'A choked, dripping shot over-extracts — coarser grounds open the bed back up. Cooler water treats the symptom and dulls the sweetness with it.' },
+    { kind: 'tastefix', tags: ['INTENSE', 'TINY'],
+      scenario: 'Timing is right at 28 seconds; nothing tastes off.',
+      prompt: 'Balanced but overwhelming — like a punch in a thimble. What first?',
+      choices: [{ t: 'Let more run into the cup', correct: true }, { t: 'Grind coarser' }, { t: 'Pull the shot shorter' }, { t: 'Use hotter water' }],
+      explain: 'When the shot is balanced, extraction is done — what’s left is strength, and strength is the ratio: let more run into the cup. Grinding coarser speeds the flow and turns it sour; pulling it shorter makes it MORE intense, not less.' },
+    { kind: 'tastefix', tags: ['NO CREMA', 'FLAT'],
+      scenario: 'Dialled in, but the bag was roasted two months ago.',
+      prompt: 'Crema vanishes in seconds and the shot tastes dull. What first?',
+      choices: [{ t: 'Get fresher beans', correct: true }, { t: 'Grind finer' }, { t: 'Raise the water temperature' }, { t: 'Tamp harder' }],
+      explain: 'Crema is CO₂ from roasting — an old bag has already breathed it out, and no dial puts it back. Grinding finer fakes a slower shot but the gas is gone.' },
   ],
   // Dial it in — calibrate the number. Only 'slider' cards.
   'g-calibrate': [
@@ -1194,6 +1313,110 @@ const MINI_GAME_CONTENT = {
         'Over 5 min — stalled and harsh',
       ],
       feedback: 'Three to three and a half minutes, start to drawdown. Much faster is under-extracted; much slower means the bed has clogged.' },
+  ],
+  // Set the grind — which grind (and contact time) belongs to which brewer
+  // (M4: Grind & Brewer). Only 'slider' cards.
+  'g-calibrate-grind-brewer': [
+    { kind: 'slider',
+      prompt: 'How coarse for a pour-over?',
+      leftLabel: 'FINER', rightLabel: 'COARSER',
+      target: 70, tolerance: 10,
+      scale: [
+        'Powder — chokes the machine',
+        'Fine — espresso',
+        'Table salt — moka, AeroPress',
+        'Sea salt — pour-over',
+        'Breadcrumbs — French press',
+      ],
+      feedback: 'Sea-salt territory. A few minutes of water passing through wants a medium-coarse bed — finer clogs the drawdown, coarser runs thin.' },
+    { kind: 'slider',
+      prompt: 'And for a moka pot?',
+      leftLabel: 'FINER', rightLabel: 'COARSER',
+      target: 48, tolerance: 10,
+      scale: [
+        'Powder — chokes the machine',
+        'Fine — espresso',
+        'Table salt — moka, AeroPress',
+        'Sea salt — pour-over',
+        'Breadcrumbs — French press',
+      ],
+      feedback: 'Table salt — finer than pour-over but NOT espresso-fine. True espresso grind chokes a moka and turns it bitter.' },
+    { kind: 'slider',
+      prompt: 'How long is water in contact with espresso grounds?',
+      leftLabel: 'SHORTER', rightLabel: 'LONGER',
+      target: 28, tolerance: 12,
+      scale: [
+        '5 seconds',
+        '~30 seconds',
+        '2 minutes',
+        '4 minutes',
+        '12 minutes',
+      ],
+      feedback: 'About 28 seconds — the shortest contact time of any brewer, which is exactly why it takes the finest grind.' },
+    { kind: 'slider',
+      prompt: 'How coarse for cold brew?',
+      leftLabel: 'FINER', rightLabel: 'COARSER',
+      target: 93, tolerance: 8,
+      scale: [
+        'Powder — chokes the machine',
+        'Fine — espresso',
+        'Table salt — moka, AeroPress',
+        'Sea salt — pour-over',
+        'Breadcrumbs — French press',
+      ],
+      feedback: 'The far coarse end — at or past French press. Twelve or more hours of steeping is the longest contact time there is, so the grind goes coarsest of all.' },
+    { kind: 'slider',
+      prompt: 'How long does a French press steep?',
+      leftLabel: 'SHORTER', rightLabel: 'LONGER',
+      target: 75, tolerance: 12,
+      scale: [
+        '30 seconds',
+        '1 minute',
+        '2 minutes',
+        '4 minutes',
+        '8 minutes',
+      ],
+      feedback: 'Around four minutes of full immersion — long contact, hence the coarsest everyday grind. Shorter tastes thin; much longer turns muddy and bitter.' },
+  ],
+  // Pour-over, in order — the V60 recipe and what happens inside it (M5:
+  // m5l6 recipe, m5l4 extraction). Only 'sequence' cards; every ordering is a
+  // taught fact, none contestable.
+  'g-sequence-v60': [
+    { kind: 'sequence', prompt: 'Order your first V60, start to finish',
+      items: [
+        { label: 'Rinse the paper filter', order: 1 },
+        { label: 'Add the ground coffee', order: 2 },
+        { label: 'Bloom pour', order: 3 },
+        { label: 'Main pours, in circles', order: 4 },
+        { label: 'Drawdown', order: 5 },
+      ] },
+    { kind: 'sequence', prompt: 'Order the bloom, first to last',
+      items: [
+        { label: 'Pour twice the grounds’ weight', order: 1 },
+        { label: 'Grounds swell and bubble', order: 2 },
+        { label: 'Trapped gas escapes', order: 3 },
+        { label: 'Begin the main pour', order: 4 },
+      ] },
+    { kind: 'sequence', prompt: 'Order what extracts, first to last',
+      items: [
+        { label: 'Acids — bright, sour', order: 1 },
+        { label: 'Sugars — sweetness', order: 2 },
+        { label: 'Bitter compounds', order: 3 },
+      ] },
+    { kind: 'sequence', prompt: 'Order what the water does in the brewer',
+      items: [
+        { label: 'Wets the grounds', order: 1 },
+        { label: 'Releases trapped gas', order: 2 },
+        { label: 'Dissolves flavour', order: 3 },
+        { label: 'Drains through the filter', order: 4 },
+      ] },
+    { kind: 'sequence', prompt: 'Order these brews by contact time, shortest to longest',
+      items: [
+        { label: 'Espresso', order: 1 },
+        { label: 'AeroPress', order: 2 },
+        { label: 'V60 pour-over', order: 3 },
+        { label: 'French press', order: 4 },
+      ] },
   ],
   // Bean to cup — put the steps in order. Only 'sequence' cards.
   'g-sequence': [

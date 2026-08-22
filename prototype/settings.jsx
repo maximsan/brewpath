@@ -36,8 +36,8 @@ function SettingsToggle({ on, onChange, label }) {
 // ── ConfirmSheet — reusable bottom-sheet confirmation ─────────
 // ── Sheet — the one bottom-sheet shell ──────────────────────────
 // Backdrop, panel, handle and content padding live here and nowhere else, so
-// sheet behaviour is changed once. ConfirmSheet, TimeSheet and PlanSheet all
-// wrap it. No sheet carries an eyebrow — each opens on its title.
+// sheet behaviour is changed once. ConfirmSheet and TimeSheet wrap it.
+// No sheet carries an eyebrow — each opens on its title.
 function Sheet({ open, onClose, children }) {
   return (
     <>
@@ -137,7 +137,7 @@ function TimeSheet({ open, value, onClose, onSave }) {
 // ── SettingsRow — THE settings/nav row for the whole app ──────
 // One implementation, six trailing variants: value, chevron, external arrow,
 // toggle, pending spinner, and destructive. Settings, About, Account and sync,
-// Help and support and Subscription all render through this; `SettingsRow` in
+// Help and support and Purchases all render through this; `SettingsRow` in
 // screens.jsx is an alias, so the row can never drift into two versions again.
 //   value    mono text before the affordance
 //   sub      second line under the label
@@ -342,7 +342,7 @@ function AboutScreen({ onClose }) {
 }
 
 // ── AccountSyncScreen ─────────────────────────────────────────
-function AccountSyncScreen({ isPlus, inTrial = false, onClose, onManagePlan, onSignOut }) {
+function AccountSyncScreen({ isPlus, onClose, onPurchases, onSignOut }) {
   const [cellular, setCellular] = useStateS(false);
   const [scrolled, onScroll] = useScrollFlag();
   return (
@@ -364,7 +364,7 @@ function AccountSyncScreen({ isPlus, inTrial = false, onClose, onManagePlan, onS
             }}>{(window.USER || {}).initial || 'm'}</div>
             <div style={{ minWidth: 0 }}>
               <div style={{ fontSize: 'var(--t-body)', color: 'var(--ink)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{(window.USER || {}).email}</div>
-              <div className="smallcaps" style={{ marginTop: 4 }}>{isPlus ? (inTrial ? 'BREWPATH PLUS · TRIAL' : 'BREWPATH PLUS') : 'FREE PLAN'}</div>
+              <div className="smallcaps" style={{ marginTop: 4 }}>{isPlus ? 'FOUNDATIONS · PURCHASED' : 'FREE'}</div>
             </div>
           </div>
         </div>
@@ -386,8 +386,8 @@ function AccountSyncScreen({ isPlus, inTrial = false, onClose, onManagePlan, onS
         </div>
 
         <div className="px-24" style={{ paddingTop: 26 }}>
-          <div className="smallcaps" style={{ marginBottom: 4 }}>SUBSCRIPTION</div>
-          <NavRow label={isPlus ? 'Manage Plus' : 'Upgrade to Plus'} value={isPlus ? (inTrial ? 'Trial' : 'Yearly') : null} onClick={onManagePlan}/>
+          <div className="smallcaps" style={{ marginBottom: 4 }}>PURCHASES</div>
+          <NavRow label={isPlus ? 'Foundations' : 'Unlock Foundations'} value={isPlus ? 'Purchased' : null} onClick={onPurchases}/>
         </div>
 
         <div className="px-24" style={{ paddingTop: 26 }}>
@@ -398,142 +398,94 @@ function AccountSyncScreen({ isPlus, inTrial = false, onClose, onManagePlan, onS
   );
 }
 
-// ── PlanSheet — switch billing cycle ─────────────────────────
-const PLAN_OPTS = [
-  { id: 'yearly',  title: 'Yearly',  price: '$29.99 / yr', note: '$2.50 / mo · save 50%' },
-  { id: 'monthly', title: 'Monthly', price: '$4.99 / mo',  note: 'Billed monthly' },
-];
-function PlanSheet({ open, value, onClose, onSave }) {
-  const [sel, setSel] = useStateS(value);
-  useEffectS(() => { if (open) setSel(value); }, [open, value]);
-  return (
-    <Sheet open={open} onClose={onClose}>
-          <SheetTitle>Change your plan</SheetTitle>
-          <p style={{ margin: '12px 0 0', fontSize: 'var(--t-body)', lineHeight: 1.55, color: 'var(--ink-mute)' }}>
-            Switches take effect at your next renewal. Nothing changes today.
-          </p>
-          <div className="stack gap-12" style={{ marginTop: 18 }}>
-            {PLAN_OPTS.map(p => {
-              const on = sel === p.id;
-              return (
-                <button key={p.id} onClick={() => setSel(p.id)}
-                  style={{
-                    appearance: 'none', cursor: 'pointer', textAlign: 'left',
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14,
-                    padding: '16px 18px', borderRadius: 2,
-                    border: '1px solid ' + (on ? 'var(--accent)' : 'var(--rule)'),
-                    background: on ? 'color-mix(in oklab, var(--accent) 10%, transparent)' : 'transparent',
-                  }}>
-                  <span>
-                    <span style={{ display: 'block', fontSize: 'var(--t-body)', color: 'var(--ink)' }}>{p.title}</span>
-                    <span style={{ display: 'block', fontSize: 'var(--t-support)', color: 'var(--ink-mute)', marginTop: 2 }}>{p.note}</span>
-                  </span>
-                  <span className="ff-mono" style={{ fontSize: 'var(--t-support)', color: 'var(--ink)', whiteSpace: 'nowrap' }}>{p.price}</span>
-                </button>
-              );
-            })}
-          </div>
-          <button className="btn btn-primary" style={{ marginTop: 22 }}
-            onClick={() => onSave(sel)}>{sel === value ? 'Keep current plan' : 'Switch plan'}</button>
-    </Sheet>
-  );
-}
-
-// ── SubscriptionScreen ────────────────────────────────────────
-// Shows the current plan state and the levers to manage it. Plus members
-// get billing detail + change/cancel; free members get a compact upgrade.
-// A trial is its own state, not a decorated Plus state: the salient fact is how
-// long is left and what happens at the end, so the card leads with the countdown
-// and every "renews / next charge / cancel" string flips to first-charge language.
-function SubscriptionScreen({ isPlus, plan = 'yearly', renews = '18 Jun 2027', trialDaysLeft = 0, chargeDate, onClose, onUpgrade, onChangePlan, onCancel, restoreOutcome = 'plus', onRestored }) {
-  const [planOpen, setPlanOpen] = useStateS(false);
-  const [cancelOpen, setCancelOpen] = useStateS(false);
+// ── PurchasesScreen ────────────────────────────────────────
+// What's owned (or active), what's on offer, and Restore. Model-driven:
+// monetization.jsx supplies the offer copy; the owned card renders from the
+// PLAN that granted the entitlement (a lifetime purchase keeps its receipt
+// even if the live model flips to subscription). Restore lives only where a
+// purchase is on offer (the free state; the paywall carries its own link):
+// the owned branch renders only when the app already knows the entitlement.
+function PurchasesScreen({ owned, planId = 'lifetime', purchased = '8 May 2026', onClose, onUnlock, restoreOutcome = 'owned', onRestored }) {
+  const mon = window.getMonetization();
+  const plan = window.getPlan(planId);
   // Restore purchases is a split responsibility: iOS owns the Apple ID auth
   // sheet, StoreKit hands back a result, and it shows the user NOTHING. So the
   // three outcomes below are ours to state plainly — otherwise the row looks
-  // broken on the two paths that don't end in a subscription.
+  // broken on the two paths that don't end in an entitlement.
   const [restoring, setRestoring] = useStateS(false);
-  const [restoreDone, setRestoreDone] = useStateS(null); // 'plus' | 'none' | 'error'
+  const [restoreDone, setRestoreDone] = useStateS(null); // 'owned' | 'none' | 'error'
   const runRestore = () => {
     if (restoring) return;
     setRestoring(true);
     setTimeout(() => {
       setRestoring(false);
-      setRestoreDone(restoreOutcome);
-      if (restoreOutcome === 'plus' && onRestored) onRestored();
+      const outcome = restoreOutcome === 'plus' ? 'owned' : restoreOutcome; // legacy tweak value
+      setRestoreDone(outcome);
+      if (outcome === 'owned' && onRestored) onRestored();
     }, 1500);
   };
   const RESTORE_RESULT = {
-    plus:  { title: 'Your Plus is back.',
-             body: 'We found your subscription on this Apple ID and reactivated it. Saved is unlimited again, and Roasty and your plant are yours to dress.' },
+    owned: { title: 'Foundations is yours again.',
+             body: 'We found your purchase on this Apple ID and restored it. Every module, the full Dictionary, unlimited Saved and the Studio are open on this device.' },
     none:  { title: 'No purchase on this Apple ID.',
-             body: 'If you bought Plus with a different Apple ID, sign in with that one and try again.' },
+             body: 'If you bought Foundations with a different Apple ID, sign in with that one and try again.' },
     error: { title: 'We couldn’t reach the store.',
              body: 'Check your connection and try again.' },
   };
-  const PlanSheetC = window.PlanSheet;
   const ConfirmSheet = window.ConfirmSheet;
-  const meta = PLAN_OPTS.find(p => p.id === plan) || PLAN_OPTS[0];
-  const inTrial = isPlus && trialDaysLeft > 0;
-  const firstCharge = chargeDate || renews;
-  // Matches the paywall's pitch exactly — the two levers, not the old cosmetics list.
-  const benefits = ['Unlimited Saved', 'Dress up Roasty', 'Choose your plant'];
+  // Matches the paywall's pitch exactly — the contents of the one purchase.
+  const benefits = ['Modules 2–5, every lesson', 'The five premium practice formats', 'The complete Dictionary', 'Unlimited Saved', 'The Studio'];
   const [scrolled, onScroll] = useScrollFlag();
 
   return (
-    <div className="screen" data-screen-label="Subscription" style={{ background: 'var(--bg)' }}>
-      <BackBar onClose={onClose} title="Subscription" scrolled={scrolled}/>
+    <div className="screen" data-screen-label="Purchases" style={{ background: 'var(--bg)' }}>
+      <BackBar onClose={onClose} title="Purchases" scrolled={scrolled}/>
       <div className="scroll" onScroll={onScroll} style={{ paddingTop: 108, paddingBottom: 40 }}>
         <div className="px-24">
-          <h1 className="ff-display" style={{ fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em', margin: 0, color: 'var(--ink)' }}>Subscription</h1>
+          <h1 className="ff-display" style={{ fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em', margin: 0, color: 'var(--ink)' }}>Purchases</h1>
         </div>
 
-        {/* Status. The card is a billing container — price, renewal, days left — so
-            it renders only when there IS billing. Free has none, so it uses the
-            screen's own section grammar instead: smallcaps label + a plain line,
-            the same shape as WITH PLUS and MANAGE below it. */}
-        {isPlus ? (
+        {/* Status. The card is a container for purchase facts — date, price,
+            permanence — so it renders only when there IS a purchase. Free has
+            none, so it uses the screen's own section grammar instead. */}
+        {owned ? (
           <div className="px-24" style={{ paddingTop: 22 }}>
             <div style={{
               border: '1px solid color-mix(in oklab, var(--accent) 30%, var(--rule))',
-              borderRadius: 2, padding: 22,
+              borderRadius: 2, padding: '18px 20px',
               background: 'linear-gradient(160deg, color-mix(in oklab, var(--accent) 12%, var(--surface)) 0%, var(--surface) 62%)',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-                <span className="smallcaps" style={{ color: 'var(--accent)' }}>{inTrial ? 'FREE TRIAL' : 'BREWPATH PLUS'}</span>
+                <span className="smallcaps" style={{ color: 'var(--accent)' }}>FOUNDATIONS{plan.kind === 'sub' ? ' · ' + plan.name.toUpperCase() : ''}</span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ width: 7, height: 7, borderRadius: 999, background: inTrial ? 'var(--accent)' : 'var(--sage)' }}/>
-                  <span className="ff-mono" style={{ fontSize: 'var(--t-label)', letterSpacing: '0.08em', color: 'var(--ink-mute)', textTransform: 'uppercase' }}>{inTrial ? 'Trialling' : 'Active'}</span>
+                  <span style={{ width: 7, height: 7, borderRadius: 999, background: 'var(--sage)' }}/>
+                  <span className="ff-mono" style={{ fontSize: 'var(--t-label)', letterSpacing: '0.08em', color: 'var(--ink-mute)', textTransform: 'uppercase' }}>{plan.ownedChip}</span>
                 </span>
               </div>
-              <div className="ff-display" style={{ fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em', color: 'var(--ink)', marginTop: 12 }}>
-                {inTrial ? (trialDaysLeft + (trialDaysLeft === 1 ? ' day left' : ' days left')) : meta.price.replace(' / ', '/')}
-              </div>
-              <div style={{ fontSize: 'var(--t-support)', color: 'var(--ink-mute)', marginTop: 6 }}>
-                {inTrial ? ('Then ' + meta.price.replace(' / ', '/') + ' on ' + firstCharge + ' \u00b7 cancel before then and you won\u2019t be charged')
-                  : ('Renews ' + renews + ' \u00b7 ' + meta.title.toLowerCase())}
+              {/* One receipt line — date and price. "Owned" is the status chip's
+                  job, permanence is the footer's; a card that says each once is
+                  a receipt, one that says them thrice is a poster. */}
+              <div style={{ fontSize: 'var(--t-support)', color: 'var(--ink-mute)', marginTop: 10 }}>
+                {plan.receipt(purchased)}
               </div>
             </div>
           </div>
         ) : (
           <div className="px-24" style={{ paddingTop: 26 }}>
-            <div className="smallcaps" style={{ marginBottom: 4 }}>FREE PLAN</div>
-            <div style={{ fontSize: 'var(--t-body)', color: 'var(--ink)', padding: '16px 0' }}>Every lesson and the dictionary, included.</div>
+            <div className="smallcaps" style={{ marginBottom: 4 }}>FREE</div>
+            <div style={{ fontSize: 'var(--t-body)', color: 'var(--ink)', padding: '16px 0' }}>All of Module 1, True or false and Match the facts, Flashcards and Guess the Term, and a Saved shelf of 5.</div>
           </div>
         )}
 
-        {isPlus ? (
+        {owned ? (
           <>
-            <div className="px-24" style={{ paddingTop: 26 }}>
-              <div className="smallcaps" style={{ marginBottom: 4 }}>BILLING</div>
-              <NavRow label="Plan" value={meta.title} onClick={() => setPlanOpen(true)}/>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, padding: '16px 0', borderBottom: '1px solid var(--rule)' }}>
-                <span style={{ fontSize: 'var(--t-body)', color: 'var(--ink)', whiteSpace: 'nowrap' }}>{inTrial ? 'First charge' : 'Next charge'}</span>
-                <span className="ff-mono" style={{ fontSize: 'var(--t-support)', color: 'var(--ink-mute)', whiteSpace: 'nowrap' }}>{meta.price.split(' / ')[0]} · {inTrial ? firstCharge : renews}</span>
+            {/* A subscription is manageable; a purchase is a fact. The manage
+                row exists only where there IS a plan to manage. */}
+            {plan.kind === 'sub' && (
+              <div className="px-24" style={{ paddingTop: 12 }}>
+                <NavRow label="Manage subscription" external onClick={() => {}}/>
               </div>
-              <NavRow label="Payment method" value="Apple ID" onClick={() => {}}/>
-            </div>
-
+            )}
             <div className="px-24" style={{ paddingTop: 26 }}>
               <div className="smallcaps" style={{ marginBottom: 4 }}>INCLUDED</div>
               {benefits.map((b, i) => (
@@ -544,71 +496,34 @@ function SubscriptionScreen({ isPlus, plan = 'yearly', renews = '18 Jun 2027', t
               ))}
             </div>
 
-            {/* No restore row here: restore recovers an entitlement the app doesn't
-                know about, and this branch only renders when it already does. It
-                lives on the surfaces where a purchase is offered — the paywall and
-                this screen's free state. MANAGE keeps only what acts. */}
-            <div className="px-24" style={{ paddingTop: 26 }}>
-              <div className="smallcaps" style={{ marginBottom: 4 }}>MANAGE</div>
-              <NavRow label={inTrial ? 'Cancel trial' : 'Cancel subscription'} accent onClick={() => setCancelOpen(true)}/>
-            </div>
-
             <div className="px-24" style={{ paddingTop: 26, textAlign: 'center' }}>
               <div className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.12em', color: 'var(--ink-mute)', textTransform: 'uppercase', lineHeight: 1.6 }}>
-                Billed through the App Store.<br/>Manage or cancel anytime in your Apple ID.
+                {plan.ownedFooter[0]}<br/>{plan.ownedFooter[1]}
               </div>
             </div>
           </>
         ) : (
           <>
+            {/* No inline paywall: this screen manages purchases, it doesn't sell.
+                Row register throughout — Unlock is a row to the paywall, Restore
+                a row beside it. One group, one heading, no duplicate pitch. */}
             <div className="px-24" style={{ paddingTop: 26 }}>
-              <div className="smallcaps" style={{ marginBottom: 4 }}>WITH PLUS</div>
-              {benefits.map((b, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 0', borderBottom: i < benefits.length - 1 ? '1px solid var(--rule)' : 'none' }}>
-                  <svg width="15" height="15" viewBox="0 0 15 15"><path d="M3 8 L6.2 11 L12 4" fill="none" stroke="var(--accent)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  <span style={{ fontSize: 'var(--t-body)', color: 'var(--ink)' }}>{b}</span>
-                </div>
-              ))}
-            </div>
-            <div className="px-24" style={{ paddingTop: 26 }}>
-              <button className="btn btn-primary" onClick={onUpgrade}>See Plus</button>
-            </div>
-
-            {/* Restore lives here because this is a surface where a purchase is on
-                offer. The CTA above stands alone so the row can't read as attached
-                to it, and the group is labelled so it isn't an orphaned list item. */}
-            <div className="px-24" style={{ paddingTop: 26 }}>
-              <div className="smallcaps" style={{ marginBottom: 4 }}>MANAGE</div>
+              <div className="smallcaps" style={{ marginBottom: 4 }}>AVAILABLE</div>
+              <NavRow label="Unlock Foundations" value={mon.offerValue} onClick={onUnlock}/>
               <NavRow label="Restore purchases" pending={restoring} pendingLabel="Restoring…" onClick={runRestore}/>
             </div>
 
-            {/* Subject is Plus, not the reader: a free user is not being billed and
-                has nothing to cancel, so this cannot be phrased as their status. */}
+            {/* Subject is the course, not the reader: a free user owns nothing and
+                is billed nothing, so this cannot be phrased as their status. */}
             <div className="px-24" style={{ paddingTop: 26, textAlign: 'center' }}>
               <div className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.12em', color: 'var(--ink-mute)', textTransform: 'uppercase', lineHeight: 1.6 }}>
-                Plus is billed through the App Store.<br/>Cancel anytime.
+                {mon.purchasesFooter[0]}<br/>{mon.purchasesFooter[1]}
               </div>
             </div>
           </>
         )}
       </div>
 
-      {PlanSheetC && (
-        <PlanSheetC open={planOpen} value={plan}
-          onClose={() => setPlanOpen(false)}
-          onSave={(v) => { setPlanOpen(false); onChangePlan && onChangePlan(v); }}/>
-      )}
-      {ConfirmSheet && (
-        <ConfirmSheet open={cancelOpen} danger
-          title={inTrial ? 'Cancel your free trial?' : 'Cancel your subscription?'}
-          body={inTrial
-            ? ('You won’t be billed. Plus stays open until ' + firstCharge + ', then the Studio locks and Saved returns to 10 items.')
-            : ('Plus stays open until ' + renews + '. After that the Studio locks and Saved returns to 10 items. Your progress and points stay as they are.')}
-          confirmLabel={inTrial ? 'Cancel trial' : 'Cancel subscription'}
-          cancelLabel={inTrial ? 'Keep trialling' : 'Keep Plus'}
-          onConfirm={() => { setCancelOpen(false); onCancel && onCancel(); }}
-          onClose={() => setCancelOpen(false)}/>
-      )}
       {ConfirmSheet && restoreDone && (
         <ConfirmSheet open={!!restoreDone}
           title={RESTORE_RESULT[restoreDone].title}
@@ -624,11 +539,13 @@ function SubscriptionScreen({ isPlus, plan = 'yearly', renews = '18 Jun 2027', t
 
 // ── HelpSupportScreen ───────────────────────────────────────
 // Reached from Settings → Help and support. A short expandable FAQ plus the
-// two contact routes. FAQ answers open inline — no dead-end rows.
-const FAQ_ITEMS = [
-  { q: 'How does my streak work?', a: 'Finish at least one lesson a day to keep it alive. Every 7 days you earn a streak freeze, and you can hold two at once — miss a day and one is spent automatically, so your streak survives and that day shows as covered in your week. Nothing to switch on.' },
+// two contact routes. FAQ answers open inline — no dead-end rows. A function,
+// not a const: the Foundations answer's tail comes from the active
+// monetization model, so it must re-read on every render.
+const FAQ_ITEMS = () => [
+  { q: 'How does my streak work?', a: 'Finish at least one lesson a day to keep it alive. Every 7 days in a row you earn a streak freeze — you hold one at a time, and if you miss a day it\u2019s spent automatically, so your streak survives and that day shows as covered in your week. Nothing to switch on.' },
   { q: 'How does my tree grow?', a: 'Your tree tracks the core course only — it moves up a stage as you complete core lessons, through ten stages from bare seed to full harvest. Points from practice and reviews don’t grow it, and it never shrinks unless you reset your progress.' },
-  { q: 'What do I get with Plus?', a: 'Two things: an unlimited Saved shelf (free keeps 10 items), and the Studio — dress up Roasty and choose which plant grows in your grove. Learning content is always free, and so is your streak.' },
+  { q: 'What does Foundations include?', a: 'Modules 2–5, the five premium practice formats, the complete Dictionary, unlimited Saved and the Studio. All of Module 1, True or false, Match the facts, Flashcards, Guess the Term and your streak are free. ' + window.getMonetization().faq },
   { q: 'Can I learn offline?', a: 'Yes — modules you\u2019ve opened are kept on your phone. Progress syncs the next time you\u2019re online.' },
 ];
 
@@ -656,7 +573,7 @@ function FaqRow({ q, a, open, onToggle }) {
   );
 }
 
-function HelpSupportScreen({ onClose }) {
+function HelpSupportScreen({ onClose, onAppGuide }) {
   const [openIdx, setOpenIdx] = useStateS(-1);
   const [scrolled, onScroll] = useScrollFlag();
   return (
@@ -667,9 +584,15 @@ function HelpSupportScreen({ onClose }) {
           <h1 className="ff-display" style={{ fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em', margin: 0, color: 'var(--ink)' }}>Help and support</h1>
         </div>
 
+        {onAppGuide && (
+          <div className="px-24" style={{ paddingTop: 26 }}>
+            <div className="smallcaps" style={{ marginBottom: 4 }}>LEARN THE APP</div>
+            <NavRow label="App Guide" sub="What each part does, plus the Today intro" onClick={onAppGuide}/>
+          </div>
+        )}
         <div className="px-24" style={{ paddingTop: 26 }}>
           <div className="smallcaps" style={{ marginBottom: 4 }}>COMMON QUESTIONS</div>
-          {FAQ_ITEMS.map((it, i) => (
+          {FAQ_ITEMS().map((it, i) => (
             <FaqRow key={i} q={it.q} a={it.a} open={openIdx === i} onToggle={() => setOpenIdx(openIdx === i ? -1 : i)}/>
           ))}
         </div>
@@ -705,6 +628,5 @@ window.TimeSheet = TimeSheet;
 window.AboutScreen = AboutScreen;
 window.HelpSupportScreen = HelpSupportScreen;
 window.AccountSyncScreen = AccountSyncScreen;
-window.PlanSheet = PlanSheet;
-window.SubscriptionScreen = SubscriptionScreen;
+window.PurchasesScreen = PurchasesScreen;
 window.REMINDER_TIMES = REMINDER_TIMES;

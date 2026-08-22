@@ -6,7 +6,7 @@ const { useState: useStateR, useEffect: useEffectR } = React;
 // Lesson Complete — full screen, tree animates from previous
 // points state to new points state. Continue → next lesson.
 // ───────────────────────────────────────────────────────────
-function LessonCompleteScreen({ lesson, result, freezeEarned = false, lessonState, onPractice, fromStage, toStage, prevPoints, newPoints, nextPlayable = true, onContinue, onBack, onDuel, brewChallenge, brewChallengeState, onStartChallenge, onNotNowChallenge}) {
+function LessonCompleteScreen({ lesson, result, freezeEarned = false, lessonState, onPractice, fromStage, toStage, toNextStage, prevPoints, newPoints, nextPlayable = true, onContinue, onBack, onDuel, brewChallenge, brewChallengeState, onStartChallenge, onNotNowChallenge}) {
   // Tree stages come from CORE-LESSON progress only (fromStage/toStage,
   // via treeStageFromCore). No points-derived fallback — single source of truth.
   const prevStage = fromStage != null ? fromStage : 1;
@@ -76,7 +76,14 @@ function LessonCompleteScreen({ lesson, result, freezeEarned = false, lessonStat
           <div style={{ display: 'flex', justifyContent: 'center', padding: '36px 0 0', position: 'relative' }}>
             <AnimatedTree fromStage={prevStage} toStage={newStage} size={240}/>
           </div>
-
+          {/* Most completions do not cross a stage threshold. Say how far the next
+              one is, so a still tree reads as progress rather than nothing. */}
+          {newStage === prevStage && toNextStage > 0 && (
+            <div className="ff-mono" style={{
+              textAlign: 'center', marginTop: 10, fontSize: 'var(--t-label)', letterSpacing: '0.12em',
+              textTransform: 'uppercase', color: 'color-mix(in oklab, var(--ink-mute) 76%, var(--ink))',
+            }}>{toNextStage} {toNextStage === 1 ? 'lesson' : 'lessons'} to the next stage</div>
+          )}
           <div className="px-24" style={{ width: '100%', marginTop: 28 }}>
             <div style={{
               background: 'var(--surface)', border: '1px solid var(--rule)', borderRadius: 16, overflow: 'hidden',
@@ -468,7 +475,68 @@ function RewardCard({ reward}) {
   );
 }
 
+// ───────────────────────────────────────────────────────────
+// Course Complete — the single biggest moment in the app, shown ONCE: after
+// the final lesson's reward chain, before landing back on Learn. Deliberately
+// NOT ModuleComplete with new copy (that reuse was ruled out): it reads as
+// RoastyMoment's bigger sibling, with two deliberate differences — it never
+// auto-dismisses (stays until the CTA), and it carries content no other beat
+// has: Roasty's spoken line, the course ledger, the Keep Sharp hand-off.
+// It GRANTS nothing — no points, no growth, no 38th card. The celebration is
+// the content. Reduced motion: entrances settle instantly (the passport-stamp
+// treatment). Content centers when it fits, scrolls when it doesn't.
+function CourseCompleteScreen({ lessons = 32, cards = 37, streak = 0, onStart }) {
+  const rows = [
+    ['Lessons completed', String(lessons)],
+    ['Cards collected', String(cards)],
+    ['Day streak', String(streak)],
+  ];
+  return (
+    <div className="screen cc-moment" data-screen-label="Course Complete" style={{ background: 'var(--bg)' }}>
+      <style>{`
+        @keyframes ccIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+        .cc-1 { animation: ccIn 520ms cubic-bezier(.2,.9,.3,1) both; }
+        .cc-2 { animation: ccIn 520ms cubic-bezier(.2,.9,.3,1) 180ms both; }
+        .cc-3 { animation: ccIn 520ms cubic-bezier(.2,.9,.3,1) 360ms both; }
+        @media (prefers-reduced-motion: reduce) { .cc-moment, .cc-moment * { animation: none !important; transition: none !important; } }
+      `}</style>
+      <div className="scroll" style={{ display: 'flex', flexDirection: 'column' }}>
+        {/* margin:auto centering is overflow-safe: small screens / large text scroll instead of clipping */}
+        <div style={{ margin: 'auto 0', padding: '20px 0 8px' }}>
+          <div className="cc-1" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
+            <div style={{ position: 'relative', background: 'var(--surface)', border: '1px solid var(--rule)', borderRadius: 12, padding: '13px 16px', color: 'var(--ink)', fontSize: 'var(--t-body)', lineHeight: 1.45, maxWidth: 260, textAlign: 'center', textWrap: 'pretty' }}>
+              Beans to brew — you did the whole thing.
+              <span aria-hidden="true" style={{ position: 'absolute', width: 11, height: 11, background: 'var(--surface)', borderLeft: '1px solid var(--rule)', borderBottom: '1px solid var(--rule)', bottom: -6, left: '50%', marginLeft: -6, transform: 'rotate(-45deg)' }}/>
+            </div>
+            <Roasty state="module" size={190}/>
+          </div>
+          {/* No eyebrow, deliberately: the headline carries the verb, so a
+              "COURSE COMPLETE" label above it said the same thing twice.
+              Recorded drift from the shipped screen (which shows both). */}
+          <div className="px-24 cc-2" style={{ textAlign: 'center', marginTop: 16 }}>
+            <h1 className="ff-display" style={{ fontSize: 'var(--t-display)', fontWeight: 600, lineHeight: 1.08, letterSpacing: '-0.02em', margin: 0, color: 'var(--ink)', textWrap: 'pretty' }}>You finished Foundations</h1>
+          </div>
+          <div className="px-24 cc-3" style={{ marginTop: 26 }}>
+            <div style={{ maxWidth: 320, margin: '0 auto' }}>
+              {rows.map(([k, v], i) => (
+                <div key={k} style={{ display: 'grid', gridTemplateColumns: '1fr auto', alignItems: 'baseline', gap: 16, padding: '13px 2px', borderBottom: i < rows.length - 1 ? '1px solid var(--rule)' : 'none' }}>
+                  <span className="smallcaps">{k}</span>
+                  <span className="ff-mono" style={{ fontSize: 'var(--t-lead)', fontWeight: 500, color: 'var(--ink)', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{v}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="px-24" style={{ position: 'sticky', bottom: 0, flexShrink: 0, paddingTop: 16, paddingBottom: 24, background: 'linear-gradient(to top, var(--bg) 74%, transparent)' }}>
+          <button className="btn btn-primary cc-3" onClick={onStart}>Start Keep Sharp</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 window.LessonCompleteScreen = LessonCompleteScreen;
 window.ModuleCompleteScreen = ModuleCompleteScreen;
 window.ModuleRewardCardScreen = ModuleRewardCardScreen;
 window.RewardCard = RewardCard;
+window.CourseCompleteScreen = CourseCompleteScreen;

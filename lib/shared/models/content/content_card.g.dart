@@ -57,7 +57,7 @@ Map<String, dynamic> _$ConceptCardToJson(ConceptCard instance) =>
 VisualCard _$VisualCardFromJson(Map<String, dynamic> json) => VisualCard(
   label: json['label'] as String,
   title: json['title'] as String,
-  variant: json['variant'] as String,
+  subject: json['visualGuide'] as String,
   caption: json['caption'] as String,
   mergeHeader: json['mergeHeader'] as bool?,
   captionTop: json['captionTop'] as bool?,
@@ -68,7 +68,7 @@ Map<String, dynamic> _$VisualCardToJson(VisualCard instance) =>
     <String, dynamic>{
       'label': instance.label,
       'title': instance.title,
-      'variant': instance.variant,
+      'visualGuide': instance.subject,
       'caption': instance.caption,
       'mergeHeader': instance.mergeHeader,
       'captionTop': instance.captionTop,

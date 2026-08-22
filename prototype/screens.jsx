@@ -233,26 +233,14 @@ function FreezeMark({ size = 12, color = 'var(--accent)', sw = 1.9 }) {
 }
 window.FreezeMark = FreezeMark;
 
-// The freezes a user is holding, as pips against the cap — scarcity you can see.
-function FreezeTokens({ held = 0, cap = 2, size = 9 }) {
-  return (
-    <span style={{ display: 'inline-flex', gap: 5, alignItems: 'center' }} aria-label={held + ' of ' + cap + ' freezes held'}>
-      {Array.from({ length: cap }).map((_, i) => (
-        <span key={i} style={{
-          width: size, height: size, borderRadius: 999,
-          background: i < held ? 'var(--accent)' : 'transparent',
-          border: '1.5px solid ' + (i < held ? 'var(--accent)' : 'var(--rule)'),
-        }}/>
-      ))}
-    </span>
-  );
-}
-
 // StreakScreen — celebration beat (Roasty), then an original streak view:
 // a progress ring toward the next milestone, the week strip, and an insight
 // card. No tree here — the tree lives on its own screen.
-function StreakScreen({ streak, frozenDays, freezesHeld = 0, freezeCap = 2, nextFreezeIn = 7, onClose, onContinue }) {
-  const [phase, setPhase] = React.useState('roasty');
+// Celebration plays once per session: first open gets the Roasty beat, later
+// opens go straight to the streak view.
+let streakBeatPlayed = false;
+function StreakScreen({ streak, frozenDays, freezesHeld = 0, freezeCap = 1, nextFreezeIn = 7, onClose, onContinue }) {
+  const [phase, setPhase] = React.useState(streakBeatPlayed ? 'content' : 'roasty');
   const [armed, setArmed] = React.useState(false);
   const [hdrScrolled, onHdrScroll] = window.useScrollFlag();
   const [shareOpen, setShareOpen] = React.useState(false);
@@ -267,7 +255,7 @@ function StreakScreen({ streak, frozenDays, freezesHeld = 0, freezeCap = 2, next
   const replay = () => setPhase('roasty');
   if (phase === 'roasty') {
     return <RoastyMoment state="correct" eyebrow="STREAK" title={`${streak} days in a row.`}
-                         onDone={() => setPhase('content')}/>;
+                         onDone={() => { streakBeatPlayed = true; setPhase('content'); }}/>;
   }
 
   const milestones = [3, 7, 14, 30, 60, 100, 180, 365];
@@ -283,7 +271,7 @@ function StreakScreen({ streak, frozenDays, freezesHeld = 0, freezeCap = 2, next
   const freezeLine = iced.length
     ? `${DAY_NAMES[iced[0]]} was covered by a freeze`
     : freezesHeld > 0
-      ? `${freezesHeld} freeze${freezesHeld === 1 ? '' : 's'} held · covers a missed day`
+      ? `1 freeze held · covers a missed day`
       : `Next freeze in ${nextFreezeIn} day${nextFreezeIn === 1 ? '' : 's'}`;
 
   return (
@@ -319,10 +307,11 @@ function StreakScreen({ streak, frozenDays, freezesHeld = 0, freezeCap = 2, next
         {/* week strip */}
         <div className="px-24" style={{ paddingTop: 30 }}>
           <WeekStrip size="lg" frozen={iced} streak={streak}/>
-          {/* Freeze state lives here, next to the days it acts on — earned by
-              keeping the streak, spent automatically, nothing to manage. */}
+          {/* Freeze state lives here, next to the days it acts on — one line;
+              at cap 1 the FreezeMark glyph inside covered days and this line
+              carry the whole story: earned by keeping the streak, spent
+              automatically, nothing to manage. */}
           <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-            <FreezeTokens held={freezesHeld} cap={freezeCap}/>
             <span className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.1em', textTransform: 'uppercase', color: iced.length ? 'var(--accent)' : 'var(--ink-mute)' }}>
               {freezeLine}
             </span>
@@ -511,7 +500,7 @@ function TreeScreen({ stage, coreDone, coreTotal, onClose }) {
 // account controls. The account rows route out to full screens (About,
 // Account and sync) or open confirmation sheets (Reset progress). The practice
 // rows are live toggles + a reminder-time sheet, managed locally.
-function SettingsScreen({ theme, onTheme, onClose, onAbout, onAccount, onSubscription, onHelp, isPlus, inTrial = false, showDataExport, onReset, onDeleteAccount, progressSummary }) {
+function SettingsScreen({ theme, onTheme, onClose, onAbout, onAccount, onPurchases, onHelp, isPlus, showDataExport, onReset, onDeleteAccount, progressSummary }) {
   const [reminder, setReminder] = useState('8:00 AM');
   const [notify, setNotify] = useState(true);
   const [sound, setSound] = useState(true);
@@ -550,7 +539,7 @@ function SettingsScreen({ theme, onTheme, onClose, onAbout, onAccount, onSubscri
         <div className="px-24" style={{ paddingTop: 26 }}>
           <div className="smallcaps" style={{ marginBottom: 4 }}>ACCOUNT</div>
           <SettingsRow label="Account and sync" value={(window.USER || {}).email} onClick={onAccount}/>
-          <SettingsRow label="Subscription" value={isPlus ? (inTrial ? 'Trial' : 'Plus') : 'Free'} onClick={onSubscription}/>
+          <SettingsRow label="Purchases" value={isPlus ? 'Foundations' : 'Free'} onClick={onPurchases}/>
           {/* Data export is deferred to v2 — rendered only in the 'everything' scope. */}
           {showDataExport && <SettingsRow label="Download my data" onClick={() => setDataOpen(true)}/>}
         </div>
@@ -687,7 +676,7 @@ function AppHeader({ tab, variant = 'default', scrolled, dictLocked, onDict, sav
       <window.HeaderCompactTitle scrolled={scrolled} eyebrow={meta.eyebrow} title={meta.title}/>
 
       {/* right entries — always visible, sit flush to the right edge */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0, marginLeft: 'auto', pointerEvents: 'auto' }}>
+      <div data-guide="today-header" style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0, marginLeft: 'auto', pointerEvents: 'auto' }}>
         {variant === 'profile' ? (
           <button onClick={onSettings} aria-label="Settings" style={{
             appearance: 'none', cursor: 'pointer', width: 44, height: 44, borderRadius: 999,
@@ -697,7 +686,9 @@ function AppHeader({ tab, variant = 'default', scrolled, dictLocked, onDict, sav
           </button>
         ) : (
           <>
-            {onSaved && (savedLocked || savedCount > 0) && <SavedHeaderButton locked={savedLocked} count={savedCount} onClick={onSaved}/>}
+            {/* Always present — an empty Saved opens its empty state (which teaches
+                the bookmark); only the count dot is gated on having items. */}
+            {onSaved && <SavedHeaderButton locked={savedLocked} count={savedCount} onClick={onSaved}/>}
             <DictHeaderButton inHeader locked={dictLocked} onClick={onDict}/>
             {showDuel && window.DuelHeaderButton && (
               <window.DuelHeaderButton inHeader locked={duelLocked} count={duelCount} onClick={onDuel}/>
@@ -713,10 +704,21 @@ window.AppHeader = AppHeader;
 
 // LEARN TAB
 // ───────────────────────────────────────────────────────────
-function LearnTab({ freezeSaved = false, freezesHeld = 0, nextFreezeIn = 7, onDismissFreeze, onLesson, onGame, onOpenDuel, showDuel = true, isLocked, state, brewChallenge, brewMode, brewAutoHide = true, brewPointsAwarded = true, onBrewLog, onBrewSkip, onBrewDismiss, onBrewCard, brewCompleted, brewActiveId, brewSaved, onBrewUnsave, onBrewAction }) {
+// Keep Sharp — what a finished learner is offered on Today (replaces the old
+// caught-up dead end). One recommended practice TYPE per local calendar day —
+// a pure function of the date, zero storage — with that type's own completion
+// rule stated on the card. Rule lines are VERBATIM from docs/decisions.md
+// §5/§6: the rule the card states is the same rule the streak judges, which is
+// why item-level picks (“play Match the facts”) were rejected. Canonical order.
+const KEEP_SHARP_TYPES = [
+  { id: 'games',  title: 'Games',           rule: 'Play two different games today.' },
+  { id: 'vocab',  title: 'Guess the term',  rule: 'Finish one guessing round.' },
+  { id: 'flash',  title: 'Flashcards',      rule: 'Review your saved terms.' },
+  { id: 'replay', title: 'Replay a lesson', rule: 'Finish a replay of any lesson you’ve completed.' },
+];
+function LearnTab({ freezeSaved = false, freezesHeld = 0, nextFreezeIn = 7, onDismissFreeze, onLesson, keepSharp = false, flashEmpty = false, isCourseLocked, onGame, gamesLocked = false, onFlashcards, onVocabGame, onOpenDuel, showDuel = true, isLocked, state, brewChallenge, brewMode, brewAutoHide = true, brewPointsAwarded = true, onBrewLog, onBrewSkip, onBrewDismiss, onBrewCard, brewCompleted, brewActiveId, brewSaved, onBrewUnsave, onBrewAction }) {
   const lock = isLocked || (() => false);
-  const tod = window.dictTermOfDay ? window.dictTermOfDay() : null;
-  const termCount = (window.DICT_TERMS || []).length;
+  const [ksSignal, setKsSignal] = React.useState({}); // Keep Sharp → open a Practice Again group
   const today = new Date(2026, 4, 8); // Friday May 8 (frozen for prototype)
   const dayName = today.toLocaleDateString('en-US', { weekday: 'long' });
   const monthDay = today.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
@@ -735,6 +737,13 @@ function LearnTab({ freezeSaved = false, freezesHeld = 0, nextFreezeIn = 7, onDi
   const nextLesson = curMod.lessons[curIdx + 1] || null; // next, still-locked lesson IN this module
   const lessonNum = curIdx + 1;
   const modTotal = curMod.lessons.length;
+  // Past free Module 1 the next lesson is part of the purchase: the card
+  // says so up front — the button must never read "Begin" and then gate.
+  const curLocked = !allCaughtUp && !!(isCourseLocked && isCourseLocked(curLesson.id));
+  // What the locked card counts: not the cursor's position in one module
+  // (meaningless once the eyebrow is the wall), but what the purchase opens —
+  // every lesson still ahead of the user, course-wide.
+  const lessonsAhead = MODULES.reduce((a, m) => a + m.lessons.filter(l => l.status !== 'complete').length, 0);
 
   // Completed work the user can revisit (lessons + games + finished modules).
   const completed = [];
@@ -743,6 +752,35 @@ function LearnTab({ freezeSaved = false, freezesHeld = 0, nextFreezeIn = 7, onDi
       if (l.status === 'complete') completed.push({ ...l, mod: m });
     }
   }
+
+  // Keep Sharp state. Trigger untouched: allCaughtUp, derived, auto-reverts
+  // when new lessons ship. Pick = KEEP_SHARP_TYPES[epochDay % 4]; a type with
+  // no material advances to the next in order (only Flashcards can be empty —
+  // it drills saved terms). No eligible type → the quiet state. `keepSharp` is
+  // a route pin (true = live pick, or a type id / 'quiet') for the overview.
+  const ksShow = allCaughtUp || !!keepSharp;
+  const ksEligible = { games: (window.MINI_GAMES || []).length > 0, vocab: true, flash: !flashEmpty, replay: completed.length > 0 };
+  let ksPick = null;
+  if (ksShow && keepSharp !== 'quiet') {
+    if (typeof keepSharp === 'string') {
+      ksPick = KEEP_SHARP_TYPES.find(x => x.id === keepSharp) || null;
+    } else {
+      const epochDay = Math.floor(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) / 86400000);
+      for (let i = 0; i < KEEP_SHARP_TYPES.length; i++) {
+        const cand = KEEP_SHARP_TYPES[(epochDay + i) % KEEP_SHARP_TYPES.length];
+        if (ksEligible[cand.id]) { ksPick = cand; break; }
+      }
+    }
+  }
+  // Start opens the type's surface. Mini-games and replays live in the
+  // Practice Again lists on this screen, so their CTA opens the matching group
+  // (never a specific item — the rule, not the card, names the work).
+  const ksStart = (id) => {
+    if (id === 'vocab') { onVocabGame && onVocabGame(); return; }
+    if (id === 'flash') { onFlashcards && onFlashcards(); return; }
+    const group = id === 'games' ? 'games' : 'lessons';
+    setKsSignal(s => ({ ...s, [group]: (s[group] || 0) + 1 }));
+  };
 
   return (
     <div className="screen slide-in" data-screen-label="Learn">
@@ -769,7 +807,7 @@ function LearnTab({ freezeSaved = false, freezesHeld = 0, nextFreezeIn = 7, onDi
               <span style={{ minWidth: 0, flex: 1 }}>
                 <span style={{ display: 'block', fontSize: 'var(--t-support)', fontWeight: 500, color: 'var(--ink)' }}>Your streak is safe.</span>
                 <span style={{ display: 'block', fontSize: 'var(--t-label)', lineHeight: 1.45, color: 'var(--ink-mute)', marginTop: 3, textWrap: 'pretty' }}>
-                  Yesterday was covered by a freeze. {freezesHeld > 0 ? `${freezesHeld} still held.` : `You'll earn another in ${nextFreezeIn} days.`}
+                  Yesterday was covered by a freeze. You'll earn another in {nextFreezeIn} days.
                 </span>
               </span>
               <button onClick={onDismissFreeze} aria-label="Dismiss" style={{ appearance: 'none', background: 'transparent', border: 0, padding: 2, cursor: 'pointer', color: 'var(--ink-mute)', flexShrink: 0 }}>
@@ -780,40 +818,82 @@ function LearnTab({ freezeSaved = false, freezesHeld = 0, nextFreezeIn = 7, onDi
         )}
 
         {/* 1 · Current lesson — the first thing the user sees */}
-        <div className="px-24" style={{ paddingTop: 28 }}>
-          <div className="smallcaps" style={{ marginBottom: 28 }}>{allCaughtUp ? 'ALL CAUGHT UP' : 'CONTINUE LEARNING'}</div>
-          {allCaughtUp ? (
-            <div className="card" style={{ textAlign: 'center' }}>
-              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 6 }}>
-                <Roasty state="module" size={96}/>
-              </div>
-              <h2 className="ff-display" style={{
-                fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.12, letterSpacing: '-0.01em',
-                margin: '4px 0 0', color: 'var(--ink)',
-              }}>You’ve finished every lesson available.</h2>
-              <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: '12px 0 20px', textWrap: 'pretty' }}>
-                New modules are on the way. Revisit anything below, or review your path so far.
-              </p>
+        <div className="px-24" data-guide="today-lesson" style={{ paddingTop: 28 }}>
+          <div className="smallcaps" style={{ marginBottom: 28 }}>{ksShow ? 'ALL CAUGHT UP' : 'CONTINUE LEARNING'}</div>
+          {ksShow ? (
+          /* Keep Sharp — a STATE of Today's lead card, not a new surface. Accent
+             hero (matches the shipped build's treatment). It grants nothing — no
+             points, no tree, no course progress; the streak is earned by the
+             activity's own rule, stated below the title. Deliberately no
+             progress chrome: no MODULE n, no lesson counts, no ~N MIN. */
+          <div className="card" role="group" aria-label={ksPick ? ('Keep Sharp — today: ' + ksPick.title) : 'Keep Sharp'}
+               style={{ background: 'var(--accent)', borderColor: 'var(--accent)', color: 'var(--accent-ink)' }}>
+            <div className="smallcaps" style={{ color: 'var(--accent-ink)', display: 'inline-flex', alignItems: 'center', gap: 7 }}>
+              <svg width="10" height="13" viewBox="0 0 11 14" aria-hidden="true" style={{ display: 'block', flexShrink: 0 }}><path d="M6.6 0.5 L1 8 H4.6 L4 13.5 L10 5.6 H6.1 Z" fill="currentColor"/></svg>
+              KEEP SHARP
             </div>
+            {ksPick ? (<>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 16, alignItems: 'center', marginTop: 14 }}>
+                <div style={{ minWidth: 0 }}>
+                  <h2 className="ff-display" style={{ fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.1, letterSpacing: '-0.01em', margin: 0, color: 'var(--accent-ink)' }}>{ksPick.title}</h2>
+                  <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.5, color: 'var(--accent-ink)', opacity: 0.82, margin: '8px 0 0', textWrap: 'pretty' }}>{ksPick.rule}</p>
+                </div>
+                <Roasty state="idle" size={84} style={{ flexShrink: 0 }}/>
+              </div>
+              <button className="btn" onClick={() => ksStart(ksPick.id)} aria-label={'Start: ' + ksPick.title}
+                style={{ width: '100%', marginTop: 18, background: 'var(--accent-ink)', color: 'var(--accent)', borderRadius: 'var(--r)', padding: '14px 24px' }}>Start</button>
+            </>) : (
+              /* Quiet state — no type has material today. No CTA, and no promise
+                 of future content. */
+              <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.5, color: 'var(--accent-ink)', opacity: 0.85, margin: '12px 0 0', textWrap: 'pretty' }}>Practice anything below to keep your streak alive.</p>
+            )}
+          </div>
           ) : (
-          <div className="card">
-            <div className="smallcaps" style={{ marginBottom: 10 }}>MODULE {curMod.n} · {curMod.label}</div>
-            <h2 className="ff-display" style={{
-              fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.1, letterSpacing: '-0.01em',
-              margin: 0, color: 'var(--ink)',
-            }}>{curLesson.title}</h2>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, marginTop: 20 }}>
-              <div className="ff-mono" style={{
-                fontSize: 'var(--t-label)', letterSpacing: '0.14em', color: 'var(--ink-mute)',
-                textTransform: 'uppercase', display: 'flex', flexDirection: 'column', gap: 7,
-              }}>
-                <span>LESSON {lessonNum}/{modTotal}</span>
-                <span>~{curLesson.time} MIN</span>
-              </div>
-              <button className="btn btn-primary" onClick={() => onLesson(curLesson.id)} style={{ flexShrink: 0, width: 'auto', minWidth: 132, padding: '12px 22px', fontSize: 'var(--t-support)' }}>
-                Begin lesson
-              </button>
+          <div className="card" role="group" aria-label={'Continue learning, module ' + curMod.n + ', ' + curMod.title}>
+            {/* Wall state: past the free lessons the eyebrow IS the wall —
+                one statement, no module number (LESSON n/total below already
+                places the user; two numbers would say it twice). Eyebrow spans
+                the full card so the art tops out level with the title, not
+                floating beside the eyebrow. */}
+            <div className="smallcaps" style={{ marginBottom: 14, ...(curLocked ? { color: 'var(--accent)' } : null) }}>
+              {curLocked ? 'CONTINUES IN FOUNDATIONS' : `MODULE ${curMod.n} · ${curMod.label}`}
             </div>
+            {/* Stacked layout (settled in review): title always spans the full card
+                — long lesson names were getting squeezed to a ~190px column beside the
+                92px art. Art is now a full-width banner under the title so the module
+                picture stays prominent; every element hangs off the same left rail. */}
+            <h2 className="ff-display" style={{
+              fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.12, letterSpacing: '-0.01em',
+              margin: 0, color: 'var(--ink)', textWrap: 'balance',
+            }}>{curLesson.title}</h2>
+            {curMod.art ? (
+              <img src={curMod.art} alt="" aria-hidden="true" style={{ width: '100%', height: 120, marginTop: 16, borderRadius: 10, objectFit: 'cover', objectPosition: curMod.artPos || '50% 50%', display: 'block' }}/>
+            ) : curMod.artNote ? (
+              /* Art slot awaiting the module illustration — same banner geometry as the real one. */
+              <div className="ff-mono" aria-hidden="true" style={{
+                width: '100%', height: 120, marginTop: 16, borderRadius: 10, display: 'grid', placeItems: 'center',
+                padding: 8, textAlign: 'center', border: '1px dashed var(--rule)',
+                background: 'repeating-linear-gradient(135deg, var(--surface-2) 0 6px, transparent 6px 12px)',
+                fontSize: 'var(--t-micro)', letterSpacing: '0.1em', textTransform: 'uppercase',
+                color: 'var(--ink-mute)', lineHeight: 1.4,
+              }}>{curMod.artNote}</div>
+            ) : null}
+            {/* One mono line, dot-joined — stacked meta plus a right-hung button
+                read as four loose corners; a single line under the title keeps
+                everything on the card's left edge. */}
+            <div className="ff-mono" aria-label={curLocked ? (lessonsAhead + ' lessons ahead in Foundations') : ('Lesson ' + lessonNum + ' of ' + modTotal + ', about ' + curLesson.time + ' minutes')} style={{
+              fontSize: 'var(--t-label)', letterSpacing: '0.14em', color: 'color-mix(in oklab, var(--ink-mute) 62%, var(--ink))',
+              textTransform: 'uppercase', marginTop: 14,
+            }}>
+              <span aria-hidden="true">{curLocked ? `${lessonsAhead} LESSONS AHEAD` : `LESSON ${lessonNum}/${modTotal} · ~${curLesson.time} MIN`}</span>
+            </div>
+            {/* Full-width CTA — same rank as Keep Sharp's Start (the other state
+                of this card); full width also affords the honest "Unlock
+                Foundations" label instead of a bare "Unlock". */}
+            <button className="btn btn-primary" onClick={() => onLesson(curLesson.id)} aria-label={(curLocked ? 'Unlock Foundations to continue: ' : 'Begin lesson: ') + curLesson.title} style={{ width: '100%', marginTop: 18, padding: '14px 24px', ...(curLocked ? { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 } : null) }}>
+              {curLocked && window.LockMark && <window.LockMark size={12} color="var(--accent-ink)"/>}
+              {curLocked ? 'Unlock Foundations' : 'Begin lesson'}
+            </button>
           </div>
           )}
         </div>
@@ -821,10 +901,11 @@ function LearnTab({ freezeSaved = false, freezesHeld = 0, nextFreezeIn = 7, onDi
         {/* 2 · Active Coffee Challenge — below Continue Learning, above Up Next */}
         {brewChallenge && brewMode && window.ActiveBrewCard && (
           <window.ActiveBrewCard challenge={brewChallenge} mode={brewMode} autoHide={brewAutoHide} showPoints={brewPointsAwarded}
+            lessonPending={!allCaughtUp}
             onLog={onBrewLog} onSkip={onBrewSkip} onDismiss={onBrewDismiss} onOpenCard={onBrewCard}/>
         )}
 
-        {/* 2b · Saved challenges — the ones you parked for later */}
+        {/* 2b · For Later — postponed challenges, collapsed until tapped */}
         {window.SavedBrewList && (
           <window.SavedBrewList saved={brewSaved} activeId={brewActiveId} completed={brewCompleted}
             onStart={(ch) => onBrewAction && onBrewAction(ch, 'available')}
@@ -863,40 +944,52 @@ function LearnTab({ freezeSaved = false, freezesHeld = 0, nextFreezeIn = 7, onDi
 
         {/* 3 · Completed work to revisit — grouped by idea, each group collapsible */}
         {(() => {
-          const practiceGroups = [
-            {
-              id: 'lessons', label: 'Lessons',
-              items: completed.map(l => ({
-                id: l.id, kind: 'lesson', title: l.title,
-                sub: `MODULE ${l.mod.n} · ${l.mod.label}`,
-                meta: `~${l.time} MIN`, lessonId: l.id,
-              })),
-            },
-            {
-              id: 'games', label: 'Mini-games',
-              items: MINI_GAMES,
-            },
-          ].filter(g => g.items.length);
-
+          const lessonItems = completed.map(l => ({ id: l.id, title: l.title, sub: `MODULE ${l.mod.n} · ${l.mod.label}`, meta: `~${l.time} MIN` }));
+          // Dictionary drills — always free; they lead, ahead of the game catalog.
+          const drills = [
+            { id: 'f-flash', kind: 'flash', title: 'Flashcards', sub: 'FLIP AND RECALL', go: onFlashcards },
+            { id: 'f-vocab', kind: 'vocab', title: 'Guess the term', sub: 'FROM THE DEFINITION', go: onVocabGame },
+          ];
+          // THE GAME CATALOG — one group per kind: kind glyph + kind name on the
+          // header (never per row), its games under it. Order and positions are
+          // fixed and identical for free and Plus; only the lock marks differ.
+          // A game is free iff its topic's module is unlocked — locked rows are
+          // lock-marked before any tap, and the tap raises the module-targeted
+          // gate sheet ("Taught in Module N").
+          const kindGroups = GAME_KINDS.map(k => ({ ...k, games: MINI_GAMES.filter(m => m.kind === k.kind) })).filter(k => k.games.length);
           return (
-            <div className="px-24" style={{ paddingTop: 32 }}>
+            <div className="px-24" data-guide="today-practice" style={{ paddingTop: 32 }}>
               <div className="smallcaps" style={{ marginBottom: 12 }}>PRACTICE AGAIN</div>
-              {practiceGroups.map((g, i) => (
-                <PracticeGroup key={g.id} label={g.label} count={g.items.length} defaultOpen={false}>
-                  {g.items.map(it => {
-                    const isGame = g.id === 'games';
-                    // Mini-games draw on the whole course, not one lesson, so the row
-                    // leads with the game's own name and takes its topic as the eyebrow.
-                    const rowTitle = it.title;
-                    const rowSub = it.sub;
-                    return (
-                    <ReplayRow key={it.id} icon={<ReplayIcon kind={it.kind}/>} title={rowTitle}
-                               sub={rowSub} meta={it.meta}
-                               onClick={() => isGame ? onGame(it) : onLesson(it.id)}/>
-                    );
-                  })}
-                </PracticeGroup>
-              ))}
+              {lessonItems.length > 0 && (
+              <PracticeGroup label="Lessons" count={lessonItems.length} defaultOpen={false} openSignal={ksSignal.lessons}>
+                {lessonItems.map(it => (
+                  <ReplayRow key={it.id} icon={<ReplayIcon kind="lesson"/>} title={it.title} sub={it.sub} meta={it.meta} onClick={() => onLesson(it.id)}/>
+                ))}
+              </PracticeGroup>
+              )}
+              <PracticeGroup label="Games" count={drills.length + MINI_GAMES.length} defaultOpen={false} openSignal={ksSignal.games} last={true}>
+                {drills.map(it => (
+                  <ReplayRow key={it.id} icon={<ReplayIcon kind={it.kind}/>} title={it.title} sub={it.sub} meta={gamesLocked ? 'FREE' : '~2 MIN'} onClick={() => it.go && it.go()}/>
+                ))}
+                {kindGroups.map(k => (
+                  <div key={k.kind}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '16px 0 2px' }}>
+                      <span aria-hidden="true" style={{ display: 'grid', placeItems: 'center', width: 20, color: 'var(--ink-mute)' }}><ReplayIcon kind={k.kind} size={18}/></span>
+                      <span className="smallcaps">{k.label}</span>
+                    </div>
+                    <div style={{ paddingLeft: 30 }}>
+                      {k.games.map(m => {
+                        const locked = gamesLocked && m.mod !== 'm1';
+                        return (
+                          <ReplayRow key={m.id} title={m.title} sub={m.sub} locked={locked}
+                                     meta={m.placeholder ? 'PLACEHOLDER' : (gamesLocked && !locked ? 'FREE' : m.meta)}
+                                     onClick={() => onGame(m)}/>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </PracticeGroup>
             </div>
           );
         })()}
@@ -923,10 +1016,12 @@ function FormRow({ label, value }) {
   );
 }
 
-function PracticeGroup({ label, count, defaultOpen, children }) {
+function PracticeGroup({ label, count, defaultOpen, openSignal, last = false, children }) {
   const [open, setOpen] = React.useState(!!defaultOpen);
+  // Keep Sharp's Start opens the matching group from the card above (no scroll APIs).
+  React.useEffect(() => { if (openSignal) setOpen(true); }, [openSignal]);
   return (
-    <div style={{ borderBottom: '1px solid var(--rule)' }}>
+    <div style={{ borderBottom: last ? 'none' : '1px solid var(--rule)' }}>
       <button onClick={() => setOpen(o => !o)} aria-expanded={open}
         style={{
           width: '100%', appearance: 'none', border: 'none', background: 'transparent',
@@ -1039,6 +1134,26 @@ function ReplayIcon({ kind, size = 20 }) {
       </svg>
     );
   }
+  if (kind === 'flash') {
+    // two stacked cards — the flip deck
+    return (
+      <svg width={size} height={size} viewBox="0 0 20 20" style={s}>
+        <rect x="5.5" y="3" width="11" height="8" rx="1.6" fill="none" stroke="currentColor" strokeWidth="1.4"/>
+        <rect x="3" y="8" width="11" height="8.5" rx="1.6" fill="var(--bg)" stroke="currentColor" strokeWidth="1.4"/>
+        <path d="M6 12.2 H11" stroke="var(--accent)" strokeWidth="1.3" strokeLinecap="round"/>
+      </svg>
+    );
+  }
+  if (kind === 'vocab') {
+    // speech bubble with a question mark — definition in, term out
+    return (
+      <svg width={size} height={size} viewBox="0 0 20 20" style={s}>
+        <path d="M3.5 4.5 h13 v9 h-7.5 l-3 3 v-3 h-2.5 Z" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
+        <path d="M8.6 7.6 c0-1 .8-1.6 1.6-1.6 .9 0 1.6 .6 1.6 1.5 0 1.2-1.5 1.3-1.5 2.4" fill="none" stroke="var(--accent)" strokeWidth="1.3" strokeLinecap="round"/>
+        <circle cx="10.2" cy="11.5" r="0.8" fill="var(--accent)"/>
+      </svg>
+    );
+  }
   // generic game fallback
   return (
     <svg width={size} height={size} viewBox="0 0 20 20" style={s}>
@@ -1048,31 +1163,37 @@ function ReplayIcon({ kind, size = 20 }) {
   );
 }
 
-function ReplayRow({ icon, title, sub, meta, onClick }) {
+function ReplayRow({ icon, title, sub, meta, onClick, locked = false }) {
   return (
     <button
       onClick={onClick}
+      className="tap-row"
+      aria-label={[title, sub, meta].filter(Boolean).join('. ') + (locked ? '. Part of Foundations.' : '. Replay.')}
       style={{
         width: '100%', appearance: 'none', border: 'none', background: 'transparent',
-        cursor: 'pointer', textAlign: 'left',
-        display: 'grid', gridTemplateColumns: '24px 1fr auto', alignItems: 'center',
-        gap: 14, padding: '12px 0',
+        cursor: 'pointer', textAlign: 'left', minHeight: 44, borderRadius: 10,
+        display: 'grid', gridTemplateColumns: icon ? '24px 1fr auto' : '1fr auto', alignItems: 'center',
+        gap: 14, padding: '12px 8px', margin: '0 -8px',
       }}>
-      {icon}
-      <div>
-        <div className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.14em', color: 'var(--ink-mute)', textTransform: 'uppercase' }}>{sub}</div>
+      {icon && <span aria-hidden="true" style={{ display: 'grid', placeItems: 'center' }}>{icon}</span>}
+      <div aria-hidden="true">
+        <div className="ff-mono" style={{ fontSize: 'var(--t-label)', letterSpacing: '0.14em', color: 'color-mix(in oklab, var(--ink-mute) 76%, var(--ink))', textTransform: 'uppercase' }}>{sub}</div>
         <div style={{ fontSize: 'var(--t-support)', color: 'var(--ink)', fontWeight: 500, marginTop: 2 }}>{title}</div>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <div aria-hidden="true" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         {meta && (
-          <span className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.12em', color: 'var(--ink-mute)', textTransform: 'uppercase', textAlign: 'right' }}>
+          <span className="ff-mono" style={{ fontSize: 'var(--t-label)', letterSpacing: '0.12em', color: 'color-mix(in oklab, var(--ink-mute) 76%, var(--ink))', textTransform: 'uppercase', textAlign: 'right' }}>
             {meta}
           </span>
         )}
-        <svg width="18" height="18" viewBox="0 0 20 20" style={{ color: 'var(--ink-mute)', flexShrink: 0 }} aria-label="Replay">
+        {locked ? (
+          <span style={{ display: 'grid', placeItems: 'center', width: 18, color: 'var(--ink-mute)' }}>{window.LockMark ? <window.LockMark size={13} label="Part of Foundations"/> : <IconLock/>}</span>
+        ) : (
+        <svg width="18" height="18" viewBox="0 0 20 20" style={{ color: 'var(--ink-mute)', flexShrink: 0 }}>
           <path d="M15.5 6.5 A6 6 0 1 0 16 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
           <path d="M15.8 4 L16 6.8 L13.2 6.6" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
+        )}
       </div>
     </button>
   );
@@ -1080,6 +1201,9 @@ function ReplayRow({ icon, title, sub, meta, onClick }) {
 
 // ───────────────────────────────────────────────────────────
 // COMING SOON — future modules teaser at the foot of the path.
+// HIDDEN FOR V1 (SHOW_COMING_SOON): we don't want to publicly promise
+// content we may never build. Flip back on if/when more modules are real.
+window.SHOW_COMING_SOON = false;
 // Deliberately NOT the locked-module pattern: no padlocks, no
 // "finish X to unlock". A dotted trail continues the path spine
 // into a light, sage-toned set of preview cards so the MVP reads
@@ -1182,17 +1306,19 @@ function ComingSoonPath({ compact = false }) {
 // PATH TAB
 // ───────────────────────────────────────────────────────────
 // A collapsed module on the Focused path: one tappable row instead of an
-// expanded lesson list. Completed modules review; locked modules just wait.
-function CompactModuleRow({ mod, prereq }) {
+// expanded lesson list. Completed modules review; progress-locked modules wait;
+// purchase-locked modules (free tier, part of Foundations) raise the purchase
+// sheet on tap — they are the visible edge of the one-time purchase.
+function CompactModuleRow({ mod, prereq, purchase = false, onTap }) {
   const locked = mod.locked;
   const n = mod.lessons.length;
   const complete = !locked && mod.lessons.every(l => l.status === 'complete');
-  // Always static: the Path shows these as a summary row, never a destination.
-  const interactive = false;
+  const interactive = purchase;
   return (
     <div className="px-24" style={{ marginBottom: 20 }}>
       <button
-        disabled
+        disabled={!interactive}
+        onClick={() => interactive && onTap && onTap()}
         style={{
           width: '100%', appearance: 'none', border: 'none', background: 'transparent',
           cursor: interactive ? 'pointer' : 'default', textAlign: 'left', padding: 0, display: 'block',
@@ -1206,7 +1332,9 @@ function CompactModuleRow({ mod, prereq }) {
             fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.1, letterSpacing: '-0.01em',
             margin: 0, color: locked ? 'var(--ink-mute)' : 'var(--ink)',
           }}>{mod.title}</h2>
-          {complete ? null : locked ? (
+          {complete ? null : purchase ? (
+            <span className="trail" style={{ color: 'var(--accent)' }}><window.LockMark size={13} label="Part of Foundations"/></span>
+          ) : locked ? (
             <span className="trail"><window.LockMark size={13}/></span>
           ) : (
             <span className="trail"><window.Chevron/></span>
@@ -1214,7 +1342,7 @@ function CompactModuleRow({ mod, prereq }) {
         </div>
         {!complete && (
           <div className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.1em', color: 'var(--ink-mute)', textTransform: 'uppercase', marginTop: 8, marginLeft: 44 }}>
-            {locked && prereq ? `Finish ${prereq.title} to unlock` : `${n} lessons`}
+            {purchase ? `Part of Foundations · ${n} lessons` : locked && prereq ? `Finish ${prereq.title} to unlock` : `${n} lessons`}
           </div>
         )}
       </button>
@@ -1222,7 +1350,7 @@ function CompactModuleRow({ mod, prereq }) {
   );
 }
 
-function PathTab({ onLesson, brewCompleted, brewActiveId, brewSaved, brewPathMode, onBrewAction }) {
+function PathTab({ onLesson, purchaseLocked, onPurchaseTap, brewCompleted, brewActiveId, brewSaved, brewPathMode, onBrewAction, onOpenGuide }) {
   const totalLessons = MODULES.reduce((a, m) => a + m.lessons.length, 0);
   const done = MODULES.flatMap(m => m.lessons).filter(l => l.status === 'complete').length;
   const unlocked = MODULES.filter(m => !m.locked).reduce((a, m) => a + m.lessons.length, 0);
@@ -1286,7 +1414,8 @@ function PathTab({ onLesson, brewCompleted, brewActiveId, brewSaved, brewPathMod
           // row, and completed modules into a tappable accordion row (expand to
           // review lessons, replay, and reach challenges).
           if (!isActive && !allDone) {
-            return <CompactModuleRow key={mod.id} mod={mod} prereq={prereq}/>;
+            const buy = !!(purchaseLocked && mod.lessons.length && purchaseLocked(mod.lessons[0].id));
+            return <CompactModuleRow key={mod.id} mod={mod} prereq={prereq} purchase={buy} onTap={onPurchaseTap}/>;
           }
           // Module Coffee Challenge — the only challenge shown on Path.
           const moduleChallenge = window.brewForModule ? window.brewForModule(mod.id) : null;
@@ -1343,6 +1472,9 @@ function PathTab({ onLesson, brewCompleted, brewActiveId, brewSaved, brewPathMod
                 const isLocked = status === 'locked' || mod.locked;
                 const isCurrent = status === 'current' && !mod.locked;
                 const isComplete = status === 'complete';
+                // Part of the purchase, not of progression: a purchase-locked row
+                // stays tappable and raises the purchase sheet.
+                const buyLocked = !isComplete && !!(purchaseLocked && purchaseLocked(lesson.id));
                 // Only a lesson with a stored score can claim mastery. Done-but-
                 // unscored (imported / legacy progress) stays deliberately neutral:
                 // an empty muted bean, never a full sage one.
@@ -1359,20 +1491,24 @@ function PathTab({ onLesson, brewCompleted, brewActiveId, brewSaved, brewPathMod
                 return (
                   <React.Fragment key={lesson.id}>
                   <button type="button"
-                       className={'lesson-row' + (isLocked ? ' locked' : '') + (isCurrent ? ' current' : '')}
-                       disabled={isLocked}
-                       onClick={() => !isLocked && onLesson(lesson.id)}>
+                       className={'lesson-row' + ((isLocked || buyLocked) ? ' locked' : '') + (isCurrent && !buyLocked ? ' current' : '')}
+                       disabled={isLocked && !buyLocked}
+                       onClick={() => buyLocked ? (onPurchaseTap && onPurchaseTap()) : (!isLocked && onLesson(lesson.id))}>
                     <span className="path-node">
                       <FlavorWheel size={20} filled={filled} total={100} stroke={1}
                                    color={nodeColor}/>
                     </span>
                     <div style={{ minWidth: 0, position: 'relative' }}>
                       <div className="title">{lesson.title}</div>
-                      {isCurrent && (
+                      {isCurrent && !buyLocked && (
                         <div className="ff-mono" style={{ position: 'absolute', top: '100%', left: 0, fontSize: 'var(--t-micro)', letterSpacing: '0.18em', color: 'var(--accent)', textTransform: 'uppercase', marginTop: 2, lineHeight: 1 }}>CURRENT</div>
                       )}
                     </div>
-                    {isLocked ? (
+                    {buyLocked ? (
+                      <div className="meta" style={{ justifySelf: 'end' }}>
+                        <span className="trail" style={{ color: 'var(--accent)' }}><window.LockMark size={13} label="Part of Foundations"/></span>
+                      </div>
+                    ) : isLocked ? (
                       <div className="meta" style={{ justifySelf: 'end' }}>
                         <span className="trail"><window.LockMark size={13} label="Locked"/></span>
                       </div>
@@ -1410,7 +1546,54 @@ function PathTab({ onLesson, brewCompleted, brewActiveId, brewSaved, brewPathMod
           );
         })}
 
-        <ComingSoonPath compact />
+        {/* Reference — the visual guides, surfaced where they were earned.
+           Styled like a module section (baseline glyph + display title, open
+           hairline rows), not a boxed card: Path is airy and editorial. */}
+        {(() => { const all = window.VISUAL_GUIDE_CARDS || []; const guides = all.filter(g => g.earned); const left = all.length - guides.length; const locked = guides.length === 0; if (all.length === 0) return null; const open = !locked && !!expandedMods.__reference; return (
+          <div className="px-24" style={{ marginTop: 12, marginBottom: 20 }}>
+            <button onClick={() => { if (!locked) toggleMod('__reference'); }} disabled={locked} style={{ width: '100%', appearance: 'none', border: 'none', background: 'transparent', cursor: locked ? 'default' : 'pointer', textAlign: 'left', padding: 0, display: 'block' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{ display: 'inline-flex', justifyContent: 'center', width: 32, flexShrink: 0 }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" style={{ color: locked ? 'var(--ink-mute)' : 'var(--sage)' }}><path d="M12 6.2 C 10 4.8 7 4.6 4.6 5.4 V17.8 C 7 17 10 17.2 12 18.6 C 14 17.2 17 17 19.4 17.8 V5.4 C 17 4.6 14 4.8 12 6.2 Z" stroke="currentColor" strokeWidth={window.GLYPH_STROKE || 1.6} strokeLinejoin="round"/><path d="M12 6.2 V18.6" stroke="currentColor" strokeWidth="1.3"/></svg>
+              </span>
+              <h2 className="ff-display" style={{ flex: 1, fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.1, letterSpacing: '-0.01em', margin: 0, color: locked ? 'var(--ink-mute)' : 'var(--ink)' }}>Reference</h2>
+                {locked ? (
+                  <span className="trail"><window.LockMark size={13}/></span>
+                ) : (
+                  <span className="trail"><svg width="11" height="7" viewBox="0 0 12 8" aria-hidden="true" style={{ transition: 'transform 320ms cubic-bezier(0.4, 0, 0.2, 1)', transform: open ? 'rotate(180deg)' : 'none' }}><path d="M1 1l5 5 5-5" fill="none" stroke="var(--ink-mute)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg></span>
+                )}
+              </div>
+              <div className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.1em', color: 'var(--ink-mute)', textTransform: 'uppercase', marginLeft: 44, marginTop: 8, marginBottom: 2 }}>{locked ? 'Visual guides unlock as lessons teach them' : 'Visual guides from your lessons'}</div>
+            </button>
+            <div style={{ display: 'grid', gridTemplateRows: open ? '1fr' : '0fr', transition: 'grid-template-rows 320ms cubic-bezier(0.4, 0, 0.2, 1)' }}>
+              <div style={{ overflow: 'hidden', minHeight: 0 }}>
+            <div style={{ marginTop: 6 }}>
+              {guides.map((g, i) => {
+                const t = (window.VISUAL_GUIDE_CONTENT || {})[g.visualGuide] || {};
+                return (
+                  <button key={g.id} onClick={() => onOpenGuide && onOpenGuide(g)} style={{
+                    appearance: 'none', width: '100%', textAlign: 'left', cursor: 'pointer', font: 'inherit',
+                    background: 'none', border: 'none', borderTop: i > 0 ? '1px solid var(--rule)' : 'none',
+                    padding: '11px 0', display: 'flex', alignItems: 'center', gap: 12, color: 'var(--ink)',
+                  }}>
+                    <span style={{ width: 36, height: 36, flexShrink: 0, borderRadius: 9, background: 'var(--surface)', border: '1px solid var(--rule)', overflow: 'hidden', display: 'block' }}>
+                      {window.VisualGuideThumb && <window.VisualGuideThumb visualGuide={g.visualGuide}/>}
+                    </span>
+                    <span style={{ minWidth: 0, flex: 1, display: 'block', fontSize: 'var(--t-body)', lineHeight: 1.25 }}>{g.title || t.title}</span>
+                    <span className="trail">{window.Chevron && <window.Chevron w={6} h={10} color="currentColor" opacity={1}/>}</span>
+                  </button>
+                );
+              })}
+            </div>
+            {left > 0 && (
+              <div className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.1em', color: 'var(--ink-mute)', textTransform: 'uppercase', marginTop: 10 }}>{left} more unlock as you learn</div>
+            )}
+              </div>
+            </div>
+          </div>
+        ); })()}
+
+        {window.SHOW_COMING_SOON && <ComingSoonPath compact />}
     </React.Fragment>
   );
   return (
@@ -1427,8 +1610,8 @@ function PathTab({ onLesson, brewCompleted, brewActiveId, brewSaved, brewPathMod
 // CARDS TAB
 // ───────────────────────────────────────────────────────────
 function CardsTab({ onOpen, brewCompleted }) {
-  // COLLECTION is collectibles only — the training guides live in TRAINING_CARDS.
-  const collectibles = COLLECTION;
+  // COLLECTIBLES is collectibles only — the visual guides live in VISUAL_GUIDE_CARDS.
+  const collectibles = COLLECTIBLES;
   const earned = collectibles.filter(c => c.earned).length;
   const stampedFor = (c) => {
     const ch = c.earned && window.brewForCard ? window.brewForCard(c.id) : null;
@@ -1753,21 +1936,6 @@ function CardArtBurrs() {
   );
 }
 
-function CardArtGuide() {
-  return (
-    <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
-      <rect x="28" y="22" width="44" height="58" rx="5" fill="var(--surface-2)" stroke="var(--rule)" strokeWidth="1.3"/>
-      <line x1="34" y1="23" x2="34" y2="79" stroke="var(--rule)" strokeWidth="1"/>
-      <line x1="66" y1="22" x2="66" y2="80" stroke="var(--accent)" strokeWidth="1.6"/>
-      <circle cx="50" cy="42" r="7" fill="none" stroke="var(--sage)" strokeWidth="1.2"/>
-      <path d="M50 37 Q47.5 42 50 47" fill="none" stroke="var(--sage)" strokeWidth="1"/>
-      <g stroke="var(--ink-mute)" strokeWidth="1" strokeLinecap="round" opacity="0.55">
-        <line x1="40" y1="58" x2="60" y2="58"/><line x1="40" y1="64" x2="56" y2="64"/><line x1="40" y1="70" x2="60" y2="70"/>
-      </g>
-    </svg>
-  );
-}
-
 // ── Bespoke art for the 15 later-lesson collectible cards ──
 // Each radiates its single idea so no two tiles read the same.
 function CardArtParticles() {
@@ -2065,7 +2233,7 @@ function CardArtShot() {
 
 // ── Module Field Guides — one cohesive booklet family, a distinct
 // emblem + spine colour per module so all five read uniquely. ──
-function GuideCard({ tint, num, children }) {
+function FieldGuideFrame({ tint, children }) {
   return (
     <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
       <rect x="33" y="20" width="42" height="60" rx="4" fill="var(--surface)" stroke="var(--rule)" strokeWidth="1" opacity="0.55"/>
@@ -2073,57 +2241,56 @@ function GuideCard({ tint, num, children }) {
       <path d="M27 25 Q27 22 30 22 L34 22 L34 80 L30 80 Q27 80 27 77 Z" fill={tint} fillOpacity="0.9"/>
       <line x1="34" y1="22" x2="34" y2="80" stroke="var(--rule)" strokeWidth="0.8"/>
       <g transform="translate(52.5 45)">{children}</g>
-      <text x="52.5" y="73" fontSize="6.5" fill="var(--ink-mute)" fontFamily="IBM Plex Mono" textAnchor="middle" letterSpacing="1.5">FIELD GUIDE {num}</text>
     </svg>
   );
 }
-function CardArtGuideBeans() {
+function CardArtFieldGuideBeans() {
   return (
-    <GuideCard tint="var(--sage)" num="01">
+    <FieldGuideFrame tint="var(--sage)">
       <ellipse cx="0" cy="0" rx="9" ry="12" fill="var(--sage)" fillOpacity="0.28" stroke="var(--sage)" strokeWidth="1.4"/>
       <path d="M0 -11 Q-3.5 0 0 11" fill="none" stroke="var(--sage)" strokeWidth="1.2"/>
       <circle cx="0" cy="-15" r="2" fill="var(--berry)"/>
-    </GuideCard>
+    </FieldGuideFrame>
   );
 }
-function CardArtGuideProcess() {
+function CardArtFieldGuideProcess() {
   return (
-    <GuideCard tint="var(--accent)" num="02">
+    <FieldGuideFrame tint="var(--accent)">
       <path d="M0 -13 C6 -3 10 3 10 8 A10 10 0 0 1 -10 8 C-10 3 -6 -3 0 -13 Z" fill="var(--accent)" fillOpacity="0.2" stroke="var(--accent)" strokeWidth="1.3" strokeLinejoin="round"/>
       <path d="M-5 8 A6.5 6.5 0 0 1 -1 1.5" fill="none" stroke="var(--cream)" strokeWidth="1" strokeLinecap="round" opacity="0.7"/>
-    </GuideCard>
+    </FieldGuideFrame>
   );
 }
-function CardArtGuideRoast() {
+function CardArtFieldGuideRoast() {
   return (
-    <GuideCard tint="var(--art-roast-mid)" num="03">
+    <FieldGuideFrame tint="var(--art-roast-mid)">
       <ellipse cx="0" cy="0" rx="9" ry="12" fill="var(--art-roast-mid)" stroke="var(--art-roast-dark)" strokeWidth="1.2"/>
       <path d="M0 -11 Q-3.5 0 0 11" fill="none" stroke="var(--art-roast-dark)" strokeWidth="1.2"/>
       <g stroke="var(--accent)" strokeWidth="1" strokeLinecap="round" opacity="0.75"><path d="M0 -17 Q-3 -20 0 -23"/><path d="M6 -15 Q3 -18 6 -21"/></g>
-    </GuideCard>
+    </FieldGuideFrame>
   );
 }
-function CardArtGuideGrind() {
+function CardArtFieldGuideGrind() {
   const spokes = Array.from({ length: 8 }).map((_, i) => {
     const a = i * Math.PI / 4 + Math.PI / 8;
     return <line key={i} x1={Math.cos(a) * 6} y1={Math.sin(a) * 6} x2={Math.cos(a) * 11} y2={Math.sin(a) * 11} stroke="var(--ink-mute)" strokeWidth="1.1" strokeLinecap="round"/>;
   });
   return (
-    <GuideCard tint="var(--ink-mute)" num="04">
+    <FieldGuideFrame tint="var(--ink-mute)">
       <circle cx="0" cy="0" r="12" fill="var(--surface)" stroke="var(--ink-mute)" strokeWidth="1.3"/>
       {spokes}
       <circle cx="0" cy="0" r="3.4" fill="var(--accent)"/>
-    </GuideCard>
+    </FieldGuideFrame>
   );
 }
-function CardArtGuideBrew() {
+function CardArtFieldGuideBrew() {
   return (
-    <GuideCard tint="var(--berry)" num="05">
+    <FieldGuideFrame tint="var(--berry)">
       <path d="M-11 -3 L11 -3 L8 12 Q7 15 3 15 L-3 15 Q-7 15 -8 12 Z" fill="var(--surface)" stroke="var(--ink-mute)" strokeWidth="1.3" strokeLinejoin="round"/>
       <path d="M11 0 Q18 2 17 8 Q16 12 9 12" fill="none" stroke="var(--ink-mute)" strokeWidth="1.2"/>
       <ellipse cx="0" cy="-3" rx="10" ry="2.6" fill="var(--art-roast-dark)"/>
       <g fill="none" stroke="var(--accent)" strokeWidth="1" strokeLinecap="round" opacity="0.7"><path d="M-4 -9 Q-7 -13 -4 -17"/><path d="M4 -9 Q7 -13 4 -17"/></g>
-    </GuideCard>
+    </FieldGuideFrame>
   );
 }
 
@@ -2159,7 +2326,6 @@ const CARD_ART = {
   scales:    CardArtScales,
   hourglass: CardArtHourglass,
   burrs:     CardArtBurrs,
-  guide:     CardArtGuide,
   particles: CardArtParticles,
   burrblade: CardArtBurrBlade,
   grinddial: CardArtGrindDial,
@@ -2176,11 +2342,11 @@ const CARD_ART = {
   filter:    CardArtFilter,
   firstcup:  CardArtFirstCup,
   shot:      CardArtShot,
-  guideBeans:  CardArtGuideBeans,
-  guideProcess:CardArtGuideProcess,
-  guideRoast:  CardArtGuideRoast,
-  guideGrind:  CardArtGuideGrind,
-  guideBrew:   CardArtGuideBrew,
+  fieldGuideBeans:  CardArtFieldGuideBeans,
+  fieldGuideProcess:CardArtFieldGuideProcess,
+  fieldGuideRoast:  CardArtFieldGuideRoast,
+  fieldGuideGrind:  CardArtFieldGuideGrind,
+  fieldGuideBrew:   CardArtFieldGuideBrew,
 };
 
 const CARD_TINT = {
@@ -2188,7 +2354,6 @@ const CARD_TINT = {
   layers:    'color-mix(in oklab, var(--surface) 90%, var(--berry) 10%)',
   map:       'color-mix(in oklab, var(--surface) 92%, var(--accent) 8%)',
   specimen:  'var(--surface-2)',
-  training:  'color-mix(in oklab, var(--surface) 90%, var(--accent) 10%)',
   dryingbed: 'color-mix(in oklab, var(--surface) 88%, var(--sage) 12%)',
   ferment:   'color-mix(in oklab, var(--surface) 89%, var(--sage) 11%)',
   label:     'color-mix(in oklab, var(--surface) 91%, var(--accent) 9%)',
@@ -2201,7 +2366,7 @@ const CARD_TINT = {
   scales:    'color-mix(in oklab, var(--surface) 91%, var(--accent) 9%)',
   hourglass: 'color-mix(in oklab, var(--surface) 90%, var(--art-roast-mid) 10%)',
   burrs:     'color-mix(in oklab, var(--surface) 92%, var(--ink) 8%)',
-  guide:     'color-mix(in oklab, var(--surface) 88%, var(--sage) 12%)',
+  visualGuide: 'color-mix(in oklab, var(--surface) 88%, var(--sage) 12%)',
   particles: 'color-mix(in oklab, var(--surface) 90%, var(--art-roast-mid) 10%)',
   burrblade: 'color-mix(in oklab, var(--surface) 92%, var(--ink) 8%)',
   grinddial: 'color-mix(in oklab, var(--surface) 91%, var(--accent) 9%)',
@@ -2218,11 +2383,11 @@ const CARD_TINT = {
   filter:    'color-mix(in oklab, var(--surface) 90%, var(--accent) 10%)',
   firstcup:  'color-mix(in oklab, var(--surface) 90%, var(--art-roast-mid) 10%)',
   shot:      'color-mix(in oklab, var(--surface) 90%, var(--art-roast-dark) 10%)',
-  guideBeans:  'color-mix(in oklab, var(--surface) 88%, var(--sage) 12%)',
-  guideProcess:'color-mix(in oklab, var(--surface) 88%, var(--accent) 12%)',
-  guideRoast:  'color-mix(in oklab, var(--surface) 88%, var(--art-roast-mid) 12%)',
-  guideGrind:  'color-mix(in oklab, var(--surface) 90%, var(--ink) 10%)',
-  guideBrew:   'color-mix(in oklab, var(--surface) 89%, var(--berry) 11%)',
+  fieldGuideBeans:  'color-mix(in oklab, var(--surface) 88%, var(--sage) 12%)',
+  fieldGuideProcess:'color-mix(in oklab, var(--surface) 88%, var(--accent) 12%)',
+  fieldGuideRoast:  'color-mix(in oklab, var(--surface) 88%, var(--art-roast-mid) 12%)',
+  fieldGuideGrind:  'color-mix(in oklab, var(--surface) 90%, var(--ink) 10%)',
+  fieldGuideBrew:   'color-mix(in oklab, var(--surface) 89%, var(--berry) 11%)',
 };
 
 function CollectionCard({ card, index, total, onOpen, stamped, challengeOpen }) {
@@ -2245,7 +2410,7 @@ function CollectionCard({ card, index, total, onOpen, stamped, challengeOpen }) 
     );
   }
   const Art = CARD_ART[card.kind] || null;
-  const isTraining = card.kind === 'training' && window.TrainingThumb;
+  const isVisualGuide = card.kind === 'visualGuide' && window.VisualGuideThumb;
   // Tint the card surface for variety — never too far from the base.
   const surfaceTint = CARD_TINT[card.kind] || 'var(--surface)';
   return (
@@ -2264,21 +2429,24 @@ function CollectionCard({ card, index, total, onOpen, stamped, challengeOpen }) 
         </span>
       )}
       {!stamped && challengeOpen && (
-        <span title="Challenge to earn — tap the card" className="ff-mono" style={{
+        <span title="Challenge to earn — tap the card" style={{
           position: 'absolute', top: 10, right: 10, zIndex: 2,
-          height: 20, padding: '0 8px', borderRadius: 999, display: 'grid', placeItems: 'center',
-          fontSize: 'var(--t-micro)', letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 500,
-          color: 'var(--accent)',
+          width: 26, height: 26, borderRadius: 999, display: 'grid', placeItems: 'center',
           background: 'color-mix(in oklab, var(--accent) 8%, var(--surface))',
-          border: '1px dashed color-mix(in oklab, var(--accent) 45%, var(--rule))',
-        }}>Challenge</span>
+          border: '1px dashed color-mix(in oklab, var(--accent) 50%, var(--rule))',
+        }}>
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <circle cx="6" cy="6" r="4.4" stroke="var(--accent)" strokeWidth="1.3"/>
+            <circle cx="6" cy="6" r="1.6" fill="var(--accent)"/>
+          </svg>
+        </span>
       )}
-      <div className="cc-sub">{isTraining ? 'TRAINING' : 'CARD ' + num}</div>
+      <div className="cc-sub">{isVisualGuide ? 'VISUAL GUIDE' : 'CARD ' + num}</div>
       <div style={{
         flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
         padding: '4px 0',
       }}>
-        {isTraining ? <window.TrainingThumb variant={card.train}/> : (Art ? <Art/> : <FlavorStamp size={64} rotate={-6 + (index % 3) * 4}/>)}
+        {isVisualGuide ? <window.VisualGuideThumb visualGuide={card.visualGuide}/> : (Art ? <Art/> : <FlavorStamp size={64} rotate={-6 + (index % 3) * 4}/>)}
       </div>
       <div>
         <div className="cc-title">{card.title}</div>
@@ -2288,7 +2456,7 @@ function CollectionCard({ card, index, total, onOpen, stamped, challengeOpen }) 
 }
 
 function CardSheet({ card, open, onClose, brewCompleted, brewActive, onBrewTry, guideSaved, onToggleGuideSave }) {
-  const isGuide = !!(card && card.kind === 'training');
+  const isVisualGuide = !!(card && card.kind === 'visualGuide');
   return (
     <>
       <div className={'sheet-backdrop' + (open ? ' open' : '')} onClick={onClose}/>
@@ -2299,23 +2467,23 @@ function CardSheet({ card, open, onClose, brewCompleted, brewActive, onBrewTry, 
             <>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  {isGuide && <div className="smallcaps" style={{ marginBottom: 8 }}>VISUAL GUIDE</div>}
+                  {isVisualGuide && <div className="smallcaps" style={{ marginBottom: 8 }}>VISUAL GUIDE</div>}
                   <h2 className="ff-display" style={{
                     fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em',
                     margin: 0, color: 'var(--ink)',
                   }}>{card.title}</h2>
                 </div>
-                {!isGuide && brewCompleted && window.TriedSeal && (
+                {!isVisualGuide && brewCompleted && window.TriedSeal && (
                   <div style={{ paddingTop: 6 }}><window.TriedSeal/></div>
                 )}
-                {isGuide && onToggleGuideSave && window.FavButton && (
+                {isVisualGuide && onToggleGuideSave && window.FavButton && (
                   <window.FavButton active={!!guideSaved} onClick={onToggleGuideSave}/>
                 )}
               </div>
 
-              {card.train && window.TrainingCard ? (
+              {card.visualGuide && window.VisualGuideCard ? (
                 <div style={{ margin: '18px 0 20px' }}>
-                  <window.TrainingCard variant={card.train} inSheet/>
+                  <window.VisualGuideCard visualGuide={card.visualGuide} inSheet/>
                 </div>
               ) : (() => {
                 const Art = CARD_ART[card.kind];
@@ -2375,7 +2543,7 @@ function CardSheet({ card, open, onClose, brewCompleted, brewActive, onBrewTry, 
 // ───────────────────────────────────────────────────────────
 // PROFILE TAB
 // ───────────────────────────────────────────────────────────
-function ProfileTab({ state, brewDone, brewTotal, frozenDays, onOpenStreak, onOpenTree, onOpenCustomize, onOpenSaved, onOpenDuel, onOpenBrew, onPractice, showDuel = true, savedCount, isLocked}) {
+function ProfileTab({ state, brewDone, brewTotal, frozenDays, onOpenStreak, onOpenTree, onOpenCustomize, onOpenSaved, onOpenDuel, onOpenBrew, onPractice, showDuel = true, showStore = false, onOpenStore, savedCount, isLocked}) {
   const lock = isLocked || (() => false);
   const names = window.STAGE_NAMES || [];
   const pretty = (n) => n ? n.charAt(0) + n.slice(1).toLowerCase() : '';
@@ -2384,7 +2552,7 @@ function ProfileTab({ state, brewDone, brewTotal, frozenDays, onOpenStreak, onOp
   // Tree stage is core-course progress, not points.
   const stage = window.treeStageFromCore ? window.treeStageFromCore(lessonsDone) : 3;
   const stageName = pretty(names[stage - 1] || 'GROWING');
-  const collection = window.COLLECTION || [];
+  const collection = window.COLLECTIBLES || [];
   const cardsDone = collection.filter(c => c.earned).length;
   const modules = window.MODULES || [];
   const modulesDone = modules.filter(m => m.lessons.length && m.lessons.every(l => l.status === 'complete')).length;
@@ -2521,7 +2689,7 @@ function ProfileTab({ state, brewDone, brewTotal, frozenDays, onOpenStreak, onOp
           </div>
         )}
 
-        {/* Customize card — entry to the premium studio */}
+        {/* Customize card — entry to the Studio (part of Foundations) */}
         <div className="px-24" style={{ paddingTop: 12 }}>
           <button onClick={onOpenCustomize}
                   style={{
@@ -2597,6 +2765,34 @@ function ProfileTab({ state, brewDone, brewTotal, frozenDays, onOpenStreak, onOp
             <window.Chevron/>
           </button>
         </div>
+
+        {/* Courses card — the catalogue. GATED FOR V1 behind the Show Courses
+            tweak: hidden until there is more than one purchasable course. */}
+        {showStore && (
+        <div className="px-24" style={{ paddingTop: 12 }}>
+          <button onClick={onOpenStore}
+                  style={{
+                    width: '100%', appearance: 'none', textAlign: 'left', cursor: 'pointer',
+                    background: 'var(--surface)', border: '1px solid var(--rule)',
+                    borderRadius: 16, padding: 16,
+                    display: 'grid', gridTemplateColumns: 'auto 1fr auto', alignItems: 'center', gap: 14,
+                  }}>
+            <div style={{ width: 64, height: 64, flexShrink: 0, display: 'grid', placeItems: 'center', background: 'var(--bg)', border: '1px solid var(--rule)', borderRadius: 12 }}>
+              <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true" style={{ color: 'var(--accent)' }}>
+                <rect x="7" y="4" width="16" height="11" rx="2" stroke="currentColor" strokeWidth="1.6" opacity="0.45"/>
+                <rect x="4" y="10" width="16" height="12" rx="2" fill="var(--bg)" stroke="currentColor" strokeWidth="1.6"/>
+                <path d="M8 15 H14 M8 18 H12" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+              </svg>
+            </div>
+            <div>
+              <div className="smallcaps" style={{ color: 'var(--accent)', marginBottom: 5 }}>COURSES</div>
+              <div className="ff-display" style={{ fontSize: 'var(--t-heading)', fontWeight: 400, letterSpacing: '-0.01em', color: 'var(--ink)', lineHeight: 1.05 }}>Browse courses</div>
+              <div style={{ fontSize: 'var(--t-support)', color: 'var(--ink-mute)', marginTop: 3 }}>Foundations, and what’s next</div>
+            </div>
+            <window.Chevron/>
+          </button>
+        </div>
+        )}
 
         <div className="px-24" style={{ paddingTop: 22 }}>
           <div className="ff-mono" style={{
@@ -2715,50 +2911,116 @@ window.Icons = {
 // ───────────────────────────────────────────────────────────
 // MINI-GAMES — replayable, each with its own intro flow
 // ───────────────────────────────────────────────────────────
+// Vocabulary: a KIND is the mechanic; a GAME is one catalog entry — a kind plus
+// exactly one course topic (`mod` names the module that teaches it), with a
+// persistent id. The original seven ids are persisted in stored day-sets and
+// are FROZEN; new ids are topic-slugged (g-<kind>-<topic>). Placeholder
+// siblings are marked `placeholder` — final topics (and slugs) land with
+// authoring; their ids are never stored, so renaming them is safe.
+// The catalog groups by kind, in this fixed order — never re-sorted by tier.
+const GAME_KINDS = [
+  { kind: 'match',    label: 'Match' },
+  { kind: 'quiz',     label: 'True or false' },
+  { kind: 'flavor',   label: 'Name the note' },
+  { kind: 'bagpick',  label: 'Blind bag' },
+  { kind: 'tastefix', label: 'Taste fix' },
+  { kind: 'slider',   label: 'Calibrate' },
+  { kind: 'sequence', label: 'Sequence' },
+];
 const MINI_GAMES = [
+  // ── match ──
   {
-    id: 'g-match', kind: 'match', title: 'Match the facts',
+    id: 'g-match', kind: 'match', mod: 'm1', title: 'Match the facts',
     sub: 'ARABICA VS ROBUSTA', meta: '~2 MIN',
     blurb: 'Pair every fact with the right species before the board clears.',
     steps: ['Read a fact on the left', 'Tap the species it belongs to', 'Clear the board with no wrong drops'],
   },
   {
-    id: 'g-flavor', kind: 'flavor', title: 'Name the flavor notes',
-    sub: 'TASTING NOTES', meta: '~2 MIN',
-    blurb: 'Read each tasting clue and name what you taste — pick the note that fits the cup.',
-    steps: ['Read the tasting clue', 'Weigh the four notes', 'Pick the one that fits'],
+    id: 'g-match-washed-natural', kind: 'match', mod: 'm2',
+    title: 'Washed vs Natural', sub: 'PROCESSING', meta: '~2 MIN',
+    blurb: 'Pair every cup trait with the process that put it there.',
+    steps: ['Read a trait on the left', 'Tap the process it belongs to', 'Clear the board with no wrong drops'],
   },
+  // ── quiz ──
   {
-    id: 'g-quiz', kind: 'quiz', title: 'True or false',
+    id: 'g-quiz', kind: 'quiz', mod: 'm1', title: 'True or false',
     sub: 'COFFEE BASICS', meta: '~1 MIN',
     blurb: 'Quick-fire statements about coffee. Decide whether each one is true or false.',
     steps: ['Read the statement', 'Choose true or false', 'See why it lands that way'],
   },
   {
-    id: 'g-bagpick', kind: 'bagpick', title: 'Read the green bean',
+    id: 'g-quiz-roast-basics', kind: 'quiz', mod: 'm3',
+    title: 'Roast basics', sub: 'ROASTING', meta: '~1 MIN',
+    blurb: 'Quick-fire statements about roasting. Decide whether each one is true or false.',
+    steps: ['Read the statement', 'Choose true or false', 'See why it lands that way'],
+  },
+  // ── flavor ──
+  {
+    id: 'g-flavor', kind: 'flavor', mod: 'm5', title: 'Name the flavor notes',
+    sub: 'TASTING NOTES', meta: '~2 MIN',
+    blurb: 'Read each tasting clue and name what you taste — pick the note that fits the cup.',
+    steps: ['Read the tasting clue', 'Weigh the four notes', 'Pick the one that fits'],
+  },
+  {
+    id: 'g-flavor-origin-signatures', kind: 'flavor', mod: 'm1',
+    title: 'Name the origin', sub: 'ORIGIN SIGNATURES', meta: '~2 MIN',
+    blurb: 'Read the cup and call the place — signatures are tendencies, and one honest answer is “could be almost anywhere”.',
+    steps: ['Read the tasting clue', 'Weigh the four origins', 'Pick the one the cup points to'],
+  },
+  // ── bagpick — stays a single game; uneven groups are the intended look ──
+  {
+    id: 'g-bagpick', kind: 'bagpick', mod: 'm2', title: 'Read the green bean',
     sub: 'WASHED, HONEY OR NATURAL', meta: '~2 MIN',
     blurb: 'Five unlabelled bags. Draw a sample, inspect the beans, and call the process from the look alone.',
     steps: ['Draw a sample from the bag', 'Inspect colour, centre cut and aroma', 'Call it — washed, honey or natural'],
   },
+  // ── tastefix ──
   {
-    id: 'g-tastefix', kind: 'tastefix', title: 'Fix the cup',
+    id: 'g-tastefix', kind: 'tastefix', mod: 'm4', title: 'Fix the cup',
     sub: 'DIAGNOSE AND DIAL IN', meta: '~2 MIN',
     blurb: 'A cup comes out wrong — read what’s off and pick the one change that pulls it back to balanced.',
     steps: ['Read what the cup tastes like', 'Pick the fix that balances it', 'Watch the cup react'],
   },
   {
-    id: 'g-calibrate', kind: 'slider', title: 'Dial it in',
+    id: 'g-tastefix-espresso', kind: 'tastefix', mod: 'm5',
+    title: 'Fix the shot', sub: 'ESPRESSO DIAL-IN', meta: '~2 MIN',
+    blurb: 'A shot comes out wrong — read the stream and the sip, and pick the one change that saves the next one.',
+    steps: ['Read what the shot did', 'Pick the fix that saves the next one', 'See why it works'],
+  },
+  // ── slider / calibrate ──
+  {
+    id: 'g-calibrate', kind: 'slider', mod: 'm4', title: 'Dial it in',
     sub: 'GRIND, RATIO, WATER, TIME', meta: '~2 MIN',
     blurb: 'Grind, ratio, temperature, time — drag each dial to where the answer actually lands.',
     steps: ['Read what you are setting', 'Drag the dial to your answer', 'Check it against the target zone'],
   },
   {
-    id: 'g-sequence', kind: 'sequence', title: 'Put it in order',
+    id: 'g-calibrate-grind-brewer', kind: 'slider', mod: 'm4',
+    title: 'Set the grind', sub: 'WHICH GRIND, WHICH BREWER', meta: '~2 MIN',
+    blurb: 'Every brewer has its grind, set by contact time — drag each dial to where it belongs.',
+    steps: ['Read the brewer', 'Drag the dial to its grind or time', 'Check it against the target zone'],
+  },
+  // ── sequence ──
+  {
+    // mod: the bank spans farm→cup but is tiered by its furthest material
+    // (brew order, M5) — keeps it Plus, matching the shipped access tiers.
+    id: 'g-sequence', kind: 'sequence', mod: 'm5', title: 'Put it in order',
     sub: 'BEAN TO CUP', meta: '~2 MIN',
     blurb: 'Five things, one right order. Farm to cup, skin to seed, first pour to drawdown.',
     steps: ['Read what is being ordered', 'Tap the items in sequence', 'Submit to see the right order'],
   },
+  {
+    id: 'g-sequence-v60', kind: 'sequence', mod: 'm5',
+    title: 'Pour-over, in order', sub: 'YOUR FIRST V60', meta: '~2 MIN',
+    blurb: 'The V60 recipe and what happens inside it — five orderings from rinse to drawdown.',
+    steps: ['Read what is being ordered', 'Tap the items in sequence', 'Submit to see the right order'],
+  },
 ];
+// Tier derives from topic: a game is free iff its topic's module is unlocked
+// (free tier = Module 1). DERIVED, not hand-kept — today g-match, g-quiz and
+// g-flavor-origin-signatures (the M1-topic games); the free catalog widens
+// only if what's unlocked widens (#175).
+const FREE_GAME_IDS = MINI_GAMES.filter(g => g.mod === 'm1').map(g => g.id);
 
 // First screen of the game flow: what it is, how to play, then Play.
 function GameIntroScreen({ game, onStart, onClose }) {
@@ -2801,7 +3063,7 @@ function GameIntroScreen({ game, onStart, onClose }) {
           }}>
             <span>{game.meta}</span>
             <span aria-hidden="true" style={{ opacity: 0.9 }}>·</span>
-            <span>{((window.MINI_GAME_CONTENT || {})[game.id] || []).length} ROUNDS</span>
+            <span>{(() => { const n = ((window.MINI_GAME_CONTENT || {})[game.id] || []).length; return n ? n + ' ROUNDS' : 'ROUNDS IN AUTHORING'; })()}</span>
           </div>
 
           <div className="smallcaps" style={{ margin: '30px 0 14px' }}>HOW TO PLAY</div>
@@ -2819,7 +3081,9 @@ function GameIntroScreen({ game, onStart, onClose }) {
         </div>
 
         <div className="px-24" style={{ paddingTop: 20, paddingBottom: 24 }}>
-          <button className="btn btn-primary" onClick={onStart}>Play</button>
+          {(() => { const n = ((window.MINI_GAME_CONTENT || {})[game.id] || []).length; return (
+            <button className="btn btn-primary" onClick={onStart} disabled={!n} style={!n ? { opacity: 0.45, cursor: 'default' } : null}>{n ? 'Play' : 'Rounds in authoring'}</button>
+          ); })()}
         </div>
       </div>
     </div>
@@ -2827,7 +3091,9 @@ function GameIntroScreen({ game, onStart, onClose }) {
 }
 
 window.ReplayIcon = ReplayIcon;
+window.GAME_KINDS = GAME_KINDS;
 window.MINI_GAMES = MINI_GAMES;
+window.FREE_GAME_IDS = FREE_GAME_IDS;
 window.GameIntroScreen = GameIntroScreen;
 window.OnboardingWelcome = OnboardingWelcome;
 window.OnboardingRoasty = OnboardingRoasty;

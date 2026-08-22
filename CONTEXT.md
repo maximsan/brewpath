@@ -25,6 +25,25 @@ _Avoid_: Brew Challenge (renamed)
 One of thirty-seven cards unlocked automatically by first-time completions —
 one per lesson, one per module. No rarity, no duplicates.
 
+**Module Reward**:
+One of the five collectible cards awarded for completing a whole module
+(Beans · Processing · Roasting · Grind · Brew). Part of the thirty-seven, and
+shown in the Cards grid.
+_Avoid_: Field Guide (renamed; the code already said `MODULE_REWARDS`)
+
+**Visual guide**:
+One of the eight illustrated references the course teaches — roast, grind,
+extraction, ratio, anatomy, variety, caffeine, distribution. Unlocks on first
+completion of the earliest lesson that teaches it, is saveable under a `g:`
+key, and is listed in the Reference row on Path. Never shown beside a
+collectible ([#106](https://github.com/maximsan/brewpath/issues/106)).
+_Avoid_: training card, training guide (renamed)
+
+**Subject**:
+The axis naming a visual guide (`roast`, `grind`, `variety`) and the value its
+`g:` save key carries.
+_Avoid_: variant (already means a mini-game format — see Format)
+
 ## Practice and the streak
 
 **Activity**:

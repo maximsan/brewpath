@@ -1,16 +1,16 @@
 // practical.jsx — the "understand what changes taste, and what to fix" layer.
 // Three new card families, all in the existing card system so they slot inside
-// normal lessons (and, for training cards, into the Cards tab / dictionary /
+// normal lessons (and, for guide cards, into the Cards tab / dictionary /
 // saved / flashcards):
 //
 //   1. TasteFixCard     — a lightweight scenario mini-game: my cup tastes X,
 //                         what do I change first?
-//   2. TrainingCard     — reusable visual reference: Roast / Grind / Extraction
+//   2. VisualGuideCard     — reusable visual reference: Roast / Grind / Extraction
 //                         / Ratio. Rendered full inside lessons + the card
 //                         sheet, and as a compact thumb in the collection grid.
 //
 // Nothing here invents a new engine — tastefix is just a card kind the
-// LessonPlayer already knows how to advance, and TrainingCard is plain
+// LessonPlayer already knows how to advance, and VisualGuideCard is plain
 // presentational markup.
 
 // Small adjust/wrench glyph — the family mark for "a thing you can change".
@@ -153,7 +153,7 @@ function TasteFixCard({ card, onContinue, onCorrect }) {
 window.TasteFixCard = TasteFixCard;
 
 // ───────────────────────────────────────────────────────────
-// TRAINING-CARD CONTENT + VISUALS
+// VISUAL GUIDE CONTENT + VISUALS
 // Four beginner reference cards. Each has a title/summary/fact (for the
 // collection + card sheet) and a `render` for the visual body.
 // ───────────────────────────────────────────────────────────
@@ -231,12 +231,12 @@ function SpectrumBar({ stops, marker = 0.5, colors }) {
   );
 }
 
-const TRAINING = {
+const VISUAL_GUIDE_CONTENT = {
   roast: {
     id: 'roast', label: 'ROAST',
     title: 'Roast Levels',
-    summary: 'Light to dark — how the roast shifts taste before you even brew.',
-    fact: 'Medium roast is the most forgiving place for a beginner to start.',
+    summary: 'Light to dark: how the roast shifts taste before you even brew.',
+    fact: 'There is no “best” roast. It is a flavour choice, not a quality scale.',
     body: () => (
       <div>
         <LevelRow visual={<Swatch color={ROAST_BEANS[0]} ring/>} name="Light" keywords="Bright · floral" note="Acidic and fruity. Can taste sharp or sour if under-extracted." />
@@ -248,12 +248,12 @@ const TRAINING = {
   grind: {
     id: 'grind', label: 'GRIND SIZE',
     title: 'Grind Size',
-    summary: 'Coarse to fine — the dial that controls how fast flavour extracts.',
+    summary: 'Coarse to fine: the dial that controls how fast flavour extracts.',
     fact: 'Grind is usually the first thing to change when a cup tastes off.',
     body: () => (
       <div>
         <LevelRow visual={<GrindDots level={0}/>} name="Coarse" keywords="Slow extraction" note="French press, cold brew. Too coarse and the cup turns weak, sour, watery." />
-        <LevelRow visual={<GrindDots level={1}/>} name="Medium" keywords="The middle" note="Pour-over and drip. The forgiving default to start from." />
+        <LevelRow visual={<GrindDots level={1}/>} name="Medium" keywords="Balanced" note="Pour-over and drip. The forgiving default to start from." />
         <LevelRow visual={<GrindDots level={2}/>} name="Fine" keywords="Fast extraction" note="Espresso, moka pot. Too fine and the cup turns bitter and harsh." />
       </div>
     ),
@@ -263,8 +263,8 @@ const TRAINING = {
     // Named apart from the c-m5l4 collectible ('Extraction') — different
     // artifacts, so they must not share a title across the two registries.
     title: 'The Extraction Spectrum',
-    summary: 'Under to over — the one idea behind sour vs bitter.',
-    fact: 'Sour usually means too little extraction; bitter usually means too much.',
+    summary: 'Under to over: the one idea behind sour vs bitter.',
+    fact: 'Water dissolves the sour notes first and the bitter ones last. Time decides where you stop.',
     body: () => (
       <SpectrumBar
         colors={['color-mix(in oklab, var(--berry) 55%, var(--surface))', 'color-mix(in oklab, var(--sage) 65%, var(--surface))', 'var(--art-roast-dark)']}
@@ -280,7 +280,7 @@ const TRAINING = {
     id: 'ratio', label: 'RATIO',
     title: 'Coffee-to-Water Ratio',
     summary: 'How much coffee vs water sets the strength of your cup.',
-    fact: 'Most brews land near 1:16 — one gram of coffee to sixteen of water.',
+    fact: 'Most brews land near 1:16, one gram of coffee to sixteen of water.',
     body: () => (
       <div>
         <SpectrumBar
@@ -292,7 +292,7 @@ const TRAINING = {
             { label: 'Strong', cue: 'More coffee' },
           ]}/>
         <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: '16px 0 0', textWrap: 'pretty' }}>
-          More water makes it weaker; more coffee makes it stronger. Ratio changes <strong style={{ color: 'var(--ink)' }}>strength</strong> first — not whether the cup tastes good.
+          Ratio changes <strong style={{ color: 'var(--ink)' }}>strength</strong> first — a bad-tasting cup is usually a grind or extraction problem, not a ratio one.
         </p>
       </div>
     ),
@@ -302,14 +302,14 @@ const TRAINING = {
     // Ditto: m1l7's reward collectible owns 'The Cherry in Section'.
     title: 'Cherry Anatomy',
     summary: 'Six layers between the skin of the fruit and the seed you brew.',
-    fact: 'Layer 03 \u2014 the sticky mucilage \u2014 is the one washed, honey and natural argue over.',
+    fact: 'Layer 03, the sticky mucilage, is the one washed, honey and natural argue over.',
     body: () => (window.CherrySection ? <window.CherrySection/> : null),
   },
   variety: {
     id: 'variety', label: 'VARIETY',
     title: 'The Variety Family Tree',
-    summary: 'Typica and Bourbon — the two old parents behind most cups you\u2019ll meet.',
-    fact: 'Geisha, Caturra and SL28 are all arabica — variety is why they taste nothing alike.',
+    summary: 'Typica and Bourbon: the two old parents behind most cups you’ll meet.',
+    fact: 'Geisha, Caturra and SL28 are all arabica. Variety is why they taste nothing alike.',
     body: () => (
       <div>
         <svg viewBox="0 0 300 132" style={{ width: '100%', display: 'block' }}>
@@ -328,7 +328,7 @@ const TRAINING = {
           <text x="255" y="110.5" textAnchor="middle" fontSize="11" fill="var(--ink)">SL28</text>
         </svg>
         <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: '14px 0 0', textWrap: 'pretty' }}>
-          Nearly every arabica on a shelf descends from <strong style={{ color: 'var(--ink)' }}>Typica</strong> or <strong style={{ color: 'var(--ink)' }}>Bourbon</strong>. Variety is why two coffees from the same farm can taste nothing alike.
+          A variety is to coffee what an apple variety is to apples — one species, very different fruit.
         </p>
       </div>
     ),
@@ -336,7 +336,7 @@ const TRAINING = {
   caffeine: {
     id: 'caffeine', label: 'CAFFEINE',
     title: 'Caffeine, Per Serving',
-    summary: 'What each brew actually delivers — the serving matters as much as the method.',
+    summary: 'What each brew actually delivers. The serving matters as much as the method.',
     fact: 'A single espresso carries less caffeine than a mug of drip.',
     body: () => {
       const rows = [
@@ -360,7 +360,7 @@ const TRAINING = {
             </div>
           ))}
           <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: '14px 0 0', textWrap: 'pretty' }}>
-            Serving size moves the number as much as the brew does — cold brew is strong <em>and</em> big.
+            Per millilitre, espresso is the strongest of the four — its small serve is what keeps the total low.
           </p>
         </div>
       );
@@ -370,7 +370,7 @@ const TRAINING = {
     id: 'distribution', label: 'GRIND SPREAD',
     title: 'Particle Distribution',
     summary: 'Why a burr\u2019s tight spread beats a blade\u2019s fines-and-boulders.',
-    fact: 'A blade chops unevenly — fines over-extract while boulders under-extract in the same brew.',
+    fact: 'Even a cheap burr grinder beats a blade: evenness matters more than fineness.',
     body: () => (
       <div>
         <svg viewBox="0 0 300 118" style={{ width: '100%', display: 'block' }}>
@@ -397,14 +397,14 @@ const TRAINING = {
     ),
   },
 };
-window.TRAINING = TRAINING;
-// One card, one text: the training card entries in data.jsx read their words
+window.VISUAL_GUIDE_CONTENT = VISUAL_GUIDE_CONTENT;
+// One card, one text: the guide card entries in data.jsx read their words
 // from here. This file loads after data.jsx, so the sync fires now.
-if (window.syncTrainingText) window.syncTrainingText();
+if (window.syncVisualGuideText) window.syncVisualGuideText();
 
-// The full training card — used inside lessons + the card-detail sheet.
-function TrainingCard({ variant, hideHeader = false }) {
-  const t = TRAINING[variant];
+// The full guide card — used inside lessons + the card-detail sheet.
+function VisualGuideCard({ visualGuide, hideHeader = false }) {
+  const t = VISUAL_GUIDE_CONTENT[visualGuide];
   if (!t) return null;
   return (
     <div style={{
@@ -423,11 +423,11 @@ function TrainingCard({ variant, hideHeader = false }) {
     </div>
   );
 }
-window.TrainingCard = TrainingCard;
+window.VisualGuideCard = VisualGuideCard;
 
-// Lesson wrapper: a training card as a full lesson step, with a Continue.
+// Lesson wrapper: a guide card as a full lesson step, with a Continue.
 function VisualLessonCard({ card, onContinue, saved, onToggleSave }) {
-  const t = TRAINING[card.variant];
+  const t = VISUAL_GUIDE_CONTENT[card.visualGuide];
   return (
     <div className="px-24" style={{ display: 'flex', flexDirection: 'column', flex: '1 0 auto', minHeight: 600 }}>
       <div className="smallcaps" style={{ marginBottom: 14 }}>{card.label || 'VISUAL GUIDE'}</div>
@@ -437,7 +437,7 @@ function VisualLessonCard({ card, onContinue, saved, onToggleSave }) {
       {card.captionTop && card.caption && (
         <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink)', margin: '-6px 0 18px', textWrap: 'pretty' }}>{card.caption}</p>
       )}
-      <TrainingCard variant={card.variant} hideHeader={!!card.mergeHeader}/>
+      <VisualGuideCard visualGuide={card.visualGuide} hideHeader={!!card.mergeHeader}/>
       {onToggleSave && (
         <button type="button" onClick={onToggleSave} aria-pressed={!!saved} style={{
           appearance: 'none', cursor: 'pointer', background: 'transparent', border: 'none',
@@ -463,8 +463,8 @@ function VisualLessonCard({ card, onContinue, saved, onToggleSave }) {
 window.VisualLessonCard = VisualLessonCard;
 
 // Compact thumbnail for the collection grid — mirrors the CARD_ART style.
-function TrainingThumb({ variant }) {
-  if (variant === 'roast') {
+function VisualGuideThumb({ visualGuide }) {
+  if (visualGuide === 'roast') {
     return (
       <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
         <circle cx="30" cy="52" r="12" fill={ROAST_BEANS[0]}/>
@@ -473,7 +473,7 @@ function TrainingThumb({ variant }) {
       </svg>
     );
   }
-  if (variant === 'grind') {
+  if (visualGuide === 'grind') {
     return (
       <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
         <circle cx="26" cy="52" r="5.5" fill="var(--ink-mute)"/>
@@ -482,7 +482,7 @@ function TrainingThumb({ variant }) {
       </svg>
     );
   }
-  if (variant === 'extraction') {
+  if (visualGuide === 'extraction') {
     return (
       <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
         <rect x="16" y="46" width="22.6" height="10" rx="2" fill="color-mix(in oklab, var(--berry) 55%, var(--surface))"/>
@@ -492,7 +492,7 @@ function TrainingThumb({ variant }) {
       </svg>
     );
   }
-  if (variant === 'variety') {
+  if (visualGuide === 'variety') {
     return (
       <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
         <path d="M50 40 L50 52 M50 52 L30 52 L30 62 M50 52 L70 52 L70 62 M50 52 L50 62" fill="none" stroke="var(--ink-mute)" strokeWidth="1.4"/>
@@ -503,7 +503,7 @@ function TrainingThumb({ variant }) {
       </svg>
     );
   }
-  if (variant === 'caffeine') {
+  if (visualGuide === 'caffeine') {
     return (
       <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
         <rect x="20" y="66" width="11" height="4" rx="1.5" fill="var(--accent)"/>
@@ -513,7 +513,7 @@ function TrainingThumb({ variant }) {
       </svg>
     );
   }
-  if (variant === 'anatomy') {
+  if (visualGuide === 'anatomy') {
     const rings = [
       ['var(--art-cherry-skin)', 34], ['var(--art-cherry-pulp)', 31], ['var(--art-cherry-gel)', 25],
       ['var(--art-cherry-parchment)', 22], ['var(--art-cherry-silverskin)', 19], ['var(--art-cherry-seed)', 17],
@@ -527,7 +527,7 @@ function TrainingThumb({ variant }) {
       </svg>
     );
   }
-  if (variant === 'distribution') {
+  if (visualGuide === 'distribution') {
     return (
       <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
         <line x1="14" y1="68" x2="86" y2="68" stroke="var(--rule)" strokeWidth="1.2"/>
@@ -546,7 +546,7 @@ function TrainingThumb({ variant }) {
     </svg>
   );
 }
-window.TrainingThumb = TrainingThumb;
+window.VisualGuideThumb = VisualGuideThumb;
 
 // Hands-on step card — a real-world instruction inside a lesson (the "do it
 // at the counter" layer). card = { kind:'practical', tag, title, paragraphs:[], note }

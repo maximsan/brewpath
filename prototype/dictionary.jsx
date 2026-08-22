@@ -244,12 +244,10 @@ function DictTermRow({ term, learned, isFav, onOpen, onToggleFav, snippet }) {
   );
 }
 
-// Term of the Day compact banner.
-function TermOfDayBanner({ term, onOpen, big }) {
+// Term of the Day lead card — dictionary home only.
+function TermOfDayBanner({ term, onOpen }) {
   if (!term) return null;
-  const cat = (window.DICT_CAT_BY_ID || {})[term.cat];
-  if (big) {
-    return (
+  return (
       <button onClick={onOpen} style={{
         width: '100%', appearance: 'none', cursor: 'pointer', textAlign: 'left',
         borderRadius: 16, overflow: 'hidden', border: '1px solid color-mix(in oklab, var(--accent) 24%, var(--rule))',
@@ -267,27 +265,10 @@ function TermOfDayBanner({ term, onOpen, big }) {
           OPEN ENTRY <svg width="14" height="10" viewBox="0 0 14 10"><path d="M1 5h11M8 1l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
         </div>
       </button>
-    );
-  }
-  return (
-    <button onClick={onOpen} style={{
-      width: '100%', appearance: 'none', cursor: 'pointer', textAlign: 'left',
-      display: 'grid', gridTemplateColumns: 'auto 1fr auto', alignItems: 'center', gap: 14,
-      background: 'var(--surface)', border: '1px solid var(--rule)', borderRadius: 14, padding: '14px 16px',
-    }}>
-      <span style={{ width: 40, height: 40, borderRadius: 12, flexShrink: 0, display: 'grid', placeItems: 'center', background: 'color-mix(in oklab, var(--accent) 10%, var(--surface))' }}>
-        <CatGlyph cat={term.cat} size={21} color="var(--accent)"/>
-      </span>
-      <span style={{ minWidth: 0 }}>
-        <span className="smallcaps" style={{ color: 'var(--accent)', display: 'block' }}>TERM OF THE DAY</span>
-        <span style={{ display: 'block', fontSize: 'var(--t-body)', color: 'var(--ink)', fontWeight: 500, marginTop: 3 }}>{term.term}</span>
-      </span>
-      <window.Chevron/>
-    </button>
   );
 }
 
-// Quick-access chips (flashcards + vocab game) — one slim row.
+// Quick-access chips (flashcards + guess-the-term game) — one slim row.
 function DictQuickChips({ savedTermCount, onFlashcards, onVocabGame }) {
   const chip = (label, sub, onClick, icon) => (
     <button onClick={onClick} style={{
@@ -304,7 +285,7 @@ function DictQuickChips({ savedTermCount, onFlashcards, onVocabGame }) {
     <div style={{ display: 'flex', gap: 10 }}>
       {chip('Flashcards', String(savedTermCount || 0), onFlashcards,
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="14" height="12" rx="2" stroke="currentColor" strokeWidth="1.6"/><path d="M7 9.5h6M7 12.5h4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/><path d="M9 4.5h9a2 2 0 0 1 2 2v9" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" opacity="0.5"/></svg>)}
-      {chip('Vocab game', null, onVocabGame,
+      {chip('Guess the term', null, onVocabGame,
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.6"/><path d="M9.5 9.8a2.5 2.5 0 1 1 3.2 2.4c-.5.2-.7.6-.7 1.1v.4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/><circle cx="12" cy="16.3" r="0.9" fill="currentColor"/></svg>)}
     </div>
   );
@@ -313,7 +294,7 @@ function DictQuickChips({ savedTermCount, onFlashcards, onVocabGame }) {
 // ════════════════════════════════════════════════════════════
 // DICTIONARY HOME
 // ════════════════════════════════════════════════════════════
-function DictionaryHome({ name = 'Coffee Dictionary', learnedSet, favorites,
+function DictionaryHome({ name = 'Coffee Dictionary', full = true, onUnlock, learnedSet, favorites,
                           savedTermCount, initialQuery, focusSearch, onOpenTerm, onToggleFav,
                           onTermOfDay, onFlashcards, onVocabGame, onClose }) {
   const [query, setQuery] = useStateD(initialQuery || '');
@@ -327,10 +308,15 @@ function DictionaryHome({ name = 'Coffee Dictionary', learnedSet, favorites,
   // The compact title tracks context: category drill-down shows the category.
   const compactTitle = cat ? ((window.DICT_CAT_BY_ID || {})[cat] || {}).label || name : name;
 
-  const terms = window.DICT_TERMS || [];
-  const cats = window.DICT_CATEGORIES || [];
-  const counts = window.dictCatCounts ? window.dictCatCounts() : {};
-  const tod = window.dictTermOfDay ? window.dictTermOfDay() : null;
+  // Free tier: the Dictionary is the terms your lessons have taught — short
+  // entries, searchable. The rest of the glossary isn't browsable and locked
+  // entries are never listed; one card names what the full Dictionary is.
+  const allTerms = window.DICT_TERMS || [];
+  const terms = full ? allTerms : allTerms.filter(t => learnedSet && learnedSet.has(t.id));
+  const cats = (window.DICT_CATEGORIES || []).filter(c => full || terms.some(t => t.cat === c.id));
+  const counts = full ? (window.dictCatCounts ? window.dictCatCounts() : {})
+    : terms.reduce((m, t) => { m[t.cat] = (m[t.cat] || 0) + 1; return m; }, {});
+  const tod = window.dictTermOfDay ? window.dictTermOfDay(null, full ? null : terms) : null;
   const isLearned = (t) => learnedSet && learnedSet.has(t.id);
   const isFav = (id) => favorites && favorites.has('t:' + id);
   // Reference-only terms have no lesson, so they can never leave the unlearned
@@ -378,7 +364,7 @@ function DictionaryHome({ name = 'Coffee Dictionary', learnedSet, favorites,
     }));
     body = (
       <div className="px-24" style={{ paddingTop: 18 }}>
-        <DictFilter value={filter} onChange={setFilter}/>
+        {full && <DictFilter value={filter} onChange={setFilter}/>}
         <div className="ff-mono" style={{ fontSize: 'var(--t-label)', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-mute)', margin: '18px 0 4px' }}>
           {searchResults.length} {searchResults.length === 1 ? 'RESULT' : 'RESULTS'}
         </div>
@@ -413,11 +399,19 @@ function DictionaryHome({ name = 'Coffee Dictionary', learnedSet, favorites,
     // ── DISCOVER ──
     body = (
       <div className="px-24" style={{ paddingTop: 6 }}>
-        <TermOfDayBanner term={tod} onOpen={onTermOfDay} big/>
-        <div style={{ marginTop: 24 }}>
+        <TermOfDayBanner term={tod} onOpen={onTermOfDay}/>
+        {(full || terms.length > 0) && (
+        <div style={{ marginTop: tod ? 24 : 0 }}>
           <DictQuickChips savedTermCount={savedTermCount} onFlashcards={onFlashcards} onVocabGame={onVocabGame}/>
         </div>
-        <div className="smallcaps" style={{ margin: '28px 0 10px' }}>ALL CATEGORIES</div>
+        )}
+        {(!full && terms.length === 0) && (
+          <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.55, color: 'var(--ink-mute)', margin: '4px 0 0', textWrap: 'pretty' }}>
+            Your glossary starts in lessons — every term you meet is collected here, short explanation included.
+          </p>
+        )}
+        {terms.length > 0 && (<>
+        <div className="smallcaps" style={{ margin: '28px 0 10px' }}>{full ? 'ALL CATEGORIES' : 'YOUR CATEGORIES'}</div>
         <div style={{ borderTop: '1px solid var(--rule)' }}>
           {cats.map(c => (
             <button key={c.id} onClick={() => { setFilter('all'); setCat(c.id); }} style={{
@@ -435,6 +429,16 @@ function DictionaryHome({ name = 'Coffee Dictionary', learnedSet, favorites,
             </button>
           ))}
         </div>
+        </>)}
+        {!full && (
+          <div style={{ marginTop: 26, border: '1px solid color-mix(in oklab, var(--accent) 24%, var(--rule))', borderRadius: 16, padding: '18px 18px 16px', background: 'linear-gradient(158deg, color-mix(in oklab, var(--accent) 9%, var(--surface)) 0%, var(--surface) 62%)' }}>
+            <div className="smallcaps" style={{ color: 'var(--accent)' }}>THE COMPLETE DICTIONARY</div>
+            <p style={{ margin: '10px 0 0', fontSize: 'var(--t-support)', lineHeight: 1.55, color: 'var(--ink-mute)', textWrap: 'pretty' }}>
+              All {allTerms.length} terms with full entries — browse, search and Term of the Day across the whole glossary. Included with Foundations.
+            </p>
+            <button className="btn btn-ghost" style={{ marginTop: 14 }} onClick={onUnlock}>Unlock Foundations</button>
+          </div>
+        )}
       </div>
     );
   }
@@ -444,12 +448,14 @@ function DictionaryHome({ name = 'Coffee Dictionary', learnedSet, favorites,
       {topbar}
       <div ref={scrollRef} className="scroll" onScroll={onScroll} style={{ paddingTop: 108, paddingBottom: 120 }}>
         <div className="px-24">
-          <div className="smallcaps" style={{ marginBottom: 10, color: 'var(--accent)' }}>REFERENCE · {terms.length} TERMS</div>
+          <div className="smallcaps" style={{ marginBottom: 10, color: 'var(--accent)' }}>{full ? `REFERENCE · ${terms.length} TERMS` : `FROM YOUR LESSONS · ${terms.length} ${terms.length === 1 ? 'TERM' : 'TERMS'}`}</div>
           <h1 className="ff-display" style={{ fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em', margin: 0, color: 'var(--ink)' }}>{name}</h1>
         </div>
+        {(full || terms.length > 0) && (
         <div className="px-24" style={{ paddingTop: 18 }}>
           <DictSearchBar value={query} onChange={setQuery} onClear={() => setQuery('')} autoFocus={!!focusSearch || !!initialQuery}/>
         </div>
+        )}
         <div style={{ paddingTop: 6 }}>{body}</div>
       </div>
     </div>
@@ -574,7 +580,7 @@ function SourcesList({ sources }) {
 // ════════════════════════════════════════════════════════════
 // TERM DETAIL — 2 layouts
 // ════════════════════════════════════════════════════════════
-function TermDetail({ termId, learned, learnedSet, isFav, onToggleFav, onOpenTerm, onLesson, onClose }) {
+function TermDetail({ termId, full = true, learned, learnedSet, isFav, onToggleFav, onOpenTerm, onLesson, onClose }) {
   const term = (window.DICT_BY_ID || {})[termId];
   // Shared collapsing header (settings.jsx) — the term page adds a bookmark on
   // the trailing side and a ringed back control to match it. Reset key is the
@@ -592,8 +598,10 @@ function TermDetail({ termId, learned, learnedSet, isFav, onToggleFav, onOpenTer
   ) : null;
 
   // Teaching content, then a break, then reference material. The two blocks are
-  // read differently, so they're spaced differently.
-  const teaching = (
+  // read differently, so they're spaced differently. Free tier reads the short
+  // entry only — the full article (in depth, in practice, check, sources) is
+  // part of Foundations, with no teaser link dangled here.
+  const teaching = !full ? null : (
     <>
       {term.deep && (
         <div>
@@ -611,12 +619,13 @@ function TermDetail({ termId, learned, learnedSet, isFav, onToggleFav, onOpenTer
     </>
   );
 
+  const visibleRelated = full ? (term.related || []) : (term.related || []).filter(id => learnedSet && learnedSet.has(id));
   const reference = (
     <>
-      {term.related && term.related.length > 0 && (
+      {visibleRelated.length > 0 && (
         <div>
           <div className="smallcaps" style={{ marginBottom: 10 }}>RELATED TERMS</div>
-          <RelatedChips ids={term.related} onOpen={onOpenTerm} currentId={term.id} currentCat={term.cat} learnedSet={learnedSet}/>
+          <RelatedChips ids={visibleRelated} onOpen={onOpenTerm} currentId={term.id} currentCat={term.cat} learnedSet={learnedSet}/>
         </div>
       )}
       {term.lesson ? (
@@ -634,7 +643,7 @@ function TermDetail({ termId, learned, learnedSet, isFav, onToggleFav, onOpenTer
           </p>
         </div>
       )}
-      {term.sources && term.sources.length > 0 && <SourcesList sources={term.sources}/>}
+      {full && term.sources && term.sources.length > 0 && <SourcesList sources={term.sources}/>}
     </>
   );
 
@@ -656,10 +665,12 @@ function TermDetail({ termId, learned, learnedSet, isFav, onToggleFav, onOpenTer
           {term.pron && <div style={{ marginTop: 14 }}><SpeakButton word={term.term} pron={term.pron}/></div>}
           <p className="ff-display" style={{ fontSize: 'var(--t-heading)', lineHeight: 1.35, letterSpacing: '-0.01em', color: 'var(--ink)', margin: '18px 0 0', fontWeight: 400, textWrap: 'pretty' }}>{term.short}</p>
         </div>
+        {teaching && (
         <div className="px-24" style={{ paddingTop: 30, display: 'flex', flexDirection: 'column', gap: 26 }}>
           {teaching}
         </div>
-        <div className="px-24" style={{ paddingTop: 40, display: 'flex', flexDirection: 'column', gap: 24 }}>
+        )}
+        <div className="px-24" style={{ paddingTop: teaching ? 40 : 34, display: 'flex', flexDirection: 'column', gap: 24 }}>
           {reference}
         </div>
       </div>
@@ -670,9 +681,10 @@ function TermDetail({ termId, learned, learnedSet, isFav, onToggleFav, onOpenTer
 // ════════════════════════════════════════════════════════════
 // IN-LESSON TERM PEEK — compact bottom sheet
 // ════════════════════════════════════════════════════════════
-function TermPeekSheet({ termId, open, learned, learnedSet, isFav, onToggleFav, onOpenFull, onOpenTerm, onClose }) {
+function TermPeekSheet({ termId, open, full = true, learned, learnedSet, isFav, onToggleFav, onOpenFull, onOpenTerm, onClose }) {
   const term = termId ? (window.DICT_BY_ID || {})[termId] : null;
   const cat = term ? (window.DICT_CAT_BY_ID || {})[term.cat] : null;
+  const relatedIds = term ? (full ? (term.related || []) : (term.related || []).filter(id => learnedSet && learnedSet.has(id))) : [];
   return (
     <>
       <div className={'sheet-backdrop' + (open ? ' open' : '')} onClick={onClose}/>
@@ -693,16 +705,16 @@ function TermPeekSheet({ termId, open, learned, learnedSet, isFav, onToggleFav, 
               {term.pron && <div style={{ marginTop: 22 }}><SpeakButton word={term.term} pron={term.pron}/></div>}
               <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.45, color: 'var(--ink)', margin: term.pron ? '16px 0 0' : '22px 0 0', textWrap: 'pretty' }}>{term.short}</p>
 
-              {term.related && term.related.length > 0 && (
+              {relatedIds.length > 0 && (
                 <div style={{ marginTop: 18 }}>
                   <div className="smallcaps" style={{ marginBottom: 16 }}>RELATED</div>
-                  <RelatedChips ids={term.related} onOpen={onOpenTerm} currentId={term.id} learnedSet={learnedSet}/>
+                  <RelatedChips ids={relatedIds} onOpen={onOpenTerm} currentId={term.id} learnedSet={learnedSet}/>
                 </div>
               )}
 
               <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
                 <button className="btn btn-ghost" style={{ flex: 1 }} onClick={onClose}>Got it</button>
-                <button className="btn btn-primary" style={{ flex: 1 }} onClick={() => onOpenFull(term.id)}>Full entry</button>
+                <button className="btn btn-primary" style={{ flex: 1 }} onClick={() => onOpenFull(term.id)}>{full ? 'Full entry' : 'Open entry'}</button>
               </div>
             </>
           )}

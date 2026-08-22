@@ -1196,6 +1196,26 @@
           "explain": "Specialty is a score, not a vibe. A qualified cupper grades the coffee against a fixed protocol, and 80 is the line."
         },
         {
+          "kind": "mcq",
+          "prompt": "“Tanzania Peaberry”, priced above the lot beside it. What has the bag told you?",
+          "choices": [
+            {
+              "t": "The beans are round singles, sieved into their own lot",
+              "correct": true
+            },
+            {
+              "t": "A cupper scored this lot higher than the others"
+            },
+            {
+              "t": "It is a rare variety the farm chose to plant"
+            },
+            {
+              "t": "The cherries were left on the tree to ripen longer"
+            }
+          ],
+          "explain": "In about one cherry in twenty only one seed is fertilised, so it grows round instead of flat. Mills sieve those out because round beans roast differently — a sorting job, not a score. Calling it a variety is the common slip: peaberries turn up on the same branch as flat beans, and no one can plant them."
+        },
+        {
           "kind": "recall",
           "label": "BEFORE YOU GO",
           "question": "A bag reads “Fair Trade Certified · Premium Blend”. What do you actually know?",
@@ -1335,7 +1355,7 @@
           "kind": "visual",
           "label": "VISUAL GUIDE",
           "title": "The variety family tree",
-          "variant": "variety",
+          "visualGuide": "variety",
           "caption": "Typica and Bourbon at the root, branching out to Geisha, Caturra and SL28. When a bag prints a variety, this is the line it is pointing at — not the country, not the process."
         },
         {
@@ -1437,8 +1457,8 @@
         },
         {
           "kind": "visual",
-          "variant": "anatomy",
-          "label": "FIELD GUIDE",
+          "visualGuide": "anatomy",
+          "label": "VISUAL GUIDE",
           "title": "Six layers, outside in",
           "mergeHeader": true,
           "captionTop": true,
@@ -3252,11 +3272,11 @@
           "prompt": "What is actually happening at first crack?",
           "choices": [
             {
-              "t": "Steam pressure inside the bean forces it to pop open",
+              "t": "Steam pressure bursts the bean from inside",
               "correct": true
             },
             {
-              "t": "The caffeine boils off"
+              "t": "The caffeine reaches its boiling point and escapes"
             },
             {
               "t": "The bean catches fire briefly"
@@ -3367,7 +3387,7 @@
           "kind": "visual",
           "label": "VISUAL GUIDE",
           "title": "Light to dark",
-          "variant": "roast",
+          "visualGuide": "roast",
           "caption": "The further the roast goes, the more the bean tastes of roast — and the less of where it grew."
         },
         {
@@ -4085,14 +4105,14 @@
           "question": "Why does a scoop of light roast carry slightly more caffeine than a scoop of dark?",
           "choices": [
             {
-              "t": "Caffeine survives the roast, but dark beans are less dense — so a scoop holds less coffee",
+              "t": "Dark beans are less dense — a scoop holds less coffee",
               "correct": true
             },
             {
               "t": "Heat creates extra caffeine in lighter roasts"
             },
             {
-              "t": "Dark roasting burns most of the caffeine away"
+              "t": "The long dark roast burns most of the caffeine away"
             }
           ],
           "explain": "It is a measuring artefact, not chemistry. Weigh instead of scooping and the difference nearly disappears.",
@@ -4259,7 +4279,7 @@
           "kind": "visual",
           "label": "VISUAL GUIDE",
           "title": "Caffeine, per serving",
-          "variant": "caffeine",
+          "visualGuide": "caffeine",
           "caption": "Decaf, espresso, drip cup, large cold brew — laid out at the size you actually drink them. The espresso is the concentrated one and the smallest dose on the chart."
         },
         {
@@ -4398,7 +4418,7 @@
           "kind": "visual",
           "label": "VISUAL GUIDE",
           "title": "Coarse to fine",
-          "variant": "grind",
+          "visualGuide": "grind",
           "caption": "Each brewer has a grind range that lets water move through at the right speed."
         },
         {
@@ -4407,6 +4427,10 @@
           "pairs": [
             {
               "l": "French press",
+              "r": "Coarse"
+            },
+            {
+              "l": "Cold brew",
               "r": "Coarse"
             },
             {
@@ -4603,7 +4627,7 @@
           "kind": "visual",
           "label": "VISUAL GUIDE",
           "title": "One setting, many sizes",
-          "variant": "distribution",
+          "visualGuide": "distribution",
           "caption": "A blade grinder throws a wide, twin-humped spread — dust at one end, boulders at the other. A burr pulls that into one tight band. Not a single size, though: even a good burr produces a spread. It is just a narrow enough one to dial in."
         },
         {
@@ -4616,7 +4640,7 @@
           "scenario": "Fresh beans, right ratio, water just off the boil — and it still tastes burnt and thin at once.",
           "choices": [
             {
-              "t": "Grind more evenly — use a burr grinder",
+              "t": "Get a burr grinder",
               "correct": true
             },
             {
@@ -4626,7 +4650,7 @@
               "t": "Grind coarser"
             },
             {
-              "t": "Use hotter water"
+              "t": "Brew with hotter water"
             }
           ],
           "explain": "Harsh and watery together is the spread talking: the dust is over-extracting while the boulders barely extract at all. No dial setting fixes a spread problem — finer makes the dust worse, coarser makes the boulders worse. The fix is the grinder, not the number."
@@ -4840,7 +4864,7 @@
           "kind": "visual",
           "label": "VISUAL GUIDE",
           "title": "The grind spectrum, by brewer",
-          "variant": "grind",
+          "visualGuide": "grind",
           "caption": "Coarse to fine, with the brewers placed along it. Find yours, start there, adjust from taste."
         },
         {
@@ -5006,7 +5030,7 @@
           "kind": "visual",
           "label": "VISUAL GUIDE",
           "title": "The grind spectrum",
-          "variant": "grind",
+          "visualGuide": "grind",
           "caption": "Match the grind to the brewer first — then nudge from there by taste."
         },
         {
@@ -5497,23 +5521,23 @@
         },
         {
           "kind": "match",
-          "prompt": "Match each budget to what is realistic",
+          "prompt": "Match each situation to what is realistic",
           "pairs": [
             {
-              "l": "Entry",
+              "l": "Entry budget",
               "r": "A capable hand burr"
             },
             {
-              "l": "Mid",
+              "l": "No counter space",
+              "r": "A capable hand burr"
+            },
+            {
+              "l": "Mid budget",
               "r": "A decent electric burr"
             },
             {
               "l": "Espresso-capable",
               "r": "A different budget entirely"
-            },
-            {
-              "l": "Any budget",
-              "r": "Alignment matters more than size"
             }
           ]
         },
@@ -5638,7 +5662,7 @@
           "kind": "visual",
           "label": "VISUAL GUIDE",
           "title": "Weak to strong",
-          "variant": "ratio",
+          "visualGuide": "ratio",
           "caption": "Ratio moves strength first — grind and water decide whether that strength tastes good."
         },
         {
@@ -5913,11 +5937,11 @@
           "scenario": "Same beans, same grind, same temperature as last week. It is clean — just empty.",
           "choices": [
             {
-              "t": "Use a bottled water with some mineral content",
+              "t": "Use water with some mineral content",
               "correct": true
             },
             {
-              "t": "Grind finer to pull more out"
+              "t": "Grind finer to pull more flavour out"
             },
             {
               "t": "Raise the temperature"
@@ -6118,23 +6142,23 @@
         },
         {
           "kind": "match",
-          "prompt": "Match each lever to what it changes",
+          "prompt": "Match each change to what it does in the cup",
           "pairs": [
             {
               "l": "Finer grind",
-              "r": "More surface area"
+              "r": "Extracts more"
             },
             {
               "l": "Hotter water",
-              "r": "Faster dissolving"
+              "r": "Extracts more"
             },
             {
-              "l": "Longer brew",
-              "r": "More contact time"
+              "l": "Shorter brew",
+              "r": "Extracts less"
             },
             {
               "l": "Wider ratio",
-              "r": "More water per gram"
+              "r": "A weaker cup"
             }
           ]
         },
@@ -6545,7 +6569,7 @@
           "kind": "visual",
           "label": "VISUAL GUIDE",
           "title": "The extraction spectrum",
-          "variant": "extraction",
+          "visualGuide": "extraction",
           "caption": "Almost every fix is just moving your cup back toward the middle of this line."
         },
         {
@@ -6996,17 +7020,17 @@
           "question": "The grounds sat flat when you poured the bloom. What does that tell you?",
           "choices": [
             {
-              "t": "The coffee is old — the CO₂ that makes the bloom has already escaped",
+              "t": "The coffee is stale — its CO₂ is gone",
               "correct": true
             },
             {
-              "t": "The water was not hot enough"
+              "t": "The water was not hot enough to trigger the bloom"
             },
             {
               "t": "You ground it too fine"
             }
           ],
-          "explain": "The bloom is trapped CO₂ leaving fresh grounds. A flat bed means there is none left, which means the coffee has been ground or roasted too long ago.",
+          "explain": "The bloom is trapped CO₂ leaving fresh grounds. Cooler water slows the bloom, but only staleness erases it — a flat bed means the gas is gone, so the coffee was ground or roasted too long ago.",
           "line": "You didn’t buy a better cup. You measured one."
         }
       ],

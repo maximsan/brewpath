@@ -1,6 +1,6 @@
-// customize.jsx — Premium customization (behind the "BrewPath Plus" paywall):
-//   • PaywallScreen     — the gate. Teaser + plan + free-trial CTA.
-//   • StudioHub         — landing with three doors once unlocked.
+// customize.jsx — Customization (part of the one-time "Foundations" purchase):
+//   • PaywallScreen     — the purchase screen. Teaser + one price + unlock CTA.
+//   • StudioHub         — landing with three doors once owned.
 //   • TreeChooserScreen — pick which plant grows in your grove (variety + light).
 //   • RoastyStudio      — dress Roasty up: roast, hat, gear, sprout.
 //   • RoastyMoodScreen  — Roasty centered; tap an emotion to see them react.
@@ -125,112 +125,146 @@ function StudioTopbar({ onBack, kind = 'close' }) {
 }
 
 // ───────────────────────────────────────────────────────────
-// PAYWALL
+// PAYWALL — the one purchase screen. Model-driven: monetization.jsx supplies
+// the plans and copy (onetime | subscription | hybrid). One plan renders no
+// picker — a picker of one is dead UI; several render selectable plan rows.
+// Restore + legal stay per store review rules whatever the model.
 // ───────────────────────────────────────────────────────────
-function PaywallScreen({ onSubscribe, onClose, showMoodPlayer = true }) {
-  const [plan, setPlan] = useStateC('yearly');
-
+function PaywallScreen({ onPurchase, onClose, restoreOutcome = 'owned', onRestored }) {
+  const mon = window.getMonetization();
+  const [planId, setPlanId] = useStateC(mon.defaultPlan);
+  // Model can change under an open paywall (tweak flip): keep the pick valid.
+  const plan = window.getPlan(mon.plans.indexOf(planId) >= 0 ? planId : mon.defaultPlan);
+  // Same simulated StoreKit restore as PurchasesScreen: pending → one of three
+  // stated outcomes (tweak-chosen). Terms/Privacy stay inert placeholders —
+  // required purchase-screen chrome, real URLs land at ship time.
+  const [restoring, setRestoring] = useStateC(false);
+  const [restoreDone, setRestoreDone] = useStateC(null); // 'owned' | 'none' | 'error'
+  const runRestore = () => {
+    if (restoring) return;
+    setRestoring(true);
+    setTimeout(() => {
+      setRestoring(false);
+      const outcome = restoreOutcome === 'plus' ? 'owned' : restoreOutcome; // legacy tweak value
+      setRestoreDone(outcome);
+      if (outcome === 'owned' && onRestored) onRestored();
+    }, 1500);
+  };
+  const RESTORE_RESULT = {
+    owned: { title: 'Foundations is yours again.',
+             body: 'We found your purchase on this Apple ID and restored it. Every module, the full Dictionary, unlimited Saved and the Studio are open on this device.' },
+    none:  { title: 'No purchase on this Apple ID.',
+             body: 'If you bought Foundations with a different Apple ID, sign in with that one and try again.' },
+    error: { title: 'We couldn’t reach the store.',
+             body: 'Check your connection and try again.' },
+  };
+  const ConfirmSheet = window.ConfirmSheet;
   const benefits = [
-    ['Unlimited Saved', 'Keep every lesson, term and guide — past the free shelf of 10'],
-    ['Dress up Roasty', 'Hats, glasses, scarves, roast level and more'],
-    ['Choose your plant', 'Grow Arabica, Robusta or Liberica \u2014 real coffee species, each its own shape'],
-    showMoodPlayer
-      ? ['Mood player', "Tap through Roasty’s reactions any time"]
-      : null,
-  ].filter(Boolean);
+    ['The rest of the course', 'Modules 2–5, every lesson'],
+    ['The five premium formats', 'Taste-fix, dial-in and more'],
+    ['The complete Dictionary', 'Every term, full entries included'],
+    ['Unlimited Saved', 'Past the free shelf of 5'],
+    ['The Studio', 'Dress up Roasty, choose your plant'],
+  ];
 
   return (
-    <div className="screen" data-screen-label="Paywall · Plus" style={{ background: 'var(--bg)' }}>
+    <div className="screen" data-screen-label="Paywall · Foundations" style={{ background: 'var(--bg)' }}>
       <div aria-hidden="true" style={{
         position: 'absolute', inset: 0, pointerEvents: 'none',
         background: 'radial-gradient(ellipse at 50% 16%, color-mix(in oklab, var(--accent) 16%, transparent) 0%, transparent 58%)',
       }}/>
       <StudioTopbar onBack={onClose}/>
 
-      <div className="scroll" style={{ paddingTop: 70, paddingBottom: 24, display: 'flex', flexDirection: 'column' }}>
-        {/* Hero — a dressed-up Roasty */}
-        <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 4 }}>
-          <Roasty state="correct" size={150} roast="dark" hat="field" gear="glasses" sprout="flower"/>
+      <div className="scroll" style={{ paddingTop: 64, paddingBottom: 24, display: 'flex', flexDirection: 'column' }}>
+        {/* Hero — a dressed-up Roasty. Sized so the pitch AND the price land in
+            one screen: a paywall that hides its own CTA below the fold is a
+            worse paywall, whatever the hero gains. */}
+        <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 0 }}>
+          <Roasty state="correct" size={112} roast="dark" hat="field" gear="glasses" sprout="flower"/>
         </div>
 
         <div className="px-24" style={{ textAlign: 'center', paddingTop: 4 }}>
-          <div className="smallcaps" style={{ color: 'var(--accent)' }}>BREWPATH PLUS</div>
+          <div className="smallcaps" style={{ color: 'var(--accent)' }}>FOUNDATIONS · {mon.eyebrow}</div>
           <h1 className="ff-display" style={{
             fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em',
             margin: '8px 0 0', color: 'var(--ink)', textWrap: 'pretty',
-          }}>Keep everything you learn. Make Roasty yours.</h1>
+          }}>{mon.heroTitle}</h1>
         </div>
 
-        {/* Benefits */}
-        <div className="px-24" style={{ paddingTop: 26 }}>
+        {/* What the purchase contains — one line per item; the gate sheets and
+            Purchases screen carry the longer pitches. */}
+        <div className="px-24" style={{ paddingTop: 18 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {benefits.map(([t, d], i) => (
-              <div key={i} style={{ display: 'grid', gridTemplateColumns: '24px 1fr', gap: 14, alignItems: 'start', padding: '13px 0', borderBottom: i < benefits.length - 1 ? '1px solid var(--rule)' : 'none' }}>
-                <span style={{ width: 24, height: 24, borderRadius: 999, background: 'color-mix(in oklab, var(--accent) 14%, var(--surface))', display: 'grid', placeItems: 'center', marginTop: 1 }}>
+              <div key={i} style={{ display: 'grid', gridTemplateColumns: '24px 1fr', gap: 14, alignItems: 'center', padding: '10px 0', borderBottom: i < benefits.length - 1 ? '1px solid var(--rule)' : 'none' }}>
+                <span style={{ width: 24, height: 24, borderRadius: 999, background: 'color-mix(in oklab, var(--accent) 14%, var(--surface))', display: 'grid', placeItems: 'center' }}>
                   <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 6.2l2.6 2.6L10 3" fill="none" stroke="var(--accent)" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </span>
-                <div>
-                  <div style={{ fontSize: 'var(--t-body)', fontWeight: 500, color: 'var(--ink)' }}>{t}</div>
-                  <div style={{ fontSize: 'var(--t-support)', color: 'var(--ink-mute)', marginTop: 2, lineHeight: 1.4 }}>{d}</div>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, minWidth: 0, flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: 'var(--t-body)', fontWeight: 500, color: 'var(--ink)' }}>{t}</span>
+                  <span style={{ fontSize: 'var(--t-support)', color: 'var(--ink-mute)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{d}</span>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Plan picker */}
-        <div className="px-24" style={{ paddingTop: 22, display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {[
-            { id: 'yearly',  title: 'Yearly',  price: '$29.99 / yr', note: '$2.50 / mo · best value', tag: 'SAVE 50%' },
-            { id: 'monthly', title: 'Monthly', price: '$4.99 / mo',  note: 'Billed monthly', tag: null },
-          ].map(p => {
-            const sel = plan === p.id;
-            return (
-              <button key={p.id} onClick={() => setPlan(p.id)}
-                style={{
-                  appearance: 'none', cursor: 'pointer', textAlign: 'left', width: '100%',
-                  display: 'grid', gridTemplateColumns: '24px 1fr auto', alignItems: 'center', gap: 14,
-                  padding: '16px 18px', borderRadius: 2, background: 'var(--surface)',
-                  border: '1px solid ' + (sel ? 'var(--accent)' : 'var(--rule)'),
-                  boxShadow: sel ? 'inset 0 0 0 1px var(--accent)' : 'none',
-                }}>
-                <span style={{ width: 20, height: 20, borderRadius: 999, border: '1.5px solid ' + (sel ? 'var(--accent)' : 'var(--rule)'), display: 'grid', placeItems: 'center' }}>
-                  {sel && <span style={{ width: 10, height: 10, borderRadius: 999, background: 'var(--accent)' }}/>}
+        {/* Plan picker — only when the model offers a choice. A single-plan
+            model keeps its facts in the slots that own them (eyebrow = model,
+            CTA = price, footer = reassurance). */}
+        {mon.plans.length > 1 && (
+          <div className="px-24" style={{ paddingTop: 18, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {mon.plans.map((pid) => { const p = window.getPlan(pid); const sel = pid === plan.id; return (
+              <button key={pid} onClick={() => setPlanId(pid)} style={{
+                appearance: 'none', cursor: 'pointer', textAlign: 'left', font: 'inherit', width: '100%',
+                display: 'flex', alignItems: 'center', gap: 12, padding: '13px 16px', borderRadius: 2,
+                background: sel ? 'color-mix(in oklab, var(--accent) 10%, var(--surface))' : 'var(--surface)',
+                border: sel ? '1px solid var(--accent)' : '1px solid var(--rule)', color: 'var(--ink)',
+              }}>
+                <span style={{ width: 16, height: 16, borderRadius: 999, boxSizing: 'border-box', flexShrink: 0, border: sel ? '5px solid var(--accent)' : '1.5px solid var(--ink-mute)' }}></span>
+                <span style={{ flex: 1, minWidth: 0 }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 'var(--t-body)', fontWeight: 500 }}>{p.name}</span>
+                    {p.badge && <span className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.1em', color: 'var(--accent)', border: '1px solid color-mix(in oklab, var(--accent) 45%, var(--rule))', borderRadius: 999, padding: '1px 6px', textTransform: 'uppercase' }}>{p.badge}</span>}
+                  </span>
+                  <span style={{ display: 'block', fontSize: 'var(--t-support)', color: 'var(--ink-mute)', marginTop: 2 }}>{p.line}</span>
                 </span>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontSize: 'var(--t-body)', fontWeight: 500, color: 'var(--ink)' }}>{p.title}</span>
-                    {p.tag && <span className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.12em', color: 'var(--accent-ink)', background: 'var(--accent)', borderRadius: 999, padding: '2px 7px' }}>{p.tag}</span>}
-                  </div>
-                  <div style={{ fontSize: 'var(--t-support)', color: 'var(--ink-mute)', marginTop: 2 }}>{p.note}</div>
-                </div>
-                <span className="ff-mono" style={{ fontSize: 'var(--t-support)', color: 'var(--ink)', whiteSpace: 'nowrap' }}>{p.price}</span>
+                <span className="ff-mono" style={{ fontSize: 'var(--t-body)', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{p.price}<span style={{ color: 'var(--ink-mute)', fontSize: 'var(--t-support)' }}>{p.per || ''}</span></span>
               </button>
-            );
-          })}
-        </div>
-
+            ); })}
+          </div>
+        )}
         <div style={{ flex: 1, minHeight: 18 }}/>
 
-        <div className="px-24" style={{ paddingTop: 18 }}>
-          <button className="btn btn-primary" onClick={() => onSubscribe(plan)}>Start 7-day free trial</button>
+        <div className="px-24" style={{ paddingTop: 16 }}>
+          <button className="btn btn-primary" onClick={() => onPurchase(plan.id)}>{plan.cta}</button>
           <div style={{ marginTop: 10 }}>
             <a className="btn btn-ghost" href="#" style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }} onClick={(e) => { e.preventDefault(); onClose(); }}>Maybe later</a>
           </div>
           <p className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.08em', color: 'var(--ink-mute)', textAlign: 'center', margin: '14px 0 0', textTransform: 'uppercase' }}>
-            Free for 7 days, then {plan === 'yearly' ? '$29.99/yr' : '$4.99/mo'} · cancel anytime
+            {mon.paywallNote}
           </p>
           {/* Store review requires restore + legal on the purchase screen itself.
               Micro type, but still real targets: padding carries each link to 44px
               and the row's negative margin keeps the original 12px optical gap. */}
           <div style={{ display: 'flex', justifyContent: 'center', gap: 4, marginTop: 12, marginBottom: -14 }}>
-            {['Restore purchases', 'Terms', 'Privacy'].map(l => (
-              <a key={l} href="#" onClick={(e) => e.preventDefault()} className="ff-mono"
-                 style={{ display: 'inline-block', padding: '15px 8px', margin: '-15px 0', fontSize: 'var(--t-micro)', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-mute)', textDecoration: 'none' }}>{l}</a>
+            {[['Restore purchases', runRestore], ['Terms', null], ['Privacy', null]].map(([l, fn]) => (
+              <a key={l} href="#" onClick={(e) => { e.preventDefault(); fn && fn(); }} className="ff-mono"
+                 style={{ display: 'inline-block', padding: '15px 8px', margin: '-15px 0', fontSize: 'var(--t-micro)', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-mute)', textDecoration: 'none' }}>{l === 'Restore purchases' && restoring ? 'Restoring…' : l}</a>
             ))}
           </div>
         </div>
       </div>
+
+      {ConfirmSheet && restoreDone && (
+        <ConfirmSheet open={!!restoreDone}
+          title={RESTORE_RESULT[restoreDone].title}
+          body={RESTORE_RESULT[restoreDone].body}
+          confirmLabel={restoreDone === 'error' ? 'Try again' : 'Done'}
+          cancelLabel={null}
+          onConfirm={() => { const d = restoreDone; setRestoreDone(null); if (d === 'error') runRestore(); else if (d === 'owned') onClose(); }}
+          onClose={() => { const d = restoreDone; setRestoreDone(null); if (d === 'owned') onClose(); }}/>
+      )}
     </div>
   );
 }
@@ -271,7 +305,7 @@ function StudioHub({ roastyCfg, treeId, lightId, showMoodPlayer = true, chrome =
       {chrome && SubHeader && <SubHeader scrolled={scrolled} title="Studio" onBack={onClose}/>}
       <div className="scroll" onScroll={onScroll} style={{ paddingTop: 108, paddingBottom: 28 }}>
         <div className="px-24">
-          <div className="smallcaps" style={{ color: 'var(--accent)' }}>BREWPATH PLUS</div>
+          <div className="smallcaps" style={{ color: 'var(--accent)' }}>FOUNDATIONS</div>
           <h1 className="ff-display" style={{ fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em', margin: '8px 0 0', color: 'var(--ink)' }}>Make it yours.</h1>
         </div>
 
@@ -587,11 +621,12 @@ function RoastyMoodScreen({ roastyCfg, onClose }) {
 }
 
 // ───────────────────────────────────────────────────────────
-// PLUS WELCOME — the celebratory beat right after payment.
+// PURCHASE WELCOME — the celebratory beat right after the one-time purchase.
 // ───────────────────────────────────────────────────────────
-function PlusWelcomeScreen({ onOpenStudio, onClose}) {
+function PlusWelcomeScreen({ planId = 'lifetime', onOpenStudio, onClose}) {
+  const plan = window.getPlan(planId);
   return (
-    <div className="screen" data-screen-label="Plus welcome" style={{ background: 'var(--bg)' }}>
+    <div className="screen" data-screen-label="Purchase welcome" style={{ background: 'var(--bg)' }}>
       <div aria-hidden="true" style={{
         position: 'absolute', inset: 0, pointerEvents: 'none',
         background: 'radial-gradient(ellipse at 50% 28%, color-mix(in oklab, var(--accent) 20%, transparent) 0%, transparent 58%)',
@@ -605,9 +640,9 @@ function PlusWelcomeScreen({ onOpenStudio, onClose}) {
             <h1 className="ff-display" style={{
               fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em',
               margin: 0, color: 'var(--ink)', textWrap: 'pretty',
-            }}>Welcome to Plus.</h1>
+            }}>Foundations is yours.</h1>
             <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: '12px auto 0', maxWidth: 300, textWrap: 'pretty' }}>
-              Everything's unlocked. Time to make Roasty and your grove your own.
+              {plan.welcome}
             </p>
           </div>
         </div>
@@ -618,7 +653,7 @@ function PlusWelcomeScreen({ onOpenStudio, onClose}) {
             <a className="btn btn-ghost" href="#" style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }} onClick={(e) => { e.preventDefault(); onClose(); }}>Back to learning</a>
           </div>
           <p className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.08em', color: 'color-mix(in oklab, var(--ink) 62%, var(--ink-mute))', textAlign: 'center', margin: '14px 0 0', textTransform: 'uppercase' }}>
-            7 days free · cancel in Settings
+            {plan.welcomeNote}
           </p>
         </div>
       </div>

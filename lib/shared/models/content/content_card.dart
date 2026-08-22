@@ -56,7 +56,14 @@ sealed class ContentCard with _$ContentCard {
   const factory ContentCard.visual({
     required String label,
     required String title,
-    required String variant,
+
+    /// The axis this guide names — `roast`, `grind`, `variety` — and the value
+    /// its `g:` save key carries.
+    ///
+    /// The bank calls it `visualGuide`; the glossary calls the concept a
+    /// **subject**, and reserves *variant* for a mini-game format. Mapped here
+    /// the way `glyph` → `iconName` is, so neither name has to bend.
+    @JsonKey(name: 'visualGuide') required String subject,
     required String caption,
     bool? mergeHeader,
     bool? captionTop,

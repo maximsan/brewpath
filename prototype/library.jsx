@@ -1,6 +1,6 @@
 // library.jsx — Module detail screen (two layouts), Saved / Favorites screen,
 // and the bookmark affordances shared across the app.
-// Loaded after screens.jsx so MODULES / LESSONS / COLLECTION / MINI_GAMES exist.
+// Loaded after screens.jsx so MODULES / LESSONS / COLLECTIBLES / MINI_GAMES exist.
 
 const { useState: useStateLib } = React;
 
@@ -88,7 +88,7 @@ function SavedIcon({ kind, cat, size = 22 }) {
   if (kind === 'term') {
     return window.CatGlyph ? <window.CatGlyph cat={cat} size={size} color="var(--ink-mute)"/> : null;
   }
-  if (kind === 'guide') {
+  if (kind === 'visualGuide') {
     return window.TuneMark ? <window.TuneMark size={size - 2} color="var(--ink-mute)"/> : null;
   }
   if (kind === 'card') {
@@ -137,9 +137,9 @@ function SavedScreen({ favorites, savedMax, isPlus, onUpgrade, onToggleFav, onLe
     if (favs.has('l:' + l.id)) lessons.push({ ...l, mod: m });
   }));
   const terms = (window.DICT_TERMS || []).filter(t => favs.has('t:' + t.id));
-  const guides = Object.values(window.TRAINING || {}).filter(t => favs.has('g:' + t.id));
+  const guides = Object.values(window.VISUAL_GUIDE_CONTENT || {}).filter(t => favs.has('g:' + t.id));
   const totalCount = lessons.length + terms.length + guides.length;
-  // Free users see their shelf against the cap; Plus users just see a count.
+  // Free users see their shelf against the cap; owners just see a count.
   const capped = !isPlus && savedMax != null;
   const atCap = capped && totalCount >= savedMax;
 
@@ -154,7 +154,7 @@ function SavedScreen({ favorites, savedMax, isPlus, onUpgrade, onToggleFav, onLe
         meta: '', onOpen: () => onLesson(l.id),
       })) },
     { id: 'guides', label: 'Visual guides', items: guides.map(t => ({
-        key: 'g:' + t.id, kind: 'guide', title: t.title,
+        key: 'g:' + t.id, kind: 'visualGuide', title: t.title,
         sub: 'VISUAL GUIDE · ' + t.label,
         meta: '', onOpen: () => onOpenGuide && onOpenGuide(t.id),
       })) },
@@ -180,7 +180,7 @@ function SavedScreen({ favorites, savedMax, isPlus, onUpgrade, onToggleFav, onLe
               background: 'var(--surface)', border: '1px solid var(--rule)', borderRadius: 12, padding: '13px 15px',
             }}>
               <span style={{ fontSize: 'var(--t-support)', lineHeight: 1.45, color: 'var(--ink-mute)', textWrap: 'pretty' }}>
-                Your shelf is full. <span style={{ color: 'var(--ink)', fontWeight: 500 }}>Unlock Plus</span> to save without a limit.
+                Your shelf is full. <span style={{ color: 'var(--ink)', fontWeight: 500 }}>Unlock Foundations</span> to save without a limit.
               </span>
               <window.Chevron color="var(--accent)" opacity={1}/>
             </button>

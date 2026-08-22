@@ -33,10 +33,24 @@ const { useState: useStateA, useEffect: useEffectA } = React;
 //                           late states without playing 32 lessons. states-demo
 //                           also layers DEMO_BEST over the score map, so every
 //                           mastery state appears at once. Dev-only.
+// monetization     PANEL    onetime | subscription | hybrid. Which pricing model
+//                           the paywall / gate sheet / Purchases render (see
+//                           monetization.jsx). Entitlement logic is model-agnostic.
 // restoreOutcome   PANEL    plus | none | error. Which of the three Restore
-//                           purchases results the button returns. There is no
-//                           real store yet, so the outcome has to be chosen.
-//                           Dies when StoreKit is wired.
+//                           purchases results the button returns ('plus' is the
+//                           legacy value name; it now means "Foundations
+//                           restored"). There is no real store yet, so the
+//                           outcome has to be chosen. Dies when StoreKit is wired.
+// showStore        PANEL    false | true. Renders the Courses catalogue entry
+//                           (Profile · Explore card + the store screen). GATED
+//                           FOR V1: stays hidden until there is more than one
+//                           purchasable course to list. SHIPS READING false.
+// guide            PANEL    false | true. The lightweight onboarding layer:
+//                           first-open Today tour (guide.jsx, replayable from
+//                           Settings → Help → App Guide), event-driven micro-
+//                           tips (one each, never consecutive, never in a
+//                           lesson) and the App Guide screen. Off while under
+//                           review — the toggle is the proposal.
 // voice            SETTLED  field-guide | specimen | plain-spoken. Copy register
 //                           across the app, applied as data-voice on <html>.
 //                           field-guide is the baseline and has no CSS rules of
@@ -81,9 +95,9 @@ const { useState: useStateA, useEffect: useEffectA } = React;
 //                           Only `tally` is tested by name, so the alternative
 //                           has no canonical spelling. v2 surface.
 //
-// The panel also carries three controls that are NOT tweak keys — Plus unlocked
-// and the two freeze toggles write real app state, so they persist and behave
-// exactly as the app would. They are listed in the panel, not here, on purpose.
+// The panel also carries three controls that are NOT tweak keys — Foundations
+// purchased and the two freeze toggles write real app state, so they persist and
+// behave exactly as the app would. They are listed in the panel, not here, on purpose.
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "voice":   "field-guide",
   "onbFlow":      "fieldguide",
@@ -100,6 +114,9 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "tasteFixReact": true,
   "tasteFixSetup": "card",
   "restoreOutcome": "plus",
+  "monetization": "onetime",
+  "showStore": false,
+  "guide": false,
   "scope": "v1"
 }/*EDITMODE-END*/;
 
@@ -139,7 +156,7 @@ const SCREEN_ROUTES = {
   'card-match':     { view: 'lesson', lessonId: 'm1l2', startKind: 'match' },
   'card-slider':    { view: 'lesson', lessonId: 'm1l2', startKind: 'slider' },
   'card-sequence':  { view: 'lesson', lessonId: 'm1l2', startKind: 'sequence' },
-  // Visual-training / taste-fix card kinds, homed in the taste-first lessons.
+  // Visual-guide / taste-fix card kinds, homed in the taste-first lessons.
   'card-visual':    { view: 'lesson', lessonId: 'm5l3', startKind: 'visual' },
   'card-anatomy':   { view: 'lesson', lessonId: 'm1l7', startKind: 'visual' },
   'card-bagpick':   { view: 'lesson', lessonId: 'm1l7', startKind: 'bagpick' },
@@ -150,7 +167,7 @@ const SCREEN_ROUTES = {
   'lesson-grind':   { view: 'lesson', lessonId: 'm4l3' },
   'lesson-ratio':   { view: 'lesson', lessonId: 'm5l1' },
   'lesson-taste':   { view: 'lesson', lessonId: 'm5l3' },
-  'card-training':  { view: 'app', tab: 'cards', sheet: true, cardId: 'tr-extraction' },
+  'card-guide':     { view: 'app', tab: 'cards', sheet: true, cardId: 'g-extraction' },
   // 2. MINI-GAMES: standalone, replayable challenges with their own
   //    intro → play → results flow. They never touch lesson points / progression.
   //    The `game-*` deep-links open a mini-game intro.
@@ -172,7 +189,10 @@ const SCREEN_ROUTES = {
   'mood-player':    { view: 'mood-player' },
   cardsheet:        { view: 'app', tab: 'cards', sheet: true },
   saved:            { view: 'saved' },
-  // Paywall / trials
+  store:            { view: 'store' },
+  // Purchase gate / ad-preview layer (previews are v2)
+  'gate-saved':     { view: 'app', tab: 'learn', gate: 'saved' },
+  'gate-course':    { view: 'app', tab: 'path', gate: 'course' },
   'rewarded-ad':    { view: 'rewarded-ad', adFeature: 'dictionary' },
   'roasty-gift':    { view: 'roasty-gift' },
   // Reward states
@@ -181,11 +201,18 @@ const SCREEN_ROUTES = {
   'lesson-complete-perfect':{ view: 'lesson-complete', lessonId: 'm1l2', prevPoints: 110, newPoints: 120, result: { correct: 7, total: 7 } },
   'module-complete':{ view: 'module-complete', lessonId: 'm1l3', prevPoints: 110, newPoints: 150 },
   'module-card':    { view: 'module-card',     lessonId: 'm1l3', prevPoints: 110, newPoints: 150 },
-  // ── Active Coffee Challenge 
+  // ── Active Coffee Challenge ──
   'module-challenge':    { view: 'module-challenge', lessonId: 'm1l3', prevPoints: 110, newPoints: 150 },
+  'course-complete':     { view: 'course-complete' },
   'today-challenge':     { view: 'app', tab: 'learn', brewToday: 'active' },
   'today-challenge-done':{ view: 'app', tab: 'learn', brewToday: 'completed' },
   'today-nochallenge':   { view: 'app', tab: 'learn', brewToday: 'none' },
+  'today-keepsharp':     { view: 'app', tab: 'learn', keepSharp: true },
+  'today-keepsharp-games':  { view: 'app', tab: 'learn', keepSharp: 'games' },
+  'today-keepsharp-vocab':  { view: 'app', tab: 'learn', keepSharp: 'vocab' },
+  'today-keepsharp-flash':  { view: 'app', tab: 'learn', keepSharp: 'flash' },
+  'today-keepsharp-replay': { view: 'app', tab: 'learn', keepSharp: 'replay' },
+  'today-keepsharp-quiet':  { view: 'app', tab: 'learn', keepSharp: 'quiet' },
   'today-challenge-log': { view: 'app', tab: 'learn', brewToday: 'active', logSheet: true },
   'path-challenge':      { view: 'app', tab: 'path',  brewPath: 'completed' },
   'path-challenge-open': { view: 'app', tab: 'path',  brewPath: 'available' },
@@ -321,7 +348,7 @@ function App() {
   );
   const [openCard, setOpenCard] = useStateA(
     _route && _route.sheet
-      ? (window.findCard(_route.cardId) || COLLECTION[0])
+      ? (window.findCard(_route.cardId) || COLLECTIBLES[0])
       : null
   );
   const [activeGame, setActiveGame] = useStateA(
@@ -342,12 +369,15 @@ function App() {
   const openDuel = (stage) => { setDuelStage(stage || 'hub'); setDuelKey(k => k + 1); setView('duel'); };
 
   // ── Favorites (saved lessons / cards / mini-games), persisted ──
-  // Free tier keeps a soft cap on the Saved shelf; Plus lifts it.
+  // Free tier keeps a soft cap on the Saved shelf; owning Foundations lifts it.
+  // The cap counts lessons, terms and guides together.
   const SAVED_FREE_MAX = 5;
   const [favorites, setFavorites] = useStateA(() => {
     let stored = null;
     try { stored = JSON.parse(localStorage.getItem('cq-favorites')); } catch (e) {}
-    return new Set(Array.isArray(stored) ? stored : ['l:m1l1', 'c:c1', 't:arabica', 't:bloom', 't:crema']);
+    // Seed only content a fresh (free) profile can actually open: lesson 1's
+    // card and terms. A free shelf must never hold entries the user can't view.
+    return new Set(Array.isArray(stored) ? stored : ['l:m1l1', 'c:c1', 't:cherry', 't:bean-belt']);
   });
   useEffectA(() => {
     try { localStorage.setItem('cq-favorites', JSON.stringify([...favorites])); } catch (e) {}
@@ -356,8 +386,8 @@ function App() {
   // against the free tier's soft cap.
   const isSavedKey = (key) => /^(l|t|g):/.test(key);
   const toggleFavorite = (key) => {
-    // Free tier holds a limited shelf; Plus makes saving unlimited. Removing is
-    // always allowed, so a capped free user can still curate.
+    // Free tier holds a limited shelf; Foundations makes saving unlimited.
+    // Removing is always allowed, so a capped free user can still curate.
     if (isSavedKey(key) && !favorites.has(key) && !isPlus
         && [...favorites].filter(isSavedKey).length >= SAVED_FREE_MAX) {
       setGateFeature('saved');
@@ -442,17 +472,19 @@ function App() {
   useEffectA(() => { try { localStorage.setItem('cq-recent-terms', JSON.stringify(recentTerms)); } catch (e) {} }, [recentTerms]);
   const recordRecent = (id) => setRecentTerms(prev => [id, ...prev.filter(x => x !== id)].slice(0, 10));
 
-  // ── Customization (premium) state, persisted across refreshes ──
+  // ── Ownership + customization state, persisted across refreshes ──
+  // Foundations is a ONE-TIME purchase: `isPlus` now means "owns Foundations",
+  // permanently. The variable name stays because every screen file reads it;
+  // storage migrates the old `plus` flag into `owned`, so a pre-pivot save
+  // keeps its entitlement. There is no plan and no trial — nothing renews.
   const _savedCustom = (() => { try { return JSON.parse(localStorage.getItem('cq-custom')) || {}; } catch (e) { return {}; } })();
-  const [isPlus, setIsPlus]       = useStateA(!!_savedCustom.plus);
-  const [subPlan, setSubPlan]     = useStateA(_savedCustom.subPlan || 'yearly');
-  // Trial is its own state, not a flavour of Plus: 0 means "paying", >0 means the
-  // 7-day trial is still running. Access is identical either way (isPlus), so only
-  // the billing language changes.
-  const TRIAL_DAYS = 7;
-  const [trialDaysLeft, setTrialDaysLeft] = useStateA(_savedCustom.trialDaysLeft || 0);
-  // Where the Subscription screen should return to (reachable from both
-  // Settings directly and Account and sync → Manage Plus).
+  const [isPlus, setIsPlus]       = useStateA(!!(_savedCustom.owned != null ? _savedCustom.owned : _savedCustom.plus));
+  // Which plan granted the entitlement ('lifetime' | 'monthly' | 'yearly').
+  // PRESENTATION ONLY — gates read isPlus/featureUnlocked, never the plan; the
+  // monetization model (monetization.jsx) decides what the paywall offers.
+  const [entPlanId, setEntPlanId] = useStateA(_savedCustom.planId || 'lifetime');
+  // Where the Purchases screen should return to (reachable from both
+  // Settings directly and Account and sync → Foundations).
   const [subFrom, setSubFrom]     = useStateA('account');
   // Where the Mood player should return to (reachable from the Studio hub
   // and from the "See moods" shortcut inside Dress up Roasty).
@@ -466,36 +498,53 @@ function App() {
 
   // Mirror to window so every <Roasty/> and <CoffeePersona/> reflects the
   // applied look (set during render so children read current values), and persist.
-  window.ROASTY_CONFIG = roastyCfg;
-  window.TREE_CONFIG = {
-    treatment: window.groveFilter ? window.groveFilter(treeId, lightId) : '',
-    shape: window.groveShape ? window.groveShape(treeId) : '',
-  };
+  // (The mirror itself is written below, once gating state exists — the applied
+  // look is entitlement-gated: customization is part of Foundations.)
   useEffectA(() => {
-    try { localStorage.setItem('cq-custom', JSON.stringify({ plus: isPlus, trialDaysLeft, subPlan, variety: treeId, light: lightId, roasty: roastyCfg })); } catch (e) {}
-  }, [isPlus, trialDaysLeft, subPlan, treeId, lightId, roastyCfg]);
+    try { localStorage.setItem('cq-custom', JSON.stringify({ owned: isPlus, planId: entPlanId, variety: treeId, light: lightId, roasty: roastyCfg })); } catch (e) {}
+  }, [isPlus, entPlanId, treeId, lightId, roastyCfg]);
 
-  // ── Plus gating: temporary unlocks, gate sheet, rewarded ad, the gift ──
-  // tempUnlocks maps a feature key → expiry timestamp (ms). A feature is open
-  // if the user is Plus, or has an unexpired trial for it.
+  // ── Purchase gating: temporary previews (v2), gate sheet, rewarded ad ──
+  // tempUnlocks maps a feature key → expiry timestamp (ms). A surface is open
+  // if the user owns Foundations, or holds an unexpired ad preview for it (v2).
   const [tempUnlocks, setTempUnlocks] = useStateA(() => {
     let s = null; try { s = JSON.parse(localStorage.getItem('cq-temp')); } catch (e) {}
     return (s && typeof s === 'object') ? s : {};
   });
   useEffectA(() => { try { localStorage.setItem('cq-temp', JSON.stringify(tempUnlocks)); } catch (e) {} }, [tempUnlocks]);
-  // Tick once a second so trial countdowns + expiries re-render live.
+  // Tick once a second so preview countdowns + expiries re-render live.
   const [, setNowTick] = useStateA(0);
   useEffectA(() => { const id = setInterval(() => setNowTick(n => n + 1), 1000); return () => clearInterval(id); }, []);
 
   const featureUnlocked = (key) => {
-    // Option A + free Saved tier: in v1 everything that teaches is free, and
-    // Saved is a free tier (soft cap), so neither is ever gated.
-    if (isV1 && (key === 'dictionary' || key === 'saved')) return true;
+    // The Saved SHELF is free for everyone — what's gated is saving past the
+    // cap, and toggleFavorite raises that gate itself.
+    if (key === 'saved') return true;
     return isPlus || (!!tempUnlocks[key] && tempUnlocks[key] > Date.now());
   };
   const grantTrial = (key, minutes) => setTempUnlocks(u => ({ ...u, [key]: Date.now() + minutes * 60000 }));
 
-  const [gateFeature, setGateFeature] = useStateA(null); // key → PlusGateSheet open
+  // The APPLIED look, mirrored for every <Roasty/> and <CoffeePersona/>: without
+  // the entitlement (or a v2 Studio preview) the app renders default Roasty and
+  // grove. The saved look stays in storage and returns with the entitlement.
+  const _studioOn = featureUnlocked('studio');
+  window.ROASTY_CONFIG = _studioOn ? roastyCfg : { roast: 'medium', hat: 'none', gear: 'none', sprout: 'leaf' };
+  window.TREE_CONFIG = {
+    treatment: window.groveFilter ? window.groveFilter(_studioOn ? treeId : 'arabica', _studioOn ? lightId : 'daylight') : '',
+    shape: window.groveShape ? window.groveShape(_studioOn ? treeId : 'arabica') : '',
+  };
+
+  // ── The course lock ──
+  // Free tier plays ALL of Module 1 (Beans) — complete lessons, its challenges
+  // and its module test; Modules 2–5 are the one-time purchase, and everything
+  // derived (dictionary terms, challenges, tree growth) inherits from lesson
+  // access. Progress locks (finish X to unlock) still apply on top for owners.
+  const FREE_MODULE_IDS = ['m1'];
+  const hasCourse = featureUnlocked('course');
+  const lessonAccessible = (id) => hasCourse || FREE_MODULE_IDS.some(m => id && id.indexOf(m + 'l') === 0);
+
+  const [gateFeature, setGateFeature] = useStateA(_route && _route.gate ? _route.gate : null); // key → PlusGateSheet open
+  const [gateGame, setGateGame]       = useStateA(null); // the locked game behind a 'games' gate → module-targeted sheet
   const [adFeature, setAdFeature]     = useStateA(_route && _route.adFeature ? _route.adFeature : 'dictionary');
 
   // What each feature key actually does once it's open.
@@ -507,6 +556,8 @@ function App() {
     else if (key === 'studio') setView('studio');
   };
   // Single funnel: open the feature if allowed, otherwise raise the gate sheet.
+  // The Dictionary is NOT routed through this — it opens for everyone and
+  // limits itself inside (free = terms from played lessons, short entries).
   const requestFeature = (key) => { if (featureUnlocked(key)) runFeature(key); else setGateFeature(key); };
 
   const openCustomize = () => setView('studio');
@@ -545,13 +596,13 @@ function App() {
   const state = { streak: progression.streak, points: progression.points };
 
   // ── Streak freeze ──
-  // Earned, scarce, and spent for you: one freeze per 7 consecutive days, at most
-  // two held. Miss a day and one is consumed automatically — the streak survives
+  // Earned, scarce, and spent for you: one freeze per 7 consecutive days, one
+  // held at a time. Miss a day and it is consumed automatically — the streak survives
   // and the day renders as covered in the week strip. Held count is DERIVED from
   // the real streak minus what's been spent, so it can never drift out of step,
   // and resetting progress zeroes it for free. There is no setting: it is a
   // mechanic, not a preference.
-  const FREEZE_EARN_DAYS = 7, FREEZE_CAP = 2;
+  const FREEZE_EARN_DAYS = 7, FREEZE_CAP = 1;
   // Two separate facts, deliberately not one value:
   //   frozenDays   — which days of THIS week a freeze covered. Drives the week
   //                  strip, and clears when the week rolls over.
@@ -618,6 +669,25 @@ function App() {
   // and the module Field Guide card unlocks when the whole module is done.
   if (window.syncCollection) window.syncCollection(effectiveCompleted);
 
+  // ── Foundations completion (the once-only course-complete moment) ──
+  // Under derivation "course complete" is permanently TRUE from lesson 32 on,
+  // so the persisted marker below is what makes the moment fire exactly once.
+  // It is written on PRESENTATION, not dismissal — a force-quit mid-celebration
+  // still counts as seen. Progress-scoped (see ACCOUNT_STORES): Reset progress
+  // clears it, so a fresh run through the course earns the moment again.
+  const courseComplete = window.coreDoneCount(effectiveCompleted) >= (window.CORE_TOTAL || 1);
+  const [courseAck, setCourseAck] = useStateA(() => { try { return localStorage.getItem('cq-course-ack') === '1'; } catch (e) { return false; } });
+  useEffectA(() => { try { localStorage.setItem('cq-course-ack', courseAck ? '1' : '0'); } catch (e) {} }, [courseAck]);
+  const ccPinned = !!(_route && _route.view === 'course-complete');
+  // Landing net — the gate is `allCaughtUp && !acked`: the reward chain's exits
+  // route to the moment directly, and ANY other arrival in the app while
+  // complete-and-unacked (the Progress tweak, an X out of a reward screen)
+  // raises it here.
+  useEffectA(() => { if (view === 'app' && courseComplete && !courseAck && !ccPinned) setView('course-complete'); }, [view, courseComplete, courseAck]);
+  // Ack on presentation. The route-pinned preview (?screen=course-complete)
+  // never writes it — nothing route-driven is ever persisted.
+  useEffectA(() => { if (view === 'course-complete' && !ccPinned) setCourseAck(true); }, [view]);
+
   // ── Perfect-module gift tracking ──
   // perfectLessons = lessons finished with every quiz answered correctly.
   // giftedModules  = modules whose Roasty gift has already been offered.
@@ -625,7 +695,7 @@ function App() {
   const [giftedModules, setGiftedModules]   = useStateA(() => new Set());
   const [giftModule, setGiftModule]         = useStateA(null);
 
-  // ── Active Coffee Challenge state 
+  // ── Active Coffee Challenge state ──
   // A single active challenge (activeId + startedAt); a set of completed ids
   // (each unlocks a card stamp). Skipping/expiry just clears the active one —
   // no archive, no penalty. Persisted across refreshes.
@@ -640,7 +710,7 @@ function App() {
   }, [brew]);
   const [justLoggedId, setJustLoggedId] = useStateA(null); // ephemeral 'completed' card on Today
   const [justLoggedPoints, setJustLoggedPoints] = useStateA(true); // whether that completion earned points (first time only)
-  const [logSheetId, setLogSheetId]     = useStateA(_route && _route.logSheet ? 'bc-m1l2' : null); // Log Result sheet target
+  const [logSheetId, setLogSheetId]     = useStateA(_route && _route.logSheet ? 'bc-m1l1' : null); // Log Result sheet target
   const [brewRecap, setBrewRecap]       = useStateA(null); // read-only recap for a completed challenge
   // Active only within the 48h window; past that it silently drops off Today.
   const brewActiveId = (brew.activeId && brew.startedAt && (Date.now() - brew.startedAt) <= (window.BREW_WINDOW_MS || 1)) ? brew.activeId : null;
@@ -771,9 +841,11 @@ function App() {
     setView('lesson');
   };
 
-  // Open a lesson from a list. Completed lessons go through a review-confirm
-  // sheet first (no new points); fresh lessons start immediately.
+  // Open a lesson from a list. The course lock comes first: past the free two,
+  // a tap raises the purchase gate instead of the player. Completed lessons go
+  // through a review-confirm sheet (no new points); fresh lessons start immediately.
   const openLesson = (id) => {
+    if (!lessonAccessible(id)) { setGateFeature('course'); return; }
     if (isLessonComplete(id)) setReviewLessonId(id);
     else startLesson(id);
   };
@@ -794,9 +866,15 @@ function App() {
   const savedTermCount = [...favorites].filter(k => k.indexOf('t:') === 0).length;
 
   // Set of learned term ids, derived from completed lessons (+ a demo seed).
+  // Reads effectiveCompleted so the Progress tweak also widens the free
+  // dictionary pool. For a free user this set IS the accessible dictionary.
   const learnedSet = React.useMemo(
-    () => (window.learnedTermSet ? window.learnedTermSet(progression.completed) : new Set()),
-    [progression.completed]
+    () => (window.learnedTermSet ? window.learnedTermSet(effectiveCompleted) : new Set()),
+    [effectiveCompleted]
+  );
+  const accessibleTerms = React.useMemo(
+    () => (window.DICT_TERMS || []).filter(t => learnedSet.has(t.id)),
+    [learnedSet]
   );
 
   const openDictionary = (opts) => {
@@ -888,11 +966,16 @@ function App() {
   };
 
   // From LessonComplete → start the next lesson directly, but only if it has a
-  // real body. In this build not every lesson is authored yet; advancing into an
-  // unbuilt lesson would render a blank player, so fall back to the Path instead.
+  // real body AND is on the buyer's side of the course lock. In this build not
+  // every lesson is authored yet; advancing into an unbuilt lesson would render
+  // a blank player. A free user finishing Module 1 lands on the Path with the
+  // purchase gate raised — the natural "keep going" moment.
   const continueFromLessonComplete = () => {
+    // Course finished: the completion moment interposes before any landing.
+    if (courseComplete && !courseAck) { setView('course-complete'); return; }
     const nextId = window.findNextLessonId(completedLesson.id);
     const playable = !!(nextId && window.LESSONS && window.LESSONS[nextId]);
+    if (playable && !lessonAccessible(nextId)) { setView('app'); setTab('path'); setGateFeature('course'); return; }
     if (playable) startLesson(nextId);
     else { setView('app'); setTab('path'); }
   };
@@ -910,6 +993,8 @@ function App() {
 
   // The original post-module routing (gift or next module / Path).
   const advanceAfterModule = () => {
+    // Course finished: the completion moment interposes before any landing.
+    if (courseComplete && !courseAck) { setView('course-complete'); return; }
     const ctx = window.findLessonContext(completedLesson.id);
     const mod = ctx ? ctx.module : null;
     // The perfect-module gift rides on the rewarded-trial layer, which is a v2
@@ -925,6 +1010,7 @@ function App() {
     // now reads as complete and its module challenge is available.
     const nextId = window.findNextModuleFirstLesson(completedLesson.id);
     const playable = !!(nextId && window.LESSONS && window.LESSONS[nextId]);
+    if (playable && !lessonAccessible(nextId)) { setView('app'); setTab('path'); setGateFeature('course'); return; }
     if (playable) startLesson(nextId);
     else { setView('app'); setTab('path'); }
   };
@@ -948,6 +1034,15 @@ function App() {
     setView('app'); setTab('path');
   };
 
+  // ── Onboarding-guide store (the Guide tweak's persisted state) ──
+  // Declared with the other stores so ACCOUNT_STORES can wipe it: a progress
+  // reset re-arms the tour and every micro-tip.
+  const [guideState, setGuideState] = useStateA(() => {
+    let s = null; try { s = JSON.parse(localStorage.getItem('cq-guide')); } catch (e) {}
+    return (s && typeof s === 'object') ? { tourDone: !!s.tourDone, seen: Array.isArray(s.seen) ? s.seen : [] } : { tourDone: false, seen: [] };
+  });
+  useEffectA(() => { try { localStorage.setItem('cq-guide', JSON.stringify(guideState)); } catch (e) {} }, [guideState]);
+
   // ── The store registry ──────────────────────────────────────
   // Every account-scoped store is listed here ONCE, with its scope and how to
   // clear it. The wipes iterate this table rather than naming stores by hand,
@@ -966,11 +1061,16 @@ function App() {
     { key: 'cq-recent-terms',  scope: 'progress', reset: () => setRecentTerms([]) },
     // Duel keeps its own store so a half-finished round survives a refresh.
     { key: 'cq-duel-progress', scope: 'progress', reset: () => window.clearDuelProgress && window.clearDuelProgress() },
+    // The course-complete ack is progress: clearing the trail re-arms the moment.
+    { key: 'cq-course-ack',    scope: 'progress', reset: () => setCourseAck(false) },
+    // Onboarding is progress too: a reset should meet the user like day one.
+    { key: 'cq-guide',         scope: 'progress', reset: () => setGuideState({ tourDone: false, seen: [] }) },
     // In-memory only (no key), but still progress that must go with the rest.
     { key: null, scope: 'progress', reset: () => { setFrozenDays([]); setFreezesSpent(0); setFreezeNoticeSeen(false); } },
     { key: 'cq-temp',          scope: 'account',  reset: () => setTempUnlocks({}) },
     { key: 'cq-custom',        scope: 'account',  reset: () => {
-      setIsPlus(false); setTrialDaysLeft(0);
+      setIsPlus(false);
+      setEntPlanId('lifetime');
       setTreeId('arabica'); setLightId('daylight');
       setRoastyCfg({ roast: 'medium', hat: 'none', gear: 'none', sprout: 'leaf' });
     } },
@@ -982,7 +1082,7 @@ function App() {
   // the table. This is the check that makes the registry worth having — without
   // it the table is just a tidier hand-list. Watching writes rather than reading
   // existing keys means no false alarms from stale keys or from other documents
-  // on this origin (Coffee Tree.html owns cq-tree-modules, for instance).
+  // on this origin (Coffee Tree.html owns cq-tree-steps, for instance).
   useEffectA(() => {
     let restore = null;
     try {
@@ -1003,8 +1103,8 @@ function App() {
 
   const wipeProgress = () => wipeStores(['progress']);
   // Reset progress — clears the trail. Completed core lessons drive the tree, so
-  // zeroing them returns the grove to a bare seed. Plus and the trial are a
-  // purchase, not progress, so they survive. Lands the user back on their profile.
+  // zeroing them returns the grove to a bare seed. Foundations is a purchase,
+  // not progress, so it survives. Lands the user back on their profile.
   const resetProgress = () => {
     wipeProgress();
     setTab('profile'); setView('app');
@@ -1023,7 +1123,7 @@ function App() {
     setTimeout(() => setOpenCard(null), 280);
   };
 
-  // ── Active Coffee Challenge — derived review state 
+  // ── Active Coffee Challenge — derived review state ──
   // Both of these were once tweaks; they are now route-only, and the keys were
   // removed from TWEAK_DEFAULTS rather than left sitting there unread.
   // brewTodayMode: a screens-overview route can pin the Today card to a state
@@ -1035,8 +1135,8 @@ function App() {
   // takes it as a prop and 'auto' is the meaningful value, not a placeholder.
   const brewPathMode  = 'auto';
   let todayCh = null, todayMode = null;
-  if (brewTodayMode === 'active')         { todayMode = 'active';    todayCh = window.brewById('bc-m1l2'); }
-  else if (brewTodayMode === 'completed') { todayMode = 'completed'; todayCh = window.brewById('bc-m1l2'); }
+  if (brewTodayMode === 'active')         { todayMode = 'active';    todayCh = window.brewById('bc-m1l1'); }
+  else if (brewTodayMode === 'completed') { todayMode = 'completed'; todayCh = window.brewById('bc-m1l1'); }
   else if (brewTodayMode === 'none')      { todayMode = null; }
   else { // auto — real state
     // A replayed challenge (even an already-completed one) is set active via
@@ -1046,6 +1146,52 @@ function App() {
     else if (justLoggedId) { todayMode = 'completed'; todayCh = window.brewById(justLoggedId); }
   }
   const onBrewTry = (ch) => { startBrew(ch.id); closeCardSheet(); setTab('learn'); setView('app'); };
+
+  // ── Lightweight onboarding (behind the Guide tweak) ──
+  // One store: whether the Today tour has run, and which micro-tips have shown.
+  const guideOn = !!t.guide;
+  const markTipSeen = (id) => setGuideState(g => g.seen.indexOf(id) >= 0 ? g : { ...g, seen: [...g.seen, id] });
+  // Turning the tweak ON re-arms everything — the toggle doubles as the demo
+  // reset, so a reviewer always sees the first-run experience. (A reload with
+  // the tweak already on is not a rising edge; seen-state persists as shipped.)
+  const prevGuideOn = React.useRef(guideOn);
+  useEffectA(() => {
+    if (guideOn && !prevGuideOn.current) setGuideState({ tourDone: false, seen: [] });
+    prevGuideOn.current = guideOn;
+  }, [guideOn]);
+  // The tour runs on Today only, never over a sheet or gate, once by default.
+  const tourVisible = guideOn && !guideState.tourDone && view === 'app' && tab === 'learn'
+    && !gateFeature && !sheetOpen && !logSheetId && !brewRecap && !reviewLessonId;
+  // Event flags for tips whose trigger is a state CHANGE, not a place.
+  const [treeGrewFlag, setTreeGrewFlag] = useStateA(false);
+  const [savedFlag, setSavedFlag] = useStateA(false);
+  const prevDoneRef = React.useRef(progression.completed.size);
+  useEffectA(() => { if (progression.completed.size > prevDoneRef.current) setTreeGrewFlag(true); prevDoneRef.current = progression.completed.size; }, [progression.completed.size]);
+  const prevSavedRef = React.useRef(savedCount);
+  useEffectA(() => { if (savedCount > prevSavedRef.current) setSavedFlag(true); prevSavedRef.current = savedCount; }, [savedCount]);
+  // Which single tip is relevant RIGHT NOW. Never inside a lesson, never under
+  // the tour or a gate sheet; place-triggered tips fire on first visit, event-
+  // triggered ones surface back on Today (the safe landing).
+  let tipCandidate = null;
+  if (guideOn && !tourVisible && view !== 'lesson' && !gateFeature) {
+    // A fresh save outranks place tips: the tip answers the action just taken,
+    // on whatever surface it happened (mid-lesson saves defer to lesson exit).
+    const savedSafe = view === 'app' ? (!sheetOpen && !logSheetId) : ['dictionary', 'term', 'term-of-day', 'saved'].indexOf(view) >= 0;
+    if (savedFlag && savedSafe && guideState.seen.indexOf('saved') < 0) tipCandidate = 'saved';
+    else if (view === 'dictionary') tipCandidate = 'dictionary';
+    else if (view === 'studio' && featureUnlocked('studio')) tipCandidate = 'studio';
+    else if (view === 'app' && tab === 'path') tipCandidate = 'path';
+    else if (view === 'app' && tab === 'learn' && !sheetOpen && !logSheetId) {
+      if (brewActiveId) tipCandidate = 'brew';
+      else if (treeGrewFlag) tipCandidate = 'tree';
+      else if (freezesHeld > 0 || freezeEarnedShown) tipCandidate = 'freeze';
+    }
+  }
+  const [activeTip, dismissTip, pauseTips] = window.useGuideTip({
+    enabled: guideOn, candidateId: tipCandidate, seen: guideState.seen,
+    markSeen: markTipSeen, contextKey: view + '/' + tab,
+  });
+  const finishTour = () => { setGuideState(g => ({ ...g, tourDone: true })); pauseTips(); };
 
   // ── Render screens ──
   let body;
@@ -1096,7 +1242,7 @@ function App() {
       onUpgrade={() => setView('paywall')}
       onToggleFav={toggleFavorite}
       onLesson={openLesson}
-      onOpenGuide={(variant) => { const card = window.findTrainingCard && window.findTrainingCard(variant); if (card) openCardSheet(card); }}
+      onOpenGuide={(variant) => { const card = window.findVisualGuideCard && window.findVisualGuideCard(variant); if (card) openCardSheet(card); }}
       onOpenTerm={openTermFull}
       onFlashcards={() => { setFlashBack('saved'); setView('flashcards'); }}
       onClose={() => { setView('app'); }}
@@ -1108,6 +1254,7 @@ function App() {
       lesson={completedLesson}
       fromStage={window.treeStageFromCore(Math.max(0, _newCore - 1))}
       toStage={window.treeStageFromCore(_newCore)}
+      toNextStage={window.lessonsToNextStage(_newCore)}
       result={completedLesson.result}
       lessonState={completedLesson.lessonState}
       onPractice={() => { setActiveLessonId(completedLesson.id); setReviewActive(true); setView('lesson'); }}
@@ -1155,9 +1302,17 @@ function App() {
     const moduleChallenge = window.brewForModule(mod.id);
     body = <window.ModuleChallengeScreen
       module={mod} challenge={moduleChallenge}
-      onStart={() => { if (moduleChallenge) startBrew(moduleChallenge.id); setView('app'); setTab('learn'); }}
+      onStart={() => { if (moduleChallenge) startBrew(moduleChallenge.id); if (courseComplete && !courseAck) setView('course-complete'); else { setView('app'); setTab('learn'); } }}
       onNotNow={() => { if (moduleChallenge) saveBrew(moduleChallenge.id); advanceAfterModule(); }}
       onBack={backToPath}/>;
+  } else if (view === 'course-complete') {
+    // The Foundations completion moment. It grants nothing — no points, no tree
+    // growth, no 38th card — and the only exit is the Keep Sharp hand-off.
+    body = <window.CourseCompleteScreen
+      lessons={window.CORE_TOTAL || 32}
+      cards={(window.COLLECTIBLES || []).length}
+      streak={progression.streak}
+      onStart={() => { setView('app'); setTab('learn'); }}/>;
   } else if (view === 'game-intro' && activeGame) {
     body = <GameIntroScreen
       game={activeGame}
@@ -1171,6 +1326,8 @@ function App() {
     />;
   } else if (view === 'dictionary') {
     body = <DictionaryHome
+      full={hasCourse}
+      onUnlock={() => setGateFeature('dictionary')}
       learnedSet={learnedSet}
       favorites={favorites}
       savedTermCount={savedTermCount}
@@ -1180,11 +1337,12 @@ function App() {
       onToggleFav={toggleFavorite}
       onTermOfDay={() => setView('term-of-day')}
       onFlashcards={() => { setFlashBack('dictionary'); setView('flashcards'); }}
-      onVocabGame={() => setView('vocab-game')}
+      onVocabGame={() => { setFlashBack('dictionary'); setView('vocab-game'); }}
       onClose={() => { setTab('learn'); setView('app'); }}/>;
   } else if (view === 'term') {
     body = <TermDetail
       termId={activeTermId}
+      full={hasCourse}
       learnedSet={learnedSet}
       learned={learnedSet.has(activeTermId)}
       isFav={favorites.has('t:' + activeTermId)}
@@ -1193,8 +1351,12 @@ function App() {
       onLesson={(id) => { setTermReturn(null); openLesson(id); }}
       onClose={closeTerm}/>;
   } else if (view === 'term-of-day') {
-    const tod = window.dictTermOfDay ? window.dictTermOfDay() : null;
+    const todPool = hasCourse ? null : accessibleTerms;
+    const tod = window.dictTermOfDay ? window.dictTermOfDay(null, todPool) : null;
     body = <TermOfDayScreen
+      pool={todPool}
+      full={hasCourse}
+      onUnlock={() => setGateFeature('dictionary')}
       isFav={tod ? favorites.has('t:' + tod.id) : false}
       onToggleFav={() => tod && toggleFavorite('t:' + tod.id)}
       onOpenFull={openTermFull}
@@ -1202,14 +1364,17 @@ function App() {
   } else if (view === 'flashcards') {
     body = <FlashcardsScreen
       favorites={favorites}
+      pool={hasCourse ? null : accessibleTerms}
+      full={hasCourse}
       onOpenTerm={openTermFull}
       onBrowse={() => setView('dictionary')}
-      onClose={() => setView(flashBack === 'saved' ? 'saved' : 'dictionary')}/>;
+      onClose={() => setView(flashBack === 'saved' ? 'saved' : flashBack === 'learn' ? 'app' : 'dictionary')}/>;
   } else if (view === 'vocab-game') {
     body = <VocabGameScreen
       favorites={favorites}
+      pool={hasCourse ? null : accessibleTerms}
       onOpenTerm={openTermFull}
-      onClose={() => setView('dictionary')}/>;
+      onClose={() => setView(flashBack === 'learn' ? 'app' : 'dictionary')}/>;
   } else if (view === 'streak') {
     body = <StreakScreen
       streak={state.streak}
@@ -1235,18 +1400,17 @@ function App() {
       onClose={() => { setTab('profile'); setView('app'); }}
       onAbout={() => setView('about')}
       onAccount={() => setView('account')}
-      onSubscription={() => { setSubFrom('settings'); setView('subscription'); }}
+      onPurchases={() => { setSubFrom('settings'); setView('subscription'); }}
       onHelp={() => setView('help')}
       showDataExport={!isV1}
       isPlus={isPlus}
-      inTrial={trialDaysLeft > 0}
       onReset={resetProgress}
       onDeleteAccount={deleteAccount}
       progressSummary={[
         { label: 'Daily streak', value: progression.streak + (progression.streak === 1 ? ' day' : ' days') },
         { label: 'Points earned', value: progression.points + ' pts' },
         { label: 'Lessons completed', value: String(progression.completed.size) },
-        { label: 'Cards collected', value: COLLECTION.filter(c => c.earned).length + ' of ' + COLLECTION.length },
+        { label: 'Cards collected', value: COLLECTIBLES.filter(c => c.earned).length + ' of ' + COLLECTIBLES.length },
         { label: 'Coffee challenges', value: brew.completed.size + ' of ' + window.BREW_TOTAL },
         { label: 'Saved items', value: String(savedCount) },
         { label: 'Your coffee tree', value: 'Back to ' + (STAGE_NAMES[0]) },
@@ -1255,41 +1419,46 @@ function App() {
   } else if (view === 'about') {
     body = <AboutScreen onClose={() => setView('settings')}/>;
   } else if (view === 'help') {
-    body = <HelpSupportScreen onClose={() => setView('settings')}/>;
+    body = <HelpSupportScreen onClose={() => setView('settings')} onAppGuide={t.guide ? () => setView('app-guide') : undefined}/>;
+  } else if (view === 'app-guide') {
+    body = <window.AppGuideScreen
+      onClose={() => setView('help')}
+      onReplay={() => { setGuideState(g => ({ ...g, tourDone: false })); setTab('learn'); setView('app'); }}/>;
   } else if (view === 'account') {
     body = <AccountSyncScreen
       isPlus={isPlus}
-      inTrial={trialDaysLeft > 0}
       onClose={() => setView('settings')}
-      onManagePlan={() => { setSubFrom('account'); setView('subscription'); }}
+      onPurchases={() => { setSubFrom('account'); setView('subscription'); }}
       onSignOut={() => setView('settings')}
     />;
   } else if (view === 'subscription') {
-    const renews = subPlan === 'monthly' ? '18 Jul 2026' : '18 Jun 2027';
-    // Frozen "today" (Fri 8 May 2026) + days remaining, formatted like renews.
-    const chargeDate = new Date(2026, 4, 8 + trialDaysLeft)
-      .toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-    body = <SubscriptionScreen
-      isPlus={isPlus}
-      plan={subPlan}
-      renews={renews}
-      trialDaysLeft={trialDaysLeft}
-      chargeDate={chargeDate}
+    // The route key predates the pivot; the screen itself is Purchases — one-time
+    // purchases only, so there is no plan, renewal or cancel state to compute.
+    body = <PurchasesScreen
+      owned={isPlus}
+      planId={entPlanId}
+      purchased="8 May 2026"
       onClose={() => setView(subFrom)}
-      onUpgrade={() => setView('paywall')}
-      onChangePlan={(p) => setSubPlan(p)}
-      onCancel={() => { setIsPlus(false); setTrialDaysLeft(0); setView(subFrom); }}
+      onUnlock={() => setView('paywall')}
       restoreOutcome={t.restoreOutcome}
-      onRestored={() => { setIsPlus(true); setTrialDaysLeft(0); }}
+      onRestored={() => setIsPlus(true)}
+    />;
+  } else if (view === 'store') {
+    body = <window.StoreScreen
+      owned={isPlus}
+      onUnlock={() => setView('paywall')}
+      onClose={() => { setTab('profile'); setView('app'); }}
     />;
   } else if (view === 'paywall') {
     body = <PaywallScreen
-      showMoodPlayer={!isV1}
-      onSubscribe={(plan) => { setSubPlan(plan); setIsPlus(true); setTrialDaysLeft(TRIAL_DAYS); setView('plus-welcome'); }}
+      onPurchase={(planId) => { setIsPlus(true); setEntPlanId(planId || 'lifetime'); setView('plus-welcome'); }}
+      restoreOutcome={t.restoreOutcome}
+      onRestored={() => setIsPlus(true)}
       onClose={() => { setTab('profile'); setView('app'); }}
     />;
   } else if (view === 'plus-welcome') {
     body = <PlusWelcomeScreen
+      planId={entPlanId}
       onOpenStudio={() => setView('studio')}
       onClose={() => { setTab('profile'); setView('app'); }}
     />;
@@ -1381,7 +1550,13 @@ function App() {
                                         nextFreezeIn={nextFreezeIn}
                                         onDismissFreeze={() => setFreezeNoticeSeen(true)}
                                         onLesson={openLesson}
-                                        onGame={(g) => { setActiveGame(g); setView('game-intro'); }}
+                                        keepSharp={(_route && _route.keepSharp) || false}
+                                        flashEmpty={savedTermCount === 0}
+                                        isCourseLocked={(id) => !lessonAccessible(id)}
+                                        gamesLocked={!hasCourse}
+                                        onGame={(g) => { if (hasCourse || window.FREE_GAME_IDS.includes(g.id)) { setActiveGame(g); setView('game-intro'); } else { setGateGame(g); setGateFeature('games'); } }}
+                                        onFlashcards={() => { setFlashBack('learn'); setView('flashcards'); }}
+                                        onVocabGame={() => { setFlashBack('learn'); setView('vocab-game'); }}
                                         onOpenDuel={() => requestFeature('duel')}
                                         showDuel={!isV1}
                                         brewChallenge={todayCh}
@@ -1399,6 +1574,9 @@ function App() {
                                         onBrewUnsave={unsaveBrew}
                                         onBrewAction={(ch, st) => { if (st === 'completed') { setBrewRecap(ch); return; } startBrew(ch.id); setTab('learn'); setView('app'); }} state={state}/>}
         {tab === 'path'    && <PathTab  onLesson={openLesson}
+                                        purchaseLocked={(id) => !lessonAccessible(id)}
+                                        onPurchaseTap={() => setGateFeature('course')}
+                                        onOpenGuide={openCardSheet}
                                         brewCompleted={brew.completed}
                                         brewActiveId={brewActiveId}
                                         brewSaved={brew.saved}
@@ -1436,6 +1614,8 @@ function App() {
                                           onPractice={() => setTab('path')}
                                           onOpenCustomize={openCustomize}
                                           onOpenSaved={() => requestFeature('saved')}
+                                          showStore={!!t.showStore}
+                                          onOpenStore={() => setView('store')}
                                           onOpenDuel={() => requestFeature('duel')}
                                           showDuel={!isV1}
                                           savedCount={savedCount}
@@ -1445,9 +1625,11 @@ function App() {
   }
 
   const showTabs = view === 'app';
-  // Which gated feature is the user currently inside? (for the trial countdown)
+  // Which gated surface is the user currently inside? (for the preview countdown)
   const trialKey =
     (view === 'dictionary' || view === 'term' || view === 'term-of-day' || view === 'flashcards' || view === 'vocab-game') ? 'dictionary'
+    : (view === 'lesson' || view === 'lesson-complete') ? 'course'
+    : (view === 'game-intro' || view === 'mini-game') ? 'games'
     : view === 'duel' ? 'duel'
     : view === 'saved' ? 'saved'
     : (view === 'studio' || view === 'tree-chooser' || view === 'roasty-studio' || view === 'mood-player') ? 'studio'
@@ -1463,13 +1645,18 @@ function App() {
   return (
     <>
       {body}
+      {guideOn && activeTip && !tourVisible && window.GuideTipCard && (
+        <window.GuideTipCard tipId={activeTip} raised={showTabs} onDismiss={dismissTip}/>
+      )}
+      {tourVisible && window.TodayTour && <window.TodayTour onFinish={finishTour}/>}
       {trialUntil && window.TrialBadge && <window.TrialBadge until={trialUntil}/>}
       {window.PlusGateSheet && (
         <window.PlusGateSheet
           featureKey={gateFeature}
+          game={gateGame}
           open={!!gateFeature}
-          showAd={!isV1}
-          onClose={() => setGateFeature(null)}
+          showAd={!isV1 && gateFeature !== 'course' && gateFeature !== 'games'}
+          onClose={() => { setGateFeature(null); setGateGame(null); }}
           onUpgrade={() => { setGateFeature(null); setView('paywall'); }}
           onWatchAd={() => { const feature = gateFeature; setGateFeature(null); setAdFeature(feature); setView('rewarded-ad'); }}/>
       )}
@@ -1484,8 +1671,8 @@ function App() {
           variant={tab === 'profile' ? 'profile' : 'default'}
           scrolled={headerScrolled}
           onSettings={() => setView('settings')}
-          dictLocked={!featureUnlocked('dictionary')}
-          onDict={() => requestFeature('dictionary')}
+          dictLocked={false}
+          onDict={() => openDictionary()}
           savedLocked={!featureUnlocked('saved')}
           onSaved={() => requestFeature('saved')}
           savedCount={savedCount}
@@ -1496,8 +1683,8 @@ function App() {
       )}
       {showTabs && <TabBar active={tab} onChange={setTab} isV1={isV1}/>}
       <CardSheet card={openCard} open={sheetOpen} onClose={closeCardSheet}
-        guideSaved={!!(openCard && openCard.train && favorites.has('g:' + openCard.train))}
-        onToggleGuideSave={openCard && openCard.train ? () => toggleFavorite('g:' + openCard.train) : null}
+        guideSaved={!!(openCard && openCard.visualGuide && favorites.has('g:' + openCard.visualGuide))}
+        onToggleGuideSave={openCard && openCard.visualGuide ? () => toggleFavorite('g:' + openCard.visualGuide) : null}
         brewCompleted={(() => { const ch = openCard && window.brewForCard(openCard.id); return !!(ch && brew.completed.has(ch.id)); })()}
         brewActive={(() => { const ch = openCard && window.brewForCard(openCard.id); return !!(ch && brewActiveId === ch.id); })()}
         onBrewTry={onBrewTry}/>
@@ -1521,6 +1708,7 @@ function App() {
       <TermPeekSheet
         termId={termPeek}
         open={!!termPeek}
+        full={hasCourse}
         learnedSet={learnedSet}
         learned={termPeek ? learnedSet.has(termPeek) : false}
         isFav={termPeek ? favorites.has('t:' + termPeek) : false}
@@ -1552,6 +1740,8 @@ function App() {
             { value: 'everything', label: 'Everything' },
           ]}
           onChange={(v) => setTweak('scope', v)}/>
+        <TweakToggle label="Onboarding & guide" value={!!t.guide}
+          onChange={(v) => setTweak('guide', v)}/>
         <TweakSelect label="Progress" value={t.progress}
           options={[
             { value: 'default',     label: 'Start — mid module 1' },
@@ -1567,16 +1757,25 @@ function App() {
         <TweakToggle label="Freeze earned this lesson" value={freezeEarnedBeat}
           onChange={(v) => setFreezeEarnedBeat(v)}/>
 
-        <TweakSection label="Customize · Plus"/>
-        <TweakToggle label="Plus unlocked" value={isPlus}
+        <TweakSection label="Purchases"/>
+        <TweakRadio label="Model" value={t.monetization}
+          options={[
+            { value: 'onetime',      label: 'One-time' },
+            { value: 'subscription', label: 'Subs' },
+            { value: 'hybrid',       label: 'Hybrid' },
+          ]}
+          onChange={(v) => setTweak('monetization', v)}/>
+        <TweakToggle label="Foundations purchased" value={isPlus}
           onChange={(v) => setIsPlus(v)}/>
         <TweakSelect label="Restore result" value={t.restoreOutcome}
           options={[
-            { value: 'plus',  label: 'Plus restored' },
+            { value: 'plus',  label: 'Foundations restored' },
             { value: 'none',  label: 'Nothing to restore' },
             { value: 'error', label: 'Store unreachable' },
           ]}
           onChange={(v) => setTweak('restoreOutcome', v)}/>
+        <TweakToggle label="Show Courses catalogue" value={!!t.showStore}
+          onChange={(v) => setTweak('showStore', v)}/>
       </TweaksPanel>
     </>
   );

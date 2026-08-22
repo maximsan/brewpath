@@ -2,7 +2,7 @@
 
 const MODULES = [
   {
-    id: 'm1', n: 1, label: 'BEANS', title: 'Beans', glyph: 'beans',
+    id: 'm1', n: 1, label: 'BEANS', title: 'Beans', glyph: 'beans', art: 'assets/modules/m1-beans.png', artPos: '50% 42%',
     locked: false,
     lessons: [
       { id: 'm1l1', title: 'What coffee actually is', points: 10, time: 3, status: 'complete' },
@@ -15,7 +15,7 @@ const MODULES = [
     ],
   },
   {
-    id: 'm2', n: 2, label: 'PROCESSING', title: 'Processing', glyph: 'processing',
+    id: 'm2', n: 2, label: 'PROCESSING', title: 'Processing', glyph: 'processing', art: 'assets/modules/m2-processing.png', artPos: '50% 62%',
     locked: true,
     lessons: [
       { id: 'm2l1', title: 'Washed, natural, honey', points: 10, time: 4, status: 'locked' },
@@ -26,7 +26,7 @@ const MODULES = [
       { id: 'm2l6', title: 'Decaf, honestly',        points: 10, time: 4, status: 'locked' },
     ],
   },
-  { id: 'm3', n: 3, label: 'ROASTING',  title: 'Roasting',  glyph: 'roasting', locked: true, lessons: [
+  { id: 'm3', n: 3, label: 'ROASTING',  title: 'Roasting',  glyph: 'roasting', art: 'assets/modules/m3-roasting.png', artPos: '50% 28%', locked: true, lessons: [
       { id: 'm3l4', title: 'What roasting does',     points: 10, time: 4, status: 'locked' },
       { id: 'm3l1', title: 'Light, medium, dark', points: 10, time: 4, status: 'locked' },
       { id: 'm3l2', title: 'First and second crack', points: 10, time: 5, status: 'locked' },
@@ -34,7 +34,7 @@ const MODULES = [
       { id: 'm3l5', title: 'Light vs dark, side by side', points: 10, time: 4, status: 'locked' },
       { id: 'm3l6', title: 'How much caffeine are you actually drinking?', points: 10, time: 4, status: 'locked' },
   ]},
-  { id: 'm4', n: 4, label: 'GRIND',     title: 'Grind',     glyph: 'grind', locked: true, lessons: [
+  { id: 'm4', n: 4, label: 'GRIND',     title: 'Grind',     glyph: 'grind', art: 'assets/modules/m4-grind.png', artPos: '50% 42%', locked: true, lessons: [
       { id: 'm4l1', title: 'Particle size, in plain English', points: 10, time: 4, status: 'locked' },
       { id: 'm4l2', title: 'Burr vs blade',                   points: 10, time: 4, status: 'locked' },
       { id: 'm4l5', title: 'Which grind for which brewer',    points: 10, time: 3, status: 'locked' },
@@ -42,7 +42,7 @@ const MODULES = [
       { id: 'm4l6', title: 'Why pre-ground never tastes as good', points: 10, time: 3, status: 'locked' },
       { id: 'm4l7', title: 'Choosing your first grinder',     points: 10, time: 3, status: 'locked' },
   ]},
-  { id: 'm5', n: 5, label: 'BREW',      title: 'Brew',      glyph: 'brewing', locked: true, lessons: [
+  { id: 'm5', n: 5, label: 'BREW',      title: 'Brew',      glyph: 'brewing', art: 'assets/modules/m5-brew.png', artPos: '50% 56%', locked: true, lessons: [
       { id: 'm5l1', title: 'The brew ratio',     points: 10, time: 5, status: 'locked' },
       { id: 'm5l2', title: 'Water, the variable', points: 10, time: 4, status: 'locked' },
       { id: 'm5l4', title: 'Extraction explained', points: 10, time: 5, status: 'locked' },
@@ -511,6 +511,16 @@ const LESSONS = {
         ],
         explain: 'Specialty is a score, not a vibe. A qualified cupper grades the coffee against a fixed protocol, and 80 is the line.',
       },
+      { kind: 'mcq',
+        prompt: '“Tanzania Peaberry”, priced above the lot beside it. What has the bag told you?',
+        choices: [
+          { t: 'The beans are round singles, sieved into their own lot', correct: true },
+          { t: 'A cupper scored this lot higher than the others' },
+          { t: 'It is a rare variety the farm chose to plant' },
+          { t: 'The cherries were left on the tree to ripen longer' },
+        ],
+        explain: 'In about one cherry in twenty only one seed is fertilised, so it grows round instead of flat. Mills sieve those out because round beans roast differently — a sorting job, not a score. Calling it a variety is the common slip: peaberries turn up on the same branch as flat beans, and no one can plant them.',
+      },
       { kind: 'recall', label: 'BEFORE YOU GO',
         question: 'A bag reads “Fair Trade Certified · Premium Blend”. What do you actually know?',
         choices: [
@@ -556,7 +566,7 @@ const LESSONS = {
         ],
         meta: [['HIGH CUPPING', 'Low yield'], ['THE COST', 'Risk at the farm']],
       },
-      { kind: 'visual', label: 'VISUAL GUIDE', title: 'The variety family tree', variant: 'variety',
+      { kind: 'visual', label: 'VISUAL GUIDE', title: 'The variety family tree', visualGuide: 'variety',
         caption: 'Typica and Bourbon at the root, branching out to Geisha, Caturra and SL28. When a bag prints a variety, this is the line it is pointing at — not the country, not the process.' },
       { kind: 'mcq',
         prompt: 'One of these lines names the variety. Which?',
@@ -607,7 +617,7 @@ const LESSONS = {
         options: ['Gel', 'Shell'],
         a: 'Gel',
         hold: 'Hold that. In five minutes you’ll name all six layers from the outside in — and read two of them off a real bean.' },
-      { kind: 'visual', variant: 'anatomy', label: 'FIELD GUIDE', title: 'Six layers, outside in', mergeHeader: true, captionTop: true,
+      { kind: 'visual', visualGuide: 'anatomy', label: 'VISUAL GUIDE', title: 'Six layers, outside in', mergeHeader: true, captionTop: true,
         caption: 'Tap a layer — in the diagram or the list — to see what it is and what happens to it. Layer 03 is the one producers actually argue about.' },
       { kind: 'concept', label: 'CONCEPT', title: 'Most of the cherry never leaves the farm',
         fill: ['The outer ', { a: 'skin', o: ['skin', 'shell'], label: 'Layer 01' }, ' and the thin fruit ', { a: 'pulp', o: ['pulp', 'pith'], label: 'Layer 02' }, ' are squeezed off within hours of picking.'],
@@ -1274,8 +1284,8 @@ const LESSONS = {
       { kind: 'mcq',
         prompt: 'What is actually happening at first crack?',
         choices: [
-          { t: 'Steam pressure inside the bean forces it to pop open', correct: true },
-          { t: 'The caffeine boils off' },
+          { t: 'Steam pressure bursts the bean from inside', correct: true },
+          { t: 'The caffeine reaches its boiling point and escapes' },
           { t: 'The bean catches fire briefly' },
           { t: 'The roaster changes the fan speed' },
         ],
@@ -1318,7 +1328,7 @@ const LESSONS = {
         ],
         meta: [['LIGHT', 'Bright \u00b7 acidic'], ['DARK', 'Bitter \u00b7 smoky']],
       },
-      { kind: 'visual', label: 'VISUAL GUIDE', title: 'Light to dark', variant: 'roast',
+      { kind: 'visual', label: 'VISUAL GUIDE', title: 'Light to dark', visualGuide: 'roast',
         caption: 'The further the roast goes, the more the bean tastes of roast \u2014 and the less of where it grew.' },
       { kind: 'match',
         prompt: 'Match each roast level to how it tends to taste',
@@ -1603,9 +1613,9 @@ const LESSONS = {
       { kind: 'recall', label: 'BEFORE YOU GO',
         question: 'Why does a scoop of light roast carry slightly more caffeine than a scoop of dark?',
         choices: [
-          { t: 'Caffeine survives the roast, but dark beans are less dense — so a scoop holds less coffee', correct: true },
+          { t: 'Dark beans are less dense — a scoop holds less coffee', correct: true },
           { t: 'Heat creates extra caffeine in lighter roasts' },
-          { t: 'Dark roasting burns most of the caffeine away' },
+          { t: 'The long dark roast burns most of the caffeine away' },
         ],
         explain: 'It is a measuring artefact, not chemistry. Weigh instead of scooping and the difference nearly disappears.',
         line: 'Light and dark are not a ranking. They are a choice about what you want to taste.' },
@@ -1653,7 +1663,7 @@ const LESSONS = {
         ],
         meta: [['MOVES IT', 'Dose · time · species'], ['DOES NOT', 'Roast colour']],
       },
-      { kind: 'visual', label: 'VISUAL GUIDE', title: 'Caffeine, per serving', variant: 'caffeine',
+      { kind: 'visual', label: 'VISUAL GUIDE', title: 'Caffeine, per serving', visualGuide: 'caffeine',
         caption: 'Decaf, espresso, drip cup, large cold brew — laid out at the size you actually drink them. The espresso is the concentrated one and the smallest dose on the chart.' },
       { kind: 'slider',
         prompt: 'How much caffeine is in a 240 ml drip cup?',
@@ -1714,12 +1724,13 @@ const LESSONS = {
         ],
         meta: [['FINER', 'More surface \u00b7 faster'], ['COARSER', 'Less surface \u00b7 slower']],
       },
-      { kind: 'visual', label: 'VISUAL GUIDE', title: 'Coarse to fine', variant: 'grind',
+      { kind: 'visual', label: 'VISUAL GUIDE', title: 'Coarse to fine', visualGuide: 'grind',
         caption: 'Each brewer has a grind range that lets water move through at the right speed.' },
       { kind: 'match',
         prompt: 'Match each brewer to the grind it usually wants',
         pairs: [
           { l: 'French press', r: 'Coarse' },
+          { l: 'Cold brew',    r: 'Coarse' },
           { l: 'Pour-over',    r: 'Medium' },
           { l: 'Espresso',     r: 'Fine' },
         ],
@@ -1792,16 +1803,16 @@ const LESSONS = {
         ],
         meta: [['UNEVEN', 'Sour + bitter at once'], ['EVEN', 'Dial-able']],
       },
-      { kind: 'visual', label: 'VISUAL GUIDE', title: 'One setting, many sizes', variant: 'distribution',
+      { kind: 'visual', label: 'VISUAL GUIDE', title: 'One setting, many sizes', visualGuide: 'distribution',
         caption: 'A blade grinder throws a wide, twin-humped spread \u2014 dust at one end, boulders at the other. A burr pulls that into one tight band. Not a single size, though: even a good burr produces a spread. It is just a narrow enough one to dial in.' },
       { kind: 'tastefix', tags: ['BITTER', 'THIN'],
         prompt: 'The cup is harsh and watery at the same time. What would you change first?',
         scenario: 'Fresh beans, right ratio, water just off the boil \u2014 and it still tastes burnt and thin at once.',
         choices: [
-          { t: 'Grind more evenly \u2014 use a burr grinder', correct: true },
+          { t: 'Get a burr grinder', correct: true },
           { t: 'Grind finer' },
           { t: 'Grind coarser' },
-          { t: 'Use hotter water' },
+          { t: 'Brew with hotter water' },
         ],
         explain: 'Harsh and watery together is the spread talking: the dust is over-extracting while the boulders barely extract at all. No dial setting fixes a spread problem \u2014 finer makes the dust worse, coarser makes the boulders worse. The fix is the grinder, not the number.',
       },
@@ -1884,7 +1895,7 @@ const LESSONS = {
         ],
         meta: [['COARSEST', 'French press'], ['FINEST', 'Espresso']],
       },
-      { kind: 'visual', label: 'VISUAL GUIDE', title: 'The grind spectrum, by brewer', variant: 'grind',
+      { kind: 'visual', label: 'VISUAL GUIDE', title: 'The grind spectrum, by brewer', visualGuide: 'grind',
         caption: 'Coarse to fine, with the brewers placed along it. Find yours, start there, adjust from taste.' },
       { kind: 'match',
         prompt: 'Match each brewer to its grind',
@@ -1955,7 +1966,7 @@ const LESSONS = {
         ],
         meta: [['FINER', 'Extracts faster'], ['COARSER', 'Extracts slower']],
       },
-      { kind: 'visual', label: 'VISUAL GUIDE', title: 'The grind spectrum', variant: 'grind',
+      { kind: 'visual', label: 'VISUAL GUIDE', title: 'The grind spectrum', visualGuide: 'grind',
         caption: 'Match the grind to the brewer first \u2014 then nudge from there by taste.' },
       { kind: 'decision', label: 'AT THE BREWER', title: 'Sour, then bitter',
         scenario: 'Your pour-over is sour. You grind three steps finer, tighten the ratio and raise the water temperature all at once. The next cup is bitter.',
@@ -2129,12 +2140,12 @@ const LESSONS = {
         meta: [['FILTER', 'Entry burr is fine'], ['ESPRESSO', 'A different budget']],
       },
       { kind: 'match',
-        prompt: 'Match each budget to what is realistic',
+        prompt: 'Match each situation to what is realistic',
         pairs: [
-          { l: 'Entry',            r: 'A capable hand burr' },
-          { l: 'Mid',              r: 'A decent electric burr' },
-          { l: 'Espresso-capable', r: 'A different budget entirely' },
-          { l: 'Any budget',       r: 'Alignment matters more than size' },
+          { l: 'Entry budget',      r: 'A capable hand burr' },
+          { l: 'No counter space',  r: 'A capable hand burr' },
+          { l: 'Mid budget',        r: 'A decent electric burr' },
+          { l: 'Espresso-capable',  r: 'A different budget entirely' },
         ],
       },
       { kind: 'decision', label: 'AT THE SHELF', title: 'One cup, every morning',
@@ -2185,7 +2196,7 @@ const LESSONS = {
         ],
         meta: [['MORE COFFEE', 'Stronger'], ['MORE WATER', 'Weaker']],
       },
-      { kind: 'visual', label: 'VISUAL GUIDE', title: 'Weak to strong', variant: 'ratio',
+      { kind: 'visual', label: 'VISUAL GUIDE', title: 'Weak to strong', visualGuide: 'ratio',
         caption: 'Ratio moves strength first \u2014 grind and water decide whether that strength tastes good.' },
       { kind: 'decision', label: 'AT THE BREWER', title: 'Clean but thin',
         scenario: 'You brewed 18g of coffee with 320g of water. The cup is clean and pleasant but thin — like it needs more of everything.',
@@ -2305,8 +2316,8 @@ const LESSONS = {
         prompt: 'You switched to distilled water to be safe, and the cup went flat. What first?',
         scenario: 'Same beans, same grind, same temperature as last week. It is clean \u2014 just empty.',
         choices: [
-          { t: 'Use a bottled water with some mineral content', correct: true },
-          { t: 'Grind finer to pull more out' },
+          { t: 'Use water with some mineral content', correct: true },
+          { t: 'Grind finer to pull more flavour out' },
           { t: 'Raise the temperature' },
           { t: 'Use more coffee' },
         ],
@@ -2371,12 +2382,12 @@ const LESSONS = {
         meta: [['FIRST OUT', 'Acids'], ['THEN', 'Sugars'], ['LAST OUT', 'Bitter compounds']],
       },
       { kind: 'match',
-        prompt: 'Match each lever to what it changes',
+        prompt: 'Match each change to what it does in the cup',
         pairs: [
-          { l: 'Finer grind',   r: 'More surface area' },
-          { l: 'Hotter water',  r: 'Faster dissolving' },
-          { l: 'Longer brew',   r: 'More contact time' },
-          { l: 'Wider ratio',   r: 'More water per gram' },
+          { l: 'Finer grind',   r: 'Extracts more' },
+          { l: 'Hotter water',  r: 'Extracts more' },
+          { l: 'Shorter brew',  r: 'Extracts less' },
+          { l: 'Wider ratio',   r: 'A weaker cup' },
         ],
       },
       { kind: 'slider',
@@ -2528,7 +2539,7 @@ const LESSONS = {
         ],
         meta: [['ACIDITY', 'Brightness'], ['BODY', 'Weight'], ['FINISH', 'What lingers']],
       },
-      { kind: 'visual', label: 'VISUAL GUIDE', title: 'The extraction spectrum', variant: 'extraction',
+      { kind: 'visual', label: 'VISUAL GUIDE', title: 'The extraction spectrum', visualGuide: 'extraction',
         caption: 'Almost every fix is just moving your cup back toward the middle of this line.' },
       { kind: 'decision', label: 'AT THE BREWER', title: 'Bitter, and you want it fixed by morning',
         scenario: 'Your cup is bitter and drying, and you’d like it fixed for tomorrow morning.',
@@ -2728,11 +2739,11 @@ const LESSONS = {
       { kind: 'recall', label: 'BEFORE YOU GO',
         question: 'The grounds sat flat when you poured the bloom. What does that tell you?',
         choices: [
-          { t: 'The coffee is old — the CO₂ that makes the bloom has already escaped', correct: true },
-          { t: 'The water was not hot enough' },
+          { t: 'The coffee is stale — its CO₂ is gone', correct: true },
+          { t: 'The water was not hot enough to trigger the bloom' },
           { t: 'You ground it too fine' },
         ],
-        explain: 'The bloom is trapped CO₂ leaving fresh grounds. A flat bed means there is none left, which means the coffee has been ground or roasted too long ago.',
+        explain: 'The bloom is trapped CO₂ leaving fresh grounds. Cooler water slows the bloom, but only staleness erases it — a flat bed means the gas is gone, so the coffee was ground or roasted too long ago.',
         line: 'You didn’t buy a better cup. You measured one.' },
     ],
     reward: {
@@ -2755,14 +2766,14 @@ const LESSONS = {
 // reward moment and the collection sheet cannot show two different facts.
 //
 // Every entry here is an earnable collectible with an `unlock`. The visual
-// training guides are NOT in this array — they live in TRAINING_CARDS below,
+// guides are NOT in this array — they live in VISUAL_GUIDE_CARDS below,
 // because they are never listed alongside collectibles and sharing one array
 // made a plain "no two cards share a title" check report false collisions.
-const COLLECTION = [
+const COLLECTIBLES = [
   { id: 'c1', earned: true, unlock: { lesson: 'm1l1' }, kind: 'botanical' },
   { id: 'c2', earned: false, unlock: { lesson: 'm1l3' }, kind: 'map' },
   { id: 'c3', earned: false, unlock: { lesson: 'm1l2' }, kind: 'specimen' },
-  { id: 'cM1', earned: false, unlock: { module: 'm1' }, kind: 'guideBeans' },
+  { id: 'cM1', earned: false, unlock: { module: 'm1' }, kind: 'fieldGuideBeans' },
   { id: 'c-m2l1', earned: false, unlock: { lesson: 'm2l1' }, kind: 'dryingbed' },
   { id: 'c-m2l2', earned: false, unlock: { lesson: 'm2l2' }, kind: 'ferment' },
   { id: 'c-m2l3', earned: false, unlock: { lesson: 'm2l3' }, kind: 'label' },
@@ -2775,10 +2786,10 @@ const COLLECTION = [
   { id: 'c-m5l1', earned: false, unlock: { lesson: 'm5l1' }, kind: 'gauge' },
   { id: 'c-m5l2', earned: false, unlock: { lesson: 'm5l2' }, kind: 'droplet' },
   { id: 'c-m5l3', earned: false, unlock: { lesson: 'm5l3' }, kind: 'spectrum' },
-  { id: 'cM2', earned: false, unlock: { module: 'm2' }, kind: 'guideProcess' },
-  { id: 'cM3', earned: false, unlock: { module: 'm3' }, kind: 'guideRoast' },
-  { id: 'cM4', earned: false, unlock: { module: 'm4' }, kind: 'guideGrind' },
-  { id: 'cM5', earned: false, unlock: { module: 'm5' }, kind: 'guideBrew' },
+  { id: 'cM2', earned: false, unlock: { module: 'm2' }, kind: 'fieldGuideProcess' },
+  { id: 'cM3', earned: false, unlock: { module: 'm3' }, kind: 'fieldGuideRoast' },
+  { id: 'cM4', earned: false, unlock: { module: 'm4' }, kind: 'fieldGuideGrind' },
+  { id: 'cM5', earned: false, unlock: { module: 'm5' }, kind: 'fieldGuideBrew' },
   { id: 'c-m1l4', earned: false, unlock: { lesson: 'm1l4' }, kind: 'altitude' },
   { id: 'c-m1l5', earned: false, unlock: { lesson: 'm1l5' }, kind: 'scales' },
   { id: 'c-m1l7', earned: false, unlock: { lesson: 'm1l7' }, kind: 'layers' },
@@ -2846,10 +2857,10 @@ MODULES.forEach((m) => {
 });
 
 // One card, one text. The reward screen renders LESSONS[id].reward (or
-// MODULE_REWARDS); the collection sheet renders the COLLECTION entry. The words
+// MODULE_REWARDS); the collection sheet renders the COLLECTIBLES entry. The words
 // are authored once and copied across here, at load, before any render.
 function syncCardText() {
-  COLLECTION.forEach((c) => {
+  COLLECTIBLES.forEach((c) => {
     if (!c.unlock) return;
     const src = c.unlock.lesson ? (LESSONS[c.unlock.lesson] || {}).reward
               : c.unlock.module ? MODULE_REWARDS[c.unlock.module]
@@ -2863,32 +2874,40 @@ function syncCardText() {
 syncCardText();
 window.syncCardText = syncCardText;
 
-// The visual training guides, as card entries. Deliberately a separate array
-// from COLLECTION: these are always available (no `unlock`, never earned),
-// they never appear in the collection grid or any other list beside a
-// collectible, and TRAINING (practical.jsx) is where their words are authored.
-// Identity + `meta` live here; title/summary/fact are copied from TRAINING by
-// syncTrainingText(), the same one-card-one-text rule syncCardText() applies to
+// The visual guides, as card entries. Deliberately a separate array
+// from COLLECTIBLES: they render on the Reference shelf, not in the collection
+// grid, they don't count toward the collection total, and they never sit in a
+// list beside a collectible, and VISUAL_GUIDE_CONTENT (practical.jsx) is where their words are authored.
+// Identity + `meta` live here; title/summary/fact are copied from VISUAL_GUIDE_CONTENT by
+// syncVisualGuideText(), the same one-card-one-text rule syncCardText() applies to
 // collectibles. practical.jsx loads after this file, so it makes the call.
-const TRAINING_CARDS = [
-  { id: 'tr-roast', earned: true, kind: 'training', train: 'roast',
+// Each guide is gated by the first lesson that shows its visual: it joins the
+// Reference shelf once that lesson is complete. syncCollection() flips `earned`.
+const VISUAL_GUIDE_CARDS = [
+  { id: 'g-roast', earned: false, unlock: { lesson: 'm3l1' }, kind: 'visualGuide', visualGuide: 'roast',
     meta: [['LIGHT', 'Bright · acidic'], ['MEDIUM', 'Balanced · sweet'], ['DARK', 'Bitter · smoky']] },
-  { id: 'tr-grind', earned: true, kind: 'training', train: 'grind',
+  { id: 'g-grind', earned: false, unlock: { lesson: 'm4l1' }, kind: 'visualGuide', visualGuide: 'grind',
     meta: [['COARSE', 'French press'], ['MEDIUM', 'Pour-over'], ['FINE', 'Espresso']] },
-  { id: 'tr-extraction', earned: true, kind: 'training', train: 'extraction',
+  { id: 'g-extraction', earned: false, unlock: { lesson: 'm5l3' }, kind: 'visualGuide', visualGuide: 'extraction',
     meta: [['UNDER', 'Sour · thin'], ['BALANCED', 'Sweet · round'], ['OVER', 'Bitter · dry']] },
-  { id: 'tr-ratio', earned: true, kind: 'training', train: 'ratio',
+  { id: 'g-ratio', earned: false, unlock: { lesson: 'm5l1' }, kind: 'visualGuide', visualGuide: 'ratio',
     meta: [['BASELINE', '1:16'], ['STRONGER', 'More coffee'], ['WEAKER', 'More water']] },
-  { id: 'tr-anatomy', earned: true, kind: 'training', train: 'anatomy',
+  { id: 'g-anatomy', earned: false, unlock: { lesson: 'm1l7' }, kind: 'visualGuide', visualGuide: 'anatomy',
     meta: [['LAYERS', '6'], ['YOU BREW', 'Layer 06'], ['DECIDES TASTE', 'Layer 03']] },
+  { id: 'g-variety', earned: false, unlock: { lesson: 'm1l6' }, kind: 'visualGuide', visualGuide: 'variety',
+    meta: [['OLD PARENTS', 'Typica · Bourbon'], ['DESCENDANTS', 'Geisha · Caturra · SL28']] },
+  { id: 'g-caffeine', earned: false, unlock: { lesson: 'm3l6' }, kind: 'visualGuide', visualGuide: 'caffeine',
+    meta: [['ESPRESSO', '~63 mg'], ['DRIP CUP', '~95 mg'], ['COLD BREW', '~200 mg']] },
+  { id: 'g-distribution', earned: false, unlock: { lesson: 'm4l2' }, kind: 'visualGuide', visualGuide: 'distribution',
+    meta: [['BLADE', 'Wide · twin-humped'], ['BURR', 'One tight band']] },
 ];
-window.TRAINING_CARDS = TRAINING_CARDS;
+window.VISUAL_GUIDE_CARDS = VISUAL_GUIDE_CARDS;
 
-// Called from practical.jsx once window.TRAINING exists, before any render.
-window.syncTrainingText = function() {
-  const src = window.TRAINING || {};
-  TRAINING_CARDS.forEach((c) => {
-    const t = src[c.train];
+// Called from practical.jsx once window.VISUAL_GUIDE_CONTENT exists, before any render.
+window.syncVisualGuideText = function() {
+  const src = window.VISUAL_GUIDE_CONTENT || {};
+  VISUAL_GUIDE_CARDS.forEach((c) => {
+    const t = src[c.visualGuide];
     if (!t) return;
     ['title', 'summary', 'fact'].forEach((k) => { if (t[k] != null) c[k] = t[k]; });
   });
@@ -2897,15 +2916,15 @@ window.syncTrainingText = function() {
 // Any card by id, from either registry — routes and challenge rewards address
 // cards by id without caring which array holds them.
 window.findCard = function(id) {
-  return COLLECTION.find(c => c.id === id) || TRAINING_CARDS.find(c => c.id === id) || null;
+  return COLLECTIBLES.find(c => c.id === id) || VISUAL_GUIDE_CARDS.find(c => c.id === id) || null;
 };
-window.findTrainingCard = function(variant) {
-  return TRAINING_CARDS.find(c => c.train === variant) || null;
+window.findVisualGuideCard = function(guide) {
+  return VISUAL_GUIDE_CARDS.find(c => c.visualGuide === guide) || null;
 };
 
 window.MODULES = MODULES;
 window.LESSONS = LESSONS;
-window.COLLECTION = COLLECTION;
+window.COLLECTIBLES = COLLECTIBLES;
 window.MODULE_REWARDS = MODULE_REWARDS;
 
 // ── Coffee Tree progress (core-course progress) ─────────────────────
@@ -2920,10 +2939,40 @@ window.coreDoneCount = function(completedSet) {
   let n = 0; window.CORE_LESSON_IDS.forEach(id => { if (completedSet.has(id)) n++; });
   return n;
 };
+// The 10 stages are pinned to the 5 modules so a module boundary is always a
+// visible jump. Each module owns two growth steps — one at its halfway point,
+// one on completion — except the last, whose single step IS the harvest:
+//   start 1 · M1 2→3 · M2 4→5 · M3 6→7 · M4 8→9 · M5 →10
+// Lessons complete in path order, so a plain count locates the learner exactly.
+window.MODULE_SIZES = MODULES.map(m => m.lessons.length);
+window.TREE_MODULE_STAGES = [3, 5, 7, 9, 10];
 window.treeStageFromCore = function(done) {
-  const total = window.CORE_TOTAL || 1;
-  const frac = Math.max(0, Math.min(1, (done || 0) / total));
-  return Math.max(1, Math.min(10, Math.round(1 + frac * 9)));
+  const sizes = window.MODULE_SIZES;
+  let left = Math.max(0, done || 0), stage = 1;
+  for (let i = 0; i < sizes.length; i++) {
+    const size = sizes[i], isLast = i === sizes.length - 1;
+    if (left >= size) { stage += isLast ? 1 : 2; left -= size; continue; }
+    if (!isLast && left >= Math.ceil(size / 2)) stage += 1;
+    break;
+  }
+  return Math.max(1, Math.min(10, stage));
+};
+// Core-lesson counts at which the tree advances — two per module (halfway,
+// completion), one for the last. Used to tell a learner how far the next stage is
+// on the completions that do not move the tree.
+window.TREE_THRESHOLDS = (function(){
+  const out = []; let at = 0;
+  window.MODULE_SIZES.forEach((size, i) => {
+    const isLast = i === window.MODULE_SIZES.length - 1;
+    if (!isLast) out.push(at + Math.ceil(size / 2));
+    at += size; out.push(at);
+  });
+  return out;
+})();
+window.lessonsToNextStage = function(done) {
+  const d = Math.max(0, done || 0);
+  const next = window.TREE_THRESHOLDS.find(t => t > d);
+  return next == null ? null : next - d;
 };
 
 // ── Lesson state (mastery) ──────────────────────────────────
@@ -3031,10 +3080,14 @@ window.syncCollection = function(completedSet) {
     const m = MODULES.find((x) => x.id === mid);
     return !!(m && m.lessons.length && m.lessons.every((l) => done.has(l.id)));
   };
-  COLLECTION.forEach((c) => {
+  COLLECTIBLES.forEach((c) => {
     if (!c.unlock) return;
     if (c.unlock.lesson)      c.earned = done.has(c.unlock.lesson);
     else if (c.unlock.module) c.earned = moduleComplete(c.unlock.module);
+  });
+  // Guides gate the same way — each on the lesson that teaches it.
+  VISUAL_GUIDE_CARDS.forEach((c) => {
+    if (c.unlock && c.unlock.lesson) c.earned = done.has(c.unlock.lesson);
   });
 };
 
