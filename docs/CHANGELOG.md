@@ -157,11 +157,11 @@ You can always edit this file by hand instead — the helpers just save effort.
   the glossary term: "Module Reward" names the thing, and was never the
   sentence shown over it.
 
-  **The five card titles still say it.** "Beans Field Guide" and its four
-  siblings are authored in the read-only design source, so the recap reads
-  "Beans Field Guide" above "Reward unlocked" until that source changes —
-  tracked separately. The collectible `kind` values stay `fieldGuide*` for the
-  same reason: wire vocabulary, not copy.
+  **The five cards keep their titles.** "Beans Field Guide" and its siblings
+  are what those cards are *called*; Module Reward is what they *are*. The
+  glossary now says so, so the next sweep does not reopen it. The collectible
+  `kind` values stay `fieldGuide*` for a different reason: they are the
+  read-only design source's wire vocabulary, not copy.
 
 - **Points pay flat ten, once — and nothing else pays.** The whole system is
   now two rules: ten for a lesson's first completion, five for a Coffee

@@ -37,8 +37,9 @@ final CoffeeCardModel _testCard = testCoffeeCard();
 
 /// The module's own collectible — what the module moment hands over now that
 /// it pays no bonus (§5.1, #16).
-// The title is the one the bundled bank actually ships. The card's *words*
-// are authored content, which this rename does not reach — see #228.
+// The title is the one the bundled bank actually ships. A card's name is
+// authored content and stays as authored; Module Reward is the category,
+// not the title (CONTEXT.md).
 final CoffeeCardModel _testModuleReward = testCoffeeCard(
   id: 'cM1',
   title: 'Beans Field Guide',

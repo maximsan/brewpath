@@ -14,8 +14,9 @@ import '../../../support/content_fixtures.dart';
 
 final ModuleModel _module = testModule(lessonIds: const ['m1l1']);
 final CoffeeCardModel _card = testCoffeeCard(title: 'First Card');
-// The title is the one the bundled bank actually ships. The card's *words*
-// are authored content, which this rename does not reach — see #228.
+// The title is the one the bundled bank actually ships. A card's name is
+// authored content and stays as authored; Module Reward is the category,
+// not the title (CONTEXT.md).
 final CoffeeCardModel _moduleReward = testCoffeeCard(
   id: 'cM1',
   title: 'Beans Field Guide',
