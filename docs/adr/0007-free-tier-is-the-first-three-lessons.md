@@ -10,10 +10,11 @@
 asked whether all of Module 1 (7 lessons, 26 of the course's 129 minutes)
 should replace them. Meanwhile the landed catalog
 ([ADR-0005](0005-mini-games-are-many-games-per-kind-gated-by-topic.md))
-shipped a third M1-topic game — *Name the origin* — intended as free, but
-whose teaching lesson (`m1l3`) the **then-free preview pair left locked**: a
-free game quizzing a lesson its player could not open, and a free tier thinner
-than the catalog built on it. The Decision below is what resolves this.
+shipped a new free game, *Name the origin*. A game quizzes one lesson's
+material, and this one quizzes `m1l3` — which was still a **paid** lesson at
+the time. So a free user could play a quiz about origins while the lesson
+teaching origins sat behind the paywall: an exam for a class they could not
+attend. The Decision below fixes this by making `m1l3` free.
 
 ## Decision
 
