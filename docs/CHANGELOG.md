@@ -65,6 +65,13 @@ You can always edit this file by hand instead — the helpers just save effort.
   build, and Profile's close button — an app-only invention the design has no
   equivalent for — is gone with its delegate.
 
+- **A spent freeze says so.** The first open after a freeze covered a day
+  shows a dismissible notice on Learn — the streak is safe, the covered day
+  named, the re-earn stated — acknowledged per covered day so sync can never
+  replay it.
+- **The streak has a home.** Tapping Day streak on Profile opens the new
+  streak screen: the day count at hero size and a one-line freeze status —
+  the covered day named, a held freeze stated, or the countdown to the next.
 - **The Coffee Dictionary.** 73 terms across 8 categories, reachable from a
   header action on Learn: a home that searches names, aliases and category
   labels (case- and accent-insensitive) and filters by status with live counts,

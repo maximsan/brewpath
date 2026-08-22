@@ -46,21 +46,28 @@ Future<int> totalPoints(Ref ref) async {
 /// The day set it folds is assembled by [streakDaySet], which also backfills
 /// a learner whose completions predate the day set — see it for why the three
 /// sources are unioned rather than ranked.
+/// The qualifying-day set every streak surface folds over — one derivation,
+/// so the engine, the save notice and the week strip can never disagree on
+/// which days count.
 @riverpod
-Future<StreakStatus> streakStatus(Ref ref) async {
+Future<Set<int>> activeDaySet(Ref ref) async {
+  final completedFuture = ref.watch(completedLessonsProvider.future);
   final snapshot = await ref.watch(snapshotRepositoryProvider).read();
-  final completed = await ref.watch(completedLessonsProvider.future);
+  final completed = await completedFuture;
   final progress = snapshot.clearedByReset;
-
-  return deriveStreak(
-    activeDays: streakDaySet(
-      activeDays: progress.activeDays,
-      dailyActivity: progress.dailyActivity,
-      firstCompletionDays: completed.map((record) => record.completedAt),
-    ),
-    today: epochDay(DateTime.now()),
+  return streakDaySet(
+    activeDays: progress.activeDays,
+    dailyActivity: progress.dailyActivity,
+    firstCompletionDays: completed.map((record) => record.completedAt),
   );
 }
+
+/// The derived streak state — the engine's fold over [activeDaySet].
+@riverpod
+Future<StreakStatus> streakStatus(Ref ref) async => deriveStreak(
+  activeDays: await ref.watch(activeDaySetProvider.future),
+  today: epochDay(DateTime.now()),
+);
 
 /// The user's current streak in days.
 @riverpod

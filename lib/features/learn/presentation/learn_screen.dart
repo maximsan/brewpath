@@ -11,6 +11,7 @@ import 'package:brew_path/features/learn/presentation/practice_any_lesson_widget
 import 'package:brew_path/features/learn/presentation/today_card_widget.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_providers.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_games_catalog_widget.dart';
+import 'package:brew_path/features/progress/presentation/freeze_save_notice_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -37,6 +38,10 @@ class LearnScreen extends ConsumerWidget {
           padding: const EdgeInsets.all(16),
           physics: const AlwaysScrollableScrollPhysics(),
           children: [
+            // The save beat leads the tab: someone returning after a miss is
+            // the most fragile learner in the app, and reassurance comes
+            // before the day's ask. Renders nothing when no save is due.
+            const FreezeSaveNoticeCard(),
             TodayCardWidget(
               today: today.asData?.value,
               keepSharp: keepSharp.asData?.value,
