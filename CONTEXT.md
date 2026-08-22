@@ -45,7 +45,8 @@ _Avoid_: training card, training guide (renamed)
 **Subject**:
 The axis naming a visual guide (`roast`, `grind`, `variety`) and the value its
 `g:` save key carries.
-_Avoid_: variant (the prototype's former field name here, renamed to `visualGuide:`)
+_Avoid_: variant (the prototype's former field name here, renamed to
+`visualGuide:` — and retired mini-game vocabulary besides; see **Kind**/**Game**)
 
 ## Practice and the streak
 
