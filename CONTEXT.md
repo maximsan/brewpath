@@ -13,8 +13,11 @@ switches to Keep Sharp.
 _Avoid_: the course (when another course could ever be meant)
 
 **Preview lesson**:
-One of the two lessons that are free permanently, with unlimited replay
-(§7, [#29](https://github.com/maximsan/brewpath/issues/29)).
+One of the **three** lessons (`m1l1`–`m1l3`) that are free permanently, with
+unlimited replay. The free set is a named lesson list everything else derives
+from (§7, [#29](https://github.com/maximsan/brewpath/issues/29); count and
+lesson-binding:
+[ADR-0007](docs/adr/0007-free-tier-is-the-first-three-lessons.md)).
 
 **Coffee Challenge**:
 A small real-world task (brew, taste, compare). Never counts toward the streak
@@ -42,7 +45,7 @@ _Avoid_: training card, training guide (renamed)
 **Subject**:
 The axis naming a visual guide (`roast`, `grind`, `variety`) and the value its
 `g:` save key carries.
-_Avoid_: variant (already means a mini-game format — see Format)
+_Avoid_: variant (the prototype's former field name here, renamed to `visualGuide:`)
 
 ## Practice and the streak
 
@@ -65,9 +68,11 @@ Several games can share one kind
 **Game** (mini-game):
 One catalog entry: a kind, exactly one course topic, and a bank of rounds,
 under a persistent id. What the streak, the daily allowance and tier gating
-count; free iff its topic's module is unlocked
-([ADR-0005](docs/adr/0005-mini-games-are-many-games-per-kind-gated-by-topic.md);
-free-pair invariant:
+count; free iff its topic's **teaching lesson** is free
+([ADR-0005](docs/adr/0005-mini-games-are-many-games-per-kind-gated-by-topic.md),
+lesson-binding per
+[ADR-0007](docs/adr/0007-free-tier-is-the-first-three-lessons.md);
+free-games invariant:
 [ADR-0001](docs/adr/0001-free-tier-carries-two-mini-game-formats.md)).
 _Avoid_: "format" for mini-games — it meant both kind and game and caused two
 corrections; retired at [#190](https://github.com/maximsan/brewpath/issues/190)

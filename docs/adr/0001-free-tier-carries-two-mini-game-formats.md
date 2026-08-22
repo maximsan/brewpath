@@ -7,6 +7,12 @@
 > [ADR-0005](0005-mini-games-are-many-games-per-kind-gated-by-topic.md) later
 > named a **game**. The invariant below survives and is restated there in the
 > new Kind/Game vocabulary.
+>
+> **Count note (2026-08-22):** "exactly two" is superseded by
+> [ADR-0007](0007-free-tier-is-the-first-three-lessons.md) — the free tier now
+> carries **three** free games (one per free lesson). The invariant survives in
+> its restated form: *at least two free games with distinct ids, so a free
+> streak day is reachable on free content alone.*
 
 ## Context
 
