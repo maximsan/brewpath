@@ -51,6 +51,17 @@ void main() {
     expect(find.text('Theme'), findsOneWidget);
   });
 
+  testWidgets('the Day streak tile opens the streak screen', (tester) async {
+    await openProfile(tester);
+
+    await tester.tap(find.text('Day streak'));
+    await settleLoaders(tester);
+
+    expect(find.text('Your streak'), findsOneWidget);
+    // A fresh user: no qualifying day yet, the full earn ahead.
+    expect(find.text('Next freeze in 7 days'), findsOneWidget);
+  });
+
   testWidgets('header gear opens the Settings screen', (tester) async {
     await openProfile(tester);
 

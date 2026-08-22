@@ -108,6 +108,9 @@ void main() {
     'moduleDetail': HeaderTier.pushed,
     'cardDetail': HeaderTier.pushed,
     'profileSettings': HeaderTier.pushed,
+    // Root navigator like Settings, and its own back-arrow bar — pushed is
+    // about the chrome the learner sees, not the navigator underneath.
+    'profileStreak': HeaderTier.pushed,
     'lesson': HeaderTier.immersive,
     'lessonComplete': HeaderTier.immersive,
     'moduleSummary': HeaderTier.immersive,

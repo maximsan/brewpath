@@ -10,6 +10,7 @@ class StatTile extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.value,
+    this.onTap,
     super.key,
   });
 
@@ -22,6 +23,9 @@ class StatTile extends StatelessWidget {
   /// The stat value text.
   final String value;
 
+  /// Invoked when the tile is tapped; when null the tile is inert.
+  final VoidCallback? onTap;
+
   static const double _cornerRadius = 20;
   static const double _badgeSize = 48;
   static const double _iconSize = 24;
@@ -31,7 +35,7 @@ class StatTile extends StatelessWidget {
     final theme = Theme.of(context);
     final mood = context.mood;
 
-    return Container(
+    final card = Container(
       decoration: BoxDecoration(
         color: mood.surface,
         borderRadius: BorderRadius.circular(_cornerRadius),
@@ -66,6 +70,15 @@ class StatTile extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+    if (onTap == null) return card;
+    return Semantics(
+      button: true,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(_cornerRadius),
+        onTap: onTap,
+        child: card,
       ),
     );
   }

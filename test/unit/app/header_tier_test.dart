@@ -19,6 +19,7 @@ const _expectedTiers = <String, HeaderTier>{
   '/learn/dictionary/term/arabica': HeaderTier.pushed,
   '/cards/c-m1l1': HeaderTier.pushed,
   '/profile/settings': HeaderTier.pushed,
+  '/profile/streak': HeaderTier.pushed,
   '/learn/lesson/m1l1': HeaderTier.immersive,
   '/learn/lesson/m1l1/complete': HeaderTier.immersive,
   '/learn/module-summary/m1': HeaderTier.immersive,
