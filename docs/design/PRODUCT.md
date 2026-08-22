@@ -42,9 +42,9 @@ you do. A searchable coffee dictionary sits one tap away and links back into the
 lessons. And every so often the app asks you to go and actually brew something
 and taste the difference.
 
-**Free gives you the first two lessons**, permanently, with unlimited replay —
+**Free gives you the first three lessons** ([ADR-0007](../adr/0007-free-tier-is-the-first-three-lessons.md)), permanently, with unlimited replay —
 plus the whole glossary at a glance, practice on what you have unlocked, and the
-streak. **BrewPath Plus** unlocks the remaining thirty, lifts the two-activity daily cap,
+streak. **BrewPath Plus** unlocks the remaining twenty-nine, lifts the two-activity daily cap,
 and adds unlimited Saved and both Studios. The free tier is a **preview**: it
 shows you the shape of the course and lets you keep the habit, but the course
 itself is what you buy.
@@ -332,9 +332,10 @@ self-conscious about a coffee-hobby app, that's worth a conversation.
 ## 11. Making it yours, and what you pay for
 
 **[Recorded — product-owner ruling]** The free/paid axis is **content, not
-pacing and not features**. Free: the first two lessons, permanently, with
-unlimited replay, plus practice on unlocked material — at most two
-learning/practice activities per day. Plus: the remaining thirty lessons, no
+pacing and not features**. Free: the first three lessons (count per
+[ADR-0007](../adr/0007-free-tier-is-the-first-three-lessons.md)), permanently,
+with unlimited replay, plus practice on unlocked material — at most two
+learning/practice activities per day. Plus: the remaining twenty-nine lessons, no
 daily cap, unlimited Saved, and both Studios. Settled on
 [Monetization shape](https://github.com/maximsan/brewpath/issues/29); full
 rules in `docs/decisions.md` §7, §8, §11 and §12.
@@ -348,9 +349,9 @@ because there are no more lessons. A content gate has no such shape: Plus
 buys thirty lessons, which do not expire on a schedule and cannot be reached by
 waiting.
 
-**The daily cap survives, doing a different job.** With only two lessons ever
+**The daily cap survives, doing a different job.** With only three lessons ever
 free it cannot pace a course; what it caps is **practice volume** — two
-activities a day on two lessons' worth of material.
+activities a day on three lessons' worth of material.
 
 **This is a preview tier, not a generous free tier**, and the pitch has to be
 written for that. Measured against current content, a free user reaches **2 of
@@ -578,11 +579,13 @@ ending.** [Recorded — product-owner ruling, `docs/decisions.md` §1 and §6.]
   accepted knowingly; Keep Sharp's no-points, no-tree, no-progress framing is
   the concession to it.
 - **The practice pool is authored, finite and small.** `MINI_GAME_CONTENT`
-  (`lesson.jsx:1022`) holds **37 rounds total** across seven games; the only
-  randomness is display-order shuffling. A daily practiser exhausts it in under
-  a week, and the free-tier slice is **11 rounds** — so the pool is known to
-  need authoring, tracked at [Free-tier practice
-  variety](https://github.com/maximsan/brewpath/issues/66).
+  (`lesson.jsx:1022`) holds **69 rounds across 13 games** (grown from the
+  original 37/7 by [ADR-0005](../adr/0005-mini-games-are-many-games-per-kind-gated-by-topic.md)'s
+  catalog split); the only randomness is display-order shuffling. The free-tier
+  slice is **18 rounds across 3 games** ([ADR-0007](../adr/0007-free-tier-is-the-first-three-lessons.md));
+  the authoring history is at [Free-tier practice
+  variety](https://github.com/maximsan/brewpath/issues/66) and
+  [#162](https://github.com/maximsan/brewpath/issues/162).
 - **A drill is not a lesson.** Day 40 is quieter than day 4, and the copy has
   to be honest that the user has moved from learning to keeping sharp.
 
@@ -618,7 +621,8 @@ survive but measure app-opening. It then weighed four ways out:
   assemble the existing pieces (mini-games, vocab quiz, flashcards, Term of the
   Day, mastery data) into a daily drill. One premise of the argument was
   **false**: the mini-game banks were described as *generated — they do not run
-  out*, when they are authored and finite (37 rounds, measured). C was chosen
+  out*, when they are authored and finite (37 rounds at the time, 69 since
+  [#162](https://github.com/maximsan/brewpath/issues/162)). C was chosen
   anyway, with the authoring cost now on the books.
 - **D. Let it end well** *(chosen in part)* — build a real ending and let the
   streak retire with dignity. The ruling takes D's ending alongside C's loop.
