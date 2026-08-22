@@ -110,6 +110,12 @@ Free access is limited by content, not by waiting.
 
 Only the first two agreed preview lessons are available for free.
 They remain available permanently for replay.
+
+> ⚠️ **Superseded on the count (Aug 2026):** the free set is now the **first
+> three lessons** (`m1l1`–`m1l3`), lesson-bound —
+> [ADR-0007](adr/0007-free-tier-is-the-first-three-lessons.md), ruled at
+> [#175](https://github.com/maximsan/brewpath/issues/175). Every other line of
+> this section stands.
 Waiting until another day does not unlock additional lessons.
 Practice content is limited to material available from unlocked lessons.
 After finishing the preview, free users can continue practising unlocked material and maintaining their streak.
