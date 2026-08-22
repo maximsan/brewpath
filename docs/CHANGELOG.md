@@ -44,6 +44,14 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The tab header gets out of the way as you scroll.** Scrolling a tab drops
+  the header's eyebrow and shrinks it to the title; scrolling back to the top
+  restores it. Each tab keeps its own collapse, for the same reason each keeps
+  its own navigator stack — scrolling Learn, switching to Path and switching
+  back finds Learn exactly as it was left. A tab with nothing to scroll never
+  collapses, a carousel inside a tab is not the tab moving, and with reduced
+  motion on, the change lands in one frame.
+
 - **One header over the four tabs.** Learn, Path and Cards each wore a stock
   bar carrying nothing but the tab's name, and Profile wore a different header
   again. They now share one, owned by the shell: a smallcaps eyebrow over a

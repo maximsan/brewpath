@@ -1,4 +1,5 @@
 import 'package:brew_path/app/header_tier.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Every location in the app gets exactly one kind of chrome, and the rule
@@ -101,6 +102,56 @@ void main() {
     test('a location that is not a tab root has no heading', () {
       expect(tabHeaderFor('/learn/dictionary', today: today), isNull);
       expect(tabHeaderFor('/learn/lesson/m1l1', today: today), isNull);
+    });
+  });
+
+  group('what counts as scrolled', () {
+    test('past the threshold collapses', () {
+      expect(
+        shouldCollapseHeader(
+          pixels: collapseThreshold + 1,
+          maxScrollExtent: 800,
+          axis: Axis.vertical,
+        ),
+        isTrue,
+      );
+    });
+
+    test('at rest, or barely moved, does not', () {
+      for (final pixels in [0.0, collapseThreshold]) {
+        expect(
+          shouldCollapseHeader(
+            pixels: pixels,
+            maxScrollExtent: 800,
+            axis: Axis.vertical,
+          ),
+          isFalse,
+          reason: 'a thumb resting on the screen is not a scroll',
+        );
+      }
+    });
+
+    test('a tab with nothing to scroll never collapses', () {
+      expect(
+        shouldCollapseHeader(
+          pixels: 200,
+          maxScrollExtent: 0,
+          axis: Axis.vertical,
+        ),
+        isFalse,
+        reason: 'an overscroll bounce moves pixels with no content behind it',
+      );
+    });
+
+    test('a carousel inside a tab is not the tab moving', () {
+      expect(
+        shouldCollapseHeader(
+          pixels: 400,
+          maxScrollExtent: 800,
+          axis: Axis.horizontal,
+        ),
+        isFalse,
+      );
     });
   });
 }

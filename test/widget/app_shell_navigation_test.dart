@@ -137,4 +137,72 @@ void main() {
     expect(find.widgetWithText(AppBar, 'Module'), findsOneWidget);
     expect(_sharedHeader(), findsNothing);
   });
+
+  group('collapse on scroll', () {
+    /// The header's height right now. Its collapse is a height change, so this
+    /// is the honest thing to assert — not an internal flag.
+    double headerHeight(WidgetTester tester) =>
+        tester.getSize(find.byType(AppHeader)).height;
+
+    /// Drags the visible tab upward far enough to pass the threshold.
+    Future<void> scrollTab(WidgetTester tester) async {
+      await tester.drag(find.byType(Scrollable).first, const Offset(0, -240));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('scrolling a tab collapses its header', (tester) async {
+      await pumpWithProviders(tester, const BrewPathApp());
+      final atRest = headerHeight(tester);
+      expect(find.text('TODAY'), findsOneWidget);
+
+      await scrollTab(tester);
+
+      expect(headerHeight(tester), lessThan(atRest));
+      expect(
+        find.text('TODAY'),
+        findsNothing,
+        reason: 'the eyebrow goes; the title is what the learner still needs',
+      );
+    });
+
+    testWidgets('scrolling back to the top restores it', (tester) async {
+      await pumpWithProviders(tester, const BrewPathApp());
+      final atRest = headerHeight(tester);
+
+      await scrollTab(tester);
+      expect(headerHeight(tester), lessThan(atRest));
+
+      await tester.drag(find.byType(Scrollable).first, const Offset(0, 400));
+      await tester.pumpAndSettle();
+
+      expect(headerHeight(tester), atRest);
+      expect(find.text('TODAY'), findsOneWidget);
+    });
+
+    testWidgets('each tab keeps its own collapse across a switch', (
+      tester,
+    ) async {
+      await pumpWithProviders(tester, const BrewPathApp());
+      final atRest = headerHeight(tester);
+
+      await scrollTab(tester);
+      expect(headerHeight(tester), lessThan(atRest));
+
+      await tester.tap(find.byIcon(Icons.route_outlined));
+      await settleLoaders(tester);
+      expect(
+        headerHeight(tester),
+        atRest,
+        reason: 'Path was never scrolled, so it must not inherit the collapse',
+      );
+
+      await tester.tap(find.byIcon(Icons.school_outlined));
+      await settleLoaders(tester);
+      expect(
+        headerHeight(tester),
+        lessThan(atRest),
+        reason: 'Learn is found exactly as it was left',
+      );
+    });
+  });
 }

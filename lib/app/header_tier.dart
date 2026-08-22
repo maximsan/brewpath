@@ -1,5 +1,6 @@
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
+import 'package:flutter/widgets.dart';
 
 /// Which chrome a location wears, and what the shared header calls itself.
 ///
@@ -133,4 +134,27 @@ TabHeader? tabHeaderFor(String location, {required DateTime today}) {
     ),
     _ => null,
   };
+}
+
+/// How far a tab scrolls before its header collapses.
+///
+/// Enough to be a deliberate scroll rather than a thumb resting on the screen,
+/// small enough that the header is out of the way by the time the learner is
+/// reading.
+const double collapseThreshold = 12;
+
+/// Whether a tab scrolled to [pixels] should wear a collapsed header.
+///
+/// [maxScrollExtent] is what makes "a tab that cannot scroll never collapses"
+/// true: an overscroll bounce moves [pixels] on a short tab without there
+/// being any content to get out of the way of. Only vertical scrolling counts
+/// — a carousel inside a tab is not the tab moving.
+bool shouldCollapseHeader({
+  required double pixels,
+  required double maxScrollExtent,
+  required Axis axis,
+}) {
+  if (axis != Axis.vertical) return false;
+  if (maxScrollExtent <= 0) return false;
+  return pixels > collapseThreshold;
 }
