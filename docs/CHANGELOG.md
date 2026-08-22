@@ -151,9 +151,11 @@ You can always edit this file by hand instead — the helpers just save effort.
   the module moment shipped under the older one — so the recap read
   "Field Guide unlocked" for a card the design calls a Module Reward.
 
-  It now reads **"Reward unlocked"**, which is the design's own eyebrow for
-  that moment. The glossary term names the thing; it was never the sentence
-  shown over it.
+  It now reads **"Reward unlocked"** — the words the design uses when a card
+  is unlocked, borrowed into the recap's caption because the app has no
+  dedicated reward screen to put them on as an eyebrow. What they are not is
+  the glossary term: "Module Reward" names the thing, and was never the
+  sentence shown over it.
 
   **The five card titles still say it.** "Beans Field Guide" and its four
   siblings are authored in the read-only design source, so the recap reads

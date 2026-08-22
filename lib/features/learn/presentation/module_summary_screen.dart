@@ -126,9 +126,13 @@ class _ModuleRewardCard extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.xxs),
         Text(
-          // The design's own eyebrow for this moment, from the screen it
-          // names `ModuleRewardCardScreen`. The glossary term names the thing;
-          // it is not the sentence shown over it.
+          // Borrowed from the design's card-unlock beat, where
+          // `ModuleRewardCardScreen` pairs the eyebrow REWARD UNLOCKED with
+          // "You earned a card." The app has no dedicated reward screen, so
+          // the words land as a caption on the recap rather than as that
+          // eyebrow — the same phrase in a different slot, not the same
+          // element. What it is *not* is the glossary term: "Module Reward"
+          // names the thing, and was never the sentence shown over it.
           'Reward unlocked',
           textAlign: TextAlign.center,
           style: theme.textTheme.bodySmall?.copyWith(color: mood.inkMute),
