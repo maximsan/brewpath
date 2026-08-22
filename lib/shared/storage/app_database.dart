@@ -98,6 +98,23 @@ class UserSettings extends Table {
   /// because two devices the same person owns may legitimately differ.
   TextColumn get themeMode => text().withDefault(const Constant('dark'))();
 
+  /// Whether the learner has answered the Tour's intro overlay.
+  ///
+  /// Written the moment either button is pressed, so mid-tour abandonment never
+  /// re-arms the auto-run. Defaults to `false` so every device migrated from an
+  /// earlier schema is offered the Tour once.
+  ///
+  /// **Fate-shares with [onboardingCompleted].** The two are the app's pair of
+  /// "this learner has been shown the introductions" bits, and a wipe that
+  /// clears one while keeping the other produces a state no learner can reach
+  /// on their own: onboarding replayed with the Tour suppressed, or the
+  /// reverse.
+  /// The three places that decide are `AccountWipe.resetProgress` (keeps both,
+  /// by leaving this row alone), `SettingsRepository.deleteAll` (clears both,
+  /// with the row) and `OnboardingRepository.resetOnboarding` (clears both, by
+  /// name). Device-local: never written to the progress snapshot.
+  BoolColumn get tourSeen => boolean().withDefault(const Constant(false))();
+
   @override
   Set<Column> get primaryKey => {id};
 }
@@ -175,8 +192,11 @@ class AppDatabase extends _$AppDatabase {
   /// advanced these two columns since.
   static const int _dropStreakColumnsVersion = 7;
 
+  /// Schema version that added the Tour's `tourSeen` bit.
+  static const int _tourSeenVersion = 8;
+
   /// The current version is whichever migration landed last.
-  static const int _schemaVersion = _dropStreakColumnsVersion;
+  static const int _schemaVersion = _tourSeenVersion;
 
   @override
   int get schemaVersion => _schemaVersion;
@@ -262,7 +282,33 @@ class AppDatabase extends _$AppDatabase {
       // lives in the day set. Recreating the table drops them by omission from
       // the current definition, the same way `best_score` went at v5.
       if (from < _dropStreakColumnsVersion) {
-        await m.alterTable(TableMigration(userSettings));
+        await m.alterTable(
+          TableMigration(
+            userSettings,
+            // `tour_seen` is not part of the v7 schema, but this rebuild takes
+            // the table's *current* Dart definition, which has it — so the
+            // copy step would select a column the source table does not have.
+            // Declared new for the same reason the v4 → v5 rebuild declares
+            // the mastery pair: it lands on its default instead of being
+            // copied. **Every future column on this table must be added here
+            // too, for as long as this step exists.**
+            newColumns: [userSettings.tourSeen],
+          ),
+        );
+      }
+
+      // v7 -> v8: the Tour's `tourSeen` bit.
+      //
+      // Additive, and deliberately defaulted rather than backfilled: a device
+      // upgrading into this version has never been offered the Tour, so `false`
+      // is the true value for it, not a placeholder.
+      //
+      // Guarded from *both* sides, unlike every step above. Anything older than
+      // v7 has just been through the rebuild, which already produced this
+      // column from the current definition; adding it again fails on the
+      // duplicate. Only a database that arrived at exactly v7 still lacks it.
+      if (from >= _dropStreakColumnsVersion && from < _tourSeenVersion) {
+        await m.addColumn(userSettings, userSettings.tourSeen);
       }
     },
   );

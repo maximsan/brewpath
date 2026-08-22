@@ -12,6 +12,7 @@ import '../generated/schema_v4.dart' show DatabaseAtV4;
 import '../generated/schema_v5.dart' show DatabaseAtV5;
 import '../generated/schema_v6.dart' show DatabaseAtV6;
 import '../generated/schema_v7.dart' show DatabaseAtV7;
+import '../generated/schema_v8.dart' show DatabaseAtV8;
 
 /// Drift schema-migration harness coverage.
 ///
@@ -216,9 +217,9 @@ void main() {
     // proving it. **A schema bump means retargeting this and the test below.**
     await verifier.testWithDataIntegrity(
       oldVersion: 4,
-      newVersion: 7,
+      newVersion: 8,
       createOld: DatabaseAtV4.new,
-      createNew: DatabaseAtV7.new,
+      createNew: DatabaseAtV8.new,
       openTestedDatabase: AppDatabase.new,
       createItems: (batch, oldDb) => batch.insert(
         oldDb.progressRecords,
@@ -273,9 +274,9 @@ void main() {
       // given on the test above.
       await verifier.testWithDataIntegrity(
         oldVersion: 5,
-        newVersion: 7,
+        newVersion: 8,
         createOld: DatabaseAtV5.new,
-        createNew: DatabaseAtV7.new,
+        createNew: DatabaseAtV8.new,
         openTestedDatabase: AppDatabase.new,
         createItems: (batch, oldDb) => batch.insert(
           oldDb.progressRecords,
@@ -331,16 +332,16 @@ void main() {
     await db.close();
   });
 
-  test('a v6 database upgrades to v7 keeping what the learner chose', () async {
+  test('a v6 database upgrades keeping what the learner chose', () async {
     // The one case that can lose data. Dropping a column means recreating the
     // table, and a recreate that copied the wrong set would silently reset a
     // learner's appearance and onboarding answers — which survive a reset by
     // design, so nothing else would catch it.
     await verifier.testWithDataIntegrity(
       oldVersion: 6,
-      newVersion: 7,
+      newVersion: 8,
       createOld: DatabaseAtV6.new,
-      createNew: DatabaseAtV7.new,
+      createNew: DatabaseAtV8.new,
       openTestedDatabase: AppDatabase.new,
       createItems: (batch, oldDb) => batch.insert(
         oldDb.userSettings,
@@ -378,6 +379,69 @@ void main() {
         expect(row.read<bool>('haptics_enabled'), false);
         expect(row.read<bool>('sound_enabled'), false);
         expect(row.read<int>('total_xp'), 120);
+      },
+    );
+  });
+  test('schema v8 database has tour_seen on user_settings', () async {
+    final connection = await verifier.startAt(8);
+    final db = DatabaseAtV8(connection);
+    await db.customSelect('SELECT 1').get();
+
+    expect(db.schemaVersion, 8);
+
+    final columns = await db
+        .customSelect('PRAGMA table_info(user_settings)')
+        .get();
+    expect(
+      columns.map((r) => r.read<String>('name')),
+      contains('tour_seen'),
+    );
+
+    await db.close();
+  });
+
+  test('a v7 database upgrades to v8 with the Tour unseen', () async {
+    // The added column defaults rather than backfills, and this is what says
+    // so: a device that has been through onboarding but predates the Tour must
+    // arrive at v8 offered the Tour, not skipped past it. Everything else on
+    // the row is asserted alongside, because an additive step that silently
+    // rewrote a preference would look identical from the column's side.
+    await verifier.testWithDataIntegrity(
+      oldVersion: 7,
+      newVersion: 8,
+      createOld: DatabaseAtV7.new,
+      createNew: DatabaseAtV8.new,
+      openTestedDatabase: AppDatabase.new,
+      createItems: (batch, oldDb) => batch.insert(
+        oldDb.userSettings,
+        const RawValuesInsertable<dynamic>({
+          'id': Variable<int>(1),
+          'haptics_enabled': Variable<bool>(true),
+          'sound_enabled': Variable<bool>(false),
+          'total_xp': Variable<int>(240),
+          'onboarding_completed': Variable<bool>(true),
+          'onboarding_goal': Variable<String>('understand_tasting'),
+          'onboarding_brewer': Variable<String>('aeropress'),
+          'theme_mode': Variable<String>('light'),
+        }),
+      ),
+      validateItems: (newDb) async {
+        final rows = await newDb
+            .customSelect(
+              'SELECT tour_seen, onboarding_completed, onboarding_goal, '
+              'theme_mode, total_xp FROM user_settings',
+            )
+            .get();
+
+        expect(rows, hasLength(1));
+        final row = rows.single;
+        expect(row.read<bool>('tour_seen'), false);
+        // The gate it fate-shares with is untouched by the migration: the two
+        // only move together when a *wipe* moves them.
+        expect(row.read<bool>('onboarding_completed'), true);
+        expect(row.read<String>('onboarding_goal'), 'understand_tasting');
+        expect(row.read<String>('theme_mode'), 'light');
+        expect(row.read<int>('total_xp'), 240);
       },
     );
   });

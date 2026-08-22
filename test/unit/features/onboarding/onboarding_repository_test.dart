@@ -49,4 +49,26 @@ void main() {
     expect(second.goal, first.goal);
     expect(second.brewer, first.brewer);
   });
+
+  test(
+    'resetOnboarding clears the gate, the selections and the Tour',
+    () async {
+      // The third wipe path the fate-sharing rule names. This one clears by
+      // field rather than by dropping the row, so it is the path where the two
+      // bits *can* drift apart — and the only place a test can see it.
+      final settings = SettingsRepository();
+      await repo.markOnboardingComplete(goal: 'brew_better', brewer: 'v60');
+      final seen = await settings.getSettings()
+        ..tourSeen = true;
+      await settings.saveSettings(seen);
+
+      await repo.resetOnboarding();
+
+      final state = await repo.getState();
+      expect(state.completed, isFalse);
+      expect(state.goal, isNull);
+      expect(state.brewer, isNull);
+      expect((await settings.getSettings()).tourSeen, isFalse);
+    },
+  );
 }

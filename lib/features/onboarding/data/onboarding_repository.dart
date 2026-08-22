@@ -54,12 +54,18 @@ class OnboardingRepository {
   /// Clears the onboarding gate and the saved selections so the next launch
   /// (or redirect re-evaluation) sends the user back through Welcome.
   /// Intended for the debug-only "Reset onboarding" action.
+  ///
+  /// `tourSeen` goes with the gate. This action exists to replay the app's
+  /// introductions from the start, and the Tour is the second half of them —
+  /// leaving it set would send the tester back through Welcome and then drop
+  /// them on a Learn tab with no Tour, which is a state no real device reaches.
   Future<void> resetOnboarding() async {
     final s = await _settings.getSettings();
     s
       ..onboardingCompleted = false
       ..onboardingGoal = null
-      ..onboardingBrewer = null;
+      ..onboardingBrewer = null
+      ..tourSeen = false;
     await _settings.saveSettings(s);
   }
 }
