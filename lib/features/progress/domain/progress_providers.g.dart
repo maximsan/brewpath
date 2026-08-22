@@ -85,9 +85,12 @@ String _$totalPointsHash() => r'23c4d5de9b6d4b471eeec26efd78d5fc7adf278a';
 /// The day set it folds is assembled by [streakDaySet], which also backfills
 /// a learner whose completions predate the day set — see it for why the three
 /// sources are unioned rather than ranked.
+/// The qualifying-day set every streak surface folds over — one derivation,
+/// so the engine, the save notice and the week strip can never disagree on
+/// which days count.
 
-@ProviderFor(streakStatus)
-final streakStatusProvider = StreakStatusProvider._();
+@ProviderFor(activeDaySet)
+final activeDaySetProvider = ActiveDaySetProvider._();
 
 /// The streak, the freeze and the covered days, derived from the snapshot.
 ///
@@ -98,15 +101,14 @@ final streakStatusProvider = StreakStatusProvider._();
 /// The day set it folds is assembled by [streakDaySet], which also backfills
 /// a learner whose completions predate the day set — see it for why the three
 /// sources are unioned rather than ranked.
+/// The qualifying-day set every streak surface folds over — one derivation,
+/// so the engine, the save notice and the week strip can never disagree on
+/// which days count.
 
-final class StreakStatusProvider
+final class ActiveDaySetProvider
     extends
-        $FunctionalProvider<
-          AsyncValue<StreakStatus>,
-          StreakStatus,
-          FutureOr<StreakStatus>
-        >
-    with $FutureModifier<StreakStatus>, $FutureProvider<StreakStatus> {
+        $FunctionalProvider<AsyncValue<Set<int>>, Set<int>, FutureOr<Set<int>>>
+    with $FutureModifier<Set<int>>, $FutureProvider<Set<int>> {
   /// The streak, the freeze and the covered days, derived from the snapshot.
   ///
   /// Read against `DateTime.now()`, so it is only as fresh as the last time it
@@ -116,6 +118,47 @@ final class StreakStatusProvider
   /// The day set it folds is assembled by [streakDaySet], which also backfills
   /// a learner whose completions predate the day set — see it for why the three
   /// sources are unioned rather than ranked.
+  /// The qualifying-day set every streak surface folds over — one derivation,
+  /// so the engine, the save notice and the week strip can never disagree on
+  /// which days count.
+  ActiveDaySetProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'activeDaySetProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$activeDaySetHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<Set<int>> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<Set<int>> create(Ref ref) {
+    return activeDaySet(ref);
+  }
+}
+
+String _$activeDaySetHash() => r'8dc582484d95ced70210f85fe37c80552e124dd8';
+
+@ProviderFor(streakStatus)
+final streakStatusProvider = StreakStatusProvider._();
+
+final class StreakStatusProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<StreakStatus>,
+          StreakStatus,
+          FutureOr<StreakStatus>
+        >
+    with $FutureModifier<StreakStatus>, $FutureProvider<StreakStatus> {
   StreakStatusProvider._()
     : super(
         from: null,
@@ -142,7 +185,7 @@ final class StreakStatusProvider
   }
 }
 
-String _$streakStatusHash() => r'5b298d97dad584941244f0cf8167574ce979517a';
+String _$streakStatusHash() => r'7ecb80964f632e911995c2d8b3c58beca869a9a4';
 
 /// The user's current streak in days.
 
