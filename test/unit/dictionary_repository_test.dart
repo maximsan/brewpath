@@ -57,7 +57,9 @@ void main() {
 
     test('gives every lesson pointer a lesson that resolves', () async {
       final terms = await dictionary.getTerms();
-      final lessonIds = {for (final lesson in await content.getLessons()) lesson.id};
+      final lessonIds = {
+        for (final lesson in await content.getLessons()) lesson.id,
+      };
 
       for (final term in terms.where((t) => t.lessonId != null)) {
         expect(
@@ -82,7 +84,8 @@ void main() {
           'sca',
           'origin-boards',
         ]),
-        reason: 'a term losing its lesson pointer silently becomes reference, '
+        reason:
+            'a term losing its lesson pointer silently becomes reference, '
             'which changes what the course promises about it',
       );
     });

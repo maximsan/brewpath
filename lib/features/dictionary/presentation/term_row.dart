@@ -60,16 +60,18 @@ class TermRow extends StatelessWidget {
                     children: [
                       Text(
                         term.term,
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(color: mood.ink),
+                        style: Theme.of(
+                          context,
+                        ).textTheme.titleMedium?.copyWith(color: mood.ink),
                       ),
                       const SizedBox(height: AppSpacing.xxs),
                       Text(
                         term.shortExplanation,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.bodySmall
-                            ?.copyWith(color: mood.inkMute),
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodySmall?.copyWith(color: mood.inkMute),
                       ),
                     ],
                   ),

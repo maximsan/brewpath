@@ -124,7 +124,11 @@ void main() {
 
     test('all keeps every term, reference included', () {
       expect(
-        filterDictionary(terms, DictionaryFilter.all, completed).map((t) => t.id),
+        filterDictionary(
+          terms,
+          DictionaryFilter.all,
+          completed,
+        ).map((t) => t.id),
         ['a', 'b', 'c', 'd', 'e'],
       );
     });
@@ -159,7 +163,8 @@ void main() {
       expect(
         counts.toLearn,
         1,
-        reason: 'the number in front of the learner must be a promise the '
+        reason:
+            'the number in front of the learner must be a promise the '
             'course can keep',
       );
     });

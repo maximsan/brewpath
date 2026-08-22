@@ -100,7 +100,10 @@ class TermEntryBody extends ConsumerWidget {
         _PathBlock(status: status, lessonId: term.lessonId),
         if (term.sources.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.lg),
-          _Block(label: 'Sources', child: _Sources(sources: term.sources)),
+          _Block(
+            label: 'Sources',
+            child: _Sources(sources: term.sources),
+          ),
         ],
       ],
     );
@@ -225,8 +228,10 @@ class _Block extends StatelessWidget {
       children: [
         Text(
           label.toUpperCase(),
-          style: Theme.of(context).textTheme.labelSmall
-              ?.copyWith(color: context.mood.inkMute, letterSpacing: 1),
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+            color: context.mood.inkMute,
+            letterSpacing: 1,
+          ),
         ),
         const SizedBox(height: AppSpacing.xs),
         child,

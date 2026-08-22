@@ -38,8 +38,9 @@ class _TermSelfCheckState extends State<TermSelfCheck> {
       children: [
         Text(
           widget.check.question,
-          style: Theme.of(context).textTheme.titleSmall
-              ?.copyWith(color: mood.ink),
+          style: Theme.of(
+            context,
+          ).textTheme.titleSmall?.copyWith(color: mood.ink),
         ),
         const SizedBox(height: AppSpacing.xs),
         for (var index = 0; index < choices.length; index++)
@@ -64,8 +65,9 @@ class _TermSelfCheckState extends State<TermSelfCheck> {
                   padding: const EdgeInsets.only(top: AppSpacing.xs),
                   child: Text(
                     widget.check.explanation,
-                    style: Theme.of(context).textTheme.bodySmall
-                        ?.copyWith(color: mood.inkMute),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: mood.inkMute),
                   ),
                 ),
         ),
@@ -105,9 +107,7 @@ class _ChoiceTile extends StatelessWidget {
     return Semantics(
       button: onTap != null,
       selected: isChosen,
-      label: answered
-          ? '$text, ${isCorrect! ? 'correct' : 'incorrect'}'
-          : text,
+      label: answered ? '$text, ${isCorrect! ? 'correct' : 'incorrect'}' : text,
       child: ExcludeSemantics(
         child: InkWell(
           onTap: onTap,
@@ -121,8 +121,9 @@ class _ChoiceTile extends StatelessWidget {
             ),
             child: Text(
               text,
-              style: Theme.of(context).textTheme.bodyMedium
-                  ?.copyWith(color: mood.ink),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: mood.ink),
             ),
           ),
         ),

@@ -163,8 +163,9 @@ class _NoMatches extends StatelessWidget {
           child: Text(
             'No terms match that search.',
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyMedium
-                ?.copyWith(color: context.mood.inkMute),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: context.mood.inkMute),
           ),
         ),
       ),
@@ -205,8 +206,9 @@ class _CategoryGlyphNote extends StatelessWidget {
           Expanded(
             child: Text(
               category.summary,
-              style: Theme.of(context).textTheme.bodySmall
-                  ?.copyWith(color: mood.inkMute),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: mood.inkMute),
             ),
           ),
         ],
