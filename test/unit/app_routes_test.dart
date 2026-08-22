@@ -1,4 +1,5 @@
 import 'package:brew_path/app/app_router.dart';
+import 'package:brew_path/app/header_tier.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -83,6 +84,62 @@ void main() {
         },
       ),
       '/learn/lesson/l1/complete?review=false&practice=false&score=80',
+    );
+  });
+
+  /// Which chrome every registered route wears.
+  ///
+  /// The point is the **completeness** assertion below, not the values: a
+  /// route added to the router without anyone deciding what chrome it gets
+  /// would otherwise inherit one silently, which is the whole failure mode
+  /// `headerTierFor` exists to prevent.
+  const tierByName = <String, HeaderTier>{
+    'loading': HeaderTier.immersive,
+    'welcome': HeaderTier.immersive,
+    'courseComplete': HeaderTier.immersive,
+    'onboardingGoal': HeaderTier.immersive,
+    'onboardingBrewer': HeaderTier.immersive,
+    'learn': HeaderTier.tabRoot,
+    'path': HeaderTier.tabRoot,
+    'cards': HeaderTier.tabRoot,
+    'profile': HeaderTier.tabRoot,
+    'dictionary': HeaderTier.pushed,
+    'dictionaryTerm': HeaderTier.pushed,
+    'moduleDetail': HeaderTier.pushed,
+    'cardDetail': HeaderTier.pushed,
+    'profileSettings': HeaderTier.pushed,
+    'lesson': HeaderTier.immersive,
+    'lessonComplete': HeaderTier.immersive,
+    'moduleSummary': HeaderTier.immersive,
+    'miniGameIntro': HeaderTier.immersive,
+    'miniGamePlay': HeaderTier.immersive,
+  };
+
+  test('every registered route has a decided chrome tier', () {
+    final registered = <String>{};
+    void walk(List<RouteBase> routes) {
+      for (final route in routes) {
+        if (route is GoRoute && route.name != null) registered.add(route.name!);
+        walk(route.routes);
+        if (route is StatefulShellRoute) {
+          for (final branch in route.branches) {
+            walk(branch.routes);
+          }
+        }
+      }
+    }
+
+    walk(router.configuration.routes);
+
+    expect(
+      registered.difference(tierByName.keys.toSet()),
+      isEmpty,
+      reason: 'a route was added without deciding what chrome it wears',
+    );
+    expect(
+      tierByName.keys.toSet().difference(registered),
+      isEmpty,
+      reason: 'the tier table names a route the router no longer has',
     );
   });
 }

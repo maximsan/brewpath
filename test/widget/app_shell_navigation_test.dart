@@ -106,6 +106,15 @@ void main() {
 
       expect(_sharedHeader(), findsNothing);
     });
+
+    testWidgets('a mini-game shows no chrome either', (tester) async {
+      final container = await pumpWithProviders(tester, const BrewPathApp());
+
+      container.read(appRouterProvider).go('/learn/mini-game/g-match');
+      await settleLoaders(tester);
+
+      expect(_sharedHeader(), findsNothing);
+    });
   });
 
   testWidgets('a branch keeps its own stack across tab switches', (

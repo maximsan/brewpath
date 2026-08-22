@@ -1,56 +1,41 @@
 import 'package:brew_path/app/header_tier.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// Every route in the app gets exactly one kind of chrome, and the rule lives
-/// in one place so a route added later cannot silently inherit the wrong one.
+/// Every location in the app gets exactly one kind of chrome, and the rule
+/// lives in one place so a route added later cannot silently inherit the
+/// wrong one.
+///
+/// ⚠️ **Tier is the chrome, not the navigator.** Settings runs on the root
+/// navigator and is still `pushed`, because what the learner sees is a page
+/// with a back arrow. Filing routes by their plumbing is the mistake this
+/// table exists to prevent.
+const _expectedTiers = <String, HeaderTier>{
+  '/learn': HeaderTier.tabRoot,
+  '/path': HeaderTier.tabRoot,
+  '/cards': HeaderTier.tabRoot,
+  '/profile': HeaderTier.tabRoot,
+  '/learn/module/m1': HeaderTier.pushed,
+  '/learn/dictionary': HeaderTier.pushed,
+  '/learn/dictionary/term/arabica': HeaderTier.pushed,
+  '/cards/c-m1l1': HeaderTier.pushed,
+  '/profile/settings': HeaderTier.pushed,
+  '/learn/lesson/m1l1': HeaderTier.immersive,
+  '/learn/lesson/m1l1/complete': HeaderTier.immersive,
+  '/learn/module-summary/m1': HeaderTier.immersive,
+  '/learn/mini-game/g-match': HeaderTier.immersive,
+  '/learn/mini-game/g-match/play': HeaderTier.immersive,
+  '/welcome': HeaderTier.immersive,
+  '/loading': HeaderTier.immersive,
+  '/onboarding/goal': HeaderTier.immersive,
+  '/course-complete': HeaderTier.immersive,
+};
+
 void main() {
-  group('tab roots', () {
-    test('the four branch roots wear the shared header', () {
-      for (final location in ['/learn', '/path', '/cards', '/profile']) {
-        expect(
-          headerTierFor(location),
-          HeaderTier.tabRoot,
-          reason: '$location is a tab the learner switches to',
-        );
-      }
-    });
-  });
-
-  group('pushed pages', () {
-    test('a page pushed inside a branch brings its own bar', () {
-      const pushed = [
-        '/learn/module/m1',
-        '/learn/dictionary',
-        '/learn/dictionary/term/arabica',
-        '/cards/c-m1l1',
-      ];
-      for (final location in pushed) {
-        expect(
-          headerTierFor(location),
-          HeaderTier.pushed,
-          reason: '$location is pushed, so it carries a back arrow instead',
-        );
-      }
-    });
-  });
-
-  group('immersive flows', () {
-    test('a lesson, its completion and the mini-games show no chrome', () {
-      const immersive = [
-        '/learn/lesson/m1l1',
-        '/learn/lesson/m1l1/complete',
-        '/learn/module-summary/m1',
-        '/learn/mini-game/g-match',
-        '/learn/mini-game/g-match/play',
-        '/profile/settings',
-      ];
-      for (final location in immersive) {
-        expect(
-          headerTierFor(location),
-          HeaderTier.immersive,
-          reason: '$location escapes the shell entirely',
-        );
-      }
+  group('the tier table', () {
+    _expectedTiers.forEach((location, expected) {
+      test('$location is $expected', () {
+        expect(headerTierFor(location), expected);
+      });
     });
   });
 
@@ -60,14 +45,16 @@ void main() {
       expect(headerTierFor('/learnable'), isNot(HeaderTier.tabRoot));
     });
 
-    test('an unknown location under a branch is treated as pushed', () {
+    test('an unknown page under a branch is pushed, not immersive', () {
       expect(headerTierFor('/learn/something-new'), HeaderTier.pushed);
     });
 
-    test('a location outside every branch gets no header', () {
-      for (final location in ['/welcome', '/loading', '/onboarding/goal']) {
-        expect(headerTierFor(location), HeaderTier.immersive);
-      }
+    test('matching is by whole segment, never substring', () {
+      expect(
+        headerTierFor('/cards/c-my-lesson-notes'),
+        HeaderTier.pushed,
+        reason: 'a card id containing "lesson" is not a lesson route',
+      );
     });
 
     test('only a tab root shows the shell header', () {
@@ -77,27 +64,43 @@ void main() {
     });
   });
 
-  group('per-tab titles', () {
-    test('each tab root names itself in the design vocabulary', () {
-      expect(headerTitleFor('/path')?.eyebrow, 'YOUR PATH');
-      expect(headerTitleFor('/path')?.title, 'Beginner Foundations');
-      expect(headerTitleFor('/cards')?.eyebrow, 'YOUR DECK');
-      expect(headerTitleFor('/cards')?.title, 'Collection');
-      expect(headerTitleFor('/profile')?.eyebrow, 'PROFILE');
+  group('per-tab headings', () {
+    final today = DateTime(2026, 5, 8);
+
+    test('each tab names itself in the design vocabulary', () {
+      expect(tabHeaderFor('/path', today: today)?.eyebrow, 'YOUR PATH');
+      expect(
+        tabHeaderFor('/path', today: today)?.title,
+        'Beginner Foundations',
+      );
+      expect(tabHeaderFor('/cards', today: today)?.eyebrow, 'YOUR DECK');
+      expect(tabHeaderFor('/cards', today: today)?.title, 'Collection');
+      expect(tabHeaderFor('/profile', today: today)?.eyebrow, 'PROFILE');
     });
 
     test('Learn titles itself with the day it is given', () {
-      final title = headerTitleFor('/learn', today: DateTime(2026, 5, 8));
-      expect(title?.eyebrow, 'TODAY');
-      expect(
-        title?.title,
-        'Friday, May 8',
-        reason: 'the date is passed in, never read from the clock here',
-      );
+      final tab = tabHeaderFor('/learn', today: today);
+      expect(tab?.eyebrow, 'TODAY');
+      expect(tab?.title, 'Friday, May 8');
     });
 
-    test('a non-tab-root has no title', () {
-      expect(headerTitleFor('/learn/dictionary'), isNull);
+    test('Profile swaps the entry rather than adding to it', () {
+      expect(
+        tabHeaderFor('/profile', today: today)?.action,
+        HeaderAction.settings,
+      );
+      for (final tab in ['/learn', '/path', '/cards']) {
+        expect(
+          tabHeaderFor(tab, today: today)?.action,
+          HeaderAction.dictionary,
+          reason: '$tab offers the dictionary',
+        );
+      }
+    });
+
+    test('a location that is not a tab root has no heading', () {
+      expect(tabHeaderFor('/learn/dictionary', today: today), isNull);
+      expect(tabHeaderFor('/learn/lesson/m1l1', today: today), isNull);
     });
   });
 }

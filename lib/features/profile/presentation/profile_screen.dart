@@ -31,60 +31,55 @@ class ProfileScreen extends ConsumerWidget {
     final grove = ref.watch(groveTreatmentProvider);
 
     return Scaffold(
-      body: SafeArea(
-        bottom: false,
-        child: CustomScrollView(
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-              sliver: SliverList.list(
-                children: [
-                  Center(
-                    child: treeStage.when(
-                      data: (stage) => CoffeeTree(
-                        stage: stage,
-                        // A grove still loading paints the real art rather
-                        // than blocking the tree on it.
-                        treatment:
-                            grove.asData?.value ?? GroveTreatment.identity,
-                      ),
-                      loading: CoffeeTreePlaceholder.new,
-                      error: (_, _) => const CoffeeTreePlaceholder(),
+      body: CustomScrollView(
+        slivers: [
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+            sliver: SliverList.list(
+              children: [
+                Center(
+                  child: treeStage.when(
+                    data: (stage) => CoffeeTree(
+                      stage: stage,
+                      // A grove still loading paints the real art rather
+                      // than blocking the tree on it.
+                      treatment: grove.asData?.value ?? GroveTreatment.identity,
                     ),
+                    loading: CoffeeTreePlaceholder.new,
+                    error: (_, _) => const CoffeeTreePlaceholder(),
                   ),
-                  const SizedBox(height: _sectionGap),
-                  const PremiumCard(),
-                  const SizedBox(height: _sectionGap),
-                  const _SectionTitle('Your progress'),
-                  const SizedBox(height: 12),
-                  _StatsGrid(
-                    points: points.asData?.value ?? 0,
-                    streakDays: streak.asData?.value ?? 0,
-                    lessonsCompleted: lessons.asData?.value.length ?? 0,
-                    cardsCollected: cards.asData?.value.length ?? 0,
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  const ChallengeStatRow(),
-                  const SizedBox(height: _sectionGap),
-                  const _SectionTitle('Customize'),
-                  const SizedBox(height: 12),
-                  _CustomizeGrid(
-                    soundEnabled: settings.asData?.value.soundEnabled ?? true,
-                    hapticsEnabled:
-                        settings.asData?.value.hapticsEnabled ?? true,
-                    onToggleSound: () => ref
-                        .read(settingsControllerProvider.notifier)
-                        .toggleSound(),
-                    onToggleHaptics: () => ref
-                        .read(settingsControllerProvider.notifier)
-                        .toggleHaptics(),
-                    onComingSoon: () => _showComingSoon(context),
-                  ),
-                ],
-              ),
+                ),
+                const SizedBox(height: _sectionGap),
+                const PremiumCard(),
+                const SizedBox(height: _sectionGap),
+                const _SectionTitle('Your progress'),
+                const SizedBox(height: 12),
+                _StatsGrid(
+                  points: points.asData?.value ?? 0,
+                  streakDays: streak.asData?.value ?? 0,
+                  lessonsCompleted: lessons.asData?.value.length ?? 0,
+                  cardsCollected: cards.asData?.value.length ?? 0,
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                const ChallengeStatRow(),
+                const SizedBox(height: _sectionGap),
+                const _SectionTitle('Customize'),
+                const SizedBox(height: 12),
+                _CustomizeGrid(
+                  soundEnabled: settings.asData?.value.soundEnabled ?? true,
+                  hapticsEnabled: settings.asData?.value.hapticsEnabled ?? true,
+                  onToggleSound: () => ref
+                      .read(settingsControllerProvider.notifier)
+                      .toggleSound(),
+                  onToggleHaptics: () => ref
+                      .read(settingsControllerProvider.notifier)
+                      .toggleHaptics(),
+                  onComingSoon: () => _showComingSoon(context),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

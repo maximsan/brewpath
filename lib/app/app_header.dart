@@ -9,113 +9,112 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// The header's fixed height, and the padding a tab's content owes it.
-///
-/// Exported as one constant so a scroll container cannot drift out of
-/// agreement with the bar above it — the class of bug the design's own chrome
-/// notes call out.
-const double kAppHeaderHeight = 96;
+/// The header's height, below the status bar.
+const double _headerHeight = 96;
 
 /// The one header the four tabs share, owned by the shell.
 ///
 /// Rendered **once**, above the branch navigators, exactly as the design
-/// renders it once at app level beside the tab bar. It reads the current
-/// location to title itself and to decide whether it draws at all: a page
-/// pushed on top of a tab brings its own bar, and this must stay out of its
-/// way.
+/// renders it once at app level beside the tab bar. The shell decides whether
+/// it draws at all; this decides what it says.
+///
+/// It consumes the status-bar inset itself, because it is the only thing here
+/// that needs to: a page pushed inside a branch brings its own `AppBar`, which
+/// handles its own.
 class AppHeader extends ConsumerWidget {
   /// Creates an [AppHeader].
   const AppHeader({required this.location, super.key});
 
-  /// The location the shell is currently showing.
+  /// The tab root the shell is showing.
   final String location;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final title = headerTitleFor(
-      location,
-      today: ref.watch(currentDayProvider),
-    );
-    if (title == null) return const SizedBox.shrink();
+    final tab = tabHeaderFor(location, today: ref.watch(currentDayProvider));
+    if (tab == null) return const SizedBox.shrink();
 
-    final mood = context.mood;
-    final isProfile = location == AppRoutes.profile.path;
-
-    return SizedBox(
-      height: kAppHeaderHeight,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.gutter,
-          AppSpacing.sm,
-          AppSpacing.md,
-          AppSpacing.sm,
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  SmallcapsLabel(title.eyebrow),
-                  const SizedBox(height: AppSpacing.xxs),
-                  Semantics(
-                    header: true,
-                    child: Text(
-                      title.title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(
-                        context,
-                      ).textTheme.headlineSmall?.copyWith(color: mood.ink),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // The design pairs Dictionary with a Saved button carrying a count
-            // badge. The Saved shelf has no screen yet and its build comes
-            // after this one, so the slot is declared and left empty rather
-            // than shipping a button that opens nothing.
-            if (isProfile)
-              _HeaderAction(
-                icon: Icons.settings_outlined,
-                tooltip: 'Settings',
-                onPressed: () =>
-                    context.pushNamed(AppRoutes.profileSettings.name),
-              )
-            else
-              _HeaderAction(
-                icon: Icons.menu_book_outlined,
-                tooltip: DictionaryHomeScreen.title,
-                onPressed: () => context.pushNamed(AppRoutes.dictionary.name),
-              ),
-          ],
+    return SafeArea(
+      bottom: false,
+      child: SizedBox(
+        height: _headerHeight,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.gutter,
+            AppSpacing.sm,
+            AppSpacing.md,
+            AppSpacing.sm,
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(child: _Heading(tab: tab)),
+              // The design pairs the Dictionary with a Saved button carrying a
+              // count badge. The Saved shelf has no screen yet and its build
+              // comes after this one, so nothing is offered here rather than a
+              // button that opens nothing.
+              _ActionButton(action: tab.action),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _HeaderAction extends StatelessWidget {
-  const _HeaderAction({
-    required this.icon,
-    required this.tooltip,
-    required this.onPressed,
-  });
+class _Heading extends StatelessWidget {
+  const _Heading({required this.tab});
 
-  final IconData icon;
-  final String tooltip;
-  final VoidCallback onPressed;
+  final TabHeader tab;
 
   @override
   Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        SmallcapsLabel(tab.eyebrow),
+        const SizedBox(height: AppSpacing.xxs),
+        Semantics(
+          header: true,
+          child: Text(
+            tab.title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(color: context.mood.ink),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ActionButton extends StatelessWidget {
+  const _ActionButton({required this.action});
+
+  final HeaderAction action;
+
+  @override
+  Widget build(BuildContext context) {
+    final (icon, tooltip, routeName) = switch (action) {
+      HeaderAction.dictionary => (
+        Icons.menu_book_outlined,
+        DictionaryHomeScreen.title,
+        AppRoutes.dictionary.name,
+      ),
+      HeaderAction.settings => (
+        Icons.settings_outlined,
+        'Settings',
+        AppRoutes.profileSettings.name,
+      ),
+    };
+
     return IconButton(
       icon: Icon(icon),
       tooltip: tooltip,
-      onPressed: onPressed,
       color: context.mood.ink,
+      onPressed: () => context.pushNamed(routeName),
     );
   }
 }

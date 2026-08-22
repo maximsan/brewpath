@@ -40,6 +40,7 @@ const _monthNames = [
   'December',
 ];
 
-/// [d] as the long form the header shows — `Friday, May 8`.
-String longDate(DateTime d) =>
-    '${_weekdayNames[d.weekday - 1]}, ${_monthNames[d.month - 1]} ${d.day}';
+/// [date] as the long form the header shows — `Friday, May 8`.
+String longDate(DateTime date) =>
+    '${_weekdayNames[date.weekday - 1]}, '
+    '${_monthNames[date.month - 1]} ${date.day}';
