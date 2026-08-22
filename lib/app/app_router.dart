@@ -3,6 +3,8 @@ import 'package:brew_path/app/app_shell.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/cards/presentation/card_detail_screen.dart';
 import 'package:brew_path/features/cards/presentation/cards_screen.dart';
+import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
+import 'package:brew_path/features/dictionary/presentation/term_detail_screen.dart';
 import 'package:brew_path/features/learn/domain/course_completion_providers.dart';
 import 'package:brew_path/features/learn/presentation/course_completion_screen.dart';
 import 'package:brew_path/features/learn/presentation/learn_screen.dart';
@@ -118,6 +120,22 @@ GoRouter appRouter(Ref ref) {
                 name: AppRoutes.learn.name,
                 builder: (context, state) => const LearnScreen(),
                 routes: [
+                  // Inside the shell on purpose: looking a word up must not
+                  // cost the learner their tab.
+                  GoRoute(
+                    path: AppRoutes.dictionary.path,
+                    name: AppRoutes.dictionary.name,
+                    builder: (context, state) => const DictionaryHomeScreen(),
+                    routes: [
+                      GoRoute(
+                        path: AppRoutes.dictionaryTerm.path,
+                        name: AppRoutes.dictionaryTerm.name,
+                        builder: (context, state) => TermDetailScreen(
+                          termId: state.pathParameters['termId']!,
+                        ),
+                      ),
+                    ],
+                  ),
                   GoRoute(
                     path: AppRoutes.moduleDetail.path,
                     name: AppRoutes.moduleDetail.name,
