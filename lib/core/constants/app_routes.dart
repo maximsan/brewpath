@@ -1,3 +1,6 @@
+import 'package:flutter/widgets.dart';
+import 'package:go_router/go_router.dart';
+
 // Self-descriptive route catalog — no per-member docs needed.
 // ignore_for_file: public_member_api_docs
 
@@ -35,10 +38,24 @@ abstract class AppRoutes {
   );
   static const miniGameIntro = AppRoute('miniGameIntro', 'mini-game/:gameId');
   static const miniGamePlay = AppRoute('miniGamePlay', 'play');
+  static const dictionary = AppRoute('dictionary', 'dictionary');
+  static const dictionaryTerm = AppRoute('dictionaryTerm', 'term/:termId');
   static const path = AppRoute('path', '/path');
   static const cards = AppRoute('cards', '/cards');
   static const cardDetail = AppRoute('cardDetail', ':cardId');
   static const profile = AppRoute('profile', '/profile');
   static const profileSettings = AppRoute('profileSettings', 'settings');
   static const profileStreak = AppRoute('profileStreak', 'streak');
+}
+
+/// Opening a dictionary term, from wherever the learner found it.
+///
+/// The route's path parameter is named in exactly one place — three callers
+/// spelling `'termId'` themselves is three chances to misspell it.
+extension DictionaryNavigation on BuildContext {
+  /// Pushes the full entry for [termId].
+  Future<void> pushDictionaryTerm(String termId) => GoRouter.of(this).pushNamed(
+    AppRoutes.dictionaryTerm.name,
+    pathParameters: {'termId': termId},
+  );
 }

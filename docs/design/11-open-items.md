@@ -91,8 +91,8 @@ this whole reference, and had not actually been done until now.
 
 ### The monetization model is not what either codebase implements
 
-**[Product-owner ruling — settled]** Free gets **the first two lessons,
-permanently**; the other thirty are paid. A cap of **two learning/practice
+**[Product-owner ruling — settled]** Free gets **the first three lessons,
+permanently** (count per [ADR-0007](../adr/0007-free-tier-is-the-first-three-lessons.md)); the other twenty-nine are paid. A cap of **two learning/practice
 activities a day** applies to free users, the free Saved cap is **5**, and the
 dictionary is tiered by **depth** rather than by term. Full rules in
 `docs/decisions.md` §7–§8, §11–§12; resolved on
