@@ -44,6 +44,10 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Milestones get their moment.** The streak screen opens on a Roasty beat
+  when a milestone day lands (3, 7, 14, 30, 60, 100, 180, 365, then every
+  30) — once per milestone, self-healing after a lapse — and the count sits
+  inside a progress ring toward the next badge.
 - **The week reads at a glance.** A shared seven-cell week strip — done,
   covered-by-a-freeze, or empty, with a cue on today — renders on the streak
   screen and inside the Profile streak tile, each cell read straight from the
