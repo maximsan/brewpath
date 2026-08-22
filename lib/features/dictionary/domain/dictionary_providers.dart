@@ -2,6 +2,7 @@ import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/shared/models/content/dictionary_category.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
+import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/dictionary_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -49,4 +50,17 @@ Future<DictionaryView> dictionaryView(Ref ref) async {
     categories: await dictionary.getCategories(),
     completedLessonIds: {for (final record in completed) record.lessonId},
   );
+}
+
+/// The title of the lesson [lessonId] names, or null when it names none.
+///
+/// A term's path block shows the lesson by title, not by id: "Where you
+/// learned it → m1l2" is a database row, not an answer.
+@riverpod
+Future<String?> lessonTitle(Ref ref, String? lessonId) async {
+  if (lessonId == null) return null;
+  final lesson = await ref
+      .watch(contentRepositoryProvider)
+      .getLessonById(lessonId);
+  return lesson?.title;
 }

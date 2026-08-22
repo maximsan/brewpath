@@ -68,7 +68,9 @@ List<DictionaryTerm> searchDictionary(
   final needle = _fold(query);
   if (needle.isEmpty) return terms;
 
-  final labelById = {for (final c in categories) c.id: c.label};
+  final labelById = {
+    for (final category in categories) category.id: category.label,
+  };
   return terms
       .where((term) => _matches(term, needle, labelById[term.categoryId]))
       .toList();
@@ -156,7 +158,9 @@ Map<DictionaryCategory, List<DictionaryTerm>> groupByCategory(
 ) {
   final grouped = <DictionaryCategory, List<DictionaryTerm>>{};
   for (final category in categories) {
-    final members = terms.where((t) => t.categoryId == category.id).toList();
+    final members = terms
+        .where((term) => term.categoryId == category.id)
+        .toList();
     if (members.isNotEmpty) grouped[category] = members;
   }
   return grouped;

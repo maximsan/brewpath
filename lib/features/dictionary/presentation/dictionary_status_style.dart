@@ -15,6 +15,13 @@ extension DictionaryStatusStyle on DictionaryStatus {
     DictionaryStatus.reference => 'Reference',
   };
 
+  /// How the entry heads the block naming where a term sits on the path.
+  String get pathLabel => switch (this) {
+    DictionaryStatus.learned => 'Where you learned it',
+    DictionaryStatus.toLearn => "Where you'll learn it",
+    DictionaryStatus.reference => 'Not on the path',
+  };
+
   /// The mark's colour. Reference is deliberately the muted one — it is not a
   /// lesser version of "not yet", it is off the path entirely.
   Color colorFrom(MoodColors mood) => switch (this) {

@@ -31,10 +31,14 @@ const _full = DictionaryTerm(
   shortExplanation: 'The species behind most specialty coffee.',
   lessonId: 'm1l2',
   aliases: ['Coffea arabica'],
+  relatedIds: ['tds'],
   pronunciation: 'uh-RAB-ih-kuh',
   deepExplanation: 'Roughly 60% of world coffee.',
   example: 'A bag saying 100% Arabica.',
-  sources: [DictionarySource(label: 'The World Atlas of Coffee')],
+  sources: [
+    DictionarySource(label: 'The World Atlas of Coffee'),
+    DictionarySource(label: 'SCA', url: 'https://sca.coffee/research'),
+  ],
   check: DictionaryCheck(
     question: 'Arabica usually has…',
     choices: [
@@ -62,6 +66,9 @@ DictionaryView _view({Set<String> completed = const {}}) => DictionaryView(
 Widget _wrap(Widget child, {DictionaryView? view}) => ProviderScope(
   overrides: [
     dictionaryViewProvider.overrideWith((ref) async => view ?? _view()),
+    lessonTitleProvider(
+      'm1l2',
+    ).overrideWith((ref) async => 'Arabica vs Robusta'),
   ],
   child: MaterialApp(theme: AppTheme.cupping, home: child),
 );
@@ -145,6 +152,46 @@ void main() {
       expect(find.text('Where you learned it'.toUpperCase()), findsOneWidget);
       expect(find.text('CHECK YOURSELF'), findsOneWidget);
       expect(find.text('SOURCES'), findsOneWidget);
+      expect(
+        find.text('Arabica vs Robusta'),
+        findsOneWidget,
+        reason: 'the lesson is named by title; an id is not an answer',
+      );
+      expect(find.text('m1l2'), findsNothing);
+    });
+
+    testWidgets('a related term is shown by name, not by id', (tester) async {
+      await tester.pumpWidget(_wrap(const TermDetailScreen(termId: 'arabica')));
+      await tester.pumpAndSettle();
+
+      expect(find.widgetWithText(ActionChip, 'TDS'), findsOneWidget);
+      expect(
+        find.widgetWithText(ActionChip, 'tds'),
+        findsNothing,
+        reason: 'a learner should never be shown a raw content id',
+      );
+    });
+
+    testWidgets('a related term peeks instead of burying the entry', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_wrap(const TermDetailScreen(termId: 'arabica')));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.widgetWithText(ActionChip, 'TDS'));
+      await tester.pumpAndSettle();
+
+      // The peek is over the entry, and the entry is still behind it.
+      expect(find.text('Total dissolved solids.'), findsOneWidget);
+      expect(find.text('Read the full entry'), findsOneWidget);
+      expect(find.text('Arabica'), findsWidgets);
+    });
+
+    testWidgets('a source with an address shows it', (tester) async {
+      await tester.pumpWidget(_wrap(const TermDetailScreen(termId: 'arabica')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('https://sca.coffee/research'), findsOneWidget);
     });
 
     testWidgets('an unlearned term promises the lesson instead', (
