@@ -86,15 +86,15 @@ staging list that feeds it, not a living board. Nothing ticks these boxes.
 - [ ] Vocab game: setup phase (deck picker + round length with a `capped` guard), play, results with missed terms openable
 - [ ] Saved screen: three groups (terms · lessons · guides), each hidden when empty, plus the "study as flashcards" row
 - [ ] 37 collectible cards + 5 training guides, all with bespoke art (**art complete — port, don't draw**)
-- [ ] 7 mini-games with content banks
+- [ ] 13 mini-games over 7 kinds with content banks (69 rounds; [ADR-0005](../adr/0005-mini-games-are-many-games-per-kind-gated-by-topic.md))
 - [ ] 12 coffee challenges
 - [ ] Studio: 3 species × 4 light treatments, 8 training guides, Roasty option tables
 
 ## Monetization
 
 > ⚠️ **Every line in this block was written against the superseded feature-gating
-> model.** The shipping model is a **content gate**: the first two lessons free
-> permanently, the other thirty paid, plus a cap of two learning/practice
+> model.** The shipping model is a **content gate**: the first three lessons free ([ADR-0007](../adr/0007-free-tier-is-the-first-three-lessons.md)),
+> permanently, the other twenty-nine paid, plus a cap of two learning/practice
 > activities a day, a free Saved cap of **5**, and a dictionary tiered by depth
 > ([PRODUCT.md](PRODUCT.md) §11, `docs/decisions.md` §7–§8, §11–§12). What
 > **BrewPath Plus** buys is now **settled** on

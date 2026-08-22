@@ -55,6 +55,19 @@ You can always edit this file by hand instead — the helpers just save effort.
 - **The streak has a home.** Tapping Day streak on Profile opens the new
   streak screen: the day count at hero size and a one-line freeze status —
   the covered day named, a held freeze stated, or the countdown to the next.
+- **The Coffee Dictionary.** 73 terms across 8 categories, reachable from a
+  header action on Learn: a home that searches names, aliases and category
+  labels (case- and accent-insensitive) and filters by status with live counts,
+  a full term entry — pronunciation, both depths of explanation, a worked
+  example, an answerable self-check, related terms, sources and the lesson that
+  teaches it — and a peek sheet that opens the same entry without costing the
+  learner their screen. A term's status is **derived** from its lesson pointer
+  against completed lessons, never stored, so it syncs and resets for free; the
+  snapshot's reserved learned-terms field is deliberately left unwritten. The
+  eight terms no lesson teaches are told so plainly and are kept out of the
+  to-learn list *and* its count — a count in front of a learner has to be a
+  promise the course can keep. Terms carrying only a short explanation render
+  as finished entries rather than advertising a gap.
 
 - **The practice catalog nearly doubles — 7 mini-games become 13.** Six new
   games join the seven that shipped, each pairing an existing mechanic with a

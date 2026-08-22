@@ -1,10 +1,12 @@
 import 'package:brew_path/core/constants/app_labels.dart';
+import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/section_header.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/challenges/presentation/active_challenge_card.dart';
 import 'package:brew_path/features/challenges/presentation/saved_challenges_list.dart';
+import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/learn/presentation/module_card_widget.dart';
@@ -15,6 +17,7 @@ import 'package:brew_path/features/mini_games/presentation/mini_games_catalog_wi
 import 'package:brew_path/features/progress/presentation/freeze_save_notice_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 /// Learn tab: today's lesson, the module list, and practice sections.
 class LearnScreen extends ConsumerWidget {
@@ -32,7 +35,18 @@ class LearnScreen extends ConsumerWidget {
     final challenge = ref.watch(activeChallengeProvider).asData?.value;
 
     return Scaffold(
-      appBar: AppBar(title: const Text(AppLabels.tabLearn)),
+      appBar: AppBar(
+        title: const Text(AppLabels.tabLearn),
+        // The design's top-right pair; Saved is not built yet and lands with
+        // its own ticket.
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.menu_book_outlined),
+            tooltip: DictionaryHomeScreen.title,
+            onPressed: () => context.pushNamed(AppRoutes.dictionary.name),
+          ),
+        ],
+      ),
       body: modules.when(
         loading: () => const LoadingIndicator(),
         error: (e, _) => ErrorView(message: '$e'),

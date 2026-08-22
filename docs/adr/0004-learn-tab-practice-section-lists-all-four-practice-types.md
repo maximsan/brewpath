@@ -20,7 +20,10 @@ Dictionary Home, even though they are a free user's *cheapest* streak paths
 
 The section lists **all four practice types**. It renames to **`PRACTICE`**,
 and the Vocab game and Flashcards join as **slim rows** (single entry points,
-not collapsible groups) beside the existing Lessons and Mini-games groups.
+not collapsible groups). *Shape amended when the prototype landed (22 Aug
+2026, owner-accepted): the two rows lead the **Games** group as its first
+entries, marked FREE, rather than sitting beside the groups — one container
+for everything playable.*
 Both rows are **free with no lock treatment** — they are content-scoped, never
 feature-gated. This is an **explicit invention** over the prototype (the Keep
 Sharp precedent), ruled at

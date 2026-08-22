@@ -47,8 +47,10 @@
  *   module as `reward`, mirroring how a lesson carries its own. Without it the
  *   five module Field Guide collectibles have no words at all, since a
  *   collectible stores identity only.
- * - **`DICT_CATEGORIES` is read but not emitted.** It validates every term's
- *   `cat` pointer; no dictionary surface exists in the app yet.
+ * - **`DICT_CATEGORIES` is both validated and emitted.** It validates every
+ *   term's `cat` pointer, and ships as its own bank: the dictionary home needs
+ *   each category's label, glyph and one-line description, and retyping those
+ *   into Dart is how they drift from the design source.
  * - **The grove's two banks are assigned straight onto `window`.**
  *   `customize.jsx` declares `TREE_VARIETIES` and `GROVE_LIGHT` with no local
  *   binding, so the slicer accepts that form too and reads the value back off
@@ -210,6 +212,7 @@ function main(argv) {
     }),
     bank("collectibles", "data.jsx", banks.collectibles),
     bank("dictionary_terms", "dictionary-data.jsx", banks.terms),
+    bank("dictionary_categories", "dictionary-data.jsx", banks.categories),
     bank("brew_challenges", "brew-challenge.jsx", banks.challenges),
     bank("mini_games", "screens.jsx", banks.miniGames),
     bank("card_kind_help", "lesson.jsx", helpToList(banks.cardKindHelp)),

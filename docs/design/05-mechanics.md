@@ -139,8 +139,9 @@ Small, optional **real-life** tasks. They never block learning, streaks, points,
 ## 5.9 Plus, gating and trials (`gating.jsx`)
 
 > ⚠️ **This whole section describes a superseded model.** The prototype gates
-> **features**; the shipping model gates **content** — the first two lessons are
-> free permanently, the other thirty are paid, with a cap of two learning/practice
+> **features**; the shipping model gates **content** — the first three lessons
+> ([ADR-0007](../adr/0007-free-tier-is-the-first-three-lessons.md)) are free
+> permanently, the other twenty-nine are paid, with a cap of two learning/practice
 > activities a day ([PRODUCT.md](PRODUCT.md) §11, `docs/decisions.md` §7–§8,
 > §11–§12). An intermediate *pacing* ruling (2 new lessons/day) was also proposed
 > and **withdrawn**; do not build to it either. Everything below is an accurate
