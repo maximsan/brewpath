@@ -1,4 +1,5 @@
 import 'package:brew_path/app/app.dart';
+import 'package:brew_path/app/app_header.dart';
 import 'package:brew_path/features/companion/application/companion_providers.dart';
 import 'package:brew_path/features/companion/domain/companion_lines.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
@@ -75,7 +76,7 @@ void main() {
     expect(find.text('You finished Beginner Foundations'), findsOneWidget);
 
     await tester.tap(find.text('Start Keep Sharp'));
-    await _settleUntil(tester, find.widgetWithText(AppBar, 'Learn'));
+    await _settleUntil(tester, find.widgetWithText(AppHeader, 'TODAY'));
     // The Learn bar appears while the page transition is still mid-flight
     // and both pages are in the tree; let the transition finish before
     // asserting the ending is gone.
@@ -85,6 +86,6 @@ void main() {
     // Landed on Learn — and stayed: the ack resolved before navigation, so
     // the redirect no longer fires.
     expect(find.text('You finished Beginner Foundations'), findsNothing);
-    expect(find.widgetWithText(AppBar, 'Learn'), findsOneWidget);
+    expect(find.widgetWithText(AppHeader, 'TODAY'), findsOneWidget);
   });
 }

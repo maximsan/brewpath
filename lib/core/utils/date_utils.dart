@@ -11,3 +11,35 @@ bool isSameDay(DateTime a, DateTime b) =>
 /// turns on. Consecutive local days map to consecutive integers.
 int epochDay(DateTime d) =>
     dateOnly(d).millisecondsSinceEpoch ~/ Duration.millisecondsPerDay;
+
+// English-only, deliberately. The app ships no localisation, and pulling in a
+// formatting dependency for one header line would be a platform decision made
+// for a string — the same call this repo made against a URL launcher.
+const _weekdayNames = [
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Sunday',
+];
+
+const _monthNames = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+
+/// [d] as the long form the header shows — `Friday, May 8`.
+String longDate(DateTime d) =>
+    '${_weekdayNames[d.weekday - 1]}, ${_monthNames[d.month - 1]} ${d.day}';

@@ -44,6 +44,19 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **One header over the four tabs.** Learn, Path and Cards each wore a stock
+  bar carrying nothing but the tab's name, and Profile wore a different header
+  again. They now share one, owned by the shell: a smallcaps eyebrow over a
+  display title — today's date on Learn, the course on Path, the collection on
+  Cards, a greeting on Profile — with the Dictionary in reach from the first
+  three and a Settings gear on Profile. Pushing into a module, a card or a term
+  shows that page's own bar and never the tab header; a lesson or mini-game
+  shows neither. Which chrome a location gets is one pure rule over the route,
+  asserted as a table, so a route added later cannot silently inherit the wrong
+  one. Learn's date joins the day-rollover list rather than being read once at
+  build, and Profile's close button — an app-only invention the design has no
+  equivalent for — is gone with its delegate.
+
 - **The Coffee Dictionary.** 73 terms across 8 categories, reachable from a
   header action on Learn: a home that searches names, aliases and category
   labels (case- and accent-insensitive) and filters by status with live counts,

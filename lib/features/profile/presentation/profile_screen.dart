@@ -2,7 +2,6 @@ import 'package:brew_path/features/challenges/presentation/challenge_stat_row.da
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:brew_path/features/profile/presentation/widgets/preference_tile.dart';
 import 'package:brew_path/features/profile/presentation/widgets/premium_card.dart';
-import 'package:brew_path/features/profile/presentation/widgets/profile_header.dart';
 import 'package:brew_path/features/profile/presentation/widgets/stat_tile.dart';
 import 'package:brew_path/features/progress/domain/grove_treatment.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
@@ -11,7 +10,6 @@ import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 /// Gap between the Profile's stacked sections. Off the `AppSpacing` scale by
 /// one notch — the design sets this page's section rhythm at 28.
@@ -37,14 +35,6 @@ class ProfileScreen extends ConsumerWidget {
         bottom: false,
         child: CustomScrollView(
           slivers: [
-            SliverPersistentHeader(
-              pinned: true,
-              delegate: ProfileHeaderDelegate(
-                title: 'Profile',
-                onClose: () => context.go('/learn'),
-                onSettings: () => context.go('/profile/settings'),
-              ),
-            ),
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
               sliver: SliverList.list(

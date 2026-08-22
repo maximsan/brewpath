@@ -28,7 +28,6 @@ void main() {
     await openProfile(tester);
 
     // Header icons.
-    expect(find.byIcon(Icons.close), findsOneWidget);
     expect(find.byIcon(Icons.settings_outlined), findsOneWidget);
 
     // Premium hero card.
@@ -50,16 +49,6 @@ void main() {
     expect(find.text('Haptics'), findsOneWidget);
     expect(find.text('Daily reminder'), findsOneWidget);
     expect(find.text('Theme'), findsOneWidget);
-  });
-
-  testWidgets('header X navigates back to the Learn tab', (tester) async {
-    await openProfile(tester);
-
-    await tester.tap(find.byIcon(Icons.close));
-    await settleLoaders(tester);
-
-    // The Learn tab AppBar is now visible.
-    expect(find.text('Learn'), findsWidgets);
   });
 
   testWidgets('header gear opens the Settings screen', (tester) async {
