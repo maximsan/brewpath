@@ -44,6 +44,10 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The week reads at a glance.** A shared seven-cell week strip — done,
+  covered-by-a-freeze, or empty, with a cue on today — renders on the streak
+  screen and inside the Profile streak tile, each cell read straight from the
+  recorded day set.
 - **A spent freeze says so.** The first open after a freeze covered a day
   shows a dismissible notice on Learn — the streak is safe, the covered day
   named, the re-earn stated — acknowledged per covered day so sync can never

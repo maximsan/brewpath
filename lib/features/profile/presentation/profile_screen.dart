@@ -8,6 +8,7 @@ import 'package:brew_path/features/profile/presentation/widgets/stat_tile.dart';
 import 'package:brew_path/features/progress/domain/grove_treatment.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/presentation/coffee_tree.dart';
+import 'package:brew_path/features/progress/presentation/week_strip.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +32,7 @@ class ProfileScreen extends ConsumerWidget {
     final cards = ref.watch(collectedCardsProvider);
     final settings = ref.watch(settingsControllerProvider);
     final treeStage = ref.watch(treeStageProvider);
+    final weekDays = ref.watch(weekStripDaysProvider).asData?.value;
     final grove = ref.watch(groveTreatmentProvider);
 
     return Scaffold(
@@ -75,6 +77,12 @@ class ProfileScreen extends ConsumerWidget {
                     cardsCollected: cards.asData?.value.length ?? 0,
                     onStreakTap: () =>
                         context.goNamed(AppRoutes.profileStreak.name),
+                    streakFooter: weekDays == null
+                        ? null
+                        : WeekStrip(
+                            days: weekDays,
+                            size: WeekStripSize.small,
+                          ),
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   const ChallengeStatRow(),
@@ -139,6 +147,7 @@ class _StatsGrid extends StatelessWidget {
     required this.lessonsCompleted,
     required this.cardsCollected,
     required this.onStreakTap,
+    required this.streakFooter,
   });
 
   final int points;
@@ -146,6 +155,7 @@ class _StatsGrid extends StatelessWidget {
   final int lessonsCompleted;
   final int cardsCollected;
   final VoidCallback onStreakTap;
+  final Widget? streakFooter;
 
   @override
   Widget build(BuildContext context) {
@@ -162,6 +172,7 @@ class _StatsGrid extends StatelessWidget {
           label: 'Day streak',
           value: '$streakDays',
           onTap: onStreakTap,
+          footer: streakFooter,
         ),
         StatTile(
           icon: Icons.check_circle,

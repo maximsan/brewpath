@@ -4,7 +4,9 @@ import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/progress/domain/freeze_status_line.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/domain/streak_status.dart';
+import 'package:brew_path/features/progress/domain/streak_week.dart';
 import 'package:brew_path/features/progress/presentation/streak_screen.dart';
+import 'package:brew_path/features/progress/presentation/week_strip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -30,6 +32,7 @@ Future<void> _pump(
   WidgetTester tester, {
   Future<StreakStatus> Function()? load,
   StreakStatus status = _counting,
+  List<StreakDay> weekDays = const [],
   bool disableAnimations = false,
 }) async {
   final router = GoRouter(
@@ -46,6 +49,7 @@ Future<void> _pump(
         streakStatusProvider.overrideWith(
           (ref) => load != null ? load() : Future.value(status),
         ),
+        weekStripDaysProvider.overrideWith((ref) async => weekDays),
       ],
       child: MediaQuery(
         data: MediaQueryData(disableAnimations: disableAnimations),
@@ -93,6 +97,24 @@ void main() {
         '${weekdayNames[now.weekday - DateTime.monday]} '
         'was covered by a freeze',
       ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('the week strip renders when its days resolve', (tester) async {
+    const monday = 20650;
+    await _pump(
+      tester,
+      weekDays: const [
+        StreakDay(day: monday, mark: StreakDayMark.done, isToday: false),
+        StreakDay(day: monday + 1, mark: StreakDayMark.frozen, isToday: false),
+        StreakDay(day: monday + 2, mark: StreakDayMark.empty, isToday: true),
+      ],
+    );
+
+    expect(find.byType(WeekStrip), findsOneWidget);
+    expect(
+      find.bySemanticsLabel('Tuesday, covered by a freeze'),
       findsOneWidget,
     );
   });

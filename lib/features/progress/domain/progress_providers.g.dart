@@ -148,8 +148,62 @@ final class ActiveDaySetProvider
 
 String _$activeDaySetHash() => r'8dc582484d95ced70210f85fe37c80552e124dd8';
 
+/// The current week's seven cells, ready for any strip host — one
+/// derivation, so the streak screen, the Profile tile and the share card can
+/// never disagree about a day.
+
+@ProviderFor(weekStripDays)
+final weekStripDaysProvider = WeekStripDaysProvider._();
+
+/// The current week's seven cells, ready for any strip host — one
+/// derivation, so the streak screen, the Profile tile and the share card can
+/// never disagree about a day.
+
+final class WeekStripDaysProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<StreakDay>>,
+          List<StreakDay>,
+          FutureOr<List<StreakDay>>
+        >
+    with $FutureModifier<List<StreakDay>>, $FutureProvider<List<StreakDay>> {
+  /// The current week's seven cells, ready for any strip host — one
+  /// derivation, so the streak screen, the Profile tile and the share card can
+  /// never disagree about a day.
+  WeekStripDaysProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'weekStripDaysProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$weekStripDaysHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<StreakDay>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<StreakDay>> create(Ref ref) {
+    return weekStripDays(ref);
+  }
+}
+
+String _$weekStripDaysHash() => r'3a214a34f33565306490049caddf4e4bcf264195';
+
+/// The derived streak state — the engine's fold over [activeDaySet].
+
 @ProviderFor(streakStatus)
 final streakStatusProvider = StreakStatusProvider._();
+
+/// The derived streak state — the engine's fold over [activeDaySet].
 
 final class StreakStatusProvider
     extends
@@ -159,6 +213,7 @@ final class StreakStatusProvider
           FutureOr<StreakStatus>
         >
     with $FutureModifier<StreakStatus>, $FutureProvider<StreakStatus> {
+  /// The derived streak state — the engine's fold over [activeDaySet].
   StreakStatusProvider._()
     : super(
         from: null,

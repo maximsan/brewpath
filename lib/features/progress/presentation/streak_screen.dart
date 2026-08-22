@@ -2,6 +2,8 @@ import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/features/progress/domain/freeze_status_line.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/domain/streak_status.dart';
+import 'package:brew_path/features/progress/domain/streak_week.dart';
+import 'package:brew_path/features/progress/presentation/week_strip.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -41,16 +43,20 @@ class StreakScreen extends ConsumerWidget {
             child: Text('$error'),
           ),
         ),
-        data: (value) => _StreakBody(status: value),
+        data: (value) => _StreakBody(
+          status: value,
+          weekDays: ref.watch(weekStripDaysProvider).asData?.value ?? const [],
+        ),
       ),
     );
   }
 }
 
 class _StreakBody extends StatelessWidget {
-  const _StreakBody({required this.status});
+  const _StreakBody({required this.status, required this.weekDays});
 
   final StreakStatus status;
+  final List<StreakDay> weekDays;
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +81,10 @@ class _StreakBody extends StatelessWidget {
                 ],
               ),
             ),
+            if (weekDays.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.lg),
+              WeekStrip(days: weekDays),
+            ],
             const SizedBox(height: AppSpacing.lg),
             Text(
               statusLine,
