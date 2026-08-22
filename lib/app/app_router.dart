@@ -21,6 +21,7 @@ import 'package:brew_path/features/path/presentation/path_screen.dart';
 import 'package:brew_path/features/profile/presentation/profile_screen.dart';
 import 'package:brew_path/features/profile/presentation/settings_screen.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
+import 'package:brew_path/features/progress/presentation/streak_screen.dart';
 import 'package:brew_path/services/analytics/analytics_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -231,6 +232,14 @@ GoRouter appRouter(Ref ref) {
                     name: AppRoutes.profileSettings.name,
                     parentNavigatorKey: _rootKey,
                     builder: (context, state) => const SettingsScreen(),
+                  ),
+                  // Pushed on the root navigator so the streak view covers
+                  // the bottom-nav shell, exactly as Settings does.
+                  GoRoute(
+                    path: AppRoutes.profileStreak.path,
+                    name: AppRoutes.profileStreak.name,
+                    parentNavigatorKey: _rootKey,
+                    builder: (context, state) => const StreakScreen(),
                   ),
                 ],
               ),

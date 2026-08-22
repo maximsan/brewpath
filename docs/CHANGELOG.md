@@ -44,6 +44,10 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The streak has a home.** Tapping Day streak on Profile opens the new
+  streak screen: the day count at hero size and a one-line freeze status —
+  the covered day named, a held freeze stated, or the countdown to the next.
+
 - **The practice catalog nearly doubles — 7 mini-games become 13.** Six new
   games join the seven that shipped, each pairing an existing mechanic with a
   course topic it suits: a second match on washed versus natural, a quiz on

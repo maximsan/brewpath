@@ -40,4 +40,5 @@ abstract class AppRoutes {
   static const cardDetail = AppRoute('cardDetail', ':cardId');
   static const profile = AppRoute('profile', '/profile');
   static const profileSettings = AppRoute('profileSettings', 'settings');
+  static const profileStreak = AppRoute('profileStreak', 'streak');
 }
