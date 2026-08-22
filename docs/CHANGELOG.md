@@ -44,6 +44,11 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **A streak travels.** Share your streak opens the iOS system share sheet
+  with a rendered card — wordmark, count, the week's strip — composed
+  off-screen at a fixed size, so it looks identical from any device. Image
+  only, no link; share_plus rides behind a presenter seam and stays
+  SPM-only.
 - **Milestones get their moment.** The streak screen opens on a Roasty beat
   when a milestone day lands (3, 7, 14, 30, 60, 100, 180, 365, then every
   30) — once per milestone, self-healing after a lapse — and the count sits

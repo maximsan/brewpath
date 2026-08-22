@@ -10,7 +10,10 @@ import 'package:brew_path/features/progress/domain/streak_milestones.dart';
 import 'package:brew_path/features/progress/domain/streak_status.dart';
 import 'package:brew_path/features/progress/domain/streak_week.dart';
 import 'package:brew_path/features/progress/presentation/milestone_ring.dart';
+import 'package:brew_path/features/progress/presentation/share_card_renderer.dart';
+import 'package:brew_path/features/progress/presentation/streak_share_card.dart';
 import 'package:brew_path/features/progress/presentation/week_strip.dart';
+import 'package:brew_path/services/share/share_provider.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -59,6 +62,23 @@ class _StreakScreenState extends ConsumerState<StreakScreen> {
     if (!reducedMotion) setState(() => _showBeat = true);
   }
 
+  /// Renders the fixed-size card and hands it to the share presenter — the
+  /// screen never touches the plugin (#237).
+  Future<void> _share() async {
+    final status = await ref.read(streakStatusProvider.future);
+    final weekDays = await ref.read(weekStripDaysProvider.future);
+    if (!mounted) return;
+    final bytes = await renderCardPng(
+      card: StreakShareCard(streak: status.streak, days: weekDays),
+      logicalSize: StreakShareCard.logicalSize,
+      pixelRatio: StreakShareCard.exportPixelRatio,
+      mood: context.mood,
+    );
+    await ref
+        .read(sharePresenterProvider)
+        .sharePng(bytes: bytes, fileName: 'brewpath-streak.png');
+  }
+
   @override
   Widget build(BuildContext context) {
     final status = ref.watch(streakStatusProvider);
@@ -97,6 +117,7 @@ class _StreakScreenState extends ConsumerState<StreakScreen> {
                 status: value,
                 weekDays:
                     ref.watch(weekStripDaysProvider).asData?.value ?? const [],
+                onShare: _share,
               ),
       ),
     );
@@ -168,10 +189,15 @@ class _MilestoneBeat extends StatelessWidget {
 }
 
 class _StreakBody extends StatelessWidget {
-  const _StreakBody({required this.status, required this.weekDays});
+  const _StreakBody({
+    required this.status,
+    required this.weekDays,
+    required this.onShare,
+  });
 
   final StreakStatus status;
   final List<StreakDay> weekDays;
+  final Future<void> Function() onShare;
 
   @override
   Widget build(BuildContext context) {
@@ -219,6 +245,11 @@ class _StreakBody extends StatelessWidget {
               statusLine,
               textAlign: TextAlign.center,
               style: AppText.support(mood: mood),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            TextButton(
+              onPressed: onShare,
+              child: const Text('Share your streak'),
             ),
           ],
         ),
