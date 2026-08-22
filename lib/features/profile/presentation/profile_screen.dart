@@ -1,3 +1,4 @@
+import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_stat_row.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:brew_path/features/profile/presentation/widgets/preference_tile.dart';
@@ -72,6 +73,8 @@ class ProfileScreen extends ConsumerWidget {
                     streakDays: streak.asData?.value ?? 0,
                     lessonsCompleted: lessons.asData?.value.length ?? 0,
                     cardsCollected: cards.asData?.value.length ?? 0,
+                    onStreakTap: () =>
+                        context.goNamed(AppRoutes.profileStreak.name),
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   const ChallengeStatRow(),
@@ -135,12 +138,14 @@ class _StatsGrid extends StatelessWidget {
     required this.streakDays,
     required this.lessonsCompleted,
     required this.cardsCollected,
+    required this.onStreakTap,
   });
 
   final int points;
   final int streakDays;
   final int lessonsCompleted;
   final int cardsCollected;
+  final VoidCallback onStreakTap;
 
   @override
   Widget build(BuildContext context) {
@@ -156,6 +161,7 @@ class _StatsGrid extends StatelessWidget {
           icon: Icons.local_fire_department,
           label: 'Day streak',
           value: '$streakDays',
+          onTap: onStreakTap,
         ),
         StatTile(
           icon: Icons.check_circle,
