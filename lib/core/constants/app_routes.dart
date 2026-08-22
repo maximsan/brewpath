@@ -35,6 +35,8 @@ abstract class AppRoutes {
   );
   static const miniGameIntro = AppRoute('miniGameIntro', 'mini-game/:gameId');
   static const miniGamePlay = AppRoute('miniGamePlay', 'play');
+  static const dictionary = AppRoute('dictionary', 'dictionary');
+  static const dictionaryTerm = AppRoute('dictionaryTerm', 'term/:termId');
   static const path = AppRoute('path', '/path');
   static const cards = AppRoute('cards', '/cards');
   static const cardDetail = AppRoute('cardDetail', ':cardId');

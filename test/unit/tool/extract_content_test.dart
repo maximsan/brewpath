@@ -31,6 +31,7 @@ const _expectedBanks = [
   'lessons.json',
   'collectibles.json',
   'dictionary_terms.json',
+  'dictionary_categories.json',
   'brew_challenges.json',
   'mini_games.json',
   'card_kind_help.json',
