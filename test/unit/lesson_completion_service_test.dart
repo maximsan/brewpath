@@ -25,8 +25,9 @@ Future<List<String>> _moduleLessonIds(
   return modules.firstWhere((m) => m.id == moduleId).lessonIds;
 }
 
-/// The real course with every module's Field Guide card removed from the bank.
-class _NoFieldGuideContent extends ContentRepository {
+/// The real course with every module's Module Reward card removed from the
+/// bank.
+class _NoModuleRewardContent extends ContentRepository {
   @override
   Future<List<CoffeeCardModel>> getCards() async =>
       (await super.getCards()).where((card) => card.lessonId != null).toList();
@@ -205,7 +206,7 @@ void main() {
       },
     );
 
-    test('finishing a module hands over its Field Guide card', () async {
+    test('finishing a module hands over its Module Reward card', () async {
       final ids = await _moduleLessonIds(content, 'm1');
       late LessonFinishResult last;
       for (final id in ids) {
@@ -215,48 +216,51 @@ void main() {
         );
       }
 
-      final fieldGuide = await content.getCardForModule('m1');
-      expect(fieldGuide, isNotNull);
-      expect(last.moduleCard?.id, fieldGuide!.id);
-      expect(await cards.isCardCollected(fieldGuide.id), isTrue);
+      final moduleReward = await content.getCardForModule('m1');
+      expect(moduleReward, isNotNull);
+      expect(last.moduleCard?.id, moduleReward!.id);
+      expect(await cards.isCardCollected(moduleReward.id), isTrue);
     });
 
-    test('a module part-finished hands over no Field Guide card', () async {
+    test('a module part-finished hands over no Module Reward card', () async {
       final ids = await _moduleLessonIds(content, 'm1');
       final result = await service.finishLesson(
         (await content.getLessonById(ids.first))!,
         mastery: const MasteryResult(correct: 5, total: 5),
       );
 
-      final fieldGuide = (await content.getCardForModule('m1'))!;
+      final moduleReward = (await content.getCardForModule('m1'))!;
       expect(result.moduleCard, isNull);
-      expect(await cards.isCardCollected(fieldGuide.id), isFalse);
+      expect(await cards.isCardCollected(moduleReward.id), isFalse);
     });
 
-    test('a module with no Field Guide card still reads as complete', () async {
-      // `moduleCompleted` is its own fact, not "a reward was handed over". A
-      // content bank missing a module's card must not make the app report the
-      // module unfinished — that would silently cost the recap its routing.
-      final bare = _NoFieldGuideContent();
-      final service = LessonCompletionService(
-        progressRepository: progress,
-        cardRepository: cards,
-        contentRepository: bare,
-        snapshotRepository: snapshots,
-        analyticsService: const NoOpAnalyticsService(),
-      );
-
-      late LessonFinishResult last;
-      for (final id in await _moduleLessonIds(bare, 'm1')) {
-        last = await service.finishLesson(
-          (await bare.getLessonById(id))!,
-          mastery: const MasteryResult(correct: 5, total: 5),
+    test(
+      'a module with no Module Reward card still reads as complete',
+      () async {
+        // `moduleCompleted` is its own fact, not "a reward was handed over". A
+        // content bank missing a module's card must not make the app report the
+        // module unfinished — that would silently cost the recap its routing.
+        final bare = _NoModuleRewardContent();
+        final service = LessonCompletionService(
+          progressRepository: progress,
+          cardRepository: cards,
+          contentRepository: bare,
+          snapshotRepository: snapshots,
+          analyticsService: const NoOpAnalyticsService(),
         );
-      }
 
-      expect(last.moduleCompleted, isTrue);
-      expect(last.moduleCard, isNull);
-    });
+        late LessonFinishResult last;
+        for (final id in await _moduleLessonIds(bare, 'm1')) {
+          last = await service.finishLesson(
+            (await bare.getLessonById(id))!,
+            mastery: const MasteryResult(correct: 5, total: 5),
+          );
+        }
+
+        expect(last.moduleCompleted, isTrue);
+        expect(last.moduleCard, isNull);
+      },
+    );
 
     test('replaying the module-closing lesson re-hands nothing', () async {
       final ids = await _moduleLessonIds(content, 'm1');
@@ -282,7 +286,7 @@ void main() {
 
   group('finishing a lesson again', () {
     /// Completes every lesson of `m1`, leaving the module fully done and its
-    /// Field Guide card already handed over.
+    /// Module Reward card already handed over.
     Future<void> completeBeansModule() async {
       for (final id in await _moduleLessonIds(content, 'm1')) {
         await service.finishLesson(

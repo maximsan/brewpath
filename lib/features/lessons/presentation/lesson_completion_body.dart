@@ -101,7 +101,7 @@ class LessonCompletionBody extends StatelessWidget {
       ),
       // One number, ever. Closing a module used to add a second — a bonus that
       // double-counted the lessons already paid for. What the module gives is
-      // the Field Guide card below (§5.1, #16).
+      // the Module Reward card below (§5.1, #16).
       if (completion.moduleCompleted) ...[
         const SizedBox(height: 4),
         Text(

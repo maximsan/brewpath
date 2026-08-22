@@ -6,8 +6,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'module_summary_provider.g.dart';
 
-/// Recap data for a finished module: the module, its Field Guide card, and the
-/// lesson cards the learner earned within it.
+/// Recap data for a finished module: the module, its Module Reward card,
+/// and the lesson cards the learner earned within it.
 ///
 /// **No points total.** It used to carry the module's summed lesson points plus
 /// a completion bonus, and the recap screen led with that number. The module
@@ -18,7 +18,7 @@ class ModuleSummary {
   const ModuleSummary({
     required this.module,
     required this.earnedCards,
-    this.fieldGuide,
+    this.moduleReward,
   });
 
   /// The completed module.
@@ -27,9 +27,9 @@ class ModuleSummary {
   /// Collected cards whose lesson belongs to [module].
   final List<CoffeeCardModel> earnedCards;
 
-  /// The module's own Field Guide card — the recap's reward — or null when it
+  /// The module's own Module Reward card — the recap's reward — or null when it
   /// has not been collected.
-  final CoffeeCardModel? fieldGuide;
+  final CoffeeCardModel? moduleReward;
 }
 
 /// Builds the [ModuleSummary] for [moduleId] by joining content (module +
@@ -51,13 +51,13 @@ Future<ModuleSummary> moduleSummary(Ref ref, String moduleId) async {
       )
       .toList();
 
-  final fieldGuide = await content.getCardForModule(moduleId);
+  final moduleReward = await content.getCardForModule(moduleId);
 
   return ModuleSummary(
     module: module,
     earnedCards: earnedCards,
-    fieldGuide: fieldGuide != null && collectedIds.contains(fieldGuide.id)
-        ? fieldGuide
+    moduleReward: moduleReward != null && collectedIds.contains(moduleReward.id)
+        ? moduleReward
         : null,
   );
 }

@@ -17,8 +17,8 @@ part 'content_repository.g.dart';
 /// banks the extractor writes out of the design.
 ///
 /// Three joins live here and nowhere else: a lesson's owning **module**, the
-/// **card** a lesson awards, and the **Field Guide card** a module awards. All
-/// three are reverse lookups the banks do not store directly, and all three
+/// **card** a lesson awards, and the **Module Reward card** a module awards.
+/// All three are reverse lookups the banks do not store directly, and all three
 /// would otherwise be open-coded at every call site with a slightly different
 /// answer.
 class ContentRepository {
@@ -75,8 +75,8 @@ class ContentRepository {
     return cards.where((card) => card.lessonId == lessonId).firstOrNull;
   }
 
-  /// The Field Guide card [moduleId] awards, or null when no collectible names
-  /// it.
+  /// The Module Reward card [moduleId] awards, or null when no collectible
+  /// names it.
   ///
   /// Matched on the collectible's **own** module pointer, not on the module a
   /// card's lesson happens to belong to — every one of the thirty-two lesson

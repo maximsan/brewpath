@@ -40,11 +40,11 @@ class _LessonCompletionScreenState
   String? _moduleId;
 
   /// Persists the run exactly once. A first completion pays the lesson's flat
-  /// ten and hands over its card, plus the module's Field Guide card where the
-  /// run closed one; a replay pays nothing, updates mastery upward and marks
-  /// the day (§3). Every path is idempotent, so a rebuild or revisit will not
-  /// double-award anything — and every path records, which is why the
-  /// write-nothing practice mode is gone.
+  /// ten and hands over its card, plus the module's Module Reward card where
+  /// the run closed one; a replay pays nothing, updates mastery upward and
+  /// marks the day (§3). Every path is idempotent, so a rebuild or revisit
+  /// will not double-award anything — and every path records, which is why
+  /// the write-nothing practice mode is gone.
   Future<LessonCompletionReward> _completeAndLoad() async {
     final content = ref.read(contentRepositoryProvider);
     final lesson = await content.getLessonById(widget.lessonId);

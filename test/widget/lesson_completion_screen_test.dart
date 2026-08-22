@@ -37,9 +37,9 @@ final CoffeeCardModel _testCard = testCoffeeCard();
 
 /// The module's own collectible — what the module moment hands over now that
 /// it pays no bonus (§5.1, #16).
-final CoffeeCardModel _testFieldGuide = testCoffeeCard(
+final CoffeeCardModel _testModuleReward = testCoffeeCard(
   id: 'fg1',
-  title: 'Beans Field Guide',
+  title: 'Beans Module Reward',
   lessonId: null,
   moduleId: 'm1',
 );
@@ -54,7 +54,7 @@ class _FakeContent extends ContentRepository {
   @override
   Future<List<CoffeeCardModel>> getCards() async => [
     _testCard,
-    _testFieldGuide,
+    _testModuleReward,
   ];
 
   @override
@@ -206,9 +206,10 @@ void main() {
   );
 
   // Finishing the last lesson of a module pays the lesson's flat ten and
-  // nothing more. What the module gives is its Field Guide card, so the screen
+  // nothing more. What the module gives is its Module Reward card, so the
+  // screen
   // must show one number and one extra card — never a second number.
-  testWidgets('completion screen shows the module Field Guide, not a bonus', (
+  testWidgets('completion screen shows the module Module Reward, not a bonus', (
     tester,
   ) async {
     final container = _buildContainer();
@@ -261,7 +262,7 @@ void main() {
     expect(find.text('Module complete!'), findsOneWidget);
     expect(find.textContaining('+25'), findsNothing);
     // The module's reward is the card.
-    expect(find.text('Beans Field Guide'), findsOneWidget);
+    expect(find.text('Beans Module Reward'), findsOneWidget);
   });
 
   // The first-completion path shows the celebratory companion in place of the

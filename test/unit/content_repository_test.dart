@@ -121,7 +121,7 @@ void main() {
       }
     });
 
-    test('award exactly one Field Guide card to every module', () async {
+    test('award exactly one Module Reward card to every module', () async {
       final modules = await repo.getModules();
       for (final module in modules) {
         expect(
@@ -132,7 +132,7 @@ void main() {
       }
     });
 
-    test('name the module, not a lesson, on a Field Guide card', () async {
+    test('name the module, not a lesson, on a Module Reward card', () async {
       final card = await repo.getCardForModule('m1');
 
       expect(card, isNotNull);
