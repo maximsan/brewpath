@@ -44,6 +44,10 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **A spent freeze says so.** The first open after a freeze covered a day
+  shows a dismissible notice on Learn — the streak is safe, the covered day
+  named, the re-earn stated — acknowledged per covered day so sync can never
+  replay it.
 - **The streak has a home.** Tapping Day streak on Profile opens the new
   streak screen: the day count at hero size and a one-line freeze status —
   the covered day named, a held freeze stated, or the countdown to the next.
