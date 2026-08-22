@@ -26,6 +26,24 @@ class LearnScreen extends ConsumerStatefulWidget {
 }
 
 class _LearnScreenState extends ConsumerState<LearnScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Listened for the whole life of the tab rather than watched in `build`,
+    // because a replay is an *event*: Profile raises it, this tab acts on it
+    // once, and no rebuild should be able to replay the Tour a second time.
+    // Learn is the shell's initial branch and so is always mounted by the time
+    // Profile can be reached, which is what makes a listener sufficient.
+    ref.listenManual(tourReplayRequestProvider, (_, requested) {
+      if (!requested || !mounted) return;
+      ref.read(tourReplayRequestProvider.notifier).consume();
+      // No intro overlay and no write: someone asking to see the Tour again
+      // has already answered the question the overlay asks, and the flag
+      // records that answer, not how many times the Tour has run.
+      startTourStops(ref);
+    });
+  }
+
   /// Whether this screen has already put the intro overlay on screen.
   ///
   /// `tourSeen` is not enough on its own: it is written *asynchronously* when

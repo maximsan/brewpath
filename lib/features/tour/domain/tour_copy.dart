@@ -59,4 +59,10 @@ abstract final class TourCopy {
   static const tabsBody =
       'Path grows your coffee tree, Cards keeps your collection, Profile holds '
       'your streak and settings.';
+
+  /// The Profile row that replays the Tour.
+  static const replayTitle = 'Replay the tour';
+
+  /// That row's supporting line.
+  static const replayBody = 'Walk through the Learn tab again';
 }

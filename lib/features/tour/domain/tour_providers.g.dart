@@ -133,3 +133,85 @@ abstract class _$TourRunning extends $Notifier<bool> {
     return element.handleCreate(ref, build);
   }
 }
+
+/// A pending request to replay the Tour, raised from outside the Learn tab.
+///
+/// Replay is asked for on Profile and happens on Learn, which are two branches
+/// of the shell that cannot call each other — so the ask is state rather than a
+/// callback. Learn consumes it the moment it arrives and runs the stops with no
+/// intro overlay and no write, because the learner asking for the Tour again is
+/// not a learner being offered it.
+
+@ProviderFor(TourReplayRequest)
+final tourReplayRequestProvider = TourReplayRequestProvider._();
+
+/// A pending request to replay the Tour, raised from outside the Learn tab.
+///
+/// Replay is asked for on Profile and happens on Learn, which are two branches
+/// of the shell that cannot call each other — so the ask is state rather than a
+/// callback. Learn consumes it the moment it arrives and runs the stops with no
+/// intro overlay and no write, because the learner asking for the Tour again is
+/// not a learner being offered it.
+final class TourReplayRequestProvider
+    extends $NotifierProvider<TourReplayRequest, bool> {
+  /// A pending request to replay the Tour, raised from outside the Learn tab.
+  ///
+  /// Replay is asked for on Profile and happens on Learn, which are two branches
+  /// of the shell that cannot call each other — so the ask is state rather than a
+  /// callback. Learn consumes it the moment it arrives and runs the stops with no
+  /// intro overlay and no write, because the learner asking for the Tour again is
+  /// not a learner being offered it.
+  TourReplayRequestProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'tourReplayRequestProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$tourReplayRequestHash();
+
+  @$internal
+  @override
+  TourReplayRequest create() => TourReplayRequest();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+}
+
+String _$tourReplayRequestHash() => r'd8e5cec4a675b0086c44238cb25a04c8389db70c';
+
+/// A pending request to replay the Tour, raised from outside the Learn tab.
+///
+/// Replay is asked for on Profile and happens on Learn, which are two branches
+/// of the shell that cannot call each other — so the ask is state rather than a
+/// callback. Learn consumes it the moment it arrives and runs the stops with no
+/// intro overlay and no write, because the learner asking for the Tour again is
+/// not a learner being offered it.
+
+abstract class _$TourReplayRequest extends $Notifier<bool> {
+  bool build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<bool, bool>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<bool, bool>,
+              bool,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}

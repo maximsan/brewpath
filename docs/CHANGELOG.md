@@ -44,6 +44,11 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The Tour can be replayed.** A "Replay the tour" row at the bottom of
+  Profile → Customize switches to Learn and runs the four stops again — no
+  intro overlay, and nothing written: the question the overlay asks was
+  answered the first time, and the flag records that answer rather than how
+  many times the Tour has run.
 - **The Tour.** A first launch that reaches the Learn tab now asks "Quick tour?"
   — four spotlight stops, auto-scrolled in order: the Today card and the daily
   loop, the practice area (replays and mini-games, as one idea), the finite
