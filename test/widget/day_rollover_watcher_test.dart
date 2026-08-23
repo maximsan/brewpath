@@ -1,3 +1,4 @@
+import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/app/day_rollover_watcher.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
@@ -16,11 +17,13 @@ void main() {
   late int streakBuilds;
   late int recommendationBuilds;
   late int acknowledgedBuilds;
+  late int dayBuilds;
 
   setUp(() {
     streakBuilds = 0;
     recommendationBuilds = 0;
     acknowledgedBuilds = 0;
+    dayBuilds = 0;
   });
 
   ProviderContainer containerWithStubs() => ProviderContainer(
@@ -37,12 +40,20 @@ void main() {
         acknowledgedBuilds++;
         return false;
       }),
+      // The app header's day. Counted here because it is the fourth surface,
+      // and the one this file's own doc warned would be added later and
+      // silently missed.
+      currentDayProvider.overrideWith((ref) {
+        dayBuilds++;
+        return DateTime(2026, 8, 20);
+      }),
     ],
   );
 
   /// Reads all three so they are built once and held by a listener.
   Future<void> primeAndHold(ProviderContainer container) async {
     container
+      ..listen(currentDayProvider, (_, _) {})
       ..listen(streakStatusProvider, (_, _) {})
       ..listen(keepSharpRecommendationProvider, (_, _) {})
       ..listen(keepSharpAcknowledgedTodayProvider, (_, _) {});
@@ -93,6 +104,11 @@ void main() {
     await container.read(streakStatusProvider.future);
     await container.read(keepSharpRecommendationProvider.future);
     await container.read(keepSharpAcknowledgedTodayProvider.future);
+    expect(
+      dayBuilds,
+      2,
+      reason: "the header's day must recompute, or it shows yesterday",
+    );
     expect(streakBuilds, 2, reason: 'the streak is folded against a new today');
     expect(recommendationBuilds, 2, reason: 'the rotation moved on');
     // In production this one would also rebuild via its watch on the
