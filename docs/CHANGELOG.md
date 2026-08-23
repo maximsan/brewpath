@@ -44,6 +44,14 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Blind bag plays.** Five unlabelled lots; draw a sample, inspect the beans,
+  and call the process from the look alone. The seeds are drawn rather than
+  photographed — one illustration reads five different lots from the four
+  attributes each round authors — and committing opens every cue at once and
+  marks the one that was the real tell, so the feedback teaches what should
+  have been noticed rather than only whether the call was right. Bagpick was
+  the last of the three renderers #123 asked for (#326).
+
 - **Fix the cup.** Tastefix rounds play: what the cup is doing wrong, the setup
   that rules out the obvious causes, and four fixes to choose between — with the
   reason named either way. Two more games open on the one renderer, the

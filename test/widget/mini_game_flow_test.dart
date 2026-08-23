@@ -1,4 +1,5 @@
 import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/features/lessons/presentation/cards/choice_list.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_intro_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_player_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_games_catalog_widget.dart';
@@ -42,6 +43,47 @@ final List<MiniGameFormat> _formats = [
   _format('g-tastefix', 'tastefix', 'Fix the cup', moduleId: 'm4'),
   _format('g-calibrate', 'slider', 'Dial it in', moduleId: 'm4'),
   _format('g-sequence', 'sequence', 'Put it in order', moduleId: 'm5'),
+];
+
+/// Two bags, so the run proves the sample redraws between rounds rather than
+/// carrying the first bag's beans into the second.
+const _bagpickRounds = <ContentCard>[
+  ContentCard.bagpick(
+    bag: 'BAG 01',
+    origin: 'Ethiopia · 1,900 m',
+    prompt: 'How was this lot processed?',
+    bean: BagpickBean(
+      body: 'var(--art-cherry-seed)',
+      crease: '#F0E9D9',
+      mottle: 0,
+      chaff: false,
+    ),
+    options: ['washed', 'natural'],
+    answer: 'washed',
+    tell: 'cut',
+    cues: [
+      BagpickCue(id: 'cut', label: 'Centre cut', text: 'A clean, pale line.'),
+    ],
+    explanation: 'Fermented clean, so no fruit sugar stained the seed.',
+  ),
+  ContentCard.bagpick(
+    bag: 'BAG 02',
+    origin: 'Brazil · 1,100 m',
+    prompt: 'And this one?',
+    bean: BagpickBean(
+      body: 'var(--art-cherry-seed)',
+      crease: '#D9C7A2',
+      mottle: 3,
+      chaff: true,
+    ),
+    options: ['washed', 'natural'],
+    answer: 'natural',
+    tell: 'cut',
+    cues: [
+      BagpickCue(id: 'cut', label: 'Centre cut', text: 'Packed and brown.'),
+    ],
+    explanation: 'Dried whole in the fruit, which stains the centre cut.',
+  ),
 ];
 
 /// Four of the six answer `true`, so always tapping True scores exactly 4 —
@@ -104,6 +146,7 @@ class _FakeContentRepository extends ContentRepository {
       switch (formatId) {
         'g-quiz' => _rounds,
         'g-match' => _matchRounds,
+        'g-bagpick' => _bagpickRounds,
         _ => const [],
       };
 }
@@ -471,12 +514,66 @@ void main() {
     expect(action.onPressed, isNotNull);
   });
 
+  testWidgets('g-bagpick plays catalog → intro → two bags → results', (
+    tester,
+  ) async {
+    Future<void> callWashed() async {
+      await tester.tap(
+        find.descendant(
+          of: find.byType(ChoiceList),
+          matching: find.text('Washed'),
+        ),
+      );
+      await _settle(tester);
+      await tester.tap(find.text('Continue'));
+      await _settle(tester);
+    }
+
+    await _pump(tester);
+
+    await tester.tap(find.text('Read the green bean'));
+    await _settle(tester);
+    await tester.tap(find.text('Play'));
+    await _settle(tester);
+
+    // The run seeds its own order from a fresh nonce, so which bag comes
+    // first is not ours to assume — only that each round draws a bag and
+    // starts uninspected.
+    expect(find.textContaining('BAG '), findsWidgets);
+
+    // The cue says nothing until it is inspected — the inspection is the card.
+    expect(find.text('Tap to inspect'), findsOneWidget);
+    await tester.tap(find.text('Tap to inspect'));
+    await _settle(tester);
+    expect(find.text('Tap to inspect'), findsNothing);
+
+    await callWashed();
+
+    // The second round is a fresh card, not the first one carried over: its
+    // cue is closed again. Inspection state leaking between rounds would hand
+    // the learner a reading they never made.
+    expect(
+      find.text('Tap to inspect'),
+      findsOneWidget,
+      reason: 'the new bag starts uninspected, whatever was opened before',
+    );
+
+    await callWashed();
+
+    // Washed is right for exactly one of the two bags, whichever order they
+    // came in: the run counts calls, not bags seen.
+    expect(find.text('Play again'), findsOneWidget);
+    expect(find.textContaining('1'), findsWidgets);
+  });
+
   testWidgets('a game with no renderer reaches its intro and cannot start', (
     tester,
   ) async {
     await _pump(tester);
 
-    await tester.tap(find.text('Read the green bean'));
+    // `slider` is one of the two kinds still unbuilt; bagpick used to stand
+    // here and now renders, which is the ticket working rather than a break.
+    await tester.tap(find.text('Dial it in'));
     await _settle(tester);
 
     // The row opened its intro like any other — the renderer gap is the

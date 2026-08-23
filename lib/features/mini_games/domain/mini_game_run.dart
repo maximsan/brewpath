@@ -45,6 +45,10 @@ const Set<String> playableMiniGameIds = {
   // Likewise two games on one kind: the pour-over cup and the shot.
   'g-tastefix',
   'g-tastefix-espresso',
+  // One kind, one game, and it stays that way: bagpick's mechanic is bound to
+  // the green-bean drawing, so it cannot be re-topiced the way match or quiz
+  // can (ADR-0005).
+  'g-bagpick',
 };
 
 /// Games whose kind renders, kept out of [playableMiniGameIds] on purpose.

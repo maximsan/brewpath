@@ -1,4 +1,5 @@
 import 'package:brew_path/features/lessons/domain/card_seed.dart';
+import 'package:brew_path/features/lessons/presentation/cards/bagpick_card_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
 import 'package:brew_path/features/lessons/presentation/cards/choice_list.dart';
 import 'package:brew_path/features/lessons/presentation/cards/concept_card_view.dart';
@@ -123,14 +124,31 @@ Widget? contentCardView(
       onSolved: onSolved,
       onContinue: onContinue,
     ),
+    final BagpickCard bag => _bagpickView(bag, seed, onSolved, onContinue),
     VisualCard() ||
     PracticalCard() ||
     MultiCard() ||
     SequenceCard() ||
-    SliderCard() ||
-    BagpickCard() => null,
+    SliderCard() => null,
   };
 }
+
+/// The blind-bag card, kept out of the switch so [contentCardView] stays a
+/// readable list of arms rather than growing a body inside one of them.
+///
+/// The process keys shuffle, never the labels: an option's identity is its
+/// key, so a reshuffle moves where it sits without changing what it means.
+BagpickCardView _bagpickView(
+  BagpickCard card,
+  int seed,
+  CardSolved onSolved,
+  CardAdvance onContinue,
+) => BagpickCardView(
+  card: card,
+  options: shuffledBySeed(card.options, seed),
+  onSolved: onSolved,
+  onContinue: onContinue,
+);
 
 /// Whether [card] can be drawn today.
 ///
@@ -148,13 +166,13 @@ bool hasRenderer(ContentCard card) => switch (card) {
   QuizCard() ||
   FlavorCard() ||
   TastefixCard() ||
+  BagpickCard() ||
   MatchCard() => true,
   VisualCard() ||
   PracticalCard() ||
   MultiCard() ||
   SequenceCard() ||
-  SliderCard() ||
-  BagpickCard() => false,
+  SliderCard() => false,
 };
 
 /// The cards of [cards] that can actually be played, in authored order.

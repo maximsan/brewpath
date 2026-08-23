@@ -94,6 +94,14 @@ dart_code_linter:
           - lib/features/path/presentation/guide_marks/guide_mark.dart
           - lib/features/path/presentation/guide_marks/roast_marks.dart
           - lib/features/path/presentation/visual_guide_art.dart
+          # The green bean of the blind-bag card, transcribed coordinate-for-
+          # coordinate from `prototype/bean-anatomy.jsx` in its own 24x24
+          # space. Naming each ellipse and bezier control point would invent a
+          # constant per number, each meaningless alone, and would hide the one
+          # property that matters — that the drawing still matches the design
+          # source exactly. Its arithmetic lives in `bagpick_bean_art.dart`,
+          # which is *not* excluded and names everything it uses.
+          - lib/features/lessons/presentation/cards/green_bean.dart
           - lib/features/companion/presentation/roasty.dart
           - lib/features/companion/presentation/roasty_animation.dart
           - lib/features/companion/presentation/roasty_body.dart

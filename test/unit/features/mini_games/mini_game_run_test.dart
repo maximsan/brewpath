@@ -93,10 +93,16 @@ void main() {
   });
 
   group('playableMiniGameIds', () {
-    test('the free pair plays; the formats without renderers do not', () {
+    test('the free pair plays; the kinds without renderers do not', () {
       // Two different games make a streak day, so this pair is load-bearing.
       expect(playableMiniGameIds, containsAll(['g-quiz', 'g-match']));
-      expect(playableMiniGameIds, isNot(contains('g-bagpick')));
+      // `slider` and `sequence` are the two kinds still unbuilt. This named
+      // `g-bagpick` until its renderer landed — a line that has to move each
+      // time one does, which is the point of it.
+      expect(
+        playableMiniGameIds,
+        isNot(containsAll(['g-calibrate', 'g-sequence'])),
+      );
     });
   });
 }
