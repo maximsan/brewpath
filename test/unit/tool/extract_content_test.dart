@@ -649,8 +649,28 @@ void main() {
     test('a lesson visual whose subject has no guide is refused', () {
       final source = seededSource();
       // The defect this check exists for: an authored subject with no card.
+      // Named by the message, not by the subject — `varietal` contains
+      // `variety`, so asserting the subject alone proves nothing.
       seedGuide(source, "visualGuide: 'variety',", "visualGuide: 'varietal',");
-      expectRefusal(source, naming: ['variety']);
+      expectRefusal(source, naming: ['which has no guide', 'dead end']);
+    });
+
+    test('a second card for one subject is refused', () {
+      final source = seededSource();
+      // The registry entry, not the lesson card — `data.jsx` carries both, and
+      // the shorter string finds the lesson's visual first.
+      seedGuide(
+        source,
+        "kind: 'visualGuide', visualGuide: 'distribution',",
+        "kind: 'visualGuide', visualGuide: 'roast',",
+      );
+      expectRefusal(source, naming: ['second card', 'roast']);
+    });
+
+    test('a guide whose words are only whitespace is refused', () {
+      final source = seededSource();
+      seedWords(source, "title: 'Roast Levels',", "title: '   ',");
+      expectRefusal(source, naming: ['g-roast', 'title']);
     });
 
     test('a meta row that is not a label and a value is refused', () {

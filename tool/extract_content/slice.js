@@ -165,14 +165,23 @@ function guardShape(value, name, filename) {
  * which is why the register long recorded it as "not a bank". Cutting the
  * member away leaves the words, which is all the app wants from it.
  *
- * **The cut is validated by the same thing that validates the slice's own end:
- * compilation.** A cut that removed too much, or too little, leaves text that
- * does not parse, and the run refuses rather than guessing. That is also what
- * makes a future reordering — markup moved above the words — fail loudly
- * instead of silently dropping fields.
+ * **What compilation does and does not cover, stated rather than left to be
+ * discovered.** A cut that leaves unbalanced delimiters does not parse, so the
+ * boundary itself is validated the same way the slice's own end is. It does
+ * **not** follow that a reordering fails loudly: moving a field *below* the
+ * cut member makes the regex swallow that field too, and what remains still
+ * compiles. Nothing here notices.
  *
- * It relies on `member` being an entry's **last**, which the prototype's
- * formatting makes true and compilation enforces.
+ * Field loss is therefore caught downstream instead, by the validator that
+ * requires each guide's copy **by name** — which covers exactly the fields it
+ * names, and would not catch a new one added after the cut member. That is the
+ * residual, and it is why the cut is deliberately anchored on the member being
+ * an entry's **last**: the prototype's formatting makes that true today, and a
+ * change to it is a change this comment is asking to be read alongside.
+ *
+ * The pattern also depends on the prototype's indentation — entries at two
+ * spaces, members at four — which is the shape every registry in these files
+ * is written in.
  */
 const dropTrailingMember = (member) => (text) =>
   text.replaceAll(

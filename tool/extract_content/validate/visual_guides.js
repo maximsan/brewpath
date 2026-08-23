@@ -21,6 +21,16 @@
 /** Copy a guide owes its sheet; an empty one renders a blank block. */
 const GUIDE_COPY = ["label", "title", "summary", "fact"];
 
+/**
+ * The guides are a closed set, checked exactly rather than as a minimum.
+ *
+ * Eight is what the course teaches; a ninth arriving silently would ship a
+ * shelf the design does not describe, and a subject going missing would leave
+ * a lesson teaching something the app cannot show. Both should stop the build
+ * and be re-decided.
+ */
+const GUIDE_COUNT = 8;
+
 /** A meta table is a short scannable pair list, never a paragraph. */
 const META_ROWS_MIN = 2;
 const META_ROWS_MAX = 3;
@@ -30,6 +40,7 @@ function validateVisualGuides(banks, index, report) {
   const words = banks.visualGuideContent;
 
   bothRegistriesAgree(guides, words, report);
+  countIsClosed(guides, report);
 
   for (const guide of guides) {
     const where = `visual guide ${guide.id}`;
@@ -38,13 +49,43 @@ function validateVisualGuides(banks, index, report) {
     metaIsAShortPairList(guide, where, report);
 
     for (const field of GUIDE_COPY) {
-      if (!words[guide.visualGuide]?.[field]) {
+      const value = words[guide.visualGuide]?.[field];
+      // Whitespace is not copy: a blank-looking title renders the blank sheet
+      // this check exists to prevent.
+      if (typeof value !== "string" || value.trim() === "") {
         report(where, `has no \`${field}\` — its sheet would render blank`);
       }
     }
   }
 
   everyLessonVisualHasAGuide(banks, guides, report);
+}
+
+/**
+ * Exactly eight guides, and one card per subject.
+ *
+ * Two cards naming the same subject is the case a set comparison cannot see:
+ * both sides would agree on the subjects while the join emitted nine records,
+ * two of them carrying identical words.
+ */
+function countIsClosed(guides, report) {
+  if (guides.length !== GUIDE_COUNT) {
+    report(
+      "visual guides",
+      `there are ${guides.length}; the course teaches ${GUIDE_COUNT}`,
+    );
+  }
+  const seen = new Set();
+  for (const guide of guides) {
+    if (seen.has(guide.visualGuide)) {
+      report(
+        `visual guide ${guide.id}`,
+        `is a second card for \`${guide.visualGuide}\` — the shelf would ` +
+          "list that subject twice",
+      );
+    }
+    seen.add(guide.visualGuide);
+  }
 }
 
 /** One subject per guide, present on both sides, each keyed by its own id. */

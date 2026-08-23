@@ -254,10 +254,7 @@ function main(argv) {
     // in `data.jsx`, the words in `practical.jsx`, and a guide is only whole
     // once they are joined.
     bank(
-      "visual_guides",
-      "data.jsx + practical.jsx",
-      joinVisualGuides(banks),
-    ),
+"visual_guides", "data.jsx + practical.jsx", joinVisualGuides(banks)),
   ]);
 }
 
@@ -302,6 +299,20 @@ function withRewards(banks) {
  * of the output rather than of anyone's memory: a bank added later is stamped
  * because it came through this function.
  */
+function bank(name, sourceFile, items, extra = {}) {
+  return {
+    name,
+    payload: {
+      generated: DO_NOT_EDIT,
+      source: sourceFile,
+      bank: name,
+      schemaVersion: SCHEMA_VERSION,
+      ...extra,
+      items,
+    },
+  };
+}
+
 /**
  * One record per visual guide, in registry order.
  *
@@ -324,20 +335,6 @@ function joinVisualGuides(banks) {
       meta: card.meta,
     };
   });
-}
-
-function bank(name, sourceFile, items, extra = {}) {
-  return {
-    name,
-    payload: {
-      generated: DO_NOT_EDIT,
-      source: sourceFile,
-      bank: name,
-      schemaVersion: SCHEMA_VERSION,
-      ...extra,
-      items,
-    },
-  };
 }
 
 /** Only reached once validation has passed, so a run writes every bank or none. */
