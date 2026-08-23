@@ -100,6 +100,12 @@ You can always edit this file by hand instead — the helpers just save effort.
   reordering leaving a learner shown a reference as locked after being taught
   it.
 
+- **The mini-game shelf is grouped by kind.** Thirteen games in one flat list
+  meant reading all thirteen to find the two that match. They now sit under
+  seven headings — Match, True or false, Name the note, Blind bag, Taste fix,
+  Calibrate, Sequence — in a fixed order that does not derive from the catalog,
+  so adding a game never reshuffles the shelf (#268).
+
 - **The Tour can be replayed.** A "Replay the tour" row at the bottom of
   Profile → Customize switches to Learn and runs the four stops again — no
   intro overlay, and nothing written: the question the overlay asks was

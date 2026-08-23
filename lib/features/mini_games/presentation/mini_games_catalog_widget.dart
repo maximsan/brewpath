@@ -1,4 +1,5 @@
 import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/features/mini_games/domain/mini_game_kinds.dart';
 import 'package:brew_path/shared/models/content/mini_game_format.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -7,9 +8,15 @@ import 'package:go_router/go_router.dart';
 
 /// The Mini-games group under Learn → Practice again.
 ///
-/// Every game in the catalog is listed, in catalog order. The row leads with
-/// the game's own name and carries the topic it drills as the eyebrow — the
-/// design reference had these inverted, corrected alongside this build.
+/// Games are grouped by **kind**, in the fixed order [miniGameKinds] declares,
+/// each group keeping catalog order internally. A learner arrives wanting a
+/// mechanic rather than a topic, and a flat list of thirteen made them read all
+/// thirteen to find the two that match. The order does not derive from the
+/// catalog, so adding a game never reshuffles the shelf.
+///
+/// The row leads with the game's own name and carries the topic it drills as
+/// the eyebrow — the design reference had these inverted, corrected alongside
+/// this build.
 ///
 /// **Every row opens its intro.** Whether a game can actually be played is a
 /// fact about which renderers this build carries, and it is disclosed on the
@@ -24,9 +31,11 @@ class MiniGamesCatalogWidget extends StatelessWidget {
   /// The catalog, in bank order.
   final List<MiniGameFormat> formats;
 
+  static const SizedBox _headingGap = SizedBox(height: AppSpacing.xs);
+  static const SizedBox _groupGap = SizedBox(height: AppSpacing.md);
+
   @override
   Widget build(BuildContext context) {
-    final mood = context.mood;
     if (formats.isEmpty) {
       return Semantics(
         label: 'No mini-games available yet.',
@@ -43,13 +52,59 @@ class MiniGamesCatalogWidget extends StatelessWidget {
       );
     }
 
+    final groups = groupCatalogByKind(formats);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (var index = 0; index < groups.length; index++) ...[
+          if (index > 0) _groupGap,
+          _GroupHeading(label: groups[index].label),
+          _headingGap,
+          _GroupCard(games: groups[index].games),
+        ],
+      ],
+    );
+  }
+}
+
+class _GroupHeading extends StatelessWidget {
+  const _GroupHeading({required this.label});
+
+  final String label;
+
+  static const double _letterSpacing = 0.8;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      header: true,
+      child: Text(
+        label.toUpperCase(),
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+          color: context.mood.inkMute,
+          letterSpacing: _letterSpacing,
+        ),
+      ),
+    );
+  }
+}
+
+class _GroupCard extends StatelessWidget {
+  const _GroupCard({required this.games});
+
+  final List<MiniGameFormat> games;
+
+  @override
+  Widget build(BuildContext context) {
+    final mood = context.mood;
     return Card(
       margin: EdgeInsets.zero,
       child: Column(
         children: [
-          for (var index = 0; index < formats.length; index++) ...[
+          for (var index = 0; index < games.length; index++) ...[
             if (index > 0) Divider(height: 1, color: mood.rule),
-            _FormatRow(format: formats[index]),
+            _FormatRow(format: games[index]),
           ],
         ],
       ),
