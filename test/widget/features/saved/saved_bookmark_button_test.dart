@@ -91,6 +91,8 @@ void main() {
       container.read(snapshotRepositoryProvider),
       key: formatSavedKey(SavedKind.term, 'arabica'),
       now: DateTime(2026, 8, 23),
+      isPlus: false,
+      visible: 0,
     );
     container.invalidate(savedKeysProvider);
 

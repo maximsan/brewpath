@@ -1,6 +1,6 @@
 import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
 import 'package:brew_path/features/path/domain/visual_guide_providers.dart';
-import 'package:brew_path/features/saved/domain/saved_key.dart';
+import 'package:brew_path/features/saved/domain/saved_cap.dart';
 import 'package:brew_path/features/saved/domain/saved_shelf.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
@@ -26,21 +26,41 @@ Future<Set<String>> savedKeys(Ref ref) async {
 Future<bool> isKeySaved(Ref ref, String key) async =>
     (await ref.watch(savedKeysProvider.future)).contains(key);
 
-/// Puts [key] on the shelf, or takes it off.
+/// Puts [key] on the shelf, takes it off, or refuses — and says which.
+///
+/// Returns the outcome rather than swallowing it, because a refusal is a thing
+/// the caller owes the learner an explanation for. A write happens only when
+/// something actually moved.
 ///
 /// A read-modify-write over the whole snapshot, as every other progress write
 /// is: the snapshot **is** the record, so there is no partial write to get
 /// wrong. Stamping it is what lets a peer that still holds the key lose to
 /// this removal rather than resurrect it.
-Future<void> toggleSaved(
+Future<SaveOutcome> toggleSaved(
   SnapshotRepository repository, {
   required String key,
   required DateTime now,
+  required bool isPlus,
+  required int visible,
 }) async {
   final snapshot = await repository.read();
-  final at = now.millisecondsSinceEpoch;
-  final next = toggleSavedKey(snapshot.clearedByReset.favourites.value, key);
+  final outcome = attemptSave(
+    key: key,
+    keys: snapshot.clearedByReset.favourites.value,
+    visible: visible,
+    isPlus: isPlus,
+  );
 
+  final next = switch (outcome) {
+    SaveSaved(:final keys) => keys,
+    SaveRemoved(:final keys) => keys,
+    // Nothing moved, so nothing is written — a refused save must not churn
+    // the last-writer-wins stamp and win a race against a real change.
+    SaveGateRaised() => null,
+  };
+  if (next == null) return outcome;
+
+  final at = now.millisecondsSinceEpoch;
   await repository.write(
     snapshot.copyWith(
       updatedAt: at,
@@ -51,6 +71,7 @@ Future<void> toggleSaved(
       ),
     ),
   );
+  return outcome;
 }
 
 /// The shelf: every saved key resolved against the content, grouped.

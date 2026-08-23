@@ -1,4 +1,8 @@
+import 'package:brew_path/features/mini_games/domain/course_entitlement.dart';
+import 'package:brew_path/features/saved/domain/saved_cap.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
+import 'package:brew_path/features/saved/domain/saved_shelf.dart';
+import 'package:brew_path/features/saved/presentation/saved_gate.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -27,12 +31,28 @@ class SavedBookmarkButton extends ConsumerWidget {
   /// lesson title, so a page with more than one is not a row of "Save".
   final String label;
 
-  Future<void> _toggle(WidgetRef ref) async {
-    await toggleSaved(
+  Future<void> _toggle(BuildContext context, WidgetRef ref) async {
+    // **Awaited, not read for its current value.** Nothing watches the
+    // entitlement here, so a synchronous read is still unresolved on the first
+    // tap and would report `false` — refusing a paying learner at five items.
+    final isPlus = await ref.read(courseEntitlementProvider.future);
+    // The cap is judged on what the shelf would show, so the number the
+    // learner is refused at is the number they were told they had.
+    final visible = savedShelfCount(await ref.read(savedShelfProvider.future));
+
+    final outcome = await toggleSaved(
       ref.read(snapshotRepositoryProvider),
       key: savedKey,
       now: DateTime.now(),
+      isPlus: isPlus,
+      visible: visible,
     );
+
+    if (outcome is SaveGateRaised) {
+      if (context.mounted) showSavedCapReached(context);
+      // Nothing moved, so nothing to re-read.
+      return;
+    }
     ref.invalidate(savedKeysProvider);
   }
 
@@ -62,7 +82,7 @@ class SavedBookmarkButton extends ConsumerWidget {
         foregroundColor: isSaved ? context.mood.accent : context.mood.ink,
       ),
       tooltip: isSaved ? 'Remove $label from Saved' : 'Save $label',
-      onPressed: () => _toggle(ref),
+      onPressed: () => _toggle(context, ref),
     );
   }
 }
