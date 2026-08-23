@@ -42,6 +42,10 @@ RoastyState _reactionState(CompanionReaction reaction) {
       return RoastyState.lesson;
     case CompanionReaction.cardEarned:
       return RoastyState.card;
+    // The streak beat keeps the prototype's pose for it — Roasty at
+    // correct, a personal win rather than a course-sized one (#26).
+    case CompanionReaction.streakMilestone:
+      return RoastyState.correct;
   }
 }
 

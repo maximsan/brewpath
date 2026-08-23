@@ -4,6 +4,7 @@ import 'package:brew_path/features/progress/domain/grove_treatment.dart';
 import 'package:brew_path/features/progress/domain/streak_day_set.dart';
 import 'package:brew_path/features/progress/domain/streak_engine.dart';
 import 'package:brew_path/features/progress/domain/streak_status.dart';
+import 'package:brew_path/features/progress/domain/streak_week.dart';
 import 'package:brew_path/features/progress/domain/tree_growth.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
@@ -60,6 +61,17 @@ Future<Set<int>> activeDaySet(Ref ref) async {
     dailyActivity: progress.dailyActivity,
     firstCompletionDays: completed.map((record) => record.completedAt),
   );
+}
+
+/// The current week's seven cells, ready for any strip host — one
+/// derivation, so the streak screen, the Profile tile and the share card can
+/// never disagree about a day.
+@riverpod
+Future<List<StreakDay>> weekStripDays(Ref ref) async {
+  final statusFuture = ref.watch(streakStatusProvider.future);
+  final days = await ref.watch(activeDaySetProvider.future);
+  final status = await statusFuture;
+  return weekStrip(activeDays: days, status: status, today: DateTime.now());
 }
 
 /// The derived streak state — the engine's fold over [activeDaySet].

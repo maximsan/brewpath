@@ -16,7 +16,10 @@ void main() {
   test('no file pairs AnimatedSize with a zero duration', () {
     final offenders = <String>[];
     for (final file in dartSourcesUnder('lib')) {
-      final source = file.readAsStringSync();
+      // Comments stripped first: this guard fired on the doc comment
+      // explaining the very bug it forbids, and a guard that cries wolf
+      // on prose is one somebody eventually deletes.
+      final source = withoutComments(file.readAsStringSync());
       if (source.contains('AnimatedSize') && source.contains('Duration.zero')) {
         offenders.add(file.path);
       }

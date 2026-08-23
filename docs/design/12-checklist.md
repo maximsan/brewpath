@@ -55,7 +55,7 @@ staging list that feeds it, not a living board. Nothing ticks these boxes.
 ## Core loop
 - [ ] Lesson player with 13 authored card kinds + the help drawer (10 entries, not one per kind — [§6](06-content.md) 6.2)
 - [ ] `bagpick` card: green-bean rendering from process cues, sample draw, cue inspection
-- [ ] Cherry cross-section (`CherrySection`) as both a lesson visual and a training card
+- [ ] Cherry cross-section (`CherrySection`) as both a lesson visual and a visual guide
 - [ ] `RoastBean` progress + counter + save-lesson
 - [ ] Term auto-linkification → peek sheet
 - [x] Points rules: +10 first completion only (per-lesson value), +5 first coffee-challenge completion, 0 for replays, no perfect bonus, no mid-lesson toast ([§5](05-mechanics.md) 5.1) — [#160](https://github.com/maximsan/brewpath/issues/160)
@@ -85,10 +85,10 @@ staging list that feeds it, not a living board. Nothing ticks these boxes.
 - [ ] Flashcards: flip, prev/next, shuffle, jump-to-term, empty state
 - [ ] Vocab game: setup phase (deck picker + round length with a `capped` guard), play, results with missed terms openable
 - [ ] Saved screen: three groups (terms · lessons · guides), each hidden when empty, plus the "study as flashcards" row
-- [ ] 37 collectible cards + 5 training guides, all with bespoke art (**art complete — port, don't draw**)
+- [ ] 37 collectible cards + 8 visual guides, all with bespoke art (**art complete — port, don't draw**)
 - [ ] 13 mini-games over 7 kinds with content banks (69 rounds; [ADR-0005](../adr/0005-mini-games-are-many-games-per-kind-gated-by-topic.md))
 - [ ] 12 coffee challenges
-- [ ] Studio: 3 species × 4 light treatments, 8 training guides, Roasty option tables
+- [ ] Studio: 3 species × 4 light treatments, 8 visual guides, Roasty option tables
 
 ## Monetization
 

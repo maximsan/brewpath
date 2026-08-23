@@ -7,6 +7,9 @@ const { validateTerms } = require("./validate/terms");
 const { validateChallenges } = require("./validate/challenges");
 const { validateMiniGames } = require("./validate/mini_games");
 const { validateGrove } = require("./validate/grove");
+const {
+  validateVisualGuides,
+} = require("./validate/visual_guides");
 
 /**
  * Validates the whole cross-reference graph before a single file is written.
@@ -31,6 +34,7 @@ function validate(banks) {
   validateChallenges(banks, index, report);
   validateMiniGames(banks, index, report);
   validateGrove(banks, index, report);
+  validateVisualGuides(banks, index, report);
 
   return errors;
 }
