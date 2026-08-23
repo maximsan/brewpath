@@ -80,6 +80,10 @@ You can always edit this file by hand instead — the helpers just save effort.
   carries is skipped rather than drawn broken, and the header's dot counts what
   the shelf will actually show — so the badge can never promise a row that is
   not there. Reset Progress clears both.
+- **Onboarding asks what to call you, and Profile says hello back.** A third,
+  optional step takes a name and the Profile header greets by it — `Hello,
+  Maya.` where one was given, `Hello, there.` where it was skipped, which is
+  the same sentence either way. Skipping costs nothing and stays skippable.
 
 - **Dictionary terms can be bookmarked.** A bookmark sits on the term entry and
   on the peek sheet, and what it saves survives closing the app. It is the same

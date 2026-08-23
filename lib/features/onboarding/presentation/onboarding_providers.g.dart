@@ -117,7 +117,10 @@ final onboardingDraftProvider = OnboardingDraftProvider._();
 /// Riverpod auto-disposes the notifier between routes and the goal is lost.
 final class OnboardingDraftProvider
     extends
-        $NotifierProvider<OnboardingDraft, ({String? brewer, String? goal})> {
+        $NotifierProvider<
+          OnboardingDraft,
+          ({String? brewer, String? goal, String? name})
+        > {
   /// In-memory selection draft carried across the goal + brewer screens.
   /// Reset and persisted to Drift by [complete]. `keepAlive: true` because
   /// the goal is picked on one screen and read on the next — without keepAlive,
@@ -141,17 +144,20 @@ final class OnboardingDraftProvider
   OnboardingDraft create() => OnboardingDraft();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(({String? brewer, String? goal}) value) {
+  Override overrideWithValue(
+    ({String? brewer, String? goal, String? name}) value,
+  ) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<({String? brewer, String? goal})>(
-        value,
-      ),
+      providerOverride:
+          $SyncValueProvider<({String? brewer, String? goal, String? name})>(
+            value,
+          ),
     );
   }
 }
 
-String _$onboardingDraftHash() => r'db6542e3a85c49fc7d2863a1a889f0e7f79ffa73';
+String _$onboardingDraftHash() => r'd653f308464caf87f4e88a476d7a585896b5b44f';
 
 /// In-memory selection draft carried across the goal + brewer screens.
 /// Reset and persisted to Drift by [complete]. `keepAlive: true` because
@@ -159,25 +165,25 @@ String _$onboardingDraftHash() => r'db6542e3a85c49fc7d2863a1a889f0e7f79ffa73';
 /// Riverpod auto-disposes the notifier between routes and the goal is lost.
 
 abstract class _$OnboardingDraft
-    extends $Notifier<({String? brewer, String? goal})> {
-  ({String? brewer, String? goal}) build();
+    extends $Notifier<({String? brewer, String? goal, String? name})> {
+  ({String? brewer, String? goal, String? name}) build();
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
     final ref =
         this.ref
             as $Ref<
-              ({String? brewer, String? goal}),
-              ({String? brewer, String? goal})
+              ({String? brewer, String? goal, String? name}),
+              ({String? brewer, String? goal, String? name})
             >;
     final element =
         ref.element
             as $ClassProviderElement<
               AnyNotifier<
-                ({String? brewer, String? goal}),
-                ({String? brewer, String? goal})
+                ({String? brewer, String? goal, String? name}),
+                ({String? brewer, String? goal, String? name})
               >,
-              ({String? brewer, String? goal}),
+              ({String? brewer, String? goal, String? name}),
               Object?,
               Object?
             >;

@@ -8,6 +8,53 @@ part of 'settings_providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// The name the learner asked to be greeted by, or null where they skipped.
+///
+/// Its own provider rather than a read through the settings controller so the
+/// header re-reads only this, and a haptics toggle does not rebuild it.
+
+@ProviderFor(learnerName)
+final learnerNameProvider = LearnerNameProvider._();
+
+/// The name the learner asked to be greeted by, or null where they skipped.
+///
+/// Its own provider rather than a read through the settings controller so the
+/// header re-reads only this, and a haptics toggle does not rebuild it.
+
+final class LearnerNameProvider
+    extends $FunctionalProvider<AsyncValue<String?>, String?, FutureOr<String?>>
+    with $FutureModifier<String?>, $FutureProvider<String?> {
+  /// The name the learner asked to be greeted by, or null where they skipped.
+  ///
+  /// Its own provider rather than a read through the settings controller so the
+  /// header re-reads only this, and a haptics toggle does not rebuild it.
+  LearnerNameProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'learnerNameProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$learnerNameHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<String?> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<String?> create(Ref ref) {
+    return learnerName(ref);
+  }
+}
+
+String _$learnerNameHash() => r'8e26fa66b6a2e74c64775a577092cc6c6081b404';
+
 /// Mutable settings state for the Profile screen. Class form because the
 /// haptics/sound toggles mutate and persist state (per CLAUDE.md provider
 /// conventions).

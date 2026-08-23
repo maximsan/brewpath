@@ -84,7 +84,7 @@ class _GoalScreenState extends ConsumerState<GoalScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SmallcapsLabel('ONBOARDING · 1 OF 2'),
+              const SmallcapsLabel('ONBOARDING · 1 OF 3'),
               const SizedBox(height: AppSpacing.base),
               Text(
                 'What brings you here?',

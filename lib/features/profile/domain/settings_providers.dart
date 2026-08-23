@@ -11,6 +11,14 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'settings_providers.g.dart';
 
+/// The name the learner asked to be greeted by, or null where they skipped.
+///
+/// Its own provider rather than a read through the settings controller so the
+/// header re-reads only this, and a haptics toggle does not rebuild it.
+@riverpod
+Future<String?> learnerName(Ref ref) async =>
+    (await ref.watch(settingsControllerProvider.future)).learnerName;
+
 /// Mutable settings state for the Profile screen. Class form because the
 /// haptics/sound toggles mutate and persist state (per CLAUDE.md provider
 /// conventions).

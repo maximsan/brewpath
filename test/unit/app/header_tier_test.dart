@@ -29,6 +29,7 @@ const _expectedTiers = <String, HeaderTier>{
   '/welcome': HeaderTier.immersive,
   '/loading': HeaderTier.immersive,
   '/onboarding/goal': HeaderTier.immersive,
+  '/onboarding/name': HeaderTier.immersive,
   '/course-complete': HeaderTier.immersive,
 };
 
@@ -78,6 +79,16 @@ void main() {
       expect(tabHeaderFor('/cards', today: today)?.eyebrow, 'YOUR DECK');
       expect(tabHeaderFor('/cards', today: today)?.title, 'Collection');
       expect(tabHeaderFor('/profile', today: today)?.eyebrow, 'PROFILE');
+      expect(
+        tabHeaderFor('/profile', today: today, learnerName: 'Maya')?.title,
+        'Hello, Maya.',
+        reason: 'the learner gave a name at onboarding',
+      );
+      expect(
+        tabHeaderFor('/profile', today: today)?.title,
+        'Hello, there.',
+        reason: 'they skipped it, and the same sentence still greets them',
+      );
     });
 
     test('Learn titles itself with the day it is given', () {

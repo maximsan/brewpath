@@ -19,11 +19,37 @@ import '../generated/schema_v8.dart' show DatabaseAtV8;
 /// Verifies the generated [GeneratedHelper] / [SchemaVerifier] pipeline: each
 /// historical schema opens cleanly, and the real `AppDatabase` migration
 /// upgrades a v1 database to the v2 schema.
+/// The newest schema that has been dumped to `drift_schemas/`.
+///
+/// Read from the generated helper rather than written as a literal: every
+/// data-integrity case below upgrades *to the current version*, and a literal
+/// there means a schema bump silently keeps testing the old target — a bump
+/// editing a file that never mentions it. The first test keeps this honest
+/// against the app's own `schemaVersion`.
+final int _currentVersion = GeneratedHelper.versions.last;
+
 void main() {
   late SchemaVerifier verifier;
 
   setUpAll(() {
     verifier = SchemaVerifier(GeneratedHelper());
+  });
+
+  test('the dumped schemas keep pace with the database', () async {
+    final db = AppDatabase(NativeDatabase.memory());
+    final declared = db.schemaVersion;
+    await db.close();
+
+    expect(
+      declared,
+      _currentVersion,
+      reason:
+          'AppDatabase.schemaVersion and the newest file in drift_schemas/ '
+          'disagree. Either the version was bumped without dumping the schema '
+          '(`dart run drift_dev schema dump …`, then `schema generate …`), or '
+          'a schema was dumped without bumping the version. Until they agree, '
+          'every migration test below validates against the wrong target.',
+    );
   });
 
   test('schema v1 database opens with the expected tables', () async {
@@ -217,9 +243,10 @@ void main() {
     // proving it. **A schema bump means retargeting this and the test below.**
     await verifier.testWithDataIntegrity(
       oldVersion: 4,
-      newVersion: 8,
+      newVersion: _currentVersion,
       createOld: DatabaseAtV4.new,
-      createNew: DatabaseAtV8.new,
+      createNew: (executor) =>
+          GeneratedHelper().databaseForVersion(executor, _currentVersion),
       openTestedDatabase: AppDatabase.new,
       createItems: (batch, oldDb) => batch.insert(
         oldDb.progressRecords,
@@ -274,9 +301,10 @@ void main() {
       // given on the test above.
       await verifier.testWithDataIntegrity(
         oldVersion: 5,
-        newVersion: 8,
+        newVersion: _currentVersion,
         createOld: DatabaseAtV5.new,
-        createNew: DatabaseAtV8.new,
+        createNew: (executor) =>
+            GeneratedHelper().databaseForVersion(executor, _currentVersion),
         openTestedDatabase: AppDatabase.new,
         createItems: (batch, oldDb) => batch.insert(
           oldDb.progressRecords,
@@ -339,9 +367,10 @@ void main() {
     // design, so nothing else would catch it.
     await verifier.testWithDataIntegrity(
       oldVersion: 6,
-      newVersion: 8,
+      newVersion: _currentVersion,
       createOld: DatabaseAtV6.new,
-      createNew: DatabaseAtV8.new,
+      createNew: (executor) =>
+          GeneratedHelper().databaseForVersion(executor, _currentVersion),
       openTestedDatabase: AppDatabase.new,
       createItems: (batch, oldDb) => batch.insert(
         oldDb.userSettings,
@@ -400,7 +429,7 @@ void main() {
     await db.close();
   });
 
-  test('a v7 database upgrades to v8 with the Tour unseen', () async {
+  test('a v7 database upgrades with the Tour unseen', () async {
     // The added column defaults rather than backfills, and this is what says
     // so: a device that has been through onboarding but predates the Tour must
     // arrive at v8 offered the Tour, not skipped past it. Everything else on
@@ -408,9 +437,10 @@ void main() {
     // rewrote a preference would look identical from the column's side.
     await verifier.testWithDataIntegrity(
       oldVersion: 7,
-      newVersion: 8,
+      newVersion: _currentVersion,
       createOld: DatabaseAtV7.new,
-      createNew: DatabaseAtV8.new,
+      createNew: (executor) =>
+          GeneratedHelper().databaseForVersion(executor, _currentVersion),
       openTestedDatabase: AppDatabase.new,
       createItems: (batch, oldDb) => batch.insert(
         oldDb.userSettings,

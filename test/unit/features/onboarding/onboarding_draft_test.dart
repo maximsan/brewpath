@@ -28,6 +28,7 @@ void main() {
       expect(container.read(onboardingDraftProvider), (
         goal: 'brew_better',
         brewer: 'v60',
+        name: null,
       ));
     });
 
@@ -40,12 +41,39 @@ void main() {
       await notifier.complete();
 
       expect(fake.completeCalls, [
-        (goal: 'understand_tasting', brewer: 'aeropress'),
+        (goal: 'understand_tasting', brewer: 'aeropress', name: null),
       ]);
       expect(container.read(onboardingDraftProvider), (
         goal: null,
         brewer: null,
+        name: null,
       ));
+    });
+
+    test('a name given at the last step is persisted with the rest', () async {
+      final container = makeContainer();
+      final notifier = container.read(onboardingDraftProvider.notifier)
+        ..setGoal('brew_better')
+        ..setBrewer('v60')
+        ..setName('  Maya  ');
+
+      await notifier.complete();
+
+      expect(fake.completeCalls, [
+        (goal: 'brew_better', brewer: 'v60', name: 'Maya'),
+      ]);
+    });
+
+    test('a skipped or blank name persists as no name at all', () async {
+      final container = makeContainer();
+      final notifier = container.read(onboardingDraftProvider.notifier)
+        ..setGoal('brew_better')
+        ..setBrewer('v60')
+        ..setName('   ');
+
+      await notifier.complete();
+
+      expect(fake.completeCalls.single.name, isNull);
     });
 
     test('complete refreshes the onboardingCompleted gate', () async {

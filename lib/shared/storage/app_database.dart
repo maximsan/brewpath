@@ -115,6 +115,13 @@ class UserSettings extends Table {
   /// name). Device-local: never written to the progress snapshot.
   BoolColumn get tourSeen => boolean().withDefault(const Constant(false))();
 
+  /// What the learner asked to be called, or null when they did not say.
+  ///
+  /// Nullable rather than defaulted to a placeholder: "no name given" and "the
+  /// name is empty" are the same fact to the greeting, and only one of them
+  /// needs representing.
+  TextColumn get learnerName => text().nullable()();
+
   @override
   Set<Column> get primaryKey => {id};
 }
@@ -195,8 +202,11 @@ class AppDatabase extends _$AppDatabase {
   /// Schema version that added the Tour's `tourSeen` bit.
   static const int _tourSeenVersion = 8;
 
+  /// Schema version that added the learner's chosen name.
+  static const int _learnerNameVersion = 9;
+
   /// The current version is whichever migration landed last.
-  static const int _schemaVersion = _tourSeenVersion;
+  static const int _schemaVersion = _learnerNameVersion;
 
   @override
   int get schemaVersion => _schemaVersion;
@@ -312,6 +322,14 @@ class AppDatabase extends _$AppDatabase {
       // lacks the column and every one of them needs the add (#273).
       if (from < _tourSeenVersion) {
         await m.addColumn(userSettings, userSettings.tourSeen);
+      }
+
+      // v8 → v9: the name the learner is greeted by. Purely additive, and
+      // nullable, so every existing device arrives with "no name given" —
+      // which is the truth for them, and what the greeting already falls back
+      // to.
+      if (from < _learnerNameVersion) {
+        await m.addColumn(userSettings, userSettings.learnerName);
       }
     },
   );

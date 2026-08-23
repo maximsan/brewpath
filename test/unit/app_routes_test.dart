@@ -117,6 +117,7 @@ void main() {
     'moduleSummary': HeaderTier.immersive,
     'miniGameIntro': HeaderTier.immersive,
     'miniGamePlay': HeaderTier.immersive,
+    'onboardingName': HeaderTier.immersive,
   };
 
   test('every registered route has a decided chrome tier', () {
