@@ -38,6 +38,47 @@ void main() {
     }
   });
 
+  /// The prose the guides shipped without.
+  ///
+  /// The words were authored all along; the extractor cut each entry before
+  /// them because they sat inside JSX it could not parse. The prototype moved
+  /// them into data fields (#271), and these assert the app actually carries
+  /// them — a bank that silently loses the prose again looks exactly like a
+  /// bank that never had it.
+  test('the guides that gloss their table carry a note per term', () async {
+    final bySubject = {
+      for (final guide in await guides.getGuides()) guide.subject: guide,
+    };
+
+    for (final subject in ['roast', 'grind']) {
+      final notes = bySubject[subject]!.notes;
+      expect(notes, hasLength(3), reason: subject);
+      for (final note in notes) {
+        expect(note.term, isNotEmpty, reason: subject);
+        expect(
+          note.detail,
+          isNotEmpty,
+          reason: '$subject: a term with no gloss is the gap this closed',
+        );
+      }
+    }
+  });
+
+  test('the guides that close on a thought carry it', () async {
+    final bySubject = {
+      for (final guide in await guides.getGuides()) guide.subject: guide,
+    };
+
+    for (final subject in ['ratio', 'variety', 'caffeine', 'distribution']) {
+      expect(bySubject[subject]!.note, isNotEmpty, reason: subject);
+    }
+
+    // Anatomy's drawing is the reference — its cross-section says what a
+    // closing paragraph would, so it having none is correct, not missing.
+    expect(bySubject['anatomy']!.note, isNull);
+    expect(bySubject['anatomy']!.notes, isEmpty);
+  });
+
   test('each unlocks at a lesson that resolves', () async {
     final lessonIds = {
       for (final lesson in await content.getLessons()) lesson.id,

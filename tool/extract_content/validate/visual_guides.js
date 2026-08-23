@@ -47,6 +47,7 @@ function validateVisualGuides(banks, index, report) {
     unlockResolves(guide, index, where, report);
     unlockIsEarliestTeachingLesson(guide, banks, where, report);
     metaIsAShortPairList(guide, where, report);
+    everyNoteGlossesARow(guide, words, where, report);
 
     for (const field of GUIDE_COPY) {
       const value = words[guide.visualGuide]?.[field];
@@ -192,6 +193,34 @@ function metaIsAShortPairList(guide, where, report) {
   for (const row of meta) {
     if (!Array.isArray(row) || row.length !== 2 || row.some((cell) => !cell)) {
       report(where, `has a meta row that is not a label and a value: ${row}`);
+    }
+  }
+}
+
+/**
+ * Every note names a row of the table it glosses.
+ *
+ * The table and the prose are authored in two registries — `meta` on the card,
+ * the level notes beside the words — so nothing forces their terms to agree.
+ * The sheet joins them by name, which means a note naming a row that does not
+ * exist is not an error anywhere: it simply never renders, and a guide quietly
+ * loses the sentence that explains it. Matched case-insensitively, because the
+ * table shouts (`LIGHT`) where the prose speaks (`Light`).
+ */
+function everyNoteGlossesARow(guide, words, where, report) {
+  const notes = words[guide.visualGuide]?.levels ?? [];
+  const labels = new Set(
+    (guide.meta ?? []).map((row) => String(row[0]).toLowerCase()),
+  );
+
+  for (const level of notes) {
+    if (!level.note) continue;
+    if (!labels.has(String(level.name).toLowerCase())) {
+      report(
+        where,
+        `glosses \`${level.name}\`, which is not a row of its meta table — ` +
+          "the sentence would never render",
+      );
     }
   }
 }

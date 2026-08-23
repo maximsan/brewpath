@@ -42,6 +42,21 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ## [Unreleased]
 
+### Added
+
+- **The visual guides explain themselves.** A guide's table said *what* —
+  `LIGHT / Bright · acidic` — and stopped there. Each row now carries the
+  sentence that says what living with it is like ("Acidic and fruity. Can taste
+  sharp or sour if under-extracted"), and the four guides that end on a thought
+  now show it. Those words were authored all along, trapped inside markup the
+  extractor could not read; the prototype moved them into data fields and the
+  app finally carries them.
+
+  The table and the prose are authored in two separate registries, so they are
+  joined **by name rather than by position** — and the extractor refuses to
+  write a gloss naming a row that does not exist, because a mismatch would not
+  fail anywhere: the sentence would simply never render.
+
 ### Fixed
 
 - **A schema bump no longer trips over a migration that predates it.** The
