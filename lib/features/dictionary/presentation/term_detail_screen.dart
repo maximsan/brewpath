@@ -5,6 +5,8 @@ import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_status_style.dart';
 import 'package:brew_path/features/dictionary/presentation/term_entry_body.dart';
 import 'package:brew_path/features/dictionary/presentation/term_peek_sheet.dart';
+import 'package:brew_path/features/saved/domain/saved_key.dart';
+import 'package:brew_path/features/saved/presentation/saved_bookmark_button.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
@@ -65,14 +67,15 @@ class _TermDetail extends StatelessWidget {
       appBar: AppBar(
         title: Text(term.term),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: AppSpacing.md),
-            child: Center(
-              child: Text(
-                status.label,
-                style: Theme.of(context).textTheme.labelSmall,
-              ),
+          Center(
+            child: Text(
+              status.label,
+              style: Theme.of(context).textTheme.labelSmall,
             ),
+          ),
+          SavedBookmarkButton(
+            savedKey: formatSavedKey(SavedKind.term, term.id),
+            label: term.term,
           ),
         ],
       ),
