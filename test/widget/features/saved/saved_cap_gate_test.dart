@@ -11,9 +11,11 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/widget_harness.dart';
 
-/// A full free shelf, none of which is the key under test.
-const _full = ['t:a', 't:b', 't:c', 't:d', 't:e'];
-const _sixth = 't:arabica';
+/// A full free shelf — **real** term ids, because the cap judges the rows the
+/// shelf would draw. Keys that resolve to nothing are not rows, so a shelf of
+/// invented ids is an empty shelf and would never be full.
+const _full = ['t:arabica', 't:robusta', 't:cultivar', 't:typica', 't:bloom'];
+const _sixth = 't:crema';
 
 void main() {
   setUp(useInMemoryDatabase);
@@ -97,7 +99,7 @@ void main() {
         container: container,
         child: const MaterialApp(
           home: Scaffold(
-            body: SavedBookmarkButton(savedKey: 't:a', label: 'A'),
+            body: SavedBookmarkButton(savedKey: 't:arabica', label: 'Arabica'),
           ),
         ),
       ),
@@ -109,7 +111,7 @@ void main() {
 
     expect(
       await container.read(savedKeysProvider.future),
-      {'t:b', 't:c', 't:d', 't:e'},
+      {'t:robusta', 't:cultivar', 't:typica', 't:bloom'},
     );
     expect(find.text(savedCapMessage), findsNothing);
   });
