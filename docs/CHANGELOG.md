@@ -61,6 +61,12 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **A locked mini-game now offers something.** Tapping one opens a sheet naming
+  the module that teaches its topic — "Taught in Module 4 · Grind" — and
+  pitching that module in its own words, rather than refusing silently. The
+  lock became a door. The purchase call to action arrives with the paywall
+  (#89); this ships the pitch and the way out (#270).
+
 - **The mini-game catalog shows what the learner owns.** Ten of the thirteen
   games now carry a lock before any tap; Match, True or false and Name the
   origin do not — the three ADR-0007's free lesson list forces. The rule is one
