@@ -68,6 +68,18 @@ void main() {
     expect(find.text('MODULE 1 · BEANS'), findsOneWidget);
   });
 
+  testWidgets('lessons read in course order, not the order they were saved', (
+    tester,
+  ) async {
+    // m2l1 saved first; m1l1 teaches earlier and must lead.
+    await _seed(tester, ['l:m2l1', 'l:m1l1']);
+    await pumpWithProviders(tester, _wrap());
+
+    final first = tester.getTopLeft(find.text('What coffee actually is')).dy;
+    final second = tester.getTopLeft(find.text('Washed, natural, honey')).dy;
+    expect(first, lessThan(second));
+  });
+
   testWidgets('a kind with nothing saved renders no heading', (tester) async {
     await _seed(tester, ['t:arabica']);
     await pumpWithProviders(tester, _wrap());
