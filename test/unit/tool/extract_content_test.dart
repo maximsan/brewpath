@@ -24,6 +24,7 @@ const _sourceFiles = [
   'lesson.jsx',
   'bean-anatomy.jsx',
   'customize.jsx',
+  'practical.jsx',
 ];
 
 const _expectedBanks = [
@@ -32,6 +33,7 @@ const _expectedBanks = [
   'collectibles.json',
   'dictionary_terms.json',
   'dictionary_categories.json',
+  'visual_guides.json',
   'brew_challenges.json',
   'mini_games.json',
   'card_kind_help.json',
@@ -586,5 +588,99 @@ void main() {
       _prototype,
     ).listSync().map((e) => '${e.path}:${e.statSync().modified}').toList();
     expect(after, before);
+  });
+
+  group('the visual guides', () {
+    void seedGuide(String source, String from, String to) =>
+        seedCorruption(source, 'data.jsx', from, to);
+
+    void seedWords(String source, String from, String to) =>
+        seedCorruption(source, 'practical.jsx', from, to);
+
+    test('a clean run emits eight guides with their words and unlocks', () {
+      final out = dir('out');
+      expect(_run(_prototype, out).exitCode, 0);
+
+      final guides = _items(out, 'visual_guides.json');
+      expect(guides, hasLength(8));
+      expect(
+        guides.map((guide) => guide['visualGuide']),
+        containsAll(<String>['roast', 'grind', 'variety', 'distribution']),
+      );
+      for (final guide in guides) {
+        for (final field in ['label', 'title', 'summary', 'fact']) {
+          expect(guide[field], isNotNull, reason: '${guide['id']} $field');
+        }
+        expect((guide['unlock'] as Map)['lesson'], isNotNull);
+        expect((guide['meta'] as List).length, inInclusiveRange(2, 3));
+      }
+    });
+
+    test('a guide stripped of its words is refused by field', () {
+      final source = seededSource();
+      seedWords(source, "title: 'Roast Levels',", "title: '',");
+      expectRefusal(source, naming: ['g-roast', 'title']);
+    });
+
+    test(
+      'a guide whose unlock is not the earliest teaching lesson is refused',
+      () {
+        final source = seededSource();
+        // grind is taught in three lessons; m4l1 is the first of them.
+        seedGuide(
+          source,
+          "{ id: 'g-grind', earned: false, unlock: { lesson: 'm4l1' }",
+          "{ id: 'g-grind', earned: false, unlock: { lesson: 'm4l3' }",
+        );
+        expectRefusal(source, naming: ['g-grind', 'm4l1']);
+      },
+    );
+
+    test('a guide unlocking at a lesson that does not exist is refused', () {
+      final source = seededSource();
+      seedGuide(
+        source,
+        "{ id: 'g-roast', earned: false, unlock: { lesson: 'm3l1' }",
+        "{ id: 'g-roast', earned: false, unlock: { lesson: 'm9l9' }",
+      );
+      expectRefusal(source, naming: ['g-roast', 'm9l9']);
+    });
+
+    test('a lesson visual whose subject has no guide is refused', () {
+      final source = seededSource();
+      // The defect this check exists for: an authored subject with no card.
+      // Named by the message, not by the subject — `varietal` contains
+      // `variety`, so asserting the subject alone proves nothing.
+      seedGuide(source, "visualGuide: 'variety',", "visualGuide: 'varietal',");
+      expectRefusal(source, naming: ['which has no guide', 'dead end']);
+    });
+
+    test('a second card for one subject is refused', () {
+      final source = seededSource();
+      // The registry entry, not the lesson card — `data.jsx` carries both, and
+      // the shorter string finds the lesson's visual first.
+      seedGuide(
+        source,
+        "kind: 'visualGuide', visualGuide: 'distribution',",
+        "kind: 'visualGuide', visualGuide: 'roast',",
+      );
+      expectRefusal(source, naming: ['second card', 'roast']);
+    });
+
+    test('a guide whose words are only whitespace is refused', () {
+      final source = seededSource();
+      seedWords(source, "title: 'Roast Levels',", "title: '   ',");
+      expectRefusal(source, naming: ['g-roast', 'title']);
+    });
+
+    test('a meta row that is not a label and a value is refused', () {
+      final source = seededSource();
+      seedGuide(
+        source,
+        "meta: [['LIGHT', 'Bright · acidic']",
+        "meta: [['LIGHT']",
+      );
+      expectRefusal(source, naming: ['g-roast', 'meta']);
+    });
   });
 }

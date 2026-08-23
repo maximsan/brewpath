@@ -304,9 +304,10 @@ in the lesson, and copied onto the card — so the moment you earn it and the ca
 you look at later can never say two different things. They unlock automatically
 as you learn — there's no chase, no rarity, no duplicates.
 
-There are also five reference guides — roast levels, grind size, extraction,
-brew ratio, the cherry cross-section — that you have from the start and can save
-for quick access.
+There are also eight reference guides — roast levels, grind size, extraction,
+brew ratio, the cherry cross-section, the variety family tree, caffeine per
+serving and particle distribution. Each arrives when you finish the lesson that
+teaches it, and can be saved for quick access.
 
 Cards you haven't earned aren't shown as a grid of locked slots. You see what
 you've earned, one teaser of what's next, and a count of how many remain.

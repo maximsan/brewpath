@@ -63,6 +63,18 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The eight visual guides are content the app can read.** The illustrated
+  references a lesson teaches — roast, grind, extraction, ratio, cherry anatomy,
+  variety, caffeine, grind spread — now ship as their own bank, joined at
+  extraction from the two prototype registries that hold half a guide each.
+  Reading the second one meant teaching the extractor to slice a data object out
+  of a file that also carries React markup, by cutting each entry's body away.
+  Five checks refuse a run that would ship a broken guide, the sharpest being
+  that a guide's unlock must be the *earliest* lesson that teaches it — which is
+  what turns ten lesson placements into eight guides, and what stops a
+  reordering leaving a learner shown a reference as locked after being taught
+  it.
+
 - **The Tour can be replayed.** A "Replay the tour" row at the bottom of
   Profile → Customize switches to Learn and runs the four stops again — no
   intro overlay, and nothing written: the question the overlay asks was

@@ -24,8 +24,8 @@ was mapped before this pass.
 | File | Lines | What it holds |
 |---|---|---|
 | `active-cards.jsx` | 297 | The three cards that replaced the read-only beats: `predict` (was `intro`), `decision` (was `practical`), `recall` (was `takeaway`). The rename is why `intro`/`takeaway` renderers sit unexercised ([§6.2](06-content.md)). |
-| `practical.jsx` | 583 | `TasteFixCard`, the `TRAINING` guide content + art (8 guides), `TrainingCard`, `TrainingThumb`. |
-| `bean-anatomy.jsx` | 345 | `CherrySection` (the interactive cross-section, `TRAINING.anatomy`), `GreenBean` (draws an unroasted seed from process cues), `BagPickCard` (card kind `bagpick`), `BAGPICK_ROUNDS`. **Load-order constraint: must evaluate before `lesson.jsx`,** which reads `BAGPICK_ROUNDS` at eval time. |
+| `practical.jsx` | 583 | `TasteFixCard`, the `VISUAL_GUIDE_CONTENT` guide content + art (8 guides), `VisualGuideCard`, `VisualGuideThumb`. |
+| `bean-anatomy.jsx` | 345 | `CherrySection` (the interactive cross-section, `VISUAL_GUIDE_CONTENT.anatomy`), `GreenBean` (draws an unroasted seed from process cues), `BagPickCard` (card kind `bagpick`), `BAGPICK_ROUNDS`. **Load-order constraint: must evaluate before `lesson.jsx`,** which reads `BAGPICK_ROUNDS` at eval time. |
 | `library.jsx` | 235 | The Saved / Favorites screen and shared bookmark affordances. **`ModuleScreen` and its two layouts were deleted** — module detail no longer exists as a screen. |
 | `rewards.jsx` | 475 | Lesson complete, module complete, module reward card. |
 | `settings.jsx` | 700 | `ConfirmSheet`, `TimeSheet`, About, Account-and-sync, `PLAN_OPTS`, `FAQ_ITEMS`, `REMINDER_TIMES`. |
