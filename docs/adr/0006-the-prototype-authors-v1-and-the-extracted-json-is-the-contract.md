@@ -34,6 +34,12 @@ first.
 
 ## Decision
 
+> **Rule added (23 Aug 2026, from [Guide body copy is authored inside
+> JSX](https://github.com/maximsan/brewpath/issues/271)):** in the prototype,
+> **copy is data** — strings are never authored inside markup; markup renders
+> data fields. The visual-guide bodies were the one gap, closed at the source
+> the same day.
+
 **The prototype remains the authoring environment for v1.** Course content is
 written there and nowhere else. `prototype/` stays read-only to this repository:
 it is the design source the app is measured against, so an edit there moves the
