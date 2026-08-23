@@ -18,9 +18,11 @@ MiniGameFormat _format(
   String kind,
   String title, {
   String topic = 'TOPIC',
+  String moduleId = 'm1',
 }) => MiniGameFormat(
   id: id,
   kind: kind,
+  moduleId: moduleId,
   title: title,
   topic: topic,
   duration: '~1 MIN',
@@ -33,11 +35,11 @@ MiniGameFormat _format(
 final List<MiniGameFormat> _formats = [
   _format('g-quiz', 'quiz', 'True or false', topic: 'COFFEE BASICS'),
   _format('g-match', 'match', 'Match the facts'),
-  _format('g-flavor', 'flavor', 'Name the flavor notes'),
-  _format('g-bagpick', 'bagpick', 'Read the green bean'),
-  _format('g-tastefix', 'tastefix', 'Fix the cup'),
-  _format('g-calibrate', 'slider', 'Dial it in'),
-  _format('g-sequence', 'sequence', 'Put it in order'),
+  _format('g-flavor', 'flavor', 'Name the flavor notes', moduleId: 'm5'),
+  _format('g-bagpick', 'bagpick', 'Read the green bean', moduleId: 'm2'),
+  _format('g-tastefix', 'tastefix', 'Fix the cup', moduleId: 'm4'),
+  _format('g-calibrate', 'slider', 'Dial it in', moduleId: 'm4'),
+  _format('g-sequence', 'sequence', 'Put it in order', moduleId: 'm5'),
 ];
 
 /// Four of the six answer `true`, so always tapping True scores exactly 4 —
@@ -84,9 +86,12 @@ class _FakeContentRepository extends ContentRepository {
       };
 }
 
+/// Pumps the catalog under a router. Entitled unless told otherwise: the tier
+/// is the subject of one group of tests and irrelevant to the rest.
 Future<void> _pump(
   WidgetTester tester, {
   bool disableAnimations = false,
+  bool hasCourse = true,
 }) async {
   tester.view.physicalSize = const Size(500, 1400);
   tester.view.devicePixelRatio = 1.0;
@@ -101,7 +106,10 @@ Future<void> _pump(
         name: AppRoutes.learn.name,
         builder: (_, _) => Scaffold(
           body: SingleChildScrollView(
-            child: MiniGamesCatalogWidget(formats: _formats),
+            child: MiniGamesCatalogWidget(
+              formats: _formats,
+              hasCourse: hasCourse,
+            ),
           ),
         ),
         routes: [
@@ -245,6 +253,88 @@ void main() {
     );
 
     handle.dispose();
+  });
+
+  group('the tier line', () {
+    /// The fixture's two free games: both on m1, like the real catalog's.
+    const freeTitles = ['True or false', 'Match the facts'];
+    const lockedTitle = 'Fix the cup';
+
+    /// Row titles top to bottom, so order can be compared across tiers.
+    List<String> rowOrder(WidgetTester tester) => [
+      for (final format in _formats)
+        if (find.text(format.title).evaluate().isNotEmpty) format.title,
+    ];
+
+    testWidgets('a free learner sees locks on what they do not own', (
+      tester,
+    ) async {
+      await _pump(tester, hasCourse: false);
+
+      expect(
+        find.byIcon(Icons.lock_outline),
+        findsNWidgets(_formats.length - freeTitles.length),
+      );
+      expect(
+        find.byIcon(Icons.chevron_right),
+        findsNWidgets(freeTitles.length),
+      );
+    });
+
+    testWidgets('a locked row announces itself and starts nothing', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await _pump(tester, hasCourse: false);
+
+      expect(
+        find.bySemanticsLabel(RegExp('Fix the cup.*Locked')),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.text(lockedTitle));
+      await _settle(tester);
+
+      expect(
+        find.text('HOW TO PLAY'),
+        findsNothing,
+        reason: 'a locked game must not reach its intro, let alone a run',
+      );
+      handle.dispose();
+    });
+
+    testWidgets('a free game still opens', (tester) async {
+      await _pump(tester, hasCourse: false);
+
+      await tester.tap(find.text('Match the facts'));
+      await _settle(tester);
+
+      expect(find.text('HOW TO PLAY'), findsOneWidget);
+    });
+
+    testWidgets('the course removes every lock', (tester) async {
+      // _pump is entitled by default — the tier is not most tests' subject.
+      await _pump(tester);
+
+      expect(find.byIcon(Icons.lock_outline), findsNothing);
+      expect(
+        find.byIcon(Icons.chevron_right),
+        findsNWidgets(_formats.length),
+      );
+    });
+
+    testWidgets('the shelf is in the same order either way', (tester) async {
+      await _pump(tester, hasCourse: false);
+      final free = rowOrder(tester);
+
+      await _pump(tester);
+
+      expect(
+        rowOrder(tester),
+        free,
+        reason: 'paying must not rearrange the shelf the learner has learned',
+      );
+    });
   });
 
   testWidgets('a game with no renderer reaches its intro and cannot start', (

@@ -61,6 +61,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The mini-game catalog shows what the learner owns.** Ten of the thirteen
+  games now carry a lock before any tap; Match, True or false and Name the
+  origin do not — the three ADR-0007's free lesson list forces. The rule is one
+  pure function, and a table test over the real shipped catalog pins the free
+  set by id and guards ADR-0001's invariant that a free learner can always
+  reach a qualifying streak day on free content alone. Entitlement is read
+  through the payments abstraction; while it resolves the shelf shows no locks,
+  so nobody who paid catches a frame of them (#269).
+
 - **The mini-game shelf is grouped by kind.** Thirteen games in one flat list
   meant reading all thirteen to find the two that match. They now sit under
   seven headings — Match, True or false, Name the note, Blind bag, Taste fix,
