@@ -1,6 +1,7 @@
 import 'package:brew_path/app/app.dart';
 import 'package:brew_path/features/profile/presentation/widgets/premium_card.dart';
 import 'package:brew_path/features/profile/presentation/widgets/stat_tile.dart';
+import 'package:brew_path/features/progress/presentation/week_strip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -60,6 +61,20 @@ void main() {
     expect(find.text('Your streak'), findsOneWidget);
     // A fresh user: no qualifying day yet, the full earn ahead.
     expect(find.text('Next freeze in 7 days'), findsOneWidget);
+  });
+
+  testWidgets('the Day streak tile carries the small week strip', (
+    tester,
+  ) async {
+    await openProfile(tester);
+
+    expect(
+      find.descendant(
+        of: find.byType(StatTile),
+        matching: find.byType(WeekStrip),
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('header gear opens the Settings screen', (tester) async {

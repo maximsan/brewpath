@@ -239,7 +239,7 @@ another — worth a check when porting.
 | `MiniGamePlayer` | `lesson.jsx` | Own intro → play → results; never touches progression ||
 | `FillSlot` | `lesson.jsx` | The concept card's tap-to-choose blank | **Fill-in-the-blank** |
 | `TasteFixCard` | `practical.jsx` | | **Taste Fix card** |
-| `TrainingCard` / `TrainingThumb` / `VisualLessonCard` | `practical.jsx` | 8 `TRAINING` variants; `inSheet` and `hideHeader` / `mergeHeader` layout options ||
+| `VisualGuideCard` / `VisualGuideThumb` / `VisualLessonCard` | `practical.jsx` | 8 `VISUAL_GUIDE_CONTENT` variants; `inSheet` and `hideHeader` / `mergeHeader` layout options ||
 | `PracticalCard` | `practical.jsx` | ||
 | `CherrySection` / `GreenBean` / `BagPickCard` | `bean-anatomy.jsx` | `GreenBean` renders from process cues: `body` colour, `crease` colour, `mottle`, `chaff`. `BagPickCard` draws a sample, exposes cues, takes the call | **Card cue** |
 
@@ -394,7 +394,7 @@ Only 6 props, but one undocumented behaviour that changes how the screen reads.
 
 Two filtering rules, both previously mis-stated in this reference:
 
-1. **`collectibles = COLLECTION.filter(c => c.kind !== 'training')`** — the 5 training guides are excluded, so the grid is **37 cards**. `ProfileTab`'s rollup (`screens.jsx:2427`) applies the same filter.
+1. **`collectibles = COLLECTIBLES`** — the visual guides live in their own registry, so no filter is needed and the grid is **37 cards**. The old render-time filter is gone; `ProfileTab`'s rollup reads the same list.
 2. **Only the first locked card renders.** Earned cards draw normally; the card at `firstLockedIdx` draws as a teaser; every later locked card `return null`s. There is no wall of silhouettes.
 
 `stampedFor(c)` and `challengeOpen(c)` decorate earned cards with brew state — a

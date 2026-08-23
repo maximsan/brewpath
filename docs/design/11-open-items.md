@@ -15,7 +15,7 @@ routes (the 104th, `card-flavor`, arrived after).
 | Dictionary lesson links resolve to a lesson that teaches the term | 72 terms, 64 pointers, `dictLessonAudit()` returns `[]` — verified. The audit scans **learner-visible copy only** (`lessonVisibleText()`), not the raw record |
 | Every lesson has a collectible card; every card unlocks from a real lesson | 32 / 32, no orphans either direction |
 | Every card `kind` has bespoke art and a tint | 37 collectibles, 37 distinct kinds, one per card, all covered |
-| **A card's words match wherever it appears** | 42 card entries, one source each — `syncCardText()` for the 37 collectibles, `syncTrainingText()` for the 5 guides |
+| **A card's words match wherever it appears** | 45 card entries, one source each — `syncCardText()` for the 37 collectibles, `syncVisualGuideText()` for the 8 guides |
 | **No two collectible cards share a name** | Distinct across both registries; the invariant no longer depends on which lists render together |
 | Path order matches defined lessons | 32 entries, 32 definitions, no drift |
 | Coffee challenges | 7 of 32 lessons, by design |
@@ -33,8 +33,8 @@ routes (the 104th, `card-flavor`, arrived after).
 ## Closed since the last pass
 - ✅ **`flavor` cards are graded.** They briefly incremented the score without being counted in the total, so mastery could exceed 100% and a perfect score was reachable with a wrong answer. `flavor` is now in the graded list; the total is 144.
 - ✅ **The `terroir` audit failure is fixed — and the check was tightened, not relaxed.** Two changes: the word now appears in *What origin means* ("Coffee borrowed wine's word for why that matters: terroir — soil, altitude and climate leaving a signature no other place can copy"), **and** `dictLessonAudit()` stopped scanning `JSON.stringify(lesson)` in favour of a new `lessonVisibleText()` that reads only fields a learner actually sees. The reasoning, from the source: *"a data field no card renders would otherwise pass a check whose whole point is that the word appears on screen."* The audit is now strictly harder to satisfy than when it was passing vacuously.
-- ✅ **The three duplicate collectible titles are resolved** — Extraction, Fermentation and The Cherry in Section. Fixed structurally: training guides moved out of `COLLECTION` into their own `TRAINING_CARDS` array, because sharing one array *"made a plain 'no two cards share a title' check report false collisions."* QA now carries the check as a standing invariant.
-- ✅ **Card copy can no longer drift between the reward screen and the collection sheet** — `syncCardText()` / `syncTrainingText()` copy the words from one authored source at load. See [§6](06-content.md) 6.3.
+- ✅ **The three duplicate collectible titles are resolved** — Extraction, Fermentation and The Cherry in Section. Fixed structurally: training guides moved out of `COLLECTION` into their own `VISUAL_GUIDE_CARDS` array, because sharing one array *"made a plain 'no two cards share a title' check report false collisions."* QA now carries the check as a standing invariant.
+- ✅ **Card copy can no longer drift between the reward screen and the collection sheet** — `syncCardText()` / `syncVisualGuideText()` copy the words from one authored source at load. See [§6](06-content.md) 6.3.
 - ✅ **The competing route counts are gone.** Every document now says **104**, the count of `SCREEN_ROUTES` keys as re-derived by `tools/extract-facts.js`. QA had lagged at 103 — it was written before `card-flavor` — and has been corrected; 96 and 97 are older still. The count is derived rather than authored, so it cannot drift again without the extractor drifting.
 - ✅ **The QA pacing note was stale ("116 cards across 15 lessons") and has been rewritten** along with the rest of that document.
 - ✅ **What makes a good question is now written down** — [`prototype/CLAUDE.md`](../../prototype/CLAUDE.md), seven content rules. See [§6](06-content.md) 6.9. *(Whether the cards meet them is still an open human pass.)*
@@ -154,7 +154,7 @@ component-local array rendered through `.map()`, checked against this document.
 `APP_HEADER_TITLES` including "Beginner Foundations" ([§4](04-information-architecture.md)) · the dead full
 `ComingSoonPath` variant ([§4](04-information-architecture.md)) · `TREE_VARIETIES` + `GROVE_LIGHT` ([§6.7](06-content.md)) ·
 `FAQ_ITEMS` answers as spec ([§6.8](06-content.md)) · `REMINDER_TIMES` ([§6.8](06-content.md)) · `PLAN_OPTS` as a
-second price list ([§5.9](05-mechanics.md)) · `BAGPICK_ROUNDS` ([§6.5](06-content.md)) · `TRAINING`'s eight guides
+second price list ([§5.9](05-mechanics.md)) · `BAGPICK_ROUNDS` ([§6.5](06-content.md)) · `VISUAL_GUIDE_CONTENT`'s eight guides
 ([§6.3](06-content.md)).
 
 **Checked and already documented:** `MINI_GAMES` + `MINI_GAME_CONTENT` ([§6.5](06-content.md)) ·

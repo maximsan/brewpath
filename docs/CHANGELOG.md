@@ -44,6 +44,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **A schema bump no longer trips over a migration that predates it.** The
+  step that dropped the two dead streak columns rebuilt `user_settings` from
+  the current table definition, so it quietly depended on every column that
+  table would ever gain — adding one broke every upgrade from older versions
+  with an error naming the new column, in a step written long before it. The
+  columns are now dropped by name, which nothing later can reach. The one
+  rebuild that must stay gained a test that fails by name if a column is added
+  without being declared.
+
 - **The mini-game catalog stopped looking broken.** Eleven of its thirteen rows
   greyed themselves out and said "Not available yet" because their kind has no
   renderer yet — a fact about our build progress, dressed as a paywall, on the
@@ -60,6 +69,36 @@ You can always edit this file by hand instead — the helpers just save effort.
   any file that pairs the two again.
 
 ### Added
+
+- **The eight visual guides get their drawings.** Roast swatches, grind dots,
+  the extraction and ratio spectrums, the cherry's six rings, the variety
+  family tree, caffeine bars and the blade-against-burr distribution curves —
+  one painter per subject, every coordinate a fraction of the box it is given,
+  so the row thumbnail and the sheet illustration are the same drawing at two
+  sizes rather than two that can drift apart. Wordless, because each guide's
+  meta table is already its diagram in words. They read the illustration
+  palette, follow the mood, and stay out of the semantics tree.
+
+- **Path ends in a Reference section.** Finish the lesson that teaches a visual
+  guide and it appears at the bottom of Path, while you are still holding the
+  phone — tap it and the reference opens as a sheet over Path, with its summary,
+  its two-or-three-row table and its fact. Locked guides are not drawn at all;
+  the section says how many are still to come, which turns the absence into a
+  promise rather than a wall of grey tiles at the moment you own one of eight.
+  Until the first guide is earned the section is locked and says what would fill
+  it, and it refuses to open onto nothing.
+
+- **The eight visual guides are content the app can read.** The illustrated
+  references a lesson teaches — roast, grind, extraction, ratio, cherry anatomy,
+  variety, caffeine, grind spread — now ship as their own bank, joined at
+  extraction from the two prototype registries that hold half a guide each.
+  Reading the second one meant teaching the extractor to slice a data object out
+  of a file that also carries React markup, by cutting each entry's body away.
+  Five checks refuse a run that would ship a broken guide, the sharpest being
+  that a guide's unlock must be the *earliest* lesson that teaches it — which is
+  what turns ten lesson placements into eight guides, and what stops a
+  reordering leaving a learner shown a reference as locked after being taught
+  it.
 
 - **The Tour can be replayed.** A "Replay the tour" row at the bottom of
   Profile → Customize switches to Learn and runs the four stops again — no
@@ -103,7 +142,14 @@ You can always edit this file by hand instead — the helpers just save effort.
   one. Learn's date joins the day-rollover list rather than being read once at
   build, and Profile's close button — an app-only invention the design has no
   equivalent for — is gone with its delegate.
-
+- **Milestones get their moment.** The streak screen opens on a Roasty beat
+  when a milestone day lands (3, 7, 14, 30, 60, 100, 180, 365, then every
+  30) — once per milestone, self-healing after a lapse — and the count sits
+  inside a progress ring toward the next badge.
+- **The week reads at a glance.** A shared seven-cell week strip — done,
+  covered-by-a-freeze, or empty, with a cue on today — renders on the streak
+  screen and inside the Profile streak tile, each cell read straight from the
+  recorded day set.
 - **A spent freeze says so.** The first open after a freeze covered a day
   shows a dismissible notice on Learn — the streak is safe, the covered day
   named, the re-earn stated — acknowledged per covered day so sync can never
