@@ -13,26 +13,31 @@ import 'package:go_router/go_router.dart';
 
 import '../support/widget_harness.dart';
 
-MiniGameFormat _format(String id, String title, {String topic = 'TOPIC'}) =>
-    MiniGameFormat(
-      id: id,
-      kind: 'quiz',
-      title: title,
-      topic: topic,
-      duration: '~1 MIN',
-      blurb: 'Blurb for $title.',
-      steps: const ['Read it', 'Answer it', 'Learn from it'],
-    );
+MiniGameFormat _format(
+  String id,
+  String kind,
+  String title, {
+  String topic = 'TOPIC',
+}) => MiniGameFormat(
+  id: id,
+  kind: kind,
+  title: title,
+  topic: topic,
+  duration: '~1 MIN',
+  blurb: 'Blurb for $title.',
+  steps: const ['Read it', 'Answer it', 'Learn from it'],
+);
 
-/// The catalog: g-quiz plays, the rest are listed only.
+/// The catalog: g-quiz and g-match play, the rest are listed only. Kinds are
+/// the real ones so the shelf groups the way it does in the app.
 final List<MiniGameFormat> _formats = [
-  _format('g-quiz', 'True or false', topic: 'COFFEE BASICS'),
-  _format('g-match', 'Match the facts'),
-  _format('g-flavor', 'Name the flavor notes'),
-  _format('g-bagpick', 'Read the green bean'),
-  _format('g-tastefix', 'Fix the cup'),
-  _format('g-calibrate', 'Dial it in'),
-  _format('g-sequence', 'Put it in order'),
+  _format('g-quiz', 'quiz', 'True or false', topic: 'COFFEE BASICS'),
+  _format('g-match', 'match', 'Match the facts'),
+  _format('g-flavor', 'flavor', 'Name the flavor notes'),
+  _format('g-bagpick', 'bagpick', 'Read the green bean'),
+  _format('g-tastefix', 'tastefix', 'Fix the cup'),
+  _format('g-calibrate', 'slider', 'Dial it in'),
+  _format('g-sequence', 'sequence', 'Put it in order'),
 ];
 
 /// Four of the six answer `true`, so always tapping True scores exactly 4 —
@@ -191,6 +196,55 @@ void main() {
     }
     expect(find.text('COFFEE BASICS'), findsOneWidget);
     expect(find.text('~1 MIN'), findsNWidgets(_formats.length));
+  });
+
+  testWidgets('the shelf groups by kind, in the fixed order', (tester) async {
+    await _pump(tester);
+
+    final headings = tester
+        .widgetList<Text>(find.byType(Text))
+        .map((text) => text.data)
+        .where(
+          (data) => const [
+            'MATCH',
+            'TRUE OR FALSE',
+            'NAME THE NOTE',
+            'BLIND BAG',
+            'TASTE FIX',
+            'CALIBRATE',
+            'SEQUENCE',
+          ].contains(data),
+        )
+        .toList();
+
+    expect(headings, [
+      'MATCH',
+      'TRUE OR FALSE',
+      'NAME THE NOTE',
+      'BLIND BAG',
+      'TASTE FIX',
+      'CALIBRATE',
+      'SEQUENCE',
+    ]);
+  });
+
+  testWidgets('each group heading is announced as a heading', (tester) async {
+    final handle = tester.ensureSemantics();
+    await _pump(tester);
+
+    expect(
+      find.bySemanticsLabel('MATCH'),
+      findsOneWidget,
+      reason:
+          'a sighted learner reads the grouping from layout; a screen '
+          'reader needs the heading flag to navigate by it',
+    );
+    expect(
+      tester.getSemantics(find.bySemanticsLabel('MATCH')),
+      isSemantics(label: 'MATCH', isHeader: true),
+    );
+
+    handle.dispose();
   });
 
   testWidgets('a game with no renderer reaches its intro and cannot start', (
