@@ -51,6 +51,11 @@ class AccountWipe {
     // emptied, and the points total derives from the completions it cleared.
     // What is left on that row is what the learner *chose*, which a progress
     // reset keeps.
+    //
+    // That includes `onboardingCompleted` and `tourSeen` together — the two
+    // "already introduced" bits fate-share, and here they share by being left
+    // alone. Neither is progress: replaying the welcome flow or the Tour is not
+    // what someone asks for when they ask to start the course over.
     await _clearLegacyTables();
   }
 
@@ -58,8 +63,10 @@ class AccountWipe {
   ///
   /// Device-local state is *not synced* and *not wiped by reset* — two separate
   /// properties, and it has both. Delete is where it goes, because after it
-  /// there is no account for the appearance preference or the onboarding
-  /// answers to belong to.
+  /// there is no account for the appearance preference, the onboarding answers
+  /// or the Tour's `tourSeen` bit to belong to. Dropping the whole row is also
+  /// what keeps `onboardingCompleted` and `tourSeen` fate-sharing here: they go
+  /// together because nothing gets the chance to clear one of them alone.
   Future<void> deleteAccount() async {
     final stored = await _snapshots.read();
     await _snapshots.write(

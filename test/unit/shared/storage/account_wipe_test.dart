@@ -80,6 +80,7 @@ void main() {
         onboardingGoal: 'brew_better',
         onboardingBrewer: 'v60',
         themeMode: AppThemeMode.light,
+        tourSeen: true,
       ),
     );
   });
@@ -126,6 +127,18 @@ void main() {
       expect(after.onboardingCompleted, true);
       expect(after.onboardingGoal, 'brew_better');
       expect(after.onboardingBrewer, 'v60');
+      expect(after.tourSeen, true);
+    });
+
+    test('keeps the two already-introduced bits together', () async {
+      // `tourSeen` fate-shares with `onboardingCompleted`, and a reset is the
+      // wipe that keeps both. Asserted as a pair, not as two independent
+      // facts, because the failure worth catching is one of them moving alone.
+      await wipe.resetProgress();
+
+      final after = await settings.getSettings();
+      expect(after.onboardingCompleted, true);
+      expect(after.tourSeen, true);
     });
 
     test('leaves the settings row alone entirely', () async {
@@ -190,6 +203,16 @@ void main() {
       expect(after.onboardingCompleted, false);
       expect(after.onboardingGoal, isNull);
       expect(after.totalXp, 0);
+    });
+
+    test('clears the two already-introduced bits together', () async {
+      // The other half of the fate-sharing rule: delete is the wipe that takes
+      // both, and it takes them by dropping the row they share.
+      await wipe.deleteAccount();
+
+      final after = await settings.getSettings();
+      expect(after.onboardingCompleted, false);
+      expect(after.tourSeen, false);
     });
 
     test('clears the tables the snapshot has not replaced yet', () async {

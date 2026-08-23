@@ -54,6 +54,14 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The Tour has somewhere to remember itself.** A `tourSeen` bit on the
+  settings row (schema v8), written once when the learner answers the Tour's
+  intro and read to decide whether the Tour auto-runs at all. It fate-shares
+  with the onboarding gate wherever a wipe decides: Reset Progress keeps both,
+  Delete Account clears both, and the debug onboarding-reset clears both — so
+  no wipe can leave a device replaying the welcome flow with the Tour silently
+  suppressed. Device-local, and deliberately outside the progress snapshot.
+
 - **The tab header gets out of the way as you scroll.** Scrolling a tab drops
   the header's eyebrow and shrinks it to the title; scrolling back to the top
   restores it. Each tab keeps its own collapse, for the same reason each keeps
