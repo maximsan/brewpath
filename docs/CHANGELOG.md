@@ -42,6 +42,17 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ## [Unreleased]
 
+### Fixed
+
+- **Two mini-games were on the shelf but switched off.** *Match: washed vs
+  natural* and *True or false: roast basics* both render, and both had sat
+  behind a dead "Not playable yet" button since they were authored — they
+  entered the catalog three days after the list of playable games was last
+  written, so nobody ever ruled on them. Both play now, and a new guard fails
+  the build when a game whose rounds can be drawn is neither playable nor
+  recorded as deliberately held back, so the next game added to the catalog
+  cannot go missing the same way.
+
 ### Added
 
 - **The visual guides explain themselves.** A guide's table said *what* —
