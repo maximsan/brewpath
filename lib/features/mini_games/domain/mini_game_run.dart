@@ -10,12 +10,18 @@ import 'package:brew_path/features/lessons/domain/card_seed.dart';
 /// The four-in-five mark the companion celebrates at.
 const double _celebrationMark = 0.8;
 
-/// The formats whose renderers exist in this build.
+/// The games whose kind renderers exist in this build.
 ///
-/// The catalog lists all seven; the rest are shown but do not navigate, and
-/// join by joining this set as their sibling slices land. Keeping it a
-/// registry rather than a card-kind lookup means a format is playable only
-/// when someone says so, not incidentally because its kind happens to render.
+/// The catalog lists every game and every row opens its intro; this decides
+/// only whether that intro can start a run, and games join the set as their
+/// sibling slices land. Keeping it a registry rather than a card-kind lookup
+/// means a game is playable only when someone says so, not incidentally
+/// because its kind happens to render.
+///
+/// Read by the intro's action and by Keep Sharp, which must never recommend a
+/// game that cannot run. Deliberately *not* read by the catalog row — a row
+/// greyed for a missing renderer is indistinguishable from one behind a
+/// paywall.
 const Set<String> playableMiniGameIds = {'g-quiz', 'g-match'};
 
 /// Mints the nonce for one run. One draw per run, held for its duration and
