@@ -1,8 +1,12 @@
 import 'package:brew_path/app/app_theme.dart';
+import 'package:brew_path/features/path/domain/visual_guide_providers.dart';
+import 'package:brew_path/features/path/domain/visual_guide_shelf.dart';
+import 'package:brew_path/features/path/presentation/visual_guide_sheet.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/presentation/saved_empty_view.dart';
 import 'package:brew_path/features/saved/presentation/saved_group_section.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
+import 'package:brew_path/shared/models/content/visual_guide.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,8 +22,47 @@ const _guides = 'VISUAL GUIDES';
 
 /// The shelf against the **real** content banks, so a row's title and subtitle
 /// are the ones a learner would actually see rather than a fixture's.
-Widget _wrap() =>
-    MaterialApp(theme: AppTheme.cupping, home: const SavedScreen());
+Widget _wrap() => ProviderScope(
+  child: MaterialApp(theme: AppTheme.cupping, home: const SavedScreen()),
+);
+
+/// Pumps the shelf with exactly [earned] guides unlocked.
+///
+/// The container carries the override rather than a nested `ProviderScope`:
+/// the shelf provider resolves against the container the screen is mounted
+/// under, so an inner scope added below it changes nothing.
+Future<void> _pumpWithGuides(
+  WidgetTester tester,
+  List<VisualGuide> earned,
+) async {
+  final container = ProviderContainer(
+    overrides: [
+      visualGuideShelfForProvider.overrideWith(
+        (ref) async =>
+            VisualGuideShelf(earned: earned, remaining: 8 - earned.length),
+      ),
+    ],
+  );
+  addTearDown(container.dispose);
+  await tester.pumpWidget(
+    UncontrolledProviderScope(
+      container: container,
+      child: MaterialApp(theme: AppTheme.cupping, home: const SavedScreen()),
+    ),
+  );
+  await settleLoaders(tester);
+}
+
+/// A guide, with the id/subject split that `g:` has to get right.
+VisualGuide _guide(String subject, String title) => VisualGuide(
+  id: 'g-$subject',
+  subject: subject,
+  unlock: const VisualGuideUnlock(lesson: 'm3l1'),
+  label: 'VISUAL GUIDE',
+  title: title,
+  summary: 'What $subject is.',
+  fact: 'Worth repeating about $subject.',
+);
 
 /// Saves [keys] the way the app does, before the screen is pumped.
 Future<void> _seed(WidgetTester tester, List<String> keys) async {
@@ -152,6 +195,64 @@ void main() {
       ),
       findsOneWidget,
     );
+  });
+
+  group('visual guides', () {
+    final roast = _guide('roast', 'Roast Levels');
+    final grind = _guide('grind', 'Grind Size');
+
+    testWidgets('a saved guide appears under its own group', (tester) async {
+      await _seed(tester, ['g:roast']);
+      await _pumpWithGuides(tester, [roast]);
+
+      expect(find.text(_guides), findsOneWidget);
+      expect(find.text('Roast Levels'), findsOneWidget);
+    });
+
+    testWidgets('a guide the learner has not earned never reaches the shelf', (
+      tester,
+    ) async {
+      // Saved while earned, then Reset locked it again. The shelf must not
+      // become a way back into content the course has re-locked.
+      await _seed(tester, ['g:roast']);
+      await _pumpWithGuides(tester, const []);
+
+      expect(find.text(_guides), findsNothing);
+      expect(find.text('Roast Levels'), findsNothing);
+      expect(find.byType(SavedEmptyView), findsOneWidget);
+    });
+
+    testWidgets('a guide row opens that guide', (tester) async {
+      await _seed(tester, ['g:roast']);
+      await _pumpWithGuides(tester, [roast]);
+
+      await tester.tap(find.text('Roast Levels'));
+      await tester.pumpAndSettle();
+
+      // A sheet, not a route: a reference opens over what you were reading.
+      expect(find.byType(VisualGuideSheetBody), findsOneWidget);
+    });
+
+    testWidgets('guides read in bank order, not save order', (tester) async {
+      await _seed(tester, ['g:grind', 'g:roast']);
+      await _pumpWithGuides(tester, [roast, grind]);
+
+      expect(
+        tester.getTopLeft(find.text('Roast Levels')).dy,
+        lessThan(tester.getTopLeft(find.text('Grind Size')).dy),
+      );
+    });
+
+    testWidgets('guides come last, after terms and lessons', (tester) async {
+      await _seed(tester, ['g:roast', 't:arabica', 'l:m1l1']);
+      await _pumpWithGuides(tester, [roast]);
+
+      final terms = tester.getTopLeft(find.text(_terms)).dy;
+      final lessons = tester.getTopLeft(find.text(_lessons)).dy;
+      final guides = tester.getTopLeft(find.text(_guides)).dy;
+      expect(terms, lessThan(lessons));
+      expect(lessons, lessThan(guides));
+    });
   });
 
   testWidgets('the count line counts what is shown', (tester) async {
