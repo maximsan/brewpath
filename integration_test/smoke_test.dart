@@ -245,6 +245,16 @@ void main() {
       describe: 'the Profile greeting carrying the name from onboarding',
     );
 
+    // Back to Learn, because the walk continues there. The detour above is a
+    // read, not a destination — leaving the walk on Profile made the content
+    // section below hunt for a lesson card on the wrong tab, which is how it
+    // failed the first time this check was added.
+    await tapWhenReady(
+      tester,
+      find.byIcon(Icons.school_outlined),
+      describe: 'the Learn tab after the Profile detour',
+    );
+
     // Content: authored material loads from the bundle as it ships, and the
     // immersive flow opens over the shell.
     //
