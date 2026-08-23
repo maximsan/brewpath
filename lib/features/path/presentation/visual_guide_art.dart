@@ -1,9 +1,10 @@
-import 'package:brew_path/shared/theme/app_radii.dart';
+import 'package:brew_path/features/path/presentation/guide_marks/beans_marks.dart';
+import 'package:brew_path/features/path/presentation/guide_marks/brew_marks.dart';
+import 'package:brew_path/features/path/presentation/guide_marks/grind_marks.dart';
+import 'package:brew_path/features/path/presentation/guide_marks/guide_mark.dart';
+import 'package:brew_path/features/path/presentation/guide_marks/roast_marks.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
-
-/// How much of the drawing's box the generic mark fills.
-const double _markToSideRatio = 2;
 
 /// Beside a row: large enough to tell eight drawings apart at a glance.
 const double _rowSide = 36;
@@ -35,15 +36,14 @@ enum VisualGuideArtSize {
 
 /// A guide's drawing.
 ///
-/// ⚠️ **A placeholder for now.** The eight real drawings are their own effort,
-/// deliberately: one painter family per subject, built to be legible at both
-/// sizes so the row thumbnail and the sheet illustration cannot drift apart —
-/// and reused later by the lesson `visual` card renderer. Until they land,
-/// every subject gets the same generic mark, which is the fallback the
-/// collectible model already documents for art that does not exist yet.
+/// **One drawing per subject, at whatever size it is asked for.** The row
+/// thumbnail and the sheet illustration are the same painter, so they cannot
+/// drift apart — and the lesson `visual` card renderer will reuse them, which
+/// makes that work a layout job rather than an art job.
 ///
-/// It is excluded from the semantics tree at both sizes: eight unlabelled
-/// shapes read out to a screen-reader user is worse than none.
+/// Excluded from the semantics tree at both sizes: eight unlabelled shapes
+/// read out to a screen-reader user is worse than none. What each guide *is*
+/// is carried by its title and its meta table.
 class VisualGuideArt extends StatelessWidget {
   /// Creates a [VisualGuideArt].
   const VisualGuideArt({
@@ -52,8 +52,7 @@ class VisualGuideArt extends StatelessWidget {
     super.key,
   });
 
-  /// Which guide's drawing to paint. Unused while the mark is generic, and
-  /// carried anyway because it is what the real drawings are chosen by.
+  /// Which guide's drawing to paint.
   final String subject;
 
   /// How large to draw it.
@@ -64,20 +63,46 @@ class VisualGuideArt extends StatelessWidget {
     final mood = context.mood;
 
     return ExcludeSemantics(
-      child: Container(
+      child: SizedBox(
         width: size.width ?? double.infinity,
         height: size.side,
-        decoration: BoxDecoration(
-          color: mood.surface,
-          border: Border.all(color: mood.rule),
-          borderRadius: BorderRadius.circular(AppRadii.chrome),
-        ),
-        child: Icon(
-          Icons.auto_stories_outlined,
-          size: size.side / _markToSideRatio,
-          color: mood.inkMute,
-        ),
+        child: CustomPaint(painter: guideMarkFor(subject, mood)),
       ),
     );
+  }
+}
+
+/// The drawing for [subject].
+///
+/// A subject with no drawing yet falls back to a plain mark rather than an
+/// empty box — the same fallback the collectible model documents for art that
+/// does not exist. Every shipped subject has one; the fallback exists so a new
+/// guide is unremarkable rather than broken.
+GuideMark guideMarkFor(String subject, MoodColors mood) => switch (subject) {
+  'roast' => RoastMark(mood),
+  'caffeine' => CaffeineMark(mood),
+  'grind' => GrindMark(mood),
+  'distribution' => DistributionMark(mood),
+  'extraction' => ExtractionMark(mood),
+  'ratio' => RatioMark(mood),
+  'anatomy' => AnatomyMark(mood),
+  'variety' => VarietyMark(mood),
+  _ => FallbackMark(mood),
+};
+
+/// The mark a subject with no drawing gets.
+class FallbackMark extends GuideMark {
+  /// Creates a [FallbackMark].
+  const FallbackMark(super.mood);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Rect.fromLTWH(
+      size.width * 0.2,
+      size.height * 0.3,
+      size.width * 0.6,
+      size.height * 0.4,
+    );
+    paintBar(canvas, rect, mood.rule, radius: size.shortestSide * 0.08);
   }
 }

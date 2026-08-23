@@ -63,6 +63,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The eight visual guides get their drawings.** Roast swatches, grind dots,
+  the extraction and ratio spectrums, the cherry's six rings, the variety
+  family tree, caffeine bars and the blade-against-burr distribution curves —
+  one painter per subject, every coordinate a fraction of the box it is given,
+  so the row thumbnail and the sheet illustration are the same drawing at two
+  sizes rather than two that can drift apart. Wordless, because each guide's
+  meta table is already its diagram in words. They read the illustration
+  palette, follow the mood, and stay out of the semantics tree.
+
 - **Path ends in a Reference section.** Finish the lesson that teaches a visual
   guide and it appears at the bottom of Path, while you are still holding the
   phone — tap it and the reference opens as a sheet over Path, with its summary,
