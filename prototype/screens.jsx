@@ -959,7 +959,7 @@ function LearnTab({ freezeSaved = false, freezesHeld = 0, nextFreezeIn = 7, onDi
           const kindGroups = GAME_KINDS.map(k => ({ ...k, games: MINI_GAMES.filter(m => m.kind === k.kind) })).filter(k => k.games.length);
           return (
             <div className="px-24" data-guide="today-practice" style={{ paddingTop: 32 }}>
-              <div className="smallcaps" style={{ marginBottom: 12 }}>PRACTICE AGAIN</div>
+              <div className="smallcaps" style={{ marginBottom: 12 }}>PRACTICE</div>
               {lessonItems.length > 0 && (
               <PracticeGroup label="Lessons" count={lessonItems.length} defaultOpen={false} openSignal={ksSignal.lessons}>
                 {lessonItems.map(it => (

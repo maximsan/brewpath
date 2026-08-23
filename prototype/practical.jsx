@@ -166,7 +166,7 @@ const ROAST_BEANS = ['var(--art-roast-light)', 'var(--art-roast-mid)', 'var(--ar
 function Swatch({ color, ring }) {
   return (
     <span style={{
-      width: 30, height: 30, borderRadius: 999, flexShrink: 0, background: color,
+      display: 'block', width: 30, height: 30, borderRadius: 999, flexShrink: 0, background: color,
       boxShadow: ring ? '0 0 0 1px var(--rule)' : 'none',
     }}/>
   );
@@ -231,32 +231,53 @@ function SpectrumBar({ stops, marker = 0.5, colors }) {
   );
 }
 
+// Prose footnote under a guide body. `emphasis`, when it appears in the text,
+// is picked out in full ink — the one word the note turns on.
+function GuideNote({ text, emphasis, margin = '14px 0 0' }) {
+  if (!text) return null;
+  const i = emphasis ? text.indexOf(emphasis) : -1;
+  return (
+    <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink-mute)', margin, textWrap: 'pretty' }}>
+      {i < 0 ? text : (<>{text.slice(0, i)}<strong style={{ color: 'var(--ink)' }}>{emphasis}</strong>{text.slice(i + emphasis.length)}</>)}
+    </p>
+  );
+}
+
+// Notes list: leading visual per row comes from the guide, the words from data.
+function LevelList({ levels, visual }) {
+  return (
+    <div>
+      {levels.map((l, i) => (
+        <LevelRow key={i} visual={visual(i)} name={l.name} keywords={l.keywords} note={l.note}/>
+      ))}
+    </div>
+  );
+}
+
 const VISUAL_GUIDE_CONTENT = {
   roast: {
     id: 'roast', label: 'ROAST',
     title: 'Roast Levels',
     summary: 'Light to dark: how the roast shifts taste before you even brew.',
     fact: 'There is no “best” roast. It is a flavour choice, not a quality scale.',
-    body: () => (
-      <div>
-        <LevelRow visual={<Swatch color={ROAST_BEANS[0]} ring/>} name="Light" keywords="Bright · floral" note="Acidic and fruity. Can taste sharp or sour if under-extracted." />
-        <LevelRow visual={<Swatch color={ROAST_BEANS[1]}/>} name="Medium" keywords="Balanced · sweet" note="Rounded and easygoing — the safest place for a beginner to start." />
-        <LevelRow visual={<Swatch color={ROAST_BEANS[2]}/>} name="Dark" keywords="Bitter · smoky" note="Heavier and bolder. Turns harsh easily, so go gentler on grind and heat." />
-      </div>
-    ),
+    levels: [
+      { name: 'Light', keywords: 'Bright · floral', note: 'Acidic and fruity. Can taste sharp or sour if under-extracted.' },
+      { name: 'Medium', keywords: 'Balanced · sweet', note: 'Rounded and easygoing — the safest place for a beginner to start.' },
+      { name: 'Dark', keywords: 'Bitter · smoky', note: 'Heavier and bolder. Turns harsh easily, so go gentler on grind and heat.' },
+    ],
+    body: (d) => <LevelList levels={d.levels} visual={(i) => <Swatch color={ROAST_BEANS[i]} ring={i === 0}/>}/>,
   },
   grind: {
     id: 'grind', label: 'GRIND SIZE',
     title: 'Grind Size',
     summary: 'Coarse to fine: the dial that controls how fast flavour extracts.',
     fact: 'Grind is usually the first thing to change when a cup tastes off.',
-    body: () => (
-      <div>
-        <LevelRow visual={<GrindDots level={0}/>} name="Coarse" keywords="Slow extraction" note="French press, cold brew. Too coarse and the cup turns weak, sour, watery." />
-        <LevelRow visual={<GrindDots level={1}/>} name="Medium" keywords="Balanced" note="Pour-over and drip. The forgiving default to start from." />
-        <LevelRow visual={<GrindDots level={2}/>} name="Fine" keywords="Fast extraction" note="Espresso, moka pot. Too fine and the cup turns bitter and harsh." />
-      </div>
-    ),
+    levels: [
+      { name: 'Coarse', keywords: 'Slow extraction', note: 'French press, cold brew. Too coarse and the cup turns weak, sour, watery.' },
+      { name: 'Medium', keywords: 'Balanced', note: 'Pour-over and drip. The forgiving default to start from.' },
+      { name: 'Fine', keywords: 'Fast extraction', note: 'Espresso, moka pot. Too fine and the cup turns bitter and harsh.' },
+    ],
+    body: (d) => <LevelList levels={d.levels} visual={(i) => <GrindDots level={i}/>}/>,
   },
   extraction: {
     id: 'extraction', label: 'EXTRACTION',
@@ -265,15 +286,16 @@ const VISUAL_GUIDE_CONTENT = {
     title: 'The Extraction Spectrum',
     summary: 'Under to over: the one idea behind sour vs bitter.',
     fact: 'Water dissolves the sour notes first and the bitter ones last. Time decides where you stop.',
-    body: () => (
+    stops: [
+      { label: 'Under', cue: 'Sour, thin, sharp' },
+      { label: 'Balanced', cue: 'Sweet, rounded, pleasant' },
+      { label: 'Over', cue: 'Bitter, dry, harsh' },
+    ],
+    body: (d) => (
       <SpectrumBar
         colors={['color-mix(in oklab, var(--berry) 55%, var(--surface))', 'color-mix(in oklab, var(--sage) 65%, var(--surface))', 'var(--art-roast-dark)']}
         marker={0.5}
-        stops={[
-          { label: 'Under', cue: 'Sour, thin, sharp' },
-          { label: 'Balanced', cue: 'Sweet, rounded, pleasant' },
-          { label: 'Over', cue: 'Bitter, dry, harsh' },
-        ]}/>
+        stops={d.stops}/>
     ),
   },
   ratio: {
@@ -281,19 +303,20 @@ const VISUAL_GUIDE_CONTENT = {
     title: 'Coffee-to-Water Ratio',
     summary: 'How much coffee vs water sets the strength of your cup.',
     fact: 'Most brews land near 1:16, one gram of coffee to sixteen of water.',
-    body: () => (
+    stops: [
+      { label: 'Weak', cue: 'More water' },
+      { label: 'Balanced', cue: '≈ 1:16' },
+      { label: 'Strong', cue: 'More coffee' },
+    ],
+    note: 'Ratio changes strength first — a bad-tasting cup is usually a grind or extraction problem, not a ratio one.',
+    noteEmphasis: 'strength',
+    body: (d) => (
       <div>
         <SpectrumBar
           colors={['#C9A97E', 'var(--art-roast-mid)', 'var(--art-roast-dark)']}
           marker={0.5}
-          stops={[
-            { label: 'Weak', cue: 'More water' },
-            { label: 'Balanced', cue: '≈ 1:16' },
-            { label: 'Strong', cue: 'More coffee' },
-          ]}/>
-        <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: '16px 0 0', textWrap: 'pretty' }}>
-          Ratio changes <strong style={{ color: 'var(--ink)' }}>strength</strong> first — a bad-tasting cup is usually a grind or extraction problem, not a ratio one.
-        </p>
+          stops={d.stops}/>
+        <GuideNote text={d.note} emphasis={d.noteEmphasis} margin="16px 0 0"/>
       </div>
     ),
   },
@@ -310,26 +333,38 @@ const VISUAL_GUIDE_CONTENT = {
     title: 'The Variety Family Tree',
     summary: 'Typica and Bourbon: the two old parents behind most cups you’ll meet.',
     fact: 'Geisha, Caturra and SL28 are all arabica. Variety is why they taste nothing alike.',
-    body: () => (
+    note: 'A variety is to coffee what an apple variety is to apples — one species, very different fruit.',
+    // The species at the root, then the tree's two tiers. x/w are the pill's
+    // hand-tuned geometry in the 300×132 viewBox; the connectors stay drawn.
+    root: 'ARABICA',
+    nodes: [
+      { label: 'Typica',  tier: 'parent', x: 50,  w: 60 },
+      { label: 'Bourbon', tier: 'parent', x: 190, w: 60 },
+      { label: 'Geisha',  tier: 'child',  x: 50,  w: 60 },
+      { label: 'Caturra', tier: 'child',  x: 152, w: 66 },
+      { label: 'SL28',    tier: 'child',  x: 228, w: 54 },
+    ],
+    body: (d) => (
       <div>
         <svg viewBox="0 0 300 132" style={{ width: '100%', display: 'block' }}>
-          <text x="150" y="14" textAnchor="middle" fontFamily="IBM Plex Mono" fontSize="9" letterSpacing="2" fill="var(--ink-mute)">ARABICA</text>
+          <text x="150" y="14" textAnchor="middle" fontFamily="IBM Plex Mono" fontSize="9" letterSpacing="2" fill="var(--ink-mute)">{d.root}</text>
           <path d="M150 20 L150 30 M150 30 L80 30 L80 44 M150 30 L220 30 L220 44" fill="none" stroke="var(--rule)" strokeWidth="1.2"/>
-          <rect x="50" y="44" width="60" height="22" rx="11" fill="none" stroke="var(--sage)" strokeWidth="1.2"/>
-          <text x="80" y="58.5" textAnchor="middle" fontSize="11" fill="var(--ink)">Typica</text>
-          <rect x="190" y="44" width="60" height="22" rx="11" fill="none" stroke="var(--sage)" strokeWidth="1.2"/>
-          <text x="220" y="58.5" textAnchor="middle" fontSize="11" fill="var(--ink)">Bourbon</text>
           <path d="M80 66 L80 96 M220 66 L220 80 M220 80 L185 80 L185 96 M220 80 L255 80 L255 96" fill="none" stroke="var(--rule)" strokeWidth="1.2"/>
-          <rect x="50" y="96" width="60" height="22" rx="11" fill="var(--surface-2)" stroke="var(--rule)" strokeWidth="1.1"/>
-          <text x="80" y="110.5" textAnchor="middle" fontSize="11" fill="var(--ink)">Geisha</text>
-          <rect x="152" y="96" width="66" height="22" rx="11" fill="var(--surface-2)" stroke="var(--rule)" strokeWidth="1.1"/>
-          <text x="185" y="110.5" textAnchor="middle" fontSize="11" fill="var(--ink)">Caturra</text>
-          <rect x="228" y="96" width="54" height="22" rx="11" fill="var(--surface-2)" stroke="var(--rule)" strokeWidth="1.1"/>
-          <text x="255" y="110.5" textAnchor="middle" fontSize="11" fill="var(--ink)">SL28</text>
+          {d.nodes.map((n) => {
+            const parent = n.tier === 'parent';
+            const y = parent ? 44 : 96;
+            return (
+              <React.Fragment key={n.label}>
+                <rect x={n.x} y={y} width={n.w} height="22" rx="11"
+                      fill={parent ? 'none' : 'var(--surface-2)'}
+                      stroke={parent ? 'var(--sage)' : 'var(--rule)'}
+                      strokeWidth={parent ? 1.2 : 1.1}/>
+                <text x={n.x + n.w / 2} y={y + 14.5} textAnchor="middle" fontSize="11" fill="var(--ink)">{n.label}</text>
+              </React.Fragment>
+            );
+          })}
         </svg>
-        <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: '14px 0 0', textWrap: 'pretty' }}>
-          A variety is to coffee what an apple variety is to apples — one species, very different fruit.
-        </p>
+        <GuideNote text={d.note}/>
       </div>
     ),
   },
@@ -338,13 +373,16 @@ const VISUAL_GUIDE_CONTENT = {
     title: 'Caffeine, Per Serving',
     summary: 'What each brew actually delivers. The serving matters as much as the method.',
     fact: 'A single espresso carries less caffeine than a mug of drip.',
-    body: () => {
-      const rows = [
-        { name: 'Decaf', serve: '240 ml cup', mg: 3 },
-        { name: 'Espresso', serve: '30 ml shot', mg: 63 },
-        { name: 'Drip coffee', serve: '240 ml cup', mg: 95 },
-        { name: 'Cold brew', serve: '450 ml glass', mg: 200 },
-      ];
+    rows: [
+      { name: 'Decaf', serve: '240 ml cup', mg: 3 },
+      { name: 'Espresso', serve: '30 ml shot', mg: 63 },
+      { name: 'Drip coffee', serve: '240 ml cup', mg: 95 },
+      { name: 'Cold brew', serve: '450 ml glass', mg: 200 },
+    ],
+    note: 'Per millilitre, espresso is the strongest of the four — its small serve is what keeps the total low.',
+    body: (d) => {
+      const rows = d.rows;
+      const peak = Math.max(...rows.map(r => r.mg));
       return (
         <div>
           {rows.map((r, i) => (
@@ -354,14 +392,12 @@ const VISUAL_GUIDE_CONTENT = {
                 <span className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.08em', color: 'var(--sage)', whiteSpace: 'nowrap' }}>~{r.mg} mg</span>
               </div>
               <div style={{ position: 'relative', height: 8, borderRadius: 999, background: 'var(--surface-2)', border: '1px solid var(--rule)', overflow: 'hidden', marginTop: 7 }}>
-                <div style={{ position: 'absolute', inset: 0, width: `${Math.max(3, r.mg / 200 * 100)}%`, background: 'var(--accent)', borderRadius: 999 }}></div>
+                <div style={{ position: 'absolute', inset: 0, width: `${Math.max(3, r.mg / peak * 100)}%`, background: 'var(--accent)', borderRadius: 999 }}></div>
               </div>
               <div className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-mute)', marginTop: 5 }}>{r.serve}</div>
             </div>
           ))}
-          <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: '14px 0 0', textWrap: 'pretty' }}>
-            Per millilitre, espresso is the strongest of the four — its small serve is what keeps the total low.
-          </p>
+          <GuideNote text={d.note}/>
         </div>
       );
     },
@@ -371,7 +407,12 @@ const VISUAL_GUIDE_CONTENT = {
     title: 'Particle Distribution',
     summary: 'Why a burr\u2019s tight spread beats a blade\u2019s fines-and-boulders.',
     fact: 'Even a cheap burr grinder beats a blade: evenness matters more than fineness.',
-    body: () => (
+    legend: [
+      { color: 'var(--berry)', label: 'Blade — wide, uneven' },
+      { color: 'var(--sage)', label: 'Burr — tight, even' },
+    ],
+    note: 'One dose of blade-ground coffee brews as two coffees at once — sour boulders and bitter dust in the same cup.',
+    body: (d) => (
       <div>
         <svg viewBox="0 0 300 118" style={{ width: '100%', display: 'block' }}>
           <line x1="16" y1="96" x2="284" y2="96" stroke="var(--rule)" strokeWidth="1"/>
@@ -383,16 +424,14 @@ const VISUAL_GUIDE_CONTENT = {
           <text x="284" y="112" textAnchor="end" fontFamily="IBM Plex Mono" fontSize="9" letterSpacing="1.5" fill="var(--ink-mute)">COARSE</text>
         </svg>
         <div style={{ display: 'flex', gap: 18, marginTop: 12 }}>
-          {[['var(--berry)', 'Blade — wide, uneven'], ['var(--sage)', 'Burr — tight, even']].map(([c, l], i) => (
+          {d.legend.map((g, i) => (
             <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-              <span style={{ width: 16, height: 3, borderRadius: 2, background: c, flexShrink: 0 }}></span>
-              <span className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-mute)' }}>{l}</span>
+              <span style={{ width: 16, height: 3, borderRadius: 2, background: g.color, flexShrink: 0 }}></span>
+              <span className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-mute)' }}>{g.label}</span>
             </span>
           ))}
         </div>
-        <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: '14px 0 0', textWrap: 'pretty' }}>
-          One dose of blade-ground coffee brews as two coffees at once — sour boulders and bitter dust in the same cup.
-        </p>
+        <GuideNote text={d.note}/>
       </div>
     ),
   },
@@ -419,7 +458,7 @@ function VisualGuideCard({ visualGuide, hideHeader = false }) {
       {!hideHeader && (
         <h3 className="ff-display" style={{ fontSize: 'var(--t-heading)', fontWeight: 400, lineHeight: 1.1, letterSpacing: '-0.01em', margin: 0, color: 'var(--ink)' }}>{t.title}</h3>
       )}
-      <div style={{ marginTop: hideHeader ? 0 : 18 }}>{t.body()}</div>
+      <div style={{ marginTop: hideHeader ? 0 : 18 }}>{t.body(t)}</div>
     </div>
   );
 }
