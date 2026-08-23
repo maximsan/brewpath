@@ -78,6 +78,21 @@ const _concept = ContentCard.concept(
   ],
 );
 
+/// A tastefix round: what the cup is doing wrong, the setup that rules out the
+/// obvious causes, and four fixes with the right one marked on the choice.
+const _tastefix = ContentCard.tastefix(
+  tags: ['SOUR', 'THIN'],
+  scenario: 'Grind is dialled in and the beans are fresh.',
+  prompt: 'The first sip puckers, and the cup feels hollow. What first?',
+  choices: [
+    Choice(text: 'Grind coarser'),
+    Choice(text: 'Grind finer', isCorrect: true),
+    Choice(text: 'Use colder water'),
+    Choice(text: 'Brew for less time'),
+  ],
+  explanation: 'Puckering with no weight behind it is under-extraction.',
+);
+
 /// A flavor round whose correct note sits **third**, not first.
 ///
 /// The position is the point. `flavor` holds correctness as an index into the
@@ -132,6 +147,7 @@ void main() {
       'decision': _decision,
       'recall': _recall,
       'flavor': _flavor,
+      'tastefix': _tastefix,
     };
 
     for (final entry in cards.entries) {
@@ -150,6 +166,74 @@ void main() {
         expect(signals.solved, 0);
       });
     }
+  });
+
+  group('tastefix — the cup that came out wrong', () {
+    testWidgets('shows the symptoms, the setup and the fixes', (tester) async {
+      await tester.pumpWidget(_host(_tastefix, _Signals()));
+
+      // The symptoms frame the question rather than answering it.
+      expect(find.textContaining('SOUR'), findsOneWidget);
+      expect(find.textContaining('THIN'), findsOneWidget);
+      expect(
+        find.text('Grind is dialled in and the beans are fresh.'),
+        findsOneWidget,
+      );
+      expect(
+        find.text(
+          'The first sip puckers, and the cup feels hollow. What first?',
+        ),
+        findsOneWidget,
+      );
+      for (final fix in ['Grind coarser', 'Grind finer', 'Use colder water']) {
+        expect(find.text(fix), findsOneWidget, reason: '$fix went missing');
+      }
+    });
+
+    testWidgets('the right fix fires success exactly once', (tester) async {
+      final signals = _Signals();
+      await tester.pumpWidget(_host(_tastefix, signals));
+
+      await _tapText(tester, 'Grind finer');
+
+      expect(signals.solved, 1);
+      expect(_continueEnabled(tester), isTrue);
+    });
+
+    testWidgets('stays winnable whichever order a run draws', (tester) async {
+      for (var nonce = 1; nonce <= 8; nonce++) {
+        final signals = _Signals();
+        await tester.pumpWidget(const SizedBox.shrink());
+        await tester.pumpWidget(_host(_tastefix, signals, nonce: nonce));
+        await _tapText(tester, 'Grind finer');
+
+        expect(signals.solved, 1, reason: 'unwinnable at nonce $nonce');
+      }
+    });
+
+    testWidgets('a wrong fix stays silent and still explains', (tester) async {
+      final signals = _Signals();
+      await tester.pumpWidget(_host(_tastefix, signals));
+
+      await _tapText(tester, 'Grind coarser');
+
+      expect(signals.solved, 0);
+      expect(
+        find.text('Puckering with no weight behind it is under-extraction.'),
+        findsOneWidget,
+      );
+      expect(_continueEnabled(tester), isTrue);
+    });
+
+    testWidgets('latches on the first commit', (tester) async {
+      final signals = _Signals();
+      await tester.pumpWidget(_host(_tastefix, signals));
+
+      await _tapText(tester, 'Grind coarser');
+      await _tapText(tester, 'Grind finer');
+
+      expect(signals.solved, 0);
+    });
   });
 
   group('flavor — the note behind the clue', () {

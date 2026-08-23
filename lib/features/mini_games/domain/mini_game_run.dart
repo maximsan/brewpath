@@ -42,6 +42,9 @@ const Set<String> playableMiniGameIds = {
   // a learner could actually reach.
   'g-flavor',
   'g-flavor-origin-signatures',
+  // Likewise two games on one kind: the pour-over cup and the shot.
+  'g-tastefix',
+  'g-tastefix-espresso',
 };
 
 /// Games whose kind renders, kept out of [playableMiniGameIds] on purpose.

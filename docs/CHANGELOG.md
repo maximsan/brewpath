@@ -44,6 +44,11 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Fix the cup.** Tastefix rounds play: what the cup is doing wrong, the setup
+  that rules out the obvious causes, and four fixes to choose between — with the
+  reason named either way. Two more games open on the one renderer, the
+  pour-over cup and the shot.
+
 - **Name the note, and the free tier's missing seven rounds.** Flavor rounds
   play: a tasting clue, four notes, one commit, and the explanation either way.
   That lights up both games authored against the kind — *Name the flavor notes*
