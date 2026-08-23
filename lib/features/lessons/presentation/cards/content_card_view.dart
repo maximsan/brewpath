@@ -90,6 +90,19 @@ Widget? contentCardView(
       onSolved: onSolved,
       onContinue: onContinue,
     ),
+    final TastefixCard tastefix => GradedPicker(
+      // Marked on the choice, unlike `flavor` directly below. The two kinds
+      // hold the same type and mean different things — see `_flavorOptions`.
+      options: shuffledBySeed(_fromChoices(tastefix.choices), seed),
+      copy: PickerCopy(
+        label: _tastefixSymptoms(tastefix),
+        scenario: tastefix.scenario,
+        prompt: tastefix.prompt,
+        explain: ({required wasCorrect}) => tastefix.explanation,
+      ),
+      onSolved: onSolved,
+      onContinue: onContinue,
+    ),
     final FlavorCard flavor => GradedPicker(
       // Marked *before* the shuffle, never after. See `_flavorOptions`.
       options: shuffledBySeed(_flavorOptions(flavor), seed),
@@ -115,7 +128,6 @@ Widget? contentCardView(
     MultiCard() ||
     SequenceCard() ||
     SliderCard() ||
-    TastefixCard() ||
     BagpickCard() => null,
   };
 }
@@ -135,13 +147,13 @@ bool hasRenderer(ContentCard card) => switch (card) {
   DecisionCard() ||
   QuizCard() ||
   FlavorCard() ||
+  TastefixCard() ||
   MatchCard() => true,
   VisualCard() ||
   PracticalCard() ||
   MultiCard() ||
   SequenceCard() ||
   SliderCard() ||
-  TastefixCard() ||
   BagpickCard() => false,
 };
 
@@ -167,6 +179,21 @@ List<ChoiceOption> _quizOptions(QuizCard card) => [
   ChoiceOption(text: 'True', isCorrect: card.answer),
   ChoiceOption(text: 'False', isCorrect: !card.answer),
 ];
+
+/// What is wrong with the cup, as the eyebrow above the question.
+///
+/// The tags are symptoms — `SOUR`, `THIN` — and they are framing rather than
+/// part of the question: they say how the cup tastes before the learner is
+/// asked what to do about it. So they take the picker's existing eyebrow slot
+/// instead of adding a parameter only one kind of the five would ever pass.
+///
+/// ⚠️ **A visual deferral, recorded rather than hidden.** The design draws
+/// these as berry-tinted pill chips that dim when a wrong fix makes the cup
+/// worse. This renders them as one smallcaps line, which carries the same words
+/// and none of the reaction. Reinstating the chips means composing around the
+/// shared picker rather than filling its slots, which is a bigger change than
+/// making the kind render and belongs to whoever takes the cup's reaction on.
+String _tastefixSymptoms(TastefixCard card) => card.tags.join(' · ');
 
 /// A flavor round's notes, marked from the card's answer **index**.
 ///
