@@ -42,12 +42,7 @@ class SavedScreen extends ConsumerWidget {
           ),
         );
       case SavedKind.guide:
-        final guide = ref
-            .read(visualGuideShelfForProvider)
-            .value
-            ?.earned
-            .where((candidate) => candidate.subject == item.id)
-            .firstOrNull;
+        final guide = ref.read(earnedGuideForProvider(item.id)).value;
         if (guide != null) unawaited(showVisualGuideSheet(context, guide));
     }
   }
@@ -109,5 +104,4 @@ class _Shelf extends StatelessWidget {
 
 /// What the count line says. The tiered form — a fraction against the free
 /// cap — arrives with the cap itself.
-String _countLine(int count) =>
-    '$count ${count == 1 ? 'item' : 'items'} to revisit';
+String _countLine(int count) => '${savedItemCount(count)} to revisit';

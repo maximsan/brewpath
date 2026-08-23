@@ -1,6 +1,7 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/presentation/saved_empty_view.dart';
+import 'package:brew_path/features/saved/presentation/saved_group_section.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:flutter/material.dart';
@@ -115,6 +116,30 @@ void main() {
     expect(find.text('Arabica'), findsOneWidget);
     expect(find.text(_lessons), findsNothing);
     expect(find.textContaining('no-such'), findsNothing);
+  });
+
+  testWidgets('a term row shows its category', (tester) async {
+    await _seed(tester, ['t:arabica']);
+    await pumpWithProviders(tester, _wrap());
+
+    expect(
+      find.text('BEANS AND BOTANY'),
+      findsOneWidget,
+      reason: 'two similar-sounding terms are told apart by their category',
+    );
+  });
+
+  testWidgets('each group says how many it holds', (tester) async {
+    await _seed(tester, ['t:arabica', 't:robusta']);
+    await pumpWithProviders(tester, _wrap());
+
+    expect(
+      find.descendant(
+        of: find.byType(SavedGroupSection),
+        matching: find.text('2'),
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('the count line counts what is shown', (tester) async {

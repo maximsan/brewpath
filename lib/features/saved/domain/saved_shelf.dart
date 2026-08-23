@@ -122,3 +122,10 @@ List<SavedGroup> deriveSavedShelf({
 /// How many rows [groups] holds — what the header badge counts.
 int savedShelfCount(List<SavedGroup> groups) =>
     groups.fold(0, (total, group) => total + group.items.length);
+
+/// How many rows, said in words — "1 item", "3 items".
+///
+/// Shared by the shelf's count line and the header button's label, which is
+/// the only reason it is here rather than inline: the two must not disagree
+/// about how one saved thing is spelled.
+String savedItemCount(int count) => '$count ${count == 1 ? 'item' : 'items'}';

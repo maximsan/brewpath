@@ -4,6 +4,7 @@ import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
+import 'package:brew_path/features/saved/domain/saved_shelf.dart';
 import 'package:brew_path/features/saved/presentation/saved_badge_dot.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -121,29 +122,45 @@ class _Heading extends StatelessWidget {
 /// How far the dot is inset from the button's top-right corner.
 const double _badgeInset = 6;
 
-class _ActionButton extends ConsumerWidget {
+class _ActionButton extends StatelessWidget {
   const _ActionButton({required this.action});
 
   final HeaderAction action;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    if (action == HeaderAction.saved) return const _SavedButton();
-
-    final (icon, tooltip, routeName) = switch (action) {
-      HeaderAction.saved => throw StateError('handled above'),
-      HeaderAction.dictionary => (
-        Icons.menu_book_outlined,
-        DictionaryHomeScreen.title,
-        AppRoutes.dictionary.name,
+  Widget build(BuildContext context) {
+    // One exhaustive dispatch: a new action is a compile error here rather
+    // than a runtime one somewhere else.
+    return switch (action) {
+      HeaderAction.saved => const _SavedButton(),
+      HeaderAction.dictionary => _RouteButton(
+        icon: Icons.menu_book_outlined,
+        tooltip: DictionaryHomeScreen.title,
+        routeName: AppRoutes.dictionary.name,
       ),
-      HeaderAction.settings => (
-        Icons.settings_outlined,
-        'Settings',
-        AppRoutes.profileSettings.name,
+      HeaderAction.settings => _RouteButton(
+        icon: Icons.settings_outlined,
+        tooltip: 'Settings',
+        routeName: AppRoutes.profileSettings.name,
       ),
     };
+  }
+}
 
+/// A header entry that does nothing but open a route.
+class _RouteButton extends StatelessWidget {
+  const _RouteButton({
+    required this.icon,
+    required this.tooltip,
+    required this.routeName,
+  });
+
+  final IconData icon;
+  final String tooltip;
+  final String routeName;
+
+  @override
+  Widget build(BuildContext context) {
     return IconButton(
       icon: Icon(icon),
       tooltip: tooltip,
@@ -163,11 +180,17 @@ class _SavedButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // An unresolved count draws no dot rather than a spinner in the chrome.
-    final count = ref.watch(savedCountProvider).value ?? 0;
+    // Counted off the shelf itself rather than through a provider of its own:
+    // the badge must not promise a row the shelf would skip, and one hop fewer
+    // keeps the chain from flushing mid-build when Reset invalidates its root.
+    //
+    // An unresolved shelf draws no dot rather than a spinner in the chrome.
+    final count = savedShelfCount(
+      ref.watch(savedShelfProvider).value ?? const [],
+    );
     final label = count == 0
         ? SavedScreen.title
-        : '${SavedScreen.title}, $count ${count == 1 ? 'item' : 'items'}';
+        : '${SavedScreen.title}, ${savedItemCount(count)}';
 
     return IconButton(
       icon: Stack(

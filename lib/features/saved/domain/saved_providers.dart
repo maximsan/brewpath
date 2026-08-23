@@ -109,11 +109,3 @@ Future<List<SavedGroup>> savedShelf(Ref ref) async {
     ],
   );
 }
-
-/// How many rows the shelf holds — what the header badge shows.
-///
-/// Derived from the shelf rather than from the stored keys, so the badge can
-/// never promise a row the shelf would skip.
-@riverpod
-Future<int> savedCount(Ref ref) async =>
-    savedShelfCount(await ref.watch(savedShelfProvider.future));

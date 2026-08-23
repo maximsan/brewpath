@@ -9,6 +9,32 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+/// Marks onboarding and the Tour as already seen on [db].
+///
+/// Pre-marked so widget tests that boot the full shell land on `/learn`.
+/// `tourSeen` is not optional: the Tour auto-runs the moment Learn shows real
+/// data with the flag unset, so without it every shell test would open onto
+/// the intro overlay's modal barrier and every tap would miss. Tour tests set
+/// the flag themselves — see test/widget/features/tour/.
+///
+/// Extracted from [useInMemoryDatabase] so a test that needs a **file-backed**
+/// database — one it can close and reopen to assert a real restart — can seed
+/// it the same way.
+Future<void> seedOnboarded(AppDatabase db) async {
+  await db
+      .into(db.userSettings)
+      .insert(
+        UserSettingsCompanion.insert(
+          id: const Value(SettingsRepository.settingsId),
+          hapticsEnabled: true,
+          soundEnabled: true,
+          totalXp: 0,
+          onboardingCompleted: const Value(true),
+          tourSeen: const Value(true),
+        ),
+      );
+}
+
 /// Shared widget-test setup: a fresh in-memory Drift DB wired into
 /// [AppDatabaseService] and stubbed package_info, so screens render against
 /// real content assets and an empty user state without platform channels.
@@ -24,27 +50,7 @@ Future<AppDatabase> useInMemoryDatabase() async {
   AppDatabaseService.instance = db;
   addTearDown(db.close);
 
-  // Pre-mark onboarding as completed so existing widget tests that boot the
-  // full app shell still land on /learn. Onboarding-specific tests build
-  // their own router and do not go through this helper.
-  //
-  // `tourSeen` is seeded for the same reason and is not optional: the Tour
-  // auto-runs the moment Learn shows real data with the flag unset, so without
-  // this every test that boots the shell would open onto the intro overlay's
-  // modal barrier and every tap would miss. Tour tests set the flag themselves
-  // — see test/widget/features/tour/.
-  await db
-      .into(db.userSettings)
-      .insert(
-        UserSettingsCompanion.insert(
-          id: const Value(SettingsRepository.settingsId),
-          hapticsEnabled: true,
-          soundEnabled: true,
-          totalXp: 0,
-          onboardingCompleted: const Value(true),
-          tourSeen: const Value(true),
-        ),
-      );
+  await seedOnboarded(db);
 
   PackageInfo.setMockInitialValues(
     appName: 'BrewPath',

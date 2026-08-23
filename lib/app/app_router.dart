@@ -122,10 +122,9 @@ GoRouter appRouter(Ref ref) {
                 name: AppRoutes.learn.name,
                 builder: (context, state) => const LearnScreen(),
                 routes: [
-                  // Inside the shell on purpose: looking a word up must not
-                  // cost the learner their tab.
-                  // Inside the shell for the same reason the dictionary is:
-                  // checking what you kept must not cost you your tab.
+                  // Both sit inside the shell on purpose: neither looking a
+                  // word up nor checking what you kept should cost the learner
+                  // their tab.
                   GoRoute(
                     path: AppRoutes.saved.path,
                     name: AppRoutes.saved.name,
