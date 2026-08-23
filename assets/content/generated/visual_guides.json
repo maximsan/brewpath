@@ -27,6 +27,20 @@
           "DARK",
           "Bitter · smoky"
         ]
+      ],
+      "notes": [
+        {
+          "term": "Light",
+          "detail": "Acidic and fruity. Can taste sharp or sour if under-extracted."
+        },
+        {
+          "term": "Medium",
+          "detail": "Rounded and easygoing — the safest place for a beginner to start."
+        },
+        {
+          "term": "Dark",
+          "detail": "Heavier and bolder. Turns harsh easily, so go gentler on grind and heat."
+        }
       ]
     },
     {
@@ -52,6 +66,20 @@
           "FINE",
           "Espresso"
         ]
+      ],
+      "notes": [
+        {
+          "term": "Coarse",
+          "detail": "French press, cold brew. Too coarse and the cup turns weak, sour, watery."
+        },
+        {
+          "term": "Medium",
+          "detail": "Pour-over and drip. The forgiving default to start from."
+        },
+        {
+          "term": "Fine",
+          "detail": "Espresso, moka pot. Too fine and the cup turns bitter and harsh."
+        }
       ]
     },
     {
@@ -77,7 +105,8 @@
           "OVER",
           "Bitter · dry"
         ]
-      ]
+      ],
+      "notes": []
     },
     {
       "id": "g-ratio",
@@ -102,7 +131,9 @@
           "WEAKER",
           "More water"
         ]
-      ]
+      ],
+      "notes": [],
+      "note": "Ratio changes strength first — a bad-tasting cup is usually a grind or extraction problem, not a ratio one."
     },
     {
       "id": "g-anatomy",
@@ -127,7 +158,8 @@
           "DECIDES TASTE",
           "Layer 03"
         ]
-      ]
+      ],
+      "notes": []
     },
     {
       "id": "g-variety",
@@ -148,7 +180,9 @@
           "DESCENDANTS",
           "Geisha · Caturra · SL28"
         ]
-      ]
+      ],
+      "notes": [],
+      "note": "A variety is to coffee what an apple variety is to apples — one species, very different fruit."
     },
     {
       "id": "g-caffeine",
@@ -173,7 +207,9 @@
           "COLD BREW",
           "~200 mg"
         ]
-      ]
+      ],
+      "notes": [],
+      "note": "Per millilitre, espresso is the strongest of the four — its small serve is what keeps the total low."
     },
     {
       "id": "g-distribution",
@@ -194,7 +230,9 @@
           "BURR",
           "One tight band"
         ]
-      ]
+      ],
+      "notes": [],
+      "note": "One dose of blade-ground coffee brews as two coffees at once — sour boulders and bitter dust in the same cup."
     }
   ]
 }

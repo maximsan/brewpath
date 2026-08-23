@@ -18,6 +18,25 @@ Issues and PRDs for this repo live as GitHub issues on `maximsan/brewpath`. Use 
   a decision means *decided*, and only a merged PR on a build ticket means
   *shipped*. Where no open build ticket owns the work yet, the closed decision
   carries the `needs-build` label until one does.
+- **The pointer must land somewhere still open.** Naming a build home is not
+  enough — the named ticket has to be open, or have an open slice covering the
+  work. A pointer at a closed ticket, or at a parent whose slices are all
+  closed, is indistinguishable from done: everything reads resolved and nothing
+  is building. Check before closing:
+
+  ```bash
+  gh api repos/maximsan/brewpath/issues/<n> --jq '"\(.state) \(.sub_issues_summary)"'
+  ```
+
+  If it comes back closed, or open at 100%, the work needs a new slice — file
+  it and point there instead.
+
+  This has happened. Two tickets closed pointing at the visual-guides parent
+  ([#271](https://github.com/maximsan/brewpath/issues/271),
+  [#277](https://github.com/maximsan/brewpath/issues/277)); its four slices
+  were already closed, so it read 100% complete while the prose those tickets
+  were about had reached the app nowhere. Both satisfied the rule above. The
+  gap was only found by reading the code.
 
 Infer the repo from `git remote -v` — `gh` does this automatically when run inside a clone.
 

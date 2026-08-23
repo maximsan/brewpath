@@ -1,4 +1,5 @@
 import 'package:brew_path/features/onboarding/presentation/loading/loading_screen.dart';
+import 'package:brew_path/features/tour/domain/tour_copy.dart';
 import 'package:brew_path/main.dart' as app;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -42,6 +43,9 @@ String _visibleText(WidgetTester tester) {
       .toSet();
   return seen.isEmpty ? '(nothing)' : seen.join(' | ');
 }
+
+/// The name the walk types at onboarding and expects to survive a relaunch.
+const _name = 'Maya';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -163,15 +167,23 @@ void main() {
       describe: 'the goal picker accepting an answer',
     );
 
-    await tapWhenReady(
-      tester,
-      find.text('V60'),
-      describe: 'the brewer picker',
-    );
+    await tapWhenReady(tester, find.text('V60'), describe: 'the brewer picker');
     await tapWhenReady(
       tester,
       liveButton('Continue'),
       describe: 'the brewer picker accepting an answer',
+    );
+
+    // The third step, and the only one that takes typing rather than a tap.
+    // A name is entered rather than skipped so the walk proves the field
+    // reaches storage — the returning launch below reads it back.
+    await pumpUntil(tester, find.byType(TextField), describe: 'the name step');
+    await tester.enterText(find.byType(TextField), _name);
+    await tester.pump();
+    await tapWhenReady(
+      tester,
+      liveButton('Continue'),
+      describe: 'the name step accepting a name',
     );
 
     await pumpUntil(
@@ -194,6 +206,17 @@ void main() {
     // Merging the two is not a shortcut, it is the fix.
     await launch(tester);
 
+    // The Tour is offered on the first launch that reaches Learn with it
+    // unseen, which this is — the previous test finished onboarding and never
+    // got here. Asserted and dismissed rather than guarded by an `if`: it is
+    // deterministic, and a walk that shrugs at a missing sheet is the silent
+    // failure this file keeps warning about.
+    await tapWhenReady(
+      tester,
+      find.widgetWithText(TextButton, TourCopy.introDecline),
+      describe: 'the Tour offer on a returning launch',
+    );
+
     // Storage: the answers the previous test gave were written to an on-disk
     // database, and a fresh process reads them back. Nothing else in the repo
     // exercises that — every widget test seeds the flag in memory instead.
@@ -206,6 +229,30 @@ void main() {
       find.text('What brings you here?'),
       findsNothing,
       reason: 'onboarding persisted, so it must not be offered again',
+    );
+
+    // The other half of that proof, and the only one a learner can see: the
+    // name typed into the previous launch survived the process and is on the
+    // Profile header. A value written, closed, reopened and rendered.
+    await tapWhenReady(
+      tester,
+      find.byIcon(Icons.person_outline),
+      describe: 'the Profile tab',
+    );
+    await pumpUntil(
+      tester,
+      find.text('Hello, $_name.'),
+      describe: 'the Profile greeting carrying the name from onboarding',
+    );
+
+    // Back to Learn, because the walk continues there. The detour above is a
+    // read, not a destination — leaving the walk on Profile made the content
+    // section below hunt for a lesson card on the wrong tab, which is how it
+    // failed the first time this check was added.
+    await tapWhenReady(
+      tester,
+      find.byIcon(Icons.school_outlined),
+      describe: 'the Learn tab after the Profile detour',
     );
 
     // Content: authored material loads from the bundle as it ships, and the

@@ -42,6 +42,21 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ## [Unreleased]
 
+### Added
+
+- **The visual guides explain themselves.** A guide's table said *what* —
+  `LIGHT / Bright · acidic` — and stopped there. Each row now carries the
+  sentence that says what living with it is like ("Acidic and fruity. Can taste
+  sharp or sour if under-extracted"), and the four guides that end on a thought
+  now show it. Those words were authored all along, trapped inside markup the
+  extractor could not read; the prototype moved them into data fields and the
+  app finally carries them.
+
+  The table and the prose are authored in two separate registries, so they are
+  joined **by name rather than by position** — and the extractor refuses to
+  write a gloss naming a row that does not exist, because a mismatch would not
+  fail anywhere: the sentence would simply never render.
+
 ### Fixed
 
 - **A schema bump no longer trips over a migration that predates it.** The
@@ -107,6 +122,12 @@ You can always edit this file by hand instead — the helpers just save effort.
   optional step takes a name and the Profile header greets by it — `Hello,
   Maya.` where one was given, `Hello, there.` where it was skipped, which is
   the same sentence either way. Skipping costs nothing and stays skippable.
+
+- **A locked mini-game now offers something.** Tapping one opens a sheet naming
+  the module that teaches its topic — "Taught in Module 4 · Grind" — and
+  pitching that module in its own words, rather than refusing silently. The
+  lock became a door. The purchase call to action arrives with the paywall
+  (#89); this ships the pitch and the way out (#270).
 
 - **Dictionary terms can be bookmarked.** A bookmark sits on the term entry and
   on the peek sheet, and what it saves survives closing the app. It is the same
@@ -203,6 +224,11 @@ You can always edit this file by hand instead — the helpers just save effort.
   one. Learn's date joins the day-rollover list rather than being read once at
   build, and Profile's close button — an app-only invention the design has no
   equivalent for — is gone with its delegate.
+- **A streak travels.** Share your streak opens the iOS system share sheet
+  with a rendered card — wordmark, count, the week's strip — composed
+  off-screen at a fixed size, so it looks identical from any device. Image
+  only, no link; share_plus rides behind a presenter seam and stays
+  SPM-only.
 - **Milestones get their moment.** The streak screen opens on a Roasty beat
   when a milestone day lands (3, 7, 14, 30, 60, 100, 180, 365, then every
   30) — once per milestone, self-healing after a lapse — and the count sits

@@ -24,7 +24,28 @@ abstract class VisualGuideUnlock with _$VisualGuideUnlock {
 /// The textual counterpart of the guide's own diagram: `LIGHT / Bright ·
 /// acidic` is what the drawing says in words, which is why the drawings carry
 /// none.
-typedef VisualGuideMetaRow = ({String label, String value});
+/// One row of the guide's table: what it is called, what it is, and — where
+/// the guide glosses its terms — the sentence saying what that is like.
+typedef VisualGuideMetaRow = ({String label, String value, String? detail});
+
+/// One term of a guide explained — the sentence under a row of its table.
+///
+/// Distinct from a meta row on purpose: `LIGHT / Bright · acidic` labels the
+/// roast, and this says what living with it is like. Paired by [term] rather
+/// than by position, because the table and the prose are authored in two
+/// different registries and nothing forces their order to agree.
+@freezed
+abstract class VisualGuideNote with _$VisualGuideNote {
+  /// Creates a [VisualGuideNote].
+  const factory VisualGuideNote({
+    required String term,
+    required String detail,
+  }) = _VisualGuideNote;
+
+  /// Creates a [VisualGuideNote] from decoded JSON.
+  factory VisualGuideNote.fromJson(Map<String, dynamic> json) =>
+      _$VisualGuideNoteFromJson(json);
+}
 
 /// One illustrated reference the course teaches.
 ///
@@ -58,6 +79,15 @@ abstract class VisualGuide with _$VisualGuide {
 
     /// The meta table on the wire: two or three label/value pairs.
     @Default(<List<String>>[]) List<List<String>> meta,
+
+    /// What each term in the table actually means. Empty for the guides whose
+    /// drawing carries the explanation — anatomy's cross-section is the
+    /// reference, so it has no rows to gloss.
+    @Default(<VisualGuideNote>[]) List<VisualGuideNote> notes,
+
+    /// The closing thought, where the guide has one: the misreading it exists
+    /// to head off, or the thing a learner should take away.
+    String? note,
   }) = _VisualGuide;
 
   const VisualGuide._();
@@ -69,9 +99,27 @@ abstract class VisualGuide with _$VisualGuide {
   /// The lesson that earns this guide.
   String get unlockLessonId => unlock.lesson;
 
-  /// The meta table as named pairs, for a renderer that should not be indexing
-  /// into lists.
+  /// The meta table as named rows, each carrying its gloss where one exists.
+  ///
+  /// The table and the prose are authored in two different registries, so they
+  /// are joined **by term** rather than by position — case-insensitively,
+  /// because the table shouts (`LIGHT`) where the prose speaks (`Light`). The
+  /// extractor refuses to write a note whose term names no row, so a gloss can
+  /// never go quietly missing here.
   List<VisualGuideMetaRow> get metaRows => [
-    for (final row in meta) (label: row.first, value: row.last),
+    for (final row in meta)
+      (
+        label: row.first,
+        value: row.last,
+        detail: _detailFor(row.first),
+      ),
   ];
+
+  String? _detailFor(String label) {
+    final wanted = label.toLowerCase();
+    for (final note in notes) {
+      if (note.term.toLowerCase() == wanted) return note.detail;
+    }
+    return null;
+  }
 }

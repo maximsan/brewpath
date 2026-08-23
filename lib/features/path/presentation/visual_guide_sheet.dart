@@ -64,6 +64,10 @@ class VisualGuideSheetBody extends StatelessWidget {
           const SizedBox(height: AppSpacing.lg),
           _MetaTable(rows: guide.metaRows),
         ],
+        if (guide.note case final note?) ...[
+          const SizedBox(height: AppSpacing.lg),
+          Text(note, style: text.bodyMedium?.copyWith(color: mood.ink)),
+        ],
         const SizedBox(height: AppSpacing.lg),
         _Fact(fact: guide.fact),
       ],
@@ -96,9 +100,23 @@ class _MetaTable extends StatelessWidget {
                 ),
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
-                  child: Text(
-                    row.value,
-                    style: text.bodyMedium?.copyWith(color: mood.ink),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        row.value,
+                        style: text.bodyMedium?.copyWith(color: mood.ink),
+                      ),
+                      // The value names the term; this says what living with
+                      // it is like. Only the guides that gloss have it.
+                      if (row.detail case final detail?) ...[
+                        const SizedBox(height: AppSpacing.xs),
+                        Text(
+                          detail,
+                          style: text.bodySmall?.copyWith(color: mood.inkMute),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
               ],
