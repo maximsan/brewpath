@@ -1,6 +1,12 @@
-# BrewPath — project rules
+# BrewPath — course content rules
 
-## Course content
+**This is the home for these rules.** It lives here because `prototype/` is the
+authoring environment — cards are written here and the extractor reads them —
+so this file loads automatically at the moment the rules apply.
+[`docs/design/content-rules.md`](../docs/design/content-rules.md) points here.
+
+What makes a good card, for anyone — agent or human — authoring or porting
+course content.
 
 **No two cards in a row may share an answer.** Check the whole lesson, not just
 adjacent pairs: if two cards resolve to the same choice ("switch to Arabica",
