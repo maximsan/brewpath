@@ -53,6 +53,13 @@ You can always edit this file by hand instead — the helpers just save effort.
   rebuild that must stay gained a test that fails by name if a column is added
   without being declared.
 
+- **The mini-game catalog stopped looking broken.** Eleven of its thirteen rows
+  greyed themselves out and said "Not available yet" because their kind has no
+  renderer yet — a fact about our build progress, dressed as a paywall, on the
+  wrong screen. Every row now opens its intro, and a game we cannot yet play
+  says so there, on the button the learner reached for. This also frees the row
+  to carry one meaning, which the tier marks need (#267).
+
 - **A dictionary self-check crashed for anyone using reduced motion.**
   Answering one asked `AnimatedSize` to finish in zero time, and it re-dirties
   itself inside its own layout when told to — so the framework asserted rather
@@ -92,6 +99,21 @@ You can always edit this file by hand instead — the helpers just save effort.
   what turns ten lesson placements into eight guides, and what stops a
   reordering leaving a learner shown a reference as locked after being taught
   it.
+
+- **The mini-game catalog shows what the learner owns.** Ten of the thirteen
+  games now carry a lock before any tap; Match, True or false and Name the
+  origin do not — the three ADR-0007's free lesson list forces. The rule is one
+  pure function, and a table test over the real shipped catalog pins the free
+  set by id and guards ADR-0001's invariant that a free learner can always
+  reach a qualifying streak day on free content alone. Entitlement is read
+  through the payments abstraction; while it resolves the shelf shows no locks,
+  so nobody who paid catches a frame of them (#269).
+
+- **The mini-game shelf is grouped by kind.** Thirteen games in one flat list
+  meant reading all thirteen to find the two that match. They now sit under
+  seven headings — Match, True or false, Name the note, Blind bag, Taste fix,
+  Calibrate, Sequence — in a fixed order that does not derive from the catalog,
+  so adding a game never reshuffles the shelf (#268).
 
 - **The Tour can be replayed.** A "Replay the tour" row at the bottom of
   Profile → Customize switches to Learn and runs the four stops again — no

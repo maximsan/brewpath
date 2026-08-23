@@ -2,6 +2,7 @@ import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_providers.dart';
+import 'package:brew_path/features/mini_games/domain/mini_game_run.dart';
 import 'package:brew_path/shared/models/content/mini_game_format.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -151,6 +152,14 @@ class _Intro extends StatelessWidget {
       ),
   ];
 
+  /// Whether this build carries a renderer for this game's kind.
+  ///
+  /// The catalog row no longer answers this — its tap is about tier — so the
+  /// intro is where a learner finds out, on the action they came to take. A
+  /// disabled action naming its own state is honest; a row that greys itself
+  /// is mistaken for a paywall.
+  bool get _isPlayable => playableMiniGameIds.contains(format.id);
+
   Widget _playButton(BuildContext context) => Padding(
     padding: const EdgeInsets.fromLTRB(
       AppSpacing.lg,
@@ -161,11 +170,13 @@ class _Intro extends StatelessWidget {
     child: SizedBox(
       width: double.infinity,
       child: FilledButton(
-        onPressed: () => context.goNamed(
-          AppRoutes.miniGamePlay.name,
-          pathParameters: {'gameId': format.id},
-        ),
-        child: const Text('Play'),
+        onPressed: _isPlayable
+            ? () => context.goNamed(
+                AppRoutes.miniGamePlay.name,
+                pathParameters: {'gameId': format.id},
+              )
+            : null,
+        child: Text(_isPlayable ? 'Play' : 'Not playable yet'),
       ),
     ),
   );
