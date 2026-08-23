@@ -323,7 +323,7 @@ Both destructive actions use a `danger` `ConfirmSheet`.
 ## 6.9 The content rulebook (`CLAUDE.md`)
 
 **New, and it closes a long-standing gap.** Until now the reference said nobody
-had written down what makes a question good. `docs/design/content-rules.md` now does —
+had written down what makes a question good. [`prototype/CLAUDE.md`](../../prototype/CLAUDE.md) now does —
 seven rules, all about the course content rather than the code:
 
 | Rule | What it forbids |

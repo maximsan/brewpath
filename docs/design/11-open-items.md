@@ -37,7 +37,7 @@ routes (the 104th, `card-flavor`, arrived after).
 - ✅ **Card copy can no longer drift between the reward screen and the collection sheet** — `syncCardText()` / `syncTrainingText()` copy the words from one authored source at load. See [§6](06-content.md) 6.3.
 - ✅ **The competing route counts are gone.** Every document now says **104**, the count of `SCREEN_ROUTES` keys as re-derived by `tools/extract-facts.js`. QA had lagged at 103 — it was written before `card-flavor` — and has been corrected; 96 and 97 are older still. The count is derived rather than authored, so it cannot drift again without the extractor drifting.
 - ✅ **The QA pacing note was stale ("116 cards across 15 lessons") and has been rewritten** along with the rest of that document.
-- ✅ **What makes a good question is now written down** — [`content-rules.md`](content-rules.md), seven content rules. See [§6](06-content.md) 6.9. *(Whether the cards meet them is still an open human pass.)*
+- ✅ **What makes a good question is now written down** — [`prototype/CLAUDE.md`](../../prototype/CLAUDE.md), seven content rules. See [§6](06-content.md) 6.9. *(Whether the cards meet them is still an open human pass.)*
 - ✅ **All 23 outstanding card-art designs are drawn.** `scales`, `hourglass`, `burrs` have components; `variety`, `caffeine`, `distribution` have both guide art and thumbnails.
 - ✅ **The `draft: true` writing pass is complete** — 15 lessons cleared, 0 remain.
 - ✅ **The duplicate 7-item tree stage-name list is gone** from `app.jsx`; `STAGE_NAMES` is the only list.

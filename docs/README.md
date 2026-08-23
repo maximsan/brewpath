@@ -8,8 +8,9 @@ doc conflict.
 
 | Area | Owns |
 |---|---|
-| [`prototype/`](../prototype/) | The React design prototype — the **read-only source** the app is built against. Never edited; findings go in the owning issue or `docs/design/`. |
-| [`docs/design/`](design/README.md) | The engineering reference **derived from the prototype** (numbered §0–§13), plus [`PRODUCT.md`](design/PRODUCT.md) (the conceptual layer) and [`content-rules.md`](design/content-rules.md) (what makes a good card). |
+| [`prototype/`](../prototype/) | The React design prototype — the source the app is built against, **read-only to agents** (the owner authors course content here). Findings go in the owning issue or `docs/design/`. |
+| [`prototype/CLAUDE.md`](../prototype/CLAUDE.md) | **The course content rules** (what makes a good card). Lives with the authoring environment so it loads when the rules apply; `docs/design/content-rules.md` points here. |
+| [`docs/design/`](design/README.md) | The engineering reference **derived from the prototype** (numbered §0–§13), plus [`PRODUCT.md`](design/PRODUCT.md) (the conceptual layer) and [`content-rules.md`](design/content-rules.md) (a pointer to the content rules in [`prototype/CLAUDE.md`](../prototype/CLAUDE.md)). |
 | [`docs/adr/`](adr/README.md) | **All new decisions**, product and engineering — one numbered file per ruling. |
 | [`docs/decisions.md`](decisions.md) | The **frozen ledger** of product-owner rulings up to Aug 2026. Stable `§` numbering; never grows. |
 | [`CONTEXT.md`](../CONTEXT.md) | The domain glossary — the vocabulary rulings and code must share. |
