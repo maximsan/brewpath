@@ -1,6 +1,7 @@
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_kinds.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_tier.dart';
+import 'package:brew_path/features/mini_games/presentation/mini_game_gate_sheet.dart';
 import 'package:brew_path/shared/models/content/mini_game_format.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -141,14 +142,14 @@ class _FormatRow extends StatelessWidget {
           ? '${format.title}. ${format.topic}. ${format.duration}.'
           : '${format.title}. ${format.topic}. Locked.',
       child: InkWell(
-        // The offer a locked tap should open lands with its own slice; until
-        // then a locked row must at least never start a run.
+        // A lock is an offer, not a dead end: the tap that cannot start a run
+        // opens the pitch for the module that teaches this game's topic.
         onTap: isOpen
             ? () => context.goNamed(
                 AppRoutes.miniGameIntro.name,
                 pathParameters: {'gameId': format.id},
               )
-            : null,
+            : () => showMiniGameGateSheet(context: context, format: format),
         child: Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.md,
