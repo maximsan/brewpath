@@ -44,6 +44,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **A schema bump no longer trips over a migration that predates it.** The
+  step that dropped the two dead streak columns rebuilt `user_settings` from
+  the current table definition, so it quietly depended on every column that
+  table would ever gain — adding one broke every upgrade from older versions
+  with an error naming the new column, in a step written long before it. The
+  columns are now dropped by name, which nothing later can reach. The one
+  rebuild that must stay gained a test that fails by name if a column is added
+  without being declared.
+
 - **A dictionary self-check crashed for anyone using reduced motion.**
   Answering one asked `AnimatedSize` to finish in zero time, and it re-dirties
   itself inside its own layout when told to — so the framework asserted rather

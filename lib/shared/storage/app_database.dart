@@ -281,20 +281,21 @@ class AppDatabase extends _$AppDatabase {
       // on disk are `0` and `NULL`, and the real history they once approximated
       // lives in the day set. Recreating the table drops them by omission from
       // the current definition, the same way `best_score` went at v5.
+      // Dropped **by name**, not by recreating the table. A
+      // `TableMigration` rebuild would take the table's *current* Dart
+      // definition and copy every column on it across by name, which silently
+      // makes this step depend on every column `user_settings` will ever
+      // have: adding `tourSeen` at v8 made the v7 rebuild select `tour_seen`
+      // out of a v7 source table that has none, and every upgrade from v1–v6
+      // failed on a column the step never mentions (#273).
+      //
+      // `dropColumn` names the two dead columns and nothing else, so no future
+      // column can reach this step. Both have existed since v1, and neither is
+      // indexed or part of a constraint, which is what SQLite requires to drop
+      // one in place.
       if (from < _dropStreakColumnsVersion) {
-        await m.alterTable(
-          TableMigration(
-            userSettings,
-            // `tour_seen` is not part of the v7 schema, but this rebuild takes
-            // the table's *current* Dart definition, which has it — so the
-            // copy step would select a column the source table does not have.
-            // Declared new for the same reason the v4 → v5 rebuild declares
-            // the mastery pair: it lands on its default instead of being
-            // copied. **Every future column on this table must be added here
-            // too, for as long as this step exists.**
-            newColumns: [userSettings.tourSeen],
-          ),
-        );
+        await m.dropColumn(userSettings, 'streak_days');
+        await m.dropColumn(userSettings, 'last_activity_date');
       }
 
       // v7 -> v8: the Tour's `tourSeen` bit.
@@ -303,11 +304,13 @@ class AppDatabase extends _$AppDatabase {
       // upgrading into this version has never been offered the Tour, so `false`
       // is the true value for it, not a placeholder.
       //
-      // Guarded from *both* sides, unlike every step above. Anything older than
-      // v7 has just been through the rebuild, which already produced this
-      // column from the current definition; adding it again fails on the
-      // duplicate. Only a database that arrived at exactly v7 still lacks it.
-      if (from >= _dropStreakColumnsVersion && from < _tourSeenVersion) {
+      // One-sided, like every step above. It needed a lower bound as well
+      // while v6 → v7 rebuilt the table from the current definition — that
+      // rebuild handed anything older than v7 this column already, and adding
+      // it twice fails on the duplicate. Dropping by name leaves the step
+      // above producing exactly the v7 shape, so every database arriving here
+      // lacks the column and every one of them needs the add (#273).
+      if (from < _tourSeenVersion) {
         await m.addColumn(userSettings, userSettings.tourSeen);
       }
     },
