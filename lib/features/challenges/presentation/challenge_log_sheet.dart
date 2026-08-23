@@ -1,6 +1,6 @@
+import 'package:brew_path/core/widgets/app_sheet.dart';
 import 'package:brew_path/features/challenges/domain/challenge_completion.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_reaction_chips.dart';
-import 'package:brew_path/features/challenges/presentation/challenge_sheet_shell.dart';
 import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -37,9 +37,9 @@ class ChallengeSavedForLater extends ChallengeLogResult {
 Future<ChallengeLogResult?> showChallengeLogSheet({
   required BuildContext context,
   required BrewChallenge challenge,
-}) => showChallengeSheet<ChallengeLogResult>(
+}) => showAppSheet<ChallengeLogResult>(
   context: context,
-  label: 'Log your result for ${challenge.title}',
+  title: challenge.title,
   builder: (context) => _LogSheetBody(challenge: challenge),
 );
 
@@ -65,16 +65,6 @@ class _LogSheetBodyState extends State<_LogSheetBody> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Semantics(
-          header: true,
-          child: Text(
-            challenge.title,
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-        const SizedBox(height: AppSpacing.lg),
         // The challenge's own question, not a generic one. A card that asks
         // "how did it go?" invites a verdict on the learner; "WHICH CUP WON?"
         // asks about the coffee.

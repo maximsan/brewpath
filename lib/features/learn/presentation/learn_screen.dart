@@ -1,8 +1,5 @@
-import 'package:brew_path/core/constants/app_labels.dart';
-import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
-import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/learn/presentation/learn_list_view.dart';
 import 'package:brew_path/features/tour/domain/tour_providers.dart';
@@ -10,7 +7,6 @@ import 'package:brew_path/features/tour/presentation/tour_intro_overlay.dart';
 import 'package:brew_path/features/tour/presentation/tour_runner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 /// Learn tab: today's lesson, the module list, and practice sections.
 ///
@@ -85,18 +81,6 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
     final tourSeen = ref.watch(tourSeenProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(AppLabels.tabLearn),
-        // The design's top-right pair; Saved is not built yet and lands with
-        // its own ticket.
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.menu_book_outlined),
-            tooltip: DictionaryHomeScreen.title,
-            onPressed: () => context.pushNamed(AppRoutes.dictionary.name),
-          ),
-        ],
-      ),
       body: modules.when(
         loading: () => const LoadingIndicator(),
         error: (e, _) => ErrorView(message: '$e'),

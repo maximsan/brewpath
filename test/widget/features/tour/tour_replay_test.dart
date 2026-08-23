@@ -1,4 +1,5 @@
 import 'package:brew_path/app/app.dart';
+import 'package:brew_path/app/app_header.dart';
 import 'package:brew_path/features/tour/domain/tour_copy.dart';
 import 'package:brew_path/features/tour/presentation/replay_tour_row.dart';
 import 'package:brew_path/shared/repositories/settings_repository.dart';
@@ -78,8 +79,9 @@ void main() {
 
     // The stops are anchored on Learn, so the row has to switch tabs as well
     // as start the Tour — a replay that ran while Profile was on screen would
-    // spotlight nothing.
-    expect(find.widgetWithText(AppBar, 'Learn'), findsOneWidget);
+    // spotlight nothing. Learn is named by the shared header's title, which is
+    // where the tab's identity lives now that the shell owns the chrome.
+    expect(find.widgetWithText(AppHeader, 'TODAY'), findsOneWidget);
   });
 
   testWidgets('replay writes nothing', (tester) async {

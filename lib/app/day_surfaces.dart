@@ -1,3 +1,4 @@
+import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +11,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// had to be added to all three, and the one that got missed fails silently:
 /// a surface quietly showing yesterday's answer, which is the defect
 /// [#202](https://github.com/maximsan/brewpath/issues/202) existed to end.
+///
+/// **The app header's date is the fourth**, added when the shared header
+/// landed — the case this doc predicted, where a day-dependent surface added
+/// later gets missed and quietly shows yesterday.
 ///
 /// **`keepSharpAcknowledgedToday` is named deliberately**, even though it
 /// watches the recommendation and so already rebuilds when that one is
@@ -24,6 +29,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// neither: the day it turns on is the app's, not a feature's.
 void invalidateDaySurfaces(WidgetRef ref) {
   ref
+    ..invalidate(currentDayProvider)
     ..invalidate(streakStatusProvider)
     ..invalidate(keepSharpRecommendationProvider)
     ..invalidate(keepSharpAcknowledgedTodayProvider);
