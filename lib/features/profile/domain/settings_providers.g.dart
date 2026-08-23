@@ -8,9 +8,6 @@ part of 'settings_providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Mutable settings state for the Profile screen. Class form because the
-/// haptics/sound toggles mutate and persist state (per CLAUDE.md provider
-/// conventions).
 /// The name the learner asked to be greeted by, or null where they skipped.
 ///
 /// Its own provider rather than a read through the settings controller so the
@@ -19,9 +16,6 @@ part of 'settings_providers.dart';
 @ProviderFor(learnerName)
 final learnerNameProvider = LearnerNameProvider._();
 
-/// Mutable settings state for the Profile screen. Class form because the
-/// haptics/sound toggles mutate and persist state (per CLAUDE.md provider
-/// conventions).
 /// The name the learner asked to be greeted by, or null where they skipped.
 ///
 /// Its own provider rather than a read through the settings controller so the
@@ -30,9 +24,6 @@ final learnerNameProvider = LearnerNameProvider._();
 final class LearnerNameProvider
     extends $FunctionalProvider<AsyncValue<String?>, String?, FutureOr<String?>>
     with $FutureModifier<String?>, $FutureProvider<String?> {
-  /// Mutable settings state for the Profile screen. Class form because the
-  /// haptics/sound toggles mutate and persist state (per CLAUDE.md provider
-  /// conventions).
   /// The name the learner asked to be greeted by, or null where they skipped.
   ///
   /// Its own provider rather than a read through the settings controller so the
@@ -64,11 +55,21 @@ final class LearnerNameProvider
 
 String _$learnerNameHash() => r'8e26fa66b6a2e74c64775a577092cc6c6081b404';
 
+/// Mutable settings state for the Profile screen. Class form because the
+/// haptics/sound toggles mutate and persist state (per CLAUDE.md provider
+/// conventions).
+
 @ProviderFor(SettingsController)
 final settingsControllerProvider = SettingsControllerProvider._();
 
+/// Mutable settings state for the Profile screen. Class form because the
+/// haptics/sound toggles mutate and persist state (per CLAUDE.md provider
+/// conventions).
 final class SettingsControllerProvider
     extends $AsyncNotifierProvider<SettingsController, UserSettingsRecord> {
+  /// Mutable settings state for the Profile screen. Class form because the
+  /// haptics/sound toggles mutate and persist state (per CLAUDE.md provider
+  /// conventions).
   SettingsControllerProvider._()
     : super(
         from: null,
@@ -90,6 +91,10 @@ final class SettingsControllerProvider
 
 String _$settingsControllerHash() =>
     r'e999eb8ac20d0515480ec25250339cd17903977c';
+
+/// Mutable settings state for the Profile screen. Class form because the
+/// haptics/sound toggles mutate and persist state (per CLAUDE.md provider
+/// conventions).
 
 abstract class _$SettingsController extends $AsyncNotifier<UserSettingsRecord> {
   FutureOr<UserSettingsRecord> build();

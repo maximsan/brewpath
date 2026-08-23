@@ -320,10 +320,26 @@ function bank(name, sourceFile, items, extra = {}) {
  * demo state — what a learner has unlocked is progress, and progress lives in
  * the database — and the second is a renderer hint the app does not need,
  * since a guide is only ever drawn as a guide.
+ *
+ * **`notes` and `note` are the guide's prose**, and they are not the same
+ * thing as `meta`. `meta` is a separately authored summary table — the drawing
+ * said in words — while these explain it: `LIGHT / Bright · acidic` is the
+ * table, "Acidic and fruity. Can taste sharp or sour if under-extracted" is
+ * the note. Both are carried because a reference that only labels is a legend,
+ * not a reference.
+ *
+ * Guides differ in shape — only `roast` and `grind` carry `levels`, and four
+ * carry a closing `note` — so both fields are optional by construction. The
+ * geometry members (`nodes`, `legend` colours, `stops`) stay behind: they are
+ * layout the drawings already encode, not words.
  */
 function joinVisualGuides(banks) {
   return banks.visualGuideCards.map((card) => {
     const words = banks.visualGuideContent[card.visualGuide] ?? {};
+    const notes = (words.levels ?? [])
+      .filter((level) => level.note)
+      .map((level) => ({ term: level.name, detail: level.note }));
+
     return {
       id: card.id,
       visualGuide: card.visualGuide,
@@ -333,6 +349,8 @@ function joinVisualGuides(banks) {
       summary: words.summary,
       fact: words.fact,
       meta: card.meta,
+      notes,
+      ...(words.note ? { note: words.note } : {}),
     };
   });
 }
