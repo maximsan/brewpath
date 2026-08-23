@@ -54,6 +54,27 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Path ends in a Reference section.** Finish the lesson that teaches a visual
+  guide and it appears at the bottom of Path, while you are still holding the
+  phone — tap it and the reference opens as a sheet over Path, with its summary,
+  its two-or-three-row table and its fact. Locked guides are not drawn at all;
+  the section says how many are still to come, which turns the absence into a
+  promise rather than a wall of grey tiles at the moment you own one of eight.
+  Until the first guide is earned the section is locked and says what would fill
+  it, and it refuses to open onto nothing.
+
+- **The eight visual guides are content the app can read.** The illustrated
+  references a lesson teaches — roast, grind, extraction, ratio, cherry anatomy,
+  variety, caffeine, grind spread — now ship as their own bank, joined at
+  extraction from the two prototype registries that hold half a guide each.
+  Reading the second one meant teaching the extractor to slice a data object out
+  of a file that also carries React markup, by cutting each entry's body away.
+  Five checks refuse a run that would ship a broken guide, the sharpest being
+  that a guide's unlock must be the *earliest* lesson that teaches it — which is
+  what turns ten lesson placements into eight guides, and what stops a
+  reordering leaving a learner shown a reference as locked after being taught
+  it.
+
 - **The Tour can be replayed.** A "Replay the tour" row at the bottom of
   Profile → Customize switches to Learn and runs the four stops again — no
   intro overlay, and nothing written: the question the overlay asks was
