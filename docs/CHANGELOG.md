@@ -42,6 +42,16 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ## [Unreleased]
 
+### Fixed
+
+- **A dictionary self-check crashed for anyone using reduced motion.**
+  Answering one asked `AnimatedSize` to finish in zero time, and it re-dirties
+  itself inside its own layout when told to — so the framework asserted rather
+  than the explanation appearing. Thirty of the seventy-three terms carry a
+  self-check. The animator is now dropped entirely when the system asks for no
+  motion, which is what "no animation" has to mean, and a sweep test fails on
+  any file that pairs the two again.
+
 ### Added
 
 - **The Tour can be replayed.** A "Replay the tour" row at the bottom of

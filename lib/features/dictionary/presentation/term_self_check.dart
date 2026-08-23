@@ -56,21 +56,23 @@ class _TermSelfCheckState extends State<TermSelfCheck> {
                   : null,
             ),
           ),
-        AnimatedSize(
-          duration: reduceMotion ? Duration.zero : _revealDuration,
-          alignment: Alignment.topCenter,
-          child: _chosen == null
-              ? const SizedBox.shrink()
-              : Padding(
-                  padding: const EdgeInsets.only(top: AppSpacing.xs),
-                  child: Text(
-                    widget.check.explanation,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodySmall?.copyWith(color: mood.inkMute),
-                  ),
-                ),
-        ),
+        // The explanation, once an answer is in.
+        //
+        // ⚠️ **Reduced motion drops the animator, rather than giving it a zero
+        // duration.** `AnimatedSize` re-dirties itself inside its own
+        // `performLayout` when asked to finish instantly, and the framework
+        // asserts on it — so "no animation" has to mean no animator.
+        if (reduceMotion)
+          _Explanation(chosen: _chosen, text: widget.check.explanation)
+        else
+          AnimatedSize(
+            duration: _revealDuration,
+            alignment: Alignment.topCenter,
+            child: _Explanation(
+              chosen: _chosen,
+              text: widget.check.explanation,
+            ),
+          ),
       ],
     );
   }
@@ -127,6 +129,28 @@ class _ChoiceTile extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// The explanation under the choices, absent until the learner answers.
+class _Explanation extends StatelessWidget {
+  const _Explanation({required this.chosen, required this.text});
+
+  final int? chosen;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    if (chosen == null) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.xs),
+      child: Text(
+        text,
+        style: Theme.of(
+          context,
+        ).textTheme.bodySmall?.copyWith(color: context.mood.inkMute),
       ),
     );
   }
