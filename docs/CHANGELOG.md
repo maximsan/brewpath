@@ -70,6 +70,12 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Lessons can be bookmarked too.** The bookmark sits in the lesson player's
+  own bar, so a lesson worth returning to is kept while it is being read rather
+  than hunted down afterwards. Saved lessons fill the shelf's Lessons group,
+  each showing the module it belongs to, in course order rather than the order
+  they were saved.
+
 - **The Saved shelf.** A bookmark button in the header on Learn, Path and
   Cards — carrying a dot when the shelf holds something — opens a screen
   listing what was kept, grouped as Dictionary terms, Lessons and Visual
