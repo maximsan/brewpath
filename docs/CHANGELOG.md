@@ -75,6 +75,12 @@ You can always edit this file by hand instead — the helpers just save effort.
   Maya.` where one was given, `Hello, there.` where it was skipped, which is
   the same sentence either way. Skipping costs nothing and stays skippable.
 
+- **A locked mini-game now offers something.** Tapping one opens a sheet naming
+  the module that teaches its topic — "Taught in Module 4 · Grind" — and
+  pitching that module in its own words, rather than refusing silently. The
+  lock became a door. The purchase call to action arrives with the paywall
+  (#89); this ships the pitch and the way out (#270).
+
 - **Dictionary terms can be bookmarked.** A bookmark sits on the term entry and
   on the peek sheet, and what it saves survives closing the app. It is the same
   control every saveable kind will use — lessons and visual guides follow — and

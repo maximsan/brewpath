@@ -4,7 +4,9 @@ import 'package:brew_path/features/mini_games/presentation/mini_game_player_scre
 import 'package:brew_path/features/mini_games/presentation/mini_games_catalog_widget.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
+import 'package:brew_path/shared/models/content/content_reward.dart';
 import 'package:brew_path/shared/models/content/mini_game_format.dart';
+import 'package:brew_path/shared/models/module_model.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -73,9 +75,29 @@ const _matchRounds = <ContentCard>[
   ),
 ];
 
+/// The module 'Fix the cup' points at, with the words its gate sheet pitches.
+const _modules = [
+  ModuleModel(
+    id: 'm4',
+    n: 4,
+    label: 'GRIND',
+    iconName: 'grind',
+    title: 'Grind',
+    lessons: [],
+    reward: ContentReward(
+      title: 'Grind',
+      summary: 'Where grind size comes from, and what it does to a cup.',
+      fact: 'Fact.',
+    ),
+  ),
+];
+
 class _FakeContentRepository extends ContentRepository {
   @override
   Future<List<MiniGameFormat>> getMiniGameFormats() async => _formats;
+
+  @override
+  Future<List<ModuleModel>> getModules() async => _modules;
 
   @override
   Future<List<ContentCard>> getMiniGameRounds(String formatId) async =>
@@ -140,7 +162,12 @@ Future<void> _pump(
         contentRepositoryProvider.overrideWithValue(_FakeContentRepository()),
       ],
       child: MediaQuery(
-        data: MediaQueryData(disableAnimations: disableAnimations),
+        // From the view, not a bare MediaQueryData: the default carries
+        // `size: Size.zero`, which lays a bottom sheet out below the
+        // viewport and makes its buttons untappable.
+        data: MediaQueryData.fromView(
+          tester.view,
+        ).copyWith(disableAnimations: disableAnimations),
         child: MaterialApp.router(routerConfig: router),
       ),
     ),
@@ -281,9 +308,7 @@ void main() {
       );
     });
 
-    testWidgets('a locked row announces itself and starts nothing', (
-      tester,
-    ) async {
+    testWidgets('a locked row announces itself as locked', (tester) async {
       final handle = tester.ensureSemantics();
       await _pump(tester, hasCourse: false);
 
@@ -291,16 +316,89 @@ void main() {
         find.bySemanticsLabel(RegExp('Fix the cup.*Locked')),
         findsOneWidget,
       );
+      handle.dispose();
+    });
+
+    testWidgets('a locked tap offers the module and starts nothing', (
+      tester,
+    ) async {
+      await _pump(tester, hasCourse: false);
 
       await tester.tap(find.text(lockedTitle));
-      await _settle(tester);
+      await tester.pumpAndSettle();
 
       expect(
         find.text('HOW TO PLAY'),
         findsNothing,
         reason: 'a locked game must not reach its intro, let alone a run',
       );
+      expect(
+        find.text('TAUGHT IN MODULE 4 · GRIND'),
+        findsOneWidget,
+        reason: 'the offer names the module that teaches this game',
+      );
+      expect(
+        find.text('Where grind size comes from, and what it does to a cup.'),
+        findsOneWidget,
+        reason: "the pitch is the module's own words, not the game's",
+      );
+    });
+
+    testWidgets('declining the offer leaves the learner on the shelf', (
+      tester,
+    ) async {
+      await _pump(tester, hasCourse: false);
+
+      await tester.tap(find.text(lockedTitle));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(TextButton, 'Not now'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('TAUGHT IN MODULE 4 · GRIND'), findsNothing);
+      expect(find.text(lockedTitle), findsOneWidget);
+      expect(find.byIcon(Icons.lock_outline), findsWidgets);
+    });
+
+    testWidgets('the offer announces itself as a named region', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await _pump(tester, hasCourse: false);
+
+      await tester.tap(find.text(lockedTitle));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.bySemanticsLabel(lockedTitle),
+        findsWidgets,
+        reason: "the sheet's name is the game the learner reached for",
+      );
       handle.dispose();
+    });
+
+    testWidgets('the offer settles at once under reduced motion', (
+      tester,
+    ) async {
+      await _pump(tester, disableAnimations: true, hasCourse: false);
+
+      await tester.tap(find.text(lockedTitle));
+      // One frame, not a settle: with motion off the sheet must already be
+      // at rest rather than partway through a slide.
+      await tester.pump();
+
+      expect(find.text('Not now'), findsOneWidget);
+    });
+
+    testWidgets('an unlocked game opens its intro, never the offer', (
+      tester,
+    ) async {
+      await _pump(tester, hasCourse: false);
+
+      await tester.tap(find.text('True or false'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('HOW TO PLAY'), findsOneWidget);
+      expect(find.textContaining('TAUGHT IN'), findsNothing);
     });
 
     testWidgets('a free game still opens', (tester) async {
