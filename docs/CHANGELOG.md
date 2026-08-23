@@ -59,6 +59,12 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **A locked mini-game told screen readers it was locked and nothing more.**
+  A sighted learner taps a lock speculatively and finds the offer behind it;
+  someone hearing only "Locked" has no reason to try, so the dead end this
+  catalog set out to remove was still there for them. The row now carries a
+  hint naming what the tap does (#125).
+
 - **A schema bump no longer trips over a migration that predates it.** The
   step that dropped the two dead streak columns rebuilt `user_settings` from
   the current table definition, so it quietly depended on every column that
