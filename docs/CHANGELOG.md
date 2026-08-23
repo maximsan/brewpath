@@ -70,6 +70,14 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Visual guides can be bookmarked, and the shelf is complete.** The bookmark
+  sits in the guide's own sheet, beside the label naming what it is, so a
+  reference is kept from where it is read. Saved guides fill the shelf's third
+  group in bank order, and a row opens the guide back over whatever the learner
+  was reading. A guide the course has re-locked — after a reset, say — drops off
+  the shelf rather than offering a way back into content that is no longer
+  earned.
+
 - **Lessons can be bookmarked too.** The bookmark sits in the lesson player's
   own bar, so a lesson worth returning to is kept while it is being read rather
   than hunted down afterwards. Saved lessons fill the shelf's Lessons group,

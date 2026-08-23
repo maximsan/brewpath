@@ -1,6 +1,8 @@
 import 'package:brew_path/core/widgets/app_sheet.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/path/presentation/visual_guide_art.dart';
+import 'package:brew_path/features/saved/domain/saved_key.dart';
+import 'package:brew_path/features/saved/presentation/saved_bookmark_button.dart';
 import 'package:brew_path/shared/models/content/visual_guide.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -37,8 +39,20 @@ class VisualGuideSheetBody extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Names the kind, because a guide and a collectible look alike and
-        // mean different things.
-        SmallcapsLabel(guide.label),
+        // mean different things. The bookmark sits beside it: a reference is
+        // kept from where it is read, like a lesson and a term.
+        Row(
+          children: [
+            Expanded(child: SmallcapsLabel(guide.label)),
+            SavedBookmarkButton(
+              // The guide's **subject**, not its id — `g:roast`, never
+              // `g:g-roast`. Both fields exist, so the wrong one would
+              // resolve to nothing without ever failing loudly.
+              savedKey: formatSavedKey(SavedKind.guide, guide.subject),
+              label: guide.title,
+            ),
+          ],
+        ),
         const SizedBox(height: AppSpacing.md),
         VisualGuideArt(subject: guide.subject, size: VisualGuideArtSize.sheet),
         const SizedBox(height: AppSpacing.md),
