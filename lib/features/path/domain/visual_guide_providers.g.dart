@@ -63,4 +63,4 @@ final class VisualGuideShelfForProvider
 }
 
 String _$visualGuideShelfForHash() =>
-    r'f8409d100925d6e5c5c3dc6d6d05d55a4b9bf186';
+    r'2dee6d1e6042e6099b48be5cefff18d269bbea2d';

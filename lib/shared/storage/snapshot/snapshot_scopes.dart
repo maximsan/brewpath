@@ -245,6 +245,24 @@ class ClearedByReset {
     ),
   );
 
+  /// A copy with the Saved shelf replaced by [favourites].
+  ///
+  /// Last-writer-wins rather than a union, for the reason recorded on the
+  /// field: removal is a first-class action here, and unioning the shelf would
+  /// resurrect every bookmark the learner ever took off, from any device that
+  /// still remembered it.
+  ClearedByReset withFavourites(
+    Set<String> favourites, {
+    required int at,
+    required String writerId,
+  }) => _copy(
+    favourites: Timestamped(
+      value: favourites,
+      updatedAt: at,
+      writerId: writerId,
+    ),
+  );
+
   /// A copy recording that [id] was logged with [reaction] on [day].
   ///
   /// Both halves move together because they are one event: the completion is
@@ -297,6 +315,7 @@ class ClearedByReset {
     Set<String>? challengesCompleted,
     Map<String, ChallengeReaction>? challengeReactions,
     Timestamped<Set<String>>? challengesSaved,
+    Timestamped<Set<String>>? favourites,
   }) => ClearedByReset(
     completedLessons: completedLessons,
     bestResults: bestResults,
@@ -311,7 +330,7 @@ class ClearedByReset {
     dailyActivity: dailyActivity ?? this.dailyActivity,
     challengesSaved: challengesSaved ?? this.challengesSaved,
     activeChallenge: activeChallenge ?? this.activeChallenge,
-    favourites: favourites,
+    favourites: favourites ?? this.favourites,
     unknown: unknown,
   );
 

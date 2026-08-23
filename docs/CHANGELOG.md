@@ -70,6 +70,14 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Dictionary terms can be bookmarked.** A bookmark sits on the term entry and
+  on the peek sheet, and what it saves survives closing the app. It is the same
+  control every saveable kind will use — lessons and visual guides follow — and
+  the key grammar behind it (`l:` a lesson, `t:` a term, `g:` a guide, and
+  nothing else) now lives in one place rather than being spelled at each call
+  site. The Saved shelf that displays them comes next; this is the half that
+  records.
+
 - **The eight visual guides get their drawings.** Roast swatches, grind dots,
   the extraction and ratio spectrums, the cherry's six rings, the variety
   family tree, caffeine bars and the blade-against-burr distribution curves —

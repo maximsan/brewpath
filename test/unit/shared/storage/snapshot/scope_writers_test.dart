@@ -183,6 +183,40 @@ void main() {
     });
   });
 
+  group('withFavourites', () {
+    const at = 1700000000000;
+
+    test('replaces the shelf and changes nothing else', () {
+      final after = populated.withFavourites(
+        const {'t:arabica'},
+        at: at,
+        writerId: 'device-a',
+      );
+
+      expect(after.favourites.value, {'t:arabica'});
+      expect(after.favourites.updatedAt, at);
+      expect(after.favourites.writerId, 'device-a');
+      expect(
+        after.toJson()..remove('favourites'),
+        populated.toJson()..remove('favourites'),
+      );
+    });
+
+    test('replaces rather than unions, so a removal stays removed', () {
+      // Last-writer-wins for the same reason the parked queue is: unioning
+      // the shelf would resurrect every bookmark the learner ever took off,
+      // from any device that still remembered it.
+      final after = populated.withFavourites(
+        const {},
+        at: at,
+        writerId: 'device-a',
+      );
+
+      expect(after.favourites.value, isEmpty);
+      expect(after.favourites.updatedAt, at);
+    });
+  });
+
   test('withChallengeLogged records the brew and its outcome', () {
     final after = populated.withChallengeLogged(
       'bc-m4',
