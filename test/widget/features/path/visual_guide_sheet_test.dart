@@ -4,6 +4,8 @@ import 'package:brew_path/shared/models/content/visual_guide.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/widget_harness.dart';
+
 /// What a guide's entry shows once opened.
 ///
 /// The prose is the part worth pinning. Guides shipped for a while with their
@@ -27,17 +29,24 @@ VisualGuide _guide({List<VisualGuideNote> notes = const [], String? note}) =>
       note: note,
     );
 
+/// Pumped under a real provider scope and an in-memory database, because the
+/// sheet's header carries a `SavedBookmarkButton` — a Riverpod consumer that
+/// reads the saved shelf. The body is otherwise pure presentation; the scope is
+/// here for that one child, and the bookmark's own behaviour is covered by its
+/// own test rather than re-asserted here.
 Future<void> _open(WidgetTester tester, VisualGuide guide) async {
-  await tester.pumpWidget(
+  await pumpWithProviders(
+    tester,
     MaterialApp(
       theme: AppTheme.darkRoast,
       home: Scaffold(body: VisualGuideSheetBody(guide: guide)),
     ),
   );
-  await tester.pumpAndSettle();
 }
 
 void main() {
+  setUp(useInMemoryDatabase);
+
   testWidgets('a table row carries the sentence that explains it', (
     tester,
   ) async {
