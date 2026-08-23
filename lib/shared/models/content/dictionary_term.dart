@@ -96,7 +96,4 @@ abstract class DictionaryTerm with _$DictionaryTerm {
   /// Creates a [DictionaryTerm] from decoded JSON.
   factory DictionaryTerm.fromJson(Map<String, dynamic> json) =>
       _$DictionaryTermFromJson(json);
-
-  /// Whether no lesson teaches this term.
-  bool get isReferenceOnly => lessonId == null;
 }

@@ -27,6 +27,12 @@ Future<AppDatabase> useInMemoryDatabase() async {
   // Pre-mark onboarding as completed so existing widget tests that boot the
   // full app shell still land on /learn. Onboarding-specific tests build
   // their own router and do not go through this helper.
+  //
+  // `tourSeen` is seeded for the same reason and is not optional: the Tour
+  // auto-runs the moment Learn shows real data with the flag unset, so without
+  // this every test that boots the shell would open onto the intro overlay's
+  // modal barrier and every tap would miss. Tour tests set the flag themselves
+  // — see test/widget/features/tour/.
   await db
       .into(db.userSettings)
       .insert(
@@ -36,6 +42,7 @@ Future<AppDatabase> useInMemoryDatabase() async {
           soundEnabled: true,
           totalXp: 0,
           onboardingCompleted: const Value(true),
+          tourSeen: const Value(true),
         ),
       );
 

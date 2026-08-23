@@ -969,6 +969,21 @@ class $UserSettingsTable extends UserSettings
     requiredDuringInsert: false,
     defaultValue: const Constant('dark'),
   );
+  static const VerificationMeta _tourSeenMeta = const VerificationMeta(
+    'tourSeen',
+  );
+  @override
+  late final GeneratedColumn<bool> tourSeen = GeneratedColumn<bool>(
+    'tour_seen',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("tour_seen" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -979,6 +994,7 @@ class $UserSettingsTable extends UserSettings
     onboardingGoal,
     onboardingBrewer,
     themeMode,
+    tourSeen,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1058,6 +1074,12 @@ class $UserSettingsTable extends UserSettings
         themeMode.isAcceptableOrUnknown(data['theme_mode']!, _themeModeMeta),
       );
     }
+    if (data.containsKey('tour_seen')) {
+      context.handle(
+        _tourSeenMeta,
+        tourSeen.isAcceptableOrUnknown(data['tour_seen']!, _tourSeenMeta),
+      );
+    }
     return context;
   }
 
@@ -1099,6 +1121,10 @@ class $UserSettingsTable extends UserSettings
         DriftSqlType.string,
         data['${effectivePrefix}theme_mode'],
       )!,
+      tourSeen: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}tour_seen'],
+      )!,
     );
   }
 
@@ -1135,6 +1161,23 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
   /// enum's storage string. Device-local: never written to the sync snapshot,
   /// because two devices the same person owns may legitimately differ.
   final String themeMode;
+
+  /// Whether the learner has answered the Tour's intro overlay.
+  ///
+  /// Written the moment either button is pressed, so mid-tour abandonment never
+  /// re-arms the auto-run. Defaults to `false` so every device migrated from an
+  /// earlier schema is offered the Tour once.
+  ///
+  /// **Fate-shares with [onboardingCompleted].** The two are the app's pair of
+  /// "this learner has been shown the introductions" bits, and a wipe that
+  /// clears one while keeping the other produces a state no learner can reach
+  /// on their own: onboarding replayed with the Tour suppressed, or the
+  /// reverse.
+  /// The three places that decide are `AccountWipe.resetProgress` (keeps both,
+  /// by leaving this row alone), `SettingsRepository.deleteAll` (clears both,
+  /// with the row) and `OnboardingRepository.resetOnboarding` (clears both, by
+  /// name). Device-local: never written to the progress snapshot.
+  final bool tourSeen;
   const SettingsRow({
     required this.id,
     required this.hapticsEnabled,
@@ -1144,6 +1187,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     this.onboardingGoal,
     this.onboardingBrewer,
     required this.themeMode,
+    required this.tourSeen,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1160,6 +1204,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
       map['onboarding_brewer'] = Variable<String>(onboardingBrewer);
     }
     map['theme_mode'] = Variable<String>(themeMode);
+    map['tour_seen'] = Variable<bool>(tourSeen);
     return map;
   }
 
@@ -1177,6 +1222,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
           ? const Value.absent()
           : Value(onboardingBrewer),
       themeMode: Value(themeMode),
+      tourSeen: Value(tourSeen),
     );
   }
 
@@ -1196,6 +1242,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
       onboardingGoal: serializer.fromJson<String?>(json['onboardingGoal']),
       onboardingBrewer: serializer.fromJson<String?>(json['onboardingBrewer']),
       themeMode: serializer.fromJson<String>(json['themeMode']),
+      tourSeen: serializer.fromJson<bool>(json['tourSeen']),
     );
   }
   @override
@@ -1210,6 +1257,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
       'onboardingGoal': serializer.toJson<String?>(onboardingGoal),
       'onboardingBrewer': serializer.toJson<String?>(onboardingBrewer),
       'themeMode': serializer.toJson<String>(themeMode),
+      'tourSeen': serializer.toJson<bool>(tourSeen),
     };
   }
 
@@ -1222,6 +1270,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     Value<String?> onboardingGoal = const Value.absent(),
     Value<String?> onboardingBrewer = const Value.absent(),
     String? themeMode,
+    bool? tourSeen,
   }) => SettingsRow(
     id: id ?? this.id,
     hapticsEnabled: hapticsEnabled ?? this.hapticsEnabled,
@@ -1235,6 +1284,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
         ? onboardingBrewer.value
         : this.onboardingBrewer,
     themeMode: themeMode ?? this.themeMode,
+    tourSeen: tourSeen ?? this.tourSeen,
   );
   SettingsRow copyWithCompanion(UserSettingsCompanion data) {
     return SettingsRow(
@@ -1256,6 +1306,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
           ? data.onboardingBrewer.value
           : this.onboardingBrewer,
       themeMode: data.themeMode.present ? data.themeMode.value : this.themeMode,
+      tourSeen: data.tourSeen.present ? data.tourSeen.value : this.tourSeen,
     );
   }
 
@@ -1269,7 +1320,8 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
           ..write('onboardingCompleted: $onboardingCompleted, ')
           ..write('onboardingGoal: $onboardingGoal, ')
           ..write('onboardingBrewer: $onboardingBrewer, ')
-          ..write('themeMode: $themeMode')
+          ..write('themeMode: $themeMode, ')
+          ..write('tourSeen: $tourSeen')
           ..write(')'))
         .toString();
   }
@@ -1284,6 +1336,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     onboardingGoal,
     onboardingBrewer,
     themeMode,
+    tourSeen,
   );
   @override
   bool operator ==(Object other) =>
@@ -1296,7 +1349,8 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
           other.onboardingCompleted == this.onboardingCompleted &&
           other.onboardingGoal == this.onboardingGoal &&
           other.onboardingBrewer == this.onboardingBrewer &&
-          other.themeMode == this.themeMode);
+          other.themeMode == this.themeMode &&
+          other.tourSeen == this.tourSeen);
 }
 
 class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
@@ -1308,6 +1362,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
   final Value<String?> onboardingGoal;
   final Value<String?> onboardingBrewer;
   final Value<String> themeMode;
+  final Value<bool> tourSeen;
   const UserSettingsCompanion({
     this.id = const Value.absent(),
     this.hapticsEnabled = const Value.absent(),
@@ -1317,6 +1372,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     this.onboardingGoal = const Value.absent(),
     this.onboardingBrewer = const Value.absent(),
     this.themeMode = const Value.absent(),
+    this.tourSeen = const Value.absent(),
   });
   UserSettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -1327,6 +1383,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     this.onboardingGoal = const Value.absent(),
     this.onboardingBrewer = const Value.absent(),
     this.themeMode = const Value.absent(),
+    this.tourSeen = const Value.absent(),
   }) : hapticsEnabled = Value(hapticsEnabled),
        soundEnabled = Value(soundEnabled),
        totalXp = Value(totalXp);
@@ -1339,6 +1396,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     Expression<String>? onboardingGoal,
     Expression<String>? onboardingBrewer,
     Expression<String>? themeMode,
+    Expression<bool>? tourSeen,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1350,6 +1408,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
       if (onboardingGoal != null) 'onboarding_goal': onboardingGoal,
       if (onboardingBrewer != null) 'onboarding_brewer': onboardingBrewer,
       if (themeMode != null) 'theme_mode': themeMode,
+      if (tourSeen != null) 'tour_seen': tourSeen,
     });
   }
 
@@ -1362,6 +1421,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     Value<String?>? onboardingGoal,
     Value<String?>? onboardingBrewer,
     Value<String>? themeMode,
+    Value<bool>? tourSeen,
   }) {
     return UserSettingsCompanion(
       id: id ?? this.id,
@@ -1372,6 +1432,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
       onboardingGoal: onboardingGoal ?? this.onboardingGoal,
       onboardingBrewer: onboardingBrewer ?? this.onboardingBrewer,
       themeMode: themeMode ?? this.themeMode,
+      tourSeen: tourSeen ?? this.tourSeen,
     );
   }
 
@@ -1402,6 +1463,9 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     if (themeMode.present) {
       map['theme_mode'] = Variable<String>(themeMode.value);
     }
+    if (tourSeen.present) {
+      map['tour_seen'] = Variable<bool>(tourSeen.value);
+    }
     return map;
   }
 
@@ -1415,7 +1479,8 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
           ..write('onboardingCompleted: $onboardingCompleted, ')
           ..write('onboardingGoal: $onboardingGoal, ')
           ..write('onboardingBrewer: $onboardingBrewer, ')
-          ..write('themeMode: $themeMode')
+          ..write('themeMode: $themeMode, ')
+          ..write('tourSeen: $tourSeen')
           ..write(')'))
         .toString();
   }
@@ -2353,6 +2418,7 @@ typedef $$UserSettingsTableCreateCompanionBuilder =
       Value<String?> onboardingGoal,
       Value<String?> onboardingBrewer,
       Value<String> themeMode,
+      Value<bool> tourSeen,
     });
 typedef $$UserSettingsTableUpdateCompanionBuilder =
     UserSettingsCompanion Function({
@@ -2364,6 +2430,7 @@ typedef $$UserSettingsTableUpdateCompanionBuilder =
       Value<String?> onboardingGoal,
       Value<String?> onboardingBrewer,
       Value<String> themeMode,
+      Value<bool> tourSeen,
     });
 
 class $$UserSettingsTableFilterComposer
@@ -2412,6 +2479,11 @@ class $$UserSettingsTableFilterComposer
 
   ColumnFilters<String> get themeMode => $composableBuilder(
     column: $table.themeMode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get tourSeen => $composableBuilder(
+    column: $table.tourSeen,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -2464,6 +2536,11 @@ class $$UserSettingsTableOrderingComposer
     column: $table.themeMode,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get tourSeen => $composableBuilder(
+    column: $table.tourSeen,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$UserSettingsTableAnnotationComposer
@@ -2508,6 +2585,9 @@ class $$UserSettingsTableAnnotationComposer
 
   GeneratedColumn<String> get themeMode =>
       $composableBuilder(column: $table.themeMode, builder: (column) => column);
+
+  GeneratedColumn<bool> get tourSeen =>
+      $composableBuilder(column: $table.tourSeen, builder: (column) => column);
 }
 
 class $$UserSettingsTableTableManager
@@ -2549,6 +2629,7 @@ class $$UserSettingsTableTableManager
                 Value<String?> onboardingGoal = const Value.absent(),
                 Value<String?> onboardingBrewer = const Value.absent(),
                 Value<String> themeMode = const Value.absent(),
+                Value<bool> tourSeen = const Value.absent(),
               }) => UserSettingsCompanion(
                 id: id,
                 hapticsEnabled: hapticsEnabled,
@@ -2558,6 +2639,7 @@ class $$UserSettingsTableTableManager
                 onboardingGoal: onboardingGoal,
                 onboardingBrewer: onboardingBrewer,
                 themeMode: themeMode,
+                tourSeen: tourSeen,
               ),
           createCompanionCallback:
               ({
@@ -2569,6 +2651,7 @@ class $$UserSettingsTableTableManager
                 Value<String?> onboardingGoal = const Value.absent(),
                 Value<String?> onboardingBrewer = const Value.absent(),
                 Value<String> themeMode = const Value.absent(),
+                Value<bool> tourSeen = const Value.absent(),
               }) => UserSettingsCompanion.insert(
                 id: id,
                 hapticsEnabled: hapticsEnabled,
@@ -2578,6 +2661,7 @@ class $$UserSettingsTableTableManager
                 onboardingGoal: onboardingGoal,
                 onboardingBrewer: onboardingBrewer,
                 themeMode: themeMode,
+                tourSeen: tourSeen,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

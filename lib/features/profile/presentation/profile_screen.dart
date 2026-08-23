@@ -3,12 +3,12 @@ import 'package:brew_path/features/challenges/presentation/challenge_stat_row.da
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:brew_path/features/profile/presentation/widgets/preference_tile.dart';
 import 'package:brew_path/features/profile/presentation/widgets/premium_card.dart';
-import 'package:brew_path/features/profile/presentation/widgets/profile_header.dart';
 import 'package:brew_path/features/profile/presentation/widgets/stat_tile.dart';
 import 'package:brew_path/features/progress/domain/grove_treatment.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/presentation/coffee_tree.dart';
 import 'package:brew_path/features/progress/presentation/week_strip.dart';
+import 'package:brew_path/features/tour/presentation/replay_tour_row.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -36,76 +36,62 @@ class ProfileScreen extends ConsumerWidget {
     final grove = ref.watch(groveTreatmentProvider);
 
     return Scaffold(
-      body: SafeArea(
-        bottom: false,
-        child: CustomScrollView(
-          slivers: [
-            SliverPersistentHeader(
-              pinned: true,
-              delegate: ProfileHeaderDelegate(
-                title: 'Profile',
-                onClose: () => context.go('/learn'),
-                onSettings: () => context.go('/profile/settings'),
-              ),
-            ),
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-              sliver: SliverList.list(
-                children: [
-                  Center(
-                    child: treeStage.when(
-                      data: (stage) => CoffeeTree(
-                        stage: stage,
-                        // A grove still loading paints the real art rather
-                        // than blocking the tree on it.
-                        treatment:
-                            grove.asData?.value ?? GroveTreatment.identity,
-                      ),
-                      loading: CoffeeTreePlaceholder.new,
-                      error: (_, _) => const CoffeeTreePlaceholder(),
+      body: CustomScrollView(
+        slivers: [
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+            sliver: SliverList.list(
+              children: [
+                Center(
+                  child: treeStage.when(
+                    data: (stage) => CoffeeTree(
+                      stage: stage,
+                      // A grove still loading paints the real art rather
+                      // than blocking the tree on it.
+                      treatment: grove.asData?.value ?? GroveTreatment.identity,
                     ),
+                    loading: CoffeeTreePlaceholder.new,
+                    error: (_, _) => const CoffeeTreePlaceholder(),
                   ),
-                  const SizedBox(height: _sectionGap),
-                  const PremiumCard(),
-                  const SizedBox(height: _sectionGap),
-                  const _SectionTitle('Your progress'),
-                  const SizedBox(height: 12),
-                  _StatsGrid(
-                    points: points.asData?.value ?? 0,
-                    streakDays: streak.asData?.value ?? 0,
-                    lessonsCompleted: lessons.asData?.value.length ?? 0,
-                    cardsCollected: cards.asData?.value.length ?? 0,
-                    onStreakTap: () =>
-                        context.goNamed(AppRoutes.profileStreak.name),
-                    streakFooter: weekDays == null
-                        ? null
-                        : WeekStrip(
-                            days: weekDays,
-                            size: WeekStripSize.small,
-                          ),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  const ChallengeStatRow(),
-                  const SizedBox(height: _sectionGap),
-                  const _SectionTitle('Customize'),
-                  const SizedBox(height: 12),
-                  _CustomizeGrid(
-                    soundEnabled: settings.asData?.value.soundEnabled ?? true,
-                    hapticsEnabled:
-                        settings.asData?.value.hapticsEnabled ?? true,
-                    onToggleSound: () => ref
-                        .read(settingsControllerProvider.notifier)
-                        .toggleSound(),
-                    onToggleHaptics: () => ref
-                        .read(settingsControllerProvider.notifier)
-                        .toggleHaptics(),
-                    onComingSoon: () => _showComingSoon(context),
-                  ),
-                ],
-              ),
+                ),
+                const SizedBox(height: _sectionGap),
+                const PremiumCard(),
+                const SizedBox(height: _sectionGap),
+                const _SectionTitle('Your progress'),
+                const SizedBox(height: 12),
+                _StatsGrid(
+                  points: points.asData?.value ?? 0,
+                  streakDays: streak.asData?.value ?? 0,
+                  lessonsCompleted: lessons.asData?.value.length ?? 0,
+                  cardsCollected: cards.asData?.value.length ?? 0,
+                  onStreakTap: () =>
+                      context.goNamed(AppRoutes.profileStreak.name),
+                  streakFooter: weekDays == null
+                      ? null
+                      : WeekStrip(days: weekDays, size: WeekStripSize.small),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                const ChallengeStatRow(),
+                const SizedBox(height: _sectionGap),
+                const _SectionTitle('Customize'),
+                const SizedBox(height: 12),
+                _CustomizeGrid(
+                  soundEnabled: settings.asData?.value.soundEnabled ?? true,
+                  hapticsEnabled: settings.asData?.value.hapticsEnabled ?? true,
+                  onToggleSound: () => ref
+                      .read(settingsControllerProvider.notifier)
+                      .toggleSound(),
+                  onToggleHaptics: () => ref
+                      .read(settingsControllerProvider.notifier)
+                      .toggleHaptics(),
+                  onComingSoon: () => _showComingSoon(context),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                const ReplayTourRow(),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

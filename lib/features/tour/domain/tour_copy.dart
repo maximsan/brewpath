@@ -1,0 +1,68 @@
+/// Every word the Tour says, in one place.
+///
+/// The copy is **locked** by the Tour spec (the resolution of
+/// [#195](https://github.com/maximsan/brewpath/issues/195)) — it was reviewed
+/// as a set, and each stop was written to explain a *mechanic* rather than to
+/// name the widget it points at. Editing a string here edits the spec, not the
+/// implementation; a change belongs in a ticket that reopens the ruling.
+///
+/// They live apart from the widgets that render them so the whole script can be
+/// read in scroll order without reading a widget tree, and so the widget tests
+/// can assert the words without restating them.
+abstract final class TourCopy {
+  /// The intro overlay's heading.
+  static const introTitle = 'Quick tour?';
+
+  /// The intro overlay's one line of body copy.
+  static const introBody =
+      'Four stops, thirty seconds — see how BrewPath works.';
+
+  /// The intro overlay's accept button. Answering *either* button writes
+  /// `tourSeen`; only this one runs the stops.
+  static const introAccept = 'Show me';
+
+  /// The intro overlay's decline button.
+  static const introDecline = 'Skip';
+
+  /// Screen-reader label for the intro overlay as a whole.
+  static const introSemanticLabel =
+      'Quick tour. Four stops, thirty seconds — see how BrewPath works.';
+
+  /// Stop 1 — the Today card.
+  static const todayTitle = 'One lesson a day.';
+
+  /// Stop 1's body.
+  static const todayBody =
+      'Your next Foundations lesson is always here. Finish any activity today '
+      'and your streak is safe.';
+
+  /// Stop 2 — the practice area: the replay list and the mini-games together.
+  static const practiceTitle = 'Practice, your way.';
+
+  /// Stop 2's body.
+  static const practiceBody =
+      'Replay finished lessons to raise your mastery, or play a mini-game — '
+      'practice protects your streak too.';
+
+  /// Stop 3 — the modules section.
+  static const modulesTitle = 'A course with an ending.';
+
+  /// Stop 3's body.
+  static const modulesBody =
+      'Five modules, thirty-two lessons, in order. First-time completions earn '
+      'points.';
+
+  /// Stop 4 — the bottom tab bar.
+  static const tabsTitle = 'And beyond.';
+
+  /// Stop 4's body.
+  static const tabsBody =
+      'Path grows your coffee tree, Cards keeps your collection, Profile holds '
+      'your streak and settings.';
+
+  /// The Profile row that replays the Tour.
+  static const replayTitle = 'Replay the tour';
+
+  /// That row's supporting line.
+  static const replayBody = 'Walk through the Learn tab again';
+}

@@ -159,6 +159,16 @@ never a qualifying activity
 _Avoid_: a Learn-tab or Today surface (the prototype's Learn-tab hook is dead
 code; ruled out)
 
+## Onboarding
+
+**Tour**:
+The one-time, skippable walkthrough of the Learn tab — four stops, each
+explaining a mechanic. Auto-runs once per device when Learn first shows with
+`tourSeen` unset; replayable from Profile
+([#191](https://github.com/maximsan/brewpath/issues/191)). Never a qualifying
+activity.
+_Avoid_: walking tour, walkthrough, coach marks
+
 ## Sync and storage
 
 **Progress snapshot**:

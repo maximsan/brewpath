@@ -16,6 +16,7 @@ class UserSettingsRecord {
     this.onboardingGoal,
     this.onboardingBrewer,
     this.themeMode = AppThemeMode.fallback,
+    this.tourSeen = false,
   });
 
   int id;
@@ -26,4 +27,5 @@ class UserSettingsRecord {
   String? onboardingGoal;
   String? onboardingBrewer;
   AppThemeMode themeMode;
+  bool tourSeen;
 }

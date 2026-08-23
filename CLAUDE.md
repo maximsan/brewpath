@@ -57,12 +57,18 @@ first, then resume.
 - **Regenerate after model changes.** Run `dart run build_runner build` whenever
   a Freezed model, Riverpod provider, or Drift table is added or modified
   (flags and behaviour: README _Development commands_).
-- **`prototype/` is entirely read-only.** It is the design source the app is
+- **`prototype/` is read-only to agents.** It is the design source the app is
   built *against*, so an edit there moves the thing we are measuring ourselves
   by. Findings about the prototype — "this is wrong", "do not port this" — go in
   the issue that owns them or in [`docs/design/`](docs/design/README.md), never
-  as an annotation in the source. Rules for authoring course content live in
-  [`docs/design/content-rules.md`](docs/design/content-rules.md).
+  as an annotation in the source. An agent edits `prototype/` only when an issue
+  rules it may (see [#196](https://github.com/maximsan/brewpath/issues/196) for
+  the shape of such a ruling).
+
+  **The owner authors course content here** — it is the authoring environment,
+  and the extractor reads it. So the rules for that authoring live where it
+  happens, in [`prototype/CLAUDE.md`](prototype/CLAUDE.md), which loads
+  automatically in that directory.
 
 ## Change History
 

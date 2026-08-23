@@ -42,8 +42,60 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ## [Unreleased]
 
+### Fixed
+
+- **A dictionary self-check crashed for anyone using reduced motion.**
+  Answering one asked `AnimatedSize` to finish in zero time, and it re-dirties
+  itself inside its own layout when told to — so the framework asserted rather
+  than the explanation appearing. Thirty of the seventy-three terms carry a
+  self-check. The animator is now dropped entirely when the system asks for no
+  motion, which is what "no animation" has to mean, and a sweep test fails on
+  any file that pairs the two again.
+
 ### Added
 
+- **The Tour can be replayed.** A "Replay the tour" row at the bottom of
+  Profile → Customize switches to Learn and runs the four stops again — no
+  intro overlay, and nothing written: the question the overlay asks was
+  answered the first time, and the flag records that answer rather than how
+  many times the Tour has run.
+- **The Tour.** A first launch that reaches the Learn tab now asks "Quick tour?"
+  — four spotlight stops, auto-scrolled in order: the Today card and the daily
+  loop, the practice area (replays and mini-games, as one idea), the finite
+  module list, and the bottom tab bar. Each stop explains a *mechanic* rather
+  than naming a widget, and the Tour says nothing about Plus or locks. Answering
+  the intro either way writes `tourSeen`, so the offer is made once and
+  abandoning the Tour halfway never re-arms it. Scrim and tooltip come from the
+  app's tokens in both moods, and reduced motion turns the spotlight's movement,
+  its scale-in and the auto-scroll into cuts.
+- **The Tour has somewhere to remember itself.** A `tourSeen` bit on the
+  settings row (schema v8), written once when the learner answers the Tour's
+  intro and read to decide whether the Tour auto-runs at all. It fate-shares
+  with the onboarding gate wherever a wipe decides: Reset Progress keeps both,
+  Delete Account clears both, and the debug onboarding-reset clears both — so
+  no wipe can leave a device replaying the welcome flow with the Tour silently
+  suppressed. Device-local, and deliberately outside the progress snapshot.
+
+- **The tab header gets out of the way as you scroll.** Scrolling a tab drops
+  the header's eyebrow and shrinks it to the title; scrolling back to the top
+  restores it. Each tab keeps its own collapse, for the same reason each keeps
+  its own navigator stack — scrolling Learn, switching to Path and switching
+  back finds Learn exactly as it was left. A tab with nothing to scroll never
+  collapses, a carousel inside a tab is not the tab moving, and with reduced
+  motion on, the change lands in one frame.
+
+- **One header over the four tabs.** Learn, Path and Cards each wore a stock
+  bar carrying nothing but the tab's name, and Profile wore a different header
+  again. They now share one, owned by the shell: a smallcaps eyebrow over a
+  display title — today's date on Learn, the course on Path, the collection on
+  Cards, a greeting on Profile — with the Dictionary in reach from the first
+  three and a Settings gear on Profile. Pushing into a module, a card or a term
+  shows that page's own bar and never the tab header; a lesson or mini-game
+  shows neither. Which chrome a location gets is one pure rule over the route,
+  asserted as a table, so a route added later cannot silently inherit the wrong
+  one. Learn's date joins the day-rollover list rather than being read once at
+  build, and Profile's close button — an app-only invention the design has no
+  equivalent for — is gone with its delegate.
 - **Milestones get their moment.** The streak screen opens on a Roasty beat
   when a milestone day lands (3, 7, 14, 30, 60, 100, 180, 365, then every
   30) — once per milestone, self-healing after a lapse — and the count sits
@@ -59,6 +111,24 @@ You can always edit this file by hand instead — the helpers just save effort.
 - **The streak has a home.** Tapping Day streak on Profile opens the new
   streak screen: the day count at hero size and a one-line freeze status —
   the covered day named, a held freeze stated, or the countdown to the next.
+- **One sheet primitive, and reduced motion at last.** Every bottom sheet now
+  opens through a single function that owns the chrome — the mood background, a
+  dimmed barrier, rounded top corners, a drag handle, safe-area insets, a
+  height cap that scrolls rather than clips, and the title, which is also the
+  name a screen reader announces the sheet by. One string feeds both, so the
+  spoken name and the visible one cannot drift.
+
+  The dictionary's peek sheet is the first to wear it: opened raw, it had none
+  of that and sat on a stock Material surface behind a moody design. And
+  because `showModalBottomSheet` ignores the platform's reduced-motion setting
+  outright, a learner who asked for less motion is now given it — the sheet
+  arrives settled instead of sliding.
+
+  Two rules the design writes down are deliberately not implemented: sheets
+  stacking, and root-level sheets dismissing on navigation. Both are DOM
+  problems that Flutter's navigator already solves, measured rather than
+  assumed.
+
 - **The Coffee Dictionary.** 73 terms across 8 categories, reachable from a
   header action on Learn: a home that searches names, aliases and category
   labels (case- and accent-insensitive) and filters by status with live counts,

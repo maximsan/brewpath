@@ -73,7 +73,7 @@ void main() {
     test('carries exactly the eight terms no lesson teaches', () async {
       final terms = await dictionary.getTerms();
       expect(
-        terms.where((t) => t.isReferenceOnly).map((t) => t.id),
+        terms.where((t) => t.lessonId == null).map((t) => t.id),
         unorderedEquals([
           'masl',
           'wet-hulled',

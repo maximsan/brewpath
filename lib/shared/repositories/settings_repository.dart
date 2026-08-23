@@ -27,6 +27,7 @@ class SettingsRepository {
         onboardingGoal: row.onboardingGoal,
         onboardingBrewer: row.onboardingBrewer,
         themeMode: AppThemeMode.fromStorage(row.themeMode),
+        tourSeen: row.tourSeen,
       );
     }
     return UserSettingsRecord(
@@ -50,6 +51,7 @@ class SettingsRepository {
             onboardingGoal: Value(settings.onboardingGoal),
             onboardingBrewer: Value(settings.onboardingBrewer),
             themeMode: Value(settings.themeMode.storageValue),
+            tourSeen: Value(settings.tourSeen),
           ),
         );
   }
@@ -57,8 +59,10 @@ class SettingsRepository {
   /// Deletes the singleton row, so reads fall back to first-launch defaults.
   ///
   /// **Delete Account only.** This row is the device-local store — appearance,
-  /// haptics, sound and the onboarding answers — which a progress reset keeps
-  /// deliberately. Delete is the one wipe it does not survive.
+  /// haptics, sound, the onboarding answers and the Tour's `tourSeen` bit —
+  /// which a progress reset keeps deliberately. Delete is the one wipe it does
+  /// not survive, and it takes `onboardingCompleted` and `tourSeen` together,
+  /// which is the fate-sharing rule those two are owed.
   Future<void> deleteAll() async {
     await _db.delete(_db.userSettings).go();
   }

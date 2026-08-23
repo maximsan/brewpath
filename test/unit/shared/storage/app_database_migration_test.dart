@@ -57,4 +57,27 @@ void main() {
     expect(reloaded.onboardingGoal, 'brew_better');
     expect(reloaded.onboardingBrewer, 'v60');
   });
+
+  test('user_settings has the Tour column', () async {
+    final cols = await db
+        .customSelect('PRAGMA table_info(user_settings)')
+        .get();
+    final names = cols.map((r) => r.read<String>('name')).toSet();
+    expect(names, contains('tour_seen'));
+  });
+
+  test('default settings row reports the Tour unseen', () async {
+    final repo = SettingsRepository();
+    final s = await repo.getSettings();
+    expect(s.tourSeen, isFalse);
+  });
+
+  test('saveSettings round-trips tourSeen', () async {
+    final repo = SettingsRepository();
+    final s = await repo.getSettings()
+      ..tourSeen = true;
+    await repo.saveSettings(s);
+
+    expect((await repo.getSettings()).tourSeen, isTrue);
+  });
 }
