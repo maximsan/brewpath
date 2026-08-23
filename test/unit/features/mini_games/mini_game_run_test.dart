@@ -93,10 +93,22 @@ void main() {
   });
 
   group('playableMiniGameIds', () {
-    test('the free pair plays; the formats without renderers do not', () {
+    test('the free pair plays', () {
       // Two different games make a streak day, so this pair is load-bearing.
       expect(playableMiniGameIds, containsAll(['g-quiz', 'g-match']));
-      expect(playableMiniGameIds, isNot(contains('g-bagpick')));
+    });
+
+    test('a kind with no renderer yet does not play', () {
+      // Retargeted: this named `g-bagpick` until its renderer landed. The two
+      // kinds still waiting are `slider` and `sequence`, and naming one of
+      // their games keeps the assertion about *a game that cannot be drawn*
+      // rather than about whichever game happened to be unfinished.
+      //
+      // The general rule — anything that renders is playable or says why not —
+      // belongs to `mini_game_playable_test.dart`, which checks it against the
+      // real banks rather than against a name written here.
+      expect(playableMiniGameIds, isNot(contains('g-calibrate')));
+      expect(playableMiniGameIds, isNot(contains('g-sequence')));
     });
   });
 }

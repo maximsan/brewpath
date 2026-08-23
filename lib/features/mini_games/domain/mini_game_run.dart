@@ -45,6 +45,9 @@ const Set<String> playableMiniGameIds = {
   // Likewise two games on one kind: the pour-over cup and the shot.
   'g-tastefix',
   'g-tastefix-espresso',
+  // The one kind with a single game, and the only one that is a real widget
+  // rather than a picker with framing.
+  'g-bagpick',
 };
 
 /// Games whose kind renders, kept out of [playableMiniGameIds] on purpose.

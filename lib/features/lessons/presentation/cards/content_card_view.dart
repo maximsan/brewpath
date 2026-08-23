@@ -1,4 +1,5 @@
 import 'package:brew_path/features/lessons/domain/card_seed.dart';
+import 'package:brew_path/features/lessons/presentation/cards/bagpick_card_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
 import 'package:brew_path/features/lessons/presentation/cards/choice_list.dart';
 import 'package:brew_path/features/lessons/presentation/cards/concept_card_view.dart';
@@ -90,6 +91,14 @@ Widget? contentCardView(
       onSolved: onSolved,
       onContinue: onContinue,
     ),
+    final BagpickCard bagpick => BagpickCardView(
+      card: bagpick,
+      // Display order only. The option's identity is the process key, so the
+      // shuffle can move it freely and nothing keys off an index.
+      options: shuffledBySeed(bagpick.options, seed),
+      onSolved: onSolved,
+      onContinue: onContinue,
+    ),
     final TastefixCard tastefix => GradedPicker(
       // Marked on the choice, unlike `flavor` directly below. The two kinds
       // hold the same type and mean different things — see `_flavorOptions`.
@@ -127,8 +136,7 @@ Widget? contentCardView(
     PracticalCard() ||
     MultiCard() ||
     SequenceCard() ||
-    SliderCard() ||
-    BagpickCard() => null,
+    SliderCard() => null,
   };
 }
 
@@ -148,13 +156,13 @@ bool hasRenderer(ContentCard card) => switch (card) {
   QuizCard() ||
   FlavorCard() ||
   TastefixCard() ||
+  BagpickCard() ||
   MatchCard() => true,
   VisualCard() ||
   PracticalCard() ||
   MultiCard() ||
   SequenceCard() ||
-  SliderCard() ||
-  BagpickCard() => false,
+  SliderCard() => false,
 };
 
 /// The cards of [cards] that can actually be played, in authored order.

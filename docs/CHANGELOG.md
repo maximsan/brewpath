@@ -44,6 +44,13 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Read the green bean.** An unlabelled bag, a sample of three seeds drawn
+  from the round's own description, and three things worth inspecting — colour,
+  centre cut, aroma — each hidden until tapped. Call the process from the look
+  alone, and the feedback names which cue was the real tell. The bag keeps its
+  process hidden until the call is made, and calling it without opening a single
+  cue is a perfectly good way to play.
+
 - **Fix the cup.** Tastefix rounds play: what the cup is doing wrong, the setup
   that rules out the obvious causes, and four fixes to choose between — with the
   reason named either way. Two more games open on the one renderer, the
