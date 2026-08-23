@@ -53,6 +53,13 @@ You can always edit this file by hand instead — the helpers just save effort.
   rebuild that must stay gained a test that fails by name if a column is added
   without being declared.
 
+- **The mini-game catalog stopped looking broken.** Eleven of its thirteen rows
+  greyed themselves out and said "Not available yet" because their kind has no
+  renderer yet — a fact about our build progress, dressed as a paywall, on the
+  wrong screen. Every row now opens its intro, and a game we cannot yet play
+  says so there, on the button the learner reached for. This also frees the row
+  to carry one meaning, which the tier marks need (#267).
+
 - **A dictionary self-check crashed for anyone using reduced motion.**
   Answering one asked `AnimatedSize` to finish in zero time, and it re-dirties
   itself inside its own layout when told to — so the framework asserted rather
