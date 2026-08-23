@@ -82,6 +82,18 @@ dart_code_linter:
           # their own and would hide the one property that matters — that the
           # numbers still match the design source exactly.
           - lib/core/widgets/bean_gauge.dart
+          # The eight visual guides' drawings. Every literal in them is a
+          # fraction of the box they are given — the normalisation that makes
+          # one drawing serve both the row thumbnail and the sheet
+          # illustration. Naming them would produce a constant per coordinate
+          # per guide, each meaningless alone, and would hide the property
+          # that matters: that nothing in them is a pixel.
+          - lib/features/path/presentation/guide_marks/beans_marks.dart
+          - lib/features/path/presentation/guide_marks/brew_marks.dart
+          - lib/features/path/presentation/guide_marks/grind_marks.dart
+          - lib/features/path/presentation/guide_marks/guide_mark.dart
+          - lib/features/path/presentation/guide_marks/roast_marks.dart
+          - lib/features/path/presentation/visual_guide_art.dart
           - lib/features/companion/presentation/roasty.dart
           - lib/features/companion/presentation/roasty_animation.dart
           - lib/features/companion/presentation/roasty_body.dart

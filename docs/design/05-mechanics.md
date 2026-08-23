@@ -108,10 +108,13 @@ The freeze is a **mechanic, not a setting** — there is deliberately no toggle.
 `syncCollection(completedSet)`:
 - A **lesson card** unlocks when its lesson completes.
 - A **module Field Guide card** unlocks when every lesson in the module is done.
-- **Training cards** have no `unlock` and are earned from the start.
+- **Visual guides** unlock on the **earliest lesson that teaches them**, the
+  same mechanic as a lesson card. They were once `earned: true` and always
+  available; that changed when they were given a surface, and the extractor now
+  refuses an unlock that is not the earliest teaching lesson.
 - ⚠️ **Only the *first* locked card is rendered in the Cards grid.** `CardsTab` (`screens.jsx:1471`) draws every earned card, then the single card at `firstLockedIdx` as a teaser, and `return null`s the rest. The grid is not "earned cards plus silhouettes" — it is earned cards plus exactly one. A "{n} more to collect" footer stands in for the remainder.
-- **Training guides are a separate registry now.** They were moved out of `COLLECTION` into `TRAINING_CARDS`, so the collectible count *is* 37 — the old filter-at-render workaround is gone. Guides surface inside lessons (`TrainingCard`) and on the Saved shelf under `g:` keys.
-- **Card copy is not stored on the collectible.** `syncCardText()` copies title/summary/fact/meta from the lesson's own `reward` (or `MODULE_REWARDS`) at load; `syncTrainingText()` does the same for guides. One card, one text — see [§6](06-content.md) 6.3.
+- **Visual guides are a separate registry now.** They were moved out of `COLLECTION` into `VISUAL_GUIDE_CARDS`, so the collectible count *is* 37 — the old filter-at-render workaround is gone. Guides surface inside lessons (`VisualGuideCard`) and on the Saved shelf under `g:` keys.
+- **Card copy is not stored on the collectible.** `syncCardText()` copies title/summary/fact/meta from the lesson's own `reward` (or `MODULE_REWARDS`) at load; `syncVisualGuideText()` does the same for guides. One card, one text — see [§6](06-content.md) 6.3.
 - A card can carry a **Coffee Challenge stamp** — a permanent "I tried this for real" mark pressed onto the card once the linked challenge is logged.
 
 ## 5.7 Saved shelf / favorites
