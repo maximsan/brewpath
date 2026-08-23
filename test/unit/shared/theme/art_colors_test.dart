@@ -29,23 +29,14 @@ const _spec = <String, Color>{
   '--cream': Color(0xFFF0DCB8),
 };
 
-Map<String, Color> get _tokens => {
-  '--art-raw': ArtColors.raw,
-  '--art-roast-light': ArtColors.roastLight,
-  '--art-roast-mid': ArtColors.roastMid,
-  '--art-roast-deep': ArtColors.roastDeep,
-  '--art-roast-dark': ArtColors.roastDark,
-  '--art-cherry-skin': ArtColors.cherrySkin,
-  '--art-cherry-pulp': ArtColors.cherryPulp,
-  '--art-cherry-gel': ArtColors.cherryGel,
-  '--art-cherry-parchment': ArtColors.cherryParchment,
-  '--art-cherry-silverskin': ArtColors.cherrySilverskin,
-  '--art-cherry-seed': ArtColors.cherrySeed,
-  '--art-seed-crease': ArtColors.seedCrease,
-  '--art-ripe': ArtColors.ripe,
-  '--art-sour': ArtColors.sour,
-  '--cream': ArtColors.cream,
-};
+/// The palette as the app states it, by the design source's own token names.
+///
+/// Read from `lib` rather than restated here, so there is one such map and the
+/// bagpick bean's colour resolution cannot drift from what this guard checks.
+/// **The comparison keeps all of its force**: [_spec]'s hex values are still
+/// transcribed independently, so a constant filed under the wrong token name
+/// fails the first test below exactly as it did when both maps lived here.
+Map<String, Color> get _tokens => ArtColors.byTokenName;
 
 void main() {
   group('the illustration palette', () {
@@ -125,6 +116,40 @@ void main() {
     test('roastAt clamps rather than running off either end', () {
       expect(ArtColors.roastAt(-1), ArtColors.raw);
       expect(ArtColors.roastAt(2), ArtColors.roastDark);
+    });
+  });
+
+  group('resolving a design-source token name', () {
+    test('returns the palette colour the design bundle names', () {
+      expect(ArtColors.ofToken('--art-cherry-seed'), ArtColors.cherrySeed);
+      expect(ArtColors.ofToken('--art-cherry-gel'), ArtColors.cherryGel);
+      expect(ArtColors.ofToken('--cream'), ArtColors.cream);
+    });
+
+    test('resolves every token the palette carries', () {
+      for (final entry in ArtColors.byTokenName.entries) {
+        expect(ArtColors.ofToken(entry.key), entry.value);
+      }
+    });
+
+    test('throws on an unknown token rather than defaulting', () {
+      // The point of the whole function. Authored content refers to these by
+      // name, and a fallback colour would draw something plausible and wrong
+      // — in illustrations where the colour *is* the information.
+      expect(
+        () => ArtColors.ofToken('--art-not-a-colour'),
+        throwsArgumentError,
+      );
+    });
+
+    test('does not accept the CSS var() wrapper', () {
+      // Unwrapping `var(...)` is the content layer's job, not the palette's:
+      // the encoding belongs to whichever bank wrote it, and the palette knows
+      // only about token names.
+      expect(
+        () => ArtColors.ofToken('var(--art-cherry-seed)'),
+        throwsArgumentError,
+      );
     });
   });
 
