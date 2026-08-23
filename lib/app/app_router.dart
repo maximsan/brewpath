@@ -24,6 +24,7 @@ import 'package:brew_path/features/profile/presentation/profile_screen.dart';
 import 'package:brew_path/features/profile/presentation/settings_screen.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/presentation/streak_screen.dart';
+import 'package:brew_path/features/saved/presentation/saved_screen.dart';
 import 'package:brew_path/services/analytics/analytics_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -123,6 +124,13 @@ GoRouter appRouter(Ref ref) {
                 routes: [
                   // Inside the shell on purpose: looking a word up must not
                   // cost the learner their tab.
+                  // Inside the shell for the same reason the dictionary is:
+                  // checking what you kept must not cost you your tab.
+                  GoRoute(
+                    path: AppRoutes.saved.path,
+                    name: AppRoutes.saved.name,
+                    builder: (context, state) => const SavedScreen(),
+                  ),
                   GoRoute(
                     path: AppRoutes.dictionary.path,
                     name: AppRoutes.dictionary.name,

@@ -3,6 +3,9 @@ import 'package:brew_path/app/header_tier.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
+import 'package:brew_path/features/saved/domain/saved_providers.dart';
+import 'package:brew_path/features/saved/presentation/saved_badge_dot.dart';
+import 'package:brew_path/features/saved/presentation/saved_screen.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -55,11 +58,7 @@ class AppHeader extends ConsumerWidget {
           Expanded(
             child: _Heading(tab: tab, isCollapsed: isCollapsed),
           ),
-          // The design pairs the Dictionary with a Saved button and its count
-          // badge. The Saved shelf has no screen yet and its build comes after
-          // this one, so nothing is offered here rather than a button that
-          // opens nothing.
-          _ActionButton(action: tab.action),
+          for (final action in tab.actions) _ActionButton(action: action),
         ],
       ),
     );
@@ -119,14 +118,20 @@ class _Heading extends StatelessWidget {
   }
 }
 
-class _ActionButton extends StatelessWidget {
+/// How far the dot is inset from the button's top-right corner.
+const double _badgeInset = 6;
+
+class _ActionButton extends ConsumerWidget {
   const _ActionButton({required this.action});
 
   final HeaderAction action;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (action == HeaderAction.saved) return const _SavedButton();
+
     final (icon, tooltip, routeName) = switch (action) {
+      HeaderAction.saved => throw StateError('handled above'),
       HeaderAction.dictionary => (
         Icons.menu_book_outlined,
         DictionaryHomeScreen.title,
@@ -144,6 +149,44 @@ class _ActionButton extends StatelessWidget {
       tooltip: tooltip,
       color: context.mood.ink,
       onPressed: () => context.pushNamed(routeName),
+    );
+  }
+}
+
+/// The way onto the Saved shelf, carrying a dot when the shelf holds anything.
+///
+/// The count reaches the **semantic label** rather than being drawn as a
+/// number: a screen reader should not have to infer "some" from a dot it
+/// cannot see.
+class _SavedButton extends ConsumerWidget {
+  const _SavedButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // An unresolved count draws no dot rather than a spinner in the chrome.
+    final count = ref.watch(savedCountProvider).value ?? 0;
+    final label = count == 0
+        ? SavedScreen.title
+        : '${SavedScreen.title}, $count ${count == 1 ? 'item' : 'items'}';
+
+    return IconButton(
+      icon: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          const Icon(Icons.bookmark_outline),
+          if (count > 0)
+            const Positioned(
+              top: -_badgeInset,
+              right: -_badgeInset,
+              child: SavedBadgeDot(),
+            ),
+        ],
+      ),
+      // The tooltip is the button's accessible name, so this is what carries
+      // the count to a screen reader.
+      tooltip: label,
+      color: context.mood.ink,
+      onPressed: () => context.pushNamed(AppRoutes.saved.name),
     );
   }
 }

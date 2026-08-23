@@ -103,6 +103,7 @@ void main() {
     'path': HeaderTier.tabRoot,
     'cards': HeaderTier.tabRoot,
     'profile': HeaderTier.tabRoot,
+    'saved': HeaderTier.pushed,
     'dictionary': HeaderTier.pushed,
     'dictionaryTerm': HeaderTier.pushed,
     'moduleDetail': HeaderTier.pushed,

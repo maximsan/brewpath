@@ -86,16 +86,15 @@ void main() {
       expect(tab?.title, 'Friday, May 8');
     });
 
-    test('Profile swaps the entry rather than adding to it', () {
-      expect(
-        tabHeaderFor('/profile', today: today)?.action,
+    test('Profile swaps the entries rather than adding to them', () {
+      expect(tabHeaderFor('/profile', today: today)?.actions, [
         HeaderAction.settings,
-      );
+      ]);
       for (final tab in ['/learn', '/path', '/cards']) {
         expect(
-          tabHeaderFor(tab, today: today)?.action,
-          HeaderAction.dictionary,
-          reason: '$tab offers the dictionary',
+          tabHeaderFor(tab, today: today)?.actions,
+          [HeaderAction.saved, HeaderAction.dictionary],
+          reason: '$tab offers Saved and the dictionary, Saved first',
         );
       }
     });

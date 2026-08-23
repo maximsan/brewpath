@@ -63,6 +63,17 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The Saved shelf.** A bookmark button in the header on Learn, Path and
+  Cards — carrying a dot when the shelf holds something — opens a screen
+  listing what was kept, grouped as Dictionary terms, Lessons and Visual
+  guides, each group hidden when it is empty. Rows open what they name and
+  carry the same bookmark that saved them, so unsaving from the shelf and
+  unsaving from the thing itself are one gesture. An empty shelf teaches the
+  bookmark rather than reporting zero, a saved item the content no longer
+  carries is skipped rather than drawn broken, and the header's dot counts what
+  the shelf will actually show — so the badge can never promise a row that is
+  not there. Reset Progress clears both.
+
 - **Dictionary terms can be bookmarked.** A bookmark sits on the term entry and
   on the peek sheet, and what it saves survives closing the app. It is the same
   control every saveable kind will use — lessons and visual guides follow — and

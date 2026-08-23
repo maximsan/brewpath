@@ -1,4 +1,8 @@
+import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
+import 'package:brew_path/features/path/domain/visual_guide_providers.dart';
 import 'package:brew_path/features/saved/domain/saved_key.dart';
+import 'package:brew_path/features/saved/domain/saved_shelf.dart';
+import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -48,3 +52,68 @@ Future<void> toggleSaved(
     ),
   );
 }
+
+/// The shelf: every saved key resolved against the content, grouped.
+///
+/// Three banks, one derivation. Guides come from the **earned** shelf rather
+/// than the whole bank, so a guide the course has not unlocked cannot be
+/// reached from here — the Reference section's rule, honoured once rather than
+/// re-invented.
+@riverpod
+Future<List<SavedGroup>> savedShelf(Ref ref) async {
+  // Every watch resolved before the first await: a rebuild mid-flight must not
+  // find a watch on the far side of an async gap.
+  final keys = ref.watch(savedKeysProvider.future);
+  final view = ref.watch(dictionaryViewProvider.future);
+  final guides = ref.watch(visualGuideShelfForProvider.future);
+  final content = ref.watch(contentRepositoryProvider);
+
+  final dictionary = await view;
+  final categories = {
+    for (final category in dictionary.categories) category.id: category.label,
+  };
+
+  final modules = await content.getModules();
+
+  // Subtitles are written in sentence case; the smallcaps label uppercases
+  // them when it draws. Doing it here as well would put the same decision in
+  // two places.
+  return deriveSavedShelf(
+    keys: await keys,
+    terms: [
+      for (final term in dictionary.terms)
+        (
+          id: term.id,
+          title: term.term,
+          subtitle: categories[term.categoryId] ?? 'Term',
+        ),
+    ],
+    // Course order comes from the modules, not from the lesson bank: the
+    // shelf reads in the order the learner meets them.
+    lessons: [
+      for (final module in modules)
+        for (final lesson in module.lessons)
+          (
+            id: lesson.id,
+            title: lesson.title,
+            subtitle: 'Module ${module.n} · ${module.label}',
+          ),
+    ],
+    guides: [
+      for (final guide in (await guides).earned)
+        (
+          id: guide.subject,
+          title: guide.title,
+          subtitle: 'Visual guide · ${guide.label}',
+        ),
+    ],
+  );
+}
+
+/// How many rows the shelf holds — what the header badge shows.
+///
+/// Derived from the shelf rather than from the stored keys, so the badge can
+/// never promise a row the shelf would skip.
+@riverpod
+Future<int> savedCount(Ref ref) async =>
+    savedShelfCount(await ref.watch(savedShelfProvider.future));

@@ -31,6 +31,10 @@ enum HeaderTier {
 
 /// Which standing entry the header offers on a tab.
 enum HeaderAction {
+  /// The way onto the Saved shelf, on Learn, Path and Cards. Leftmost of the
+  /// pair, as the design right-aligns them.
+  saved,
+
   /// The way into the Coffee Dictionary, on Learn, Path and Cards.
   dictionary,
 
@@ -39,13 +43,19 @@ enum HeaderAction {
   settings,
 }
 
-/// A tab's heading and the entry it offers.
+/// What Learn, Path and Cards all offer, in draw order.
+const List<HeaderAction> _sharedActions = [
+  HeaderAction.saved,
+  HeaderAction.dictionary,
+];
+
+/// A tab's heading and the entries it offers.
 class TabHeader {
   /// Creates a [TabHeader].
   const TabHeader({
     required this.eyebrow,
     required this.title,
-    required this.action,
+    required this.actions,
   });
 
   /// The smallcaps line above — `TODAY`, `YOUR PATH`.
@@ -54,8 +64,9 @@ class TabHeader {
   /// The display line — the day, the course, the collection.
   final String title;
 
-  /// The entry on the right.
-  final HeaderAction action;
+  /// The entries on the right, in the order they are drawn. Profile
+  /// **replaces** the pair with a gear rather than appending to it.
+  final List<HeaderAction> actions;
 }
 
 /// The four branch roots, in bottom-nav order.
@@ -113,24 +124,24 @@ TabHeader? tabHeaderFor(String location, {required DateTime today}) {
     _ when location == AppRoutes.learn.path => TabHeader(
       eyebrow: 'TODAY',
       title: longDate(today),
-      action: HeaderAction.dictionary,
+      actions: _sharedActions,
     ),
     _ when location == AppRoutes.path.path => const TabHeader(
       eyebrow: 'YOUR PATH',
       title: 'Beginner Foundations',
-      action: HeaderAction.dictionary,
+      actions: _sharedActions,
     ),
     _ when location == AppRoutes.cards.path => const TabHeader(
       eyebrow: 'YOUR DECK',
       title: 'Collection',
-      action: HeaderAction.dictionary,
+      actions: _sharedActions,
     ),
     // The design greets the learner by name; nothing in the app captures one,
     // so the greeting stands on its own rather than inventing a field.
     _ when location == AppRoutes.profile.path => const TabHeader(
       eyebrow: 'PROFILE',
       title: 'Hello there.',
-      action: HeaderAction.settings,
+      actions: [HeaderAction.settings],
     ),
     _ => null,
   };

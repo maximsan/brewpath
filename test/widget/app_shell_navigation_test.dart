@@ -1,6 +1,7 @@
 import 'package:brew_path/app/app.dart';
 import 'package:brew_path/app/app_header.dart';
 import 'package:brew_path/app/app_router.dart';
+import 'package:brew_path/features/saved/presentation/saved_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -13,6 +14,7 @@ import '../support/widget_harness.dart';
 Finder _sharedHeader() => find.byType(AppHeader);
 Finder _headerTitled(String title) => find.widgetWithText(AppHeader, title);
 Finder _dictionaryButton() => find.byIcon(Icons.menu_book_outlined);
+Finder _savedButton() => find.byTooltip(SavedScreen.title);
 Finder _settingsButton() => find.byIcon(Icons.settings_outlined);
 
 void main() {
@@ -83,6 +85,41 @@ void main() {
         _sharedHeader(),
         findsNothing,
         reason: 'a pushed page carries a back arrow, not the tab entries',
+      );
+    });
+
+    testWidgets('the shelf is reached from the header', (tester) async {
+      await pumpWithProviders(tester, const BrewPathApp());
+
+      await tester.tap(_savedButton());
+      await settleLoaders(tester);
+
+      expect(find.widgetWithText(AppBar, SavedScreen.title), findsOneWidget);
+      expect(
+        _sharedHeader(),
+        findsNothing,
+        reason: 'the shelf is a pushed page: a back arrow, not the tab entries',
+      );
+    });
+
+    testWidgets('backing out of the shelf returns to the tab it came from', (
+      tester,
+    ) async {
+      await pumpWithProviders(tester, const BrewPathApp());
+
+      await tester.tap(find.byIcon(Icons.route_outlined));
+      await settleLoaders(tester);
+      await tester.tap(_savedButton());
+      await settleLoaders(tester);
+      expect(find.widgetWithText(AppBar, SavedScreen.title), findsOneWidget);
+
+      await tester.tap(find.byType(BackButton));
+      await settleLoaders(tester);
+
+      expect(
+        _headerTitled('Beginner Foundations'),
+        findsOneWidget,
+        reason: 'checking what you kept must not cost you your tab',
       );
     });
 

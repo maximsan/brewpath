@@ -144,3 +144,109 @@ final class IsKeySavedFamily extends $Family
   @override
   String toString() => r'isKeySavedProvider';
 }
+
+/// The shelf: every saved key resolved against the content, grouped.
+///
+/// Three banks, one derivation. Guides come from the **earned** shelf rather
+/// than the whole bank, so a guide the course has not unlocked cannot be
+/// reached from here — the Reference section's rule, honoured once rather than
+/// re-invented.
+
+@ProviderFor(savedShelf)
+final savedShelfProvider = SavedShelfProvider._();
+
+/// The shelf: every saved key resolved against the content, grouped.
+///
+/// Three banks, one derivation. Guides come from the **earned** shelf rather
+/// than the whole bank, so a guide the course has not unlocked cannot be
+/// reached from here — the Reference section's rule, honoured once rather than
+/// re-invented.
+
+final class SavedShelfProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<SavedGroup>>,
+          List<SavedGroup>,
+          FutureOr<List<SavedGroup>>
+        >
+    with $FutureModifier<List<SavedGroup>>, $FutureProvider<List<SavedGroup>> {
+  /// The shelf: every saved key resolved against the content, grouped.
+  ///
+  /// Three banks, one derivation. Guides come from the **earned** shelf rather
+  /// than the whole bank, so a guide the course has not unlocked cannot be
+  /// reached from here — the Reference section's rule, honoured once rather than
+  /// re-invented.
+  SavedShelfProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'savedShelfProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$savedShelfHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<SavedGroup>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<SavedGroup>> create(Ref ref) {
+    return savedShelf(ref);
+  }
+}
+
+String _$savedShelfHash() => r'b1b938ee1deaa562d40661b882db4f5b9bd7acf7';
+
+/// How many rows the shelf holds — what the header badge shows.
+///
+/// Derived from the shelf rather than from the stored keys, so the badge can
+/// never promise a row the shelf would skip.
+
+@ProviderFor(savedCount)
+final savedCountProvider = SavedCountProvider._();
+
+/// How many rows the shelf holds — what the header badge shows.
+///
+/// Derived from the shelf rather than from the stored keys, so the badge can
+/// never promise a row the shelf would skip.
+
+final class SavedCountProvider
+    extends $FunctionalProvider<AsyncValue<int>, int, FutureOr<int>>
+    with $FutureModifier<int>, $FutureProvider<int> {
+  /// How many rows the shelf holds — what the header badge shows.
+  ///
+  /// Derived from the shelf rather than from the stored keys, so the badge can
+  /// never promise a row the shelf would skip.
+  SavedCountProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'savedCountProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$savedCountHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<int> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<int> create(Ref ref) {
+    return savedCount(ref);
+  }
+}
+
+String _$savedCountHash() => r'5e0fd6a0ac2733830d4bd46bdeb7c4b735855c01';
