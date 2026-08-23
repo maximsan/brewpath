@@ -28,6 +28,7 @@ class SettingsRepository {
         onboardingBrewer: row.onboardingBrewer,
         themeMode: AppThemeMode.fromStorage(row.themeMode),
         tourSeen: row.tourSeen,
+        learnerName: row.learnerName,
       );
     }
     return UserSettingsRecord(
@@ -52,6 +53,7 @@ class SettingsRepository {
             onboardingBrewer: Value(settings.onboardingBrewer),
             themeMode: Value(settings.themeMode.storageValue),
             tourSeen: Value(settings.tourSeen),
+            learnerName: Value(settings.learnerName),
           ),
         );
   }

@@ -70,6 +70,11 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Onboarding asks what to call you, and Profile says hello back.** A third,
+  optional step takes a name and the Profile header greets by it — `Hello,
+  Maya.` where one was given, `Hello, there.` where it was skipped, which is
+  the same sentence either way. Skipping costs nothing and stays skippable.
+
 - **Dictionary terms can be bookmarked.** A bookmark sits on the term entry and
   on the peek sheet, and what it saves survives closing the app. It is the same
   control every saveable kind will use — lessons and visual guides follow — and

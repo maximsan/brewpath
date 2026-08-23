@@ -25,16 +25,28 @@ Future<bool> onboardingCompleted(Ref ref) async {
 @Riverpod(keepAlive: true)
 class OnboardingDraft extends _$OnboardingDraft {
   @override
-  ({String? goal, String? brewer}) build() => (goal: null, brewer: null);
+  ({String? goal, String? brewer, String? name}) build() =>
+      (goal: null, brewer: null, name: null);
 
   /// Sets the chosen goal key.
   void setGoal(String value) {
-    state = (goal: value, brewer: state.brewer);
+    state = (goal: value, brewer: state.brewer, name: state.name);
   }
 
   /// Sets the chosen brewer key.
   void setBrewer(String value) {
-    state = (goal: state.goal, brewer: value);
+    state = (goal: state.goal, brewer: value, name: state.name);
+  }
+
+  /// Sets the name the learner asked to be called, or clears it when they
+  /// skipped. Trimmed to empty is the same as skipping.
+  void setName(String? value) {
+    final trimmed = value?.trim();
+    state = (
+      goal: state.goal,
+      brewer: state.brewer,
+      name: trimmed == null || trimmed.isEmpty ? null : trimmed,
+    );
   }
 
   /// Persists the goal + brewer selections, then resets the draft.
@@ -48,8 +60,12 @@ class OnboardingDraft extends _$OnboardingDraft {
     }
     // ignore: only_use_keep_alive_inside_keep_alive — one-shot read in an action method doesn't subscribe, so keepAlive is unaffected
     final repo = ref.read(onboardingRepositoryProvider);
-    await repo.markOnboardingComplete(goal: goal, brewer: brewer);
-    state = (goal: null, brewer: null);
+    await repo.markOnboardingComplete(
+      goal: goal,
+      brewer: brewer,
+      name: state.name,
+    );
+    state = (goal: null, brewer: null, name: null);
     ref.invalidate(onboardingCompletedProvider);
   }
 }

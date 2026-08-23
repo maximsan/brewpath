@@ -12,7 +12,7 @@ class FakeOnboardingRepository implements OnboardingRepository {
   OnboardingState _state;
 
   /// Args passed to each [markOnboardingComplete] call, in order.
-  final List<({String goal, String brewer})> completeCalls = [];
+  final List<({String goal, String brewer, String? name})> completeCalls = [];
   int resetCalls = 0;
 
   /// Overrides the state returned by [getState] (e.g. to simulate a returning,
@@ -27,8 +27,9 @@ class FakeOnboardingRepository implements OnboardingRepository {
   Future<void> markOnboardingComplete({
     required String goal,
     required String brewer,
+    String? name,
   }) async {
-    completeCalls.add((goal: goal, brewer: brewer));
+    completeCalls.add((goal: goal, brewer: brewer, name: name));
     _state = OnboardingState(completed: true, goal: goal, brewer: brewer);
   }
 

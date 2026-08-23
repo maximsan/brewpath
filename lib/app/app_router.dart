@@ -17,6 +17,7 @@ import 'package:brew_path/features/mini_games/presentation/mini_game_player_scre
 import 'package:brew_path/features/onboarding/presentation/brewer/brewer_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/goal/goal_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/loading/loading_screen.dart';
+import 'package:brew_path/features/onboarding/presentation/name/name_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/onboarding_providers.dart';
 import 'package:brew_path/features/onboarding/presentation/welcome/welcome_screen.dart';
 import 'package:brew_path/features/path/presentation/path_screen.dart';
@@ -110,6 +111,11 @@ GoRouter appRouter(Ref ref) {
         path: AppRoutes.onboardingBrewer.path,
         name: AppRoutes.onboardingBrewer.name,
         builder: (context, state) => const BrewerScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.onboardingName.path,
+        name: AppRoutes.onboardingName.name,
+        builder: (context, state) => const NameScreen(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) => AppShell(navigationShell),
