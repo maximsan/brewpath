@@ -108,7 +108,11 @@ bool _startsSegment(List<String> segments, String routePath) {
 /// [today] is required rather than defaulted, so this stays a pure function of
 /// its inputs: the app already has one place that decides when *today* changed,
 /// and a fallback clock here would quietly compete with it.
-TabHeader? tabHeaderFor(String location, {required DateTime today}) {
+TabHeader? tabHeaderFor(
+  String location, {
+  required DateTime today,
+  String? learnerName,
+}) {
   return switch (location) {
     _ when location == AppRoutes.learn.path => TabHeader(
       eyebrow: 'TODAY',
@@ -125,11 +129,13 @@ TabHeader? tabHeaderFor(String location, {required DateTime today}) {
       title: 'Collection',
       action: HeaderAction.dictionary,
     ),
-    // The design greets the learner by name; nothing in the app captures one,
-    // so the greeting stands on its own rather than inventing a field.
-    _ when location == AppRoutes.profile.path => const TabHeader(
+    // The design's greeting, and its fallback: `Hello, {name}.` where the
+    // learner gave one at onboarding, `Hello, there.` where they skipped —
+    // the same sentence either way, so the tab reads as addressed to them
+    // whether or not they answered.
+    _ when location == AppRoutes.profile.path => TabHeader(
       eyebrow: 'PROFILE',
-      title: 'Hello there.',
+      title: 'Hello, ${learnerName ?? 'there'}.',
       action: HeaderAction.settings,
     ),
     _ => null,

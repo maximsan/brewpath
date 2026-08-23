@@ -42,12 +42,14 @@ class OnboardingRepository {
   Future<void> markOnboardingComplete({
     required String goal,
     required String brewer,
+    String? name,
   }) async {
     final s = await _settings.getSettings();
     s
       ..onboardingCompleted = true
       ..onboardingGoal = goal
-      ..onboardingBrewer = brewer;
+      ..onboardingBrewer = brewer
+      ..learnerName = name;
     await _settings.saveSettings(s);
   }
 

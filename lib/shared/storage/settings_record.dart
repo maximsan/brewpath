@@ -17,6 +17,7 @@ class UserSettingsRecord {
     this.onboardingBrewer,
     this.themeMode = AppThemeMode.fallback,
     this.tourSeen = false,
+    this.learnerName,
   });
 
   int id;
@@ -28,4 +29,5 @@ class UserSettingsRecord {
   String? onboardingBrewer;
   AppThemeMode themeMode;
   bool tourSeen;
+  String? learnerName;
 }
