@@ -107,7 +107,9 @@ The freeze is a **mechanic, not a setting** — there is deliberately no toggle.
 
 `syncCollection(completedSet)`:
 - A **lesson card** unlocks when its lesson completes.
-- A **module Field Guide card** unlocks when every lesson in the module is done.
+- A **Module Reward card** unlocks when every lesson in the module is done.
+  (The five keep their authored titles — *Beans Field Guide* and its siblings
+  — the way a book keeps its name; the category is Module Reward.)
 - **Visual guides** unlock on the **earliest lesson that teaches them**, the
   same mechanic as a lesson card. They were once `earned: true` and always
   available; that changed when they were given a surface, and the extractor now
@@ -117,7 +119,7 @@ The freeze is a **mechanic, not a setting** — there is deliberately no toggle.
 - **Card copy is not stored on the collectible.** `syncCardText()` copies title/summary/fact/meta from the lesson's own `reward` (or `MODULE_REWARDS`) at load; `syncVisualGuideText()` does the same for guides. One card, one text — see [§6](06-content.md) 6.3.
 - A card can carry a **Coffee Challenge stamp** — a permanent "I tried this for real" mark pressed onto the card once the linked challenge is logged.
 
-## 5.7 Saved shelf / favorites
+## 5.7 Saved shelf
 
 - Persisted to `localStorage['cq-favorites']` as a `Set` of prefixed keys: `l:` lesson, `t:` term, `g:` guide, `c:` collectible card.
 - **Only `l:` / `t:` / `g:` count as "Saved"** and appear on the Saved screen or in the header badge. Card favourites do not.
@@ -176,7 +178,7 @@ Small, optional **real-life** tasks. They never block learning, streaks, points,
 | Key | Contents |
 |---|---|
 | `cq-theme` | `light` / `dark` / `system` |
-| `cq-favorites` | array of favourite keys |
+| `cq-favorites` | array of Saved keys (the key keeps the old name) |
 | `cq-custom` | `{ plus, trialDaysLeft, subPlan, variety, light, roasty }` |
 | `cq-temp` | `{ featureKey: expiryMs }` temporary unlocks |
 | `cq-brew` | `{ activeId, startedAt, completed[], saved[] }` |

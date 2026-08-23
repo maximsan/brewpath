@@ -101,7 +101,7 @@ are reordered.
 | Registry | Count | Unlock | In the Cards grid? |
 |---|---|---|---|
 | `COLLECTION` — lesson cards | 32 | One per lesson, no gaps | Yes |
-| `COLLECTION` — module Field Guides | 5 | Beans · Processing · Roasting · Grind · Brew | Yes |
+| `COLLECTION` — Module Rewards | 5 | Beans · Processing · Roasting · Grind · Brew (each *titled* “… Field Guide”) | Yes |
 | `VISUAL_GUIDE_CARDS` — visual guides | 8 | The earliest lesson that teaches each | **No — a separate array, never listed beside a collectible** |
 
 `COLLECTION` **array order is the catalogue number printed on each card**, so
