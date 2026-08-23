@@ -15,7 +15,7 @@ Future<VisualGuideShelf> visualGuideShelfFor(Ref ref) async {
   final guides = await ref.watch(visualGuideRepositoryProvider).getGuides();
   final completed = await ref.watch(completedLessonsProvider.future);
 
-  return visualGuideShelf(guides, {
+  return deriveVisualGuideShelf(guides, {
     for (final record in completed) record.lessonId,
   });
 }

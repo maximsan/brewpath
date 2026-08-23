@@ -19,10 +19,17 @@ enum VisualGuideArtSize {
   /// The illustration in the guide's sheet.
   sheet;
 
-  /// The side of the square the drawing is given.
+  /// The height the drawing is given.
   double get side => switch (this) {
     VisualGuideArtSize.row => _rowSide,
     VisualGuideArtSize.sheet => _sheetSide,
+  };
+
+  /// Its width: square beside a row, full-bleed in the sheet. Kept on the enum
+  /// with [side] so both size decisions are made in one place.
+  double? get width => switch (this) {
+    VisualGuideArtSize.row => _rowSide,
+    VisualGuideArtSize.sheet => null,
   };
 }
 
@@ -58,7 +65,7 @@ class VisualGuideArt extends StatelessWidget {
 
     return ExcludeSemantics(
       child: Container(
-        width: size == VisualGuideArtSize.row ? size.side : double.infinity,
+        width: size.width ?? double.infinity,
         height: size.side,
         decoration: BoxDecoration(
           color: mood.surface,

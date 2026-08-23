@@ -2,6 +2,7 @@ import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/path/domain/visual_guide_providers.dart';
 import 'package:brew_path/features/path/domain/visual_guide_shelf.dart';
 import 'package:brew_path/features/path/presentation/reference_section.dart';
+import 'package:brew_path/features/path/presentation/visual_guide_art.dart';
 import 'package:brew_path/shared/models/content/visual_guide.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -66,7 +67,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.chevron_right), findsNothing);
-      expect(find.text('8 MORE UNLOCK AS YOU LEARN'), findsNothing);
+      expect(find.text('8 more unlock as you learn'), findsNothing);
     });
   });
 
@@ -104,7 +105,7 @@ void main() {
         lessThan(titles.indexOf('Roast Levels')),
         reason: 'bank order, not completion order',
       );
-      expect(find.text('6 MORE UNLOCK AS YOU LEARN'), findsOneWidget);
+      expect(find.text('6 more unlock as you learn'), findsOneWidget);
     });
 
     testWidgets('drops the count line once nothing is left', (tester) async {
@@ -115,7 +116,7 @@ void main() {
       await tester.tap(find.text('Reference'));
       await tester.pumpAndSettle();
 
-      expect(find.textContaining('MORE UNLOCK'), findsNothing);
+      expect(find.textContaining('more unlock'), findsNothing);
     });
 
     testWidgets('opening a guide shows its whole entry', (tester) async {
@@ -136,19 +137,94 @@ void main() {
       );
     });
 
-    testWidgets('opens without an expansion animation under reduced motion', (
+    /// The height the guides occupy right now — the expansion *is* a size
+    /// change, so this is the honest thing to measure.
+    double guidesHeight(WidgetTester tester) =>
+        tester.getSize(find.byType(ReferenceSection)).height;
+
+    testWidgets('with motion allowed, the expansion takes frames', (
       tester,
     ) async {
-      await tester.pumpWidget(_harness(some, disableAnimations: true));
+      await tester.pumpWidget(_harness(some));
       await tester.pumpAndSettle();
+      final collapsed = guidesHeight(tester);
 
       await tester.tap(find.text('Reference'));
       await tester.pump();
 
       expect(
-        find.text('Roast Levels'),
-        findsOneWidget,
+        guidesHeight(tester),
+        collapsed,
+        reason:
+            'the first frame has not moved yet — this is what reduced '
+            'motion skips',
+      );
+      await tester.pumpAndSettle();
+      expect(guidesHeight(tester), greaterThan(collapsed));
+    });
+
+    testWidgets('reduced motion opens it in one frame', (tester) async {
+      await tester.pumpWidget(_harness(some, disableAnimations: true));
+      await tester.pumpAndSettle();
+      final collapsed = guidesHeight(tester);
+
+      await tester.tap(find.text('Reference'));
+      await tester.pump();
+
+      expect(
+        guidesHeight(tester),
+        greaterThan(collapsed),
         reason: 'no transition to wait out when the system asks for none',
+      );
+    });
+
+    testWidgets('the section announces what it is and its state', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await tester.pumpWidget(_harness(some));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.bySemanticsLabel(RegExp('Reference')),
+        findsWidgets,
+        reason: 'a screen reader should know what the section is',
+      );
+      await tester.tap(find.text('Reference'));
+      await tester.pumpAndSettle();
+      handle.dispose();
+    });
+
+    testWidgets('the sheet is titled and named by the guide', (tester) async {
+      await tester.pumpWidget(_harness(some));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Reference'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Roast Levels'));
+      await tester.pumpAndSettle();
+
+      // The primitive takes one string as heading and accessible name, so the
+      // title is visible in the sheet and announced as its region.
+      expect(find.text('Roast Levels'), findsWidgets);
+      expect(find.bySemanticsLabel('Roast Levels'), findsWidgets);
+    });
+
+    testWidgets('the drawings are kept out of the semantics tree', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_harness(some));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Reference'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.descendant(
+          of: find.byType(VisualGuideArt),
+          matching: find.byType(ExcludeSemantics),
+        ),
+        findsWidgets,
+        reason: 'eight unlabelled shapes read out is worse than none',
       );
     });
   });
