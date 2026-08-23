@@ -85,6 +85,16 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The Saved shelf.** A bookmark button in the header on Learn, Path and
+  Cards — carrying a dot when the shelf holds something — opens a screen
+  listing what was kept, grouped as Dictionary terms, Lessons and Visual
+  guides, each group hidden when it is empty. Rows open what they name and
+  carry the same bookmark that saved them, so unsaving from the shelf and
+  unsaving from the thing itself are one gesture. An empty shelf teaches the
+  bookmark rather than reporting zero, a saved item the content no longer
+  carries is skipped rather than drawn broken, and the header's dot counts what
+  the shelf will actually show — so the badge can never promise a row that is
+  not there. Reset Progress clears both.
 - **Onboarding asks what to call you, and Profile says hello back.** A third,
   optional step takes a name and the Profile header greets by it — `Hello,
   Maya.` where one was given, `Hello, there.` where it was skipped, which is

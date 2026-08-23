@@ -144,3 +144,62 @@ final class IsKeySavedFamily extends $Family
   @override
   String toString() => r'isKeySavedProvider';
 }
+
+/// The shelf: every saved key resolved against the content, grouped.
+///
+/// Three banks, one derivation. Guides come from the **earned** shelf rather
+/// than the whole bank, so a guide the course has not unlocked cannot be
+/// reached from here — the Reference section's rule, honoured once rather than
+/// re-invented.
+
+@ProviderFor(savedShelf)
+final savedShelfProvider = SavedShelfProvider._();
+
+/// The shelf: every saved key resolved against the content, grouped.
+///
+/// Three banks, one derivation. Guides come from the **earned** shelf rather
+/// than the whole bank, so a guide the course has not unlocked cannot be
+/// reached from here — the Reference section's rule, honoured once rather than
+/// re-invented.
+
+final class SavedShelfProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<SavedGroup>>,
+          List<SavedGroup>,
+          FutureOr<List<SavedGroup>>
+        >
+    with $FutureModifier<List<SavedGroup>>, $FutureProvider<List<SavedGroup>> {
+  /// The shelf: every saved key resolved against the content, grouped.
+  ///
+  /// Three banks, one derivation. Guides come from the **earned** shelf rather
+  /// than the whole bank, so a guide the course has not unlocked cannot be
+  /// reached from here — the Reference section's rule, honoured once rather than
+  /// re-invented.
+  SavedShelfProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'savedShelfProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$savedShelfHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<SavedGroup>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<SavedGroup>> create(Ref ref) {
+    return savedShelf(ref);
+  }
+}
+
+String _$savedShelfHash() => r'11b8b5359aa26438647fbefae5aa65d9616695e6';

@@ -4,6 +4,10 @@ import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
+import 'package:brew_path/features/saved/domain/saved_providers.dart';
+import 'package:brew_path/features/saved/domain/saved_shelf.dart';
+import 'package:brew_path/features/saved/presentation/saved_badge_dot.dart';
+import 'package:brew_path/features/saved/presentation/saved_screen.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -60,11 +64,7 @@ class AppHeader extends ConsumerWidget {
           Expanded(
             child: _Heading(tab: tab, isCollapsed: isCollapsed),
           ),
-          // The design pairs the Dictionary with a Saved button and its count
-          // badge. The Saved shelf has no screen yet and its build comes after
-          // this one, so nothing is offered here rather than a button that
-          // opens nothing.
-          _ActionButton(action: tab.action),
+          for (final action in tab.actions) _ActionButton(action: action),
         ],
       ),
     );
@@ -124,6 +124,9 @@ class _Heading extends StatelessWidget {
   }
 }
 
+/// How far the dot is inset from the button's top-right corner.
+const double _badgeInset = 6;
+
 class _ActionButton extends StatelessWidget {
   const _ActionButton({required this.action});
 
@@ -131,24 +134,87 @@ class _ActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (icon, tooltip, routeName) = switch (action) {
-      HeaderAction.dictionary => (
-        Icons.menu_book_outlined,
-        DictionaryHomeScreen.title,
-        AppRoutes.dictionary.name,
+    // One exhaustive dispatch: a new action is a compile error here rather
+    // than a runtime one somewhere else.
+    return switch (action) {
+      HeaderAction.saved => const _SavedButton(),
+      HeaderAction.dictionary => _RouteButton(
+        icon: Icons.menu_book_outlined,
+        tooltip: DictionaryHomeScreen.title,
+        routeName: AppRoutes.dictionary.name,
       ),
-      HeaderAction.settings => (
-        Icons.settings_outlined,
-        'Settings',
-        AppRoutes.profileSettings.name,
+      HeaderAction.settings => _RouteButton(
+        icon: Icons.settings_outlined,
+        tooltip: 'Settings',
+        routeName: AppRoutes.profileSettings.name,
       ),
     };
+  }
+}
 
+/// A header entry that does nothing but open a route.
+class _RouteButton extends StatelessWidget {
+  const _RouteButton({
+    required this.icon,
+    required this.tooltip,
+    required this.routeName,
+  });
+
+  final IconData icon;
+  final String tooltip;
+  final String routeName;
+
+  @override
+  Widget build(BuildContext context) {
     return IconButton(
       icon: Icon(icon),
       tooltip: tooltip,
       color: context.mood.ink,
       onPressed: () => context.pushNamed(routeName),
+    );
+  }
+}
+
+/// The way onto the Saved shelf, carrying a dot when the shelf holds anything.
+///
+/// The count reaches the **semantic label** rather than being drawn as a
+/// number: a screen reader should not have to infer "some" from a dot it
+/// cannot see.
+class _SavedButton extends ConsumerWidget {
+  const _SavedButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Counted off the shelf itself rather than through a provider of its own:
+    // the badge must not promise a row the shelf would skip, and one hop fewer
+    // keeps the chain from flushing mid-build when Reset invalidates its root.
+    //
+    // An unresolved shelf draws no dot rather than a spinner in the chrome.
+    final count = savedShelfCount(
+      ref.watch(savedShelfProvider).value ?? const [],
+    );
+    final label = count == 0
+        ? SavedScreen.title
+        : '${SavedScreen.title}, ${savedItemCount(count)}';
+
+    return IconButton(
+      icon: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          const Icon(Icons.bookmark_outline),
+          if (count > 0)
+            const Positioned(
+              top: -_badgeInset,
+              right: -_badgeInset,
+              child: SavedBadgeDot(),
+            ),
+        ],
+      ),
+      // The tooltip is the button's accessible name, so this is what carries
+      // the count to a screen reader.
+      tooltip: label,
+      color: context.mood.ink,
+      onPressed: () => context.pushNamed(AppRoutes.saved.name),
     );
   }
 }

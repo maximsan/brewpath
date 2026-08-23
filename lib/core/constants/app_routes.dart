@@ -39,6 +39,7 @@ abstract class AppRoutes {
   );
   static const miniGameIntro = AppRoute('miniGameIntro', 'mini-game/:gameId');
   static const miniGamePlay = AppRoute('miniGamePlay', 'play');
+  static const saved = AppRoute('saved', 'saved');
   static const dictionary = AppRoute('dictionary', 'dictionary');
   static const dictionaryTerm = AppRoute('dictionaryTerm', 'term/:termId');
   static const path = AppRoute('path', '/path');

@@ -1,6 +1,7 @@
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
+import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/storage/account_wipe.dart';
 import 'package:brew_path/shared/storage/settings_record.dart';
@@ -69,4 +70,8 @@ Future<void> resetProgress(WidgetRef ref) async {
   ref.invalidate(modulesWithProgressProvider);
   ref.invalidate(todayLessonProvider);
   ref.invalidate(settingsControllerProvider);
+  // The shelf goes with the progress it recorded. Without this the header's
+  // badge keeps the wiped keys alive: it watches the key set continuously, so
+  // nothing else ever asks the store again.
+  ref.invalidate(savedKeysProvider);
 }

@@ -1,5 +1,6 @@
 import 'package:brew_path/features/path/domain/visual_guide_shelf.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
+import 'package:brew_path/shared/models/content/visual_guide.dart';
 import 'package:brew_path/shared/repositories/visual_guide_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -18,4 +19,14 @@ Future<VisualGuideShelf> visualGuideShelfFor(Ref ref) async {
   return deriveVisualGuideShelf(guides, {
     for (final record in completed) record.lessonId,
   });
+}
+
+/// The earned guide covering [subject], or null when none is earned.
+///
+/// Lives here rather than at the call site so nothing outside this feature has
+/// to know that a guide is found by subject, or that only earned ones count.
+@riverpod
+Future<VisualGuide?> earnedGuideFor(Ref ref, String subject) async {
+  final shelf = await ref.watch(visualGuideShelfForProvider.future);
+  return shelf.earned.where((guide) => guide.subject == subject).firstOrNull;
 }

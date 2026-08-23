@@ -127,6 +127,16 @@ The ten-stage plant that is the single picture of course progress. Grows only
 on first-time lesson completions; only a deliberate reset returns it to seed.
 _Avoid_: plant (in code and rulings; "plant" is fine in user-facing prose)
 
+**Saved shelf**:
+The one place holding what a learner bookmarked — **lessons, dictionary terms
+and visual guides**, stored as prefixed keys (`l:` / `t:` / `g:`, and a guide
+by its *subject*). Reached from the shared header, free with a soft cap, and
+cleared by Reset. Removal is always allowed, including at the cap
+([#60](https://github.com/maximsan/brewpath/issues/60), §5.7).
+_Avoid_: Favourites, favorites (the prototype's second name for this screen);
+card favourites (never a design feature — `c:` was never a key, and the app's
+heart toggle was removed in [#108](https://github.com/maximsan/brewpath/issues/108))
+
 ## Tiers
 
 **BrewPath Plus**:
