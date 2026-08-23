@@ -1,81 +1,75 @@
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
-import 'package:brew_path/core/widgets/section_header.dart';
-import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
-import 'package:brew_path/features/challenges/presentation/active_challenge_card.dart';
-import 'package:brew_path/features/challenges/presentation/saved_challenges_list.dart';
-import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
-import 'package:brew_path/features/learn/presentation/module_card_widget.dart';
-import 'package:brew_path/features/learn/presentation/practice_any_lesson_widget.dart';
-import 'package:brew_path/features/learn/presentation/today_card_widget.dart';
-import 'package:brew_path/features/mini_games/domain/mini_game_providers.dart';
-import 'package:brew_path/features/mini_games/presentation/mini_games_catalog_widget.dart';
-import 'package:brew_path/features/progress/presentation/freeze_save_notice_card.dart';
+import 'package:brew_path/features/learn/presentation/learn_list_view.dart';
+import 'package:brew_path/features/tour/domain/tour_providers.dart';
+import 'package:brew_path/features/tour/presentation/tour_intro_overlay.dart';
+import 'package:brew_path/features/tour/presentation/tour_runner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Learn tab: today's lesson, the module list, and practice sections.
-class LearnScreen extends ConsumerWidget {
+///
+/// Also where the Tour auto-runs. Stateful for that alone: the offer is made
+/// once per app launch at most, and only a `State` can remember that it has
+/// already been made across the rebuilds the tab's providers cause.
+class LearnScreen extends ConsumerStatefulWidget {
   /// Creates a [LearnScreen].
   const LearnScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final today = ref.watch(todayLessonProvider);
-    final keepSharp = ref.watch(keepSharpRecommendationProvider);
-    final keepSharpDone = ref.watch(keepSharpAcknowledgedTodayProvider);
+  ConsumerState<LearnScreen> createState() => _LearnScreenState();
+}
+
+class _LearnScreenState extends ConsumerState<LearnScreen> {
+  /// Whether this screen has already put the intro overlay on screen.
+  ///
+  /// `tourSeen` is not enough on its own: it is written *asynchronously* when
+  /// the overlay is answered, so between the tap and the write landing the
+  /// provider still reads false and a rebuild would offer the Tour a second
+  /// time. This is the latch that closes immediately.
+  bool _offered = false;
+
+  /// Offers the Tour once the tab is showing real data and the flag is unset.
+  ///
+  /// Gated on data rather than on the screen mounting, because the Tour points
+  /// at a Today card and a module list — spotlighting a loading spinner would
+  /// explain nothing. [seen] is null while the flag is still loading, which is
+  /// treated as "already seen": the offer is deferred to the rebuild the
+  /// resolved flag causes, never made against an unknown.
+  void _offerTourIfDue(bool? seen) {
+    if (_offered || (seen ?? true)) return;
+
+    _offered = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      final accepted = await TourIntroOverlay.show(context);
+      if (accepted == null || !mounted) return;
+
+      // Either answer writes the flag: the Tour is offered once, and declining
+      // is an answer. Mid-tour abandonment never re-arms it, because the write
+      // has already happened by then.
+      await markTourSeen(ref);
+      if (!mounted || !accepted) return;
+      startTourStops(ref);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final modules = ref.watch(modulesWithProgressProvider);
-    final finishedLessons = ref.watch(completedLessonsWithModuleProvider);
-    final miniGames = ref.watch(miniGameFormatsProvider);
-    final challenge = ref.watch(activeChallengeProvider).asData?.value;
+    // Watched, not read: the flag resolves on its own schedule, and the offer
+    // has to survive it landing after the module data.
+    final tourSeen = ref.watch(tourSeenProvider);
 
     return Scaffold(
       body: modules.when(
         loading: () => const LoadingIndicator(),
         error: (e, _) => ErrorView(message: '$e'),
-        data: (list) => ListView(
-          padding: const EdgeInsets.all(16),
-          physics: const AlwaysScrollableScrollPhysics(),
-          children: [
-            // The save beat leads the tab: someone returning after a miss is
-            // the most fragile learner in the app, and reassurance comes
-            // before the day's ask. Renders nothing when no save is due.
-            const FreezeSaveNoticeCard(),
-            TodayCardWidget(
-              today: today.asData?.value,
-              keepSharp: keepSharp.asData?.value,
-              keepSharpDone: keepSharpDone.asData?.value ?? false,
-            ),
-            // The brew in play sits under the day's lesson: a sibling card,
-            // because what to learn and what to go and make are two questions
-            // and a learner can have both open at once.
-            if (challenge != null) ...[
-              const SizedBox(height: 12),
-              ActiveChallengeCard(challenge: challenge),
-            ],
-            const SavedChallengesList(),
-            const SizedBox(height: 24),
-            const SectionHeader('Practice a finished lesson'),
-            const SizedBox(height: 12),
-            PracticeAnyLessonWidget(
-              lessons: finishedLessons.asData?.value ?? const [],
-            ),
-            const SizedBox(height: 24),
-            const SectionHeader('Mini-games'),
-            const SizedBox(height: 12),
-            MiniGamesCatalogWidget(
-              formats: miniGames.asData?.value ?? const [],
-            ),
-            const SizedBox(height: 24),
-            const SectionHeader('Modules'),
-            const SizedBox(height: 12),
-            for (var i = 0; i < list.length; i++) ...[
-              if (i > 0) const SizedBox(height: 8),
-              ModuleCardWidget(item: list[i]),
-            ],
-          ],
-        ),
+        data: (list) {
+          _offerTourIfDue(tourSeen.value);
+          return LearnListView(modules: list);
+        },
       ),
     );
   }

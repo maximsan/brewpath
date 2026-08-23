@@ -1,6 +1,10 @@
 import 'package:brew_path/app/app_header.dart';
 import 'package:brew_path/app/header_tier.dart';
 import 'package:brew_path/core/constants/app_labels.dart';
+import 'package:brew_path/features/tour/domain/tour_copy.dart';
+import 'package:brew_path/features/tour/presentation/tour_runner.dart';
+import 'package:brew_path/features/tour/presentation/tour_stop.dart';
+import 'package:brew_path/features/tour/presentation/tour_stops.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -67,54 +71,64 @@ class _AppShellState extends State<AppShell> {
     final location = GoRouterState.of(context).uri.path;
     final showsHeader = headerTierFor(location).showsSharedHeader;
 
-    return Scaffold(
-      body: Column(
-        children: [
-          if (showsHeader)
-            AppHeader(
-              location: location,
-              isCollapsed:
-                  _collapsedByBranch[widget.navigationShell.currentIndex] ??
-                  false,
+    // The Tour's engine is owned here, not on Learn: the last stop is the tab
+    // bar below, which lives outside every branch.
+    return TourHost(
+      child: Scaffold(
+        body: Column(
+          children: [
+            if (showsHeader)
+              AppHeader(
+                location: location,
+                isCollapsed:
+                    _collapsedByBranch[widget.navigationShell.currentIndex] ??
+                    false,
+              ),
+            Expanded(
+              // Only a tab root's scrolling moves this header. A pushed page
+              // scrolls under its own bar, and letting it collapse a header
+              // it cannot see would leave the tab wrong when the learner
+              // pops back.
+              child: showsHeader
+                  ? NotificationListener<ScrollNotification>(
+                      onNotification: _onScroll,
+                      child: widget.navigationShell,
+                    )
+                  : widget.navigationShell,
             ),
-          Expanded(
-            // Only a tab root's scrolling moves this header. A pushed page
-            // scrolls under its own bar, and letting it collapse a header it
-            // cannot see would leave the tab wrong when the learner pops back.
-            child: showsHeader
-                ? NotificationListener<ScrollNotification>(
-                    onNotification: _onScroll,
-                    child: widget.navigationShell,
-                  )
-                : widget.navigationShell,
+          ],
+        ),
+        bottomNavigationBar: TourStop(
+          stopKey: TourStops.tabs,
+          title: TourCopy.tabsTitle,
+          description: TourCopy.tabsBody,
+          child: NavigationBar(
+            selectedIndex: widget.navigationShell.currentIndex,
+            onDestinationSelected: _onDestinationSelected,
+            destinations: const [
+              NavigationDestination(
+                icon: Icon(Icons.school_outlined),
+                selectedIcon: Icon(Icons.school),
+                label: AppLabels.tabLearn,
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.route_outlined),
+                selectedIcon: Icon(Icons.route),
+                label: AppLabels.tabPath,
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.style_outlined),
+                selectedIcon: Icon(Icons.style),
+                label: AppLabels.tabCards,
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.person_outline),
+                selectedIcon: Icon(Icons.person),
+                label: AppLabels.tabProfile,
+              ),
+            ],
           ),
-        ],
-      ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: widget.navigationShell.currentIndex,
-        onDestinationSelected: _onDestinationSelected,
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.school_outlined),
-            selectedIcon: Icon(Icons.school),
-            label: AppLabels.tabLearn,
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.route_outlined),
-            selectedIcon: Icon(Icons.route),
-            label: AppLabels.tabPath,
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.style_outlined),
-            selectedIcon: Icon(Icons.style),
-            label: AppLabels.tabCards,
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
-            label: AppLabels.tabProfile,
-          ),
-        ],
+        ),
       ),
     );
   }

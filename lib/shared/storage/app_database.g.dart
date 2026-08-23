@@ -1171,7 +1171,8 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
   /// **Fate-shares with [onboardingCompleted].** The two are the app's pair of
   /// "this learner has been shown the introductions" bits, and a wipe that
   /// clears one while keeping the other produces a state no learner can reach
-  /// on their own: onboarding replayed with the Tour suppressed, or the reverse.
+  /// on their own: onboarding replayed with the Tour suppressed, or the
+  /// reverse.
   /// The three places that decide are `AccountWipe.resetProgress` (keeps both,
   /// by leaving this row alone), `SettingsRepository.deleteAll` (clears both,
   /// with the row) and `OnboardingRepository.resetOnboarding` (clears both, by
