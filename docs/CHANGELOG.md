@@ -72,6 +72,24 @@ You can always edit this file by hand instead — the helpers just save effort.
 - **The streak has a home.** Tapping Day streak on Profile opens the new
   streak screen: the day count at hero size and a one-line freeze status —
   the covered day named, a held freeze stated, or the countdown to the next.
+- **One sheet primitive, and reduced motion at last.** Every bottom sheet now
+  opens through a single function that owns the chrome — the mood background, a
+  dimmed barrier, rounded top corners, a drag handle, safe-area insets, a
+  height cap that scrolls rather than clips, and the title, which is also the
+  name a screen reader announces the sheet by. One string feeds both, so the
+  spoken name and the visible one cannot drift.
+
+  The dictionary's peek sheet is the first to wear it: opened raw, it had none
+  of that and sat on a stock Material surface behind a moody design. And
+  because `showModalBottomSheet` ignores the platform's reduced-motion setting
+  outright, a learner who asked for less motion is now given it — the sheet
+  arrives settled instead of sliding.
+
+  Two rules the design writes down are deliberately not implemented: sheets
+  stacking, and root-level sheets dismissing on navigation. Both are DOM
+  problems that Flutter's navigator already solves, measured rather than
+  assumed.
+
 - **The Coffee Dictionary.** 73 terms across 8 categories, reachable from a
   header action on Learn: a home that searches names, aliases and category
   labels (case- and accent-insensitive) and filters by status with live counts,
