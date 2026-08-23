@@ -48,8 +48,53 @@ function block(src, name) {
 const out = {};
 const W = loadData();
 
+// ── Silence is the real failure mode ──────────────────────────────────────
+// This tool exists to contradict the docs. A read that quietly resolves to
+// nothing lets it fail by *agreeing* with them instead — which is how
+// `visualVariants` sat empty while the prototype renamed the field under it,
+// and how `COLLECTION` took the whole script down only because it happened to
+// be read unguarded. Every prototype symbol now goes through `need`, and
+// anything unresolved is reported and exits non-zero.
+const missing = [];
+
+/** A `window` symbol the docs depend on. Absent is a finding, not an empty. */
+function need(name) {
+  if (W[name] === undefined || W[name] === null) {
+    missing.push(name);
+    return undefined;
+  }
+  return W[name];
+}
+
+/**
+ * Reports anything unresolved and stops.
+ *
+ * Called at each section boundary rather than only at the end, because a
+ * required symbol is dereferenced almost immediately — waiting until the end
+ * means a raw `TypeError` on `undefined.length` instead of the name that
+ * moved.
+ */
+function bailIfMissing() {
+  if (!missing.length) return;
+  console.error(
+    `\n\u2717 ${missing.length} read(s) resolved to nothing:\n` +
+    missing.map((name) => `    - ${name}`).join('\n') +
+    '\n\nThe prototype has probably renamed something. Every number this tool\n' +
+    'did not derive is a doc claim nobody checked.\n',
+  );
+  process.exit(1);
+}
+
+/** A derivation that should not be empty. Emptiness is a finding too. */
+function expectNonEmpty(label, value) {
+  const size = value == null ? 0 : (value.length ?? Object.keys(value).length);
+  if (size === 0) missing.push(`${label} (derived nothing)`);
+  return value;
+}
+
 // ── Course ────────────────────────────────────────────────────────────────
-const L = W.LESSONS, M = W.MODULES;
+const L = need('LESSONS'), M = need('MODULES');
+bailIfMissing();
 /** Must match the graded-kind list in lesson.jsx's `quizTotal`. */
 const GRADED = ['mcq', 'multi', 'match', 'slider', 'sequence', 'tastefix', 'bagpick', 'decision', 'recall', 'flavor'];
 const kinds = {};
@@ -73,8 +118,8 @@ out.course = {
   cards,
   graded,
   draft: displayOrder.filter((i) => L[i].draft).length,
-  coreTotal: W.CORE_TOTAL,
-  masteryPass: W.MASTERY_PASS,
+  coreTotal: need('CORE_TOTAL'),
+  masteryPass: need('MASTERY_PASS'),
   kinds,
   perLesson: perLesson.join(' · '),
   moduleTable: M.map((m) => ({
@@ -90,13 +135,28 @@ out.course = {
   timeValues: [...new Set(displayOrder.map((i) => L[i].time))],
 };
 
-// visual-card variants actually referenced
-out.course.visualVariants = [...new Set(
-  displayOrder.flatMap((i) => L[i].cards.filter((c) => c.kind === 'visual').map((c) => c.variant || c.guide || c.art)),
-)].filter(Boolean);
+// Visual guides: the placements in lessons, and the subjects behind them.
+// The card's field is `visualGuide` — the old `variant`/`guide`/`art` guesses
+// matched nothing and returned an empty list without saying so.
+const visualCards = displayOrder.flatMap((i) =>
+  L[i].cards.filter((c) => c.kind === 'visual'));
+out.course.visualPlacements = visualCards.length;
+out.course.visualVariants = expectNonEmpty('course.visualVariants',
+  [...new Set(visualCards.map((c) => c.visualGuide))].filter(Boolean));
+
+// The guide registry itself, which the collectible count deliberately excludes.
+const guides = need('VISUAL_GUIDE_CARDS') || [];
+out.visualGuides = {
+  total: guides.length,
+  subjects: guides.map((g) => g.visualGuide),
+  titles: guides.map((g) => g.title),
+  unlockLessons: guides.map((g) => (g.unlock || {}).lesson),
+};
 
 // ── Collectibles ──────────────────────────────────────────────────────────
-const C = W.COLLECTION;
+// Renamed from COLLECTION when the guides moved out into their own registry.
+const C = need('COLLECTIBLES');
+bailIfMissing();
 out.collection = {
   total: C.length,
   groups: C.reduce((a, c) => { const g = c.group || (c.unlock ? (c.unlock.module ? 'module' : 'lesson') : 'training'); a[g] = (a[g] || 0) + 1; return a; }, {}),
@@ -116,10 +176,11 @@ out.collection.cardTintKeys = clean(tintKeys);
 out.collection.artKindsMissingComponent = out.collection.artKinds.filter((k) => !clean(artKeys).includes(k));
 
 // ── Dictionary ────────────────────────────────────────────────────────────
-const T = W.DICT_TERMS;
+const T = need('DICT_TERMS');
+bailIfMissing();
 out.dictionary = {
   terms: T.length,
-  categories: W.DICT_CATEGORIES.map((c) => c.name || c.title || c.id),
+  categories: need('DICT_CATEGORIES').map((c) => c.name || c.title || c.id),
   full: T.filter((t) => t.deep).length,
   stubs: T.filter((t) => !t.deep).length,
   withCheck: T.filter((t) => t.check).length,
@@ -176,4 +237,11 @@ out.stageNames = (W.STAGE_NAMES || []).length ? W.STAGE_NAMES : (read('flavor-wh
 out.savedFreeMax = (app.match(/SAVED_FREE_MAX\s*=\s*(\d+)/) || [])[1];
 out.plusFeatures = (block(read('gating.jsx'), 'PLUS_FEATURES') || '').slice(0, 800);
 
+// `savedFreeMax` is scraped from source text rather than the VM, so it fails
+// the same way the symbol reads used to — quietly.
+if (out.savedFreeMax === undefined) missing.push('SAVED_FREE_MAX (not matched)');
+
 console.log(JSON.stringify(out, null, 2));
+
+// Loud, and last, so it survives a piped stdout.
+bailIfMissing();
