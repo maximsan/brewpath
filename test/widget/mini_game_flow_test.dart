@@ -181,7 +181,7 @@ void main() {
   // store to write into.
   setUp(useInMemoryDatabase);
 
-  testWidgets('the catalog lists seven name-led rows in catalog order', (
+  testWidgets('the catalog lists every game name-led, in catalog order', (
     tester,
   ) async {
     await _pump(tester);
@@ -193,15 +193,41 @@ void main() {
     expect(find.text('~1 MIN'), findsNWidgets(_formats.length));
   });
 
-  testWidgets('a format with no renderer does not navigate', (tester) async {
+  testWidgets('a game with no renderer reaches its intro and cannot start', (
+    tester,
+  ) async {
     await _pump(tester);
 
     await tester.tap(find.text('Read the green bean'));
     await _settle(tester);
 
-    // Still on the catalog: no intro opened.
-    expect(find.text('Match the facts'), findsOneWidget);
+    // The row opened its intro like any other — the renderer gap is the
+    // intro's to disclose, not the row's.
+    expect(find.text('HOW TO PLAY'), findsOneWidget);
     expect(find.text('Play'), findsNothing);
+
+    final action = tester.widget<FilledButton>(
+      find.widgetWithText(FilledButton, 'Not playable yet'),
+    );
+    expect(
+      action.onPressed,
+      isNull,
+      reason: 'a game with no renderer must not start a run',
+    );
+  });
+
+  testWidgets('every row opens its intro', (tester) async {
+    for (final format in _formats) {
+      await _pump(tester);
+      await tester.tap(find.text(format.title));
+      await _settle(tester);
+
+      expect(
+        find.text('HOW TO PLAY'),
+        findsOneWidget,
+        reason: '${format.id} did not reach its intro',
+      );
+    }
   });
 
   testWidgets('g-quiz plays catalog → intro → six rounds → results', (

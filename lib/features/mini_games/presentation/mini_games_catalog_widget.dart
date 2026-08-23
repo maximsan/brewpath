@@ -1,5 +1,4 @@
 import 'package:brew_path/core/constants/app_routes.dart';
-import 'package:brew_path/features/mini_games/domain/mini_game_run.dart';
 import 'package:brew_path/shared/models/content/mini_game_format.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -8,11 +7,16 @@ import 'package:go_router/go_router.dart';
 
 /// The Mini-games group under Learn → Practice again.
 ///
-/// Every format in the catalog is listed, in catalog order. The row leads with
+/// Every game in the catalog is listed, in catalog order. The row leads with
 /// the game's own name and carries the topic it drills as the eyebrow — the
 /// design reference had these inverted, corrected alongside this build.
-/// Formats whose renderers are not built yet are shown but do not navigate,
-/// so the catalog stays honest about what the app can play today.
+///
+/// **Every row opens its intro.** Whether a game can actually be played is a
+/// fact about which renderers this build carries, and it is disclosed on the
+/// intro's own action rather than here — the design puts the row's tap on tier
+/// alone. A row that dimmed itself for a missing renderer looked exactly like
+/// a row behind a paywall, so the catalog said "unfinished" where it meant
+/// "unbuilt" and would later mean "unbought".
 class MiniGamesCatalogWidget extends StatelessWidget {
   /// Creates a [MiniGamesCatalogWidget].
   const MiniGamesCatalogWidget({required this.formats, super.key});
@@ -59,28 +63,20 @@ class _FormatRow extends StatelessWidget {
   final MiniGameFormat format;
 
   static const double _eyebrowLetterSpacing = 0.8;
-  static const double _lockedAlpha = 0.5;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final mood = context.mood;
-    final playable = playableMiniGameIds.contains(format.id);
-    final ink = playable ? mood.ink : mood.ink.withValues(alpha: _lockedAlpha);
 
     return Semantics(
-      button: playable,
-      enabled: playable,
-      label: playable
-          ? '${format.title}. ${format.topic}. ${format.duration}.'
-          : '${format.title}. ${format.topic}. Not available yet.',
+      button: true,
+      label: '${format.title}. ${format.topic}. ${format.duration}.',
       child: InkWell(
-        onTap: playable
-            ? () => context.goNamed(
-                AppRoutes.miniGameIntro.name,
-                pathParameters: {'gameId': format.id},
-              )
-            : null,
+        onTap: () => context.goNamed(
+          AppRoutes.miniGameIntro.name,
+          pathParameters: {'gameId': format.id},
+        ),
         child: Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.md,
@@ -104,7 +100,7 @@ class _FormatRow extends StatelessWidget {
                     Text(
                       format.title,
                       style: theme.textTheme.titleSmall?.copyWith(
-                        color: ink,
+                        color: mood.ink,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -118,10 +114,7 @@ class _FormatRow extends StatelessWidget {
                   color: mood.inkMute,
                 ),
               ),
-              if (playable)
-                Icon(Icons.chevron_right, color: mood.inkMute)
-              else
-                const SizedBox(width: AppSpacing.md),
+              Icon(Icons.chevron_right, color: mood.inkMute),
             ],
           ),
         ),
