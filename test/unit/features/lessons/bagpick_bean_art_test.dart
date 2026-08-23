@@ -49,15 +49,24 @@ void main() {
       final first = mottlePatches(_bean(mottle: 3), seed: 1);
       final again = mottlePatches(_bean(mottle: 3), seed: 1);
 
-      expect(first.map((p) => p.centre), again.map((p) => p.centre));
-      expect(first.map((p) => p.radius), again.map((p) => p.radius));
+      expect(
+        first.map((patch) => patch.centre),
+        again.map((patch) => patch.centre),
+      );
+      expect(
+        first.map((patch) => patch.radius),
+        again.map((patch) => patch.radius),
+      );
     });
 
     test('a different seed draws a different bean', () {
       final one = mottlePatches(_bean(mottle: 3), seed: 1);
       final two = mottlePatches(_bean(mottle: 3), seed: 2);
 
-      expect(one.map((p) => p.centre), isNot(two.map((p) => p.centre)));
+      expect(
+        one.map((patch) => patch.centre),
+        isNot(two.map((patch) => patch.centre)),
+      );
     });
 
     test('every patch lands inside the bean', () {

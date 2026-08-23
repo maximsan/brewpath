@@ -1,4 +1,5 @@
 import 'package:brew_path/features/lessons/presentation/cards/bagpick_card_view.dart';
+import 'package:brew_path/features/lessons/presentation/cards/bagpick_cue_row.dart';
 import 'package:brew_path/features/lessons/presentation/cards/choice_list.dart';
 import 'package:brew_path/features/lessons/presentation/cards/green_bean.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
@@ -91,6 +92,58 @@ void main() {
       find.text('Tap to inspect'),
       findsNWidgets(2),
       reason: 'inspecting one cue must not uncover the others',
+    );
+  });
+
+  testWidgets('a closed cue looks closed, before its words are read', (
+    tester,
+  ) async {
+    await _pump(tester);
+
+    Decoration decorationOf(int index) => tester
+        .widgetList<Container>(
+          find.descendant(
+            of: find.byType(BagpickCueRow),
+            matching: find.byType(Container),
+          ),
+        )
+        .elementAt(index)
+        .decoration!;
+
+    final closed = decorationOf(0);
+    await tester.tap(find.text('Tap to inspect').first);
+    await tester.pumpAndSettle();
+
+    expect(
+      decorationOf(0),
+      isNot(closed),
+      reason:
+          'a row whose only difference is its text makes the learner read '
+          'every row to find the unread ones',
+    );
+  });
+
+  testWidgets('the verdict is coloured by outcome, not only worded', (
+    tester,
+  ) async {
+    await _pump(tester);
+    await tester.tap(_option('Natural'));
+    await tester.pumpAndSettle();
+    final wrong = tester.widget<Text>(find.text('Washed, actually.'));
+
+    // Tear the tree down first: a bare re-pump reuses the same State, so the
+    // card would still be latched on the wrong call and never reach the right
+    // one.
+    await tester.pumpWidget(const SizedBox.shrink());
+    await _pump(tester);
+    await tester.tap(_option('Washed'));
+    await tester.pumpAndSettle();
+    final right = tester.widget<Text>(find.text('Called it.'));
+
+    expect(
+      right.style?.color,
+      isNot(wrong.style?.color),
+      reason: 'scanning back over a run, wording alone is easy to miss',
     );
   });
 

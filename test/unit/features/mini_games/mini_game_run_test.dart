@@ -99,10 +99,11 @@ void main() {
       // `slider` and `sequence` are the two kinds still unbuilt. This named
       // `g-bagpick` until its renderer landed — a line that has to move each
       // time one does, which is the point of it.
-      expect(
-        playableMiniGameIds,
-        isNot(containsAll(['g-calibrate', 'g-sequence'])),
-      );
+      // Separately, not `isNot(containsAll([...]))`: a negated containsAll
+      // passes when *either* is absent, so one of them going playable would
+      // slip through the very guard meant to catch it.
+      expect(playableMiniGameIds, isNot(contains('g-calibrate')));
+      expect(playableMiniGameIds, isNot(contains('g-sequence')));
     });
   });
 }

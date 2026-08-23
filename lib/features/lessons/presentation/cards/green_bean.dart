@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:brew_path/features/lessons/presentation/cards/bagpick_bean_art.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
+import 'package:brew_path/shared/theme/art_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 
 /// One green seed from the sample, drawn from the round's own bean attributes.
@@ -20,7 +22,7 @@ class GreenBean extends StatelessWidget {
     required this.bean,
     required this.seed,
     required this.size,
-    required this.turns,
+    required this.degrees,
     super.key,
   });
 
@@ -33,8 +35,9 @@ class GreenBean extends StatelessWidget {
   /// Width in logical pixels; the drawing is very slightly taller.
   final double size;
 
-  /// Rotation, in turns, so each seed lies at its own angle.
-  final double turns;
+  /// Rotation in degrees, as the design states it, so each seed lies at its
+  /// own angle.
+  final double degrees;
 
   /// The design's own aspect: the box is a touch taller than it is wide.
   static const double _aspect = 1.04;
@@ -45,7 +48,7 @@ class GreenBean extends StatelessWidget {
       width: size,
       height: size * _aspect,
       child: CustomPaint(
-        painter: _GreenBeanPainter(bean: bean, seed: seed, turns: turns),
+        painter: _GreenBeanPainter(bean: bean, seed: seed, degrees: degrees),
       ),
     ),
   );
@@ -55,21 +58,29 @@ class _GreenBeanPainter extends CustomPainter {
   _GreenBeanPainter({
     required this.bean,
     required this.seed,
-    required this.turns,
+    required this.degrees,
   });
 
   final BagpickBean bean;
   final int seed;
-  final double turns;
+  final double degrees;
 
   /// The space the design drew in.
   static const double _viewBox = 24;
 
-  static const Color _shadow = Color(0x2E1B1614);
-  static const Color _outline = Color(0x591B1614);
-  static const Color _creaseShadow = Color(0x4D1B1614);
-  static const Color _mottleStain = Color(0xFF6B4A22);
-  static const Color _chaff = Color(0xFFF3EADA);
+  /// The one ink the drawing shades with, at the three weights the design
+  /// uses it: a cast shadow, an outline, and the shadow under the centre cut.
+  static final Color _shadow = OffTokens.seedInk.value.withValues(alpha: 0.18);
+  static final Color _outline = OffTokens.seedInk.value.withValues(alpha: 0.35);
+  static final Color _creaseShadow = OffTokens.seedInk.value.withValues(
+    alpha: 0.30,
+  );
+
+  /// Silverskin clinging to the seed. The design draws these flecks a shade
+  /// off its own `--art-cherry-silverskin` (`#F3EADA` against `#F1E8D6`); the
+  /// token wins, because a palette that carries two answers for silverskin is
+  /// how the two drift apart. The difference is under two points per channel.
+  static const Color _chaff = ArtColors.cherrySilverskin;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -78,7 +89,7 @@ class _GreenBeanPainter extends CustomPainter {
       ..save()
       ..scale(scale)
       ..translate(beanCentre.dx, beanCentre.dy)
-      ..rotate(turns * 2 * math.pi)
+      ..rotate(_radians(degrees))
       ..translate(-beanCentre.dx, -beanCentre.dy);
 
     _paintBody(canvas);
@@ -111,7 +122,10 @@ class _GreenBeanPainter extends CustomPainter {
           width: patch.radius.width * 2,
           height: patch.radius.height * 2,
         ),
-        Paint()..color = _mottleStain.withValues(alpha: patch.opacity),
+        Paint()
+          ..color = OffTokens.seedStain.value.withValues(
+            alpha: patch.opacity,
+          ),
       );
     }
   }
@@ -166,12 +180,12 @@ class _GreenBeanPainter extends CustomPainter {
     Offset centre,
     Size radius,
     double opacity,
-    double degrees,
+    double tilt,
   ) {
     canvas
       ..save()
       ..translate(centre.dx, centre.dy)
-      ..rotate(degrees * math.pi / 180)
+      ..rotate(_radians(tilt))
       ..drawOval(
         Rect.fromCenter(
           center: Offset.zero,
@@ -189,7 +203,9 @@ class _GreenBeanPainter extends CustomPainter {
     height: beanRadius.height * 2,
   );
 
+  static double _radians(double degrees) => degrees * math.pi / 180;
+
   @override
   bool shouldRepaint(_GreenBeanPainter old) =>
-      old.bean != bean || old.seed != seed || old.turns != turns;
+      old.bean != bean || old.seed != seed || old.degrees != degrees;
 }
