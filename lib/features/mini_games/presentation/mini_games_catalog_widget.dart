@@ -1,5 +1,6 @@
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_kinds.dart';
+import 'package:brew_path/features/mini_games/domain/mini_game_tier.dart';
 import 'package:brew_path/shared/models/content/mini_game_format.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -26,10 +27,17 @@ import 'package:go_router/go_router.dart';
 /// "unbuilt" and would later mean "unbought".
 class MiniGamesCatalogWidget extends StatelessWidget {
   /// Creates a [MiniGamesCatalogWidget].
-  const MiniGamesCatalogWidget({required this.formats, super.key});
+  const MiniGamesCatalogWidget({
+    required this.formats,
+    required this.hasCourse,
+    super.key,
+  });
 
   /// The catalog, in bank order.
   final List<MiniGameFormat> formats;
+
+  /// Whether the learner owns the course. Everything opens when they do.
+  final bool hasCourse;
 
   static const SizedBox _headingGap = SizedBox(height: AppSpacing.xs);
   static const SizedBox _groupGap = SizedBox(height: AppSpacing.md);
@@ -61,7 +69,7 @@ class MiniGamesCatalogWidget extends StatelessWidget {
           if (index > 0) _groupGap,
           _GroupHeading(label: groups[index].label),
           _headingGap,
-          _GroupCard(games: groups[index].games),
+          _GroupCard(games: groups[index].games, hasCourse: hasCourse),
         ],
       ],
     );
@@ -91,9 +99,10 @@ class _GroupHeading extends StatelessWidget {
 }
 
 class _GroupCard extends StatelessWidget {
-  const _GroupCard({required this.games});
+  const _GroupCard({required this.games, required this.hasCourse});
 
   final List<MiniGameFormat> games;
+  final bool hasCourse;
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +113,7 @@ class _GroupCard extends StatelessWidget {
         children: [
           for (var index = 0; index < games.length; index++) ...[
             if (index > 0) Divider(height: 1, color: mood.rule),
-            _FormatRow(format: games[index]),
+            _FormatRow(format: games[index], hasCourse: hasCourse),
           ],
         ],
       ),
@@ -113,9 +122,10 @@ class _GroupCard extends StatelessWidget {
 }
 
 class _FormatRow extends StatelessWidget {
-  const _FormatRow({required this.format});
+  const _FormatRow({required this.format, required this.hasCourse});
 
   final MiniGameFormat format;
+  final bool hasCourse;
 
   static const double _eyebrowLetterSpacing = 0.8;
 
@@ -123,15 +133,22 @@ class _FormatRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final mood = context.mood;
+    final isOpen = isMiniGameOpen(format, hasCourse: hasCourse);
 
     return Semantics(
       button: true,
-      label: '${format.title}. ${format.topic}. ${format.duration}.',
+      label: isOpen
+          ? '${format.title}. ${format.topic}. ${format.duration}.'
+          : '${format.title}. ${format.topic}. Locked.',
       child: InkWell(
-        onTap: () => context.goNamed(
-          AppRoutes.miniGameIntro.name,
-          pathParameters: {'gameId': format.id},
-        ),
+        // The offer a locked tap should open lands with its own slice; until
+        // then a locked row must at least never start a run.
+        onTap: isOpen
+            ? () => context.goNamed(
+                AppRoutes.miniGameIntro.name,
+                pathParameters: {'gameId': format.id},
+              )
+            : null,
         child: Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.md,
@@ -163,13 +180,17 @@ class _FormatRow extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: AppSpacing.sm),
-              Text(
-                format.duration,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: mood.inkMute,
+              if (isOpen)
+                Text(
+                  format.duration,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: mood.inkMute,
+                  ),
                 ),
+              Icon(
+                isOpen ? Icons.chevron_right : Icons.lock_outline,
+                color: mood.inkMute,
               ),
-              Icon(Icons.chevron_right, color: mood.inkMute),
             ],
           ),
         ),

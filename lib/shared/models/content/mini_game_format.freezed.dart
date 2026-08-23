@@ -18,7 +18,9 @@ mixin _$MiniGameFormat {
  String get id;/// The card kind its rounds carry. Unread today — the player dispatches
 /// on the round's own kind — and kept because the extractor renames and
 /// drops nothing, so the model mirrors the bank.
- String get kind; String get title;@JsonKey(name: 'sub') String get topic;@JsonKey(name: 'meta') String get duration; String get blurb; List<String> get steps;
+ String get kind; String get title;/// The module owning the topic this game advertises. The tier line reads
+/// it: a game is free iff this module is one the free tier carries.
+@JsonKey(name: 'mod') String get moduleId;@JsonKey(name: 'sub') String get topic;@JsonKey(name: 'meta') String get duration; String get blurb; List<String> get steps;
 /// Create a copy of MiniGameFormat
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -31,16 +33,16 @@ $MiniGameFormatCopyWith<MiniGameFormat> get copyWith => _$MiniGameFormatCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MiniGameFormat&&(identical(other.id, id) || other.id == id)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.title, title) || other.title == title)&&(identical(other.topic, topic) || other.topic == topic)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.blurb, blurb) || other.blurb == blurb)&&const DeepCollectionEquality().equals(other.steps, steps));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MiniGameFormat&&(identical(other.id, id) || other.id == id)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.title, title) || other.title == title)&&(identical(other.moduleId, moduleId) || other.moduleId == moduleId)&&(identical(other.topic, topic) || other.topic == topic)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.blurb, blurb) || other.blurb == blurb)&&const DeepCollectionEquality().equals(other.steps, steps));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,kind,title,topic,duration,blurb,const DeepCollectionEquality().hash(steps));
+int get hashCode => Object.hash(runtimeType,id,kind,title,moduleId,topic,duration,blurb,const DeepCollectionEquality().hash(steps));
 
 @override
 String toString() {
-  return 'MiniGameFormat(id: $id, kind: $kind, title: $title, topic: $topic, duration: $duration, blurb: $blurb, steps: $steps)';
+  return 'MiniGameFormat(id: $id, kind: $kind, title: $title, moduleId: $moduleId, topic: $topic, duration: $duration, blurb: $blurb, steps: $steps)';
 }
 
 
@@ -51,7 +53,7 @@ abstract mixin class $MiniGameFormatCopyWith<$Res>  {
   factory $MiniGameFormatCopyWith(MiniGameFormat value, $Res Function(MiniGameFormat) _then) = _$MiniGameFormatCopyWithImpl;
 @useResult
 $Res call({
- String id, String kind, String title,@JsonKey(name: 'sub') String topic,@JsonKey(name: 'meta') String duration, String blurb, List<String> steps
+ String id, String kind, String title,@JsonKey(name: 'mod') String moduleId,@JsonKey(name: 'sub') String topic,@JsonKey(name: 'meta') String duration, String blurb, List<String> steps
 });
 
 
@@ -68,11 +70,12 @@ class _$MiniGameFormatCopyWithImpl<$Res>
 
 /// Create a copy of MiniGameFormat
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? kind = null,Object? title = null,Object? topic = null,Object? duration = null,Object? blurb = null,Object? steps = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? kind = null,Object? title = null,Object? moduleId = null,Object? topic = null,Object? duration = null,Object? blurb = null,Object? steps = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,kind: null == kind ? _self.kind : kind // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,moduleId: null == moduleId ? _self.moduleId : moduleId // ignore: cast_nullable_to_non_nullable
 as String,topic: null == topic ? _self.topic : topic // ignore: cast_nullable_to_non_nullable
 as String,duration: null == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
 as String,blurb: null == blurb ? _self.blurb : blurb // ignore: cast_nullable_to_non_nullable
@@ -162,10 +165,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String kind,  String title, @JsonKey(name: 'sub')  String topic, @JsonKey(name: 'meta')  String duration,  String blurb,  List<String> steps)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String kind,  String title, @JsonKey(name: 'mod')  String moduleId, @JsonKey(name: 'sub')  String topic, @JsonKey(name: 'meta')  String duration,  String blurb,  List<String> steps)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _MiniGameFormat() when $default != null:
-return $default(_that.id,_that.kind,_that.title,_that.topic,_that.duration,_that.blurb,_that.steps);case _:
+return $default(_that.id,_that.kind,_that.title,_that.moduleId,_that.topic,_that.duration,_that.blurb,_that.steps);case _:
   return orElse();
 
 }
@@ -183,10 +186,10 @@ return $default(_that.id,_that.kind,_that.title,_that.topic,_that.duration,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String kind,  String title, @JsonKey(name: 'sub')  String topic, @JsonKey(name: 'meta')  String duration,  String blurb,  List<String> steps)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String kind,  String title, @JsonKey(name: 'mod')  String moduleId, @JsonKey(name: 'sub')  String topic, @JsonKey(name: 'meta')  String duration,  String blurb,  List<String> steps)  $default,) {final _that = this;
 switch (_that) {
 case _MiniGameFormat():
-return $default(_that.id,_that.kind,_that.title,_that.topic,_that.duration,_that.blurb,_that.steps);case _:
+return $default(_that.id,_that.kind,_that.title,_that.moduleId,_that.topic,_that.duration,_that.blurb,_that.steps);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -203,10 +206,10 @@ return $default(_that.id,_that.kind,_that.title,_that.topic,_that.duration,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String kind,  String title, @JsonKey(name: 'sub')  String topic, @JsonKey(name: 'meta')  String duration,  String blurb,  List<String> steps)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String kind,  String title, @JsonKey(name: 'mod')  String moduleId, @JsonKey(name: 'sub')  String topic, @JsonKey(name: 'meta')  String duration,  String blurb,  List<String> steps)?  $default,) {final _that = this;
 switch (_that) {
 case _MiniGameFormat() when $default != null:
-return $default(_that.id,_that.kind,_that.title,_that.topic,_that.duration,_that.blurb,_that.steps);case _:
+return $default(_that.id,_that.kind,_that.title,_that.moduleId,_that.topic,_that.duration,_that.blurb,_that.steps);case _:
   return null;
 
 }
@@ -218,7 +221,7 @@ return $default(_that.id,_that.kind,_that.title,_that.topic,_that.duration,_that
 @JsonSerializable()
 
 class _MiniGameFormat implements MiniGameFormat {
-  const _MiniGameFormat({required this.id, required this.kind, required this.title, @JsonKey(name: 'sub') required this.topic, @JsonKey(name: 'meta') required this.duration, required this.blurb, required final  List<String> steps}): _steps = steps;
+  const _MiniGameFormat({required this.id, required this.kind, required this.title, @JsonKey(name: 'mod') required this.moduleId, @JsonKey(name: 'sub') required this.topic, @JsonKey(name: 'meta') required this.duration, required this.blurb, required final  List<String> steps}): _steps = steps;
   factory _MiniGameFormat.fromJson(Map<String, dynamic> json) => _$MiniGameFormatFromJson(json);
 
 @override final  String id;
@@ -227,6 +230,9 @@ class _MiniGameFormat implements MiniGameFormat {
 /// drops nothing, so the model mirrors the bank.
 @override final  String kind;
 @override final  String title;
+/// The module owning the topic this game advertises. The tier line reads
+/// it: a game is free iff this module is one the free tier carries.
+@override@JsonKey(name: 'mod') final  String moduleId;
 @override@JsonKey(name: 'sub') final  String topic;
 @override@JsonKey(name: 'meta') final  String duration;
 @override final  String blurb;
@@ -251,16 +257,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MiniGameFormat&&(identical(other.id, id) || other.id == id)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.title, title) || other.title == title)&&(identical(other.topic, topic) || other.topic == topic)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.blurb, blurb) || other.blurb == blurb)&&const DeepCollectionEquality().equals(other._steps, _steps));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MiniGameFormat&&(identical(other.id, id) || other.id == id)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.title, title) || other.title == title)&&(identical(other.moduleId, moduleId) || other.moduleId == moduleId)&&(identical(other.topic, topic) || other.topic == topic)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.blurb, blurb) || other.blurb == blurb)&&const DeepCollectionEquality().equals(other._steps, _steps));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,kind,title,topic,duration,blurb,const DeepCollectionEquality().hash(_steps));
+int get hashCode => Object.hash(runtimeType,id,kind,title,moduleId,topic,duration,blurb,const DeepCollectionEquality().hash(_steps));
 
 @override
 String toString() {
-  return 'MiniGameFormat(id: $id, kind: $kind, title: $title, topic: $topic, duration: $duration, blurb: $blurb, steps: $steps)';
+  return 'MiniGameFormat(id: $id, kind: $kind, title: $title, moduleId: $moduleId, topic: $topic, duration: $duration, blurb: $blurb, steps: $steps)';
 }
 
 
@@ -271,7 +277,7 @@ abstract mixin class _$MiniGameFormatCopyWith<$Res> implements $MiniGameFormatCo
   factory _$MiniGameFormatCopyWith(_MiniGameFormat value, $Res Function(_MiniGameFormat) _then) = __$MiniGameFormatCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String kind, String title,@JsonKey(name: 'sub') String topic,@JsonKey(name: 'meta') String duration, String blurb, List<String> steps
+ String id, String kind, String title,@JsonKey(name: 'mod') String moduleId,@JsonKey(name: 'sub') String topic,@JsonKey(name: 'meta') String duration, String blurb, List<String> steps
 });
 
 
@@ -288,11 +294,12 @@ class __$MiniGameFormatCopyWithImpl<$Res>
 
 /// Create a copy of MiniGameFormat
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? kind = null,Object? title = null,Object? topic = null,Object? duration = null,Object? blurb = null,Object? steps = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? kind = null,Object? title = null,Object? moduleId = null,Object? topic = null,Object? duration = null,Object? blurb = null,Object? steps = null,}) {
   return _then(_MiniGameFormat(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,kind: null == kind ? _self.kind : kind // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,moduleId: null == moduleId ? _self.moduleId : moduleId // ignore: cast_nullable_to_non_nullable
 as String,topic: null == topic ? _self.topic : topic // ignore: cast_nullable_to_non_nullable
 as String,duration: null == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
 as String,blurb: null == blurb ? _self.blurb : blurb // ignore: cast_nullable_to_non_nullable

@@ -7,6 +7,7 @@ import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/learn/presentation/module_card_widget.dart';
 import 'package:brew_path/features/learn/presentation/practice_any_lesson_widget.dart';
 import 'package:brew_path/features/learn/presentation/today_card_widget.dart';
+import 'package:brew_path/features/mini_games/domain/course_entitlement.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_providers.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_games_catalog_widget.dart';
 import 'package:brew_path/features/progress/presentation/freeze_save_notice_card.dart';
@@ -60,6 +61,7 @@ class LearnListView extends ConsumerWidget {
     final keepSharpDone = ref.watch(keepSharpAcknowledgedTodayProvider);
     final finishedLessons = ref.watch(completedLessonsWithModuleProvider);
     final miniGames = ref.watch(miniGameFormatsProvider);
+    final entitlement = ref.watch(courseEntitlementProvider);
     final challenge = ref.watch(activeChallengeProvider).asData?.value;
     final tourRunning = ref.watch(tourRunningProvider);
 
@@ -113,6 +115,11 @@ class LearnListView extends ConsumerWidget {
               _headerGap,
               MiniGamesCatalogWidget(
                 formats: miniGames.asData?.value ?? const [],
+                // Unresolved entitlement reads as **owned**. A learner who
+                // bought the course must never catch a frame of locks on
+                // their own shelf; a missing lock for one frame costs the
+                // free learner nothing, and the wrong lock insults the payer.
+                hasCourse: entitlement.asData?.value ?? true,
               ),
             ],
           ),

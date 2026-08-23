@@ -19,6 +19,10 @@ abstract class MiniGameFormat with _$MiniGameFormat {
     /// drops nothing, so the model mirrors the bank.
     required String kind,
     required String title,
+
+    /// The module owning the topic this game advertises. The tier line reads
+    /// it: a game is free iff this module is one the free tier carries.
+    @JsonKey(name: 'mod') required String moduleId,
     @JsonKey(name: 'sub') required String topic,
     @JsonKey(name: 'meta') required String duration,
     required String blurb,
