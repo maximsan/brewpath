@@ -30,7 +30,11 @@ class SavedScreen extends ConsumerWidget {
   /// What this screen is called, everywhere it is named.
   static const title = 'Saved';
 
-  void _open(BuildContext context, WidgetRef ref, SavedItem item) {
+  Future<void> _open(
+    BuildContext context,
+    WidgetRef ref,
+    SavedItem item,
+  ) async {
     switch (item.kind) {
       case SavedKind.term:
         unawaited(context.pushDictionaryTerm(item.id));
@@ -42,8 +46,13 @@ class SavedScreen extends ConsumerWidget {
           ),
         );
       case SavedKind.guide:
-        final guide = ref.read(earnedGuideForProvider(item.id)).value;
-        if (guide != null) unawaited(showVisualGuideSheet(context, guide));
+        // Awaited, not read for its current value: nothing has asked for this
+        // guide before, so a synchronous read is still unresolved and the
+        // first tap would silently do nothing.
+        final guide = await ref.read(earnedGuideForProvider(item.id).future);
+        if (guide != null && context.mounted) {
+          unawaited(showVisualGuideSheet(context, guide));
+        }
     }
   }
 
@@ -68,7 +77,7 @@ class SavedScreen extends ConsumerWidget {
             ? const SavedEmptyView()
             : _Shelf(
                 groups: groups,
-                onOpen: (item) => _open(context, ref, item),
+                onOpen: (item) => unawaited(_open(context, ref, item)),
               ),
       ),
     );

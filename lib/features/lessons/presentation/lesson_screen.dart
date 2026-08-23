@@ -1,11 +1,12 @@
 import 'dart:async';
-
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/features/lessons/domain/card_seed.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/features/lessons/presentation/cards/content_card_view.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_progress_header.dart';
+import 'package:brew_path/features/saved/domain/saved_key.dart';
+import 'package:brew_path/features/saved/presentation/saved_bookmark_button.dart';
 import 'package:brew_path/services/analytics/analytics_provider.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/models/content/content_card_grading.dart';
@@ -86,9 +87,26 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: FutureBuilder<LessonModel?>(future: _lesson, builder: _buildBody),
+    // One future for both: the bar needs the lesson's title for the
+    // bookmark's accessible name, and the body needs its cards. Resolving it
+    // twice would be two chances for them to disagree about which lesson this
+    // is.
+    return FutureBuilder<LessonModel?>(
+      future: _lesson,
+      builder: (context, snapshot) => Scaffold(
+        appBar: AppBar(
+          actions: [
+            // The design bookmarks a lesson **while it is being read**, not
+            // off a list afterwards.
+            if (snapshot.data case final lesson?)
+              SavedBookmarkButton(
+                savedKey: formatSavedKey(SavedKind.lesson, lesson.id),
+                label: lesson.title,
+              ),
+          ],
+        ),
+        body: _buildBody(context, snapshot),
+      ),
     );
   }
 

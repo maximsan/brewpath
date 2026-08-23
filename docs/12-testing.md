@@ -32,7 +32,7 @@ did, and every listed snippet had drifted from the real APIs).
 | `test/unit/tool/` | The content extractor (shells out to `node tool/extract_content.js`) |
 | `test/database/` | Schema smoke + migration tests over the real Drift schema history (`drift_schemas/`) |
 | `test/widget/` | Screens, games, shell navigation, shared widgets |
-| `integration_test/` | The smoke flow — boots through onboarding (loading → welcome → goal → brewer) into Learn, proves it persisted across a relaunch, and opens authored content |
+| `integration_test/` | The smoke flow — boots through onboarding (loading → welcome → goal → brewer → name) into Learn, proves it persisted across a relaunch by reading the name back off the Profile header, dismisses the Tour, and opens authored content |
 
 Run: `flutter test` (everything), `flutter test test/unit/` etc. per directory,
 `flutter test integration_test/smoke_test.dart -d <simulator>` for the smoke

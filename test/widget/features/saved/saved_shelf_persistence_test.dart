@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:brew_path/app/app.dart';
 import 'package:brew_path/app/app_header.dart';
 import 'package:brew_path/features/dictionary/presentation/term_detail_screen.dart';
+import 'package:brew_path/features/lessons/presentation/lesson_screen.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/presentation/saved_empty_view.dart';
@@ -101,6 +102,17 @@ void main() {
     await settleLoaders(tester);
 
     expect(find.byType(TermDetailScreen), findsOneWidget);
+  });
+
+  testWidgets('a lesson row opens that lesson', (tester) async {
+    await saveThenClose('l:m1l1');
+    await pumpWithProviders(tester, const BrewPathApp());
+    await openShelf(tester);
+
+    await tester.tap(find.text('What coffee actually is'));
+    await settleLoaders(tester);
+
+    expect(find.byType(LessonScreen), findsOneWidget);
   });
 
   testWidgets('Reset Progress empties the shelf and the badge', (
