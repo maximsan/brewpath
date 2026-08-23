@@ -1,4 +1,4 @@
-import 'package:brew_path/features/challenges/presentation/challenge_sheet_shell.dart';
+import 'package:brew_path/core/widgets/app_sheet.dart';
 import 'package:brew_path/features/companion/domain/companion_reaction.dart';
 import 'package:brew_path/features/companion/presentation/companion_celebration.dart';
 import 'package:brew_path/shared/models/content/brew_challenge.dart';
@@ -26,9 +26,9 @@ Future<ChallengeRecapChoice?> showChallengeRecapSheet({
   required BuildContext context,
   required BrewChallenge challenge,
   required int pointsAwarded,
-}) => showChallengeSheet<ChallengeRecapChoice>(
+}) => showAppSheet<ChallengeRecapChoice>(
   context: context,
-  label: 'You logged ${challenge.title}',
+  title: challenge.title,
   builder: (context) => _RecapBody(
     challenge: challenge,
     pointsAwarded: pointsAwarded,
@@ -64,17 +64,6 @@ class _RecapBody extends StatelessWidget {
                 style: theme.textTheme.bodyLarge,
               ),
             ],
-          ),
-        ),
-        const SizedBox(height: AppSpacing.md),
-        Semantics(
-          header: true,
-          child: Text(
-            challenge.title,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
           ),
         ),
         if (pointsAwarded > 0) ...[
