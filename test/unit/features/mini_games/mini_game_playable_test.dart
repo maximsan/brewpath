@@ -1,5 +1,6 @@
 import 'package:brew_path/features/lessons/presentation/cards/content_card_view.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_run.dart';
+import 'package:brew_path/features/mini_games/domain/mini_game_tier.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/models/content/mini_game_format.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
@@ -107,5 +108,31 @@ void main() {
         reason: '${entry.key} is both held back and playable',
       );
     }
+  });
+
+  test('the free tier can reach every round it advertises', () {
+    // ADR-0007 promises the free learner three games. All three have been
+    // authored and extracted the whole time; one of them — Name the origin,
+    // seven rounds — had no renderer, so free practice advertised 18 rounds
+    // and reached 11 (#123, #308).
+    //
+    // Asserted as a count rather than as "the flavor renderer exists", because
+    // the count is the thing the learner experiences and the thing an ADR
+    // promises. It fails if a free game loses its renderer, if one is dropped
+    // from the playable set, or if the free set itself is re-picked.
+    final free = freeMiniGameIds(catalog);
+    final advertised = free.fold(0, (sum, id) => sum + banks[id]!.length);
+    final reachable = free
+        .where(playableMiniGameIds.contains)
+        .fold(0, (sum, id) => sum + banks[id]!.length);
+
+    expect(advertised, 18, reason: 'the free tier no longer advertises 18');
+    expect(
+      reachable,
+      advertised,
+      reason:
+          'a free game cannot be played: free practice advertises $advertised '
+          'rounds and reaches $reachable',
+    );
   });
 }

@@ -42,6 +42,16 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ## [Unreleased]
 
+### Added
+
+- **Name the note, and the free tier's missing seven rounds.** Flavor rounds
+  play: a tasting clue, four notes, one commit, and the explanation either way.
+  That lights up both games authored against the kind — *Name the flavor notes*
+  and *Name the origin* — and the second of those is the third game the free
+  tier has always advertised and never been able to open. Free practice went to
+  18 reachable rounds from 11, which is the number ADR-0007 promises, and a test
+  now holds it there.
+
 ### Changed
 
 - **The illustration palette can be looked up by the name the design calls it.**

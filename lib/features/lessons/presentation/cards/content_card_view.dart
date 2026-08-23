@@ -90,6 +90,17 @@ Widget? contentCardView(
       onSolved: onSolved,
       onContinue: onContinue,
     ),
+    final FlavorCard flavor => GradedPicker(
+      // Marked *before* the shuffle, never after. See `_flavorOptions`.
+      options: shuffledBySeed(_flavorOptions(flavor), seed),
+      copy: PickerCopy(
+        scenario: flavor.clue,
+        prompt: flavor.prompt,
+        explain: ({required wasCorrect}) => flavor.explanation,
+      ),
+      onSolved: onSolved,
+      onContinue: onContinue,
+    ),
     final MatchCard match => MatchBoardView(
       prompt: match.prompt,
       // Both sides are seeded from the card's own seed, so a replay moves the
@@ -105,8 +116,7 @@ Widget? contentCardView(
     SequenceCard() ||
     SliderCard() ||
     TastefixCard() ||
-    BagpickCard() ||
-    FlavorCard() => null,
+    BagpickCard() => null,
   };
 }
 
@@ -124,6 +134,7 @@ bool hasRenderer(ContentCard card) => switch (card) {
   RecallCard() ||
   DecisionCard() ||
   QuizCard() ||
+  FlavorCard() ||
   MatchCard() => true,
   VisualCard() ||
   PracticalCard() ||
@@ -131,8 +142,7 @@ bool hasRenderer(ContentCard card) => switch (card) {
   SequenceCard() ||
   SliderCard() ||
   TastefixCard() ||
-  BagpickCard() ||
-  FlavorCard() => false,
+  BagpickCard() => false,
 };
 
 /// The cards of [cards] that can actually be played, in authored order.
@@ -156,6 +166,28 @@ List<ContentCard> playableCards(List<ContentCard> cards) => [
 List<ChoiceOption> _quizOptions(QuizCard card) => [
   ChoiceOption(text: 'True', isCorrect: card.answer),
   ChoiceOption(text: 'False', isCorrect: !card.answer),
+];
+
+/// A flavor round's notes, marked from the card's answer **index**.
+///
+/// Deliberately not [_fromChoices], which the tastefix kind uses, even though
+/// both kinds hold `List<Choice>` and the two lines would look interchangeable
+/// in review.
+///
+/// A tastefix round marks its correct choice *on the choice*. A flavor round
+/// does not — its notes are authored bare and correctness lives in a separate
+/// index into the authored order. Passing them through [_fromChoices] compiles,
+/// renders, and yields a round where every note reads as wrong: success can
+/// never fire and the learner scores zero on a game that looks perfect. Nothing
+/// throws.
+///
+/// So the index is resolved here, and the result is shuffled *after*. Once an
+/// option carries its own correctness the seeded order is free to move it;
+/// shuffling first would leave the index pointing at whatever landed in that
+/// position.
+List<ChoiceOption> _flavorOptions(FlavorCard card) => [
+  for (final (index, choice) in card.choices.indexed)
+    ChoiceOption(text: choice.text, isCorrect: index == card.answer),
 ];
 
 List<ChoiceOption> _fromChoices(List<Choice> choices) => [

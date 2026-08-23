@@ -36,6 +36,12 @@ const Set<String> playableMiniGameIds = {
   'g-match',
   'g-quiz-roast-basics',
   'g-match-washed-natural',
+  // The flavor kind serves both of these, so one renderer opened two games.
+  // `g-flavor-origin-signatures` is the third free game ADR-0007 promises, and
+  // was the 7 rounds standing between the free tier's advertised 18 and the 11
+  // a learner could actually reach.
+  'g-flavor',
+  'g-flavor-origin-signatures',
 };
 
 /// Games whose kind renders, kept out of [playableMiniGameIds] on purpose.
