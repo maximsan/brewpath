@@ -7,6 +7,7 @@ import 'package:brew_path/features/profile/presentation/widgets/stat_tile.dart';
 import 'package:brew_path/features/progress/domain/grove_treatment.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/presentation/coffee_tree.dart';
+import 'package:brew_path/features/tour/presentation/replay_tour_row.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -80,6 +81,8 @@ class ProfileScreen extends ConsumerWidget {
                       .toggleHaptics(),
                   onComingSoon: () => _showComingSoon(context),
                 ),
+                const SizedBox(height: AppSpacing.sm),
+                const ReplayTourRow(),
               ],
             ),
           ),

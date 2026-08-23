@@ -31,6 +31,25 @@ class TourRunning extends _$TourRunning {
   void set({required bool running}) => state = running;
 }
 
+/// A pending request to replay the Tour, raised from outside the Learn tab.
+///
+/// Replay is asked for on Profile and happens on Learn, which are two branches
+/// of the shell that cannot call each other — so the ask is state rather than a
+/// callback. Learn consumes it the moment it arrives and runs the stops with no
+/// intro overlay and no write, because the learner asking for the Tour again is
+/// not a learner being offered it.
+@riverpod
+class TourReplayRequest extends _$TourReplayRequest {
+  @override
+  bool build() => false;
+
+  /// Asks Learn to run the stops.
+  void request() => state = true;
+
+  /// Clears the ask, so a later rebuild does not run the Tour a second time.
+  void consume() => state = false;
+}
+
 /// Records that the intro overlay was answered, whichever button answered it.
 ///
 /// Takes a [WidgetRef] rather than a provider [Ref] because the caller is a
