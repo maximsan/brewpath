@@ -1,3 +1,4 @@
+import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/pick_card.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
@@ -48,12 +49,16 @@ class _BrewerScreenState extends ConsumerState<BrewerScreen> {
     super.initState();
     _controller = BrewerController(
       onSubmit: (index) async {
-        final draft = ref.read(onboardingDraftProvider.notifier);
-        draft.setBrewer(_options[index].key);
-        await draft.complete();
+        ref
+            .read(onboardingDraftProvider.notifier)
+            .setBrewer(_options[index].key);
       },
+      // The flow is completed by the name step, which is the last one — the
+      // draft is not persisted until then, so a learner who quits here is
+      // still un-onboarded and comes back to the start rather than to a
+      // half-written row.
       onFinished: () {
-        if (mounted) context.go('/learn');
+        if (mounted) context.goNamed(AppRoutes.onboardingName.name);
       },
     )..addListener(_onControllerChanged);
   }
@@ -84,7 +89,7 @@ class _BrewerScreenState extends ConsumerState<BrewerScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SmallcapsLabel('ONBOARDING · 2 OF 2'),
+              const SmallcapsLabel('ONBOARDING · 2 OF 3'),
               const SizedBox(height: AppSpacing.base),
               Text(
                 'What do you brew with?',

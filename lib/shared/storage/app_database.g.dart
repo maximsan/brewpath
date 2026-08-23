@@ -984,6 +984,17 @@ class $UserSettingsTable extends UserSettings
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _learnerNameMeta = const VerificationMeta(
+    'learnerName',
+  );
+  @override
+  late final GeneratedColumn<String> learnerName = GeneratedColumn<String>(
+    'learner_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -995,6 +1006,7 @@ class $UserSettingsTable extends UserSettings
     onboardingBrewer,
     themeMode,
     tourSeen,
+    learnerName,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1080,6 +1092,15 @@ class $UserSettingsTable extends UserSettings
         tourSeen.isAcceptableOrUnknown(data['tour_seen']!, _tourSeenMeta),
       );
     }
+    if (data.containsKey('learner_name')) {
+      context.handle(
+        _learnerNameMeta,
+        learnerName.isAcceptableOrUnknown(
+          data['learner_name']!,
+          _learnerNameMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -1125,6 +1146,10 @@ class $UserSettingsTable extends UserSettings
         DriftSqlType.bool,
         data['${effectivePrefix}tour_seen'],
       )!,
+      learnerName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}learner_name'],
+      ),
     );
   }
 
@@ -1178,6 +1203,13 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
   /// with the row) and `OnboardingRepository.resetOnboarding` (clears both, by
   /// name). Device-local: never written to the progress snapshot.
   final bool tourSeen;
+
+  /// What the learner asked to be called, or null when they did not say.
+  ///
+  /// Nullable rather than defaulted to a placeholder: "no name given" and "the
+  /// name is empty" are the same fact to the greeting, and only one of them
+  /// needs representing.
+  final String? learnerName;
   const SettingsRow({
     required this.id,
     required this.hapticsEnabled,
@@ -1188,6 +1220,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     this.onboardingBrewer,
     required this.themeMode,
     required this.tourSeen,
+    this.learnerName,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1205,6 +1238,9 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     }
     map['theme_mode'] = Variable<String>(themeMode);
     map['tour_seen'] = Variable<bool>(tourSeen);
+    if (!nullToAbsent || learnerName != null) {
+      map['learner_name'] = Variable<String>(learnerName);
+    }
     return map;
   }
 
@@ -1223,6 +1259,9 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
           : Value(onboardingBrewer),
       themeMode: Value(themeMode),
       tourSeen: Value(tourSeen),
+      learnerName: learnerName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(learnerName),
     );
   }
 
@@ -1243,6 +1282,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
       onboardingBrewer: serializer.fromJson<String?>(json['onboardingBrewer']),
       themeMode: serializer.fromJson<String>(json['themeMode']),
       tourSeen: serializer.fromJson<bool>(json['tourSeen']),
+      learnerName: serializer.fromJson<String?>(json['learnerName']),
     );
   }
   @override
@@ -1258,6 +1298,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
       'onboardingBrewer': serializer.toJson<String?>(onboardingBrewer),
       'themeMode': serializer.toJson<String>(themeMode),
       'tourSeen': serializer.toJson<bool>(tourSeen),
+      'learnerName': serializer.toJson<String?>(learnerName),
     };
   }
 
@@ -1271,6 +1312,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     Value<String?> onboardingBrewer = const Value.absent(),
     String? themeMode,
     bool? tourSeen,
+    Value<String?> learnerName = const Value.absent(),
   }) => SettingsRow(
     id: id ?? this.id,
     hapticsEnabled: hapticsEnabled ?? this.hapticsEnabled,
@@ -1285,6 +1327,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
         : this.onboardingBrewer,
     themeMode: themeMode ?? this.themeMode,
     tourSeen: tourSeen ?? this.tourSeen,
+    learnerName: learnerName.present ? learnerName.value : this.learnerName,
   );
   SettingsRow copyWithCompanion(UserSettingsCompanion data) {
     return SettingsRow(
@@ -1307,6 +1350,9 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
           : this.onboardingBrewer,
       themeMode: data.themeMode.present ? data.themeMode.value : this.themeMode,
       tourSeen: data.tourSeen.present ? data.tourSeen.value : this.tourSeen,
+      learnerName: data.learnerName.present
+          ? data.learnerName.value
+          : this.learnerName,
     );
   }
 
@@ -1321,7 +1367,8 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
           ..write('onboardingGoal: $onboardingGoal, ')
           ..write('onboardingBrewer: $onboardingBrewer, ')
           ..write('themeMode: $themeMode, ')
-          ..write('tourSeen: $tourSeen')
+          ..write('tourSeen: $tourSeen, ')
+          ..write('learnerName: $learnerName')
           ..write(')'))
         .toString();
   }
@@ -1337,6 +1384,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     onboardingBrewer,
     themeMode,
     tourSeen,
+    learnerName,
   );
   @override
   bool operator ==(Object other) =>
@@ -1350,7 +1398,8 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
           other.onboardingGoal == this.onboardingGoal &&
           other.onboardingBrewer == this.onboardingBrewer &&
           other.themeMode == this.themeMode &&
-          other.tourSeen == this.tourSeen);
+          other.tourSeen == this.tourSeen &&
+          other.learnerName == this.learnerName);
 }
 
 class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
@@ -1363,6 +1412,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
   final Value<String?> onboardingBrewer;
   final Value<String> themeMode;
   final Value<bool> tourSeen;
+  final Value<String?> learnerName;
   const UserSettingsCompanion({
     this.id = const Value.absent(),
     this.hapticsEnabled = const Value.absent(),
@@ -1373,6 +1423,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     this.onboardingBrewer = const Value.absent(),
     this.themeMode = const Value.absent(),
     this.tourSeen = const Value.absent(),
+    this.learnerName = const Value.absent(),
   });
   UserSettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -1384,6 +1435,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     this.onboardingBrewer = const Value.absent(),
     this.themeMode = const Value.absent(),
     this.tourSeen = const Value.absent(),
+    this.learnerName = const Value.absent(),
   }) : hapticsEnabled = Value(hapticsEnabled),
        soundEnabled = Value(soundEnabled),
        totalXp = Value(totalXp);
@@ -1397,6 +1449,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     Expression<String>? onboardingBrewer,
     Expression<String>? themeMode,
     Expression<bool>? tourSeen,
+    Expression<String>? learnerName,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1409,6 +1462,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
       if (onboardingBrewer != null) 'onboarding_brewer': onboardingBrewer,
       if (themeMode != null) 'theme_mode': themeMode,
       if (tourSeen != null) 'tour_seen': tourSeen,
+      if (learnerName != null) 'learner_name': learnerName,
     });
   }
 
@@ -1422,6 +1476,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     Value<String?>? onboardingBrewer,
     Value<String>? themeMode,
     Value<bool>? tourSeen,
+    Value<String?>? learnerName,
   }) {
     return UserSettingsCompanion(
       id: id ?? this.id,
@@ -1433,6 +1488,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
       onboardingBrewer: onboardingBrewer ?? this.onboardingBrewer,
       themeMode: themeMode ?? this.themeMode,
       tourSeen: tourSeen ?? this.tourSeen,
+      learnerName: learnerName ?? this.learnerName,
     );
   }
 
@@ -1466,6 +1522,9 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     if (tourSeen.present) {
       map['tour_seen'] = Variable<bool>(tourSeen.value);
     }
+    if (learnerName.present) {
+      map['learner_name'] = Variable<String>(learnerName.value);
+    }
     return map;
   }
 
@@ -1480,7 +1539,8 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
           ..write('onboardingGoal: $onboardingGoal, ')
           ..write('onboardingBrewer: $onboardingBrewer, ')
           ..write('themeMode: $themeMode, ')
-          ..write('tourSeen: $tourSeen')
+          ..write('tourSeen: $tourSeen, ')
+          ..write('learnerName: $learnerName')
           ..write(')'))
         .toString();
   }
@@ -2419,6 +2479,7 @@ typedef $$UserSettingsTableCreateCompanionBuilder =
       Value<String?> onboardingBrewer,
       Value<String> themeMode,
       Value<bool> tourSeen,
+      Value<String?> learnerName,
     });
 typedef $$UserSettingsTableUpdateCompanionBuilder =
     UserSettingsCompanion Function({
@@ -2431,6 +2492,7 @@ typedef $$UserSettingsTableUpdateCompanionBuilder =
       Value<String?> onboardingBrewer,
       Value<String> themeMode,
       Value<bool> tourSeen,
+      Value<String?> learnerName,
     });
 
 class $$UserSettingsTableFilterComposer
@@ -2484,6 +2546,11 @@ class $$UserSettingsTableFilterComposer
 
   ColumnFilters<bool> get tourSeen => $composableBuilder(
     column: $table.tourSeen,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get learnerName => $composableBuilder(
+    column: $table.learnerName,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -2541,6 +2608,11 @@ class $$UserSettingsTableOrderingComposer
     column: $table.tourSeen,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get learnerName => $composableBuilder(
+    column: $table.learnerName,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$UserSettingsTableAnnotationComposer
@@ -2588,6 +2660,11 @@ class $$UserSettingsTableAnnotationComposer
 
   GeneratedColumn<bool> get tourSeen =>
       $composableBuilder(column: $table.tourSeen, builder: (column) => column);
+
+  GeneratedColumn<String> get learnerName => $composableBuilder(
+    column: $table.learnerName,
+    builder: (column) => column,
+  );
 }
 
 class $$UserSettingsTableTableManager
@@ -2630,6 +2707,7 @@ class $$UserSettingsTableTableManager
                 Value<String?> onboardingBrewer = const Value.absent(),
                 Value<String> themeMode = const Value.absent(),
                 Value<bool> tourSeen = const Value.absent(),
+                Value<String?> learnerName = const Value.absent(),
               }) => UserSettingsCompanion(
                 id: id,
                 hapticsEnabled: hapticsEnabled,
@@ -2640,6 +2718,7 @@ class $$UserSettingsTableTableManager
                 onboardingBrewer: onboardingBrewer,
                 themeMode: themeMode,
                 tourSeen: tourSeen,
+                learnerName: learnerName,
               ),
           createCompanionCallback:
               ({
@@ -2652,6 +2731,7 @@ class $$UserSettingsTableTableManager
                 Value<String?> onboardingBrewer = const Value.absent(),
                 Value<String> themeMode = const Value.absent(),
                 Value<bool> tourSeen = const Value.absent(),
+                Value<String?> learnerName = const Value.absent(),
               }) => UserSettingsCompanion.insert(
                 id: id,
                 hapticsEnabled: hapticsEnabled,
@@ -2662,6 +2742,7 @@ class $$UserSettingsTableTableManager
                 onboardingBrewer: onboardingBrewer,
                 themeMode: themeMode,
                 tourSeen: tourSeen,
+                learnerName: learnerName,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

@@ -70,6 +70,11 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Onboarding asks what to call you, and Profile says hello back.** A third,
+  optional step takes a name and the Profile header greets by it — `Hello,
+  Maya.` where one was given, `Hello, there.` where it was skipped, which is
+  the same sentence either way. Skipping costs nothing and stays skippable.
+
 - **A locked mini-game now offers something.** Tapping one opens a sheet naming
   the module that teaches its topic — "Taught in Module 4 · Grind" — and
   pitching that module in its own words, rather than refusing silently. The
