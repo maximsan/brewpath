@@ -435,6 +435,23 @@ void main() {
     });
   });
 
+  testWidgets('a game whose renderer has landed offers Play', (tester) async {
+    // The other side of the test below, and the one that would have caught
+    // both halves of #311: a game is only playable when the registry says so,
+    // so a renderer landing without its registry line looks from here exactly
+    // like a renderer that was never written.
+    await _pump(tester);
+
+    await tester.tap(find.text('Name the flavor notes'));
+    await _settle(tester);
+
+    expect(find.text('HOW TO PLAY'), findsOneWidget);
+    final action = tester.widget<FilledButton>(
+      find.widgetWithText(FilledButton, 'Play'),
+    );
+    expect(action.onPressed, isNotNull);
+  });
+
   testWidgets('a game with no renderer reaches its intro and cannot start', (
     tester,
   ) async {

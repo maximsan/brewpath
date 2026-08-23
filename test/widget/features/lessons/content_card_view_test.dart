@@ -78,6 +78,26 @@ const _concept = ContentCard.concept(
   ],
 );
 
+/// A flavor round whose correct note sits **third**, not first.
+///
+/// The position is the point. `flavor` holds correctness as an index into the
+/// authored order rather than on the choice, so a mapping that reads the wrong
+/// field, or shuffles before it marks, produces a round nobody can win — and a
+/// fixture answering at index 0 would pass under several of those mistakes by
+/// luck.
+const _flavor = ContentCard.flavor(
+  clue: 'A sharp, tangy brightness that makes your mouth water',
+  prompt: 'Name the note',
+  choices: [
+    Choice(text: 'Caramel'),
+    Choice(text: 'Cedar'),
+    Choice(text: 'Citrus'),
+    Choice(text: 'Tobacco'),
+  ],
+  answer: 2,
+  explanation: 'That mouth-watering snap is acidity — most often citrus.',
+);
+
 Widget _host(ContentCard card, _Signals signals, {int nonce = 1}) =>
     MaterialApp(
       home: Scaffold(
@@ -111,6 +131,7 @@ void main() {
       'mcq': _mcq,
       'decision': _decision,
       'recall': _recall,
+      'flavor': _flavor,
     };
 
     for (final entry in cards.entries) {
@@ -129,6 +150,77 @@ void main() {
         expect(signals.solved, 0);
       });
     }
+  });
+
+  group('flavor — the note behind the clue', () {
+    testWidgets('shows the tasting clue and every note', (tester) async {
+      await tester.pumpWidget(_host(_flavor, _Signals()));
+
+      expect(
+        find.text('A sharp, tangy brightness that makes your mouth water'),
+        findsOneWidget,
+      );
+      expect(find.text('Name the note'), findsOneWidget);
+      for (final note in ['Caramel', 'Cedar', 'Citrus', 'Tobacco']) {
+        expect(find.text(note), findsOneWidget, reason: '$note went missing');
+      }
+    });
+
+    testWidgets('a correct note fires success exactly once', (tester) async {
+      // **The trap test.** The answer is an index into the authored order, and
+      // the options are shuffled — so this passes only if the index is resolved
+      // into the marked option before the shuffle moves it. Mapping through the
+      // helper the tastefix kind uses, or shuffling first, leaves every note
+      // reading as wrong: the round renders perfectly and cannot be won.
+      final signals = _Signals();
+      await tester.pumpWidget(_host(_flavor, signals));
+
+      await _tapText(tester, 'Citrus');
+
+      expect(signals.solved, 1);
+      expect(_continueEnabled(tester), isTrue);
+    });
+
+    testWidgets('every seed keeps the answer winnable', (tester) async {
+      // The shuffle is seeded per run, so correctness must survive whichever
+      // order a run happens to draw — not merely the one this file pumps.
+      for (var nonce = 1; nonce <= 8; nonce++) {
+        final signals = _Signals();
+        // A bare pump between runs, so each nonce meets a freshly mounted card
+        // rather than the previous one updated in place — which would still be
+        // latched, and would report every run after the first as a failure.
+        await tester.pumpWidget(const SizedBox.shrink());
+        await tester.pumpWidget(_host(_flavor, signals, nonce: nonce));
+        await _tapText(tester, 'Citrus');
+
+        expect(signals.solved, 1, reason: 'unwinnable at nonce $nonce');
+      }
+    });
+
+    testWidgets('a wrong note stays silent and still explains', (tester) async {
+      final signals = _Signals();
+      await tester.pumpWidget(_host(_flavor, signals));
+
+      await _tapText(tester, 'Cedar');
+
+      expect(signals.solved, 0);
+      expect(
+        find.text('That mouth-watering snap is acidity — most often citrus.'),
+        findsOneWidget,
+      );
+      expect(_continueEnabled(tester), isTrue);
+    });
+
+    testWidgets('latches on the first commit', (tester) async {
+      final signals = _Signals();
+      await tester.pumpWidget(_host(_flavor, signals));
+
+      await _tapText(tester, 'Cedar');
+      // Fishing for the answer after committing must change nothing.
+      await _tapText(tester, 'Citrus');
+
+      expect(signals.solved, 0);
+    });
   });
 
   group('graded cards report success once, and only when earned', () {
