@@ -85,7 +85,7 @@ staging list that feeds it, not a living board. Nothing ticks these boxes.
 - [ ] Flashcards: flip, prev/next, shuffle, jump-to-term, empty state
 - [ ] Vocab game: setup phase (deck picker + round length with a `capped` guard), play, results with missed terms openable
 - [ ] Saved screen: three groups (terms · lessons · guides), each hidden when empty, plus the "study as flashcards" row
-- [ ] 37 collectible cards + 5 training guides, all with bespoke art (**art complete — port, don't draw**)
+- [ ] 37 collectible cards + 8 visual guides, all with bespoke art (**art complete — port, don't draw**)
 - [ ] 13 mini-games over 7 kinds with content banks (69 rounds; [ADR-0005](../adr/0005-mini-games-are-many-games-per-kind-gated-by-topic.md))
 - [ ] 12 coffee challenges
 - [ ] Studio: 3 species × 4 light treatments, 8 training guides, Roasty option tables

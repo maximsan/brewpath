@@ -58,9 +58,13 @@
  *   exactly, because both are closed product rulings rather than lists that
  *   grow. Each variety's `drop` is emitted but read by nothing: all three
  *   species ship, and a rollout note must not be able to re-defer that.
- * - **`TRAINING_CARDS` is not a bank.** Its words live in `practical.jsx`
- *   (`TRAINING`), a file this mechanism does not read. It joins when the guides
- *   get a surface.
+ * - **The visual guides are one bank joined from two files.** Identity, unlock
+ *   and the meta table come from `VISUAL_GUIDE_CARDS` (`data.jsx`); the words
+ *   from `VISUAL_GUIDE_CONTENT` (`practical.jsx`). The second is the only
+ *   registry whose entries carry React markup — each ends with a `body` member
+ *   V8 cannot parse — so it is read with that member cut away first, and the
+ *   cut is validated by compilation exactly as the slice's own end is. Markup
+ *   moved above the words would fail loudly rather than drop fields silently.
  * - **Module reward `meta` is not carried.** `data.jsx` computes it after the
  *   declaration, from lesson counts, so slicing does not see it. Deriving it
  *   app-side is also why the prototype computes it: a stored copy goes stale
@@ -111,7 +115,10 @@
 const fs = require("node:fs");
 const path = require("node:path");
 
-const { evaluateDeclaration } = require("./extract_content/slice");
+const {
+  evaluateDeclaration,
+  dropTrailingMember,
+} = require("./extract_content/slice");
 const { validate, GRADED_KINDS } = require("./extract_content/validate");
 
 const REPO_ROOT = path.resolve(__dirname, "..");
@@ -151,6 +158,7 @@ function main(argv) {
   const lesson = read("lesson.jsx");
   const anatomy = read("bean-anatomy.jsx");
   const customize = read("customize.jsx");
+  const practical = read("practical.jsx");
 
   // A declaration that has been renamed or reformatted past recognition is as
   // much a refusal as a broken reference, and reports the same way: reading on
@@ -194,6 +202,20 @@ function main(argv) {
         "customize.jsx",
       ),
       groveLights: evaluateDeclaration(customize, "GROVE_LIGHT", "customize.jsx"),
+      visualGuideCards: evaluateDeclaration(
+        data,
+        "VISUAL_GUIDE_CARDS",
+        "data.jsx",
+      ),
+      // The one registry whose entries carry React markup. Its `body` member
+      // is cut away before evaluation — see `dropTrailingMember`.
+      visualGuideContent: evaluateDeclaration(
+        practical,
+        "VISUAL_GUIDE_CONTENT",
+        "practical.jsx",
+        {},
+        dropTrailingMember("body"),
+      ),
     };
   } catch (error) {
     fail([error.message]);
@@ -228,6 +250,14 @@ function main(argv) {
     // is the other's auxiliary data, and each validates on its own terms.
     bank("grove_varieties", "customize.jsx", banks.groveVarieties),
     bank("grove_lights", "customize.jsx", banks.groveLights),
+    // Two sources, honestly: identity, unlock and the meta table are authored
+    // in `data.jsx`, the words in `practical.jsx`, and a guide is only whole
+    // once they are joined.
+    bank(
+      "visual_guides",
+      "data.jsx + practical.jsx",
+      joinVisualGuides(banks),
+    ),
   ]);
 }
 
@@ -272,6 +302,30 @@ function withRewards(banks) {
  * of the output rather than of anyone's memory: a bank added later is stamped
  * because it came through this function.
  */
+/**
+ * One record per visual guide, in registry order.
+ *
+ * `earned` and `kind` are deliberately not carried: the first is prototype
+ * demo state — what a learner has unlocked is progress, and progress lives in
+ * the database — and the second is a renderer hint the app does not need,
+ * since a guide is only ever drawn as a guide.
+ */
+function joinVisualGuides(banks) {
+  return banks.visualGuideCards.map((card) => {
+    const words = banks.visualGuideContent[card.visualGuide] ?? {};
+    return {
+      id: card.id,
+      visualGuide: card.visualGuide,
+      unlock: card.unlock,
+      label: words.label,
+      title: words.title,
+      summary: words.summary,
+      fact: words.fact,
+      meta: card.meta,
+    };
+  });
+}
+
 function bank(name, sourceFile, items, extra = {}) {
   return {
     name,
