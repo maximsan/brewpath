@@ -57,19 +57,6 @@ SavedKey? parseSavedKey(String raw) {
 String formatSavedKey(SavedKind kind, String id) =>
     '${kind.prefix}$_separator$id';
 
-/// Whether [raw] is one of the three saveable kinds.
-bool isSavedKey(String raw) => parseSavedKey(raw) != null;
-
-/// The ids in [keys] belonging to [kind], with anything unparseable dropped.
-Set<String> savedKeysOfKind(Set<String> keys, SavedKind kind) => {
-  for (final raw in keys)
-    if (parseSavedKey(raw) case (
-      kind: final parsed,
-      :final id,
-    ) when parsed == kind)
-      id,
-};
-
 /// [keys] with [key] added when absent and removed when present.
 ///
 /// Returns a new set rather than mutating: the caller holds a value read out

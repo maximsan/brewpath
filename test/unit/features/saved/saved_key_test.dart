@@ -38,16 +38,6 @@ void main() {
     });
   });
 
-  group('isSavedKey', () {
-    test('is true for the three saveable prefixes and false otherwise', () {
-      expect(isSavedKey('l:m1l1'), isTrue);
-      expect(isSavedKey('t:arabica'), isTrue);
-      expect(isSavedKey('g:roast'), isTrue);
-      expect(isSavedKey('c:c1'), isFalse);
-      expect(isSavedKey('nonsense'), isFalse);
-    });
-  });
-
   group('toggleSavedKey', () {
     test('adds a key that is not there', () {
       expect(toggleSavedKey({'t:arabica'}, 'l:m1l1'), {
@@ -71,15 +61,6 @@ void main() {
       final original = {'t:arabica'};
       toggleSavedKey(original, 'l:m1l1');
       expect(original, {'t:arabica'});
-    });
-  });
-
-  group('savedKeysOfKind', () {
-    test('keeps only the requested kind, and drops unparseable keys', () {
-      const stored = {'t:arabica', 't:bloom', 'l:m1l1', 'c:c1', 'rubbish'};
-      expect(savedKeysOfKind(stored, SavedKind.term), {'arabica', 'bloom'});
-      expect(savedKeysOfKind(stored, SavedKind.lesson), {'m1l1'});
-      expect(savedKeysOfKind(stored, SavedKind.guide), isEmpty);
     });
   });
 }

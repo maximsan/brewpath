@@ -67,10 +67,13 @@ class _TermDetail extends StatelessWidget {
       appBar: AppBar(
         title: Text(term.term),
         actions: [
-          Center(
-            child: Text(
-              status.label,
-              style: Theme.of(context).textTheme.labelSmall,
+          Padding(
+            padding: const EdgeInsets.only(left: AppSpacing.md),
+            child: Center(
+              child: Text(
+                status.label,
+                style: Theme.of(context).textTheme.labelSmall,
+              ),
             ),
           ),
           SavedBookmarkButton(

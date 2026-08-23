@@ -55,8 +55,12 @@ class SavedBookmarkButton extends ConsumerWidget {
       isSelected: isSaved,
       icon: const Icon(Icons.bookmark_outline),
       selectedIcon: const Icon(Icons.bookmark),
-      color: context.mood.ink,
-      style: IconButton.styleFrom(foregroundColor: context.mood.accent),
+      // One colour source. Setting both `color` and a `styleFrom`
+      // foreground silently drops one of them in the button's style merge,
+      // which is how the saved and unsaved states ended up the same colour.
+      style: IconButton.styleFrom(
+        foregroundColor: isSaved ? context.mood.accent : context.mood.ink,
+      ),
       tooltip: isSaved ? 'Remove $label from Saved' : 'Save $label',
       onPressed: () => _toggle(ref),
     );
