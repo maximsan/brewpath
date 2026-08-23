@@ -32,3 +32,14 @@ Iterable<String> stringLiteralsIn(String source) sync* {
     yield match.group(1) ?? match.group(2) ?? '';
   }
 }
+
+/// [source] with its comments removed.
+///
+/// A sweep that reads prose finds the thing it forbids in the sentence
+/// explaining why it is forbidden — which is how a guard earns a reputation
+/// for crying wolf, and then gets disabled. Line comments and block comments
+/// both go; string literals are left alone, since a rule about literals wants
+/// to see them.
+String withoutComments(String source) => source
+    .replaceAll(RegExp(r'/\*.*?\*/', dotAll: true), '')
+    .replaceAll(RegExp('//.*'), '');

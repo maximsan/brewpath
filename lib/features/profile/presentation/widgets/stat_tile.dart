@@ -1,4 +1,5 @@
 import 'package:brew_path/core/widgets/icon_badge.dart';
+import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -11,6 +12,7 @@ class StatTile extends StatelessWidget {
     required this.label,
     required this.value,
     this.onTap,
+    this.footer,
     super.key,
   });
 
@@ -25,6 +27,10 @@ class StatTile extends StatelessWidget {
 
   /// Invoked when the tile is tapped; when null the tile is inert.
   final VoidCallback? onTap;
+
+  /// Optional row under the caption — the streak tile rides its week strip
+  /// here.
+  final Widget? footer;
 
   static const double _cornerRadius = 20;
   static const double _badgeSize = 48;
@@ -69,6 +75,10 @@ class StatTile extends StatelessWidget {
               color: mood.inkMute,
             ),
           ),
+          if (footer != null) ...[
+            const SizedBox(height: AppSpacing.xxs),
+            footer!,
+          ],
         ],
       ),
     );

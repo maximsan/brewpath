@@ -85,26 +85,37 @@ self-explanatory) or an omission is an open question, not a documented decision.
 
 **Lesson player chrome:** close button, `RoastBean` progress (fills as a roasting bean) + `NN / NN` counter, save-lesson bookmark. Glossary terms inside body copy are auto-linkified and open a `TermPeekSheet` without leaving the lesson.
 
-## 6.3 Collectible cards — 37 collectibles + 5 guides, two registries
+## 6.3 Collectible cards — 37 collectibles + 8 visual guides, two registries
 
-**The collectible model was restructured.** Training guides used to live inside
-`COLLECTION`; they now sit in their own `TRAINING_CARDS` array. The recorded
-reason is precise: sharing one array *"made a plain 'no two cards share a title'
-check report false collisions."*
+**The collectible model was restructured.** The visual guides used to live
+inside `COLLECTION`; they now sit in their own `VISUAL_GUIDE_CARDS` array. The
+recorded reason is precise: sharing one array *"made a plain 'no two cards
+share a title' check report false collisions."*
+
+⚠️ **They are eight, and they are earned.** Both claims changed: three subjects
+that had words but no card were given one, and `earned: true` became an unlock
+on the earliest lesson that teaches each guide. The extractor refuses a run
+where a guide's unlock is not that lesson, so the rule cannot rot when lessons
+are reordered.
 
 | Registry | Count | Unlock | In the Cards grid? |
 |---|---|---|---|
 | `COLLECTION` — lesson cards | 32 | One per lesson, no gaps | Yes |
 | `COLLECTION` — module Field Guides | 5 | Beans · Processing · Roasting · Grind · Brew | Yes |
-| `TRAINING_CARDS` — visual guides | 5 | `earned: true`, always available | **No — a separate array, never listed beside a collectible** |
+| `VISUAL_GUIDE_CARDS` — visual guides | 8 | The earliest lesson that teaches each | **No — a separate array, never listed beside a collectible** |
 
 `COLLECTION` **array order is the catalogue number printed on each card**, so
 entries are never re-sorted — only appended.
 
-**The 5 training guides:** `tr-roast` Roast Levels · `tr-grind` Grind Size ·
-`tr-extraction` Extraction · `tr-ratio` Coffee-to-Water Ratio · `tr-anatomy`
-The Cherry in Section. Each carries identity plus a `meta` table; its words come
-from `TRAINING` (`practical.jsx`).
+**The 8 visual guides:** `g-roast` Roast Levels · `g-grind` Grind Size ·
+`g-extraction` The Extraction Spectrum · `g-ratio` Coffee-to-Water Ratio ·
+`g-anatomy` Cherry Anatomy · `g-variety` The Variety Family Tree ·
+`g-caffeine` Caffeine, Per Serving · `g-distribution` Particle Distribution.
+Each carries identity, an unlock lesson and a `meta` table; its words come from
+`VISUAL_GUIDE_CONTENT` (`practical.jsx`).
+
+⚠️ **The ids changed with the rename** — they were `tr-*` while the registry
+was `TRAINING_CARDS`. Anything still citing a `tr-` id predates that.
 
 ### One card, one text — the invariant, and how *not* to port it
 
@@ -113,7 +124,7 @@ A collectible entry carries **identity only** — `id`, `kind` (its art and tint
 
 **The invariant, which matters:** a card's title, summary and fact are authored
 in exactly one place — the lesson's own `reward`, or `MODULE_REWARDS`, or
-`TRAINING` for the guides — and every surface that shows that card reads from
+`VISUAL_GUIDE_CONTENT` for the guides — and every surface that shows that card reads from
 it. The stated purpose is *"so the reward moment and the collection sheet cannot
 show two different facts."*
 
@@ -127,11 +138,11 @@ the arrays in place at load:
 | Function | Copies | From | Into |
 |---|---|---|---|
 | `syncCardText()` | `title`, `summary`, `fact`, `meta` | the lesson's `reward`, or `MODULE_REWARDS` | the 37 `COLLECTION` entries |
-| `syncTrainingText()` | `title`, `summary`, `fact` | `TRAINING` | the 5 `TRAINING_CARDS` |
+| `syncVisualGuideText()` | `title`, `summary`, `fact` | `VISUAL_GUIDE_CONTENT` | the 8 `VISUAL_GUIDE_CARDS` |
 
 Two properties of that approach are prototype-grade only:
 
-- **It depends on script order, enforced by nothing.** `TRAINING_CARDS` ships with no titles at all — load `data.jsx` without `practical.jsx` and every guide is `undefined`. The titles exist solely because `practical.jsx` runs the sync afterwards, ten `<script>` tags later in `index.html`. Reorder them and five cards render blank with no error.
+- **It depends on script order, enforced by nothing.** `VISUAL_GUIDE_CARDS` ships with no titles at all — load `data.jsx` without `practical.jsx` and every guide is `undefined`. The titles exist solely because `practical.jsx` runs the sync afterwards, ten `<script>` tags later in `index.html`. Reorder them and eight cards render blank with no error. *(The app does not inherit this: the extractor joins the two registries at build time and refuses a guide missing its words.)*
 - **It fails quietly.** `syncCardText()` does `if (!src) return;`, so a collectible pointing at a lesson with no `reward` keeps whatever it had. *(All 37 currently resolve, and the QA record checks this — so there is no live gap, only a silent failure mode.)*
 
 > **For the port: keep the invariant, drop the technique.** Derive a card's text

@@ -2,6 +2,7 @@ import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/path/presentation/path_module_node_widget.dart';
+import 'package:brew_path/features/path/presentation/reference_section.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +32,9 @@ class PathScreen extends ConsumerWidget {
                 isFirst: i == 0,
                 isLast: i == list.length - 1,
               ),
+            // Last on Path: the course's own appendix, at the end of the thing
+            // it summarises.
+            const ReferenceSection(),
           ],
         ),
       ),
