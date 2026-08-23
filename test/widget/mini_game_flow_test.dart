@@ -316,6 +316,25 @@ void main() {
         find.bySemanticsLabel(RegExp('Fix the cup.*Locked')),
         findsOneWidget,
       );
+      expect(
+        tester.getSemantics(find.bySemanticsLabel(RegExp('Fix the cup.*'))),
+        isSemantics(hint: 'Shows the module that teaches it'),
+        reason:
+            'being told a row is locked, with no hint that it does '
+            'anything, is the dead end this catalog exists to remove',
+      );
+      handle.dispose();
+    });
+
+    testWidgets('an open row carries no offer hint', (tester) async {
+      final handle = tester.ensureSemantics();
+      await _pump(tester, hasCourse: false);
+
+      expect(
+        tester.getSemantics(find.bySemanticsLabel(RegExp('True or false.*'))),
+        isSemantics(hint: ''),
+        reason: 'nothing to offer a learner who can already play it',
+      );
       handle.dispose();
     });
 
