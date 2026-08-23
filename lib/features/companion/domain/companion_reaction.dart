@@ -31,4 +31,7 @@ enum CompanionReaction {
 
   /// A collectible card was earned (unwired in v1 — card screen has no mascot).
   cardEarned,
+
+  /// A fresh streak milestone — the streak screen's opening beat (#236).
+  streakMilestone,
 }

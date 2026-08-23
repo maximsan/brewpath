@@ -96,7 +96,14 @@ You can always edit this file by hand instead — the helpers just save effort.
   one. Learn's date joins the day-rollover list rather than being read once at
   build, and Profile's close button — an app-only invention the design has no
   equivalent for — is gone with its delegate.
-
+- **Milestones get their moment.** The streak screen opens on a Roasty beat
+  when a milestone day lands (3, 7, 14, 30, 60, 100, 180, 365, then every
+  30) — once per milestone, self-healing after a lapse — and the count sits
+  inside a progress ring toward the next badge.
+- **The week reads at a glance.** A shared seven-cell week strip — done,
+  covered-by-a-freeze, or empty, with a cue on today — renders on the streak
+  screen and inside the Profile streak tile, each cell read straight from the
+  recorded day set.
 - **A spent freeze says so.** The first open after a freeze covered a day
   shows a dismissible notice on Learn — the streak is safe, the covered day
   named, the re-earn stated — acknowledged per covered day so sync can never
