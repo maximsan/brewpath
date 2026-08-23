@@ -42,6 +42,16 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ## [Unreleased]
 
+### Changed
+
+- **The illustration palette can be looked up by the name the design calls it.**
+  Extracted content sometimes refers to a colour by the design bundle's own
+  custom-property name rather than by hex, so the palette now answers to those
+  names — and throws on one it does not carry, rather than falling back to a
+  colour that would look plausible and be wrong. The mapping used to be written
+  out inside the palette's drift guard; it now lives beside the colours, and the
+  guard reads it instead of keeping a second copy.
+
 ### Fixed
 
 - **Two mini-games were on the shelf but switched off.** *Match: washed vs
