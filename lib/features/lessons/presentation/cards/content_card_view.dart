@@ -48,46 +48,25 @@ Widget? contentCardView(
     ),
     final McqCard mcq => GradedPicker(
       options: shuffledBySeed(_fromChoices(mcq.choices), seed),
-      copy: PickerCopy(
-        prompt: mcq.prompt,
-        explain: ({required wasCorrect}) => mcq.explanation,
-      ),
+      copy: _mcqCopy(mcq),
       onSolved: onSolved,
       onContinue: onContinue,
     ),
     final RecallCard recall => GradedPicker(
       options: shuffledBySeed(_fromChoices(recall.choices), seed),
-      copy: PickerCopy(
-        label: recall.label,
-        prompt: recall.question,
-        explain: ({required wasCorrect}) => recall.explanation,
-        footnote: recall.takeaway,
-      ),
+      copy: _recallCopy(recall),
       onSolved: onSolved,
       onContinue: onContinue,
     ),
     final DecisionCard decision => GradedPicker(
       options: shuffledBySeed(_decisionOptions(decision), seed),
-      copy: PickerCopy(
-        label: decision.label,
-        title: decision.title,
-        scenario: decision.scenario,
-        prompt: decision.question,
-        // The one kind that authors a separate reading per outcome: being
-        // wrong here has its own lesson, not a softer version of being right.
-        explain: ({required wasCorrect}) =>
-            wasCorrect ? decision.rightExplanation : decision.wrongExplanation,
-        footnote: decision.note,
-      ),
+      copy: _decisionCopy(decision),
       onSolved: onSolved,
       onContinue: onContinue,
     ),
     final QuizCard quiz => GradedPicker(
       options: shuffledBySeed(_quizOptions(quiz), seed),
-      copy: PickerCopy(
-        prompt: quiz.statement,
-        explain: ({required wasCorrect}) => quiz.explanation,
-      ),
+      copy: _quizCopy(quiz),
       onSolved: onSolved,
       onContinue: onContinue,
     ),
@@ -103,23 +82,14 @@ Widget? contentCardView(
       // Marked on the choice, unlike `flavor` directly below. The two kinds
       // hold the same type and mean different things — see `_flavorOptions`.
       options: shuffledBySeed(_fromChoices(tastefix.choices), seed),
-      copy: PickerCopy(
-        label: _tastefixSymptoms(tastefix),
-        scenario: tastefix.scenario,
-        prompt: tastefix.prompt,
-        explain: ({required wasCorrect}) => tastefix.explanation,
-      ),
+      copy: _tastefixCopy(tastefix),
       onSolved: onSolved,
       onContinue: onContinue,
     ),
     final FlavorCard flavor => GradedPicker(
       // Marked *before* the shuffle, never after. See `_flavorOptions`.
       options: shuffledBySeed(_flavorOptions(flavor), seed),
-      copy: PickerCopy(
-        scenario: flavor.clue,
-        prompt: flavor.prompt,
-        explain: ({required wasCorrect}) => flavor.explanation,
-      ),
+      copy: _flavorCopy(flavor),
       onSolved: onSolved,
       onContinue: onContinue,
     ),
@@ -202,6 +172,64 @@ List<ChoiceOption> _quizOptions(QuizCard card) => [
 /// shared picker rather than filling its slots, which is a bigger change than
 /// making the kind render and belongs to whoever takes the cup's reaction on.
 String _tastefixSymptoms(TastefixCard card) => card.tags.join(' · ');
+
+/// What each picking kind says around its choices.
+///
+/// One builder per kind, beside the option builders below, because the two are
+/// halves of the same mapping: what a kind *offers* and what it *says* are the
+/// two things a card has to get right about its content, and reading one
+/// without the other is how they drift.
+///
+/// Named rather than written inline in the switch for a reason with history.
+/// The last real bug in this file was a mapping — `flavor` marks correctness
+/// with an index where `tastefix` marks it on the choice, and routing one
+/// through the other's helper produced a round nobody could win, silently. It
+/// was caught because the *options* half already had a name to test against.
+/// These are the other half.
+PickerCopy _mcqCopy(McqCard card) => PickerCopy(
+  prompt: card.prompt,
+  explain: ({required wasCorrect}) => card.explanation,
+);
+
+PickerCopy _recallCopy(RecallCard card) => PickerCopy(
+  label: card.label,
+  prompt: card.question,
+  explain: ({required wasCorrect}) => card.explanation,
+  footnote: card.takeaway,
+);
+
+PickerCopy _decisionCopy(DecisionCard card) => PickerCopy(
+  label: card.label,
+  title: card.title,
+  scenario: card.scenario,
+  prompt: card.question,
+  // The one kind that authors a separate reading per outcome: being wrong here
+  // has its own lesson, not a softer version of being right.
+  explain: ({required wasCorrect}) =>
+      wasCorrect ? card.rightExplanation : card.wrongExplanation,
+  footnote: card.note,
+);
+
+PickerCopy _quizCopy(QuizCard card) => PickerCopy(
+  prompt: card.statement,
+  explain: ({required wasCorrect}) => card.explanation,
+);
+
+/// The cup's symptoms lead, then the setup, then the question.
+PickerCopy _tastefixCopy(TastefixCard card) => PickerCopy(
+  label: _tastefixSymptoms(card),
+  scenario: card.scenario,
+  prompt: card.prompt,
+  explain: ({required wasCorrect}) => card.explanation,
+);
+
+/// The tasting clue takes the scenario slot: it is what the learner is reading
+/// *from*, set out before the question rather than being part of it.
+PickerCopy _flavorCopy(FlavorCard card) => PickerCopy(
+  scenario: card.clue,
+  prompt: card.prompt,
+  explain: ({required wasCorrect}) => card.explanation,
+);
 
 /// A flavor round's notes, marked from the card's answer **index**.
 ///

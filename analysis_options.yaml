@@ -54,15 +54,6 @@ dart_code_linter:
     - lib/features/companion/presentation/roasty_particles.dart
     # Declarative GoRouter route table — long by nature, low logic complexity.
     - lib/app/app_router.dart
-    # The exhaustive switch over the card union. Its length *is* the feature:
-    # one arm per kind, no registry and no builder map, so an unhandled kind
-    # is a compile error rather than a runtime blank. It crossed the 90-line
-    # cap on the tenth arm and has five kinds still to come, and the only ways
-    # to shorten it are the indirections the file exists to avoid. What is
-    # given up here is real — cyclomatic-complexity and nesting go unchecked
-    # too — but a switch with one arm per variant has neither branching nor
-    # depth to hide.
-    - lib/features/lessons/presentation/cards/content_card_view.dart
     # A flat 13-token colour table. Its constructor, copyWith, lerp, == and
     # hashCode each restate all 13 by definition, so number-of-parameters (5)
     # and source-lines-of-code (90) measure the token count, not complexity.
