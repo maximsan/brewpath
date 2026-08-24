@@ -789,7 +789,7 @@ void main() {
 
       test('a serving row whose figure is not a number is refused', () {
         final source = seededSource();
-        seedWords(source, "mg: 95 }", "mg: '95' }");
+        seedWords(source, 'mg: 95 }', "mg: '95' }");
         expectRefusal(source, naming: ['g-caffeine', 'mg']);
       });
 
