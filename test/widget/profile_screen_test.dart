@@ -54,16 +54,12 @@ void main() {
     await openProfile(tester);
 
     // Three rulings broke in one card, so three things to stay gone:
-    // subscription language against the one-time purchase (#55), "Premium"
-    // where the glossary says Plus, and an ads promise the design never makes.
-    for (final copy in [
-      'Go Premium',
-      'Premium',
-      'subscription',
-      'remove ads',
-    ]) {
+    // "Premium" where the glossary says Plus, subscription language against
+    // the one-time purchase (#55), and an ads promise the design never makes.
+    // Matched case-insensitively — sentence-case copy is the same pitch.
+    for (final copy in ['premium', 'subscription', 'remove ads']) {
       expect(
-        find.textContaining(copy),
+        find.textContaining(RegExp(copy, caseSensitive: false)),
         findsNothing,
         reason: '"$copy" is paywall copy the Profile design does not carry',
       );

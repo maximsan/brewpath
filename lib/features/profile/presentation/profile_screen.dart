@@ -18,7 +18,7 @@ import 'package:go_router/go_router.dart';
 /// one notch — the design sets this page's section rhythm at 28.
 const double _sectionGap = 28;
 
-/// Profile tab: progress stats, the premium CTA, and preferences.
+/// Profile tab: progress stats and preferences.
 class ProfileScreen extends ConsumerWidget {
   /// Creates a [ProfileScreen].
   const ProfileScreen({super.key});
