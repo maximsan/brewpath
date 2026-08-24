@@ -56,14 +56,3 @@ SavedKey? parseSavedKey(String raw) {
 /// The stored key for [id] of [kind].
 String formatSavedKey(SavedKind kind, String id) =>
     '${kind.prefix}$_separator$id';
-
-/// [keys] with [key] added when absent and removed when present.
-///
-/// Returns a new set rather than mutating: the caller holds a value read out
-/// of the snapshot, and a store that hands back something other than what it
-/// was given is the bug this shape rules out.
-Set<String> toggleSavedKey(Set<String> keys, String key) {
-  final next = {...keys};
-  if (!next.remove(key)) next.add(key);
-  return next;
-}

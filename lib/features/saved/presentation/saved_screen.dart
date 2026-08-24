@@ -3,13 +3,16 @@ import 'dart:async';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
+import 'package:brew_path/features/mini_games/domain/course_entitlement.dart';
 import 'package:brew_path/features/path/domain/visual_guide_providers.dart';
 import 'package:brew_path/features/path/presentation/visual_guide_sheet.dart';
+import 'package:brew_path/features/saved/domain/saved_cap.dart';
 import 'package:brew_path/features/saved/domain/saved_key.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/domain/saved_shelf.dart';
 import 'package:brew_path/features/saved/presentation/saved_empty_view.dart';
 import 'package:brew_path/features/saved/presentation/saved_group_section.dart';
+import 'package:brew_path/features/saved/presentation/saved_upgrade_row.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -77,6 +80,9 @@ class SavedScreen extends ConsumerWidget {
             ? const SavedEmptyView()
             : _Shelf(
                 groups: groups,
+                // Unresolved entitlement reads as free — the offer is the
+                // safe thing to show while the answer is still coming.
+                isPlus: ref.watch(courseEntitlementProvider).value ?? false,
                 onOpen: (item) => unawaited(_open(context, ref, item)),
               ),
       ),
@@ -85,22 +91,34 @@ class SavedScreen extends ConsumerWidget {
 }
 
 class _Shelf extends StatelessWidget {
-  const _Shelf({required this.groups, required this.onOpen});
+  const _Shelf({
+    required this.groups,
+    required this.isPlus,
+    required this.onOpen,
+  });
 
   final List<SavedGroup> groups;
+  final bool isPlus;
   final void Function(SavedItem item) onOpen;
 
   @override
   Widget build(BuildContext context) {
+    final count = savedShelfCount(groups);
+
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.gutter),
       children: [
         Text(
-          _countLine(savedShelfCount(groups)),
+          savedCountLine(count: count, isPlus: isPlus),
           style: Theme.of(
             context,
           ).textTheme.labelMedium?.copyWith(color: context.mood.inkMute),
         ),
+        // The offer belongs where the limit is felt.
+        if (savedShelfIsFull(count: count, isPlus: isPlus)) ...[
+          const SizedBox(height: AppSpacing.md),
+          const SavedUpgradeRow(),
+        ],
         const SizedBox(height: AppSpacing.lg),
         for (final group in groups) ...[
           SavedGroupSection(group: group, onOpen: onOpen),
@@ -110,7 +128,3 @@ class _Shelf extends StatelessWidget {
     );
   }
 }
-
-/// What the count line says. The tiered form — a fraction against the free
-/// cap — arrives with the cap itself.
-String _countLine(int count) => '${savedItemCount(count)} to revisit';

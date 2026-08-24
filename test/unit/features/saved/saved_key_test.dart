@@ -37,30 +37,4 @@ void main() {
       }
     });
   });
-
-  group('toggleSavedKey', () {
-    test('adds a key that is not there', () {
-      expect(toggleSavedKey({'t:arabica'}, 'l:m1l1'), {
-        't:arabica',
-        'l:m1l1',
-      });
-    });
-
-    test('removes a key that is', () {
-      expect(toggleSavedKey({'t:arabica', 'l:m1l1'}, 't:arabica'), {'l:m1l1'});
-    });
-
-    test('saving twice is one entry, not two', () {
-      final once = toggleSavedKey(const {}, 't:arabica');
-      expect(toggleSavedKey(toggleSavedKey(once, 't:arabica'), 't:arabica'), {
-        't:arabica',
-      });
-    });
-
-    test('does not mutate the set it was handed', () {
-      final original = {'t:arabica'};
-      toggleSavedKey(original, 'l:m1l1');
-      expect(original, {'t:arabica'});
-    });
-  });
 }

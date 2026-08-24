@@ -46,24 +46,54 @@ void main() {
   }
 
   test('a bookmark is still there after a restart', () async {
-    await toggleSaved(SnapshotRepository(), key: 't:arabica', now: now);
+    await toggleSaved(
+      SnapshotRepository(),
+      key: 't:arabica',
+      now: now,
+      isPlus: false,
+      visible: 0,
+    );
 
     expect(await restartAndRead(), {'t:arabica'});
   });
 
   test('a removal is still gone after a restart', () async {
     final repo = SnapshotRepository();
-    await toggleSaved(repo, key: 't:arabica', now: now);
-    await toggleSaved(repo, key: 't:arabica', now: now);
+    await toggleSaved(
+      repo,
+      key: 't:arabica',
+      now: now,
+      isPlus: false,
+      visible: 0,
+    );
+    await toggleSaved(
+      repo,
+      key: 't:arabica',
+      now: now,
+      isPlus: false,
+      visible: 0,
+    );
 
     expect(await restartAndRead(), isEmpty);
   });
 
   test('a removal made after a restart also survives the next one', () async {
-    await toggleSaved(SnapshotRepository(), key: 't:arabica', now: now);
+    await toggleSaved(
+      SnapshotRepository(),
+      key: 't:arabica',
+      now: now,
+      isPlus: false,
+      visible: 0,
+    );
     expect(await restartAndRead(), {'t:arabica'});
 
-    await toggleSaved(SnapshotRepository(), key: 't:arabica', now: now);
+    await toggleSaved(
+      SnapshotRepository(),
+      key: 't:arabica',
+      now: now,
+      isPlus: false,
+      visible: 0,
+    );
 
     expect(await restartAndRead(), isEmpty);
   });
@@ -71,7 +101,7 @@ void main() {
   test('several bookmarks accumulate rather than replace', () async {
     final repo = SnapshotRepository();
     for (final key in ['t:arabica', 't:bloom', 'l:m1l1']) {
-      await toggleSaved(repo, key: key, now: now);
+      await toggleSaved(repo, key: key, now: now, isPlus: false, visible: 0);
     }
 
     expect(await restartAndRead(), {'t:arabica', 't:bloom', 'l:m1l1'});
@@ -80,7 +110,13 @@ void main() {
   test(
     'the write stamps the shelf so a peer cannot resurrect a removal',
     () async {
-      await toggleSaved(SnapshotRepository(), key: 't:arabica', now: now);
+      await toggleSaved(
+        SnapshotRepository(),
+        key: 't:arabica',
+        now: now,
+        isPlus: false,
+        visible: 0,
+      );
       await restartAndRead();
 
       final stored = (await SnapshotRepository().read()).clearedByReset;
@@ -91,7 +127,13 @@ void main() {
   test('every kind round-trips through the store', () async {
     final repo = SnapshotRepository();
     for (final kind in SavedKind.values) {
-      await toggleSaved(repo, key: formatSavedKey(kind, 'thing'), now: now);
+      await toggleSaved(
+        repo,
+        key: formatSavedKey(kind, 'thing'),
+        now: now,
+        isPlus: false,
+        visible: 0,
+      );
     }
 
     expect(await restartAndRead(), {'l:thing', 't:thing', 'g:thing'});

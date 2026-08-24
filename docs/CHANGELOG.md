@@ -134,6 +134,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The free shelf holds five, and says so.** A free learner's shelf reads
+  `3 of 5 saved`; a sixth save does not take, and the app explains why rather
+  than failing silently — the shelf is full, and Plus makes it unlimited. The
+  offer also sits on the shelf itself, where the limit is felt. **Removing is
+  always allowed**, including at the cap, so a full shelf can still be
+  curated: one tap to make room, another to fill it. The cap counts lessons,
+  terms and guides together, because there is one shelf rather than three, and
+  a learner with Plus is never shown a limit that does not apply to them.
+
 - **Visual guides can be bookmarked, and the shelf is complete.** The bookmark
   sits in the guide's own sheet, beside the label naming what it is, so a
   reference is kept from where it is read. Saved guides fill the shelf's third
