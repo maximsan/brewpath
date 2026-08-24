@@ -44,6 +44,17 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The visual guides appear in the lessons that teach them.** Ten authored
+  cards sat in four modules with no renderer, so every one of them was
+  filtered out before a lesson started — the diagram was missing from the
+  one lesson built to explain it, and only turned up later on the Reference
+  section. They now render: the guide's drawing at full width, its caption
+  above or below as authored, and a bookmark that keeps the guide under the
+  same key its sheet writes. The cherry-anatomy card merges its header with
+  the guide's, so the same title is not said twice. Nothing here is graded —
+  a reference is shown, not asked, so Continue is live on arrival and
+  mastery is untouched.
+
 - **The cherry's six layers and the caffeine table reach the app.** The
   cross-section's layer names, latin names, fates and notes were authored
   beside the drawing that reads them, in a file the guide extraction never
