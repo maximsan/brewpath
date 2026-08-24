@@ -427,7 +427,7 @@ work has to re-light all three, not just the tab.
 | `CardSheet` | `screens.jsx` | `brewCompleted` · `brewActive` · `guideSaved` · `onToggleGuideSave`; branches on `card.kind === 'training'` (`isGuide`) | **Collectible card** |
 | `StreakScreen` · `TreeScreen` · `WeekStrip` · `FreezeMark` | `screens.jsx` | | |
 | `ModuleScreen` | `library.jsx` | **Two layouts** | |
-| `SavedScreen` | `library.jsx` | Title "Favorites". Three groups in fixed order — **Dictionary terms · Lessons · Visual guides** — each hidden when empty; `totalCount` sums all three. **"Study {n} terms as flashcards"** row appears whenever `terms.length > 0` (a second Flashcards entry point). `onUpgrade` → "Unlock Plus" when capped | |
+| `SavedScreen` | `library.jsx` | Title "Favorites" — ⚠️ **the app ships this as "Saved"** (`SavedScreen.title`): the prototype names this one screen twice, "Favorites" in the header and "0 OF 5 SAVED" in the counter beneath it, and *Favourites* was also the deleted card-hearting feature. Port the screen, not the second name. Three groups in fixed order — **Dictionary terms · Lessons · Visual guides** — each hidden when empty; `totalCount` sums all three. **"Study {n} terms as flashcards"** row appears whenever `terms.length > 0` (a second Flashcards entry point). `onUpgrade` → "Unlock Plus" when capped | |
 | `GameIntroScreen` · `PickScreen` | `screens.jsx` | | **Pick card** / **Pick tile** |
 | `OnboardingWelcome` · `OnboardingRoasty` | `screens.jsx` | The two v1 intro screens | **Intro screen skeleton** / **Tap to continue** |
 | `Roasty` · `RoastyLoadingScreen` · `RoastyMoment` · `RoastyAnimScreen` · `ReplayButton` | `roasty.jsx` | `RoastyMoment` takes `autoMs` + `onDone` — the phase driver above | **Roasty, the companion** / **Loading sequence** |
