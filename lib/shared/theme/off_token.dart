@@ -63,10 +63,33 @@ abstract final class OffTokens {
         'keeps the Dark Roast accent instead of following the mood.',
   );
 
+  /// The ink the green-bean drawing is shaded with — its outline, its cast
+  /// shadow and the shadow under its centre cut, at three different alphas.
+  static const OffToken<Color> seedInk = OffToken(
+    Color(0xFF1B1614),
+    reason:
+        'A bean is an object the learner is looking at, not a page of the app, '
+        'so its shading does not invert with the mood — a seam lit from above '
+        'stays dark in Dark Roast. It happens to equal Cupping ink, which is a '
+        'coincidence of the palette rather than a reference to it; the drawing '
+        'would keep this value if Cupping ink moved.',
+  );
+
+  /// The fruit staining left on a naturally processed seed.
+  static const OffToken<Color> seedStain = OffToken(
+    Color(0xFF6B4A22),
+    reason:
+        'The mottling of a bean dried in its own fruit. The design draws it '
+        'and never names it, so there is no --art-* token to read; it belongs '
+        'to one illustration rather than to the palette.',
+  );
+
   /// Every sanctioned exception, so the register can be read — and tested — as
   /// a whole rather than one constant at a time.
   static const register = <OffToken<Object>>[
     rewardedAdCanvas,
     rewardedAdProgressRing,
+    seedInk,
+    seedStain,
   ];
 }

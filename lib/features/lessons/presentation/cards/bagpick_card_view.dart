@@ -70,6 +70,8 @@ class _BagpickCardViewState extends State<BagpickCardView> {
 
   bool get _latched => _called != null;
 
+  bool get _wasCorrect => _called == widget.card.answer;
+
   /// Whether [cueId] is showing its text. Committing reveals them all, so the
   /// explanation can point at a cue the learner never opened.
   bool _isRevealed(String cueId) => _latched || _inspected.contains(cueId);
@@ -138,6 +140,19 @@ class _BagpickCardViewState extends State<BagpickCardView> {
         ),
         if (_latched) ...[
           const SizedBox(height: AppSpacing.xs),
+          // Coloured by outcome, as the design's feedback block is. Right and
+          // wrong reading the same weight of type differ only in their
+          // wording, which a learner scanning back over a run will not catch.
+          Text(
+            _wasCorrect
+                ? 'Called it.'
+                : '${_processLabels[card.answer] ?? card.answer}, actually.',
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              color: _wasCorrect ? context.mood.sage : context.mood.warn,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xxs),
           Text(card.explanation, style: Theme.of(context).textTheme.bodyMedium),
         ],
       ],
@@ -270,6 +285,10 @@ class _CueRow extends StatelessWidget {
 
   static const _labelWidth = 96.0;
 
+  /// A closed cue's border, dimmed so it reads as an outline waiting to be
+  /// filled rather than a box with something already in it.
+  static const _closedBorder = 0.4;
+
   final BagpickCue cue;
   final bool revealed;
   final bool isTell;
@@ -288,7 +307,18 @@ class _CueRow extends StatelessWidget {
           : '${cue.label}. $body',
       excludeSemantics: true,
       child: Material(
-        color: isTell ? mood.surface2 : Colors.transparent,
+        // A closed cue has to *look* closed, before its words are read. The
+        // design draws it dashed over nothing and fills it in once inspected;
+        // a dashed border is a painter's job in Flutter and not worth one
+        // here, so the fill and the border weight carry the state instead. A
+        // row whose only difference is its text makes the learner read every
+        // row to find the unread ones — on the one card where looking *is*
+        // the interaction.
+        color: switch ((isTell, revealed)) {
+          (true, _) => mood.surface2,
+          (false, true) => mood.surface,
+          (false, false) => Colors.transparent,
+        },
         borderRadius: BorderRadius.circular(AppRadii.chrome),
         child: InkWell(
           onTap: onTap,
@@ -296,7 +326,11 @@ class _CueRow extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(AppRadii.chrome),
-              border: Border.all(color: isTell ? mood.accent : mood.rule),
+              border: Border.all(
+                color: isTell
+                    ? mood.accent
+                    : mood.rule.withValues(alpha: revealed ? 1 : _closedBorder),
+              ),
             ),
             padding: const EdgeInsets.all(AppSpacing.sm),
             child: Row(

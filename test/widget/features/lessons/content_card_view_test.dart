@@ -242,6 +242,52 @@ void main() {
       expect(find.text('Washed'), findsNWidgets(2));
     });
 
+    testWidgets('a closed cue looks closed, before its words are read', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_host(_bagpick, _Signals()));
+
+      /// The surface behind the cue row showing [text].
+      Color? surfaceBehind(String text) => tester
+          .widget<Material>(find.widgetWithText(Material, text).first)
+          .color;
+
+      await tester.tap(find.text('Tap to inspect').first);
+      await tester.pumpAndSettle();
+
+      // Compared in the same frame: an opened row against one still closed,
+      // which is exactly what the learner is looking at.
+      expect(
+        surfaceBehind('Even blue-green. Every bean the same shade.'),
+        isNot(surfaceBehind('Tap to inspect')),
+        reason:
+            'a row whose only difference is its text makes the learner read '
+            'every row to find the unread ones — on the one card where '
+            'looking is the interaction',
+      );
+    });
+
+    testWidgets('the verdict is coloured by outcome, not only worded', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_host(_bagpick, _Signals()));
+      await call(tester, 'Natural');
+      final wrong = tester.widget<Text>(find.text('Washed, actually.'));
+
+      // A bare re-pump reuses the same State, so the card would still be
+      // latched on the wrong call and never reach the right one.
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pumpWidget(_host(_bagpick, _Signals()));
+      await call(tester, 'Washed');
+      final right = tester.widget<Text>(find.text('Called it.'));
+
+      expect(
+        right.style?.color,
+        isNot(wrong.style?.color),
+        reason: 'scanning back over a run, wording alone is easy to miss',
+      );
+    });
+
     testWidgets('a cue is hidden until it is inspected', (tester) async {
       await tester.pumpWidget(_host(_bagpick, _Signals()));
 

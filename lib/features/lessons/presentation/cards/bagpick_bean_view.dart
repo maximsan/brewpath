@@ -1,5 +1,7 @@
 import 'package:brew_path/features/lessons/presentation/cards/bagpick_bean.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
+import 'package:brew_path/shared/theme/art_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 
 /// One green bean from the sample, drawn.
@@ -59,12 +61,25 @@ class _BeanPainter extends CustomPainter {
 
   /// The ink the design draws a seed's own shading with — a near-black at low
   /// opacity, so it reads on any body colour rather than tinting toward one.
-  static const _shading = Color(0xFF1B1614);
+  ///
+  /// Registered rather than written as a literal: it happens to equal Cupping
+  /// `ink`, and left bare it reads as a mood token someone forgot to wire up.
+  static final Color _shading = OffTokens.seedInk.value;
   static const _shadowOpacity = 0.18;
   static const _outlineOpacity = 0.35;
   static const _creaseShadowOpacity = 0.3;
-  static const _mottleInk = Color(0xFF6B4A22);
-  static const _chaffInk = Color(0xFFF3EADA);
+
+  /// The fruit staining of a seed dried in its own cherry. The design draws it
+  /// and never names it, so there is no `--art-*` token to read.
+  static final Color _mottleInk = OffTokens.seedStain.value;
+
+  /// Silverskin clinging to the seed. The design fills these flecks `#F3EADA`
+  /// while declaring `--art-cherry-silverskin` as `#F1E8D6` — and that token's
+  /// own description is *"the tissue membrane that becomes chaff"*, which is
+  /// exactly this. The token wins: a palette with two answers for silverskin is
+  /// how the two drift apart. Under two points per channel, and the design
+  /// source owes itself the same correction (#334).
+  static const Color _chaffInk = ArtColors.cherrySilverskin;
 
   static const _outlineWidth = 0.7;
   static const _creaseShadowWidth = 2.9;
