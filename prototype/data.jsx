@@ -811,7 +811,7 @@ const LESSONS = {
       { kind: 'concept', label: 'CONCEPT', title: 'Sugar meets time',
         fill: ['More fruit contact means ', { a: 'more', o: ['more', 'less'], label: 'Fermented flavour' }, ' fruity, fermented flavour; less contact keeps the cup ', { a: 'cleaner', o: ['cleaner', 'sweeter'], label: 'Less contact' }, '.'],
         paragraphs: [
-          'While a seed dries, natural sugars and microbes in the leftover fruit slowly ferment. That fermentation is where fruity, boozy, wine-like notes are born.',
+          'While a seed dries, the fruit\u2019s own sugars and microbes in the leftover pulp slowly ferment. That fermentation is where fruity, boozy, wine-like notes are born.',
           'More fruit contact and more time means more of those flavours. Less contact keeps things clean and lets the origin speak for itself.',
         ],
         meta: [['MORE FRUIT', 'More ferment'], ['LESS FRUIT', 'More clarity']],
