@@ -47,6 +47,64 @@ abstract class VisualGuideNote with _$VisualGuideNote {
       _$VisualGuideNoteFromJson(json);
 }
 
+/// One layer of the coffee cherry, skin to seed.
+///
+/// The whole content of the cross-section: tapping a ring reveals exactly
+/// these five fields. [fate] is the layer's end at the mill — *"Stripped at
+/// the mill"*, *"This is your coffee"* — which is what turns six rings into a
+/// story about what happens to a cherry on its way to a cup.
+///
+/// The ring's colour and radius are **not** here: the drawing owns its own
+/// geometry through the illustration palette, so a redrawn cross-section
+/// cannot be contradicted by a stale radius in the bank.
+@freezed
+abstract class CherryLayer with _$CherryLayer {
+  /// Creates a [CherryLayer].
+  const factory CherryLayer({
+    /// The layer's place, outside in, as the drawing numbers it: `01`–`06`.
+    /// A string because it is shown as one — a zero-padded chip on the band.
+    @JsonKey(name: 'n') required String number,
+
+    required String name,
+
+    /// The botanical name — `exocarp`, `pectin gel`, `endosperm`.
+    required String latin,
+
+    /// What becomes of this layer: stripped, hulled, or brewed.
+    required String fate,
+
+    /// The sentences shown when this layer is the selected one.
+    required String note,
+  }) = _CherryLayer;
+
+  /// Creates a [CherryLayer] from decoded JSON.
+  factory CherryLayer.fromJson(Map<String, dynamic> json) =>
+      _$CherryLayerFromJson(json);
+}
+
+/// One brew in a guide's servings table: what it is, how much of it, and how
+/// much caffeine that carries.
+///
+/// [milligrams] is a number rather than authored text because the bar beside
+/// each row is drawn from it, scaled against the largest row in the table.
+@freezed
+abstract class ServingRow with _$ServingRow {
+  /// Creates a [ServingRow].
+  const factory ServingRow({
+    required String name,
+
+    /// The serving this figure is for — `240 ml cup`, `30 ml shot`. The half
+    /// of the table a guide titled *Caffeine, Per Serving* cannot do without.
+    @JsonKey(name: 'serve') required String serving,
+
+    @JsonKey(name: 'mg') required int milligrams,
+  }) = _ServingRow;
+
+  /// Creates a [ServingRow] from decoded JSON.
+  factory ServingRow.fromJson(Map<String, dynamic> json) =>
+      _$ServingRowFromJson(json);
+}
+
 /// One illustrated reference the course teaches.
 ///
 /// **It carries nothing about the learner.** Whether a guide is earned is
@@ -84,6 +142,13 @@ abstract class VisualGuide with _$VisualGuide {
     /// drawing carries the explanation — anatomy's cross-section is the
     /// reference, so it has no rows to gloss.
     @Default(<VisualGuideNote>[]) List<VisualGuideNote> notes,
+
+    /// The cherry's six layers, outside in. Only the anatomy guide carries
+    /// them; every other guide's reference is the drawing itself.
+    @Default(<CherryLayer>[]) List<CherryLayer> layers,
+
+    /// The servings table, where the guide has one. Only caffeine does.
+    @Default(<ServingRow>[]) List<ServingRow> rows,
 
     /// The closing thought, where the guide has one: the misreading it exists
     /// to head off, or the thing a learner should take away.

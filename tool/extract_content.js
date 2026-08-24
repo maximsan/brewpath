@@ -58,9 +58,11 @@
  *   exactly, because both are closed product rulings rather than lists that
  *   grow. Each variety's `drop` is emitted but read by nothing: all three
  *   species ship, and a rollout note must not be able to re-defer that.
- * - **The visual guides are one bank joined from two files.** Identity, unlock
- *   and the meta table come from `VISUAL_GUIDE_CARDS` (`data.jsx`); the words
- *   from `VISUAL_GUIDE_CONTENT` (`practical.jsx`). The second is the only
+ * - **The visual guides are one bank joined from three files.** Identity,
+ *   unlock and the meta table come from `VISUAL_GUIDE_CARDS` (`data.jsx`); the
+ *   words from `VISUAL_GUIDE_CONTENT` (`practical.jsx`); and the cherry's six
+ *   layers from `CHERRY_LAYERS` (`bean-anatomy.jsx`), which is authored beside
+ *   the cross-section that draws them rather than with the other guides. The second is the only
  *   registry whose entries carry React markup — each ends with a `body` member
  *   V8 cannot parse — so it is read with that member cut away first, and the
  *   cut is validated by compilation exactly as the slice's own end is. Markup
@@ -170,6 +172,11 @@ function main(argv) {
       "BAGPICK_ROUNDS",
       "bean-anatomy.jsx",
     );
+    const cherryLayers = evaluateDeclaration(
+      anatomy,
+      "CHERRY_LAYERS",
+      "bean-anatomy.jsx",
+    );
     banks = {
       modules: evaluateDeclaration(data, "MODULES", "data.jsx"),
       lessons: evaluateDeclaration(data, "LESSONS", "data.jsx"),
@@ -207,6 +214,9 @@ function main(argv) {
         "VISUAL_GUIDE_CARDS",
         "data.jsx",
       ),
+      // The cross-section's own content, authored beside the drawing that
+      // reads it rather than with the other guides' words.
+      cherryLayers,
       // The one registry whose entries carry React markup. Its `body` member
       // is cut away before evaluation — see `dropTrailingMember`.
       visualGuideContent: evaluateDeclaration(
@@ -254,7 +264,10 @@ function main(argv) {
     // in `data.jsx`, the words in `practical.jsx`, and a guide is only whole
     // once they are joined.
     bank(
-"visual_guides", "data.jsx + practical.jsx", joinVisualGuides(banks)),
+      "visual_guides",
+      "data.jsx + practical.jsx + bean-anatomy.jsx",
+      joinVisualGuides(banks),
+    ),
   ]);
 }
 
@@ -328,10 +341,27 @@ function bank(name, sourceFile, items, extra = {}) {
  * the note. Both are carried because a reference that only labels is a legend,
  * not a reference.
  *
- * Guides differ in shape — only `roast` and `grind` carry `levels`, and four
- * carry a closing `note` — so both fields are optional by construction. The
- * geometry members (`nodes`, `legend` colours, `stops`) stay behind: they are
- * layout the drawings already encode, not words.
+ * Guides differ in shape, so every field below the four every guide owns is
+ * optional by construction: only `roast` and `grind` carry `levels`, four
+ * carry a closing `note`, `caffeine` alone carries `rows`, and `anatomy` alone
+ * carries `layers`.
+ *
+ * **What is carried and what stays behind is one rule**: a field is content
+ * when it carries words or figures a learner reads, and layout when the
+ * drawing already encodes it.
+ *
+ * - Carried: `levels` (as `notes`), `note`, **`rows`** — the servings and
+ *   milligram figures behind a guide titled *Caffeine, Per Serving* — and
+ *   **`layers`**, the cross-section's six layers with their names, latin
+ *   names, fates and notes.
+ * - Behind: `nodes`, `legend` colours and `stops`, which are labels the
+ *   drawings position themselves, and each layer's `fill` and `r`, which are
+ *   geometry the app owns.
+ *
+ * This list is exhaustive on purpose. `rows` was carried by nothing for a
+ * release while three exclusions sat documented above it, which reads as a
+ * considered set and hid two omissions inside it — so a field that is neither
+ * carried nor named here is a bug in this comment, not a silent decision.
  */
 function joinVisualGuides(banks) {
   return banks.visualGuideCards.map((card) => {
@@ -339,6 +369,10 @@ function joinVisualGuides(banks) {
     const notes = (words.levels ?? [])
       .filter((level) => level.note)
       .map((level) => ({ term: level.name, detail: level.note }));
+    const layers =
+      card.visualGuide === CROSS_SECTION_SUBJECT
+        ? banks.cherryLayers.map(layerWords)
+        : [];
 
     return {
       id: card.id,
@@ -350,10 +384,39 @@ function joinVisualGuides(banks) {
       fact: words.fact,
       meta: card.meta,
       notes,
+      ...(words.rows ? { rows: words.rows } : {}),
+      ...(layers.length > 0 ? { layers } : {}),
       ...(words.note ? { note: words.note } : {}),
     };
   });
 }
+
+/**
+ * The subject whose reference is a drawing with content of its own.
+ *
+ * Named rather than inlined because it is the one place this join reaches into
+ * a second file for a single guide: the cherry's layers are authored beside
+ * the cross-section that draws them, not with the other guides' words. A
+ * rename of the subject fails the run at the six-layer check rather than
+ * quietly emitting a guide with nothing in it.
+ */
+const CROSS_SECTION_SUBJECT = "anatomy";
+
+/**
+ * A cherry layer's words, without its geometry.
+ *
+ * `fill` and `r` are the ring's colour token and radius. They stay behind
+ * because the app draws the cherry from its own illustration palette, and a
+ * radius in a bank is a second source of truth for a shape already drawn — the
+ * first place a redrawn cross-section would go stale.
+ */
+const layerWords = ({ n, name, latin, fate, note }) => ({
+  n,
+  name,
+  latin,
+  fate,
+  note,
+});
 
 /** Only reached once validation has passed, so a run writes every bank or none. */
 function writeBanks(out, banks) {

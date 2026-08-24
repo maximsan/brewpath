@@ -682,5 +682,122 @@ void main() {
       );
       expectRefusal(source, naming: ['g-roast', 'meta']);
     });
+
+    /// The two data sets that reached no bank for a release.
+    ///
+    /// Both were words all along — the cherry's layers in a file the guide
+    /// join never opened, the servings in a field it never named. Neither
+    /// broke anything: a field nothing reads resolves to nothing and fails no
+    /// check, which is why these assert the content is *present*, not merely
+    /// that the run succeeds.
+    group('the cross-section and the servings table', () {
+      void seedLayers(String source, String from, String to) =>
+          seedCorruption(source, 'bean-anatomy.jsx', from, to);
+
+      Map<String, dynamic> guideNamed(String out, String subject) => _items(
+        out,
+        'visual_guides.json',
+      ).firstWhere((guide) => guide['visualGuide'] == subject);
+
+      test('a clean run carries six cherry layers, outside in', () {
+        final out = dir('out');
+        expect(_run(_prototype, out).exitCode, 0);
+
+        final layers = (guideNamed(out, 'anatomy')['layers'] as List)
+            .cast<Map<String, dynamic>>();
+
+        expect(layers, hasLength(6));
+        expect(
+          layers.map((layer) => layer['n']),
+          ['01', '02', '03', '04', '05', '06'],
+        );
+        expect(layers[2]['name'], 'Mucilage', reason: 'the section opens here');
+        for (final layer in layers) {
+          for (final field in ['name', 'latin', 'fate', 'note']) {
+            expect(layer[field], isNotEmpty, reason: '${layer['n']} $field');
+          }
+        }
+      });
+
+      test('a layer carries its words and not its geometry', () {
+        final out = dir('out');
+        expect(_run(_prototype, out).exitCode, 0);
+
+        final layer =
+            (guideNamed(out, 'anatomy')['layers'] as List).first
+                as Map<String, dynamic>;
+        expect(
+          layer.keys,
+          unorderedEquals(<String>['n', 'name', 'latin', 'fate', 'note']),
+          reason: 'the app draws the rings; a radius here would go stale',
+        );
+      });
+
+      test('a clean run carries the servings table with its figures', () {
+        final out = dir('out');
+        expect(_run(_prototype, out).exitCode, 0);
+
+        final rows = (guideNamed(out, 'caffeine')['rows'] as List)
+            .cast<Map<String, dynamic>>();
+
+        expect(rows, hasLength(4));
+        expect(
+          rows.map((row) => row['name']),
+          ['Decaf', 'Espresso', 'Drip coffee', 'Cold brew'],
+        );
+        for (final row in rows) {
+          expect(row['serve'], isNotEmpty, reason: '${row['name']} serving');
+          expect(row['mg'], isA<int>(), reason: '${row['name']} figure');
+        }
+      });
+
+      test('only the guides that authored them carry them', () {
+        final out = dir('out');
+        expect(_run(_prototype, out).exitCode, 0);
+
+        for (final guide in _items(out, 'visual_guides.json')) {
+          final subject = guide['visualGuide'];
+          expect(
+            guide.containsKey('layers'),
+            subject == 'anatomy',
+            reason: '$subject layers',
+          );
+          expect(
+            guide.containsKey('rows'),
+            subject == 'caffeine',
+            reason: '$subject rows',
+          );
+        }
+      });
+
+      test('a layer stripped of a word is refused by field', () {
+        final source = seededSource();
+        seedLayers(source, "latin: 'exocarp'", "latin: ''");
+        expectRefusal(source, naming: ['cherry layers', 'latin']);
+      });
+
+      test('a seventh cherry layer is refused — the count is the fact', () {
+        final source = seededSource();
+        seedLayers(
+          source,
+          "  { n: '06', name: 'Seed',",
+          "  { n: '07', name: 'Husk', latin: 'x', fate: 'y', note: 'z' },\n"
+              "  { n: '06', name: 'Seed',",
+        );
+        expectRefusal(source, naming: ['cherry layers', 'a cherry has 6']);
+      });
+
+      test('a serving row whose figure is not a number is refused', () {
+        final source = seededSource();
+        seedWords(source, 'mg: 95 }', "mg: '95' }");
+        expectRefusal(source, naming: ['g-caffeine', 'mg']);
+      });
+
+      test('a serving row stripped of its serving is refused', () {
+        final source = seededSource();
+        seedWords(source, "serve: '30 ml shot'", "serve: ''");
+        expectRefusal(source, naming: ['g-caffeine', 'serve']);
+      });
+    });
   });
 }
