@@ -79,6 +79,85 @@ void main() {
     expect(bySubject['anatomy']!.notes, isEmpty);
   });
 
+  /// The cross-section's content, which the app had no source for at all.
+  ///
+  /// Six layers of names, latin names, fates and notes were authored beside
+  /// the drawing that reads them, in a file the guide join never opened — so
+  /// the anatomy guide shipped as a title, a summary and three meta rows.
+  /// Asserted against the shipped bank rather than a fixture: a fixture would
+  /// have passed the whole time the content was missing.
+  test('the cherry arrives with its six layers, outside in', () async {
+    final bySubject = {
+      for (final guide in await guides.getGuides()) guide.subject: guide,
+    };
+    final layers = bySubject['anatomy']!.layers;
+
+    expect(layers, hasLength(6));
+    expect(layers.map((layer) => layer.number), [
+      '01',
+      '02',
+      '03',
+      '04',
+      '05',
+      '06',
+    ]);
+    expect(
+      layers[2].name,
+      'Mucilage',
+      reason: 'the section opens on 03 — the layer the processes argue over',
+    );
+    expect(layers.last.name, 'Seed');
+
+    for (final layer in layers) {
+      expect(layer.latin, isNotEmpty, reason: layer.number);
+      expect(layer.fate, isNotEmpty, reason: layer.number);
+      expect(layer.note, isNotEmpty, reason: layer.number);
+    }
+  });
+
+  test('the servings table carries a serving and a figure per brew', () async {
+    final bySubject = {
+      for (final guide in await guides.getGuides()) guide.subject: guide,
+    };
+    final rows = bySubject['caffeine']!.rows;
+
+    expect(rows, hasLength(4));
+    expect(rows.map((row) => row.name), [
+      'Decaf',
+      'Espresso',
+      'Drip coffee',
+      'Cold brew',
+    ]);
+    for (final row in rows) {
+      expect(
+        row.serving,
+        isNotEmpty,
+        reason: '${row.name} — the guide is titled Caffeine, Per Serving',
+      );
+      expect(row.milligrams, greaterThan(0), reason: row.name);
+    }
+    expect(
+      rows.map((row) => row.milligrams).toList(),
+      orderedEquals(rows.map((row) => row.milligrams).toList()..sort()),
+      reason: 'the table climbs, and the bars are drawn against the largest',
+    );
+  });
+
+  test('only the guides that authored them carry them', () async {
+    for (final guide in await guides.getGuides()) {
+      expect(
+        guide.layers.isNotEmpty,
+        guide.subject == 'anatomy',
+        reason: '${guide.id} layers',
+      );
+      expect(
+        guide.rows.isNotEmpty,
+        guide.subject == 'caffeine',
+        reason: '${guide.id} rows',
+      );
+    }
+  });
+
   test('each unlocks at a lesson that resolves', () async {
     final lessonIds = {
       for (final lesson in await content.getLessons()) lesson.id,

@@ -35,6 +35,22 @@ const GUIDE_COUNT = 8;
 const META_ROWS_MIN = 2;
 const META_ROWS_MAX = 3;
 
+/**
+ * A coffee cherry has six layers, skin to seed.
+ *
+ * Checked exactly, like the grove's counts and for the same reason: this is a
+ * botanical fact the drawing is built around — six rings, a numbered chip per
+ * band — not a list that grows. A seventh layer means the source changed
+ * enough that the drawing and the numbering both need re-deciding.
+ */
+const CHERRY_LAYER_COUNT = 6;
+
+/** What a layer owes the panel that reveals it. */
+const LAYER_COPY = ["n", "name", "latin", "fate", "note"];
+
+/** What a serving row owes the table it renders in. */
+const SERVING_COPY = ["name", "serve"];
+
 function validateVisualGuides(banks, index, report) {
   const guides = banks.visualGuideCards;
   const words = banks.visualGuideContent;
@@ -48,6 +64,7 @@ function validateVisualGuides(banks, index, report) {
     unlockIsEarliestTeachingLesson(guide, banks, where, report);
     metaIsAShortPairList(guide, where, report);
     everyNoteGlossesARow(guide, words, where, report);
+    servingRowsAreWhole(guide, words, where, report);
 
     for (const field of GUIDE_COPY) {
       const value = words[guide.visualGuide]?.[field];
@@ -60,6 +77,80 @@ function validateVisualGuides(banks, index, report) {
   }
 
   everyLessonVisualHasAGuide(banks, guides, report);
+  cherryLayersAreWhole(banks, report);
+}
+
+/**
+ * The cross-section's six layers, each carrying every word the panel shows.
+ *
+ * The interactive section reveals a layer's number, name, latin name, fate and
+ * note the moment it is tapped, so a layer missing any of them renders a panel
+ * with a hole in it — visible only to whoever taps that one ring. The order is
+ * checked too: the layers are numbered `01`–`06` outside in, and the drawing
+ * reads them in that order to place its rings.
+ */
+function cherryLayersAreWhole(banks, report) {
+  const layers = banks.cherryLayers ?? [];
+  const where = "cherry layers";
+
+  if (layers.length !== CHERRY_LAYER_COUNT) {
+    report(
+      where,
+      `there are ${layers.length}; a cherry has ${CHERRY_LAYER_COUNT}`,
+    );
+  }
+
+  layers.forEach((layer, index) => {
+    const expected = String(index + 1).padStart(2, "0");
+    if (layer.n !== expected) {
+      report(
+        where,
+        `layer ${index + 1} is numbered \`${layer.n}\`, not \`${expected}\` — ` +
+          "the rings are drawn outside in and read this order",
+      );
+    }
+    for (const field of LAYER_COPY) {
+      const value = layer[field];
+      if (typeof value !== "string" || value.trim() === "") {
+        report(
+          where,
+          `layer \`${layer.n ?? index}\` has no \`${field}\` — its panel ` +
+            "would open with a hole in it",
+        );
+      }
+    }
+  });
+}
+
+/**
+ * A servings table's rows, each whole.
+ *
+ * The guide is titled *Caffeine, Per Serving*: a row without its serving is
+ * the one thing the guide exists to say, missing. `mg` is checked as a number
+ * because the bar beside each row is drawn from it — a string renders a bar of
+ * no width rather than failing.
+ */
+function servingRowsAreWhole(guide, words, where, report) {
+  const rows = words[guide.visualGuide]?.rows;
+  if (rows === undefined) return;
+
+  if (!Array.isArray(rows) || rows.length < 2) {
+    report(where, "has a servings table with fewer than two rows");
+    return;
+  }
+  for (const row of rows) {
+    for (const field of SERVING_COPY) {
+      if (typeof row[field] !== "string" || row[field].trim() === "") {
+        report(where, `has a serving row with no \`${field}\`: ${row.name}`);
+      }
+    }
+    if (typeof row.mg !== "number") {
+      report(
+        where,
+        `has a serving row whose \`mg\` is not a number: ${row.name}`,
+      );
+    }
+  }
 }
 
 /**

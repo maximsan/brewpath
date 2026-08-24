@@ -44,6 +44,16 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The cherry's six layers and the caffeine table reach the app.** The
+  cross-section's layer names, latin names, fates and notes were authored
+  beside the drawing that reads them, in a file the guide extraction never
+  opened; the caffeine guide's servings and milligram figures sat in a field
+  it never named. Both now ship in the guide bank — so a guide titled
+  *Caffeine, Per Serving* finally carries its servings, and the cross-section
+  has content to reveal. The extraction refuses a run where a layer loses a
+  word, where the layers are not six outside-in, or where a serving figure is
+  not a number.
+
 - **Read the green bean.** An unlabelled bag, a sample of three seeds drawn
   from the round's own description, and three things worth inspecting — colour,
   centre cut, aroma — each hidden until tapped. Call the process from the look
