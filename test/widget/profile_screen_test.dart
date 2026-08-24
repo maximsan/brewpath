@@ -1,5 +1,4 @@
 import 'package:brew_path/app/app.dart';
-import 'package:brew_path/features/profile/presentation/widgets/premium_card.dart';
 import 'package:brew_path/features/profile/presentation/widgets/stat_tile.dart';
 import 'package:brew_path/features/progress/presentation/week_strip.dart';
 import 'package:flutter/material.dart';
@@ -23,16 +22,13 @@ void main() {
     await settleLoaders(tester);
   }
 
-  testWidgets('renders header, premium card, and stat grid for a fresh user', (
+  testWidgets('renders header and stat grid for a fresh user', (
     tester,
   ) async {
     await openProfile(tester);
 
     // Header icons.
     expect(find.byIcon(Icons.settings_outlined), findsOneWidget);
-
-    // Premium hero card.
-    expect(find.byType(PremiumCard), findsOneWidget);
 
     // 2x2 stats grid.
     expect(find.byType(StatTile), findsNWidgets(4));
@@ -50,6 +46,28 @@ void main() {
     expect(find.text('Haptics'), findsOneWidget);
     expect(find.text('Daily reminder'), findsOneWidget);
     expect(find.text('Theme'), findsOneWidget);
+  });
+
+  testWidgets('carries no paywall pitch — the design has no slot for one', (
+    tester,
+  ) async {
+    await openProfile(tester);
+
+    // Three rulings broke in one card, so three things to stay gone:
+    // subscription language against the one-time purchase (#55), "Premium"
+    // where the glossary says Plus, and an ads promise the design never makes.
+    for (final copy in [
+      'Go Premium',
+      'Premium',
+      'subscription',
+      'remove ads',
+    ]) {
+      expect(
+        find.textContaining(copy),
+        findsNothing,
+        reason: '"$copy" is paywall copy the Profile design does not carry',
+      );
+    }
   });
 
   testWidgets('the Day streak tile opens the streak screen', (tester) async {

@@ -2,7 +2,6 @@ import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_stat_row.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:brew_path/features/profile/presentation/widgets/preference_tile.dart';
-import 'package:brew_path/features/profile/presentation/widgets/premium_card.dart';
 import 'package:brew_path/features/profile/presentation/widgets/stat_tile.dart';
 import 'package:brew_path/features/progress/domain/grove_treatment.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
@@ -54,8 +53,6 @@ class ProfileScreen extends ConsumerWidget {
                     error: (_, _) => const CoffeeTreePlaceholder(),
                   ),
                 ),
-                const SizedBox(height: _sectionGap),
-                const PremiumCard(),
                 const SizedBox(height: _sectionGap),
                 const _SectionTitle('Your progress'),
                 const SizedBox(height: 12),

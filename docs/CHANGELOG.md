@@ -84,6 +84,14 @@ You can always edit this file by hand instead — the helpers just save effort.
   out inside the palette's drift guard; it now lives beside the colours, and the
   guard reads it instead of keeping a second copy.
 
+### Removed
+
+- **The Profile paywall card is gone.** "Go Premium" promised a subscription
+  the app does not sell, used a word the glossary rules against, and offered to
+  remove ads that do not exist. The design has no paywall slot on Profile at
+  all, so the card is removed rather than reworded — where Plus is genuinely
+  gated, the design marks the gated card itself.
+
 ### Fixed
 
 - **The blind bag's closed cues looked exactly like its open ones.** Inspecting
