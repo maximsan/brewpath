@@ -76,6 +76,21 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **The blind bag's closed cues looked exactly like its open ones.** Inspecting
+  a cue changed only its words, so finding the ones you had not read meant
+  reading all of them — on the single card where looking *is* the interaction.
+  Open and closed rows now differ before a word is read. The verdict is
+  coloured by outcome too, rather than right and wrong sharing one weight of
+  type that a learner scanning back over a run would not catch.
+
+- **The green bean's colours left the token system.** Its shading was Cupping's
+  `ink` frozen as a literal, so in Dark Roast the bean kept a light-mood
+  outline with nothing recording why; and its chaff sat two points off
+  `ArtColors.cherrySilverskin`, whose own description names it as chaff — a
+  palette carrying two answers for one thing. The flecks take the token, and
+  the shading ink and fruit stain are registered in `OffTokens` with their
+  reasons (#334 owes the design source the matching fix).
+
 - **Two mini-games were on the shelf but switched off.** *Match: washed vs
   natural* and *True or false: roast basics* both render, and both had sat
   behind a dead "Not playable yet" button since they were authored — they
