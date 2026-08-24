@@ -1,4 +1,5 @@
 import 'package:brew_path/app/app_theme.dart';
+import 'package:brew_path/features/mini_games/domain/course_entitlement.dart';
 import 'package:brew_path/features/path/domain/visual_guide_providers.dart';
 import 'package:brew_path/features/path/domain/visual_guide_shelf.dart';
 import 'package:brew_path/features/path/presentation/visual_guide_sheet.dart';
@@ -6,6 +7,7 @@ import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/presentation/saved_empty_view.dart';
 import 'package:brew_path/features/saved/presentation/saved_group_section.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
+import 'package:brew_path/features/saved/presentation/saved_upgrade_row.dart';
 import 'package:brew_path/shared/models/content/visual_guide.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +27,21 @@ const _guides = 'VISUAL GUIDES';
 Widget _wrap() => ProviderScope(
   child: MaterialApp(theme: AppTheme.cupping, home: const SavedScreen()),
 );
+
+/// Pumps the shelf for a learner who owns Plus.
+Future<void> _pumpAsPlus(WidgetTester tester) async {
+  final container = ProviderContainer(
+    overrides: [courseEntitlementProvider.overrideWith((ref) async => true)],
+  );
+  addTearDown(container.dispose);
+  await tester.pumpWidget(
+    UncontrolledProviderScope(
+      container: container,
+      child: MaterialApp(theme: AppTheme.cupping, home: const SavedScreen()),
+    ),
+  );
+  await settleLoaders(tester);
+}
 
 /// Pumps the shelf with exactly [earned] guides unlocked.
 ///
@@ -73,6 +90,8 @@ Future<void> _seed(WidgetTester tester, List<String> keys) async {
       container.read(snapshotRepositoryProvider),
       key: key,
       now: DateTime(2026, 8, 23),
+      isPlus: false,
+      visible: 0,
     );
   }
 }
@@ -255,18 +274,61 @@ void main() {
     });
   });
 
-  testWidgets('the count line counts what is shown', (tester) async {
+  testWidgets('a free shelf reads against the cap, counting what is shown', (
+    tester,
+  ) async {
     await _seed(tester, ['t:arabica', 't:robusta', 't:no-such-term']);
     await pumpWithProviders(tester, _wrap());
 
-    expect(find.text('2 items to revisit'), findsOneWidget);
+    expect(find.text('2 of 5 saved'), findsOneWidget);
   });
 
-  testWidgets('one saved item reads in the singular', (tester) async {
+  testWidgets('a Plus shelf is not shown a limit that does not apply', (
+    tester,
+  ) async {
     await _seed(tester, ['t:arabica']);
-    await pumpWithProviders(tester, _wrap());
+    await _pumpAsPlus(tester);
 
     expect(find.text('1 item to revisit'), findsOneWidget);
+    expect(find.byType(SavedUpgradeRow), findsNothing);
+  });
+
+  group('the cap', () {
+    /// Five saveable terms — a full free shelf.
+    const five = [
+      't:arabica',
+      't:robusta',
+      't:cultivar',
+      't:typica',
+      't:bloom',
+    ];
+
+    testWidgets('a full free shelf offers the way out', (tester) async {
+      await _seed(tester, five);
+      await pumpWithProviders(tester, _wrap());
+
+      expect(find.text('5 of 5 saved'), findsOneWidget);
+      expect(find.text(SavedUpgradeRow.message), findsOneWidget);
+    });
+
+    testWidgets('below the cap there is no offer', (tester) async {
+      await _seed(tester, five.take(4).toList());
+      await pumpWithProviders(tester, _wrap());
+
+      expect(find.byType(SavedUpgradeRow), findsNothing);
+    });
+
+    testWidgets('removal still works at the cap', (tester) async {
+      // The rule most worth protecting: a full shelf stays curatable.
+      await _seed(tester, five);
+      await pumpWithProviders(tester, _wrap());
+
+      await tester.tap(find.byIcon(Icons.bookmark).first);
+      await settleLoaders(tester);
+
+      expect(find.text('4 of 5 saved'), findsOneWidget);
+      expect(find.byType(SavedUpgradeRow), findsNothing);
+    });
   });
 
   testWidgets('the shelf says so when it cannot load', (tester) async {

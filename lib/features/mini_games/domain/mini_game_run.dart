@@ -22,7 +22,41 @@ const double _celebrationMark = 0.8;
 /// game that cannot run. Deliberately *not* read by the catalog row — a row
 /// greyed for a missing renderer is indistinguishable from one behind a
 /// paywall.
-const Set<String> playableMiniGameIds = {'g-quiz', 'g-match'};
+///
+/// **An allowlist has one failure mode, and it has already happened.** A game
+/// added to the catalog does not join this set, and nothing notices: the two
+/// topic-slugged siblings below rendered from the day they were authored and
+/// sat here unplayable for want of a line, because they entered the catalog
+/// three days after this set was last written (#311). The guard test pairs
+/// this set with [deliberatelyNotPlayable] so the next catalog addition fails
+/// the suite until someone rules on it — which is the "someone said so"
+/// property this list exists for, restated as something a build can check.
+const Set<String> playableMiniGameIds = {
+  'g-quiz',
+  'g-match',
+  'g-quiz-roast-basics',
+  'g-match-washed-natural',
+  // The flavor kind serves both of these, so one renderer opened two games.
+  // `g-flavor-origin-signatures` is the third free game ADR-0007 promises, and
+  // was the 7 rounds standing between the free tier's advertised 18 and the 11
+  // a learner could actually reach.
+  'g-flavor',
+  'g-flavor-origin-signatures',
+  // Likewise two games on one kind: the pour-over cup and the shot.
+  'g-tastefix',
+  'g-tastefix-espresso',
+  // The one kind with a single game, and the only one that is a real widget
+  // rather than a picker with framing.
+  'g-bagpick',
+};
+
+/// Games whose kind renders, kept out of [playableMiniGameIds] on purpose.
+///
+/// Empty, and that is the point: an exclusion here is a *decision with a
+/// reason attached*, where an absence from the set above is indistinguishable
+/// from an oversight. Anything that renders and is in neither place fails the
+/// guard test.
+const Map<String, String> deliberatelyNotPlayable = <String, String>{};
 
 /// Mints the nonce for one run. One draw per run, held for its duration and
 /// never stored — see `card_seed.dart` for why storing it would defeat the

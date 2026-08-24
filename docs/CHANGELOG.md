@@ -44,6 +44,49 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Read the green bean.** An unlabelled bag, a sample of three seeds drawn
+  from the round's own description, and three things worth inspecting — colour,
+  centre cut, aroma — each hidden until tapped. Call the process from the look
+  alone, and the feedback names which cue was the real tell. The bag keeps its
+  process hidden until the call is made, and calling it without opening a single
+  cue is a perfectly good way to play.
+
+- **Fix the cup.** Tastefix rounds play: what the cup is doing wrong, the setup
+  that rules out the obvious causes, and four fixes to choose between — with the
+  reason named either way. Two more games open on the one renderer, the
+  pour-over cup and the shot.
+
+- **Name the note, and the free tier's missing seven rounds.** Flavor rounds
+  play: a tasting clue, four notes, one commit, and the explanation either way.
+  That lights up both games authored against the kind — *Name the flavor notes*
+  and *Name the origin* — and the second of those is the third game the free
+  tier has always advertised and never been able to open. Free practice went to
+  18 reachable rounds from 11, which is the number ADR-0007 promises, and a test
+  now holds it there.
+
+### Changed
+
+- **The illustration palette can be looked up by the name the design calls it.**
+  Extracted content sometimes refers to a colour by the design bundle's own
+  custom-property name rather than by hex, so the palette now answers to those
+  names — and throws on one it does not carry, rather than falling back to a
+  colour that would look plausible and be wrong. The mapping used to be written
+  out inside the palette's drift guard; it now lives beside the colours, and the
+  guard reads it instead of keeping a second copy.
+
+### Fixed
+
+- **Two mini-games were on the shelf but switched off.** *Match: washed vs
+  natural* and *True or false: roast basics* both render, and both had sat
+  behind a dead "Not playable yet" button since they were authored — they
+  entered the catalog three days after the list of playable games was last
+  written, so nobody ever ruled on them. Both play now, and a new guard fails
+  the build when a game whose rounds can be drawn is neither playable nor
+  recorded as deliberately held back, so the next game added to the catalog
+  cannot go missing the same way.
+
+### Added
+
 - **The visual guides explain themselves.** A guide's table said *what* —
   `LIGHT / Bright · acidic` — and stopped there. Each row now carries the
   sentence that says what living with it is like ("Acidic and fruity. Can taste
@@ -58,6 +101,12 @@ You can always edit this file by hand instead — the helpers just save effort.
   fail anywhere: the sentence would simply never render.
 
 ### Fixed
+
+- **A locked mini-game told screen readers it was locked and nothing more.**
+  A sighted learner taps a lock speculatively and finds the offer behind it;
+  someone hearing only "Locked" has no reason to try, so the dead end this
+  catalog set out to remove was still there for them. The row now carries a
+  hint naming what the tap does (#125).
 
 - **A schema bump no longer trips over a migration that predates it.** The
   step that dropped the two dead streak columns rebuilt `user_settings` from
@@ -84,6 +133,15 @@ You can always edit this file by hand instead — the helpers just save effort.
   any file that pairs the two again.
 
 ### Added
+
+- **The free shelf holds five, and says so.** A free learner's shelf reads
+  `3 of 5 saved`; a sixth save does not take, and the app explains why rather
+  than failing silently — the shelf is full, and Plus makes it unlimited. The
+  offer also sits on the shelf itself, where the limit is felt. **Removing is
+  always allowed**, including at the cap, so a full shelf can still be
+  curated: one tap to make room, another to fill it. The cap counts lessons,
+  terms and guides together, because there is one shelf rather than three, and
+  a learner with Plus is never shown a limit that does not apply to them.
 
 - **Visual guides can be bookmarked, and the shelf is complete.** The bookmark
   sits in the guide's own sheet, beside the label naming what it is, so a
@@ -215,6 +273,11 @@ You can always edit this file by hand instead — the helpers just save effort.
   one. Learn's date joins the day-rollover list rather than being read once at
   build, and Profile's close button — an app-only invention the design has no
   equivalent for — is gone with its delegate.
+- **A streak travels.** Share your streak opens the iOS system share sheet
+  with a rendered card — wordmark, count, the week's strip — composed
+  off-screen at a fixed size, so it looks identical from any device. Image
+  only, no link; share_plus rides behind a presenter seam and stays
+  SPM-only.
 - **Milestones get their moment.** The streak screen opens on a Roasty beat
   when a milestone day lands (3, 7, 14, 30, 60, 100, 180, 365, then every
   30) — once per milestone, self-healing after a lapse — and the count sits

@@ -78,6 +78,73 @@ const _concept = ContentCard.concept(
   ],
 );
 
+/// A bag whose tell is its centre cut, with the answer authored **second** in
+/// the options so a run that keys off position rather than the process key
+/// cannot pass by accident.
+const _bagpick = ContentCard.bagpick(
+  bag: 'BAG 01',
+  origin: 'Ethiopia · 1,900 m',
+  prompt: 'How was this lot processed?',
+  bean: BagpickBean(
+    body: 'var(--art-cherry-seed)',
+    crease: '#F0E9D9',
+    mottle: 0,
+    chaff: false,
+  ),
+  options: ['natural', 'washed'],
+  answer: 'washed',
+  tell: 'cut',
+  cues: [
+    BagpickCue(
+      id: 'colour',
+      label: 'Colour',
+      text: 'Even blue-green. Every bean the same shade.',
+    ),
+    BagpickCue(
+      id: 'cut',
+      label: 'Centre cut',
+      text: 'A clean, pale line — nothing packed into it.',
+    ),
+    BagpickCue(id: 'aroma', label: 'Aroma', text: 'Dry and grassy, like hay.'),
+  ],
+  explanation: 'Even colour and a pale centre cut are the washed signature.',
+);
+
+/// A tastefix round: what the cup is doing wrong, the setup that rules out the
+/// obvious causes, and four fixes with the right one marked on the choice.
+const _tastefix = ContentCard.tastefix(
+  tags: ['SOUR', 'THIN'],
+  scenario: 'Grind is dialled in and the beans are fresh.',
+  prompt: 'The first sip puckers, and the cup feels hollow. What first?',
+  choices: [
+    Choice(text: 'Grind coarser'),
+    Choice(text: 'Grind finer', isCorrect: true),
+    Choice(text: 'Use colder water'),
+    Choice(text: 'Brew for less time'),
+  ],
+  explanation: 'Puckering with no weight behind it is under-extraction.',
+);
+
+/// A flavor round whose correct note sits **third**, not first.
+///
+/// The position is the point. `flavor` holds correctness as an index into the
+/// authored order rather than on the choice, so a mapping that reads the wrong
+/// field, or shuffles before it marks, produces a round nobody can win — and a
+/// fixture answering at index 0 would pass under several of those mistakes by
+/// luck.
+const _flavor = ContentCard.flavor(
+  clue: 'A sharp, tangy brightness that makes your mouth water',
+  prompt: 'Name the note',
+  choices: [
+    Choice(text: 'Caramel'),
+    Choice(text: 'Cedar'),
+    Choice(text: 'Citrus'),
+    Choice(text: 'Tobacco'),
+  ],
+  answer: 2,
+  explanation: 'That mouth-watering snap is acidity — most often citrus.',
+);
+
 Widget _host(ContentCard card, _Signals signals, {int nonce = 1}) =>
     MaterialApp(
       home: Scaffold(
@@ -111,6 +178,9 @@ void main() {
       'mcq': _mcq,
       'decision': _decision,
       'recall': _recall,
+      'flavor': _flavor,
+      'tastefix': _tastefix,
+      'bagpick': _bagpick,
     };
 
     for (final entry in cards.entries) {
@@ -129,6 +199,284 @@ void main() {
         expect(signals.solved, 0);
       });
     }
+  });
+
+  group('bagpick — investigate, then call it', () {
+    /// Taps a process in the option list.
+    ///
+    /// Scoped deliberately: once called, the bag names the process too, so a
+    /// bare text finder matches the pill as well as the option. The options are
+    /// last on the card, which is what `.last` leans on.
+    Future<void> call(WidgetTester tester, String process) async {
+      await tester.tap(find.text(process).last);
+      await tester.pumpAndSettle();
+    }
+
+    /// The screen-reader label of the cue row headed [label].
+    String cueLabel(WidgetTester tester, String label) => tester
+        .widgetList<Semantics>(find.byType(Semantics))
+        .map((node) => node.properties.label)
+        .whereType<String>()
+        .singleWhere((text) => text.startsWith(label));
+
+    testWidgets('withholds the process until the learner commits', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_host(_bagpick, _Signals()));
+
+      // The concealment is the game: a card showing the answer while asking
+      // the question is not asking anything.
+      expect(find.text('Process hidden'), findsOneWidget);
+      expect(find.text('Washed'), findsOneWidget); // the option, not the label
+      expect(find.text('BAG 01'), findsOneWidget);
+      expect(find.text('Ethiopia · 1,900 m'), findsOneWidget);
+    });
+
+    testWidgets('names the process on the bag once called', (tester) async {
+      await tester.pumpWidget(_host(_bagpick, _Signals()));
+
+      await call(tester, 'Washed');
+
+      expect(find.text('Process hidden'), findsNothing);
+      // Now on the bag as well as on the option that was chosen.
+      expect(find.text('Washed'), findsNWidgets(2));
+    });
+
+    testWidgets('a cue is hidden until it is inspected', (tester) async {
+      await tester.pumpWidget(_host(_bagpick, _Signals()));
+
+      expect(find.text('Tap to inspect'), findsNWidgets(3));
+      expect(find.text('Dry and grassy, like hay.'), findsNothing);
+
+      await _tapText(tester, 'Aroma');
+
+      expect(find.text('Dry and grassy, like hay.'), findsOneWidget);
+      // The other two stay shut — inspecting is one cue at a time.
+      expect(find.text('Tap to inspect'), findsNWidgets(2));
+    });
+
+    testWidgets('calling it without inspecting anything is allowed', (
+      tester,
+    ) async {
+      // Confidence is a legitimate way to play. A card that required every cue
+      // to be opened would be a checklist rather than a judgement.
+      final signals = _Signals();
+      await tester.pumpWidget(_host(_bagpick, signals));
+
+      await call(tester, 'Washed');
+
+      expect(signals.solved, 1);
+      expect(_continueEnabled(tester), isTrue);
+    });
+
+    testWidgets('names the cue that was the real tell', (tester) async {
+      // The round's whole teaching payload. A version that graded the call and
+      // skipped this would pass every other test here and teach nothing.
+      await tester.pumpWidget(_host(_bagpick, _Signals()));
+
+      await call(tester, 'Natural');
+
+      expect(cueLabel(tester, 'Centre cut'), contains('This was the tell'));
+      // And only that one — the tell is a single cue, not a mood on all three.
+      expect(cueLabel(tester, 'Colour'), isNot(contains('the tell')));
+      expect(cueLabel(tester, 'Aroma'), isNot(contains('the tell')));
+    });
+
+    testWidgets('every cue opens once the call is made', (tester) async {
+      // So the explanation can point at a cue the learner never looked at.
+      await tester.pumpWidget(_host(_bagpick, _Signals()));
+
+      await call(tester, 'Washed');
+
+      expect(find.text('Tap to inspect'), findsNothing);
+      expect(
+        find.text('A clean, pale line — nothing packed into it.'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('a wrong call stays silent and still explains', (tester) async {
+      final signals = _Signals();
+      await tester.pumpWidget(_host(_bagpick, signals));
+
+      await _tapText(tester, 'Natural');
+
+      expect(signals.solved, 0);
+      expect(
+        find.text(
+          'Even colour and a pale centre cut are the washed signature.',
+        ),
+        findsOneWidget,
+      );
+      expect(_continueEnabled(tester), isTrue);
+    });
+
+    testWidgets('latches: neither the call nor the cues move after', (
+      tester,
+    ) async {
+      final signals = _Signals();
+      await tester.pumpWidget(_host(_bagpick, signals));
+
+      await call(tester, 'Natural');
+      await call(tester, 'Washed');
+
+      expect(signals.solved, 0, reason: 'a second call was accepted');
+    });
+
+    testWidgets('is winnable whichever order the options are drawn in', (
+      tester,
+    ) async {
+      // The answer is matched on the process key. A run that compared indices
+      // would pass for some seeds and fail for others, which is exactly the
+      // kind of bug a single-seed test lets through.
+      for (var nonce = 1; nonce <= 8; nonce++) {
+        final signals = _Signals();
+        await tester.pumpWidget(const SizedBox.shrink());
+        await tester.pumpWidget(_host(_bagpick, signals, nonce: nonce));
+        await call(tester, 'Washed');
+
+        expect(signals.solved, 1, reason: 'unwinnable at nonce $nonce');
+      }
+    });
+  });
+
+  group('tastefix — the cup that came out wrong', () {
+    testWidgets('shows the symptoms, the setup and the fixes', (tester) async {
+      await tester.pumpWidget(_host(_tastefix, _Signals()));
+
+      // The symptoms frame the question rather than answering it.
+      expect(find.textContaining('SOUR'), findsOneWidget);
+      expect(find.textContaining('THIN'), findsOneWidget);
+      expect(
+        find.text('Grind is dialled in and the beans are fresh.'),
+        findsOneWidget,
+      );
+      expect(
+        find.text(
+          'The first sip puckers, and the cup feels hollow. What first?',
+        ),
+        findsOneWidget,
+      );
+      for (final fix in ['Grind coarser', 'Grind finer', 'Use colder water']) {
+        expect(find.text(fix), findsOneWidget, reason: '$fix went missing');
+      }
+    });
+
+    testWidgets('the right fix fires success exactly once', (tester) async {
+      final signals = _Signals();
+      await tester.pumpWidget(_host(_tastefix, signals));
+
+      await _tapText(tester, 'Grind finer');
+
+      expect(signals.solved, 1);
+      expect(_continueEnabled(tester), isTrue);
+    });
+
+    testWidgets('stays winnable whichever order a run draws', (tester) async {
+      for (var nonce = 1; nonce <= 8; nonce++) {
+        final signals = _Signals();
+        await tester.pumpWidget(const SizedBox.shrink());
+        await tester.pumpWidget(_host(_tastefix, signals, nonce: nonce));
+        await _tapText(tester, 'Grind finer');
+
+        expect(signals.solved, 1, reason: 'unwinnable at nonce $nonce');
+      }
+    });
+
+    testWidgets('a wrong fix stays silent and still explains', (tester) async {
+      final signals = _Signals();
+      await tester.pumpWidget(_host(_tastefix, signals));
+
+      await _tapText(tester, 'Grind coarser');
+
+      expect(signals.solved, 0);
+      expect(
+        find.text('Puckering with no weight behind it is under-extraction.'),
+        findsOneWidget,
+      );
+      expect(_continueEnabled(tester), isTrue);
+    });
+
+    testWidgets('latches on the first commit', (tester) async {
+      final signals = _Signals();
+      await tester.pumpWidget(_host(_tastefix, signals));
+
+      await _tapText(tester, 'Grind coarser');
+      await _tapText(tester, 'Grind finer');
+
+      expect(signals.solved, 0);
+    });
+  });
+
+  group('flavor — the note behind the clue', () {
+    testWidgets('shows the tasting clue and every note', (tester) async {
+      await tester.pumpWidget(_host(_flavor, _Signals()));
+
+      expect(
+        find.text('A sharp, tangy brightness that makes your mouth water'),
+        findsOneWidget,
+      );
+      expect(find.text('Name the note'), findsOneWidget);
+      for (final note in ['Caramel', 'Cedar', 'Citrus', 'Tobacco']) {
+        expect(find.text(note), findsOneWidget, reason: '$note went missing');
+      }
+    });
+
+    testWidgets('a correct note fires success exactly once', (tester) async {
+      // **The trap test.** The answer is an index into the authored order, and
+      // the options are shuffled — so this passes only if the index is resolved
+      // into the marked option before the shuffle moves it. Mapping through the
+      // helper the tastefix kind uses, or shuffling first, leaves every note
+      // reading as wrong: the round renders perfectly and cannot be won.
+      final signals = _Signals();
+      await tester.pumpWidget(_host(_flavor, signals));
+
+      await _tapText(tester, 'Citrus');
+
+      expect(signals.solved, 1);
+      expect(_continueEnabled(tester), isTrue);
+    });
+
+    testWidgets('every seed keeps the answer winnable', (tester) async {
+      // The shuffle is seeded per run, so correctness must survive whichever
+      // order a run happens to draw — not merely the one this file pumps.
+      for (var nonce = 1; nonce <= 8; nonce++) {
+        final signals = _Signals();
+        // A bare pump between runs, so each nonce meets a freshly mounted card
+        // rather than the previous one updated in place — which would still be
+        // latched, and would report every run after the first as a failure.
+        await tester.pumpWidget(const SizedBox.shrink());
+        await tester.pumpWidget(_host(_flavor, signals, nonce: nonce));
+        await _tapText(tester, 'Citrus');
+
+        expect(signals.solved, 1, reason: 'unwinnable at nonce $nonce');
+      }
+    });
+
+    testWidgets('a wrong note stays silent and still explains', (tester) async {
+      final signals = _Signals();
+      await tester.pumpWidget(_host(_flavor, signals));
+
+      await _tapText(tester, 'Cedar');
+
+      expect(signals.solved, 0);
+      expect(
+        find.text('That mouth-watering snap is acidity — most often citrus.'),
+        findsOneWidget,
+      );
+      expect(_continueEnabled(tester), isTrue);
+    });
+
+    testWidgets('latches on the first commit', (tester) async {
+      final signals = _Signals();
+      await tester.pumpWidget(_host(_flavor, signals));
+
+      await _tapText(tester, 'Cedar');
+      // Fishing for the answer after committing must change nothing.
+      await _tapText(tester, 'Citrus');
+
+      expect(signals.solved, 0);
+    });
   });
 
   group('graded cards report success once, and only when earned', () {

@@ -141,6 +141,12 @@ class _FormatRow extends StatelessWidget {
       label: isOpen
           ? '${format.title}. ${format.topic}. ${format.duration}.'
           : '${format.title}. ${format.topic}. Locked.',
+      // A lock a screen reader cannot act on is the dead end this catalog set
+      // out to remove: sighted learners tap a lock speculatively, but being
+      // told only that a row is locked gives no reason to try. The hint slot
+      // is where the action belongs — the label carries state, and the reader
+      // announces the button role itself.
+      hint: isOpen ? null : 'Shows the module that teaches it',
       child: InkWell(
         // A lock is an offer, not a dead end: the tap that cannot start a run
         // opens the pitch for the module that teaches this game's topic.

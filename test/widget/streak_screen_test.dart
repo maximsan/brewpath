@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/progress/domain/freeze_status_line.dart';
@@ -9,6 +11,8 @@ import 'package:brew_path/features/progress/domain/streak_week.dart';
 import 'package:brew_path/features/progress/presentation/milestone_ring.dart';
 import 'package:brew_path/features/progress/presentation/streak_screen.dart';
 import 'package:brew_path/features/progress/presentation/week_strip.dart';
+import 'package:brew_path/services/share/share_presenter.dart';
+import 'package:brew_path/services/share/share_provider.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,6 +42,7 @@ Future<void> _pump(
   StreakStatus status = _counting,
   List<StreakDay> weekDays = const [],
   bool milestoneDue = false,
+  SharePresenter? presenter,
   bool disableAnimations = false,
 }) async {
   final router = GoRouter(
@@ -56,6 +61,8 @@ Future<void> _pump(
         ),
         weekStripDaysProvider.overrideWith((ref) async => weekDays),
         streakMilestoneDueProvider.overrideWith((ref) async => milestoneDue),
+        if (presenter != null)
+          sharePresenterProvider.overrideWithValue(presenter),
       ],
       child: MediaQuery(
         data: MediaQueryData(disableAnimations: disableAnimations),
@@ -84,6 +91,21 @@ Future<void> _settle(WidgetTester tester) async {
       () => Future<void>.delayed(const Duration(milliseconds: 20)),
     );
     await tester.pump(const Duration(milliseconds: 50));
+  }
+}
+
+/// Records what the screen hands the share seam.
+class _RecordingSharePresenter implements SharePresenter {
+  Uint8List? bytes;
+  String? fileName;
+
+  @override
+  Future<void> sharePng({
+    required Uint8List bytes,
+    required String fileName,
+  }) async {
+    this.bytes = bytes;
+    this.fileName = fileName;
   }
 }
 
@@ -214,6 +236,32 @@ void main() {
     expect(find.text('Continue'), findsNothing);
     final stored = await SnapshotRepository().read();
     expect(stored.clearedByReset.acks, contains(milestoneAckKey));
+  });
+
+  testWidgets('Share renders the fixed-size card into the presenter', (
+    tester,
+  ) async {
+    final presenter = _RecordingSharePresenter();
+    await _pump(tester, presenter: presenter);
+
+    await tester.tap(find.text('Share your streak'));
+    for (var i = 0; i < 20; i++) {
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 20)),
+      );
+      await tester.pump();
+      if (presenter.bytes != null) break;
+    }
+
+    expect(presenter.fileName, 'brewpath-streak.png');
+    final image = await tester.runAsync(() async {
+      final codec = await ui.instantiateImageCodec(presenter.bytes!);
+      return (await codec.getNextFrame()).image;
+    });
+    // The export lands at 1080 px wide regardless of the device the test
+    // pretends to be — the whole point of off-screen composition (#26).
+    expect(image!.width, 1080);
+    expect(image.height, 1080);
   });
 
   testWidgets('loading carries a spoken label', (tester) async {

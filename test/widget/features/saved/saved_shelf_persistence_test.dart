@@ -46,6 +46,8 @@ void main() {
       SnapshotRepository(),
       key: key,
       now: DateTime(2026, 8, 23),
+      isPlus: false,
+      visible: 0,
     );
     await writing.close();
 

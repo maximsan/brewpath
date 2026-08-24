@@ -76,22 +76,19 @@ const _liveDocRoots = <String>[
   'learning',
 ];
 
-/// The live docs at the repo root, which have no directory to name them by.
-const _liveDocFiles = <String>[
-  'docs/02-architecture.md',
-  'docs/09-firebase.md',
-  'docs/10-payments.md',
-  'docs/11-ads.md',
-  'docs/12-testing.md',
-  'docs/13-ci-cd.md',
-  'docs/14-ios-release-checklist.md',
-  'docs/15-future-android-web-plan.md',
-  'docs/18-git-and-github-workflow.md',
-  'docs/README.md',
-  'CLAUDE.md',
-  'AGENTS.md',
-  'README.md',
-];
+/// The history that is deliberately **not** swept, named one file at a time.
+///
+/// A deny-list rather than a list of what to check, so a doc added tomorrow is
+/// guarded by default. The opposite — naming the live files — silently stops
+/// covering anything new, which is the failure this whole guard exists to stop.
+const _historyNotSwept = <String>{'docs/CHANGELOG.md', 'docs/decisions.md'};
+
+/// The repo-root docs an agent reads as current.
+///
+/// `CONTEXT.md` is **not** among them, and cannot be: it is where a retired
+/// term is retired, so its `_Avoid_` lines name every word these rules forbid.
+/// Sweeping the glossary would mean the glossary could not state its own rule.
+const _rootDocs = <String>['CLAUDE.md', 'AGENTS.md', 'README.md'];
 
 /// Prose is held to a **narrower** rule than copy, and deliberately so.
 ///
@@ -155,7 +152,15 @@ Iterable<File> _liveDocs() sync* {
         .whereType<File>()
         .where((file) => file.path.endsWith('.md'));
   }
-  for (final path in _liveDocFiles) {
+  // Every top-level doc except the history, so a new one is covered the day it
+  // lands rather than the day someone remembers to list it.
+  yield* Directory('docs')
+      .listSync()
+      .whereType<File>()
+      .where((file) => file.path.endsWith('.md'))
+      .where((file) => !_historyNotSwept.contains(file.path));
+
+  for (final path in _rootDocs) {
     final file = File(path);
     if (file.existsSync()) yield file;
   }

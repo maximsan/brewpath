@@ -1,4 +1,5 @@
 import 'package:brew_path/features/lessons/domain/card_seed.dart';
+import 'package:brew_path/features/lessons/presentation/cards/bagpick_card_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
 import 'package:brew_path/features/lessons/presentation/cards/choice_list.dart';
 import 'package:brew_path/features/lessons/presentation/cards/concept_card_view.dart';
@@ -90,6 +91,38 @@ Widget? contentCardView(
       onSolved: onSolved,
       onContinue: onContinue,
     ),
+    final BagpickCard bagpick => BagpickCardView(
+      card: bagpick,
+      // Display order only. The option's identity is the process key, so the
+      // shuffle can move it freely and nothing keys off an index.
+      options: shuffledBySeed(bagpick.options, seed),
+      onSolved: onSolved,
+      onContinue: onContinue,
+    ),
+    final TastefixCard tastefix => GradedPicker(
+      // Marked on the choice, unlike `flavor` directly below. The two kinds
+      // hold the same type and mean different things — see `_flavorOptions`.
+      options: shuffledBySeed(_fromChoices(tastefix.choices), seed),
+      copy: PickerCopy(
+        label: _tastefixSymptoms(tastefix),
+        scenario: tastefix.scenario,
+        prompt: tastefix.prompt,
+        explain: ({required wasCorrect}) => tastefix.explanation,
+      ),
+      onSolved: onSolved,
+      onContinue: onContinue,
+    ),
+    final FlavorCard flavor => GradedPicker(
+      // Marked *before* the shuffle, never after. See `_flavorOptions`.
+      options: shuffledBySeed(_flavorOptions(flavor), seed),
+      copy: PickerCopy(
+        scenario: flavor.clue,
+        prompt: flavor.prompt,
+        explain: ({required wasCorrect}) => flavor.explanation,
+      ),
+      onSolved: onSolved,
+      onContinue: onContinue,
+    ),
     final MatchCard match => MatchBoardView(
       prompt: match.prompt,
       // Both sides are seeded from the card's own seed, so a replay moves the
@@ -103,10 +136,7 @@ Widget? contentCardView(
     PracticalCard() ||
     MultiCard() ||
     SequenceCard() ||
-    SliderCard() ||
-    TastefixCard() ||
-    BagpickCard() ||
-    FlavorCard() => null,
+    SliderCard() => null,
   };
 }
 
@@ -124,15 +154,15 @@ bool hasRenderer(ContentCard card) => switch (card) {
   RecallCard() ||
   DecisionCard() ||
   QuizCard() ||
+  FlavorCard() ||
+  TastefixCard() ||
+  BagpickCard() ||
   MatchCard() => true,
   VisualCard() ||
   PracticalCard() ||
   MultiCard() ||
   SequenceCard() ||
-  SliderCard() ||
-  TastefixCard() ||
-  BagpickCard() ||
-  FlavorCard() => false,
+  SliderCard() => false,
 };
 
 /// The cards of [cards] that can actually be played, in authored order.
@@ -156,6 +186,43 @@ List<ContentCard> playableCards(List<ContentCard> cards) => [
 List<ChoiceOption> _quizOptions(QuizCard card) => [
   ChoiceOption(text: 'True', isCorrect: card.answer),
   ChoiceOption(text: 'False', isCorrect: !card.answer),
+];
+
+/// What is wrong with the cup, as the eyebrow above the question.
+///
+/// The tags are symptoms — `SOUR`, `THIN` — and they are framing rather than
+/// part of the question: they say how the cup tastes before the learner is
+/// asked what to do about it. So they take the picker's existing eyebrow slot
+/// instead of adding a parameter only one kind of the five would ever pass.
+///
+/// ⚠️ **A visual deferral, recorded rather than hidden.** The design draws
+/// these as berry-tinted pill chips that dim when a wrong fix makes the cup
+/// worse. This renders them as one smallcaps line, which carries the same words
+/// and none of the reaction. Reinstating the chips means composing around the
+/// shared picker rather than filling its slots, which is a bigger change than
+/// making the kind render and belongs to whoever takes the cup's reaction on.
+String _tastefixSymptoms(TastefixCard card) => card.tags.join(' · ');
+
+/// A flavor round's notes, marked from the card's answer **index**.
+///
+/// Deliberately not [_fromChoices], which the tastefix kind uses, even though
+/// both kinds hold `List<Choice>` and the two lines would look interchangeable
+/// in review.
+///
+/// A tastefix round marks its correct choice *on the choice*. A flavor round
+/// does not — its notes are authored bare and correctness lives in a separate
+/// index into the authored order. Passing them through [_fromChoices] compiles,
+/// renders, and yields a round where every note reads as wrong: success can
+/// never fire and the learner scores zero on a game that looks perfect. Nothing
+/// throws.
+///
+/// So the index is resolved here, and the result is shuffled *after*. Once an
+/// option carries its own correctness the seeded order is free to move it;
+/// shuffling first would leave the index pointing at whatever landed in that
+/// position.
+List<ChoiceOption> _flavorOptions(FlavorCard card) => [
+  for (final (index, choice) in card.choices.indexed)
+    ChoiceOption(text: choice.text, isCorrect: index == card.answer),
 ];
 
 List<ChoiceOption> _fromChoices(List<Choice> choices) => [

@@ -103,4 +103,59 @@ abstract final class ArtColors {
     final stop = math.min(roastRamp.length - 2, scaled.floor());
     return Color.lerp(roastRamp[stop], roastRamp[stop + 1], scaled - stop)!;
   }
+
+  /// Every token under the name the **design source** calls it.
+  ///
+  /// Extracted content does not always carry a colour as a hex literal — some
+  /// of it refers to the palette by the custom-property name the design bundle
+  /// declares, because that is what the author wrote. Rendering such content
+  /// means turning `--art-cherry-seed` back into [cherrySeed], and that
+  /// mapping has to exist somewhere a widget can reach.
+  ///
+  /// It lives here, once. It was previously written out inside the palette's
+  /// own drift guard, where it belongs and still belongs — but a second copy
+  /// under `lib/` would be the one thing that guard cannot check, since it
+  /// would not know the copy existed. The guard now reads this map instead of
+  /// restating it, and keeps comparing it against its own separately
+  /// transcribed hex values, so a constant paired with the wrong name still
+  /// fails there.
+  static const byTokenName = <String, Color>{
+    '--art-raw': raw,
+    '--art-roast-light': roastLight,
+    '--art-roast-mid': roastMid,
+    '--art-roast-deep': roastDeep,
+    '--art-roast-dark': roastDark,
+    '--art-cherry-skin': cherrySkin,
+    '--art-cherry-pulp': cherryPulp,
+    '--art-cherry-gel': cherryGel,
+    '--art-cherry-parchment': cherryParchment,
+    '--art-cherry-silverskin': cherrySilverskin,
+    '--art-cherry-seed': cherrySeed,
+    '--art-seed-crease': seedCrease,
+    '--art-ripe': ripe,
+    '--art-sour': sour,
+    '--cream': cream,
+  };
+
+  /// The colour the design source names [token], e.g. `--art-cherry-seed`.
+  ///
+  /// **Throws on a name the palette does not carry**, and that is the whole
+  /// reason this is a function rather than a map lookup at each call site. The
+  /// callers are drawing illustrations from authored content, where the
+  /// tempting fallback — a default colour, or a transparent one — renders
+  /// something entirely plausible that is simply wrong, and no reviewer looking
+  /// at it would know. A missing token is a content or palette bug and has to
+  /// arrive as one.
+  static Color ofToken(String token) {
+    final colour = byTokenName[token];
+    if (colour == null) {
+      throw ArgumentError.value(
+        token,
+        'token',
+        'not a colour in the illustration palette; expected one of '
+            '${byTokenName.keys.join(', ')}',
+      );
+    }
+    return colour;
+  }
 }

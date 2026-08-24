@@ -75,6 +75,49 @@ const _matchRounds = <ContentCard>[
   ),
 ];
 
+/// Two bags, with the answers in different positions so the score proves it
+/// counts calls that were right rather than rounds that were reached.
+const _bagpickRounds = <ContentCard>[
+  ContentCard.bagpick(
+    bag: 'BAG 01',
+    origin: 'Ethiopia · 1,900 m',
+    prompt: 'How was this lot processed?',
+    bean: BagpickBean(
+      body: 'var(--art-cherry-seed)',
+      crease: '#F0E9D9',
+      mottle: 0,
+      chaff: false,
+    ),
+    options: ['natural', 'washed'],
+    answer: 'washed',
+    tell: 'cut',
+    cues: [
+      BagpickCue(id: 'cut', label: 'Centre cut', text: 'Clean and pale.'),
+      BagpickCue(id: 'colour', label: 'Colour', text: 'Even blue-green.'),
+    ],
+    explanation: 'A pale centre cut is the washed signature.',
+  ),
+  ContentCard.bagpick(
+    bag: 'BAG 02',
+    origin: 'Brazil · 1,100 m',
+    prompt: 'And this one?',
+    bean: BagpickBean(
+      body: '#9E7C45',
+      crease: '#7A4526',
+      mottle: 2,
+      chaff: true,
+    ),
+    options: ['natural', 'washed'],
+    answer: 'natural',
+    tell: 'colour',
+    cues: [
+      BagpickCue(id: 'cut', label: 'Centre cut', text: 'Packed with fruit.'),
+      BagpickCue(id: 'colour', label: 'Colour', text: 'Blotchy and amber.'),
+    ],
+    explanation: 'Dried in the fruit, so the sugars stained the seed.',
+  ),
+];
+
 /// The module 'Fix the cup' points at, with the words its gate sheet pitches.
 const _modules = [
   ModuleModel(
@@ -104,6 +147,7 @@ class _FakeContentRepository extends ContentRepository {
       switch (formatId) {
         'g-quiz' => _rounds,
         'g-match' => _matchRounds,
+        'g-bagpick' => _bagpickRounds,
         _ => const [],
       };
 }
@@ -316,6 +360,25 @@ void main() {
         find.bySemanticsLabel(RegExp('Fix the cup.*Locked')),
         findsOneWidget,
       );
+      expect(
+        tester.getSemantics(find.bySemanticsLabel(RegExp('Fix the cup.*'))),
+        isSemantics(hint: 'Shows the module that teaches it'),
+        reason:
+            'being told a row is locked, with no hint that it does '
+            'anything, is the dead end this catalog exists to remove',
+      );
+      handle.dispose();
+    });
+
+    testWidgets('an open row carries no offer hint', (tester) async {
+      final handle = tester.ensureSemantics();
+      await _pump(tester, hasCourse: false);
+
+      expect(
+        tester.getSemantics(find.bySemanticsLabel(RegExp('True or false.*'))),
+        isSemantics(hint: ''),
+        reason: 'nothing to offer a learner who can already play it',
+      );
       handle.dispose();
     });
 
@@ -435,12 +498,33 @@ void main() {
     });
   });
 
+  testWidgets('a game whose renderer has landed offers Play', (tester) async {
+    // The other side of the test below, and the one that would have caught
+    // both halves of #311: a game is only playable when the registry says so,
+    // so a renderer landing without its registry line looks from here exactly
+    // like a renderer that was never written.
+    await _pump(tester);
+
+    await tester.tap(find.text('Name the flavor notes'));
+    await _settle(tester);
+
+    expect(find.text('HOW TO PLAY'), findsOneWidget);
+    final action = tester.widget<FilledButton>(
+      find.widgetWithText(FilledButton, 'Play'),
+    );
+    expect(action.onPressed, isNotNull);
+  });
+
   testWidgets('a game with no renderer reaches its intro and cannot start', (
     tester,
   ) async {
     await _pump(tester);
 
-    await tester.tap(find.text('Read the green bean'));
+    // 'Dial it in' — the `slider` kind, one of the two still waiting for a
+    // renderer. This named 'Read the green bean' until bagpick landed; the
+    // assertion is about a game that cannot be drawn, not about whichever
+    // game happened to be unfinished when it was written.
+    await tester.tap(find.text('Dial it in'));
     await _settle(tester);
 
     // The row opened its intro like any other — the renderer gap is the
@@ -576,6 +660,43 @@ void main() {
     await _clearBoard(tester, second);
 
     // The run completed, and the shortfall shows: one of two boards scored.
+    expect(find.text('1 / 2'), findsOneWidget);
+    expect(find.text('Play again'), findsOneWidget);
+  });
+
+  testWidgets('g-bagpick plays round by round, and scores the calls', (
+    tester,
+  ) async {
+    // The one game here that is a real widget rather than a picker, and the
+    // only one with an interaction beyond choosing — so it is the one worth
+    // driving the whole way rather than trusting the wiring to hold.
+    await _pump(tester);
+
+    await tester.tap(find.text('Read the green bean'));
+    await _settle(tester);
+    await tester.tap(find.text('Play'));
+    await _settle(tester);
+
+    // Each round is called by its own bag, whichever order the run drew, and
+    // the first is answered wrongly on purpose.
+    for (var round = 0; round < 2; round++) {
+      final isFirstBag = find.text('BAG 01').evaluate().isNotEmpty;
+      final answer = isFirstBag ? 'Washed' : 'Natural';
+      final wrong = isFirstBag ? 'Natural' : 'Washed';
+
+      // A cue opens only when asked, and only the one asked for.
+      expect(find.text('Tap to inspect'), findsNWidgets(2));
+      await tester.tap(find.text('Centre cut'));
+      await _settle(tester);
+      expect(find.text('Tap to inspect'), findsOneWidget);
+
+      await tester.tap(find.text(round == 0 ? wrong : answer).last);
+      await _settle(tester);
+      await tester.tap(find.text('Continue'));
+      await _settle(tester);
+    }
+
+    // One of two called correctly: the run scores the calls, not the rounds.
     expect(find.text('1 / 2'), findsOneWidget);
     expect(find.text('Play again'), findsOneWidget);
   });
