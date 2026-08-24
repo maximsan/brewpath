@@ -8,7 +8,7 @@
 Lessons are listed in **display order**, which is array position in
 `MODULES[].lessons` — *not* id order. Existing ids never moved when the course
 was restructured, so Roasting opens on `m3l4` and Grind runs `l1 · l2 · l5 · l3
-· l6 · l7`. Four things point at lesson ids (`COLLECTION[].unlock.lesson`, brew
+· l6 · l7`. Four things point at lesson ids (`COLLECTIBLES[].unlock.lesson`, brew
 challenge pointers, dictionary `lesson` fields, mini-game `lessonId`), which is
 why renumbering was ruled out.
 
@@ -34,7 +34,7 @@ Every lesson carries `points: 10` and `time: 3–6 min`; card counts run 6–11.
 > ✅ **The writing pass has landed.** **Zero lessons** now carry `draft: true`;
 > the flag was removed from all 15 that had it. Prose is no longer provisional.
 
-*(A recursive string count over `MODULES`, `LESSONS`, `COLLECTION` and
+*(A recursive string count over `MODULES`, `LESSONS`, `COLLECTIBLES` and
 `MODULE_REWARDS` is the only defensible size measure; the old "1,445 strings"
 figure predates two restructures and should not be quoted.)*
 
@@ -88,7 +88,10 @@ self-explanatory) or an omission is an open question, not a documented decision.
 ## 6.3 Collectible cards — 37 collectibles + 8 visual guides, two registries
 
 **The collectible model was restructured.** The visual guides used to live
-inside `COLLECTION`; they now sit in their own `VISUAL_GUIDE_CARDS` array. The
+inside `COLLECTION`; they now sit in their own `VISUAL_GUIDE_CARDS` array, and
+the collectible registry itself was renamed **`COLLECTIBLES`**. Anything still
+naming `COLLECTION` as a live symbol predates that — the fact extractor did,
+and returned nothing for months as a result. The
 recorded reason is precise: sharing one array *"made a plain 'no two cards
 share a title' check report false collisions."*
 
@@ -100,11 +103,11 @@ are reordered.
 
 | Registry | Count | Unlock | In the Cards grid? |
 |---|---|---|---|
-| `COLLECTION` — lesson cards | 32 | One per lesson, no gaps | Yes |
-| `COLLECTION` — module Field Guides | 5 | Beans · Processing · Roasting · Grind · Brew | Yes |
+| `COLLECTIBLES` — lesson cards | 32 | One per lesson, no gaps | Yes |
+| `COLLECTIBLES` — module Field Guides | 5 | Beans · Processing · Roasting · Grind · Brew | Yes |
 | `VISUAL_GUIDE_CARDS` — visual guides | 8 | The earliest lesson that teaches each | **No — a separate array, never listed beside a collectible** |
 
-`COLLECTION` **array order is the catalogue number printed on each card**, so
+`COLLECTIBLES` **array order is the catalogue number printed on each card**, so
 entries are never re-sorted — only appended.
 
 **The 8 visual guides:** `g-roast` Roast Levels · `g-grind` Grind Size ·
@@ -137,7 +140,7 @@ the arrays in place at load:
 
 | Function | Copies | From | Into |
 |---|---|---|---|
-| `syncCardText()` | `title`, `summary`, `fact`, `meta` | the lesson's `reward`, or `MODULE_REWARDS` | the 37 `COLLECTION` entries |
+| `syncCardText()` | `title`, `summary`, `fact`, `meta` | the lesson's `reward`, or `MODULE_REWARDS` | the 37 `COLLECTIBLES` entries |
 | `syncVisualGuideText()` | `title`, `summary`, `fact` | `VISUAL_GUIDE_CONTENT` | the 8 `VISUAL_GUIDE_CARDS` |
 
 Two properties of that approach are prototype-grade only:
