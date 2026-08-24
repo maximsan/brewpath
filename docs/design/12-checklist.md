@@ -45,7 +45,7 @@ staging list that feeds it, not a living board. Nothing ticks these boxes.
 ## Data model & persistence
 - [ ] Persist + sync `progression` (streak, points, completed set, bestResults) — **not persisted in the prototype** ([§5](05-mechanics.md) 5.10)
 - [ ] Persist `frozenDays` / `freezesSpent` separately
-- [ ] Favourites with prefixed keys and the `l|t|g` Saved filter
+- [ ] The Saved shelf with prefixed keys and the `l|t|g` filter
 - [ ] Brew state (active + startedAt + completed + saved)
 - [ ] Plus / trial / subscription state, read from StoreKit rather than local flags
 - [ ] Grove state as **two axes** (`variety` + `light`) + the `migrateGrove` legacy upgrade

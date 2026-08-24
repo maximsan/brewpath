@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 
 import '../support/dart_sources.dart';
@@ -60,6 +62,110 @@ final _ruledOut =
       ),
     ];
 
+/// The live documentation — everything an agent reads as current.
+///
+/// History is not swept: `CHANGELOG` records what shipped under the name it
+/// shipped under, `archive/` is a tombstone ledger, and `plans/` and
+/// `research/` are bannered point-in-time snapshots. Rewriting any of them
+/// would make the record wrong rather than current. `prototype/` is the
+/// read-only design source.
+const _liveDocRoots = <String>[
+  'docs/design',
+  'docs/adr',
+  'docs/agents',
+  'learning',
+];
+
+/// The history that is deliberately **not** swept, named one file at a time.
+///
+/// A deny-list rather than a list of what to check, so a doc added tomorrow is
+/// guarded by default. The opposite — naming the live files — silently stops
+/// covering anything new, which is the failure this whole guard exists to stop.
+const _historyNotSwept = <String>{'docs/CHANGELOG.md', 'docs/decisions.md'};
+
+/// The repo-root docs an agent reads as current.
+///
+/// `CONTEXT.md` is **not** among them, and cannot be: it is where a retired
+/// term is retired, so its `_Avoid_` lines name every word these rules forbid.
+/// Sweeping the glossary would mean the glossary could not state its own rule.
+const _rootDocs = <String>['CLAUDE.md', 'AGENTS.md', 'README.md'];
+
+/// Prose is held to a **narrower** rule than copy, and deliberately so.
+///
+/// In `lib/` any occurrence is a string a learner reads, so the bare term is
+/// the rule. Documentation is different: it has to be able to *name* a retired
+/// term in order to retire it — `CONTEXT.md` lists it under _Avoid_, §5.1 says
+/// *"'XP' no longer appears in the source"*, `PRODUCT.md` describes the engine
+/// the app used to have. A guard that failed on those would fire on every
+/// honest sentence and teach everyone to bypass it.
+///
+/// So docs are checked for the **misuse shape** — the term used as the name of
+/// the thing — rather than for the term. Only *Field Guide* qualifies, because
+/// only it has one: the category reading is always *module Field Guide(s)* or
+/// *Field Guide card*, while every legitimate use is an authored card title
+/// (*Beans Field Guide*) or ordinary English (*A FIELD GUIDE TO COFFEE*).
+///
+/// *XP* has no such shape and is not swept here; §5.1 and `PRODUCT.md` discuss
+/// it correctly and at length.
+///
+/// **Favourites is deliberately absent too, and was tried.** The glossary rules
+/// it out as a name for the Saved shelf, but `docs/design/` exists to describe
+/// the prototype — it quotes that screen's own copy (*Title "Favorites"*), it
+/// names its seed data, and `learning/` names the real Dart
+/// identifiers of a `FavoritesScreen` the course had the learner build. Every
+/// one is legitimate, and no pattern separates them from misuse. A guard firing
+/// on all of those would be bypassed within a week, so the term stays a review
+/// matter rather than a checked one.
+final _ruledOutInProse =
+    <({RegExp pattern, String term, String instead, String why})>[
+      (
+        pattern: RegExp(
+          r'\b(module\s+Field\s+Guides?|Field\s+Guide\s+cards?)\b',
+          caseSensitive: false,
+        ),
+        term: 'Field Guide (as the category)',
+        instead: 'Module Reward',
+        why:
+            'the five module collectibles are Module Rewards (#106, #222); '
+            'they keep their authored titles — Beans Field Guide and its '
+            'siblings — so a title is fine and a category is not',
+      ),
+      (
+        // No innocent sense: nothing in this product is a "training" anything
+        // any more, so the bare term is the rule here.
+        pattern: RegExp(
+          r'\btraining\s+(cards?|guides?)\b',
+          caseSensitive: false,
+        ),
+        term: 'training card / training guide',
+        instead: 'visual guide',
+        why: 'the eight illustrated references are visual guides (#106)',
+      ),
+    ];
+
+Iterable<File> _liveDocs() sync* {
+  for (final root in _liveDocRoots) {
+    final dir = Directory(root);
+    if (!dir.existsSync()) continue;
+    yield* dir
+        .listSync(recursive: true)
+        .whereType<File>()
+        .where((file) => file.path.endsWith('.md'));
+  }
+  // Every top-level doc except the history, so a new one is covered the day it
+  // lands rather than the day someone remembers to list it.
+  yield* Directory('docs')
+      .listSync()
+      .whereType<File>()
+      .where((file) => file.path.endsWith('.md'))
+      .where((file) => !_historyNotSwept.contains(file.path));
+
+  for (final path in _rootDocs) {
+    final file = File(path);
+    if (file.existsSync()) yield file;
+  }
+}
+
 void main() {
   for (final rule in _ruledOut) {
     test('no user-facing string says ${rule.term}', () {
@@ -69,6 +175,28 @@ void main() {
           if (rule.allow.contains(literal)) continue;
           if (rule.pattern.hasMatch(literal)) {
             offenders.add('${file.path}: "$literal"');
+          }
+        }
+      }
+
+      expect(
+        offenders,
+        isEmpty,
+        reason:
+            'say ${rule.instead}, not ${rule.term} — ${rule.why}.\n'
+            'Found:\n${offenders.join('\n')}',
+      );
+    });
+  }
+
+  for (final rule in _ruledOutInProse) {
+    test('no live doc says ${rule.term}', () {
+      final offenders = <String>[];
+      for (final file in _liveDocs()) {
+        final lines = file.readAsLinesSync();
+        for (var index = 0; index < lines.length; index++) {
+          if (rule.pattern.hasMatch(lines[index])) {
+            offenders.add('${file.path}:${index + 1}: ${lines[index].trim()}');
           }
         }
       }
