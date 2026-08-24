@@ -129,8 +129,8 @@ function GreenBean({ bean, size = 60, rot = -16, seed = 0 }) {
     );
   }
   const flecks = b.chaff ? [
-    <ellipse key="f1" cx="11.2" cy="8.2" rx="0.85" ry="0.42" fill="#F3EADA" opacity="0.6" transform="rotate(-14 11.2 8.2)"/>,
-    <ellipse key="f2" cx="12.7" cy="16" rx="0.7" ry="0.38" fill="#F3EADA" opacity="0.5" transform="rotate(12 12.7 16)"/>,
+    <ellipse key="f1" cx="11.2" cy="8.2" rx="0.85" ry="0.42" fill="var(--art-cherry-silverskin)" opacity="0.6" transform="rotate(-14 11.2 8.2)"/>,
+    <ellipse key="f2" cx="12.7" cy="16" rx="0.7" ry="0.38" fill="var(--art-cherry-silverskin)" opacity="0.5" transform="rotate(12 12.7 16)"/>,
   ] : null;
   return (
     <svg width={size} height={size * 1.04} viewBox="0 0 24 24" style={{ display: 'block', flexShrink: 0 }} aria-hidden="true">

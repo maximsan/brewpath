@@ -76,6 +76,14 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **The design source and the app agree on silverskin again.** The prototype's
+  green bean filled its chaff flecks with a literal `#F3EADA` while declaring
+  `--art-cherry-silverskin` as `#F1E8D6` — two answers for one colour, two
+  points apart, which is imperceptible on screen and therefore permanent. The
+  flecks now read the token the same drawing already uses twelve lines below
+  for the bean's crease. Extracted content is byte-identical; the app-side note
+  recording the disagreement is retired (#334).
+
 - **The blind bag's closed cues looked exactly like its open ones.** Inspecting
   a cue changed only its words, so finding the ones you had not read meant
   reading all of them — on the single card where looking *is* the interaction.

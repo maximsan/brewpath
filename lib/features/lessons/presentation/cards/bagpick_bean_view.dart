@@ -73,12 +73,8 @@ class _BeanPainter extends CustomPainter {
   /// and never names it, so there is no `--art-*` token to read.
   static final Color _mottleInk = OffTokens.seedStain.value;
 
-  /// Silverskin clinging to the seed. The design fills these flecks `#F3EADA`
-  /// while declaring `--art-cherry-silverskin` as `#F1E8D6` — and that token's
-  /// own description is *"the tissue membrane that becomes chaff"*, which is
-  /// exactly this. The token wins: a palette with two answers for silverskin is
-  /// how the two drift apart. Under two points per channel, and the design
-  /// source owes itself the same correction (#334).
+  /// Silverskin clinging to the seed — the token's own description names it
+  /// as chaff, which is exactly this.
   static const Color _chaffInk = ArtColors.cherrySilverskin;
 
   static const _outlineWidth = 0.7;
