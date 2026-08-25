@@ -88,12 +88,15 @@ dart_code_linter:
           # illustration. Naming them would produce a constant per coordinate
           # per guide, each meaningless alone, and would hide the property
           # that matters: that nothing in them is a pixel.
-          - lib/features/path/presentation/guide_marks/beans_marks.dart
-          - lib/features/path/presentation/guide_marks/brew_marks.dart
-          - lib/features/path/presentation/guide_marks/grind_marks.dart
-          - lib/features/path/presentation/guide_marks/guide_mark.dart
-          - lib/features/path/presentation/guide_marks/roast_marks.dart
-          - lib/features/path/presentation/visual_guide_art.dart
+          #
+          # They moved out of the Path feature once the lesson card that
+          # teaches a guide drew them too — three hosts, one drawing.
+          - lib/core/widgets/guide_marks/beans_marks.dart
+          - lib/core/widgets/guide_marks/brew_marks.dart
+          - lib/core/widgets/guide_marks/grind_marks.dart
+          - lib/core/widgets/guide_marks/guide_mark.dart
+          - lib/core/widgets/guide_marks/roast_marks.dart
+          - lib/core/widgets/visual_guide_art.dart
           # The green bean a bagpick round draws, on the design source's own
           # 24x24 grid. Its literals are that grid — ellipse radii, the two
           # bezier curves of the centre cut, and the hash constants of the

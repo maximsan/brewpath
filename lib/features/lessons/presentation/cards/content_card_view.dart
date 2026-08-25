@@ -7,6 +7,7 @@ import 'package:brew_path/features/lessons/presentation/cards/graded_picker.dart
 import 'package:brew_path/features/lessons/presentation/cards/match_board.dart';
 import 'package:brew_path/features/lessons/presentation/cards/match_board_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/predict_card_view.dart';
+import 'package:brew_path/features/lessons/presentation/cards/visual_card_view.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:flutter/widgets.dart';
@@ -18,11 +19,12 @@ import 'package:flutter/widgets.dart';
 /// function until the kind is handled, which is the guarantee the union was
 /// chosen for.
 ///
-/// Seven kinds render today: the five lesson kinds that are the eight cards
-/// of the first lesson and 185 of the course's 257, plus `quiz` and
-/// `match`, which the free mini-game pair needs. The rest return null rather
-/// than a placeholder, so a host meets an honest absence instead of a card
-/// that pretends.
+/// Eleven kinds render today. The rest return null rather than a placeholder,
+/// so a host meets an honest absence instead of a card that pretends.
+///
+/// `visual` is the one that reports no success: it is a reference a lesson
+/// shows, never a question, so it latches on arrival and mastery cannot move
+/// when a lesson gains one.
 ///
 /// [nonce] identifies the lesson attempt and [cardIndex] the card's place in
 /// it; together they seed the choice order. See `card_seed.dart` for why
@@ -102,11 +104,11 @@ Widget? contentCardView(
       onSolved: onSolved,
       onContinue: onContinue,
     ),
-    VisualCard() ||
-    PracticalCard() ||
-    MultiCard() ||
-    SequenceCard() ||
-    SliderCard() => null,
+    final VisualCard visual => VisualCardView(
+      card: visual,
+      onContinue: onContinue,
+    ),
+    PracticalCard() || MultiCard() || SequenceCard() || SliderCard() => null,
   };
 }
 
@@ -127,21 +129,18 @@ bool hasRenderer(ContentCard card) => switch (card) {
   FlavorCard() ||
   TastefixCard() ||
   BagpickCard() ||
-  MatchCard() => true,
-  VisualCard() ||
-  PracticalCard() ||
-  MultiCard() ||
-  SequenceCard() ||
-  SliderCard() => false,
+  MatchCard() ||
+  VisualCard() => true,
+  PracticalCard() || MultiCard() || SequenceCard() || SliderCard() => false,
 };
 
 /// The cards of [cards] that can actually be played, in authored order.
 ///
-/// Eight of the fifteen kinds have no renderer yet, and they are scattered
-/// through thirty of the thirty-two lessons. Filtering here keeps every lesson
-/// finishable instead of stranding the learner on a card that cannot draw
-/// itself; the alternative — a placeholder that says so — puts unfinished
-/// scaffolding in front of a learner on the way to the next real card.
+/// Four kinds have no renderer yet — `practical`, `multi`, `sequence` and
+/// `slider`. Filtering here keeps every lesson finishable instead of stranding
+/// the learner on a card that cannot draw itself; the alternative — a
+/// placeholder that says so — puts unfinished scaffolding in front of a
+/// learner on the way to the next real card.
 ///
 /// This is a temporary shape. It disappears on its own as the remaining
 /// renderers land, without a caller changing.

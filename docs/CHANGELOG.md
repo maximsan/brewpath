@@ -51,6 +51,17 @@ You can always edit this file by hand instead — the helpers just save effort.
   screens had nothing to render. Twenty-five entries also carry edited copy,
   and one lesson's line on fermentation is reworded.
 
+- **The visual guides appear in the lessons that teach them.** Ten authored
+  cards sat in four modules with no renderer, so every one of them was
+  filtered out before a lesson started — the diagram was missing from the
+  one lesson built to explain it, and only turned up later on the Reference
+  section. They now render: the guide's drawing at full width, its caption
+  above or below as authored, and a bookmark that keeps the guide under the
+  same key its sheet writes. The cherry-anatomy card merges its header with
+  the guide's, so the same title is not said twice. Nothing here is graded —
+  a reference is shown, not asked, so Continue is live on arrival and
+  mastery is untouched.
+
 - **The cherry's six layers and the caffeine table reach the app.** The
   cross-section's layer names, latin names, fates and notes were authored
   beside the drawing that reads them, in a file the guide extraction never
@@ -90,6 +101,14 @@ You can always edit this file by hand instead — the helpers just save effort.
   colour that would look plausible and be wrong. The mapping used to be written
   out inside the palette's drift guard; it now lives beside the colours, and the
   guard reads it instead of keeping a second copy.
+
+### Removed
+
+- **The Profile paywall card is gone.** "Go Premium" promised a subscription
+  the app does not sell, used a word the glossary rules against, and offered to
+  remove ads that do not exist. The design has no paywall slot on Profile at
+  all, so the card is removed rather than reworded — where Plus is genuinely
+  gated, the design marks the gated card itself.
 
 ### Fixed
 

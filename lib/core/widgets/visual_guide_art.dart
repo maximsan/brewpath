@@ -1,45 +1,53 @@
-import 'package:brew_path/features/path/presentation/guide_marks/beans_marks.dart';
-import 'package:brew_path/features/path/presentation/guide_marks/brew_marks.dart';
-import 'package:brew_path/features/path/presentation/guide_marks/grind_marks.dart';
-import 'package:brew_path/features/path/presentation/guide_marks/guide_mark.dart';
-import 'package:brew_path/features/path/presentation/guide_marks/roast_marks.dart';
+import 'package:brew_path/core/widgets/guide_marks/beans_marks.dart';
+import 'package:brew_path/core/widgets/guide_marks/brew_marks.dart';
+import 'package:brew_path/core/widgets/guide_marks/grind_marks.dart';
+import 'package:brew_path/core/widgets/guide_marks/guide_mark.dart';
+import 'package:brew_path/core/widgets/guide_marks/roast_marks.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
 /// Beside a row: large enough to tell eight drawings apart at a glance.
 const double _rowSide = 36;
 
-/// In the sheet: the thing the learner came to look at.
-const double _sheetSide = 180;
+/// Wherever the drawing is the thing the learner came to look at: the
+/// guide's sheet, and the lesson card that teaches it.
+const double _fullSide = 180;
 
 /// The two sizes a guide's drawing is asked for.
+///
+/// Two, not one per host: the lesson card that teaches a guide and the sheet
+/// that keeps it want the same drawing at the same size, and giving each its
+/// own value would be an invitation for them to drift.
 enum VisualGuideArtSize {
   /// Beside a row on the Reference section.
   row,
 
-  /// The illustration in the guide's sheet.
-  sheet;
+  /// The illustration itself — in the guide's sheet, or on its lesson card.
+  full;
 
   /// The height the drawing is given.
   double get side => switch (this) {
     VisualGuideArtSize.row => _rowSide,
-    VisualGuideArtSize.sheet => _sheetSide,
+    VisualGuideArtSize.full => _fullSide,
   };
 
-  /// Its width: square beside a row, full-bleed in the sheet. Kept on the enum
+  /// Its width: square beside a row, full-bleed otherwise. Kept on the enum
   /// with [side] so both size decisions are made in one place.
   double? get width => switch (this) {
     VisualGuideArtSize.row => _rowSide,
-    VisualGuideArtSize.sheet => null,
+    VisualGuideArtSize.full => null,
   };
 }
 
 /// A guide's drawing.
 ///
 /// **One drawing per subject, at whatever size it is asked for.** The row
-/// thumbnail and the sheet illustration are the same painter, so they cannot
-/// drift apart — and the lesson `visual` card renderer will reuse them, which
-/// makes that work a layout job rather than an art job.
+/// thumbnail, the sheet illustration and the lesson card that teaches the
+/// guide are the same painter, so they cannot drift apart.
+///
+/// It lives here rather than with the Reference section that first needed it
+/// because two features draw it now — the convention being that anything two
+/// features use moves out of both.
 ///
 /// Excluded from the semantics tree at both sizes: eight unlabelled shapes
 /// read out to a screen-reader user is worse than none. What each guide *is*
