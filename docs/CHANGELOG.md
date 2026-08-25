@@ -44,6 +44,13 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Twenty-six dictionary terms gain their depth.** Each now carries the long
+  explanation, the everyday example, the sources it rests on and a self-check
+  question — the material the entry screen was already built to show. The app
+  has read these fields all along; the shipped banks predated them, so the
+  screens had nothing to render. Twenty-five entries also carry edited copy,
+  and one lesson's line on fermentation is reworded.
+
 - **The cherry's six layers and the caffeine table reach the app.** The
   cross-section's layer names, latin names, fates and notes were authored
   beside the drawing that reads them, in a file the guide extraction never
