@@ -3,6 +3,14 @@
 Research for [issue #192](https://github.com/maximsan/brewpath/issues/192), child of the
 wayfinder map [#191](https://github.com/maximsan/brewpath/issues/191).
 
+> **Superseded — kept as the record of an earlier decision.** This document vets packages
+> against a spotlight-tooltip tour with auto-scroll, the design #191 specified. That design
+> was invented rather than read from the prototype; the real one, `prototype/guide.jsx`, is
+> a callout-and-frame layer, and
+> [issue #339](https://github.com/maximsan/brewpath/issues/339) found `showcaseview` cannot
+> draw it. See [`guide-render-approach.md`](guide-render-approach.md) for the current
+> decision.
+
 **Scope.** The Tour is a one-time, skippable, replayable guided walkthrough of the Learn
 tab. This document vets the coach-mark/showcase packages against the five criteria in
 #192 and recommends one (or from-scratch as the explicit fallback). It does not design
