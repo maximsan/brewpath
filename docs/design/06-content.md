@@ -177,22 +177,30 @@ string per module (`BEANS · COMPLETE` … `BREW · COMPLETE`).
 > **In the Cards grid**, only **earned cards plus one locked teaser** render, with
 > a "{n} more to collect" footer — see [§5](05-mechanics.md) 5.6.
 
-## 6.4 Coffee Dictionary — 72 terms, 8 categories
+## 6.4 Coffee Dictionary — 73 terms, 8 categories
 
-Categories and their counts: Beans and Botany (16) · Processing (12) · Equipment (9) · Roasting (8) · Brewing (7) · Espresso (7) · Coffee Trade (7) · Sensory Vocabulary (6).
+Categories and their counts: Beans and Botany (17) · Processing (12) · Equipment (9) · Roasting (8) · Brewing (7) · Espresso (7) · Coffee Trade (7) · Sensory Vocabulary (6).
 
 Term shape: `{ id, term, pron?, cat, aliases?, short, deep?, example?, related[], lesson?, sources[], check{q, choices, explain} }`.
 
 | Measure | Count |
 |---|---|
-| Terms | **72** (was 42) |
-| "Full" terms carrying deep text | **46** (was 18) |
-| Stubs with `short` only | 26 |
-| With a self-check question | 29 |
-| With a pronunciation respelling | 23 |
+| Terms | **73** |
+| "Full" terms carrying deep text | **73 — every term** (the 26 stubs were written out, Aug 2026) |
+| Stubs with `short` only | 0 |
+| With a self-check question | 56 |
+| With a pronunciation respelling | 24 |
 | **Reference-only** (no lesson teaches them) | **8** |
 
 Sources cited across the full terms: Hoffmann's *World Atlas of Coffee*, SCA, World Coffee Research, Perfect Daily Grind.
+
+> **Every term is now a full term** (design source, Aug 2026 — the last 26
+> stubs were written out). Two consequences for tier arithmetic: premium adds a
+> full explanation on **all 65** lesson terms, not on a subset; and the
+> Term-of-Day pool is **every term for Plus, every lesson term for free**. The
+> `§12` agent note in the frozen ledger measured the older content (72 terms,
+> 46 full, free 38 / premium 46) — its **rulings stand, its counts do not**.
+> This table is the live measurement; re-derive rather than quote.
 
 #### The third term state: Reference
 
