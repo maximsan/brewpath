@@ -1,5 +1,5 @@
 import 'package:brew_path/app/app_theme.dart';
-import 'package:brew_path/features/path/presentation/visual_guide_art.dart';
+import 'package:brew_path/core/widgets/visual_guide_art.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -66,7 +66,7 @@ void main() {
       for (final subject in _subjects) {
         await tester.pumpWidget(
           _harness(
-            VisualGuideArt(subject: subject, size: VisualGuideArtSize.sheet),
+            VisualGuideArt(subject: subject, size: VisualGuideArtSize.full),
             theme: theme,
           ),
         );

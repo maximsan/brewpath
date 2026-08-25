@@ -295,12 +295,35 @@
         "coffee cherry"
       ],
       "short": "The fruit of the coffee plant. Each cherry usually holds two seeds — the “beans” we roast.",
+      "deep": "A coffee bean is a seed, and the cherry is the fruit it grew in: skin, sweet pulp, sticky mucilage, then two seeds pressed flat against each other. Sugar builds up in the fruit while it hangs on the branch, and nobody further down the chain can add it later — so an unripe cherry gives the mill and the roaster nothing to work with. It takes about five to six kilos of cherry to make one kilo of green coffee.",
+      "example": "A branch ripens unevenly, which is why hand-picked lots get walked several times in a season.",
       "related": [
         "arabica",
         "bean-belt",
         "peaberry"
       ],
-      "lesson": "m1l1"
+      "lesson": "m1l1",
+      "sources": [
+        {
+          "label": "James Hoffmann — The World Atlas of Coffee"
+        }
+      ],
+      "check": {
+        "q": "A picker strips a branch, ripe and unripe cherries together. What does that cost the lot?",
+        "choices": [
+          {
+            "t": "Sweetness the fruit never built",
+            "correct": true
+          },
+          {
+            "t": "Nothing much; roasting evens ripeness out"
+          },
+          {
+            "t": "Caffeine, which forms only as fruit ripens"
+          }
+        ],
+        "explain": "Ripeness is decided on the branch. The mill can sort out the worst cherries and the roaster can do a careful job, but neither one adds sugar that was never there. The caffeine is in the seed either way, so what you lose is sweetness, not strength."
+      }
     },
     {
       "id": "peaberry",
@@ -356,11 +379,36 @@
         "bean belt"
       ],
       "short": "The band around the equator, roughly 25°N to 25°S, where coffee grows best.",
+      "deep": "Coffee needs a narrow climate: arabica likes an average of about 18–22 °C and no frost at all. Those conditions sit either side of the equator. Height and latitude are two ways to reach them — farms on the equator climb high for cool nights, while farms near the edges of the belt find the same temperatures much lower down. A warming climate is pushing that window uphill, which is one reason altitude now appears on so many bags.",
+      "example": "Kenyan farms on the equator sit near 1,700 m; Brazilian ones at 20°S grow well below 1,200 m.",
       "related": [
         "cherry",
-        "terroir"
+        "terroir",
+        "masl"
       ],
-      "lesson": "m1l1"
+      "lesson": "m1l1",
+      "sources": [
+        {
+          "label": "Foods (MDPI) — Does Coffee Have Terroir and How Should It Be Assessed?",
+          "url": "https://www.mdpi.com/2304-8158/11/13/1907"
+        }
+      ],
+      "check": {
+        "q": "Why do Kenyan farms sit so much higher than Brazilian ones?",
+        "choices": [
+          {
+            "t": "Altitude supplies the cool it needs",
+            "correct": true
+          },
+          {
+            "t": "Kenyan soil is only fertile high up"
+          },
+          {
+            "t": "Arabica needs thin air to ripen properly"
+          }
+        ],
+        "explain": "Height and distance from the equator both get you to the same cool temperatures. It is also why “high grown” means different numbers in different countries."
+      }
     },
     {
       "id": "terroir",
@@ -368,12 +416,36 @@
       "pron": "tair-WAHR",
       "cat": "beans",
       "short": "The sense of place in a cup — how soil, altitude and climate shape a coffee’s flavour.",
+      "deep": "Terroir is the whole growing environment turning up in the cup: altitude, soil, rainfall, shade, and how far the temperature drops overnight. Cooler, higher farms ripen their cherries slowly, and slow ripening is the usual explanation for denser beans with more acidity and more going on. Coffee has no legal definition of terroir the way wine does — and a heavy roast or a bold processing style will drown it out.",
+      "example": "Two farms on one Colombian slope, 300 m apart in height, cup differently every harvest.",
       "related": [
         "single-origin",
         "cultivar",
         "masl"
       ],
-      "lesson": "m1l3"
+      "lesson": "m1l3",
+      "sources": [
+        {
+          "label": "Foods (MDPI) — Does Coffee Have Terroir and How Should It Be Assessed?",
+          "url": "https://www.mdpi.com/2304-8158/11/13/1907"
+        }
+      ],
+      "check": {
+        "q": "A roaster says a coffee “tastes of its terroir”. What has to hold steady for that to mean anything?",
+        "choices": [
+          {
+            "t": "Roast, grind and brew method",
+            "correct": true
+          },
+          {
+            "t": "Nothing: terroir survives any roast"
+          },
+          {
+            "t": "The variety, since terroir is really genetics"
+          }
+        ],
+        "explain": "Terroir is a claim about a place, so everything that happens after the farm has to stay the same before you can taste it. Variety is a separate thing: that is genetics, not ground."
+      }
     },
     {
       "id": "masl",
@@ -580,7 +652,8 @@
       "aliases": [
         "natural process",
         "dry process",
-        "naturals"
+        "naturals",
+        "natural"
       ],
       "short": "The whole cherry is dried with the fruit still on, pushing fruity, sometimes wine-like sweetness into the bean.",
       "deep": "The oldest method: cherries dry in the sun for weeks before the dried fruit is removed. It uses little water but demands constant turning to avoid mould. Results are heavier-bodied and fruit-forward.",
@@ -622,11 +695,40 @@
         "honey process"
       ],
       "short": "A middle path: some fruit pulp is left on the bean during drying, balancing sweetness and clarity.",
+      "deep": "The skin and some pulp are removed, but the sticky layer underneath — the mucilage — is left on the seed while it dries. There is no honey in it; the name describes how the wet seed feels. Producers grade the result by colour: yellow honey dries fastest and cleanest, red takes longer, black is slowest and sweetest. More mucilage left on means more sugar fermenting in place, and more risk of mould if the beds are not turned often enough.",
+      "example": "“Black honey” means most of the mucilage stayed on through a long, shaded dry.",
       "related": [
         "washed",
-        "natural"
+        "natural",
+        "mucilage"
       ],
-      "lesson": "m2l1"
+      "lesson": "m2l1",
+      "sources": [
+        {
+          "label": "Barista Magazine — Understanding the Process: Honey",
+          "url": "https://www.baristamagazine.com/understanding-the-process-part-three-honey-process/"
+        },
+        {
+          "label": "Perfect Daily Grind — Processing 101",
+          "url": "https://perfectdailygrind.com/2016/07/washed-natural-honey-coffee-processing-101/"
+        }
+      ],
+      "check": {
+        "q": "A bag says “red honey”. What are you being told?",
+        "choices": [
+          {
+            "t": "How much mucilage stayed on",
+            "correct": true
+          },
+          {
+            "t": "That honey was added during processing"
+          },
+          {
+            "t": "That the coffee was roasted medium-dark"
+          }
+        ],
+        "explain": "Honey grades describe how much mucilage was left on and how slowly it dried. Nothing is added, and it says nothing about the roast. Washed and natural sit at the two ends of that same dial."
+      }
     },
     {
       "id": "fermentation",
@@ -673,11 +775,36 @@
         "anaerobic fermentation"
       ],
       "short": "Fermenting cherries in sealed, oxygen-free tanks — slower microbes, louder and funkier flavours.",
+      "deep": "Cherries or depulped seeds ferment in sealed tanks. With the oxygen gone the usual microbes cannot work, CO₂ builds up, and a different set of yeasts and bacteria takes over. Because the producer sets the time and temperature instead of leaving it to the weather, the loud, wine-like flavours come out the same way batch after batch. It is the newest style on most shelves, and the easiest to push too far.",
+      "example": "A sealed ferment of several days before drying is what puts “cinnamon, plum” on a competition bag.",
       "related": [
         "fermentation",
-        "natural"
+        "natural",
+        "honey"
       ],
-      "lesson": "m2l5"
+      "lesson": "m2l5",
+      "sources": [
+        {
+          "label": "PMC — Effect of processing method (natural, washed, honey, fermentation, maceration) on specialty coffee",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10848008/"
+        }
+      ],
+      "check": {
+        "q": "What does sealing the tank actually change?",
+        "choices": [
+          {
+            "t": "Which microbes can work",
+            "correct": true
+          },
+          {
+            "t": "The temperature, which drives all fermentation"
+          },
+          {
+            "t": "Nothing chemical — it keeps rain and insects off"
+          }
+        ],
+        "explain": "Sealing the tank swaps one set of microbes for another, so you get different byproducts and a different cup. The real prize is control: a sealed ferment repeats in a way that open tanks in the sun never will."
+      }
     },
     {
       "id": "decaf",
@@ -728,11 +855,36 @@
         "swiss water process"
       ],
       "short": "A solvent-free decaffeination method that pulls caffeine out of green beans with water and a carbon filter.",
+      "deep": "Green beans are soaked in green coffee extract: water already full of everything coffee is made of, except caffeine. Because the water is already loaded with flavour compounds, those stay in the bean, while the caffeine has somewhere to go and leaves. Activated carbon then filters the caffeine out of the water so the same extract can be used again. No solvent ever touches the coffee. Decaf is never caffeine-free, though — US rules set the bar at 97% removed, and Swiss Water reports 99.9%.",
+      "example": "Single origins are usually decaffeinated this way, because origin character survives it best.",
       "related": [
         "decaf",
-        "caffeine"
+        "caffeine",
+        "green-coffee"
       ],
-      "lesson": "m2l6"
+      "lesson": "m2l6",
+      "sources": [
+        {
+          "label": "Barista Magazine — Understanding the Process: Swiss Water Decaffeination",
+          "url": "https://www.baristamagazine.com/understanding-the-process-swiss-water-decaffeination/"
+        }
+      ],
+      "check": {
+        "q": "Why soak the beans in coffee extract instead of plain water?",
+        "choices": [
+          {
+            "t": "Water would carry flavour out too",
+            "correct": true
+          },
+          {
+            "t": "Extract dissolves caffeine faster than water"
+          },
+          {
+            "t": "The extract swaps in sugars for the caffeine"
+          }
+        ],
+        "explain": "Every water-based decaf works this way: give a compound nowhere to go and it stays where it is. These methods are judged on what they leave behind, not on what they take out."
+      }
     },
     {
       "id": "green-coffee",
@@ -893,11 +1045,35 @@
         "second crack"
       ],
       "short": "A second, quieter cracking deeper into the roast that marks the edge of dark-roast territory.",
+      "deep": "Deeper into the roast the cell walls break down again. It is quieter and faster than first crack — a crackle rather than a pop — and oils start working their way to the surface of the bean. Past that point you are in dark-roast territory: bittersweet, smoky, low in acidity, tasting more of the roast than of where it grew. Oil on the outside of the bean also turns rancid sooner, which is why dark roasts keep for less time.",
+      "example": "Beans that look glossy in the bag went at least as far as second crack.",
       "related": [
         "first-crack",
-        "roast-level"
+        "roast-level",
+        "staling"
       ],
-      "lesson": "m3l2"
+      "lesson": "m3l2",
+      "sources": [
+        {
+          "label": "Scott Rao — The Coffee Roaster’s Companion"
+        }
+      ],
+      "check": {
+        "q": "What does a sheen of oil on the beans tell you?",
+        "choices": [
+          {
+            "t": "The roast reached second crack",
+            "correct": true
+          },
+          {
+            "t": "The beans are especially fresh"
+          },
+          {
+            "t": "The lot was natural, not washed"
+          }
+        ],
+        "explain": "Oil on the surface tells you how far the roast went, not how fresh the beans are or how they were processed. If anything it means the coffee will fade sooner."
+      }
     },
     {
       "id": "development",
@@ -908,10 +1084,34 @@
         "development"
       ],
       "short": "The stretch after first crack that balances the inside and outside of the bean.",
+      "deep": "Development is the time between first crack and the moment the roaster drops the beans, while the heat finishes working through to the middle of each bean. Cut it short and the inside never catches up with the outside: the cup tastes grassy, hollow and drying. That is pale coffee, not bright coffee. Roasters track development as a share of the whole roast rather than as a temperature, because what matters is the proportion.",
+      "example": "Roasters talk about development as a ratio — often around a fifth to a quarter of the whole roast.",
       "related": [
-        "first-crack"
+        "first-crack",
+        "roast-level"
       ],
-      "lesson": "m3l4"
+      "lesson": "m3l4",
+      "sources": [
+        {
+          "label": "Scott Rao — The Coffee Roaster’s Companion"
+        }
+      ],
+      "check": {
+        "q": "Brewed to a recipe you trust, a light roast still tastes grassy and hollow. What is the fault?",
+        "choices": [
+          {
+            "t": "Dropped too soon after first crack",
+            "correct": true
+          },
+          {
+            "t": "Taken too dark for its origin"
+          },
+          {
+            "t": "A blend rather than a single origin"
+          }
+        ],
+        "explain": "The colour tells you where the roast stopped. Development tells you whether the middle of the bean caught up. People mix up “light” and “underdeveloped” all the time, and only one of the two is a fault."
+      }
     },
     {
       "id": "roast-date",
@@ -921,10 +1121,36 @@
         "roast date"
       ],
       "short": "When the coffee was roasted — fresher is better; aim to brew within a few weeks.",
+      "deep": "The roast date is the only date on a bag that measures anything. A best-before date is chosen by whoever packed the coffee, often a year ahead, and tells you nothing about when it was roasted. Whole beans are usually at their best from a few days after roasting, once the worst of the degassing is over, until a few weeks after. A bag with no roast date on it is telling you something too.",
+      "example": "“Roasted 9 days ago” is a fact; “best before March 2027” is a shelf-life promise.",
       "related": [
-        "roast-level"
+        "roast-level",
+        "degassing",
+        "staling"
       ],
-      "lesson": "m3l3"
+      "lesson": "m3l3",
+      "sources": [
+        {
+          "label": "National Coffee Association — Storage and shelf life",
+          "url": "https://www.aboutcoffee.org/beans/storage-and-shelf-life/"
+        }
+      ],
+      "check": {
+        "q": "One bag is best-before in eight months; another was roasted eleven days ago. Which is the better bet?",
+        "choices": [
+          {
+            "t": "The dated one — you know where it sits in its life",
+            "correct": true
+          },
+          {
+            "t": "The best-before one, which guarantees eight months of freshness"
+          },
+          {
+            "t": "Neither matters as long as the beans are whole"
+          }
+        ],
+        "explain": "Freshness is really the distance from the roast, and only a roast date measures that. Keeping the beans whole slows the decline, but it does not reset the clock."
+      }
     },
     {
       "id": "degassing",
@@ -935,12 +1161,41 @@
         "degas"
       ],
       "short": "Roasted beans releasing built-up CO₂ for days after roasting — the gas behind the bloom.",
+      "deep": "Roasting traps carbon dioxide inside the bean, and it leaks out for days or weeks afterwards — fastest in the first few days, and much faster once the coffee is ground. Brew too early and the escaping gas stops the water soaking the grounds evenly. Wait too long and the aromas have drifted off along with it. Filter coffee usually wants a few days of rest; espresso wants rather more.",
+      "example": "Espresso pulled the day after roasting gushes crema and tastes thin — the gas is in the way.",
       "related": [
         "roast-date",
         "staling",
-        "bloom"
+        "bloom",
+        "co2"
       ],
-      "lesson": "m3l3"
+      "lesson": "m3l3",
+      "sources": [
+        {
+          "label": "Food Research International — Roasting conditions and CO₂ degassing behaviour",
+          "url": "https://www.sciencedirect.com/science/article/abs/pii/S0963996914000337"
+        },
+        {
+          "label": "J. Agric. Food Chem. — Time-resolved gravimetric assessment of coffee degassing",
+          "url": "https://pubs.acs.org/doi/10.1021/acs.jafc.7b03310"
+        }
+      ],
+      "check": {
+        "q": "Why does very fresh coffee often brew unevenly?",
+        "choices": [
+          {
+            "t": "CO₂ blocks even wetting",
+            "correct": true
+          },
+          {
+            "t": "Fresh beans are harder, so grind coarser"
+          },
+          {
+            "t": "The oils have not yet reached the surface"
+          }
+        ],
+        "explain": "The bloom is that gas escaping where you can see it. Resting the coffee gives up a little aroma in exchange for an even extraction. Espresso gets the longer rest because the water only has seconds to do its work, not minutes."
+      }
     },
     {
       "id": "co2",
@@ -994,11 +1249,36 @@
         "stale"
       ],
       "short": "Flavour fading as oxygen gets at the coffee — slow for whole beans, fast once ground.",
+      "deep": "Staling is oxidation, not gas escaping: oxygen reacts with the oils and aromas in the coffee, and heat, light and damp all speed that up. Whole beans hold on for weeks. Ground coffee fades within days, because grinding exposes far more surface to the air. Stale coffee tastes papery, woody and flat.",
+      "example": "Grinding a week’s worth on Sunday costs more flavour than buying cheaper beans would.",
       "related": [
         "degassing",
-        "roast-date"
+        "roast-date",
+        "co2"
       ],
-      "lesson": "m4l6"
+      "lesson": "m4l6",
+      "sources": [
+        {
+          "label": "National Coffee Association — Storage and shelf life",
+          "url": "https://www.aboutcoffee.org/beans/storage-and-shelf-life/"
+        }
+      ],
+      "check": {
+        "q": "You can change one thing about how you store coffee. Which does the most?",
+        "choices": [
+          {
+            "t": "Grind only what you brew",
+            "correct": true
+          },
+          {
+            "t": "Move the bag into the fridge"
+          },
+          {
+            "t": "Decant into a clear jar on the counter"
+          }
+        ],
+        "explain": "Exposed surface is what drives staling, so grinding at the last minute does more than anything else you can change. The fridge adds moisture and a clear jar lets light in, and both speed up the same reaction."
+      }
     },
     {
       "id": "bloom",
@@ -1168,24 +1448,74 @@
         "pour over"
       ],
       "short": "Brewing by pouring hot water through grounds in a filter cone, like a V60 or Chemex.",
+      "deep": "Water passes through the bed of grounds once and drains away — nothing sits and steeps. That means the contact time is a result of your grind and how fast you pour, rather than a number you choose. It is the control people love pour-over for, and the reason it is easy to get wrong. Paper holds back most of the oils and fine particles, so the cup tastes clean and light.",
+      "example": "Same coffee, same ratio: a slower pour and a finer grind taste noticeably stronger.",
       "related": [
         "bloom",
         "immersion",
-        "gooseneck"
+        "gooseneck",
+        "v60"
       ],
-      "lesson": "m5l6"
+      "lesson": "m5l6",
+      "sources": [
+        {
+          "label": "National Coffee Association — Brewing",
+          "url": "https://www.aboutcoffee.org/brewing/"
+        }
+      ],
+      "check": {
+        "q": "What makes pour-over harder to repeat than a French press?",
+        "choices": [
+          {
+            "t": "You set the flow, so time varies",
+            "correct": true
+          },
+          {
+            "t": "The water has to be hotter"
+          },
+          {
+            "t": "Paper filters strip flavour unpredictably"
+          }
+        ],
+        "explain": "With a press, the time is fixed: four minutes is four minutes. With a pour-over the time is an outcome of your own choices, which gives you more control and more to keep steady."
+      }
     },
     {
       "id": "immersion",
       "term": "Immersion",
       "cat": "brewing",
       "short": "Brewing by steeping grounds fully in water, like a French press, then separating them.",
+      "deep": "The grounds sit in the full volume of water for a set time, then get separated out — plunged, filtered or poured off. Because the clock is doing the work, immersion is forgiving of an uneven grind: the bigger particles have the whole steep to catch up with the small ones. A metal mesh lets oils and fine particles through, and that is where the heavier body comes from.",
+      "example": "Cold brew and a French press are the same idea run at different temperatures.",
       "related": [
         "pour-over",
         "french-press",
-        "cold-brew"
+        "cold-brew",
+        "grind-size"
       ],
-      "lesson": "m4l5"
+      "lesson": "m4l5",
+      "sources": [
+        {
+          "label": "National Coffee Association — Brewing",
+          "url": "https://www.aboutcoffee.org/brewing/"
+        }
+      ],
+      "check": {
+        "q": "Which method is kindest to someone without a good grinder?",
+        "choices": [
+          {
+            "t": "Immersion — time evens it out",
+            "correct": true
+          },
+          {
+            "t": "Pour-over, if you pour more slowly"
+          },
+          {
+            "t": "Espresso, where pressure compensates"
+          }
+        ],
+        "explain": "Particles of different sizes extract at different speeds. A long steep closes that gap; pressure widens it. Espresso is the harshest test of a grinder there is."
+      }
     },
     {
       "id": "cold-brew",
@@ -1348,33 +1678,105 @@
       "pron": "kor-TAH-doh",
       "cat": "espresso",
       "short": "An espresso “cut” with a small, equal amount of warm milk to soften it.",
+      "deep": "Cortado means “cut”: a shot cut with roughly its own volume of warm steamed milk, and hardly any foam. The ratio is the whole point — enough milk to take the edge off the acidity and bitterness, not enough to bury the coffee. That ratio is also the main thing separating one café milk drink from another.",
+      "example": "A cortado runs about 1:1 espresso to milk; a latte can be 1:5 or looser.",
       "related": [
-        "crema"
+        "crema",
+        "espresso"
       ],
-      "lesson": "m5l7"
+      "lesson": "m5l7",
+      "sources": [
+        {
+          "label": "James Hoffmann — The World Atlas of Coffee"
+        }
+      ],
+      "check": {
+        "q": "What separates a cortado from a latte?",
+        "choices": [
+          {
+            "t": "The ratio, near equal parts",
+            "correct": true
+          },
+          {
+            "t": "The milk is warmed but never steamed"
+          },
+          {
+            "t": "It is pulled as a longer, weaker shot"
+          }
+        ],
+        "explain": "Milk drinks mostly differ in one way: how much milk goes in per shot. The names are ratios, not different kinds of coffee."
+      }
     },
     {
       "id": "channeling",
       "term": "Channeling",
       "cat": "espresso",
       "short": "When water forces a path through cracks in the espresso puck, extracting unevenly.",
+      "deep": "Water takes the easiest route through the coffee, floods it, and leaves the rest of the bed barely brewed — which is how one shot manages to taste sour and bitter at the same time. The causes are all in the puck rather than the machine: clumps, cracks, grounds spread unevenly, or a tamp that went in at an angle. Look at the spent puck afterwards and you will see streaks or small craters.",
+      "example": "Sour and harsh in the same sip is the signature; a shot that merely ran fast is a different problem.",
       "related": [
         "portafilter",
         "tamp",
-        "extraction"
+        "extraction",
+        "fines"
       ],
-      "lesson": "m5l7"
+      "lesson": "m5l7",
+      "sources": [
+        {
+          "label": "Barista Hustle — espresso technique guides"
+        }
+      ],
+      "check": {
+        "q": "A shot tastes sour and bitter at the same time. What does that point to?",
+        "choices": [
+          {
+            "t": "Channelling in the puck",
+            "correct": true
+          },
+          {
+            "t": "A grind that is simply too fine"
+          },
+          {
+            "t": "Water that is too cool"
+          }
+        ],
+        "explain": "A mistake that affects the whole puck evenly pushes the cup one way or the other. Two opposite faults at once mean parts of the bed brewed and parts did not — that is how you prepared it, not where the grinder is set."
+      }
     },
     {
       "id": "tamp",
       "term": "Tamp",
       "cat": "espresso",
       "short": "Pressing the espresso grounds flat and firm in the portafilter for an even shot.",
+      "deep": "Tamping presses the grounds into a level bed so the water meets the same resistance everywhere. Level matters more than hard: once the press is firm and even, pushing harder changes very little, while a tamp that sits a degree or two off level sends water down one side. It also cannot fix badly spread grounds — clumps pressed flat are still clumps.",
+      "example": "Baristas practise tamping level rather than hard; the puck should end up like a polished floor.",
       "related": [
         "portafilter",
-        "channeling"
+        "channeling",
+        "espresso"
       ],
-      "lesson": "m5l7"
+      "lesson": "m5l7",
+      "sources": [
+        {
+          "label": "Barista Hustle — espresso technique guides"
+        }
+      ],
+      "check": {
+        "q": "Which does more for a shot — tamping harder, or tamping level?",
+        "choices": [
+          {
+            "t": "Level",
+            "correct": true
+          },
+          {
+            "t": "Harder — tamp pressure sets the shot time"
+          },
+          {
+            "t": "Neither, once the basket is full to the rim"
+          }
+        ],
+        "explain": "How much resistance the puck gives comes mostly from the grind and the dose. How even it is comes from your hands. Water goes wherever the bed is weakest, so a flat tamp is the part worth practising."
+      }
     },
     {
       "id": "acidity",
@@ -1453,10 +1855,36 @@
       "term": "Mouthfeel",
       "cat": "sensory",
       "short": "The texture and weight of coffee on your tongue — another word for body.",
+      "deep": "Mouthfeel is what you feel rather than what you taste: the weight, the texture, how thick the coffee is. It comes from dissolved solids plus whatever oils and fine particles are still floating in the cup, so the filter you brew through changes it more than the coffee itself does. Cuppers score it in its own section, separate from flavour.",
+      "example": "The same coffee is silkier from a press than through paper — same beans, same ratio.",
       "related": [
-        "body"
+        "body",
+        "balance",
+        "finish"
       ],
-      "lesson": "m5l3"
+      "lesson": "m5l3",
+      "sources": [
+        {
+          "label": "SCA — Evolving the cupping protocol and form",
+          "url": "https://sca.coffee/sca-news/read/evolving-the-sca-cupping-protocol-and-form-an-overview-of-the-pilot-testing-process"
+        }
+      ],
+      "check": {
+        "q": "Where does a French press get its heavier mouthfeel?",
+        "choices": [
+          {
+            "t": "Oils and fines through the mesh",
+            "correct": true
+          },
+          {
+            "t": "A larger dose of coffee per cup"
+          },
+          {
+            "t": "A darker roast level"
+          }
+        ],
+        "explain": "Texture and strength are two different things. Swap paper for a metal mesh and the body changes even though the recipe has not. It is the cheapest experiment in brewing."
+      }
     },
     {
       "id": "finish",
@@ -1467,23 +1895,73 @@
         "aftertaste"
       ],
       "short": "The flavour that lingers after you swallow — short and clean, or long and sweet.",
+      "deep": "The finish — cuppers call it aftertaste — is what is left once you have swallowed: how long it lasts, and whether it stays pleasant. Good coffee fades away sweet and clean. Tired or badly brewed coffee turns papery, drying or ashy a few seconds later. It gets its own score because a cup can taste lovely at first and then fall apart.",
+      "example": "Wait ten seconds after swallowing before judging it — the finish arrives late by definition.",
       "related": [
         "acidity",
-        "balance"
+        "balance",
+        "mouthfeel"
       ],
-      "lesson": "m5l3"
+      "lesson": "m5l3",
+      "sources": [
+        {
+          "label": "SCA — Evolving the cupping protocol and form",
+          "url": "https://sca.coffee/sca-news/read/evolving-the-sca-cupping-protocol-and-form-an-overview-of-the-pilot-testing-process"
+        }
+      ],
+      "check": {
+        "q": "A cup tastes fine, then turns dry and papery ten seconds later. What have you learned?",
+        "choices": [
+          {
+            "t": "It is probably stale",
+            "correct": true
+          },
+          {
+            "t": "That it was under-extracted"
+          },
+          {
+            "t": "Nothing gradeable — that is preference"
+          }
+        ],
+        "explain": "Different faults show up at different points in a sip, which is why the first taste and the finish are scored separately. Papery and woody are the words for stale coffee; astringent and ashy point at a brewing problem instead."
+      }
     },
     {
       "id": "balance",
       "term": "Balance",
       "cat": "sensory",
       "short": "How well a coffee’s sweetness, acidity, body and bitterness fit together.",
+      "deep": "Balance asks whether the parts fit together — acidity, sweetness, body, bitterness, finish — not whether any one of them is quiet. A powerful coffee can be balanced, and a dull one can be unbalanced. Cuppers score it after the individual qualities, because it is a judgement about how those relate to each other.",
+      "example": "A searing Kenyan acidity carried by enough sweetness scores well; the same acidity alone does not.",
       "related": [
         "acidity",
         "body",
-        "finish"
+        "finish",
+        "mouthfeel"
       ],
-      "lesson": "m5l3"
+      "lesson": "m5l3",
+      "sources": [
+        {
+          "label": "SCA — Evolving the cupping protocol and form",
+          "url": "https://sca.coffee/sca-news/read/evolving-the-sca-cupping-protocol-and-form-an-overview-of-the-pilot-testing-process"
+        }
+      ],
+      "check": {
+        "q": "Which is better balanced — a fierce, very acidic Kenyan whose sweetness carries it, or a mild cup with nothing sticking out?",
+        "choices": [
+          {
+            "t": "The Kenyan",
+            "correct": true
+          },
+          {
+            "t": "The mild one; nothing dominates it"
+          },
+          {
+            "t": "Unanswerable without measuring extraction"
+          }
+        ],
+        "explain": "Balance is about how the parts relate, so a cup with very little in it has very little to balance. Strength and harmony are separate judgements: plenty of bold coffees are perfectly harmonious."
+      }
     },
     {
       "id": "cupping",
@@ -1596,11 +2074,40 @@
       "pron": "AIR-oh-press",
       "cat": "equipment",
       "short": "A compact plunger brewer that uses gentle pressure to make a quick, clean cup.",
+      "deep": "A chamber, a paper or metal filter, and a plunger. The coffee steeps for a short time, then you press it through in seconds. As it comes out of the box that press is gentle — around a bar, against the nine or so a machine uses for espresso — so it mostly speeds up the drain, and what you get is a short, clean immersion brew. Add-on caps with a pressure valve change that: they hold the brew back until the pressure builds, and a fine grind and tight ratio then give you a concentrated, foam-topped shot much closer to espresso. It travels well and is forgiving about grind, which is most of the reason people love it.",
+      "example": "Two minutes of steep and a slow twenty-second press is a good default recipe.",
       "related": [
         "immersion",
-        "pour-over"
+        "pour-over",
+        "grind-size",
+        "espresso"
       ],
-      "lesson": "m4l5"
+      "lesson": "m4l5",
+      "sources": [
+        {
+          "label": "AeroPress — official brew guides",
+          "url": "https://aeropress.com/pages/brew-guides"
+        },
+        {
+          "label": "James Hoffmann — Technique Guides"
+        }
+      ],
+      "check": {
+        "q": "Two people brew the same beans in an AeroPress, one with a valve cap fitted. Why is only one cup espresso-like?",
+        "choices": [
+          {
+            "t": "The valve holds pressure back until it builds",
+            "correct": true
+          },
+          {
+            "t": "The valve raises the brewing temperature"
+          },
+          {
+            "t": "The valve doses more coffee into the chamber"
+          }
+        ],
+        "explain": "A plain AeroPress lets water through as you push, so pressure never gets a chance to build and the result behaves like filter coffee. A valve makes the brew wait, and pressure is what pulls out the concentration and foam people recognise as espresso."
+      }
     },
     {
       "id": "chemex",
@@ -1608,10 +2115,35 @@
       "pron": "KEM-ex",
       "cat": "equipment",
       "short": "An hourglass-shaped pour-over brewer using thick filters for an exceptionally clean cup.",
+      "deep": "An hourglass of heatproof glass with a thick, folded paper filter. That paper is heavier than most, so it holds back more oil and fine particles and slows the drain down as it does. The cup comes out unusually clean and tea-like, and the thick paper is why Chemex recipes ask for a coarser grind than a V60 at the same dose.",
+      "example": "Grind a notch coarser than you would for a V60, or the brew stalls in the paper.",
       "related": [
-        "pour-over"
+        "pour-over",
+        "v60",
+        "mouthfeel"
       ],
-      "lesson": "m4l5"
+      "lesson": "m4l5",
+      "sources": [
+        {
+          "label": "James Hoffmann — Technique Guides"
+        }
+      ],
+      "check": {
+        "q": "Why do Chemex recipes ask for a coarser grind than a V60?",
+        "choices": [
+          {
+            "t": "The thick paper drains slowly",
+            "correct": true
+          },
+          {
+            "t": "Its cone angle is steeper"
+          },
+          {
+            "t": "It holds more water at once"
+          }
+        ],
+        "explain": "The grind has to suit how fast the brewer drains. Thick paper already slows the flow, so a fine grind on top of that stalls the bed and over-extracts whatever does get through. The same paper does two things at once: it slows the drain and it cleans up the cup."
+      }
     },
     {
       "id": "v60",
@@ -1659,11 +2191,36 @@
       "term": "Scale",
       "cat": "equipment",
       "short": "A small kitchen scale lets you weigh coffee and water for a repeatable brew ratio.",
+      "deep": "Coffee is measured by weight because volume is unreliable: a scoop of light roast weighs more than the same scoop of a dark one, and the grind size changes how much fits in the spoon. A scale that reads to 0.1 g, ideally with a timer, turns a recipe into something you can repeat — the same ratio every morning, so when the cup changes you know it was because of something you changed. Rules of thumb like tablespoons per cup are a starting point, not a recipe.",
+      "example": "60 g of coffee to 1,000 g of water is a recipe; “two scoops” is a guess.",
       "related": [
         "brew-ratio",
-        "gooseneck"
+        "gooseneck",
+        "grind-size"
       ],
-      "lesson": "m5l6"
+      "lesson": "m5l6",
+      "sources": [
+        {
+          "label": "National Coffee Association — Brewing",
+          "url": "https://www.aboutcoffee.org/brewing/"
+        }
+      ],
+      "check": {
+        "q": "Why do baristas weigh rather than scoop?",
+        "choices": [
+          {
+            "t": "A scoop’s mass varies",
+            "correct": true
+          },
+          {
+            "t": "Scales read the water temperature too"
+          },
+          {
+            "t": "Coffee absorbs water differently by volume"
+          }
+        ],
+        "explain": "A brew ratio compares two weights, so measuring by the scoop quietly changes it every time you switch beans. Weighing is what lets you compare yesterday’s brew to today’s."
+      }
     },
     {
       "id": "grind-size",
@@ -1673,11 +2230,36 @@
         "grind size"
       ],
       "short": "How coarse or fine the coffee is ground — the main dial for matching your brew method.",
+      "deep": "The grind decides how much coffee surface the water can reach, which makes it the fastest way to change how quickly a brew extracts: finer is quicker, coarser is slower. Each method comes with its own contact time — seconds for espresso, minutes for a press, hours for cold brew — so the method sets the rough range and your taste decides where in that range you land. How even the grind is matters as much as how fine, and that is the whole argument for burr grinders over blades.",
+      "example": "Espresso runs near table salt; a French press nearer coarse sea salt.",
       "related": [
         "burr-grinder",
-        "extraction"
+        "extraction",
+        "fines"
       ],
-      "lesson": "m4l1"
+      "lesson": "m4l1",
+      "sources": [
+        {
+          "label": "National Coffee Association — Brewing",
+          "url": "https://www.aboutcoffee.org/brewing/"
+        }
+      ],
+      "check": {
+        "q": "You brew a pour-over with the grind you use for a French press. What happens?",
+        "choices": [
+          {
+            "t": "Under-extraction",
+            "correct": true
+          },
+          {
+            "t": "Over-extraction; the water runs hotter"
+          },
+          {
+            "t": "Nothing: grind and method are independent"
+          }
+        ],
+        "explain": "Grind and contact time work against each other, so changing the method means changing the grind. A coarse grind in a fast brewer tastes sour and thin no matter how good the coffee is."
+      }
     },
     {
       "id": "fines",
@@ -1784,22 +2366,71 @@
         "direct trade"
       ],
       "short": "Roasters buying straight from farmers, often paying above market for quality and relationships.",
+      "deep": "Direct trade is a roaster describing how they buy: straight from the producer or through a single exporter, usually paying above the market rate, often from the same farms year after year. Nobody audits the phrase, so by itself it guarantees nothing. What makes it checkable is the detail a roaster publishes — the price they paid, the names of the farms and lots, how many years they have been buying there. Certification works the other way round: it is audited, but it usually sets a floor rather than a premium.",
+      "example": "A transparency report listing the price paid per kilo turns the claim into something you can check.",
       "related": [
         "fair-trade",
-        "traceability"
+        "traceability",
+        "specialty"
       ],
-      "lesson": "m1l5"
+      "lesson": "m1l5",
+      "sources": [
+        {
+          "label": "Fairtrade International — Standards (the audited contrast)",
+          "url": "https://www.fairtrade.net/en/why-fairtrade/how-we-do-it/standards.html"
+        }
+      ],
+      "check": {
+        "q": "What does “direct trade” on a bag guarantee?",
+        "choices": [
+          {
+            "t": "Nothing on its own",
+            "correct": true
+          },
+          {
+            "t": "A minimum price set by a certifier"
+          },
+          {
+            "t": "That the roaster visited the farm"
+          }
+        ],
+        "explain": "The label tells you what the roaster intends. The evidence is whatever they publish alongside it. Certification is the opposite trade-off: someone checks it, but what it guarantees is a minimum price, not a good one."
+      }
     },
     {
       "id": "traceability",
       "term": "Traceability",
       "cat": "trade",
       "short": "Knowing exactly where a coffee came from, down to the farm or washing station.",
+      "deep": "Traceability is how far back a coffee can be followed: to a country, a region, a washing station or co-op, a farm, sometimes even a single day’s picking. Following it further back does not automatically mean it tastes better — what it buys you is quality that can be repeated and a premium you can check. Commodity coffee is traceable to a country and a grade, so a bag that says only “Brazil” is telling you where the trail runs out.",
+      "example": "“Ethiopia” is an origin; “Gedeb, Worka Sakaro, lot 12” is traceability.",
       "related": [
         "single-origin",
-        "direct-trade"
+        "direct-trade",
+        "washing-station"
       ],
-      "lesson": "m1l5"
+      "lesson": "m1l5",
+      "sources": [
+        {
+          "label": "James Hoffmann — The World Atlas of Coffee"
+        }
+      ],
+      "check": {
+        "q": "A bag names the washing station but no farm. Is that a traceability failure?",
+        "choices": [
+          {
+            "t": "No — the station is the real unit",
+            "correct": true
+          },
+          {
+            "t": "Yes; only a farm name counts"
+          },
+          {
+            "t": "Yes, unless the roaster is certified"
+          }
+        ],
+        "explain": "What matters is naming the place where the lot was actually made. In much of East Africa hundreds of small farms deliver their cherries to one washing station, and the lot is created there — so the station is the honest answer. Demanding a single farm name would only encourage roasters to make one up."
+      }
     },
     {
       "id": "sca",
@@ -1880,11 +2511,41 @@
         "specialty"
       ],
       "short": "High-quality coffee scoring 80+ points on a 100-point scale, made with care at every step.",
+      "deep": "In the trade, specialty is a threshold rather than a style: green coffee that stays inside a defect limit and scores 80 or more on the 100-point cupping form. In everyday use the word also describes a supply chain that pays for quality and can tell you where the coffee came from. It does not mean expensive, single-origin or dark — blends clear 80 all the time.",
+      "example": "On a green-coffee invoice, “specialty grade” means inside the defect limit and 80+ on the form.",
       "related": [
         "single-origin",
-        "arabica"
+        "arabica",
+        "cupping",
+        "sca"
       ],
-      "lesson": "m1l5"
+      "lesson": "m1l5",
+      "sources": [
+        {
+          "label": "SCA — Evolving the cupping protocol and form",
+          "url": "https://sca.coffee/sca-news/read/evolving-the-sca-cupping-protocol-and-form-an-overview-of-the-pilot-testing-process"
+        },
+        {
+          "label": "SCA — Standards and research",
+          "url": "https://sca.coffee/research?page=resources"
+        }
+      ],
+      "check": {
+        "q": "What makes a coffee “specialty” in the trade sense?",
+        "choices": [
+          {
+            "t": "80 or more on the 100-point form",
+            "correct": true
+          },
+          {
+            "t": "A retail price above a set threshold"
+          },
+          {
+            "t": "Being single-origin, not a blend"
+          }
+        ],
+        "explain": "It is a tasting score with a defect count behind it. That is why a blend can be specialty while an expensive single origin falls short."
+      }
     }
   ]
 }
