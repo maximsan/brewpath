@@ -64,3 +64,6 @@ app.*.map.json
 # Agent worktrees — full working copies of this repo created by Claude Code.
 # Untracked and large (GBs); never meant to be committed.
 .claude/worktrees/
+
+# temp folder to verify that content extracted by node/extract_content.js is correct. Not meant to be committed.
+.banks-check
