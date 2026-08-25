@@ -1,4 +1,4 @@
-import 'package:brew_path/features/path/presentation/guide_marks/guide_mark.dart';
+import 'package:brew_path/core/widgets/guide_marks/guide_mark.dart';
 import 'package:brew_path/shared/theme/art_colors.dart';
 import 'package:flutter/material.dart';
 

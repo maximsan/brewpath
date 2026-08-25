@@ -1,6 +1,6 @@
 import 'package:brew_path/core/widgets/app_sheet.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
-import 'package:brew_path/features/path/presentation/visual_guide_art.dart';
+import 'package:brew_path/core/widgets/visual_guide_art.dart';
 import 'package:brew_path/features/saved/domain/saved_key.dart';
 import 'package:brew_path/features/saved/presentation/saved_bookmark_button.dart';
 import 'package:brew_path/shared/models/content/visual_guide.dart';
@@ -54,7 +54,7 @@ class VisualGuideSheetBody extends StatelessWidget {
           ],
         ),
         const SizedBox(height: AppSpacing.md),
-        VisualGuideArt(subject: guide.subject, size: VisualGuideArtSize.sheet),
+        VisualGuideArt(subject: guide.subject, size: VisualGuideArtSize.full),
         const SizedBox(height: AppSpacing.md),
         Text(
           guide.summary,
