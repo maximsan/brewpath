@@ -44,6 +44,13 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Twenty-six dictionary terms gain their depth.** Each now carries the long
+  explanation, the everyday example, the sources it rests on and a self-check
+  question — the material the entry screen was already built to show. The app
+  has read these fields all along; the shipped banks predated them, so the
+  screens had nothing to render. Twenty-five entries also carry edited copy,
+  and one lesson's line on fermentation is reworded.
+
 - **The visual guides appear in the lessons that teach them.** Ten authored
   cards sat in four modules with no renderer, so every one of them was
   filtered out before a lesson started — the diagram was missing from the
