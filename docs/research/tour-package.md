@@ -8,8 +8,8 @@ wayfinder map [#191](https://github.com/maximsan/brewpath/issues/191).
 > was invented rather than read from the prototype; the real one, `prototype/guide.jsx`, is
 > a callout-and-frame layer, and
 > [issue #339](https://github.com/maximsan/brewpath/issues/339) found `showcaseview` cannot
-> draw it. See [`guide-render-approach.md`](guide-render-approach.md) for the current
-> decision.
+> draw it. The current decision — build the guide layer by hand, in tree — is
+> [#339's resolution](https://github.com/maximsan/brewpath/issues/339#issuecomment-5399403183).
 
 **Scope.** The Tour is a one-time, skippable, replayable guided walkthrough of the Learn
 tab. This document vets the coach-mark/showcase packages against the five criteria in

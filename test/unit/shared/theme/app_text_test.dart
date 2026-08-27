@@ -32,6 +32,72 @@ Map<String, TextStyle> _steps(MoodColors mood) => {
   'micro': AppText.micro(mood: mood),
 };
 
+/// The step each of Material's slots lands on, and whether it takes the
+/// full-strength ink or the muted role its step defaults to.
+///
+/// This is the expectation, written out independently; the reasoning that
+/// produced it — role first, then the nearest Roboto size, ties downwards —
+/// lives once, on `AppText.textTheme`. Restating it here would give it a
+/// second home to drift from.
+const _slotMap = <String, ({String step, bool ink})>{
+  'displayLarge': (step: 'display', ink: true),
+  'displayMedium': (step: 'display', ink: true),
+  'displaySmall': (step: 'display', ink: true),
+  'headlineLarge': (step: 'display', ink: true),
+  'headlineMedium': (step: 'title', ink: true),
+  'headlineSmall': (step: 'title', ink: true),
+  'titleLarge': (step: 'heading', ink: true),
+  'titleMedium': (step: 'body', ink: true),
+  'titleSmall': (step: 'support', ink: true),
+  'bodyLarge': (step: 'body', ink: true),
+  'bodyMedium': (step: 'support', ink: false),
+  'bodySmall': (step: 'support', ink: false),
+  'labelLarge': (step: 'support', ink: false),
+  'labelMedium': (step: 'label', ink: false),
+  'labelSmall': (step: 'label', ink: false),
+};
+
+/// Material's slots grouped by family, largest first — the order the mapping
+/// must not invert.
+const _slotFamilies = <String, List<String>>{
+  'display': ['displayLarge', 'displayMedium', 'displaySmall'],
+  'headline': ['headlineLarge', 'headlineMedium', 'headlineSmall'],
+  'title': ['titleLarge', 'titleMedium', 'titleSmall'],
+  'body': ['bodyLarge', 'bodyMedium', 'bodySmall'],
+  'label': ['labelLarge', 'labelMedium', 'labelSmall'],
+};
+
+Map<String, TextStyle?> _slots(TextTheme theme) => {
+  'displayLarge': theme.displayLarge,
+  'displayMedium': theme.displayMedium,
+  'displaySmall': theme.displaySmall,
+  'headlineLarge': theme.headlineLarge,
+  'headlineMedium': theme.headlineMedium,
+  'headlineSmall': theme.headlineSmall,
+  'titleLarge': theme.titleLarge,
+  'titleMedium': theme.titleMedium,
+  'titleSmall': theme.titleSmall,
+  'bodyLarge': theme.bodyLarge,
+  'bodyMedium': theme.bodyMedium,
+  'bodySmall': theme.bodySmall,
+  'labelLarge': theme.labelLarge,
+  'labelMedium': theme.labelMedium,
+  'labelSmall': theme.labelSmall,
+};
+
+/// The slot names `TextTheme` declares, read off its own diagnostics rather
+/// than transcribed here, so the tables above are checked against Flutter
+/// rather than against a second copy of themselves.
+///
+/// `TextTheme.debugFillProperties` is hand-maintained upstream, so this catches
+/// a slot Flutter adds only once Flutter's own authors list it there — a good
+/// guard, not a guarantee.
+Iterable<String> _declaredSlotNames() => const TextTheme()
+    .toDiagnosticsNode()
+    .getProperties()
+    .map((property) => property.name)
+    .whereType<String>();
+
 void main() {
   group('the ladder', () {
     test("is nine steps at the design's sizes", () {
@@ -141,6 +207,136 @@ void main() {
 
     test('with neither, it inherits rather than inventing one', () {
       expect(AppText.body().color, isNull);
+    });
+  });
+
+  group("Material's slots", () {
+    const mood = MoodColors.cupping;
+    final theme = AppText.textTheme(mood);
+    final steps = _steps(mood);
+
+    test('the mapping covers every slot TextTheme declares', () {
+      final declared = _declaredSlotNames().toSet();
+
+      expect(
+        _slotMap.keys.toSet(),
+        declared,
+        reason:
+            'TextTheme declares a slot this mapping does not name — an unnamed '
+            'slot is a Roboto hole, which is the fault this table closes',
+      );
+      // The tables below read slots through hand-written getter lists, which a
+      // new slot would not join on its own. Lock them to the same set, or a
+      // slot could be named once and go unchecked by every test after this.
+      expect(_slots(theme).keys.toSet(), declared);
+      expect(_slotFamilies.values.expand((slots) => slots).toSet(), declared);
+    });
+
+    test('every slot is filled, so none falls back to Roboto', () {
+      final unmapped = _slots(theme).entries
+          .where((slot) => slot.value == null)
+          .map((slot) => slot.key)
+          .toList();
+
+      expect(
+        unmapped,
+        isEmpty,
+        reason:
+            'ThemeData merges a supplied TextTheme onto the default '
+            'typography, so every slot left null keeps Roboto: '
+            '${unmapped.join(', ')}',
+      );
+    });
+
+    test('every slot lands on its step of the ladder', () {
+      final resolved = _slots(theme).map(
+        (name, style) => MapEntry(name, style!.fontSize),
+      );
+      final expected = _slotMap.map(
+        (name, mapping) => MapEntry(name, _ladder[mapping.step]),
+      );
+
+      expect(resolved, expected);
+    });
+
+    test("every slot is set in one of the design's three faces", () {
+      final families = {
+        for (final face in AppFace.values)
+          if (face.family != null) face.family,
+      };
+
+      for (final slot in _slots(theme).entries) {
+        expect(
+          slot.value!.fontFamily,
+          isIn(families),
+          reason: '${slot.key} is set outside the design’s faces',
+        );
+      }
+    });
+
+    test('every slot carries a weight the design has', () {
+      for (final slot in _slots(theme).entries) {
+        expect(
+          slot.value!.fontWeight,
+          anyOf(FontWeight.w400, FontWeight.w500),
+          reason:
+              'the design has exactly two weights — Plex Sans 400 body / 500 '
+              'controls, Fraunces 400 — and ${slot.key} asks for a third',
+        );
+      }
+    });
+
+    test(
+      'a slot matches its step exactly, tracking and line height included',
+      () {
+        for (final slot in _slots(theme).entries) {
+          final step = steps[_slotMap[slot.key]!.step]!;
+
+          expect(slot.value!.fontSize, step.fontSize);
+          expect(
+            slot.value!.letterSpacing,
+            step.letterSpacing,
+            reason:
+                '${slot.key} would set its own tracking, which the step '
+                'already carries',
+          );
+          expect(slot.value!.height, step.height);
+        }
+      },
+    );
+
+    test('a slot takes the ink its role calls for, not its step’s', () {
+      for (final slot in _slots(theme).entries) {
+        final takesInk = _slotMap[slot.key]!.ink;
+
+        expect(
+          slot.value!.color,
+          takesInk ? mood.ink : mood.inkMute,
+          reason: takesInk
+              ? '${slot.key} names a title or the copy under one; muting it '
+                    'would grey out text the reader is meant to read'
+              : '${slot.key} is a support or label slot, and muted by role',
+        );
+      }
+    });
+
+    test("the mapping never inverts Material's own order", () {
+      for (final family in _slotFamilies.entries) {
+        final sizes = [
+          for (final slot in family.value) _ladder[_slotMap[slot]!.step]!,
+        ];
+
+        for (var slot = 1; slot < sizes.length; slot++) {
+          expect(
+            sizes[slot],
+            lessThanOrEqualTo(sizes[slot - 1]),
+            reason:
+                '${family.value[slot]} maps larger than '
+                '${family.value[slot - 1]}, so the ${family.key} family reads '
+                'upside down',
+          );
+        }
+      }
     });
   });
 
