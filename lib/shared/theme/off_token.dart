@@ -95,6 +95,17 @@ abstract final class OffTokens {
         'Nor is it --art-cream, whose warmer value is for illustration fills.',
   );
 
+  /// The vertical room inside a `predict` card's guess tile.
+  static const OffToken<double> pickTilePadding = OffToken(
+    26,
+    reason:
+        'The design sets `.pick-tile` to `padding: 26px 14px`. 26 sits between '
+        'AppSpacing.lg (24) and xl (32) and is deliberate: the two-up guess is '
+        'meant to read far taller than a row, so it does not look like the '
+        'graded lists it sits among. Rounding it onto the scale is a design '
+        'change, not a tidy-up.',
+  );
+
   /// Every sanctioned exception, so the register can be read — and tested — as
   /// a whole rather than one constant at a time.
   static const register = <OffToken<Object>>[
@@ -103,5 +114,6 @@ abstract final class OffTokens {
     seedInk,
     seedStain,
     beanCrease,
+    pickTilePadding,
   ];
 }

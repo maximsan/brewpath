@@ -6,6 +6,8 @@ import 'package:brew_path/features/lessons/presentation/cards/concept_card_view.
 import 'package:brew_path/features/lessons/presentation/cards/graded_picker.dart';
 import 'package:brew_path/features/lessons/presentation/cards/match_board.dart';
 import 'package:brew_path/features/lessons/presentation/cards/match_board_view.dart';
+import 'package:brew_path/features/lessons/presentation/cards/multi_card_view.dart';
+import 'package:brew_path/features/lessons/presentation/cards/practical_card_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/predict_card_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/visual_card_view.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
@@ -19,7 +21,7 @@ import 'package:flutter/widgets.dart';
 /// function until the kind is handled, which is the guarantee the union was
 /// chosen for.
 ///
-/// Eleven kinds render today. The rest return null rather than a placeholder,
+/// Thirteen kinds render today. The rest return null rather than a placeholder,
 /// so a host meets an honest absence instead of a card that pretends.
 ///
 /// `visual` is the one that reports no success: it is a reference a lesson
@@ -41,11 +43,22 @@ Widget? contentCardView(
   return switch (card) {
     final PredictCard predict => PredictCardView(
       card: predict,
-      options: shuffledBySeed(_predictOptions(predict), seed),
+      options: shuffledBySeed(predict.options, seed),
       onContinue: onContinue,
     ),
     final ConceptCard concept => ConceptCardView(
       card: concept,
+      onContinue: onContinue,
+    ),
+    final PracticalCard practical => PracticalCardView(
+      card: practical,
+      onContinue: onContinue,
+    ),
+    final MultiCard multi => MultiCardView(
+      prompt: multi.prompt,
+      explanation: multi.explanation,
+      options: shuffledBySeed(_fromChoices(multi.choices), seed),
+      onSolved: onSolved,
       onContinue: onContinue,
     ),
     final McqCard mcq => GradedPicker(
@@ -108,7 +121,7 @@ Widget? contentCardView(
       card: visual,
       onContinue: onContinue,
     ),
-    PracticalCard() || MultiCard() || SequenceCard() || SliderCard() => null,
+    SequenceCard() || SliderCard() => null,
   };
 }
 
@@ -130,15 +143,17 @@ bool hasRenderer(ContentCard card) => switch (card) {
   TastefixCard() ||
   BagpickCard() ||
   MatchCard() ||
-  VisualCard() => true,
-  PracticalCard() || MultiCard() || SequenceCard() || SliderCard() => false,
+  VisualCard() ||
+  PracticalCard() ||
+  MultiCard() => true,
+  SequenceCard() || SliderCard() => false,
 };
 
 /// The cards of [cards] that can actually be played, in authored order.
 ///
-/// Four kinds have no renderer yet — `practical`, `multi`, `sequence` and
-/// `slider`. Filtering here keeps every lesson finishable instead of stranding
-/// the learner on a card that cannot draw itself; the alternative — a
+/// Two kinds have no renderer yet — `sequence` and `slider`. Filtering
+/// here keeps every lesson finishable instead of stranding the learner on a
+/// card that cannot draw itself; the alternative — a
 /// placeholder that says so — puts unfinished scaffolding in front of a
 /// learner on the way to the next real card.
 ///
@@ -264,11 +279,4 @@ List<ChoiceOption> _decisionOptions(DecisionCard card) => [
       subtitle: option.subtitle,
       isCorrect: option.isCorrect,
     ),
-];
-
-/// A predict card's two guesses are bare strings, and its answer is held back
-/// rather than marked — so `isCorrect` is recorded but never revealed.
-List<ChoiceOption> _predictOptions(PredictCard card) => [
-  for (final option in card.options)
-    ChoiceOption(text: option, isCorrect: option == card.answer),
 ];

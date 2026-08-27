@@ -1,13 +1,11 @@
+import 'package:brew_path/features/lessons/presentation/cards/card_tints.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// How far a placed fact recedes: it stays readable as the record of what was
-/// matched, without competing with the facts still in play.
-const double _placedFactTint = 0.5;
-
-/// Border weights: the selected fact carries the heavier one.
+/// `.match-item.selected` is a hairline border plus an inset second line;
+/// doubling the width is how that reads without painting two.
 const double _selectedBorder = 2;
 const double _plainBorder = 1;
 
@@ -52,24 +50,28 @@ class MatchFactTile extends StatelessWidget {
         child: Container(
           width: double.infinity,
           padding: const EdgeInsets.all(AppSpacing.sm),
+          // `.match-item.matched` is a **sage** border over a sage 12% wash,
+          // and its text stays full ink — a paired fact is finished, not
+          // dimmed. The app had it as a grey `surface2` box with half-alpha
+          // ink, which read as disabled rather than solved.
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppRadii.chrome),
             border: Border.all(
-              color: selected ? mood.accent : mood.rule,
-              width: selected ? _selectedBorder : _plainBorder,
+              color: switch ((_placed, selected)) {
+                (true, _) => mood.sage,
+                (false, true) => mood.accent,
+                (false, false) => mood.rule,
+              },
+              width: selected && !_placed ? _selectedBorder : _plainBorder,
             ),
-            color: _placed ? mood.surface2 : null,
+            color: _placed ? mood.sage.withValues(alpha: CardTints.wash) : null,
           ),
           child: Row(
             children: [
               Expanded(
                 child: Text(
                   text,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: _placed
-                        ? mood.ink.withValues(alpha: _placedFactTint)
-                        : mood.ink,
-                  ),
+                  style: theme.textTheme.bodyMedium?.copyWith(color: mood.ink),
                 ),
               ),
               if (_placed) ...[

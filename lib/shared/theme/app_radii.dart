@@ -14,8 +14,11 @@
 /// See `docs/design/03-design-system.md` — including its correction that the
 /// "radius scale of 4 / 12 / 14 / 16 / 20" earlier docs listed never existed.
 abstract final class AppRadii {
-  /// 2 px — **editorial**. Cards, buttons, inputs, MCQ and match tiles: the
-  /// sharp, print-like default.
+  /// 2 px — **editorial**. Cards, buttons and inputs: the sharp, print-like
+  /// default.
+  ///
+  /// **Not MCQ or match tiles**, though `Design System.html` lists them here.
+  /// The running prototype sets both to `var(--r)` and wins — see ADR-0009.
   static const double editorial = 2;
 
   /// 14 px (`--r`) — **soft chrome**. Media frames, bottom sheets, icon wells,

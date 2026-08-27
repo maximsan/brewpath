@@ -44,6 +44,33 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The lesson cards are drawn the way the design draws them.** Answering a
+  multiple-choice question now tints the row you picked — green for right, a
+  softer red for wrong — instead of only outlining it. The opening guess of a
+  lesson is two large tiles side by side rather than a list, the one you did
+  not take dims instead of vanishing, and you can change your mind until you
+  move on; nothing there is scored. A matched pair on a match card reads as
+  solved rather than greyed out. On a select-all card, an answer you missed is
+  outlined in dashes so it never looks like one you got right, and the card
+  shows a single button that changes from *Check answers* to *Continue* rather
+  than two.
+
+- **Two more card kinds reach the lesson.** Fifteen authored cards sat in the
+  banks with no renderer, so every one was filtered out before a lesson
+  started. **Hands-on cards** now render: a step's name, what to do, and a
+  closing "Worth knowing" note — read, not asked, so Continue is live on
+  arrival and nothing is scored. **Select-all-that-apply cards** now render
+  too: pick freely, commit the whole set with *Check answers*, and the card
+  marks every choice — including the answers left unpicked, so a learner who
+  under-picked can see what they missed. It scores all-or-nothing and pays
+  once; a correct subset, a superset and a same-sized wrong set all score
+  nothing, so neither picking cautiously nor picking everything is a strategy.
+
+  Because select-all cards are graded, ten lessons regain a graded card each
+  and now score out of what the course always specified — m1l2, m1l3, m1l5,
+  m2l1, m2l3, m2l5, m3l1, m3l3, m4l2 and m4l6. A best already recorded is not
+  disturbed: it stands until a run on the fuller lesson beats it.
+
 - **Twenty-six dictionary terms gain their depth.** Each now carries the long
   explanation, the everyday example, the sources it rests on and a self-check
   question — the material the entry screen was already built to show. The app

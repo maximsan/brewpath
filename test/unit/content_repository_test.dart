@@ -1,3 +1,5 @@
+import 'package:brew_path/features/lessons/presentation/cards/content_card_view.dart';
+import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/models/content/content_card_grading.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -80,6 +82,80 @@ void main() {
       final lesson = await repo.getLessonById('m1l1');
       expect(lesson!.cards.length, 8);
       expect(gradedCards(lesson.cards).length, 5);
+    });
+
+    // The counts the two tickets were written against. Pinned, not derived:
+    // a content edit that drops a card would otherwise slip past the
+    // per-lesson property below, which only checks authored == playable and
+    // is happy when both fall together.
+    test(
+      'the bank still carries the authored practical and multi cards',
+      () async {
+        final lessons = await repo.getLessons();
+        final cards = lessons.expand((lesson) => lesson.cards);
+        expect(cards.whereType<PracticalCard>().length, 5);
+        expect(cards.whereType<MultiCard>().length, 10);
+      },
+    );
+
+    test('practical and multi cards keep their authored order', () async {
+      final lessons = await repo.getLessons();
+      for (final lesson in lessons) {
+        final authored = lesson.cards
+            .where((card) => card is PracticalCard || card is MultiCard)
+            .toList();
+        final played = playableCards(
+          lesson.cards,
+        ).where((card) => card is PracticalCard || card is MultiCard).toList();
+        expect(
+          played,
+          authored,
+          reason:
+              '${lesson.id} reorders cards the learner should meet in '
+              'the order they were authored',
+        );
+      }
+    });
+
+    test('every authored practical and multi card reaches a learner', () async {
+      final lessons = await repo.getLessons();
+      for (final lesson in lessons) {
+        final authored = lesson.cards
+            .where((card) => card is PracticalCard || card is MultiCard)
+            .length;
+        final playable = playableCards(
+          lesson.cards,
+        ).where((card) => card is PracticalCard || card is MultiCard).length;
+        expect(
+          playable,
+          authored,
+          reason: '${lesson.id} drops a card the learner should see',
+        );
+      }
+    });
+
+    test('every playable multi card counts toward mastery', () async {
+      final lessons = await repo.getLessons();
+      var counted = 0;
+      for (final lesson in lessons) {
+        final played = playableCards(lesson.cards);
+        final graded = gradedCards(played);
+        for (final card in played.whereType<MultiCard>()) {
+          expect(
+            graded,
+            contains(card),
+            reason: '${lesson.id} plays a multi card it does not score',
+          );
+          counted++;
+        }
+      }
+      expect(
+        counted,
+        greaterThan(0),
+        reason:
+            'the bank carries multi cards — a zero here means the '
+            'assertion stopped testing anything',
+      );
     });
 
     test('every lesson carries at least one card', () async {
