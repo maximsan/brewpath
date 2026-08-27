@@ -1,9 +1,11 @@
+import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/features/onboarding/presentation/loading/loading_screen.dart';
 import 'package:brew_path/features/tour/domain/tour_copy.dart';
 import 'package:brew_path/main.dart' as app;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import '../test/support/find_mark.dart';
 
 /// The one thing that boots the real app.
 ///
@@ -236,7 +238,7 @@ void main() {
     // Profile header. A value written, closed, reopened and rendered.
     await tapWhenReady(
       tester,
-      find.byIcon(Icons.person_outline),
+      findMark(AppIcon.leaf, active: false),
       describe: 'the Profile tab',
     );
     await pumpUntil(
@@ -251,7 +253,7 @@ void main() {
     // failed the first time this check was added.
     await tapWhenReady(
       tester,
-      find.byIcon(Icons.school_outlined),
+      findMark(AppIcon.cup, active: false),
       describe: 'the Learn tab after the Profile detour',
     );
 

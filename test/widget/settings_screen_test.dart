@@ -1,4 +1,5 @@
 import 'package:brew_path/app/app.dart';
+import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/repositories/card_repository.dart';
 import 'package:brew_path/shared/repositories/progress_repository.dart';
@@ -6,6 +7,7 @@ import 'package:brew_path/shared/repositories/settings_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../support/find_mark.dart';
 import '../support/widget_harness.dart';
 
 void main() {
@@ -18,7 +20,7 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
 
     await pumpWithProviders(tester, const BrewPathApp());
-    await tester.tap(find.byIcon(Icons.person_outline));
+    await tester.tap(findMark(AppIcon.leaf, active: false));
     await settleLoaders(tester);
     await tester.tap(find.byIcon(Icons.settings_outlined));
     await settleLoaders(tester);

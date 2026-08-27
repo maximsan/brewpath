@@ -1,11 +1,13 @@
 import 'package:brew_path/app/app.dart';
 import 'package:brew_path/app/app_header.dart';
+import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/features/tour/domain/tour_copy.dart';
 import 'package:brew_path/features/tour/presentation/replay_tour_row.dart';
 import 'package:brew_path/shared/repositories/settings_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/find_mark.dart';
 import '../../../support/widget_harness.dart';
 
 /// Replay from Profile: the stops, without the offer.
@@ -37,7 +39,7 @@ void main() {
   }
 
   Future<void> openProfile(WidgetTester tester) async {
-    await tester.tap(find.byIcon(Icons.person_outline));
+    await tester.tap(findMark(AppIcon.leaf, active: false));
     await settleLoaders(tester);
     await tester.pumpAndSettle();
   }

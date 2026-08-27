@@ -1,9 +1,11 @@
 import 'package:brew_path/app/app.dart';
+import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/features/profile/presentation/widgets/stat_tile.dart';
 import 'package:brew_path/features/progress/presentation/week_strip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../support/find_mark.dart';
 import '../support/widget_harness.dart';
 
 void main() {
@@ -18,7 +20,7 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
 
     await pumpWithProviders(tester, const BrewPathApp());
-    await tester.tap(find.byIcon(Icons.person_outline));
+    await tester.tap(findMark(AppIcon.leaf, active: false));
     await settleLoaders(tester);
   }
 
