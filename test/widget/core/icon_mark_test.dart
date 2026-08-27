@@ -45,6 +45,32 @@ void main() {
     );
   });
 
+  testWidgets('takes the ink an IconButton gives it', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.darkRoast,
+        home: Scaffold(
+          body: IconButton(
+            onPressed: () {},
+            style: IconButton.styleFrom(
+              foregroundColor: MoodColors.darkRoast.accent,
+            ),
+            icon: const IconMark(AppIcon.bookmark, active: true),
+          ),
+        ),
+      ),
+    );
+
+    expect(
+      _inkOf(tester),
+      MoodColors.darkRoast.accent,
+      reason:
+          'IconButton colours its glyph by merging an IconTheme, which '
+          'flutter_svg does not read — so a saved bookmark filled in muted '
+          'ink instead of the accent its own rule asks for',
+    );
+  });
+
   testWidgets('follows the mood it is drawn in', (tester) async {
     await _pumpMark(tester, const IconMark(AppIcon.cup));
     final dark = _inkOf(tester);

@@ -152,10 +152,11 @@ You can always edit this file by hand instead — the helpers just save effort.
   Processing used a droplet where "water is not the category", and every
   knowledge topic the lookup did not name fell back to the same book, so four
   topics shared one mark. The marks are extracted from the design source
-  rather than redrawn, and they follow the mood: a tab fills with the accent
-  when it is selected, a bookmark fills when saved. What the design has not
-  drawn a mark for — a Settings toggle, "not collected yet" — still uses
-  Material, and says so.
+  rather than redrawn, and they follow the mood — a bookmark now fills when
+  it is saved, which is the design's own rule for it. Icons also default to
+  muted ink rather than Material's white, which is what the palette says
+  every inactive icon should be. What the design has not drawn a mark for — a
+  Settings toggle, "not collected yet" — still uses Material, and says so.
 
 - **The active tab wore a green pill, and the first tab had two names.** The
   bar was stock Material with no theme of its own, so it reached through the

@@ -171,15 +171,17 @@ enum AppIcon {
   /// recoloured; the bookmark fills when saved. [activeAsset] is the file.
   final bool hasActive;
 
-  /// Where the extractor writes this mark. Directory and extension in one
-  /// place, so a move is one edit rather than forty.
-  String get asset => 'assets/icons/$_slug.svg';
+  /// Where the extractor writes this mark.
+  String get asset => _file(_slug);
 
   /// The active state's file, or the resting one for a mark that has none —
   /// so a call site can ask for "the active version" without first asking
   /// whether there is one.
-  String get activeAsset =>
-      hasActive ? 'assets/icons/${_slug}_active.svg' : asset;
+  String get activeAsset => hasActive ? _file('${_slug}_active') : asset;
+
+  /// Directory and extension in one place, so a move is one edit rather than
+  /// eighty.
+  String _file(String slug) => 'assets/icons/$slug.svg';
 
   /// `cherrySection` → `cherry_section`. Dart names the value, the design
   /// names the file, and this is the one place the two spellings meet.

@@ -72,8 +72,16 @@ class IconMark extends StatelessWidget {
   /// A mark keeps its aspect inside whatever box it is given.
   final double? size;
 
-  /// The mark's ink. Defaults to the mood's muted ink, which is what the
-  /// design gives every inactive glyph.
+  /// The mark's ink.
+  ///
+  /// Falls back to the ambient [IconTheme]'s colour, then to the mood's muted
+  /// ink — which is what the design gives every inactive glyph.
+  ///
+  /// Inheriting matters more than it looks: `IconButton`, `AppBar` and
+  /// `ListTile` all colour their glyphs by merging an [IconTheme] rather than
+  /// by passing a colour, and `flutter_svg` does not read one. A mark that
+  /// ignored it would paint muted ink inside a button that had asked for the
+  /// accent — which is exactly what a saved bookmark did before this.
   final Color? color;
 
   /// Whether to draw the design's active state, where it draws one.
@@ -90,11 +98,17 @@ class IconMark extends StatelessWidget {
   Widget build(BuildContext context) {
     final mood = context.mood;
 
+    // Colour inherits; size does not. An ambient `IconTheme` almost always
+    // carries Material's 24, and taking it would scale the design's chrome
+    // marks — drawn at 20, 18, 16 — up to the size of the concept family and
+    // lose the distinction the design draws between them.
+    final ink = color ?? IconTheme.of(context).color ?? mood.inkMute;
+
     return SvgPicture.asset(
       active ? icon.activeAsset : icon.asset,
       width: size,
       height: size,
-      theme: SvgTheme(currentColor: color ?? mood.inkMute),
+      theme: SvgTheme(currentColor: ink),
       colorMapper: _MoodColorMapper(mood),
       semanticsLabel: semanticLabel,
       excludeFromSemantics: semanticLabel == null,

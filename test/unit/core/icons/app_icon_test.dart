@@ -122,7 +122,14 @@ void main() {
 
   group('the written marks', () {
     test('carry no colour of their own beyond the mapped sentinels', () {
-      const mapped = {'#FF00FF', '#FF00EE', '#FF00DD'};
+      // Read rather than restated: the extractor publishes the sentinels it
+      // wrote, so a fourth one added there cannot pass unnoticed here.
+      final index =
+          jsonDecode(File(p.join(_assets, 'index.json')).readAsStringSync())
+              as Map<String, dynamic>;
+      final mapped = (index['sentinels']! as Map<String, dynamic>).values
+          .cast<String>()
+          .toSet();
 
       for (final name in _svgsIn(_assets)) {
         final svg = File(p.join(_assets, name)).readAsStringSync();
