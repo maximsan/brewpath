@@ -71,11 +71,11 @@ class DashedRoundedBorder extends OutlinedBorder {
   );
 
   @override
-  ShapeBorder scale(double t) => DashedRoundedBorder(
-    radius: radius * t,
-    side: side.scale(t),
-    dashLength: dashLength * t,
-    dashGap: dashGap * t,
+  ShapeBorder scale(double factor) => DashedRoundedBorder(
+    radius: radius * factor,
+    side: side.scale(factor),
+    dashLength: dashLength * factor,
+    dashGap: dashGap * factor,
   );
 
   @override

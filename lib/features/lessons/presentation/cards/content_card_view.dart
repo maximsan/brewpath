@@ -143,8 +143,9 @@ bool hasRenderer(ContentCard card) => switch (card) {
   TastefixCard() ||
   BagpickCard() ||
   MatchCard() ||
-  VisualCard() => true,
-  PracticalCard() || MultiCard() => true,
+  VisualCard() ||
+  PracticalCard() ||
+  MultiCard() => true,
   SequenceCard() || SliderCard() => false,
 };
 

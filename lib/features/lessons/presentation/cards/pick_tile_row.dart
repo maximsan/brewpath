@@ -1,18 +1,18 @@
+import 'package:brew_path/features/lessons/presentation/cards/card_tints.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
-
-/// Wash behind the tile the learner picked.
-const double _chosenWash = 0.12;
 
 /// How far the tile *not* picked recedes. It stays legible — the guess can
 /// still be changed, so the other option is dimmed, never disabled.
 const double _fadedOpacity = 0.62;
 
 /// Vertical room inside a tile, which the design sets far taller than a row.
-const double _tilePadding = 26;
+/// Off the spacing scale on purpose — see the register entry for why.
+final double _tilePadding = OffTokens.pickTilePadding.value;
 
 /// The two-up guess a `predict` card offers.
 ///
@@ -96,9 +96,9 @@ class _PickTile extends StatelessWidget {
           onPressed: onTap,
           style: OutlinedButton.styleFrom(
             backgroundColor: chosen
-                ? mood.accent.withValues(alpha: _chosenWash)
+                ? mood.accent.withValues(alpha: CardTints.wash)
                 : null,
-            padding: const EdgeInsets.symmetric(
+            padding: EdgeInsets.symmetric(
               vertical: _tilePadding,
               horizontal: AppSpacing.base,
             ),

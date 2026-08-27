@@ -2,6 +2,7 @@ import 'package:brew_path/core/widgets/dashed_rounded_border.dart';
 import 'package:brew_path/features/lessons/presentation/cards/bagpick_bean_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_tints.dart';
 import 'package:brew_path/features/lessons/presentation/cards/choice_list.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
@@ -286,9 +287,6 @@ class _CueRow extends StatelessWidget {
 
   static const _labelWidth = 96.0;
 
-  /// Tint behind the cue that turned out to be the tell.
-  static const _tellTint = 0.12;
-
   final BagpickCue cue;
   final bool revealed;
   final bool isTell;
@@ -313,7 +311,7 @@ class _CueRow extends StatelessWidget {
         // row to find the unread ones — on the one card where looking *is*
         // the interaction.
         color: switch ((isTell, revealed)) {
-          (true, _) => mood.accent.withValues(alpha: _tellTint),
+          (true, _) => mood.accent.withValues(alpha: CardTints.wash),
           (false, true) => mood.surface,
           (false, false) => Colors.transparent,
         },

@@ -84,6 +84,39 @@ void main() {
       expect(gradedCards(lesson.cards).length, 5);
     });
 
+    // The counts the two tickets were written against. Pinned, not derived:
+    // a content edit that drops a card would otherwise slip past the
+    // per-lesson property below, which only checks authored == playable and
+    // is happy when both fall together.
+    test(
+      'the bank still carries the authored practical and multi cards',
+      () async {
+        final lessons = await repo.getLessons();
+        final cards = lessons.expand((lesson) => lesson.cards);
+        expect(cards.whereType<PracticalCard>().length, 5);
+        expect(cards.whereType<MultiCard>().length, 10);
+      },
+    );
+
+    test('practical and multi cards keep their authored order', () async {
+      final lessons = await repo.getLessons();
+      for (final lesson in lessons) {
+        final authored = lesson.cards
+            .where((card) => card is PracticalCard || card is MultiCard)
+            .toList();
+        final played = playableCards(
+          lesson.cards,
+        ).where((card) => card is PracticalCard || card is MultiCard).toList();
+        expect(
+          played,
+          authored,
+          reason:
+              '${lesson.id} reorders cards the learner should meet in '
+              'the order they were authored',
+        );
+      }
+    });
+
     test('every authored practical and multi card reaches a learner', () async {
       final lessons = await repo.getLessons();
       for (final lesson in lessons) {

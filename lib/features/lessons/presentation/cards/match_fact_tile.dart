@@ -1,10 +1,8 @@
+import 'package:brew_path/features/lessons/presentation/cards/card_tints.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
-
-/// Wash behind a fact once it is paired — `.match-item.matched`'s sage 12%.
-const double _matchedWash = 0.12;
 
 /// `.match-item.selected` is a hairline border plus an inset second line;
 /// doubling the width is how that reads without painting two.
@@ -66,7 +64,7 @@ class MatchFactTile extends StatelessWidget {
               },
               width: selected && !_placed ? _selectedBorder : _plainBorder,
             ),
-            color: _placed ? mood.sage.withValues(alpha: _matchedWash) : null,
+            color: _placed ? mood.sage.withValues(alpha: CardTints.wash) : null,
           ),
           child: Row(
             children: [

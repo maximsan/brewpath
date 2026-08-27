@@ -29,6 +29,12 @@ const String _notQuite = 'NOT QUITE';
 /// The single button swaps between *Check answers* and *Continue*, as the
 /// design has it — the shell owns that swap, so this card still does not draw
 /// its own way forward.
+///
+/// It takes its fields rather than the `MultiCard`, unlike the display-only
+/// kinds next to it in the switch. That is the seeding rule, not an
+/// oversight: every card whose options are shuffled is handed them already
+/// shuffled, so one place owns the seed and a replay moves every card the
+/// same way. `GradedPicker` is handed its options for the same reason.
 class MultiCardView extends StatefulWidget {
   /// Creates a [MultiCardView].
   const MultiCardView({
@@ -116,6 +122,7 @@ class _MultiCardViewState extends State<MultiCardView> {
           options: widget.options,
           selected: _selected,
           marks: _marks,
+          submitted: _submitted,
           onToggle: _toggle,
         ),
         if (_submitted) ...[

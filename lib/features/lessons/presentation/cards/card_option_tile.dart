@@ -1,7 +1,11 @@
+import 'package:brew_path/core/widgets/dashed_rounded_border.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
+
+/// The outline width every state keeps unless a kind asks for heavier.
+const double _hairline = 1;
 
 /// One tappable option row, in the shape every picking card draws them.
 ///
@@ -17,6 +21,8 @@ class CardOptionTile extends StatelessWidget {
     this.onTap,
     this.borderColor,
     this.fillColor,
+    this.borderWidth,
+    this.dashed = false,
     super.key,
   });
 
@@ -37,9 +43,23 @@ class CardOptionTile extends StatelessWidget {
   /// Fill behind a marked row, where the kind distinguishes marks by fill.
   final Color? fillColor;
 
+  /// Width of the outline, where a kind reads one state heavier. Defaults to
+  /// the hairline every other state keeps.
+  final double? borderWidth;
+
+  /// Whether the outline is drawn in dashes — the design's "should have been
+  /// picked" state, which must never be mistakable for a row the learner got
+  /// right.
+  final bool dashed;
+
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
+
+    final side = BorderSide(
+      color: borderColor ?? mood.rule,
+      width: borderWidth ?? _hairline,
+    );
 
     return Semantics(
       button: true,
@@ -52,10 +72,14 @@ class CardOptionTile extends StatelessWidget {
           alignment: Alignment.centerLeft,
           backgroundColor: fillColor,
           padding: const EdgeInsets.all(AppSpacing.md),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadii.chrome),
-          ),
-          side: BorderSide(color: borderColor ?? mood.rule),
+          // A dashed outline is painted by the shape, so the button's own
+          // side must stand down or the two draw over each other.
+          shape: dashed
+              ? DashedRoundedBorder(radius: AppRadii.chrome, side: side)
+              : RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppRadii.chrome),
+                ),
+          side: dashed ? BorderSide.none : side,
         ),
         child: child,
       ),

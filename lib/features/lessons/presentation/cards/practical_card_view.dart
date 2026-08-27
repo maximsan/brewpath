@@ -1,5 +1,6 @@
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_takeaway.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -12,8 +13,8 @@ const String _defaultTag = 'HANDS ON';
 /// Label above a practical card's closing note.
 const String _takeawayLabel = 'Worth knowing';
 
-/// Tracking on the two small-caps labels, which the design sets wider than
-/// [CardShell]'s so they read as mono rather than as a heading.
+/// Tracking on the eyebrow, which the design sets wider than [CardShell]'s so
+/// it reads as mono rather than as a heading.
 const double _labelTracking = 1.6;
 
 /// Size of the tune mark beside the eyebrow.
@@ -61,7 +62,7 @@ class PracticalCardView extends StatelessWidget {
         ],
         if (card.note.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.sm),
-          _Takeaway(note: card.note),
+          CardTakeaway(label: _takeawayLabel, text: card.note),
         ],
       ],
     );
@@ -92,51 +93,6 @@ class _Eyebrow extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-/// The closing note, set off by a rule and named.
-///
-/// Named because a practical card's body is a sequence of instructions, and an
-/// unlabelled trailing line reads as one more of them. Read as a single thing
-/// rather than two, so a screen reader does not deliver a bare label and then
-/// an unattached sentence.
-class _Takeaway extends StatelessWidget {
-  const _Takeaway({required this.note});
-
-  final String note;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final mood = context.mood;
-
-    return Semantics(
-      label: '$_takeawayLabel. $note',
-      excludeSemantics: true,
-      child: Container(
-        padding: const EdgeInsets.only(top: AppSpacing.md),
-        decoration: BoxDecoration(
-          border: Border(top: BorderSide(color: mood.rule)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              _takeawayLabel.toUpperCase(),
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: mood.inkMute,
-                letterSpacing: _labelTracking,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(note, style: AppText.heading(mood: mood)),
-          ],
-        ),
-      ),
     );
   }
 }

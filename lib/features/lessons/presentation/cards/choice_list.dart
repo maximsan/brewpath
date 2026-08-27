@@ -1,12 +1,8 @@
 import 'package:brew_path/features/lessons/presentation/cards/card_option_tile.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_tints.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
-
-/// Tint behind a marked option. The design tints a right answer more strongly
-/// than a wrong one, so a bad run does not read as a wall of red.
-const double _correctTint = 0.12;
-const double _incorrectTint = 0.08;
 
 /// One option in a [ChoiceList], already in display order.
 @immutable
@@ -115,8 +111,8 @@ class ChoiceList extends StatelessWidget {
         _OptionMark.none => null,
       },
       fillColor: switch (mark) {
-        _OptionMark.correct => mood.sage.withValues(alpha: _correctTint),
-        _OptionMark.wrong => mood.berry.withValues(alpha: _incorrectTint),
+        _OptionMark.correct => mood.sage.withValues(alpha: CardTints.wash),
+        _OptionMark.wrong => mood.berry.withValues(alpha: CardTints.wrongWash),
         _OptionMark.chosen || _OptionMark.none => null,
       },
       semanticsLabel: [
