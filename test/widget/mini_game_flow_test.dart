@@ -1,4 +1,5 @@
 import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_intro_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_player_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_games_catalog_widget.dart';
@@ -13,6 +14,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../support/find_mark.dart';
 import '../support/widget_harness.dart';
 
 MiniGameFormat _format(
@@ -343,11 +345,11 @@ void main() {
       await _pump(tester, hasCourse: false);
 
       expect(
-        find.byIcon(Icons.lock_outline),
+        findMark(AppIcon.lock),
         findsNWidgets(_formats.length - freeTitles.length),
       );
       expect(
-        find.byIcon(Icons.chevron_right),
+        findMark(AppIcon.chevron),
         findsNWidgets(freeTitles.length),
       );
     });
@@ -419,7 +421,7 @@ void main() {
 
       expect(find.text('TAUGHT IN MODULE 4 · GRIND'), findsNothing);
       expect(find.text(lockedTitle), findsOneWidget);
-      expect(find.byIcon(Icons.lock_outline), findsWidgets);
+      expect(findMark(AppIcon.lock), findsWidgets);
     });
 
     testWidgets('the offer announces itself as a named region', (
@@ -477,9 +479,9 @@ void main() {
       // _pump is entitled by default — the tier is not most tests' subject.
       await _pump(tester);
 
-      expect(find.byIcon(Icons.lock_outline), findsNothing);
+      expect(findMark(AppIcon.lock), findsNothing);
       expect(
-        find.byIcon(Icons.chevron_right),
+        findMark(AppIcon.chevron),
         findsNWidgets(_formats.length),
       );
     });

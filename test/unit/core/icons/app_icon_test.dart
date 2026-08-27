@@ -75,17 +75,18 @@ void main() {
       }
     });
 
-    test('only the nav set is drawn with a state', () {
+    test('the marks with a state are the ones the design gives one', () {
       expect(
-        AppIcon.values
-            .where((icon) => icon.hasActive)
-            .map((icon) => icon.set)
-            .toSet(),
-        {AppIconSet.nav},
+        AppIcon.values.where((icon) => icon.hasActive).toSet(),
+        {
+          // The four v1 tabs, which flavor-wheel.jsx draws twice.
+          AppIcon.cup, AppIcon.route, AppIcon.cards, AppIcon.leaf,
+          // The bookmark, whose rule is prose: "Filled accent when saved".
+          AppIcon.bookmark,
+        },
         reason:
-            'the running prototype draws an active state for the tabs alone; '
-            'a second set gaining one is a design change to read before it is '
-            'transcribed',
+            'a mark gaining or losing a state is a design change to read '
+            'before it is transcribed, not something to discover in a diff',
       );
     });
   });

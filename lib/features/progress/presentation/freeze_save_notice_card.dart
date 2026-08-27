@@ -1,3 +1,5 @@
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/progress/domain/freeze_save_notice.dart';
 import 'package:brew_path/features/progress/domain/freeze_save_notice_providers.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
@@ -72,7 +74,7 @@ class FreezeSaveNoticeCard extends ConsumerWidget {
               ),
             ),
             IconButton(
-              icon: const Icon(Icons.close),
+              icon: const IconMark(AppIcon.close),
               iconSize: AppSpacing.md,
               color: mood.inkMute,
               tooltip: 'Dismiss',

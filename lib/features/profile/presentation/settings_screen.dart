@@ -1,5 +1,6 @@
 import 'dart:async';
-
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/onboarding/presentation/onboarding_providers.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:brew_path/features/profile/presentation/widgets/appearance_selector.dart';
@@ -24,7 +25,7 @@ class SettingsScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Settings'),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const IconMark(AppIcon.back),
           onPressed: () => context.pop(),
         ),
       ),
@@ -115,7 +116,7 @@ class _ResetProgressTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final mood = context.mood;
     return ListTile(
-      leading: Icon(Icons.restart_alt, color: mood.berry),
+      leading: IconMark(AppIcon.rematch, color: mood.berry),
       title: Text(
         'Reset Progress',
         style: TextStyle(color: mood.berry, fontWeight: FontWeight.w600),
@@ -123,7 +124,7 @@ class _ResetProgressTile extends ConsumerWidget {
       subtitle: const Text(
         'Clear completed lessons, points, streak, and unlocked cards.',
       ),
-      trailing: Icon(Icons.chevron_right, color: mood.berry),
+      trailing: IconMark(AppIcon.chevron, color: mood.berry),
       onTap: () => _confirmAndReset(context, ref),
     );
   }
@@ -164,7 +165,7 @@ class _ResetProgressTile extends ConsumerWidget {
       ..showMaterialBanner(
         MaterialBanner(
           content: const Text('Progress reset.'),
-          leading: Icon(Icons.check_circle, color: mood.accent),
+          leading: IconMark(AppIcon.check, color: mood.accent),
           backgroundColor: mood.surface,
           actions: [
             TextButton(
@@ -187,10 +188,10 @@ class _ResetOnboardingTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ListTile(
-      leading: const Icon(Icons.replay_outlined),
+      leading: const IconMark(AppIcon.rematch),
       title: const Text('Restart onboarding'),
       subtitle: const Text('Take the Welcome tour again. Your progress stays.'),
-      trailing: const Icon(Icons.chevron_right),
+      trailing: const IconMark(AppIcon.chevron),
       onTap: () => _confirmAndReset(context, ref),
     );
   }

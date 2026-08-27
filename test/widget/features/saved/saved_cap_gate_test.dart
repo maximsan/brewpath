@@ -1,4 +1,5 @@
 import 'package:brew_path/app/app_theme.dart';
+import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/features/mini_games/domain/course_entitlement.dart';
 import 'package:brew_path/features/saved/domain/saved_cap.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/find_mark.dart';
 import '../../../support/widget_harness.dart';
 
 /// A full free shelf — **real** term ids, because the cap judges the rows the
@@ -65,7 +67,7 @@ void main() {
       _full.toSet(),
       reason: 'nothing moved',
     );
-    expect(find.byIcon(Icons.bookmark_outline), findsOneWidget);
+    expect(findMark(AppIcon.bookmark, active: false), findsOneWidget);
     expect(find.text(savedCapMessage), findsOneWidget);
   });
 

@@ -1,5 +1,6 @@
 import 'dart:async';
-
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/features/companion/domain/companion_reaction.dart';
 import 'package:brew_path/features/companion/presentation/companion_celebration.dart';
@@ -93,7 +94,7 @@ class _StreakScreenState extends ConsumerState<StreakScreen> {
       appBar: AppBar(
         title: const Text('Your streak'),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const IconMark(AppIcon.back),
           onPressed: () => context.pop(),
         ),
       ),

@@ -1,3 +1,5 @@
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/mini_games/domain/course_entitlement.dart';
 import 'package:brew_path/features/saved/domain/saved_cap.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
@@ -73,8 +75,11 @@ class SavedBookmarkButton extends ConsumerWidget {
     // drawing it.
     return IconButton(
       isSelected: isSaved,
-      icon: const Icon(Icons.bookmark_outline),
-      selectedIcon: const Icon(Icons.bookmark),
+      // One mark, two states. The design's rule for it is "filled accent when
+      // saved" — so the saved state is the same drawing filled, not a second
+      // glyph, which is why both slots name the same mark.
+      icon: const IconMark(AppIcon.bookmark),
+      selectedIcon: const IconMark(AppIcon.bookmark, active: true),
       // One colour source. Setting both `color` and a `styleFrom`
       // foreground silently drops one of them in the button's style merge,
       // which is how the saved and unsaved states ended up the same colour.

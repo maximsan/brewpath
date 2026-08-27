@@ -1,4 +1,6 @@
 import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_providers.dart';
@@ -29,7 +31,7 @@ class MiniGameIntroScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Mini-game'),
         leading: IconButton(
-          icon: const Icon(Icons.close),
+          icon: const IconMark(AppIcon.close),
           tooltip: 'Close',
           onPressed: () => context.canPop()
               ? context.pop()

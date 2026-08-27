@@ -1,4 +1,6 @@
 import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/icon_badge.dart';
 import 'package:brew_path/features/tour/domain/tour_copy.dart';
 import 'package:brew_path/features/tour/domain/tour_providers.dart';
@@ -75,7 +77,7 @@ class ReplayTourRow extends ConsumerWidget {
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right, color: mood.inkMute),
+              IconMark(AppIcon.chevron, color: mood.inkMute),
             ],
           ),
         ),

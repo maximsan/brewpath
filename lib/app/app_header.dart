@@ -1,6 +1,8 @@
 import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/app/header_tier.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
@@ -201,7 +203,7 @@ class _SavedButton extends ConsumerWidget {
       icon: Stack(
         clipBehavior: Clip.none,
         children: [
-          const Icon(Icons.bookmark_outline),
+          const IconMark(AppIcon.bookmark),
           if (count > 0)
             const Positioned(
               top: -_badgeInset,

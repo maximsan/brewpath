@@ -1,3 +1,4 @@
+import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/widgets/visual_guide_art.dart';
 import 'package:brew_path/features/lessons/presentation/cards/visual_card_view.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
@@ -5,6 +6,7 @@ import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/find_mark.dart';
 import '../../../support/widget_harness.dart';
 
 /// The anatomy card, the only authored card that sets either flag — and it
@@ -136,7 +138,7 @@ void main() {
 
     await tester.tap(
       find.ancestor(
-        of: find.byIcon(Icons.bookmark_outline),
+        of: findMark(AppIcon.bookmark),
         matching: find.byType(IconButton),
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:brew_path/core/constants/app_labels.dart';
+import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/learn/presentation/learn_screen.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../support/content_fixtures.dart';
+import '../support/find_mark.dart';
 
 /// First module unlocked, the next four locked — mirrors a fresh user.
 final _modules = <ModuleWithProgress>[
@@ -63,7 +65,7 @@ void main() {
   testWidgets('locked modules show a lock icon', (tester) async {
     await _pumpLearn(tester);
 
-    expect(find.byIcon(Icons.lock_outline), findsNWidgets(4));
+    expect(findMark(AppIcon.lock), findsNWidgets(4));
   });
 
   testWidgets('tapping a locked module surfaces the unlock hint', (
@@ -71,7 +73,7 @@ void main() {
   ) async {
     await _pumpLearn(tester);
 
-    await tester.tap(find.byIcon(Icons.lock_outline).first);
+    await tester.tap(findMark(AppIcon.lock).first);
     await tester.pump(); // let the SnackBar appear
     expect(find.text(AppLabels.lockedModuleMessage), findsOneWidget);
   });

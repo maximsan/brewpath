@@ -293,7 +293,7 @@
       "set": "action",
       "label": "Save / favourite",
       "description": "Toggles on lessons, terms, cards & games. Filled accent when saved.",
-      "hasActive": false
+      "hasActive": true
     },
     {
       "slug": "gear",

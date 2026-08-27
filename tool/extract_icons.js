@@ -150,6 +150,21 @@ const STATEFUL = {
       },
     },
   },
+  action: {
+    // Not from a component — from the catalogue's own rule for this mark:
+    // "Toggles on lessons, terms, cards & games. Filled accent when saved."
+    // ADR-0009 leaves the catalogue authoritative where the running prototype
+    // does not contradict it, and no component draws a second bookmark.
+    //
+    // The fill is `currentColor` rather than the accent itself: the accent is
+    // what a saved bookmark is *given* by its call site, and baking it in here
+    // would be the one mark that could not follow the mood.
+    Bookmark: {
+      elements: 1,
+      inactive: {},
+      active: { 0: { fill: "currentColor" } },
+    },
+  },
 };
 
 /** Errors are collected so one run reports every problem, not just the first. */

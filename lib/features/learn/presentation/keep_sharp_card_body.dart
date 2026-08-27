@@ -1,3 +1,5 @@
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/companion/domain/companion_reaction.dart';
 import 'package:brew_path/features/companion/presentation/companion_celebration.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp.dart';
@@ -54,7 +56,7 @@ class KeepSharpCardBody extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.bolt, size: _iconSm, color: mood.accentInk),
+              IconMark(AppIcon.bolt, size: _iconSm, color: mood.accentInk),
               const SizedBox(width: AppSpacing.xs),
               Text(
                 'KEEP SHARP',

@@ -1,3 +1,5 @@
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/saved/presentation/saved_gate.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -46,7 +48,7 @@ class SavedUpgradeRow extends StatelessWidget {
                   ).textTheme.bodyMedium?.copyWith(color: mood.inkMute),
                 ),
               ),
-              Icon(Icons.chevron_right, color: mood.accent),
+              IconMark(AppIcon.chevron, color: mood.accent),
             ],
           ),
         ),

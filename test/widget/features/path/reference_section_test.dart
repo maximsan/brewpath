@@ -1,4 +1,5 @@
 import 'package:brew_path/app/app_theme.dart';
+import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/widgets/visual_guide_art.dart';
 import 'package:brew_path/features/path/domain/visual_guide_providers.dart';
 import 'package:brew_path/features/path/domain/visual_guide_shelf.dart';
@@ -7,6 +8,8 @@ import 'package:brew_path/shared/models/content/visual_guide.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../../../support/find_mark.dart';
 
 VisualGuide _guide(String subject, String title) => VisualGuide(
   id: 'g-$subject',
@@ -54,7 +57,7 @@ void main() {
         find.text('VISUAL GUIDES UNLOCK AS LESSONS TEACH THEM'),
         findsOneWidget,
       );
-      expect(find.byIcon(Icons.lock_outline), findsOneWidget);
+      expect(findMark(AppIcon.lock), findsOneWidget);
     });
 
     testWidgets('refuses to open rather than opening onto nothing', (
@@ -66,7 +69,7 @@ void main() {
       await tester.tap(find.text('Reference'));
       await tester.pumpAndSettle();
 
-      expect(find.byIcon(Icons.chevron_right), findsNothing);
+      expect(findMark(AppIcon.chevron), findsNothing);
       expect(find.text('8 more unlock as you learn'), findsNothing);
     });
   });

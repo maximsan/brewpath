@@ -136,8 +136,9 @@ enum AppIcon {
   /// Overflow.
   more(AppIconSet.action),
 
-  /// Save or favourite.
-  bookmark(AppIconSet.action),
+  /// Save or favourite. Filled when saved, which is the design's own rule for
+  /// this mark rather than a second drawing of it.
+  bookmark(AppIconSet.action, hasActive: true),
 
   /// Settings.
   gear(AppIconSet.action),
@@ -163,11 +164,11 @@ enum AppIcon {
   /// The set the design draws this mark in.
   final AppIconSet set;
 
-  /// Whether the design draws a second, active state for this mark.
+  /// Whether the design gives this mark a second, active state.
   ///
-  /// Only the nav set has one: an active tab fills its shape with the accent
-  /// and knocks the interior lines out, which is a different drawing rather
-  /// than the same drawing in another colour. [activeAsset] is the file for it.
+  /// Five do. The four tabs fill their shape and knock the interior lines out
+  /// when selected, which is a different drawing rather than the same drawing
+  /// recoloured; the bookmark fills when saved. [activeAsset] is the file.
   final bool hasActive;
 
   /// Where the extractor writes this mark. Directory and extension in one

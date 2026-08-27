@@ -1,7 +1,8 @@
 import 'dart:async';
-
 import 'package:brew_path/app/day_surfaces.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/roast_meter.dart';
@@ -94,7 +95,7 @@ class _MiniGamePlayerScreenState extends ConsumerState<MiniGamePlayerScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.close),
+          icon: const IconMark(AppIcon.close),
           tooltip: 'Close',
           onPressed: _done,
         ),
