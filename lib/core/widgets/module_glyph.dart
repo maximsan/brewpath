@@ -1,3 +1,4 @@
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,7 @@ class ModuleGlyph extends StatelessWidget {
     super.key,
   });
 
-  /// The content-defined icon name, resolved through [moduleIcon].
+  /// The content-defined icon name, resolved through [moduleMark].
   final String iconName;
 
   /// Whether the module is still locked, which is the only thing the glyph's
@@ -49,8 +50,8 @@ class ModuleGlyph extends StatelessWidget {
     return SizedBox(
       width: _columnWidth,
       child: Center(
-        child: Icon(
-          moduleIcon(iconName),
+        child: IconMark(
+          moduleMark(iconName),
           size: _glyphSize,
           color: locked ? mood.inkMute : mood.accent,
         ),

@@ -1,4 +1,6 @@
 import 'package:brew_path/app/app_theme.dart';
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/module_glyph.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -10,8 +12,11 @@ Widget _app(Widget child, {ThemeData? theme}) => MaterialApp(
   home: Scaffold(body: Center(child: child)),
 );
 
-Icon _iconOf(WidgetTester tester) => tester.widget<Icon>(
-  find.descendant(of: find.byType(ModuleGlyph), matching: find.byType(Icon)),
+IconMark _markOf(WidgetTester tester) => tester.widget<IconMark>(
+  find.descendant(
+    of: find.byType(ModuleGlyph),
+    matching: find.byType(IconMark),
+  ),
 );
 
 void main() {
@@ -21,7 +26,7 @@ void main() {
         _app(const ModuleGlyph(iconName: 'ic_roast', locked: false)),
       );
 
-      expect(_iconOf(tester).icon, moduleIcon('ic_roast'));
+      expect(_markOf(tester).icon, moduleMark('ic_roast'));
     });
 
     testWidgets('keeps the module icon when locked, never a lock glyph', (
@@ -33,8 +38,8 @@ void main() {
 
       // The design signals lock with colour here and puts the lock mark in the
       // row's trailing slot; the glyph stays the module's identity either way.
-      expect(_iconOf(tester).icon, moduleIcon('ic_roast'));
-      expect(_iconOf(tester).icon, isNot(Icons.lock_outline));
+      expect(_markOf(tester).icon, moduleMark('ic_roast'));
+      expect(_markOf(tester).icon, isNot(AppIcon.lock));
     });
   });
 
@@ -44,7 +49,7 @@ void main() {
         _app(const ModuleGlyph(iconName: 'ic_beans', locked: false)),
       );
 
-      expect(_iconOf(tester).color, MoodColors.darkRoast.accent);
+      expect(_markOf(tester).color, MoodColors.darkRoast.accent);
     });
 
     testWidgets('locked glyphs take the muted ink', (tester) async {
@@ -52,7 +57,7 @@ void main() {
         _app(const ModuleGlyph(iconName: 'ic_beans', locked: true)),
       );
 
-      expect(_iconOf(tester).color, MoodColors.darkRoast.inkMute);
+      expect(_markOf(tester).color, MoodColors.darkRoast.inkMute);
     });
 
     testWidgets('colours follow the mood', (tester) async {
@@ -63,7 +68,7 @@ void main() {
         ),
       );
 
-      expect(_iconOf(tester).color, MoodColors.cupping.accent);
+      expect(_markOf(tester).color, MoodColors.cupping.accent);
     });
   });
 

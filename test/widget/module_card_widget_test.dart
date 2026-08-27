@@ -1,5 +1,6 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/constants/app_labels.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/module_glyph.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/learn/presentation/module_card_widget.dart';
@@ -35,10 +36,10 @@ Future<void> _pump(WidgetTester tester, ModuleWithProgress item) =>
     );
 
 Color? _glyphColour(WidgetTester tester) => tester
-    .widget<Icon>(
+    .widget<IconMark>(
       find.descendant(
         of: find.byType(ModuleGlyph),
-        matching: find.byType(Icon),
+        matching: find.byType(IconMark),
       ),
     )
     .color;

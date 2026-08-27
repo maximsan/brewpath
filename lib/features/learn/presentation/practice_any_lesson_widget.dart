@@ -95,8 +95,8 @@ class _LessonRow extends StatelessWidget {
     final theme = Theme.of(context);
     final mood = context.mood;
     return ListTile(
-      leading: IconBadge.rounded(
-        icon: moduleIcon(entry.module.iconName),
+      leading: IconBadge.roundedMark(
+        mark: moduleMark(entry.module.iconName),
         size: _rowBadgeSize,
         radius: _rowBadgeRadius,
         iconSize: _iconSm,

@@ -205,8 +205,8 @@ class _RewardCard extends StatelessWidget {
         padding: const EdgeInsets.all(14),
         child: Row(
           children: [
-            IconBadge.rounded(
-              icon: moduleIcon(card.iconName),
+            IconBadge.roundedMark(
+              mark: moduleMark(card.iconName),
               size: _badgeSize,
               radius: _cardRadius,
             ),
