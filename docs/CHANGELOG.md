@@ -157,6 +157,16 @@ You can always edit this file by hand instead — the helpers just save effort.
   recorded in `OffTokens` with its reason. The marks are still Material's;
   #378 ports the design's own.
 
+- **A large share of the app's text was still Roboto.** The type ladder resolved
+  eight of Material's fifteen text slots and left seven unset — and an unset slot
+  does not fall back to a neighbouring step, it keeps Flutter's own font at
+  Flutter's own size. Card titles, row headings, eyebrows and support lines
+  across Learn, Path, Cards, Profile, the dictionary and the lesson player were
+  all rendering in a typeface the design does not use, off the nine-step ladder
+  the ladder exists to make inescapable. All fifteen slots are now mapped, so
+  every screen reads in Fraunces, IBM Plex Sans or IBM Plex Mono at a size the
+  design declares — including screens nobody has touched since.
+
 - **The blind bag's closed cues looked exactly like its open ones.** Inspecting
   a cue changed only its words, so finding the ones you had not read meant
   reading all of them — on the single card where looking *is* the interaction.

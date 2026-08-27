@@ -136,20 +136,51 @@ abstract final class AppText {
   /// the ~70 screen call sites still reading `Theme.of(context).textTheme` —
   /// are set in the app's type rather than Roboto.
   ///
-  /// Each slot maps to the step its previous style snaps to, so migrating the
-  /// ladder does not silently restyle screens that were never touched:
-  /// `displayLarge/Medium/Small` were 36/32/30 → [display]; `headlineSmall` was
-  /// 24 → [title]; `bodyMedium` was 14 → [support]; `labelLarge` was the 14px
-  /// button → [support] in the control face; `labelSmall` was the 11px mono
-  /// smallcaps → [label] in mono.
+  /// **All fifteen, with none left out.** `ThemeData` merges a supplied
+  /// `TextTheme` onto the default typography, so a slot left null does not fall
+  /// back to a neighbouring step — it keeps Roboto at Material's own size, off
+  /// the ladder and outside the design's three faces. Seven slots did, which is
+  /// how a class whose whole point is that going off-ladder must be a visible
+  /// act let a large share of the app's text off it invisibly.
+  ///
+  /// Each slot lands on the step nearest the Roboto size it used to resolve to
+  /// — 57/45/36 · 32/28/24 · 22/16/14 · 16/14/12 · 14/12/11 — so mapping a slot
+  /// does not restyle screens that were never touched. A tie is taken
+  /// downwards: `bodyLarge` 16 → [body], `bodyMedium` and `labelLarge` 14 →
+  /// [support], `headlineMedium` 28 → [title], `labelMedium` 12 → [label].
+  ///
+  /// Two things the nearest step cannot decide:
+  ///
+  /// - **Face.** A slot Material sets at weight 500 is a control, so it takes
+  ///   [AppFace.control] where its step defaults to the 400 body face —
+  ///   `titleMedium`, `titleSmall`, `labelLarge`. `labelSmall` keeps mono: it
+  ///   is the numeral smallcaps.
+  /// - **Colour.** [support] and [label] are muted by role, which is right for
+  ///   the support line under a heading and wrong for a title. `titleSmall`
+  ///   therefore lands on the [support] step in full-strength ink.
+  ///
+  /// The three `display*` slots are the exception, and predate this rule: 57
+  /// and 45 are nearest [hero], but a screen title is a role and `hero` is
+  /// reserved for celebration numerals, so all three sit on [display].
+  ///
+  /// Fifteen slots over nine steps means slots Material distinguishes share a
+  /// step — `bodySmall` and `bodyMedium` both land on [support]. That is the
+  /// ladder being shorter than Material's scale, which is the point of it.
   static TextTheme textTheme(MoodColors mood) => TextTheme(
     displayLarge: display(mood: mood),
     displayMedium: display(mood: mood),
     displaySmall: display(mood: mood),
+    headlineLarge: display(mood: mood),
+    headlineMedium: title(mood: mood),
     headlineSmall: title(mood: mood),
+    titleLarge: heading(mood: mood),
+    titleMedium: body(mood: mood, face: AppFace.control),
+    titleSmall: support(color: mood.ink, face: AppFace.control),
     bodyLarge: body(mood: mood),
     bodyMedium: support(mood: mood),
+    bodySmall: support(mood: mood),
     labelLarge: support(mood: mood, face: AppFace.control),
+    labelMedium: label(mood: mood),
     labelSmall: label(mood: mood, face: AppFace.mono),
   );
 
