@@ -97,6 +97,16 @@ explanations — plus test and iOS/SPM build notes — lives in
 - **Tests:** unit tests in `test/unit/`; widget tests in `test/widget/`; integration tests in `integration_test/`
 - **No print statements** — use `debugPrint` only in development guards; never in production paths
 - **Lints:** see `analysis_options.yaml` (the config is the truth) and the README _Toolchain_ paragraph
+- **Building or changing a screen? Read the design reference first.** The
+  component and layout rules live in
+  [`docs/design/03-design-system.md`](docs/design/03-design-system.md) — §"The
+  design system is specified far beyond this section" indexes all 57 components
+  and patterns, and names the source for each. Many are rules rather than
+  widgets ("card or section", "the progress mark reports position, never
+  quality", "sage is never an action"), so they land only if someone reads them —
+  no ticket will ever carry them. A screen built without consulting it is how the
+  app came to diverge from the design on 40 of 61 catalogued components
+  ([#389](https://github.com/maximsan/brewpath/issues/389)).
 
 ## Code Quality Rules
 

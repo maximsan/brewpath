@@ -79,7 +79,7 @@ staging list that feeds it, not a living board. Nothing ticks these boxes.
 
 ## Content
 - [ ] 5 modules / 32 lessons / 257 cards ported with typographic punctuation intact ([§6](06-content.md) 6.1)
-- [ ] 72 dictionary terms (46 full) + 8 categories + cross-links + sources
+- [ ] 73 dictionary terms (all full) + 8 categories + cross-links + sources
 - [ ] Dictionary third state (**Reference**): glyph, chip, To-learn filter exclusion, `REFERENCE ONLY` block, 8 terms
 - [ ] Dictionary home: alias-matching search (deep-linkable + auto-focus), status filter with live counts, category grid, Term-of-Day banner, quick chips
 - [ ] Flashcards: flip, prev/next, shuffle, jump-to-term, empty state

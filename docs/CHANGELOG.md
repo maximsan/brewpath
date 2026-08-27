@@ -121,6 +121,11 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **One progress mark for every run: a bean that roasts as you go.** The lesson
+  header's pill, percentage and bar and the mini-game's segmented strip are
+  replaced by a bean that darkens from green to espresso beside a zero-padded
+  `03 / 08`.
+
 - **The illustration palette can be looked up by the name the design calls it.**
   Extracted content sometimes refers to a colour by the design bundle's own
   custom-property name rather than by hex, so the palette now answers to those
