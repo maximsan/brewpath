@@ -74,7 +74,19 @@ void main() {
 
     expect(find.text('MODULE 1 · BEANS'), findsOneWidget);
     expect(find.text('What coffee actually is'), findsOneWidget);
-    expect(find.text('Step 1 of 2'), findsOneWidget);
+    expect(find.text('01 / 02'), findsOneWidget);
+  });
+
+  testWidgets('reports position without ever reporting a score', (
+    tester,
+  ) async {
+    await pumpLesson(tester, testLesson());
+
+    // The header says where the learner is. How well they did belongs to the
+    // completion screen — a percentage or a filling bar here would be read as
+    // a mark on the run in progress.
+    expect(find.byType(LinearProgressIndicator), findsNothing);
+    expect(find.textContaining('%'), findsNothing);
   });
 
   testWidgets('plays every card and ends at the completion screen', (
@@ -84,7 +96,7 @@ void main() {
 
     // Card 1 — the concept card, ungraded.
     await advance(tester, 'Continue');
-    expect(find.text('Step 2 of 2'), findsOneWidget);
+    expect(find.text('02 / 02'), findsOneWidget);
 
     // Card 2 — the graded one. Answer, then move on.
     await advance(tester, 'A seed');
@@ -117,7 +129,7 @@ void main() {
     );
 
     // Three authored, two playable — and the run reaches the end.
-    expect(find.text('Step 1 of 2'), findsOneWidget);
+    expect(find.text('01 / 02'), findsOneWidget);
     await advance(tester, 'Continue');
     await advance(tester, 'A seed');
     await advance(tester, 'Continue');

@@ -1,16 +1,15 @@
+import 'package:brew_path/core/widgets/roast_meter.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-const double _pillRadius = 20;
-const int _percentScale = 100;
-const double _progressBarHeight = 6;
-const double _progressBarRadius = 3;
-const double _pillGapH = 10;
-const double _pillGapV = 4;
-
 /// The header above a playing lesson: which module it belongs to, its title,
 /// and how far through it the learner is.
+///
+/// The position is a [RoastMeter] — the same bean the mini-game player shows.
+/// It deliberately carries **no percentage and no bar**: this header says where
+/// the learner is, and a filling bar with a figure beside it reads as how well
+/// they are doing. That is the completion screen's job, not this one's.
 class LessonProgressHeader extends StatelessWidget {
   /// Creates a [LessonProgressHeader].
   const LessonProgressHeader({
@@ -53,69 +52,14 @@ class LessonProgressHeader extends StatelessWidget {
           ),
         ),
         const SizedBox(height: AppSpacing.md),
-        _CardProgress(current: current, total: total),
+        Center(
+          child: RoastMeter(
+            done: current,
+            total: total,
+            semanticsLabel: 'Card $current of $total',
+          ),
+        ),
       ],
-    );
-  }
-}
-
-/// A pill on the left (`Step X of Y`), percent on the right, bar beneath.
-class _CardProgress extends StatelessWidget {
-  const _CardProgress({required this.current, required this.total});
-
-  final int current;
-  final int total;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final mood = context.mood;
-    final progress = total == 0 ? 0.0 : current / total;
-
-    return Semantics(
-      label: 'Step $current of $total',
-      excludeSemantics: true,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: _pillGapH,
-                  vertical: _pillGapV,
-                ),
-                decoration: BoxDecoration(
-                  color: mood.accent,
-                  borderRadius: BorderRadius.circular(_pillRadius),
-                ),
-                child: Text(
-                  'Step $current of $total',
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: mood.accentInk,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              Text(
-                '${(progress * _percentScale).round()}%',
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: mood.inkMute,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          LinearProgressIndicator(
-            value: progress,
-            minHeight: _progressBarHeight,
-            borderRadius: BorderRadius.circular(_progressBarRadius),
-            backgroundColor: mood.surface2,
-            color: mood.accent,
-          ),
-        ],
-      ),
     );
   }
 }
