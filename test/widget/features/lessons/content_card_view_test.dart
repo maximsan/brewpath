@@ -289,6 +289,35 @@ void main() {
       );
     });
 
+    testWidgets('a closed cue is dashed and an opened one is not', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_host(_bagpick, _Signals()));
+
+      /// The shape drawn around the cue row showing [text].
+      ShapeBorder? shapeAround(String text) {
+        final decoration = tester
+            .widget<Container>(find.widgetWithText(Container, text).first)
+            .decoration;
+        return decoration is ShapeDecoration ? decoration.shape : null;
+      }
+
+      await tester.tap(find.text('Tap to inspect').first);
+      await tester.pumpAndSettle();
+
+      // The design draws a cue dashed over nothing and fills it in once
+      // inspected — compared in the same frame, as the learner sees them.
+      expect(
+        shapeAround('Tap to inspect'),
+        isA<DashedRoundedBorder>(),
+        reason: 'a cue waiting to be read is an outline, not a filled box',
+      );
+      expect(
+        shapeAround('Even blue-green. Every bean the same shade.'),
+        isNot(isA<DashedRoundedBorder>()),
+      );
+    });
+
     testWidgets('the verdict is coloured by outcome, not only worded', (
       tester,
     ) async {

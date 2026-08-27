@@ -1,3 +1,4 @@
+import 'package:brew_path/core/widgets/dashed_rounded_border.dart';
 import 'package:brew_path/features/lessons/presentation/cards/bagpick_bean_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
@@ -285,9 +286,8 @@ class _CueRow extends StatelessWidget {
 
   static const _labelWidth = 96.0;
 
-  /// A closed cue's border, dimmed so it reads as an outline waiting to be
-  /// filled rather than a box with something already in it.
-  static const _closedBorder = 0.4;
+  /// Tint behind the cue that turned out to be the tell.
+  static const _tellTint = 0.12;
 
   final BagpickCue cue;
   final bool revealed;
@@ -307,17 +307,13 @@ class _CueRow extends StatelessWidget {
           : '${cue.label}. $body',
       excludeSemantics: true,
       child: Material(
-        // A closed cue has to *look* closed, before its words are read. The
-        // design draws it dashed over nothing and fills it in once inspected;
-        // the fill and the border weight carry the state here instead. That
-        // was once because no dashed border existed — `DashedRoundedBorder`
-        // now does, so this is an open divergence from the design rather than
-        // a cost, and it is not this file's ticket to close. A
-        // row whose only difference is its text makes the learner read every
+        // A closed cue has to *look* closed, before its words are read: the
+        // design draws it dashed over nothing and fills it in once inspected.
+        // A row whose only difference is its text makes the learner read every
         // row to find the unread ones — on the one card where looking *is*
         // the interaction.
         color: switch ((isTell, revealed)) {
-          (true, _) => mood.surface2,
+          (true, _) => mood.accent.withValues(alpha: _tellTint),
           (false, true) => mood.surface,
           (false, false) => Colors.transparent,
         },
@@ -326,13 +322,20 @@ class _CueRow extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(AppRadii.chrome),
           child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(AppRadii.chrome),
-              border: Border.all(
-                color: isTell
-                    ? mood.accent
-                    : mood.rule.withValues(alpha: revealed ? 1 : _closedBorder),
-              ),
+            decoration: ShapeDecoration(
+              shape: revealed
+                  ? RoundedRectangleBorder(
+                      side: BorderSide(
+                        color: isTell ? mood.accent : mood.rule,
+                      ),
+                      borderRadius: BorderRadius.circular(AppRadii.chrome),
+                    )
+                  : DashedRoundedBorder(
+                      radius: AppRadii.chrome,
+                      side: BorderSide(
+                        color: isTell ? mood.accent : mood.rule,
+                      ),
+                    ),
             ),
             padding: const EdgeInsets.all(AppSpacing.sm),
             child: Row(
