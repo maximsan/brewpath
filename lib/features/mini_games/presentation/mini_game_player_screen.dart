@@ -102,7 +102,7 @@ class _MiniGamePlayerScreenState extends ConsumerState<MiniGamePlayerScreen> {
           data: (data) => data.isEmpty || _index >= data.length
               ? null
               : RoastMeter(
-                  done: _index + 1,
+                  position: _index + 1,
                   total: data.length,
                   semanticsLabel: 'Round ${_index + 1} of ${data.length}',
                 ),

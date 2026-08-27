@@ -1,15 +1,9 @@
 import 'package:brew_path/core/widgets/bean_shape.dart';
+import 'package:brew_path/core/widgets/roast_meter_math.dart';
 import 'package:brew_path/shared/theme/art_colors.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
-
-/// How far along the roast ramp a run has got: 0 at the start, 1 at the end.
-///
-/// A run with nothing in it has not started, so it reads raw green rather than
-/// dividing by zero.
-double roastProgress({required int done, required int total}) =>
-    total <= 0 ? 0 : done.clamp(0, total) / total;
 
 /// A coffee bean that **roasts as a run advances** — the design's `RoastBean`.
 ///
@@ -21,16 +15,17 @@ double roastProgress({required int done, required int total}) =>
 /// The roast colours are literal coffee, so they come from [ArtColors] and are
 /// identical in both moods; only the outline follows the mood.
 class RoastBean extends StatelessWidget {
-  /// Creates a [RoastBean] showing [done] of [total].
+  /// Creates a [RoastBean] showing [position] of [total].
   const RoastBean({
-    required this.done,
+    required this.position,
     required this.total,
     this.size = _defaultSize,
     super.key,
   });
 
-  /// The card being played, 1-based.
-  final int done;
+  /// The card being played, 1-based. (The design calls this prop `done` and
+  /// passes it `idx + 1`; here it is named for what it holds.)
+  final int position;
 
   /// How many cards the run plays.
   final int total;
@@ -52,7 +47,7 @@ class RoastBean extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final outline = context.mood.inkMute;
-    final target = roastProgress(done: done, total: total);
+    final target = roastProgress(position: position, total: total);
 
     return SizedBox.square(
       dimension: size,

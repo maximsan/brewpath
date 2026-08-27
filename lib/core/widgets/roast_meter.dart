@@ -1,11 +1,9 @@
 import 'package:brew_path/core/widgets/roast_bean.dart';
+import 'package:brew_path/core/widgets/roast_meter_math.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
-
-/// A count as the design sets it: `1` of `8` reads `01 / 08`.
-String zeroPadded(int count) => count.toString().padLeft(2, '0');
 
 /// Where a learner is inside a run: a roasting bean and a zero-padded counter.
 ///
@@ -14,16 +12,16 @@ String zeroPadded(int count) => count.toString().padLeft(2, '0');
 /// unrelated ideas of "how far through am I". It reports **position only**:
 /// there is no percentage and no bar, because either would be read as a score.
 class RoastMeter extends StatelessWidget {
-  /// Creates a [RoastMeter] showing [done] of [total].
+  /// Creates a [RoastMeter] showing [position] of [total].
   const RoastMeter({
-    required this.done,
+    required this.position,
     required this.total,
     required this.semanticsLabel,
     super.key,
   });
 
   /// The card or round being played, 1-based.
-  final int done;
+  final int position;
 
   /// How many the run plays.
   final int total;
@@ -44,10 +42,10 @@ class RoastMeter extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          RoastBean(done: done, total: total),
+          RoastBean(position: position, total: total),
           const SizedBox(width: AppSpacing.xs),
           Text(
-            '${zeroPadded(done)} / ${zeroPadded(total)}',
+            '${zeroPadded(position)} / ${zeroPadded(total)}',
             style: AppText.label(mood: mood, face: AppFace.mono),
           ),
         ],

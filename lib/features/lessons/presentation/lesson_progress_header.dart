@@ -54,7 +54,7 @@ class LessonProgressHeader extends StatelessWidget {
         const SizedBox(height: AppSpacing.md),
         Center(
           child: RoastMeter(
-            done: current,
+            position: current,
             total: total,
             semanticsLabel: 'Card $current of $total',
           ),

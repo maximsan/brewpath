@@ -15,11 +15,11 @@ Widget _app(Widget child, {bool reduceMotion = false}) => MaterialApp(
 
 /// Keyed by the card it shows, so each pump mounts a fresh meter — except
 /// where a test passes one key across two pumps to watch the same meter move.
-Widget _meter(int done, {int total = 8, Key? key}) => RoastMeter(
-  key: key ?? ValueKey(done),
-  done: done,
+Widget _meter(int position, {int total = 8, Key? key}) => RoastMeter(
+  key: key ?? ValueKey(position),
+  position: position,
   total: total,
-  semanticsLabel: 'Card $done of $total',
+  semanticsLabel: 'Card $position of $total',
 );
 
 /// The colour the bean is actually painted in, read off its painter.
@@ -56,8 +56,8 @@ void main() {
 
     testWidgets('moves on every card of an eight-card lesson', (tester) async {
       final shown = <Color>[];
-      for (var done = 1; done <= 8; done++) {
-        await tester.pumpWidget(_app(_meter(done), reduceMotion: true));
+      for (var position = 1; position <= 8; position++) {
+        await tester.pumpWidget(_app(_meter(position), reduceMotion: true));
         shown.add(_roast(tester));
       }
 
