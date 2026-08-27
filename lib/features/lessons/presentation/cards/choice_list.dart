@@ -3,6 +3,11 @@ import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
+/// Tint behind a marked option. The design tints a right answer more strongly
+/// than a wrong one, so a bad run does not read as a wall of red.
+const double _correctTint = 0.12;
+const double _incorrectTint = 0.08;
+
 /// One option in a [ChoiceList], already in display order.
 @immutable
 class ChoiceOption {
@@ -85,9 +90,12 @@ class ChoiceList extends StatelessWidget {
     return _OptionMark.none;
   }
 
-  /// One option, in the shared frame, marked by border alone — this list
-  /// distinguishes a single committed answer, so a fill would say nothing a
-  /// border does not.
+  /// One option, in the shared frame.
+  ///
+  /// A mark is carried by border colour **and** a tint, as
+  /// `.mcq-choice.correct` / `.incorrect` have it — sage at 12%, berry at 8%,
+  /// the weaker one so a bad run does not read as a wall of red. The border
+  /// stays hairline in every state; the design never thickens it.
   Widget _option(
     BuildContext context, {
     required ChoiceOption option,
@@ -105,6 +113,11 @@ class ChoiceList extends StatelessWidget {
         _OptionMark.wrong => mood.berry,
         _OptionMark.chosen => mood.accent,
         _OptionMark.none => null,
+      },
+      fillColor: switch (mark) {
+        _OptionMark.correct => mood.sage.withValues(alpha: _correctTint),
+        _OptionMark.wrong => mood.berry.withValues(alpha: _incorrectTint),
+        _OptionMark.chosen || _OptionMark.none => null,
       },
       semanticsLabel: [
         option.text,

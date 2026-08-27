@@ -3,10 +3,6 @@ import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// Border weight on an option once a card has marked it.
-const double _markedBorder = 2;
-const double _plainBorder = 1;
-
 /// One tappable option row, in the shape every picking card draws them.
 ///
 /// The frame only — border, fill, hit target and the spoken label. What the
@@ -33,7 +29,9 @@ class CardOptionTile extends StatelessWidget {
   /// Null once the card has latched, which is what disables the row.
   final VoidCallback? onTap;
 
-  /// Set once the row carries a mark; drives the heavier border too.
+  /// Set once the row carries a mark. The width never changes with it: the
+  /// design keeps the outline hairline in every state and lets colour and
+  /// tint carry the mark.
   final Color? borderColor;
 
   /// Fill behind a marked row, where the kind distinguishes marks by fill.
@@ -57,10 +55,7 @@ class CardOptionTile extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadii.chrome),
           ),
-          side: BorderSide(
-            color: borderColor ?? mood.rule,
-            width: borderColor != null ? _markedBorder : _plainBorder,
-          ),
+          side: BorderSide(color: borderColor ?? mood.rule),
         ),
         child: child,
       ),

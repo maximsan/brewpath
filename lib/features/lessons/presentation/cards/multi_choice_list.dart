@@ -22,9 +22,11 @@ const double _boxSize = 22;
 const double _boxBorder = 1.5;
 const double _boxMark = 15;
 
-/// Border weight on a row the learner has marked or picked.
-const double _markedBorder = 2;
-const double _plainBorder = 1;
+/// The design keeps the outline hairline in every state. Only a pre-submit
+/// pick reads heavier, and it does so with an inset second line rather than a
+/// thicker one — `.ms-choice.on`'s `box-shadow: inset 0 0 0 1px`.
+const double _borderWidth = 1;
+const double _pickedInset = 2;
 
 /// How one option is drawn, as the design's four states.
 ///
@@ -179,9 +181,11 @@ class _MultiOptionRow extends StatelessWidget {
     final theme = Theme.of(context);
     final mood = context.mood;
     final skin = _skin(mood);
-    final marked = mark != MultiMark.none || picked;
-    final width = marked ? _markedBorder : _plainBorder;
-    final side = BorderSide(color: skin.border, width: width);
+    final open = mark == MultiMark.none;
+    final side = BorderSide(
+      color: skin.border,
+      width: open && picked ? _pickedInset : _borderWidth,
+    );
 
     return Semantics(
       button: true,
