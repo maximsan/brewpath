@@ -186,6 +186,11 @@ bool _continueEnabled(WidgetTester tester) =>
 
 void main() {
   group('every renderer', () {
+    // Kinds that latch on arrival are absent on purpose: `visual` and
+    // `practical` are read, not asked, so Continue is live from the first
+    // frame and the assertion below — that it starts disabled — is not true
+    // of them. Each has its own file. The switch-pair test at the foot of
+    // this one is what keeps every kind covered.
     final cards = <String, ContentCard>{
       'predict': _predict,
       'concept': _concept,
@@ -794,6 +799,33 @@ void main() {
         find.text('Missed'),
         findsNWidgets(2),
         reason: 'both unpicked answers must be shown as missed',
+      );
+    });
+
+    testWidgets('a missed answer is not drawn like one you got right', (
+      tester,
+    ) async {
+      /// The fill behind an option row, which is what separates the marks.
+      Color? fillBehind(String text) {
+        final button = tester.widget<OutlinedButton>(
+          find.ancestor(
+            of: find.text(text),
+            matching: find.byType(OutlinedButton),
+          ),
+        );
+        return button.style?.backgroundColor?.resolve(const {});
+      }
+
+      await tester.pumpWidget(_host(_multi, _Signals()));
+      await pickAndCheck(tester, ['Grind size']);
+
+      // Compared in the same frame: an answer picked against one missed.
+      expect(
+        fillBehind('Water temperature'),
+        isNot(fillBehind('Grind size')),
+        reason:
+            'a row whose only difference is a small tag makes the learner '
+            'read every row to find the ones they missed',
       );
     });
 

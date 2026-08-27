@@ -7,7 +7,6 @@ import 'package:brew_path/features/lessons/presentation/cards/graded_picker.dart
 import 'package:brew_path/features/lessons/presentation/cards/match_board.dart';
 import 'package:brew_path/features/lessons/presentation/cards/match_board_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/multi_card_view.dart';
-import 'package:brew_path/features/lessons/presentation/cards/multi_choice_list.dart';
 import 'package:brew_path/features/lessons/presentation/cards/practical_card_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/predict_card_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/visual_card_view.dart';
@@ -58,7 +57,7 @@ Widget? contentCardView(
     final MultiCard multi => MultiCardView(
       prompt: multi.prompt,
       explanation: multi.explanation,
-      options: shuffledBySeed(_multiOptions(multi), seed),
+      options: shuffledBySeed(_fromChoices(multi.choices), seed),
       onSolved: onSolved,
       onContinue: onContinue,
     ),
@@ -265,12 +264,6 @@ PickerCopy _flavorCopy(FlavorCard card) => PickerCopy(
 List<ChoiceOption> _flavorOptions(FlavorCard card) => [
   for (final (index, choice) in card.choices.indexed)
     ChoiceOption(text: choice.text, isCorrect: index == card.answer),
-];
-
-/// A `multi` card's choices, carrying the answer key the list marks with.
-List<MultiOption> _multiOptions(MultiCard card) => [
-  for (final choice in card.choices)
-    MultiOption(text: choice.text, isCorrect: choice.isCorrect),
 ];
 
 List<ChoiceOption> _fromChoices(List<Choice> choices) => [

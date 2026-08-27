@@ -63,15 +63,42 @@ void main() {
   testWidgets('the note is shown, and says what it is', (tester) async {
     await tester.pumpWidget(wrap(_brewStep));
 
-    expect(find.text('Worth knowing'), findsOneWidget);
+    // The design sets the label in small caps, as it does every card label.
+    expect(find.text('WORTH KNOWING'), findsOneWidget);
     expect(find.text(_brewStep.note), findsOneWidget);
+  });
+
+  testWidgets('the note is read as one thing, not a label and a stray line', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await tester.pumpWidget(wrap(_brewStep));
+
+    expect(
+      find.bySemanticsLabel('Worth knowing. ${_brewStep.note}'),
+      findsOneWidget,
+      reason: 'a bare label followed by an unattached sentence reads as two',
+    );
+    handle.dispose();
+  });
+
+  testWidgets('the step is named in the accent, with the mark beside it', (
+    tester,
+  ) async {
+    await tester.pumpWidget(wrap(_brewStep));
+
+    expect(
+      find.byIcon(Icons.tune),
+      findsOneWidget,
+      reason: 'the design marks a hands-on card before it names the step',
+    );
   });
 
   testWidgets('a card with no note shows no takeaway at all', (tester) async {
     await tester.pumpWidget(wrap(_untagged));
 
     expect(
-      find.text('Worth knowing'),
+      find.text('WORTH KNOWING'),
       findsNothing,
       reason: 'an empty note must not leave a labelled, empty block behind',
     );

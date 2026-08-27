@@ -1,5 +1,6 @@
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
+import 'package:brew_path/features/lessons/presentation/cards/choice_list.dart';
 import 'package:brew_path/features/lessons/presentation/cards/multi_choice_list.dart';
 import 'package:brew_path/features/lessons/presentation/cards/multi_scoring.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -46,7 +47,7 @@ class MultiCardView extends StatefulWidget {
   final String explanation;
 
   /// The choices, already in display order.
-  final List<MultiOption> options;
+  final List<ChoiceOption> options;
 
   /// Fired once, only when the committed set is exactly right.
   final CardSolved onSolved;
@@ -62,12 +63,23 @@ class _MultiCardViewState extends State<MultiCardView> {
   final Set<int> _selected = {};
   bool _submitted = false;
 
+  /// Derived here and nowhere else: this card both scores against the key and
+  /// hands the list its marks, so a second derivation could only disagree.
   List<bool> get _answerKey => [
     for (final option in widget.options) option.isCorrect,
   ];
 
   bool get _wasCorrect =>
       isMultiCorrect(selected: _selected, isCorrect: _answerKey);
+
+  /// One mark per option — all [MultiMark.none] until the card is committed.
+  List<MultiMark> get _marks => [
+    for (var index = 0; index < widget.options.length; index++)
+      if (!_submitted)
+        MultiMark.none
+      else
+        markFor(index: index, selected: _selected, isCorrect: _answerKey),
+  ];
 
   void _toggle(int index) {
     if (_submitted) return;
@@ -78,9 +90,7 @@ class _MultiCardViewState extends State<MultiCardView> {
 
   void _check() {
     if (_submitted || _selected.isEmpty) return;
-    // Latching before the callback matters: the host may rebuild synchronously
-    // on the success signal, and a card that had not yet latched would accept
-    // a second commit.
+    // Latched before the callback, for the reason `graded_picker` records.
     final correct = _wasCorrect;
     setState(() => _submitted = true);
     if (correct) widget.onSolved();
@@ -106,7 +116,7 @@ class _MultiCardViewState extends State<MultiCardView> {
         MultiChoiceList(
           options: widget.options,
           selected: _selected,
-          submitted: _submitted,
+          marks: _marks,
           onToggle: _toggle,
         ),
         if (!_submitted) ...[
