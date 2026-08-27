@@ -173,9 +173,9 @@ abstract final class AppText {
   /// one — `bodySmall` and `bodyMedium` both land on [support]. That is the
   /// ladder being shorter than Material's scale, which is the point of it.
   ///
-  /// What this cannot fix is a call site reading the wrong slot: a few read
-  /// `labelMedium` for sentence-case text ("Step 3 of 8"), which now carries
-  /// the smallcaps tracking the label rung owes its uppercase siblings. Those
+  /// What this cannot fix is a call site reading the wrong slot: three read
+  /// `labelMedium` for sentence-case text ("3 of 5 saved") and so inherit the
+  /// smallcaps tracking the label rung owes its uppercase siblings. Those
   /// belong to the per-screen work, not here.
   static TextTheme textTheme(MoodColors mood) => TextTheme(
     displayLarge: display(mood: mood),
