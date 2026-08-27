@@ -40,12 +40,7 @@ void main() {
     testWidgets('starts green at the first card of a lesson', (tester) async {
       await tester.pumpWidget(_app(_meter(1), reduceMotion: true));
 
-      // One card into eight is an eighth along the ramp — halfway between raw
-      // green and light roast.
-      expect(
-        _roast(tester),
-        Color.lerp(ArtColors.raw, ArtColors.roastLight, 0.5),
-      );
+      expect(_roast(tester), ArtColors.raw);
     });
 
     testWidgets('reaches espresso on the last card', (tester) async {
@@ -104,17 +99,17 @@ void main() {
 
       final midFlight = _roast(tester);
       expect(midFlight, isNot(first));
-      expect(midFlight, isNot(ArtColors.roastAt(2 / 8)));
+      expect(midFlight, isNot(ArtColors.roastAt(1 / 7)));
 
       await tester.pumpAndSettle();
-      expect(_roast(tester), ArtColors.roastAt(2 / 8));
+      expect(_roast(tester), ArtColors.roastAt(1 / 7));
     });
 
     testWidgets('drops the animator under reduced motion', (tester) async {
       await tester.pumpWidget(_app(_meter(1), reduceMotion: true));
 
       expect(find.byType(TweenAnimationBuilder<double>), findsNothing);
-      expect(_roast(tester), ArtColors.roastAt(1 / 8));
+      expect(_roast(tester), ArtColors.raw);
     });
   });
 
