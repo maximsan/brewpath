@@ -2,6 +2,7 @@ import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -52,12 +53,7 @@ class PracticalCardView extends StatelessWidget {
       children: [
         _Eyebrow(tag: card.tag.isEmpty ? _defaultTag : card.tag),
         const SizedBox(height: AppSpacing.xs),
-        Text(
-          card.title,
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
+        Text(card.title, style: AppText.title(mood: context.mood)),
         const SizedBox(height: AppSpacing.md),
         for (final paragraph in card.paragraphs) ...[
           Text(paragraph, style: theme.textTheme.bodyLarge),
@@ -137,7 +133,7 @@ class _Takeaway extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.xs),
-            Text(note, style: theme.textTheme.titleMedium),
+            Text(note, style: AppText.heading(mood: mood)),
           ],
         ),
       ),

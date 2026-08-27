@@ -1,5 +1,6 @@
 import 'package:brew_path/features/lessons/presentation/cards/practical_card_view.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -102,6 +103,20 @@ void main() {
       findsNothing,
       reason: 'an empty note must not leave a labelled, empty block behind',
     );
+  });
+
+  testWidgets('the title is set in the display face, not a stock fallback', (
+    tester,
+  ) async {
+    await tester.pumpWidget(wrap(_brewStep));
+
+    // `titleLarge` and `titleMedium` are not mapped in AppText.textTheme, so
+    // asking for them silently returns Material's Roboto — a face this design
+    // does not use anywhere. #357 closes that gap; this card must not depend
+    // on how it closes.
+    final title = tester.widget<Text>(find.text('Weigh the coffee'));
+    expect(title.style?.fontFamily, AppText.title().fontFamily);
+    expect(title.style?.fontFamily, isNot('Roboto'));
   });
 
   testWidgets('continue is live on arrival — nothing here is answered', (
