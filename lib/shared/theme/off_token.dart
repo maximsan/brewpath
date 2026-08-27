@@ -84,6 +84,17 @@ abstract final class OffTokens {
         'to one illustration rather than to the palette.',
   );
 
+  /// The cream highlight carved down the middle of a drawn bean.
+  static const OffToken<Color> beanCrease = OffToken(
+    Color(0xFFFBF7EE),
+    reason:
+        'The design writes this literal into the bean itself, so the crease '
+        'stays the same cream in both moods — it is a highlight on an object, '
+        'not a surface of the app. It happens to equal the Cupping surface, '
+        'which is a coincidence of the palette rather than a reference to it. '
+        'Nor is it --art-cream, whose warmer value is for illustration fills.',
+  );
+
   /// Every sanctioned exception, so the register can be read — and tested — as
   /// a whole rather than one constant at a time.
   static const register = <OffToken<Object>>[
@@ -91,5 +102,6 @@ abstract final class OffTokens {
     rewardedAdProgressRing,
     seedInk,
     seedStain,
+    beanCrease,
   ];
 }
