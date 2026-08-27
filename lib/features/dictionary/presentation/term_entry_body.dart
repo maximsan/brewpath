@@ -1,3 +1,4 @@
+import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_status_style.dart';
@@ -226,13 +227,7 @@ class _Block extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label.toUpperCase(),
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: context.mood.inkMute,
-            letterSpacing: 1,
-          ),
-        ),
+        SmallcapsLabel(label),
         const SizedBox(height: AppSpacing.xs),
         child,
       ],

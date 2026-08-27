@@ -1,24 +1,20 @@
-import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:flutter/material.dart';
 
-/// Small uppercase-weight heading that introduces a list section.
+/// The smallcaps label that introduces a list section.
 ///
-/// Shared across screens to keep section labels visually consistent.
+/// A name for the role, not a second type rule: the lettering is
+/// [SmallcapsLabel]'s. This exists so the four screens that raise a section —
+/// Learn, Cards, module detail and dictionary home — say *section header*
+/// rather than each reaching for the label widget directly, and so a section
+/// can later gain spacing or a trailing count in one place.
 class SectionHeader extends StatelessWidget {
   /// Creates a [SectionHeader].
   const SectionHeader(this.title, {super.key});
 
-  /// The section heading text.
+  /// The section heading text. Rendered uppercase, like every smallcaps.
   final String title;
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Text(
-      title,
-      style: theme.textTheme.titleSmall?.copyWith(
-        color: context.mood.inkMute,
-      ),
-    );
-  }
+  Widget build(BuildContext context) => SmallcapsLabel(title);
 }

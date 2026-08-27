@@ -32,7 +32,7 @@ void main() {
 
     // A header over an empty list tells the learner they are missing
     // something rather than that there is nothing to miss.
-    expect(find.text('Saved challenges'), findsNothing);
+    expect(find.text('SAVED CHALLENGES'), findsNothing);
     expect(find.byType(SizedBox), findsWidgets);
   });
 
@@ -42,7 +42,7 @@ void main() {
       testChallenge(id: 'bc-m2', title: 'Blind process test'),
     ]);
 
-    expect(find.text('Saved challenges'), findsOneWidget);
+    expect(find.text('SAVED CHALLENGES'), findsOneWidget);
     expect(find.text('Two cups, two ratios'), findsOneWidget);
     expect(find.text('Blind process test'), findsOneWidget);
     expect(find.text('Next brews · 5 min'), findsNWidgets(2));

@@ -262,6 +262,14 @@ You can always edit this file by hand instead — the helpers just save effort.
   a Settings toggle, "not collected yet", the start arrow — still uses
   Material, and says so at the call site.
 
+- **Section headings are smallcaps everywhere, and lettered the same.** The
+  shared `SectionHeader` — the heading over Learn's sections, Cards' groups,
+  a module's lessons and the dictionary's categories — was not uppercase at
+  all, and two more places wrote their own smallcaps a letter or two apart:
+  the dictionary entry's block labels and Settings' group labels each picked
+  their own spacing, and Settings a weight the design does not have. All three
+  now render through the one label the app already shipped.
+
 - **The active tab wore a green pill, and the first tab had two names.** The
   bar was stock Material with no theme of its own, so it reached through the
   palette for whatever Material's defaults pointed at: the pill behind the

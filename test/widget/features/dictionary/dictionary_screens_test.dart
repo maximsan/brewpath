@@ -79,8 +79,10 @@ void main() {
       await tester.pumpWidget(_wrap(const DictionaryHomeScreen()));
       await tester.pumpAndSettle();
 
-      expect(find.text('Beans and Botany'), findsOneWidget);
-      expect(find.text('Coffee Trade'), findsOneWidget);
+      // The category names head sections, so they are smallcaps; the terms
+      // under them are not.
+      expect(find.text('BEANS AND BOTANY'), findsOneWidget);
+      expect(find.text('COFFEE TRADE'), findsOneWidget);
       expect(find.text('Arabica'), findsOneWidget);
       expect(find.text('TDS'), findsOneWidget);
     });
