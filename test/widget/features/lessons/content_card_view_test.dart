@@ -683,6 +683,47 @@ void main() {
       expect(_continueEnabled(tester), isTrue);
     });
 
+    testWidgets('predict lets the learner change their guess', (tester) async {
+      await tester.pumpWidget(_host(_predict, _Signals()));
+
+      /// Whether the tile carrying [text] is drawn as the chosen one.
+      bool chosen(String text) {
+        final button = tester.widget<OutlinedButton>(
+          find.ancestor(
+            of: find.text(text),
+            matching: find.byType(OutlinedButton),
+          ),
+        );
+        return button.style?.backgroundColor?.resolve(const {}) != null;
+      }
+
+      await _tapText(tester, 'Skin');
+      expect(chosen('Skin'), isTrue);
+
+      // Nothing here is scored, so nothing is protected by latching — and a
+      // first instinct immediately reconsidered is still the instinct.
+      await _tapText(tester, 'Seed');
+      expect(chosen('Seed'), isTrue);
+      expect(chosen('Skin'), isFalse);
+    });
+
+    testWidgets('predict dims the guess not taken, without disabling it', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_host(_predict, _Signals()));
+      await _tapText(tester, 'Seed');
+
+      final faded = tester.widget<Opacity>(
+        find.ancestor(of: find.text('Skin'), matching: find.byType(Opacity)),
+      );
+      expect(faded.opacity, lessThan(1));
+      expect(
+        faded.opacity,
+        greaterThan(0),
+        reason: 'the other guess must stay readable — it can still be taken',
+      );
+    });
+
     testWidgets('concept resolves a blank to its authored answer', (
       tester,
     ) async {

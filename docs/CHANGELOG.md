@@ -44,6 +44,17 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The lesson cards are drawn the way the design draws them.** Answering a
+  multiple-choice question now tints the row you picked — green for right, a
+  softer red for wrong — instead of only outlining it. The opening guess of a
+  lesson is two large tiles side by side rather than a list, the one you did
+  not take dims instead of vanishing, and you can change your mind until you
+  move on; nothing there is scored. A matched pair on a match card reads as
+  solved rather than greyed out. On a select-all card, an answer you missed is
+  outlined in dashes so it never looks like one you got right, and the card
+  shows a single button that changes from *Check answers* to *Continue* rather
+  than two.
+
 - **Two more card kinds reach the lesson.** Fifteen authored cards sat in the
   banks with no renderer, so every one was filtered out before a lesson
   started. **Hands-on cards** now render: a step's name, what to do, and a

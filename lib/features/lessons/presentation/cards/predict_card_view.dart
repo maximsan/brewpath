@@ -1,6 +1,6 @@
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
-import 'package:brew_path/features/lessons/presentation/cards/choice_list.dart';
+import 'package:brew_path/features/lessons/presentation/cards/pick_tile_row.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -13,6 +13,11 @@ import 'package:flutter/material.dart';
 /// what resolves it, some minutes later. Marking the guess here would spend
 /// the tension the whole lesson is built on, which is why this card exposes no
 /// success callback at all: there is nothing to be right about yet.
+///
+/// The guess is offered as **two tiles side by side**, not as a row list — the
+/// one picking moment in the course that is not graded should not look like
+/// the ones that are. It also stays changeable right up to Continue, because
+/// nothing is scored and so nothing is protected by latching.
 class PredictCardView extends StatefulWidget {
   /// Creates a [PredictCardView].
   const PredictCardView({
@@ -26,7 +31,7 @@ class PredictCardView extends StatefulWidget {
   final PredictCard card;
 
   /// The two guesses, already in display order.
-  final List<ChoiceOption> options;
+  final List<String> options;
 
   /// Fired when the learner moves on.
   final CardAdvance onContinue;
@@ -60,11 +65,10 @@ class _PredictCardViewState extends State<PredictCardView> {
           ),
         ),
         const SizedBox(height: AppSpacing.md),
-        ChoiceList(
+        PickTileRow(
           options: widget.options,
-          selectedIndex: _selectedIndex,
-          onSelect: (index) => setState(() => _selectedIndex = index),
-          revealAnswer: false,
+          chosenIndex: _selectedIndex,
+          onChoose: (index) => setState(() => _selectedIndex = index),
         ),
         if (latched) ...[
           const SizedBox(height: AppSpacing.xs),

@@ -43,7 +43,7 @@ Widget? contentCardView(
   return switch (card) {
     final PredictCard predict => PredictCardView(
       card: predict,
-      options: shuffledBySeed(_predictOptions(predict), seed),
+      options: shuffledBySeed(predict.options, seed),
       onContinue: onContinue,
     ),
     final ConceptCard concept => ConceptCardView(
@@ -278,11 +278,4 @@ List<ChoiceOption> _decisionOptions(DecisionCard card) => [
       subtitle: option.subtitle,
       isCorrect: option.isCorrect,
     ),
-];
-
-/// A predict card's two guesses are bare strings, and its answer is held back
-/// rather than marked — so `isCorrect` is recorded but never revealed.
-List<ChoiceOption> _predictOptions(PredictCard card) => [
-  for (final option in card.options)
-    ChoiceOption(text: option, isCorrect: option == card.answer),
 ];
