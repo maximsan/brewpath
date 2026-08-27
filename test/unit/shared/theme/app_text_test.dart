@@ -32,52 +32,29 @@ Map<String, TextStyle> _steps(MoodColors mood) => {
   'micro': AppText.micro(mood: mood),
 };
 
-/// Every slot Flutter's `TextTheme` carries, and the ladder step
-/// `AppText.textTheme` resolves it to.
+/// The step each of Material's slots lands on, and whether it takes the
+/// full-strength ink or the muted role its step defaults to.
 ///
-/// Material's scale has fifteen slots and the ladder has nine steps, so slots
-/// Material distinguishes and the design does not are allowed to share one.
-/// Each slot lands on the step nearest the Roboto size it used to resolve to —
-/// 57/45/36 · 32/28/24 · 22/16/14 · 16/14/12 · 14/12/11, read from the
-/// installed Flutter SDK's 2021 typography — with a tie taken downwards, which
-/// is the choice the first eight mappings already made (`bodyLarge` 16 → 15,
-/// `bodyMedium` and `labelLarge` 14 → 13).
-///
-/// The three display slots are the exception, and predate this table: all sit
-/// on `display` rather than snapping 57 and 45 up to `hero`, because a screen
-/// title is a role and `hero` is reserved for celebration numerals.
-const _slotSteps = <String, String>{
-  'displayLarge': 'display',
-  'displayMedium': 'display',
-  'displaySmall': 'display',
-  'headlineLarge': 'display',
-  'headlineMedium': 'title',
-  'headlineSmall': 'title',
-  'titleLarge': 'heading',
-  'titleMedium': 'body',
-  'titleSmall': 'support',
-  'bodyLarge': 'body',
-  'bodyMedium': 'support',
-  'bodySmall': 'support',
-  'labelLarge': 'support',
-  'labelMedium': 'label',
-  'labelSmall': 'label',
-};
-
-/// The slots that carry a title, a headline, or the body copy under one — text
-/// the reader is meant to read, so it takes full-strength ink even where the
-/// step it lands on is muted by role.
-const _inkSlots = <String>{
-  'displayLarge',
-  'displayMedium',
-  'displaySmall',
-  'headlineLarge',
-  'headlineMedium',
-  'headlineSmall',
-  'titleLarge',
-  'titleMedium',
-  'titleSmall',
-  'bodyLarge',
+/// This is the expectation, written out independently; the reasoning that
+/// produced it — role first, then the nearest Roboto size, ties downwards —
+/// lives once, on `AppText.textTheme`. Restating it here would give it a
+/// second home to drift from.
+const _slotMap = <String, ({String step, bool ink})>{
+  'displayLarge': (step: 'display', ink: true),
+  'displayMedium': (step: 'display', ink: true),
+  'displaySmall': (step: 'display', ink: true),
+  'headlineLarge': (step: 'display', ink: true),
+  'headlineMedium': (step: 'title', ink: true),
+  'headlineSmall': (step: 'title', ink: true),
+  'titleLarge': (step: 'heading', ink: true),
+  'titleMedium': (step: 'body', ink: true),
+  'titleSmall': (step: 'support', ink: true),
+  'bodyLarge': (step: 'body', ink: true),
+  'bodyMedium': (step: 'support', ink: false),
+  'bodySmall': (step: 'support', ink: false),
+  'labelLarge': (step: 'support', ink: false),
+  'labelMedium': (step: 'label', ink: false),
+  'labelSmall': (step: 'label', ink: false),
 };
 
 /// Material's slots grouped by family, largest first — the order the mapping
@@ -108,9 +85,13 @@ Map<String, TextStyle?> _slots(TextTheme theme) => {
   'labelSmall': theme.labelSmall,
 };
 
-/// The slot names `TextTheme` actually declares, read off its own diagnostics
-/// rather than transcribed — so a slot Flutter adds in a later release shows up
-/// as a failing test instead of a quiet Roboto hole.
+/// The slot names `TextTheme` declares, read off its own diagnostics rather
+/// than transcribed here, so the tables above are checked against Flutter
+/// rather than against a second copy of themselves.
+///
+/// `TextTheme.debugFillProperties` is hand-maintained upstream, so this catches
+/// a slot Flutter adds only once Flutter's own authors list it there — a good
+/// guard, not a guarantee.
 Iterable<String> _declaredSlotNames() => const TextTheme()
     .toDiagnosticsNode()
     .getProperties()
@@ -235,13 +216,20 @@ void main() {
     final steps = _steps(mood);
 
     test('the mapping covers every slot TextTheme declares', () {
+      final declared = _declaredSlotNames().toSet();
+
       expect(
-        _declaredSlotNames().toSet(),
-        _slotSteps.keys.toSet(),
+        _slotMap.keys.toSet(),
+        declared,
         reason:
             'TextTheme declares a slot this mapping does not name — an unnamed '
             'slot is a Roboto hole, which is the fault this table closes',
       );
+      // The tables below read slots through hand-written getter lists, which a
+      // new slot would not join on its own. Lock them to the same set, or a
+      // slot could be named once and go unchecked by every test after this.
+      expect(_slots(theme).keys.toSet(), declared);
+      expect(_slotFamilies.values.expand((slots) => slots).toSet(), declared);
     });
 
     test('every slot is filled, so none falls back to Roboto', () {
@@ -264,8 +252,8 @@ void main() {
       final resolved = _slots(theme).map(
         (name, style) => MapEntry(name, style!.fontSize),
       );
-      final expected = _slotSteps.map(
-        (name, step) => MapEntry(name, _ladder[step]),
+      final expected = _slotMap.map(
+        (name, mapping) => MapEntry(name, _ladder[mapping.step]),
       );
 
       expect(resolved, expected);
@@ -302,7 +290,7 @@ void main() {
       'a slot matches its step exactly, tracking and line height included',
       () {
         for (final slot in _slots(theme).entries) {
-          final step = steps[_slotSteps[slot.key]]!;
+          final step = steps[_slotMap[slot.key]!.step]!;
 
           expect(slot.value!.fontSize, step.fontSize);
           expect(
@@ -317,32 +305,25 @@ void main() {
       },
     );
 
-    test('titles, headlines and body copy take the full-strength ink', () {
+    test('a slot takes the ink its role calls for, not its step’s', () {
       for (final slot in _slots(theme).entries) {
-        if (!_inkSlots.contains(slot.key)) continue;
+        final takesInk = _slotMap[slot.key]!.ink;
 
         expect(
           slot.value!.color,
-          mood.ink,
-          reason:
-              '${slot.key} names a title or the copy under one; muting it '
-              'would grey out text the reader is meant to read',
+          takesInk ? mood.ink : mood.inkMute,
+          reason: takesInk
+              ? '${slot.key} names a title or the copy under one; muting it '
+                    'would grey out text the reader is meant to read'
+              : '${slot.key} is a support or label slot, and muted by role',
         );
-      }
-    });
-
-    test('the support and label slots stay muted by role', () {
-      for (final slot in _slots(theme).entries) {
-        if (_inkSlots.contains(slot.key)) continue;
-
-        expect(slot.value!.color, mood.inkMute, reason: slot.key);
       }
     });
 
     test("the mapping never inverts Material's own order", () {
       for (final family in _slotFamilies.entries) {
         final sizes = [
-          for (final slot in family.value) _ladder[_slotSteps[slot]!]!,
+          for (final slot in family.value) _ladder[_slotMap[slot]!.step]!,
         ];
 
         for (var slot = 1; slot < sizes.length; slot++) {

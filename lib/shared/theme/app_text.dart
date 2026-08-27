@@ -143,29 +143,40 @@ abstract final class AppText {
   /// how a class whose whole point is that going off-ladder must be a visible
   /// act let a large share of the app's text off it invisibly.
   ///
-  /// Each slot lands on the step nearest the Roboto size it used to resolve to
-  /// — 57/45/36 · 32/28/24 · 22/16/14 · 16/14/12 · 14/12/11 — so mapping a slot
-  /// does not restyle screens that were never touched. A tie is taken
-  /// downwards: `bodyLarge` 16 → [body], `bodyMedium` and `labelLarge` 14 →
-  /// [support], `headlineMedium` 28 → [title], `labelMedium` 12 → [label].
+  /// **Role first, then the nearest size.** The role picks which rungs are
+  /// eligible — a `label*` slot may only land on a tracked rung ([label],
+  /// [micro]), because 0.14em is smallcaps spacing and would set body copy
+  /// adrift; a `body*` slot may only land on an untracked one. Within those,
+  /// the slot takes the rung nearest the Roboto size it used to resolve to —
+  /// 57/45/36 · 32/28/24 · 22/16/14 · 16/14/12 · 14/12/11 — so mapping a slot
+  /// does not restyle screens that were never touched. A tie goes downwards:
+  /// `bodyLarge` 16 → [body], `bodyMedium` and `labelLarge` 14 → [support],
+  /// `headlineMedium` 28 → [title], `labelMedium` 12 → [label].
   ///
-  /// Two things the nearest step cannot decide:
+  /// Role is why the two 12px slots part company: `bodySmall` takes [support]
+  /// (13, untracked) and `labelMedium` takes [label] (11, tracked). Size alone
+  /// would have tied them. It is also why the three `display*` slots ignore
+  /// the nearest rung altogether — 57 and 45 are nearest [hero], but a screen
+  /// title is a role and `hero` is reserved for celebration numerals.
+  ///
+  /// Two more things the nearest size cannot decide:
   ///
   /// - **Face.** A slot Material sets at weight 500 is a control, so it takes
-  ///   [AppFace.control] where its step defaults to the 400 body face —
+  ///   [AppFace.control] where its rung defaults to the 400 body face —
   ///   `titleMedium`, `titleSmall`, `labelLarge`. `labelSmall` keeps mono: it
   ///   is the numeral smallcaps.
   /// - **Colour.** [support] and [label] are muted by role, which is right for
   ///   the support line under a heading and wrong for a title. `titleSmall`
-  ///   therefore lands on the [support] step in full-strength ink.
+  ///   therefore lands on the [support] rung in full-strength ink.
   ///
-  /// The three `display*` slots are the exception, and predate this rule: 57
-  /// and 45 are nearest [hero], but a screen title is a role and `hero` is
-  /// reserved for celebration numerals, so all three sit on [display].
-  ///
-  /// Fifteen slots over nine steps means slots Material distinguishes share a
-  /// step — `bodySmall` and `bodyMedium` both land on [support]. That is the
+  /// Fifteen slots over nine rungs means slots Material distinguishes share
+  /// one — `bodySmall` and `bodyMedium` both land on [support]. That is the
   /// ladder being shorter than Material's scale, which is the point of it.
+  ///
+  /// What this cannot fix is a call site reading the wrong slot: a few read
+  /// `labelMedium` for sentence-case text ("Step 3 of 8"), which now carries
+  /// the smallcaps tracking the label rung owes its uppercase siblings. Those
+  /// belong to the per-screen work, not here.
   static TextTheme textTheme(MoodColors mood) => TextTheme(
     displayLarge: display(mood: mood),
     displayMedium: display(mood: mood),
