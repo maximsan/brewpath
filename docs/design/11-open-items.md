@@ -12,7 +12,7 @@ routes (the 104th, `card-flavor`, arrived after).
 
 | Check | Result it reports |
 |---|---|
-| Dictionary lesson links resolve to a lesson that teaches the term | 72 terms, 64 pointers, `dictLessonAudit()` returns `[]` — verified. The audit scans **learner-visible copy only** (`lessonVisibleText()`), not the raw record |
+| Dictionary lesson links resolve to a lesson that teaches the term | 73 terms, 65 pointers, `dictLessonAudit()` returns `[]` — verified. The audit scans **learner-visible copy only** (`lessonVisibleText()`), not the raw record |
 | Every lesson has a collectible card; every card unlocks from a real lesson | 32 / 32, no orphans either direction |
 | Every card `kind` has bespoke art and a tint | 37 collectibles, 37 distinct kinds, one per card, all covered |
 | **A card's words match wherever it appears** | 45 card entries, one source each — `syncCardText()` for the 37 collectibles, `syncVisualGuideText()` for the 8 guides |
