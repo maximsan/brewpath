@@ -48,7 +48,7 @@ destinations. Collapsing those leaves roughly **44 distinct v1 destinations**.
 | **Four future course modules** — Espresso Basics · Milk Drinks · Brewing Gear · Coffee Tasting | 0 built | Not built at all, but **named to users** on the Path tab by `ComingSoonPath` ([§4](04-information-architecture.md)). Unwritten content, not switched-off code. Two lessons have been pulled forward out of them into v1 ([§4](04-information-architecture.md)). |
 
 ## Tab bar
-**v1: four tabs — Learn · Path · Cards · Profile.** Atlas is removed from the tab bar (`app.jsx` force-redirects `tab === 'atlas'` back to `learn`). Dictionary and Saved stay as pinned top-right header entries.
+**v1: four tabs — TODAY · PATH · CARDS · PROFILE.** The bar letters its labels uppercase (`index.html:357-363`); the first tab is named for the day, not the verb, and only becomes LEARN in the merged nav model where Path folds into it (`ds-content.js`, Navigation icon set). Its branch is still `learn` in code. Atlas is removed from the tab bar (`app.jsx` force-redirects `tab === 'atlas'` back to `learn`). Dictionary and Saved stay as pinned top-right header entries.
 
 ---
 

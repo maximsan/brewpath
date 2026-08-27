@@ -4,13 +4,14 @@
 /// User-facing string constants.
 abstract class AppLabels {
   static const appName = 'BrewPath';
-  // The design letters the tab bar in uppercase, and names the first tab for
-  // the day rather than the verb — the same word its header eyebrow already
-  // used. The branch behind it stays `/learn`.
-  static const tabToday = 'TODAY';
-  static const tabPath = 'PATH';
-  static const tabCards = 'CARDS';
-  static const tabProfile = 'PROFILE';
+  // The design names the first tab for the day rather than the verb — the same
+  // word its header eyebrow already used. The branch behind it stays `/learn`.
+  // The bar letters these uppercase; that is the tab bar's type rule, so it is
+  // applied where the bar is built, never frozen into the words themselves.
+  static const tabToday = 'Today';
+  static const tabPath = 'Path';
+  static const tabCards = 'Cards';
+  static const tabProfile = 'Profile';
   static const lockedModuleMessage =
       'Complete the previous module to unlock this one.';
   static const continueLabel = 'Continue';

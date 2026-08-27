@@ -112,6 +112,12 @@ class _AppShellState extends State<AppShell> {
   /// box with an opaque `Material`, and `DecoratedBox` paints a background
   /// decoration *behind* its child without insetting it — so the default
   /// position would draw the rule and then bury it.
+  ///
+  /// The labels are uppercased here rather than in [AppLabels], the way
+  /// `SmallcapsLabel` does it: `TextStyle` has no text-transform, and the case
+  /// is this bar's type rule, not part of what the tabs are called. Changing
+  /// it back is then a change to the bar, not a rewrite of four constants and
+  /// everything else that reads them.
   Widget _tabBar(MoodColors mood) => TourStop(
     stopKey: TourStops.tabs,
     title: TourCopy.tabsTitle,
@@ -124,26 +130,26 @@ class _AppShellState extends State<AppShell> {
       child: NavigationBar(
         selectedIndex: widget.navigationShell.currentIndex,
         onDestinationSelected: _onDestinationSelected,
-        destinations: const [
+        destinations: [
           NavigationDestination(
-            icon: Icon(Icons.school_outlined),
-            selectedIcon: Icon(Icons.school),
-            label: AppLabels.tabToday,
+            icon: const Icon(Icons.school_outlined),
+            selectedIcon: const Icon(Icons.school),
+            label: AppLabels.tabToday.toUpperCase(),
           ),
           NavigationDestination(
-            icon: Icon(Icons.route_outlined),
-            selectedIcon: Icon(Icons.route),
-            label: AppLabels.tabPath,
+            icon: const Icon(Icons.route_outlined),
+            selectedIcon: const Icon(Icons.route),
+            label: AppLabels.tabPath.toUpperCase(),
           ),
           NavigationDestination(
-            icon: Icon(Icons.style_outlined),
-            selectedIcon: Icon(Icons.style),
-            label: AppLabels.tabCards,
+            icon: const Icon(Icons.style_outlined),
+            selectedIcon: const Icon(Icons.style),
+            label: AppLabels.tabCards.toUpperCase(),
           ),
           NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
-            label: AppLabels.tabProfile,
+            icon: const Icon(Icons.person_outline),
+            selectedIcon: const Icon(Icons.person),
+            label: AppLabels.tabProfile.toUpperCase(),
           ),
         ],
       ),
