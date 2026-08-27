@@ -1,6 +1,7 @@
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
+import 'package:brew_path/core/widgets/section_header.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_kinds.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_tier.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_gate_sheet.dart';
@@ -70,33 +71,11 @@ class MiniGamesCatalogWidget extends StatelessWidget {
       children: [
         for (var index = 0; index < groups.length; index++) ...[
           if (index > 0) _groupGap,
-          _GroupHeading(label: groups[index].label),
+          SectionHeader(groups[index].label),
           _headingGap,
           _GroupCard(games: groups[index].games, hasCourse: hasCourse),
         ],
       ],
-    );
-  }
-}
-
-class _GroupHeading extends StatelessWidget {
-  const _GroupHeading({required this.label});
-
-  final String label;
-
-  static const double _letterSpacing = 0.8;
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      header: true,
-      child: Text(
-        label.toUpperCase(),
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color: context.mood.inkMute,
-          letterSpacing: _letterSpacing,
-        ),
-      ),
     );
   }
 }

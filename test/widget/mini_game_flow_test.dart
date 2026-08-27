@@ -313,16 +313,16 @@ void main() {
     final handle = tester.ensureSemantics();
     await _pump(tester);
 
+    // Lettered `MATCH`, announced `Match`: uppercase is the smallcaps rule,
+    // not what the group is called, and a heading read as written is not
+    // spelled out letter by letter.
+    expect(find.text('MATCH'), findsOneWidget);
     expect(
-      find.bySemanticsLabel('MATCH'),
-      findsOneWidget,
+      tester.getSemantics(find.bySemanticsLabel('Match')),
+      isSemantics(label: 'Match', isHeader: true),
       reason:
           'a sighted learner reads the grouping from layout; a screen '
           'reader needs the heading flag to navigate by it',
-    );
-    expect(
-      tester.getSemantics(find.bySemanticsLabel('MATCH')),
-      isSemantics(label: 'MATCH', isHeader: true),
     );
 
     handle.dispose();
@@ -376,8 +376,12 @@ void main() {
       final handle = tester.ensureSemantics();
       await _pump(tester, hasCourse: false);
 
+      // Found by its rendered title, not by its semantics label: the fixture
+      // names a game exactly what its kind is called, and the group heading
+      // above it is now announced in that same casing. The heading letters
+      // itself `TRUE OR FALSE`, so the title text tells the two apart.
       expect(
-        tester.getSemantics(find.bySemanticsLabel(RegExp('True or false.*'))),
+        tester.getSemantics(find.text('True or false')),
         isSemantics(hint: ''),
         reason: 'nothing to offer a learner who can already play it',
       );
