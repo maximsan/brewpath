@@ -82,7 +82,7 @@ class _Pitch extends StatelessWidget {
         Text(
           'TAUGHT IN MODULE ${module.n} · ${module.label}',
           style: theme.textTheme.labelSmall?.copyWith(
-            color: mood.accent,
+            color: mood.accentText,
             letterSpacing: _eyebrowLetterSpacing,
           ),
         ),

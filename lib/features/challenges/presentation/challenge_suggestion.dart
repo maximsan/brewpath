@@ -110,7 +110,7 @@ class _SuggestionState extends ConsumerState<_Suggestion> {
         'COFFEE CHALLENGE UNLOCKED',
         textAlign: TextAlign.center,
         style: theme.textTheme.labelSmall?.copyWith(
-          color: mood.accent,
+          color: mood.accentText,
           fontWeight: FontWeight.w700,
           letterSpacing: _eyebrowLetterSpacing,
         ),

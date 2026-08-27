@@ -121,7 +121,7 @@ class _GuideBlock extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (guide case final guide?) ...[
-            SmallcapsLabel(guide.label, color: mood.accent),
+            SmallcapsLabel(guide.label, color: mood.accentText),
             const SizedBox(height: AppSpacing.xxs),
             Text(
               guide.title,

@@ -4,7 +4,9 @@
 
 
 ## Color tokens (two moods, one system)
-Documented in `ds-content.js`; defined in `index.html`. **Unchanged since the last pass.**
+Documented in `ds-content.js`; defined in `index.html`. **Unchanged since the
+last pass**, except that `--accent-text` — in `index.html` all along — now has
+the row it was missing.
 
 | Token | Role | Cupping (light) | Dark Roast (dark) |
 |---|---|---|---|
@@ -16,10 +18,20 @@ Documented in `ds-content.js`; defined in `index.html`. **Unchanged since the la
 | `--rule` | 1px hairlines — the structural grid | `#D8CFBF` | `#44321E` |
 | `--accent` | The one brand colour (crema orange). Actions, active tab, links, current step, needs-practice | `#B8533A` | `#E07A4F` |
 | `--accent-ink` | Text on accent fill | `#FBF7EE` | `#1A130E` |
+| `--accent-text` | The accent **as small text**. Derived, not authored: `color-mix(in oklab, var(--accent) 62%, var(--ink))` | `#783C2C` | `#EAA482` |
 | `--sage` | Success = "learned". Correct answers, learned terms, pass mark. **Never an action.** | `#5F6E55` | `#97A285` |
 | `--warn` | **Celebration only.** Streak flame, win crown, completion glow, fastest answer | `#9A5F1C` | `#E6A35C` |
 | `--berry` | Alert. Wrong answers, cross mark, destructive | `#A8362A` | `#C75450` |
 | `--cream` | (dark only) | — | `#F0DCB8` |
+
+`--accent-text` exists because QA measured `--accent` at **4.23:1 on `--bg`** in
+Cupping — under AA for small text — and ruled that moving the one brand colour
+"costs more than it buys". So the accent stays where it is and small accent text
+takes the darkened mix instead. The design pairs the two in the same row: an
+accent glyph beside an `--accent-text` label (`brew-challenge.jsx:303`, `:706`),
+and an accent-bordered pill with an `--accent-text` label (`:338`). Marks,
+fills, borders and progress bars keep `--accent`. In the app the token is
+`MoodColors.accentText`, applied to every accent text below the `title` step.
 
 **Illustration palette** — literal coffee, identical in both moods, never theme tokens.
 The cherry-anatomy work ([§6.1](06-content.md), `m1l7`) added eight tokens to what was a six-token set:

@@ -65,14 +65,25 @@ class _Node extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final mood = context.mood;
-    final (label, tint) = switch (state) {
+    // Two tints, not one: the glyph is a mark and takes the brand colour,
+    // while the state word is small text and takes the reading one. The
+    // design pairs them exactly this way (`brew-challenge.jsx:303`).
+    final (label, tint, textTint) = switch (state) {
       // `sage` is "learned", never an action — which is exactly what a
       // finished brew is.
-      ChallengeSurfaceState.completed => ('Done', mood.sage),
-      ChallengeSurfaceState.active => ('Active', mood.accent),
-      ChallengeSurfaceState.saved => ('Saved', mood.inkMute),
-      ChallengeSurfaceState.available => ('Challenge', mood.inkMute),
-      ChallengeSurfaceState.locked => ('Challenge', mood.inkMute),
+      ChallengeSurfaceState.completed => ('Done', mood.sage, mood.sage),
+      ChallengeSurfaceState.active => ('Active', mood.accent, mood.accentText),
+      ChallengeSurfaceState.saved => ('Saved', mood.inkMute, mood.inkMute),
+      ChallengeSurfaceState.available => (
+        'Challenge',
+        mood.inkMute,
+        mood.inkMute,
+      ),
+      ChallengeSurfaceState.locked => (
+        'Challenge',
+        mood.inkMute,
+        mood.inkMute,
+      ),
     };
 
     return Semantics(
@@ -95,7 +106,7 @@ class _Node extends StatelessWidget {
             Text(
               label,
               style: theme.textTheme.labelSmall?.copyWith(
-                color: tint,
+                color: textTint,
                 fontWeight: FontWeight.w700,
               ),
             ),
