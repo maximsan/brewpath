@@ -1,12 +1,12 @@
+import 'package:brew_path/core/widgets/bean_shape.dart';
 import 'package:flutter/material.dart';
 
 /// A coffee bean that fills bottom-up — the design's `FlavorWheel`.
 ///
 /// The bean **is** the gauge: mastery reads as "how full" rather than as a
-/// word in the margin. Geometry is transcribed from
-/// `prototype/flavor-wheel.jsx`: a 24×24 box holding an ellipse of rx 7.5 /
-/// ry 9.5 tilted −18°, a fill clipped to that ellipse and grown from the
-/// bottom, and a wavy centre crease.
+/// word in the margin. The silhouette it fills is [BeanShape], the same one the
+/// roast meter roasts; only the meaning differs, and the two must never be read
+/// for each other — this one is how well you did, that one is where you are.
 ///
 /// Colours are passed in rather than read from `context.mood`, so the painter
 /// needs no `BuildContext` and the widget stays testable against explicit
@@ -69,12 +69,6 @@ class _BeanGaugePainter extends CustomPainter {
   final Color muted;
   final Color ink;
 
-  /// The design's 24×24 authoring box; every dimension below is in its units
-  /// and scaled to the widget's actual size on paint.
-  static const double _viewBox = 24;
-  static const double _radiusX = 7.5;
-  static const double _radiusY = 9.5;
-  static const double _tiltRadians = -18 * 3.1415926535897932 / 180;
   static const double _strokeWidth = 1;
 
   /// Above this the fill is dark enough that a muted crease stops reading, so
@@ -89,19 +83,11 @@ class _BeanGaugePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final scale = size.width / _viewBox;
-    canvas
-      ..save()
-      ..scale(scale)
-      ..translate(_viewBox / 2, _viewBox / 2)
-      ..rotate(_tiltRadians);
+    canvas.save();
+    BeanShape.applyTo(canvas, size);
 
-    final bean = Rect.fromCenter(
-      center: Offset.zero,
-      width: _radiusX * 2,
-      height: _radiusY * 2,
-    );
-    final beanPath = Path()..addOval(bean);
+    final bean = BeanShape.oval;
+    final beanPath = BeanShape.ovalPath();
 
     // Fill, clipped to the bean and grown from the bottom so a partial score
     // reads as a level rather than a wedge.
@@ -134,38 +120,9 @@ class _BeanGaugePainter extends CustomPainter {
       ..strokeWidth =
           _strokeWidth * (_isFull ? _fullCreaseScale : _partialCreaseScale)
       ..color = creaseColor;
-    canvas.drawPath(_creasePath(), crease);
+    canvas.drawPath(BeanShape.creasePath(), crease);
 
     canvas.restore();
-  }
-
-  /// The bean's centre groove — the design's
-  /// `M12 3.5 C 13.5 7, 10.5 9, 12 12 S 13.5 17, 12 20.5`, re-expressed
-  /// around the origin because the canvas is already centred and tilted.
-  Path _creasePath() {
-    const halfBox = _viewBox / 2;
-    Offset at(double x, double y) => Offset(x - halfBox, y - halfBox);
-
-    return Path()
-      ..moveTo(at(12, 3.5).dx, at(12, 3.5).dy)
-      ..cubicTo(
-        at(13.5, 7).dx,
-        at(13.5, 7).dy,
-        at(10.5, 9).dx,
-        at(10.5, 9).dy,
-        at(12, 12).dx,
-        at(12, 12).dy,
-      )
-      // The SVG `S` command mirrors the previous control point through the
-      // current one: (10.5, 9) reflected about (12, 12) is (13.5, 15).
-      ..cubicTo(
-        at(13.5, 15).dx,
-        at(13.5, 15).dy,
-        at(13.5, 17).dx,
-        at(13.5, 17).dy,
-        at(12, 20.5).dx,
-        at(12, 20.5).dy,
-      );
   }
 
   @override

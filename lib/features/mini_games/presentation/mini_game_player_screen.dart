@@ -4,12 +4,12 @@ import 'package:brew_path/app/day_surfaces.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
+import 'package:brew_path/core/widgets/roast_meter.dart';
 import 'package:brew_path/features/lessons/presentation/cards/content_card_view.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_completion.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_providers.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_run.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_results_view.dart';
-import 'package:brew_path/features/mini_games/presentation/round_progress_strip.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -101,7 +101,11 @@ class _MiniGamePlayerScreenState extends ConsumerState<MiniGamePlayerScreen> {
         title: rounds.maybeWhen(
           data: (data) => data.isEmpty || _index >= data.length
               ? null
-              : RoundProgressStrip(played: _index, total: data.length),
+              : RoastMeter(
+                  position: _index + 1,
+                  total: data.length,
+                  semanticsLabel: 'Round ${_index + 1} of ${data.length}',
+                ),
           orElse: () => null,
         ),
       ),

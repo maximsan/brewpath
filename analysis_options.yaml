@@ -76,12 +76,14 @@ dart_code_linter:
         severity: warning
         allowed: [0, 1, 2]
         exclude:
-          # The coffee-bean gauge: an SVG path transcribed coordinate-for-
+          # The coffee-bean silhouette: an SVG path transcribed coordinate-for-
           # coordinate from `prototype/flavor-wheel.jsx`. Naming each bezier
           # control point would invent twelve constants that mean nothing on
           # their own and would hide the one property that matters — that the
-          # numbers still match the design source exactly.
-          - lib/core/widgets/bean_gauge.dart
+          # numbers still match the design source exactly. Both beans cut from
+          # it read the shape from here: the mastery gauge fills it, the roast
+          # meter roasts it.
+          - lib/core/widgets/bean_shape.dart
           # The eight visual guides' drawings. Every literal in them is a
           # fraction of the box they are given — the normalisation that makes
           # one drawing serve both the row thumbnail and the sheet
