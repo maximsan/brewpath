@@ -101,11 +101,19 @@ ContentCard testMcqCard({String prompt = 'What is a coffee bean?'}) =>
     );
 
 /// A card kind with no renderer, for testing what a lesson does with one.
-ContentCard testUnplayableCard() => const ContentCard.practical(
-  tag: 'TRY IT',
-  title: 'Brew a cup',
-  paragraphs: ['Go and make one.'],
-  note: 'No renderer draws this kind yet.',
+///
+/// `slider` because it is the kind furthest from having one — it belongs to
+/// #333 and nothing in flight touches it. Whichever renderer lands next, point
+/// this at a kind that still has none rather than deleting the tests it feeds:
+/// they cover what a lesson does with an undrawable card, not this kind.
+ContentCard testUnplayableCard() => const ContentCard.slider(
+  prompt: 'How fine did you grind?',
+  leftLabel: 'Coarse',
+  rightLabel: 'Fine',
+  target: 0.6,
+  tolerance: 0.1,
+  scale: ['Coarse', 'Medium', 'Fine'],
+  feedback: 'No renderer draws this kind yet.',
 );
 
 /// A Coffee Challenge. Defaults to a lesson-scoped record naming no lesson —

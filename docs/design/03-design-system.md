@@ -60,12 +60,20 @@ There is **one radius token** (`--r: 14px`). Everything else is a rule, not a sc
 
 | Radius | Language | Where |
 |---|---|---|
-| **2px** | Editorial | Cards, buttons, inputs, MCQ & match tiles. The sharp, print-like default. |
+| **2px** | Editorial | Cards, buttons and inputs. The sharp, print-like default. |
 | **14px** (`--r`) | Soft chrome | Media frames, bottom sheets, icon wells, avatars, mini-game tiles. 14px is the token; 12–20 is the range other chrome may sit in. |
 | **999px** | Pill / dot | Status dots, fav toggle, switch toggles, badges, home indicator. |
 
 > **"Mixing them on one element is the tell of an off-system component."**
 > Two radius languages run in parallel on purpose; they are not points on one scale.
+
+> ⚠️ **MCQ and match tiles are 14px, not 2px.** The two prototype sources
+> disagree: `Design System.html` sets `.mcq-choice` and `.match-item` to `2px`,
+> while `index.html` — the running prototype — sets both to `var(--r)`. Per
+> [ADR-0009](../adr/0009-the-running-prototype-wins-over-the-design-system-catalogue.md)
+> the running prototype wins, so they are **14px** and this table no longer
+> lists them under editorial. The dropped value is named here so it is not
+> "corrected" back. `.pick-tile` is 14px in both.
 
 > ⚠️ **Correction.** Earlier versions of this doc listed a "radius scale of
 > 4 / 12 / 14 / 16 / 20 / 999". No such scale exists in the source — `--r` is

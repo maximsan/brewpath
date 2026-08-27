@@ -95,6 +95,17 @@ abstract final class OffTokens {
         'Nor is it --art-cream, whose warmer value is for illustration fills.',
   );
 
+  /// The vertical room inside a `predict` card's guess tile.
+  static const OffToken<double> pickTilePadding = OffToken(
+    26,
+    reason:
+        'The design sets `.pick-tile` to `padding: 26px 14px`. 26 sits between '
+        'AppSpacing.lg (24) and xl (32) and is deliberate: the two-up guess is '
+        'meant to read far taller than a row, so it does not look like the '
+        'graded lists it sits among. Rounding it onto the scale is a design '
+        'change, not a tidy-up.',
+  );
+
   /// The tab label's letter-spacing, in em — wider than the micro rung the
   /// label otherwise sits on.
   static const OffToken<double> tabLabelTracking = OffToken(
@@ -115,6 +126,7 @@ abstract final class OffTokens {
     seedInk,
     seedStain,
     beanCrease,
+    pickTilePadding,
     tabLabelTracking,
   ];
 }

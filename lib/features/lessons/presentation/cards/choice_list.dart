@@ -1,11 +1,8 @@
-import 'package:brew_path/shared/theme/app_radii.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_option_tile.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_tints.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
-
-/// Border weight on an option once the card has latched and marked it.
-const double _markedBorder = 2;
-const double _plainBorder = 1;
 
 /// One option in a [ChoiceList], already in display order.
 @immutable
@@ -69,7 +66,8 @@ class ChoiceList extends StatelessWidget {
         for (var index = 0; index < options.length; index++)
           Padding(
             padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-            child: _Option(
+            child: _option(
+              context,
               option: options[index],
               mark: _markFor(index),
               onTap: _latched ? null : () => onSelect(index),
@@ -87,6 +85,57 @@ class ChoiceList extends StatelessWidget {
     if (index == selectedIndex) return _OptionMark.wrong;
     return _OptionMark.none;
   }
+
+  /// One option, in the shared frame.
+  ///
+  /// A mark is carried by border colour **and** a tint, as
+  /// `.mcq-choice.correct` / `.incorrect` have it — sage at 12%, berry at 8%,
+  /// the weaker one so a bad run does not read as a wall of red. The border
+  /// stays hairline in every state; the design never thickens it.
+  Widget _option(
+    BuildContext context, {
+    required ChoiceOption option,
+    required _OptionMark mark,
+    VoidCallback? onTap,
+  }) {
+    final theme = Theme.of(context);
+    final mood = context.mood;
+    final subtitle = option.subtitle;
+
+    return CardOptionTile(
+      onTap: onTap,
+      borderColor: switch (mark) {
+        _OptionMark.correct => mood.sage,
+        _OptionMark.wrong => mood.berry,
+        _OptionMark.chosen => mood.accent,
+        _OptionMark.none => null,
+      },
+      fillColor: switch (mark) {
+        _OptionMark.correct => mood.sage.withValues(alpha: CardTints.wash),
+        _OptionMark.wrong => mood.berry.withValues(alpha: CardTints.wrongWash),
+        _OptionMark.chosen || _OptionMark.none => null,
+      },
+      semanticsLabel: [
+        option.text,
+        subtitle,
+        mark.semantics,
+      ].nonNulls.join(', '),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(option.text, style: theme.textTheme.bodyLarge),
+          if (subtitle != null) ...[
+            const SizedBox(height: AppSpacing.xxs),
+            Text(
+              subtitle,
+              style: theme.textTheme.bodySmall?.copyWith(color: mood.inkMute),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
 }
 
 /// How a committed option is drawn — and, for a screen reader, said.
@@ -100,62 +149,4 @@ enum _OptionMark {
 
   /// Spoken suffix, because the mark is otherwise carried by colour alone.
   final String? semantics;
-}
-
-class _Option extends StatelessWidget {
-  const _Option({required this.option, required this.mark, this.onTap});
-
-  final ChoiceOption option;
-  final _OptionMark mark;
-  final VoidCallback? onTap;
-
-  Color? _borderColor(MoodColors mood) => switch (mark) {
-    _OptionMark.correct => mood.sage,
-    _OptionMark.wrong => mood.berry,
-    _OptionMark.chosen => mood.accent,
-    _OptionMark.none => null,
-  };
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final mood = context.mood;
-    final border = _borderColor(mood);
-    final subtitle = option.subtitle;
-
-    return Semantics(
-      button: true,
-      enabled: onTap != null,
-      label: [option.text, subtitle, mark.semantics].nonNulls.join(', '),
-      excludeSemantics: true,
-      child: OutlinedButton(
-        onPressed: onTap,
-        style: OutlinedButton.styleFrom(
-          alignment: Alignment.centerLeft,
-          padding: const EdgeInsets.all(AppSpacing.md),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadii.chrome),
-          ),
-          side: BorderSide(
-            color: border ?? mood.rule,
-            width: border != null ? _markedBorder : _plainBorder,
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(option.text, style: theme.textTheme.bodyLarge),
-            if (subtitle != null) ...[
-              const SizedBox(height: AppSpacing.xxs),
-              Text(
-                subtitle,
-                style: theme.textTheme.bodySmall?.copyWith(color: mood.inkMute),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
 }
