@@ -157,6 +157,12 @@ You can always edit this file by hand instead — the helpers just save effort.
   recorded in `OffTokens` with its reason. The marks are still Material's;
   #378 ports the design's own.
 
+- **A large share of the app's text was still Roboto.** The type ladder filled
+  eight of Material's fifteen text slots, and an unset slot keeps Flutter's own
+  font rather than falling back to a neighbouring step — so card titles, row
+  headings, eyebrows and support lines across nearly every screen were set off
+  the ladder. All fifteen slots are now mapped.
+
 - **The blind bag's closed cues looked exactly like its open ones.** Inspecting
   a cue changed only its words, so finding the ones you had not read meant
   reading all of them — on the single card where looking *is* the interaction.
