@@ -5,6 +5,7 @@ import 'package:brew_path/features/tour/domain/tour_copy.dart';
 import 'package:brew_path/features/tour/presentation/tour_runner.dart';
 import 'package:brew_path/features/tour/presentation/tour_stop.dart';
 import 'package:brew_path/features/tour/presentation/tour_stops.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -98,38 +99,60 @@ class _AppShellState extends State<AppShell> {
             ),
           ],
         ),
-        bottomNavigationBar: TourStop(
-          stopKey: TourStops.tabs,
-          title: TourCopy.tabsTitle,
-          description: TourCopy.tabsBody,
-          child: NavigationBar(
-            selectedIndex: widget.navigationShell.currentIndex,
-            onDestinationSelected: _onDestinationSelected,
-            destinations: const [
-              NavigationDestination(
-                icon: Icon(Icons.school_outlined),
-                selectedIcon: Icon(Icons.school),
-                label: AppLabels.tabLearn,
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.route_outlined),
-                selectedIcon: Icon(Icons.route),
-                label: AppLabels.tabPath,
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.style_outlined),
-                selectedIcon: Icon(Icons.style),
-                label: AppLabels.tabCards,
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.person_outline),
-                selectedIcon: Icon(Icons.person),
-                label: AppLabels.tabProfile,
-              ),
-            ],
-          ),
-        ),
+        bottomNavigationBar: _tabBar(context.mood),
       ),
     );
   }
+
+  /// Colours and type come from the theme (`tabBarTheme`); the hairline the
+  /// design separates the bar from the page with is what a theme cannot
+  /// express.
+  ///
+  /// **Painted in the foreground on purpose.** `NavigationBar` fills its whole
+  /// box with an opaque `Material`, and `DecoratedBox` paints a background
+  /// decoration *behind* its child without insetting it — so the default
+  /// position would draw the rule and then bury it.
+  ///
+  /// The labels are uppercased here rather than in [AppLabels], the way
+  /// `SmallcapsLabel` does it: `TextStyle` has no text-transform, and the case
+  /// is this bar's type rule, not part of what the tabs are called. Changing
+  /// it back is then a change to the bar, not a rewrite of four constants and
+  /// everything else that reads them.
+  Widget _tabBar(MoodColors mood) => TourStop(
+    stopKey: TourStops.tabs,
+    title: TourCopy.tabsTitle,
+    description: TourCopy.tabsBody,
+    child: DecoratedBox(
+      position: DecorationPosition.foreground,
+      decoration: BoxDecoration(
+        border: Border(top: BorderSide(color: mood.rule)),
+      ),
+      child: NavigationBar(
+        selectedIndex: widget.navigationShell.currentIndex,
+        onDestinationSelected: _onDestinationSelected,
+        destinations: [
+          NavigationDestination(
+            icon: const Icon(Icons.school_outlined),
+            selectedIcon: const Icon(Icons.school),
+            label: AppLabels.tabToday.toUpperCase(),
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.route_outlined),
+            selectedIcon: const Icon(Icons.route),
+            label: AppLabels.tabPath.toUpperCase(),
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.style_outlined),
+            selectedIcon: const Icon(Icons.style),
+            label: AppLabels.tabCards.toUpperCase(),
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.person_outline),
+            selectedIcon: const Icon(Icons.person),
+            label: AppLabels.tabProfile.toUpperCase(),
+          ),
+        ],
+      ),
+    ),
+  );
 }

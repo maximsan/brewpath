@@ -1,3 +1,4 @@
+import 'package:brew_path/app/tab_bar_theme.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -27,6 +28,7 @@ abstract class AppTheme {
         colorScheme: _schemeFor(mood, brightness),
         extensions: [mood],
         textTheme: AppText.textTheme(mood),
+        navigationBarTheme: tabBarTheme(mood),
         appBarTheme: AppBarTheme(
           centerTitle: true,
           elevation: 0,
