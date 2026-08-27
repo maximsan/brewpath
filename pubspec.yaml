@@ -52,6 +52,13 @@ dependencies:
   share_plus: ^13.3.0
   showcaseview: ^5.1.0
 
+  # The design system's own 24x24 icon family, written to assets/icons/ by
+  # tool/extract_icons.js as real SVG. The marks carry arcs, transforms,
+  # per-element opacity and nine stroke widths, so they are rendered rather
+  # than transcribed into painters; `currentColor` is what lets one asset
+  # follow the mood.
+  flutter_svg: ^2.3.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
