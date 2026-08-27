@@ -112,6 +112,19 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **The active tab wore a green pill, and the first tab had two names.** The
+  bar was stock Material with no theme of its own, so it reached through the
+  palette for whatever Material's defaults pointed at: the pill behind the
+  active tab came out `sage` — the token reserved for "learned", never for an
+  action — and the mark inside it came out the page background. An active tab
+  is now the accent in mark and in label with no pill behind it, and a
+  hairline rules the bar off from the page the way the design does. The four
+  labels are the design's own — `TODAY`, `PATH`, `CARDS`, `PROFILE` — so the
+  first tab no longer calls itself `Learn` under a header already reading
+  `TODAY`. The bar letters them wider than the type ladder does, which is
+  recorded in `OffTokens` with its reason. The marks are still Material's;
+  #378 ports the design's own.
+
 - **The blind bag's closed cues looked exactly like its open ones.** Inspecting
   a cue changed only its words, so finding the ones you had not read meant
   reading all of them — on the single card where looking *is* the interaction.

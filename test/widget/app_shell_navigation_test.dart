@@ -190,13 +190,13 @@ void main() {
     testWidgets('scrolling a tab collapses its header', (tester) async {
       await pumpWithProviders(tester, const BrewPathApp());
       final atRest = headerHeight(tester);
-      expect(find.text('TODAY'), findsOneWidget);
+      expect(_headerTitled('TODAY'), findsOneWidget);
 
       await scrollTab(tester);
 
       expect(headerHeight(tester), lessThan(atRest));
       expect(
-        find.text('TODAY'),
+        _headerTitled('TODAY'),
         findsNothing,
         reason: 'the eyebrow goes; the title is what the learner still needs',
       );
@@ -213,7 +213,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(headerHeight(tester), atRest);
-      expect(find.text('TODAY'), findsOneWidget);
+      expect(_headerTitled('TODAY'), findsOneWidget);
     });
 
     testWidgets('each tab keeps its own collapse across a switch', (

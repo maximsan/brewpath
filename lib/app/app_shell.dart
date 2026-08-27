@@ -5,6 +5,7 @@ import 'package:brew_path/features/tour/domain/tour_copy.dart';
 import 'package:brew_path/features/tour/presentation/tour_runner.dart';
 import 'package:brew_path/features/tour/presentation/tour_stop.dart';
 import 'package:brew_path/features/tour/presentation/tour_stops.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -98,38 +99,48 @@ class _AppShellState extends State<AppShell> {
             ),
           ],
         ),
-        bottomNavigationBar: TourStop(
-          stopKey: TourStops.tabs,
-          title: TourCopy.tabsTitle,
-          description: TourCopy.tabsBody,
-          child: NavigationBar(
-            selectedIndex: widget.navigationShell.currentIndex,
-            onDestinationSelected: _onDestinationSelected,
-            destinations: const [
-              NavigationDestination(
-                icon: Icon(Icons.school_outlined),
-                selectedIcon: Icon(Icons.school),
-                label: AppLabels.tabLearn,
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.route_outlined),
-                selectedIcon: Icon(Icons.route),
-                label: AppLabels.tabPath,
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.style_outlined),
-                selectedIcon: Icon(Icons.style),
-                label: AppLabels.tabCards,
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.person_outline),
-                selectedIcon: Icon(Icons.person),
-                label: AppLabels.tabProfile,
-              ),
-            ],
-          ),
-        ),
+        bottomNavigationBar: _tabBar(context.mood),
       ),
     );
   }
+
+  /// The bar itself. Its colours and type come from the theme
+  /// (`tabBarTheme`); what a theme cannot express is the hairline the design
+  /// separates the bar from the page with.
+  Widget _tabBar(MoodColors mood) => TourStop(
+    stopKey: TourStops.tabs,
+    title: TourCopy.tabsTitle,
+    description: TourCopy.tabsBody,
+    child: DecoratedBox(
+      decoration: BoxDecoration(
+        border: Border(top: BorderSide(color: mood.rule)),
+      ),
+      child: NavigationBar(
+        selectedIndex: widget.navigationShell.currentIndex,
+        onDestinationSelected: _onDestinationSelected,
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.school_outlined),
+            selectedIcon: Icon(Icons.school),
+            label: AppLabels.tabToday,
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.route_outlined),
+            selectedIcon: Icon(Icons.route),
+            label: AppLabels.tabPath,
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.style_outlined),
+            selectedIcon: Icon(Icons.style),
+            label: AppLabels.tabCards,
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person),
+            label: AppLabels.tabProfile,
+          ),
+        ],
+      ),
+    ),
+  );
 }

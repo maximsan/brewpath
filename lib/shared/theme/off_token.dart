@@ -84,6 +84,18 @@ abstract final class OffTokens {
         'to one illustration rather than to the palette.',
   );
 
+  /// The tab label's letter-spacing, in em — wider than the micro rung the
+  /// label otherwise sits on.
+  static const OffToken<double> tabLabelTracking = OffToken(
+    0.18,
+    reason:
+        'The design letters the tab label at 0.18em where the ladder tracks '
+        'its micro rung at 0.14em (`index.html:361` against the rung table in '
+        '`app_text.dart`). The bar is the only place in the shipped design '
+        'lettered this wide, so widening the rung would restyle every other '
+        'micro line to letter one bar.',
+  );
+
   /// Every sanctioned exception, so the register can be read — and tested — as
   /// a whole rather than one constant at a time.
   static const register = <OffToken<Object>>[
@@ -91,5 +103,6 @@ abstract final class OffTokens {
     rewardedAdProgressRing,
     seedInk,
     seedStain,
+    tabLabelTracking,
   ];
 }
