@@ -168,6 +168,16 @@ You can always edit this file by hand instead — the helpers just save effort.
   colour is the one thing a screen reader cannot report. Both are now
   announced when they appear, the way the match card's verdict already was.
 
+- **Screens spelled their own URLs, so the router was not the only thing that
+  knew them.** Eight places navigated by a literal path — `/learn`,
+  `/welcome`, `/onboarding/goal`, a module's and a card's detail URL — and the
+  router's own gate spelled four more inline while reading two from the route
+  catalog in the same function. Every one now goes through that catalog, by
+  route name where a name exists, so changing what a URL looks like is a change
+  in one file. Opening a module went through two call sites that each spelled
+  the `moduleId` parameter themselves; they share one helper now, the way
+  opening a dictionary term already did.
+
 - **The active tab wore a green pill, and the first tab had two names.** The
   bar was stock Material with no theme of its own, so it reached through the
   palette for whatever Material's defaults pointed at: the pill behind the

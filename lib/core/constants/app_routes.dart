@@ -22,6 +22,11 @@ class AppRoute {
 abstract class AppRoutes {
   static const loading = AppRoute('loading', '/loading');
   static const welcome = AppRoute('welcome', '/welcome');
+
+  /// The segment every onboarding step sits under. The router's redirect
+  /// gates the whole flow at once, so it tests the prefix rather than naming
+  /// each step — and it reads it here rather than spelling it inline.
+  static const onboardingPrefix = '/onboarding';
   static const onboardingGoal = AppRoute('onboardingGoal', '/onboarding/goal');
   static const onboardingBrewer = AppRoute(
     'onboardingBrewer',
