@@ -5,9 +5,13 @@ import 'package:flutter/material.dart';
 
 /// The nav family is drawn on a 24×24 grid. The marks themselves are stock
 /// Material until #378 ports the design's own; the box they sit in is not.
-const double _markBox = 24;
+const double _markSize = 24;
 
 /// The tab bar's theme, so none of it resolves through Material's fallbacks.
+///
+/// "Tab bar" is this project's word for the bottom bar (`docs/design/02-scope.md`
+/// §Tab bar) and the prototype's own component name — not Material's `TabBar`,
+/// which the app does not use. The widget themed here is `NavigationBar`.
 ///
 /// Left undeclared, `NavigationBar` reaches `ColorScheme.secondaryContainer`
 /// for its indicator, and that slot is unset — so it falls through a second
@@ -19,7 +23,7 @@ NavigationBarThemeData tabBarTheme(MoodColors mood) => NavigationBarThemeData(
   backgroundColor: mood.surface,
   indicatorColor: Colors.transparent,
   iconTheme: WidgetStateProperty.resolveWith(
-    (states) => IconThemeData(size: _markBox, color: _tabInk(mood, states)),
+    (states) => IconThemeData(size: _markSize, color: _tabInk(mood, states)),
   ),
   labelTextStyle: WidgetStateProperty.resolveWith(
     (states) => tabLabelStyle(mood).copyWith(color: _tabInk(mood, states)),

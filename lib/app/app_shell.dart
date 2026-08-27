@@ -104,14 +104,20 @@ class _AppShellState extends State<AppShell> {
     );
   }
 
-  /// The bar itself. Its colours and type come from the theme
-  /// (`tabBarTheme`); what a theme cannot express is the hairline the design
-  /// separates the bar from the page with.
+  /// Colours and type come from the theme (`tabBarTheme`); the hairline the
+  /// design separates the bar from the page with is what a theme cannot
+  /// express.
+  ///
+  /// **Painted in the foreground on purpose.** `NavigationBar` fills its whole
+  /// box with an opaque `Material`, and `DecoratedBox` paints a background
+  /// decoration *behind* its child without insetting it — so the default
+  /// position would draw the rule and then bury it.
   Widget _tabBar(MoodColors mood) => TourStop(
     stopKey: TourStops.tabs,
     title: TourCopy.tabsTitle,
     description: TourCopy.tabsBody,
     child: DecoratedBox(
+      position: DecorationPosition.foreground,
       decoration: BoxDecoration(
         border: Border(top: BorderSide(color: mood.rule)),
       ),
