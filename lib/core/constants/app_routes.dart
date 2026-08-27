@@ -50,6 +50,18 @@ abstract class AppRoutes {
   static const profileStreak = AppRoute('profileStreak', 'streak');
 }
 
+/// Opening a module, from the Learn grid or the Path tree.
+///
+/// Same reason as [DictionaryNavigation]: two callers spelling `'moduleId'`
+/// themselves is two chances to misspell it.
+extension ModuleNavigation on BuildContext {
+  /// Goes to the detail screen for [moduleId].
+  void goModuleDetail(String moduleId) => GoRouter.of(this).goNamed(
+    AppRoutes.moduleDetail.name,
+    pathParameters: {'moduleId': moduleId},
+  );
+}
+
 /// Opening a dictionary term, from wherever the learner found it.
 ///
 /// The route's path parameter is named in exactly one place — three callers

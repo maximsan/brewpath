@@ -130,6 +130,11 @@ You can always edit this file by hand instead — the helpers just save effort.
   Marks, fills, borders and progress bars keep the brand orange, so a glyph and
   its label sit side by side in the two shades exactly as the design draws them.
 
+- **The Welcome hero is rounded the way every other media frame is.** Its
+  corner was a bespoke 4px, left over from a radius scale the design never
+  had; it now takes the one radius token the design does ship, matching the
+  bottom sheets, icon wells and mini-game tiles beside it.
+
 - **One progress mark for every run: a bean that roasts as you go.** The lesson
   header's pill, percentage and bar and the mini-game's segmented strip are
   replaced by a bean that darkens from green to espresso beside a zero-padded

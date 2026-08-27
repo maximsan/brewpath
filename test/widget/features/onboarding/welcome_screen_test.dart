@@ -1,3 +1,4 @@
+import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/onboarding/presentation/welcome/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,12 +11,20 @@ void main() {
   testWidgets('renders headline + CTA and routes to /onboarding/goal', (
     tester,
   ) async {
+    // Names as well as paths: the screen navigates by route *name*, as the
+    // router owns the path. A stub that registered paths alone would throw
+    // `unknown route name` on the tap this test exists to make.
     final router = GoRouter(
-      initialLocation: '/welcome',
+      initialLocation: AppRoutes.welcome.path,
       routes: [
-        GoRoute(path: '/welcome', builder: (_, _) => const WelcomeScreen()),
         GoRoute(
-          path: '/onboarding/goal',
+          path: AppRoutes.welcome.path,
+          name: AppRoutes.welcome.name,
+          builder: (_, _) => const WelcomeScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.onboardingGoal.path,
+          name: AppRoutes.onboardingGoal.name,
           builder: (_, _) => const Scaffold(body: Text('goal-stub')),
         ),
       ],
