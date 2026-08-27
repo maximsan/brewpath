@@ -309,8 +309,10 @@ class _CueRow extends StatelessWidget {
       child: Material(
         // A closed cue has to *look* closed, before its words are read. The
         // design draws it dashed over nothing and fills it in once inspected;
-        // a dashed border is a painter's job in Flutter and not worth one
-        // here, so the fill and the border weight carry the state instead. A
+        // the fill and the border weight carry the state here instead. That
+        // was once because no dashed border existed — `DashedRoundedBorder`
+        // now does, so this is an open divergence from the design rather than
+        // a cost, and it is not this file's ticket to close. A
         // row whose only difference is its text makes the learner read every
         // row to find the unread ones — on the one card where looking *is*
         // the interaction.

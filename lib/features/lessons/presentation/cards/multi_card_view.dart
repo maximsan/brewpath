@@ -25,10 +25,9 @@ const String _notQuite = 'NOT QUITE';
 /// rather than this card's invention — a fraction would have to mean something
 /// to mastery, and mastery counts whole cards. See `card_boundary.dart`.
 ///
-/// Continue stays gated on the commit, as [CardShell] gates every card. The
-/// prototype swaps its single button between *check* and *continue*; here the
-/// check sits above the shell's Continue so that one widget keeps owning when
-/// a learner may move on.
+/// The single button swaps between *Check answers* and *Continue*, as the
+/// design has it — the shell owns that swap, so this card still does not draw
+/// its own way forward.
 class MultiCardView extends StatefulWidget {
   /// Creates a [MultiCardView].
   const MultiCardView({
@@ -105,6 +104,10 @@ class _MultiCardViewState extends State<MultiCardView> {
       latched: _submitted,
       onContinue: widget.onContinue,
       label: _cue,
+      commit: CardCommit(
+        label: _checkLabel,
+        onCommit: _selected.isEmpty ? null : _check,
+      ),
       children: [
         Text(
           widget.prompt,
@@ -119,13 +122,6 @@ class _MultiCardViewState extends State<MultiCardView> {
           marks: _marks,
           onToggle: _toggle,
         ),
-        if (!_submitted) ...[
-          const SizedBox(height: AppSpacing.xs),
-          FilledButton.tonal(
-            onPressed: _selected.isEmpty ? null : _check,
-            child: const Text(_checkLabel),
-          ),
-        ],
         if (_submitted) ...[
           const SizedBox(height: AppSpacing.xs),
           Text(

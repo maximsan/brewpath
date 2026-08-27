@@ -1,3 +1,4 @@
+import 'package:brew_path/core/widgets/dashed_rounded_border.dart';
 import 'package:brew_path/features/lessons/presentation/cards/content_card_view.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
@@ -186,11 +187,13 @@ bool _continueEnabled(WidgetTester tester) =>
 
 void main() {
   group('every renderer', () {
-    // Kinds that latch on arrival are absent on purpose: `visual` and
+    // Three kinds are absent on purpose, all because this table asserts a
+    // *disabled Continue* before the card is answered. `visual` and
     // `practical` are read, not asked, so Continue is live from the first
-    // frame and the assertion below — that it starts disabled — is not true
-    // of them. Each has its own file. The switch-pair test at the foot of
-    // this one is what keeps every kind covered.
+    // frame; `multi` shows *Check answers* in its place until it commits, as
+    // the design's single swapping button has it. Each is covered where its
+    // own rule lives, and the switch-pair test at the foot of this file is
+    // what keeps every kind covered.
     final cards = <String, ContentCard>{
       'predict': _predict,
       'concept': _concept,
@@ -200,7 +203,6 @@ void main() {
       'flavor': _flavor,
       'tastefix': _tastefix,
       'bagpick': _bagpick,
-      'multi': _multi,
     };
 
     for (final entry in cards.entries) {
@@ -747,6 +749,22 @@ void main() {
       expect(tester.widget<FilledButton>(check).onPressed, isNotNull);
     });
 
+    testWidgets('one button, which swaps once the set is committed', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_host(_multi, _Signals()));
+
+      // The design shows a single primary action, never a check beside a
+      // dead Continue.
+      expect(find.text('Check answers'), findsOneWidget);
+      expect(_continueButton, findsNothing);
+
+      await pickAndCheck(tester, ['Grind size']);
+
+      expect(find.text('Check answers'), findsNothing);
+      expect(_continueEnabled(tester), isTrue);
+    });
+
     testWidgets('the exact correct set scores, once', (tester) async {
       final signals = _Signals();
       await tester.pumpWidget(_host(_multi, signals));
@@ -796,9 +814,34 @@ void main() {
       await pickAndCheck(tester, ['Grind size']);
 
       expect(
-        find.text('Missed'),
+        find.text('MISSED'),
         findsNWidgets(2),
         reason: 'both unpicked answers must be shown as missed',
+      );
+    });
+
+    testWidgets('a missed answer is outlined in dashes, as the design has it', (
+      tester,
+    ) async {
+      /// The shape an option row is drawn with.
+      ShapeBorder? shapeOf(String text) {
+        final button = tester.widget<OutlinedButton>(
+          find.ancestor(
+            of: find.text(text),
+            matching: find.byType(OutlinedButton),
+          ),
+        );
+        return button.style?.shape?.resolve(const {});
+      }
+
+      await tester.pumpWidget(_host(_multi, _Signals()));
+      await pickAndCheck(tester, ['Grind size']);
+
+      expect(shapeOf('Water temperature'), isA<DashedRoundedBorder>());
+      expect(
+        shapeOf('Grind size'),
+        isNot(isA<DashedRoundedBorder>()),
+        reason: 'only the answer left unpicked is dashed',
       );
     });
 
