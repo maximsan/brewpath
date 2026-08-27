@@ -81,6 +81,20 @@ const _concept = ContentCard.concept(
 /// A bag whose tell is its centre cut, with the answer authored **second** in
 /// the options so a run that keys off position rather than the process key
 /// cannot pass by accident.
+const _multi =
+    ContentCard.multi(
+          prompt: 'Which of these change how a cup tastes?',
+          choices: [
+            Choice(text: 'Grind size', isCorrect: true),
+            Choice(text: 'Mug colour'),
+            Choice(text: 'Water temperature', isCorrect: true),
+            Choice(text: 'The weather'),
+            Choice(text: 'Brew time', isCorrect: true),
+          ],
+          explanation: 'Grind, temperature and time are the three you control.',
+        )
+        as MultiCard;
+
 const _bagpick = ContentCard.bagpick(
   bag: 'BAG 01',
   origin: 'Ethiopia · 1,900 m',
@@ -181,6 +195,7 @@ void main() {
       'flavor': _flavor,
       'tastefix': _tastefix,
       'bagpick': _bagpick,
+      'multi': _multi,
     };
 
     for (final entry in cards.entries) {
@@ -692,6 +707,127 @@ void main() {
       moved = optionOrder().join() != first.join();
     }
     expect(moved, isTrue, reason: 'choice order never changed across attempts');
+  });
+
+  group('multi — select all that apply, checked together', () {
+    /// Picks each of [texts] and commits the card.
+    Future<void> pickAndCheck(WidgetTester tester, List<String> texts) async {
+      for (final text in texts) {
+        await _tapText(tester, text);
+      }
+      await _tapText(tester, 'Check answers');
+    }
+
+    testWidgets('asks for every answer, and offers them all', (tester) async {
+      await tester.pumpWidget(_host(_multi, _Signals()));
+
+      expect(find.text('Select all that apply'), findsOneWidget);
+      expect(find.text(_multi.prompt), findsOneWidget);
+      for (final choice in _multi.choices) {
+        expect(find.text(choice.text), findsOneWidget);
+      }
+    });
+
+    testWidgets('cannot be checked until something is picked', (tester) async {
+      await tester.pumpWidget(_host(_multi, _Signals()));
+
+      final check = find.widgetWithText(FilledButton, 'Check answers');
+      expect(
+        tester.widget<FilledButton>(check).onPressed,
+        isNull,
+        reason: 'an empty selection is not an answer',
+      );
+
+      await _tapText(tester, 'Grind size');
+      expect(tester.widget<FilledButton>(check).onPressed, isNotNull);
+    });
+
+    testWidgets('the exact correct set scores, once', (tester) async {
+      final signals = _Signals();
+      await tester.pumpWidget(_host(_multi, signals));
+
+      await pickAndCheck(tester, [
+        'Grind size',
+        'Water temperature',
+        'Brew time',
+      ]);
+
+      expect(signals.solved, 1);
+      expect(find.text('ALL CORRECT'), findsOneWidget);
+    });
+
+    testWidgets('a correct subset scores nothing', (tester) async {
+      final signals = _Signals();
+      await tester.pumpWidget(_host(_multi, signals));
+
+      await pickAndCheck(tester, ['Grind size', 'Water temperature']);
+
+      expect(
+        signals.solved,
+        0,
+        reason: 'missing an answer is not a partial pass',
+      );
+      expect(find.text('NOT QUITE'), findsOneWidget);
+    });
+
+    testWidgets('picking everything scores nothing', (tester) async {
+      final signals = _Signals();
+      await tester.pumpWidget(_host(_multi, signals));
+
+      await pickAndCheck(tester, [
+        for (final choice in _multi.choices) choice.text,
+      ]);
+
+      expect(
+        signals.solved,
+        0,
+        reason: 'picking everything must not be a winning strategy',
+      );
+    });
+
+    testWidgets('names what should have been picked', (tester) async {
+      await tester.pumpWidget(_host(_multi, _Signals()));
+
+      await pickAndCheck(tester, ['Grind size']);
+
+      expect(
+        find.text('Missed'),
+        findsNWidgets(2),
+        reason: 'both unpicked answers must be shown as missed',
+      );
+    });
+
+    testWidgets('latches: nothing moves after the check', (tester) async {
+      final signals = _Signals();
+      await tester.pumpWidget(_host(_multi, signals));
+
+      await pickAndCheck(tester, [
+        'Grind size',
+        'Water temperature',
+        'Brew time',
+      ]);
+      // A second run at it must neither re-score nor re-open the card.
+      await _tapText(tester, 'Mug colour');
+
+      expect(signals.solved, 1, reason: 'a re-submit paid twice');
+      expect(find.text('Check answers'), findsNothing);
+      expect(_continueEnabled(tester), isTrue);
+    });
+
+    testWidgets('stays winnable whichever order a run draws', (tester) async {
+      for (var nonce = 1; nonce <= 8; nonce++) {
+        final signals = _Signals();
+        await tester.pumpWidget(const SizedBox.shrink());
+        await tester.pumpWidget(_host(_multi, signals, nonce: nonce));
+        await pickAndCheck(tester, [
+          'Grind size',
+          'Water temperature',
+          'Brew time',
+        ]);
+
+        expect(signals.solved, 1, reason: 'unwinnable at nonce $nonce');
+      }
+    });
   });
 
   group('hasRenderer agrees with what contentCardView actually builds', () {

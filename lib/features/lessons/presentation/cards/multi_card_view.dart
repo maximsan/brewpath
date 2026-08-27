@@ -1,0 +1,134 @@
+import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
+import 'package:brew_path/features/lessons/presentation/cards/multi_choice_list.dart';
+import 'package:brew_path/features/lessons/presentation/cards/multi_scoring.dart';
+import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:flutter/material.dart';
+
+/// The cue above a multi card's prompt.
+const String _cue = 'Select all that apply';
+
+/// The commit affordance, before anything has been checked.
+const String _checkLabel = 'Check answers';
+
+/// Verdicts, which name the all-or-nothing rule rather than a score.
+const String _allCorrect = 'ALL CORRECT';
+const String _notQuite = 'NOT QUITE';
+
+/// The select-all-that-apply card: pick freely, then commit the whole set.
+///
+/// Two things separate it from every other graded card. Choices **toggle**
+/// until a separate commit, because a set is not answered until it is
+/// finished; and it is scored **all-or-nothing**, which is the boundary's rule
+/// rather than this card's invention — a fraction would have to mean something
+/// to mastery, and mastery counts whole cards. See `card_boundary.dart`.
+///
+/// Continue stays gated on the commit, as [CardShell] gates every card. The
+/// prototype swaps its single button between *check* and *continue*; here the
+/// check sits above the shell's Continue so that one widget keeps owning when
+/// a learner may move on.
+class MultiCardView extends StatefulWidget {
+  /// Creates a [MultiCardView].
+  const MultiCardView({
+    required this.prompt,
+    required this.explanation,
+    required this.options,
+    required this.onSolved,
+    required this.onContinue,
+    super.key,
+  });
+
+  /// The question.
+  final String prompt;
+
+  /// Shown once committed, whatever the outcome.
+  final String explanation;
+
+  /// The choices, already in display order.
+  final List<MultiOption> options;
+
+  /// Fired once, only when the committed set is exactly right.
+  final CardSolved onSolved;
+
+  /// Fired when the learner moves on.
+  final CardAdvance onContinue;
+
+  @override
+  State<MultiCardView> createState() => _MultiCardViewState();
+}
+
+class _MultiCardViewState extends State<MultiCardView> {
+  final Set<int> _selected = {};
+  bool _submitted = false;
+
+  List<bool> get _answerKey => [
+    for (final option in widget.options) option.isCorrect,
+  ];
+
+  bool get _wasCorrect =>
+      isMultiCorrect(selected: _selected, isCorrect: _answerKey);
+
+  void _toggle(int index) {
+    if (_submitted) return;
+    setState(() {
+      if (!_selected.remove(index)) _selected.add(index);
+    });
+  }
+
+  void _check() {
+    if (_submitted || _selected.isEmpty) return;
+    // Latching before the callback matters: the host may rebuild synchronously
+    // on the success signal, and a card that had not yet latched would accept
+    // a second commit.
+    final correct = _wasCorrect;
+    setState(() => _submitted = true);
+    if (correct) widget.onSolved();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final mood = context.mood;
+
+    return CardShell(
+      latched: _submitted,
+      onContinue: widget.onContinue,
+      label: _cue,
+      children: [
+        Text(
+          widget.prompt,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        MultiChoiceList(
+          options: widget.options,
+          selected: _selected,
+          submitted: _submitted,
+          onToggle: _toggle,
+        ),
+        if (!_submitted) ...[
+          const SizedBox(height: AppSpacing.xs),
+          FilledButton.tonal(
+            onPressed: _selected.isEmpty ? null : _check,
+            child: const Text(_checkLabel),
+          ),
+        ],
+        if (_submitted) ...[
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            _wasCorrect ? _allCorrect : _notQuite,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: _wasCorrect ? mood.sage : mood.berry,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xxs),
+          Text(widget.explanation, style: theme.textTheme.bodyMedium),
+        ],
+      ],
+    );
+  }
+}

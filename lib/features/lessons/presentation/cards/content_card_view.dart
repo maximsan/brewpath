@@ -6,6 +6,8 @@ import 'package:brew_path/features/lessons/presentation/cards/concept_card_view.
 import 'package:brew_path/features/lessons/presentation/cards/graded_picker.dart';
 import 'package:brew_path/features/lessons/presentation/cards/match_board.dart';
 import 'package:brew_path/features/lessons/presentation/cards/match_board_view.dart';
+import 'package:brew_path/features/lessons/presentation/cards/multi_card_view.dart';
+import 'package:brew_path/features/lessons/presentation/cards/multi_choice_list.dart';
 import 'package:brew_path/features/lessons/presentation/cards/practical_card_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/predict_card_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/visual_card_view.dart';
@@ -20,7 +22,7 @@ import 'package:flutter/widgets.dart';
 /// function until the kind is handled, which is the guarantee the union was
 /// chosen for.
 ///
-/// Twelve kinds render today. The rest return null rather than a placeholder,
+/// Thirteen kinds render today. The rest return null rather than a placeholder,
 /// so a host meets an honest absence instead of a card that pretends.
 ///
 /// `visual` is the one that reports no success: it is a reference a lesson
@@ -51,6 +53,13 @@ Widget? contentCardView(
     ),
     final PracticalCard practical => PracticalCardView(
       card: practical,
+      onContinue: onContinue,
+    ),
+    final MultiCard multi => MultiCardView(
+      prompt: multi.prompt,
+      explanation: multi.explanation,
+      options: shuffledBySeed(_multiOptions(multi), seed),
+      onSolved: onSolved,
       onContinue: onContinue,
     ),
     final McqCard mcq => GradedPicker(
@@ -113,7 +122,7 @@ Widget? contentCardView(
       card: visual,
       onContinue: onContinue,
     ),
-    MultiCard() || SequenceCard() || SliderCard() => null,
+    SequenceCard() || SliderCard() => null,
   };
 }
 
@@ -136,15 +145,15 @@ bool hasRenderer(ContentCard card) => switch (card) {
   BagpickCard() ||
   MatchCard() ||
   VisualCard() => true,
-  PracticalCard() => true,
-  MultiCard() || SequenceCard() || SliderCard() => false,
+  PracticalCard() || MultiCard() => true,
+  SequenceCard() || SliderCard() => false,
 };
 
 /// The cards of [cards] that can actually be played, in authored order.
 ///
-/// Three kinds have no renderer yet — `multi`, `sequence` and
-/// `slider`. Filtering here keeps every lesson finishable instead of stranding
-/// the learner on a card that cannot draw itself; the alternative — a
+/// Two kinds have no renderer yet — `sequence` and `slider`. Filtering
+/// here keeps every lesson finishable instead of stranding the learner on a
+/// card that cannot draw itself; the alternative — a
 /// placeholder that says so — puts unfinished scaffolding in front of a
 /// learner on the way to the next real card.
 ///
@@ -256,6 +265,12 @@ PickerCopy _flavorCopy(FlavorCard card) => PickerCopy(
 List<ChoiceOption> _flavorOptions(FlavorCard card) => [
   for (final (index, choice) in card.choices.indexed)
     ChoiceOption(text: choice.text, isCorrect: index == card.answer),
+];
+
+/// A `multi` card's choices, carrying the answer key the list marks with.
+List<MultiOption> _multiOptions(MultiCard card) => [
+  for (final choice in card.choices)
+    MultiOption(text: choice.text, isCorrect: choice.isCorrect),
 ];
 
 List<ChoiceOption> _fromChoices(List<Choice> choices) => [
