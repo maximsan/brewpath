@@ -849,6 +849,31 @@ void main() {
       expect(find.text('ALL CORRECT'), findsOneWidget);
     });
 
+    /// Whether [verdict] is spoken when it appears, rather than only drawn.
+    bool announces(WidgetTester tester, String verdict) => tester
+        .widgetList<Semantics>(find.byType(Semantics))
+        .where((node) => node.properties.label == verdict)
+        .any((node) => node.properties.liveRegion ?? false);
+
+    for (final (picks, verdict) in [
+      (['Grind size', 'Water temperature', 'Brew time'], 'ALL CORRECT'),
+      (['Grind size'], 'NOT QUITE'),
+    ]) {
+      testWidgets('$verdict is announced, not only shown', (tester) async {
+        // The per-choice marks say what each row was; only this line says
+        // whether the card was passed. It appears with no focus change to
+        // bring a reader to it, so without a live region a learner using one
+        // hears every mark and never the outcome — the same reason the match
+        // board announces its own verdict.
+        await tester.pumpWidget(_host(_multi, _Signals()));
+
+        await pickAndCheck(tester, picks);
+
+        expect(find.text(verdict), findsOneWidget);
+        expect(announces(tester, verdict), isTrue);
+      });
+    }
+
     testWidgets('a correct subset scores nothing', (tester) async {
       final signals = _Signals();
       await tester.pumpWidget(_host(_multi, signals));

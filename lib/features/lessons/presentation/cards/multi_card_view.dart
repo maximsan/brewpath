@@ -127,11 +127,21 @@ class _MultiCardViewState extends State<MultiCardView> {
         ),
         if (_submitted) ...[
           const SizedBox(height: AppSpacing.xs),
-          Text(
-            _wasCorrect ? _allCorrect : _notQuite,
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: _wasCorrect ? mood.sage : mood.berry,
-              fontWeight: FontWeight.w700,
+          // Announced as its own region, as the match board's verdict is. The
+          // choice marks say what each row was; only this line says whether
+          // the card was passed, and it arrives with no focus change to bring
+          // a reader to it — so a learner who cannot see it hears every mark
+          // and never the outcome.
+          Semantics(
+            liveRegion: true,
+            label: _wasCorrect ? _allCorrect : _notQuite,
+            excludeSemantics: true,
+            child: Text(
+              _wasCorrect ? _allCorrect : _notQuite,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: _wasCorrect ? mood.sage : mood.berry,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
           const SizedBox(height: AppSpacing.xxs),
