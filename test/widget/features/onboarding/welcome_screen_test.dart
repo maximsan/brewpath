@@ -1,58 +1,76 @@
-import 'package:brew_path/core/constants/app_routes.dart';
-import 'package:brew_path/features/onboarding/presentation/welcome/welcome_screen.dart';
+import 'package:brew_path/features/companion/presentation/roasty.dart';
+import 'package:brew_path/features/onboarding/presentation/meet_roasty/meet_roasty_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:go_router/go_router.dart';
 
-/// WelcomeScreen reads no onboarding providers (it only navigates), so the view
-/// renders against a plain ProviderScope — no repository or database needed.
+import '../../../support/intro_router.dart';
+
+/// Welcome reads no onboarding providers — it only navigates — so a plain
+/// `ProviderScope` is enough. The video_player platform channel is unavailable
+/// under `flutter test`, so the hero always renders its fallback here; that is
+/// the state these tests assert against.
+Future<void> _pumpWelcome(WidgetTester tester) async {
+  await tester.pumpWidget(
+    ProviderScope(
+      child: MaterialApp.router(
+        routerConfig: introRouter(initialLocation: '/welcome'),
+      ),
+    ),
+  );
+  await tester.pump();
+  await tester.pump(const Duration(milliseconds: 100));
+}
+
 void main() {
-  testWidgets('renders headline + CTA and routes to /onboarding/goal', (
-    tester,
-  ) async {
-    // Names as well as paths: the screen navigates by route *name*, as the
-    // router owns the path. A stub that registered paths alone would throw
-    // `unknown route name` on the tap this test exists to make.
-    final router = GoRouter(
-      initialLocation: AppRoutes.welcome.path,
-      routes: [
-        GoRoute(
-          path: AppRoutes.welcome.path,
-          name: AppRoutes.welcome.name,
-          builder: (_, _) => const WelcomeScreen(),
-        ),
-        GoRoute(
-          path: AppRoutes.onboardingGoal.path,
-          name: AppRoutes.onboardingGoal.name,
-          builder: (_, _) => const Scaffold(body: Text('goal-stub')),
-        ),
-      ],
-    );
-
-    await tester.pumpWidget(
-      ProviderScope(child: MaterialApp.router(routerConfig: router)),
-    );
-    // The video_player platform channel is unavailable in unit tests, so the
-    // hero falls back to a static Roasty. Roasty's idle animation runs forever;
-    // bounded pumps instead of `pumpAndSettle`.
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 100));
+  testWidgets("carries its own copy, not Meet Roasty's", (tester) async {
+    await _pumpWelcome(tester);
 
     expect(find.text('BREWPATH'), findsOneWidget);
-    expect(find.textContaining('Plant your tree.'), findsOneWidget);
+    expect(find.text('Learn coffee.\nGrow a tree.'), findsOneWidget);
     expect(
-      find.widgetWithText(FilledButton, 'Plant your seed'),
+      find.textContaining('Short, hands-on lessons in the craft of coffee.'),
       findsOneWidget,
     );
 
-    final cta = find.widgetWithText(FilledButton, 'Plant your seed');
-    await tester.ensureVisible(cta);
-    await tester.pump();
-    await tester.tap(cta);
+    // The copy that used to live here belongs to Meet Roasty.
+    expect(find.textContaining('YOUR COMPANION'), findsNothing);
+    expect(find.textContaining('Plant your tree.'), findsNothing);
+  });
+
+  testWidgets('has no Roasty — the design says so outright', (tester) async {
+    await _pumpWelcome(tester);
+
+    expect(find.byType(Roasty), findsNothing);
+  });
+
+  testWidgets('frames the hero 4/3, not square', (tester) async {
+    await _pumpWelcome(tester);
+
+    final frame = tester.widget<AspectRatio>(
+      find.byType(AspectRatio).first,
+    );
+    expect(frame.aspectRatio, closeTo(4 / 3, 0.001));
+  });
+
+  testWidgets('ships no dead controls', (tester) async {
+    await _pumpWelcome(tester);
+
+    expect(find.textContaining('Restore'), findsNothing);
+    // The whole screen advances; there is no button to press.
+    expect(find.byType(FilledButton), findsNothing);
+  });
+
+  testWidgets('tapping anywhere advances to Meet Roasty', (tester) async {
+    await _pumpWelcome(tester);
+
+    expect(find.text('TAP ANYWHERE TO CONTINUE'), findsOneWidget);
+
+    await tester.tap(find.text('Learn coffee.\nGrow a tree.'));
     for (var i = 0; i < 5; i++) {
       await tester.pump(const Duration(milliseconds: 50));
     }
-    expect(find.text('goal-stub'), findsOneWidget);
+
+    expect(find.byType(MeetRoastyScreen), findsOneWidget);
   });
 }

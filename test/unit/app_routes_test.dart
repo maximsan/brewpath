@@ -96,6 +96,9 @@ void main() {
   const tierByName = <String, HeaderTier>{
     'loading': HeaderTier.immersive,
     'welcome': HeaderTier.immersive,
+    // Meet Roasty is the same beat as Welcome — full bleed, no chrome, one
+    // way forward.
+    'meetRoasty': HeaderTier.immersive,
     'courseComplete': HeaderTier.immersive,
     'onboardingGoal': HeaderTier.immersive,
     'onboardingBrewer': HeaderTier.immersive,

@@ -44,6 +44,24 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The app opens on a welcome screen it never had.** The first screen a new
+  learner saw was the mascot's introduction wearing the welcome screen's slot:
+  it led with *"Plant your tree."* and copy about Roasty, and the screen that
+  says what the app actually is did not exist. There are two screens now, in
+  the order they were designed. **Welcome** opens on the seed-to-tree film —
+  framed the way the design frames it rather than cropped square — over
+  *"Learn coffee. / Grow a tree."*, and the whole screen advances on a tap,
+  with nothing to press. **Meet Roasty** follows with the mascot, what he is
+  for, and one way on. Roasty no longer appears on the first screen at all; his
+  arrival is the second screen's whole point.
+
+  The loading screen now says it can be skipped. It has always been tappable
+  and never mentioned it — the brand mark at its foot becomes *tap anywhere to
+  continue* once a full wake-up has played, so a learner waiting on a slow
+  start is told what to do instead of guessing.
+
+  A dead *Restore* link that went nowhere is gone.
+
 - **The lesson cards are drawn the way the design draws them.** Answering a
   multiple-choice question now tints the row you picked — green for right, a
   softer red for wrong — instead of only outlining it. The opening guess of a

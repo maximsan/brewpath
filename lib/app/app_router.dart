@@ -17,6 +17,7 @@ import 'package:brew_path/features/mini_games/presentation/mini_game_player_scre
 import 'package:brew_path/features/onboarding/presentation/brewer/brewer_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/goal/goal_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/loading/loading_screen.dart';
+import 'package:brew_path/features/onboarding/presentation/meet_roasty/meet_roasty_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/name/name_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/onboarding_providers.dart';
 import 'package:brew_path/features/onboarding/presentation/welcome/welcome_screen.dart';
@@ -63,16 +64,21 @@ GoRouter appRouter(Ref ref) {
         return AppRoutes.loading.path;
       }
       final completed = ref.read(onboardingCompletedProvider).value ?? false;
+      // The intro proper — the two screens a first run is walked through.
+      // Named once because the gate asks about them twice, in opposite
+      // directions: an unfinished learner must be let in, a finished one
+      // bounced out.
+      final isIntroRoute =
+          path == AppRoutes.welcome.path || path == AppRoutes.meetRoasty.path;
       final isOnboardingRoute =
           path == AppRoutes.loading.path ||
-          path == AppRoutes.welcome.path ||
+          isIntroRoute ||
           path.startsWith(AppRoutes.onboardingPrefix);
       if (!completed && !isOnboardingRoute) {
         return AppRoutes.welcome.path;
       }
       if (completed &&
-          (path == AppRoutes.welcome.path ||
-              path.startsWith(AppRoutes.onboardingPrefix))) {
+          (isIntroRoute || path.startsWith(AppRoutes.onboardingPrefix))) {
         return AppRoutes.learn.path;
       }
       // The one-off completion moment intercepts arrival at Today only — the
@@ -98,6 +104,11 @@ GoRouter appRouter(Ref ref) {
         path: AppRoutes.welcome.path,
         name: AppRoutes.welcome.name,
         builder: (context, state) => const WelcomeScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.meetRoasty.path,
+        name: AppRoutes.meetRoasty.name,
+        builder: (context, state) => const MeetRoastyScreen(),
       ),
       // Root-level so the ending covers the whole screen — no shell, no tabs.
       GoRoute(

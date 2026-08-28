@@ -27,6 +27,7 @@ abstract class AppRoutes {
   /// gates the whole flow at once, so it tests the prefix rather than naming
   /// each step — and it reads it here rather than spelling it inline.
   static const onboardingPrefix = '/onboarding';
+  static const meetRoasty = AppRoute('meetRoasty', '/meet-roasty');
   static const onboardingGoal = AppRoute('onboardingGoal', '/onboarding/goal');
   static const onboardingBrewer = AppRoute(
     'onboardingBrewer',
