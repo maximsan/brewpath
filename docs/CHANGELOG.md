@@ -153,6 +153,16 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **Two cards told a screen reader everything except whether you passed.** On
+  a select-all card every choice announced what it was — correct, incorrect,
+  or an answer you missed — and on the blind-bag card the option list marked
+  the call. But the line that names the actual outcome (`ALL CORRECT` /
+  `NOT QUITE`, and `Called it.` / `Washed, actually.`) was drawn and never
+  spoken, and it appears with no focus change to bring a reader to it. On the
+  blind bag it was worse: right and wrong are told apart by colour there, and
+  colour is the one thing a screen reader cannot report. Both are now
+  announced when they appear, the way the match card's verdict already was.
+
 - **The app drew coffee with Material's icons, and three of them said the
   wrong thing.** The design has its own 39-mark family — a cup, a trail of
   stops, a cherry in section — and none of it had reached the app, which drew

@@ -74,6 +74,12 @@ class _BagpickCardViewState extends State<BagpickCardView> {
 
   bool get _wasCorrect => _called == widget.card.answer;
 
+  /// What the call came to. Named once, because it is both drawn and spoken
+  /// and the two must not be able to drift into saying different things.
+  String _verdict(BagpickCard card) => _wasCorrect
+      ? 'Called it.'
+      : '${_processLabels[card.answer] ?? card.answer}, actually.';
+
   /// Whether [cueId] is showing its text. Committing reveals them all, so the
   /// explanation can point at a cue the learner never opened.
   bool _isRevealed(String cueId) => _latched || _inspected.contains(cueId);
@@ -145,13 +151,22 @@ class _BagpickCardViewState extends State<BagpickCardView> {
           // Coloured by outcome, as the design's feedback block is. Right and
           // wrong reading the same weight of type differ only in their
           // wording, which a learner scanning back over a run will not catch.
-          Text(
-            _wasCorrect
-                ? 'Called it.'
-                : '${_processLabels[card.answer] ?? card.answer}, actually.',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              color: _wasCorrect ? context.mood.sage : context.mood.warn,
-              fontWeight: FontWeight.w600,
+          //
+          // And announced as its own region, because colour is precisely what
+          // a screen reader cannot report. The option list marks the call, but
+          // only this line names the outcome, and it arrives with no focus
+          // change to bring a reader to it — the same rule the match board and
+          // the multi card's verdicts follow.
+          Semantics(
+            liveRegion: true,
+            label: _verdict(card),
+            excludeSemantics: true,
+            child: Text(
+              _verdict(card),
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                color: _wasCorrect ? context.mood.sage : context.mood.warn,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
           const SizedBox(height: AppSpacing.xxs),

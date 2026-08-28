@@ -185,6 +185,16 @@ Finder get _continueButton => find.widgetWithText(FilledButton, 'Continue');
 bool _continueEnabled(WidgetTester tester) =>
     tester.widget<FilledButton>(_continueButton).onPressed != null;
 
+/// Whether [verdict] is spoken when it appears, rather than only drawn.
+///
+/// Shared by every kind that ends on a line naming the outcome. Those lines
+/// arrive on commit with no focus change to bring a reader to them, so without
+/// a live region a learner using one hears the marks and never the result.
+bool _announces(WidgetTester tester, String verdict) => tester
+    .widgetList<Semantics>(find.byType(Semantics))
+    .where((node) => node.properties.label == verdict)
+    .any((node) => node.properties.liveRegion ?? false);
+
 void main() {
   group('every renderer', () {
     // Three kinds are absent on purpose, all because this table asserts a
@@ -338,6 +348,24 @@ void main() {
         reason: 'scanning back over a run, wording alone is easy to miss',
       );
     });
+
+    for (final (process, verdict) in [
+      ('Washed', 'Called it.'),
+      ('Natural', 'Washed, actually.'),
+    ]) {
+      testWidgets('$verdict is announced, not only drawn', (tester) async {
+        // Colour is what separates right from wrong here, and colour is the
+        // one thing a screen reader cannot report. The option list marks the
+        // call itself, but only this line names the outcome, and it arrives
+        // with no focus change to bring a reader to it.
+        await tester.pumpWidget(_host(_bagpick, _Signals()));
+
+        await call(tester, process);
+
+        expect(find.text(verdict), findsOneWidget);
+        expect(_announces(tester, verdict), isTrue);
+      });
+    }
 
     testWidgets('a cue is hidden until it is inspected', (tester) async {
       await tester.pumpWidget(_host(_bagpick, _Signals()));
@@ -848,6 +876,25 @@ void main() {
       expect(signals.solved, 1);
       expect(find.text('ALL CORRECT'), findsOneWidget);
     });
+
+    for (final (picks, verdict) in [
+      (['Grind size', 'Water temperature', 'Brew time'], 'ALL CORRECT'),
+      (['Grind size'], 'NOT QUITE'),
+    ]) {
+      testWidgets('$verdict is announced, not only shown', (tester) async {
+        // The per-choice marks say what each row was; only this line says
+        // whether the card was passed. It appears with no focus change to
+        // bring a reader to it, so without a live region a learner using one
+        // hears every mark and never the outcome — the same reason the match
+        // board announces its own verdict.
+        await tester.pumpWidget(_host(_multi, _Signals()));
+
+        await pickAndCheck(tester, picks);
+
+        expect(find.text(verdict), findsOneWidget);
+        expect(_announces(tester, verdict), isTrue);
+      });
+    }
 
     testWidgets('a correct subset scores nothing', (tester) async {
       final signals = _Signals();
