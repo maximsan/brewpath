@@ -1,3 +1,4 @@
+import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/pick_card.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
@@ -53,7 +54,7 @@ class _GoalScreenState extends ConsumerState<GoalScreen> {
     _controller = GoalController(
       onSubmit: (index) {
         ref.read(onboardingDraftProvider.notifier).setGoal(_options[index].key);
-        context.go('/onboarding/brewer');
+        context.goNamed(AppRoutes.onboardingBrewer.name);
       },
     )..addListener(_onControllerChanged);
   }

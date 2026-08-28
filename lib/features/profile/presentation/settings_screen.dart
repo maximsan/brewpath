@@ -1,4 +1,6 @@
 import 'dart:async';
+
+import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/onboarding/presentation/onboarding_providers.dart';
@@ -223,6 +225,6 @@ class _ResetOnboardingTile extends ConsumerWidget {
     await ref.read(onboardingRepositoryProvider).resetOnboarding();
     ref.invalidate(onboardingCompletedProvider);
     if (!context.mounted) return;
-    context.go('/welcome');
+    context.goNamed(AppRoutes.welcome.name);
   }
 }

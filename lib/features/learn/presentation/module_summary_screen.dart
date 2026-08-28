@@ -1,3 +1,4 @@
+import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/icon_badge.dart';
@@ -86,7 +87,7 @@ class _ModuleSummaryScreenState extends ConsumerState<ModuleSummaryScreen> {
             ],
             const SizedBox(height: AppSpacing.xl),
             FilledButton(
-              onPressed: () => context.go('/learn'),
+              onPressed: () => context.goNamed(AppRoutes.learn.name),
               child: const Text('Continue'),
             ),
           ],

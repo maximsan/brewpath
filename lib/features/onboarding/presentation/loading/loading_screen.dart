@@ -1,3 +1,4 @@
+import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/onboarding/presentation/loading/loading_animation.dart';
 import 'package:brew_path/features/onboarding/presentation/loading/wake_sequence_controller.dart';
 import 'package:brew_path/features/onboarding/presentation/loading/widgets/pulsing_dots.dart';
@@ -72,7 +73,7 @@ class _LoadingScreenState extends ConsumerState<LoadingScreen> {
   /// users on to `/learn`, so this screen does not duplicate that decision.
   void _advance() {
     if (!mounted) return;
-    context.goNamed('welcome');
+    context.goNamed(AppRoutes.welcome.name);
   }
 
   @override

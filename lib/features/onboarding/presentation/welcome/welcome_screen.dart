@@ -1,10 +1,12 @@
 import 'dart:async';
 
+import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/link_button.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
+import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -16,10 +18,7 @@ import 'package:video_player/video_player.dart';
 /// Welcome / onboarding intro: hero video, Roasty, and the "plant your seed" CTA.
 class WelcomeScreen extends ConsumerWidget {
   /// Creates a [WelcomeScreen].
-  /// Creates a [WelcomeScreen].
   const WelcomeScreen({super.key});
-
-  static const double _heroFrameRadius = 4;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -45,7 +44,7 @@ class WelcomeScreen extends ConsumerWidget {
                   decoration: BoxDecoration(
                     color: mood.surface,
                     border: Border.all(color: mood.rule),
-                    borderRadius: BorderRadius.circular(_heroFrameRadius),
+                    borderRadius: BorderRadius.circular(AppRadii.chrome),
                   ),
                   clipBehavior: Clip.hardEdge,
                   child: const _VideoHero(),
@@ -70,7 +69,7 @@ class WelcomeScreen extends ConsumerWidget {
               const SizedBox(height: AppSpacing.lg + 4),
               PrimaryButton(
                 label: 'Plant your seed',
-                onPressed: () => context.go('/onboarding/goal'),
+                onPressed: () => context.goNamed(AppRoutes.onboardingGoal.name),
               ),
               Center(
                 child: LinkButton(

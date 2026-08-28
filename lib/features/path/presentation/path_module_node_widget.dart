@@ -1,10 +1,10 @@
 import 'package:brew_path/core/constants/app_labels.dart';
+import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/challenges/presentation/path_challenge_node.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/path/presentation/path_node_card.dart';
 import 'package:brew_path/features/path/presentation/path_node_rail.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 /// A single node in the vertical learning path: a state-colored circle on the
 /// connecting rail plus a content card with the module icon, title, and
@@ -38,7 +38,7 @@ class PathModuleNodeWidget extends StatelessWidget {
         );
       return;
     }
-    context.go('/learn/module/${item.module.id}');
+    context.goModuleDetail(item.module.id);
   }
 
   @override

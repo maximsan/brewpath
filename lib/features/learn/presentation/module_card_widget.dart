@@ -1,4 +1,5 @@
 import 'package:brew_path/core/constants/app_labels.dart';
+import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/module_glyph.dart';
@@ -6,7 +7,6 @@ import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 /// Module summary card for the Learn list: per-module icon, title, lesson
 /// progress, and lock state. Locked taps surface the unlock hint instead of
@@ -29,7 +29,7 @@ class ModuleCardWidget extends StatelessWidget {
         );
       return;
     }
-    context.go('/learn/module/${item.module.id}');
+    context.goModuleDetail(item.module.id);
   }
 
   @override
