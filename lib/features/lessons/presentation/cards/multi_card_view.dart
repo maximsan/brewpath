@@ -106,6 +106,9 @@ class _MultiCardViewState extends State<MultiCardView> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final mood = context.mood;
+    // Named once, because it is both drawn and spoken and the two must not be
+    // able to drift into saying different things.
+    final verdict = _wasCorrect ? _allCorrect : _notQuite;
 
     return CardShell(
       latched: _submitted,
@@ -134,10 +137,10 @@ class _MultiCardViewState extends State<MultiCardView> {
           // and never the outcome.
           Semantics(
             liveRegion: true,
-            label: _wasCorrect ? _allCorrect : _notQuite,
+            label: verdict,
             excludeSemantics: true,
             child: Text(
-              _wasCorrect ? _allCorrect : _notQuite,
+              verdict,
               style: theme.textTheme.labelSmall?.copyWith(
                 color: _wasCorrect ? mood.sage : mood.berry,
                 fontWeight: FontWeight.w700,

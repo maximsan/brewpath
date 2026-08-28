@@ -144,12 +144,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
-- **A select-all card told a screen reader every mark except whether you
-  passed.** Each choice announced what it was — correct, incorrect, or an
-  answer you missed — but the `ALL CORRECT` / `NOT QUITE` line that carries
-  the actual outcome was drawn and never spoken, and it appears with no focus
-  change to bring a reader to it. It is now announced when it appears, the way
-  the match card's verdict already was.
+- **Two cards told a screen reader everything except whether you passed.** On
+  a select-all card every choice announced what it was — correct, incorrect,
+  or an answer you missed — and on the blind-bag card the option list marked
+  the call. But the line that names the actual outcome (`ALL CORRECT` /
+  `NOT QUITE`, and `Called it.` / `Washed, actually.`) was drawn and never
+  spoken, and it appears with no focus change to bring a reader to it. On the
+  blind bag it was worse: right and wrong are told apart by colour there, and
+  colour is the one thing a screen reader cannot report. Both are now
+  announced when they appear, the way the match card's verdict already was.
 
 - **The active tab wore a green pill, and the first tab had two names.** The
   bar was stock Material with no theme of its own, so it reached through the
