@@ -34,8 +34,9 @@ MiniGameFormat _format(
   steps: const ['Read it', 'Answer it', 'Learn from it'],
 );
 
-/// The catalog: g-quiz and g-match play, the rest are listed only. Kinds are
-/// the real ones so the shelf groups the way it does in the app.
+/// The catalog. Kinds are the real ones so the shelf groups the way it does in
+/// the app, and every id but the last is a shipped game the registry rules
+/// playable.
 final List<MiniGameFormat> _formats = [
   _format('g-quiz', 'quiz', 'True or false', topic: 'COFFEE BASICS'),
   _format('g-match', 'match', 'Match the facts'),
@@ -44,6 +45,14 @@ final List<MiniGameFormat> _formats = [
   _format('g-tastefix', 'tastefix', 'Fix the cup', moduleId: 'm4'),
   _format('g-calibrate', 'slider', 'Dial it in', moduleId: 'm4'),
   _format('g-sequence', 'sequence', 'Put it in order', moduleId: 'm5'),
+  // A game the playable registry has not ruled on — the shape the intro has to
+  // disclose. It used to be a game whose *kind* had no renderer, and it named
+  // whichever that was: 'Read the green bean', then 'Dial it in'. Every kind
+  // draws as of #124, so there is no third kind to name, and the state that
+  // remains is a catalog entry no one has ruled playable. That is the failure
+  // `mini_game_playable_test` exists to catch, and this is what a learner meets
+  // if it ever slips through.
+  _format('g-not-yet-ruled', 'sequence', 'Not ruled on yet', moduleId: 'm5'),
 ];
 
 /// Four of the six answer `true`, so always tapping True scores exactly 4 —
@@ -120,6 +129,27 @@ const _bagpickRounds = <ContentCard>[
   ),
 ];
 
+/// Two rounds, authored — as every sequence round is — in their own answer, so
+/// the run has to shuffle them before the learner sees them.
+const _sequenceRounds = <ContentCard>[
+  ContentCard.sequence(
+    prompt: 'Order the journey from farm to cup',
+    items: [
+      SequenceItem(label: 'Pick the cherry', order: 1),
+      SequenceItem(label: 'Roast', order: 2),
+      SequenceItem(label: 'Brew', order: 3),
+    ],
+  ),
+  ContentCard.sequence(
+    prompt: 'Order the bloom, first to last',
+    items: [
+      SequenceItem(label: 'Pour', order: 1),
+      SequenceItem(label: 'Grounds swell', order: 2),
+      SequenceItem(label: 'Gas escapes', order: 3),
+    ],
+  ),
+];
+
 /// The module 'Fix the cup' points at, with the words its gate sheet pitches.
 const _modules = [
   ModuleModel(
@@ -150,6 +180,7 @@ class _FakeContentRepository extends ContentRepository {
         'g-quiz' => _rounds,
         'g-match' => _matchRounds,
         'g-bagpick' => _bagpickRounds,
+        'g-sequence' => _sequenceRounds,
         _ => const [],
       };
 }
@@ -517,16 +548,12 @@ void main() {
     expect(action.onPressed, isNotNull);
   });
 
-  testWidgets('a game with no renderer reaches its intro and cannot start', (
+  testWidgets('a game the registry has not ruled on cannot start', (
     tester,
   ) async {
     await _pump(tester);
 
-    // 'Dial it in' — the `slider` kind, one of the two still waiting for a
-    // renderer. This named 'Read the green bean' until bagpick landed; the
-    // assertion is about a game that cannot be drawn, not about whichever
-    // game happened to be unfinished when it was written.
-    await tester.tap(find.text('Dial it in'));
+    await tester.tap(find.text('Not ruled on yet'));
     await _settle(tester);
 
     // The row opened its intro like any other — the renderer gap is the
@@ -540,7 +567,7 @@ void main() {
     expect(
       action.onPressed,
       isNull,
-      reason: 'a game with no renderer must not start a run',
+      reason: 'a game nobody ruled playable must not start a run',
     );
   });
 
@@ -699,6 +726,51 @@ void main() {
     }
 
     // One of two called correctly: the run scores the calls, not the rounds.
+    expect(find.text('1 / 2'), findsOneWidget);
+    expect(find.text('Play again'), findsOneWidget);
+  });
+
+  testWidgets('g-sequence plays round by round, and scores the runs', (
+    tester,
+  ) async {
+    // The other card here with a multi-step interaction, and the only one the
+    // host hands an order to rather than a list of choices — so the seeded
+    // display order and the run's own tally are worth driving end to end.
+    await _pump(tester);
+
+    await tester.tap(find.text('Put it in order'));
+    await _settle(tester);
+    await tester.tap(find.text('Play'));
+    await _settle(tester);
+
+    // Each round is named by its own first step, whichever order the run drew,
+    // and the first is committed in the wrong order on purpose.
+    for (var round = 0; round < _sequenceRounds.length; round++) {
+      final isJourney = find.text('Pick the cherry').evaluate().isNotEmpty;
+      final answer = isJourney
+          ? ['Pick the cherry', 'Roast', 'Brew']
+          : ['Pour', 'Grounds swell', 'Gas escapes'];
+      final run = round == 0 ? answer.reversed.toList() : answer;
+
+      // The bank authors each round in its own answer; the card must never
+      // open in it, or the run is won by tapping down the list.
+      expect(
+        find.text(answer.first).evaluate().isNotEmpty,
+        isTrue,
+        reason: 'the round did not draw',
+      );
+
+      for (final step in run) {
+        await tester.tap(find.text(step));
+        await _settle(tester);
+      }
+      await tester.tap(find.text('Submit'));
+      await _settle(tester);
+      await tester.tap(find.text('Continue'));
+      await _settle(tester);
+    }
+
+    // One of two ordered correctly: the run scores the runs, not the rounds.
     expect(find.text('1 / 2'), findsOneWidget);
     expect(find.text('Play again'), findsOneWidget);
   });

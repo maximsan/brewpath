@@ -9,6 +9,9 @@ import 'package:brew_path/features/lessons/presentation/cards/match_board_view.d
 import 'package:brew_path/features/lessons/presentation/cards/multi_card_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/practical_card_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/predict_card_view.dart';
+import 'package:brew_path/features/lessons/presentation/cards/sequence_card_view.dart';
+import 'package:brew_path/features/lessons/presentation/cards/sequence_order.dart';
+import 'package:brew_path/features/lessons/presentation/cards/slider_card_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/visual_card_view.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
@@ -21,8 +24,10 @@ import 'package:flutter/widgets.dart';
 /// function until the kind is handled, which is the guarantee the union was
 /// chosen for.
 ///
-/// Thirteen kinds render today. The rest return null rather than a placeholder,
-/// so a host meets an honest absence instead of a card that pretends.
+/// **Every kind renders**, as of `slider` and `sequence` (#124). The return
+/// type stays nullable rather than being narrowed: a kind is added to the union
+/// before its renderer exists, and the honest absence a host can meet is the
+/// reason nothing here ever draws a placeholder.
 ///
 /// `visual` is the one that reports no success: it is a reference a lesson
 /// shows, never a question, so it latches on arrival and mastery cannot move
@@ -121,17 +126,35 @@ Widget? contentCardView(
       card: visual,
       onContinue: onContinue,
     ),
-    SequenceCard() || SliderCard() => null,
+    final SliderCard slider => SliderCardView(
+      card: slider,
+      onSolved: onSolved,
+      onContinue: onContinue,
+    ),
+    final SequenceCard sequence => SequenceCardView(
+      prompt: sequence.prompt,
+      // The one shuffle that can hand the learner the answer: a sequence round
+      // is authored in its correct order, so the draw is checked against the
+      // solution rather than merely taken. See `sequence_order.dart`.
+      items: sequenceDisplayOrder(sequence.items, seed),
+      onSolved: onSolved,
+      onContinue: onContinue,
+    ),
   };
 }
 
 /// Whether [card] can be drawn today.
 ///
-/// The same partition as [contentCardView]'s final arm, stated separately so a
-/// host can decide what to play *before* it builds anything. Both switches are
+/// The same partition as [contentCardView]'s arms, stated separately so a host
+/// can decide what to play *before* it builds anything. Both switches are
 /// exhaustive over the sealed union, so a new kind breaks both at once and
 /// neither can quietly drift out of step with the other — a unit test pins the
 /// two together for the cases that exist now.
+///
+/// **Every arm is true today** (#124), and the switch is kept rather than
+/// replaced by `true`: that is what makes it break when a kind is added to the
+/// union, which is the whole reason both switches exist. A kind arrives before
+/// its renderer does, and this is where that gap is declared.
 bool hasRenderer(ContentCard card) => switch (card) {
   PredictCard() ||
   ConceptCard() ||
@@ -145,20 +168,22 @@ bool hasRenderer(ContentCard card) => switch (card) {
   MatchCard() ||
   VisualCard() ||
   PracticalCard() ||
-  MultiCard() => true,
-  SequenceCard() || SliderCard() => false,
+  MultiCard() ||
+  SequenceCard() ||
+  SliderCard() => true,
 };
 
 /// The cards of [cards] that can actually be played, in authored order.
 ///
-/// Two kinds have no renderer yet — `sequence` and `slider`. Filtering
-/// here keeps every lesson finishable instead of stranding the learner on a
-/// card that cannot draw itself; the alternative — a
-/// placeholder that says so — puts unfinished scaffolding in front of a
-/// learner on the way to the next real card.
+/// Filtering here keeps every lesson finishable instead of stranding the
+/// learner on a card that cannot draw itself; the alternative — a placeholder
+/// that says so — puts unfinished scaffolding in front of a learner on the way
+/// to the next real card.
 ///
-/// This is a temporary shape. It disappears on its own as the remaining
-/// renderers land, without a caller changing.
+/// **It drops nothing today**, because every kind renders. It stays because
+/// the gap it covers is a recurring one rather than a past one: a kind lands in
+/// the union with its bank before its renderer is built, and for that stretch
+/// this is what keeps the lessons carrying it playable.
 List<ContentCard> playableCards(List<ContentCard> cards) => [
   for (final card in cards)
     if (hasRenderer(card)) card,
