@@ -35,4 +35,11 @@ abstract final class TourStops {
 
   /// The stops as the engine plays them.
   static List<GlobalKey> get inScrollOrder => [today, practice, modules, tabs];
+
+  /// Whether [stopKey] is the stop the Tour ends on.
+  ///
+  /// Asked by the card, which labels its right-hand button *Done* rather than
+  /// *Next* there. Answered from [inScrollOrder] rather than by naming [tabs],
+  /// so re-ordering the Tour re-labels the card by itself.
+  static bool isLast(GlobalKey stopKey) => inScrollOrder.last == stopKey;
 }

@@ -158,6 +158,16 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **The Today tour has a way out, and a way back in.** Every card in the
+  four-stop tour now carries **Skip** on the left and **Next** on the right —
+  **Done** on the last stop — where before it had no buttons at all and could
+  only be finished by walking it to the end. Navigating to another tab
+  mid-tour now ends the tour instead of leaving its callout floating over the
+  tab you moved to. And the way back is **Settings → Help & Support → App
+  Guide**: a new screen that says in a line or two what each part of the app
+  does, with **Replay Today introduction** at the foot. That replay row moved
+  there from Profile, where it read as a fifth preference in Customize.
+
 - **Two cards told a screen reader everything except whether you passed.** On
   a select-all card every choice announced what it was — correct, incorrect,
   or an answer you missed — and on the blind-bag card the option list marked
