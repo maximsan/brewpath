@@ -60,6 +60,11 @@ You can always edit this file by hand instead — the helpers just save effort.
   continue* once a full wake-up has played, so a learner waiting on a slow
   start is told what to do instead of guessing.
 
+  The film on the welcome screen can be heard. It has always had an audio
+  track and no way to reach it; the design's mute control sits on the frame
+  now, and the sound is cut on the way out so it never follows you to the
+  next screen.
+
   A dead *Restore* link that went nowhere is gone.
 
 - **The lesson cards are drawn the way the design draws them.** Answering a
