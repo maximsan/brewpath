@@ -57,15 +57,10 @@ first, then resume.
 - **Regenerate after model changes.** Run `dart run build_runner build` whenever
   a Freezed model, Riverpod provider, or Drift table is added or modified
   (flags and behaviour: README _Development commands_).
-- **Scope is ruled by the readiness audit, not inferred.**
-  [`prototype/v1 Readiness Audit.html`](prototype/v1%20Readiness%20Audit.html)
-  is the ship/defer authority: it cuts v1 to ~32 of the prototype's ~55 screens
-  and defers Atlas, Duel, rewarded ads, the mood player and the onboarding
-  question flow to v2. **Read it before calling anything missing** — a v2 screen
-  absent from the app is correct, not a gap. The prototype also carries 18
-  `.html` design documents beyond `index.html`, authored deliberately in
-  isolation; `Design System.html` (+ `ds-content.js`) and `QA Findings.html`
-  carry rulings that appear nowhere in the `.jsx`.
+- **Scope:** [`prototype/v1 Readiness Audit.html`](prototype/v1%20Readiness%20Audit.html)
+  rules what ships in v1 and what defers to v2 — read it before calling anything
+  missing, because a v2 screen absent from the app is correct. The prototype's
+  other `.html` files carry design rulings the `.jsx` does not.
 
 - **`prototype/` is read-only to agents.** It is the design source the app is
   built *against*, so an edit there moves the thing we are measuring ourselves
@@ -107,16 +102,9 @@ explanations — plus test and iOS/SPM build notes — lives in
 - **Tests:** unit tests in `test/unit/`; widget tests in `test/widget/`; integration tests in `integration_test/`
 - **No print statements** — use `debugPrint` only in development guards; never in production paths
 - **Lints:** see `analysis_options.yaml` (the config is the truth) and the README _Toolchain_ paragraph
-- **Building or changing a screen? Read the design reference first.** The
-  component and layout rules live in
-  [`docs/design/03-design-system.md`](docs/design/03-design-system.md) — §"The
-  design system is specified far beyond this section" indexes all 57 components
-  and patterns, and names the source for each. Many are rules rather than
-  widgets ("card or section", "the progress mark reports position, never
-  quality", "sage is never an action"), so they land only if someone reads them —
-  no ticket will ever carry them. A screen built without consulting it is how the
-  app came to diverge from the design on 40 of 61 catalogued components
-  ([#389](https://github.com/maximsan/brewpath/issues/389)).
+- **Screens:** read [`docs/design/03-design-system.md`](docs/design/03-design-system.md)
+  before building one — it indexes all 57 components and patterns. Many are rules,
+  not widgets, so no ticket will ever carry them.
 
 ## Code Quality Rules
 
