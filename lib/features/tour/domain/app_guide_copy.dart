@@ -70,12 +70,17 @@ abstract final class AppGuideCopy {
           'Grows a stage as you complete core lessons, from seed to harvest. '
           'Only lessons grow it — it lives on your Profile.',
     ),
+    // The design's first sentence — *"One lesson a day keeps it alive"* —
+    // names one of the six activities that qualify a day and reads as the only
+    // one, the same understatement §6.8 records against the Help FAQ. Rewritten
+    // under a product-owner ruling (#338); the freeze half is the design's and
+    // is correct. The rule itself is `docs/design/05-mechanics.md` §5.
     AppGuideSection(
       title: 'Streak',
       body:
-          'One lesson a day keeps it alive. Every 7 days in a row earns a '
-          'streak freeze (you hold one at a time); it covers a missed day '
-          'automatically.',
+          'One finished activity a day keeps it alive — a lesson, a replay, or '
+          'practice. Every 7 days in a row earns a streak freeze (you hold one '
+          'at a time); it covers a missed day automatically.',
     ),
   ];
 }

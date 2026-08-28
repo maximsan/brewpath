@@ -166,7 +166,10 @@ You can always edit this file by hand instead — the helpers just save effort.
   tab you moved to. And the way back is **Settings → Help & Support → App
   Guide**: a new screen that says in a line or two what each part of the app
   does, with **Replay Today introduction** at the foot. That replay row moved
-  there from Profile, where it read as a fifth preference in Customize.
+  there from Profile, where it read as a fifth preference in Customize. The
+  guide's streak line says *"one finished activity a day"* rather than the
+  design's *"one lesson a day"*, which named one of the six ways a day
+  qualifies and read as the only one.
 
 - **Two cards told a screen reader everything except whether you passed.** On
   a select-all card every choice announced what it was — correct, incorrect,
