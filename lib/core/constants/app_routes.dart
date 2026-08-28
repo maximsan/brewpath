@@ -22,6 +22,11 @@ class AppRoute {
 abstract class AppRoutes {
   static const loading = AppRoute('loading', '/loading');
   static const welcome = AppRoute('welcome', '/welcome');
+
+  /// The segment every onboarding step sits under. The router's redirect
+  /// gates the whole flow at once, so it tests the prefix rather than naming
+  /// each step — and it reads it here rather than spelling it inline.
+  static const onboardingPrefix = '/onboarding';
   static const onboardingGoal = AppRoute('onboardingGoal', '/onboarding/goal');
   static const onboardingBrewer = AppRoute(
     'onboardingBrewer',
@@ -48,6 +53,18 @@ abstract class AppRoutes {
   static const profile = AppRoute('profile', '/profile');
   static const profileSettings = AppRoute('profileSettings', 'settings');
   static const profileStreak = AppRoute('profileStreak', 'streak');
+}
+
+/// Opening a module, from the Learn grid or the Path tree.
+///
+/// Same reason as [DictionaryNavigation]: two callers spelling `'moduleId'`
+/// themselves is two chances to misspell it.
+extension ModuleNavigation on BuildContext {
+  /// Goes to the detail screen for [moduleId].
+  void goModuleDetail(String moduleId) => GoRouter.of(this).goNamed(
+    AppRoutes.moduleDetail.name,
+    pathParameters: {'moduleId': moduleId},
+  );
 }
 
 /// Opening a dictionary term, from wherever the learner found it.

@@ -130,6 +130,11 @@ You can always edit this file by hand instead — the helpers just save effort.
   Marks, fills, borders and progress bars keep the brand orange, so a glyph and
   its label sit side by side in the two shades exactly as the design draws them.
 
+- **The Welcome hero is rounded the way every other media frame is.** Its
+  corner was a bespoke 4px, left over from a radius scale the design never
+  had; it now takes the one radius token the design does ship, matching the
+  bottom sheets, icon wells and mini-game tiles beside it.
+
 - **One progress mark for every run: a bean that roasts as you go.** The lesson
   header's pill, percentage and bar and the mini-game's segmented strip are
   replaced by a bean that darkens from green to espresso beside a zero-padded
@@ -162,6 +167,16 @@ You can always edit this file by hand instead — the helpers just save effort.
   blind bag it was worse: right and wrong are told apart by colour there, and
   colour is the one thing a screen reader cannot report. Both are now
   announced when they appear, the way the match card's verdict already was.
+
+- **Screens spelled their own URLs, so the router was not the only thing that
+  knew them.** Eight places navigated by a literal path — `/learn`,
+  `/welcome`, `/onboarding/goal`, a module's and a card's detail URL — and the
+  router's own gate spelled four more inline while reading two from the route
+  catalog in the same function. Every one now goes through that catalog, by
+  route name where a name exists, so changing what a URL looks like is a change
+  in one file. Opening a module went through two call sites that each spelled
+  the `moduleId` parameter themselves; they share one helper now, the way
+  opening a dictionary term already did.
 
 - **The active tab wore a green pill, and the first tab had two names.** The
   bar was stock Material with no theme of its own, so it reached through the

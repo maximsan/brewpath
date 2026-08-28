@@ -53,25 +53,27 @@ GoRouter appRouter(Ref ref) {
   });
   return GoRouter(
     navigatorKey: _rootKey,
-    initialLocation: '/loading',
+    initialLocation: AppRoutes.loading.path,
     refreshListenable: refresh,
     // Funnels the root (platform initial route, error-page "Home") to Loading
     // and gates the rest of the app behind the onboarding flow.
     redirect: (context, state) {
       final path = state.uri.path;
       if (path == '/') {
-        return '/loading';
+        return AppRoutes.loading.path;
       }
       final completed = ref.read(onboardingCompletedProvider).value ?? false;
       final isOnboardingRoute =
-          path == '/loading' ||
-          path == '/welcome' ||
-          path.startsWith('/onboarding');
+          path == AppRoutes.loading.path ||
+          path == AppRoutes.welcome.path ||
+          path.startsWith(AppRoutes.onboardingPrefix);
       if (!completed && !isOnboardingRoute) {
-        return '/welcome';
+        return AppRoutes.welcome.path;
       }
-      if (completed && (path == '/welcome' || path.startsWith('/onboarding'))) {
-        return '/learn';
+      if (completed &&
+          (path == AppRoutes.welcome.path ||
+              path.startsWith(AppRoutes.onboardingPrefix))) {
+        return AppRoutes.learn.path;
       }
       // The one-off completion moment intercepts arrival at Today only — the
       // ending presents where the course lived, and never hijacks another
