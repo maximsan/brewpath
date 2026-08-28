@@ -26,12 +26,20 @@ the row it was missing.
 
 `--accent-text` exists because QA measured `--accent` at **4.23:1 on `--bg`** in
 Cupping — under AA for small text — and ruled that moving the one brand colour
-"costs more than it buys". So the accent stays where it is and small accent text
-takes the darkened mix instead. The design pairs the two in the same row: an
-accent glyph beside an `--accent-text` label (`brew-challenge.jsx:303`, `:706`),
-and an accent-bordered pill with an `--accent-text` label (`:338`). Marks,
-fills, borders and progress bars keep `--accent`. In the app the token is
-`MoodColors.accentText`, applied to every accent text below the `title` step.
+"costs more than it buys". `index.html:34` states its scope beside the token and
+that sentence is the whole rule: *"small accent labels use this darkened mix
+instead (AA at 11px)"* — smallcaps, eyebrows and kickers at `--t-label`. Accent
+set larger is not covered, and neither is anything the accent is not read as:
+marks, fills, borders and progress bars keep `--accent`. Where a glyph sits
+beside such a label only the label changes (`brew-challenge.jsx:303`, `:706`,
+and the accent-bordered pill at `:338`).
+
+Two components the running prototype rules on explicitly, **against** that
+sentence, so they keep `--accent`: `.btn-link` at `--t-support` (`:283`) and
+`.tab.active` on a 9.5px tab label (`:356`). The tab bar is an open conflict —
+`index.html` carries both the rule and the line contradicting it — and it is the
+owner's to settle, not a doc's; [#356](https://github.com/maximsan/brewpath/issues/356)
+restyles that bar. In the app the token is `MoodColors.accentText`.
 
 **Illustration palette** — literal coffee, identical in both moods, never theme tokens.
 The cherry-anatomy work ([§6.1](06-content.md), `m1l7`) added eight tokens to what was a six-token set:

@@ -121,14 +121,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
-- **Small orange text is readable in the light theme.** Every eyebrow, kicker,
-  link and score set in the brand orange was drawing at 4.23:1 on the light
-  background — under the accessibility minimum for text that size. The design
-  had already answered this with a second, darker orange reserved for text; the
-  app never carried it. It does now (`MoodColors.accentText`), and the roughly
-  twenty small-text call sites use it, clearing the minimum in both themes.
-  Marks, fills, borders and progress bars keep the brand orange, so a glyph and
-  its label sit side by side in the two shades exactly as the design draws them.
+- **Small orange labels are readable in the light theme.** Every eyebrow,
+  kicker and smallcaps label set in the brand orange was drawing at 4.23:1 on
+  the light background — under the accessibility minimum for text that size.
+  The design had already answered this with a second, darker orange reserved
+  for small labels; the app never carried it. It does now
+  (`MoodColors.accentText`), and the eleven label-sized call sites use it,
+  clearing the minimum in both themes. Marks, fills, borders and progress bars
+  keep the brand orange, so a glyph and its label sit side by side in the two
+  shades exactly as the design draws them.
 
 - **The Welcome hero is rounded the way every other media frame is.** Its
   corner was a bespoke 4px, left over from a radius scale the design never

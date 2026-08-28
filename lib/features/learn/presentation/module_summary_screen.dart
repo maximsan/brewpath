@@ -121,7 +121,7 @@ class _ModuleRewardCard extends StatelessWidget {
           card.title,
           textAlign: TextAlign.center,
           style: theme.textTheme.titleMedium?.copyWith(
-            color: mood.accentText,
+            color: mood.accent,
             fontWeight: FontWeight.w700,
           ),
         ),

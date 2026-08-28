@@ -20,14 +20,14 @@ class LinkButton extends StatelessWidget {
     return TextButton(
       onPressed: onPressed,
       style: TextButton.styleFrom(
-        foregroundColor: mood.accentText,
+        foregroundColor: mood.accent,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       ),
       child: Text(
         label,
         style: AppText.support(
           mood: mood,
-          color: mood.accentText,
+          color: mood.accent,
         ).copyWith(decoration: TextDecoration.none),
       ),
     );

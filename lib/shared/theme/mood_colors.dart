@@ -105,26 +105,35 @@ class MoodColors extends ThemeExtension<MoodColors> {
   /// Text placed on an [accent] fill.
   final Color accentInk;
 
-  /// [accent] as **text**, at every step below the design's `title` (26px).
+  /// [accent] as a **small label** — the `label` step, where the design's
+  /// smallcaps live.
   ///
   /// Raw [accent] is the brand colour, tuned to be a fill and a mark rather
   /// than a reading colour: in Cupping it lands at 4.23:1 on [bg] — under
   /// WCAG AA's 4.5:1 for small text, which the design's own QA recorded and
   /// then declined to fix by moving the brand colour, "because moving the one
   /// brand colour costs more than it buys". This token is the fix it chose
-  /// instead: the accent pulled toward [ink] until it reads, and nothing else
-  /// changes.
+  /// instead: the accent pulled toward [ink] until it reads.
   ///
-  /// **Where it applies.** Every accent text set smaller than the `title`
-  /// step — eyebrows, smallcaps kickers, link labels, support lines, scores.
-  /// The boundary is the ladder rather than WCAG's own 24px / 18.66px-bold
-  /// line so that it does not move when a call site drops a weight the design
-  /// forbids (#380): a step is a fixed thing, a rendered weight is not.
+  /// **Where it applies is the design's sentence, not ours.**
+  /// `prototype/index.html:34` states the whole rule beside the token —
+  /// *"Accent used as TEXT: raw `--accent` lands at ~4.3:1 on paper, so small
+  /// accent labels use this darkened mix instead (AA at 11px)"*. So: accent
+  /// smallcaps, eyebrows and kickers at the `label` step. Accent set larger
+  /// than that is not what the sentence covers and keeps [accent], and so does
+  /// everything the accent is not *read* as — fills, borders, progress bars,
+  /// marks and icons.
   ///
-  /// Everything the accent is *not* read as keeps [accent]: fills, borders,
-  /// progress bars, marks and icons. The design sets exactly this pair side
-  /// by side — an accent glyph beside an `--accent-text` label
-  /// (`prototype/brew-challenge.jsx:303`, `:706`), and an accent-bordered
+  /// **Two components the running prototype rules on explicitly, against the
+  /// sentence, and which therefore keep [accent]:** `.btn-link`, accent at the
+  /// support step (`index.html:283`), and `.tab.active`, accent on a 9.5px tab
+  /// label (`:356`). The tab bar is the live conflict — `index.html` carries
+  /// both the rule and the line that contradicts it — and settling it is the
+  /// owner's, not this token's. See #356, which restyles that bar.
+  ///
+  /// Where a glyph sits beside such a label, only the label changes: the
+  /// design draws exactly that pair, an accent mark next to an `--accent-text`
+  /// word (`prototype/brew-challenge.jsx:303`, `:706`), and an accent-bordered
   /// pill with an `--accent-text` label (`:338`).
   ///
   /// The design writes it as
