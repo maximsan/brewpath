@@ -72,6 +72,13 @@ dev_dependencies:
   # transitively; declared so the direct import is legitimate.
   path: ^1.9.0
 
+  # A stand-in video platform, so the Welcome film and the controls on it are
+  # reachable under `flutter test` — the real decoders are native and never
+  # register in `flutter_tester`. Same story as `path` above: already resolved
+  # through `video_player`, declared so the direct import is legitimate.
+  video_player_platform_interface: ^6.6.0
+  plugin_platform_interface: ^2.1.8
+
   # Code generation
   build_runner: ^2.15.0
   # riverpod_generator / freezed: analyzer-12 support ships on the -dev line
