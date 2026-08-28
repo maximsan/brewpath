@@ -106,6 +106,9 @@ class _MultiCardViewState extends State<MultiCardView> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final mood = context.mood;
+    // Named once, because it is both drawn and spoken and the two must not be
+    // able to drift into saying different things.
+    final verdict = _wasCorrect ? _allCorrect : _notQuite;
 
     return CardShell(
       latched: _submitted,
@@ -127,11 +130,21 @@ class _MultiCardViewState extends State<MultiCardView> {
         ),
         if (_submitted) ...[
           const SizedBox(height: AppSpacing.xs),
-          Text(
-            _wasCorrect ? _allCorrect : _notQuite,
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: _wasCorrect ? mood.sage : mood.berry,
-              fontWeight: FontWeight.w700,
+          // Announced as its own region, as the match board's verdict is. The
+          // choice marks say what each row was; only this line says whether
+          // the card was passed, and it arrives with no focus change to bring
+          // a reader to it — so a learner who cannot see it hears every mark
+          // and never the outcome.
+          Semantics(
+            liveRegion: true,
+            label: verdict,
+            excludeSemantics: true,
+            child: Text(
+              verdict,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: _wasCorrect ? mood.sage : mood.berry,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
           const SizedBox(height: AppSpacing.xxs),
