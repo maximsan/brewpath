@@ -14,16 +14,12 @@ const double _backgroundStop = 0.74;
 
 /// Height the bar assumes for its first frame, before it has measured itself.
 ///
-/// [PrimaryButton] is a fixed 52, and the paddings are tokens, so this is exact
-/// for an action with no link at the default text scale — which is every use
-/// today. It is an estimate rather than a constant because a quiet link, or a
-/// large text scale, makes the real height bigger; see [_StickyActionBarState].
+/// A starting guess, not a promise: it omits the safe-area inset a notched
+/// device adds, any quiet link, and any text scaling. It exists only so the
+/// opening frame reserves roughly the right room instead of none — the real
+/// height arrives one frame later. See [_StickyActionBarState].
 const double _estimatedBarHeight =
-    AppSpacing.md + _primaryButtonHeight + AppSpacing.lg;
-
-/// Mirrors `PrimaryButton`'s own fixed height. Duplicated as a number rather
-/// than read from it, because the estimate must be a `const`.
-const double _primaryButtonHeight = 52;
+    AppSpacing.md + PrimaryButton.height + AppSpacing.lg;
 
 /// Below this, a re-measure is rounding noise rather than a real change, and
 /// acting on it would set state every frame.
@@ -105,36 +101,54 @@ class _StickyActionBarState extends State<StickyActionBar> {
   /// scroll to reserve exactly the right space — reserves it in one pass, but
   /// puts a duplicate of the action's label and button in the tree, where
   /// `find.text` and every screen reader meet it twice. Measuring keeps the
-  /// tree honest and costs one frame, and [_estimatedBarHeight] is already
-  /// exact for the default case so that frame is not usually visible.
-  double _barHeight = _estimatedBarHeight;
+  /// tree honest and costs one frame.
+  ///
+  /// Null until the first measurement lands; [_estimatedBarHeight] stands in
+  /// for that one frame.
+  double? _measuredBarHeight;
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback(_measure);
-  }
-
-  @override
-  void didUpdateWidget(StickyActionBar oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    WidgetsBinding.instance.addPostFrameCallback(_measure);
-  }
-
+  /// Reads the bar's real height and reserves that much under the content.
+  ///
+  /// Settles rather than loops: the bar's own height does not depend on the
+  /// reservation, so the re-measure that a `setState` provokes agrees with the
+  /// value just stored and returns here without setting state again.
   void _measure(Duration _) {
     if (!mounted) return;
     final box = _barKey.currentContext?.findRenderObject();
     if (box is! RenderBox || !box.hasSize) return;
-    if ((box.size.height - _barHeight).abs() < _measurementNoise) return;
-    setState(() => _barHeight = box.size.height);
+    final measured = box.size.height;
+    if (((_measuredBarHeight ?? 0) - measured).abs() < _measurementNoise) {
+      return;
+    }
+    setState(() => _measuredBarHeight = measured);
   }
 
   @override
   Widget build(BuildContext context) {
+    // Depending on the whole MediaQuery is deliberate. The bar's height moves
+    // with the system text scale and with the safe-area inset a rotation
+    // changes, and neither reaches this widget as a widget update — so without
+    // this dependency `build` is never called again, the post-frame measure
+    // below never runs, and the reservation stays at whatever the bar happened
+    // to be on the first frame. A narrower `paddingOf` would miss the text
+    // scale and leave exactly that gap.
+    final media = MediaQuery.of(context);
+    WidgetsBinding.instance.addPostFrameCallback(_measure);
+
+    // The estimate carries the inset because a notched device adds it to every
+    // bar, which is precisely where a short first frame would be seen.
+    final reserved =
+        _measuredBarHeight ?? _estimatedBarHeight + media.padding.bottom;
+
     return Stack(
       children: [
-        Positioned.fill(child: _scrollingContent()),
-        Positioned(left: 0, right: 0, bottom: 0, child: _bar()),
+        Positioned.fill(child: _scrollingContent(reserved)),
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: _bar(),
+        ),
       ],
     );
   }
@@ -152,12 +166,12 @@ class _StickyActionBarState extends State<StickyActionBar> {
   ///
   /// The bottom padding, rather than a sibling spacer, is what reserves the
   /// bar's own height, so it applies to the short and the tall case alike.
-  Widget _scrollingContent() {
+  Widget _scrollingContent(double reserved) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final room = constraints.maxHeight - _barHeight;
+        final room = constraints.maxHeight - reserved;
         return SingleChildScrollView(
-          padding: EdgeInsets.only(bottom: _barHeight),
+          padding: EdgeInsets.only(bottom: reserved),
           child: ConstrainedBox(
             constraints: BoxConstraints(minHeight: room > 0 ? room : 0),
             child: Center(child: widget.content),

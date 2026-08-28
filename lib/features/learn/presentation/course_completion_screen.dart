@@ -93,7 +93,13 @@ class _CourseCompletionScreenState
           // Centres when the moment fits and scrolls when it does not, which
           // the bar owns — the design's `margin: auto 0` on this screen.
           content: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+            // Vertical as well as horizontal: the bar reserves room under the
+            // content but nothing above it, and the celebration sat flush
+            // against the safe-area edge on a tall run without this.
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.gutter,
+              vertical: AppSpacing.lg,
+            ),
             child: _celebration(theme, mood, stats),
           ),
         ),
