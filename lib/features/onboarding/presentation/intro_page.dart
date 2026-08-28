@@ -6,18 +6,20 @@ import 'package:flutter/material.dart';
 const double _topInset = 64;
 const double _bottomInset = 40;
 
-/// One intro beat: a full-height column, inset the way the design insets it.
+/// One intro beat: a column that fills the viewport, and scrolls once it
+/// cannot.
 ///
-/// Deliberately **not** scrollable. These screens are single, fixed beats — a
-/// picture, three lines, one way forward — and the design pins their last
-/// element to the foot of the screen (`marginTop: 'auto'`). A scroll view
-/// gives its child unbounded height, which is precisely what a [Spacer] cannot
-/// work in, so making these scroll would cost the pinned foot on every screen
-/// to buy nothing on almost all of them.
+/// The design pins each of these screens' last element to the foot — the tap
+/// cue, the CTA (`marginTop: 'auto'`). A plain [Column] does that with a
+/// [Spacer], but overflows the moment the content is taller than the screen; a
+/// [SingleChildScrollView] alone gives its child unbounded height, which is
+/// exactly what a [Spacer] cannot expand into.
 ///
-/// What flexes instead is whatever the screen marks [Flexible] — the hero
-/// film. On a short viewport it gives up height and the copy stays put, which
-/// is the right trade for a screen whose text is three lines long.
+/// So the viewport's height becomes a **minimum**, not a maximum. Short
+/// content is stretched to it and the [Spacer] pins the foot; tall content —
+/// a 2x text scale, a landscape phone — grows past it and scrolls, which is
+/// the case that used to clip the CTA off the bottom of the first screen a
+/// learner ever sees.
 class IntroPage extends StatelessWidget {
   /// Creates an [IntroPage].
   const IntroPage({required this.children, super.key});
@@ -30,19 +32,34 @@ class IntroPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: context.mood.bg,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.lg,
-            _topInset,
-            AppSpacing.lg,
-            _bottomInset,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: children,
+        child: LayoutBuilder(
+          builder: (context, viewport) => SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: viewport.maxHeight),
+              child: IntrinsicHeight(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.lg,
+                    _topInset,
+                    AppSpacing.lg,
+                    _bottomInset,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: children,
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
       ),
     );
   }
 }
+
+/// The widest the intro's copy sets before it wraps (`screens.jsx:82`, `:118`).
+///
+/// On [IntroPage] rather than on each screen: both set the same measure, and
+/// two names for one number is how they drift.
+const double introCopyMaxWidth = 330;

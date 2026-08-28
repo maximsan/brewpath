@@ -118,6 +118,28 @@ abstract final class OffTokens {
         'micro line to letter one bar.',
   );
 
+  /// The gap the intro screens set between a block and the next one.
+  static const OffToken<double> introBlockGap = OffToken(
+    28,
+    reason:
+        'The design sets 28 twice on the intro — under the Welcome hero and '
+        'above the Meet Roasty CTA (`screens.jsx:72`, `:120`). It sits midway '
+        'between AppSpacing.lg (24) and xl (32), belonging to neither, and '
+        'these are the only two screens in the app that use it. Snapping it '
+        'onto a rung would retune two screens to spare one entry.',
+  );
+
+  /// The tap cue's letter-spacing, in logical pixels at the label step.
+  static const OffToken<double> tapCueTracking = OffToken(
+    2.64,
+    reason:
+        '`.tap-cue` letters at 0.24em (`index.html:1111`), half again as wide '
+        'as any other mono label in the design and the thing that makes it '
+        'read as an instruction rather than a heading. 2.64 is that em value '
+        'at the 11px label step. Same case as tabLabelTracking: widening the '
+        'rung would reletter every micro line to style one cue.',
+  );
+
   /// Every sanctioned exception, so the register can be read — and tested — as
   /// a whole rather than one constant at a time.
   static const register = <OffToken<Object>>[
@@ -127,6 +149,8 @@ abstract final class OffTokens {
     seedStain,
     beanCrease,
     pickTilePadding,
+    introBlockGap,
+    tapCueTracking,
     tabLabelTracking,
   ];
 }

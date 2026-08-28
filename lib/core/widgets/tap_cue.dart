@@ -1,9 +1,11 @@
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 
-/// Tracking on the cue — `.tap-cue`'s 0.24em at the 11px label step.
-const double _cueTracking = 2.64;
+/// Tracking on the cue. Off the ladder's rung on purpose — the register
+/// entry holds why.
+final double _cueTracking = OffTokens.tapCueTracking.value;
 
 /// The design's `.tap-cue` line (`index.html:1111`).
 ///

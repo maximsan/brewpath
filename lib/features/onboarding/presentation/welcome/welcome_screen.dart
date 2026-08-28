@@ -7,6 +7,7 @@ import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -14,9 +15,9 @@ import 'package:go_router/go_router.dart';
 /// the film's growth and reads as a photo rather than a stage.
 const double _heroRatio = 4 / 3;
 
-/// The widest the copy sets before it wraps (`screens.jsx:82`), so the line
-/// length stays readable rather than running the full width of a tablet.
-const double _copyMaxWidth = 330;
+/// The gap under the film. Off the spacing scale on purpose — see the
+/// register entry.
+final double _blockGap = OffTokens.introBlockGap.value;
 
 /// Screen 01 of the intro: what the app is, over the seed-to-tree film.
 ///
@@ -59,7 +60,7 @@ class WelcomeScreen extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: AppSpacing.xl - 4),
+            SizedBox(height: _blockGap),
             SmallcapsLabel('BREWPATH', color: mood.accentText),
             const SizedBox(height: AppSpacing.base),
             Text(
@@ -68,7 +69,7 @@ class WelcomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.md),
             ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: _copyMaxWidth),
+              constraints: const BoxConstraints(maxWidth: introCopyMaxWidth),
               child: Text(
                 'Short, hands-on lessons in the craft of coffee. Every one '
                 'you finish feeds a living tree, growing from seed to '
@@ -77,8 +78,14 @@ class WelcomeScreen extends StatelessWidget {
               ),
             ),
             const Spacer(),
-            const SizedBox(height: AppSpacing.xl),
-            const Center(child: TapCue('TAP ANYWHERE TO CONTINUE')),
+            // Excluded, not unlabelled: the screen's own Semantics already
+            // says "tap anywhere to continue", and a reader should hear that
+            // once rather than once per widget that draws it.
+            const Center(
+              child: ExcludeSemantics(
+                child: TapCue('TAP ANYWHERE TO CONTINUE'),
+              ),
+            ),
           ],
         ),
       ),

@@ -1,5 +1,6 @@
 import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/onboarding/presentation/meet_roasty/meet_roasty_screen.dart';
+import 'package:brew_path/features/onboarding/presentation/welcome/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -66,7 +67,8 @@ void main() {
 
     expect(find.text('TAP ANYWHERE TO CONTINUE'), findsOneWidget);
 
-    await tester.tap(find.text('Learn coffee.\nGrow a tree.'));
+    // The screen itself, not a widget on it — "tap anywhere" is the claim.
+    await tester.tap(find.byType(WelcomeScreen));
     for (var i = 0; i < 5; i++) {
       await tester.pump(const Duration(milliseconds: 50));
     }

@@ -43,7 +43,7 @@ void main() {
     expect(find.byType(WelcomeScreen), findsOneWidget);
     expect(find.byType(MeetRoastyScreen), findsNothing);
 
-    await tester.tap(find.text('Learn coffee.\nGrow a tree.'));
+    await tester.tap(find.byType(WelcomeScreen));
     await _settleRoute(tester);
     expect(find.byType(MeetRoastyScreen), findsOneWidget);
     expect(find.byType(WelcomeScreen), findsNothing);

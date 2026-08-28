@@ -7,6 +7,7 @@ import 'package:brew_path/features/onboarding/presentation/intro_page.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -17,8 +18,9 @@ const double _mascotInset = 40;
 /// so the largest he appears anywhere in the app.
 const double _mascotSize = 184;
 
-/// The widest the body sets before it wraps (`screens.jsx:118`).
-const double _bodyMaxWidth = 330;
+/// The gap above the CTA. Off the spacing scale on purpose — see the
+/// register entry.
+final double _blockGap = OffTokens.introBlockGap.value;
 
 /// Screen 01b of the intro: the mascot, and what he is for.
 ///
@@ -47,26 +49,32 @@ class MeetRoastyScreen extends StatelessWidget {
           child: Padding(
             padding: EdgeInsets.only(top: _mascotInset),
             child: Center(
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Roasty(state: RoastyState.correct, size: _mascotSize),
+              // The drawing carries no information the heading beneath it does
+              // not already say, and `Roasty` labels nothing itself — so it is
+              // excluded rather than left as an unnamed node, as
+              // `roasty_stage.dart` excludes its own artwork.
+              child: ExcludeSemantics(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Roasty(state: RoastyState.correct, size: _mascotSize),
+                ),
               ),
             ),
           ),
         ),
         SmallcapsLabel('YOUR COMPANION', color: mood.accentText),
-        const SizedBox(height: AppSpacing.sm - 2),
+        const SizedBox(height: AppSpacing.sm),
         Text('Meet Roasty.', style: AppText.display(mood: mood)),
-        const SizedBox(height: AppSpacing.md + 2),
+        const SizedBox(height: AppSpacing.md),
         ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: _bodyMaxWidth),
+          constraints: const BoxConstraints(maxWidth: introCopyMaxWidth),
           child: Text(
             'Your talisman for the journey. Roasty cheers your wins, '
             'marks every milestone, and keeps you company between cups.',
             style: AppText.body(mood: mood, color: mood.inkMute),
           ),
         ),
-        const SizedBox(height: AppSpacing.xl - 4),
+        SizedBox(height: _blockGap),
         PrimaryButton(
           label: 'Start learning',
           onPressed: () => context.goNamed(AppRoutes.onboardingGoal.name),
