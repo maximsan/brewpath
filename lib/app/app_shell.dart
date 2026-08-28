@@ -1,6 +1,8 @@
 import 'package:brew_path/app/app_header.dart';
 import 'package:brew_path/app/header_tier.dart';
 import 'package:brew_path/core/constants/app_labels.dart';
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/tour/domain/tour_copy.dart';
 import 'package:brew_path/features/tour/presentation/tour_runner.dart';
 import 'package:brew_path/features/tour/presentation/tour_stop.dart';
@@ -113,6 +115,12 @@ class _AppShellState extends State<AppShell> {
   /// decoration *behind* its child without insetting it — so the default
   /// position would draw the rule and then bury it.
   ///
+  /// **The marks are the design's own**, and each tab carries two drawings:
+  /// selected fills the shape with the accent and knocks its interior lines
+  /// out, which is not the same drawing recoloured. The theme's `iconTheme`
+  /// gives them their ink, so the selected/unselected colours are declared
+  /// once in `tabBarTheme` rather than at each destination.
+  ///
   /// The labels are uppercased here rather than in [AppLabels], the way
   /// `SmallcapsLabel` does it: `TextStyle` has no text-transform, and the case
   /// is this bar's type rule, not part of what the tabs are called. Changing
@@ -132,23 +140,23 @@ class _AppShellState extends State<AppShell> {
         onDestinationSelected: _onDestinationSelected,
         destinations: [
           NavigationDestination(
-            icon: const Icon(Icons.school_outlined),
-            selectedIcon: const Icon(Icons.school),
+            icon: const IconMark(AppIcon.cup),
+            selectedIcon: const IconMark(AppIcon.cup, active: true),
             label: AppLabels.tabToday.toUpperCase(),
           ),
           NavigationDestination(
-            icon: const Icon(Icons.route_outlined),
-            selectedIcon: const Icon(Icons.route),
+            icon: const IconMark(AppIcon.route),
+            selectedIcon: const IconMark(AppIcon.route, active: true),
             label: AppLabels.tabPath.toUpperCase(),
           ),
           NavigationDestination(
-            icon: const Icon(Icons.style_outlined),
-            selectedIcon: const Icon(Icons.style),
+            icon: const IconMark(AppIcon.cards),
+            selectedIcon: const IconMark(AppIcon.cards, active: true),
             label: AppLabels.tabCards.toUpperCase(),
           ),
           NavigationDestination(
-            icon: const Icon(Icons.person_outline),
-            selectedIcon: const Icon(Icons.person),
+            icon: const IconMark(AppIcon.leaf),
+            selectedIcon: const IconMark(AppIcon.leaf, active: true),
             label: AppLabels.tabProfile.toUpperCase(),
           ),
         ],

@@ -1,6 +1,7 @@
 import 'dart:ui' show Tristate;
 
 import 'package:brew_path/app/app_theme.dart';
+import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/features/saved/domain/saved_key.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/presentation/saved_bookmark_button.dart';
@@ -8,6 +9,7 @@ import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/find_mark.dart';
 import '../../../support/widget_harness.dart';
 
 const _key = 't:arabica';
@@ -25,12 +27,12 @@ void main() {
   testWidgets('starts empty and fills when tapped', (tester) async {
     final container = await pumpWithProviders(tester, _wrap());
 
-    expect(find.byIcon(Icons.bookmark_outline), findsOneWidget);
+    expect(findMark(AppIcon.bookmark, active: false), findsOneWidget);
 
     await tester.tap(find.byType(IconButton));
     await settleLoaders(tester);
 
-    expect(find.byIcon(Icons.bookmark), findsOneWidget);
+    expect(findMark(AppIcon.bookmark, active: true), findsOneWidget);
     expect(await container.read(savedKeysProvider.future), {_key});
   });
 
@@ -42,7 +44,7 @@ void main() {
     await tester.tap(find.byType(IconButton));
     await settleLoaders(tester);
 
-    expect(find.byIcon(Icons.bookmark_outline), findsOneWidget);
+    expect(findMark(AppIcon.bookmark, active: false), findsOneWidget);
     expect(await container.read(savedKeysProvider.future), isEmpty);
   });
 

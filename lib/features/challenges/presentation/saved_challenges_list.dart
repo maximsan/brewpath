@@ -1,3 +1,5 @@
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/section_header.dart';
 import 'package:brew_path/features/challenges/domain/challenge_bank.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
@@ -80,7 +82,7 @@ class _SavedRow extends ConsumerWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.local_cafe_outlined, size: _iconSm, color: mood.inkMute),
+          IconMark(AppIcon.cup, size: _iconSm, color: mood.inkMute),
           const SizedBox(width: AppSpacing.xs),
           Expanded(
             child: Column(
@@ -102,7 +104,7 @@ class _SavedRow extends ConsumerWidget {
             child: const Text('Start'),
           ),
           IconButton(
-            icon: const Icon(Icons.close),
+            icon: const IconMark(AppIcon.close),
             iconSize: _iconSm,
             tooltip: 'Remove ${challenge.title} from saved',
             onPressed: () => _remove(ref),

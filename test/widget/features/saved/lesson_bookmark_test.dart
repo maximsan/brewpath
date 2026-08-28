@@ -2,6 +2,7 @@ import 'dart:ui' show Tristate;
 
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_screen.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
@@ -12,6 +13,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../support/content_fixtures.dart';
+import '../../../support/find_mark.dart';
 import '../../../support/widget_harness.dart';
 
 /// Serves one lesson, so the player has something to open.
@@ -76,7 +78,7 @@ void main() {
   testWidgets('bookmarking writes the lesson key', (tester) async {
     final container = await pumpLesson(tester);
 
-    await tester.tap(find.byIcon(Icons.bookmark_outline));
+    await tester.tap(findMark(AppIcon.bookmark, active: false));
     await settleLoaders(tester);
 
     expect(await container.read(savedKeysProvider.future), {'l:${lesson.id}'});
@@ -85,7 +87,7 @@ void main() {
   testWidgets('the bookmark announces its state', (tester) async {
     await pumpLesson(tester);
     final button = find.ancestor(
-      of: find.byIcon(Icons.bookmark_outline),
+      of: findMark(AppIcon.bookmark, active: false),
       matching: find.byType(IconButton),
     );
 
@@ -101,7 +103,7 @@ void main() {
       tester
           .getSemantics(
             find.ancestor(
-              of: find.byIcon(Icons.bookmark),
+              of: findMark(AppIcon.bookmark, active: true),
               matching: find.byType(IconButton),
             ),
           )
@@ -114,9 +116,9 @@ void main() {
   testWidgets('tapping again takes it off', (tester) async {
     final container = await pumpLesson(tester);
 
-    await tester.tap(find.byIcon(Icons.bookmark_outline));
+    await tester.tap(findMark(AppIcon.bookmark, active: false));
     await settleLoaders(tester);
-    await tester.tap(find.byIcon(Icons.bookmark));
+    await tester.tap(findMark(AppIcon.bookmark, active: true));
     await settleLoaders(tester);
 
     expect(await container.read(savedKeysProvider.future), isEmpty);

@@ -1,4 +1,6 @@
 import 'package:brew_path/core/constants/app_labels.dart';
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/module_glyph.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -66,7 +68,7 @@ class PathNodeCard extends StatelessWidget {
               // trailing slot stays empty there rather than doubling the lock.
               if (!locked && !complete) ...[
                 const SizedBox(width: AppSpacing.xs),
-                Icon(Icons.chevron_right, color: mood.inkMute),
+                IconMark(AppIcon.chevron, color: mood.inkMute),
               ],
             ],
           ),

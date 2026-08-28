@@ -1,11 +1,13 @@
 import 'dart:ui' show Tristate;
 
+import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/features/path/presentation/visual_guide_sheet.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/shared/models/content/visual_guide.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/find_mark.dart';
 import '../../../support/widget_harness.dart';
 
 /// A guide carries **both** an id and a subject, and they differ — which is
@@ -28,7 +30,7 @@ void main() {
   setUp(useInMemoryDatabase);
 
   Finder bookmark() => find.ancestor(
-    of: find.byIcon(Icons.bookmark_outline),
+    of: findMark(AppIcon.bookmark, active: false),
     matching: find.byType(IconButton),
   );
 
@@ -68,7 +70,7 @@ void main() {
       tester
           .getSemantics(
             find.ancestor(
-              of: find.byIcon(Icons.bookmark),
+              of: findMark(AppIcon.bookmark, active: true),
               matching: find.byType(IconButton),
             ),
           )
@@ -83,7 +85,7 @@ void main() {
 
     await tester.tap(bookmark());
     await settleLoaders(tester);
-    await tester.tap(find.byIcon(Icons.bookmark));
+    await tester.tap(findMark(AppIcon.bookmark, active: true));
     await settleLoaders(tester);
 
     expect(await container.read(savedKeysProvider.future), isEmpty);

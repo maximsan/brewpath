@@ -111,8 +111,8 @@ class _ModuleRewardCard extends StatelessWidget {
     final mood = context.mood;
     return Column(
       children: [
-        IconBadge.circle(
-          icon: moduleIcon(card.iconName),
+        IconBadge.circleMark(
+          mark: moduleMark(card.iconName),
           size: _badgeSize,
           semanticLabel: card.title,
         ),
@@ -159,8 +159,8 @@ class _EarnedCards extends StatelessWidget {
       runSpacing: AppSpacing.sm,
       children: [
         for (final card in cards)
-          IconBadge.circle(
-            icon: moduleIcon(card.iconName),
+          IconBadge.circleMark(
+            mark: moduleMark(card.iconName),
             size: _badgeSize,
             semanticLabel: card.title,
           ),

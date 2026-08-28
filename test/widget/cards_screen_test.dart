@@ -1,8 +1,9 @@
 import 'package:brew_path/app/app.dart';
+import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/features/cards/presentation/card_grid_item_widget.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../support/find_mark.dart';
 import '../support/widget_harness.dart';
 
 void main() {
@@ -13,7 +14,7 @@ void main() {
   ) async {
     await pumpWithProviders(tester, const BrewPathApp());
 
-    await tester.tap(find.byIcon(Icons.style_outlined)); // Cards tab
+    await tester.tap(findMark(AppIcon.cards, active: false)); // Cards tab
     await settleLoaders(tester);
 
     // GridView is lazy, so only the on-screen tiles are built; assert the

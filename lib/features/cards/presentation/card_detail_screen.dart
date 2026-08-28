@@ -1,3 +1,4 @@
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
@@ -60,11 +61,19 @@ class _CardDetailBody extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Center(
-            child: Icon(
-              item.isCollected ? moduleIcon(card.iconName) : Icons.help_outline,
-              size: _iconSize,
-              color: mood.accent,
-            ),
+            // As on the grid: the design has a mark for every module and none
+            // for "not collected yet", so only the collected side moves.
+            child: item.isCollected
+                ? IconMark(
+                    moduleMark(card.iconName),
+                    size: _iconSize,
+                    color: mood.accent,
+                  )
+                : Icon(
+                    Icons.help_outline,
+                    size: _iconSize,
+                    color: mood.accent,
+                  ),
           ),
           const SizedBox(height: AppSpacing.lg),
           Text(

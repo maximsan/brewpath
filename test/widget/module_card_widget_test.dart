@@ -1,5 +1,7 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/constants/app_labels.dart';
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/module_glyph.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/learn/presentation/module_card_widget.dart';
@@ -9,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../support/content_fixtures.dart';
+import '../support/find_mark.dart';
 
 final ModuleModel _module = testModule(
   id: 'm3',
@@ -35,10 +38,10 @@ Future<void> _pump(WidgetTester tester, ModuleWithProgress item) =>
     );
 
 Color? _glyphColour(WidgetTester tester) => tester
-    .widget<Icon>(
+    .widget<IconMark>(
       find.descendant(
         of: find.byType(ModuleGlyph),
-        matching: find.byType(Icon),
+        matching: find.byType(IconMark),
       ),
     )
     .color;
@@ -51,7 +54,7 @@ void main() {
       await _pump(tester, _item(done: 0, locked: true));
 
       expect(_glyphColour(tester), MoodColors.darkRoast.inkMute);
-      expect(find.byIcon(Icons.lock_outline), findsOneWidget);
+      expect(findMark(AppIcon.lock), findsOneWidget);
       expect(find.text('Locked'), findsOneWidget);
       expect(find.byType(LinearProgressIndicator), findsNothing);
     });
@@ -77,7 +80,7 @@ void main() {
       // "locked".
       await _pump(tester, _item(done: 2, locked: true));
 
-      expect(find.byIcon(Icons.lock_outline), findsOneWidget);
+      expect(findMark(AppIcon.lock), findsOneWidget);
       expect(find.text('Locked'), findsOneWidget);
     });
   });
@@ -87,8 +90,8 @@ void main() {
       await _pump(tester, _item(done: 1, locked: false));
 
       expect(_glyphColour(tester), MoodColors.darkRoast.accent);
-      expect(find.byIcon(Icons.chevron_right), findsOneWidget);
-      expect(find.byIcon(Icons.lock_outline), findsNothing);
+      expect(findMark(AppIcon.chevron), findsOneWidget);
+      expect(findMark(AppIcon.lock), findsNothing);
     });
 
     testWidgets('shows the lesson count above a progress bar', (tester) async {
@@ -122,9 +125,9 @@ void main() {
     ) async {
       await _pump(tester, _item(done: 2, locked: false));
 
-      expect(find.byIcon(Icons.chevron_right), findsNothing);
-      expect(find.byIcon(Icons.check_circle), findsNothing);
-      expect(find.byIcon(Icons.lock_outline), findsNothing);
+      expect(findMark(AppIcon.chevron), findsNothing);
+      expect(findMark(AppIcon.check), findsNothing);
+      expect(findMark(AppIcon.lock), findsNothing);
     });
 
     testWidgets('drops the lesson-count line and its progress bar', (

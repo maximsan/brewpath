@@ -40,15 +40,25 @@ class CardGridItemWidget extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              IconBadge.rounded(
-                icon: collected
-                    ? moduleIcon(item.card.iconName)
-                    : Icons.help_outline,
-                size: _badgeSize,
-                iconSize: _iconSize,
-                background: collected ? mood.accent : mood.surface2,
-                foreground: collected ? mood.accentInk : mood.inkMute,
-              ),
+              // An uncollected card shows what it is not: the design draws no
+              // mark for "unknown", so that branch keeps a stock glyph while
+              // the collected one carries the module's own.
+              if (collected)
+                IconBadge.roundedMark(
+                  mark: moduleMark(item.card.iconName),
+                  size: _badgeSize,
+                  iconSize: _iconSize,
+                  background: mood.accent,
+                  foreground: mood.accentInk,
+                )
+              else
+                IconBadge.rounded(
+                  icon: Icons.help_outline,
+                  size: _badgeSize,
+                  iconSize: _iconSize,
+                  background: mood.surface2,
+                  foreground: mood.inkMute,
+                ),
               const SizedBox(height: 10),
               Text(
                 collected ? item.card.title : '???',

@@ -1,4 +1,5 @@
 import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_stat_row.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:brew_path/features/profile/presentation/widgets/preference_tile.dart';
@@ -149,7 +150,11 @@ class _StatsGrid extends StatelessWidget {
       mainAxisSpacing: AppSpacing.sm,
       crossAxisSpacing: AppSpacing.sm,
       children: [
-        StatTile(icon: Icons.bolt, label: 'Total points', value: '$points'),
+        StatTile.mark(
+          mark: AppIcon.bean,
+          label: 'Total points',
+          value: '$points',
+        ),
         StatTile(
           icon: Icons.local_fire_department,
           label: 'Day streak',
@@ -157,12 +162,16 @@ class _StatsGrid extends StatelessWidget {
           onTap: onStreakTap,
           footer: streakFooter,
         ),
-        StatTile(
-          icon: Icons.check_circle,
+        StatTile.mark(
+          mark: AppIcon.check,
           label: 'Lessons',
           value: '$lessonsCompleted',
         ),
-        StatTile(icon: Icons.style, label: 'Cards', value: '$cardsCollected'),
+        StatTile.mark(
+          mark: AppIcon.cards,
+          label: 'Cards',
+          value: '$cardsCollected',
+        ),
       ],
     );
   }

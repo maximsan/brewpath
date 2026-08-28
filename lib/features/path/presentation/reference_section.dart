@@ -1,3 +1,6 @@
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/caret_mark.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/core/widgets/visual_guide_art.dart';
 import 'package:brew_path/features/path/domain/visual_guide_providers.dart';
@@ -144,7 +147,7 @@ class _Heading extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Icon(Icons.menu_book_outlined, size: _glyphSize, color: ink),
+                  IconMark(AppIcon.module, size: _glyphSize, color: ink),
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Text(
@@ -155,12 +158,9 @@ class _Heading extends StatelessWidget {
                     ),
                   ),
                   if (isLocked)
-                    Icon(Icons.lock_outline, size: _lockSize, color: ink)
+                    IconMark(AppIcon.lock, size: _lockSize, color: ink)
                   else
-                    Icon(
-                      isOpen ? Icons.expand_less : Icons.expand_more,
-                      color: mood.inkMute,
-                    ),
+                    CaretMark(open: isOpen, color: mood.inkMute),
                 ],
               ),
               const SizedBox(height: AppSpacing.xxs),
@@ -246,7 +246,7 @@ class _GuideRow extends StatelessWidget {
                 ).textTheme.bodyLarge?.copyWith(color: mood.ink),
               ),
             ),
-            Icon(Icons.chevron_right, color: mood.inkMute),
+            IconMark(AppIcon.chevron, color: mood.inkMute),
           ],
         ),
       ),

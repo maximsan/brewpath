@@ -1,0 +1,347 @@
+{
+  "sentinels": {
+    "var(--surface)": "#FF00FF",
+    "var(--surface-2)": "#FF00EE",
+    "var(--accent-ink)": "#FF00DD"
+  },
+  "sets": {
+    "nav": {
+      "title": "Navigation",
+      "rule": "One tab, one coffee-vocabulary shape — drawn at 24×24, stroke 1.6. Outlined in ink-mute when inactive, filled in accent when active. This is the master icon family every other set should defer to. Five concepts are drawn; v1 ships four — Globe / Atlas is built and kept here so the family stays whole, but the tab is held back for v2."
+    },
+    "duel": {
+      "title": "Coffee Duel types",
+      "rule": "Each duel type names its subject by re-using the navigation concept vocabulary: the icon tells you what you are about to be quizzed on. Cup / Globe / Route are pulled straight from the shared nav family (window.Icons) — one drawing, one stroke (1.6). Only Tiles and Drop are duel-specific, matched to the same weight."
+    },
+    "dict": {
+      "title": "Knowledge marks",
+      "rule": "One literal line mark per topic, drawn at stroke 1.6 (the shared family weight), interior accents lighter. These serve twice — dictionary categories AND the Path module headers — so each is the most recognisable OBJECT for its subject, never an abstract symbol, and no two topics share a mark."
+    },
+    "status": {
+      "title": "Status and feedback",
+      "rule": "Meaning is carried by colour as much as shape: sage = right / solid / learned, berry = wrong / incorrect, accent = anything to act on (current step, needs practice), warn = celebration. Each mark has exactly one job."
+    },
+    "action": {
+      "title": "Actions and navigation",
+      "rule": "Workhorse interface glyphs — small chrome marks, not part of the 24×24 concept family, so they keep a lighter 1.4–1.7 range. Ink for primary actions, ink-mute for passive affordances, accent only when the control itself is the primary action."
+    },
+    "kinds": {
+      "title": "Content kinds",
+      "rule": "Used in the \"replay\" and \"saved\" lists to tag what kind of thing a row is. Each mirrors the shape of the activity itself."
+    }
+  },
+  "marks": [
+    {
+      "slug": "cup",
+      "name": "Cup",
+      "set": "nav",
+      "label": "Today (Learn)",
+      "description": "The everyday drink → the lessons home. Labelled TODAY in the shipped tab nav; it becomes LEARN only in the merged nav model, where Path folds into it.",
+      "hasActive": true
+    },
+    {
+      "slug": "route",
+      "name": "Route",
+      "set": "nav",
+      "label": "Path",
+      "description": "A trail of stops → the structured learning journey.",
+      "hasActive": true
+    },
+    {
+      "slug": "globe",
+      "name": "Globe",
+      "set": "nav",
+      "label": "Atlas · v2",
+      "description": "The world → coffee origins & geography. Drawn and in use inside the Atlas screens; the tab itself is deferred to v2.",
+      "hasActive": false
+    },
+    {
+      "slug": "cards",
+      "name": "Cards",
+      "set": "nav",
+      "label": "Cards",
+      "description": "A deck → the collectible knowledge cards.",
+      "hasActive": true
+    },
+    {
+      "slug": "leaf",
+      "name": "Leaf",
+      "set": "nav",
+      "label": "Profile",
+      "description": "The coffee plant → you, growing with points.",
+      "hasActive": true
+    },
+    {
+      "slug": "tiles",
+      "name": "Tiles",
+      "set": "duel",
+      "label": "Taste match",
+      "description": "Two tiles joined → pairing a flavour to its cause. Duel-specific.",
+      "hasActive": false
+    },
+    {
+      "slug": "cherry_section",
+      "name": "Cherry section",
+      "set": "duel",
+      "label": "Processing",
+      "description": "Seed inside the opened fruit. Duel-specific; same mark as the Processing dictionary category.",
+      "hasActive": false
+    },
+    {
+      "slug": "beans",
+      "name": "Beans",
+      "set": "dict",
+      "label": "Beans",
+      "description": "Two cherries on a stem — the raw fruit.",
+      "hasActive": false
+    },
+    {
+      "slug": "processing",
+      "name": "Processing",
+      "set": "dict",
+      "label": "Processing",
+      "description": "Cherry in section — one cherry on its stem, the seed revealed inside. Neutral across washed / natural / honey; water is not the category.",
+      "hasActive": false
+    },
+    {
+      "slug": "roasting",
+      "name": "Roasting",
+      "set": "dict",
+      "label": "Roasting",
+      "description": "Roast curve on its axes — temperature over time, with first crack marked. Heat plus change, and it leaves the flame to the streak.",
+      "hasActive": false
+    },
+    {
+      "slug": "brewing",
+      "name": "Brewing",
+      "set": "dict",
+      "label": "Brewing",
+      "description": "Pour-over cone with a drip.",
+      "hasActive": false
+    },
+    {
+      "slug": "espresso",
+      "name": "Espresso",
+      "set": "dict",
+      "label": "Espresso",
+      "description": "A demitasse — the concentrated cup.",
+      "hasActive": false
+    },
+    {
+      "slug": "sensory",
+      "name": "Sensory",
+      "set": "dict",
+      "label": "Sensory",
+      "description": "Tasting wheel — the flavour wheel, one wedge picked. The words for what you taste, not a mood face.",
+      "hasActive": false
+    },
+    {
+      "slug": "grind",
+      "name": "Grind",
+      "set": "dict",
+      "label": "Grind (module)",
+      "description": "Hand grinder with its crank, burr line across the body. The Grind module’s own mark.",
+      "hasActive": false
+    },
+    {
+      "slug": "equipment",
+      "name": "Equipment",
+      "set": "dict",
+      "label": "Equipment",
+      "description": "Gooseneck kettle — the most recognisable tool on the counter. A gear says settings, not coffee gear.",
+      "hasActive": false
+    },
+    {
+      "slug": "trade",
+      "name": "Trade",
+      "set": "dict",
+      "label": "Trade",
+      "description": "Balance scales — what a lot is worth and who gets paid. Exchange arrows read as sync, not trade. Globe stays reserved for geography.",
+      "hasActive": false
+    },
+    {
+      "slug": "check",
+      "name": "Check",
+      "set": "status",
+      "label": "Correct · Learned",
+      "description": "Right answer, learned term, completed challenge. Always sage. A finished lesson is NOT a check — its bean node shows how full.",
+      "hasActive": false
+    },
+    {
+      "slug": "cross",
+      "name": "Cross",
+      "set": "status",
+      "label": "Incorrect",
+      "description": "Wrong answer, in answer review. Always berry.",
+      "hasActive": false
+    },
+    {
+      "slug": "lock",
+      "name": "Lock",
+      "set": "status",
+      "label": "Locked",
+      "description": "Content not yet unlocked. Always ink-mute at low opacity.",
+      "hasActive": false
+    },
+    {
+      "slug": "status_dot",
+      "name": "Status dot",
+      "set": "status",
+      "label": "Current / Locked",
+      "description": "Pill marker — filled = active, hollow = pending, none = locked.",
+      "hasActive": false
+    },
+    {
+      "slug": "crown",
+      "name": "Crown",
+      "set": "status",
+      "label": "Win",
+      "description": "Awarded to the duel winner. Always warn.",
+      "hasActive": false
+    },
+    {
+      "slug": "bolt",
+      "name": "Bolt",
+      "set": "status",
+      "label": "Fastest answer",
+      "description": "Highlights the quickest response in a duel. Always warn.",
+      "hasActive": false
+    },
+    {
+      "slug": "bean",
+      "name": "Bean",
+      "set": "status",
+      "label": "Points currency",
+      "description": "The unit of progress. Appears beside every points value.",
+      "hasActive": false
+    },
+    {
+      "slug": "chevron",
+      "name": "Chevron",
+      "set": "action",
+      "label": "Drill in",
+      "description": "Trailing affordance on a tappable row. One shared definition at 70% ink-mute — rows never draw their own.",
+      "hasActive": false
+    },
+    {
+      "slug": "arrow",
+      "name": "Arrow",
+      "set": "action",
+      "label": "Direction along a scale",
+      "description": "Slider endpoints and any labelled range. Shaft plus head, because it states a DIRECTION — Chevron is a head alone and states “more this way”. Same 1.5 stroke as Chevron so the two never clash. Rotate 180° for the left end; never redraw it mirrored.",
+      "hasActive": false
+    },
+    {
+      "slug": "caret",
+      "name": "Caret",
+      "set": "action",
+      "label": "Expand / collapse",
+      "description": "Accordions, review toggles. Rotates 180° when open.",
+      "hasActive": false
+    },
+    {
+      "slug": "back",
+      "name": "Back",
+      "set": "action",
+      "label": "Back",
+      "description": "Returns up a level in a flow. Shared definition, currentColor.",
+      "hasActive": false
+    },
+    {
+      "slug": "close",
+      "name": "Close",
+      "set": "action",
+      "label": "Close / quit",
+      "description": "Dismisses a lesson, game or sheet. Shared definition, currentColor.",
+      "hasActive": false
+    },
+    {
+      "slug": "share",
+      "name": "Share",
+      "set": "action",
+      "label": "Share",
+      "description": "Opens the native share sheet for a duel invite.",
+      "hasActive": false
+    },
+    {
+      "slug": "link",
+      "name": "Link",
+      "set": "action",
+      "label": "Copy link",
+      "description": "The shareable challenge URL.",
+      "hasActive": false
+    },
+    {
+      "slug": "rematch",
+      "name": "Rematch",
+      "set": "action",
+      "label": "Run it back",
+      "description": "Restarts the same duel with a fresh question set.",
+      "hasActive": false
+    },
+    {
+      "slug": "more",
+      "name": "More",
+      "set": "action",
+      "label": "Overflow",
+      "description": "Additional share targets / actions.",
+      "hasActive": false
+    },
+    {
+      "slug": "bookmark",
+      "name": "Bookmark",
+      "set": "action",
+      "label": "Save / favourite",
+      "description": "Toggles on lessons, terms, cards & games. Filled accent when saved.",
+      "hasActive": true
+    },
+    {
+      "slug": "gear",
+      "name": "Gear",
+      "set": "action",
+      "label": "Settings",
+      "description": "Top-right entry to Settings from Profile.",
+      "hasActive": false
+    },
+    {
+      "slug": "duel",
+      "name": "Duel",
+      "set": "action",
+      "label": "Coffee Duel entry",
+      "description": "Crossed coffee-stirrers — the persistent top-right duel button.",
+      "hasActive": false
+    },
+    {
+      "slug": "module",
+      "name": "Module",
+      "set": "kinds",
+      "label": "Module",
+      "description": "A stacked cube — a bundle of lessons.",
+      "hasActive": false
+    },
+    {
+      "slug": "match",
+      "name": "Match",
+      "set": "kinds",
+      "label": "Match game",
+      "description": "Two joined tiles — the pairing game.",
+      "hasActive": false
+    },
+    {
+      "slug": "quiz",
+      "name": "Quiz",
+      "set": "kinds",
+      "label": "Quiz game",
+      "description": "A target — quick-fire true/false.",
+      "hasActive": false
+    },
+    {
+      "slug": "flavour",
+      "name": "Flavour",
+      "set": "kinds",
+      "label": "Flavour / tasting",
+      "description": "A spoke wheel — the flavour-wheel game & lessons.",
+      "hasActive": false
+    }
+  ]
+}

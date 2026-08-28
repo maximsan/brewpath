@@ -1,3 +1,5 @@
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/challenges/domain/challenge_bank.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/challenges/domain/challenge_surface_state.dart';
@@ -92,7 +94,7 @@ class _Node extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(Icons.local_cafe_outlined, size: _iconSm, color: glyphTint),
+            IconMark(AppIcon.cup, size: _iconSm, color: glyphTint),
             const SizedBox(width: AppSpacing.xs),
             Expanded(
               child: Text(title, style: theme.textTheme.titleSmall),

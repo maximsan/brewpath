@@ -1,4 +1,6 @@
 import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_kinds.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_tier.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_gate_sheet.dart';
@@ -194,8 +196,8 @@ class _FormatRow extends StatelessWidget {
                     color: mood.inkMute,
                   ),
                 ),
-              Icon(
-                isOpen ? Icons.chevron_right : Icons.lock_outline,
+              IconMark(
+                isOpen ? AppIcon.chevron : AppIcon.lock,
                 color: mood.inkMute,
               ),
             ],

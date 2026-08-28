@@ -1,3 +1,5 @@
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/bean_gauge.dart';
 import 'package:brew_path/features/learn/presentation/lesson_node_gauge.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
@@ -83,7 +85,7 @@ class ModuleLessonCardWidget extends StatelessWidget {
                   child: const Text('Review'),
                 )
               else
-                Icon(Icons.chevron_right, color: mood.inkMute),
+                IconMark(AppIcon.chevron, color: mood.inkMute),
             ],
           ),
         ),
@@ -158,7 +160,7 @@ class _PointsInline extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(Icons.bolt, size: _iconSize, color: mood.inkMute),
+        IconMark(AppIcon.bean, size: _iconSize, color: mood.inkMute),
         const SizedBox(width: 2),
         Text(
           '+$points PTS',

@@ -1,10 +1,12 @@
 import 'package:brew_path/app/app.dart';
 import 'package:brew_path/app/app_header.dart';
 import 'package:brew_path/app/app_router.dart';
+import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../support/find_mark.dart';
 import '../support/widget_harness.dart';
 
 /// The header the four tabs share, and the rule about where it does *not*
@@ -15,7 +17,7 @@ Finder _sharedHeader() => find.byType(AppHeader);
 Finder _headerTitled(String title) => find.widgetWithText(AppHeader, title);
 Finder _dictionaryButton() => find.byIcon(Icons.menu_book_outlined);
 Finder _savedButton() => find.byTooltip(SavedScreen.title);
-Finder _settingsButton() => find.byIcon(Icons.settings_outlined);
+Finder _settingsButton() => findMark(AppIcon.gear);
 
 void main() {
   setUp(useInMemoryDatabase);
@@ -30,15 +32,15 @@ void main() {
     testWidgets('each names itself in the design vocabulary', (tester) async {
       await pumpWithProviders(tester, const BrewPathApp());
 
-      await tester.tap(find.byIcon(Icons.route_outlined));
+      await tester.tap(findMark(AppIcon.route, active: false));
       await settleLoaders(tester);
       expect(_headerTitled('Beginner Foundations'), findsOneWidget);
 
-      await tester.tap(find.byIcon(Icons.style_outlined));
+      await tester.tap(findMark(AppIcon.cards, active: false));
       await settleLoaders(tester);
       expect(_headerTitled('Collection'), findsOneWidget);
 
-      await tester.tap(find.byIcon(Icons.person_outline));
+      await tester.tap(findMark(AppIcon.leaf, active: false));
       await settleLoaders(tester);
       expect(_headerTitled('PROFILE'), findsOneWidget);
     });
@@ -48,7 +50,7 @@ void main() {
       expect(_dictionaryButton(), findsOneWidget);
       expect(_settingsButton(), findsNothing);
 
-      await tester.tap(find.byIcon(Icons.person_outline));
+      await tester.tap(findMark(AppIcon.leaf, active: false));
       await settleLoaders(tester);
       expect(
         _dictionaryButton(),
@@ -61,12 +63,8 @@ void main() {
 
     testWidgets('there is only ever one header on screen', (tester) async {
       await pumpWithProviders(tester, const BrewPathApp());
-      for (final icon in [
-        Icons.route_outlined,
-        Icons.style_outlined,
-        Icons.person_outline,
-      ]) {
-        await tester.tap(find.byIcon(icon));
+      for (final tab in [AppIcon.route, AppIcon.cards, AppIcon.leaf]) {
+        await tester.tap(findMark(tab, active: false));
         await settleLoaders(tester);
         expect(_sharedHeader(), findsOneWidget);
       }
@@ -107,7 +105,7 @@ void main() {
     ) async {
       await pumpWithProviders(tester, const BrewPathApp());
 
-      await tester.tap(find.byIcon(Icons.route_outlined));
+      await tester.tap(findMark(AppIcon.route, active: false));
       await settleLoaders(tester);
       await tester.tap(_savedButton());
       await settleLoaders(tester);
@@ -163,11 +161,11 @@ void main() {
     await settleLoaders(tester);
     expect(find.widgetWithText(AppBar, 'Module'), findsOneWidget);
 
-    await tester.tap(find.byIcon(Icons.route_outlined));
+    await tester.tap(findMark(AppIcon.route, active: false));
     await settleLoaders(tester);
     expect(_headerTitled('Beginner Foundations'), findsOneWidget);
 
-    await tester.tap(find.byIcon(Icons.school_outlined));
+    await tester.tap(findMark(AppIcon.cup, active: false));
     await settleLoaders(tester);
 
     // Learn kept its stack — still on the module, still without the header.
@@ -225,7 +223,7 @@ void main() {
       await scrollTab(tester);
       expect(headerHeight(tester), lessThan(atRest));
 
-      await tester.tap(find.byIcon(Icons.route_outlined));
+      await tester.tap(findMark(AppIcon.route, active: false));
       await settleLoaders(tester);
       expect(
         headerHeight(tester),
@@ -233,7 +231,7 @@ void main() {
         reason: 'Path was never scrolled, so it must not inherit the collapse',
       );
 
-      await tester.tap(find.byIcon(Icons.school_outlined));
+      await tester.tap(findMark(AppIcon.cup, active: false));
       await settleLoaders(tester);
       expect(
         headerHeight(tester),

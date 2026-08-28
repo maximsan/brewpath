@@ -1,3 +1,5 @@
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
 import 'package:brew_path/features/learn/presentation/keep_sharp_card_body.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
@@ -67,8 +69,8 @@ class TodayCardWidget extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.local_cafe,
+                IconMark(
+                  AppIcon.cup,
                   size: _iconSm,
                   color: mood.accentInk,
                 ),
@@ -143,7 +145,7 @@ class _PointsPill extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.bolt, size: _iconMd, color: mood.accentInk),
+          IconMark(AppIcon.bean, size: _iconMd, color: mood.accentInk),
           const SizedBox(width: 4),
           Text(
             '+$points PTS',

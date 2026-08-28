@@ -28,6 +28,11 @@ abstract class AppTheme {
         colorScheme: _schemeFor(mood, brightness),
         extensions: [mood],
         textTheme: AppText.textTheme(mood),
+        // Every inactive icon is muted ink — the design says so in the token's
+        // own description. Left unset, Material hands glyphs white or black87,
+        // which is off-palette in both moods and which `IconMark` would then
+        // inherit for want of anything better.
+        iconTheme: IconThemeData(color: mood.inkMute),
         navigationBarTheme: tabBarTheme(mood),
         appBarTheme: AppBarTheme(
           centerTitle: true,

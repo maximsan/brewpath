@@ -1,3 +1,5 @@
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/challenges/domain/challenge_bank.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_log_sheet.dart';
@@ -137,7 +139,7 @@ class ActiveChallengeCard extends ConsumerWidget {
 
   Widget _eyebrow(ThemeData theme, MoodColors mood) => Row(
     children: [
-      Icon(Icons.local_cafe_outlined, size: _iconSm, color: mood.accent),
+      IconMark(AppIcon.cup, size: _iconSm, color: mood.accent),
       const SizedBox(width: AppSpacing.xxs),
       Text(
         'COFFEE CHALLENGE',

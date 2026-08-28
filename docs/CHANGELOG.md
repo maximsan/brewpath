@@ -178,6 +178,24 @@ You can always edit this file by hand instead — the helpers just save effort.
   the `moduleId` parameter themselves; they share one helper now, the way
   opening a dictionary term already did.
 
+- **The app drew coffee with Material's icons, and three of them said the
+  wrong thing.** The design has its own 39-mark family — a cup, a trail of
+  stops, a cherry in section — and none of it had reached the app, which drew
+  ~70 stock glyphs instead. Three broke the design's own rules by name:
+  Roasting used a flame where the design leaves the flame to the streak,
+  Processing used a droplet where "water is not the category", and every
+  knowledge topic the lookup did not name fell back to the same book, so four
+  topics shared one mark. The marks are extracted from the design source
+  rather than redrawn, and they follow the mood — a tab fills with the accent
+  when it is selected, a bookmark fills when it is saved, each the design's
+  own rule for that mark, and one caret rotates rather than swapping for a
+  second glyph. Points now carry the design's bean, not a lightning bolt,
+  which the design reserves for the fastest answer. Icons also default to
+  muted ink rather than Material's white, which is what the palette says
+  every inactive icon should be. What the design has not drawn a mark for —
+  a Settings toggle, "not collected yet", the start arrow — still uses
+  Material, and says so at the call site.
+
 - **The active tab wore a green pill, and the first tab had two names.** The
   bar was stock Material with no theme of its own, so it reached through the
   palette for whatever Material's defaults pointed at: the pill behind the

@@ -1,4 +1,6 @@
 import 'package:brew_path/app/app_theme.dart';
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/module_glyph.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/path/presentation/path_node_card.dart';
@@ -8,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../support/content_fixtures.dart';
+import '../support/find_mark.dart';
 
 final ModuleModel _module = testModule(
   id: 'm5',
@@ -39,10 +42,10 @@ Future<void> _pump(
 );
 
 Color? _glyphColour(WidgetTester tester) => tester
-    .widget<Icon>(
+    .widget<IconMark>(
       find.descendant(
         of: find.byType(ModuleGlyph),
-        matching: find.byType(Icon),
+        matching: find.byType(IconMark),
       ),
     )
     .color;
@@ -57,7 +60,7 @@ void main() {
       expect(find.byType(LinearProgressIndicator), findsNothing);
       // The rail beside this card already carries the lock mark, so the card
       // itself keeps its trailing slot empty rather than doubling it up.
-      expect(find.byIcon(Icons.chevron_right), findsNothing);
+      expect(findMark(AppIcon.chevron), findsNothing);
     });
   });
 
@@ -75,7 +78,7 @@ void main() {
       await _pump(tester, _item(done: 1, locked: false));
 
       expect(_glyphColour(tester), MoodColors.darkRoast.accent);
-      expect(find.byIcon(Icons.chevron_right), findsOneWidget);
+      expect(findMark(AppIcon.chevron), findsOneWidget);
     });
 
     testWidgets('shows the lesson count above a progress bar', (tester) async {
@@ -117,8 +120,8 @@ void main() {
     ) async {
       await _pump(tester, _item(done: 2, locked: false));
 
-      expect(find.byIcon(Icons.chevron_right), findsNothing);
-      expect(find.byIcon(Icons.check_circle), findsNothing);
+      expect(findMark(AppIcon.chevron), findsNothing);
+      expect(findMark(AppIcon.check), findsNothing);
     });
 
     testWidgets('drops the status line under the title', (tester) async {

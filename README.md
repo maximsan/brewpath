@@ -139,6 +139,35 @@ node tool/extract_content.js                          # the usual run
 node tool/extract_content.js --source DIR --out DIR   # used by the tests
 ```
 
+### `tool/extract_icons.js` — regenerate the icon family
+
+Node script (no dependencies). Run after the design prototype's icon family
+changes. Writes the design's 39 marks as SVG into `assets/icons/`, plus the
+`index.json` that describes the family, and gives five of them a second file
+for the state the design draws them in when active.
+
+The marks carry arcs, transforms, per-element opacity and nine stroke widths
+across four element types, which is why they are rendered rather than
+transcribed into painters. Colour is not baked in: a mark paints in
+`currentColor`, which `IconMark` resolves to a mood token, or in a sentinel
+magenta standing in for a CSS variable, which it maps back to a token.
+
+Like the content extractor, it validates and refuses to write — an unmappable
+colour, two sets drawing one name differently, or a state transcription the
+catalogue no longer matches all fail the run and write **nothing**. Its output
+is generated: regenerate it, never hand-edit it. `prototype/` is opened for
+reading only.
+
+Two sources, per [ADR-0009](docs/adr/0009-the-running-prototype-wins-over-the-design-system-catalogue.md):
+geometry comes from the catalogue (`prototype/ds-content.js`), and the paint of
+each active state from the running components (`prototype/flavor-wheel.jsx`),
+which the catalogue does not draw.
+
+```bash
+node tool/extract_icons.js                          # the usual run
+node tool/extract_icons.js --source DIR --out DIR   # used by the tests
+```
+
 ### `tool/release.js` — cut a release
 
 Node script (no dependencies). Run when shipping a build to TestFlight / the App

@@ -1,4 +1,5 @@
 import 'package:brew_path/app/app_theme.dart';
+import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/features/mini_games/domain/course_entitlement.dart';
 import 'package:brew_path/features/path/domain/visual_guide_providers.dart';
 import 'package:brew_path/features/path/domain/visual_guide_shelf.dart';
@@ -14,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/find_mark.dart';
 import '../../../support/widget_harness.dart';
 
 /// Headings and subtitles are drawn by the smallcaps label, which uppercases.
@@ -174,7 +176,7 @@ void main() {
     await pumpWithProviders(tester, _wrap());
     expect(find.text(_terms), findsOneWidget);
 
-    await tester.tap(find.byIcon(Icons.bookmark));
+    await tester.tap(findMark(AppIcon.bookmark, active: true));
     await settleLoaders(tester);
 
     expect(find.text(_terms), findsNothing);
@@ -323,7 +325,7 @@ void main() {
       await _seed(tester, five);
       await pumpWithProviders(tester, _wrap());
 
-      await tester.tap(find.byIcon(Icons.bookmark).first);
+      await tester.tap(findMark(AppIcon.bookmark, active: true).first);
       await settleLoaders(tester);
 
       expect(find.text('4 of 5 saved'), findsOneWidget);

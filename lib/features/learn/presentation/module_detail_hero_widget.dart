@@ -26,8 +26,8 @@ class ModuleHeroWidget extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        IconBadge.rounded(
-          icon: moduleIcon(module.iconName),
+        IconBadge.roundedMark(
+          mark: moduleMark(module.iconName),
           size: _badgeSize,
           iconSize: _iconSize,
         ),

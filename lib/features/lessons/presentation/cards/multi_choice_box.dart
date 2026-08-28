@@ -1,3 +1,5 @@
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/dashed_rounded_border.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +43,7 @@ class MultiOptionSkin {
   final Color markColor;
 
   /// The mark inside the checkbox, or null where there is none.
-  final IconData? icon;
+  final AppIcon? icon;
 
   /// Whether the row and its box are outlined in dashes.
   final bool dashed;
@@ -74,7 +76,7 @@ class MultiChoiceBox extends StatelessWidget {
       ),
       child: skin.icon == null
           ? null
-          : Icon(skin.icon, size: _boxMark, color: skin.markColor),
+          : IconMark(skin.icon!, size: _boxMark, color: skin.markColor),
     );
   }
 }

@@ -1,3 +1,5 @@
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +34,7 @@ class IconBadge extends StatelessWidget {
   /// sanctioned — it predates this widget and is kept only so the migration
   /// moves no pixels; it wants a design call, not an `OffTokens` entry.
   const IconBadge.rounded({
-    required this.icon,
+    required IconData icon,
     required this.size,
     double radius = AppRadii.chrome,
     this.iconSize,
@@ -40,23 +42,66 @@ class IconBadge extends StatelessWidget {
     this.foreground,
     this.semanticLabel,
     super.key,
-  }) : _radius = radius,
+  }) : _icon = icon,
+       _mark = null,
+       _radius = radius,
        _shape = BoxShape.rectangle;
 
   /// A circular badge.
   const IconBadge.circle({
-    required this.icon,
+    required IconData icon,
     required this.size,
     this.iconSize,
     this.background,
     this.foreground,
     this.semanticLabel,
     super.key,
-  }) : _shape = BoxShape.circle,
+  }) : _icon = icon,
+       _mark = null,
+       _shape = BoxShape.circle,
        _radius = 0;
 
-  /// The glyph at the centre of the badge.
-  final IconData icon;
+  /// A rounded badge carrying one of the design's own marks.
+  const IconBadge.roundedMark({
+    required AppIcon mark,
+    required this.size,
+    double radius = AppRadii.chrome,
+    this.iconSize,
+    this.background,
+    this.foreground,
+    this.semanticLabel,
+    super.key,
+  }) : _mark = mark,
+       _icon = null,
+       _radius = radius,
+       _shape = BoxShape.rectangle;
+
+  /// A circular badge carrying one of the design's own marks.
+  const IconBadge.circleMark({
+    required AppIcon mark,
+    required this.size,
+    this.iconSize,
+    this.background,
+    this.foreground,
+    this.semanticLabel,
+    super.key,
+  }) : _mark = mark,
+       _icon = null,
+       _shape = BoxShape.circle,
+       _radius = 0;
+
+  /// The stock glyph at the centre, for a badge whose subject the design has
+  /// not drawn a mark for. Null when [_mark] carries the drawing instead.
+  ///
+  /// Two sources, on purpose and not forever: the design's family covers the
+  /// app's concepts and its chrome, but not every switch and toggle Settings
+  /// puts a badge on. Those keep Material until the design draws them, and
+  /// this pair of constructors is what lets the rest move now rather than
+  /// waiting for all of it.
+  final IconData? _icon;
+
+  /// The design's own mark at the centre, where the family has one.
+  final AppIcon? _mark;
 
   /// Width and height of the badge; it is always square.
   final double size;
@@ -93,12 +138,19 @@ class IconBadge extends StatelessWidget {
         shape: _shape,
         borderRadius: isCircle ? null : BorderRadius.circular(_radius),
       ),
-      child: Icon(
-        icon,
-        size: iconSize,
-        color: foreground ?? mood.accentInk,
-        semanticLabel: semanticLabel,
-      ),
+      child: _mark == null
+          ? Icon(
+              _icon,
+              size: iconSize,
+              color: foreground ?? mood.accentInk,
+              semanticLabel: semanticLabel,
+            )
+          : IconMark(
+              _mark,
+              size: iconSize,
+              color: foreground ?? mood.accentInk,
+              semanticLabel: semanticLabel,
+            ),
     );
   }
 }
