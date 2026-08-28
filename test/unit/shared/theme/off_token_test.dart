@@ -3,14 +3,7 @@ import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// WCAG contrast ratio, used to check the *reason* the rewarded-ad ring is
-/// allowed off-token — not just that it is spelled the way the design does.
-double _contrast(Color a, Color b) {
-  final lighter = a.computeLuminance() > b.computeLuminance() ? a : b;
-  final darker = identical(lighter, a) ? b : a;
-  return (lighter.computeLuminance() + 0.05) /
-      (darker.computeLuminance() + 0.05);
-}
+import '../../../support/contrast.dart';
 
 void main() {
   group('OffToken', () {
@@ -67,8 +60,8 @@ void main() {
       final canvas = OffTokens.rewardedAdCanvas.value;
 
       expect(
-        _contrast(MoodColors.cupping.accent, canvas),
-        lessThan(_contrast(MoodColors.darkRoast.accent, canvas)),
+        contrastRatio(MoodColors.cupping.accent, canvas),
+        lessThan(contrastRatio(MoodColors.darkRoast.accent, canvas)),
         reason:
             'if the Cupping accent read as well as the Dark Roast one on the '
             'ad canvas, this exception would have no reason to exist',

@@ -2,6 +2,8 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/contrast.dart';
+
 /// Hexes transcribed from the design bundle CSS
 /// (`prototype/index.html` — `:root` for Cupping, `[data-mood="dark-roast"]`
 /// for Dark Roast). Any drift between these and [MoodColors] is a bug in the
@@ -57,17 +59,6 @@ Map<String, Color> _flatTokens(MoodColors mood) => {
   'waterHi': mood.waterHi,
 };
 
-/// WCAG contrast ratio, the measure [MoodColors.accentText] exists to satisfy.
-double _contrast(Color a, Color b) {
-  final lighter = a.computeLuminance() > b.computeLuminance() ? a : b;
-  final darker = identical(lighter, a) ? b : a;
-  return (lighter.computeLuminance() + 0.05) /
-      (darker.computeLuminance() + 0.05);
-}
-
-/// AA for text below the large-text threshold.
-const _smallTextMinimum = 4.5;
-
 void main() {
   group('MoodColors instances', () {
     test('Cupping matches the design bundle 1:1', () {
@@ -105,8 +96,8 @@ void main() {
       for (final mood in [MoodColors.cupping, MoodColors.darkRoast]) {
         for (final ground in [mood.bg, mood.surface, mood.surface2]) {
           expect(
-            _contrast(mood.accentText, ground),
-            greaterThanOrEqualTo(_smallTextMinimum),
+            contrastRatio(mood.accentText, ground),
+            greaterThanOrEqualTo(contrastMinimumSmallText),
           );
         }
       }
@@ -115,8 +106,8 @@ void main() {
     test('exists because raw accent does not clear it', () {
       // The finding the token answers: cupping accent is 4.23 on `bg`.
       expect(
-        _contrast(MoodColors.cupping.accent, MoodColors.cupping.bg),
-        lessThan(_smallTextMinimum),
+        contrastRatio(MoodColors.cupping.accent, MoodColors.cupping.bg),
+        lessThan(contrastMinimumSmallText),
       );
     });
 
@@ -125,8 +116,8 @@ void main() {
         expect(mood.accentText, isNot(mood.ink));
         expect(mood.accentText, isNot(mood.accent));
         expect(
-          _contrast(mood.accentText, mood.accent),
-          lessThan(_smallTextMinimum),
+          contrastRatio(mood.accentText, mood.accent),
+          lessThan(contrastMinimumSmallText),
           reason: 'a mix of accent and ink stays close to the accent',
         );
       }
