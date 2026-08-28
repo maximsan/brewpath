@@ -1,3 +1,5 @@
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/challenges/domain/challenge_bank.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
@@ -88,11 +90,12 @@ class _Stamp extends StatelessWidget {
             const SizedBox(height: AppSpacing.xs),
             Row(
               children: [
-                Icon(
-                  done ? Icons.verified : Icons.local_cafe_outlined,
-                  size: _iconMd,
-                  color: tint,
-                ),
+                // `verified` has no counterpart in the design's family, so a
+                // stamped card keeps it while an unstamped one takes the cup.
+                if (done)
+                  Icon(Icons.verified, size: _iconMd, color: tint)
+                else
+                  IconMark(AppIcon.cup, size: _iconMd, color: tint),
                 const SizedBox(width: AppSpacing.xs),
                 Expanded(
                   child: Text(title, style: theme.textTheme.titleSmall),

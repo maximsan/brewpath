@@ -82,7 +82,7 @@ class _SavedRow extends ConsumerWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.local_cafe_outlined, size: _iconSm, color: mood.inkMute),
+          IconMark(AppIcon.cup, size: _iconSm, color: mood.inkMute),
           const SizedBox(width: AppSpacing.xs),
           Expanded(
             child: Column(

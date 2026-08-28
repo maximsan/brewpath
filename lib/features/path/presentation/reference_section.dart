@@ -1,4 +1,5 @@
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/caret_mark.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/core/widgets/visual_guide_art.dart';
@@ -146,7 +147,7 @@ class _Heading extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Icon(Icons.menu_book_outlined, size: _glyphSize, color: ink),
+                  IconMark(AppIcon.module, size: _glyphSize, color: ink),
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Text(
@@ -159,10 +160,7 @@ class _Heading extends StatelessWidget {
                   if (isLocked)
                     IconMark(AppIcon.lock, size: _lockSize, color: ink)
                   else
-                    Icon(
-                      isOpen ? Icons.expand_less : Icons.expand_more,
-                      color: mood.inkMute,
-                    ),
+                    CaretMark(open: isOpen, color: mood.inkMute),
                 ],
               ),
               const SizedBox(height: AppSpacing.xxs),

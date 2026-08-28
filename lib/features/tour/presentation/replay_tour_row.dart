@@ -50,8 +50,8 @@ class ReplayTourRow extends ConsumerWidget {
           padding: _padding,
           child: Row(
             children: [
-              const IconBadge.rounded(
-                icon: Icons.replay,
+              const IconBadge.roundedMark(
+                mark: AppIcon.rematch,
                 size: _badgeSize,
                 radius: _badgeRadius,
                 iconSize: _iconSize,

@@ -1,6 +1,7 @@
 import 'dart:async';
-
 import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/section_header.dart';
@@ -196,8 +197,8 @@ class _CategoryGlyphNote extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ExcludeSemantics(
-            child: Icon(
-              Icons.local_cafe_outlined,
+            child: IconMark(
+              AppIcon.cup,
               size: AppSpacing.md,
               color: mood.inkMute,
             ),

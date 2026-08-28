@@ -3,6 +3,7 @@ import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/progress/domain/freeze_save_notice.dart';
 import 'package:brew_path/features/progress/domain/freeze_save_notice_providers.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
+import 'package:brew_path/features/progress/presentation/freeze_mark.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -54,9 +55,10 @@ class FreezeSaveNoticeCard extends ConsumerWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ExcludeSemantics(
-              child: Icon(Icons.ac_unit, color: mood.accent),
-            ),
+            // The design draws its own freeze mark — "one dash, one meaning: a
+            // day held rather than earned" — and the app already ships it for
+            // the week strip. A snowflake was never the design's idea of it.
+            ExcludeSemantics(child: FreezeMark(color: mood.accent)),
             const SizedBox(width: AppSpacing.sm),
             Expanded(
               child: ExcludeSemantics(

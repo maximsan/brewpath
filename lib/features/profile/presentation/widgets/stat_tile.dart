@@ -1,3 +1,4 @@
+import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/widgets/icon_badge.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -8,16 +9,32 @@ import 'package:flutter/material.dart';
 class StatTile extends StatelessWidget {
   /// Creates a [StatTile].
   const StatTile({
-    required this.icon,
+    required IconData icon,
     required this.label,
     required this.value,
     this.onTap,
     this.footer,
     super.key,
-  });
+  }) : _icon = icon,
+       _mark = null;
 
-  /// Icon shown in the badge.
-  final IconData icon;
+  /// A tile badged with one of the design's own marks.
+  const StatTile.mark({
+    required AppIcon mark,
+    required this.label,
+    required this.value,
+    this.onTap,
+    this.footer,
+    super.key,
+  }) : _mark = mark,
+       _icon = null;
+
+  /// Stock glyph in the badge, for a stat the design draws no mark for — the
+  /// streak's flame is the one that stays.
+  final IconData? _icon;
+
+  /// The design's own mark in the badge.
+  final AppIcon? _mark;
 
   /// Caption shown under the value.
   final String label;
@@ -51,11 +68,18 @@ class StatTile extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          IconBadge.rounded(
-            icon: icon,
-            size: _badgeSize,
-            iconSize: _iconSize,
-          ),
+          if (_mark == null)
+            IconBadge.rounded(
+              icon: _icon!,
+              size: _badgeSize,
+              iconSize: _iconSize,
+            )
+          else
+            IconBadge.roundedMark(
+              mark: _mark,
+              size: _badgeSize,
+              iconSize: _iconSize,
+            ),
           const Spacer(),
           Text(
             value,

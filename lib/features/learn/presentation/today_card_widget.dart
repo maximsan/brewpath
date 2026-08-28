@@ -69,8 +69,8 @@ class TodayCardWidget extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.local_cafe,
+                IconMark(
+                  AppIcon.cup,
                   size: _iconSm,
                   color: mood.accentInk,
                 ),
@@ -145,7 +145,7 @@ class _PointsPill extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          IconMark(AppIcon.bolt, size: _iconMd, color: mood.accentInk),
+          IconMark(AppIcon.bean, size: _iconMd, color: mood.accentInk),
           const SizedBox(width: 4),
           Text(
             '+$points PTS',

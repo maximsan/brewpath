@@ -17,7 +17,7 @@ Finder _sharedHeader() => find.byType(AppHeader);
 Finder _headerTitled(String title) => find.widgetWithText(AppHeader, title);
 Finder _dictionaryButton() => find.byIcon(Icons.menu_book_outlined);
 Finder _savedButton() => find.byTooltip(SavedScreen.title);
-Finder _settingsButton() => find.byIcon(Icons.settings_outlined);
+Finder _settingsButton() => findMark(AppIcon.gear);
 
 void main() {
   setUp(useInMemoryDatabase);

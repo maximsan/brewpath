@@ -1,4 +1,5 @@
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/caret_mark.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/icon_badge.dart';
@@ -59,8 +60,8 @@ class _PracticeAnyLessonWidgetState extends State<PracticeAnyLessonWidget> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      _expanded ? Icons.expand_less : Icons.expand_more,
+                    CaretMark(
+                      open: _expanded,
                       size: _iconSm,
                       color: mood.accent,
                     ),

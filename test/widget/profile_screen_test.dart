@@ -30,7 +30,7 @@ void main() {
     await openProfile(tester);
 
     // Header icons.
-    expect(find.byIcon(Icons.settings_outlined), findsOneWidget);
+    expect(findMark(AppIcon.gear), findsOneWidget);
 
     // 2x2 stats grid.
     expect(find.byType(StatTile), findsNWidgets(4));
@@ -96,7 +96,7 @@ void main() {
   testWidgets('header gear opens the Settings screen', (tester) async {
     await openProfile(tester);
 
-    await tester.tap(find.byIcon(Icons.settings_outlined));
+    await tester.tap(findMark(AppIcon.gear));
     await settleLoaders(tester);
 
     expect(find.text('Settings'), findsOneWidget);

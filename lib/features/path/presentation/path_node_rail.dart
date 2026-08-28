@@ -1,3 +1,5 @@
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -97,29 +99,30 @@ class _NodeCircle extends StatelessWidget {
     final (
       Color background,
       Color foreground,
-      IconData icon,
+      Widget glyph,
       Border? border,
     ) = switch (item) {
       _ when item.isLocked => (
         mood.surface2,
         mood.inkMute,
-        Icons.lock_outline,
+        const IconMark(AppIcon.lock, size: _iconSize),
         null,
       ),
       _ when item.isComplete => (
         mood.accent,
         mood.accentInk,
-        Icons.check,
+        const IconMark(AppIcon.check, size: _iconSize),
         null,
       ),
       // The current node is an outline, not a fill: the design draws it on
       // the page canvas (`.lesson-row.current .path-node`). It used to ask
       // for `primaryContainer`, which resolved to `primary` and painted the
       // arrow in its own background colour — invisible.
+      // `play_arrow` stays stock: the design draws no "start here" mark.
       _ => (
         mood.bg,
         mood.accent,
-        Icons.play_arrow,
+        const Icon(Icons.play_arrow, size: _iconSize),
         Border.all(color: mood.accent, width: 2),
       ),
     };
@@ -133,7 +136,12 @@ class _NodeCircle extends StatelessWidget {
         shape: BoxShape.circle,
         border: border,
       ),
-      child: Icon(icon, size: _iconSize, color: foreground),
+      // Both an `Icon` and an `IconMark` read the ambient icon colour, so the
+      // state's ink is declared once here rather than in each branch above.
+      child: IconTheme.merge(
+        data: IconThemeData(color: foreground),
+        child: glyph,
+      ),
     );
   }
 }

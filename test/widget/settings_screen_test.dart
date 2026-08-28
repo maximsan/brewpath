@@ -22,7 +22,7 @@ void main() {
     await pumpWithProviders(tester, const BrewPathApp());
     await tester.tap(findMark(AppIcon.leaf, active: false));
     await settleLoaders(tester);
-    await tester.tap(find.byIcon(Icons.settings_outlined));
+    await tester.tap(findMark(AppIcon.gear));
     await settleLoaders(tester);
   }
 

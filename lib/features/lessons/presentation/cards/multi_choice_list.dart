@@ -1,3 +1,4 @@
+import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_option_tile.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_tints.dart';
 import 'package:brew_path/features/lessons/presentation/cards/choice_list.dart';
@@ -105,7 +106,7 @@ class _MultiOptionRow extends StatelessWidget {
       fill: mood.sage.withValues(alpha: CardTints.wash),
       boxFill: mood.sage,
       markColor: mood.surface,
-      icon: Icons.check,
+      icon: AppIcon.check,
     ),
     MultiMark.incorrect => MultiOptionSkin(
       border: mood.berry,
@@ -113,7 +114,7 @@ class _MultiOptionRow extends StatelessWidget {
       fill: mood.berry.withValues(alpha: CardTints.wrongWash),
       boxFill: mood.berry,
       markColor: mood.surface,
-      icon: Icons.close,
+      icon: AppIcon.cross,
     ),
     MultiMark.missed => MultiOptionSkin(
       border: mood.sage,
@@ -121,7 +122,7 @@ class _MultiOptionRow extends StatelessWidget {
       fill: null,
       boxFill: Colors.transparent,
       markColor: mood.sage,
-      icon: Icons.check,
+      icon: AppIcon.check,
       dashed: true,
     ),
     MultiMark.none =>
@@ -132,7 +133,7 @@ class _MultiOptionRow extends StatelessWidget {
               fill: null,
               boxFill: mood.accent,
               markColor: mood.accentInk,
-              icon: Icons.check,
+              icon: AppIcon.check,
             )
           : MultiOptionSkin(
               border: mood.rule,

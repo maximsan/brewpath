@@ -1,4 +1,5 @@
 import 'package:brew_path/core/constants/app_labels.dart';
+import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/icon_badge.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_suggestion.dart';
@@ -125,7 +126,7 @@ class LessonCompletionBody extends StatelessWidget {
     final theme = Theme.of(context);
     final mood = context.mood;
     return [
-      const _HeroBadge(icon: Icons.replay),
+      const _HeroBadge.mark(AppIcon.rematch),
       const SizedBox(height: 20),
       Text(
         'Review complete!',
@@ -171,9 +172,14 @@ class _CompletionHero extends StatelessWidget {
 
 /// Round tinted celebration/replay badge shown above the headline.
 class _HeroBadge extends StatelessWidget {
-  const _HeroBadge({required this.icon});
+  const _HeroBadge({required IconData icon}) : _icon = icon, _mark = null;
 
-  final IconData icon;
+  /// The design's own mark, where it has one for the occasion.
+  const _HeroBadge.mark(AppIcon mark) : _mark = mark, _icon = null;
+
+  /// Stock glyph, for a celebration the design draws no mark for.
+  final IconData? _icon;
+  final AppIcon? _mark;
 
   static const double _size = 96;
   static const double _iconSize = 48;
@@ -181,7 +187,13 @@ class _HeroBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: IconBadge.circle(icon: icon, size: _size, iconSize: _iconSize),
+      child: _mark == null
+          ? IconBadge.circle(icon: _icon!, size: _size, iconSize: _iconSize)
+          : IconBadge.circleMark(
+              mark: _mark,
+              size: _size,
+              iconSize: _iconSize,
+            ),
     );
   }
 }

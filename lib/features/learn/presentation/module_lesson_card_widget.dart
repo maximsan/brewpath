@@ -160,7 +160,7 @@ class _PointsInline extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        IconMark(AppIcon.bolt, size: _iconSize, color: mood.inkMute),
+        IconMark(AppIcon.bean, size: _iconSize, color: mood.inkMute),
         const SizedBox(width: 2),
         Text(
           '+$points PTS',

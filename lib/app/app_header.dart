@@ -141,12 +141,12 @@ class _ActionButton extends StatelessWidget {
     return switch (action) {
       HeaderAction.saved => const _SavedButton(),
       HeaderAction.dictionary => _RouteButton(
-        icon: Icons.menu_book_outlined,
+        glyph: const Icon(Icons.menu_book_outlined),
         tooltip: DictionaryHomeScreen.title,
         routeName: AppRoutes.dictionary.name,
       ),
       HeaderAction.settings => _RouteButton(
-        icon: Icons.settings_outlined,
+        glyph: const IconMark(AppIcon.gear),
         tooltip: 'Settings',
         routeName: AppRoutes.profileSettings.name,
       ),
@@ -157,19 +157,22 @@ class _ActionButton extends StatelessWidget {
 /// A header entry that does nothing but open a route.
 class _RouteButton extends StatelessWidget {
   const _RouteButton({
-    required this.icon,
+    required this.glyph,
     required this.tooltip,
     required this.routeName,
   });
 
-  final IconData icon;
+  /// Either kind of glyph: `IconButton` colours whatever it is given through
+  /// an `IconTheme`, and both `Icon` and `IconMark` read one. The Dictionary
+  /// entry stays stock because the design draws no mark for it.
+  final Widget glyph;
   final String tooltip;
   final String routeName;
 
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      icon: Icon(icon),
+      icon: glyph,
       tooltip: tooltip,
       color: context.mood.ink,
       onPressed: () => context.pushNamed(routeName),
