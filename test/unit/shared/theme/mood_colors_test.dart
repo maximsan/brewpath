@@ -127,9 +127,12 @@ void main() {
   group('background-derived tokens', () {
     test('veil is the mood background at veil opacity', () {
       for (final mood in [MoodColors.cupping, MoodColors.darkRoast]) {
-        expect(mood.veil, mood.bg.withValues(alpha: MoodColors.veilOpacity));
         expect(
-          mood.veilStrong,
+          mood.veil.color,
+          mood.bg.withValues(alpha: MoodColors.veilOpacity),
+        );
+        expect(
+          mood.veilStrong.color,
           mood.bg.withValues(alpha: MoodColors.veilStrongOpacity),
         );
       }
@@ -148,8 +151,8 @@ void main() {
 
     test('veilStrong is more opaque than veil', () {
       expect(
-        MoodColors.darkRoast.veilStrong.a,
-        greaterThan(MoodColors.darkRoast.veil.a),
+        MoodColors.darkRoast.veilStrong.color.a,
+        greaterThan(MoodColors.darkRoast.veil.color.a),
       );
     });
   });
@@ -180,7 +183,7 @@ void main() {
       final halfway = MoodColors.cupping.lerp(MoodColors.darkRoast, 0.5);
 
       expect(
-        halfway.veil,
+        halfway.veil.color,
         halfway.bg.withValues(alpha: MoodColors.veilOpacity),
       );
     });
@@ -216,7 +219,7 @@ void main() {
       final tweaked = MoodColors.darkRoast.copyWith(bg: replacement);
 
       expect(
-        tweaked.veil,
+        tweaked.veil.color,
         replacement.withValues(alpha: MoodColors.veilOpacity),
       );
     });

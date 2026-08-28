@@ -45,10 +45,15 @@ abstract class AppTheme {
         // any other route is at least not wearing stock Material colours. The
         // handle, insets, height cap, title and reduced motion live in the
         // function, which is the door to use.
+        //
+        // It is also the one place the dim's colour is taken without its blur,
+        // because `BottomSheetThemeData` has no field for a filter. That is the
+        // whole reason `showAppSheet` pushes its own route — a sheet that came
+        // through the theme alone would be dimmed and unblurred (#379).
         bottomSheetTheme: BottomSheetThemeData(
           backgroundColor: mood.bg,
           modalBackgroundColor: mood.bg,
-          modalBarrierColor: OverlayColors.dimModal,
+          modalBarrierColor: OverlayColors.dimModal.color,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(
               top: Radius.circular(AppRadii.chrome),

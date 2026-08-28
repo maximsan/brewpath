@@ -1,3 +1,4 @@
+import 'package:brew_path/shared/theme/app_overlay.dart';
 import 'package:flutter/material.dart';
 
 /// The colour half of a **mood** — the design's word for a theme.
@@ -80,6 +81,15 @@ class MoodColors extends ThemeExtension<MoodColors> {
   /// Opacity of [veilStrong] — the same mix at 82%.
   static const veilStrongOpacity = 0.82;
 
+  /// Blur behind [veil] — the design gives the plain veil *"none"*, because the
+  /// screen under it is meant to stay readable.
+  static const veilBlurRadius = 0.0;
+
+  /// Blur behind [veilStrong] — the design's *"3px for a covering wash"*, which
+  /// the bundle also writes out on the card preview that is the wash's one host
+  /// (`prototype/rewards.jsx:185`).
+  static const veilStrongBlurRadius = 3.0;
+
   /// Page canvas.
   final Color bg;
 
@@ -150,13 +160,30 @@ class MoodColors extends ThemeExtension<MoodColors> {
   /// Highlight on a [water] fill.
   final Color waterHi;
 
-  /// The page background pulled over the page. Derived from [bg] rather than
-  /// stored, so it follows the mood — and keeps following it mid-[lerp].
-  Color get veil => bg.withValues(alpha: veilOpacity);
+  /// The page background pulled over the page, and the blur that goes with it.
+  /// Derived from [bg] rather than stored, so it follows the mood — and keeps
+  /// following it mid-[lerp].
+  ///
+  /// **No call site.** The veil's job is the Foundations feature lock — a wash
+  /// over content the learner is meant to keep reading, because that legibility
+  /// is the pitch (`prototype/gating.jsx:416`). The app has no feature lock to
+  /// wear it: the content gate is #215.
+  AppOverlay get veil => AppOverlay(
+    color: bg.withValues(alpha: veilOpacity),
+    blurRadius: veilBlurRadius,
+  );
 
   /// [veil] at full strength, for content that must be obscured rather than
   /// softened.
-  Color get veilStrong => bg.withValues(alpha: veilStrongOpacity);
+  ///
+  /// **No call site.** The covering wash's job is the earned-card preview at
+  /// the end of a lesson (`prototype/rewards.jsx:185`), a screen the app has
+  /// not built: it is #384's reward card, with the preview overlay itself in
+  /// #382.
+  AppOverlay get veilStrong => AppOverlay(
+    color: bg.withValues(alpha: veilStrongOpacity),
+    blurRadius: veilStrongBlurRadius,
+  );
 
   @override
   MoodColors copyWith({

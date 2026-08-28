@@ -16,9 +16,9 @@ const _spec = <String, Color>{
 };
 
 Map<String, Color> get _tokens => {
-  '--scrim': OverlayColors.scrim,
+  '--scrim': OverlayColors.scrim.color,
   '--scrim-ink': OverlayColors.scrimInk,
-  '--dim-modal': OverlayColors.dimModal,
+  '--dim-modal': OverlayColors.dimModal.color,
 };
 
 void main() {
@@ -30,7 +30,10 @@ void main() {
     test('the modal dim darkens the canvas in both moods', () {
       for (final mood in [MoodColors.cupping, MoodColors.darkRoast]) {
         expect(
-          Color.alphaBlend(OverlayColors.dimModal, mood.bg).computeLuminance(),
+          Color.alphaBlend(
+            OverlayColors.dimModal.color,
+            mood.bg,
+          ).computeLuminance(),
           lessThan(mood.bg.computeLuminance()),
           reason:
               'a dim bound to the mood would lighten the Cupping canvas; a '
@@ -49,7 +52,10 @@ void main() {
         Color(0xFFC79A63),
       ]) {
         expect(
-          Color.alphaBlend(OverlayColors.scrim, media).computeLuminance(),
+          Color.alphaBlend(
+            OverlayColors.scrim.color,
+            media,
+          ).computeLuminance(),
           lessThan(media.computeLuminance()),
         );
       }
@@ -60,7 +66,7 @@ void main() {
         OverlayColors.scrimInk.computeLuminance(),
         greaterThan(
           Color.alphaBlend(
-            OverlayColors.scrim,
+            OverlayColors.scrim.color,
             const Color(0xFFFFFFFF),
           ).computeLuminance(),
         ),

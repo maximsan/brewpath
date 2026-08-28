@@ -158,6 +158,24 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **Sheets and the tour's opening question now blur what is behind them.** The
+  design gives every overlay a blur radius in the same breath as its colour —
+  5px behind a bottom sheet, 3px behind a covering wash, 8px behind a control
+  sitting on video, none on the plain veil. The app had ported the colours and
+  dropped every radius, so a sheet dimmed the screen behind it and left it
+  sharp. An overlay is now one value carrying both halves, and the two
+  overlays the app actually renders arrive blurred. The blur holds steady
+  while the tint fades, which is also what keeps it affordable on an older
+  phone; turning animations off does not take it away, because a blur is not
+  motion.
+
+- **The tour's spotlight was wearing the wrong overlay.** It dimmed the screen
+  with the media scrim — the one overlay the design reserves for a control
+  sitting on a photo, and the only one of the four that is not full-screen.
+  The coach mark now uses the blocking dim the design draws it with. It is the
+  one dim deliberately left unblurred: blurring behind a spotlight would blur
+  the thing the spotlight is pointing at.
+
 - **Two cards told a screen reader everything except whether you passed.** On
   a select-all card every choice announced what it was — correct, incorrect,
   or an answer you missed — and on the blind-bag card the option list marked

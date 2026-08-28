@@ -1,3 +1,4 @@
+import 'package:brew_path/shared/theme/app_overlay.dart';
 import 'package:flutter/painting.dart';
 
 /// The overlays that do **not** flip with the mood.
@@ -16,6 +17,11 @@ import 'package:flutter/painting.dart';
 /// page background pulled over the page — are on `MoodColors`, derived from its
 /// background.
 ///
+/// Each overlay is an `AppOverlay`: a colour **and** the blur that goes with
+/// it, because the design gives both in one breath and the first port kept only
+/// the colour (#379). Only `scrimInk` is a bare colour — it is ink drawn on top
+/// of an overlay, not an overlay itself.
+///
 /// Values are transcribed from the design bundle CSS
 /// (`prototype/index.html`). `color-mix(in oklab, X n%, transparent)` scales
 /// only the alpha channel, so each is its literal at that opacity.
@@ -26,12 +32,40 @@ abstract final class OverlayColors {
   /// Opacity of [dimModal] — the same mix over `#0E0A07` at 62%.
   static const dimModalOpacity = 0.62;
 
+  /// Blur behind [scrim] — the design's *"8px behind a media control"*.
+  static const scrimBlurRadius = 8.0;
+
+  /// Blur behind [dimModal] — the design's *"5px for the modal dim"*, which the
+  /// bundle also writes out as `.sheet-backdrop { backdrop-filter: blur(5px) }`
+  /// (`prototype/index.html:725`).
+  static const dimModalBlurRadius = 5.0;
+
   /// The tint behind a control that sits on video or photography.
-  static const scrim = Color.fromRGBO(0x1B, 0x16, 0x14, scrimOpacity);
+  ///
+  /// **No call site.** The design's only scrim is the sound toggle on the
+  /// seed-to-tree video (`prototype/screens.jsx:54`), and the app's Welcome
+  /// hero plays that video muted with no control on it — the control is part of
+  /// the Welcome screen that #383 builds. It is the one overlay of the four
+  /// that is not full-screen, so it must be clipped to the control it sits
+  /// behind; the full-screen `OverlayBarrier` seam is the wrong shape for it,
+  /// and the right one is a widget the screen that needs it should bring.
+  ///
+  /// It was previously the coach-mark scrim, which the design draws in
+  /// [dimModal] instead (`prototype/guide.jsx:61`).
+  static const scrim = AppOverlay(
+    color: Color.fromRGBO(0x1B, 0x16, 0x14, scrimOpacity),
+    blurRadius: scrimBlurRadius,
+  );
 
   /// The glyph on top of a [scrim].
+  ///
+  /// **No call site**, for the same reason as [scrim]: it is the colour of the
+  /// control the app has not built yet.
   static const scrimInk = Color(0xFFFBF7EE);
 
   /// The dim behind a bottom sheet — the app's one blocking overlay.
-  static const dimModal = Color.fromRGBO(0x0E, 0x0A, 0x07, dimModalOpacity);
+  static const dimModal = AppOverlay(
+    color: Color.fromRGBO(0x0E, 0x0A, 0x07, dimModalOpacity),
+    blurRadius: dimModalBlurRadius,
+  );
 }
