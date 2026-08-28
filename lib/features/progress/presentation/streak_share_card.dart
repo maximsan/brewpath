@@ -43,7 +43,7 @@ class StreakShareCard extends StatelessWidget {
         children: [
           Text(
             'BREWPATH',
-            style: AppText.label(mood: mood, color: mood.accent),
+            style: AppText.label(mood: mood, color: mood.accentText),
           ),
           Column(
             children: [

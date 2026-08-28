@@ -256,12 +256,15 @@ class _ProcessPill extends StatelessWidget {
   Widget build(BuildContext context) {
     final mood = context.mood;
     final hidden = revealed == null;
-    final colour = hidden ? mood.accent : mood.sage;
+    // An accent-bordered pill labelled in the reading accent — the design's
+    // own pairing for this shape (`brew-challenge.jsx:338`).
+    final borderColour = hidden ? mood.accent : mood.sage;
+    final labelColour = hidden ? mood.accentText : mood.sage;
 
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppRadii.pill),
-        border: Border.all(color: colour),
+        border: Border.all(color: borderColour),
       ),
       child: Padding(
         padding: _padding,
@@ -269,7 +272,7 @@ class _ProcessPill extends StatelessWidget {
           revealed ?? 'Process hidden',
           style: Theme.of(
             context,
-          ).textTheme.labelSmall?.copyWith(color: colour),
+          ).textTheme.labelSmall?.copyWith(color: labelColour),
         ),
       ),
     );
@@ -344,7 +347,7 @@ class _CueRow extends StatelessWidget {
                   child: Text(
                     cue.label,
                     style: text.labelSmall?.copyWith(
-                      color: isTell ? mood.accent : mood.inkMute,
+                      color: isTell ? mood.accentText : mood.inkMute,
                     ),
                   ),
                 ),

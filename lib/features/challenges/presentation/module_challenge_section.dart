@@ -75,7 +75,7 @@ class _Offer extends ConsumerWidget {
             Text(
               'MODULE COFFEE CHALLENGE',
               style: theme.textTheme.labelSmall?.copyWith(
-                color: mood.accent,
+                color: mood.accentText,
                 fontWeight: FontWeight.w700,
                 letterSpacing: _eyebrowLetterSpacing,
               ),

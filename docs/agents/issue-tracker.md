@@ -4,6 +4,24 @@ Issues and PRDs for this repo live as GitHub issues on `maximsan/brewpath`. Use 
 
 ## Conventions
 
+### Before creating an issue — the duplicate check
+
+Sessions run concurrently, so **the tracker moves while you work**. Four tickets
+once existed for the same two card kinds because three sessions each created one
+without finding the others (#388 → #391/#392 → #397).
+
+1. **Enumerate, don't rely on relevance search.** Fetch and grep locally:
+   `gh issue list --state all --limit 500 --json number,title --jq '.[] | "\(.number)\t\(.title)"' | grep -i <term>`.
+   Search a **domain noun** (the card kind, the screen, the component), not your
+   ticket's phrasing — a duplicate rarely shares your wording.
+2. **Check recency, not just keywords.** Anything created in the last few hours
+   may post-date your search. Re-run the grep immediately before `gh issue create`.
+3. **On finding an overlap, prefer the older ticket.** Improve it in place rather
+   than opening a better one beside it. If a newer ticket is genuinely better,
+   say so in the close comment and name which came first — "duplicate" alone
+   loses the fact that the older one had it right.
+
+
 - **Create an issue**: `gh issue create --title "..." --body "..."`. Use a heredoc for multi-line bodies.
 - **Read an issue**: `gh issue view <number> --comments`, filtering comments by `jq` and also fetching labels.
 - **List issues**: `gh issue list --state open --json number,title,body,labels,comments --jq '[.[] | {number, title, body, labels: [.labels[].name], comments: [.comments[].body]}]'` with appropriate `--label` and `--state` filters.

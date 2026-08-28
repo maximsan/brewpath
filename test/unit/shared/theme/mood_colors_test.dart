@@ -2,6 +2,8 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/contrast.dart';
+
 /// Hexes transcribed from the design bundle CSS
 /// (`prototype/index.html` — `:root` for Cupping, `[data-mood="dark-roast"]`
 /// for Dark Roast). Any drift between these and [MoodColors] is a bug in the
@@ -15,6 +17,7 @@ const _cuppingSpec = <String, Color>{
   'rule': Color(0xFFD8CFBF),
   'accent': Color(0xFFB8533A),
   'accentInk': Color(0xFFFBF7EE),
+  'accentText': Color(0xFF783C2C),
   'sage': Color(0xFF5F6E55),
   'warn': Color(0xFF9A5F1C),
   'berry': Color(0xFFA8362A),
@@ -31,6 +34,7 @@ const _darkRoastSpec = <String, Color>{
   'rule': Color(0xFF44321E),
   'accent': Color(0xFFE07A4F),
   'accentInk': Color(0xFF1A130E),
+  'accentText': Color(0xFFEAA482),
   'sage': Color(0xFF97A285),
   'warn': Color(0xFFE6A35C),
   'berry': Color(0xFFC75450),
@@ -47,6 +51,7 @@ Map<String, Color> _flatTokens(MoodColors mood) => {
   'rule': mood.rule,
   'accent': mood.accent,
   'accentInk': mood.accentInk,
+  'accentText': mood.accentText,
   'sage': mood.sage,
   'warn': mood.warn,
   'berry': mood.berry,
@@ -83,6 +88,39 @@ void main() {
         MoodColors.cupping.hashCode,
         equals(MoodColors.cupping.hashCode),
       );
+    });
+  });
+
+  group('accentText', () {
+    test('clears AA as small text on every surface it is set on', () {
+      for (final mood in [MoodColors.cupping, MoodColors.darkRoast]) {
+        for (final ground in [mood.bg, mood.surface, mood.surface2]) {
+          expect(
+            contrastRatio(mood.accentText, ground),
+            greaterThanOrEqualTo(contrastMinimumSmallText),
+          );
+        }
+      }
+    });
+
+    test('exists because raw accent does not clear it', () {
+      // The finding the token answers: cupping accent is 4.23 on `bg`.
+      expect(
+        contrastRatio(MoodColors.cupping.accent, MoodColors.cupping.bg),
+        lessThan(contrastMinimumSmallText),
+      );
+    });
+
+    test('reads as the accent rather than as ink', () {
+      for (final mood in [MoodColors.cupping, MoodColors.darkRoast]) {
+        expect(mood.accentText, isNot(mood.ink));
+        expect(mood.accentText, isNot(mood.accent));
+        expect(
+          contrastRatio(mood.accentText, mood.accent),
+          lessThan(contrastMinimumSmallText),
+          reason: 'a mix of accent and ink stays close to the accent',
+        );
+      }
     });
   });
 

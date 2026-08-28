@@ -54,8 +54,8 @@ dart_code_linter:
     - lib/features/companion/presentation/roasty_particles.dart
     # Declarative GoRouter route table — long by nature, low logic complexity.
     - lib/app/app_router.dart
-    # A flat 13-token colour table. Its constructor, copyWith, lerp, == and
-    # hashCode each restate all 13 by definition, so number-of-parameters (5)
+    # A flat 14-token colour table. Its constructor, copyWith, lerp, == and
+    # hashCode each restate all 14 by definition, so number-of-parameters (5)
     # and source-lines-of-code (90) measure the token count, not complexity.
     - lib/shared/theme/mood_colors.dart
     # A flat sealed union with one factory per authored card kind. Its method
