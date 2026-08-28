@@ -29,6 +29,7 @@ class MoodColors extends ThemeExtension<MoodColors> {
     required this.rule,
     required this.accent,
     required this.accentInk,
+    required this.accentText,
     required this.sage,
     required this.warn,
     required this.berry,
@@ -46,6 +47,7 @@ class MoodColors extends ThemeExtension<MoodColors> {
     rule: Color(0xFFD8CFBF),
     accent: Color(0xFFB8533A),
     accentInk: Color(0xFFFBF7EE),
+    accentText: Color(0xFF783C2C),
     sage: Color(0xFF5F6E55),
     warn: Color(0xFF9A5F1C),
     berry: Color(0xFFA8362A),
@@ -63,6 +65,7 @@ class MoodColors extends ThemeExtension<MoodColors> {
     rule: Color(0xFF44321E),
     accent: Color(0xFFE07A4F),
     accentInk: Color(0xFF1A130E),
+    accentText: Color(0xFFEAA482),
     sage: Color(0xFF97A285),
     warn: Color(0xFFE6A35C),
     berry: Color(0xFFC75450),
@@ -102,6 +105,34 @@ class MoodColors extends ThemeExtension<MoodColors> {
   /// Text placed on an [accent] fill.
   final Color accentInk;
 
+  /// [accent] as **text**, at every step below the design's `title` (26px).
+  ///
+  /// Raw [accent] is the brand colour, tuned to be a fill and a mark rather
+  /// than a reading colour: in Cupping it lands at 4.23:1 on [bg] — under
+  /// WCAG AA's 4.5:1 for small text, which the design's own QA recorded and
+  /// then declined to fix by moving the brand colour, "because moving the one
+  /// brand colour costs more than it buys". This token is the fix it chose
+  /// instead: the accent pulled toward [ink] until it reads, and nothing else
+  /// changes.
+  ///
+  /// **Where it applies.** Every accent text set smaller than the `title`
+  /// step — eyebrows, smallcaps kickers, link labels, support lines, scores.
+  /// The boundary is the ladder rather than WCAG's own 24px / 18.66px-bold
+  /// line so that it does not move when a call site drops a weight the design
+  /// forbids (#380): a step is a fixed thing, a rendered weight is not.
+  ///
+  /// Everything the accent is *not* read as keeps [accent]: fills, borders,
+  /// progress bars, marks and icons. The design sets exactly this pair side
+  /// by side — an accent glyph beside an `--accent-text` label
+  /// (`prototype/brew-challenge.jsx:303`, `:706`), and an accent-bordered
+  /// pill with an `--accent-text` label (`:338`).
+  ///
+  /// The design writes it as
+  /// `color-mix(in oklab, var(--accent) 62%, var(--ink))` and the values here
+  /// are that mix resolved per mood, so a mood keeps one literal per token and
+  /// lerps between moods like every other.
+  final Color accentText;
+
   /// Success = "learned": correct answers, learned terms, pass mark.
   /// **Never an action** — that is [accent].
   final Color sage;
@@ -137,6 +168,7 @@ class MoodColors extends ThemeExtension<MoodColors> {
     Color? rule,
     Color? accent,
     Color? accentInk,
+    Color? accentText,
     Color? sage,
     Color? warn,
     Color? berry,
@@ -152,6 +184,7 @@ class MoodColors extends ThemeExtension<MoodColors> {
       rule: rule ?? this.rule,
       accent: accent ?? this.accent,
       accentInk: accentInk ?? this.accentInk,
+      accentText: accentText ?? this.accentText,
       sage: sage ?? this.sage,
       warn: warn ?? this.warn,
       berry: berry ?? this.berry,
@@ -175,6 +208,7 @@ class MoodColors extends ThemeExtension<MoodColors> {
       rule: Color.lerp(rule, other.rule, progress)!,
       accent: Color.lerp(accent, other.accent, progress)!,
       accentInk: Color.lerp(accentInk, other.accentInk, progress)!,
+      accentText: Color.lerp(accentText, other.accentText, progress)!,
       sage: Color.lerp(sage, other.sage, progress)!,
       warn: Color.lerp(warn, other.warn, progress)!,
       berry: Color.lerp(berry, other.berry, progress)!,
@@ -195,6 +229,7 @@ class MoodColors extends ThemeExtension<MoodColors> {
         other.rule == rule &&
         other.accent == accent &&
         other.accentInk == accentInk &&
+        other.accentText == accentText &&
         other.sage == sage &&
         other.warn == warn &&
         other.berry == berry &&
@@ -212,6 +247,7 @@ class MoodColors extends ThemeExtension<MoodColors> {
     rule,
     accent,
     accentInk,
+    accentText,
     sage,
     warn,
     berry,

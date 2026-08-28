@@ -2,6 +2,11 @@
 
 - **Status:** accepted
 - **Date:** 2026-08-22
+- **Reaffirmed:** 2026-08-28 — the Readiness Audit's 18 Aug amendment
+  widens the free taster to all of Module 1, which this record had
+  already weighed and refused four days later without citing it
+  ([#370](https://github.com/maximsan/brewpath/issues/370)). The
+  decision stands; the audit's line is the stale artifact.
 
 ## Context
 

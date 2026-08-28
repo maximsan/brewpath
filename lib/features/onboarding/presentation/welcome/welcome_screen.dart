@@ -52,7 +52,10 @@ class WelcomeScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: AppSpacing.lg),
-              SmallcapsLabel('ROASTY · YOUR COMPANION', color: mood.accent),
+              SmallcapsLabel(
+                'ROASTY · YOUR COMPANION',
+                color: mood.accentText,
+              ),
               const SizedBox(height: 10),
               Text(
                 'Plant your tree.\nGrow with every cup.',

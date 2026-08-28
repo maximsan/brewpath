@@ -57,6 +57,16 @@ first, then resume.
 - **Regenerate after model changes.** Run `dart run build_runner build` whenever
   a Freezed model, Riverpod provider, or Drift table is added or modified
   (flags and behaviour: README _Development commands_).
+- **Scope is ruled by the readiness audit, not inferred.**
+  [`prototype/v1 Readiness Audit.html`](prototype/v1%20Readiness%20Audit.html)
+  is the ship/defer authority: it cuts v1 to ~32 of the prototype's ~55 screens
+  and defers Atlas, Duel, rewarded ads, the mood player and the onboarding
+  question flow to v2. **Read it before calling anything missing** — a v2 screen
+  absent from the app is correct, not a gap. The prototype also carries 18
+  `.html` design documents beyond `index.html`, authored deliberately in
+  isolation; `Design System.html` (+ `ds-content.js`) and `QA Findings.html`
+  carry rulings that appear nowhere in the `.jsx`.
+
 - **`prototype/` is read-only to agents.** It is the design source the app is
   built *against*, so an edit there moves the thing we are measuring ourselves
   by. Findings about the prototype — "this is wrong", "do not port this" — go in

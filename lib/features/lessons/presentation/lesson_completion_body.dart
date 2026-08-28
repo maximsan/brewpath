@@ -95,7 +95,7 @@ class LessonCompletionBody extends StatelessWidget {
         '+${completion.pointsEarned} PTS',
         textAlign: TextAlign.center,
         style: theme.textTheme.titleLarge?.copyWith(
-          color: mood.accent,
+          color: mood.accentText,
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -107,7 +107,9 @@ class LessonCompletionBody extends StatelessWidget {
         Text(
           'Module complete!',
           textAlign: TextAlign.center,
-          style: theme.textTheme.titleMedium?.copyWith(color: mood.accent),
+          style: theme.textTheme.titleMedium?.copyWith(
+            color: mood.accentText,
+          ),
         ),
       ],
       if (reward.card != null) ...[
@@ -139,7 +141,7 @@ class LessonCompletionBody extends StatelessWidget {
         'Best score: ${review.mastery.correct} / ${review.mastery.total}',
         textAlign: TextAlign.center,
         style: theme.textTheme.titleLarge?.copyWith(
-          color: mood.accent,
+          color: mood.accentText,
           fontWeight: FontWeight.w700,
         ),
       ),
