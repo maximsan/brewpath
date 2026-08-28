@@ -189,8 +189,7 @@ class _AppSheetRoute<T> extends ModalBottomSheetRoute<T>
     super.backgroundColor,
     super.shape,
     super.transitionAnimationController,
-  }) : barrierOverlay = overlay,
-       super(modalBarrierColor: overlay.color);
+  }) : barrierOverlay = overlay;
 
   @override
   final AppOverlay barrierOverlay;

@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 
 /// The colour half of a **mood** — the design's word for a theme.
 ///
+/// (The two veils are the exception that proves it: they are overlays rather
+/// than colours, so they carry a blur radius as well — see [veil].)
+///
 /// The design ships one token system in two moods, [cupping] (light) and
 /// [darkRoast] (dark), and every token below flips between them. They are held
 /// here rather than on [ColorScheme] because Material's vocabulary cannot hold

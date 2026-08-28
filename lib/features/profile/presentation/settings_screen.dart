@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
+import 'package:brew_path/core/widgets/overlay_barrier.dart';
 import 'package:brew_path/features/onboarding/presentation/onboarding_providers.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:brew_path/features/profile/presentation/widgets/appearance_selector.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/overlay_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -132,8 +134,9 @@ class _ResetProgressTile extends ConsumerWidget {
   }
 
   Future<void> _confirmAndReset(BuildContext context, WidgetRef ref) async {
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showOverlayDialog<bool>(
       context: context,
+      overlay: OverlayColors.dimModal,
       builder: (ctx) => AlertDialog(
         title: const Text('Reset all progress?'),
         content: const Text(
@@ -199,8 +202,9 @@ class _ResetOnboardingTile extends ConsumerWidget {
   }
 
   Future<void> _confirmAndReset(BuildContext context, WidgetRef ref) async {
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showOverlayDialog<bool>(
       context: context,
+      overlay: OverlayColors.dimModal,
       builder: (ctx) => AlertDialog(
         title: const Text('Restart onboarding?'),
         content: const Text(

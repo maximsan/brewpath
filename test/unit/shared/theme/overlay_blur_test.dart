@@ -28,9 +28,26 @@ Map<String, double> get _radiusByRole => {
 };
 
 /// The design's ruling, as one line of `ds-content.js`.
-String get _blurRuling => File('prototype/ds-content.js')
-    .readAsLinesSync()
-    .singleWhere((line) => line.contains('Blur is part of the token'));
+///
+/// Reading prose is the only way to read this rule: the design states the four
+/// radii in a sentence and nowhere else. If the sentence is reworded away, that
+/// is itself worth stopping for — the rule these tokens answer to has moved.
+String get _blurRuling {
+  final ruling = File('prototype/ds-content.js')
+      .readAsLinesSync()
+      .where((line) => line.contains('Blur is part of the token'))
+      .toList();
+
+  expect(
+    ruling,
+    hasLength(1),
+    reason:
+        'the Scrims-and-dims blur ruling is no longer one line of '
+        'prototype/ds-content.js — re-read it and re-point these tests',
+  );
+
+  return ruling.single;
+}
 
 void main() {
   group("the design's blur ruling", () {

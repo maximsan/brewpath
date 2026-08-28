@@ -10,7 +10,8 @@ import 'package:flutter/material.dart';
 /// or a `DialogTheme` can carry a barrier *colour* and nothing more, so a
 /// screen that opens a sheet through the theme alone would separate the pair
 /// that [AppOverlay] exists to keep together — which is why every sheet opens
-/// through `showAppSheet` and every dialog through [showOverlayDialog].
+/// through `showAppSheet` and every dialog through [showOverlayDialog], each
+/// with a guard test that fails the build on a modal opened any other way.
 ///
 /// Flutter's own hook is [ModalRoute.filter], which wraps the barrier in a
 /// `BackdropFilter`. Both routes the app opens inherit that field and neither
@@ -26,10 +27,16 @@ import 'package:flutter/material.dart';
 /// transition at rest on the first frame, and the barrier is simply there.
 mixin OverlayBarrier<T> on ModalRoute<T> {
   /// The overlay this route's barrier wears.
-  ///
-  /// Its colour must also be handed to the superclass as the barrier colour;
-  /// the two halves are read by different parts of the framework.
   AppOverlay get barrierOverlay;
+
+  /// Narrower than [ModalRoute.barrierColor], which is nullable: a route that
+  /// mixes this in always has an overlay, and a barrier is what it is for.
+  ///
+  /// Both halves are read off the one token here rather than passed separately
+  /// to a superclass, so a route cannot be built that dims with one overlay and
+  /// blurs with another.
+  @override
+  Color get barrierColor => barrierOverlay.color;
 
   @override
   ImageFilter? get filter => barrierOverlay.backdropFilter;
@@ -45,8 +52,7 @@ class OverlayDialogRoute<T> extends DialogRoute<T> with OverlayBarrier<T> {
     super.themes,
     super.barrierDismissible,
     super.settings,
-  }) : barrierOverlay = overlay,
-       super(barrierColor: overlay.color);
+  }) : barrierOverlay = overlay;
 
   @override
   final AppOverlay barrierOverlay;
