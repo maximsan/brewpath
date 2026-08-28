@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
+import 'package:brew_path/core/widgets/sticky_action_bar.dart';
 import 'package:brew_path/features/companion/domain/companion_reaction.dart';
 import 'package:brew_path/features/companion/presentation/companion_celebration.dart';
 import 'package:brew_path/features/learn/domain/course_completion_providers.dart';
@@ -82,21 +83,19 @@ class _CourseCompletionScreenState
       streak: streak.value ?? 0,
     );
     return Scaffold(
+      // The bar takes the bottom inset itself, so this must not consume it
+      // first — doing both pads the safe area twice.
       body: SafeArea(
-        child: Column(
-          children: [
-            // Centers when the content fits, scrolls when it does not — the
-            // moment must survive small screens and large text.
-            Expanded(
-              child: Center(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(AppSpacing.lg),
-                  child: _celebration(theme, mood, stats),
-                ),
-              ),
-            ),
-            _handOffButton(),
-          ],
+        bottom: false,
+        child: StickyActionBar(
+          label: 'Start Keep Sharp',
+          onPressed: _handOffToKeepSharp,
+          // Centres when the moment fits and scrolls when it does not, which
+          // the bar owns — the design's `margin: auto 0` on this screen.
+          content: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+            child: _celebration(theme, mood, stats),
+          ),
         ),
       ),
     );
@@ -148,24 +147,6 @@ class _CourseCompletionScreenState
           _StatRow(label: 'Cards collected', value: '${stats.cards}'),
           _StatRow(label: 'Day streak', value: '${stats.streak}'),
         ],
-      ),
-    );
-  }
-
-  Widget _handOffButton() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.lg,
-        0,
-        AppSpacing.lg,
-        AppSpacing.lg,
-      ),
-      child: SizedBox(
-        width: double.infinity,
-        child: FilledButton(
-          onPressed: _handOffToKeepSharp,
-          child: const Text('Start Keep Sharp'),
-        ),
       ),
     );
   }

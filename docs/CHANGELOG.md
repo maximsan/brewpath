@@ -44,6 +44,16 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The sticky action bar, and the course ending is the first screen on it.**
+  The design closes a scrolling screen with one pinned action over a gradient
+  that fades from the page colour to nothing, so text passes *behind* the
+  button instead of stopping above it. Six screens want it and the app had
+  none, so each was about to grow its own. There is one now, and it takes a
+  single action plus an optional quiet link — a second button is not something
+  a screen can ask it for. The Foundations ending moved onto it: its Continue
+  used to be a plain footer that content stopped dead above, and the last of a
+  long celebration is now reachable rather than pinned behind the button.
+
 - **The lesson cards are drawn the way the design draws them.** Answering a
   multiple-choice question now tints the row you picked — green for right, a
   softer red for wrong — instead of only outlining it. The opening guess of a
