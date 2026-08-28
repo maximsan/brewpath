@@ -150,6 +150,29 @@ const _sequenceRounds = <ContentCard>[
   ),
 ];
 
+/// Two rounds whose bands sit at opposite ends of the track, so a run that
+/// dragged to one place cannot score both.
+const _calibrateRounds = <ContentCard>[
+  ContentCard.slider(
+    prompt: 'How fine should you grind for espresso?',
+    leftLabel: 'FINER',
+    rightLabel: 'COARSER',
+    target: 20,
+    tolerance: 10,
+    scale: ['Powder', 'Fine — espresso', 'Table salt', 'Sea salt', 'Crumbs'],
+    feedback: 'Espresso lives at the fine end, just above powder.',
+  ),
+  ContentCard.slider(
+    prompt: 'And how coarse for a French press?',
+    leftLabel: 'FINER',
+    rightLabel: 'COARSER',
+    target: 90,
+    tolerance: 10,
+    scale: ['Powder', 'Fine — espresso', 'Table salt', 'Sea salt', 'Crumbs'],
+    feedback: 'Four minutes of immersion needs the coarsest setting.',
+  ),
+];
+
 /// The module 'Fix the cup' points at, with the words its gate sheet pitches.
 const _modules = [
   ModuleModel(
@@ -181,6 +204,7 @@ class _FakeContentRepository extends ContentRepository {
         'g-match' => _matchRounds,
         'g-bagpick' => _bagpickRounds,
         'g-sequence' => _sequenceRounds,
+        'g-calibrate' => _calibrateRounds,
         _ => const [],
       };
 }
@@ -752,11 +776,12 @@ void main() {
           : ['Pour', 'Grounds swell', 'Gas escapes'];
       final run = round == 0 ? answer.reversed.toList() : answer;
 
-      // The bank authors each round in its own answer; the card must never
-      // open in it, or the run is won by tapping down the list.
+      // That the round never *opens* in its own answer is the seeded order's
+      // rule, proved over many seeds in `sequence_order_test.dart` and wired
+      // in by `content_card_view_test.dart`. Here it only has to have drawn.
       expect(
-        find.text(answer.first).evaluate().isNotEmpty,
-        isTrue,
+        find.text(answer.first),
+        findsOneWidget,
         reason: 'the round did not draw',
       );
 
@@ -771,6 +796,38 @@ void main() {
     }
 
     // One of two ordered correctly: the run scores the runs, not the rounds.
+    expect(find.text('1 / 2'), findsOneWidget);
+    expect(find.text('Play again'), findsOneWidget);
+  });
+
+  testWidgets('g-calibrate plays round by round, and scores the settings', (
+    tester,
+  ) async {
+    // The other kind this slice built, and the only card in the app graded on
+    // a value rather than a choice — so the host's own seam to it, a control
+    // that has to be moved before it can be committed, is worth driving.
+    await _pump(tester);
+
+    await tester.tap(find.text('Dial it in'));
+    await _settle(tester);
+    await tester.tap(find.text('Play'));
+    await _settle(tester);
+
+    // Both rounds are dialled to the fine end: right for espresso, wrong for
+    // the French press, whichever order the run drew them in.
+    for (var round = 0; round < _calibrateRounds.length; round++) {
+      final rail = tester.getRect(find.byType(Slider));
+      await tester.tapAt(Offset(rail.left + rail.width / 5, rail.center.dy));
+      await _settle(tester);
+
+      await tester.tap(find.text('Check answer'));
+      await _settle(tester);
+      await tester.tap(find.text('Continue'));
+      await _settle(tester);
+    }
+
+    // One of two dialled into its band: the run scores the settings, not the
+    // rounds it reached.
     expect(find.text('1 / 2'), findsOneWidget);
     expect(find.text('Play again'), findsOneWidget);
   });

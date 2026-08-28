@@ -13,10 +13,6 @@ library;
 import 'package:brew_path/features/lessons/domain/card_seed.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 
-/// Pulls the seeded draw somewhere else when the first one lands on the answer.
-/// Any constant would do; this is the one `card_seed.dart` already mixes with.
-const int _redrawStride = 0x9E3779B1;
-
 /// The steps in the order the card opens with — seeded, and never the answer.
 ///
 /// Every other card's shuffle is cosmetic: moving four choices around cannot
@@ -40,7 +36,7 @@ List<SequenceItem> sequenceDisplayOrder(List<SequenceItem> items, int seed) {
   final first = shuffledBySeed(items, seed);
   if (!sequenceIsSolution(first)) return first;
 
-  final second = shuffledBySeed(items, seed ^ _redrawStride);
+  final second = shuffledBySeed(items, derivedSeed(seed));
   if (!sequenceIsSolution(second)) return second;
 
   return second.reversed.toList();
@@ -72,6 +68,44 @@ bool sequenceIsCorrect({
   required List<SequenceItem> tapped,
   required int total,
 }) => total > 0 && tapped.length == total && sequenceIsSolution(tapped);
+
+/// What a step's badge and tile are saying at a given moment.
+///
+/// One value rather than three booleans passed around together. `right` and
+/// `wrong` are mutually exclusive and both imply `placed`, and a triple of
+/// booleans can say otherwise — which is a state nothing draws and every
+/// switch over them has to pretend to handle.
+enum SequenceStepMark {
+  /// No position yet.
+  unplaced,
+
+  /// Given a position, with the run still open.
+  placed,
+
+  /// Committed, and it belongs where it was put.
+  right,
+
+  /// Committed, and it belongs somewhere else.
+  wrong;
+
+  /// Whether the step carries a position at all.
+  bool get isPlaced => this != unplaced;
+}
+
+/// How [item] at [position] is marked, for a run that is [submitted] or not.
+///
+/// A [position] below zero means the learner has not placed this step.
+SequenceStepMark sequenceStepMark({
+  required SequenceItem item,
+  required int position,
+  required bool submitted,
+}) {
+  if (position < 0) return SequenceStepMark.unplaced;
+  if (!submitted) return SequenceStepMark.placed;
+  return sequencePlacedRight(item: item, position: position)
+      ? SequenceStepMark.right
+      : SequenceStepMark.wrong;
+}
 
 /// The authored order, for the reveal after a wrong run.
 List<SequenceItem> sequenceSolution(List<SequenceItem> items) =>

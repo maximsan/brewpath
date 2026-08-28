@@ -11,6 +11,43 @@ const _grindScale = [
 ];
 
 void main() {
+  group('sliderBands', () {
+    test('a round reads back in the words it authored', () {
+      expect(
+        sliderBands(
+          scale: _grindScale,
+          leftLabel: 'FINER',
+          rightLabel: 'COARSER',
+        ),
+        _grindScale,
+      );
+    });
+
+    // Unreachable against today's banks — every shipped round carries a scale
+    // — and the reason it exists is that the bands are the whole point: a
+    // position on a track has to read as something concrete, and a round
+    // authored without one is exactly where that would quietly stop.
+    test('a round with none falls back to its own ends, never a number', () {
+      final bands = sliderBands(
+        scale: const [],
+        leftLabel: 'COOLER',
+        rightLabel: 'HOTTER',
+      );
+
+      expect(bands, [
+        'Very COOLER',
+        'COOLER',
+        'Middle',
+        'HOTTER',
+        'Very HOTTER',
+      ]);
+      expect(
+        sliderBandIndex(value: sliderTrackStart, bandCount: bands.length),
+        2,
+      );
+    });
+  });
+
   group('sliderBandIndex', () {
     test('reads the band a setting falls in', () {
       // The five shipped bands are 20 wide each.

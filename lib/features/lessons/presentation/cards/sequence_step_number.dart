@@ -1,3 +1,4 @@
+import 'package:brew_path/features/lessons/presentation/cards/sequence_order.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -16,19 +17,15 @@ class SequenceStepNumber extends StatelessWidget {
   /// Creates a [SequenceStepNumber].
   const SequenceStepNumber({
     required this.position,
-    required this.right,
-    required this.wrong,
+    required this.mark,
     super.key,
   });
 
   /// The one-based place this step was given, or null while it has none.
   final int? position;
 
-  /// Whether a committed run put this step where it belongs.
-  final bool right;
-
-  /// Whether a committed run put it somewhere else.
-  final bool wrong;
+  /// What the badge is saying at this moment.
+  final SequenceStepMark mark;
 
   @override
   Widget build(BuildContext context) {
@@ -51,17 +48,19 @@ class SequenceStepNumber extends StatelessWidget {
     );
   }
 
-  Color? _fill(MoodColors mood) {
-    if (right) return mood.sage;
-    if (wrong) return mood.berry;
-    return position == null ? null : mood.accent;
-  }
+  Color? _fill(MoodColors mood) => switch (mark) {
+    SequenceStepMark.unplaced => null,
+    SequenceStepMark.placed => mood.accent,
+    SequenceStepMark.right => mood.sage,
+    SequenceStepMark.wrong => mood.berry,
+  };
 
   /// Ink on the badge. A marked badge is read on a solid mood colour, so it
   /// takes the surface rather than the accent's own ink — sage and berry have
   /// no paired ink token, and the surface is what the design puts on them.
-  Color _ink(MoodColors mood) {
-    if (right || wrong) return mood.surface;
-    return position == null ? mood.inkMute : mood.accentInk;
-  }
+  Color _ink(MoodColors mood) => switch (mark) {
+    SequenceStepMark.unplaced => mood.inkMute,
+    SequenceStepMark.placed => mood.accentInk,
+    SequenceStepMark.right || SequenceStepMark.wrong => mood.surface,
+  };
 }

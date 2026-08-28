@@ -231,6 +231,41 @@ void main() {
     expect(find.byType(GrinderDialView), findsNothing);
   });
 
+  testWidgets('the card holds together on a narrow phone at large text', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      MediaQuery(
+        // The largest step iOS offers without the accessibility sizes.
+        data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+        child: MaterialApp(
+          home: Scaffold(
+            body: SingleChildScrollView(
+              child: SliderCardView(
+                card: _espressoGrind,
+                onSolved: () {},
+                onContinue: () {},
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
+    // The readout is a floor, not a fixed height: a two-line band at this size
+    // must still be readable rather than clipped.
+    expect(find.text('Table salt — moka, AeroPress'), findsOneWidget);
+    expect(find.text('FINER'), findsOneWidget);
+    expect(find.text('COARSER'), findsOneWidget);
+  });
+
   testWidgets('the verdict is announced, and the setting is spoken as a band', (
     tester,
   ) async {

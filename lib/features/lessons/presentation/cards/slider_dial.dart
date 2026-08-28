@@ -26,6 +26,26 @@ const double sliderTrackStart = 50;
 /// The span the track covers, named because the band arithmetic divides by it.
 const double sliderTrackSpan = sliderTrackMax - sliderTrackMin;
 
+/// The words a round reads its track back in.
+///
+/// Almost always the round's own `scale` — five authored descriptions, from
+/// "Powder — chokes the machine" to "Breadcrumbs — French press". Every one of
+/// the 19 shipped slider rounds carries one.
+///
+/// A round that carries none falls back to a scale built from its end labels,
+/// as the design source does, rather than to the raw number. That fallback is
+/// unreachable against today's banks and is still worth having: the point of
+/// the bands is that a position on a track "always reads as something concrete
+/// instead of a bare number", and a round authored without a scale is exactly
+/// where that would quietly stop being true.
+List<String> sliderBands({
+  required List<String> scale,
+  required String leftLabel,
+  required String rightLabel,
+}) => scale.isNotEmpty
+    ? scale
+    : ['Very $leftLabel', leftLabel, 'Middle', rightLabel, 'Very $rightLabel'];
+
 /// Which of [bandCount] descriptive bands [value] reads as.
 ///
 /// The bands divide the track evenly and are what the learner actually reads —
@@ -33,8 +53,9 @@ const double sliderTrackSpan = sliderTrackMax - sliderTrackMin;
 /// last band rather than to a band past the end of the list, which is the whole
 /// of the clamp below and the reason it is not left to the division alone.
 ///
-/// A round with no scale has no band to name, and asking for one is a
-/// programming error rather than a value to fall back on.
+/// Asking for a band out of no bands is a programming error rather than a
+/// value to fall back on — [sliderBands] is what guarantees there are always
+/// some, so a caller that reached here empty skipped it.
 int sliderBandIndex({required double value, required int bandCount}) {
   assert(bandCount > 0, 'a track with no bands has nothing to read back');
   final width = sliderTrackSpan / bandCount;

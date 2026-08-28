@@ -3,6 +3,7 @@ import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart
 import 'package:brew_path/features/lessons/presentation/cards/card_option_tile.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_tints.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_verdict.dart';
 import 'package:brew_path/features/lessons/presentation/cards/sequence_order.dart';
 import 'package:brew_path/features/lessons/presentation/cards/sequence_step_number.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
@@ -149,39 +150,41 @@ class _SequenceCardViewState extends State<SequenceCardView> {
   Widget _step(MoodColors mood, int index) {
     final item = widget.items[index];
     final position = _run.indexOf(index);
-    final placed = position >= 0;
-    final right =
-        _submitted &&
-        placed &&
-        sequencePlacedRight(item: item, position: position);
-    final wrong = _submitted && placed && !right;
+    final mark = sequenceStepMark(
+      item: item,
+      position: position,
+      submitted: _submitted,
+    );
 
     return CardOptionTile(
       onTap: _submitted ? null : () => _tap(index),
-      borderColor: switch ((right, wrong, placed)) {
-        (true, _, _) => mood.sage,
-        (_, true, _) => mood.berry,
-        (_, _, true) => mood.accent,
-        _ => null,
+      // Only a committed step marks its tile. A step merely *placed* carries
+      // its position on the badge and nothing else, as the design source has
+      // it — `.seq-item.assigned` tints the number, never the row.
+      borderColor: switch (mark) {
+        SequenceStepMark.right => mood.sage,
+        SequenceStepMark.wrong => mood.berry,
+        SequenceStepMark.unplaced || SequenceStepMark.placed => null,
       },
-      fillColor: switch ((right, wrong)) {
-        (true, _) => mood.sage.withValues(alpha: CardTints.wash),
-        (_, true) => mood.berry.withValues(alpha: CardTints.wrongWash),
-        _ => null,
+      fillColor: switch (mark) {
+        SequenceStepMark.right => mood.sage.withValues(alpha: CardTints.wash),
+        SequenceStepMark.wrong => mood.berry.withValues(
+          alpha: CardTints.wrongWash,
+        ),
+        SequenceStepMark.unplaced || SequenceStepMark.placed => null,
       },
       semanticsLabel: [
         item.label,
-        if (placed) 'position ${position + 1}',
-        if (right) 'correct',
-        if (wrong) 'belongs at ${item.order}',
+        if (mark.isPlaced) 'position ${position + 1}',
+        if (mark == SequenceStepMark.right) 'correct',
+        if (mark == SequenceStepMark.wrong) 'belongs at ${item.order}',
       ].join(', '),
       child: Row(
         spacing: AppSpacing.sm,
         children: [
           SequenceStepNumber(
-            position: placed ? position + 1 : null,
-            right: right,
-            wrong: wrong,
+            position: mark.isPlaced ? position + 1 : null,
+            mark: mark,
           ),
           Expanded(
             child: Text(
@@ -191,47 +194,40 @@ class _SequenceCardViewState extends State<SequenceCardView> {
           ),
           // Muted rather than berry: the row is already marked, and a second
           // red thing on it would read as a second fault.
-          if (wrong)
+          if (mark == SequenceStepMark.wrong)
             Text('GOES #${item.order}', style: AppText.micro(mood: mood)),
         ],
       ),
     );
   }
 
-  /// What the run came to, announced as its own region — the step marks say
-  /// where each one sat, and only this line says whether the round was passed.
-  List<Widget> _verdict(MoodColors mood) {
-    final verdict = _wasCorrect ? _inOrder : _notQuite;
-    return [
-      Semantics(
-        liveRegion: true,
-        label: verdict,
-        excludeSemantics: true,
-        child: Text(
-          verdict,
-          style: AppText.label(
-            mood: mood,
-            color: _wasCorrect ? mood.sage : mood.berry,
-          ),
+  /// What the run came to. The step marks say where each one sat; only this
+  /// says whether the round was passed.
+  ///
+  /// The reveal follows either way, as the design source has it: a learner who
+  /// got it right still leaves the round with the order written out.
+  List<Widget> _verdict(MoodColors mood) => [
+    CardVerdict(
+      verdict: _wasCorrect ? _inOrder : _notQuite,
+      wasCorrect: _wasCorrect,
+      children: [
+        Text(
+          _wasCorrect ? _nailedIt : _wrongOrder,
+          style: AppText.body(mood: mood),
         ),
-      ),
-      const SizedBox(height: AppSpacing.xxs),
-      Text(
-        _wasCorrect ? _nailedIt : _wrongOrder,
-        style: AppText.body(mood: mood),
-      ),
-      const SizedBox(height: AppSpacing.sm),
-      Text(
-        _correctOrder,
-        style: AppText.label(mood: mood, color: mood.sage),
-      ),
-      const SizedBox(height: AppSpacing.xxs),
-      Text(
-        [
-          for (final item in sequenceSolution(widget.items)) item.label,
-        ].join(_arrow),
-        style: AppText.support(mood: mood, color: mood.ink),
-      ),
-    ];
-  }
+        const SizedBox(height: AppSpacing.sm),
+        Text(
+          _correctOrder,
+          style: AppText.label(mood: mood, color: mood.sage),
+        ),
+        const SizedBox(height: AppSpacing.xxs),
+        Text(
+          [
+            for (final item in sequenceSolution(widget.items)) item.label,
+          ].join(_arrow),
+          style: AppText.support(mood: mood, color: mood.ink),
+        ),
+      ],
+    ),
+  ];
 }

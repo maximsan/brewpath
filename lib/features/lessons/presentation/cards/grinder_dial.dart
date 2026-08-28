@@ -58,6 +58,10 @@ const double _passedSlack = 0.5;
 /// clicks because that is the unit the part itself is marked in.
 const int grinderClickSpan = 30;
 
+/// Degrees to radians, so the trigonometry below names its conversion rather
+/// than spelling `/ 180` at each call.
+const double _radiansPerDegree = math.pi / 180;
+
 /// Contact shadow, drawn under the cylinder.
 const double _shadowDrop = 16;
 const double _shadowScaleX = 0.82;
@@ -93,7 +97,7 @@ int grinderClicks(double value) =>
 
 /// A point on the ellipse at [degrees], scaled toward the centre by [scale].
 Offset _pointAt(double degrees, {double scale = 1}) {
-  final radians = degrees * math.pi / 180;
+  final radians = degrees * _radiansPerDegree;
   return Offset(
     grinderCentre.dx + _radiusX * scale * math.cos(radians),
     grinderCentre.dy + _radiusY * scale * math.sin(radians),
@@ -138,20 +142,21 @@ class GrinderTick {
   int get hashCode => Object.hash(outer, inner, passed);
 }
 
+/// The tick at [index], lit if the marker at [markerDegrees] has reached it.
+GrinderTick _tickAt(int index, double markerDegrees) {
+  final degrees = _startDegrees + (index / (_tickCount - 1)) * _sweepDegrees;
+  return GrinderTick(
+    outer: _pointAt(degrees),
+    inner: _pointAt(degrees, scale: _tickInnerScale),
+    passed: degrees <= markerDegrees + _passedSlack,
+  );
+}
+
 /// Every tick on the arc, in sweep order, marked against [value].
 List<GrinderTick> grinderTicks(double value) {
   final marker = _markerDegrees(value);
   return [
-    for (var index = 0; index < _tickCount; index++)
-      () {
-        final degrees =
-            _startDegrees + (index / (_tickCount - 1)) * _sweepDegrees;
-        return GrinderTick(
-          outer: _pointAt(degrees),
-          inner: _pointAt(degrees, scale: _tickInnerScale),
-          passed: degrees <= marker + _passedSlack,
-        );
-      }(),
+    for (var index = 0; index < _tickCount; index++) _tickAt(index, marker),
   ];
 }
 

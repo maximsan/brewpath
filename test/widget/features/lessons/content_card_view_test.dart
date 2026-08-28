@@ -1022,6 +1022,49 @@ void main() {
     });
   });
 
+  group('the sequence arm hands the card a scrambled order', () {
+    // The dispatch is where the shuffle guard is wired in, and a sequence
+    // round is the one kind whose shuffle can hand the learner the answer:
+    // the bank authors every round in its own correct order. The rule itself
+    // is unit-tested; this is the wiring, which a widget test is the only
+    // place to see.
+    const journey = ContentCard.sequence(
+      prompt: 'Order the journey from farm to cup',
+      items: [
+        SequenceItem(label: 'Pick the cherry', order: 1),
+        SequenceItem(label: 'Process and dry', order: 2),
+        SequenceItem(label: 'Roast', order: 3),
+      ],
+    );
+
+    /// The steps as the built card lays them out, top to bottom.
+    List<String> shownOrder(WidgetTester tester) => [
+      for (final text in tester.widgetList<Text>(find.byType(Text)))
+        if (text.data != null &&
+            const [
+              'Pick the cherry',
+              'Process and dry',
+              'Roast',
+            ].contains(text.data))
+          text.data!,
+    ];
+
+    testWidgets('never opens a round already solved, at any nonce', (
+      tester,
+    ) async {
+      for (var nonce = 1; nonce <= 30; nonce++) {
+        await tester.pumpWidget(const SizedBox.shrink());
+        await tester.pumpWidget(_host(journey, _Signals(), nonce: nonce));
+
+        expect(
+          shownOrder(tester),
+          isNot(['Pick the cherry', 'Process and dry', 'Roast']),
+          reason: 'nonce $nonce opened the round in its own answer',
+        );
+      }
+    });
+  });
+
   group('hasRenderer agrees with what contentCardView actually builds', () {
     // Two exhaustive switches over the same sealed union. Adding a kind breaks
     // both, but nothing stops the two from disagreeing about a kind they both

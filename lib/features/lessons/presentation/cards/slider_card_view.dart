@@ -2,6 +2,7 @@ import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_verdict.dart';
 import 'package:brew_path/features/lessons/presentation/cards/grinder_dial_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/slider_dial.dart';
 import 'package:brew_path/features/lessons/presentation/cards/slider_track.dart';
@@ -25,9 +26,14 @@ const String _notQuite = 'NOT QUITE';
 const String _yourSetting = 'Your setting';
 const String _target = 'Target';
 
-/// Fixed height for that readout, so committing an answer never shifts the
-/// track out from under the learner's finger.
-const double _readoutHeight = 58;
+/// Floor under the readout, so committing an answer never shifts the track out
+/// from under the learner's finger.
+///
+/// A floor rather than a fixed height, as the design source has it: the two
+/// readings are one and two lines at the shipped text size, and at a large one
+/// they are longer. A fixed height would hold the track still by clipping the
+/// answer.
+const double _readoutMinHeight = 58;
 
 /// Calibrate: drag to a value, then check it against a target band.
 ///
@@ -74,13 +80,22 @@ class _SliderCardViewState extends State<SliderCardView> {
     tolerance: _card.tolerance,
   );
 
+  /// The band this round accepts, as a span of the track.
+  ({double start, double width}) get _zone =>
+      sliderTargetZone(target: _card.target, tolerance: _card.tolerance);
+
+  /// The words this round reads its track back in.
+  List<String> get _bands => sliderBands(
+    scale: _card.scale,
+    leftLabel: _card.leftLabel,
+    rightLabel: _card.rightLabel,
+  );
+
   /// What [value] reads as on this round's own scale.
-  String _band(double value) => _card.scale.isEmpty
-      ? '${value.round()}'
-      : _card.scale[sliderBandIndex(
-          value: value,
-          bandCount: _card.scale.length,
-        )];
+  String _band(double value) {
+    final bands = _bands;
+    return bands[sliderBandIndex(value: value, bandCount: bands.length)];
+  }
 
   void _drag(double value) => setState(() {
     _value = value;
@@ -121,12 +136,7 @@ class _SliderCardViewState extends State<SliderCardView> {
         SliderTrack(
           value: _value,
           onChanged: _checked ? null : _drag,
-          zone: _checked
-              ? sliderTargetZone(
-                  target: _card.target,
-                  tolerance: _card.tolerance,
-                )
-              : null,
+          zone: _checked ? _zone : null,
           readValue: _band,
         ),
         _endLabels(mood),
@@ -141,8 +151,8 @@ class _SliderCardViewState extends State<SliderCardView> {
   /// committed claim. After it, it states the *target's* band beside the band
   /// drawn on the track directly below, so the answer is read where the eye
   /// already is and the range is never stated twice on one screen.
-  Widget _readout(MoodColors mood) => SizedBox(
-    height: _readoutHeight,
+  Widget _readout(MoodColors mood) => ConstrainedBox(
+    constraints: const BoxConstraints(minHeight: _readoutMinHeight),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.end,
@@ -169,17 +179,22 @@ class _SliderCardViewState extends State<SliderCardView> {
   /// Which way the track runs, marked at both ends.
   Widget _endLabels(MoodColors mood) => Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      _endLabel(mood, _card.leftLabel, pointsLeft: true),
-      _endLabel(mood, _card.rightLabel, pointsLeft: false),
+      Flexible(child: _endLabel(mood, _card.leftLabel, pointsLeft: true)),
+      Flexible(child: _endLabel(mood, _card.rightLabel, pointsLeft: false)),
     ],
   );
 
   Widget _endLabel(MoodColors mood, String text, {required bool pointsLeft}) {
     final mark = IconMark(AppIcon.arrow, color: mood.ink);
-    final label = Text(
-      text,
-      style: AppText.label(mood: mood, color: mood.ink),
+    // Flexible, because the two ends share one row: at a large text size
+    // COARSER and FINER would otherwise run into each other rather than wrap.
+    final label = Flexible(
+      child: Text(
+        text,
+        style: AppText.label(mood: mood, color: mood.ink),
+      ),
     );
 
     return Row(
@@ -191,27 +206,14 @@ class _SliderCardViewState extends State<SliderCardView> {
     );
   }
 
-  /// What the setting came to, announced as its own region — the marks on the
-  /// track say where things sit, and only this line says whether the round was
-  /// passed.
-  List<Widget> _verdict(MoodColors mood) {
-    final verdict = _within ? _dialedIn : _notQuite;
-    return [
-      const SizedBox(height: AppSpacing.md),
-      Semantics(
-        liveRegion: true,
-        label: verdict,
-        excludeSemantics: true,
-        child: Text(
-          verdict,
-          style: AppText.label(
-            mood: mood,
-            color: _within ? mood.sage : mood.berry,
-          ),
-        ),
-      ),
-      const SizedBox(height: AppSpacing.xxs),
-      Text(_card.feedback, style: AppText.body(mood: mood)),
-    ];
-  }
+  /// What the setting came to. The band on the track says where the answer
+  /// sat; only this says whether the round was passed.
+  List<Widget> _verdict(MoodColors mood) => [
+    const SizedBox(height: AppSpacing.md),
+    CardVerdict(
+      verdict: _within ? _dialedIn : _notQuite,
+      wasCorrect: _within,
+      children: [Text(_card.feedback, style: AppText.body(mood: mood))],
+    ),
+  ];
 }

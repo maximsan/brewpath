@@ -126,9 +126,10 @@ You can always edit this file by hand instead — the helpers just save effort.
   reported. Grind rounds draw the grinder's own collar above the track, counting
   clicks as the setting moves. Sequence rounds play too: tap the steps into
   order, take one back out if you change your mind and the rest renumber,
-  submit, and see which places were right — with the whole correct order shown
-  when the run was not. Both grade all-or-nothing and pay once, like every other
-  graded card, and both react inside the card when the answer is wrong.
+  submit, and see which places were right — a misplaced step says where it
+  belonged, and the whole correct order is spelled out either way. Both grade
+  all-or-nothing and pay once, like every other graded card, and both react
+  inside the card when the answer is wrong.
 
   A sequence round is authored in its own answer, so the opening order is drawn
   from the run's seed **and checked against the solution** — no round can open
