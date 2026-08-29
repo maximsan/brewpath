@@ -1,8 +1,13 @@
-/// Every word Settings and the four screens behind it say.
+/// The words Settings and the four screens behind it are **built from** — the
+/// section headings, the row labels, the titles, and About's own copy.
 ///
 /// Held together the way `AppGuideCopy` and `TourCopy` are: the design owns
 /// these strings (`prototype/screens.jsx`, `prototype/settings.jsx`), and a
 /// screen that spelled its own would be a second place to change them.
+///
+/// Not *every* string on the surface: the two confirmation dialogs keep their
+/// copy beside the action they confirm, where the wording and the consequence
+/// can only be read together.
 abstract final class SettingsCopy {
   /// The screen's own name.
   static const title = 'Settings';

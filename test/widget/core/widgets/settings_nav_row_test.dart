@@ -12,7 +12,7 @@ import 'package:flutter_test/flutter_test.dart';
 /// makes this a component rather than a `ListTile` call with different
 /// arguments.
 /// A node a screen reader announces as a button.
-final Matcher _isButton = containsSemantics(isButton: true);
+final Matcher _isButton = isSemantics(isButton: true);
 
 void main() {
   Future<void> pump(WidgetTester tester, Widget row) => tester.pumpWidget(

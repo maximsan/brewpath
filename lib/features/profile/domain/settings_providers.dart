@@ -71,11 +71,21 @@ class SettingsController extends _$SettingsController {
 }
 
 /// The current app version string, formatted as `x.y.z+build`.
+///
+/// The build number is for the person reading a crash report, so it belongs on
+/// About beside the rest of the fine print — not in the signature line that
+/// closes Settings, which the design writes as a version alone.
 @riverpod
 Future<String> appVersion(Ref ref) async {
   final info = await PackageInfo.fromPlatform();
   return '${info.version}+${info.buildNumber}';
 }
+
+/// The marketing version alone, as the design's closing line prints it —
+/// `v0.1` (`prototype/screens.jsx:559`).
+@riverpod
+Future<String> appVersionShort(Ref ref) async =>
+    'v${(await PackageInfo.fromPlatform()).version}';
 
 /// Wipes the learner's progress and rebuilds the screens that showed it.
 ///

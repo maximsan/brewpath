@@ -1,22 +1,16 @@
-import 'dart:async';
-
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
-import 'package:brew_path/core/widgets/overlay_barrier.dart';
 import 'package:brew_path/core/widgets/settings_nav_row.dart';
-import 'package:brew_path/features/onboarding/presentation/onboarding_providers.dart';
 import 'package:brew_path/features/profile/domain/daily_reminder.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
+import 'package:brew_path/features/profile/presentation/settings/settings_confirmations.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
-import 'package:brew_path/features/profile/presentation/settings/settings_destinations.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_sub_screen.dart';
 import 'package:brew_path/features/profile/presentation/widgets/appearance_selector.dart';
 import 'package:brew_path/features/profile/presentation/widgets/daily_reminder_sheet.dart';
 import 'package:brew_path/shared/storage/settings_record.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
-import 'package:brew_path/shared/theme/mood_colors.dart';
-import 'package:brew_path/shared/theme/overlay_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -46,7 +40,7 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsControllerProvider);
-    final version = ref.watch(appVersionProvider);
+    final version = ref.watch(appVersionShortProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -59,6 +53,11 @@ class SettingsScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.only(bottom: AppSpacing.xl),
         children: [
+          // The design draws the name twice: once in the bar, once as the
+          // display heading the sections hang under
+          // (`prototype/screens.jsx:523`). The four screens behind this one do
+          // the same, through `SettingsSubScreen`.
+          const SettingsScreenHeading(title: SettingsCopy.title),
           const SettingsSection(
             label: SettingsCopy.appearanceSection,
             children: [AppearanceSelector()],
@@ -199,99 +198,13 @@ class _DestructiveRows extends ConsumerWidget {
       SettingsNavRow(
         label: SettingsCopy.resetProgressRow,
         isDestructive: true,
-        onTap: () => _confirmReset(context, ref),
+        onTap: () => confirmResetProgress(context, ref),
       ),
       SettingsNavRow(
         label: SettingsCopy.restartOnboardingRow,
         isDestructive: true,
-        onTap: () => _confirmRestartOnboarding(context, ref),
+        onTap: () => confirmRestartOnboarding(context, ref),
       ),
     ],
   );
-}
-
-/// Asks before wiping progress, then wipes it and says so.
-Future<void> _confirmReset(BuildContext context, WidgetRef ref) async {
-  final confirmed = await showOverlayDialog<bool>(
-    context: context,
-    overlay: OverlayColors.dimModal,
-    builder: (ctx) => AlertDialog(
-      title: const Text('Reset all progress?'),
-      content: const Text(
-        'This will remove your completed lessons, points, streak, '
-        'unlocked cards, and all local progress. '
-        'This action cannot be undone.',
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(ctx, false),
-          child: const Text('Cancel'),
-        ),
-        TextButton(
-          style: TextButton.styleFrom(foregroundColor: ctx.mood.berry),
-          onPressed: () => Navigator.pop(ctx, true),
-          child: const Text('Reset'),
-        ),
-      ],
-    ),
-  );
-
-  if (confirmed != true) return;
-  if (!context.mounted) return;
-  final messenger = ScaffoldMessenger.of(context);
-  final mood = context.mood;
-  await resetProgress(ref);
-  messenger
-    ..hideCurrentMaterialBanner()
-    ..showMaterialBanner(
-      MaterialBanner(
-        content: const Text('Progress reset.'),
-        leading: IconMark(AppIcon.check, color: mood.accent),
-        backgroundColor: mood.surface,
-        actions: [
-          TextButton(
-            onPressed: messenger.hideCurrentMaterialBanner,
-            child: const Text('Dismiss'),
-          ),
-        ],
-      ),
-    );
-  Timer(const Duration(seconds: 2), messenger.hideCurrentMaterialBanner);
-}
-
-/// Clears the onboarding gate and returns to Welcome. Points, streak and
-/// collected cards are untouched — that is [_confirmReset]'s job.
-Future<void> _confirmRestartOnboarding(
-  BuildContext context,
-  WidgetRef ref,
-) async {
-  final confirmed = await showOverlayDialog<bool>(
-    context: context,
-    overlay: OverlayColors.dimModal,
-    builder: (ctx) => AlertDialog(
-      title: const Text('Restart onboarding?'),
-      content: const Text(
-        "You'll go back through the Welcome screen and pick your goal and "
-        'brewer again. Your points, streak, and collected cards stay as they '
-        'are.',
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(ctx, false),
-          child: const Text('Cancel'),
-        ),
-        TextButton(
-          onPressed: () => Navigator.pop(ctx, true),
-          child: const Text('Restart'),
-        ),
-      ],
-    ),
-  );
-
-  if (confirmed != true) return;
-  if (!context.mounted) return;
-  await ref.read(onboardingRepositoryProvider).resetOnboarding();
-  ref.invalidate(onboardingCompletedProvider);
-  if (!context.mounted) return;
-  context.goNamed(AppRoutes.welcome.name);
 }

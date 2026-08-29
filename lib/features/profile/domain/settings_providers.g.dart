@@ -90,7 +90,7 @@ final class SettingsControllerProvider
 }
 
 String _$settingsControllerHash() =>
-    r'e999eb8ac20d0515480ec25250339cd17903977c';
+    r'3556807372026ce73ece41f3075efe5288e618a5';
 
 /// Mutable settings state for the Profile screen. Class form because the
 /// haptics/sound toggles mutate and persist state (per CLAUDE.md provider
@@ -116,16 +116,28 @@ abstract class _$SettingsController extends $AsyncNotifier<UserSettingsRecord> {
 }
 
 /// The current app version string, formatted as `x.y.z+build`.
+///
+/// The build number is for the person reading a crash report, so it belongs on
+/// About beside the rest of the fine print — not in the signature line that
+/// closes Settings, which the design writes as a version alone.
 
 @ProviderFor(appVersion)
 final appVersionProvider = AppVersionProvider._();
 
 /// The current app version string, formatted as `x.y.z+build`.
+///
+/// The build number is for the person reading a crash report, so it belongs on
+/// About beside the rest of the fine print — not in the signature line that
+/// closes Settings, which the design writes as a version alone.
 
 final class AppVersionProvider
     extends $FunctionalProvider<AsyncValue<String>, String, FutureOr<String>>
     with $FutureModifier<String>, $FutureProvider<String> {
   /// The current app version string, formatted as `x.y.z+build`.
+  ///
+  /// The build number is for the person reading a crash report, so it belongs on
+  /// About beside the rest of the fine print — not in the signature line that
+  /// closes Settings, which the design writes as a version alone.
   AppVersionProvider._()
     : super(
         from: null,
@@ -152,3 +164,44 @@ final class AppVersionProvider
 }
 
 String _$appVersionHash() => r'9634514c60acb1f79941bdacd697f695d6621e0c';
+
+/// The marketing version alone, as the design's closing line prints it —
+/// `v0.1` (`prototype/screens.jsx:559`).
+
+@ProviderFor(appVersionShort)
+final appVersionShortProvider = AppVersionShortProvider._();
+
+/// The marketing version alone, as the design's closing line prints it —
+/// `v0.1` (`prototype/screens.jsx:559`).
+
+final class AppVersionShortProvider
+    extends $FunctionalProvider<AsyncValue<String>, String, FutureOr<String>>
+    with $FutureModifier<String>, $FutureProvider<String> {
+  /// The marketing version alone, as the design's closing line prints it —
+  /// `v0.1` (`prototype/screens.jsx:559`).
+  AppVersionShortProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'appVersionShortProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$appVersionShortHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<String> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<String> create(Ref ref) {
+    return appVersionShort(ref);
+  }
+}
+
+String _$appVersionShortHash() => r'c8b0082d7131d96888692811933d9281cc0fb459';

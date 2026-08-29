@@ -4,7 +4,7 @@ import 'package:brew_path/core/widgets/settings_nav_row.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/profile/domain/daily_reminder.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
-import 'package:brew_path/features/profile/presentation/settings/settings_destinations.dart';
+import 'package:brew_path/features/profile/presentation/settings/settings_sub_screen.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/repositories/card_repository.dart';
 import 'package:brew_path/shared/repositories/progress_repository.dart';
@@ -58,7 +58,11 @@ void main() {
     await openSettings(tester);
 
     expect(find.byType(SettingsVersionLine), findsOneWidget);
-    expect(find.textContaining('1.0.0+1'), findsOneWidget);
+    // The design's line is a version, not a build: `BrewPath · v0.1 · …`
+    // (`prototype/screens.jsx:559`). The build number belongs on About, with
+    // the rest of the fine print.
+    expect(find.textContaining('V1.0.0'), findsOneWidget);
+    expect(find.textContaining('+1'), findsNothing);
   });
 
   testWidgets('draws no leading icon on any settings row', (tester) async {

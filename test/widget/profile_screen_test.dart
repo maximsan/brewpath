@@ -44,11 +44,14 @@ void main() {
       findsOneWidget,
     );
 
-    // Customize tiles.
+    // Customize tiles. The reminder and the theme used to sit here reading
+    // "Soon"; both ship in Settings now, so a tile promising them would be
+    // offering a learner something they already have (#395).
     expect(find.text('Sound'), findsOneWidget);
     expect(find.text('Haptics'), findsOneWidget);
-    expect(find.text('Daily reminder'), findsOneWidget);
-    expect(find.text('Theme'), findsOneWidget);
+    expect(find.text('Daily reminder'), findsNothing);
+    expect(find.text('Theme'), findsNothing);
+    expect(find.text('Soon'), findsNothing);
   });
 
   testWidgets('carries no paywall pitch — the design has no slot for one', (
@@ -100,7 +103,10 @@ void main() {
     await tester.tap(findMark(AppIcon.gear));
     await settleLoaders(tester);
 
-    expect(find.text(SettingsCopy.title), findsOneWidget);
+    // Twice: the bar, and the display heading the sections hang under — which
+    // is how the design draws every one of these screens
+    // (`prototype/screens.jsx:523`).
+    expect(find.text(SettingsCopy.title), findsNWidgets(2));
     expect(find.text(SettingsCopy.resetProgressRow), findsOneWidget);
   });
 }

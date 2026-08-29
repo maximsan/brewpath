@@ -15,6 +15,7 @@ library;
 
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/settings_nav_row.dart';
+import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_sub_screen.dart';
@@ -102,6 +103,13 @@ class AboutScreen extends ConsumerWidget {
     return SettingsSubScreen(
       title: SettingsCopy.aboutTitle,
       children: [
+        // The design's brand block: the kicker under the app's name, then what
+        // the app is (`prototype/settings.jsx:308-315`).
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+          child: SmallcapsLabel(SettingsCopy.aboutTagline),
+        ),
+        const SizedBox(height: AppSpacing.sm),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
           child: Text(
@@ -116,49 +124,6 @@ class AboutScreen extends ConsumerWidget {
         const SizedBox(height: AppSpacing.lg),
         SettingsVersionLine(version: version.asData?.value),
       ],
-    );
-  }
-}
-
-/// The centred mono line that closes Settings and About.
-///
-/// The design ends both screens this way rather than with a labelled row: the
-/// app's name, its version and [SettingsCopy.versionTagline], separated by
-/// middots (`prototype/screens.jsx:559`) — mono smallcaps, centred, in muted
-/// ink. The app had it as an `About` section with a stock info glyph on a
-/// `ListTile`, which is a row where the design has a signature.
-///
-/// The line is not spelled out here: the glossary guard reads comments too,
-/// and the tagline is the one phrase it allows by name.
-class SettingsVersionLine extends StatelessWidget {
-  /// Creates the version line for [version].
-  const SettingsVersionLine({required this.version, super.key});
-
-  /// The version string, or null while it is still being read.
-  final String? version;
-
-  /// Shown while `package_info` is still answering — the line's shape without
-  /// a number it does not have yet.
-  static const _pendingVersion = '—';
-
-  @override
-  Widget build(BuildContext context) {
-    final mood = context.mood;
-    final line =
-        'BrewPath · ${version ?? _pendingVersion} · '
-        '${SettingsCopy.versionTagline}';
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
-      child: Semantics(
-        label: line,
-        excludeSemantics: true,
-        child: Text(
-          line.toUpperCase(),
-          textAlign: TextAlign.center,
-          style: AppText.micro(mood: mood, color: mood.inkMute),
-        ),
-      ),
     );
   }
 }
