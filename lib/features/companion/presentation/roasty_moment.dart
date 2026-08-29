@@ -27,15 +27,15 @@ class RoastyMoment extends StatefulWidget {
     required this.eyebrow,
     required this.title,
     required this.onDone,
-    this.hold = defaultHold,
     super.key,
   });
 
   /// How long the beat holds before it hands over on its own.
   ///
-  /// The design's `autoMs`. The module ending holds slightly longer; a caller
-  /// that needs that passes it.
-  static const Duration defaultHold = Duration(milliseconds: 2000);
+  /// The design's `autoMs`. One value, not a parameter: the module ending
+  /// holds slightly longer, and the caller that needs that can widen this when
+  /// it arrives rather than the slot waiting empty for it.
+  static const Duration hold = Duration(milliseconds: 2000);
 
   /// The one-shot the companion plays as the beat opens.
   final CompanionReaction reaction;
@@ -48,9 +48,6 @@ class RoastyMoment extends StatefulWidget {
 
   /// Called once, when the beat is over — by the timer or by a tap.
   final VoidCallback onDone;
-
-  /// How long the beat holds.
-  final Duration hold;
 
   /// The companion's rendered size in the beat.
   static const double companionSize = 184;
@@ -65,7 +62,7 @@ class _RoastyMomentState extends State<RoastyMoment>
   /// take it away.
   late final AnimationController _controller = AnimationController(
     vsync: this,
-    duration: widget.hold,
+    duration: RoastyMoment.hold,
   );
 
   Timer? _timer;
@@ -74,7 +71,7 @@ class _RoastyMomentState extends State<RoastyMoment>
   @override
   void initState() {
     super.initState();
-    _timer = Timer(widget.hold, _finish);
+    _timer = Timer(RoastyMoment.hold, _finish);
   }
 
   @override
@@ -151,7 +148,7 @@ class _RoastyMomentState extends State<RoastyMoment>
           builder: (context, companion, _) => companion,
         ),
         const SizedBox(height: AppSpacing.xs),
-        SmallcapsLabel(widget.eyebrow, color: mood.accent),
+        SmallcapsLabel(widget.eyebrow, color: mood.accentText),
         const SizedBox(height: AppSpacing.sm),
         ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: _titleWidth),
@@ -165,7 +162,7 @@ class _RoastyMomentState extends State<RoastyMoment>
     ),
   );
 
-  /// The countdown rail. Held at empty rather than full under reduced motion:
+  /// The countdown. Held at empty rather than full under reduced motion:
   /// the beat still ends on its own, and a full bar would say it already had.
   Widget _bar(MoodColors mood, {required bool animate}) => ClipRRect(
     borderRadius: BorderRadius.circular(_barHeight),
@@ -190,13 +187,13 @@ class _RoastyMomentState extends State<RoastyMoment>
     ),
   );
 
-  /// The rail's gutter — the design's `left: 32; right: 32`.
+  /// The countdown's gutter — the design's `left: 32; right: 32`.
   static const double _barInset = AppSpacing.xl;
 
-  /// How far the rail sits off the bottom.
+  /// How far the countdown sits off the bottom.
   static const double _barBottom = 40;
 
-  /// The rail's own thickness.
+  /// The countdown's own thickness.
   static const double _barHeight = 3;
 
   /// The headline's measure, so a long title wraps rather than running the

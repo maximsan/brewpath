@@ -27,16 +27,6 @@ class CompletionLink {
 
   /// Where it goes.
   final RouteDestination destination;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is CompletionLink &&
-          other.label == label &&
-          other.destination == destination;
-
-  @override
-  int get hashCode => Object.hash(label, destination);
 }
 
 /// One primary action and at most one quiet link — the shape the shared
@@ -67,9 +57,16 @@ class CompletionActions {
 ///
 /// **Three rules, in this order.**
 ///
-/// 1. A run that closed its module continues to that module's own recap.
-///    The design has no lesson-level word for this moment because it hands the
-///    module its own screen, so the neutral `Continue` stands.
+/// 1. A run that closed its module continues to that module's own recap,
+///    under whatever [continueLabel] the caller hands in. **Open, not
+///    settled:** the design gives the lesson ending no word for this moment
+///    because it routes a closed module to its own screen, so the app's
+///    existing neutral label is carried forward rather than invented over.
+///    The module ending's beat structure is [#230]'s and [#384]'s, and the
+///    label belongs with it.
+///
+/// [#230]: https://github.com/maximsan/brewpath/issues/230
+/// [#384]: https://github.com/maximsan/brewpath/issues/384
 /// 2. Otherwise the action is the next lesson when one is playable, and
 ///    [backToPathLabel] when the course has nothing left queued.
 /// 3. The quiet link is the weak run's practice invitation where there is one,
@@ -84,7 +81,7 @@ CompletionActions completionActions({
   String? nextLessonId,
   String? moduleSummaryId,
 }) {
-  final practice = band == MasteryBand.needsPractice
+  final practice = (band?.invitesPractice ?? false)
       ? CompletionLink(
           label: practiceAgainLabel,
           destination: lessonRun(lessonId),

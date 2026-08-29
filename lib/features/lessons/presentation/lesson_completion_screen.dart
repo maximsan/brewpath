@@ -132,7 +132,7 @@ class _LessonCompletionScreenState
             ? CompanionReaction.moduleComplete
             : CompanionReaction.lessonComplete,
         eyebrow: completionEyebrow(isReplay: reward.result.isReplay),
-        title: completionBeatTitle(reward.result.mastery.band),
+        title: completionBeatTitle(widget.mastery.band),
         onDone: () {
           if (mounted) setState(() => _beatDone = true);
         },
@@ -157,14 +157,19 @@ class _LessonCompletionScreenState
     );
   }
 
+  /// The screen reports **the run that reached it**, which on a replay is not
+  /// the stored best: `LessonFinishResult.mastery` is the never-downgraded
+  /// record, and the design prints the run (`prototype/rewards.jsx:57-73`).
+  /// Every band-driven surface below therefore reads `widget.mastery`.
   Widget _content(LessonCompletionReward reward) => LessonCompletionBody(
     lessonId: widget.lessonId,
     lessonTitle: reward.lesson.title,
+    mastery: widget.mastery,
     reward: reward,
     actions: completionActions(
       lessonId: widget.lessonId,
       continueLabel: AppLabels.continueLabel,
-      band: reward.result.mastery.band,
+      band: widget.mastery.band,
       nextLessonId: reward.nextLessonId,
       moduleSummaryId: reward.result.moduleCompleted ? _moduleId : null,
     ),

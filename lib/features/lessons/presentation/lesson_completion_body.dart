@@ -6,6 +6,7 @@ import 'package:brew_path/features/lessons/presentation/lesson_completion_beat.d
 import 'package:brew_path/features/lessons/presentation/lesson_completion_header.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_rail.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_reward.dart';
+import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 
@@ -20,6 +21,7 @@ class LessonCompletionBody extends StatelessWidget {
   const LessonCompletionBody({
     required this.lessonId,
     required this.lessonTitle,
+    required this.mastery,
     required this.reward,
     required this.actions,
     super.key,
@@ -30,6 +32,14 @@ class LessonCompletionBody extends StatelessWidget {
 
   /// Its name, which is the screen's headline.
   final String lessonTitle;
+
+  /// **This run's** graded result — not the stored best.
+  ///
+  /// The two differ on a replay, and the design reports the run
+  /// (`prototype/rewards.jsx:57-73`). Showing the best instead would tell a
+  /// learner who has just played badly that they did well, and would withhold
+  /// the chip and the practice invitation from the exact run that earned them.
+  final MasteryResult mastery;
 
   /// What the run recorded, plus any card it unlocked.
   final LessonCompletionReward reward;
@@ -65,7 +75,7 @@ class LessonCompletionBody extends StatelessWidget {
                 isReplay: reward.result.isReplay,
               ),
               title: lessonTitle,
-              mastery: reward.result.mastery,
+              mastery: mastery,
             ),
             const SizedBox(height: AppSpacing.xl),
             LessonCompletionRail(

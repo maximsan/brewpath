@@ -104,7 +104,7 @@ Widget _app(Widget home) => MaterialApp(
 
 /// Taps past the opening beat and settles onto the content behind it.
 ///
-/// The beat hands over on its own after [RoastyMoment.defaultHold]; tapping is
+/// The beat hands over on its own after [RoastyMoment.hold]; tapping is
 /// what a learner who does not want to wait does, and asserting it here keeps
 /// the skip working.
 Future<void> skipBeat(WidgetTester tester) async {
@@ -345,7 +345,10 @@ void main() {
       await qualifyDaysBefore(tester, freezeEarnDays - 1);
       await pumpCompletion(tester, container);
 
-      expect(find.text(LessonCompletionRail.freezeKicker), findsOneWidget);
+      expect(
+        find.text(LessonCompletionRail.freezeKicker.toUpperCase()),
+        findsOneWidget,
+      );
       expect(find.text(LessonCompletionRail.freezeSupport), findsOneWidget);
     });
 
@@ -358,7 +361,10 @@ void main() {
       await qualifyDaysBefore(tester, freezeEarnDays - 2);
       await pumpCompletion(tester, container);
 
-      expect(find.text(LessonCompletionRail.freezeKicker), findsNothing);
+      expect(
+        find.text(LessonCompletionRail.freezeKicker.toUpperCase()),
+        findsNothing,
+      );
     });
   });
 
@@ -457,7 +463,10 @@ void main() {
     expect(find.textContaining('+25'), findsNothing);
     // The module's reward is the card, on the rail under its own kicker.
     expect(find.text('Beans Field Guide'), findsOneWidget);
-    expect(find.text(LessonCompletionRail.cardKicker), findsWidgets);
+    expect(
+      find.text(LessonCompletionRail.cardKicker.toUpperCase()),
+      findsWidgets,
+    );
     // The design routes a closed module to its own screen instead of stacking
     // a second headline here.
     expect(find.text('Module complete!'), findsNothing);
@@ -514,7 +523,7 @@ void main() {
     await settleLoaders(tester);
     expect(find.byType(RoastyMoment), findsOneWidget);
 
-    await tester.pump(RoastyMoment.defaultHold);
+    await tester.pump(RoastyMoment.hold);
     await settleLoaders(tester);
 
     expect(find.byType(RoastyMoment), findsNothing);
@@ -522,9 +531,8 @@ void main() {
   });
 
   // Review mode pays nothing at all — not the lesson's points, and not the
-  // per-day practice reward it used to grant (§5.1, #16). It reports the best
-  // score and no number.
-  testWidgets('review mode shows best score and pays nothing', (tester) async {
+  // per-day practice reward it used to grant (§5.1, #16).
+  testWidgets('review mode pays nothing, and says so', (tester) async {
     final container = _buildContainer();
     addTearDown(container.dispose);
 
@@ -555,14 +563,54 @@ void main() {
     );
 
     expect(find.text(reviewEyebrow.toUpperCase()), findsOneWidget);
-    // {4,5} is one wrong (Solid); {2,5} is three wrong (Needs Practice).
-    // The better band wins, so the review result replaces the completion's.
     expect(find.text('4 / 5'), findsOneWidget);
     // No payout line of any kind: the screen used to read '+2 PTS · Practice'
     // or 'Practice points already earned today'.
     expect(find.textContaining('PTS'), findsNothing);
     // A replay pays nothing, so the rail has no row to draw at all.
-    expect(find.text(LessonCompletionRail.cardKicker), findsNothing);
+    expect(
+      find.text(LessonCompletionRail.cardKicker.toUpperCase()),
+      findsNothing,
+    );
+  });
+
+  // ⚠️ The screen reports the run that reached it, not the stored best. The
+  // two only differ on a replay, and reading the best there would congratulate
+  // a learner on a run they did not have — and withhold the chip and the
+  // invitation from the exact run that earned them.
+  testWidgets('a replay reports the run just played, not the best ever', (
+    tester,
+  ) async {
+    final container = _buildContainer();
+    addTearDown(container.dispose);
+    container.listen(contentRepositoryProvider, (_, _) {});
+    container.listen(lessonCompletionServiceProvider, (_, _) {});
+
+    // A clean first run, so the stored best is perfect.
+    final content = container.read(contentRepositoryProvider);
+    final service = container.read(lessonCompletionServiceProvider);
+    final lesson = await tester.runAsync(() => content.getLessonById('m1l1'));
+    await tester.runAsync(
+      () => service.finishLesson(
+        lesson!,
+        mastery: const MasteryResult(correct: 5, total: 5),
+      ),
+    );
+
+    // Then a bad replay. The stored best stays {5,5}; the screen must not.
+    await pumpCompletion(
+      tester,
+      container,
+      mastery: const MasteryResult(correct: 1, total: 5),
+    );
+
+    expect(find.text('1 / 5'), findsOneWidget);
+    expect(find.text('5 / 5'), findsNothing);
+    expect(
+      find.text(MasteryBand.needsPractice.label.toUpperCase()),
+      findsOneWidget,
+    );
+    expect(find.text(practiceAgainLabel), findsOneWidget);
   });
 
   // Completing a module's last lesson, then tapping its action, routes to the

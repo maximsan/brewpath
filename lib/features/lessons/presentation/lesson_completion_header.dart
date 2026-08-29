@@ -114,13 +114,10 @@ class MasteryChip extends StatelessWidget {
 
   /// The chip for [band], or null for a band the design gives no chip.
   static MasteryChip? forBand(MasteryBand? band) =>
-      band == MasteryBand.needsPractice ? MasteryChip(band: band!) : null;
+      band != null && band.invitesPractice ? MasteryChip(band: band) : null;
 
   /// The band the chip names.
   final MasteryBand band;
-
-  /// How much accent washes the chip's fill, over the page.
-  static const double _fillTint = 0.12;
 
   /// How much accent the chip's hairline carries, over the structural rule.
   static const double _borderTint = 0.4;
@@ -134,10 +131,7 @@ class MasteryChip extends StatelessWidget {
         vertical: AppSpacing.xxs,
       ),
       decoration: BoxDecoration(
-        color: Color.alphaBlend(
-          mood.accent.withValues(alpha: _fillTint),
-          mood.surface,
-        ),
+        color: mood.accentWash,
         border: Border.all(
           color: Color.alphaBlend(
             mood.accent.withValues(alpha: _borderTint),

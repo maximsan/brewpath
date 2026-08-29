@@ -1,6 +1,7 @@
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/utils/module_icons.dart';
+import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/progress/presentation/freeze_mark.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
@@ -42,15 +43,19 @@ class LessonCompletionRail extends StatelessWidget {
   /// The Module Reward card, when this run closed its module.
   final CoffeeCardModel? moduleCard;
 
-  /// The reassurance under `FREEZE EARNED`, in the design's words.
+  /// The reassurance under [freezeKicker], in the design's words.
   static const String freezeSupport = "You're covered for one missed day.";
 
   /// The kicker over the freeze row — the first time most learners meet the
   /// word, which is the whole reason the row lives here.
-  static const String freezeKicker = 'FREEZE EARNED';
+  ///
+  /// Written as it is spoken. `SmallcapsLabel` letters it uppercase, because
+  /// that is the type rule rather than part of what the thing is called — and
+  /// a screen reader is given the original casing instead of shouting it.
+  static const String freezeKicker = 'Freeze earned';
 
   /// The kicker over a collected card.
-  static const String cardKicker = 'NEW CARD UNLOCKED';
+  static const String cardKicker = 'New card unlocked';
 
   @override
   Widget build(BuildContext context) {
@@ -166,7 +171,7 @@ class _CardRow extends StatelessWidget {
   }
 }
 
-/// One payout row: a tinted well, a mono accent kicker, and the sentence under
+/// One payout row: a tinted well, an accent kicker, and the sentence under
 /// it. The shape every row below the points line shares.
 class _RailRow extends StatelessWidget {
   const _RailRow({
@@ -175,7 +180,7 @@ class _RailRow extends StatelessWidget {
     required this.well,
   });
 
-  /// The mono micro label over the line — the design's accent kicker.
+  /// The smallcaps label over the line — the design's accent kicker.
   final String kicker;
 
   /// What the row actually says.
@@ -189,9 +194,6 @@ class _RailRow extends StatelessWidget {
 
   /// The mark's own size inside that well.
   static const double markSize = 18;
-
-  /// How much accent the well is washed with, over the panel's surface.
-  static const double _wellTint = 0.12;
 
   @override
   Widget build(BuildContext context) {
@@ -211,10 +213,7 @@ class _RailRow extends StatelessWidget {
               height: _wellSize,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: Color.alphaBlend(
-                  mood.accent.withValues(alpha: _wellTint),
-                  mood.surface,
-                ),
+                color: mood.accentWash,
                 borderRadius: BorderRadius.circular(AppRadii.chrome),
               ),
               child: well,
@@ -225,12 +224,9 @@ class _RailRow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    kicker,
-                    // `accentText`, not raw accent: this is the accent picked
-                    // as a small label, which is the sentence that token owns.
-                    style: AppText.micro(mood: mood, color: mood.accentText),
-                  ),
+                  // `accentText`, not raw accent: this is the accent picked
+                  // as a small label, which is the sentence that token owns.
+                  SmallcapsLabel(kicker, color: mood.accentText),
                   const SizedBox(height: AppSpacing.xxs),
                   Text(
                     support,

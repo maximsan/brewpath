@@ -50,7 +50,7 @@ void main() {
     await tester.pump();
     expect(done, 0);
 
-    await tester.pump(RoastyMoment.defaultHold);
+    await tester.pump(RoastyMoment.hold);
 
     expect(done, 1);
   });
@@ -60,7 +60,7 @@ void main() {
   testWidgets('hands over under reduced motion too', (tester) async {
     var done = 0;
     await tester.pumpWidget(_host(() => done++, reducedMotion: true));
-    await tester.pump(RoastyMoment.defaultHold);
+    await tester.pump(RoastyMoment.hold);
 
     expect(done, 1);
   });
@@ -85,7 +85,7 @@ void main() {
     await tester.pump();
 
     await tester.tap(find.byType(RoastyMoment));
-    await tester.pump(RoastyMoment.defaultHold * 2);
+    await tester.pump(RoastyMoment.hold * 2);
 
     expect(done, 1);
   });
@@ -96,7 +96,7 @@ void main() {
     await tester.pump();
 
     await tester.pumpWidget(const SizedBox.shrink());
-    await tester.pump(RoastyMoment.defaultHold * 2);
+    await tester.pump(RoastyMoment.hold * 2);
 
     expect(done, 0);
   });
