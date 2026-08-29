@@ -233,6 +233,16 @@ You can always edit this file by hand instead — the helpers just save effort.
   gated, the design marks the gated card itself.
 
 ### Fixed
+- **The lesson's Continue is the same size as every other button that means
+  the same thing.** It was Material's shorter default while the Continue on the
+  screen after it stood taller — the most-pressed button in the app, visibly
+  smaller than its own follow-up. The two challenge sheets' actions match now
+  too. Buttons that sit *inside* a card or beside another button are left as
+  they are, and say why.
+
+- **A collectible's corner matches every other rounded thing.** It carried a
+  hand-picked radius that belonged to no part of the design.
+
 
 - **Every button in the app is the shape the design draws, and none of them
   were.** The app never told Material what a button looks like, so almost every

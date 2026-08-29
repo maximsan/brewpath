@@ -1,4 +1,5 @@
 import 'package:brew_path/core/widgets/app_sheet.dart';
+import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/features/challenges/domain/challenge_completion.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_reaction_chips.dart';
 import 'package:brew_path/shared/models/content/brew_challenge.dart';
@@ -83,16 +84,14 @@ class _LogSheetBodyState extends State<_LogSheetBody> {
           onPicked: (picked) => setState(() => _picked = picked),
         ),
         const SizedBox(height: AppSpacing.lg),
-        FilledButton(
+        PrimaryButton(
+          label: 'Mark as done',
           // Disabled until an outcome is picked. Every authored reaction
           // asserts the brew happened, so logging without one would record a
           // claim the learner never made.
           onPressed: canLogResult(_picked)
-              ? () => Navigator.of(
-                  context,
-                ).pop(ChallengeLogged(_picked!))
+              ? () => Navigator.of(context).pop(ChallengeLogged(_picked!))
               : null,
-          child: const Text('Mark as done'),
         ),
         const SizedBox(height: AppSpacing.xs),
         TextButton(

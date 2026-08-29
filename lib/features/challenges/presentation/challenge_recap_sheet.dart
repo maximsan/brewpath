@@ -1,4 +1,5 @@
 import 'package:brew_path/core/widgets/app_sheet.dart';
+import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/features/companion/domain/companion_reaction.dart';
 import 'package:brew_path/features/companion/presentation/companion_celebration.dart';
 import 'package:brew_path/shared/models/content/brew_challenge.dart';
@@ -73,10 +74,10 @@ class _RecapBody extends StatelessWidget {
           ),
         ],
         const SizedBox(height: AppSpacing.lg),
-        FilledButton(
+        PrimaryButton(
+          label: 'Brew it again',
           onPressed: () =>
               Navigator.of(context).pop(ChallengeRecapChoice.brewAgain),
-          child: const Text('Brew it again'),
         ),
         const SizedBox(height: AppSpacing.xs),
         TextButton(

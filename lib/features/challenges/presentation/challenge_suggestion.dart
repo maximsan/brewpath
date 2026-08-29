@@ -130,6 +130,8 @@ class _SuggestionState extends ConsumerState<_Suggestion> {
         style: theme.textTheme.bodyMedium?.copyWith(color: mood.inkMute),
       ),
       const SizedBox(height: AppSpacing.sm),
+      // An action inside a suggestion block, not the screen's CTA — the
+      // lesson's own Continue is below it and owns that role.
       FilledButton(
         onPressed: _start,
         child: const Text('Start Challenge'),
