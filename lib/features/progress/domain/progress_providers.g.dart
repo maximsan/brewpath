@@ -429,6 +429,53 @@ final class TreeStageProvider
 
 String _$treeStageHash() => r'b0c44f97033fd2ac052c14d89e26465c313f17f8';
 
+/// The learner's progress through the core course.
+
+@ProviderFor(coreLessonProgress)
+final coreLessonProgressProvider = CoreLessonProgressProvider._();
+
+/// The learner's progress through the core course.
+
+final class CoreLessonProgressProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<CoreLessonProgress>,
+          CoreLessonProgress,
+          FutureOr<CoreLessonProgress>
+        >
+    with
+        $FutureModifier<CoreLessonProgress>,
+        $FutureProvider<CoreLessonProgress> {
+  /// The learner's progress through the core course.
+  CoreLessonProgressProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'coreLessonProgressProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$coreLessonProgressHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<CoreLessonProgress> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<CoreLessonProgress> create(Ref ref) {
+    return coreLessonProgress(ref);
+  }
+}
+
+String _$coreLessonProgressHash() =>
+    r'ad6fbf7e4293b231c2def4776ae73be186e6a5cf';
+
 /// The planted grove, resolved against the banks into one matrix and one scale.
 ///
 /// Joined here rather than in the widget so the tree stays ignorant of species
