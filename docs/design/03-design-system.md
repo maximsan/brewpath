@@ -85,7 +85,7 @@ There is **one radius token** (`--r: 14px`). Everything else is a rule, not a sc
 
 | Radius | Language | Where |
 |---|---|---|
-| **2px** | Editorial | Cards, buttons and inputs. The sharp, print-like default. |
+| **2px** | Editorial | Cards and inputs. The sharp, print-like default. |
 | **14px** (`--r`) | Soft chrome | Media frames, bottom sheets, icon wells, avatars, mini-game tiles. 14px is the token; 12–20 is the range other chrome may sit in. |
 | **999px** | Pill / dot | Status dots, fav toggle, switch toggles, badges, home indicator. |
 
@@ -99,6 +99,13 @@ There is **one radius token** (`--r: 14px`). Everything else is a rule, not a sc
 > the running prototype wins, so they are **14px** and this table no longer
 > lists them under editorial. The dropped value is named here so it is not
 > "corrected" back. `.pick-tile` is 14px in both.
+>
+> **Buttons are the same case, missed in that sweep and corrected in #377.**
+> `Design System.html` sets `.btn-primary` to `border-radius:2px`; `index.html`
+> sets it to `var(--r)`. So every button is **14px**, and this table no longer
+> lists buttons under editorial either. The app declares it once, in
+> `AppTheme`'s button themes, so a bare `FilledButton` is correct without
+> knowing the rule.
 
 > ⚠️ **Correction.** Earlier versions of this doc listed a "radius scale of
 > 4 / 12 / 14 / 16 / 20 / 999". No such scale exists in the source — `--r` is

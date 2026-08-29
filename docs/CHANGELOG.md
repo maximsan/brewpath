@@ -212,6 +212,21 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **Every button in the app was a rounded pill; none of them should have
+  been.** The app never told Material what a button looks like, so every one it
+  drew fell back to the fully-rounded default — on lesson completion, the
+  module summary, the streak screen, both mini-game screens and a dozen
+  smaller places. Only onboarding was right, because onboarding used a
+  hand-built button that carried the rule privately. The rule is declared once
+  now, so a button is the right shape wherever it is drawn.
+
+  The corner it takes is the one the running design actually sets. The
+  component catalogue and the running prototype disagreed about buttons — 2px
+  against 14px — and the app had followed the catalogue. It follows the running
+  prototype now, the way it already does for the quiz and match tiles, so every
+  rounded thing on a screen is rounded the same amount.
+
+
 - **The Today tour has a way out, and a way back in.** Every card in the
   four-stop tour now carries **Skip** on the left and **Next** on the right —
   **Done** on the last stop — where before it had no buttons at all and could

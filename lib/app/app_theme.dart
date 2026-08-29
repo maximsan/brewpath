@@ -34,6 +34,20 @@ abstract class AppTheme {
         // inherit for want of anything better.
         iconTheme: IconThemeData(color: mood.inkMute),
         navigationBarTheme: tabBarTheme(mood),
+        // Buttons take `--r`, the design's one radius token, where Material
+        // defaults to a stadium pill. Declared here rather than at each call
+        // site so a bare `FilledButton` is correct by construction: the app
+        // shipped fourteen of them wearing the pill because the rule lived
+        // only inside `PrimaryButton`, which six screens bypassed (#377).
+        //
+        // Shape only. Height and full width belong to `PrimaryButton`, which
+        // is the *primary CTA*, not every button — theming those here would
+        // stretch the lesson card's Continue and the sheets' actions to a
+        // page-wide 52px bar.
+        filledButtonTheme: FilledButtonThemeData(style: _buttonShape),
+        outlinedButtonTheme: OutlinedButtonThemeData(style: _buttonShape),
+        textButtonTheme: TextButtonThemeData(style: _buttonShape),
+        elevatedButtonTheme: ElevatedButtonThemeData(style: _buttonShape),
         appBarTheme: AppBarTheme(
           centerTitle: true,
           elevation: 0,
@@ -61,6 +75,25 @@ abstract class AppTheme {
           ),
         ),
       );
+
+  /// The one shape every button type takes.
+  ///
+  /// [AppRadii.chrome], not [AppRadii.editorial]. `Design System.html` sets
+  /// `.btn-primary` to 2px and the running `index.html` sets it to `var(--r)`;
+  /// ADR-0009 rules the running prototype wins, and this is the same
+  /// disagreement it already resolved for `.mcq-choice` and `.match-item`.
+  /// Buttons were missed in that sweep.
+  ///
+  /// A `ButtonStyle` rather than a `shape:` on each theme so the four read as
+  /// one decision. A call site that sets its own shape still wins, because a
+  /// widget's own style resolves over the theme's.
+  static final ButtonStyle _buttonShape = ButtonStyle(
+    shape: WidgetStatePropertyAll(
+      RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadii.chrome),
+      ),
+    ),
+  );
 
   /// Material's own palette, translated from the mood as faithfully as its
   /// vocabulary allows. The container slots repeat `accent` / `accentInk`
