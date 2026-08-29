@@ -8,6 +8,7 @@ import 'package:brew_path/features/progress/domain/grove_treatment.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/presentation/coffee_tree.dart';
 import 'package:brew_path/features/progress/presentation/week_strip.dart';
+import 'package:brew_path/features/studio/presentation/studio_door_tile.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -79,6 +80,8 @@ class ProfileScreen extends ConsumerWidget {
                 const SizedBox(height: _sectionGap),
                 const _SectionTitle('Customize'),
                 const SizedBox(height: 12),
+                const StudioDoorTile(),
+                const SizedBox(height: AppSpacing.sm),
                 _CustomizeGrid(
                   soundEnabled: settings.asData?.value.soundEnabled ?? true,
                   hapticsEnabled: settings.asData?.value.hapticsEnabled ?? true,

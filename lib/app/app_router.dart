@@ -28,6 +28,7 @@ import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/presentation/streak_screen.dart';
 import 'package:brew_path/features/progress/presentation/tree_screen.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
+import 'package:brew_path/features/studio/presentation/studio_screen.dart';
 import 'package:brew_path/features/tour/presentation/app_guide_screen.dart';
 import 'package:brew_path/services/analytics/analytics_provider.dart';
 import 'package:flutter/material.dart';
@@ -266,6 +267,14 @@ GoRouter appRouter(Ref ref) {
                 name: AppRoutes.profile.name,
                 builder: (context, state) => const ProfileScreen(),
                 routes: [
+                  // Pushed on the root navigator like Settings: the grove is
+                  // a full-screen surface, not a page inside the Profile tab.
+                  GoRoute(
+                    path: AppRoutes.studio.path,
+                    name: AppRoutes.studio.name,
+                    parentNavigatorKey: _rootKey,
+                    builder: (context, state) => const StudioScreen(),
+                  ),
                   GoRoute(
                     path: AppRoutes.profileSettings.path,
                     name: AppRoutes.profileSettings.name,

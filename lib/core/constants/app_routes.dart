@@ -53,6 +53,7 @@ abstract class AppRoutes {
   static const profile = AppRoute('profile', '/profile');
   static const profileSettings = AppRoute('profileSettings', 'settings');
   static const profileStreak = AppRoute('profileStreak', 'streak');
+  static const studio = AppRoute('studio', 'studio');
   static const appGuide = AppRoute('appGuide', 'app-guide');
   static const profileTree = AppRoute('profileTree', 'tree');
 

@@ -42,17 +42,23 @@ void main() {
   }
 
   /// Profile → tap the tree, which is the only way in.
+  ///
+  /// `.first` because Profile draws two trees since #140: the hero, and the
+  /// thumbnail in the Studio door below it. The hero is the one above.
   Future<void> openTree(WidgetTester tester) async {
     await openProfile(tester);
-    await tester.tap(find.byType(CoffeeTree));
+    await tester.tap(find.byType(CoffeeTree).first);
     await settleSwaying(tester);
   }
 
   /// The rotation the tree is currently drawn at, read off the widget tree
   /// rather than off the controller — the sway is only real if it reaches the
   /// pixels.
+  ///
+  /// `.first` for the reason [openTree] gives: Profile draws the hero and the
+  /// Studio door's thumbnail, and the hero is the one above.
   Matrix4 treeTransform(WidgetTester tester) =>
-      tester.widget<Transform>(find.byKey(CoffeeTree.swayKey)).transform;
+      tester.widget<Transform>(find.byKey(CoffeeTree.swayKey).first).transform;
 
   testWidgets('the Profile tree opens the screen', (tester) async {
     useTallViewport(tester);
@@ -61,7 +67,7 @@ void main() {
     await openProfile(tester);
     expect(find.byType(TreeScreen), findsNothing);
 
-    await tester.tap(find.byType(CoffeeTree));
+    await tester.tap(find.byType(CoffeeTree).first);
     await settleSwaying(tester);
 
     expect(find.byType(TreeScreen), findsOneWidget);

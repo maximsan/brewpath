@@ -107,6 +107,8 @@ void main() {
     // Root navigator like Settings, and its own back-arrow bar — pushed is
     // about the chrome the learner sees, not the navigator underneath.
     'profileStreak': HeaderTier.pushed,
+    // Full-screen surface with its own back bar, like Settings.
+    'studio': HeaderTier.pushed,
     // The four screens the design's ACCOUNT and SUPPORT rows lead to. Each
     // wears the same back-arrow bar Settings does, which is what pushed
     // means here.
