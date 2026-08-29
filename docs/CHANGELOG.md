@@ -174,6 +174,18 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **The Cards tab stops opening as a wall of blanks.** The grid showed every
+  collectible at once, so a new learner met thirty locked silhouettes and one
+  earned card. It now shows what you have earned plus a single locked card as
+  a teaser, and a block underneath names the rest — *"29 more to collect ·
+  Finish lessons to reveal new cards."* The count includes the teaser you can
+  see, which is the design's reading of "how many are left".
+
+  The tab loses three things with it: the grid is no longer sectioned by
+  module, the progress bar is gone — the grid is the progress — and the header
+  is the bare `1 OF 30` in mono the design gives it, rather than a second
+  "Collection" title under the one the tab bar already shows.
+
 - **Small orange labels are readable in the light theme.** Every eyebrow,
   kicker and smallcaps label set in the brand orange was drawing at 4.23:1 on
   the light background — under the accessibility minimum for text that size.
