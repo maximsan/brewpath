@@ -16,7 +16,10 @@ class PrimaryButton extends StatelessWidget {
     super.key,
   });
 
-  static const double _height = 52;
+  /// The design's fixed CTA height. Public because the sticky action bar
+  /// reserves room for a button before one has been laid out, and a second
+  /// copy of the number is a second thing to keep in step.
+  static const double height = 52;
 
   /// Text shown on the button.
   final String label;
@@ -32,7 +35,7 @@ class PrimaryButton extends StatelessWidget {
     final foreground = enabled ? mood.accentInk : mood.inkMute;
     return SizedBox(
       width: double.infinity,
-      height: _height,
+      height: height,
       child: FilledButton(
         onPressed: onPressed,
         style: FilledButton.styleFrom(
