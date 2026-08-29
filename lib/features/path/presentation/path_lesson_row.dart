@@ -3,35 +3,27 @@ import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/bean_gauge.dart';
 import 'package:brew_path/features/learn/presentation/lesson_node_gauge.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
+import 'package:brew_path/features/path/domain/path_module_view.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
-import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// A lesson row in the module's lesson list. Completed lessons expose a
-/// `Review` action; what a finished run pays is decided by the service, not by
-/// the row that opened it.
-class ModuleLessonCardWidget extends StatelessWidget {
-  /// Creates a [ModuleLessonCardWidget].
-  const ModuleLessonCardWidget({
-    required this.lesson,
-    required this.isCompleted,
-    required this.isCurrent,
-    super.key,
-    this.mastery = MasteryResult.unscored,
-  });
+/// A lesson row under its module on Path. Completed lessons expose a `Review`
+/// action; what a finished run pays is decided by the service, not by the row
+/// that opened it.
+///
+/// Moved here from the deleted module-detail screen rather than rewritten
+/// ([#394](https://github.com/maximsan/brewpath/issues/394)): it already drew a
+/// lesson at each status, and Path is now the only screen that lists lessons.
+/// Its **chrome** is still the module screen's card rather than the design's
+/// flat `.lesson-row` on the path spine — see
+/// [#435](https://github.com/maximsan/brewpath/issues/435).
+class PathLessonRow extends StatelessWidget {
+  /// Creates a [PathLessonRow].
+  const PathLessonRow({required this.entry, super.key});
 
-  /// The lesson to render.
-  final LessonModel lesson;
-
-  /// Whether the user has already completed this lesson.
-  final bool isCompleted;
-
-  /// Whether this is the lesson the user is up to.
-  final bool isCurrent;
-
-  /// The lesson's best stored result, driving the node's fill.
-  final MasteryResult mastery;
+  /// The lesson and the learner's progress through it.
+  final PathLesson entry;
 
   static const double _cardRadius = 12;
 
@@ -39,6 +31,7 @@ class ModuleLessonCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final mood = context.mood;
+    final lesson = entry.lesson;
     final destination = lessonRun(lesson.id);
 
     return Card(
@@ -51,9 +44,9 @@ class ModuleLessonCardWidget extends StatelessWidget {
           child: Row(
             children: [
               _LessonBadge(
-                isCompleted: isCompleted,
-                isCurrent: isCurrent,
-                mastery: mastery,
+                isCompleted: entry.isCompleted,
+                isCurrent: entry.isCurrent,
+                mastery: entry.mastery,
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -79,7 +72,7 @@ class ModuleLessonCardWidget extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              if (isCompleted)
+              if (entry.isCompleted)
                 TextButton(
                   onPressed: () => context.goTo(destination),
                   child: const Text('Review'),

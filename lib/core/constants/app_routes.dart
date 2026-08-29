@@ -36,7 +36,6 @@ abstract class AppRoutes {
   static const onboardingName = AppRoute('onboardingName', '/onboarding/name');
   static const learn = AppRoute('learn', '/learn');
   static const courseComplete = AppRoute('courseComplete', '/course-complete');
-  static const moduleDetail = AppRoute('moduleDetail', 'module/:moduleId');
   static const lesson = AppRoute('lesson', 'lesson/:lessonId');
   static const lessonComplete = AppRoute('lessonComplete', 'complete');
   static const moduleSummary = AppRoute(
@@ -55,18 +54,6 @@ abstract class AppRoutes {
   static const profileSettings = AppRoute('profileSettings', 'settings');
   static const profileStreak = AppRoute('profileStreak', 'streak');
   static const appGuide = AppRoute('appGuide', 'app-guide');
-}
-
-/// Opening a module, from the Learn grid or the Path tree.
-///
-/// Same reason as [DictionaryNavigation]: two callers spelling `'moduleId'`
-/// themselves is two chances to misspell it.
-extension ModuleNavigation on BuildContext {
-  /// Goes to the detail screen for [moduleId].
-  void goModuleDetail(String moduleId) => GoRouter.of(this).goNamed(
-    AppRoutes.moduleDetail.name,
-    pathParameters: {'moduleId': moduleId},
-  );
 }
 
 /// Opening a dictionary term, from wherever the learner found it.

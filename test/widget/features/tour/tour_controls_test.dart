@@ -91,7 +91,7 @@ void main() {
     expect(find.text(TourCopy.todayTitle), findsOneWidget);
 
     // Three taps from the first stop to the fourth, which is the tab bar.
-    for (final title in [TourCopy.practiceTitle, TourCopy.modulesTitle]) {
+    for (final title in [TourCopy.practiceTitle, TourCopy.headerTitle]) {
       await tester.tap(find.text(TourCopy.stopNext));
       await letTheTourRun(tester);
       expect(find.text(title), findsOneWidget);
