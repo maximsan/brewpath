@@ -5,6 +5,7 @@
 /// buried in eight lines of scaffolding it did not care about.
 library;
 
+import 'package:brew_path/features/cards/domain/cards_providers.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
@@ -75,6 +76,17 @@ CoffeeCardModel testCoffeeCard({
   iconName: 'beans',
   lessonId: lessonId,
   moduleId: moduleId,
+);
+
+/// A collectible paired with whether the learner holds it, in the shape the
+/// Cards tab receives them.
+CardWithCollection testCardWithCollection(
+  String id, {
+  required bool collected,
+  String moduleTag = 'Beans',
+}) => CardWithCollection(
+  card: testCoffeeCard(id: id, title: 'Card $id', moduleTag: moduleTag),
+  isCollected: collected,
 );
 
 /// An ungraded card — reading it can never cost a learner a mark.
