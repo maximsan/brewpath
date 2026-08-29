@@ -8,29 +8,29 @@
 | Thing | Where |
 |---|---|
 | App shell, phone frame, design tokens, CSS | `index.html` (1,350 lines) |
-| Top-level state + routing + all flow wiring | `app.jsx` (1,436) |
-| Course content (modules, lessons, cards, collectibles) | `data.jsx` (3,136) |
-| Tab screens, streak, tree, card art, mini-game catalog | `screens.jsx` (2,883) |
-| Lesson player + card renderers + mini-game player | `lesson.jsx` (1,512) |
-| Dictionary data / screens / practice extras | `dictionary-data.jsx` (581) · `dictionary.jsx` (733) · `dictionary-extras.jsx` (488) |
-| Mascot | `roasty.jsx` (868) |
-| Icons, glyphs, stage names | `flavor-wheel.jsx` (503) |
+| Top-level state + routing + all flow wiring | `app.jsx` |
+| Course content (modules, lessons, cards, collectibles) | `data.jsx` |
+| Tab screens, streak, tree, card art, mini-game catalog | `screens.jsx` |
+| Lesson player + card renderers + mini-game player | `lesson.jsx` |
+| Dictionary data / screens / practice extras | `dictionary-data.jsx` · `dictionary.jsx` · `dictionary-extras.jsx` |
+| Mascot | `roasty.jsx` |
+| Icons, glyphs, stage names | `flavor-wheel.jsx` |
 
 ## The eight files §0 used to omit
 
 Everything below holds user-visible content or a card renderer, and none of it
 was mapped before this pass.
 
-| File | Lines | What it holds |
-|---|---|---|
-| `active-cards.jsx` | 297 | The three cards that replaced the read-only beats: `predict` (was `intro`), `decision` (was `practical`), `recall` (was `takeaway`). The rename is why `intro`/`takeaway` renderers sit unexercised ([§6.2](06-content.md)). |
-| `practical.jsx` | 583 | `TasteFixCard`, the `VISUAL_GUIDE_CONTENT` guide content + art (8 guides), `VisualGuideCard`, `VisualGuideThumb`. |
-| `bean-anatomy.jsx` | 345 | `CherrySection` (the interactive cross-section, `VISUAL_GUIDE_CONTENT.anatomy`), `GreenBean` (draws an unroasted seed from process cues), `BagPickCard` (card kind `bagpick`), `BAGPICK_ROUNDS`. **Load-order constraint: must evaluate before `lesson.jsx`,** which reads `BAGPICK_ROUNDS` at eval time. |
-| `library.jsx` | 235 | The Saved / Favorites screen and shared bookmark affordances. **`ModuleScreen` and its two layouts were deleted** — module detail no longer exists as a screen. |
-| `rewards.jsx` | 475 | Lesson complete, module complete, module reward card. |
-| `settings.jsx` | 700 | `ConfirmSheet`, `TimeSheet`, About, Account-and-sync, `PLAN_OPTS`, `FAQ_ITEMS`, `REMINDER_TIMES`. |
-| `customize.jsx` | 635 | Paywall, Studio hub, tree chooser, Roasty studio, mood player, and the option tables (`TREE_VARIETIES`, `GROVE_LIGHT`, `ROAST_OPTS`, `HAT_OPTS`, `GEAR_OPTS`, `SPROUT_OPTS`, `BACKDROPS`). |
-| `gating.jsx` | 391 | `PLUS_FEATURES`, `PlusGateSheet`, `FeatureLock`, `RewardedAdScreen`, `RoastyGiftScreen`, `TrialBadge`. |
+| File | What it holds |
+|---|---|
+| `active-cards.jsx` | The three cards that replaced the read-only beats: `predict` (was `intro`), `decision` (was `practical`), `recall` (was `takeaway`). The rename is why `intro`/`takeaway` renderers sit unexercised ([§6.2](06-content.md)). |
+| `practical.jsx` | `TasteFixCard`, the `VISUAL_GUIDE_CONTENT` guide content + art (8 guides), `VisualGuideCard`, `VisualGuideThumb`. |
+| `bean-anatomy.jsx` | `CherrySection` (the interactive cross-section, `VISUAL_GUIDE_CONTENT.anatomy`), `GreenBean` (draws an unroasted seed from process cues), `BagPickCard` (card kind `bagpick`), `BAGPICK_ROUNDS`. **Load-order constraint: must evaluate before `lesson.jsx`,** which reads `BAGPICK_ROUNDS` at eval time. |
+| `library.jsx` | The Saved / Favorites screen and shared bookmark affordances. **`ModuleScreen` and its two layouts were deleted** — module detail no longer exists as a screen. |
+| `rewards.jsx` | Lesson complete, module complete, module reward card. |
+| `settings.jsx` | `ConfirmSheet`, `TimeSheet`, About, Account-and-sync, `PLAN_OPTS`, `FAQ_ITEMS`, `REMINDER_TIMES`. |
+| `customize.jsx` | Paywall, Studio hub, tree chooser, Roasty studio, mood player, and the option tables (`TREE_VARIETIES`, `GROVE_LIGHT`, `ROAST_OPTS`, `HAT_OPTS`, `GEAR_OPTS`, `SPROUT_OPTS`, `BACKDROPS`). |
+| `gating.jsx` | `PLUS_FEATURES`, `PlusGateSheet`, `FeatureLock`, `RewardedAdScreen`, `RoastyGiftScreen`, `TrialBadge`. |
 
 ## Companion documents
 
