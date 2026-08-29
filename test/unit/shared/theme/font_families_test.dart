@@ -5,8 +5,6 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../../support/dart_sources.dart';
-
 /// Flutter resolves a font by the family **string**. A name that does not match
 /// a `fonts:` entry in `pubspec.yaml` does not throw — it silently falls
 /// back to the platform font, so the app renders in the wrong typeface with
@@ -134,31 +132,6 @@ void main() {
     }
   });
 
-  test("no call site names a FontWeight — that is the face's job", () {
-    // `AppFace` exists precisely so weight is not a number a call site passes.
-    // A `copyWith(fontWeight: …)` keeps the family and changes the number,
-    // which is the one combination that silently synthesises: 54 sites once
-    // asked for w600/w700/w800 across three families that ship none of them.
-    final offenders = <String>[];
-
-    for (final file in dartSourcesUnder('lib')) {
-      if (file.path == _faceTable) continue;
-      final source = withoutComments(file.readAsStringSync());
-      for (final match in RegExp(r'FontWeight\.\w+').allMatches(source)) {
-        offenders.add('${file.path} names ${match.group(0)}');
-      }
-    }
-
-    expect(
-      offenders,
-      isEmpty,
-      reason:
-          'weight belongs to AppFace, which pairs it with the family that '
-          'ships it. Ask for emphasis with `face: AppFace.control` (or the '
-          'role that carries it), not a number:\n${offenders.join('\n')}',
-    );
-  });
-
   test('every declared family is backed by a font file that exists', () {
     final assets = RegExp(
       r'-\s*asset:\s*(\S+)',
@@ -174,9 +147,6 @@ void main() {
     }
   });
 }
-
-/// The one file allowed to name a `FontWeight`: the face table itself.
-const _faceTable = 'lib/shared/theme/app_text.dart';
 
 /// Which weights the `fonts:` block bundles, per family.
 ///

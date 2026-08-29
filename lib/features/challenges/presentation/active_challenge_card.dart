@@ -109,7 +109,7 @@ class ActiveChallengeCard extends ConsumerWidget {
               const SizedBox(height: AppSpacing.xs),
               Text(
                 challenge.title,
-                style: theme.textTheme.titleMedium?.copyWith(),
+                style: theme.textTheme.titleMedium,
               ),
               const SizedBox(height: AppSpacing.xxs),
               Text(

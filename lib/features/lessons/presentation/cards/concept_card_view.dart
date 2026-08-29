@@ -142,7 +142,7 @@ class _Blank extends StatelessWidget {
         ),
         child: Text(
           answer,
-          style: theme.textTheme.titleMedium?.copyWith(),
+          style: theme.textTheme.titleMedium,
         ),
       );
     }

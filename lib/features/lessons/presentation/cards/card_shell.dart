@@ -89,7 +89,7 @@ class CardShell extends StatelessWidget {
         if (title != null) ...[
           Text(
             title!,
-            style: theme.textTheme.titleLarge?.copyWith(),
+            style: theme.textTheme.titleLarge,
           ),
           const SizedBox(height: AppSpacing.md),
         ],

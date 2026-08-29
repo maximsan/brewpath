@@ -63,7 +63,7 @@ class _ModuleSummaryScreenState extends ConsumerState<ModuleSummaryScreen> {
             Text(
               'Module complete!',
               textAlign: TextAlign.center,
-              style: theme.textTheme.headlineSmall?.copyWith(),
+              style: theme.textTheme.headlineSmall,
             ),
             const SizedBox(height: AppSpacing.xs),
             Text(

@@ -75,7 +75,7 @@ class _StatRow extends StatelessWidget {
                 ),
                 Text(
                   '$brewed / $total',
-                  style: theme.textTheme.labelLarge?.copyWith(),
+                  style: theme.textTheme.labelLarge,
                 ),
               ],
             ),

@@ -87,7 +87,7 @@ class LessonCompletionBody extends StatelessWidget {
       Text(
         'Lesson complete!',
         textAlign: TextAlign.center,
-        style: theme.textTheme.headlineSmall?.copyWith(),
+        style: theme.textTheme.headlineSmall,
       ),
       const SizedBox(height: 12),
       Text(
@@ -128,7 +128,7 @@ class LessonCompletionBody extends StatelessWidget {
       Text(
         'Review complete!',
         textAlign: TextAlign.center,
-        style: theme.textTheme.headlineSmall?.copyWith(),
+        style: theme.textTheme.headlineSmall,
       ),
       const SizedBox(height: 12),
       Text(

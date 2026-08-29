@@ -118,7 +118,7 @@ class _SuggestionState extends ConsumerState<_Suggestion> {
       Text(
         widget.challenge.title,
         textAlign: TextAlign.center,
-        style: theme.textTheme.titleMedium?.copyWith(),
+        style: theme.textTheme.titleMedium,
       ),
       const SizedBox(height: AppSpacing.xxs),
       Text(

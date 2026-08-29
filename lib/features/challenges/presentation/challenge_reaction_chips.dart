@@ -89,9 +89,15 @@ class _Chip extends StatelessWidget {
           ),
           child: Text(
             label,
-            style: theme.textTheme.labelLarge?.copyWith(
-              color: selected ? mood.accentInk : mood.ink,
-            ),
+            // Selection reads as weight here, and the bundle can say that
+            // honestly: the control face at 500 against the body face at 400,
+            // the same rung either way. It used to ask for 700 against 500,
+            // and the heavier half was synthesised.
+            style:
+                (selected
+                        ? theme.textTheme.labelLarge
+                        : theme.textTheme.bodyMedium)
+                    ?.copyWith(color: selected ? mood.accentInk : mood.ink),
           ),
         ),
       ),

@@ -39,7 +39,7 @@ class ModuleHeroWidget extends StatelessWidget {
             children: [
               Text(
                 module.title,
-                style: theme.textTheme.headlineSmall?.copyWith(),
+                style: theme.textTheme.headlineSmall,
               ),
               const SizedBox(height: 4),
               Text(
