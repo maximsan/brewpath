@@ -152,10 +152,19 @@ void main() {
 
     // Each screen is landmarked on the control the walk then uses, so the
     // assertion and the action cannot drift apart.
+    // Welcome has no button — the whole screen advances — so the walk taps
+    // its heading, which is also the landmark proving this is Welcome and not
+    // Meet Roasty wearing its route (#383).
     await tapWhenReady(
       tester,
-      liveButton('Plant your seed'),
+      find.text('Learn coffee.\nGrow a tree.'),
       describe: 'the welcome screen',
+    );
+
+    await tapWhenReady(
+      tester,
+      liveButton('Start learning'),
+      describe: 'the Meet Roasty screen',
     );
 
     await tapWhenReady(
