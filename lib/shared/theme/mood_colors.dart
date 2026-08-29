@@ -124,12 +124,18 @@ class MoodColors extends ThemeExtension<MoodColors> {
   /// everything the accent is not *read* as — fills, borders, progress bars,
   /// marks and icons.
   ///
-  /// **Two components the running prototype rules on explicitly, against the
-  /// sentence, and which therefore keep [accent]:** `.btn-link`, accent at the
-  /// support step (`index.html:283`), and `.tab.active`, accent on a 9.5px tab
-  /// label (`:356`). The tab bar is the live conflict — `index.html` carries
-  /// both the rule and the line that contradicts it — and settling it is the
-  /// owner's, not this token's. See #356, which restyles that bar.
+  /// **The tab bar is not an exception to any of this — it is outside the
+  /// sentence.** `.tab.active` (`index.html:356`) puts [accent] on a 9.5px
+  /// label, which looks like a contradiction and is not: it colours a
+  /// *control*, setting one `color` for the mark and its word so the pair
+  /// reads as one unit, the way an active-state colour must. This token
+  /// governs accent picked as a **text** colour, which is what every
+  /// `--accent-text` site in the design is. A state colour is not a text
+  /// colour, so the tab bar keeps [accent], joined — and no divergence is
+  /// being recorded here, because there is none.
+  ///
+  /// `.btn-link` keeps [accent] for the plainer reason that it is set at the
+  /// support step (`index.html:283`), above the labels the sentence covers.
   ///
   /// Where a glyph sits beside such a label, only the label changes: the
   /// design draws exactly that pair, an accent mark next to an `--accent-text`

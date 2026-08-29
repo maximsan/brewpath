@@ -34,12 +34,17 @@ marks, fills, borders and progress bars keep `--accent`. Where a glyph sits
 beside such a label only the label changes (`brew-challenge.jsx:303`, `:706`,
 and the accent-bordered pill at `:338`).
 
-Two components the running prototype rules on explicitly, **against** that
-sentence, so they keep `--accent`: `.btn-link` at `--t-support` (`:283`) and
-`.tab.active` on a 9.5px tab label (`:356`). The tab bar is an open conflict —
-`index.html` carries both the rule and the line contradicting it — and it is the
-owner's to settle, not a doc's; [#356](https://github.com/maximsan/brewpath/issues/356)
-restyles that bar. In the app the token is `MoodColors.accentText`.
+**The tab bar reads like a contradiction and is not one.** `.tab.active`
+(`:356`) puts `--accent` on a 9.5px label — below the size the sentence names.
+But it colours a *control*: one `color` for the mark and its word, so the active
+pair reads as one unit. `--accent-text` governs accent picked as a **text**
+colour, which is what all five of its uses in the design are; a state colour is
+not a text colour. So the tab bar keeps `--accent`, joined, and the app matches
+the design with nothing to record. `.btn-link` keeps `--accent` for the plainer
+reason that it sits at `--t-support` (`:283`), above the labels the sentence
+covers.
+
+In the app the token is `MoodColors.accentText`.
 
 **Illustration palette** — literal coffee, identical in both moods, never theme tokens.
 The cherry-anatomy work ([§6.1](06-content.md), `m1l7`) added eight tokens to what was a six-token set:
