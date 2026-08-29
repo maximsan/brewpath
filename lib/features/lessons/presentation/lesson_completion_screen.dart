@@ -1,10 +1,18 @@
 import 'package:brew_path/app/day_surfaces.dart';
+import 'package:brew_path/core/constants/app_labels.dart';
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
+import 'package:brew_path/features/companion/domain/companion_reaction.dart';
+import 'package:brew_path/features/companion/presentation/roasty_moment.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
+import 'package:brew_path/features/lessons/domain/lesson_completion_actions.dart';
 import 'package:brew_path/features/lessons/domain/lesson_completion_service.dart';
+import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
+import 'package:brew_path/features/lessons/presentation/lesson_completion_beat.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_body.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_reward.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
@@ -13,8 +21,9 @@ import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Post-lesson screen: shows the points earned and any unlocked card, then
-/// routes back.
+/// Post-lesson screen: the companion's beat, then what the run paid — the
+/// lesson's name, its score, the points, the freeze and any card — and the way
+/// on.
 class LessonCompletionScreen extends ConsumerStatefulWidget {
   /// Creates a [LessonCompletionScreen].
   const LessonCompletionScreen({
@@ -38,6 +47,10 @@ class _LessonCompletionScreenState
     extends ConsumerState<LessonCompletionScreen> {
   late final Future<LessonCompletionReward> _future = _completeAndLoad();
   String? _moduleId;
+
+  /// Whether the opening beat has handed over. The content is not built until
+  /// it has, which is the design's two-phase reveal.
+  bool _beatDone = false;
 
   /// Persists the run exactly once. A first completion pays the lesson's flat
   /// ten and hands over its card, plus the module's Module Reward card where
@@ -79,7 +92,16 @@ class _LessonCompletionScreenState
     final card = result.isReplay
         ? null
         : await content.getCardForLesson(lesson.id);
-    return LessonCompletionReward(result: result, card: card);
+    // Read after the invalidation above, so it is the lesson queued *behind*
+    // this completion rather than the one just finished.
+    final next = await ref.read(todayLessonProvider.future);
+
+    return LessonCompletionReward(
+      result: result,
+      lesson: lesson,
+      card: card,
+      nextLessonId: next?.id,
+    );
   }
 
   @override
@@ -103,11 +125,48 @@ class _LessonCompletionScreenState
     }
     if (snap.hasError) return ErrorView(message: '${snap.error}');
     final reward = snap.data!;
-    return LessonCompletionBody(
-      lessonId: widget.lessonId,
-      reward: reward,
-      celebrating: !reward.result.isReplay,
-      moduleSummaryId: reward.result.moduleCompleted ? _moduleId : null,
+
+    if (!_beatDone) {
+      return RoastyMoment(
+        reaction: reward.result.moduleCompleted
+            ? CompanionReaction.moduleComplete
+            : CompanionReaction.lessonComplete,
+        eyebrow: completionEyebrow(isReplay: reward.result.isReplay),
+        title: completionBeatTitle(reward.result.mastery.band),
+        onDone: () {
+          if (mounted) setState(() => _beatDone = true);
+        },
+      );
+    }
+
+    return Stack(
+      children: [
+        Positioned.fill(child: _content(reward)),
+        // The design keeps the lesson topbar's X here, so the celebration is
+        // never a screen the learner is held on.
+        Positioned(
+          top: 0,
+          left: 0,
+          child: IconButton(
+            icon: const IconMark(AppIcon.close),
+            tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+            onPressed: () => context.goTo(pathTab),
+          ),
+        ),
+      ],
     );
   }
+
+  Widget _content(LessonCompletionReward reward) => LessonCompletionBody(
+    lessonId: widget.lessonId,
+    lessonTitle: reward.lesson.title,
+    reward: reward,
+    actions: completionActions(
+      lessonId: widget.lessonId,
+      continueLabel: AppLabels.continueLabel,
+      band: reward.result.mastery.band,
+      nextLessonId: reward.nextLessonId,
+      moduleSummaryId: reward.result.moduleCompleted ? _moduleId : null,
+    ),
+  );
 }

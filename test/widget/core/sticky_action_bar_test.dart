@@ -29,6 +29,7 @@ Widget _host(
   Widget content, {
   VoidCallback? onPressed,
   QuietLink? link,
+  Widget? preface,
   bool darkRoast = false,
   // Separate from a null `onPressed`, which is the disabled state under test —
   // defaulting the callback would quietly make that case untestable.
@@ -40,6 +41,7 @@ Widget _host(
       label: 'Start Keep Sharp',
       onPressed: enabled ? (onPressed ?? () {}) : null,
       link: link,
+      preface: preface,
       content: content,
     ),
   ),
@@ -202,6 +204,72 @@ void main() {
         greaterThan(viewport.top + viewport.height / 4),
         reason: 'short content was pinned to the top instead of centred',
       );
+    });
+  });
+
+  // The design pins a whole card above the action on the lesson ending — the
+  // Coffee Challenge offer — and a support paragraph on the duel. Both travel
+  // with the action rather than with the scrolling content, so the gradient
+  // sits behind them.
+  group('the preface', () {
+    const offer = Key('offer');
+
+    testWidgets('sits inside the bar, above the action', (tester) async {
+      await tester.pumpWidget(
+        _host(
+          _tallContent(),
+          preface: const SizedBox(key: offer, height: 60),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final bar = _barRect(tester);
+      final card = tester.getRect(find.byKey(offer));
+      expect(card.top, greaterThanOrEqualTo(bar.top));
+      expect(
+        card.bottom,
+        lessThanOrEqualTo(tester.getRect(find.byType(FilledButton)).top),
+      );
+    });
+
+    testWidgets('grows the room reserved under the content', (tester) async {
+      await tester.pumpWidget(_host(_tallContent()));
+      await tester.pumpAndSettle();
+      final plain = _barRect(tester).height;
+
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pumpWidget(
+        _host(
+          _tallContent(),
+          preface: const SizedBox(key: offer, height: 60),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(_barRect(tester).height, greaterThan(plain));
+      await tester.drag(find.byType(Scrollable), const Offset(0, -4000));
+      await tester.pumpAndSettle();
+      expect(
+        tester.getRect(_lastRow).bottom,
+        lessThanOrEqualTo(_barRect(tester).top),
+        reason: 'the preface grew the bar but not the room reserved under it',
+      );
+    });
+
+    testWidgets('no preface leaves no gap where one would go', (tester) async {
+      await tester.pumpWidget(_host(_tallContent()));
+      await tester.pumpAndSettle();
+      final plain = _barRect(tester).height;
+
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pumpWidget(
+        _host(_tallContent(), preface: const SizedBox.shrink()),
+      );
+      await tester.pumpAndSettle();
+
+      // A screen whose lesson carries no challenge renders `SizedBox.shrink`
+      // here, and must be indistinguishable from one that never had a slot.
+      expect(_barRect(tester).height, plain);
     });
   });
 

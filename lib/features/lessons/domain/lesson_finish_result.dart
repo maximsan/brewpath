@@ -19,6 +19,7 @@ class LessonFinishResult {
     required this.mastery,
     this.moduleCompleted = false,
     this.moduleCard,
+    this.freezeEarned = false,
   });
 
   /// Whether the lesson had already been finished before this run.
@@ -53,4 +54,31 @@ class LessonFinishResult {
   /// show a number; the design pays nothing for a module, because what waits
   /// at the moment is this collectible (§5.1, #16).
   final CoffeeCardModel? moduleCard;
+
+  /// Whether *this* run is the one that earned the streak freeze.
+  ///
+  /// A rise, never the held state — see `freezeEarnedBetween`. It is what the
+  /// completion screen's `FREEZE EARNED` row renders on, and the design puts
+  /// that row here for a stated reason: it is where a learner should first
+  /// meet the word, before they ever need one rather than at the moment they
+  /// are told they lost a day.
+  ///
+  /// **Either path can earn it.** A replay records the day exactly as a first
+  /// completion does (§3), so a replay can be the seventh qualifying day.
+  final bool freezeEarned;
+
+  /// The same result with [freezeEarned] set.
+  ///
+  /// Not a constructor argument on the paths above, because neither path can
+  /// answer it: the freeze is derived by comparing the day set on both sides
+  /// of the write, which only `finishLesson` sees.
+  LessonFinishResult withFreezeEarned({required bool earned}) =>
+      LessonFinishResult(
+        isReplay: isReplay,
+        pointsEarned: pointsEarned,
+        mastery: mastery,
+        moduleCompleted: moduleCompleted,
+        moduleCard: moduleCard,
+        freezeEarned: earned,
+      );
 }

@@ -1,6 +1,9 @@
+import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/lessons/domain/lesson_finish_result.dart';
 import 'package:brew_path/features/progress/domain/activity_recorder.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
+import 'package:brew_path/features/progress/domain/streak_day_set.dart';
+import 'package:brew_path/features/progress/domain/streak_engine.dart';
 import 'package:brew_path/features/progress/domain/tree_growth.dart';
 import 'package:brew_path/services/analytics/analytics_provider.dart';
 import 'package:brew_path/services/analytics/analytics_service.dart';
@@ -78,13 +81,44 @@ class LessonCompletionService {
     DateTime? now,
   }) async {
     final at = now ?? DateTime.now();
+    // Read before anything is written, because both writes below can add
+    // today to the day set — the completion row through the backfill, and the
+    // activity record directly. Sampled after the first of them, "before"
+    // would already contain today and no run could ever read as earning a
+    // freeze.
+    final daysBefore = await _qualifyingDays();
+
     final existing = await progressRepository.getByLessonId(lesson.id);
     // The record travels rather than being looked up again: a second read
     // could return null after Reset Progress landed between the two awaits,
     // and an invariant re-derived is an invariant that can fail.
-    return existing == null
-        ? _firstCompletion(lesson, mastery: mastery, now: at)
-        : _replay(lesson, existing, mastery: mastery, now: at);
+    final result = existing == null
+        ? await _firstCompletion(lesson, mastery: mastery, now: at)
+        : await _replay(lesson, existing, mastery: mastery, now: at);
+
+    return result.withFreezeEarned(
+      earned: freezeEarnedBetween(
+        before: daysBefore,
+        after: await _qualifyingDays(),
+        today: epochDay(at),
+      ),
+    );
+  }
+
+  /// The qualifying-day set as the stores hold it at this instant.
+  ///
+  /// Assembled by the same [streakDaySet] union every streak surface reads
+  /// through, so what the completion screen reports about the freeze and what
+  /// the streak screen shows can never be derived two different ways.
+  Future<Set<int>> _qualifyingDays() async {
+    final snapshot = await snapshotRepository.read();
+    final progress = snapshot.clearedByReset;
+    final completed = await progressRepository.getAllCompleted();
+    return streakDaySet(
+      activeDays: progress.activeDays,
+      dailyActivity: progress.dailyActivity,
+      firstCompletionDays: completed.map((record) => record.completedAt),
+    );
   }
 
   Future<LessonFinishResult> _firstCompletion(

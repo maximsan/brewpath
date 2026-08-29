@@ -182,7 +182,31 @@ You can always edit this file by hand instead — the helpers just save effort.
   Four more games opened on the two renderers: *Dial it in*, *Set the grind*,
   *Put it in order* and *Pour-over, in order*.
 
+- **Finishing a lesson finally says what you did.** The screen was a badge, the
+  words *Lesson complete!* and a points number: it never named the lesson you
+  had just finished, and it only showed your score if you were replaying. It
+  now opens on a full-screen beat from Roasty whose line changes with how the
+  run went, then names the lesson, prints the score, and gathers what the run
+  paid into one receipt card — the points, and any collectible it handed over.
+  A run that needs practice gets a chip in the action colour and an invitation
+  to play it again rather than a red mark, and there is a close button now, so
+  the celebration is not a screen you are held on.
+
+- **You meet the word "freeze" before you ever need one.** Seven qualifying
+  days in a row earn a streak freeze, and the app only ever mentioned freezes
+  *afterwards* — as the notice telling you a day had already been saved. The
+  lesson that earns one now says so on the spot, which is where the design put
+  it: the payout for keeping a streak, met before the day you need it rather
+  than at the moment you are told you lost one.
+
 ### Changed
+
+- **The lesson ending's button moved onto the shared sticky action bar**, and
+  now says where it goes: *Next lesson* while the course has one queued, *Back
+  to Path* when it does not. The Coffee Challenge a lesson sometimes unlocks
+  travels with that button instead of sitting in the scroll above it — the bar
+  learned to carry an offer over its action, which the duel and the module
+  ending will want too, and it still refuses a second button.
 
 - **The course lives in one place now, and Today is only today.** The app used
   to list every module on the Learn tab *and* on Path, and both opened a module

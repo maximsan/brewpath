@@ -16,7 +16,10 @@ const double _eyebrowLetterSpacing = 0.6;
 /// the common case rather than the exception, and it renders *nothing at all*:
 /// no gap, no divider, no placeholder. The completion screen without a
 /// challenge must be indistinguishable from a completion screen that never had
-/// the possibility of one.
+/// the possibility of one. It sits in the completion screen's sticky footer,
+/// above the action, and carries the gap between the two itself — the bar
+/// contributes none, so an absent offer leaves no band where it would have
+/// been.
 class ChallengeSuggestion extends ConsumerWidget {
   /// Creates a [ChallengeSuggestion].
   const ChallengeSuggestion({required this.lessonId, super.key});
@@ -32,8 +35,11 @@ class ChallengeSuggestion extends ConsumerWidget {
     final challenge = challengeForLesson(bank, lessonId);
     if (challenge == null) return const SizedBox.shrink();
 
+    // The gap belongs to the offer rather than to its host: the sticky bar
+    // adds no spacer of its own, so a lesson with no challenge leaves no trace
+    // in the footer at all.
     return Padding(
-      padding: const EdgeInsets.only(top: AppSpacing.lg),
+      padding: const EdgeInsets.only(bottom: AppSpacing.base),
       child: _Suggestion(challenge: challenge),
     );
   }

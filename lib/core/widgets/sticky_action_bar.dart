@@ -68,6 +68,7 @@ class StickyActionBar extends StatefulWidget {
     required this.label,
     required this.onPressed,
     this.link,
+    this.preface,
     super.key,
   });
 
@@ -83,6 +84,26 @@ class StickyActionBar extends StatefulWidget {
 
   /// The optional quiet link under the action.
   final QuietLink? link;
+
+  /// Optional content pinned **above** the action, inside the bar.
+  ///
+  /// The design puts a whole card here on the lesson ending — the Coffee
+  /// Challenge offer (`prototype/rewards.jsx:139`) — and a support paragraph
+  /// on the duel. Both belong to the footer rather than to the scrolling
+  /// content: they travel with the action, and the gradient has to sit behind
+  /// them.
+  ///
+  /// **Still not a second action.** The primary is a label and a callback and
+  /// nothing here changes that, so the design's *"one primary action only"*
+  /// stays enforced by the signature. A caller that puts a filled button in
+  /// here is doing something the rule already forbids in words; what it can
+  /// express is an offer or a sentence, which is what the design asks for.
+  ///
+  /// **It carries its own gap.** The bar adds no spacer above the action,
+  /// because a preface that renders nothing must leave nothing behind: the
+  /// challenge offer is absent from twenty of the thirty-two lessons, and a
+  /// spacer the bar contributed would show as a phantom band on all of them.
+  final Widget? preface;
 
   @override
   State<StickyActionBar> createState() => _StickyActionBarState();
@@ -184,6 +205,7 @@ class _StickyActionBarState extends State<StickyActionBar> {
   Widget _bar() {
     final mood = context.mood;
     final link = widget.link;
+    final preface = widget.preface;
 
     return DecoratedBox(
       key: _barKey,
@@ -206,7 +228,9 @@ class _StickyActionBarState extends State<StickyActionBar> {
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              ?preface,
               PrimaryButton(label: widget.label, onPressed: widget.onPressed),
               if (link != null)
                 LinkButton(label: link.label, onPressed: link.onTap),
