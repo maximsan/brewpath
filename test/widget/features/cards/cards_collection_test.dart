@@ -3,23 +3,11 @@ import 'package:brew_path/features/cards/domain/cards_providers.dart';
 import 'package:brew_path/features/cards/presentation/card_grid_item_widget.dart';
 import 'package:brew_path/features/cards/presentation/cards_footer.dart';
 import 'package:brew_path/features/cards/presentation/cards_screen.dart';
-import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-CardWithCollection _card(String id, {required bool collected}) =>
-    CardWithCollection(
-      card: CoffeeCardModel(
-        id: id,
-        title: 'Card $id',
-        description: 'A card called $id.',
-        fact: 'A fact about $id.',
-        moduleTag: 'BEANS',
-        iconName: 'beans',
-      ),
-      isCollected: collected,
-    );
+import '../../../support/content_fixtures.dart';
 
 /// Pumps the screen over a fixed collection, with no database behind it — the
 /// screen's whole job here is what it does with the list it is handed.
@@ -48,10 +36,10 @@ Future<void> _pump(
 
 /// Four cards, one earned — so the grid has something to hide.
 final List<CardWithCollection> _mostlyLocked = [
-  _card('a', collected: true),
-  _card('b', collected: false),
-  _card('c', collected: false),
-  _card('d', collected: false),
+  testCardWithCollection('a', collected: true),
+  testCardWithCollection('b', collected: false),
+  testCardWithCollection('c', collected: false),
+  testCardWithCollection('d', collected: false),
 ];
 
 void main() {
@@ -81,8 +69,8 @@ void main() {
     tester,
   ) async {
     await _pump(tester, [
-      _card('a', collected: true),
-      _card('b', collected: true),
+      testCardWithCollection('a', collected: true),
+      testCardWithCollection('b', collected: true),
     ]);
 
     expect(find.byType(CardGridItemWidget), findsNWidgets(2));
@@ -94,16 +82,16 @@ void main() {
     tester,
   ) async {
     await _pump(tester, [
-      _card('a', collected: false),
-      _card('b', collected: false),
-      _card('c', collected: false),
+      testCardWithCollection('a', collected: false),
+      testCardWithCollection('b', collected: false),
+      testCardWithCollection('c', collected: false),
     ]);
 
     expect(find.byType(CardGridItemWidget), findsOneWidget);
     expect(find.text('3 more to collect'), findsOneWidget);
   });
 
-  testWidgets('the count line is the whole header — no title, no bar', (
+  testWidgets('the count line is the whole header — no prose, no bar', (
     tester,
   ) async {
     await _pump(tester, _mostlyLocked);
@@ -114,35 +102,23 @@ void main() {
       findsNothing,
       reason: 'the grid is the progress; a bar restates it',
     );
-    expect(
-      find.text('Collection'),
-      findsNothing,
-      reason: 'the tab name is the shared header, never said twice',
-    );
+    // The prose the count replaced. That the tab's *title* is not said twice
+    // needs the shell above it, so it is asserted in `cards_screen_test.dart`.
+    expect(find.textContaining('cards collected'), findsNothing);
   });
 
   testWidgets('the grid is flat — no module sections above the tiles', (
     tester,
   ) async {
     await _pump(tester, [
-      _card('a', collected: true),
-      const CardWithCollection(
-        card: CoffeeCardModel(
-          id: 'z',
-          title: 'Card z',
-          description: 'From another module.',
-          fact: 'A fact.',
-          moduleTag: 'TASTE',
-          iconName: 'taste',
-        ),
-        isCollected: true,
-      ),
+      testCardWithCollection('a', collected: true),
+      testCardWithCollection('z', collected: true, moduleTag: 'Taste'),
     ]);
 
     // The two cards carry different module tags; neither becomes a heading.
     expect(find.byType(CardGridItemWidget), findsNWidgets(2));
-    expect(find.text('BEANS'), findsOneWidget);
-    expect(find.text('TASTE'), findsOneWidget);
+    expect(find.text('Beans'), findsOneWidget);
+    expect(find.text('Taste'), findsOneWidget);
   });
 
   testWidgets('the count and the remainder are spoken', (tester) async {

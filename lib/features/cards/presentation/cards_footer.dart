@@ -1,10 +1,11 @@
 import 'package:brew_path/core/icons/app_icon.dart';
-import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/dashed_rounded_border.dart';
+import 'package:brew_path/core/widgets/icon_badge.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 
 /// What the block says under its count.
@@ -23,6 +24,12 @@ const double _lockWellRadius = 12;
 /// The design writes it as `color-mix(in oklab, var(--surface) 55%, var(--bg))`
 /// — a surface that has not quite lifted off the page, which is the point: the
 /// block stands for cards that are not there.
+///
+/// ⚠️ **Mixed in sRGB, not oklab.** `Color.lerp` is the only blend Flutter
+/// gives us and it interpolates in sRGB, so the result is a shade off what the
+/// design computes. Between two near-neutral surfaces the two spaces barely
+/// part company; recorded because the ratio is transcribed exactly and the
+/// space it is mixed in is not.
 const double _blockLift = 0.55;
 
 /// The remainder the grid does not draw, named under it.
@@ -57,10 +64,7 @@ class CardsFooter extends StatelessWidget {
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            vertical: AppSpacing.lg,
-            horizontal: AppSpacing.md,
-          ),
+          padding: OffTokens.cardsFooterPadding.value,
           child: Row(
             spacing: AppSpacing.base,
             children: [
@@ -74,7 +78,7 @@ class CardsFooter extends StatelessWidget {
                       count,
                       style: AppText.body(mood: mood, face: AppFace.control),
                     ),
-                    const SizedBox(height: AppSpacing.xxs),
+                    SizedBox(height: OffTokens.cardsFooterLineGap.value),
                     Text(_invitation, style: AppText.support(mood: mood)),
                   ],
                 ),
@@ -86,20 +90,15 @@ class CardsFooter extends StatelessWidget {
     );
   }
 
-  /// The well the lock sits in.
-  ///
-  /// Built here rather than with `IconBadge`, which draws no border: the
-  /// design outlines this one in the rule colour, and a badge without it reads
-  /// as a filled chip rather than an empty slot.
-  Widget _lock(MoodColors mood) => Container(
-    width: _lockWell,
-    height: _lockWell,
-    alignment: Alignment.center,
-    decoration: BoxDecoration(
-      color: mood.bg,
-      border: Border.all(color: mood.rule),
-      borderRadius: BorderRadius.circular(_lockWellRadius),
-    ),
-    child: IconMark(AppIcon.lock, size: _lockGlyph, color: mood.inkMute),
+  /// The well the lock sits in — outlined, because it stands for a slot that
+  /// is waiting rather than a chip that is filled.
+  Widget _lock(MoodColors mood) => IconBadge.roundedMark(
+    mark: AppIcon.lock,
+    size: _lockWell,
+    radius: _lockWellRadius,
+    iconSize: _lockGlyph,
+    background: mood.bg,
+    foreground: mood.inkMute,
+    borderColor: mood.rule,
   );
 }

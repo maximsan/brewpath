@@ -7,6 +7,7 @@ import 'package:brew_path/features/cards/presentation/cards_footer.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -21,6 +22,11 @@ const double _tileGap = AppSpacing.sm;
 /// by module, and it does not lay out the whole locked set: it shows what has
 /// been earned, one locked card as a teaser, and a footer naming the rest
 /// (#396). What is drawn and what is counted are decided in `cards_grid.dart`.
+///
+/// The **tile** is untouched and still diverges — a locked one draws `???`
+/// where the design draws the card's place in the set. That is #434's, and it
+/// matters more now than it did: there is exactly one locked tile on screen,
+/// and it is the next card the learner will earn.
 class CardsScreen extends ConsumerWidget {
   /// Creates a [CardsScreen].
   const CardsScreen({super.key});
@@ -35,6 +41,11 @@ class CardsScreen extends ConsumerWidget {
           label: 'Loading your collection',
           child: const LoadingIndicator(),
         ),
+        // Excluded rather than merged, as the mini-game player's error branch
+        // has it: the raw exception is not a sentence, and reading it after
+        // the label says the failure twice. ⚠️ Safe only while no retry is
+        // offered — `ErrorView` grows a Retry button when handed `onRetry`,
+        // and this would silence it.
         error: (error, _) => Semantics(
           label: 'Your collection could not be loaded.',
           excludeSemantics: true,
@@ -60,13 +71,20 @@ class _CardsBody extends StatelessWidget {
       physics: const AlwaysScrollableScrollPhysics(),
       slivers: [
         SliverPadding(
+          // The design opens both the header block and the grid below it at 24
+          // from what precedes them.
           padding: const EdgeInsets.fromLTRB(
             AppSpacing.gutter,
-            AppSpacing.md,
+            AppSpacing.lg,
             AppSpacing.gutter,
             AppSpacing.lg,
           ),
-          sliver: SliverToBoxAdapter(child: _CollectionCount(list: list)),
+          sliver: SliverToBoxAdapter(
+            child: _CollectionCount(
+              earned: earnedCount(list),
+              total: list.length,
+            ),
+          ),
         ),
         SliverPadding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
@@ -110,26 +128,33 @@ class _CardsBody extends StatelessWidget {
 /// It carries no title. The tab's name is the shared header's, and the design
 /// never states it twice on one screen.
 ///
-/// ⚠️ **One recorded divergence: the tracking.** The design tracks this line
-/// at `0.08em`; the label rung tracks at `0.14em`, the smallcaps value it owes
-/// its uppercase siblings. The ladder owns tracking precisely so a call site
-/// cannot drift, so this takes the rung and the difference is written down
-/// rather than spent — it is under a pixel per character at this step.
+/// Its tracking is the design's own rather than the rung's — see
+/// [OffTokens.collectionCountTracking] for why a figure does not want the
+/// smallcaps value.
 class _CollectionCount extends StatelessWidget {
-  const _CollectionCount({required this.list});
+  const _CollectionCount({required this.earned, required this.total});
 
-  final List<CardWithCollection> list;
+  /// How many cards the learner holds.
+  final int earned;
+
+  /// How many there are to hold.
+  final int total;
 
   @override
   Widget build(BuildContext context) {
-    final count = '${earnedCount(list)} of ${list.length}';
+    final count = '$earned of $total';
+    final style = AppText.label(mood: context.mood, face: AppFace.mono);
 
     return Text(
       // Uppercased here rather than authored so, because the case is the
       // design's treatment of the line, not part of what it says — which is
       // also why the spoken label below keeps its own.
       count.toUpperCase(),
-      style: AppText.label(mood: context.mood, face: AppFace.mono),
+      style: style.copyWith(
+        // In em, as the design writes it, so it follows the rung's size.
+        letterSpacing:
+            OffTokens.collectionCountTracking.value * (style.fontSize ?? 0),
+      ),
       semanticsLabel: '$count cards collected',
     );
   }

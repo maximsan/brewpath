@@ -11,9 +11,9 @@ import '../support/widget_harness.dart';
 void main() {
   setUp(useInMemoryDatabase);
 
-  // The tab against the real content bank and a real empty user, which is what
-  // this file is for. What the screen does with an arbitrary collection is
-  // `features/cards/cards_screen_test.dart`'s.
+  // The tab against the real content bank and a real empty user, under the
+  // shell — which is what this file is for. What the screen does with an
+  // arbitrary collection is `features/cards/cards_collection_test.dart`'s.
   testWidgets('a fresh user meets one teaser and the whole remainder', (
     tester,
   ) async {
@@ -36,5 +36,21 @@ void main() {
     expect(find.byType(CardGridItemWidget), findsOneWidget);
     expect(find.text('???'), findsOneWidget);
     expect(find.byType(CardsFooter), findsOneWidget);
+  });
+
+  testWidgets('the tab is titled once, by the shared header', (tester) async {
+    tester.view.physicalSize = const Size(420, 1200);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await pumpWithProviders(tester, const BrewPathApp());
+    await tester.tap(findMark(AppIcon.cards, active: false));
+    await settleLoaders(tester);
+
+    // The screen used to draw a second "Collection" under the header's. This
+    // needs the shell to mean anything — under a bare `CardsScreen` there is
+    // no header to duplicate, so the assertion could not fail.
+    expect(find.text('Collection'), findsOneWidget);
   });
 }
