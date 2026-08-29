@@ -3,6 +3,7 @@ import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
+import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_providers.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_run.dart';
 import 'package:brew_path/shared/models/content/mini_game_format.dart';
@@ -168,17 +169,14 @@ class _Intro extends StatelessWidget {
       AppSpacing.lg,
       AppSpacing.lg,
     ),
-    child: SizedBox(
-      width: double.infinity,
-      child: FilledButton(
-        onPressed: _isPlayable
-            ? () => context.goNamed(
-                AppRoutes.miniGamePlay.name,
-                pathParameters: {'gameId': format.id},
-              )
-            : null,
-        child: Text(_isPlayable ? 'Play' : 'Not playable yet'),
-      ),
+    child: PrimaryButton(
+      label: _isPlayable ? 'Play' : 'Not playable yet',
+      onPressed: _isPlayable
+          ? () => context.goNamed(
+              AppRoutes.miniGamePlay.name,
+              pathParameters: {'gameId': format.id},
+            )
+          : null,
     ),
   );
 }

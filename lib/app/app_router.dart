@@ -26,6 +26,7 @@ import 'package:brew_path/features/profile/presentation/profile_screen.dart';
 import 'package:brew_path/features/profile/presentation/settings_screen.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/presentation/streak_screen.dart';
+import 'package:brew_path/features/progress/presentation/tree_screen.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
 import 'package:brew_path/features/tour/presentation/app_guide_screen.dart';
 import 'package:brew_path/services/analytics/analytics_provider.dart';
@@ -296,6 +297,14 @@ GoRouter appRouter(Ref ref) {
                     name: AppRoutes.profileStreak.name,
                     parentNavigatorKey: _rootKey,
                     builder: (context, state) => const StreakScreen(),
+                  ),
+                  // Same shape as the streak view: pushed on the root
+                  // navigator so the tree covers the bottom-nav shell.
+                  GoRoute(
+                    path: AppRoutes.profileTree.path,
+                    name: AppRoutes.profileTree.name,
+                    parentNavigatorKey: _rootKey,
+                    builder: (context, state) => const TreeScreen(),
                   ),
                 ],
               ),

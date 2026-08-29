@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
+import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/features/companion/domain/companion_reaction.dart';
 import 'package:brew_path/features/companion/presentation/companion_celebration.dart';
 import 'package:brew_path/features/progress/domain/freeze_status_line.dart';
@@ -174,13 +175,7 @@ class _MilestoneBeat extends StatelessWidget {
               AppSpacing.lg,
               AppSpacing.lg,
             ),
-            child: SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                onPressed: onContinue,
-                child: const Text('Continue'),
-              ),
-            ),
+            child: PrimaryButton(label: 'Continue', onPressed: onContinue),
           ),
         ],
       ),

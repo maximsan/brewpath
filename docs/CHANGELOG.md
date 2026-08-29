@@ -44,6 +44,16 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The Coffee Tree has its own screen.** Tapping the tree on Profile opens it:
+  the stage's name — Seed, Flowering, Near harvest — the tree at hero size, how
+  far through the core course you are as a bar that fills, what the next stage
+  is called, and a ten-rung ladder of the whole climb. It explains, in the
+  design's own words, that only first-time lesson completions grow the tree and
+  that replays sharpen mastery instead. The tree also **sways** now, gently and
+  forever, on the one screen you sit on — the Profile hero stays still, as the
+  design has it, so a tab you leave open carries no permanent animation.
+  Reduced motion holds the tree upright and fills the bar instantly.
+
 - **The app opens on a welcome screen it never had.** The first screen a new
   learner saw was the mascot's introduction wearing the welcome screen's slot:
   it led with *"Plant your tree."* and copy about Roasty, and the screen that
@@ -174,6 +184,18 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **The Cards tab stops opening as a wall of blanks.** The grid laid out every
+  collectible at once, so a learner who had earned nothing met a full screen of
+  locked tiles. It now shows what you have earned plus a single locked card as
+  a teaser, and a block underneath names the rest — *"29 more to collect ·
+  Finish lessons to reveal new cards."* The count includes the teaser you can
+  see, which is the design's reading of "how many are left".
+
+  The tab loses three things with it: the grid is no longer sectioned by
+  module, the progress bar is gone — the grid is the progress — and the header
+  is the bare `0 OF 30` in mono the design gives it, rather than a second
+  "Collection" title under the one the shared header already shows.
+
 - **Bold text is real bold now, or it isn't there.** 53 places asked for a
   weight the app doesn't ship — Flutter faked it by smearing the letterforms —
   and one asked for Roboto by accident. Emphasis now comes from the typeface
@@ -217,6 +239,32 @@ You can always edit this file by hand instead — the helpers just save effort.
   gated, the design marks the gated card itself.
 
 ### Fixed
+- **The lesson's Continue is the same size as every other button that means
+  the same thing.** It was Material's shorter default while the Continue on the
+  screen after it stood taller — the most-pressed button in the app, visibly
+  smaller than its own follow-up. The two challenge sheets' actions match now
+  too. Buttons that sit *inside* a card or beside another button are left as
+  they are, and say why.
+
+- **A collectible's corner matches every other rounded thing.** It carried a
+  hand-picked radius that belonged to no part of the design.
+
+
+- **Every button in the app is the shape the design draws, and none of them
+  were.** The app never told Material what a button looks like, so almost every
+  one it drew fell back to a fully-rounded pill — on lesson completion, the
+  module summary, the streak screen, both mini-game screens and a dozen smaller
+  places. Onboarding escaped the pill, because it used a hand-built button that
+  carried the rule privately — but that button had the wrong corner too, so
+  onboarding's buttons change as well. The rule is declared once now, so a
+  button is right wherever it is drawn.
+
+  The corner they take is the one the running design actually sets. The
+  component catalogue and the running prototype disagreed about buttons — 2px
+  against 14px — and the app had followed the catalogue. It follows the running
+  prototype now, as it already does for the quiz and match tiles, so everything
+  rounded on a screen is rounded to the same measure. The Appearance toggle in
+  Settings stays a pill, which is what the design draws it as.
 
 - **The Today tour has a way out, and a way back in.** Every card in the
   four-stop tour now carries **Skip** on the left and **Next** on the right —

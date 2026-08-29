@@ -118,6 +118,9 @@ void main() {
     // Two pushes deep — Settings, then the guide — and it carries a back-arrow
     // bar of its own, the same as the screen it was opened from.
     'appGuide': HeaderTier.pushed,
+    // Its own bar with a close icon, over the shell — pushed, like the
+    // streak view it sits beside.
+    'profileTree': HeaderTier.pushed,
     'lesson': HeaderTier.immersive,
     'lessonComplete': HeaderTier.immersive,
     'moduleSummary': HeaderTier.immersive,

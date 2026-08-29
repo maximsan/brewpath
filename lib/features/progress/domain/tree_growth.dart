@@ -22,3 +22,23 @@ int treeStageForProgress({required int completed, required int total}) {
   final earned = (completed * treeStageCount + total - 1) ~/ total;
   return earned.clamp(freshTreeStage, treeStageCount);
 }
+
+/// The smallest bar the tree screen will draw, as a fraction of full width.
+///
+/// The design's floor (`screens.jsx:439`). A learner with nothing finished
+/// still sees a bar rather than an empty track they might read as a broken
+/// one — it says "here is the thing that fills", not "you have progress".
+const double minTreeProgressFraction = 0.03;
+
+/// How full the tree screen's bar is with [completed] of [total] lessons done.
+///
+/// Separate from [treeStageForProgress] because it answers a different
+/// question: that one returns which of ten stages has been *earned*, this one
+/// is the continuous fill between them. A course with no lessons reads as the
+/// floor rather than dividing by zero, and completions beyond the course size
+/// — which a grown-then-shrunk course can produce — clamp to full.
+double treeProgressFraction({required int completed, required int total}) {
+  if (total <= 0) return minTreeProgressFraction;
+  final filled = completed / total;
+  return filled.clamp(minTreeProgressFraction, 1);
+}

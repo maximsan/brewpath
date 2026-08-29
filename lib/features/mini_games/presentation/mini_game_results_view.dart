@@ -1,3 +1,4 @@
+import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/features/companion/domain/companion_reaction.dart';
 import 'package:brew_path/features/companion/presentation/companion_celebration.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_run.dart';
@@ -97,13 +98,7 @@ class MiniGameResultsView extends StatelessWidget {
             ),
             child: Column(
               children: [
-                SizedBox(
-                  width: double.infinity,
-                  child: FilledButton(
-                    onPressed: onPlayAgain,
-                    child: const Text('Play again'),
-                  ),
-                ),
+                PrimaryButton(label: 'Play again', onPressed: onPlayAgain),
                 const SizedBox(height: AppSpacing.xs),
                 SizedBox(
                   width: double.infinity,

@@ -1,4 +1,5 @@
 import 'package:brew_path/core/constants/app_labels.dart';
+import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -95,15 +96,15 @@ class CardShell extends StatelessWidget {
         ],
         ...children,
         const SizedBox(height: AppSpacing.lg),
+        // The lesson's own CTA, so it is the design's `.btn-primary` at full
+        // width and 52 — not Material's 40, which left the most-pressed button
+        // in the app shorter than the Continue on the screen after it.
         if (commit != null && !latched)
-          FilledButton(
-            onPressed: commit!.onCommit,
-            child: Text(commit!.label),
-          )
+          PrimaryButton(label: commit!.label, onPressed: commit!.onCommit)
         else
-          FilledButton(
+          PrimaryButton(
+            label: AppLabels.continueLabel,
             onPressed: latched ? onContinue : null,
-            child: const Text(AppLabels.continueLabel),
           ),
       ],
     );

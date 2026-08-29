@@ -3,6 +3,7 @@ import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/icon_badge.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
+import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/features/companion/domain/companion_reaction.dart';
 import 'package:brew_path/features/companion/presentation/companion_celebration.dart';
 import 'package:brew_path/features/learn/domain/module_summary_provider.dart';
@@ -84,9 +85,9 @@ class _ModuleSummaryScreenState extends ConsumerState<ModuleSummaryScreen> {
               _EarnedCards(cards: summary.earnedCards),
             ],
             const SizedBox(height: AppSpacing.xl),
-            FilledButton(
+            PrimaryButton(
+              label: 'Continue',
               onPressed: () => context.goNamed(AppRoutes.learn.name),
-              child: const Text('Continue'),
             ),
           ],
         ),

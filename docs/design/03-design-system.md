@@ -85,8 +85,8 @@ There is **one radius token** (`--r: 14px`). Everything else is a rule, not a sc
 
 | Radius | Language | Where |
 |---|---|---|
-| **2px** | Editorial | Cards, buttons and inputs. The sharp, print-like default. |
-| **14px** (`--r`) | Soft chrome | Media frames, bottom sheets, icon wells, avatars, mini-game tiles. 14px is the token; 12–20 is the range other chrome may sit in. |
+| **2px** | Editorial | Cards and inputs. The sharp, print-like default. |
+| **14px** (`--r`) | Soft chrome | Media frames, bottom sheets, icon wells, avatars, mini-game tiles, and **buttons** (`.btn-primary`, `.btn-ghost`). 14px is the token; 12–20 is the range other chrome may sit in. |
 | **999px** | Pill / dot | Status dots, fav toggle, switch toggles, badges, home indicator. |
 
 > **"Mixing them on one element is the tell of an off-system component."**
@@ -99,12 +99,52 @@ There is **one radius token** (`--r: 14px`). Everything else is a rule, not a sc
 > the running prototype wins, so they are **14px** and this table no longer
 > lists them under editorial. The dropped value is named here so it is not
 > "corrected" back. `.pick-tile` is 14px in both.
+>
+> **Buttons are the same case, missed in that sweep and corrected in #377.**
+> `Design System.html` sets `.btn-primary` to `border-radius:2px`; `index.html`
+> sets it to `var(--r)`. So every button is **14px**, and this table no longer
+> lists buttons under editorial either. The app declares it once, in
+> `AppTheme`'s button themes, so a bare `FilledButton` is correct without
+> knowing the rule.
 
 > ⚠️ **Correction.** Earlier versions of this doc listed a "radius scale of
 > 4 / 12 / 14 / 16 / 20 / 999". No such scale exists in the source — `--r` is
 > the only radius token, and the editorial default is **2px, not 4px**. An
-> implementation built from the old line would round every card and button
-> wrong.
+> implementation built from the old line would round every card wrong.
+> (Buttons are `--r`, per the correction above — not editorial at all.)
+
+## The two prototype files, diffed in full
+
+[ADR-0009](../adr/0009-the-running-prototype-wins-over-the-design-system-catalogue.md)
+ruled that where `Design System.html` and the running `index.html` disagree, the
+running file wins. Its table listed the disagreements known when it was written;
+it was never a sweep, and buttons were missing from it — which is how
+`.btn-primary` shipped at the catalogue's 2px.
+
+Both stylesheets have now been diffed selector by selector. **39 selectors are
+defined in both.** Of the 29 properties that differ, most are the catalogue
+writing a literal where the running file writes the token for the same value
+(`13px` is `var(--t-support)`), or whitespace inside a `font-family`. Those are
+not disagreements.
+
+These are, and each resolves to the running file:
+
+| Selector | Property | Catalogue | Running — **wins** | Where it stands |
+|---|---|---|---|---|
+| `.btn-primary`, `.btn-ghost` | `border-radius` | 2px | `var(--r)` | Fixed, #377 |
+| `.mcq-choice`, `.match-item` | `border-radius` | 2px | `var(--r)` | Fixed, ADR-0009 |
+| `.match-item.matched` | background, colour | sage 10%, `--ink-mute` | sage 12%, `--ink` | Fixed, ADR-0009 |
+| `.collect-card` | `border-radius` | 2px | `var(--r)` | Fixed here |
+| `.collect-card .cc-title` | `font-size`, `line-height` | 19px, 1.1 | `var(--t-lead)`, 1.15 | Open — the app styles this title elsewhere |
+| `.match-item` | `padding` | 14px 16px | 15px 18px | Open — 3–6px, and both are off the spacing scale |
+| `.brew-slider` | track, thumb, margin | 1px rule track | 3px filled track | Open — the slider is not built (#124, #333) |
+
+`body`'s background differs because the catalogue is a demo page; it is not a
+component.
+
+**The two open rows are recorded, not deferred silently.** Neither is worth a
+ticket of its own: the slider's belongs to whoever builds it, and the other two
+are a few pixels on components already drawn.
 
 ## Borders & elevation
 - **Hairlines do the work.** 1px `--rule` separates almost everything; shadows are reserved for sheets and floating buttons only.

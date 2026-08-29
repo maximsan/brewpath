@@ -2,6 +2,8 @@ import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/icon_badge.dart';
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
+import 'package:brew_path/shared/theme/app_radii.dart';
+import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -15,7 +17,6 @@ class CardGridItemWidget extends StatelessWidget {
   /// The card paired with its collected state.
   final CardWithCollection item;
 
-  static const double _cornerRadius = 12;
   static const double _badgeSize = 56;
   static const double _iconSize = 28;
 
@@ -34,9 +35,9 @@ class CardGridItemWidget extends StatelessWidget {
                 pathParameters: {'cardId': item.card.id},
               )
             : null,
-        borderRadius: BorderRadius.circular(_cornerRadius),
+        borderRadius: BorderRadius.circular(AppRadii.chrome),
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(AppSpacing.base),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

@@ -97,6 +97,8 @@ class _Offer extends ConsumerWidget {
             const SizedBox(height: AppSpacing.sm),
             Align(
               alignment: Alignment.centerLeft,
+              // Deliberately not full width — the `Align` is the design's:
+              // a section action, not the screen's CTA.
               child: FilledButton(
                 onPressed: () => _start(context, ref),
                 child: const Text('Start Challenge'),

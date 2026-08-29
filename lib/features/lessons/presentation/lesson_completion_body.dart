@@ -2,6 +2,7 @@ import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/icon_badge.dart';
+import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_suggestion.dart';
 import 'package:brew_path/features/companion/domain/companion_reaction.dart';
 import 'package:brew_path/features/companion/presentation/companion_celebration.dart';
@@ -54,9 +55,9 @@ class LessonCompletionBody extends StatelessWidget {
             // twenty of the thirty-two — the widget renders no gap of its own.
             ChallengeSuggestion(lessonId: lessonId),
             const SizedBox(height: 32),
-            FilledButton(
+            PrimaryButton(
+              label: AppLabels.continueLabel,
               onPressed: () => _onContinue(context),
-              child: const Text(AppLabels.continueLabel),
             ),
           ],
         ),

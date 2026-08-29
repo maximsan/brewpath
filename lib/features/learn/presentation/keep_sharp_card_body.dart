@@ -137,6 +137,8 @@ class KeepSharpCardBody extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.sm),
+          // Sized by Material, not `PrimaryButton`: this is an action
+          // inside a card, not the screen's CTA.
           FilledButton(
             onPressed: () => context.goTo(recommended.destination),
             child: const Text('Start'),

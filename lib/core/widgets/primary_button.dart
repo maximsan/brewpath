@@ -3,11 +3,23 @@ import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// Full-width, square-corner primary CTA used across onboarding. Mirrors the
-/// `.btn-primary` style from the design bundle (2px corner radius, accent
-/// fill, accent-ink text). When disabled, swaps to a muted neutral fill so
-/// the affordance is still clearly visible against the dark-roast
-/// background — the prototype's 35% opacity fade is invisible on screen.
+/// The full-width primary CTA — the design's `.btn-primary`.
+///
+/// Accent fill, accent-ink text, and the radius the running prototype sets:
+/// `var(--r)`, which is [AppRadii.chrome]. It read [AppRadii.editorial] until
+/// #377, transcribed from `Design System.html`'s 2px, which ADR-0009 ranks
+/// below the running `index.html`.
+///
+/// The shape is set here as well as on `AppTheme`'s button themes. That is not
+/// belt-and-braces: `context.mood` falls back to Dark Roast when no theme
+/// carries the extension, so this renders in a themeless `MaterialApp` — and
+/// without its own shape it would render there as Material's pill. Both read
+/// [AppRadii.chrome], so the two cannot drift; `button_shape_test.dart` pins
+/// the themeless case.
+///
+/// When disabled, swaps to a muted neutral fill so the affordance is still
+/// clearly visible against the dark-roast background — the prototype's 35%
+/// opacity fade is invisible on screen.
 class PrimaryButton extends StatelessWidget {
   /// Creates a [PrimaryButton].
   const PrimaryButton({
@@ -44,7 +56,7 @@ class PrimaryButton extends StatelessWidget {
           disabledBackgroundColor: mood.surface2,
           disabledForegroundColor: mood.inkMute,
           shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(AppRadii.editorial)),
+            borderRadius: BorderRadius.all(Radius.circular(AppRadii.chrome)),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16),
         ),
