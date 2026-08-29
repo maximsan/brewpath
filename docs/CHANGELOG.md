@@ -158,20 +158,31 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **The Today tour has a way out, and a way back in.** Every card in the
+  four-stop tour now carries **Skip** on the left and **Next** on the right —
+  **Done** on the last stop — where before it had no buttons at all and could
+  only be finished by walking it to the end. Navigating to another tab
+  mid-tour now ends the tour instead of leaving its callout floating over the
+  tab you moved to. And the way back is **Settings → Help & Support → App
+  Guide**: a new screen that says in a line or two what each part of the app
+  does, with **Replay Today introduction** at the foot. That replay row moved
+  there from Profile, where it read as a fifth preference in Customize. The
+  guide's streak line says *"one finished activity a day"* rather than the
+  design's *"one lesson a day"*, which named one of the six ways a day
+  qualifies and read as the only one.
+
 - **Sheets, the tour's opening question and the Settings confirmations now
-  blur what is behind them.** The
-  design gives every overlay a blur radius in the same breath as its colour —
-  5px behind a bottom sheet, 3px behind a covering wash, 8px behind a control
-  sitting on video, none on the plain veil. The app had ported the colours and
-  dropped every radius, so a sheet dimmed the screen behind it and left it
-  sharp. An overlay is now one value carrying both halves, and the two
-  overlays the app actually renders arrive blurred. Reset Progress and Restart
-  onboarding were also asking for confirmation behind Material's stock black,
-  having never been given the app's dim at all; they open through the same door
-  now. The blur holds steady
-  while the tint fades, which is also what keeps it affordable on an older
-  phone; turning animations off does not take it away, because a blur is not
-  motion.
+  blur what is behind them.** The design gives every overlay a blur radius in
+  the same breath as its colour — 5px behind a bottom sheet, 3px behind a
+  covering wash, 8px behind a control sitting on video, none on the plain veil.
+  The app had ported the colours and dropped every radius, so a sheet dimmed
+  the screen behind it and left it sharp. An overlay is now one value carrying
+  both halves, and the overlays the app actually renders arrive blurred. Reset
+  Progress and Restart onboarding were also asking for confirmation behind
+  Material's stock black, having never been given the app's dim at all; they
+  open through the same door now. The blur holds steady while the tint fades,
+  which is also what keeps it affordable on an older phone; turning animations
+  off does not take it away, because a blur is not motion.
 
 - **The tour's spotlight was wearing the wrong overlay.** It dimmed the screen
   with the media scrim — the one overlay the design reserves for a control

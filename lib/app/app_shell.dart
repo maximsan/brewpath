@@ -77,6 +77,9 @@ class _AppShellState extends State<AppShell> {
     // The Tour's engine is owned here, not on Learn: the last stop is the tab
     // bar below, which lives outside every branch.
     return TourHost(
+      // Told which branch is showing, so it can end a Tour the learner has
+      // navigated away from — the host itself never disposes on a tab switch.
+      activeBranchIndex: widget.navigationShell.currentIndex,
       child: Scaffold(
         body: Column(
           children: [

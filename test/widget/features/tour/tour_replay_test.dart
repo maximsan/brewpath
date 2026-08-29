@@ -1,8 +1,9 @@
 import 'package:brew_path/app/app.dart';
 import 'package:brew_path/app/app_header.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/features/tour/domain/app_guide_copy.dart';
 import 'package:brew_path/features/tour/domain/tour_copy.dart';
-import 'package:brew_path/features/tour/presentation/replay_tour_row.dart';
+import 'package:brew_path/features/tour/presentation/replay_intro_row.dart';
 import 'package:brew_path/shared/repositories/settings_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,16 +11,17 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../../support/find_mark.dart';
 import '../../../support/widget_harness.dart';
 
-/// Replay from Profile: the stops, without the offer.
+/// Replay from the App Guide: the stops, without the offer.
 ///
-/// The whole point of this ticket is what replay *does not* do — no intro
-/// overlay, and no write — so most of these assertions are negative ones.
+/// The whole point of this entry point is what replay *does not* do — no intro
+/// overlay, and no write — so most of these assertions are negative ones. It
+/// reaches the row the way a learner does, through Settings → Help & Support →
+/// App Guide, because the path is half of what the ticket asks for.
 void main() {
   setUp(useInMemoryDatabase);
 
-  /// Tall enough for the whole of *Profile*, not just Learn: the replay row is
-  /// the last thing on that page, under the tree, the stats and the Customize
-  /// grid, and a tap cannot land on a widget below the viewport.
+  /// Tall enough for the whole of *Profile* and of Settings, so a tap cannot
+  /// land on a widget below the viewport.
   void useTallViewport(WidgetTester tester) {
     tester.view.physicalSize = const Size(400, 3600);
     tester.view.devicePixelRatio = 1.0;
@@ -44,23 +46,69 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('Profile offers a replay row under Customize', (tester) async {
+  /// Profile → gear → App Guide, which is the only way in.
+  Future<void> openAppGuide(WidgetTester tester) async {
+    await openProfile(tester);
+    await tester.tap(findMark(AppIcon.gear));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(AppGuideCopy.title));
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('Settings files the App Guide under Help & Support', (
+    tester,
+  ) async {
+    useTallViewport(tester);
+
+    await pumpWithProviders(tester, const BrewPathApp());
+    await openProfile(tester);
+    await tester.tap(findMark(AppIcon.gear));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text(AppGuideCopy.helpSectionLabel.toUpperCase()),
+      findsOneWidget,
+    );
+    expect(find.text(AppGuideCopy.settingsRowBody), findsOneWidget);
+  });
+
+  testWidgets('the App Guide explains each part and offers a replay', (
+    tester,
+  ) async {
+    useTallViewport(tester);
+
+    await pumpWithProviders(tester, const BrewPathApp());
+    await openAppGuide(tester);
+
+    for (final section in AppGuideCopy.sections) {
+      expect(
+        find.text(section.body),
+        findsOneWidget,
+        reason: 'the guide must say what ${section.title} does',
+      );
+    }
+    expect(find.text(TourCopy.replayTitle), findsOneWidget);
+    expect(find.text(TourCopy.replayBody), findsOneWidget);
+  });
+
+  testWidgets('Profile no longer carries the replay row', (tester) async {
     useTallViewport(tester);
 
     await pumpWithProviders(tester, const BrewPathApp());
     await openProfile(tester);
 
-    expect(find.text(TourCopy.replayTitle), findsOneWidget);
-    expect(find.text(TourCopy.replayBody), findsOneWidget);
+    // It moved to the App Guide. Left on Profile as well it would read as a
+    // fifth preference in Customize, which is what the design does not do.
+    expect(find.byType(ReplayIntroRow), findsNothing);
   });
 
   testWidgets('replay runs the stops with no intro overlay', (tester) async {
     useTallViewport(tester);
 
     await pumpWithProviders(tester, const BrewPathApp());
-    await openProfile(tester);
+    await openAppGuide(tester);
 
-    await tester.tap(find.byType(ReplayTourRow));
+    await tester.tap(find.byType(ReplayIntroRow));
     await letTheTourRun(tester);
 
     // Straight to stop 1 — the question the overlay asks was answered the
@@ -74,23 +122,23 @@ void main() {
     useTallViewport(tester);
 
     await pumpWithProviders(tester, const BrewPathApp());
-    await openProfile(tester);
+    await openAppGuide(tester);
 
-    await tester.tap(find.byType(ReplayTourRow));
+    await tester.tap(find.byType(ReplayIntroRow));
     await letTheTourRun(tester);
 
-    // The stops are anchored on Learn, so the row has to switch tabs as well
-    // as start the Tour — a replay that ran while Profile was on screen would
-    // spotlight nothing. Learn is named by the shared header's title, which is
-    // where the tab's identity lives now that the shell owns the chrome.
+    // The stops are anchored on Learn, so the row has to switch tabs — and
+    // clear the two pushed screens it was tapped from — as well as start the
+    // Tour. Learn is named by the shared header's title, which is where the
+    // tab's identity lives now that the shell owns the chrome.
     expect(find.widgetWithText(AppHeader, 'TODAY'), findsOneWidget);
   });
 
   testWidgets('replay writes nothing', (tester) async {
     useTallViewport(tester);
 
-    // Arrive at Profile with the flag deliberately unset, which a real device
-    // never is by this point — precisely so a stray write would be visible.
+    // Arrive with the flag deliberately unset, which a real device never is by
+    // this point — precisely so a stray write would be visible.
     final repo = SettingsRepository();
     final armed = await repo.getSettings()
       ..tourSeen = false;
@@ -106,8 +154,8 @@ void main() {
     final before = await repo.getSettings();
     await repo.saveSettings(before..tourSeen = false);
 
-    await openProfile(tester);
-    await tester.tap(find.byType(ReplayTourRow));
+    await openAppGuide(tester);
+    await tester.tap(find.byType(ReplayIntroRow));
     await letTheTourRun(tester);
 
     expect(

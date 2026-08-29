@@ -1,4 +1,5 @@
 import 'package:brew_path/features/tour/presentation/tour_runner.dart';
+import 'package:brew_path/features/tour/presentation/tour_stop_actions.dart';
 import 'package:brew_path/features/tour/presentation/tour_stops.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -91,6 +92,13 @@ class TourStop extends StatelessWidget {
       // The Tour is read, not operated: tapping the highlighted widget should
       // advance the Tour, never fire the button underneath it.
       disableDefaultTargetGestures: true,
+      // Every card carries its own pair rather than the engine's global one,
+      // because the right-hand button is not the same word on every stop.
+      tooltipActions: tourStopActions(
+        mood: mood,
+        isLast: TourStops.isLast(stopKey),
+      ),
+      tooltipActionConfig: tourStopActionConfig,
       child: child,
     );
   }

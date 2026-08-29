@@ -60,9 +60,21 @@ abstract final class TourCopy {
       'Path grows your coffee tree, Cards keeps your collection, Profile holds '
       'your streak and settings.';
 
-  /// The Profile row that replays the Tour.
-  static const replayTitle = 'Replay the tour';
+  /// The card's left-hand button, on every stop — the way out the shipped Tour
+  /// had none of. Spelled apart from [introDecline] even though the word is
+  /// the same: one answers the offer, the other abandons a run, and either can
+  /// be re-worded without dragging the other with it.
+  static const stopSkip = 'Skip';
+
+  /// The card's right-hand button on stops 1–3.
+  static const stopNext = 'Next';
+
+  /// The same button on the last stop, where advancing *is* finishing.
+  static const stopDone = 'Done';
+
+  /// The App Guide row that replays the Tour.
+  static const replayTitle = 'Replay Today introduction';
 
   /// That row's supporting line.
-  static const replayBody = 'Walk through the Learn tab again';
+  static const replayBody = 'Runs the short first-open tour again';
 }
