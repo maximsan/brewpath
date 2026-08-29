@@ -174,6 +174,12 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **Bold text is real bold now, or it isn't there.** 53 places asked for a
+  weight the app doesn't ship — Flutter faked it by smearing the letterforms —
+  and one asked for Roboto by accident. Emphasis now comes from the typeface
+  the design actually bundles, and a test fails the build if a screen names a
+  weight again.
+
 - **Small orange labels are readable in the light theme.** Every eyebrow,
   kicker and smallcaps label set in the brand orange was drawing at 4.23:1 on
   the light background — under the accessibility minimum for text that size.

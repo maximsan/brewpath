@@ -99,9 +99,7 @@ class _CollectionHeader extends StatelessWidget {
       children: [
         Text(
           'Collection',
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+          style: theme.textTheme.titleMedium?.copyWith(),
         ),
         const SizedBox(height: 4),
         Text(

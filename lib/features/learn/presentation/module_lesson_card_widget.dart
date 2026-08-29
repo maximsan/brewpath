@@ -166,7 +166,6 @@ class _PointsInline extends StatelessWidget {
           '+$points PTS',
           style: theme.textTheme.labelSmall?.copyWith(
             color: mood.inkMute,
-            fontWeight: FontWeight.w600,
           ),
         ),
       ],

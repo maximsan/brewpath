@@ -62,9 +62,7 @@ class _PathHeader extends StatelessWidget {
       children: [
         Text(
           'Your journey',
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+          style: theme.textTheme.titleMedium?.copyWith(),
         ),
         const SizedBox(height: 4),
         Text(

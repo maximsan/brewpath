@@ -91,7 +91,6 @@ class _Chip extends StatelessWidget {
             label,
             style: theme.textTheme.labelLarge?.copyWith(
               color: selected ? mood.accentInk : mood.ink,
-              fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
             ),
           ),
         ),

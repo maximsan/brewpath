@@ -159,7 +159,6 @@ class _MilestoneBeat extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: theme.textTheme.headlineMedium?.copyWith(
                           color: mood.ink,
-                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),

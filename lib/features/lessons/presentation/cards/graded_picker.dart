@@ -105,9 +105,7 @@ class _GradedPickerState extends State<GradedPicker> {
         ],
         Text(
           copy.prompt,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+          style: theme.textTheme.titleMedium?.copyWith(),
         ),
         const SizedBox(height: AppSpacing.md),
         ChoiceList(

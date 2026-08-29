@@ -50,7 +50,6 @@ class CardTakeaway extends StatelessWidget {
               style: theme.textTheme.labelSmall?.copyWith(
                 color: mood.inkMute,
                 letterSpacing: _kickerTracking,
-                fontWeight: FontWeight.w500,
               ),
             ),
             const SizedBox(height: AppSpacing.xs),

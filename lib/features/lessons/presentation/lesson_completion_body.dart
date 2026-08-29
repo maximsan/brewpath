@@ -87,9 +87,7 @@ class LessonCompletionBody extends StatelessWidget {
       Text(
         'Lesson complete!',
         textAlign: TextAlign.center,
-        style: theme.textTheme.headlineSmall?.copyWith(
-          fontWeight: FontWeight.w700,
-        ),
+        style: theme.textTheme.headlineSmall?.copyWith(),
       ),
       const SizedBox(height: 12),
       Text(
@@ -97,7 +95,6 @@ class LessonCompletionBody extends StatelessWidget {
         textAlign: TextAlign.center,
         style: theme.textTheme.titleLarge?.copyWith(
           color: mood.accent,
-          fontWeight: FontWeight.w700,
         ),
       ),
       // One number, ever. Closing a module used to add a second — a bonus that
@@ -131,9 +128,7 @@ class LessonCompletionBody extends StatelessWidget {
       Text(
         'Review complete!',
         textAlign: TextAlign.center,
-        style: theme.textTheme.headlineSmall?.copyWith(
-          fontWeight: FontWeight.w700,
-        ),
+        style: theme.textTheme.headlineSmall?.copyWith(),
       ),
       const SizedBox(height: 12),
       Text(
@@ -141,7 +136,6 @@ class LessonCompletionBody extends StatelessWidget {
         textAlign: TextAlign.center,
         style: theme.textTheme.titleLarge?.copyWith(
           color: mood.accent,
-          fontWeight: FontWeight.w700,
         ),
       ),
     ];

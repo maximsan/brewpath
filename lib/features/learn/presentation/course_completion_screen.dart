@@ -131,7 +131,6 @@ class _CourseCompletionScreenState
             textAlign: TextAlign.center,
             style: theme.textTheme.headlineMedium?.copyWith(
               color: mood.ink,
-              fontWeight: FontWeight.w700,
             ),
           ),
         ),
@@ -182,10 +181,9 @@ class _StatRow extends StatelessWidget {
           ),
           Text(
             value,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: mood.ink,
-              fontWeight: FontWeight.w700,
-            ),
+            // `titleMedium` is `bodyLarge`'s rung in the control face — the
+            // same size, emphasised the one way the bundle can.
+            style: theme.textTheme.titleMedium?.copyWith(color: mood.ink),
           ),
         ],
       ),

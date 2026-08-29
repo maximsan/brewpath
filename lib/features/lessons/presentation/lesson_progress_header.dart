@@ -47,9 +47,7 @@ class LessonProgressHeader extends StatelessWidget {
         const SizedBox(height: AppSpacing.xxs),
         Text(
           title,
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+          style: theme.textTheme.titleLarge?.copyWith(),
         ),
         const SizedBox(height: AppSpacing.md),
         Center(

@@ -109,9 +109,7 @@ class ActiveChallengeCard extends ConsumerWidget {
               const SizedBox(height: AppSpacing.xs),
               Text(
                 challenge.title,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+                style: theme.textTheme.titleMedium?.copyWith(),
               ),
               const SizedBox(height: AppSpacing.xxs),
               Text(
@@ -145,7 +143,6 @@ class ActiveChallengeCard extends ConsumerWidget {
         'COFFEE CHALLENGE',
         style: theme.textTheme.labelSmall?.copyWith(
           color: mood.accentText,
-          fontWeight: FontWeight.w700,
           letterSpacing: _eyebrowLetterSpacing,
         ),
       ),

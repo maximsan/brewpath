@@ -145,7 +145,12 @@ class _ResetProgressTile extends ConsumerWidget {
       leading: IconMark(AppIcon.rematch, color: mood.berry),
       title: Text(
         'Reset Progress',
-        style: TextStyle(color: mood.berry, fontWeight: FontWeight.w600),
+        // A bare `TextStyle` names no family, so this row was set in Roboto
+        // and fake-bolded. `titleMedium` is the slot a `ListTile` title takes
+        // anyway, and it carries the control face the emphasis wanted.
+        style: Theme.of(
+          context,
+        ).textTheme.titleMedium?.copyWith(color: mood.berry),
       ),
       subtitle: const Text(
         'Clear completed lessons, points, streak, and unlocked cards.',

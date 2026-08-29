@@ -60,9 +60,7 @@ class _PredictCardViewState extends State<PredictCardView> {
         const SizedBox(height: AppSpacing.md),
         Text(
           card.question,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+          style: theme.textTheme.titleMedium?.copyWith(),
         ),
         const SizedBox(height: AppSpacing.md),
         PickTileRow(

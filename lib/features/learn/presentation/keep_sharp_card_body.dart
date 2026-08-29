@@ -63,7 +63,6 @@ class KeepSharpCardBody extends StatelessWidget {
                 style: theme.textTheme.labelMedium?.copyWith(
                   color: mood.accentInk,
                   letterSpacing: _eyebrowLetterSpacing,
-                  fontWeight: FontWeight.w700,
                 ),
               ),
             ],
@@ -97,9 +96,9 @@ class KeepSharpCardBody extends StatelessWidget {
               Expanded(
                 child: Text(
                   phrase,
-                  style: theme.textTheme.bodyMedium?.copyWith(
+                  // `labelLarge` is `bodyMedium`'s rung in the control face.
+                  style: theme.textTheme.labelLarge?.copyWith(
                     color: mood.accentInk,
-                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -128,7 +127,6 @@ class KeepSharpCardBody extends StatelessWidget {
             copy.title,
             style: theme.textTheme.titleMedium?.copyWith(
               color: mood.accentInk,
-              fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: AppSpacing.xxs),

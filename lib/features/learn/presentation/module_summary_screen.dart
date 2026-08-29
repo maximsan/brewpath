@@ -63,9 +63,7 @@ class _ModuleSummaryScreenState extends ConsumerState<ModuleSummaryScreen> {
             Text(
               'Module complete!',
               textAlign: TextAlign.center,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+              style: theme.textTheme.headlineSmall?.copyWith(),
             ),
             const SizedBox(height: AppSpacing.xs),
             Text(
@@ -122,7 +120,6 @@ class _ModuleRewardCard extends StatelessWidget {
           textAlign: TextAlign.center,
           style: theme.textTheme.titleMedium?.copyWith(
             color: mood.accent,
-            fontWeight: FontWeight.w700,
           ),
         ),
         const SizedBox(height: AppSpacing.xxs),

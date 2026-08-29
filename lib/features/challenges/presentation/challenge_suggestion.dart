@@ -111,7 +111,6 @@ class _SuggestionState extends ConsumerState<_Suggestion> {
         textAlign: TextAlign.center,
         style: theme.textTheme.labelSmall?.copyWith(
           color: mood.accentText,
-          fontWeight: FontWeight.w700,
           letterSpacing: _eyebrowLetterSpacing,
         ),
       ),
@@ -119,9 +118,7 @@ class _SuggestionState extends ConsumerState<_Suggestion> {
       Text(
         widget.challenge.title,
         textAlign: TextAlign.center,
-        style: theme.textTheme.titleMedium?.copyWith(
-          fontWeight: FontWeight.w700,
-        ),
+        style: theme.textTheme.titleMedium?.copyWith(),
       ),
       const SizedBox(height: AppSpacing.xxs),
       Text(
