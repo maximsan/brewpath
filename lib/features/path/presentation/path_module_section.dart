@@ -1,3 +1,4 @@
+import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/module_glyph.dart';
@@ -5,6 +6,7 @@ import 'package:brew_path/features/challenges/presentation/path_challenge_node.d
 import 'package:brew_path/features/path/domain/path_density.dart';
 import 'package:brew_path/features/path/domain/path_module_view.dart';
 import 'package:brew_path/features/path/presentation/path_lesson_row.dart';
+import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -43,10 +45,9 @@ class PathModuleSection extends StatelessWidget {
   /// The design's gap between one module and the next.
   static const double _sectionGap = 20;
 
-  /// The chevron's turn, in whole rotations, when a module is open.
-  static const double _openTurns = 0.5;
-
-  static const Duration _expandDuration = Duration(milliseconds: 320);
+  /// The design's `320ms cubic-bezier(.4,0,.2,1)` — one duration, because the
+  /// chevron turns *as* the list grows and two constants could drift apart.
+  static const Duration expandDuration = Duration(milliseconds: 320);
 
   /// Whether the lessons are showing right now.
   bool get _isOpen =>
@@ -67,11 +68,7 @@ class PathModuleSection extends StatelessWidget {
             onToggle: onToggle,
             previousTitle: previousTitle,
           ),
-          _Lessons(module: module, isOpen: _isOpen, duration: _expandDuration),
-          // The module's Coffee Challenge — Path is the only place a challenge
-          // appears outside Today. A locked module has none to offer.
-          if (module.density != PathModuleDensity.locked)
-            PathChallengeNode(moduleId: module.id),
+          _Lessons(module: module, isOpen: _isOpen),
         ],
       ),
     );
@@ -95,10 +92,7 @@ class _Heading extends StatelessWidget {
   /// The design indents the sub-line to the title's left edge: the 32-px glyph
   /// column plus the gap beside it.
   static const double _titleInset = 44;
-  static const double _glyphGap = 12;
-  static const double _subLineGap = 8;
   static const double _markSize = 13;
-  static const Duration _turnDuration = Duration(milliseconds: 320);
 
   @override
   Widget build(BuildContext context) {
@@ -111,30 +105,35 @@ class _Heading extends StatelessWidget {
       children: [
         Row(
           children: [
-            ModuleGlyph(iconName: module.item.module.iconName, locked: locked),
-            const SizedBox(width: _glyphGap),
+            ModuleGlyph(iconName: module.iconName, locked: locked),
+            const SizedBox(width: AppSpacing.sm),
             Expanded(
               child: Text(
-                module.item.module.title,
+                module.title,
                 style: AppText.title(
                   mood: mood,
                   color: locked ? mood.inkMute : mood.ink,
                 ),
               ),
             ),
-            _TrailingMark(
-              module: module,
-              isOpen: isOpen,
-              markSize: _markSize,
-              turnDuration: _turnDuration,
-            ),
+            _TrailingMark(module: module, isOpen: isOpen, size: _markSize),
           ],
         ),
         if (_subLine(module, previousTitle) case final line?) ...[
-          const SizedBox(height: _subLineGap),
+          const SizedBox(height: AppSpacing.xs),
           Padding(
             padding: const EdgeInsets.only(left: _titleInset),
-            child: Text(line, style: AppText.micro(mood: mood)),
+            // Uppercase is the type rule, not part of what the line says, so
+            // the reader is given it as written — the same split
+            // `SmallcapsLabel` makes at the label step.
+            child: Semantics(
+              label: line,
+              excludeSemantics: true,
+              child: Text(
+                line.toUpperCase(),
+                style: AppText.micro(mood: mood),
+              ),
+            ),
           ),
         ],
       ],
@@ -146,25 +145,30 @@ class _Heading extends StatelessWidget {
       return heading;
     }
 
+    // Only a finished module gets here, and completion is the one thing this
+    // row does not say out loud: the design signals it by *removing* the
+    // lesson-count line, which leaves a screen reader nothing to read.
     return Semantics(
       button: true,
       expanded: isOpen,
-      label: module.item.module.title,
+      label: AppLabels.moduleCompleteSemantics(module.title),
       excludeSemantics: true,
       child: InkWell(onTap: onToggle, child: heading),
     );
   }
 
-  /// The mono line under a module's title, or null where the design prints
-  /// none. A finished module says nothing — it goes quiet rather than
-  /// announcing itself.
-  static String? _subLine(PathModule module, String? previousTitle) =>
-      switch (module.density) {
-        PathModuleDensity.complete => null,
-        PathModuleDensity.locked when previousTitle != null =>
-          'Finish $previousTitle to unlock',
-        _ => '${module.item.totalCount} lessons',
-      };
+  /// The mono line under a module's title — **only a locked module has one**.
+  ///
+  /// The design prints it in `CompactModuleRow` alone; the expanded branch
+  /// guards its sub-line on `mod.locked && prereq`, which an expanded module
+  /// never is (`screens.jsx:1463`). So an active module states its lesson
+  /// count by listing the lessons, and a finished one goes quiet.
+  static String? _subLine(PathModule module, String? previousTitle) {
+    if (!module.density.isLocked) return null;
+    return previousTitle == null
+        ? '${module.totalCount} lessons'
+        : 'Finish $previousTitle to unlock';
+  }
 }
 
 /// The lock, or the chevron that turns as a finished module opens.
@@ -172,35 +176,32 @@ class _TrailingMark extends StatelessWidget {
   const _TrailingMark({
     required this.module,
     required this.isOpen,
-    required this.markSize,
-    required this.turnDuration,
+    required this.size,
   });
+
+  /// Half a turn: the chevron points down shut and up open.
+  static const double _openTurns = 0.5;
 
   final PathModule module;
   final bool isOpen;
-  final double markSize;
-  final Duration turnDuration;
+  final double size;
 
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
 
-    if (module.density == PathModuleDensity.locked) {
-      return IconMark(AppIcon.lock, size: markSize, color: mood.inkMute);
+    if (module.density.isLocked) {
+      return IconMark(AppIcon.lock, size: size, color: mood.inkMute);
     }
     if (!module.density.canCollapse) return const SizedBox.shrink();
 
-    final chevron = IconMark(
-      AppIcon.chevron,
-      size: markSize,
-      color: mood.inkMute,
-    );
+    final chevron = IconMark(AppIcon.chevron, size: size, color: mood.inkMute);
 
     return MediaQuery.disableAnimationsOf(context)
         ? RotatedBox(quarterTurns: isOpen ? 2 : 0, child: chevron)
         : AnimatedRotation(
-            turns: isOpen ? PathModuleSection._openTurns : 0,
-            duration: turnDuration,
+            turns: isOpen ? _openTurns : 0,
+            duration: PathModuleSection.expandDuration,
             child: chevron,
           );
   }
@@ -208,32 +209,31 @@ class _TrailingMark extends StatelessWidget {
 
 /// The lesson list, and the way it grows and shrinks.
 class _Lessons extends StatelessWidget {
-  const _Lessons({
-    required this.module,
-    required this.isOpen,
-    required this.duration,
-  });
+  const _Lessons({required this.module, required this.isOpen});
 
   final PathModule module;
   final bool isOpen;
-  final Duration duration;
-
-  static const double _listTop = 8;
-  static const double _rowGap = 8;
 
   @override
   Widget build(BuildContext context) {
     final lessons = isOpen
         ? Padding(
-            padding: const EdgeInsets.only(top: _listTop),
+            padding: const EdgeInsets.only(top: AppSpacing.xs),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,
               children: [
                 for (var i = 0; i < module.lessons.length; i++) ...[
-                  if (i > 0) const SizedBox(height: _rowGap),
+                  if (i > 0) const SizedBox(height: AppSpacing.xs),
                   PathLessonRow(entry: module.lessons[i]),
                 ],
+                // The module's Coffee Challenge — Path is the only place a
+                // challenge appears outside Today. Inside the collapsible
+                // region, as the design nests it: a finished module that is
+                // shut is not still offering its brew. A locked module never
+                // opens, so it never shows one.
+                if (!module.density.isLocked)
+                  PathChallengeNode(moduleId: module.id),
               ],
             ),
           )
@@ -246,7 +246,7 @@ class _Lessons extends StatelessWidget {
     return MediaQuery.disableAnimationsOf(context)
         ? lessons
         : AnimatedSize(
-            duration: duration,
+            duration: PathModuleSection.expandDuration,
             curve: Curves.easeInOut,
             alignment: Alignment.topCenter,
             child: lessons,

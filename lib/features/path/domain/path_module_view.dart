@@ -5,6 +5,7 @@
 /// learner's next move — is testable without pumping a screen.
 library;
 
+import 'package:brew_path/features/learn/domain/course_order.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/path/domain/path_density.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
@@ -54,6 +55,15 @@ class PathModule {
 
   /// The module's id, which is what the screen keys its expansion on.
   String get id => item.module.id;
+
+  /// The module's own name.
+  String get title => item.module.title;
+
+  /// The glyph the module is drawn with.
+  String get iconName => item.module.iconName;
+
+  /// How many lessons it holds, reachable or not.
+  int get totalCount => item.totalCount;
 }
 
 /// Arranges [modules] into what Path draws.
@@ -69,7 +79,7 @@ List<PathModule> buildPathModules({
   required Set<String> completedIds,
   required Map<String, MasteryResult> masteryById,
 }) {
-  final currentId = _currentLessonId(modules, completedIds);
+  final currentId = firstUnfinishedLessonId(modules, completedIds);
 
   return [
     for (final item in modules)
@@ -88,20 +98,4 @@ List<PathModule> buildPathModules({
         ],
       ),
   ];
-}
-
-/// The course's next lesson: the first unfinished one in course order.
-///
-/// The same rule `todayLessonProvider` uses, so the lesson Path marks current
-/// is the lesson the Today card offers. Null once the course is finished.
-String? _currentLessonId(
-  List<ModuleWithProgress> modules,
-  Set<String> completedIds,
-) {
-  for (final item in modules) {
-    for (final lessonId in item.module.lessonIds) {
-      if (!completedIds.contains(lessonId)) return lessonId;
-    }
-  }
-  return null;
 }

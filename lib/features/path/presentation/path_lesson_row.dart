@@ -1,8 +1,8 @@
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/bean_gauge.dart';
-import 'package:brew_path/features/learn/presentation/lesson_node_gauge.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
+import 'package:brew_path/features/path/domain/lesson_node_gauge.dart';
 import 'package:brew_path/features/path/domain/path_module_view.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';

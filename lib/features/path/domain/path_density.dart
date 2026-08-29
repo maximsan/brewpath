@@ -31,6 +31,11 @@ enum PathModuleDensity {
   /// [active] must stay open and [locked] has nothing to show.
   bool get canCollapse => this == PathModuleDensity.complete;
 
+  /// Whether the module is out of reach. Asked instead of comparing against
+  /// the enum value at a call site, so every question about a density is
+  /// answered by the density itself.
+  bool get isLocked => this == PathModuleDensity.locked;
+
   /// Whether the module lists its lessons without being asked. True only for
   /// [active] — the one module whose lessons are the learner's next move.
   bool get showsLessonsWhenCollapsed => this == PathModuleDensity.active;

@@ -1,4 +1,4 @@
-import 'package:brew_path/features/learn/presentation/lesson_node_gauge.dart';
+import 'package:brew_path/features/path/domain/lesson_node_gauge.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:flutter_test/flutter_test.dart';
 

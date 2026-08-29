@@ -12,8 +12,6 @@ abstract class AppLabels {
   static const tabPath = 'Path';
   static const tabCards = 'Cards';
   static const tabProfile = 'Profile';
-  static const lockedModuleMessage =
-      'Complete the previous module to unlock this one.';
   static const continueLabel = 'Continue';
 
   // The eyebrow over the day's lead card. It names which of the card's two

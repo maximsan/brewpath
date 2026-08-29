@@ -1,3 +1,5 @@
+import 'package:brew_path/core/constants/app_labels.dart';
+import 'package:brew_path/features/challenges/presentation/path_challenge_node.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/path/domain/path_density.dart';
 import 'package:brew_path/features/path/domain/path_module_view.dart';
@@ -149,6 +151,43 @@ void main() {
     expect(find.text('3 OF 4 LESSONS COMPLETE'), findsOneWidget);
     expect(find.text('Your journey'), findsNothing);
     expect(find.byType(LinearProgressIndicator), findsNothing);
+  });
+
+  testWidgets('only a locked module states its lesson count', (tester) async {
+    await _pumpPath(tester);
+
+    // The design prints the count line in `CompactModuleRow` alone; an
+    // expanded module says how many lessons it has by listing them.
+    expect(find.text('2 LESSONS'), findsNothing);
+    expect(find.text('FINISH MODULE 2 TO UNLOCK'), findsOneWidget);
+  });
+
+  testWidgets('a shut module is not still offering its challenge', (
+    tester,
+  ) async {
+    await _pumpPath(tester);
+
+    // Module 1 is finished and collapsed, so its Coffee Challenge is inside
+    // the region that is shut — the design nests it there.
+    expect(find.byType(PathChallengeNode), findsOneWidget);
+
+    await tester.tap(find.text('Module 1'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(PathChallengeNode), findsNWidgets(2));
+  });
+
+  testWidgets('a finished module announces that it is finished', (
+    tester,
+  ) async {
+    await _pumpPath(tester);
+
+    // Completion is drawn by *removing* the count line, which leaves a screen
+    // reader nothing — so the row has to say it.
+    expect(
+      find.bySemanticsLabel(AppLabels.moduleCompleteSemantics('Module 1')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('opening a finished module leaves the others as they were', (

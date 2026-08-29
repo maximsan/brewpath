@@ -1,13 +1,12 @@
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
+import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/path/domain/path_density.dart';
 import 'package:brew_path/features/path/domain/path_module_view.dart';
 import 'package:brew_path/features/path/domain/path_providers.dart';
 import 'package:brew_path/features/path/presentation/path_module_section.dart';
 import 'package:brew_path/features/path/presentation/reference_section.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
-import 'package:brew_path/shared/theme/app_text.dart';
-import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -58,7 +57,7 @@ class _PathScreenState extends ConsumerState<PathScreen> {
           physics: const AlwaysScrollableScrollPhysics(),
           children: [
             _CourseTally(modules: list),
-            const SizedBox(height: _headerGap),
+            const SizedBox(height: AppSpacing.lg),
             for (var i = 0; i < list.length; i++)
               PathModuleSection(
                 module: list[i],
@@ -74,11 +73,9 @@ class _PathScreenState extends ConsumerState<PathScreen> {
       ),
     );
   }
-
-  static const double _headerGap = 24;
 }
 
-/// `{done} of {unlocked} lessons complete`, in mono smallcaps above the trail.
+/// `{done} of {unlocked} lessons complete`, in smallcaps above the trail.
 ///
 /// No progress bar: the design's Path header has none, because the trail below
 /// it already is the progress — a bar would say the same thing twice, less
@@ -94,9 +91,6 @@ class _CourseTally extends StatelessWidget {
       for (final module in modules) module.item,
     ]);
 
-    return Text(
-      summary.label.toUpperCase(),
-      style: AppText.label(mood: context.mood),
-    );
+    return SmallcapsLabel(summary.label);
   }
 }

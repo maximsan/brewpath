@@ -125,13 +125,13 @@ class LearnListView extends ConsumerWidget {
             children: [
               const SectionHeader(AppLabels.practiceSection),
               _headerGap,
-              const SmallcapsLabel(AppLabels.practiceLessonsGroup),
+              const SectionHeader(AppLabels.practiceLessonsGroup),
               _headerGap,
               PracticeAnyLessonWidget(
                 lessons: finishedLessons.asData?.value ?? const [],
               ),
               _sectionGap,
-              const SmallcapsLabel(AppLabels.practiceGamesGroup),
+              const SectionHeader(AppLabels.practiceGamesGroup),
               _headerGap,
               MiniGamesCatalogWidget(
                 formats: miniGames.asData?.value ?? const [],
