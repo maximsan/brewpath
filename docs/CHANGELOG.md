@@ -194,6 +194,26 @@ You can always edit this file by hand instead — the helpers just save effort.
   design's *"one lesson a day"*, which named one of the six ways a day
   qualifies and read as the only one.
 
+- **Overlays blur what is behind them, the way the design says they should.**
+  Every overlay carries a blur radius in the same breath as its colour — 5px
+  behind a bottom sheet, 8px behind a control sitting on video, none on the
+  plain veil. The app had ported the colours and dropped every radius, so a
+  sheet dimmed the screen behind it and left it sharp. An overlay is one value
+  carrying both halves now, so every sheet, the tour's opening question and the
+  sound toggle on the intro film arrive blurred. Reset Progress and Restart
+  onboarding were also asking for confirmation behind Material's stock black,
+  having never been given the app's dim at all; they open through the same door
+  now. The blur holds steady while the tint fades, which is also what keeps it
+  affordable on an older phone; turning animations off does not take it away,
+  because a blur is not motion.
+
+- **The tour's spotlight was wearing the wrong overlay.** It dimmed the screen
+  with the media scrim — the one overlay the design reserves for a control
+  sitting on a photo, and the only one of the four that is not full-screen.
+  The coach mark now uses the blocking dim the design draws it with. It is the
+  one dim deliberately left unblurred: blurring behind a spotlight would blur
+  the thing the spotlight is pointing at.
+
 - **Two cards told a screen reader everything except whether you passed.** On
   a select-all card every choice announced what it was — correct, incorrect,
   or an answer you missed — and on the blind-bag card the option list marked

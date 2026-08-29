@@ -1,3 +1,4 @@
+import 'package:brew_path/core/widgets/overlay_barrier.dart';
 import 'package:brew_path/features/tour/domain/tour_copy.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -22,10 +23,14 @@ class TourIntroOverlay extends StatelessWidget {
   static const _insets = EdgeInsets.symmetric(horizontal: AppSpacing.lg);
 
   /// Shows the overlay and resolves to the learner's answer.
-  static Future<bool?> show(BuildContext context) => showDialog<bool>(
+  ///
+  /// It opens through [showOverlayDialog] rather than `showDialog` for the same
+  /// reason `showAppSheet` pushes its own route: `barrierColor` would take the
+  /// dim's colour and leave its 5px blur behind (#379).
+  static Future<bool?> show(BuildContext context) => showOverlayDialog<bool>(
     context: context,
+    overlay: OverlayColors.dimModal,
     barrierDismissible: false,
-    barrierColor: OverlayColors.dimModal,
     builder: (_) => const TourIntroOverlay(),
   );
 

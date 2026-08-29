@@ -16,6 +16,12 @@ const double _glyphSize = 19;
 ///
 /// Labelled by what a press *does*, not by what is true now — a reader hearing
 /// "turn sound on" knows the outcome, where "muted" leaves them to work it out.
+///
+/// **The scrim is taken whole here**, tint and blur. It is the one overlay
+/// `OverlayBarrier` cannot render, because it is the only one of the four that
+/// is not full-screen: its blur has to be shaped like the control it sits
+/// behind, so the control clips it (#379). The design puts the film behind it
+/// at 8px (`screens.jsx:54`).
 class SoundToggle extends StatelessWidget {
   /// Creates a [SoundToggle].
   const SoundToggle({required this.muted, required this.onPressed, super.key});
@@ -26,6 +32,19 @@ class SoundToggle extends StatelessWidget {
   /// Fired when the learner flips it.
   final VoidCallback onPressed;
 
+  /// The film behind [button], blurred at the scrim's own radius.
+  ///
+  /// Inside the circle only — the clip is what makes this a control on media
+  /// rather than a wash over the screen. Returned unwrapped if the token ever
+  /// carries no blur, because a `BackdropFilter` costs a `saveLayer` whatever
+  /// its sigma.
+  Widget _behindTheGlass(Widget button) {
+    final blur = OverlayColors.scrim.backdropFilter;
+    if (blur == null) return button;
+
+    return BackdropFilter(filter: blur, child: button);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Semantics(
@@ -35,16 +54,20 @@ class SoundToggle extends StatelessWidget {
       child: SizedBox(
         width: _targetSize,
         height: _targetSize,
-        child: Material(
-          color: OverlayColors.scrim,
-          shape: const CircleBorder(),
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            onTap: onPressed,
-            child: Icon(
-              muted ? Icons.volume_off : Icons.volume_up,
-              size: _glyphSize,
-              color: OverlayColors.scrimInk,
+        child: ClipOval(
+          child: _behindTheGlass(
+            Material(
+              color: OverlayColors.scrim.color,
+              shape: const CircleBorder(),
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
+                onTap: onPressed,
+                child: Icon(
+                  muted ? Icons.volume_off : Icons.volume_up,
+                  size: _glyphSize,
+                  color: OverlayColors.scrimInk,
+                ),
+              ),
             ),
           ),
         ),
