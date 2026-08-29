@@ -17,10 +17,8 @@ void main() {
   /// The one file allowed to open a dialog route: the primitive itself.
   const primitive = 'lib/core/widgets/overlay_barrier.dart';
 
-  /// The two files that may take an overlay's colour without its blur.
-  ///
-  /// Each is a place where the blur has nowhere to go, and each says so where
-  /// it does it:
+  /// The two files that render an overlay's colour and *cannot* render its
+  /// blur, each saying so where it does it:
   ///
   /// - `app_theme.dart` — `BottomSheetThemeData` has a barrier colour field and
   ///   no filter field. It is the safety net under `showAppSheet`, which is the
@@ -59,26 +57,37 @@ void main() {
     );
   });
 
-  test('only the registered exceptions take an overlay colour alone', () {
+  test('a file that takes an overlay colour renders its blur too', () {
+    // Reading `.color` is not itself the sin — a control that sits *on* media
+    // has to fill its own shape and clip its own blur, so it needs both halves
+    // by hand. Taking the colour and rendering no blur at all is the sin.
     final offenders = dartSourcesUnder('lib')
         .where((file) => !mayTakeColourAlone.contains(file.path))
         .where((file) => file.path != 'lib/shared/theme/app_overlay.dart')
+        .map((file) => (file.path, withoutComments(file.readAsStringSync())))
         .where(
-          (file) => RegExp(
+          (source) => RegExp(
             r'\b(dimModal|scrim|veil|veilStrong)\.color\b',
-          ).hasMatch(withoutComments(file.readAsStringSync())),
+          ).hasMatch(source.$2),
         )
-        .map((file) => file.path)
+        .where(
+          (source) => !const [
+            'backdropFilter',
+            'BackdropFilter',
+          ].any(source.$2.contains),
+        )
+        .map((source) => source.$1)
         .toList();
 
     expect(
       offenders,
       isEmpty,
       reason:
-          'reading .color off an overlay leaves its blur behind — the exact '
-          'half-port this guard exists to stop. If the blur genuinely has '
-          'nowhere to go, add the file to mayTakeColourAlone with the reason. '
-          'Found:\n${offenders.join('\n')}',
+          'taking .color and drawing no blur leaves half the overlay behind — '
+          'the exact half-port this guard exists to stop. Render the blur, or '
+          'if it genuinely has nowhere to go, add the file to '
+          'mayTakeColourAlone with the reason. Found:\n'
+          '${offenders.join('\n')}',
     );
   });
 }

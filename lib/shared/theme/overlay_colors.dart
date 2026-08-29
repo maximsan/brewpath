@@ -42,13 +42,16 @@ abstract final class OverlayColors {
 
   /// The tint behind a control that sits on video or photography.
   ///
-  /// **No call site.** The design's only scrim is the sound toggle on the
+  /// **No call site yet.** The design's only scrim is the sound toggle on the
   /// seed-to-tree video (`prototype/screens.jsx:54`), and the app's Welcome
-  /// hero plays that video muted with no control on it — the control is part of
-  /// the Welcome screen that #383 builds. It is the one overlay of the four
-  /// that is not full-screen, so it must be clipped to the control it sits
-  /// behind; the full-screen `OverlayBarrier` seam is the wrong shape for it,
-  /// and the right one is a widget the screen that needs it should bring.
+  /// hero plays that video with no control on it. #383 builds that control.
+  ///
+  /// It is the one overlay of the four that is **not full-screen**, so it is
+  /// also the one the `OverlayBarrier` seam cannot render: the blur has to be
+  /// clipped to the control's own shape. A caller therefore takes both halves
+  /// by hand — this colour as the fill, and `backdropFilter` inside the same
+  /// clip — which is the one shape of call site the pairing guard allows to
+  /// read `.color`.
   ///
   /// It was previously the coach-mark scrim, which the design draws in
   /// [dimModal] instead (`prototype/guide.jsx:61`).
@@ -59,8 +62,8 @@ abstract final class OverlayColors {
 
   /// The glyph on top of a [scrim].
   ///
-  /// **No call site**, for the same reason as [scrim]: it is the colour of the
-  /// control the app has not built yet.
+  /// **No call site yet**, for the same reason as [scrim]: it is the ink of a
+  /// control the app has not built.
   static const scrimInk = Color(0xFFFBF7EE);
 
   /// The dim behind a bottom sheet — the app's one blocking overlay.
