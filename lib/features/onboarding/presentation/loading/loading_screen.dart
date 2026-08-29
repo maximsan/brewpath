@@ -1,4 +1,5 @@
 import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/core/widgets/tap_cue.dart';
 import 'package:brew_path/features/onboarding/presentation/loading/loading_animation.dart';
 import 'package:brew_path/features/onboarding/presentation/loading/wake_sequence_controller.dart';
 import 'package:brew_path/features/onboarding/presentation/loading/widgets/pulsing_dots.dart';
@@ -35,7 +36,11 @@ class _LoadingScreenState extends ConsumerState<LoadingScreen> {
   static const double _captionGap = 56;
   static const double _wordmarkInset = 24;
   static const Duration _captionFade = Duration(milliseconds: 300);
-  static const double _wordmarkLetterSpacing = 2.64; // 0.24em at 11px
+
+  /// The slot at the foot of the screen carries the brand on the first cycle
+  /// and the tap cue afterwards — one line, two jobs, as the design has it.
+  static const String _brandMark = 'BREWPATH';
+  static const String _tapCue = 'TAP ANYWHERE TO CONTINUE';
 
   late final WakeSequenceController _controller;
   bool _started = false;
@@ -135,16 +140,8 @@ class _LoadingScreenState extends ConsumerState<LoadingScreen> {
                   right: 0,
                   bottom: _wordmarkInset,
                   child: Center(
-                    child: Text(
-                      'BREWPATH',
-                      // `.tap-cue` (index.html:1103) is the one mono label the
-                      // design sets at 400 rather than 500, with wider
-                      // tracking — it reads as a cue, not a heading.
-                      style: AppText.label(mood: mood, face: AppFace.mono)
-                          .copyWith(
-                            fontWeight: FontWeight.w400,
-                            letterSpacing: _wordmarkLetterSpacing,
-                          ),
+                    child: TapCue(
+                      _controller.showsTapCue ? _tapCue : _brandMark,
                     ),
                   ),
                 ),

@@ -13,7 +13,20 @@ import 'package:showcaseview/showcaseview.dart';
 /// bar unable to join the run its own list order ends with.
 class TourHost extends ConsumerStatefulWidget {
   /// Creates a [TourHost] around [child].
-  const TourHost({required this.child, super.key});
+  const TourHost({
+    required this.activeBranchIndex,
+    required this.child,
+    super.key,
+  });
+
+  /// Which of the shell's four branches is on screen.
+  ///
+  /// The host outlives every tab, which is exactly why it has to be told: a
+  /// spotlight anchored on Learn kept floating over Path once the tab changed,
+  /// because nothing here disposes on a branch switch. Passed as a value
+  /// rather than read from the router so the rule is a widget input — a test
+  /// changes it directly, with no route to drive.
+  final int activeBranchIndex;
 
   /// The shell this host wraps.
   final Widget child;
@@ -82,9 +95,42 @@ class _TourHostState extends ConsumerState<TourHost> {
       ..scrollDuration = reduceMotion ? Duration.zero : _scrollDuration;
   }
 
+  /// Ends a running Tour the way Skip does, leaving a finished one alone.
+  ///
+  /// `dismiss()` fires `onDismiss` whether or not a stop is on screen, so the
+  /// guard is what keeps an ordinary tab switch from announcing the end of a
+  /// Tour nobody started.
+  void _endIfRunning() {
+    if (!_view.isShowcaseRunning) return;
+    _view.dismiss();
+  }
+
   void _stopped() {
     if (!mounted) return;
     ref.read(tourRunningProvider.notifier).set(running: false);
+  }
+
+  @override
+  void didUpdateWidget(TourHost oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // The stops belong to the tab that anchors them. Leaving that tab ends the
+    // Tour rather than carrying it along, which is what the callout did.
+    //
+    // Next frame, not this one: the branch changes *during* a build, and
+    // ending the Tour writes `tourRunningProvider`, which Riverpod refuses
+    // mid-build. Waiting a frame is invisible — the overlay is torn down
+    // before the new tab has been painted with anything over it.
+    //
+    // Whether a Tour was running is read *now*, at the switch, not in the
+    // callback: Replay switches tabs and then starts the stops, and a check
+    // deferred to the next frame would find that new Tour and end it.
+    final branchChanged =
+        widget.activeBranchIndex != oldWidget.activeBranchIndex;
+    if (branchChanged && _view.isShowcaseRunning) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _endIfRunning();
+      });
+    }
   }
 
   @override

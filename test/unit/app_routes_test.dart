@@ -96,6 +96,9 @@ void main() {
   const tierByName = <String, HeaderTier>{
     'loading': HeaderTier.immersive,
     'welcome': HeaderTier.immersive,
+    // Meet Roasty is the same beat as Welcome — full bleed, no chrome, one
+    // way forward.
+    'meetRoasty': HeaderTier.immersive,
     'courseComplete': HeaderTier.immersive,
     'onboardingGoal': HeaderTier.immersive,
     'onboardingBrewer': HeaderTier.immersive,
@@ -112,6 +115,9 @@ void main() {
     // Root navigator like Settings, and its own back-arrow bar — pushed is
     // about the chrome the learner sees, not the navigator underneath.
     'profileStreak': HeaderTier.pushed,
+    // Two pushes deep — Settings, then the guide — and it carries a back-arrow
+    // bar of its own, the same as the screen it was opened from.
+    'appGuide': HeaderTier.pushed,
     'lesson': HeaderTier.immersive,
     'lessonComplete': HeaderTier.immersive,
     'moduleSummary': HeaderTier.immersive,

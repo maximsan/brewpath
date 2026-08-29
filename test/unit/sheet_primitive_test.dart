@@ -30,10 +30,16 @@ void main() {
   const primitive = 'lib/core/widgets/app_sheet.dart';
 
   test('no source outside the primitive opens a bottom sheet directly', () {
+    // Both doors, because the primitive now pushes the route itself: a sheet
+    // needs the dim's blur as well as its colour, and only a route can carry
+    // one (#379).
     final offenders = dartSourcesUnder('lib')
         .where((file) => file.path != primitive)
         .where(
-          (file) => file.readAsStringSync().contains('showModalBottomSheet'),
+          (file) => const [
+            'showModalBottomSheet',
+            'ModalBottomSheetRoute',
+          ].any(file.readAsStringSync().contains),
         )
         .map((file) => file.path)
         .toList();

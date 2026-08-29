@@ -1,45 +1,54 @@
-import 'dart:async';
-
 import 'package:brew_path/core/constants/app_routes.dart';
-import 'package:brew_path/core/widgets/link_button.dart';
-import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
-import 'package:brew_path/features/companion/domain/roasty_state.dart';
-import 'package:brew_path/features/companion/presentation/roasty.dart';
+import 'package:brew_path/core/widgets/tap_cue.dart';
+import 'package:brew_path/features/onboarding/presentation/intro_page.dart';
+import 'package:brew_path/features/onboarding/presentation/welcome/seed_video_hero.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:video_player/video_player.dart';
 
-/// Welcome / onboarding intro: hero video, Roasty, and the "plant your seed" CTA.
-class WelcomeScreen extends ConsumerWidget {
+/// The frame's proportion (`screens.jsx:39`). Not square: a 1:1 frame crops
+/// the film's growth and reads as a photo rather than a stage.
+const double _heroRatio = 4 / 3;
+
+/// The gap under the film. Off the spacing scale on purpose — see the
+/// register entry.
+final double _blockGap = OffTokens.introBlockGap.value;
+
+/// Screen 01 of the intro: what the app is, over the seed-to-tree film.
+///
+/// **Not Meet Roasty.** This screen carried the mascot's eyebrow, heading and
+/// body until #383; both screens now exist, in the order the design has them.
+/// The design's comment here reads *"No Roasty here."* — the mascot's arrival
+/// is the next screen's entire reason to exist.
+///
+/// The whole screen advances. There is no button: the design gives this beat a
+/// `.tap-cue` and nothing to press, because nothing here is a choice.
+class WelcomeScreen extends StatelessWidget {
   /// Creates a [WelcomeScreen].
   const WelcomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final mood = context.mood;
-    return Scaffold(
-      backgroundColor: mood.bg,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.lg,
-            64,
-            AppSpacing.lg,
-            40,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SmallcapsLabel('BREWPATH'),
-              const SizedBox(height: AppSpacing.base),
-              AspectRatio(
-                aspectRatio: 1,
+
+    return Semantics(
+      button: true,
+      label: 'Welcome. Tap anywhere to continue.',
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => context.goNamed(AppRoutes.meetRoasty.name),
+        child: IntroPage(
+          children: [
+            // Flexible so a short viewport takes height off the film rather
+            // than off the words.
+            Flexible(
+              child: AspectRatio(
+                aspectRatio: _heroRatio,
                 child: Container(
                   decoration: BoxDecoration(
                     color: mood.surface,
@@ -47,113 +56,39 @@ class WelcomeScreen extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(AppRadii.chrome),
                   ),
                   clipBehavior: Clip.hardEdge,
-                  child: const _VideoHero(),
+                  child: const SeedVideoHero(),
                 ),
               ),
-              const SizedBox(height: AppSpacing.lg),
-              SmallcapsLabel(
-                'ROASTY · YOUR COMPANION',
-                color: mood.accentText,
-              ),
-              const SizedBox(height: 10),
-              Text(
-                'Plant your tree.\nGrow with every cup.',
-                style: AppText.display(mood: mood),
-              ),
-              const SizedBox(height: AppSpacing.md + 2),
-              Text(
-                'Short lessons, real ideas. Roasty stays beside you — '
-                'celebrating small wins as your coffee tree grows.',
+            ),
+            SizedBox(height: _blockGap),
+            SmallcapsLabel('BREWPATH', color: mood.accentText),
+            const SizedBox(height: AppSpacing.base),
+            Text(
+              'Learn coffee.\nGrow a tree.',
+              style: AppText.display(mood: mood),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: introCopyMaxWidth),
+              child: Text(
+                'Short, hands-on lessons in the craft of coffee. Every one '
+                'you finish feeds a living tree, growing from seed to '
+                'harvest.',
                 style: AppText.body(mood: mood, color: mood.inkMute),
               ),
-              const SizedBox(height: AppSpacing.lg + 4),
-              PrimaryButton(
-                label: 'Plant your seed',
-                onPressed: () => context.goNamed(AppRoutes.onboardingGoal.name),
-              ),
-              Center(
-                child: LinkButton(
-                  label: 'Already have progress? Restore',
-                  onPressed: () {}, // placeholder per plan
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Looping seed-to-tree video with Roasty perched bottom-right. Falls back to
-/// a static Roasty if the asset can't initialize (e.g. in unit tests where
-/// the video_player platform channel is unavailable).
-class _VideoHero extends StatefulWidget {
-  const _VideoHero();
-
-  @override
-  State<_VideoHero> createState() => _VideoHeroState();
-}
-
-class _VideoHeroState extends State<_VideoHero> {
-  late final VideoPlayerController _controller;
-  bool _initFailed = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = VideoPlayerController.asset(
-      'assets/video/Flowerpot_seed_to.mp4',
-    );
-    unawaited(_controller.setLooping(true));
-    unawaited(_controller.setVolume(0));
-    unawaited(
-      _controller.initialize().then(
-        (_) {
-          if (mounted) {
-            setState(() {});
-            unawaited(_controller.play());
-          }
-        },
-        onError: (_) {
-          if (mounted) setState(() => _initFailed = true);
-        },
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    unawaited(_controller.dispose());
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_initFailed || !_controller.value.isInitialized) {
-      return const Center(child: Roasty(state: RoastyState.idle, size: 220));
-    }
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Positioned.fill(
-          child: FittedBox(
-            fit: BoxFit.cover,
-            child: SizedBox(
-              width: _controller.value.size.width,
-              height: _controller.value.size.height,
-              child: VideoPlayer(_controller),
             ),
-          ),
+            const Spacer(),
+            // Excluded, not unlabelled: the screen's own Semantics already
+            // says "tap anywhere to continue", and a reader should hear that
+            // once rather than once per widget that draws it.
+            const Center(
+              child: ExcludeSemantics(
+                child: TapCue('TAP ANYWHERE TO CONTINUE'),
+              ),
+            ),
+          ],
         ),
-        const Positioned(
-          right: 8,
-          bottom: 8,
-          child: IgnorePointer(
-            child: Roasty(state: RoastyState.idle, size: 80),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

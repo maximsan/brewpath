@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:brew_path/core/widgets/overlay_barrier.dart';
+import 'package:brew_path/shared/theme/app_overlay.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -18,13 +20,17 @@ const double _maxHeightFraction = 0.78;
 /// **Every sheet opens through here.** The chrome below is identical across all
 /// nine sheet types the design specifies, which is why one function can serve
 /// them all — callers supply only what is inside. A guard test fails the build
-/// on a `showModalBottomSheet` written anywhere else, because the first sheet
-/// carried a comment inviting the second to generalise it and the second was
-/// written raw anyway.
+/// on a sheet opened anywhere else, because the first sheet carried a comment
+/// inviting the second to generalise it and the second was written raw
+/// anyway.
 ///
 /// The barrier is [OverlayColors.dimModal], whose own doc names this as the
 /// app's one blocking overlay, and the corners are [AppRadii.chrome], which
-/// names bottom sheets among the surfaces it is for.
+/// names bottom sheets among the surfaces it is for. The dim arrives as an
+/// [AppOverlay] — colour *and* the design's 5px blur — through
+/// [OverlayBarrier], which is why the route below is pushed by hand: the theme
+/// and `showModalBottomSheet` can both carry a barrier colour, and neither can
+/// carry the blur that goes with it.
 ///
 /// [title] is required and is the sheet's *only* name: it is rendered as the
 /// heading every sheet opens on, and it is the accessible name of the sheet as
@@ -48,25 +54,39 @@ Future<T?> showAppSheet<T>({
   final mood = context.mood;
   final settleAtOnce = _restingControllerForReducedMotion(context);
 
-  final closed = showModalBottomSheet<T>(
-    context: context,
-    backgroundColor: mood.bg,
-    barrierColor: OverlayColors.dimModal,
-    // Sheets carry a lot of copy; on a short screen they scroll rather than
-    // clipping the action the learner came for.
-    isScrollControlled: true,
-    transitionAnimationController: settleAtOnce,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(
-        top: Radius.circular(AppRadii.chrome),
+  final navigator = Navigator.of(context);
+  final localizations = MaterialLocalizations.of(context);
+
+  final closed = navigator.push<T>(
+    _AppSheetRoute<T>(
+      overlay: OverlayColors.dimModal,
+      backgroundColor: mood.bg,
+      // Without these the sheet loses the mood: a route is built from the
+      // navigator's context, not the caller's, so the theme has to travel.
+      capturedThemes: InheritedTheme.capture(
+        from: context,
+        to: navigator.context,
       ),
-    ),
-    builder: (context) => Semantics(
-      container: true,
-      label: title,
-      child: _SheetFrame(
-        title: title,
-        child: Builder(builder: builder),
+      barrierLabel: localizations.scrimLabel,
+      barrierOnTapHint: localizations.scrimOnTapHint(
+        localizations.bottomSheetLabel,
+      ),
+      // Sheets carry a lot of copy; on a short screen they scroll rather than
+      // clipping the action the learner came for.
+      isScrollControlled: true,
+      transitionAnimationController: settleAtOnce,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppRadii.chrome),
+        ),
+      ),
+      builder: (context) => Semantics(
+        container: true,
+        label: title,
+        child: _SheetFrame(
+          title: title,
+          child: Builder(builder: builder),
+        ),
       ),
     ),
   );
@@ -83,8 +103,9 @@ Future<T?> showAppSheet<T>({
 /// An already-elapsed controller when the platform asks for reduced motion,
 /// or null to let the default transition run.
 ///
-/// `showModalBottomSheet` does not consult [MediaQueryData.disableAnimations] —
-/// measured, not assumed: the slide is identical either way. Handing it a
+/// `ModalBottomSheetRoute` does not consult
+/// [MediaQueryData.disableAnimations] — measured, not assumed: the slide is
+/// identical either way. Handing it a
 /// zero-duration controller is the only supported hook, and it lands the sheet
 /// at rest on the first frame. It needs a [TickerProvider], which a top-level
 /// function does not have and the navigator does.
@@ -149,4 +170,27 @@ class _SheetFrame extends StatelessWidget {
       ),
     );
   }
+}
+
+/// The sheet route that wears the app's blocking overlay.
+///
+/// `ModalBottomSheetRoute` takes a barrier colour and inherits
+/// [ModalRoute.filter] without forwarding it, so the blur is put back by
+/// [OverlayBarrier] and both halves come from the one [AppOverlay].
+class _AppSheetRoute<T> extends ModalBottomSheetRoute<T>
+    with OverlayBarrier<T> {
+  _AppSheetRoute({
+    required AppOverlay overlay,
+    required super.builder,
+    required super.isScrollControlled,
+    super.capturedThemes,
+    super.barrierLabel,
+    super.barrierOnTapHint,
+    super.backgroundColor,
+    super.shape,
+    super.transitionAnimationController,
+  }) : barrierOverlay = overlay;
+
+  @override
+  final AppOverlay barrierOverlay;
 }

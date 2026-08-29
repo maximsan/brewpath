@@ -27,6 +27,7 @@ abstract class AppRoutes {
   /// gates the whole flow at once, so it tests the prefix rather than naming
   /// each step — and it reads it here rather than spelling it inline.
   static const onboardingPrefix = '/onboarding';
+  static const meetRoasty = AppRoute('meetRoasty', '/meet-roasty');
   static const onboardingGoal = AppRoute('onboardingGoal', '/onboarding/goal');
   static const onboardingBrewer = AppRoute(
     'onboardingBrewer',
@@ -53,6 +54,7 @@ abstract class AppRoutes {
   static const profile = AppRoute('profile', '/profile');
   static const profileSettings = AppRoute('profileSettings', 'settings');
   static const profileStreak = AppRoute('profileStreak', 'streak');
+  static const appGuide = AppRoute('appGuide', 'app-guide');
 }
 
 /// Opening a module, from the Learn grid or the Path tree.

@@ -44,6 +44,29 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The app opens on a welcome screen it never had.** The first screen a new
+  learner saw was the mascot's introduction wearing the welcome screen's slot:
+  it led with *"Plant your tree."* and copy about Roasty, and the screen that
+  says what the app actually is did not exist. There are two screens now, in
+  the order they were designed. **Welcome** opens on the seed-to-tree film —
+  framed the way the design frames it rather than cropped square — over
+  *"Learn coffee. / Grow a tree."*, and the whole screen advances on a tap,
+  with nothing to press. **Meet Roasty** follows with the mascot, what he is
+  for, and one way on. Roasty no longer appears on the first screen at all; his
+  arrival is the second screen's whole point.
+
+  The loading screen now says it can be skipped. It has always been tappable
+  and never mentioned it — the brand mark at its foot becomes *tap anywhere to
+  continue* once a full wake-up has played, so a learner waiting on a slow
+  start is told what to do instead of guessing.
+
+  The film on the welcome screen can be heard. It has always had an audio
+  track and no way to reach it; the design's mute control sits on the frame
+  now, and the sound is cut on the way out so it never follows you to the
+  next screen.
+
+  A dead *Restore* link that went nowhere is gone.
+
 - **The sticky action bar, and the course ending is the first screen on it.**
   The design closes a scrolling screen with one pinned action over a gradient
   that fades from the page colour to nothing, so text passes *behind* the
@@ -167,6 +190,39 @@ You can always edit this file by hand instead — the helpers just save effort.
   gated, the design marks the gated card itself.
 
 ### Fixed
+
+- **The Today tour has a way out, and a way back in.** Every card in the
+  four-stop tour now carries **Skip** on the left and **Next** on the right —
+  **Done** on the last stop — where before it had no buttons at all and could
+  only be finished by walking it to the end. Navigating to another tab
+  mid-tour now ends the tour instead of leaving its callout floating over the
+  tab you moved to. And the way back is **Settings → Help & Support → App
+  Guide**: a new screen that says in a line or two what each part of the app
+  does, with **Replay Today introduction** at the foot. That replay row moved
+  there from Profile, where it read as a fifth preference in Customize. The
+  guide's streak line says *"one finished activity a day"* rather than the
+  design's *"one lesson a day"*, which named one of the six ways a day
+  qualifies and read as the only one.
+
+- **Overlays blur what is behind them, the way the design says they should.**
+  Every overlay carries a blur radius in the same breath as its colour — 5px
+  behind a bottom sheet, 8px behind a control sitting on video, none on the
+  plain veil. The app had ported the colours and dropped every radius, so a
+  sheet dimmed the screen behind it and left it sharp. An overlay is one value
+  carrying both halves now, so every sheet, the tour's opening question and the
+  sound toggle on the intro film arrive blurred. Reset Progress and Restart
+  onboarding were also asking for confirmation behind Material's stock black,
+  having never been given the app's dim at all; they open through the same door
+  now. The blur holds steady while the tint fades, which is also what keeps it
+  affordable on an older phone; turning animations off does not take it away,
+  because a blur is not motion.
+
+- **The tour's spotlight was wearing the wrong overlay.** It dimmed the screen
+  with the media scrim — the one overlay the design reserves for a control
+  sitting on a photo, and the only one of the four that is not full-screen.
+  The coach mark now uses the blocking dim the design draws it with. It is the
+  one dim deliberately left unblurred: blurring behind a spotlight would blur
+  the thing the spotlight is pointing at.
 
 - **Two cards told a screen reader everything except whether you passed.** On
   a select-all card every choice announced what it was — correct, incorrect,

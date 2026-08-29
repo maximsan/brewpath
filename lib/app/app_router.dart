@@ -17,6 +17,7 @@ import 'package:brew_path/features/mini_games/presentation/mini_game_player_scre
 import 'package:brew_path/features/onboarding/presentation/brewer/brewer_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/goal/goal_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/loading/loading_screen.dart';
+import 'package:brew_path/features/onboarding/presentation/meet_roasty/meet_roasty_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/name/name_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/onboarding_providers.dart';
 import 'package:brew_path/features/onboarding/presentation/welcome/welcome_screen.dart';
@@ -26,6 +27,7 @@ import 'package:brew_path/features/profile/presentation/settings_screen.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/presentation/streak_screen.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
+import 'package:brew_path/features/tour/presentation/app_guide_screen.dart';
 import 'package:brew_path/services/analytics/analytics_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -63,16 +65,21 @@ GoRouter appRouter(Ref ref) {
         return AppRoutes.loading.path;
       }
       final completed = ref.read(onboardingCompletedProvider).value ?? false;
+      // The intro proper — the two screens a first run is walked through.
+      // Named once because the gate asks about them twice, in opposite
+      // directions: an unfinished learner must be let in, a finished one
+      // bounced out.
+      final isIntroRoute =
+          path == AppRoutes.welcome.path || path == AppRoutes.meetRoasty.path;
       final isOnboardingRoute =
           path == AppRoutes.loading.path ||
-          path == AppRoutes.welcome.path ||
+          isIntroRoute ||
           path.startsWith(AppRoutes.onboardingPrefix);
       if (!completed && !isOnboardingRoute) {
         return AppRoutes.welcome.path;
       }
       if (completed &&
-          (path == AppRoutes.welcome.path ||
-              path.startsWith(AppRoutes.onboardingPrefix))) {
+          (isIntroRoute || path.startsWith(AppRoutes.onboardingPrefix))) {
         return AppRoutes.learn.path;
       }
       // The one-off completion moment intercepts arrival at Today only — the
@@ -98,6 +105,11 @@ GoRouter appRouter(Ref ref) {
         path: AppRoutes.welcome.path,
         name: AppRoutes.welcome.name,
         builder: (context, state) => const WelcomeScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.meetRoasty.path,
+        name: AppRoutes.meetRoasty.name,
+        builder: (context, state) => const MeetRoastyScreen(),
       ),
       // Root-level so the ending covers the whole screen — no shell, no tabs.
       GoRoute(
@@ -265,6 +277,17 @@ GoRouter appRouter(Ref ref) {
                     name: AppRoutes.profileSettings.name,
                     parentNavigatorKey: _rootKey,
                     builder: (context, state) => const SettingsScreen(),
+                    routes: [
+                      // Under Settings because that is the only way in:
+                      // Help & Support is a section of Settings, not of
+                      // Profile.
+                      GoRoute(
+                        path: AppRoutes.appGuide.path,
+                        name: AppRoutes.appGuide.name,
+                        parentNavigatorKey: _rootKey,
+                        builder: (context, state) => const AppGuideScreen(),
+                      ),
+                    ],
                   ),
                   // Pushed on the root navigator so the streak view covers
                   // the bottom-nav shell, exactly as Settings does.

@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:brew_path/features/onboarding/data/onboarding_repository.dart';
 import 'package:brew_path/features/onboarding/presentation/loading/loading_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/onboarding_providers.dart';
 import 'package:flutter/material.dart';
@@ -57,4 +60,68 @@ void main() {
     final stillLoading = find.byType(LoadingScreen).evaluate().isNotEmpty;
     expect(advanced || stillLoading, isTrue);
   });
+
+  testWidgets('reduced motion offers the tap cue instead of the brand mark', (
+    tester,
+  ) async {
+    // The cue is the one thing this screen has to say — it has always been
+    // tappable and never mentioned it. Reduced motion runs no cycle, so the
+    // cue shows from the first frame; asserted here rather than only on the
+    // controller, because the controller knowing is not the learner seeing.
+    //
+    // The gate is left unresolved (a repository whose read never completes) so
+    // the screen holds still instead of advancing out from under the check.
+    final router = GoRouter(
+      initialLocation: '/loading',
+      routes: [
+        GoRoute(
+          path: '/loading',
+          name: 'loading',
+          builder: (_, _) => const LoadingScreen(),
+        ),
+        GoRoute(
+          path: '/welcome',
+          name: 'welcome',
+          builder: (_, _) => const Scaffold(body: Text('welcome-stub')),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          onboardingRepositoryProvider.overrideWithValue(
+            _NeverResolvingOnboardingRepository(),
+          ),
+        ],
+        child: MaterialApp.router(
+          routerConfig: router,
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(disableAnimations: true),
+            child: child!,
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('TAP ANYWHERE TO CONTINUE'), findsOneWidget);
+    expect(find.text('BREWPATH'), findsNothing);
+  });
+}
+
+/// A gate that never resolves, so the loading screen stays put.
+class _NeverResolvingOnboardingRepository implements OnboardingRepository {
+  @override
+  Future<OnboardingState> getState() => Completer<OnboardingState>().future;
+
+  @override
+  Future<void> markOnboardingComplete({
+    required String goal,
+    required String brewer,
+    String? name,
+  }) async {}
+
+  @override
+  Future<void> resetOnboarding() async {}
 }
