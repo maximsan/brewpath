@@ -147,6 +147,35 @@ void main() {
     expect(stored.notificationsEnabled, isTrue);
   });
 
+  testWidgets('the destructive block draws Delete account, inert', (
+    tester,
+  ) async {
+    // Ruled on #395: the design lists the row, and there is no account to
+    // delete — Firebase is gated off. It is drawn so the block is the design's
+    // shape, and it must not act, because acting would mean promising
+    // something the app cannot do.
+    await openSettings(tester);
+
+    final row = tester.widget<SettingsNavRow>(
+      find.ancestor(
+        of: find.text(SettingsCopy.deleteAccountRow),
+        matching: find.byType(SettingsNavRow),
+      ),
+    );
+
+    expect(row.isDimmed, isTrue);
+    expect(row.onTap, isNull);
+    expect(
+      tester.getSemantics(find.text(SettingsCopy.deleteAccountRow)),
+      isNot(isSemantics(isButton: true)),
+      reason: 'a row that cannot act must not be announced as a button',
+    );
+
+    await tester.tap(find.text(SettingsCopy.deleteAccountRow));
+    await tester.pumpAndSettle();
+    expect(find.byType(AlertDialog), findsNothing);
+  });
+
   testWidgets('Reset Progress is gated behind a confirmation dialog', (
     tester,
   ) async {

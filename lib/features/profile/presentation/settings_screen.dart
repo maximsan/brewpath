@@ -24,15 +24,18 @@ import 'package:go_router/go_router.dart';
 /// the foot carries **no label** — a heading over it would announce it before
 /// the learner has any reason to look there.
 ///
-/// Two deliberate divergences, both because the app is not the prototype:
+/// The destructive block carries three rows, which is one more than the design
+/// and one more than works. Both are the owner's rulings on #395, not this
+/// file's:
 ///
-/// - **`Delete account` is absent.** The design lists it beside Reset
-///   progress; there are no accounts to delete — Firebase is gated off and the
-///   app stores everything on the device.
-/// - **`Restart onboarding` is present**, and the design has no such row. It
-///   is the app's own, it works, and removing a working control is not what a
-///   parity pass is for. It sits in the same unlabelled block, being the other
-///   thing on this screen that throws state away.
+/// - **`Delete account` is drawn and inert.** The design lists it, and there
+///   is nothing to delete — Firebase is gated off and the app keeps everything
+///   on the device. Shown rather than omitted so the block is the design's
+///   shape from the start; dimmed and unpressable so it cannot promise
+///   anything, which is the trade the ruling accepted.
+/// - **`Restart onboarding` is kept**, and the design has no such row. It is
+///   the app's own, it works, and it is the only way back through the intro
+///   #383 built.
 class SettingsScreen extends ConsumerWidget {
   /// Creates a [SettingsScreen].
   const SettingsScreen({super.key});
@@ -204,6 +207,13 @@ class _DestructiveRows extends ConsumerWidget {
         label: SettingsCopy.restartOnboardingRow,
         isDestructive: true,
         onTap: () => confirmRestartOnboarding(context, ref),
+      ),
+      // No `onTap`, so it is not a button and nothing happens: an account has
+      // to exist before deleting one can mean anything.
+      const SettingsNavRow(
+        label: SettingsCopy.deleteAccountRow,
+        isDestructive: true,
+        isDimmed: true,
       ),
     ],
   );

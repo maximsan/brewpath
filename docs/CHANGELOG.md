@@ -198,7 +198,9 @@ You can always edit this file by hand instead — the helpers just save effort.
   rows they belong with, and **Account** and **Support** carry the rows that
   leave the screen. The version moved out of a labelled row into the centred
   line that closes the screen. Rows are label-left, value-right over a
-  hairline, and none of them draws a leading icon any more — the design's
+  hairline, **Delete account** joins the two rows at the foot — drawn, but
+  faded and unpressable until there are accounts to delete — and none of the
+  rows draws a leading icon any more — the design's
   settings row has no icon slot at all, so the six stock glyphs the app had put
   there were removals, not replacements.
 

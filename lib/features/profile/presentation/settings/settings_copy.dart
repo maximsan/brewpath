@@ -54,6 +54,9 @@ abstract final class SettingsCopy {
   /// Row: sends them back through the intro.
   static const restartOnboardingRow = 'Restart onboarding';
 
+  /// Row: the design's third destructive row, drawn but not yet live.
+  static const deleteAccountRow = 'Delete account';
+
   /// The tier a learner without the purchase is on.
   static const freeTier = 'Free';
 
