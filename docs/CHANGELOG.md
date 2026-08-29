@@ -44,6 +44,16 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The Coffee Tree has its own screen.** Tapping the tree on Profile opens it:
+  the stage's name — Seed, Flowering, Near harvest — the tree at hero size, how
+  far through the core course you are as a bar that fills, what the next stage
+  is called, and a ten-rung ladder of the whole climb. It explains, in the
+  design's own words, that only first-time lesson completions grow the tree and
+  that replays sharpen mastery instead. The tree also **sways** now, gently and
+  forever, on the one screen you sit on — the Profile hero stays still, as the
+  design has it, so a tab you leave open carries no permanent animation.
+  Reduced motion holds the tree upright and fills the bar instantly.
+
 - **The app opens on a welcome screen it never had.** The first screen a new
   learner saw was the mascot's introduction wearing the welcome screen's slot:
   it led with *"Plant your tree."* and copy about Roasty, and the screen that

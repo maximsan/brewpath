@@ -127,12 +127,10 @@ void main() {
     // Same frame, wearing Robusta's silhouette under Moonlit.
     expect(heroAssetName(tester), 'assets/images/trees/7.png');
 
-    // Robusta is wider than it is tall: scale(1.2, 0.9).
+    // Robusta is wider than it is tall: scale(1.2, 0.9). Named rather than
+    // found by position: the sway nests a second `Transform` around this one.
     final scaled = tester.widget<Transform>(
-      find.descendant(
-        of: find.byType(CoffeeTree),
-        matching: find.byType(Transform),
-      ),
+      find.byKey(CoffeeTree.silhouetteKey),
     );
     expect(scaled.transform.storage[0], closeTo(1.2, 1e-9));
     expect(scaled.transform.storage[5], closeTo(0.9, 1e-9));

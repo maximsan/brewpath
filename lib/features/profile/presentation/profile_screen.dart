@@ -43,11 +43,18 @@ class ProfileScreen extends ConsumerWidget {
               children: [
                 Center(
                   child: treeStage.when(
-                    data: (stage) => CoffeeTree(
-                      stage: stage,
-                      // A grove still loading paints the real art rather
-                      // than blocking the tree on it.
-                      treatment: grove.asData?.value ?? GroveTreatment.identity,
+                    data: (stage) => _TreeHeroTap(
+                      child: CoffeeTree(
+                        stage: stage,
+                        // A grove still loading paints the real art rather
+                        // than blocking the tree on it.
+                        treatment:
+                            grove.asData?.value ?? GroveTreatment.identity,
+                        // Still here, swaying on its own screen: the design
+                        // freezes the hero (`screens.jsx:2586`), so the tab
+                        // does not carry a permanent animation.
+                        animate: false,
+                      ),
                     ),
                     loading: CoffeeTreePlaceholder.new,
                     error: (_, _) => const CoffeeTreePlaceholder(),
@@ -100,6 +107,33 @@ class ProfileScreen extends ConsumerWidget {
           duration: Duration(seconds: 2),
         ),
       );
+  }
+}
+
+/// The way onto the tree's own screen.
+///
+/// A tap target around the hero rather than a row beneath it, because the
+/// design makes the whole hero the button (`screens.jsx:2579`). The card it
+/// wraps that button in — the border, the stage line, its own bar — is
+/// [#393](https://github.com/maximsan/brewpath/issues/393)'s; this is only the
+/// way through.
+class _TreeHeroTap extends StatelessWidget {
+  const _TreeHeroTap({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      // The child already names the stage, and a button that announces its
+      // own label twice reads as two controls.
+      hint: 'Opens your coffee tree',
+      child: InkWell(
+        onTap: () => context.pushNamed(AppRoutes.profileTree.name),
+        child: child,
+      ),
+    );
   }
 }
 

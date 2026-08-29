@@ -55,6 +55,7 @@ abstract class AppRoutes {
   static const profileSettings = AppRoute('profileSettings', 'settings');
   static const profileStreak = AppRoute('profileStreak', 'streak');
   static const appGuide = AppRoute('appGuide', 'app-guide');
+  static const profileTree = AppRoute('profileTree', 'tree');
 }
 
 /// Opening a module, from the Learn grid or the Path tree.
