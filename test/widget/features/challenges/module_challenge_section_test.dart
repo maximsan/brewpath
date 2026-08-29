@@ -24,16 +24,20 @@ void main() {
   /// learner back to Today.
   Widget app({Widget? child}) {
     final router = GoRouter(
-      initialLocation: '/learn/module/m1',
+      initialLocation: '/host/m1',
       routes: [
         GoRoute(
           path: '/learn',
           name: AppRoutes.learn.name,
           builder: (context, state) => const Scaffold(body: Text('Learn tab')),
         ),
+        // A bare host for the section under test. It used to be the
+        // module-detail route; that screen is gone (#394) and the section now
+        // renders on Path, so this is named for what it is rather than for a
+        // route that no longer exists.
         GoRoute(
-          path: '/learn/module/:moduleId',
-          name: 'moduleDetail',
+          path: '/host/:moduleId',
+          name: 'challengeHost',
           builder: (context, state) => Scaffold(
             body: child ?? const ModuleChallengeSection(moduleId: 'm1'),
           ),

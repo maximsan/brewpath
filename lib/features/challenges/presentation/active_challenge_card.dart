@@ -125,6 +125,8 @@ class ActiveChallengeCard extends ConsumerWidget {
               const SizedBox(height: AppSpacing.sm),
               Align(
                 alignment: Alignment.centerLeft,
+                // Deliberately not full width — an action on a card, sized
+                // to its label rather than the screen.
                 child: FilledButton(
                   onPressed: () => _log(context, ref),
                   child: const Text('Log Result'),

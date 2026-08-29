@@ -29,13 +29,22 @@ void main() {
     // Every section header is smallcaps — `SectionHeader` uppercases, the way
     // the design sets them. The lead card's eyebrow is not a section header,
     // so it keeps its sentence case.
+    // Practice is one section with two groups under it, and the course is
+    // Path's now — so there is no MODULES header to find here (#394).
     for (final section in const [
       "Today's lesson",
+      'PRACTICE',
+      'LESSONS',
+      'GAMES',
+    ]) {
+      expect(find.text(section), findsOneWidget, reason: section);
+    }
+    for (final gone in const [
       'PRACTICE A FINISHED LESSON',
       'MINI-GAMES',
       'MODULES',
     ]) {
-      expect(find.text(section), findsOneWidget, reason: section);
+      expect(find.text(gone), findsNothing, reason: gone);
     }
   });
 
@@ -71,7 +80,7 @@ void main() {
 
     await pumpWithProviders(tester, const BrewPathApp());
 
-    expect(find.text('PRACTICE A FINISHED LESSON'), findsOneWidget);
+    expect(find.text('PRACTICE'), findsOneWidget);
     expect(find.text('No lessons available yet.'), findsOneWidget);
   });
 

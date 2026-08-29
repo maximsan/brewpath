@@ -40,6 +40,7 @@ class IconBadge extends StatelessWidget {
     this.iconSize,
     this.background,
     this.foreground,
+    this.borderColor,
     this.semanticLabel,
     super.key,
   }) : _icon = icon,
@@ -54,6 +55,7 @@ class IconBadge extends StatelessWidget {
     this.iconSize,
     this.background,
     this.foreground,
+    this.borderColor,
     this.semanticLabel,
     super.key,
   }) : _icon = icon,
@@ -69,6 +71,7 @@ class IconBadge extends StatelessWidget {
     this.iconSize,
     this.background,
     this.foreground,
+    this.borderColor,
     this.semanticLabel,
     super.key,
   }) : _mark = mark,
@@ -83,6 +86,7 @@ class IconBadge extends StatelessWidget {
     this.iconSize,
     this.background,
     this.foreground,
+    this.borderColor,
     this.semanticLabel,
     super.key,
   }) : _mark = mark,
@@ -115,6 +119,14 @@ class IconBadge extends StatelessWidget {
   /// Icon colour. Defaults to the mood's accent ink.
   final Color? foreground;
 
+  /// Hairline around the badge, where the design outlines one.
+  ///
+  /// Null for the filled badges that are the common case: a badge that carries
+  /// its own fill needs no edge. Set where the design draws the badge as an
+  /// empty *well* rather than a chip — the Cards tab's lock sits in one — and
+  /// the outline is what says the slot is waiting rather than occupied.
+  final Color? borderColor;
+
   /// Screen-reader label for the icon. Omit for decorative badges whose
   /// meaning is already carried by adjacent text.
   final String? semanticLabel;
@@ -136,6 +148,7 @@ class IconBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: background ?? mood.accent,
         shape: _shape,
+        border: borderColor == null ? null : Border.all(color: borderColor!),
         borderRadius: isCircle ? null : BorderRadius.circular(_radius),
       ),
       child: _mark == null

@@ -8,7 +8,6 @@ import 'package:brew_path/features/dictionary/presentation/term_detail_screen.da
 import 'package:brew_path/features/learn/domain/course_completion_providers.dart';
 import 'package:brew_path/features/learn/presentation/course_completion_screen.dart';
 import 'package:brew_path/features/learn/presentation/learn_screen.dart';
-import 'package:brew_path/features/learn/presentation/module_detail_screen.dart';
 import 'package:brew_path/features/learn/presentation/module_summary_screen.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_screen.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_screen.dart';
@@ -27,6 +26,7 @@ import 'package:brew_path/features/profile/presentation/settings/settings_destin
 import 'package:brew_path/features/profile/presentation/settings_screen.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/presentation/streak_screen.dart';
+import 'package:brew_path/features/progress/presentation/tree_screen.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
 import 'package:brew_path/features/tour/presentation/app_guide_screen.dart';
 import 'package:brew_path/services/analytics/analytics_provider.dart';
@@ -164,13 +164,6 @@ GoRouter appRouter(Ref ref) {
                         ),
                       ),
                     ],
-                  ),
-                  GoRoute(
-                    path: AppRoutes.moduleDetail.path,
-                    name: AppRoutes.moduleDetail.name,
-                    builder: (context, state) => ModuleDetailScreen(
-                      moduleId: state.pathParameters['moduleId']!,
-                    ),
                   ),
                   // Immersive lesson flow: pushed on the root navigator so it
                   // covers the bottom-nav shell.
@@ -324,6 +317,14 @@ GoRouter appRouter(Ref ref) {
                     name: AppRoutes.profileStreak.name,
                     parentNavigatorKey: _rootKey,
                     builder: (context, state) => const StreakScreen(),
+                  ),
+                  // Same shape as the streak view: pushed on the root
+                  // navigator so the tree covers the bottom-nav shell.
+                  GoRoute(
+                    path: AppRoutes.profileTree.path,
+                    name: AppRoutes.profileTree.name,
+                    parentNavigatorKey: _rootKey,
+                    builder: (context, state) => const TreeScreen(),
                   ),
                 ],
               ),

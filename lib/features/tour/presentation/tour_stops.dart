@@ -5,8 +5,9 @@ import 'package:showcaseview/showcaseview.dart';
 ///
 /// The order of [inScrollOrder] *is* the Tour: `startShowCase` plays the keys
 /// in list order, so the sequence the spec locked lives here rather than in the
-/// screens that anchor them. Stops 1–3 are anchored on Learn and stop 4 on the
-/// app shell's tab bar, which is why the keys cannot live on either screen.
+/// screens that anchor them. Stops 1–2 are anchored on Learn, stops 3–4 on the
+/// app shell's header and tab bar, which is why the keys cannot live on either
+/// screen.
 ///
 /// The keys are top-level rather than per-`State` because since `showcaseview`
 /// 5.x a `Showcase` key is a **registry identifier**, not a key attached to the
@@ -26,15 +27,18 @@ abstract final class TourStops {
   /// because they are one idea ("practice, your way") rather than two.
   static final GlobalKey practice = GlobalKey();
 
-  /// Stop 3 — the modules section: a finite course that pays on first
-  /// completion.
-  static final GlobalKey modules = GlobalKey();
+  /// Stop 3 — the header's Saved and Dictionary entries.
+  ///
+  /// Anchored on the shell's `AppHeader` rather than on Learn, for the same
+  /// reason [tabs] is: the header is drawn once at app level, beside the tab
+  /// bar, not by the tab under it.
+  static final GlobalKey header = GlobalKey();
 
   /// Stop 4 — the bottom tab bar: the three tabs the Tour never visits.
   static final GlobalKey tabs = GlobalKey();
 
   /// The stops as the engine plays them.
-  static List<GlobalKey> get inScrollOrder => [today, practice, modules, tabs];
+  static List<GlobalKey> get inScrollOrder => [today, practice, header, tabs];
 
   /// Whether [stopKey] is the stop the Tour ends on.
   ///

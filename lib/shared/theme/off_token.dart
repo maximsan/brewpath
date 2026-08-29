@@ -106,6 +106,40 @@ abstract final class OffTokens {
         'change, not a tidy-up.',
   );
 
+  /// The padding inside the Cards tab's "more to collect" block.
+  static const OffToken<EdgeInsets> cardsFooterPadding = OffToken(
+    EdgeInsets.symmetric(vertical: 20, horizontal: 18),
+    reason:
+        'The design sets this block to `padding: 20px 18px`, and neither is a '
+        'spacing stop: 20 sits between AppSpacing.md (16) and lg (24), 18 '
+        'between md and lg as well. Rounding them onto the scale is a design '
+        'change rather than a tidy-up, and this block is the one place on the '
+        'tab that stands for an absence — it is meant to sit a little looser '
+        'than the tiles beside it.',
+  );
+
+  /// The gap between the block's count and the line under it.
+  static const OffToken<double> cardsFooterLineGap = OffToken(
+    2,
+    reason:
+        'The design sets `marginTop: 2` between "N more to collect" and the '
+        'line under it. The hairline stop (4) is the nearest and is already '
+        'double it: the two lines are one stacked label, not two blocks, and '
+        'the smallest stop reads as a gap between them.',
+  );
+
+  /// The Cards tab count line's letter-spacing, in em — tighter than the label
+  /// rung it otherwise sits on.
+  static const OffToken<double> collectionCountTracking = OffToken(
+    0.08,
+    reason:
+        'The design tracks `{earned} of {total}` at 0.08em, where the label '
+        'rung tracks at 0.14em — the smallcaps value it owes its uppercase '
+        'siblings. This line is a figure rather than a kicker, and figures do '
+        'not want smallcaps tracking: at 0.14em the numerals drift apart and '
+        'the line stops reading as one count.',
+  );
+
   /// The tab label's letter-spacing, in em — wider than the micro rung the
   /// label otherwise sits on.
   static const OffToken<double> tabLabelTracking = OffToken(
@@ -149,6 +183,9 @@ abstract final class OffTokens {
     seedStain,
     beanCrease,
     pickTilePadding,
+    cardsFooterPadding,
+    cardsFooterLineGap,
+    collectionCountTracking,
     introBlockGap,
     tapCueTracking,
     tabLabelTracking,

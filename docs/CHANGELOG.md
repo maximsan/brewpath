@@ -44,6 +44,16 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The Coffee Tree has its own screen.** Tapping the tree on Profile opens it:
+  the stage's name — Seed, Flowering, Near harvest — the tree at hero size, how
+  far through the core course you are as a bar that fills, what the next stage
+  is called, and a ten-rung ladder of the whole climb. It explains, in the
+  design's own words, that only first-time lesson completions grow the tree and
+  that replays sharpen mastery instead. The tree also **sways** now, gently and
+  forever, on the one screen you sit on — the Profile hero stays still, as the
+  design has it, so a tab you leave open carries no permanent animation.
+  Reduced motion holds the tree upright and fills the bar instantly.
+
 - **Settings has the four screens its rows always implied.** Account and sync,
   Purchases, Help and support and About now exist and open from the rows that
   name them, instead of being sections the app had no destination for. They are
@@ -187,6 +197,35 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **The course lives in one place now, and Today is only today.** The app used
+  to list every module on the Learn tab *and* on Path, and both opened a module
+  screen — so a learner met the same five modules three times, and the tab meant
+  to show today's work read as a course index. Learn keeps the day: the lesson
+  card, Keep Sharp, the active brew and practice. Path is the course, and it
+  fits on one screen because each module shows only as much as its state earns
+  — the module you are in lists its lessons, a finished one collapses to a row
+  that opens when you want to review or replay it, and one you have not reached
+  is a single line saying what unlocks it. The module screen is gone entirely.
+
+- **Practice is one section instead of two.** *"Practice a finished lesson"* and
+  *"Mini-games"* were sibling headings for what the design calls one thing:
+  **Practice**, holding **Lessons** and **Games**. Games are indented under
+  their kind, the way the shelf is drawn. The day's card also gained the eyebrow
+  that names which of its two states you are looking at — *Continue learning*,
+  or *All caught up* when there is no lesson left today.
+
+- **The Cards tab stops opening as a wall of blanks.** The grid laid out every
+  collectible at once, so a learner who had earned nothing met a full screen of
+  locked tiles. It now shows what you have earned plus a single locked card as
+  a teaser, and a block underneath names the rest — *"29 more to collect ·
+  Finish lessons to reveal new cards."* The count includes the teaser you can
+  see, which is the design's reading of "how many are left".
+
+  The tab loses three things with it: the grid is no longer sectioned by
+  module, the progress bar is gone — the grid is the progress — and the header
+  is the bare `0 OF 30` in mono the design gives it, rather than a second
+  "Collection" title under the one the shared header already shows.
+
 - **The lesson player is the card, and nothing else.** It used to print the
   module name and the lesson title above every card, and leave by a back
   arrow. Now the bar carries only what the design puts there: a close mark, the
@@ -198,11 +237,11 @@ You can always edit this file by hand instead — the helpers just save effort.
   rows they belong with, and **Account** and **Support** carry the rows that
   leave the screen. The version moved out of a labelled row into the centred
   line that closes the screen. Rows are label-left, value-right over a
-  hairline, **Delete account** joins the two rows at the foot — drawn, but
-  faded and unpressable until there are accounts to delete — and none of the
-  rows draws a leading icon any more — the design's
+  hairline, and none of them draws a leading icon any more: the design's
   settings row has no icon slot at all, so the six stock glyphs the app had put
-  there were removals, not replacements.
+  there were removals, not replacements. **Delete account** joins the two rows
+  at the foot — drawn, but faded and unpressable until there are accounts to
+  delete.
 
 - **Small orange labels are readable in the light theme.** Every eyebrow,
   kicker and smallcaps label set in the brand orange was drawing at 4.23:1 on
@@ -241,6 +280,32 @@ You can always edit this file by hand instead — the helpers just save effort.
   gated, the design marks the gated card itself.
 
 ### Fixed
+- **The lesson's Continue is the same size as every other button that means
+  the same thing.** It was Material's shorter default while the Continue on the
+  screen after it stood taller — the most-pressed button in the app, visibly
+  smaller than its own follow-up. The two challenge sheets' actions match now
+  too. Buttons that sit *inside* a card or beside another button are left as
+  they are, and say why.
+
+- **A collectible's corner matches every other rounded thing.** It carried a
+  hand-picked radius that belonged to no part of the design.
+
+
+- **Every button in the app is the shape the design draws, and none of them
+  were.** The app never told Material what a button looks like, so almost every
+  one it drew fell back to a fully-rounded pill — on lesson completion, the
+  module summary, the streak screen, both mini-game screens and a dozen smaller
+  places. Onboarding escaped the pill, because it used a hand-built button that
+  carried the rule privately — but that button had the wrong corner too, so
+  onboarding's buttons change as well. The rule is declared once now, so a
+  button is right wherever it is drawn.
+
+  The corner they take is the one the running design actually sets. The
+  component catalogue and the running prototype disagreed about buttons — 2px
+  against 14px — and the app had followed the catalogue. It follows the running
+  prototype now, as it already does for the quiz and match tiles, so everything
+  rounded on a screen is rounded to the same measure. The Appearance toggle in
+  Settings stays a pill, which is what the design draws it as.
 
 - **The Today tour has a way out, and a way back in.** Every card in the
   four-stop tour now carries **Skip** on the left and **Next** on the right —

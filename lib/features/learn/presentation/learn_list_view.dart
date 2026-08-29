@@ -1,10 +1,11 @@
+import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/widgets/section_header.dart';
+import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/challenges/presentation/active_challenge_card.dart';
 import 'package:brew_path/features/challenges/presentation/saved_challenges_list.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
-import 'package:brew_path/features/learn/presentation/module_card_widget.dart';
 import 'package:brew_path/features/learn/presentation/practice_any_lesson_widget.dart';
 import 'package:brew_path/features/learn/presentation/today_card_widget.dart';
 import 'package:brew_path/features/mini_games/domain/course_entitlement.dart';
@@ -23,13 +24,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// The Learn tab's one scrollable list, and the three Tour stops anchored in
 /// it.
 class LearnListView extends ConsumerWidget {
-  /// Creates a [LearnListView] over [modules].
-  const LearnListView({required this.modules, super.key});
+  /// Creates a [LearnListView].
+  const LearnListView({super.key});
 
   static const _padding = EdgeInsets.all(AppSpacing.md);
   static const _sectionGap = SizedBox(height: AppSpacing.lg);
   static const _headerGap = SizedBox(height: AppSpacing.sm);
-  static const _cardGap = SizedBox(height: AppSpacing.xs);
 
   /// How much off-screen list to keep mounted while the Tour is running.
   ///
@@ -50,9 +50,6 @@ class LearnListView extends ConsumerWidget {
   /// small one outgrows. Five viewports clears the whole tab on any device the
   /// app supports.
   static const _tourCacheViewports = 5.0;
-
-  /// The modules the tab lists, already resolved.
-  final List<ModuleWithProgress> modules;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -80,10 +77,31 @@ class LearnListView extends ConsumerWidget {
           stopKey: TourStops.today,
           title: TourCopy.todayTitle,
           description: TourCopy.todayBody,
-          child: TodayCardWidget(
-            today: today.asData?.value,
-            keepSharp: keepSharp.asData?.value,
-            keepSharpDone: keepSharpDone.asData?.value ?? false,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // The eyebrow is what tells a caught-up learner that the accent
+              // card below is a *state* of the day rather than a new kind of
+              // work. Without it the Keep Sharp card reads as another lesson.
+              //
+              // Held back until the lesson resolves: "all caught up" is the
+              // pending state's shape too, and congratulating someone for a
+              // day they have not been read yet would be the wrong half of a
+              // flash to show.
+              if (today.hasValue) ...[
+                SmallcapsLabel(
+                  today.requireValue == null
+                      ? AppLabels.allCaughtUp
+                      : AppLabels.continueLearning,
+                ),
+                _headerGap,
+              ],
+              TodayCardWidget(
+                today: today.asData?.value,
+                keepSharp: keepSharp.asData?.value,
+                keepSharpDone: keepSharpDone.asData?.value ?? false,
+              ),
+            ],
           ),
         ),
         // The brew in play sits under the day's lesson: a sibling card,
@@ -105,13 +123,15 @@ class LearnListView extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SectionHeader('Practice a finished lesson'),
+              const SectionHeader(AppLabels.practiceSection),
+              _headerGap,
+              const SectionHeader(AppLabels.practiceLessonsGroup),
               _headerGap,
               PracticeAnyLessonWidget(
                 lessons: finishedLessons.asData?.value ?? const [],
               ),
               _sectionGap,
-              const SectionHeader('Mini-games'),
+              const SectionHeader(AppLabels.practiceGamesGroup),
               _headerGap,
               MiniGamesCatalogWidget(
                 formats: miniGames.asData?.value ?? const [],
@@ -121,23 +141,6 @@ class LearnListView extends ConsumerWidget {
                 // free learner nothing, and the wrong lock insults the payer.
                 hasCourse: entitlement.asData?.value ?? true,
               ),
-            ],
-          ),
-        ),
-        _sectionGap,
-        TourStop(
-          stopKey: TourStops.modules,
-          title: TourCopy.modulesTitle,
-          description: TourCopy.modulesBody,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SectionHeader('Modules'),
-              _headerGap,
-              for (var i = 0; i < modules.length; i++) ...[
-                if (i > 0) _cardGap,
-                ModuleCardWidget(item: modules[i]),
-              ],
             ],
           ),
         ),

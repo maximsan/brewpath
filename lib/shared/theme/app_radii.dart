@@ -14,15 +14,17 @@
 /// See `docs/design/03-design-system.md` — including its correction that the
 /// "radius scale of 4 / 12 / 14 / 16 / 20" earlier docs listed never existed.
 abstract final class AppRadii {
-  /// 2 px — **editorial**. Cards, buttons and inputs: the sharp, print-like
-  /// default.
+  /// 2 px — **editorial**. Cards and inputs: the sharp, print-like default.
   ///
-  /// **Not MCQ or match tiles**, though `Design System.html` lists them here.
-  /// The running prototype sets both to `var(--r)` and wins — see ADR-0009.
+  /// **Not MCQ tiles, match tiles or buttons**, though `Design System.html`
+  /// lists all three here — at 2px for buttons. The running prototype sets
+  /// each to `var(--r)` and wins, per ADR-0009. The dropped value is named so
+  /// the next reader does not "correct" it back.
   static const double editorial = 2;
 
   /// 14 px (`--r`) — **soft chrome**. Media frames, bottom sheets, icon wells,
-  /// avatars, mini-game tiles.
+  /// avatars, mini-game tiles, and every **button** (`.btn-primary`,
+  /// `.btn-ghost`), which the app declares once in `AppTheme` (#377).
   ///
   /// This is the token; a component that genuinely needs its own radius may sit
   /// anywhere in 12–20, which is slack around [chrome] rather than a set of

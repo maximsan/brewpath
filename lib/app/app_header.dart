@@ -10,6 +10,9 @@ import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/domain/saved_shelf.dart';
 import 'package:brew_path/features/saved/presentation/saved_badge_dot.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
+import 'package:brew_path/features/tour/domain/tour_copy.dart';
+import 'package:brew_path/features/tour/presentation/tour_stop.dart';
+import 'package:brew_path/features/tour/presentation/tour_stops.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -66,7 +69,20 @@ class AppHeader extends ConsumerWidget {
           Expanded(
             child: _Heading(tab: tab, isCollapsed: isCollapsed),
           ),
-          for (final action in tab.actions) _ActionButton(action: action),
+          // Tour stop 3 frames the pair rather than either entry: the design
+          // introduces Saved and the Dictionary as one place things you keep
+          // end up, and a frame around one button would name half of it.
+          TourStop(
+            stopKey: TourStops.header,
+            title: TourCopy.headerTitle,
+            description: TourCopy.headerBody,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (final action in tab.actions) _ActionButton(action: action),
+              ],
+            ),
+          ),
         ],
       ),
     );

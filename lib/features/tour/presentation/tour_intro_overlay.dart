@@ -56,6 +56,8 @@ class TourIntroOverlay extends StatelessWidget {
               style: AppText.label(mood: mood),
             ),
           ),
+          // Not `PrimaryButton`: it sits in a row beside a decline, so a
+          // full-width CTA would push its pair off the line.
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
             child: Text(

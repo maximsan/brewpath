@@ -117,6 +117,24 @@ Future<int> treeStage(Ref ref) async {
   return stored > derived ? stored : derived;
 }
 
+/// Core lessons finished, and how many the course holds.
+///
+/// *Core* means every lesson in every module — the design's `CORE_LESSON_IDS`
+/// is `MODULES.flatMap(m => m.lessons)` (`data.jsx:2935`), and the app has no
+/// lesson outside a module, so this is not a new content concept and needs no
+/// flag on `LessonModel`. It is the very pair [treeStage] already folds over,
+/// named once here so the tree screen's counter and the stage it sits under
+/// can never disagree about what they are counting.
+typedef CoreLessonProgress = ({int completed, int total});
+
+/// The learner's progress through the core course.
+@riverpod
+Future<CoreLessonProgress> coreLessonProgress(Ref ref) async {
+  final completed = await ref.watch(completedLessonsProvider.future);
+  final lessons = await ref.watch(contentRepositoryProvider).getLessons();
+  return (completed: completed.length, total: lessons.length);
+}
+
 /// The planted grove, resolved against the banks into one matrix and one scale.
 ///
 /// Joined here rather than in the widget so the tree stays ignorant of species

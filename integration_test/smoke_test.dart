@@ -1,4 +1,5 @@
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/widgets/roast_meter.dart';
 import 'package:brew_path/features/onboarding/presentation/loading/loading_screen.dart';
 import 'package:brew_path/features/tour/domain/tour_copy.dart';
 import 'package:brew_path/main.dart' as app;
@@ -284,12 +285,28 @@ void main() {
       describe: "today's lesson card",
     );
 
-    // `Step 1 of N` is the proof the bundle loaded: N is the lesson's own step
-    // count, so it cannot be rendered without real authored content behind it.
+    // The meter on card one is the proof the bundle loaded: its `total` is the
+    // lesson's own card count, so it cannot be mounted without real authored
+    // content behind it.
+    //
+    // Asserted on the **widget and its numbers**, not on the string it draws.
+    // This step used to wait for `Step 1 of`, which the player stopped drawing
+    // when the counter became `RoastMeter`'s `01 / 08` — the assertion went
+    // stale, and because this job runs on push only, `main` went red with no
+    // PR to catch it ([#437](https://github.com/maximsan/brewpath/issues/437)).
+    // Numbers cannot rot the way a format can.
     await pumpUntil(
       tester,
-      find.textContaining('Step 1 of'),
-      describe: "today's lesson opening on its first step",
+      find.byWidgetPredicate(
+        (widget) => widget is RoastMeter && widget.position == 1,
+        description: 'RoastMeter on card one',
+      ),
+      describe: "today's lesson opening on its first card",
+    );
+    expect(
+      tester.widget<RoastMeter>(find.byType(RoastMeter)).total,
+      greaterThan(1),
+      reason: 'the card count must come from the authored lesson, not a stub',
     );
   });
 }
