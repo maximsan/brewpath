@@ -128,6 +128,11 @@ class _CardsBody extends StatelessWidget {
 /// It carries no title. The tab's name is the shared header's, and the design
 /// never states it twice on one screen.
 ///
+/// The design does give this screen a large `Collection` title — paired with a
+/// header that is *invisible* until the tab scrolls. The app's header draws at
+/// rest, so the pair cannot be had here yet; #441 owns that, and the title
+/// comes back with it.
+///
 /// Its tracking is the design's own rather than the rung's — see
 /// [OffTokens.collectionCountTracking] for why a figure does not want the
 /// smallcaps value.
