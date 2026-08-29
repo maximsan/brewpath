@@ -36,6 +36,11 @@ and were not themselves at fault.
 would actually see, and it is the file that keeps moving — it was last edited
 five days after the catalogue when this was found.
 
+> **The table above is what was found here, not a sweep.** `.btn-primary` also
+> disagreed and was not in it, so the app shipped the catalogue's 2px until
+> #377. Both files have since been diffed in full — see *"The two prototype
+> files, diffed in full"* in `docs/design/03-design-system.md`.
+
 The catalogue stays useful for components the running prototype does not
 exercise, and for the rules it states in prose. It is not authoritative on a
 value the running prototype also sets.
