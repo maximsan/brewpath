@@ -8,7 +8,6 @@ import 'package:brew_path/features/dictionary/presentation/term_detail_screen.da
 import 'package:brew_path/features/learn/domain/course_completion_providers.dart';
 import 'package:brew_path/features/learn/presentation/course_completion_screen.dart';
 import 'package:brew_path/features/learn/presentation/learn_screen.dart';
-import 'package:brew_path/features/learn/presentation/module_detail_screen.dart';
 import 'package:brew_path/features/learn/presentation/module_summary_screen.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_screen.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_screen.dart';
@@ -164,13 +163,6 @@ GoRouter appRouter(Ref ref) {
                         ),
                       ),
                     ],
-                  ),
-                  GoRoute(
-                    path: AppRoutes.moduleDetail.path,
-                    name: AppRoutes.moduleDetail.name,
-                    builder: (context, state) => ModuleDetailScreen(
-                      moduleId: state.pathParameters['moduleId']!,
-                    ),
                   ),
                   // Immersive lesson flow: pushed on the root navigator so it
                   // covers the bottom-nav shell.

@@ -1,13 +1,14 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/widgets/bean_gauge.dart';
-import 'package:brew_path/features/learn/presentation/module_lesson_card_widget.dart';
+import 'package:brew_path/features/path/domain/path_module_view.dart';
+import 'package:brew_path/features/path/presentation/path_lesson_row.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../support/content_fixtures.dart';
+import '../../../support/content_fixtures.dart';
 
 final LessonModel _lesson = testLesson(title: 'Where coffee grows');
 
@@ -20,11 +21,13 @@ Future<void> _pump(
   MaterialApp(
     theme: AppTheme.darkRoast,
     home: Scaffold(
-      body: ModuleLessonCardWidget(
-        lesson: _lesson,
-        isCompleted: isCompleted,
-        isCurrent: isCurrent,
-        mastery: mastery,
+      body: PathLessonRow(
+        entry: PathLesson(
+          lesson: _lesson,
+          isCompleted: isCompleted,
+          isCurrent: isCurrent,
+          mastery: mastery,
+        ),
       ),
     ),
   ),

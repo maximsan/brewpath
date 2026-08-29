@@ -48,13 +48,6 @@ void main() {
 
   test('parametrized routes interpolate path parameters', () {
     expect(
-      locationOf(
-        AppRoutes.moduleDetail.name,
-        pathParameters: {'moduleId': 'beans'},
-      ),
-      '/learn/module/beans',
-    );
-    expect(
       locationOf(AppRoutes.lesson.name, pathParameters: {'lessonId': 'l1'}),
       '/learn/lesson/l1',
     );
@@ -109,7 +102,6 @@ void main() {
     'saved': HeaderTier.pushed,
     'dictionary': HeaderTier.pushed,
     'dictionaryTerm': HeaderTier.pushed,
-    'moduleDetail': HeaderTier.pushed,
     'cardDetail': HeaderTier.pushed,
     'profileSettings': HeaderTier.pushed,
     // Root navigator like Settings, and its own back-arrow bar — pushed is
