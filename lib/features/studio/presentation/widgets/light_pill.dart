@@ -1,3 +1,4 @@
+import 'package:brew_path/features/studio/presentation/widgets/grove_selection.dart';
 import 'package:brew_path/shared/models/content/grove_light.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -13,9 +14,6 @@ const double _minTarget = 44;
 /// Alpha on the swatch's hairline — enough to read against a pale swatch
 /// without becoming a ring in its own right.
 const double _swatchEdgeAlpha = 0.22;
-
-/// Wash behind the chosen pill.
-const double _selectedWash = 0.12;
 
 /// One light the grove can stand in.
 ///
@@ -54,7 +52,7 @@ class LightPill extends StatelessWidget {
       label: light.name,
       excludeSemantics: true,
       child: Material(
-        color: selected ? mood.accent.withValues(alpha: _selectedWash) : null,
+        color: GroveSelection.fill(mood, picked: selected),
         shape: const StadiumBorder(),
         child: InkWell(
           onTap: onSelect,
@@ -68,7 +66,7 @@ class LightPill extends StatelessWidget {
             decoration: ShapeDecoration(
               shape: StadiumBorder(
                 side: BorderSide(
-                  color: selected ? mood.accent : mood.rule,
+                  color: GroveSelection.edge(mood, picked: selected),
                 ),
               ),
             ),

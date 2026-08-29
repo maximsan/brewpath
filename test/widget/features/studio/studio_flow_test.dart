@@ -2,11 +2,13 @@ import 'dart:ui' show Tristate;
 
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/mini_games/domain/course_entitlement.dart';
-import 'package:brew_path/features/progress/domain/grove_treatment.dart';
+import 'package:brew_path/features/progress/presentation/coffee_tree.dart';
+import 'package:brew_path/features/studio/presentation/studio_door_tile.dart';
 import 'package:brew_path/features/studio/presentation/studio_gate.dart';
 import 'package:brew_path/features/studio/presentation/studio_screen.dart';
 import 'package:brew_path/features/studio/presentation/widgets/light_pill.dart';
 import 'package:brew_path/features/studio/presentation/widgets/plant_row.dart';
+import 'package:brew_path/features/studio/presentation/widgets/plus_pill.dart';
 import 'package:brew_path/features/studio/presentation/widgets/studio_door.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
@@ -49,8 +51,9 @@ void main() {
   Future<void> settle(WidgetTester tester) => settleLoaders(tester);
 
   /// The chooser is taller than a test viewport, so a target has to be brought
-  /// on screen before it can be tapped. `pumpAndSettle` is not available —
-  /// the previewed plant animates — so the frames are counted out.
+  /// on screen before it can be tapped, and `settleLoaders` run again for the
+  /// scroll — Drift and `rootBundle` are real async, which a fake-async pump
+  /// alone cannot advance.
   Future<void> tapAfterScroll(WidgetTester tester, Finder target) async {
     await tester.ensureVisible(target);
     await settle(tester);
@@ -159,32 +162,95 @@ void main() {
     expect(other.flagsCollection.isSelected, Tristate.isFalse);
   });
 
-  testWidgets('the door is locked for a free learner, and says so', (
-    tester,
-  ) async {
+  testWidgets('a free learner gets the lock, not the chooser', (tester) async {
+    // Pumps `StudioDoorTile`, which is where the entitlement branch lives.
+    // Building `StudioDoor` by hand and passing `locked: true` would only
+    // prove that a callback I wrote in the test fires.
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           courseEntitlementProvider.overrideWith((_) async => false),
         ],
-        child: MaterialApp(
-          home: Scaffold(
-            body: Builder(
-              builder: (context) => StudioDoor(
-                treatment: GroveTreatment.identity,
-                locked: true,
-                onTap: () => showStudioLocked(context),
-              ),
-            ),
-          ),
+        child: const MaterialApp(
+          home: Scaffold(body: StudioDoorTile()),
         ),
       ),
     );
-    await tester.pump();
+    await settle(tester);
+
+    expect(find.byType(PlusPill), findsOneWidget);
 
     await tester.tap(find.byType(StudioDoor));
-    await tester.pump();
+    await settle(tester);
 
     expect(find.text(studioLockedMessage), findsOneWidget);
+    expect(find.byType(StudioScreen), findsNothing);
+  });
+
+  testWidgets('the door names what is planted, and Plus learners see no pill', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          courseEntitlementProvider.overrideWith((_) async => true),
+        ],
+        child: const MaterialApp(
+          home: Scaffold(body: StudioDoorTile()),
+        ),
+      ),
+    );
+    await settle(tester);
+
+    // Daylight is the resting light, so the design names only the species.
+    expect(find.text('Arabica'), findsOneWidget);
+    expect(find.byType(PlusPill), findsNothing);
+  });
+
+  testWidgets('the pills announce which light is chosen', (tester) async {
+    await tester.pumpWidget(host(isPlus: true));
+    await settle(tester);
+
+    final chosen = tester.getSemantics(
+      find.widgetWithText(LightPill, 'Daylight'),
+    );
+    expect(chosen.flagsCollection.isSelected, Tristate.isTrue);
+
+    final other = tester.getSemantics(
+      find.widgetWithText(LightPill, 'Moonlit'),
+    );
+    expect(other.flagsCollection.isSelected, Tristate.isFalse);
+  });
+
+  testWidgets('nothing on the surface animates, so reduced motion is moot', (
+    tester,
+  ) async {
+    // The criterion is "reduced motion is respected". It is respected by
+    // there being no motion: every tree here is passed `animate: false`, so
+    // `CoffeeTree`'s own `disableAnimations` check never has to save it.
+    // Asserted rather than assumed, because a later edit that lets the
+    // preview sway would satisfy no test and break the criterion silently.
+    await tester.pumpWidget(host(isPlus: true));
+    await settle(tester);
+
+    final trees = tester.widgetList<CoffeeTree>(find.byType(CoffeeTree));
+    expect(trees, isNotEmpty);
+    expect(trees.every((tree) => !tree.animate), isTrue);
+  });
+
+  testWidgets('a planted grove survives a fresh read', (tester) async {
+    // The write is the whole point of the feature, so it is checked from a
+    // scope that never saw the chooser — which is what a restart is.
+    await tester.pumpWidget(host(isPlus: true));
+    await settle(tester);
+
+    await tapAfterScroll(tester, find.widgetWithText(PlantRow, 'Liberica'));
+    await tapAfterScroll(
+      tester,
+      find.widgetWithText(FilledButton, 'Plant in my grove'),
+    );
+
+    final reread = await SnapshotRepository().read();
+    expect(reread.clearedByDeleteOnly.grove.value.variety, 'liberica');
   });
 }

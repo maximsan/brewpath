@@ -3,6 +3,7 @@ import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/progress/domain/grove_treatment.dart';
 import 'package:brew_path/features/progress/presentation/coffee_tree.dart';
+import 'package:brew_path/features/studio/presentation/widgets/plus_pill.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -26,11 +27,14 @@ const int _doorStage = 10;
 ///
 /// **Locked for a free learner**, and the lock is on the door rather than
 /// inside the chooser — a learner should not walk through a door to be told
-/// they cannot be there.
+/// they cannot be there. The design marks that with a Plus pill beside the
+/// eyebrow and **keeps the chevron**: the door still goes somewhere, it just
+/// asks first.
 class StudioDoor extends StatelessWidget {
   /// Creates a [StudioDoor].
   const StudioDoor({
     required this.treatment,
+    required this.subtitle,
     required this.locked,
     required this.onTap,
     super.key,
@@ -38,6 +42,10 @@ class StudioDoor extends StatelessWidget {
 
   /// How the planted grove looks right now.
   final GroveTreatment treatment;
+
+  /// What the door says it opens onto — the planted species, and its light
+  /// when the light is not the default.
+  final String subtitle;
 
   /// Whether the learner is outside the entitlement.
   final bool locked;
@@ -52,8 +60,8 @@ class StudioDoor extends StatelessWidget {
     return Semantics(
       button: true,
       label: locked
-          ? 'Your grove, locked. BrewPath Plus'
-          : 'Your grove. Change the plant and its light',
+          ? 'Choose your plant. $subtitle. BrewPath Plus'
+          : 'Choose your plant. $subtitle',
       excludeSemantics: true,
       child: Material(
         color: mood.surface,
@@ -94,12 +102,26 @@ class StudioDoor extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      SmallcapsLabel('STUDIO', color: mood.accentText),
-                      const SizedBox(height: AppSpacing.xxs),
-                      Text('Your grove', style: AppText.heading(mood: mood)),
+                      Row(
+                        children: [
+                          SmallcapsLabel('GROVE', color: mood.accentText),
+                          if (locked) ...[
+                            const SizedBox(width: AppSpacing.xs),
+                            const PlusPill(),
+                          ],
+                        ],
+                      ),
                       const SizedBox(height: AppSpacing.xxs),
                       Text(
-                        'Choose your plant and its light',
+                        'Choose your plant',
+                        style: AppText.heading(mood: mood),
+                      ),
+                      const SizedBox(height: AppSpacing.xxs),
+                      // The planted grove, which is what makes this a door onto
+                      // something the learner already owns rather than a menu
+                      // item.
+                      Text(
+                        subtitle,
                         style: AppText.support(
                           mood: mood,
                           color: mood.inkMute,
@@ -108,7 +130,7 @@ class StudioDoor extends StatelessWidget {
                     ],
                   ),
                 ),
-                IconMark(locked ? AppIcon.lock : AppIcon.chevron),
+                const IconMark(AppIcon.chevron),
               ],
             ),
           ),

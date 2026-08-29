@@ -5,18 +5,29 @@ import 'package:flutter/material.dart';
 
 /// One labelled fact about the selected species.
 ///
-/// The design's `.form-row` — a muted mono label, the value in mono against
-/// the right edge, a hairline under each. The same shape a dictionary term
-/// carries, so the grove reads as course material rather than as decoration.
+/// The design's `.form-row`: the label in **sans** small-caps (`index.html:302`
+/// — not mono, though every other small-caps label in the app is), the value in
+/// mono against the right edge, and a hairline under every row but the last
+/// (`.form-row:last-child { border-bottom: none }`). The same shape a
+/// dictionary term carries, so the grove reads as course material rather than
+/// as decoration.
 class SpecRow extends StatelessWidget {
   /// Creates a [SpecRow].
-  const SpecRow({required this.label, required this.value, super.key});
+  const SpecRow({
+    required this.label,
+    required this.value,
+    this.last = false,
+    super.key,
+  });
 
   /// What the fact is called.
   final String label;
 
   /// The fact, as the bank authored it.
   final String value;
+
+  /// Whether this is the strip's last row, which carries no hairline.
+  final bool last;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +39,7 @@ class SpecRow extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.base),
         decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(color: mood.rule)),
+          border: last ? null : Border(bottom: BorderSide(color: mood.rule)),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -36,7 +47,7 @@ class SpecRow extends StatelessWidget {
           children: [
             Text(
               label.toUpperCase(),
-              style: AppText.label(mood: mood, face: AppFace.mono),
+              style: AppText.label(mood: mood),
             ),
             const Spacer(),
             Flexible(

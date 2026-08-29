@@ -1,5 +1,8 @@
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/progress/domain/grove_treatment.dart';
 import 'package:brew_path/features/progress/presentation/coffee_tree.dart';
+import 'package:brew_path/features/studio/presentation/widgets/grove_selection.dart';
 import 'package:brew_path/shared/models/content/grove_variety.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -55,7 +58,7 @@ class PlantRow extends StatelessWidget {
       label: '${variety.name}, ${variety.use}',
       excludeSemantics: true,
       child: Material(
-        color: selected ? mood.accent.withValues(alpha: _selectedWash) : null,
+        color: GroveSelection.fill(mood, picked: selected),
         borderRadius: BorderRadius.circular(AppRadii.editorial),
         child: InkWell(
           onTap: onSelect,
@@ -65,7 +68,7 @@ class PlantRow extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(AppRadii.editorial),
               border: Border.all(
-                color: selected ? mood.accent : mood.rule,
+                color: GroveSelection.edge(mood, picked: selected),
               ),
             ),
             child: Row(
@@ -106,10 +109,12 @@ class PlantRow extends StatelessWidget {
                       color: mood.accent,
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(
-                      Icons.check,
-                      size: _tickMark,
-                      color: mood.accentInk,
+                    child: Center(
+                      child: IconMark(
+                        AppIcon.check,
+                        size: _tickMark,
+                        color: mood.accentInk,
+                      ),
                     ),
                   ),
               ],
@@ -120,7 +125,3 @@ class PlantRow extends StatelessWidget {
     );
   }
 }
-
-/// Wash behind the chosen row — the same 12% the app tints every marked
-/// surface at.
-const double _selectedWash = 0.12;

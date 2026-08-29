@@ -174,7 +174,7 @@ class _Chooser extends StatelessWidget {
               SpecRow(label: 'Share of cups', value: variety.share),
               SpecRow(label: 'Home', value: variety.origin),
               SpecRow(label: 'Grows', value: variety.grows),
-              SpecRow(label: 'Tastes like', value: variety.cup),
+              SpecRow(label: 'Tastes like', value: variety.cup, last: true),
               const SizedBox(height: AppSpacing.base),
               Text(
                 variety.tell,

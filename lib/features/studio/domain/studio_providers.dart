@@ -41,6 +41,23 @@ class StudioGrove {
   GroveVariety varietyOf(String id) =>
       varieties.firstWhere((v) => v.id == id, orElse: () => varieties.first);
 
+  /// What the Studio door says under its title: the planted species, and its
+  /// light when the light is not the default.
+  ///
+  /// The design writes `variety.name + (light is daylight ? '' : ' · ' +
+  /// light.name)` (`customize.jsx:314`) — Daylight is the grove's resting
+  /// state, so naming it would be telling the learner they have chosen
+  /// something when they have not.
+  String get doorSubtitle {
+    final variety = varietyOf(planted.variety);
+    if (planted.light == Grove.defaultLight) return variety.name;
+    final light = lights.firstWhere(
+      (l) => l.id == planted.light,
+      orElse: () => lights.first,
+    );
+    return '${variety.name} · ${light.name}';
+  }
+
   /// How [variety] looks under [light].
   GroveTreatment treatmentFor(String variety, String light) =>
       groveTreatmentFor(
