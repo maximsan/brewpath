@@ -995,6 +995,32 @@ class $UserSettingsTable extends UserSettings
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _notificationsEnabledMeta =
+      const VerificationMeta('notificationsEnabled');
+  @override
+  late final GeneratedColumn<bool> notificationsEnabled = GeneratedColumn<bool>(
+    'notifications_enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("notifications_enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _dailyReminderTimeMeta = const VerificationMeta(
+    'dailyReminderTime',
+  );
+  @override
+  late final GeneratedColumn<String> dailyReminderTime =
+      GeneratedColumn<String>(
+        'daily_reminder_time',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1007,6 +1033,8 @@ class $UserSettingsTable extends UserSettings
     themeMode,
     tourSeen,
     learnerName,
+    notificationsEnabled,
+    dailyReminderTime,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1101,6 +1129,24 @@ class $UserSettingsTable extends UserSettings
         ),
       );
     }
+    if (data.containsKey('notifications_enabled')) {
+      context.handle(
+        _notificationsEnabledMeta,
+        notificationsEnabled.isAcceptableOrUnknown(
+          data['notifications_enabled']!,
+          _notificationsEnabledMeta,
+        ),
+      );
+    }
+    if (data.containsKey('daily_reminder_time')) {
+      context.handle(
+        _dailyReminderTimeMeta,
+        dailyReminderTime.isAcceptableOrUnknown(
+          data['daily_reminder_time']!,
+          _dailyReminderTimeMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -1149,6 +1195,14 @@ class $UserSettingsTable extends UserSettings
       learnerName: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}learner_name'],
+      ),
+      notificationsEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}notifications_enabled'],
+      )!,
+      dailyReminderTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}daily_reminder_time'],
       ),
     );
   }
@@ -1210,6 +1264,25 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
   /// name is empty" are the same fact to the greeting, and only one of them
   /// needs representing.
   final String? learnerName;
+
+  /// Whether the learner asked for a daily reminder.
+  ///
+  /// Off by default: a notification nobody asked for is the fastest way to be
+  /// switched off for good, and the design's own row starts as a choice rather
+  /// than as something to undo.
+  ///
+  /// **Stored, not yet acted on.** Nothing schedules anything from this bit —
+  /// whether reminders ship at all has never been ruled, and the platform work
+  /// behind it is #443. Device-local either way: a reminder is a property of
+  /// the phone in your pocket, not of the account.
+  final bool notificationsEnabled;
+
+  /// The time of day the reminder is set for, as one of the design's eight
+  /// slots (`prototype/settings.jsx:103`).
+  ///
+  /// Nullable rather than defaulted: "never chose a time" is a different fact
+  /// from "chose 8:00 AM", and the row reads *Off* for the first.
+  final String? dailyReminderTime;
   const SettingsRow({
     required this.id,
     required this.hapticsEnabled,
@@ -1221,6 +1294,8 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     required this.themeMode,
     required this.tourSeen,
     this.learnerName,
+    required this.notificationsEnabled,
+    this.dailyReminderTime,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1240,6 +1315,10 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     map['tour_seen'] = Variable<bool>(tourSeen);
     if (!nullToAbsent || learnerName != null) {
       map['learner_name'] = Variable<String>(learnerName);
+    }
+    map['notifications_enabled'] = Variable<bool>(notificationsEnabled);
+    if (!nullToAbsent || dailyReminderTime != null) {
+      map['daily_reminder_time'] = Variable<String>(dailyReminderTime);
     }
     return map;
   }
@@ -1262,6 +1341,10 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
       learnerName: learnerName == null && nullToAbsent
           ? const Value.absent()
           : Value(learnerName),
+      notificationsEnabled: Value(notificationsEnabled),
+      dailyReminderTime: dailyReminderTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(dailyReminderTime),
     );
   }
 
@@ -1283,6 +1366,12 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
       themeMode: serializer.fromJson<String>(json['themeMode']),
       tourSeen: serializer.fromJson<bool>(json['tourSeen']),
       learnerName: serializer.fromJson<String?>(json['learnerName']),
+      notificationsEnabled: serializer.fromJson<bool>(
+        json['notificationsEnabled'],
+      ),
+      dailyReminderTime: serializer.fromJson<String?>(
+        json['dailyReminderTime'],
+      ),
     );
   }
   @override
@@ -1299,6 +1388,8 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
       'themeMode': serializer.toJson<String>(themeMode),
       'tourSeen': serializer.toJson<bool>(tourSeen),
       'learnerName': serializer.toJson<String?>(learnerName),
+      'notificationsEnabled': serializer.toJson<bool>(notificationsEnabled),
+      'dailyReminderTime': serializer.toJson<String?>(dailyReminderTime),
     };
   }
 
@@ -1313,6 +1404,8 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     String? themeMode,
     bool? tourSeen,
     Value<String?> learnerName = const Value.absent(),
+    bool? notificationsEnabled,
+    Value<String?> dailyReminderTime = const Value.absent(),
   }) => SettingsRow(
     id: id ?? this.id,
     hapticsEnabled: hapticsEnabled ?? this.hapticsEnabled,
@@ -1328,6 +1421,10 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     themeMode: themeMode ?? this.themeMode,
     tourSeen: tourSeen ?? this.tourSeen,
     learnerName: learnerName.present ? learnerName.value : this.learnerName,
+    notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
+    dailyReminderTime: dailyReminderTime.present
+        ? dailyReminderTime.value
+        : this.dailyReminderTime,
   );
   SettingsRow copyWithCompanion(UserSettingsCompanion data) {
     return SettingsRow(
@@ -1353,6 +1450,12 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
       learnerName: data.learnerName.present
           ? data.learnerName.value
           : this.learnerName,
+      notificationsEnabled: data.notificationsEnabled.present
+          ? data.notificationsEnabled.value
+          : this.notificationsEnabled,
+      dailyReminderTime: data.dailyReminderTime.present
+          ? data.dailyReminderTime.value
+          : this.dailyReminderTime,
     );
   }
 
@@ -1368,7 +1471,9 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
           ..write('onboardingBrewer: $onboardingBrewer, ')
           ..write('themeMode: $themeMode, ')
           ..write('tourSeen: $tourSeen, ')
-          ..write('learnerName: $learnerName')
+          ..write('learnerName: $learnerName, ')
+          ..write('notificationsEnabled: $notificationsEnabled, ')
+          ..write('dailyReminderTime: $dailyReminderTime')
           ..write(')'))
         .toString();
   }
@@ -1385,6 +1490,8 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     themeMode,
     tourSeen,
     learnerName,
+    notificationsEnabled,
+    dailyReminderTime,
   );
   @override
   bool operator ==(Object other) =>
@@ -1399,7 +1506,9 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
           other.onboardingBrewer == this.onboardingBrewer &&
           other.themeMode == this.themeMode &&
           other.tourSeen == this.tourSeen &&
-          other.learnerName == this.learnerName);
+          other.learnerName == this.learnerName &&
+          other.notificationsEnabled == this.notificationsEnabled &&
+          other.dailyReminderTime == this.dailyReminderTime);
 }
 
 class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
@@ -1413,6 +1522,8 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
   final Value<String> themeMode;
   final Value<bool> tourSeen;
   final Value<String?> learnerName;
+  final Value<bool> notificationsEnabled;
+  final Value<String?> dailyReminderTime;
   const UserSettingsCompanion({
     this.id = const Value.absent(),
     this.hapticsEnabled = const Value.absent(),
@@ -1424,6 +1535,8 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     this.themeMode = const Value.absent(),
     this.tourSeen = const Value.absent(),
     this.learnerName = const Value.absent(),
+    this.notificationsEnabled = const Value.absent(),
+    this.dailyReminderTime = const Value.absent(),
   });
   UserSettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -1436,6 +1549,8 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     this.themeMode = const Value.absent(),
     this.tourSeen = const Value.absent(),
     this.learnerName = const Value.absent(),
+    this.notificationsEnabled = const Value.absent(),
+    this.dailyReminderTime = const Value.absent(),
   }) : hapticsEnabled = Value(hapticsEnabled),
        soundEnabled = Value(soundEnabled),
        totalXp = Value(totalXp);
@@ -1450,6 +1565,8 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     Expression<String>? themeMode,
     Expression<bool>? tourSeen,
     Expression<String>? learnerName,
+    Expression<bool>? notificationsEnabled,
+    Expression<String>? dailyReminderTime,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1463,6 +1580,9 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
       if (themeMode != null) 'theme_mode': themeMode,
       if (tourSeen != null) 'tour_seen': tourSeen,
       if (learnerName != null) 'learner_name': learnerName,
+      if (notificationsEnabled != null)
+        'notifications_enabled': notificationsEnabled,
+      if (dailyReminderTime != null) 'daily_reminder_time': dailyReminderTime,
     });
   }
 
@@ -1477,6 +1597,8 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     Value<String>? themeMode,
     Value<bool>? tourSeen,
     Value<String?>? learnerName,
+    Value<bool>? notificationsEnabled,
+    Value<String?>? dailyReminderTime,
   }) {
     return UserSettingsCompanion(
       id: id ?? this.id,
@@ -1489,6 +1611,8 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
       themeMode: themeMode ?? this.themeMode,
       tourSeen: tourSeen ?? this.tourSeen,
       learnerName: learnerName ?? this.learnerName,
+      notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
+      dailyReminderTime: dailyReminderTime ?? this.dailyReminderTime,
     );
   }
 
@@ -1525,6 +1649,12 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     if (learnerName.present) {
       map['learner_name'] = Variable<String>(learnerName.value);
     }
+    if (notificationsEnabled.present) {
+      map['notifications_enabled'] = Variable<bool>(notificationsEnabled.value);
+    }
+    if (dailyReminderTime.present) {
+      map['daily_reminder_time'] = Variable<String>(dailyReminderTime.value);
+    }
     return map;
   }
 
@@ -1540,7 +1670,9 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
           ..write('onboardingBrewer: $onboardingBrewer, ')
           ..write('themeMode: $themeMode, ')
           ..write('tourSeen: $tourSeen, ')
-          ..write('learnerName: $learnerName')
+          ..write('learnerName: $learnerName, ')
+          ..write('notificationsEnabled: $notificationsEnabled, ')
+          ..write('dailyReminderTime: $dailyReminderTime')
           ..write(')'))
         .toString();
   }
@@ -2480,6 +2612,8 @@ typedef $$UserSettingsTableCreateCompanionBuilder =
       Value<String> themeMode,
       Value<bool> tourSeen,
       Value<String?> learnerName,
+      Value<bool> notificationsEnabled,
+      Value<String?> dailyReminderTime,
     });
 typedef $$UserSettingsTableUpdateCompanionBuilder =
     UserSettingsCompanion Function({
@@ -2493,6 +2627,8 @@ typedef $$UserSettingsTableUpdateCompanionBuilder =
       Value<String> themeMode,
       Value<bool> tourSeen,
       Value<String?> learnerName,
+      Value<bool> notificationsEnabled,
+      Value<String?> dailyReminderTime,
     });
 
 class $$UserSettingsTableFilterComposer
@@ -2551,6 +2687,16 @@ class $$UserSettingsTableFilterComposer
 
   ColumnFilters<String> get learnerName => $composableBuilder(
     column: $table.learnerName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get notificationsEnabled => $composableBuilder(
+    column: $table.notificationsEnabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get dailyReminderTime => $composableBuilder(
+    column: $table.dailyReminderTime,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -2613,6 +2759,16 @@ class $$UserSettingsTableOrderingComposer
     column: $table.learnerName,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get notificationsEnabled => $composableBuilder(
+    column: $table.notificationsEnabled,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get dailyReminderTime => $composableBuilder(
+    column: $table.dailyReminderTime,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$UserSettingsTableAnnotationComposer
@@ -2665,6 +2821,16 @@ class $$UserSettingsTableAnnotationComposer
     column: $table.learnerName,
     builder: (column) => column,
   );
+
+  GeneratedColumn<bool> get notificationsEnabled => $composableBuilder(
+    column: $table.notificationsEnabled,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get dailyReminderTime => $composableBuilder(
+    column: $table.dailyReminderTime,
+    builder: (column) => column,
+  );
 }
 
 class $$UserSettingsTableTableManager
@@ -2708,6 +2874,8 @@ class $$UserSettingsTableTableManager
                 Value<String> themeMode = const Value.absent(),
                 Value<bool> tourSeen = const Value.absent(),
                 Value<String?> learnerName = const Value.absent(),
+                Value<bool> notificationsEnabled = const Value.absent(),
+                Value<String?> dailyReminderTime = const Value.absent(),
               }) => UserSettingsCompanion(
                 id: id,
                 hapticsEnabled: hapticsEnabled,
@@ -2719,6 +2887,8 @@ class $$UserSettingsTableTableManager
                 themeMode: themeMode,
                 tourSeen: tourSeen,
                 learnerName: learnerName,
+                notificationsEnabled: notificationsEnabled,
+                dailyReminderTime: dailyReminderTime,
               ),
           createCompanionCallback:
               ({
@@ -2732,6 +2902,8 @@ class $$UserSettingsTableTableManager
                 Value<String> themeMode = const Value.absent(),
                 Value<bool> tourSeen = const Value.absent(),
                 Value<String?> learnerName = const Value.absent(),
+                Value<bool> notificationsEnabled = const Value.absent(),
+                Value<String?> dailyReminderTime = const Value.absent(),
               }) => UserSettingsCompanion.insert(
                 id: id,
                 hapticsEnabled: hapticsEnabled,
@@ -2743,6 +2915,8 @@ class $$UserSettingsTableTableManager
                 themeMode: themeMode,
                 tourSeen: tourSeen,
                 learnerName: learnerName,
+                notificationsEnabled: notificationsEnabled,
+                dailyReminderTime: dailyReminderTime,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

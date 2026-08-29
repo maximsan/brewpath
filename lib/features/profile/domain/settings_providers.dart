@@ -1,5 +1,6 @@
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
+import 'package:brew_path/features/profile/domain/daily_reminder.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
@@ -36,6 +37,30 @@ class SettingsController extends _$SettingsController {
   Future<void> toggleSound() =>
       _update((s) => s.soundEnabled = !s.soundEnabled);
 
+  /// Toggles whether the learner wants a daily reminder.
+  ///
+  /// Switching it on with no time chosen takes the design's default slot, so
+  /// the row never reads on-with-no-time — the state its own value has no way
+  /// to show.
+  ///
+  /// **Nothing is scheduled** by this, here or anywhere: see #443.
+  Future<void> toggleNotifications() => _update((s) {
+    s.notificationsEnabled = !s.notificationsEnabled;
+    if (s.notificationsEnabled) {
+      s.dailyReminderTime ??= DailyReminder.defaultTime;
+    }
+  });
+
+  /// Sets the reminder's time, and turns reminders on if they were off.
+  ///
+  /// Choosing a time *is* asking for the reminder — the design's own sheet
+  /// saves with `setNotify(true)` beside the time it stores.
+  Future<void> setReminderTime(String time) => _update((s) {
+    s
+      ..dailyReminderTime = time
+      ..notificationsEnabled = true;
+  });
+
   Future<void> _update(void Function(UserSettingsRecord) mutate) async {
     final repo = ref.read(settingsRepositoryProvider);
     final settings = await repo.getSettings();
@@ -46,11 +71,21 @@ class SettingsController extends _$SettingsController {
 }
 
 /// The current app version string, formatted as `x.y.z+build`.
+///
+/// The build number is for the person reading a crash report, so it belongs on
+/// About beside the rest of the fine print — not in the signature line that
+/// closes Settings, which the design writes as a version alone.
 @riverpod
 Future<String> appVersion(Ref ref) async {
   final info = await PackageInfo.fromPlatform();
   return '${info.version}+${info.buildNumber}';
 }
+
+/// The marketing version alone, as the design's closing line prints it —
+/// `v0.1` (`prototype/screens.jsx:559`).
+@riverpod
+Future<String> appVersionShort(Ref ref) async =>
+    'v${(await PackageInfo.fromPlatform()).version}';
 
 /// Wipes the learner's progress and rebuilds the screens that showed it.
 ///

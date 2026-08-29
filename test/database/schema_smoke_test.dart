@@ -13,6 +13,7 @@ import '../generated/schema_v5.dart' show DatabaseAtV5;
 import '../generated/schema_v6.dart' show DatabaseAtV6;
 import '../generated/schema_v7.dart' show DatabaseAtV7;
 import '../generated/schema_v8.dart' show DatabaseAtV8;
+import '../generated/schema_v9.dart' show DatabaseAtV9;
 
 /// Drift schema-migration harness coverage.
 ///
@@ -472,6 +473,62 @@ void main() {
         expect(row.read<String>('onboarding_goal'), 'understand_tasting');
         expect(row.read<String>('theme_mode'), 'light');
         expect(row.read<int>('total_xp'), 240);
+      },
+    );
+  });
+
+  test('schema v9 database has neither reminder column yet', () async {
+    final connection = await verifier.startAt(9);
+    final db = DatabaseAtV9(connection);
+
+    await expectLater(
+      db.customSelect('SELECT notifications_enabled FROM user_settings').get(),
+      throwsA(isA<Exception>()),
+    );
+
+    await db.close();
+  });
+
+  test('a v9 database upgrades with no reminder asked for', () async {
+    // Both columns default rather than backfill: a device upgrading into the
+    // reminder has never been asked about it, so "off, with no time" is the
+    // truth for it — and the row must read *Off* rather than a time that will
+    // never arrive. The learner's name is asserted alongside, because an
+    // additive step that quietly rewrote the row it touched would look the
+    // same from the new columns' side.
+    await verifier.testWithDataIntegrity(
+      oldVersion: 9,
+      newVersion: _currentVersion,
+      createOld: DatabaseAtV9.new,
+      createNew: (executor) =>
+          GeneratedHelper().databaseForVersion(executor, _currentVersion),
+      openTestedDatabase: AppDatabase.new,
+      createItems: (batch, oldDb) => batch.insert(
+        oldDb.userSettings,
+        const RawValuesInsertable<dynamic>({
+          'id': Variable<int>(1),
+          'haptics_enabled': Variable<bool>(true),
+          'sound_enabled': Variable<bool>(true),
+          'total_xp': Variable<int>(0),
+          'onboarding_completed': Variable<bool>(true),
+          'theme_mode': Variable<String>('dark'),
+          'tour_seen': Variable<bool>(true),
+          'learner_name': Variable<String>('Sam'),
+        }),
+      ),
+      validateItems: (newDb) async {
+        final rows = await newDb
+            .customSelect(
+              'SELECT notifications_enabled, daily_reminder_time, '
+              'learner_name FROM user_settings',
+            )
+            .get();
+
+        expect(rows, hasLength(1));
+        final row = rows.single;
+        expect(row.read<bool>('notifications_enabled'), false);
+        expect(row.readNullable<String>('daily_reminder_time'), null);
+        expect(row.read<String>('learner_name'), 'Sam');
       },
     );
   });
