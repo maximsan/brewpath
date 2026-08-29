@@ -180,11 +180,16 @@ bool hasRenderer(ContentCard card) => switch (card) {
 /// that says so — puts unfinished scaffolding in front of a learner on the way
 /// to the next real card.
 ///
-/// **It drops nothing today**, because every kind renders. It stays by ruling
-/// — #333 §8 — because the gap it covers is a recurring one rather than a past
-/// one: a kind lands in the union with its bank before its renderer is built,
-/// and for that stretch this is what keeps the lessons carrying it playable.
-/// The lesson-only kinds at #80 and the visual card at #272 still need it.
+/// **It drops nothing today**, and nothing is waiting on it: every kind of the
+/// union renders, and the two tickets #333 §8 named as still needing it — the
+/// lesson-only kinds at #80 and the visual card at #272 — have both closed.
+/// It stays only because §8 scoped its removal out of #124, not because it has
+/// a job. Retiring it, `hasRenderer` and the hosts' "cannot be shown yet"
+/// branches is #418's.
+///
+/// The cover it gave was real while it lasted: a kind lands in the union with
+/// its bank before its renderer is built, and for that stretch this is what
+/// kept the lessons carrying it playable.
 List<ContentCard> playableCards(List<ContentCard> cards) => [
   for (final card in cards)
     if (hasRenderer(card)) card,
