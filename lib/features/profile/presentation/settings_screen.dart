@@ -6,6 +6,7 @@ import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/onboarding/presentation/onboarding_providers.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:brew_path/features/profile/presentation/widgets/appearance_selector.dart';
+import 'package:brew_path/features/tour/domain/app_guide_copy.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -72,6 +73,9 @@ class SettingsScreen extends ConsumerWidget {
           const _SectionLabel('Onboarding'),
           const _ResetOnboardingTile(),
           const SizedBox(height: 24),
+          const _SectionLabel(AppGuideCopy.helpSectionLabel),
+          const _AppGuideTile(),
+          const SizedBox(height: 24),
           const _SectionLabel('Danger zone'),
           const _ResetProgressTile(),
           const SizedBox(height: 24),
@@ -107,6 +111,27 @@ class _SectionLabel extends StatelessWidget {
           fontWeight: FontWeight.w700,
         ),
       ),
+    );
+  }
+}
+
+/// The way into the written guide — and, through it, the way back into the
+/// Tour. Sits under Help & Support because that is where the design files it
+/// (`settings.jsx:590`); this screen has no Help sub-screen of its own yet, so
+/// the section is a heading here rather than a push.
+class _AppGuideTile extends StatelessWidget {
+  const _AppGuideTile();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      // Stock, for the same reason the header's Dictionary entry is: the
+      // design draws no mark for the guide.
+      leading: const Icon(Icons.help_outline),
+      title: const Text(AppGuideCopy.title),
+      subtitle: const Text(AppGuideCopy.settingsRowBody),
+      trailing: const IconMark(AppIcon.chevron),
+      onTap: () => context.pushNamed(AppRoutes.appGuide.name),
     );
   }
 }

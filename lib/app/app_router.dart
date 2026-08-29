@@ -26,6 +26,7 @@ import 'package:brew_path/features/profile/presentation/settings_screen.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/presentation/streak_screen.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
+import 'package:brew_path/features/tour/presentation/app_guide_screen.dart';
 import 'package:brew_path/services/analytics/analytics_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -265,6 +266,17 @@ GoRouter appRouter(Ref ref) {
                     name: AppRoutes.profileSettings.name,
                     parentNavigatorKey: _rootKey,
                     builder: (context, state) => const SettingsScreen(),
+                    routes: [
+                      // Under Settings because that is the only way in:
+                      // Help & Support is a section of Settings, not of
+                      // Profile.
+                      GoRoute(
+                        path: AppRoutes.appGuide.path,
+                        name: AppRoutes.appGuide.name,
+                        parentNavigatorKey: _rootKey,
+                        builder: (context, state) => const AppGuideScreen(),
+                      ),
+                    ],
                   ),
                   // Pushed on the root navigator so the streak view covers
                   // the bottom-nav shell, exactly as Settings does.
