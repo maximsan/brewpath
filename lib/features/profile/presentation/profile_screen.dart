@@ -1,25 +1,35 @@
 import 'package:brew_path/core/constants/app_routes.dart';
-import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/utils/date_utils.dart';
+import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_stat_row.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
+import 'package:brew_path/features/profile/presentation/widgets/lesson_progress_rollup.dart';
 import 'package:brew_path/features/profile/presentation/widgets/preference_tile.dart';
-import 'package:brew_path/features/profile/presentation/widgets/stat_tile.dart';
+import 'package:brew_path/features/profile/presentation/widgets/profile_progress_line.dart';
+import 'package:brew_path/features/profile/presentation/widgets/streak_card.dart';
+import 'package:brew_path/features/profile/presentation/widgets/tree_hero_card.dart';
 import 'package:brew_path/features/progress/domain/grove_treatment.dart';
+import 'package:brew_path/features/progress/domain/mastery_rollup.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/presentation/coffee_tree.dart';
-import 'package:brew_path/features/progress/presentation/week_strip.dart';
 import 'package:brew_path/features/studio/presentation/studio_door_tile.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// Gap between the Profile's stacked sections. Off the `AppSpacing` scale by
-/// one notch — the design sets this page's section rhythm at 28.
-const double _sectionGap = 28;
+/// Gap between Profile's stacked cards. The design sets 12 between the cards
+/// and 24 above the two it treats as headline — the tree and the streak.
+const double _cardGap = AppSpacing.sm;
+const double _headlineGap = AppSpacing.gutter;
 
-/// Profile tab: progress stats and preferences.
+/// Above the closing line — the design's 22, its own value on this screen.
+const double _joinedGap = AppSpacing.lg - 2;
+
+/// Profile tab: the tree, the streak, what has been learned, and — until #429
+/// moves them — the app's preferences.
 class ProfileScreen extends ConsumerWidget {
   /// Creates a [ProfileScreen].
   const ProfileScreen({super.key});
@@ -29,69 +39,72 @@ class ProfileScreen extends ConsumerWidget {
     final points = ref.watch(totalPointsProvider);
     final streak = ref.watch(streakProvider);
     final lessons = ref.watch(completedLessonsProvider);
-    final cards = ref.watch(collectedCardsProvider);
-    final settings = ref.watch(settingsControllerProvider);
     final treeStage = ref.watch(treeStageProvider);
     final weekDays = ref.watch(weekStripDaysProvider).asData?.value;
     final grove = ref.watch(groveTreatmentProvider);
+    final course = ref.watch(coreLessonProgressProvider).asData?.value;
+    final joined = ref.watch(joinedDateProvider).asData?.value;
+
+    final records = lessons.asData?.value ?? const [];
+    final rollup = rollUpMastery(
+      records.map((record) => record.mastery),
+      total: course?.total ?? records.length,
+    );
 
     return Scaffold(
       body: CustomScrollView(
         slivers: [
           SliverPadding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.gutter,
+              AppSpacing.xs,
+              AppSpacing.gutter,
+              AppSpacing.gutter,
+            ),
             sliver: SliverList.list(
               children: [
-                Center(
-                  child: treeStage.when(
-                    data: (stage) => _TreeHeroTap(
-                      child: CoffeeTree(
-                        stage: stage,
-                        // A grove still loading paints the real art rather
-                        // than blocking the tree on it.
-                        treatment:
-                            grove.asData?.value ?? GroveTreatment.identity,
-                        // Still here, swaying on its own screen: the design
-                        // freezes the hero (`screens.jsx:2586`), so the tab
-                        // does not carry a permanent animation.
-                        animate: false,
-                      ),
-                    ),
-                    loading: CoffeeTreePlaceholder.new,
-                    error: (_, _) => const CoffeeTreePlaceholder(),
+                treeStage.when(
+                  data: (stage) => TreeHeroCard(
+                    stage: stage,
+                    // A grove still loading paints the real art rather than
+                    // blocking the tree on it.
+                    treatment: grove.asData?.value ?? GroveTreatment.identity,
+                    completed: course?.completed ?? 0,
+                    total: course?.total ?? 0,
+                    onTap: () => context.pushNamed(AppRoutes.profileTree.name),
                   ),
+                  loading: CoffeeTreePlaceholder.new,
+                  error: (_, _) => const CoffeeTreePlaceholder(),
                 ),
-                const SizedBox(height: _sectionGap),
-                const _SectionTitle('Your progress'),
-                const SizedBox(height: 12),
-                _StatsGrid(
+                const SizedBox(height: _headlineGap),
+                StreakCard(
+                  days: streak.asData?.value ?? 0,
+                  weekDays: weekDays,
+                  onTap: () => context.goNamed(AppRoutes.profileStreak.name),
+                ),
+                const SizedBox(height: AppSpacing.base),
+                ProfileProgressLine(
+                  lessons: records.length,
                   points: points.asData?.value ?? 0,
-                  streakDays: streak.asData?.value ?? 0,
-                  lessonsCompleted: lessons.asData?.value.length ?? 0,
-                  cardsCollected: cards.asData?.value.length ?? 0,
-                  onStreakTap: () =>
-                      context.goNamed(AppRoutes.profileStreak.name),
-                  streakFooter: weekDays == null
-                      ? null
-                      : WeekStrip(days: weekDays, size: WeekStripSize.small),
                 ),
-                const SizedBox(height: AppSpacing.sm),
+                // Absent until a lesson holds a score: an empty bar under a
+                // heading says the learner is behind, when in fact they have
+                // not started.
+                if (rollup.scored > 0) ...[
+                  const SizedBox(height: _cardGap),
+                  LessonProgressRollup(
+                    rollup: rollup,
+                    onPractice: () => context.goNamed(AppRoutes.path.name),
+                  ),
+                ],
+                const SizedBox(height: _cardGap),
                 const ChallengeStatRow(),
-                const SizedBox(height: _sectionGap),
-                const _SectionTitle('Customize'),
-                const SizedBox(height: 12),
-                const StudioDoorTile(),
-                const SizedBox(height: AppSpacing.sm),
-                _CustomizeGrid(
-                  soundEnabled: settings.asData?.value.soundEnabled ?? true,
-                  hapticsEnabled: settings.asData?.value.hapticsEnabled ?? true,
-                  onToggleSound: () => ref
-                      .read(settingsControllerProvider.notifier)
-                      .toggleSound(),
-                  onToggleHaptics: () => ref
-                      .read(settingsControllerProvider.notifier)
-                      .toggleHaptics(),
-                ),
+                const SizedBox(height: _headlineGap),
+                const _CustomizeSection(),
+                if (joined != null) ...[
+                  const SizedBox(height: _joinedGap),
+                  _JoinedLine(joined: joined),
+                ],
               ],
             ),
           ),
@@ -101,97 +114,52 @@ class ProfileScreen extends ConsumerWidget {
   }
 }
 
-/// The way onto the tree's own screen.
+/// The month the learner joined, closing the screen.
 ///
-/// A tap target around the hero rather than a row beneath it, because the
-/// design makes the whole hero the button (`screens.jsx:2579`). The card it
-/// wraps that button in — the border, the stage line, its own bar — is
-/// [#393](https://github.com/maximsan/brewpath/issues/393)'s; this is only the
-/// way through.
-class _TreeHeroTap extends StatelessWidget {
-  const _TreeHeroTap({required this.child});
+/// Mono at the micro step, not [SmallcapsLabel]: the design sets this line in
+/// `ff-mono` at `--t-micro` (`screens.jsx:2798-2802`), where smallcaps is Plex
+/// Sans at the label step. The tracking is the same, the face and size are not.
+class _JoinedLine extends StatelessWidget {
+  const _JoinedLine({required this.joined});
 
-  final Widget child;
+  final DateTime joined;
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      // The child already names the stage, and a button that announces its
-      // own label twice reads as two controls.
-      hint: 'Opens your coffee tree',
-      child: InkWell(
-        onTap: () => context.pushNamed(AppRoutes.profileTree.name),
-        child: child,
-      ),
-    );
-  }
-}
-
-class _SectionTitle extends StatelessWidget {
-  const _SectionTitle(this.text);
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Text(
-      text,
-      style: theme.textTheme.titleLarge?.copyWith(
-        color: context.mood.ink,
-      ),
+      'Joined ${monthYear(joined)}'.toUpperCase(),
+      style: AppText.micro(mood: context.mood),
     );
   }
 }
 
-class _StatsGrid extends StatelessWidget {
-  const _StatsGrid({
-    required this.points,
-    required this.streakDays,
-    required this.lessonsCompleted,
-    required this.cardsCollected,
-    required this.onStreakTap,
-    required this.streakFooter,
-  });
-
-  final int points;
-  final int streakDays;
-  final int lessonsCompleted;
-  final int cardsCollected;
-  final VoidCallback onStreakTap;
-  final Widget? streakFooter;
+/// The Studio door and the app's preferences, still on Profile.
+///
+/// Its own widget so it reads its own settings: #429 moves the preferences to
+/// Settings, where the design keeps them, and a section that owns its state is
+/// a deletion rather than an unpicking. The door stays either way — #428 gives
+/// it the design's own entry card, beside Saved, now that #140 has built what
+/// it opens.
+class _CustomizeSection extends ConsumerWidget {
+  const _CustomizeSection();
 
   @override
-  Widget build(BuildContext context) {
-    return GridView.count(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 2,
-      mainAxisSpacing: AppSpacing.sm,
-      crossAxisSpacing: AppSpacing.sm,
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(settingsControllerProvider).asData?.value;
+    final controller = ref.read(settingsControllerProvider.notifier);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        StatTile.mark(
-          mark: AppIcon.bean,
-          label: 'Total points',
-          value: '$points',
-        ),
-        StatTile(
-          icon: Icons.local_fire_department,
-          label: 'Day streak',
-          value: '$streakDays',
-          onTap: onStreakTap,
-          footer: streakFooter,
-        ),
-        StatTile.mark(
-          mark: AppIcon.check,
-          label: 'Lessons',
-          value: '$lessonsCompleted',
-        ),
-        StatTile.mark(
-          mark: AppIcon.cards,
-          label: 'Cards',
-          value: '$cardsCollected',
+        const SmallcapsLabel('Customize'),
+        const SizedBox(height: _cardGap),
+        const StudioDoorTile(),
+        const SizedBox(height: _cardGap),
+        _CustomizeGrid(
+          soundEnabled: settings?.soundEnabled ?? true,
+          hapticsEnabled: settings?.hapticsEnabled ?? true,
+          onToggleSound: controller.toggleSound,
+          onToggleHaptics: controller.toggleHaptics,
         ),
       ],
     );

@@ -12,6 +12,28 @@ bool isSameDay(DateTime a, DateTime b) =>
 int epochDay(DateTime d) =>
     dateOnly(d).millisecondsSinceEpoch ~/ Duration.millisecondsPerDay;
 
+/// [epochDay]'s inverse: the local calendar day [day] indexes.
+///
+/// Needed wherever a stored day index has to be shown rather than compared —
+/// the snapshot keeps activity as indices, and the Profile's joined line reads
+/// the earliest of them.
+///
+/// **Not a plain division back.** [epochDay] floors a *local* midnight's UTC
+/// milliseconds, so east of UTC that midnight falls on the previous UTC day
+/// and the naive inverse lands a day early. Every offset is under 24 hours, so
+/// checking the candidate against [epochDay] and stepping once is exact.
+DateTime dateFromEpochDay(int day) {
+  final utc = DateTime.fromMillisecondsSinceEpoch(
+    day * Duration.millisecondsPerDay,
+    isUtc: true,
+  );
+  final candidate = DateTime(utc.year, utc.month, utc.day);
+
+  return epochDay(candidate) == day
+      ? candidate
+      : DateTime(utc.year, utc.month, utc.day + 1);
+}
+
 // English-only, deliberately. The app ships no localisation, and pulling in a
 // formatting dependency for one header line would be a platform decision made
 // for a string — the same call this repo made against a URL launcher.
@@ -44,3 +66,7 @@ const _monthNames = [
 String longDate(DateTime date) =>
     '${_weekdayNames[date.weekday - 1]}, '
     '${_monthNames[date.month - 1]} ${date.day}';
+
+/// [date] as the month and year the Profile's closing line shows — `May 2026`.
+String monthYear(DateTime date) =>
+    '${_monthNames[date.month - 1]} ${date.year}';
