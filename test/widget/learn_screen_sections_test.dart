@@ -26,11 +26,14 @@ void main() {
     await pumpWithProviders(tester, const BrewPathApp());
     // Learn is the initial tab — no nav needed.
 
+    // Every section header is smallcaps — `SectionHeader` uppercases, the way
+    // the design sets them. The lead card's eyebrow is not a section header,
+    // so it keeps its sentence case.
     for (final section in const [
       "Today's lesson",
-      'Practice a finished lesson',
-      'Mini-games',
-      'Modules',
+      'PRACTICE A FINISHED LESSON',
+      'MINI-GAMES',
+      'MODULES',
     ]) {
       expect(find.text(section), findsOneWidget, reason: section);
     }
@@ -68,7 +71,7 @@ void main() {
 
     await pumpWithProviders(tester, const BrewPathApp());
 
-    expect(find.text('Practice a finished lesson'), findsOneWidget);
+    expect(find.text('PRACTICE A FINISHED LESSON'), findsOneWidget);
     expect(find.text('No lessons available yet.'), findsOneWidget);
   });
 

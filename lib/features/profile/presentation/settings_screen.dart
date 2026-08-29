@@ -4,10 +4,12 @@ import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/overlay_barrier.dart';
+import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/onboarding/presentation/onboarding_providers.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:brew_path/features/profile/presentation/widgets/appearance_selector.dart';
 import 'package:brew_path/features/tour/domain/app_guide_copy.dart';
+import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/overlay_colors.dart';
 import 'package:flutter/material.dart';
@@ -93,28 +95,23 @@ class SettingsScreen extends ConsumerWidget {
   }
 }
 
+/// A Settings group label: the one smallcaps rule, inset to the list's gutter.
+///
+/// The padding is this screen's layout, not a second type rule — the lettering
+/// is [SmallcapsLabel]'s.
 class _SectionLabel extends StatelessWidget {
   const _SectionLabel(this.text);
-
-  static const double _letterSpacing = 1.2;
 
   final String text;
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-      child: Text(
-        text.toUpperCase(),
-        style: theme.textTheme.labelSmall?.copyWith(
-          color: context.mood.inkMute,
-          letterSpacing: _letterSpacing,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(
+      horizontal: AppSpacing.md,
+      vertical: AppSpacing.xs,
+    ),
+    child: SmallcapsLabel(text),
+  );
 }
 
 /// The way into the written guide — and, through it, the way back into the
