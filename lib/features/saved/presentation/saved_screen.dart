@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
-import 'package:brew_path/features/mini_games/domain/course_entitlement.dart';
+import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
 import 'package:brew_path/features/path/domain/visual_guide_providers.dart';
 import 'package:brew_path/features/path/presentation/visual_guide_sheet.dart';
 import 'package:brew_path/features/saved/domain/saved_cap.dart';
