@@ -191,6 +191,18 @@ You can always edit this file by hand instead — the helpers just save effort.
   that names which of its two states you are looking at — *Continue learning*,
   or *All caught up* when there is no lesson left today.
 
+- **The Cards tab stops opening as a wall of blanks.** The grid laid out every
+  collectible at once, so a learner who had earned nothing met a full screen of
+  locked tiles. It now shows what you have earned plus a single locked card as
+  a teaser, and a block underneath names the rest — *"29 more to collect ·
+  Finish lessons to reveal new cards."* The count includes the teaser you can
+  see, which is the design's reading of "how many are left".
+
+  The tab loses three things with it: the grid is no longer sectioned by
+  module, the progress bar is gone — the grid is the progress — and the header
+  is the bare `0 OF 30` in mono the design gives it, rather than a second
+  "Collection" title under the one the shared header already shows.
+
 - **Small orange labels are readable in the light theme.** Every eyebrow,
   kicker and smallcaps label set in the brand orange was drawing at 4.23:1 on
   the light background — under the accessibility minimum for text that size.
