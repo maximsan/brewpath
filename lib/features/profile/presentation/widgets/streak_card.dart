@@ -25,9 +25,6 @@ class StreakCard extends StatelessWidget {
     super.key,
   });
 
-  /// The design's radius for the cards under the hero.
-  static const double _radius = 16;
-
   /// The circle the mark sits in.
   static const double _markWellSize = 46;
 
@@ -60,9 +57,9 @@ class StreakCard extends StatelessWidget {
     final strip = weekDays;
 
     return ProfileCard(
-      radius: _radius,
+      radius: ProfileCard.cardRadius,
       onTap: onTap,
-      padding: const EdgeInsets.all(AppSpacing.md + 2),
+      padding: ProfileCard.headlinePadding,
       semanticLabel: 'Current streak, $days ${days == 1 ? 'day' : 'days'}.',
       child: Column(
         mainAxisSize: MainAxisSize.min,

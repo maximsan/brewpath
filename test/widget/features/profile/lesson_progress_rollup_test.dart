@@ -22,8 +22,7 @@ void main() {
         theme: AppTheme.darkRoast,
         home: Scaffold(
           body: LessonProgressRollup(
-            rollup: rollUpMastery(results),
-            total: total,
+            rollup: rollUpMastery(results, total: total),
             onPractice: onPractice ?? () {},
           ),
         ),

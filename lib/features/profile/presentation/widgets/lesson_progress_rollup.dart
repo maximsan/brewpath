@@ -21,13 +21,15 @@ class LessonProgressRollup extends StatelessWidget {
   /// Creates a [LessonProgressRollup].
   const LessonProgressRollup({
     required this.rollup,
-    required this.total,
     required this.onPractice,
     super.key,
   });
 
-  /// The design's radius for the cards under the hero.
-  static const double _radius = 16;
+  /// The course, split into the design's two states.
+  final MasteryRollup rollup;
+
+  /// Opens the Path, where a weak lesson can be practised.
+  final VoidCallback onPractice;
 
   /// The segmented bar's thickness.
   static const double _barHeight = 8;
@@ -39,27 +41,21 @@ class LessonProgressRollup extends StatelessWidget {
   /// The legend's dots.
   static const double _dotSize = 8;
 
-  /// Gap between the two legend entries.
-  static const double _legendGap = 16;
+  /// Gap between the two legend entries — the design's 16.
+  static const double _legendGap = AppSpacing.md;
 
-  /// The scored lessons, split into the design's two states.
-  final MasteryRollup rollup;
-
-  /// Lessons in the course, scored or not.
-  final int total;
-
-  /// Opens the Path, where a weak lesson can be practised.
-  final VoidCallback onPractice;
+  /// Gap between a legend dot and its words — the design's 6.
+  static const double _dotGap = AppSpacing.xxs + 2;
 
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
 
     return ProfileCard(
-      radius: _radius,
+      radius: ProfileCard.cardRadius,
       onTap: onPractice,
       semanticLabel:
-          'Lesson progress. ${rollup.scored} of $total done, '
+          'Lesson progress. ${rollup.completed} of ${rollup.total} done, '
           '${rollup.solid} solid, ${rollup.needsPractice} need practice.',
       child: Row(
         children: [
@@ -73,14 +69,16 @@ class LessonProgressRollup extends StatelessWidget {
                   textBaseline: TextBaseline.alphabetic,
                   children: [
                     const Expanded(child: SmallcapsLabel('Lesson progress')),
+                    // Finished lessons, not scored ones — the same count the
+                    // hero above shows.
                     Text(
-                      '${rollup.scored} / $total DONE',
+                      '${rollup.completed} / ${rollup.total} DONE',
                       style: AppText.label(mood: mood, face: AppFace.mono),
                     ),
                   ],
                 ),
                 const SizedBox(height: AppSpacing.sm),
-                _SegmentedBar(rollup: rollup, total: total),
+                _SegmentedBar(rollup: rollup),
                 const SizedBox(height: AppSpacing.sm),
                 _Legend(rollup: rollup),
               ],
@@ -96,15 +94,14 @@ class LessonProgressRollup extends StatelessWidget {
 
 /// The bar: solid, then needs-practice, then the unplayed remainder.
 class _SegmentedBar extends StatelessWidget {
-  const _SegmentedBar({required this.rollup, required this.total});
+  const _SegmentedBar({required this.rollup});
 
   final MasteryRollup rollup;
-  final int total;
 
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
-    final remainder = rollup.remainderOf(total);
+    final remainder = rollup.remainder;
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(AppRadii.pill),
@@ -220,10 +217,20 @@ class _LegendEntry extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppRadii.pill),
           ),
         ),
-        const SizedBox(width: AppSpacing.xxs + 2),
+        const SizedBox(width: LessonProgressRollup._dotGap),
+        // The design sets the number in the control face and the word in the
+        // body one, so the count carries the line.
         Flexible(
-          child: Text(
-            '$count $label',
+          child: Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: '$count',
+                  style: AppText.support(color: ink, face: AppFace.control),
+                ),
+                TextSpan(text: ' $label'),
+              ],
+            ),
             style: AppText.support(color: ink),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

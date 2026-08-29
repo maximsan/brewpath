@@ -14,7 +14,7 @@ MasteryResult _weak() => const MasteryResult(correct: 3, total: 5);
 void main() {
   group('the rollup folds bands into the design’s two states', () {
     test('a perfect run and a solid one both count as solid', () {
-      final rollup = rollUpMastery([_perfect(), _solid()]);
+      final rollup = rollUpMastery([_perfect(), _solid()], total: 10);
 
       expect(
         rollup.solid,
@@ -28,7 +28,11 @@ void main() {
     });
 
     test('two or more wrong is the only thing that needs practice', () {
-      final rollup = rollUpMastery([_perfect(), _weak(), _weak()]);
+      final rollup = rollUpMastery([
+        _perfect(),
+        _weak(),
+        _weak(),
+      ], total: 10);
 
       expect(rollup.needsPractice, 2);
       expect(rollup.solid, 1);
@@ -39,7 +43,7 @@ void main() {
         _solid(),
         MasteryResult.unscored,
         MasteryResult.unscored,
-      ]);
+      ], total: 10);
 
       expect(rollup.scored, 1, reason: 'only a stored score can claim a band');
       expect(rollup.solid, 1);
@@ -47,37 +51,37 @@ void main() {
     });
 
     test('nothing played rolls up to nothing', () {
-      final rollup = rollUpMastery(const []);
+      final rollup = rollUpMastery(const [], total: 10);
 
       expect(rollup.scored, 0);
       expect(rollup.solid, 0);
       expect(rollup.needsPractice, 0);
     });
 
-    test('the two bands always account for every scored lesson', () {
+    test('scored is derived, so it cannot disagree with its parts', () {
       final rollup = rollUpMastery([
         _perfect(),
         _solid(),
         _weak(),
         MasteryResult.unscored,
-      ]);
+      ], total: 10);
 
       expect(rollup.solid + rollup.needsPractice, rollup.scored);
     });
   });
 
-  group('the bar’s segments', () {
-    test('leave the unplayed remainder empty', () {
-      final rollup = rollUpMastery([_solid(), _weak()]);
+  group('the bar’s empty tail', () {
+    test('is the lessons not yet scored', () {
+      final rollup = rollUpMastery([_solid(), _weak()], total: 10);
 
-      expect(rollup.remainderOf(10), 8);
+      expect(rollup.remainder, 8);
     });
 
-    test('never go negative when the total is behind the played count', () {
-      final rollup = rollUpMastery([_solid(), _weak()]);
+    test('never goes negative when the course is behind the played count', () {
+      final rollup = rollUpMastery([_solid(), _weak()], total: 1);
 
       expect(
-        rollup.remainderOf(1),
+        rollup.remainder,
         0,
         reason:
             'a bank edited between runs can leave more played than the course '

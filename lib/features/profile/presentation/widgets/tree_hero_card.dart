@@ -26,10 +26,6 @@ class TreeHeroCard extends StatelessWidget {
     super.key,
   });
 
-  /// The design's radius for this card — the widest it uses, and the reason
-  /// the hero reads as softer than the cards under it.
-  static const double _radius = 20;
-
   /// The design's art well: a square of `bg` inside its own hairline.
   static const double _wellSize = 96;
 
@@ -79,9 +75,9 @@ class TreeHeroCard extends StatelessWidget {
     final mood = context.mood;
 
     return ProfileCard(
-      radius: _radius,
+      radius: ProfileCard.heroRadius,
       onTap: onTap,
-      padding: const EdgeInsets.all(AppSpacing.md + 2),
+      padding: ProfileCard.headlinePadding,
       semanticLabel:
           'Your coffee tree. Stage $_displayedStage, ${treeStageName(stage)}. '
           '$_countLine.',

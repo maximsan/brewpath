@@ -289,7 +289,9 @@ You can always edit this file by hand instead — the helpers just save effort.
   the course that is; the streak has the full-width card the design gives it,
   carrying the steam mark, the day count and the week; and the three remaining
   tiles collapse into one quiet line of lessons and points. The screen closes
-  with the month you joined.
+  with the month you joined. The whole tab also moves onto the 24-point gutter
+  the design uses and the other tabs already keep, so everything on it — the
+  challenge row and the preferences grid included — sits a little wider.
 
 - **Mastery has a home outside the moment it is earned.** A card under the
   streak shows how many lessons are solid and how many want another run, as one

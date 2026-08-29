@@ -427,7 +427,7 @@ final class TreeStageProvider
   }
 }
 
-String _$treeStageHash() => r'b0c44f97033fd2ac052c14d89e26465c313f17f8';
+String _$treeStageHash() => r'00c8c29c4c6041beba826ae5152ea17cc9cad882';
 
 /// The learner's progress through the core course.
 
@@ -482,7 +482,7 @@ String _$coreLessonProgressHash() =>
 /// install timestamp, and adding one is a schema change; the first day the
 /// learner did anything is a real stored date and the closest thing available.
 /// It reads a month late for someone who installed and did not start — see
-/// [#436](https://github.com/maximsan/brewpath/issues/436).
+/// [#447](https://github.com/maximsan/brewpath/issues/447).
 ///
 /// Null before any activity, so the line is absent on a fresh install rather
 /// than naming today as the day they joined.
@@ -496,7 +496,7 @@ final joinedDateProvider = JoinedDateProvider._();
 /// install timestamp, and adding one is a schema change; the first day the
 /// learner did anything is a real stored date and the closest thing available.
 /// It reads a month late for someone who installed and did not start — see
-/// [#436](https://github.com/maximsan/brewpath/issues/436).
+/// [#447](https://github.com/maximsan/brewpath/issues/447).
 ///
 /// Null before any activity, so the line is absent on a fresh install rather
 /// than naming today as the day they joined.
@@ -515,7 +515,7 @@ final class JoinedDateProvider
   /// install timestamp, and adding one is a schema change; the first day the
   /// learner did anything is a real stored date and the closest thing available.
   /// It reads a month late for someone who installed and did not start — see
-  /// [#436](https://github.com/maximsan/brewpath/issues/436).
+  /// [#447](https://github.com/maximsan/brewpath/issues/447).
   ///
   /// Null before any activity, so the line is absent on a fresh install rather
   /// than naming today as the day they joined.
