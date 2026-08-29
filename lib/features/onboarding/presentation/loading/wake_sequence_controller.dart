@@ -43,6 +43,19 @@ class WakeSequenceController extends ChangeNotifier {
   /// The phase to render. Reduced motion collapses to a static idle frame.
   WakePhase get phase => reduceMotion ? WakePhase.brewing : _phase;
 
+  /// Whether the brand mark should give way to the tap cue.
+  ///
+  /// The design shows `BREWPATH` on the first cycle and
+  /// `TAP ANYWHERE TO CONTINUE` on every cycle after (`roasty.jsx:708`): the
+  /// cue earns its place once a learner has watched a whole wake-up and is
+  /// still waiting.
+  ///
+  /// Reduced motion shows it from the first frame. There is no cycle to wait
+  /// through there — the static frame *is* the steady state — so withholding
+  /// the cue would leave that learner with no sign the screen is tappable,
+  /// which is the one thing it has to say.
+  bool get showsTapCue => reduceMotion || _cycle > 0;
+
   /// Begins the sequence. In reduced-motion mode there is nothing to schedule;
   /// advancement waits for [notifyGateResolved].
   void start() {
