@@ -12,9 +12,19 @@ abstract class AppLabels {
   static const tabPath = 'Path';
   static const tabCards = 'Cards';
   static const tabProfile = 'Profile';
-  static const lockedModuleMessage =
-      'Complete the previous module to unlock this one.';
   static const continueLabel = 'Continue';
+
+  // The eyebrow over the day's lead card. It names which of the card's two
+  // states is showing, which is the only thing distinguishing a Keep Sharp
+  // pick from a lesson at a glance.
+  static const continueLearning = 'Continue learning';
+  static const allCaughtUp = 'All caught up';
+
+  // Practice is one section with two groups under it, which is how the design
+  // names them: `PRACTICE`, then `Lessons` and `Games`.
+  static const practiceSection = 'Practice';
+  static const practiceLessonsGroup = 'Lessons';
+  static const practiceGamesGroup = 'Games';
 
   /// Announced for a finished module. The design signals completion by
   /// *removing* the trailing chevron and the lesson-count line, which leaves a

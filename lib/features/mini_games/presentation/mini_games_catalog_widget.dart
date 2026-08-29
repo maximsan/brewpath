@@ -46,6 +46,9 @@ class MiniGamesCatalogWidget extends StatelessWidget {
   static const SizedBox _headingGap = SizedBox(height: AppSpacing.xs);
   static const SizedBox _groupGap = SizedBox(height: AppSpacing.md);
 
+  /// The design's `padding-left: 30` under a kind heading.
+  static const double _kindIndent = 30;
+
   @override
   Widget build(BuildContext context) {
     if (formats.isEmpty) {
@@ -73,7 +76,13 @@ class MiniGamesCatalogWidget extends StatelessWidget {
           if (index > 0) _groupGap,
           SectionHeader(groups[index].label),
           _headingGap,
-          _GroupCard(games: groups[index].games, hasCourse: hasCourse),
+          // The design indents a kind's games under its heading, so the shelf
+          // reads as kinds with games inside rather than as one long
+          // alternation of headings and cards.
+          Padding(
+            padding: const EdgeInsets.only(left: _kindIndent),
+            child: _GroupCard(games: groups[index].games, hasCourse: hasCourse),
+          ),
         ],
       ],
     );

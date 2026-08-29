@@ -1,5 +1,3 @@
-import 'package:brew_path/core/widgets/error_view.dart';
-import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/learn/presentation/learn_list_view.dart';
 import 'package:brew_path/features/tour/domain/tour_providers.dart';
@@ -8,7 +6,11 @@ import 'package:brew_path/features/tour/presentation/tour_runner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Learn tab: today's lesson, the module list, and practice sections.
+/// Learn tab: today's lesson and the practice sections.
+///
+/// The course itself is Path's
+/// ([#394](https://github.com/maximsan/brewpath/issues/394)) — this tab is
+/// today's work, which is what the design calls it.
 ///
 /// Also where the Tour auto-runs. Stateful for that alone: the offer is made
 /// once per app launch at most, and only a `State` can remember that it has
@@ -50,11 +52,12 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
 
   /// Offers the Tour once the tab is showing real data and the flag is unset.
   ///
-  /// Gated on data rather than on the screen mounting, because the Tour points
-  /// at a Today card and a module list — spotlighting a loading spinner would
-  /// explain nothing. [seen] is null while the flag is still loading, which is
-  /// treated as "already seen": the offer is deferred to the rebuild the
-  /// resolved flag causes, never made against an unknown.
+  /// Gated on the day's lesson having resolved rather than on the screen
+  /// mounting, because the Tour's first stop is the Today card — spotlighting
+  /// a card that has not decided what it says explains nothing. [seen] is null
+  /// while the flag is still loading, which is treated as "already seen": the
+  /// offer is deferred to the rebuild the resolved flag causes, never made
+  /// against an unknown.
   void _offerTourIfDue(bool? seen) {
     if (_offered || (seen ?? true)) return;
 
@@ -75,20 +78,21 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final modules = ref.watch(modulesWithProgressProvider);
+    // The day's lesson — the Tour's first stop, so its arrival is the signal
+    // that there is something to point at.
+    //
+    // **The tab is not gated on it.** Every section here degrades on its own
+    // while its provider is pending, which is what lets the day's card settle
+    // last without holding a spinner over a tab that is otherwise ready. A
+    // screen-level gate would also hand one slow provider the power to blank
+    // the whole tab.
+    final today = ref.watch(todayLessonProvider);
     // Watched, not read: the flag resolves on its own schedule, and the offer
-    // has to survive it landing after the module data.
+    // has to survive it landing after the lesson.
     final tourSeen = ref.watch(tourSeenProvider);
 
-    return Scaffold(
-      body: modules.when(
-        loading: () => const LoadingIndicator(),
-        error: (e, _) => ErrorView(message: '$e'),
-        data: (list) {
-          _offerTourIfDue(tourSeen.value);
-          return LearnListView(modules: list);
-        },
-      ),
-    );
+    if (today.hasValue) _offerTourIfDue(tourSeen.value);
+
+    return const Scaffold(body: LearnListView());
   }
 }

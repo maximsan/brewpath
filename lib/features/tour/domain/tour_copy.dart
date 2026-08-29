@@ -44,13 +44,18 @@ abstract final class TourCopy {
       'Replay finished lessons to raise your mastery, or play a mini-game — '
       'practice protects your streak too.';
 
-  /// Stop 3 — the modules section.
-  static const modulesTitle = 'A course with an ending.';
+  /// Stop 3 — the header's Saved and Dictionary entries.
+  ///
+  /// The design's own third stop (`guide.jsx:10-13`). It used to be the module
+  /// list, which was never the design's — and the course's own "five modules,
+  /// in order" line is already stop 4's job, where the Path tab it names is
+  /// what the learner is being pointed at.
+  static const headerTitle = 'Saved and Dictionary.';
 
   /// Stop 3's body.
-  static const modulesBody =
-      'Five modules, thirty-two lessons, in order. First-time completions earn '
-      'points.';
+  static const headerBody =
+      'Anything you bookmark lands behind the ribbon; every coffee term you '
+      'meet joins the book beside it.';
 
   /// Stop 4 — the bottom tab bar.
   static const tabsTitle = 'And beyond.';

@@ -1,3 +1,4 @@
+import 'package:brew_path/features/learn/domain/course_order.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/models/module_model.dart';
@@ -97,16 +98,20 @@ Future<LessonModel?> todayLesson(Ref ref) async {
       .watch(progressRepositoryProvider)
       .getAllCompleted();
   final completedIds = completed.map((r) => r.lessonId).toSet();
+  // Wrapped so the shared rule can read a module's lesson ids; the lock state
+  // is irrelevant to "what is next in order" and is not consulted.
+  final inOrder = [
+    for (final module in modules)
+      ModuleWithProgress(
+        module: module,
+        completedCount: module.lessonIds.where(completedIds.contains).length,
+        totalCount: module.lessonIds.length,
+        isLocked: false,
+      ),
+  ];
 
-  for (final module in modules) {
-    for (final lessonId in module.lessonIds) {
-      if (!completedIds.contains(lessonId)) {
-        return content.getLessonById(lessonId);
-      }
-    }
-  }
-
-  return null;
+  final nextId = firstUnfinishedLessonId(inOrder, completedIds);
+  return nextId == null ? null : content.getLessonById(nextId);
 }
 
 /// One row per lesson plus its owning module, for the Learn screen's practice

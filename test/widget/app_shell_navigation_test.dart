@@ -2,6 +2,7 @@ import 'package:brew_path/app/app.dart';
 import 'package:brew_path/app/app_header.dart';
 import 'package:brew_path/app/app_router.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -75,10 +76,13 @@ void main() {
     testWidgets('bring their own bar and never the tab header', (tester) async {
       final container = await pumpWithProviders(tester, const BrewPathApp());
 
-      container.read(appRouterProvider).go('/learn/module/module_beans');
+      container.read(appRouterProvider).go('/learn/dictionary');
       await settleLoaders(tester);
 
-      expect(find.widgetWithText(AppBar, 'Module'), findsOneWidget);
+      expect(
+        find.widgetWithText(AppBar, DictionaryHomeScreen.title),
+        findsOneWidget,
+      );
       expect(
         _sharedHeader(),
         findsNothing,
@@ -157,9 +161,12 @@ void main() {
   ) async {
     final container = await pumpWithProviders(tester, const BrewPathApp());
 
-    container.read(appRouterProvider).go('/learn/module/module_beans');
+    container.read(appRouterProvider).go('/learn/dictionary');
     await settleLoaders(tester);
-    expect(find.widgetWithText(AppBar, 'Module'), findsOneWidget);
+    expect(
+      find.widgetWithText(AppBar, DictionaryHomeScreen.title),
+      findsOneWidget,
+    );
 
     await tester.tap(findMark(AppIcon.route, active: false));
     await settleLoaders(tester);
@@ -168,8 +175,12 @@ void main() {
     await tester.tap(findMark(AppIcon.cup, active: false));
     await settleLoaders(tester);
 
-    // Learn kept its stack — still on the module, still without the header.
-    expect(find.widgetWithText(AppBar, 'Module'), findsOneWidget);
+    // Learn kept its stack — still on the pushed page, still without the
+    // header.
+    expect(
+      find.widgetWithText(AppBar, DictionaryHomeScreen.title),
+      findsOneWidget,
+    );
     expect(_sharedHeader(), findsNothing);
   });
 

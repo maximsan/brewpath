@@ -184,6 +184,23 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **The course lives in one place now, and Today is only today.** The app used
+  to list every module on the Learn tab *and* on Path, and both opened a module
+  screen — so a learner met the same five modules three times, and the tab meant
+  to show today's work read as a course index. Learn keeps the day: the lesson
+  card, Keep Sharp, the active brew and practice. Path is the course, and it
+  fits on one screen because each module shows only as much as its state earns
+  — the module you are in lists its lessons, a finished one collapses to a row
+  that opens when you want to review or replay it, and one you have not reached
+  is a single line saying what unlocks it. The module screen is gone entirely.
+
+- **Practice is one section instead of two.** *"Practice a finished lesson"* and
+  *"Mini-games"* were sibling headings for what the design calls one thing:
+  **Practice**, holding **Lessons** and **Games**. Games are indented under
+  their kind, the way the shelf is drawn. The day's card also gained the eyebrow
+  that names which of its two states you are looking at — *Continue learning*,
+  or *All caught up* when there is no lesson left today.
+
 - **The Cards tab stops opening as a wall of blanks.** The grid laid out every
   collectible at once, so a learner who had earned nothing met a full screen of
   locked tiles. It now shows what you have earned plus a single locked card as
