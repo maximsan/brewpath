@@ -111,10 +111,11 @@ class _PurchaseOutcome extends StatelessWidget {
 
 /// Terms and Privacy, which the App Store requires of a non-consumable.
 ///
-/// ⚠️ **Both are stubs.** The real URLs are owed and tracked; they are drawn
-/// here because their absence is a store-review failure, and a row that looks
-/// finished and does nothing is the defect the design docs already record
-/// against the About screen.
+/// ⚠️ **Both are stubs, and disabled rather than dead.** The real URLs are owed
+/// at [#448](https://github.com/maximsan/brewpath/issues/448). They are drawn
+/// because their absence is a store-review failure, and disabled because a link
+/// that looks live and does nothing is the defect the design docs already
+/// record against the About screen.
 class _LegalLinks extends StatelessWidget {
   const _LegalLinks();
 
