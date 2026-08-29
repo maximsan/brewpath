@@ -23,6 +23,7 @@ import 'package:brew_path/features/onboarding/presentation/onboarding_providers.
 import 'package:brew_path/features/onboarding/presentation/welcome/welcome_screen.dart';
 import 'package:brew_path/features/path/presentation/path_screen.dart';
 import 'package:brew_path/features/profile/presentation/profile_screen.dart';
+import 'package:brew_path/features/profile/presentation/settings/settings_destinations.dart';
 import 'package:brew_path/features/profile/presentation/settings_screen.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/presentation/streak_screen.dart';
@@ -278,14 +279,41 @@ GoRouter appRouter(Ref ref) {
                     parentNavigatorKey: _rootKey,
                     builder: (context, state) => const SettingsScreen(),
                     routes: [
-                      // Under Settings because that is the only way in:
-                      // Help & Support is a section of Settings, not of
-                      // Profile.
+                      // The design files the App Guide inside Help and
+                      // support (`prototype/settings.jsx:589`), not on the
+                      // Settings root. It sat on the root only because this
+                      // screen did not exist, which #414's own comment said.
                       GoRoute(
-                        path: AppRoutes.appGuide.path,
-                        name: AppRoutes.appGuide.name,
+                        path: AppRoutes.settingsHelp.path,
+                        name: AppRoutes.settingsHelp.name,
                         parentNavigatorKey: _rootKey,
-                        builder: (context, state) => const AppGuideScreen(),
+                        builder: (context, state) => const HelpSupportScreen(),
+                        routes: [
+                          GoRoute(
+                            path: AppRoutes.appGuide.path,
+                            name: AppRoutes.appGuide.name,
+                            parentNavigatorKey: _rootKey,
+                            builder: (context, state) => const AppGuideScreen(),
+                          ),
+                        ],
+                      ),
+                      GoRoute(
+                        path: AppRoutes.settingsAccount.path,
+                        name: AppRoutes.settingsAccount.name,
+                        parentNavigatorKey: _rootKey,
+                        builder: (context, state) => const AccountSyncScreen(),
+                      ),
+                      GoRoute(
+                        path: AppRoutes.settingsPurchases.path,
+                        name: AppRoutes.settingsPurchases.name,
+                        parentNavigatorKey: _rootKey,
+                        builder: (context, state) => const PurchasesScreen(),
+                      ),
+                      GoRoute(
+                        path: AppRoutes.settingsAbout.path,
+                        name: AppRoutes.settingsAbout.name,
+                        parentNavigatorKey: _rootKey,
+                        builder: (context, state) => const AboutScreen(),
                       ),
                     ],
                   ),

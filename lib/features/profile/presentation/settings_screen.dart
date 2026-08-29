@@ -4,11 +4,16 @@ import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/overlay_barrier.dart';
-import 'package:brew_path/core/widgets/smallcaps_label.dart';
+import 'package:brew_path/core/widgets/settings_nav_row.dart';
 import 'package:brew_path/features/onboarding/presentation/onboarding_providers.dart';
+import 'package:brew_path/features/profile/domain/daily_reminder.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
+import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
+import 'package:brew_path/features/profile/presentation/settings/settings_destinations.dart';
+import 'package:brew_path/features/profile/presentation/settings/settings_sub_screen.dart';
 import 'package:brew_path/features/profile/presentation/widgets/appearance_selector.dart';
-import 'package:brew_path/features/tour/domain/app_guide_copy.dart';
+import 'package:brew_path/features/profile/presentation/widgets/daily_reminder_sheet.dart';
+import 'package:brew_path/shared/storage/settings_record.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/overlay_colors.dart';
@@ -16,9 +21,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// Dedicated Settings screen reached via the gear icon on Profile. Hosts the
-/// app-wide preferences (haptics, sound), the destructive reset action, and
-/// the version footer.
+/// Settings, in the design's four sections.
+///
+/// The order and the grouping are the design's, not the app's
+/// (`prototype/screens.jsx:526-562`): `APPEARANCE` leads, the preference
+/// toggles are filed under `PRACTICE` beside the reminder they belong with,
+/// `ACCOUNT` and `SUPPORT` are pure navigation, and the destructive block at
+/// the foot carries **no label** — a heading over it would announce it before
+/// the learner has any reason to look there.
+///
+/// Two deliberate divergences, both because the app is not the prototype:
+///
+/// - **`Delete account` is absent.** The design lists it beside Reset
+///   progress; there are no accounts to delete — Firebase is gated off and the
+///   app stores everything on the device.
+/// - **`Restart onboarding` is present**, and the design has no such row. It
+///   is the app's own, it works, and removing a working control is not what a
+///   parity pass is for. It sits in the same unlabelled block, being the other
+///   thing on this screen that throws state away.
 class SettingsScreen extends ConsumerWidget {
   /// Creates a [SettingsScreen].
   const SettingsScreen({super.key});
@@ -30,64 +50,94 @@ class SettingsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: const Text(SettingsCopy.title),
         leading: IconButton(
           icon: const IconMark(AppIcon.back),
           onPressed: () => context.pop(),
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        padding: const EdgeInsets.only(bottom: AppSpacing.xl),
         children: [
-          const _SectionLabel('Preferences'),
-          settings.when(
-            loading: () => const Padding(
-              padding: EdgeInsets.all(16),
-              child: Center(child: CircularProgressIndicator()),
-            ),
-            error: (e, _) =>
-                Padding(padding: const EdgeInsets.all(16), child: Text('$e')),
-            data: (s) => Column(
-              children: [
-                SwitchListTile(
-                  title: const Text('Haptics'),
-                  subtitle: const Text('Subtle vibrations on taps and answers'),
-                  value: s.hapticsEnabled,
-                  onChanged: (_) => ref
-                      .read(settingsControllerProvider.notifier)
-                      .toggleHaptics(),
-                ),
-                SwitchListTile(
-                  title: const Text('Sound'),
-                  subtitle: const Text(
-                    'Audio feedback for lessons and mini-games',
-                  ),
-                  value: s.soundEnabled,
-                  onChanged: (_) => ref
-                      .read(settingsControllerProvider.notifier)
-                      .toggleSound(),
-                ),
-              ],
-            ),
+          const SettingsSection(
+            label: SettingsCopy.appearanceSection,
+            children: [AppearanceSelector()],
           ),
-          const SizedBox(height: 24),
-          const _SectionLabel('Appearance'),
-          const AppearanceSelector(),
-          const SizedBox(height: 24),
-          const _SectionLabel('Onboarding'),
-          const _ResetOnboardingTile(),
-          const SizedBox(height: 24),
-          const _SectionLabel(AppGuideCopy.helpSectionLabel),
-          const _AppGuideTile(),
-          const SizedBox(height: 24),
-          const _SectionLabel('Danger zone'),
-          const _ResetProgressTile(),
-          const SizedBox(height: 24),
-          const _SectionLabel('About'),
-          ListTile(
-            leading: const Icon(Icons.info_outline),
-            title: const Text('Version'),
-            trailing: Text(version.asData?.value ?? '—'),
+          SettingsSection(
+            label: SettingsCopy.practiceSection,
+            children: [_PracticeRows(settings: settings)],
+          ),
+          const SettingsSection(
+            label: SettingsCopy.accountSection,
+            children: [_AccountRows()],
+          ),
+          const SettingsSection(
+            label: SettingsCopy.supportSection,
+            children: [_SupportRows()],
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          const _DestructiveRows(),
+          const SizedBox(height: AppSpacing.xl),
+          SettingsVersionLine(version: version.asData?.value),
+        ],
+      ),
+    );
+  }
+}
+
+/// The four preference rows the design files under `PRACTICE`.
+class _PracticeRows extends ConsumerWidget {
+  const _PracticeRows({required this.settings});
+
+  final AsyncValue<UserSettingsRecord> settings;
+
+  Future<void> _pickReminder(
+    BuildContext context,
+    WidgetRef ref,
+    UserSettingsRecord current,
+  ) async {
+    final picked = await DailyReminderSheet.show(
+      context,
+      current: current.dailyReminderTime,
+    );
+    if (picked == null) return;
+
+    await ref.read(settingsControllerProvider.notifier).setReminderTime(picked);
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final controller = ref.read(settingsControllerProvider.notifier);
+
+    return settings.when(
+      loading: () => const SettingsPlaceholder('Reading your preferences…'),
+      error: (error, _) => SettingsPlaceholder('$error'),
+      data: (state) => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SettingsNavRow(
+            label: SettingsCopy.notificationsRow,
+            toggleValue: state.notificationsEnabled,
+            onToggle: (_) => controller.toggleNotifications(),
+          ),
+          SettingsNavRow(
+            label: SettingsCopy.reminderRow,
+            value: DailyReminder.rowValue(
+              enabled: state.notificationsEnabled,
+              time: state.dailyReminderTime,
+            ),
+            isDimmed: !state.notificationsEnabled,
+            onTap: () => _pickReminder(context, ref, state),
+          ),
+          SettingsNavRow(
+            label: SettingsCopy.soundRow,
+            toggleValue: state.soundEnabled,
+            onToggle: (_) => controller.toggleSound(),
+          ),
+          SettingsNavRow(
+            label: SettingsCopy.hapticsRow,
+            toggleValue: state.hapticsEnabled,
+            onToggle: (_) => controller.toggleHaptics(),
           ),
         ],
       ),
@@ -95,162 +145,153 @@ class SettingsScreen extends ConsumerWidget {
   }
 }
 
-/// A Settings group label: the one smallcaps rule, inset to the list's gutter.
-///
-/// The padding is this screen's layout, not a second type rule — the lettering
-/// is [SmallcapsLabel]'s.
-class _SectionLabel extends StatelessWidget {
-  const _SectionLabel(this.text);
-
-  final String text;
+/// `ACCOUNT`: where the learner's identity and purchases will live.
+class _AccountRows extends StatelessWidget {
+  const _AccountRows();
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(
-      horizontal: AppSpacing.md,
-      vertical: AppSpacing.xs,
-    ),
-    child: SmallcapsLabel(text),
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      SettingsNavRow(
+        label: SettingsCopy.accountRow,
+        onTap: () => context.pushNamed(AppRoutes.settingsAccount.name),
+      ),
+      SettingsNavRow(
+        label: SettingsCopy.purchasesRow,
+        // Every learner is on the free tier: the payments service is a no-op
+        // stub, so there is no purchase for this to report.
+        value: SettingsCopy.freeTier,
+        onTap: () => context.pushNamed(AppRoutes.settingsPurchases.name),
+      ),
+    ],
   );
 }
 
-/// The way into the written guide — and, through it, the way back into the
-/// Tour. Sits under Help & Support because that is where the design files it
-/// (`settings.jsx:590`); this screen has no Help sub-screen of its own yet, so
-/// the section is a heading here rather than a push.
-class _AppGuideTile extends StatelessWidget {
-  const _AppGuideTile();
+/// `SUPPORT`: help, and the app's own page.
+class _SupportRows extends StatelessWidget {
+  const _SupportRows();
 
   @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      // Stock, for the same reason the header's Dictionary entry is: the
-      // design draws no mark for the guide.
-      leading: const Icon(Icons.help_outline),
-      title: const Text(AppGuideCopy.title),
-      subtitle: const Text(AppGuideCopy.settingsRowBody),
-      trailing: const IconMark(AppIcon.chevron),
-      onTap: () => context.pushNamed(AppRoutes.appGuide.name),
-    );
-  }
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      SettingsNavRow(
+        label: SettingsCopy.helpRow,
+        onTap: () => context.pushNamed(AppRoutes.settingsHelp.name),
+      ),
+      SettingsNavRow(
+        label: SettingsCopy.aboutRow,
+        onTap: () => context.pushNamed(AppRoutes.settingsAbout.name),
+      ),
+    ],
+  );
 }
 
-class _ResetProgressTile extends ConsumerWidget {
-  const _ResetProgressTile();
+/// The unlabelled block at the foot: the two rows that throw state away.
+class _DestructiveRows extends ConsumerWidget {
+  const _DestructiveRows();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final mood = context.mood;
-    return ListTile(
-      leading: IconMark(AppIcon.rematch, color: mood.berry),
-      title: Text(
-        'Reset Progress',
-        style: TextStyle(color: mood.berry, fontWeight: FontWeight.w600),
+  Widget build(BuildContext context, WidgetRef ref) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      SettingsNavRow(
+        label: SettingsCopy.resetProgressRow,
+        isDestructive: true,
+        onTap: () => _confirmReset(context, ref),
       ),
-      subtitle: const Text(
-        'Clear completed lessons, points, streak, and unlocked cards.',
+      SettingsNavRow(
+        label: SettingsCopy.restartOnboardingRow,
+        isDestructive: true,
+        onTap: () => _confirmRestartOnboarding(context, ref),
       ),
-      trailing: IconMark(AppIcon.chevron, color: mood.berry),
-      onTap: () => _confirmAndReset(context, ref),
-    );
-  }
+    ],
+  );
+}
 
-  Future<void> _confirmAndReset(BuildContext context, WidgetRef ref) async {
-    final confirmed = await showOverlayDialog<bool>(
-      context: context,
-      overlay: OverlayColors.dimModal,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Reset all progress?'),
-        content: const Text(
-          'This will remove your completed lessons, points, streak, '
-          'unlocked cards, and all local progress. '
-          'This action cannot be undone.',
+/// Asks before wiping progress, then wipes it and says so.
+Future<void> _confirmReset(BuildContext context, WidgetRef ref) async {
+  final confirmed = await showOverlayDialog<bool>(
+    context: context,
+    overlay: OverlayColors.dimModal,
+    builder: (ctx) => AlertDialog(
+      title: const Text('Reset all progress?'),
+      content: const Text(
+        'This will remove your completed lessons, points, streak, '
+        'unlocked cards, and all local progress. '
+        'This action cannot be undone.',
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, false),
+          child: const Text('Cancel'),
         ),
+        TextButton(
+          style: TextButton.styleFrom(foregroundColor: ctx.mood.berry),
+          onPressed: () => Navigator.pop(ctx, true),
+          child: const Text('Reset'),
+        ),
+      ],
+    ),
+  );
+
+  if (confirmed != true) return;
+  if (!context.mounted) return;
+  final messenger = ScaffoldMessenger.of(context);
+  final mood = context.mood;
+  await resetProgress(ref);
+  messenger
+    ..hideCurrentMaterialBanner()
+    ..showMaterialBanner(
+      MaterialBanner(
+        content: const Text('Progress reset.'),
+        leading: IconMark(AppIcon.check, color: mood.accent),
+        backgroundColor: mood.surface,
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            style: TextButton.styleFrom(
-              foregroundColor: ctx.mood.berry,
-            ),
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Reset'),
+            onPressed: messenger.hideCurrentMaterialBanner,
+            child: const Text('Dismiss'),
           ),
         ],
       ),
     );
-
-    if (confirmed != true) return;
-    if (!context.mounted) return;
-    final messenger = ScaffoldMessenger.of(context);
-    final mood = context.mood;
-    await resetProgress(ref);
-    messenger
-      ..hideCurrentMaterialBanner()
-      ..showMaterialBanner(
-        MaterialBanner(
-          content: const Text('Progress reset.'),
-          leading: IconMark(AppIcon.check, color: mood.accent),
-          backgroundColor: mood.surface,
-          actions: [
-            TextButton(
-              onPressed: messenger.hideCurrentMaterialBanner,
-              child: const Text('Dismiss'),
-            ),
-          ],
-        ),
-      );
-    Timer(const Duration(seconds: 2), messenger.hideCurrentMaterialBanner);
-  }
+  Timer(const Duration(seconds: 2), messenger.hideCurrentMaterialBanner);
 }
 
-/// Clears the onboarding gate and returns the user to the Welcome screen so
-/// they can pick a different goal/brewer. Lesson XP, streak, and collected
-/// cards are not affected — use the "Reset Progress" action below for that.
-class _ResetOnboardingTile extends ConsumerWidget {
-  const _ResetOnboardingTile();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return ListTile(
-      leading: const IconMark(AppIcon.rematch),
-      title: const Text('Restart onboarding'),
-      subtitle: const Text('Take the Welcome tour again. Your progress stays.'),
-      trailing: const IconMark(AppIcon.chevron),
-      onTap: () => _confirmAndReset(context, ref),
-    );
-  }
-
-  Future<void> _confirmAndReset(BuildContext context, WidgetRef ref) async {
-    final confirmed = await showOverlayDialog<bool>(
-      context: context,
-      overlay: OverlayColors.dimModal,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Restart onboarding?'),
-        content: const Text(
-          "You'll go back through the Welcome screen and pick your goal and "
-          'brewer again. Your points, streak, and collected cards stay as they '
-          'are.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Restart'),
-          ),
-        ],
+/// Clears the onboarding gate and returns to Welcome. Points, streak and
+/// collected cards are untouched — that is [_confirmReset]'s job.
+Future<void> _confirmRestartOnboarding(
+  BuildContext context,
+  WidgetRef ref,
+) async {
+  final confirmed = await showOverlayDialog<bool>(
+    context: context,
+    overlay: OverlayColors.dimModal,
+    builder: (ctx) => AlertDialog(
+      title: const Text('Restart onboarding?'),
+      content: const Text(
+        "You'll go back through the Welcome screen and pick your goal and "
+        'brewer again. Your points, streak, and collected cards stay as they '
+        'are.',
       ),
-    );
-    if (confirmed != true) return;
-    if (!context.mounted) return;
-    await ref.read(onboardingRepositoryProvider).resetOnboarding();
-    ref.invalidate(onboardingCompletedProvider);
-    if (!context.mounted) return;
-    context.goNamed(AppRoutes.welcome.name);
-  }
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, false),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, true),
+          child: const Text('Restart'),
+        ),
+      ],
+    ),
+  );
+
+  if (confirmed != true) return;
+  if (!context.mounted) return;
+  await ref.read(onboardingRepositoryProvider).resetOnboarding();
+  ref.invalidate(onboardingCompletedProvider);
+  if (!context.mounted) return;
+  context.goNamed(AppRoutes.welcome.name);
 }

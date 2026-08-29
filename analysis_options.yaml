@@ -71,6 +71,15 @@ dart_code_linter:
     # would mean a second hand-listed copy of every field, which is exactly
     # the duplication that once left `main` uncompilable.
     - lib/shared/storage/snapshot/snapshot_scopes.dart
+    # Drift table declarations, where a column *is* a getter. `UserSettings`
+    # crossed number-of-methods (12) on its thirteenth column — the daily
+    # reminder's time — and a settings row is a schema, not a class with
+    # behaviour: the count measures how much the app remembers, which is the
+    # one thing this metric should not be steering. What the exclusion costs
+    # is source-lines-of-code on the migration beside it; that step is
+    # append-only and guarded by its own tests in `test/database/`, one per
+    # version, which is the stronger check anyway.
+    - lib/shared/storage/app_database.dart
   rules:
     - no-magic-number:
         severity: warning

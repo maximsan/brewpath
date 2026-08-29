@@ -54,7 +54,14 @@ final _ruledOut =
         // A guidebook, not the collectible: the subtitle offered to the learner
         // who is "Just curious about coffee". Add a line here only for the
         // ordinary English sense, never to excuse the collectible.
-        allow: const <String>{'A quiet field guide. No pressure.'},
+        allow: const <String>{
+          'A quiet field guide. No pressure.',
+          // Settings and About close on the design's own ordinary-English
+          // phrase — the app describing itself, never the collectible
+          // (`prototype/settings.jsx:308`, `prototype/screens.jsx:559`).
+          'A field guide to coffee',
+          'A field guide',
+        },
         why:
             'the five module collectibles are Module Rewards — the design '
             'names the screen that hands one over ModuleRewardCardScreen, '

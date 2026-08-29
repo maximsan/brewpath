@@ -1,5 +1,10 @@
 import 'package:brew_path/app/app.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/widgets/settings_nav_row.dart';
+import 'package:brew_path/core/widgets/smallcaps_label.dart';
+import 'package:brew_path/features/profile/domain/daily_reminder.dart';
+import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
+import 'package:brew_path/features/profile/presentation/settings/settings_destinations.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/repositories/card_repository.dart';
 import 'package:brew_path/shared/repositories/progress_repository.dart';
@@ -26,16 +31,53 @@ void main() {
     await settleLoaders(tester);
   }
 
-  testWidgets('shows preferences, danger zone, and the app version', (
+  testWidgets("carries the design's four sections, in its order", (
+    tester,
+  ) async {
+    // The order is the design's (`prototype/screens.jsx:526-562`): Appearance
+    // leads, the preference toggles are filed under Practice beside the
+    // reminder they belong with, and Account and Support are pure navigation.
+    await openSettings(tester);
+
+    final sections = tester
+        .widgetList<SmallcapsLabel>(find.byType(SmallcapsLabel))
+        .map((label) => label.text)
+        .toList();
+
+    expect(sections, [
+      SettingsCopy.appearanceSection,
+      SettingsCopy.practiceSection,
+      SettingsCopy.accountSection,
+      SettingsCopy.supportSection,
+    ]);
+  });
+
+  testWidgets('closes on the centred version line, not an About row', (
     tester,
   ) async {
     await openSettings(tester);
 
-    expect(find.text('Settings'), findsOneWidget);
-    expect(find.widgetWithText(SwitchListTile, 'Haptics'), findsOneWidget);
-    expect(find.widgetWithText(SwitchListTile, 'Sound'), findsOneWidget);
-    expect(find.text('Reset Progress'), findsOneWidget);
-    expect(find.text('1.0.0+1'), findsOneWidget);
+    expect(find.byType(SettingsVersionLine), findsOneWidget);
+    expect(find.textContaining('1.0.0+1'), findsOneWidget);
+  });
+
+  testWidgets('draws no leading icon on any settings row', (tester) async {
+    // `NavRow` has no icon slot at all (`prototype/settings.jsx:149`); the
+    // rows had grown six stock Material glyphs the design never drew.
+    await openSettings(tester);
+
+    for (final row in tester.widgetList<SettingsNavRow>(
+      find.byType(SettingsNavRow),
+    )) {
+      expect(
+        find.descendant(
+          of: find.byWidget(row),
+          matching: find.byType(Icon),
+        ),
+        findsNothing,
+        reason: '${row.label} drew a glyph the design does not have',
+      );
+    }
   });
 
   testWidgets('haptics toggle flips and persists via SettingsController', (
@@ -43,13 +85,62 @@ void main() {
   ) async {
     await openSettings(tester);
 
-    final hapticsSwitch = find.widgetWithText(SwitchListTile, 'Haptics');
-    expect(tester.widget<SwitchListTile>(hapticsSwitch).value, isTrue);
+    Finder hapticsRow() => find.ancestor(
+      of: find.text(SettingsCopy.hapticsRow),
+      matching: find.byType(SettingsNavRow),
+    );
 
-    await tester.tap(hapticsSwitch);
+    expect(tester.widget<SettingsNavRow>(hapticsRow()).toggleValue, isTrue);
+
+    await tester.tap(find.text(SettingsCopy.hapticsRow));
     await settleLoaders(tester);
 
-    expect(tester.widget<SwitchListTile>(hapticsSwitch).value, isFalse);
+    expect(tester.widget<SettingsNavRow>(hapticsRow()).toggleValue, isFalse);
+  });
+
+  testWidgets('the reminder row reads Off until it is asked for', (
+    tester,
+  ) async {
+    // A time is only a setting while the switch above it is on: a row showing
+    // 8:00 AM with notifications off promises something that never arrives.
+    await openSettings(tester);
+
+    Finder reminderRow() => find.ancestor(
+      of: find.text(SettingsCopy.reminderRow),
+      matching: find.byType(SettingsNavRow),
+    );
+
+    expect(tester.widget<SettingsNavRow>(reminderRow()).value, 'Off');
+    expect(tester.widget<SettingsNavRow>(reminderRow()).isDimmed, isTrue);
+
+    await tester.tap(find.text(SettingsCopy.notificationsRow));
+    await settleLoaders(tester);
+
+    expect(
+      tester.widget<SettingsNavRow>(reminderRow()).value,
+      DailyReminder.defaultTime,
+    );
+    expect(tester.widget<SettingsNavRow>(reminderRow()).isDimmed, isFalse);
+  });
+
+  testWidgets('picking a time stores it and turns the reminder on', (
+    tester,
+  ) async {
+    await openSettings(tester);
+
+    await tester.tap(find.text(SettingsCopy.reminderRow));
+    await tester.pumpAndSettle();
+
+    expect(find.text(DailyReminder.sheetTitle), findsOneWidget);
+
+    await tester.tap(find.text('6:30 AM'));
+    await tester.pump();
+    await tester.tap(find.text(DailyReminder.sheetAction));
+    await settleLoaders(tester);
+
+    final stored = await SettingsRepository().getSettings();
+    expect(stored.dailyReminderTime, '6:30 AM');
+    expect(stored.notificationsEnabled, isTrue);
   });
 
   testWidgets('Reset Progress is gated behind a confirmation dialog', (
@@ -65,7 +156,7 @@ void main() {
 
     await openSettings(tester);
 
-    await tester.tap(find.text('Reset Progress'));
+    await tester.tap(find.text(SettingsCopy.resetProgressRow));
     await tester.pumpAndSettle();
     expect(find.text('Reset all progress?'), findsOneWidget);
 
@@ -91,7 +182,7 @@ void main() {
 
     await openSettings(tester);
 
-    await tester.tap(find.text('Reset Progress'));
+    await tester.tap(find.text(SettingsCopy.resetProgressRow));
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(TextButton, 'Reset'));
     await settleLoaders(tester);

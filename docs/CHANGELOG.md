@@ -44,6 +44,19 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Settings has the four screens its rows always implied.** Account and sync,
+  Purchases, Help and support and About now exist and open from the rows that
+  name them, instead of being sections the app had no destination for. They are
+  frames rather than finished screens: each carries its real title and section
+  headings, and says in a line what is still to come. The **App Guide** moved
+  into Help and support, which is where it belongs — it sat on the Settings
+  root only because that screen did not exist yet.
+
+- **A daily reminder can be asked for.** Settings gains a Notifications switch
+  and a Daily reminder row that opens a sheet of eight times to pick from. The
+  choice is remembered; nothing is scheduled yet, because whether reminders
+  ship at all is still an open question.
+
 - **The app opens on a welcome screen it never had.** The first screen a new
   learner saw was the mascot's introduction wearing the welcome screen's slot:
   it led with *"Plant your tree."* and copy about Roasty, and the screen that
@@ -173,6 +186,21 @@ You can always edit this file by hand instead — the helpers just save effort.
   *Put it in order* and *Pour-over, in order*.
 
 ### Changed
+
+- **The lesson player is the card, and nothing else.** It used to print the
+  module name and the lesson title above every card, and leave by a back
+  arrow. Now the bar carries only what the design puts there: a close mark, the
+  roasting bean with its position beside it, and the save control. Nothing
+  competes with the question being asked.
+
+- **Settings is grouped the way the design groups it.** Appearance leads, the
+  sound and haptics switches move under **Practice** beside the new reminder
+  rows they belong with, and **Account** and **Support** carry the rows that
+  leave the screen. The version moved out of a labelled row into the centred
+  line that closes the screen. Rows are label-left, value-right over a
+  hairline, and none of them draws a leading icon any more — the design's
+  settings row has no icon slot at all, so the six stock glyphs the app had put
+  there were removals, not replacements.
 
 - **Small orange labels are readable in the light theme.** Every eyebrow,
   kicker and smallcaps label set in the brand orange was drawing at 4.23:1 on

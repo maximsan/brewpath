@@ -1,5 +1,6 @@
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
+import 'package:brew_path/features/profile/domain/daily_reminder.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
@@ -35,6 +36,30 @@ class SettingsController extends _$SettingsController {
   /// Toggles the sound preference and persists it.
   Future<void> toggleSound() =>
       _update((s) => s.soundEnabled = !s.soundEnabled);
+
+  /// Toggles whether the learner wants a daily reminder.
+  ///
+  /// Switching it on with no time chosen takes the design's default slot, so
+  /// the row never reads on-with-no-time — the state its own value has no way
+  /// to show.
+  ///
+  /// **Nothing is scheduled** by this, here or anywhere: see #443.
+  Future<void> toggleNotifications() => _update((s) {
+    s.notificationsEnabled = !s.notificationsEnabled;
+    if (s.notificationsEnabled) {
+      s.dailyReminderTime ??= DailyReminder.defaultTime;
+    }
+  });
+
+  /// Sets the reminder's time, and turns reminders on if they were off.
+  ///
+  /// Choosing a time *is* asking for the reminder — the design's own sheet
+  /// saves with `setNotify(true)` beside the time it stores.
+  Future<void> setReminderTime(String time) => _update((s) {
+    s
+      ..dailyReminderTime = time
+      ..notificationsEnabled = true;
+  });
 
   Future<void> _update(void Function(UserSettingsRecord) mutate) async {
     final repo = ref.read(settingsRepositoryProvider);

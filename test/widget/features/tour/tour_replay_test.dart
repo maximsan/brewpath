@@ -1,6 +1,7 @@
 import 'package:brew_path/app/app.dart';
 import 'package:brew_path/app/app_header.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
 import 'package:brew_path/features/tour/domain/app_guide_copy.dart';
 import 'package:brew_path/features/tour/domain/tour_copy.dart';
 import 'package:brew_path/features/tour/presentation/replay_intro_row.dart';
@@ -15,8 +16,9 @@ import '../../../support/widget_harness.dart';
 ///
 /// The whole point of this entry point is what replay *does not* do — no intro
 /// overlay, and no write — so most of these assertions are negative ones. It
-/// reaches the row the way a learner does, through Settings → Help & Support →
-/// App Guide, because the path is half of what the ticket asks for.
+/// reaches the row the way a learner does, through Settings → Support → Help
+/// and support → App Guide, because the path is half of what the ticket asks
+/// for.
 void main() {
   setUp(useInMemoryDatabase);
 
@@ -46,18 +48,25 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  /// Profile → gear → App Guide, which is the only way in.
+  /// Profile → gear → Help and support → App Guide, which is the only way in.
+  ///
+  /// One push deeper than it used to be: the design files the guide inside the
+  /// Help screen (`prototype/settings.jsx:589`), which now exists (#395).
   Future<void> openAppGuide(WidgetTester tester) async {
     await openProfile(tester);
     await tester.tap(findMark(AppIcon.gear));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(SettingsCopy.helpRow));
     await tester.pumpAndSettle();
     await tester.tap(find.text(AppGuideCopy.title));
     await tester.pumpAndSettle();
   }
 
-  testWidgets('Settings files the App Guide under Help & Support', (
+  testWidgets('Settings files the App Guide inside Help and support', (
     tester,
   ) async {
+    // It used to be a section heading on the Settings root, because the Help
+    // screen did not exist. It does now, and the design puts the guide in it.
     useTallViewport(tester);
 
     await pumpWithProviders(tester, const BrewPathApp());
@@ -65,10 +74,13 @@ void main() {
     await tester.tap(findMark(AppIcon.gear));
     await tester.pumpAndSettle();
 
-    expect(
-      find.text(AppGuideCopy.helpSectionLabel.toUpperCase()),
-      findsOneWidget,
-    );
+    expect(find.text(SettingsCopy.helpRow), findsOneWidget);
+    expect(find.text(AppGuideCopy.title), findsNothing);
+
+    await tester.tap(find.text(SettingsCopy.helpRow));
+    await tester.pumpAndSettle();
+
+    expect(find.text(AppGuideCopy.title), findsWidgets);
     expect(find.text(AppGuideCopy.settingsRowBody), findsOneWidget);
   });
 

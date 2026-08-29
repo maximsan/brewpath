@@ -1,5 +1,6 @@
 import 'package:brew_path/app/app.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
 import 'package:brew_path/features/profile/presentation/widgets/stat_tile.dart';
 import 'package:brew_path/features/progress/presentation/week_strip.dart';
 import 'package:flutter/material.dart';
@@ -99,7 +100,7 @@ void main() {
     await tester.tap(findMark(AppIcon.gear));
     await settleLoaders(tester);
 
-    expect(find.text('Settings'), findsOneWidget);
-    expect(find.text('Reset Progress'), findsOneWidget);
+    expect(find.text(SettingsCopy.title), findsOneWidget);
+    expect(find.text(SettingsCopy.resetProgressRow), findsOneWidget);
   });
 }
