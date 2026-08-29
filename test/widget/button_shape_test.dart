@@ -1,4 +1,5 @@
 import 'package:brew_path/app/app_theme.dart';
+import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -19,10 +20,13 @@ import 'package:flutter_test/flutter_test.dart';
 /// knowing the rule — so what is inspected is the `Material` the button
 /// actually paints, not the style it was handed.
 ShapeBorder _paintedShape(WidgetTester tester, Finder button) {
-  final material = tester.widget<Material>(
-    find.descendant(of: button, matching: find.byType(Material)).first,
+  // The first `Material` under a button is not always the one that paints it —
+  // `SegmentedButton` wraps its segments in a shapeless container first — so
+  // take the first that actually carries a shape.
+  final materials = tester.widgetList<Material>(
+    find.descendant(of: button, matching: find.byType(Material)),
   );
-  return material.shape!;
+  return materials.firstWhere((material) => material.shape != null).shape!;
 }
 
 Future<void> _pump(WidgetTester tester, ThemeData theme, Widget button) async {
@@ -51,8 +55,41 @@ void main() {
     'ElevatedButton': ElevatedButton(onPressed: () {}, child: const Text('x')),
   };
 
+  testWidgets('PrimaryButton keeps its shape without the app theme', (
+    tester,
+  ) async {
+    // `PrimaryButton` sets the radius itself as well as taking it from the
+    // theme. This is why: `context.mood` falls back to Dark Roast when no
+    // theme carries the extension, so the component renders in a themeless
+    // `MaterialApp` — and without its own shape it would render there as
+    // Material's pill. Both read `AppRadii.chrome`, so the two cannot drift.
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: PrimaryButton(label: 'x', onPressed: () {}),
+        ),
+      ),
+    );
+
+    final shape = _paintedShape(tester, find.byType(PrimaryButton));
+    expect(shape, isNot(isA<StadiumBorder>()));
+    expect(
+      (shape as RoundedRectangleBorder).borderRadius.resolve(
+        TextDirection.ltr,
+      ),
+      BorderRadius.circular(AppRadii.chrome),
+    );
+  });
+
   for (final theme in themes.entries) {
     for (final entry in bareButtons().entries) {
+      // `.btn-link` draws no body and the design gives it no radius, so a text
+      // button takes the sharp end rather than `--r`. It still needs a shape,
+      // or Material's pill shows through on press.
+      final expected = entry.key == 'TextButton'
+          ? AppRadii.editorial
+          : AppRadii.chrome;
+
       testWidgets('${entry.key} is not a pill in ${theme.key}', (tester) async {
         await _pump(tester, theme.value, entry.value);
 
@@ -70,11 +107,27 @@ void main() {
           (shape as RoundedRectangleBorder).borderRadius.resolve(
             TextDirection.ltr,
           ),
-          BorderRadius.circular(AppRadii.chrome),
-          reason: 'the running prototype sets buttons at --r',
+          BorderRadius.circular(expected),
+          reason: 'the running prototype sets this button at $expected',
         );
       });
     }
+
+    test('${theme.key} declares the segmented toggle as a pill', () {
+      // The one exception, and it is the design's: the filter toggle is drawn
+      // at `borderRadius: 999` (`dictionary.jsx:202`), which `AppRadii.pill`
+      // names for toggles in as many words.
+      //
+      // Asserted on the *declaration* rather than the painted shape, unlike
+      // every case above. Material already drew this one as a pill by default,
+      // so painting proves nothing about the app's intent — what changed is
+      // that the app now says so, and that is what stops the rule above being
+      // applied here by someone tidying.
+      expect(
+        theme.value.segmentedButtonTheme.style?.shape?.resolve({}),
+        isA<StadiumBorder>(),
+      );
+    });
   }
 
   testWidgets('a call site that asks for its own shape still wins', (

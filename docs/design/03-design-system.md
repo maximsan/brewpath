@@ -86,7 +86,7 @@ There is **one radius token** (`--r: 14px`). Everything else is a rule, not a sc
 | Radius | Language | Where |
 |---|---|---|
 | **2px** | Editorial | Cards and inputs. The sharp, print-like default. |
-| **14px** (`--r`) | Soft chrome | Media frames, bottom sheets, icon wells, avatars, mini-game tiles. 14px is the token; 12–20 is the range other chrome may sit in. |
+| **14px** (`--r`) | Soft chrome | Media frames, bottom sheets, icon wells, avatars, mini-game tiles, and **buttons** (`.btn-primary`, `.btn-ghost`). 14px is the token; 12–20 is the range other chrome may sit in. |
 | **999px** | Pill / dot | Status dots, fav toggle, switch toggles, badges, home indicator. |
 
 > **"Mixing them on one element is the tell of an off-system component."**
@@ -110,8 +110,8 @@ There is **one radius token** (`--r: 14px`). Everything else is a rule, not a sc
 > ⚠️ **Correction.** Earlier versions of this doc listed a "radius scale of
 > 4 / 12 / 14 / 16 / 20 / 999". No such scale exists in the source — `--r` is
 > the only radius token, and the editorial default is **2px, not 4px**. An
-> implementation built from the old line would round every card and button
-> wrong.
+> implementation built from the old line would round every card wrong.
+> (Buttons are `--r`, per the correction above — not editorial at all.)
 
 ## Borders & elevation
 - **Hairlines do the work.** 1px `--rule` separates almost everything; shadows are reserved for sheets and floating buttons only.

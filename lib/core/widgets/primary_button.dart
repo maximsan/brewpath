@@ -10,9 +10,12 @@ import 'package:flutter/material.dart';
 /// #377, transcribed from `Design System.html`'s 2px, which ADR-0009 ranks
 /// below the running `index.html`.
 ///
-/// The shape is set here as well as on the theme so the component is correct
-/// wherever it is mounted, including a test that pumps it without the app
-/// theme. Both read the same token, so they cannot drift.
+/// The shape is set here as well as on `AppTheme`'s button themes. That is not
+/// belt-and-braces: `context.mood` falls back to Dark Roast when no theme
+/// carries the extension, so this renders in a themeless `MaterialApp` — and
+/// without its own shape it would render there as Material's pill. Both read
+/// [AppRadii.chrome], so the two cannot drift; `button_shape_test.dart` pins
+/// the themeless case.
 ///
 /// When disabled, swaps to a muted neutral fill so the affordance is still
 /// clearly visible against the dark-roast background — the prototype's 35%
