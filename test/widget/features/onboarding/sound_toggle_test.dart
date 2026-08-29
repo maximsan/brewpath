@@ -1,4 +1,5 @@
 import 'package:brew_path/features/onboarding/presentation/welcome/sound_toggle.dart';
+import 'package:brew_path/shared/theme/overlay_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -46,6 +47,29 @@ void main() {
 
     await _pump(tester, muted: false, onPressed: () {});
     expect(find.byIcon(Icons.volume_up), findsOneWidget);
+  });
+
+  testWidgets('blurs the film behind it, inside its own circle', (
+    tester,
+  ) async {
+    // The scrim is the one overlay a modal barrier cannot render: it is not
+    // full-screen, so its blur is the control's to clip. Taking the tint and
+    // leaving the blur is the half-port #379 exists to end.
+    await _pump(tester, muted: true, onPressed: () {});
+
+    final backdrop = tester.widget<BackdropFilter>(
+      find.byType(BackdropFilter),
+    );
+    expect(backdrop.filter, OverlayColors.scrim.backdropFilter);
+
+    expect(
+      find.ancestor(
+        of: find.byType(BackdropFilter),
+        matching: find.byType(ClipOval),
+      ),
+      findsOneWidget,
+      reason: 'an unclipped blur would frost the whole screen behind the film',
+    );
   });
 
   testWidgets('does not advance the screen it floats on', (tester) async {
