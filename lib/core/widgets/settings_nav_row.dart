@@ -13,12 +13,11 @@ import 'package:flutter/material.dart';
 /// trailing variants, one implementation, so the row cannot drift into two
 /// versions again.
 ///
-/// **It has no icon slot, deliberately.** The app's settings rows had grown
-/// leading Material glyphs — `notifications_outlined`, `palette_outlined`,
-/// `vibration`, `volume_up_outlined`, `tune`, `info_outline` — that the design
-/// never draws, which is why the icon port (#378) left them alone rather than
-/// hunting for marks that do not exist. The fix was removal, and removal is
-/// this shape.
+/// **It has no icon slot, deliberately.** Settings' rows had grown leading
+/// Material glyphs — `info_outline` on the version row, `help_outline` on the
+/// App Guide one — that the design never draws, which is why the icon port
+/// (#378) left them alone rather than hunting for marks that do not exist. The
+/// fix was removal, and removal is this shape.
 ///
 /// Layout is label left, affordance right, over a hairline: the rule is the
 /// row's own bottom border in the design, so a list of these needs no
