@@ -141,7 +141,9 @@ class _TreeBody extends StatelessWidget {
           ),
         ),
         const SizedBox(height: AppSpacing.lg),
-        if (progress case final counted?)
+        // The bar and its own gap arrive together, so a course still being
+        // read leaves one space here rather than two.
+        if (progress case final counted?) ...[
           Padding(
             padding: gutter,
             child: TreeProgressBar(
@@ -150,7 +152,8 @@ class _TreeBody extends StatelessWidget {
               nextStageName: next,
             ),
           ),
-        const SizedBox(height: AppSpacing.lg),
+          const SizedBox(height: AppSpacing.lg),
+        ],
         Padding(
           padding: gutter,
           child: TreeLadder(stage: displayed),

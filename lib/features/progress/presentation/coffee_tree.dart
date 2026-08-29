@@ -68,6 +68,16 @@ class _CoffeeTreeState extends State<CoffeeTree>
     duration: treeSwayPeriod,
   );
 
+  /// Whether the tree is currently swaying — the widget's flag AND platform
+  /// reduced motion, resolved.
+  ///
+  /// Tracked rather than read back off the controller, which is `Roasty`'s
+  /// shape and is the correct one: a stopped controller does not notify, so a
+  /// builder asking `isAnimating` could paint one last leaning frame. Both
+  /// lifecycle hooks that write this are followed by a build, so it is always
+  /// read fresh.
+  bool _swaying = false;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -87,8 +97,12 @@ class _CoffeeTreeState extends State<CoffeeTree>
   void _syncAnimation() {
     final reduceMotion =
         MediaQuery.maybeOf(context)?.disableAnimations ?? false;
-    if (widget.animate && !reduceMotion) {
-      if (!_controller.isAnimating) unawaited(_controller.repeat());
+    final shouldSway = widget.animate && !reduceMotion;
+    if (shouldSway == _swaying) return;
+
+    _swaying = shouldSway;
+    if (shouldSway) {
+      unawaited(_controller.repeat());
     } else {
       _controller
         ..stop()
@@ -141,7 +155,7 @@ class _CoffeeTreeState extends State<CoffeeTree>
       child: picture,
       builder: (context, child) => Transform.rotate(
         key: CoffeeTree.swayKey,
-        angle: _controller.isAnimating
+        angle: _swaying
             ? treeSwayRadiansAt(_controller.value)
             : treeSwayHeldRadians,
         alignment: treeSwayOrigin,
