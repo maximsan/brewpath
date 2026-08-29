@@ -5,6 +5,8 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/dart_sources.dart';
+
 /// Flutter resolves a font by the family **string**. A name that does not match
 /// a `fonts:` entry in `pubspec.yaml` does not throw — it silently falls
 /// back to the platform font, so the app renders in the wrong typeface with
@@ -130,6 +132,32 @@ void main() {
             'Flutter would synthesise it rather than fail.',
       );
     }
+  });
+
+  test('no file spells a family out — it reads one from AppFace', () {
+    // Being declared is not enough. A painter that spells 'Fraunces' is
+    // correct only until the pubspec renames it, and then it is a silent
+    // fallback again — the same failure the test above exists for, one step
+    // later. `AppFace` is where a family is chosen, so a painter needing one
+    // outside `AppText` reads `AppFace.display.family`, the way
+    // `grinder_dial_view.dart` does.
+    final offenders = <String>[];
+
+    for (final file in dartSourcesUnder('lib')) {
+      for (final match in RegExp(
+        r"""fontFamily:\s*'([^']+)'""",
+      ).allMatches(withoutComments(file.readAsStringSync()))) {
+        offenders.add('${file.path} spells "${match.group(1)}"');
+      }
+    }
+
+    expect(
+      offenders,
+      isEmpty,
+      reason:
+          'read the family from AppFace instead, so a rename in pubspec.yaml '
+          'reaches every drawing:\n${offenders.join('\n')}',
+    );
   });
 
   test('every declared family is backed by a font file that exists', () {

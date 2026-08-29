@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty_faces.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:flutter/material.dart';
 
 // The front particle dispatch handles the states with particles and defaults
@@ -182,13 +183,17 @@ void _paintSleepZzz(Canvas c, double t) {
     final tp = TextPainter(
       text: TextSpan(
         text: 'z',
+        // Face from the ladder, size from the drawing — the same split
+        // `grinder_dial_view.dart` makes, so a rename in the pubspec reaches
+        // this `z` too.
         style: TextStyle(
           color: const Color(
             0xFF6B5F54,
           ).withValues(alpha: opacity.clamp(0.0, 1.0)),
           fontStyle: FontStyle.italic,
           fontSize: l.size,
-          fontFamily: 'Fraunces',
+          fontFamily: AppFace.display.family,
+          fontWeight: AppFace.display.weight,
         ),
       ),
       textDirection: TextDirection.ltr,
