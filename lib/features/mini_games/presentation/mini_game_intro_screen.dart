@@ -139,7 +139,7 @@ class _Intro extends StatelessWidget {
               child: Text(
                 '${index + 1}',
                 style: theme.textTheme.labelLarge?.copyWith(
-                  color: mood.accentText,
+                  color: mood.accent,
                 ),
               ),
             ),

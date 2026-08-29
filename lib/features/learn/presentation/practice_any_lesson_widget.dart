@@ -71,7 +71,7 @@ class _PracticeAnyLessonWidgetState extends State<PracticeAnyLessonWidget> {
                           ? 'Show fewer'
                           : 'Show all ${widget.lessons.length} lessons',
                       style: theme.textTheme.labelLarge?.copyWith(
-                        color: mood.accentText,
+                        color: mood.accent,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
