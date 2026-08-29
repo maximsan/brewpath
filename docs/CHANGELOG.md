@@ -152,6 +152,26 @@ You can always edit this file by hand instead — the helpers just save effort.
   18 reachable rounds from 11, which is the number ADR-0007 promises, and a test
   now holds it there.
 
+- **Dial it in, and Put it in order — the last two formats.** Calibrate rounds
+  play: drag along the scale, watch the setting read back as something concrete
+  ("Sea salt — pour-over", not 71), and commit. The card then names the target
+  and draws the band it accepted, so a near miss is visible rather than merely
+  reported. Grind rounds draw the grinder's own collar above the track, counting
+  clicks as the setting moves. Sequence rounds play too: tap the steps into
+  order, take one back out if you change your mind and the rest renumber,
+  submit, and see which places were right — a misplaced step says where it
+  belonged, and the whole correct order is spelled out either way. Both grade
+  all-or-nothing and pay once, like every other graded card, and both react
+  inside the card when the answer is wrong.
+
+  A sequence round is authored in its own answer, so the opening order is drawn
+  from the run's seed **and checked against the solution** — no round can open
+  already solved.
+
+  With these two, every card kind in the app draws, and all 13 mini-games play.
+  Four more games opened on the two renderers: *Dial it in*, *Set the grind*,
+  *Put it in order* and *Pour-over, in order*.
+
 ### Changed
 
 - **Small orange text is readable in the light theme.** Every eyebrow, kicker,

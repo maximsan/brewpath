@@ -98,17 +98,31 @@ void main() {
       expect(playableMiniGameIds, containsAll(['g-quiz', 'g-match']));
     });
 
-    test('a kind with no renderer yet does not play', () {
-      // Retargeted: this named `g-bagpick` until its renderer landed. The two
-      // kinds still waiting are `slider` and `sequence`, and naming one of
-      // their games keeps the assertion about *a game that cannot be drawn*
-      // rather than about whichever game happened to be unfinished.
+    test('the last two kinds play, so nothing is left waiting', () {
+      // This test named a game that could not be drawn while any kind was
+      // still unbuilt — `g-bagpick` first, then `g-calibrate` and `g-sequence`
+      // after it. There is no third name to retarget to: with `slider` and
+      // `sequence` built (#124), every kind renders and every game plays.
       //
+      // So it asserts the state that replaced the wait, and it does so by name
+      // rather than by count: these four are the games those two renderers
+      // opened, and losing one of them should say which.
+      expect(
+        playableMiniGameIds,
+        containsAll([
+          'g-calibrate',
+          'g-calibrate-grind-brewer',
+          'g-sequence',
+          'g-sequence-v60',
+        ]),
+      );
+    });
+
+    test('nothing is held back, and an exclusion would say why', () {
       // The general rule — anything that renders is playable or says why not —
       // belongs to `mini_game_playable_test.dart`, which checks it against the
       // real banks rather than against a name written here.
-      expect(playableMiniGameIds, isNot(contains('g-calibrate')));
-      expect(playableMiniGameIds, isNot(contains('g-sequence')));
+      expect(deliberatelyNotPlayable, isEmpty);
     });
   });
 }

@@ -29,6 +29,15 @@ const int _cardStride = 0x9E3779B1;
 int cardSeed({required int nonce, required int cardIndex}) =>
     (nonce + (cardIndex + 1) * _cardStride) % _modulus;
 
+/// A second seed derived from [seed], for a card that has to draw again.
+///
+/// One card kind needs this: a `sequence` round is authored in its own answer,
+/// so a draw that lands on the solution has to be re-taken. Re-taking it must
+/// stay a function of the run's nonce, or the round stops being reproducible —
+/// so the new seed is derived here, with the same stride a card's own seed is
+/// mixed with, rather than restated wherever a redraw happens to be needed.
+int derivedSeed(int seed) => (seed ^ _cardStride) % _modulus;
+
 /// A permutation of `0 …  length - 1`, decided entirely by [seed].
 ///
 /// Returns display position → source index, so a caller reorders its own list

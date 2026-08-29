@@ -118,27 +118,16 @@ void main() {
     expect(completedWith['total'], '1');
   });
 
-  testWidgets('skips a card no renderer can draw rather than dead-ending', (
-    tester,
-  ) async {
-    await pumpLesson(
-      tester,
-      testLesson(
-        cards: [testConceptCard(), testUnplayableCard(), testMcqCard()],
-      ),
-    );
-
-    // Three authored, two playable — and the run reaches the end.
-    expect(find.text('01 / 02'), findsOneWidget);
-    await advance(tester, 'Continue');
-    await advance(tester, 'A seed');
-    await advance(tester, 'Continue');
-
-    expect(find.text('Completion screen'), findsOneWidget);
-  });
+  // A test that fed this lesson an undrawable card stood here, alongside the
+  // one below. It cannot be written any more: every kind of the union draws as
+  // of #124, so there is no card to build one from. The screen still filters
+  // through `playableCards` for the next kind that arrives ahead of its
+  // renderer, and the exhaustive switches make that arrival a build failure
+  // rather than something a test has to catch.
 
   testWidgets('says so when a lesson has nothing it can draw', (tester) async {
-    await pumpLesson(tester, testLesson(cards: [testUnplayableCard()]));
+    // A lesson with no playable card left, which is now only an empty one.
+    await pumpLesson(tester, testLesson(cards: []));
 
     expect(find.text('This lesson cannot be played yet.'), findsOneWidget);
   });

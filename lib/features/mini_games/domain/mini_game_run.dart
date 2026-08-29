@@ -13,10 +13,15 @@ const double _celebrationMark = 0.8;
 /// The games whose kind renderers exist in this build.
 ///
 /// The catalog lists every game and every row opens its intro; this decides
-/// only whether that intro can start a run, and games join the set as their
-/// sibling slices land. Keeping it a registry rather than a card-kind lookup
+/// only whether that intro can start a run, and games joined the set as their
+/// sibling slices landed. Keeping it a registry rather than a card-kind lookup
 /// means a game is playable only when someone says so, not incidentally
 /// because its kind happens to render.
+///
+/// **It now holds the whole catalog** — every one of the 13 games plays, as of
+/// `slider` and `sequence` (#124). That is the state it was built to reach, not
+/// a reason to delete it: the next game authored lands here unruled, and the
+/// guard test says so.
 ///
 /// Read by the intro's action and by Keep Sharp, which must never recommend a
 /// game that cannot run. Deliberately *not* read by the catalog row — a row
@@ -48,6 +53,13 @@ const Set<String> playableMiniGameIds = {
   // The one kind with a single game, and the only one that is a real widget
   // rather than a picker with framing.
   'g-bagpick',
+  // The last two kinds, and with them the last four games (#124). Neither is a
+  // picker: calibrate commits a value against a band, sequence arranges steps
+  // into an order.
+  'g-calibrate',
+  'g-calibrate-grind-brewer',
+  'g-sequence',
+  'g-sequence-v60',
 };
 
 /// Games whose kind renders, kept out of [playableMiniGameIds] on purpose.

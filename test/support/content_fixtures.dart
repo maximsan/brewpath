@@ -100,21 +100,16 @@ ContentCard testMcqCard({String prompt = 'What is a coffee bean?'}) =>
       explanation: 'It is the seed of a fruit.',
     );
 
-/// A card kind with no renderer, for testing what a lesson does with one.
-///
-/// `slider` because it is the kind furthest from having one — it belongs to
-/// #333 and nothing in flight touches it. Whichever renderer lands next, point
-/// this at a kind that still has none rather than deleting the tests it feeds:
-/// they cover what a lesson does with an undrawable card, not this kind.
-ContentCard testUnplayableCard() => const ContentCard.slider(
-  prompt: 'How fine did you grind?',
-  leftLabel: 'Coarse',
-  rightLabel: 'Fine',
-  target: 0.6,
-  tolerance: 0.1,
-  scale: ['Coarse', 'Medium', 'Fine'],
-  feedback: 'No renderer draws this kind yet.',
-);
+// `testUnplayableCard` stood here — a card of whatever kind had no renderer
+// yet, so a lesson could be asked what it does with one. It named `slider`
+// last, and asked to be retargeted rather than deleted whenever a renderer
+// landed.
+//
+// There is nothing left to retarget it at: with `slider` and `sequence` built
+// (#124) every kind of the union draws, so an undrawable card cannot be
+// constructed at all. What it guarded is now a compile-time fact — the two
+// exhaustive switches in `content_card_view.dart` break the build when a kind
+// is added — and `content_card_view_test.dart` pins them to each other.
 
 /// A Coffee Challenge. Defaults to a lesson-scoped record naming no lesson —
 /// the shape the bank allows but the rules refuse to earn.
