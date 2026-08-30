@@ -122,11 +122,14 @@ class _LegalLinks extends StatelessWidget {
   @override
   Widget build(BuildContext context) => const Padding(
     padding: EdgeInsets.only(top: AppSpacing.xs),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    // Wrapped, not a Row: two links side by side fit a phone at the default
+    // text size and stop fitting well before the largest one, and a required
+    // legal link is the last thing that may be clipped off the sheet.
+    child: Wrap(
+      alignment: WrapAlignment.center,
+      spacing: AppSpacing.md,
       children: [
         LinkButton(label: PlusCopy.terms, onPressed: null),
-        SizedBox(width: AppSpacing.md),
         LinkButton(label: PlusCopy.privacy, onPressed: null),
       ],
     ),

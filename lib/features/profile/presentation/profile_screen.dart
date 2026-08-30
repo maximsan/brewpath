@@ -12,6 +12,7 @@ import 'package:brew_path/features/progress/domain/grove_treatment.dart';
 import 'package:brew_path/features/progress/domain/mastery_rollup.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/presentation/coffee_tree.dart';
+import 'package:brew_path/features/saved/presentation/saved_entry_card.dart';
 import 'package:brew_path/features/studio/presentation/studio_door_tile.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -99,6 +100,13 @@ class ProfileScreen extends ConsumerWidget {
                 ],
                 const SizedBox(height: _cardGap),
                 const ChallengeStatRow(),
+                // The entries the design closes on, in its order: the Studio
+                // door, then Saved. The Duel and Courses cards beside them are
+                // gated off in the design and are not owed for v1.
+                const SizedBox(height: _cardGap),
+                const StudioDoorTile(),
+                const SizedBox(height: _cardGap),
+                const SavedEntryCard(),
                 const SizedBox(height: _headlineGap),
                 const _CustomizeSection(),
                 if (joined != null) ...[
@@ -133,13 +141,12 @@ class _JoinedLine extends StatelessWidget {
   }
 }
 
-/// The Studio door and the app's preferences, still on Profile.
+/// The app's preferences, still on Profile.
 ///
-/// Its own widget so it reads its own settings: #429 moves the preferences to
-/// Settings, where the design keeps them, and a section that owns its state is
-/// a deletion rather than an unpicking. The door stays either way — #428 gives
-/// it the design's own entry card, beside Saved, now that #140 has built what
-/// it opens.
+/// Its own widget so it reads its own settings: #429 moves them to Settings,
+/// where the design keeps them, and a section that owns its state is a deletion
+/// rather than an unpicking. The Studio door used to sit under this heading;
+/// it has moved up to the entry stack, which is where the design draws it.
 class _CustomizeSection extends ConsumerWidget {
   const _CustomizeSection();
 
@@ -152,8 +159,6 @@ class _CustomizeSection extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const SmallcapsLabel('Customize'),
-        const SizedBox(height: _cardGap),
-        const StudioDoorTile(),
         const SizedBox(height: _cardGap),
         _CustomizeGrid(
           soundEnabled: settings?.soundEnabled ?? true,

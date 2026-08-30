@@ -44,6 +44,20 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Profile closes on the two doors the design gives it.** Under the streak and
+  the challenge row there are now entry cards for the Studio and for Saved —
+  each an art well, an accent kicker, what it opens and a line saying what is
+  behind it. Saved counts what the shelf actually holds and opens it, so the
+  things you kept are findable from the page about you rather than only from a
+  bookmark in the header. The Studio door already existed; it now shares one
+  row pattern with Saved instead of carrying its own, so the two cannot drift
+  apart. It also keeps its Plus mark and still raises the offer rather than the
+  chooser — Saved carries no mark, because the shelf is free for everyone and
+  what Plus lifts is the cap on saving past five.
+
+  Terms and Privacy on the Plus sheet now wrap onto a second line instead of
+  running off the edge when the text is scaled up.
+
 - **Hitting a lock now offers something.** A free learner whose shelf is full
   used to get a one-line snackbar; they now get the Plus gate — a sheet that
   opens on *what they just hit*, then makes the case for the course: the rest
