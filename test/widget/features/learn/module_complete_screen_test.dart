@@ -3,9 +3,9 @@ import 'package:brew_path/features/cards/presentation/reward_card.dart';
 import 'package:brew_path/features/companion/application/companion_providers.dart';
 import 'package:brew_path/features/companion/domain/companion_lines.dart';
 import 'package:brew_path/features/companion/presentation/roasty_moment.dart';
-import 'package:brew_path/features/learn/domain/module_flip.dart';
 import 'package:brew_path/features/learn/domain/module_summary_provider.dart';
 import 'package:brew_path/features/learn/presentation/module_complete_screen.dart';
+import 'package:brew_path/features/learn/presentation/module_flip_animation.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/presentation/growing_tree.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
@@ -17,6 +17,11 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../../support/content_fixtures.dart';
 
 final ModuleModel _module = testModule(lessonIds: const ['m1l1']);
+
+/// The beat's hold, as the screen sets it (`rewards.jsx:225`). Restated here
+/// rather than imported: it is private to the screen, and a test that reached
+/// for it would be asserting the screen against itself.
+const Duration _moduleHold = Duration(milliseconds: 2200);
 // The title is the one the bundled bank actually ships. A card's name is
 // authored content and stays as authored; Module Reward is the category,
 // not the title (CONTEXT.md).
@@ -28,14 +33,12 @@ final CoffeeCardModel _moduleReward = testCoffeeCard(
 );
 
 ModuleSummary _summary({
-  bool hasNextModule = true,
+  String? nextLessonId = 'm2l1',
   CoffeeCardModel? reward,
 }) => ModuleSummary(
   module: _module,
-  earnedCards: const [],
   moduleReward: reward ?? _moduleReward,
-  hasNextModule: hasNextModule,
-  treeStage: 3,
+  nextLessonId: nextLessonId,
 );
 
 /// Pumped with animations **on** by default: the flip is the subject, and a
@@ -70,6 +73,23 @@ void main() {
   // long as it is on screen, so nothing on the celebration face ever settles.
   // Each step pumps the duration it actually waits on.
 
+  /// How much of the reward card's width the viewer actually sees, `0` edge-on
+  /// to `1` face-on.
+  ///
+  /// Read off the composed paint transform rather than the layout box: the
+  /// card lays out at full size whatever angle it is turned to.
+  double paintedWidthFraction(WidgetTester tester) {
+    final card = tester.renderObject(find.byType(RewardCard)) as RenderBox;
+    final screen = tester.renderObject(find.byType(MaterialApp)) as RenderBox;
+    final toScreen = card.getTransformTo(screen);
+    final left = MatrixUtils.transformPoint(toScreen, Offset.zero);
+    final right = MatrixUtils.transformPoint(
+      toScreen,
+      Offset(card.size.width, 0),
+    );
+    return ((right.dx - left.dx) / card.size.width).abs();
+  }
+
   /// Taps a face's action and lets the turn finish.
   Future<void> turn(WidgetTester tester, Finder control) async {
     await tester.tap(control);
@@ -81,7 +101,7 @@ void main() {
   /// Plays the opening beat out, leaving the celebration face on screen.
   Future<void> pastTheBeat(WidgetTester tester) async {
     await tester.pump();
-    await tester.pump(RoastyMoment.moduleHold);
+    await tester.pump(_moduleHold);
     await tester.pump();
   }
 
@@ -105,7 +125,7 @@ void main() {
       await tester.pump(RoastyMoment.defaultHold);
       expect(find.byType(RoastyMoment), findsOneWidget);
 
-      await tester.pump(RoastyMoment.moduleHold - RoastyMoment.defaultHold);
+      await tester.pump(_moduleHold - RoastyMoment.defaultHold);
       await tester.pump();
       expect(find.byType(RoastyMoment), findsNothing);
     });
@@ -203,6 +223,13 @@ void main() {
       await tester.tap(find.text(AppLabels.turnItOver));
       await tester.pump();
 
+      // ⚠️ **Readable, not merely present.** Resting the turn at its swap
+      // point once left the card face-on to nobody, and `findsOneWidget` was
+      // happy with it — so was `getSize`, because a `Transform` does not
+      // change layout size. This measures what is actually painted: how much
+      // of the card's width survives the rotation it is drawn under.
+      expect(paintedWidthFraction(tester), closeTo(1, 0.01));
+
       // One pump, no settle: the result is there immediately rather than
       // after 820 ms of rotation.
       expect(find.byType(RewardCard), findsOneWidget);
@@ -219,7 +246,7 @@ void main() {
     });
 
     testWidgets('and the Path when none does', (tester) async {
-      await tester.pumpWidget(harness(_summary(hasNextModule: false)));
+      await tester.pumpWidget(harness(_summary(nextLessonId: null)));
       await pastTheBeat(tester);
       await turn(tester, find.text(AppLabels.turnItOver));
 

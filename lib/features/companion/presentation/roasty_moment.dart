@@ -35,11 +35,6 @@ class RoastyMoment extends StatefulWidget {
   /// `autoMs` default.
   static const Duration defaultHold = Duration(milliseconds: 2000);
 
-  /// The module ending's longer hold (`rewards.jsx:225`). It is the one beat
-  /// that overrides the default, and it says so here rather than at the call
-  /// site so the two durations sit together.
-  static const Duration moduleHold = Duration(milliseconds: 2200);
-
   /// How long this beat holds before it hands over on its own.
   final Duration hold;
 

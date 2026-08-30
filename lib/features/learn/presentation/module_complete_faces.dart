@@ -22,6 +22,7 @@ class CelebrationGlow extends StatelessWidget {
   const CelebrationGlow({
     required this.strength,
     required this.centre,
+    required this.edge,
     super.key,
   });
 
@@ -29,12 +30,14 @@ class CelebrationGlow extends StatelessWidget {
   static const CelebrationGlow celebration = CelebrationGlow(
     strength: 0.14,
     centre: Alignment(0, -0.2),
+    edge: 0.6,
   );
 
   /// The wash behind the reward card.
   static const CelebrationGlow reward = CelebrationGlow(
     strength: 0.18,
     centre: Alignment(0, -0.4),
+    edge: 0.55,
   );
 
   /// How much accent the wash carries at its centre.
@@ -43,8 +46,9 @@ class CelebrationGlow extends StatelessWidget {
   /// Where the wash is brightest.
   final Alignment centre;
 
-  /// Where the wash has faded out entirely — the design's `transparent 60%`.
-  static const double _edge = 0.6;
+  /// Where the wash has faded out entirely — `transparent 60%` on the
+  /// celebration, `55%` behind the card.
+  final double edge;
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +63,7 @@ class CelebrationGlow extends StatelessWidget {
               accent.withValues(alpha: strength),
               accent.withValues(alpha: 0),
             ],
-            stops: const [0, _edge],
+            stops: [0, edge],
           ),
         ),
         child: const SizedBox.expand(),
@@ -78,6 +82,7 @@ class ModuleCompleteFront extends StatelessWidget {
   /// Creates a [ModuleCompleteFront].
   const ModuleCompleteFront({
     required this.summary,
+    required this.treeStage,
     required this.onClose,
     required this.onTurnOver,
     super.key,
@@ -85,6 +90,10 @@ class ModuleCompleteFront extends StatelessWidget {
 
   /// The finished module and what it earned.
   final ModuleSummary summary;
+
+  /// Where the coffee tree stands. Passed in rather than joined into
+  /// [ModuleSummary]: that is a content read, and the tree is progress.
+  final int treeStage;
 
   /// Leaves the moment.
   final VoidCallback onClose;
@@ -94,6 +103,11 @@ class ModuleCompleteFront extends StatelessWidget {
 
   /// The design's `AnimatedTree size={250}` on this screen.
   static const double _treeSize = 250;
+
+  // ⚠️ The design's *Turn it over* also carries a flip glyph after its label
+  // (`rewards.jsx:341-344`). `StickyActionBar` takes a label and a callback,
+  // so a mark beside it would mean changing the shared footer (#412) for one
+  // caller. Left as words, recorded here rather than dropped quietly.
 
   @override
   Widget build(BuildContext context) {
@@ -134,11 +148,11 @@ class ModuleCompleteFront extends StatelessWidget {
               // caused it, and the lesson ending has already played it by the
               // time this screen opens (#458).
               Semantics(
-                label: AppLabels.treeAtStage(summary.treeStage),
+                label: AppLabels.treeAtStage(treeStage),
                 excludeSemantics: true,
                 child: GrowingTree(
-                  fromStage: summary.treeStage,
-                  toStage: summary.treeStage,
+                  fromStage: treeStage,
+                  toStage: treeStage,
                   size: _treeSize,
                 ),
               ),
