@@ -93,13 +93,31 @@ void main() {
     await openWith(tester, const SavedShelfFull(cap: 5));
 
     expect(find.text(PlusCopy.buy), findsOneWidget);
+
     // The three things the design's sheet carries that v1 must not: an ad
     // path, a trial, and a plan chooser.
-    expect(find.textContaining('ad'), findsNothing);
-    expect(find.textContaining('trial'), findsNothing);
-    expect(find.textContaining('Trial'), findsNothing);
-    expect(find.textContaining('month'), findsNothing);
-    expect(find.textContaining('year'), findsNothing);
+    //
+    // Matched on **whole words**. This began as `textContaining('ad')`, which
+    // passed by luck — it would have fired on *Loading*, *already* or *ahead*
+    // and failed with a message about advertising. A substring is the wrong
+    // shape for a rule about vocabulary.
+    final forbidden = RegExp(
+      r'\b(ads?|advert\w*|trial|month(ly)?|year(ly)?|subscri\w+)\b',
+      caseSensitive: false,
+    );
+    final onScreen = tester
+        .widgetList<Text>(find.byType(Text))
+        .map((text) => text.data ?? '')
+        .where(forbidden.hasMatch)
+        .toList();
+
+    expect(
+      onScreen,
+      isEmpty,
+      reason:
+          'v1 sells one non-consumable: no ad path, no trial, no plan '
+          'chooser. Found: ${onScreen.join(' | ')}',
+    );
   });
 
   testWidgets('Restore, Terms and Privacy are present', (tester) async {
