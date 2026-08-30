@@ -223,10 +223,11 @@ class _Lessons extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,
               children: [
-                for (var i = 0; i < module.lessons.length; i++) ...[
-                  if (i > 0) const SizedBox(height: AppSpacing.xs),
-                  PathLessonRow(entry: module.lessons[i]),
-                ],
+                for (var i = 0; i < module.lessons.length; i++)
+                  PathLessonRow(
+                    entry: module.lessons[i],
+                    isLast: i == module.lessons.length - 1,
+                  ),
                 // The module's Coffee Challenge — Path is the only place a
                 // challenge appears outside Today. Inside the collapsible
                 // region, as the design nests it: a finished module that is

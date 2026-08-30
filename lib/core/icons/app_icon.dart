@@ -157,7 +157,19 @@ enum AppIcon {
   quiz(AppIconSet.kinds),
 
   /// A flavour or tasting activity.
-  flavour(AppIconSet.kinds);
+  flavour(AppIconSet.kinds),
+
+  /// A blind-bag game.
+  bagpick(AppIconSet.kinds),
+
+  /// A taste-fix game.
+  tastefix(AppIconSet.kinds),
+
+  /// A calibrate game.
+  slider(AppIconSet.kinds),
+
+  /// A put-in-order game.
+  sequence(AppIconSet.kinds);
 
   const AppIcon(this.set, {this.hasActive = false});
 

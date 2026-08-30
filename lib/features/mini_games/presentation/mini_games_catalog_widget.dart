@@ -74,7 +74,7 @@ class MiniGamesCatalogWidget extends StatelessWidget {
       children: [
         for (var index = 0; index < groups.length; index++) ...[
           if (index > 0) _groupGap,
-          SectionHeader(groups[index].label),
+          _KindHeading(group: groups[index]),
           _headingGap,
           // The design indents a kind's games under its heading, so the shelf
           // reads as kinds with games inside rather than as one long
@@ -192,6 +192,35 @@ class _FormatRow extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// A kind's heading: its glyph, then its name.
+///
+/// The glyph is what lets a learner find a mechanic by shape rather than by
+/// reading seven headings. A group with no mark — a game whose kind is not in
+/// `miniGameKinds` — heads with the name alone rather than a gap where a mark
+/// should be.
+class _KindHeading extends StatelessWidget {
+  const _KindHeading({required this.group});
+
+  final MiniGameGroup group;
+
+  static const double _markSize = 18;
+  static const double _markGap = AppSpacing.xs;
+
+  @override
+  Widget build(BuildContext context) {
+    final mark = group.mark;
+    if (mark == null) return SectionHeader(group.label);
+
+    return Row(
+      children: [
+        IconMark(mark, size: _markSize, color: context.mood.inkMute),
+        const SizedBox(width: _markGap),
+        SectionHeader(group.label),
+      ],
     );
   }
 }

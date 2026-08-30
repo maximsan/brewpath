@@ -208,6 +208,22 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **The path looks like a path.** Lessons on Path were separate cards; the
+  design threads them on one hairline spine that each lesson's bean punches a
+  stop out of, which is what makes a list of them read as a route rather than
+  a stack. The row you are on is washed in the accent and says *CURRENT*, and
+  one that needs practice says so in a word. The rows drop the minutes, the
+  points and the *Review* button — those belonged to the module screen, where
+  you were picking a lesson; here the course is the subject.
+
+- **Each kind of game is headed by its own glyph.** The practice shelf grouped
+  games by kind but headed them with words alone, because only three of the
+  seven kinds had a mark: the other four are drawn in the running prototype
+  rather than in the design-system catalogue the icon extractor reads. The
+  extractor reads both now, so *Blind bag*, *Taste fix*, *Calibrate* and
+  *Sequence* have their marks and every group wears one. A kind can no longer
+  be added without one.
+
 - **The course lives in one place now, and Today is only today.** The app used
   to list every module on the Learn tab *and* on Path, and both opened a module
   screen — so a learner met the same five modules three times, and the tab meant
