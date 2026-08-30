@@ -6,6 +6,7 @@ import 'package:brew_path/features/lessons/presentation/lesson_completion_beat.d
 import 'package:brew_path/features/lessons/presentation/lesson_completion_header.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_rail.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_reward.dart';
+import 'package:brew_path/features/lessons/presentation/lesson_completion_tree.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
@@ -76,6 +77,12 @@ class LessonCompletionBody extends StatelessWidget {
               ),
               title: lessonTitle,
               mastery: mastery,
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            LessonCompletionTree(
+              fromStage: reward.result.treeStageBefore,
+              toStage: reward.result.treeStageAfter,
+              lessonsToNextStage: reward.result.lessonsToNextStage,
             ),
             const SizedBox(height: AppSpacing.xl),
             LessonCompletionRail(

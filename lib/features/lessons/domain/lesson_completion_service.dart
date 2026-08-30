@@ -21,6 +21,10 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'lesson_completion_service.g.dart';
 
+/// Where the Coffee Tree stood before a run and after it, and how far the next
+/// stage is from here.
+typedef TreeGrowth = ({int before, int after, int? toNext});
+
 /// Orchestrates everything that happens when a lesson finishes: persist
 /// progress, award points, unlock the lesson's card, mark the day, and hand
 /// over the module's Module Reward card once every lesson in it is done.
@@ -155,7 +159,7 @@ class LessonCompletionService {
       now: now,
     );
 
-    await _growTree();
+    final growth = await _growTree();
 
     final module = await _maybeCompletedModule(lesson);
     final moduleCard = module == null ? null : await _awardModuleReward(module);
@@ -173,6 +177,9 @@ class LessonCompletionService {
       isReplay: false,
       pointsEarned: points,
       mastery: mastery,
+      treeStageBefore: growth.before,
+      treeStageAfter: growth.after,
+      lessonsToNextStage: growth.toNext,
       moduleCompleted: module != null,
       moduleCard: moduleCard,
     );
@@ -221,10 +228,16 @@ class LessonCompletionService {
       },
     );
 
+    final standing = await _treeStanding();
     return LessonFinishResult(
       isReplay: true,
       pointsEarned: 0,
       mastery: record.mastery,
+      // A replay grows nothing, so the pair is equal by construction — but the
+      // screen still shows the tree, and still says how far the next stage is.
+      treeStageBefore: standing.before,
+      treeStageAfter: standing.after,
+      lessonsToNextStage: standing.toNext,
     );
   }
 
@@ -295,20 +308,49 @@ class LessonCompletionService {
   /// write is raise-only, so a course
   /// that grows later cannot take a stage back, and a stage already reached on
   /// another device survives the merge by the same rule.
-  Future<void> _growTree() async {
+  Future<TreeGrowth> _growTree() async {
     final completed = await progressRepository.getAllCompleted();
-    final lessons = await contentRepository.getLessons();
+    final modules = await contentRepository.getModules();
+    final sizes = moduleSizesInOrder(modules);
     final stage = treeStageForProgress(
       completed: completed.length,
-      total: lessons.length,
+      moduleSizes: sizes,
+    );
+    final toNext = lessonsToNextStage(
+      completed: completed.length,
+      moduleSizes: sizes,
     );
 
     final snapshot = await snapshotRepository.read();
-    if (stage <= snapshot.clearedByReset.treeStage) return;
+    final before = snapshot.clearedByReset.treeStage;
+    if (stage <= before) {
+      return (before: before, after: before, toNext: toNext);
+    }
     await snapshotRepository.write(
       snapshot.copyWith(
         updatedAt: DateTime.now().millisecondsSinceEpoch,
         clearedByReset: snapshot.clearedByReset.withTreeStageAtLeast(stage),
+      ),
+    );
+    return (before: before, after: stage, toNext: toNext);
+  }
+
+  /// What the tree did, and how far the next stage is.
+  ///
+  /// Read out of the same call that writes the stage, so the screen cannot ask
+  /// a second time and get an answer the write has already moved past.
+  Future<TreeGrowth> _treeStanding() async {
+    final completed = await progressRepository.getAllCompleted();
+    final modules = await contentRepository.getModules();
+    final sizes = moduleSizesInOrder(modules);
+    final snapshot = await snapshotRepository.read();
+    final stage = snapshot.clearedByReset.treeStage;
+    return (
+      before: stage,
+      after: stage,
+      toNext: lessonsToNextStage(
+        completed: completed.length,
+        moduleSizes: sizes,
       ),
     );
   }

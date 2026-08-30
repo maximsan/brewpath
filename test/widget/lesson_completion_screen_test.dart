@@ -7,10 +7,12 @@ import 'package:brew_path/features/lessons/domain/lesson_completion_service.dart
 import 'package:brew_path/features/lessons/presentation/lesson_completion_beat.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_rail.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_screen.dart';
+import 'package:brew_path/features/lessons/presentation/lesson_completion_tree.dart';
 import 'package:brew_path/features/progress/domain/activity_recorder.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/domain/streak_status.dart';
+import 'package:brew_path/features/progress/presentation/growing_tree.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/models/module_model.dart';
@@ -365,6 +367,70 @@ void main() {
         find.text(LessonCompletionRail.freezeKicker.toUpperCase()),
         findsNothing,
       );
+    });
+  });
+
+  // Row #40 and #41 of the audit: the screen is where the living-tree metaphor
+  // the Welcome screen sells actually pays off, and most completions cross no
+  // threshold — so a still tree has to say how far the next one is.
+  group('the tree', () {
+    testWidgets('is on the screen', (tester) async {
+      final container = _buildContainer();
+      addTearDown(container.dispose);
+
+      await pumpCompletion(tester, container);
+
+      expect(find.byType(GrowingTree), findsOneWidget);
+    });
+
+    testWidgets('says how far the next stage is when it did not move', (
+      tester,
+    ) async {
+      final container = _buildContainer();
+      addTearDown(container.dispose);
+
+      // These fixtures hold a single module, and the design gives the last
+      // module one growth step rather than two — so the only threshold is the
+      // course's own end, and one lesson in leaves the rest of it to go.
+      await pumpCompletion(tester, container);
+
+      final tree = tester.widget<GrowingTree>(find.byType(GrowingTree));
+      expect(tree.grows, isFalse);
+      expect(
+        find.text(
+          LessonCompletionTree.stillTreeLine(_lessonCount - 1).toUpperCase(),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('and says nothing extra when it did move', (tester) async {
+      final container = _buildContainer();
+      addTearDown(container.dispose);
+      container.listen(contentRepositoryProvider, (_, _) {});
+      container.listen(lessonCompletionServiceProvider, (_, _) {});
+
+      // Finish every lesson but the first, so the run under test is the one
+      // that closes the module — the single threshold this course has.
+      final content = container.read(contentRepositoryProvider);
+      final service = container.read(lessonCompletionServiceProvider);
+      for (final lesson in _testLessons.skip(1)) {
+        final loaded = await tester.runAsync(
+          () => content.getLessonById(lesson.id),
+        );
+        await tester.runAsync(
+          () => service.finishLesson(
+            loaded!,
+            mastery: const MasteryResult(correct: 5, total: 5),
+          ),
+        );
+      }
+
+      await pumpCompletion(tester, container);
+
+      final tree = tester.widget<GrowingTree>(find.byType(GrowingTree));
+      expect(tree.grows, isTrue);
+      expect(find.textContaining('TO THE NEXT STAGE'), findsNothing);
     });
   });
 
