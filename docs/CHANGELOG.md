@@ -65,6 +65,19 @@ You can always edit this file by hand instead — the helpers just save effort.
   design has it, so a tab you leave open carries no permanent animation.
   Reduced motion holds the tree upright and fills the bar instantly.
 
+- **Settings has the four screens its rows always implied.** Account and sync,
+  Purchases, Help and support and About now exist and open from the rows that
+  name them, instead of being sections the app had no destination for. They are
+  frames rather than finished screens: each carries its real title and section
+  headings, and says in a line what is still to come. The **App Guide** moved
+  into Help and support, which is where it belongs — it sat on the Settings
+  root only because that screen did not exist yet.
+
+- **A daily reminder can be asked for.** Settings gains a Notifications switch
+  and a Daily reminder row that opens a sheet of eight times to pick from. The
+  choice is remembered; nothing is scheduled yet, because whether reminders
+  ship at all is still an open question.
+
 - **The app opens on a welcome screen it never had.** The first screen a new
   learner saw was the mascot's introduction wearing the welcome screen's slot:
   it led with *"Plant your tree."* and copy about Roasty, and the screen that
@@ -223,6 +236,23 @@ You can always edit this file by hand instead — the helpers just save effort.
   module, the progress bar is gone — the grid is the progress — and the header
   is the bare `0 OF 30` in mono the design gives it, rather than a second
   "Collection" title under the one the shared header already shows.
+
+- **The lesson player is the card, and nothing else.** It used to print the
+  module name and the lesson title above every card, and leave by a back
+  arrow. Now the bar carries only what the design puts there: a close mark, the
+  roasting bean with its position beside it, and the save control. Nothing
+  competes with the question being asked.
+
+- **Settings is grouped the way the design groups it.** Appearance leads, the
+  sound and haptics switches move under **Practice** beside the new reminder
+  rows they belong with, and **Account** and **Support** carry the rows that
+  leave the screen. The version moved out of a labelled row into the centred
+  line that closes the screen. Rows are label-left, value-right over a
+  hairline, and none of them draws a leading icon any more: the design's
+  settings row has no icon slot at all, so the six stock glyphs the app had put
+  there were removals, not replacements. **Delete account** joins the two rows
+  at the foot — drawn, but faded and unpressable until there are accounts to
+  delete.
 
 - **Small orange labels are readable in the light theme.** Every eyebrow,
   kicker and smallcaps label set in the brand orange was drawing at 4.23:1 on

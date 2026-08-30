@@ -12,7 +12,10 @@ import 'package:flutter_test/flutter_test.dart';
 const _theThreeNamedSites = <String>[
   'lib/core/widgets/section_header.dart',
   'lib/features/dictionary/presentation/term_entry_body.dart',
-  'lib/features/profile/presentation/settings_screen.dart',
+  // Settings' group labels moved into the section widget the whole settings
+  // surface now builds them with (#395): one label component, so the screen
+  // and the four screens behind it cannot letter their headings differently.
+  'lib/features/profile/presentation/settings/settings_sub_screen.dart',
 ];
 
 /// Source with comments removed, so prose about `letterSpacing:` does not read
