@@ -67,12 +67,20 @@ const DEFAULT_SOURCE = path.join(REPO_ROOT, "prototype");
 const DEFAULT_OUT = path.join(REPO_ROOT, "assets", "icons");
 
 const CATALOGUE = "ds-content.js";
+const RUNNING = "screens.jsx";
 
 /** CSS variable → the literal that stands in for it in a written asset. */
 const SENTINELS = {
   "var(--surface)": "#FF00FF",
   "var(--surface-2)": "#FF00EE",
   "var(--accent-ink)": "#FF00DD",
+  // The two the game-kind marks brought in. `--bg` is another knockout, like
+  // `--surface`. `--accent` is not: it is a *second ink*, and these are the
+  // family's first two-tone marks — the design draws them muted with one
+  // detail in the accent, and that detail stays accent whatever ink the call
+  // site gives the mark. See RUNNING_KINDS.
+  "var(--bg)": "#FF00CC",
+  "var(--accent)": "#FF00BB",
 };
 
 /**
@@ -86,6 +94,54 @@ const EXPECTED_HELPER =
 
 /** What a mark may paint in, before the sentinels are substituted. */
 const ALLOWED_PAINT = new Set(["currentColor", "none", ...Object.keys(SENTINELS)]);
+
+/**
+ * Game-kind marks the running prototype draws and the catalogue has not got.
+ *
+ * `ds-content.js` draws four kinds — module, match, quiz, flavour — but the
+ * catalogue of playable games has seven, so the practice shelf could head only
+ * three of its groups and headed none instead (#436). The other four are drawn
+ * in `screens.jsx`'s `ReplayIcon`, which `index.html` boots, and ADR-0009
+ * ranks the running prototype above the catalogue — so they are read from
+ * there rather than redrawn here.
+ *
+ * `name` is what the asset is slugged from, so it is the kind's own key: the
+ * shelf looks a mark up by the `kind` its catalogue entry carries.
+ */
+const RUNNING_KINDS = {
+  bagpick: {
+    name: "Bagpick",
+    label: "Blind bag",
+    description:
+      "An unlabelled bag with a bean inside — read the sample, name the process.",
+  },
+  tastefix: {
+    name: "Tastefix",
+    label: "Taste fix",
+    description:
+      "A cup with a corrective arrow curving back — diagnose and dial in.",
+  },
+  slider: {
+    name: "Slider",
+    label: "Calibrate",
+    description: "A track with a handle on it — put the value where it belongs.",
+  },
+  sequence: {
+    name: "Sequence",
+    label: "Sequence",
+    description: "Three stops and their rules — put the steps in order.",
+  },
+};
+
+/** JSX spells these camelCase; SVG spells them with a hyphen. */
+const JSX_ATTRIBUTES = {
+  strokeWidth: "stroke-width",
+  strokeLinecap: "stroke-linecap",
+  strokeLinejoin: "stroke-linejoin",
+  strokeDasharray: "stroke-dasharray",
+  clipRule: "clip-rule",
+  fillRule: "fill-rule",
+};
 
 /**
  * The marks the running prototype draws with a state, and the paint each state
@@ -225,6 +281,78 @@ function readCatalogue(sourceDir, problems) {
   return evaluateDeclaration(source, "ICONS", CATALOGUE, { svg });
 }
 
+/**
+ * Reads the four game-kind marks out of `ReplayIcon` and rewrites each as the
+ * catalogue's `svg()` would have emitted it.
+ *
+ * A regex rather than a parser because the target is narrow and the failure
+ * mode is loud: every kind named in [RUNNING_KINDS] must be found, must draw
+ * at least one element, and must carry a 0-origin `viewBox`, or the run writes
+ * nothing. A silent miss here is a heading with no glyph, which is exactly the
+ * state this is fixing.
+ */
+function readRunningKinds(sourceDir, problems) {
+  const file = path.join(sourceDir, RUNNING);
+  if (!fs.existsSync(file)) {
+    problems.push(`${RUNNING}: not found under ${sourceDir}`);
+    return [];
+  }
+  const source = fs.readFileSync(file, "utf8");
+  const start = source.indexOf("function ReplayIcon");
+  if (start === -1) {
+    problems.push(
+      `${RUNNING}: no \`ReplayIcon\` — the running prototype no longer draws ` +
+        "the kind marks where this reads them, which is a ruling to make " +
+        "rather than a miss to paper over.",
+    );
+    return [];
+  }
+  const body = source.slice(start);
+
+  const items = [];
+  for (const [kind, meta] of Object.entries(RUNNING_KINDS)) {
+    const block = new RegExp(
+      `if \\(kind === '${kind}'\\)[\\s\\S]*?(<svg[\\s\\S]*?</svg>)`,
+    ).exec(body);
+    if (!block) {
+      problems.push(`${RUNNING}/${kind}: \`ReplayIcon\` no longer draws it`);
+      continue;
+    }
+
+    const markup = normaliseJsxMark(block[1]);
+    if (!/viewBox="0 0 [\d.]+ [\d.]+"/.test(markup)) {
+      problems.push(`${RUNNING}/${kind}: no 0-origin viewBox`);
+      continue;
+    }
+    if (elementsOf(markup).length === 0) {
+      problems.push(`${RUNNING}/${kind}: draws nothing`);
+      continue;
+    }
+
+    items.push([meta.name, meta.label, meta.description, markup]);
+  }
+
+  return items;
+}
+
+/** One JSX `<svg>` as the catalogue's helper would have written it. */
+function normaliseJsxMark(markup) {
+  const inner = markup.slice(markup.indexOf(">") + 1, markup.lastIndexOf("</svg>"));
+  const viewBox = /viewBox="([^"]*)"/.exec(markup);
+  const attributes = Object.entries(JSX_ATTRIBUTES).reduce(
+    (text, [jsx, svg]) => text.replaceAll(`${jsx}=`, `${svg}=`),
+    inner,
+  );
+
+  // The root is restated rather than carried over: the JSX one holds
+  // `width={size}`, `height={size}` and `style={s}`, none of which mean
+  // anything in a written asset.
+  return (
+    `<svg viewBox="${viewBox[1]}" fill="none" stroke-width="1.6" ` +
+    `aria-hidden="true">${attributes.replace(/\s+/g, " ").trim()}</svg>`
+  );
+}
+
 function assertPaint(sets, problems) {
   for (const [setKey, set] of Object.entries(sets)) {
     for (const [name, , , markup] of set.items) {
@@ -338,6 +466,18 @@ function main() {
 
   const problems = [];
   const sets = readCatalogue(options.source, problems);
+
+  // The running prototype's kind marks join the catalogue's own set, so every
+  // assertion below reads them too — paint, one-drawing-per-name, and the
+  // write itself. They are not a second pipeline.
+  const running = readRunningKinds(options.source, problems);
+  if (running.length) {
+    if (!sets.kinds) {
+      problems.push(`${CATALOGUE}: no \`kinds\` set for the running marks to join`);
+    } else {
+      sets.kinds.items.push(...running);
+    }
+  }
 
   assertPaint(sets, problems);
   assertOneDrawingPerName(sets, problems);

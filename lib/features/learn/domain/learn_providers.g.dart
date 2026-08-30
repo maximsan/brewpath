@@ -97,7 +97,7 @@ final class TodayLessonProvider
   }
 }
 
-String _$todayLessonHash() => r'874e4a4903c7e12c16470cd2b56c2772a6d24b81';
+String _$todayLessonHash() => r'774ffc3540c940bd7a15b792d141cacbecd430cb';
 
 /// The lessons the learner has **finished**, in course order, each joined with
 /// its module so the Learn screen can group them without re-querying.

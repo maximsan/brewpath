@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_kinds.dart';
 import 'package:brew_path/shared/models/content/mini_game_format.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
@@ -18,6 +21,39 @@ MiniGameFormat _game(String id, String kind) => MiniGameFormat(
 /// is that the groups are always in the same places and that no game is ever
 /// missing from them — both are assertions about this function alone.
 void main() {
+  group('every kind can be drawn', () {
+    test('each one names a mark from the kinds set', () {
+      for (final kind in miniGameKinds) {
+        expect(
+          kind.mark.set,
+          AppIconSet.kinds,
+          reason: '${kind.kind} heads with a mark from another set',
+        );
+      }
+    });
+
+    test('no two kinds share a mark', () {
+      // A shelf where two mechanics wear the same glyph is worse than one with
+      // no glyphs: it says they are the same thing.
+      final marks = [for (final kind in miniGameKinds) kind.mark];
+      expect(marks.toSet(), hasLength(marks.length));
+    });
+
+    test('every mark has an asset behind it', () {
+      // The marks are extracted, not hand-drawn — `tool/extract_icons.js`
+      // writes one file per mark, so a kind naming an unextracted mark would
+      // draw nothing at runtime and fail only on the shelf.
+      for (final kind in miniGameKinds) {
+        final file = File('assets/icons/${kind.mark.name.toLowerCase()}.svg');
+        expect(
+          file.existsSync(),
+          isTrue,
+          reason: 'no asset for ${kind.kind} (${kind.mark.name})',
+        );
+      }
+    });
+  });
+
   TestWidgetsFlutterBinding.ensureInitialized();
 
   test('groups come back in the fixed order, not catalog order', () {

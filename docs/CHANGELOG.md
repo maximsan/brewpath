@@ -44,6 +44,32 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Hitting a lock now offers something.** A free learner whose shelf is full
+  used to get a one-line snackbar; they now get the Plus gate — a sheet that
+  opens on *what they just hit*, then makes the case for the course: the rest
+  of Beginner Foundations first, practice depth second, the Studios and the
+  bigger shelf last. One action, buy. No trial, no subscription, no plan to
+  choose between and no watch-an-ad path, because v1 sells a single one-time
+  purchase. Restore, Terms and Privacy sit under it, as the App Store requires.
+  Every number the pitch says — lessons left, games locked, reference terms,
+  the shelf cap — is counted from the shipped content, so authoring a lesson
+  can never make the paywall lie.
+
+- **You can choose what grows in your grove.** Profile gains a Studio door
+  onto *Your grove*: three coffee species and four lights, with the plant drawn
+  live under whatever you are considering — full-grown, so you are choosing the
+  tree you end up with rather than the seedling you start as. Each species
+  carries its real botany: the binomial, its share of the world's cups, where
+  it comes from, how it grows and what it tastes like. Nothing is written until
+  you confirm, and the confirm stays dark until the draft actually differs from
+  what is planted, so backing out costs nothing and re-picking what you already
+  have is not offered as a change. Every plant grows through all ten stages
+  either way — the choice is what it looks like, never how far it gets.
+
+  It is part of Plus. For everyone else the door is marked, and tapping it
+  opens the same offer every other lock does — naming the Studio, then making
+  the case for the course.
+
 - **The Coffee Tree has its own screen.** Tapping the tree on Profile opens it:
   the stage's name — Seed, Flowering, Near harvest — the tree at hero size, how
   far through the core course you are as a bar that fills, what the next stage
@@ -53,6 +79,19 @@ You can always edit this file by hand instead — the helpers just save effort.
   forever, on the one screen you sit on — the Profile hero stays still, as the
   design has it, so a tab you leave open carries no permanent animation.
   Reduced motion holds the tree upright and fills the bar instantly.
+
+- **Settings has the four screens its rows always implied.** Account and sync,
+  Purchases, Help and support and About now exist and open from the rows that
+  name them, instead of being sections the app had no destination for. They are
+  frames rather than finished screens: each carries its real title and section
+  headings, and says in a line what is still to come. The **App Guide** moved
+  into Help and support, which is where it belongs — it sat on the Settings
+  root only because that screen did not exist yet.
+
+- **A daily reminder can be asked for.** Settings gains a Notifications switch
+  and a Daily reminder row that opens a sheet of eight times to pick from. The
+  choice is remembered; nothing is scheduled yet, because whether reminders
+  ship at all is still an open question.
 
 - **The app opens on a welcome screen it never had.** The first screen a new
   learner saw was the mascot's introduction wearing the welcome screen's slot:
@@ -201,6 +240,22 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **The path looks like a path.** Lessons on Path were separate cards; the
+  design threads them on one hairline spine that each lesson's bean punches a
+  stop out of, which is what makes a list of them read as a route rather than
+  a stack. The row you are on is washed in the accent and says *CURRENT*, and
+  one that needs practice says so in a word. The rows drop the minutes, the
+  points and the *Review* button — those belonged to the module screen, where
+  you were picking a lesson; here the course is the subject.
+
+- **Each kind of game is headed by its own glyph.** The practice shelf grouped
+  games by kind but headed them with words alone, because only three of the
+  seven kinds had a mark: the other four are drawn in the running prototype
+  rather than in the design-system catalogue the icon extractor reads. The
+  extractor reads both now, so *Blind bag*, *Taste fix*, *Calibrate* and
+  *Sequence* have their marks and every group wears one. A kind can no longer
+  be added without one.
+
 - **The lesson ending's button moved onto the shared sticky action bar**, and
   now says where it goes: *Next lesson* while the course has one queued, *Back
   to Path* when it does not. The Coffee Challenge a lesson sometimes unlocks
@@ -236,6 +291,23 @@ You can always edit this file by hand instead — the helpers just save effort.
   module, the progress bar is gone — the grid is the progress — and the header
   is the bare `0 OF 30` in mono the design gives it, rather than a second
   "Collection" title under the one the shared header already shows.
+
+- **The lesson player is the card, and nothing else.** It used to print the
+  module name and the lesson title above every card, and leave by a back
+  arrow. Now the bar carries only what the design puts there: a close mark, the
+  roasting bean with its position beside it, and the save control. Nothing
+  competes with the question being asked.
+
+- **Settings is grouped the way the design groups it.** Appearance leads, the
+  sound and haptics switches move under **Practice** beside the new reminder
+  rows they belong with, and **Account** and **Support** carry the rows that
+  leave the screen. The version moved out of a labelled row into the centred
+  line that closes the screen. Rows are label-left, value-right over a
+  hairline, and none of them draws a leading icon any more: the design's
+  settings row has no icon slot at all, so the six stock glyphs the app had put
+  there were removals, not replacements. **Delete account** joins the two rows
+  at the foot — drawn, but faded and unpressable until there are accounts to
+  delete.
 
 - **Small orange labels are readable in the light theme.** Every eyebrow,
   kicker and smallcaps label set in the brand orange was drawing at 4.23:1 on

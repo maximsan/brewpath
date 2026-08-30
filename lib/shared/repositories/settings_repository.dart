@@ -29,6 +29,8 @@ class SettingsRepository {
         themeMode: AppThemeMode.fromStorage(row.themeMode),
         tourSeen: row.tourSeen,
         learnerName: row.learnerName,
+        notificationsEnabled: row.notificationsEnabled,
+        dailyReminderTime: row.dailyReminderTime,
       );
     }
     return UserSettingsRecord(
@@ -54,6 +56,8 @@ class SettingsRepository {
             themeMode: Value(settings.themeMode.storageValue),
             tourSeen: Value(settings.tourSeen),
             learnerName: Value(settings.learnerName),
+            notificationsEnabled: Value(settings.notificationsEnabled),
+            dailyReminderTime: Value(settings.dailyReminderTime),
           ),
         );
   }

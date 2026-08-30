@@ -8,6 +8,7 @@ import 'package:brew_path/features/progress/domain/grove_treatment.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/presentation/coffee_tree.dart';
 import 'package:brew_path/features/progress/presentation/week_strip.dart';
+import 'package:brew_path/features/studio/presentation/studio_door_tile.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -79,6 +80,8 @@ class ProfileScreen extends ConsumerWidget {
                 const SizedBox(height: _sectionGap),
                 const _SectionTitle('Customize'),
                 const SizedBox(height: 12),
+                const StudioDoorTile(),
+                const SizedBox(height: AppSpacing.sm),
                 _CustomizeGrid(
                   soundEnabled: settings.asData?.value.soundEnabled ?? true,
                   hapticsEnabled: settings.asData?.value.hapticsEnabled ?? true,
@@ -88,7 +91,6 @@ class ProfileScreen extends ConsumerWidget {
                   onToggleHaptics: () => ref
                       .read(settingsControllerProvider.notifier)
                       .toggleHaptics(),
-                  onComingSoon: () => _showComingSoon(context),
                 ),
               ],
             ),
@@ -96,17 +98,6 @@ class ProfileScreen extends ConsumerWidget {
         ],
       ),
     );
-  }
-
-  void _showComingSoon(BuildContext context) {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        const SnackBar(
-          content: Text('Coming soon.'),
-          duration: Duration(seconds: 2),
-        ),
-      );
   }
 }
 
@@ -214,14 +205,12 @@ class _CustomizeGrid extends StatelessWidget {
     required this.hapticsEnabled,
     required this.onToggleSound,
     required this.onToggleHaptics,
-    required this.onComingSoon,
   });
 
   final bool soundEnabled;
   final bool hapticsEnabled;
   final VoidCallback onToggleSound;
   final VoidCallback onToggleHaptics;
-  final VoidCallback onComingSoon;
 
   @override
   Widget build(BuildContext context) {
@@ -246,20 +235,11 @@ class _CustomizeGrid extends StatelessWidget {
           value: hapticsEnabled,
           onChanged: (_) => onToggleHaptics(),
         ),
-        PreferenceTile.action(
-          icon: Icons.notifications_outlined,
-          title: 'Daily reminder',
-          subtitle: 'Pick a time to brew up a lesson',
-          trailingText: 'Soon',
-          onTap: onComingSoon,
-        ),
-        PreferenceTile.action(
-          icon: Icons.palette_outlined,
-          title: 'Theme',
-          subtitle: 'Light, dark, or follow system',
-          trailingText: 'Soon',
-          onTap: onComingSoon,
-        ),
+        // The reminder and the theme used to sit here reading "Soon". Both
+        // ship in Settings now (#395), so the tiles were promising a learner
+        // something they already have — behind the gear at the top of this
+        // screen. Whether the two toggles left here should also defer to
+        // Settings is the Profile rebuild's call (#393).
       ],
     );
   }

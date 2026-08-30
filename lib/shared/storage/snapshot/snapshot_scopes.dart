@@ -488,6 +488,22 @@ class ClearedByDeleteOnly {
   /// envelope so a Reset preserves them, exactly as it preserves the grove.
   final Map<String, dynamic> unknown;
 
+  /// A copy with [planted] as the grove, stamped so a peer holding an older
+  /// pick loses to it.
+  ///
+  /// Last-writer-wins, like everything in this scope: two devices cannot both
+  /// be right about which plant is in the ground, and the newer choice is the
+  /// one the learner made most recently.
+  ClearedByDeleteOnly withGrove(
+    Grove planted, {
+    required int at,
+    required String writerId,
+  }) => ClearedByDeleteOnly(
+    grove: Timestamped(value: planted, updatedAt: at, writerId: writerId),
+    companion: companion,
+    unknown: unknown,
+  );
+
   /// This scope's JSON form, with unrecognised keys written back verbatim.
   Map<String, dynamic> toJson() => {
     ...unknown,
