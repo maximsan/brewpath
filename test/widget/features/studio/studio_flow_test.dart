@@ -9,7 +9,6 @@ import 'package:brew_path/features/studio/presentation/studio_door_tile.dart';
 import 'package:brew_path/features/studio/presentation/studio_screen.dart';
 import 'package:brew_path/features/studio/presentation/widgets/light_pill.dart';
 import 'package:brew_path/features/studio/presentation/widgets/plant_row.dart';
-import 'package:brew_path/features/studio/presentation/widgets/studio_door.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
 import 'package:flutter/material.dart';
@@ -164,7 +163,7 @@ void main() {
 
   testWidgets('a free learner gets the lock, not the chooser', (tester) async {
     // Pumps `StudioDoorTile`, which is where the entitlement branch lives.
-    // Building `StudioDoor` by hand and passing `locked: true` would only
+    // Building the card by hand and passing `locked: true` would only
     // prove that a callback I wrote in the test fires.
     await tester.pumpWidget(
       ProviderScope(
@@ -180,7 +179,7 @@ void main() {
 
     expect(find.byType(PlusPill), findsOneWidget);
 
-    await tester.tap(find.byType(StudioDoor));
+    await tester.tap(find.byType(StudioDoorTile));
     await settle(tester);
 
     // The Plus gate, not a snackbar and not the chooser. Asserted on the

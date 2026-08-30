@@ -36,9 +36,15 @@ class ProfileEntryCard extends StatelessWidget {
     super.key,
   });
 
-  /// The design's art well on these cards, and the size the caller draws [art]
-  /// against.
-  static const double wellSize = 64;
+  /// The design's art well on these cards — 64 square, against the tree hero's
+  /// 96.
+  static const double _wellSize = 64;
+
+  /// And its corner, which is the design's own 12 rather than [AppRadii.chrome]
+  /// — inside the token's documented 12–20 slack, at the tight end because the
+  /// well is small. The hero's larger well keeps the token; the two are not one
+  /// value to be reconciled.
+  static const double _wellRadius = 12;
 
   /// Gap between the well and the text column.
   static const double _columnGap = AppSpacing.base;
@@ -128,12 +134,12 @@ class _ArtWell extends StatelessWidget {
     final mood = context.mood;
 
     return Container(
-      width: ProfileEntryCard.wellSize,
-      height: ProfileEntryCard.wellSize,
+      width: ProfileEntryCard._wellSize,
+      height: ProfileEntryCard._wellSize,
       decoration: BoxDecoration(
         color: mood.bg,
         border: Border.all(color: mood.rule),
-        borderRadius: BorderRadius.circular(AppRadii.chrome),
+        borderRadius: BorderRadius.circular(ProfileEntryCard._wellRadius),
       ),
       clipBehavior: Clip.antiAlias,
       child: Center(child: child),

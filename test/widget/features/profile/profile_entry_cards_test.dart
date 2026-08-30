@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:brew_path/app/app.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
@@ -5,10 +7,11 @@ import 'package:brew_path/features/monetization/presentation/plus_pill.dart';
 import 'package:brew_path/features/profile/presentation/widgets/profile_entry_card.dart';
 import 'package:brew_path/features/progress/presentation/coffee_tree.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
+import 'package:brew_path/features/saved/domain/saved_shelf.dart';
 import 'package:brew_path/features/saved/presentation/saved_entry_card.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
+import 'package:brew_path/features/studio/presentation/studio_door_tile.dart';
 import 'package:brew_path/features/studio/presentation/studio_screen.dart';
-import 'package:brew_path/features/studio/presentation/widgets/studio_door.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -55,7 +58,7 @@ void main() {
 
     expect(find.byType(ProfileEntryCard), findsNWidgets(2));
     expect(
-      tester.getTopLeft(find.byType(StudioDoor)).dy,
+      tester.getTopLeft(find.byType(StudioDoorTile)).dy,
       lessThan(tester.getTopLeft(find.byType(SavedEntryCard)).dy),
       reason: 'the design stacks the Studio door above Saved',
     );
@@ -73,7 +76,7 @@ void main() {
     // something the learner owns.
     expect(
       find.descendant(
-        of: find.byType(StudioDoor),
+        of: find.byType(StudioDoorTile),
         matching: find.byType(CoffeeTree),
       ),
       findsOneWidget,
@@ -114,6 +117,28 @@ void main() {
     expect(find.text('1 saved to revisit'), findsOneWidget);
   });
 
+  testWidgets('an unresolved shelf is not reported as an empty one', (
+    tester,
+  ) async {
+    // "0 saved to revisit" under a learner's full shelf is a wrong count, not
+    // an absent one. The header's badge can hide while it waits; a sentence
+    // cannot, so it waits for a number before claiming one.
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          savedShelfProvider.overrideWith(
+            (ref) => Completer<List<SavedGroup>>().future,
+          ),
+        ],
+        child: const MaterialApp(home: Scaffold(body: SavedEntryCard())),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.byType(SavedEntryCard), findsOneWidget);
+    expect(find.textContaining('saved to revisit'), findsNothing);
+  });
+
   testWidgets('the Saved card opens the shelf', (tester) async {
     await seedSaved(['t:arabica']);
     await openProfile(tester);
@@ -141,7 +166,7 @@ void main() {
       findsNothing,
     );
 
-    await tester.tap(find.byType(StudioDoor));
+    await tester.tap(find.byType(StudioDoorTile));
     await settleLoaders(tester);
 
     expect(find.text(const LockedStudio().header), findsOneWidget);

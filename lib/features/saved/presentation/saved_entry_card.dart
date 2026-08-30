@@ -32,11 +32,15 @@ class SavedEntryCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Counted off the shelf itself rather than off the stored keys, exactly as
     // the header's badge is: the card must not promise a row the shelf would
-    // skip. An unresolved shelf reads as empty rather than as a spinner in a
-    // card that is mostly copy.
-    final count = savedShelfCount(
-      ref.watch(savedShelfProvider).value ?? const [],
-    );
+    // skip.
+    //
+    // **Unresolved says nothing rather than zero.** The header's badge can hide
+    // while it waits; a sentence cannot, and "0 saved to revisit" under a
+    // learner's full shelf is a wrong count rather than an absent one. The row
+    // holds its height, so nothing jumps when the number arrives. A shelf that
+    // fails to load lands here too, and the screen this card opens is where
+    // that is reported.
+    final shelf = ref.watch(savedShelfProvider).asData?.value;
 
     return ProfileEntryCard(
       art: IconMark(
@@ -51,7 +55,9 @@ class SavedEntryCard extends ConsumerWidget {
       // the free cap ("3 of 5 saved") because that is where the cap is acted
       // on; repeating it here would put the paywall on a page that has no slot
       // for one.
-      support: '$count saved to revisit',
+      support: shelf == null
+          ? ''
+          : '${savedShelfCount(shelf)} saved to revisit',
       onTap: () => context.pushNamed(AppRoutes.saved.name),
     );
   }

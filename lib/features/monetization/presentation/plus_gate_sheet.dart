@@ -128,6 +128,7 @@ class _LegalLinks extends StatelessWidget {
     child: Wrap(
       alignment: WrapAlignment.center,
       spacing: AppSpacing.md,
+      runSpacing: AppSpacing.xxs,
       children: [
         LinkButton(label: PlusCopy.terms, onPressed: null),
         LinkButton(label: PlusCopy.privacy, onPressed: null),
