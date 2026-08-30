@@ -97,12 +97,20 @@ void main() {
     );
 
     for (final label in [SettingsCopy.soundRow, SettingsCopy.hapticsRow]) {
-      expect(tester.widget<SettingsNavRow>(row(label)).toggleValue, isTrue);
+      expect(
+        tester.widget<SettingsNavRow>(row(label)).toggleValue,
+        isTrue,
+        reason: '$label starts on',
+      );
 
       await tester.tap(find.text(label));
       await settleLoaders(tester);
 
-      expect(tester.widget<SettingsNavRow>(row(label)).toggleValue, isFalse);
+      expect(
+        tester.widget<SettingsNavRow>(row(label)).toggleValue,
+        isFalse,
+        reason: '$label did not follow its own tap',
+      );
     }
 
     final stored = await SettingsRepository().getSettings();

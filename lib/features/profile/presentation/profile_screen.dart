@@ -18,8 +18,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// Gap between Profile's stacked cards, and the wider one the design sets
-/// between the tree and the streak — the two cards it treats as headline.
+/// Gap between Profile's stacked cards: the design sets 12 between them, and
+/// 24 in the one place it wants air — under the tree, above the streak.
 const double _cardGap = AppSpacing.sm;
 const double _headlineGap = AppSpacing.gutter;
 
@@ -29,8 +29,9 @@ const double _joinedGap = AppSpacing.lg - 2;
 /// Profile tab: the tree, the streak, what has been learned, and the doors on
 /// out of it.
 ///
-/// No preferences. The design keeps none here (`prototype/screens.jsx:2546`) —
-/// they live in Settings, which the header gear opens.
+/// No preferences. Across the whole of the design's tab
+/// (`prototype/screens.jsx:2546-2808`) there is not one — they live in
+/// Settings, which the header gear opens.
 class ProfileScreen extends ConsumerWidget {
   /// Creates a [ProfileScreen].
   const ProfileScreen({super.key});
@@ -103,8 +104,9 @@ class ProfileScreen extends ConsumerWidget {
                 const SizedBox(height: _cardGap),
                 // The one door left on this screen, and no heading over it:
                 // the `Customize` label belonged to the preferences, and they
-                // are Settings' (#429). #428 gives the door the design's own
-                // entry card, beside Saved.
+                // are Settings' (#429). 12 above it, which is what the design
+                // sets over its own card in this slot (`screens.jsx:2692`).
+                // #428 gives the door that card, beside Saved.
                 const StudioDoorTile(),
                 if (joined != null) ...[
                   const SizedBox(height: _joinedGap),
