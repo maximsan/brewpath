@@ -538,9 +538,15 @@ void main() {
     final connection = await verifier.startAt(10);
     final db = DatabaseAtV10(connection);
 
-    await expectLater(
-      db.customSelect('SELECT installed_at FROM app_installs').get(),
-      throwsA(isA<Exception>()),
+    // Named against the catalogue rather than by selecting from the table and
+    // expecting a throw: any failure at all satisfies that, including one that
+    // has nothing to do with the table being absent.
+    final tables = await db
+        .customSelect("SELECT name FROM sqlite_master WHERE type = 'table'")
+        .get();
+    expect(
+      tables.map((row) => row.read<String>('name')),
+      isNot(contains('app_installs')),
     );
 
     await db.close();

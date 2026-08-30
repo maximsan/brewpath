@@ -59,9 +59,8 @@ class AccountWipe {
     // alone. Neither is progress: replaying the welcome flow or the Tour is not
     // what someone asks for when they ask to start the course over.
     //
-    // The install stamp is left alone for the same reason, and it is the more
-    // obviously right of the two: starting the course over does not change the
-    // day you joined.
+    // The install stamp is left alone too: starting the course over does not
+    // change the day you joined.
     await _clearLegacyTables();
   }
 
@@ -74,12 +73,9 @@ class AccountWipe {
   /// what keeps `onboardingCompleted` and `tourSeen` fate-sharing here: they go
   /// together because nothing gets the chance to clear one of them alone.
   ///
-  /// The install stamp is **restamped, not kept and not cleared**. What is left
-  /// behind is a fresh install in every other respect — no progress, no
-  /// preferences, onboarding replayed — so the account this line dates is the
-  /// one beginning now. Keeping the old stamp would tell someone who just
-  /// erased everything that they joined months ago; clearing it would send the
-  /// line to a fallback meant for devices that never recorded anything.
+  /// The install stamp is **restamped, not kept and not cleared** (ADR-0012):
+  /// what is left behind is a fresh install in every other respect, so the
+  /// account Profile's closing line dates is the one beginning now.
   Future<void> deleteAccount() async {
     final stored = await _snapshots.read();
     await _snapshots.write(

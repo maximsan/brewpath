@@ -7,6 +7,7 @@
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/shared/repositories/progress_repository.dart';
+import 'package:brew_path/shared/storage/account_wipe.dart';
 import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -50,7 +51,7 @@ void main() {
   }
 
   test('a fresh install reads its own first run', () async {
-    expect(await joined(), firstRun);
+    expect(await joined(), DateTime(2026, 3, 14));
   });
 
   test('a fresh install reads it before doing anything at all', () async {
@@ -62,7 +63,7 @@ void main() {
     // The divergence the ticket is about: installed in March, started in July.
     await completedOn('m1l1', DateTime(2026, 7, 2, 12));
 
-    expect(await joined(), firstRun);
+    expect(await joined(), DateTime(2026, 3, 14));
   });
 
   test('an install predating the stamp falls back to its first day', () async {
@@ -76,5 +77,27 @@ void main() {
     await asAnInstallPredatingTheStamp();
 
     expect(await joined(), isNull);
+  });
+
+  test('a reset takes the fallback line with the days it clears', () async {
+    // The line has no invalidation of its own in `resetProgress`, and does not
+    // need one — it reaches the wiped day set through the completions that
+    // wipe already invalidates. This is what says so, because the failure is
+    // silent: a device predating the stamp would keep naming a month whose
+    // activity no longer exists.
+    await asAnInstallPredatingTheStamp();
+    await completedOn('m1l1', DateTime(2026, 7, 2, 12));
+
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    expect(
+      await container.read(joinedDateProvider.future),
+      DateTime(2026, 7, 2),
+    );
+
+    await AccountWipe().resetProgress();
+    container.invalidate(completedLessonsProvider);
+
+    expect(await container.read(joinedDateProvider.future), isNull);
   });
 }

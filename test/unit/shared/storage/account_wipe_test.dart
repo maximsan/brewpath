@@ -240,6 +240,21 @@ void main() {
       );
     });
 
+    test('restamps a device that never had a stamp to begin with', () async {
+      // The real-device combination this ticket creates: a database from
+      // before schema v11 reaches a delete with an empty install table, so the
+      // restamp has to insert rather than update. It must end the wipe in the
+      // same state as any other device, not back on the fallback.
+      await db.delete(db.appInstalls).go();
+
+      await wipe.deleteAccount();
+
+      expect(
+        await install.installedAt(),
+        DateTime.fromMillisecondsSinceEpoch(_wipedAt),
+      );
+    });
+
     test('clears the tables the snapshot has not replaced yet', () async {
       await wipe.deleteAccount();
 

@@ -23,8 +23,11 @@ chooses something.
 installed the app at a time this build cannot know, and the only instant
 available is now.
 
-**An empty table means "not recorded", and the line falls back to the earliest
-active day** — what it read before, absent when there is no activity either.
+**The line names the earlier of the stamp and the first active day**, not the
+stamp in preference to it. An empty table therefore reads as the fallback the
+ticket asked for, and a restored snapshot carrying days older than this copy of
+the app moves the line earlier rather than later — which is the ticket's own
+defect, inverted. The line is absent only when neither is known.
 
 **Reset Progress leaves the stamp; Delete Account restamps it to the wipe.**
 What a delete leaves behind is a fresh install in every other respect, so the
@@ -36,11 +39,12 @@ Every device installed before v11 keeps reading a month late, permanently. The
 divergence closes going forward only, and no later change can recover the dates
 that were never recorded.
 
-The stamp is device-local and stays out of the progress snapshot, so restoring
-progress onto a second device dates that device's own install rather than the
-learner's. If the joined line ever has to survive a device change, this is the
-record to revisit — the stamp moves into the snapshot's delete-only scope and
-gains merge semantics it does not have today.
+The stamp is device-local and stays out of the progress snapshot. Taking the
+minimum is what keeps that survivable: a second device dates its own install,
+but any restored day older than it pulls the line back to the truth. If the
+stamp itself ever has to move between devices, this is the record to revisit —
+it enters the snapshot's delete-only scope and gains merge semantics it does not
+have today.
 
 A second writer of the stamp would turn a recorded date into today's;
 `InstallRepository.recordInstall` exists for the delete alone.

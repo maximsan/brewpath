@@ -1,8 +1,6 @@
 // Self-describing tokens / DTOs / storage infra; no per-member docs.
 // ignore_for_file: public_member_api_docs
 
-import 'package:brew_path/shared/repositories/install_repository.dart'
-    show InstallRepository;
 import 'package:brew_path/shared/repositories/settings_repository.dart'
     show SettingsRepository;
 import 'package:drift/drift.dart';
@@ -172,16 +170,18 @@ class ProgressSnapshots extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-/// The one row saying when this account began — Profile's `Joined` line.
+/// The one row saying when this account began — Profile's `Joined` line, ruled
+/// by [ADR-0012](../../../docs/adr/0012-the-joined-line-dates-the-install-and-old-devices-are-not-back-dated.md).
 ///
-/// **Its own table, not a column on [UserSettings].** That row is what the
-/// learner *chose*, and it deliberately does not exist until they choose
-/// something; a stamp written by the app on first run would have to create it,
-/// which is an invariant other code already depends on. Here, the row's mere
-/// existence carries the fact: a database created before the stamp shipped has
-/// none, and that absence is what sends the joined line to its fallback.
+/// Its own table rather than a column on [UserSettings], because that row
+/// deliberately does not exist until the learner chooses something. Here the
+/// row's mere existence carries the fact: a database created before the stamp
+/// shipped has none, and that absence is what sends the line to its fallback.
 @DataClassName('InstallRow')
 class AppInstalls extends Table {
+  /// Primary-key id of the singleton install row.
+  static const int singletonId = 1;
+
   IntColumn get id => integer()();
 
   /// The instant the database was created, which is the app's first run.
@@ -213,6 +213,9 @@ class AppDatabase extends _$AppDatabase {
   ///
   /// [clock] is injected so the install stamp written at creation is a test
   /// input rather than the wall clock, the way `AccountWipe` takes its own.
+  /// Positional rather than named, unlike that one, because Dart forbids a
+  /// signature carrying both optional positional and named parameters and
+  /// `executor` is positional at every call site in the suite.
   AppDatabase([QueryExecutor? executor, DateTime Function()? clock])
     : _clock = clock ?? DateTime.now,
       super(executor ?? driftDatabase(name: 'coffee_quest'));
@@ -268,15 +271,12 @@ class AppDatabase extends _$AppDatabase {
   @override
   MigrationStrategy get migration => MigrationStrategy(
     // A created database *is* the install, so this is the one place that can
-    // record it without guessing. The upgrade path below deliberately writes
-    // no row: a device arriving from an earlier version installed at some
-    // point this build cannot know, and stamping it now would tell a
-    // long-standing learner they joined today.
+    // record it without guessing (ADR-0012).
     onCreate: (m) async {
       await m.createAll();
       await into(appInstalls).insert(
         AppInstallsCompanion.insert(
-          id: const Value(InstallRepository.installId),
+          id: const Value(AppInstalls.singletonId),
           installedAt: _clock(),
         ),
       );
@@ -411,10 +411,7 @@ class AppDatabase extends _$AppDatabase {
       //
       // The emptiness is the point, not an oversight. This device installed
       // the app before anything recorded when, and the only instant available
-      // here is now — which is the one answer that is certainly wrong. An
-      // empty table says "not recorded", and the joined line falls back to the
-      // earliest day the learner was active, which is what it read before this
-      // version and is at least a date they were here for.
+      // here is now — the one answer that is certainly wrong (ADR-0012).
       if (from < _installStampVersion) {
         await m.createTable(appInstalls);
       }
