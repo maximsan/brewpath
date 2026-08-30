@@ -14,6 +14,10 @@ abstract class AppLabels {
   static const tabProfile = 'Profile';
   static const continueLabel = 'Continue';
 
+  // The eyebrow under the lesson the learner is on, in the path's own
+  // list. Announced as written; the row letters it.
+  static const currentLesson = 'Current';
+
   // The eyebrow over the day's lead card. It names which of the card's two
   // states is showing, which is the only thing distinguishing a Keep Sharp
   // pick from a lesson at a glance.

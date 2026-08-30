@@ -13,6 +13,7 @@ import 'package:brew_path/features/lessons/presentation/lesson_completion_screen
 import 'package:brew_path/features/lessons/presentation/lesson_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_intro_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_player_screen.dart';
+import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
 import 'package:brew_path/features/onboarding/presentation/brewer/brewer_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/goal/goal_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/loading/loading_screen.dart';
@@ -28,6 +29,7 @@ import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/presentation/streak_screen.dart';
 import 'package:brew_path/features/progress/presentation/tree_screen.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
+import 'package:brew_path/features/studio/presentation/studio_screen.dart';
 import 'package:brew_path/features/tour/presentation/app_guide_screen.dart';
 import 'package:brew_path/services/analytics/analytics_provider.dart';
 import 'package:flutter/material.dart';
@@ -83,6 +85,18 @@ GoRouter appRouter(Ref ref) {
           (isIntroRoute || path.startsWith(AppRoutes.onboardingPrefix))) {
         return AppRoutes.learn.path;
       }
+      // The Studio is behind the entitlement, and the door is not the only way
+      // to reach it — a deep link is. The gate belongs here for the same
+      // reason every other gate→destination decision does: a screen that
+      // guards itself is a guard one route can be added around.
+      //
+      // Unresolved reads as not entitled, which sends a paying learner to
+      // Profile for one tick rather than showing a free one the chooser.
+      if (path.endsWith('/${AppRoutes.studio.path}') &&
+          !(ref.read(courseEntitlementProvider).value ?? false)) {
+        return AppRoutes.profile.path;
+      }
+
       // The one-off completion moment intercepts arrival at Today only — the
       // ending presents where the course lived, and never hijacks another
       // tab. Presenting the screen writes the ack, which flips the gate off.
@@ -266,6 +280,14 @@ GoRouter appRouter(Ref ref) {
                 name: AppRoutes.profile.name,
                 builder: (context, state) => const ProfileScreen(),
                 routes: [
+                  // Pushed on the root navigator like Settings: the grove is
+                  // a full-screen surface, not a page inside the Profile tab.
+                  GoRoute(
+                    path: AppRoutes.studio.path,
+                    name: AppRoutes.studio.name,
+                    parentNavigatorKey: _rootKey,
+                    builder: (context, state) => const StudioScreen(),
+                  ),
                   GoRoute(
                     path: AppRoutes.profileSettings.path,
                     name: AppRoutes.profileSettings.name,

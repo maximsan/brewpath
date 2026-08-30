@@ -1,3 +1,4 @@
+import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/bean_gauge.dart';
@@ -5,85 +6,178 @@ import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/features/path/domain/lesson_node_gauge.dart';
 import 'package:brew_path/features/path/domain/path_module_view.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// A lesson row under its module on Path. Completed lessons expose a `Review`
-/// action; what a finished run pays is decided by the service, not by the row
-/// that opened it.
+/// A lesson on the path: a bean on the spine, its title, and what the row has
+/// to say about it.
 ///
-/// Moved here from the deleted module-detail screen rather than rewritten
-/// ([#394](https://github.com/maximsan/brewpath/issues/394)): it already drew a
-/// lesson at each status, and Path is now the only screen that lists lessons.
-/// Its **chrome** is still the module screen's card rather than the design's
-/// flat `.lesson-row` on the path spine — see
-/// [#435](https://github.com/maximsan/brewpath/issues/435).
+/// **The row is not a card.** The design draws `.lesson-row` as a flat row on a
+/// hairline, threaded by a 1px spine that the bean discs punch stops out of —
+/// that continuous line is what makes a list of lessons read as a *path*.
+/// Cards would break it into separate objects, which is what this looked like
+/// until [#435](https://github.com/maximsan/brewpath/issues/435).
+///
+/// It carries the title and one meta word, and deliberately not the lesson's
+/// minutes or points: those belonged to the module screen, where a lesson was
+/// being chosen. Here the course is the subject and the row is a step in it.
 class PathLessonRow extends StatelessWidget {
   /// Creates a [PathLessonRow].
-  const PathLessonRow({required this.entry, super.key});
+  const PathLessonRow({
+    required this.entry,
+    required this.isLast,
+    super.key,
+  });
 
   /// The lesson and the learner's progress through it.
   final PathLesson entry;
 
-  static const double _cardRadius = 12;
+  /// Whether this is the module's last row, which drops its hairline so the
+  /// list does not end on a rule with nothing under it.
+  final bool isLast;
+
+  /// The design's `.lesson-row` padding — `18px 0`, generous because the row
+  /// has no card to give it room.
+  static const double _rowPadding = 18;
+
+  /// Where the spine runs: `.lesson-row::before`'s `left: 15.5px`, which is the
+  /// centre of the 32-px node column.
+  static const double _spineLeft = 15.5;
+  static const double _spineWidth = 1;
+
+  /// The wash behind the current row, and behind its node — the design's
+  /// `color-mix(in oklab, var(--accent) 7%, …)`.
+  static const double _currentWash = 0.07;
+
+  /// The design's `gap: 14px` between the node column and the title.
+  static const double _columnGap = 14;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final mood = context.mood;
     final lesson = entry.lesson;
-    final destination = lessonRun(lesson.id);
 
-    return Card(
-      margin: EdgeInsets.zero,
-      child: InkWell(
-        onTap: () => context.goTo(destination),
-        borderRadius: BorderRadius.circular(_cardRadius),
-        child: Padding(
-          padding: const EdgeInsets.all(14),
-          child: Row(
-            children: [
-              _LessonBadge(
-                isCompleted: entry.isCompleted,
-                isCurrent: entry.isCurrent,
-                mastery: entry.mastery,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(lesson.title, style: theme.textTheme.titleSmall),
-                    const SizedBox(height: 4),
-                    Text(
-                      // Inside its own module the label would repeat the
-                      // header, so the row carries the lesson's own estimate.
-                      '~${lesson.time} min',
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: mood.inkMute,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    _PointsInline(points: lesson.points),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              if (entry.isCompleted)
-                TextButton(
-                  onPressed: () => context.goTo(destination),
-                  child: const Text('Review'),
-                )
-              else
-                IconMark(AppIcon.chevron, color: mood.inkMute),
-            ],
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: entry.isCurrent
+            ? mood.accent.withValues(alpha: _currentWash)
+            : null,
+        // The current row drops its rule too: the wash already separates it,
+        // and a line under a highlighted row reads as a second edge.
+        border: Border(
+          bottom: BorderSide(
+            color: isLast || entry.isCurrent ? Colors.transparent : mood.rule,
           ),
         ),
       ),
+      child: Stack(
+        children: [
+          // Behind everything, and masked into stops by each node's own disc.
+          Positioned(
+            left: _spineLeft,
+            top: 0,
+            bottom: 0,
+            width: _spineWidth,
+            child: ColoredBox(color: mood.rule),
+          ),
+          InkWell(
+            onTap: () => context.goTo(lessonRun(lesson.id)),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: _rowPadding),
+              child: Row(
+                children: [
+                  _LessonNode(entry: entry),
+                  const SizedBox(width: _columnGap),
+                  Expanded(child: _Title(entry: entry)),
+                  const SizedBox(width: _columnGap),
+                  _Meta(entry: entry),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
+  }
+}
+
+/// The lesson's title, and the eyebrow that names the one the learner is on.
+class _Title extends StatelessWidget {
+  const _Title({required this.entry});
+
+  final PathLesson entry;
+
+  static const double _eyebrowGap = 2;
+
+  @override
+  Widget build(BuildContext context) {
+    final mood = context.mood;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          entry.lesson.title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: AppText.body(mood: mood, face: AppFace.control),
+        ),
+        // The design hangs this under the title absolutely, so it cannot change
+        // the row's height. Laid out in flow here instead: an eyebrow that
+        // overlaps its neighbours at a large text size is worse than a row
+        // that grows by one line.
+        if (entry.isCurrent) ...[
+          const SizedBox(height: _eyebrowGap),
+          Text(
+            AppLabels.currentLesson.toUpperCase(),
+            style: AppText.micro(mood: mood, color: mood.accent),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+/// The right-hand slot: a chevron on the current lesson, the mastery word on
+/// one that needs practice, and nothing at all otherwise.
+///
+/// Nothing is the common case, and it is deliberate — a finished lesson that
+/// went well says so by the fill of its bean, not by a second label.
+class _Meta extends StatelessWidget {
+  const _Meta({required this.entry});
+
+  final PathLesson entry;
+
+  static const double _chevronWidth = 6;
+  static const double _chevronHeight = 10;
+
+  @override
+  Widget build(BuildContext context) {
+    final mood = context.mood;
+
+    if (entry.isCurrent) {
+      return SizedBox(
+        width: _chevronWidth,
+        height: _chevronHeight,
+        child: IconMark(AppIcon.chevron, color: mood.accent),
+      );
+    }
+
+    final band = entry.mastery.band;
+    if (entry.isCompleted && band == MasteryBand.needsPractice) {
+      return Text(
+        band!.short.toUpperCase(),
+        style: AppText.label(
+          mood: mood,
+          color: mood.accent,
+          face: AppFace.mono,
+        ),
+      );
+    }
+
+    return const SizedBox.shrink();
   }
 }
 
@@ -93,29 +187,25 @@ class PathLessonRow extends StatelessWidget {
 /// The bean *is* the gauge, so mastery reads as "how full" instead of a word in
 /// the margin. Which tone and how full is decided by [lessonNodeGauge]; this
 /// widget only turns that decision into mood colours.
-class _LessonBadge extends StatelessWidget {
-  const _LessonBadge({
-    required this.isCompleted,
-    required this.isCurrent,
-    required this.mastery,
-  });
+///
+/// Its disc is painted in the page colour on purpose: that is what masks the
+/// spine behind it into a stop.
+class _LessonNode extends StatelessWidget {
+  const _LessonNode({required this.entry});
 
-  final bool isCompleted;
-  final bool isCurrent;
-  final MasteryResult mastery;
+  final PathLesson entry;
 
-  /// The design's `.path-node`: a 32-px well in the page canvas colour, so the
-  /// bean sits on `bg` rather than on the card's surface. The bean inside keeps
-  /// [BeanGauge]'s own default, which is the design's 20 px.
+  /// The design's `.path-node`: a 32-px well in the page canvas colour. The
+  /// bean inside keeps [BeanGauge]'s own default, which is the design's 20 px.
   static const double _nodeSize = 32;
 
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
     final gauge = lessonNodeGauge(
-      isComplete: isCompleted,
-      isCurrent: isCurrent,
-      mastery: mastery,
+      isComplete: entry.isCompleted,
+      isCurrent: entry.isCurrent,
+      mastery: entry.mastery,
     );
     final color = switch (gauge.tone) {
       LessonNodeTone.muted => mood.inkMute,
@@ -127,41 +217,23 @@ class _LessonBadge extends StatelessWidget {
       width: _nodeSize,
       height: _nodeSize,
       alignment: Alignment.center,
-      decoration: BoxDecoration(color: mood.bg, shape: BoxShape.circle),
+      decoration: BoxDecoration(
+        // Opaque either way — a translucent disc would let the spine show
+        // through the stop it exists to punch.
+        color: entry.isCurrent
+            ? Color.alphaBlend(
+                mood.accent.withValues(alpha: PathLessonRow._currentWash),
+                mood.bg,
+              )
+            : mood.bg,
+        shape: BoxShape.circle,
+      ),
       child: BeanGauge(
         fill: gauge.fill,
         color: color,
         muted: mood.inkMute,
         ink: mood.ink,
       ),
-    );
-  }
-}
-
-/// Inline `+N PTS` label shown beneath each lesson row.
-class _PointsInline extends StatelessWidget {
-  const _PointsInline({required this.points});
-
-  final int points;
-
-  static const double _iconSize = 14;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final mood = context.mood;
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconMark(AppIcon.bean, size: _iconSize, color: mood.inkMute),
-        const SizedBox(width: 2),
-        Text(
-          '+$points PTS',
-          style: theme.textTheme.labelSmall?.copyWith(
-            color: mood.inkMute,
-          ),
-        ),
-      ],
     );
   }
 }

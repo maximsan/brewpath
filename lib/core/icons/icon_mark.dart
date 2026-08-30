@@ -19,6 +19,8 @@ class _MoodColorMapper extends ColorMapper {
   static const _surface = Color(0xFFFF00FF);
   static const _surface2 = Color(0xFFFF00EE);
   static const _accentInk = Color(0xFFFF00DD);
+  static const _bg = Color(0xFFFF00CC);
+  static const _accent = Color(0xFFFF00BB);
 
   final MoodColors mood;
 
@@ -32,6 +34,11 @@ class _MoodColorMapper extends ColorMapper {
     _surface => mood.surface,
     _surface2 => mood.surface2,
     _accentInk => mood.accentInk,
+    _bg => mood.bg,
+    // The one sentinel that is a second *ink* rather than a knockout: the
+    // game-kind marks are drawn muted with one detail in the accent, and that
+    // detail stays accent whatever ink the call site gives the mark.
+    _accent => mood.accent,
     _ => color,
   };
 

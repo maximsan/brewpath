@@ -55,6 +55,21 @@ You can always edit this file by hand instead — the helpers just save effort.
   the shelf cap — is counted from the shipped content, so authoring a lesson
   can never make the paywall lie.
 
+- **You can choose what grows in your grove.** Profile gains a Studio door
+  onto *Your grove*: three coffee species and four lights, with the plant drawn
+  live under whatever you are considering — full-grown, so you are choosing the
+  tree you end up with rather than the seedling you start as. Each species
+  carries its real botany: the binomial, its share of the world's cups, where
+  it comes from, how it grows and what it tastes like. Nothing is written until
+  you confirm, and the confirm stays dark until the draft actually differs from
+  what is planted, so backing out costs nothing and re-picking what you already
+  have is not offered as a change. Every plant grows through all ten stages
+  either way — the choice is what it looks like, never how far it gets.
+
+  It is part of Plus. For everyone else the door is marked, and tapping it
+  opens the same offer every other lock does — naming the Studio, then making
+  the case for the course.
+
 - **The Coffee Tree has its own screen.** Tapping the tree on Profile opens it:
   the stage's name — Seed, Flowering, Near harvest — the tree at hero size, how
   far through the core course you are as a bar that fills, what the next stage
@@ -207,6 +222,22 @@ You can always edit this file by hand instead — the helpers just save effort.
   *Put it in order* and *Pour-over, in order*.
 
 ### Changed
+
+- **The path looks like a path.** Lessons on Path were separate cards; the
+  design threads them on one hairline spine that each lesson's bean punches a
+  stop out of, which is what makes a list of them read as a route rather than
+  a stack. The row you are on is washed in the accent and says *CURRENT*, and
+  one that needs practice says so in a word. The rows drop the minutes, the
+  points and the *Review* button — those belonged to the module screen, where
+  you were picking a lesson; here the course is the subject.
+
+- **Each kind of game is headed by its own glyph.** The practice shelf grouped
+  games by kind but headed them with words alone, because only three of the
+  seven kinds had a mark: the other four are drawn in the running prototype
+  rather than in the design-system catalogue the icon extractor reads. The
+  extractor reads both now, so *Blind bag*, *Taste fix*, *Calibrate* and
+  *Sequence* have their marks and every group wears one. A kind can no longer
+  be added without one.
 
 - **The course lives in one place now, and Today is only today.** The app used
   to list every module on the Learn tab *and* on Path, and both opened a module

@@ -142,7 +142,7 @@ node tool/extract_content.js --source DIR --out DIR   # used by the tests
 ### `tool/extract_icons.js` — regenerate the icon family
 
 Node script (no dependencies). Run after the design prototype's icon family
-changes. Writes the design's 39 marks as SVG into `assets/icons/`, plus the
+changes. Writes the design's 43 marks as SVG into `assets/icons/`, plus the
 `index.json` that describes the family, and gives five of them a second file
 for the state the design draws them in when active.
 
@@ -158,10 +158,14 @@ catalogue no longer matches all fail the run and write **nothing**. Its output
 is generated: regenerate it, never hand-edit it. `prototype/` is opened for
 reading only.
 
-Two sources, per [ADR-0009](docs/adr/0009-the-running-prototype-wins-over-the-design-system-catalogue.md):
-geometry comes from the catalogue (`prototype/ds-content.js`), and the paint of
+Three sources, per [ADR-0009](docs/adr/0009-the-running-prototype-wins-over-the-design-system-catalogue.md):
+geometry comes from the catalogue (`prototype/ds-content.js`); the paint of
 each active state from the running components (`prototype/flavor-wheel.jsx`),
-which the catalogue does not draw.
+which the catalogue does not draw; and the four game-kind marks the catalogue
+has not got at all from `ReplayIcon` in `prototype/screens.jsx`. The last of
+those is why the sentinel list carries `--bg` and `--accent`: those marks are
+the family's first two-tone ones, drawn muted with a single detail in the
+accent that stays accent whatever ink the call site gives the mark.
 
 ```bash
 node tool/extract_icons.js                          # the usual run

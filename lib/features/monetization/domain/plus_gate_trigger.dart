@@ -33,6 +33,19 @@ class SavedShelfFull extends PlusGateTrigger {
   String get header => 'Your free shelf is full at $cap.';
 }
 
+/// The Studio, which the free tier does not open.
+///
+/// Named as the thing it *is* rather than as a refusal: the grove is the one
+/// gated surface a learner can already see the result of, on their own Profile,
+/// so the header says what the door leads to rather than that it is shut.
+class LockedStudio extends PlusGateTrigger {
+  /// Creates a [LockedStudio].
+  const LockedStudio();
+
+  @override
+  String get header => 'The Studio comes with the full course.';
+}
+
 /// A lesson the free tier does not carry.
 class LockedLesson extends PlusGateTrigger {
   /// Creates a [LockedLesson] for the lesson called [title].
