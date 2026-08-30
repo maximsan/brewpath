@@ -1,10 +1,10 @@
 import 'dart:ui' show Tristate;
 
 import 'package:brew_path/core/constants/app_routes.dart';
-import 'package:brew_path/features/mini_games/domain/course_entitlement.dart';
+import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
+import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/features/progress/presentation/coffee_tree.dart';
 import 'package:brew_path/features/studio/presentation/studio_door_tile.dart';
-import 'package:brew_path/features/studio/presentation/studio_gate.dart';
 import 'package:brew_path/features/studio/presentation/studio_screen.dart';
 import 'package:brew_path/features/studio/presentation/widgets/light_pill.dart';
 import 'package:brew_path/features/studio/presentation/widgets/plant_row.dart';
@@ -183,7 +183,10 @@ void main() {
     await tester.tap(find.byType(StudioDoor));
     await settle(tester);
 
-    expect(find.text(studioLockedMessage), findsOneWidget);
+    // The Plus gate, not a snackbar and not the chooser. Asserted on the
+    // trigger's own header so this test breaks if the Studio starts raising
+    // some other gate — the sheet's contents are #89's to test.
+    expect(find.text(const LockedStudio().header), findsOneWidget);
     expect(find.byType(StudioScreen), findsNothing);
   });
 

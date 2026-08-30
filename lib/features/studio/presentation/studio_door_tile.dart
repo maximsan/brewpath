@@ -1,5 +1,5 @@
 import 'package:brew_path/core/constants/app_routes.dart';
-import 'package:brew_path/features/mini_games/domain/course_entitlement.dart';
+import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
 import 'package:brew_path/features/progress/domain/grove_treatment.dart';
 import 'package:brew_path/features/studio/domain/studio_providers.dart';
 import 'package:brew_path/features/studio/presentation/studio_gate.dart';

@@ -1,21 +1,21 @@
+import 'dart:async';
+
+import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
+import 'package:brew_path/features/monetization/presentation/plus_gate_sheet.dart';
 import 'package:flutter/material.dart';
 
 /// What a free learner is told when they try the Studio door.
 ///
-/// **One call site, deliberately** — the same shape as `saved_gate.dart`, and
-/// for the same reason. The Plus gate sheet is specified and ticketed
-/// ([#89](https://github.com/maximsan/brewpath/issues/89)) but not built;
-/// until it is, the refusal has to say something rather than nothing, because
-/// a tap that silently fails is a mystery. When the sheet lands it replaces
-/// the body of this function and nothing else in the feature changes.
+/// **One call site's worth of policy, deliberately.** The refusal is the Plus
+/// gate, so this raises the same sheet every other lock does, carrying the
+/// Studio as the trigger. A new gated surface adds a trigger case, never a
+/// second sheet.
 ///
-/// Copy reads as an offer, not an error: the grove exists, and Plus opens it.
+/// This was a snackbar until #89 landed, and the placeholder said the sheet
+/// would replace its body and nothing else — which is what happened.
+///
+/// Fire-and-forget: the sheet resolves when it is dismissed, and dismissal
+/// writes nothing, so no caller has anything to await.
 void showStudioLocked(BuildContext context) {
-  ScaffoldMessenger.maybeOf(context)
-    ?..hideCurrentSnackBar()
-    ..showSnackBar(const SnackBar(content: Text(studioLockedMessage)));
+  unawaited(showPlusGate(context, const LockedStudio()));
 }
-
-/// The refusal, named so a test can assert it without re-spelling it.
-const String studioLockedMessage =
-    'Your grove is part of BrewPath Plus. Three plants, four lights.';

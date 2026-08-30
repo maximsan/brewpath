@@ -66,8 +66,9 @@ You can always edit this file by hand instead — the helpers just save effort.
   have is not offered as a change. Every plant grows through all ten stages
   either way — the choice is what it looks like, never how far it gets.
 
-  It is part of Plus. For everyone else the door carries a lock and says what
-  is behind it rather than opening on a refusal.
+  It is part of Plus. For everyone else the door is marked, and tapping it
+  opens the same offer every other lock does — naming the Studio, then making
+  the case for the course.
 
 - **The Coffee Tree has its own screen.** Tapping the tree on Profile opens it:
   the stage's name — Seed, Flowering, Near harvest — the tree at hero size, how
