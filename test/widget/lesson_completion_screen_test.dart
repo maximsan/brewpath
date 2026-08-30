@@ -1,3 +1,4 @@
+import 'package:brew_path/features/cards/presentation/reward_card.dart';
 import 'package:brew_path/features/companion/presentation/companion.dart';
 import 'package:brew_path/features/companion/presentation/roasty_moment.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
@@ -431,6 +432,53 @@ void main() {
       final tree = tester.widget<GrowingTree>(find.byType(GrowingTree));
       expect(tree.grows, isTrue);
       expect(find.textContaining('TO THE NEXT STAGE'), findsNothing);
+    });
+  });
+
+  // Row #47's other half: the rail's card row is the way into the collectible,
+  // because the card *is* the module's guide and this is the moment it was
+  // earned — not something to go and find on the Cards tab later.
+  group('the card the run handed over', () {
+    testWidgets('opens its preview when tapped', (tester) async {
+      final container = _buildContainer();
+      addTearDown(container.dispose);
+
+      await pumpCompletion(tester, container);
+      expect(
+        find.text(LessonCompletionRail.cardKicker.toUpperCase()),
+        findsOneWidget,
+      );
+
+      final row = find.text(LessonCompletionRail.cardKicker.toUpperCase());
+      await tester.ensureVisible(row);
+      await tester.pumpAndSettle();
+      await tester.tap(row);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(RewardCard), findsOneWidget);
+      expect(find.text(_testCard.fact), findsOneWidget);
+    });
+
+    testWidgets('the rows that open onto nothing are not buttons', (
+      tester,
+    ) async {
+      final container = _buildContainer();
+      addTearDown(container.dispose);
+      container.listen(lessonCompletionServiceProvider, (_, _) {});
+      container.listen(contentRepositoryProvider, (_, _) {});
+
+      await qualifyDaysBefore(tester, freezeEarnDays - 1);
+      await pumpCompletion(tester, container);
+
+      final freeze = tester.getSemantics(
+        find
+            .ancestor(
+              of: find.text(LessonCompletionRail.freezeKicker.toUpperCase()),
+              matching: find.byType(Semantics),
+            )
+            .first,
+      );
+      expect(freeze.flagsCollection.isButton, isFalse);
     });
   });
 

@@ -186,7 +186,7 @@ void main() {
     test('are read in course position, not bank order', () {
       final shuffled = [
         testModule(id: 'm3', n: 3, lessonIds: const ['a', 'b', 'c']),
-        testModule(id: 'm1', n: 1, lessonIds: const ['d']),
+        testModule(lessonIds: const ['d']),
         testModule(id: 'm2', n: 2, lessonIds: const ['e', 'f']),
       ];
 

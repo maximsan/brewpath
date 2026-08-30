@@ -14,7 +14,7 @@ Widget _host({
   VoidCallback? onDone,
   bool reducedMotion = false,
 }) => MaterialApp(
-  theme: ThemeData(extensions: [MoodColors.cupping]),
+  theme: ThemeData(extensions: const [MoodColors.cupping]),
   home: Scaffold(
     body: Center(
       child: GrowingTree(
@@ -31,7 +31,7 @@ Widget _host({
 );
 
 /// Long enough for the whole beat, whatever it drew.
-final _wholeBeat = treeGrowthTotal + const Duration(milliseconds: 100);
+final Duration _wholeBeat = treeGrowthTotal + const Duration(milliseconds: 100);
 
 void main() {
   setUp(useInMemoryDatabase);

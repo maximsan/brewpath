@@ -2,6 +2,7 @@ import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
+import 'package:brew_path/features/cards/presentation/reward_card_preview.dart';
 import 'package:brew_path/features/progress/presentation/freeze_mark.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
@@ -150,7 +151,12 @@ class _FreezeRow extends StatelessWidget {
   }
 }
 
-/// A collectible the run handed over.
+/// A collectible the run handed over, and the way into it.
+///
+/// **Tappable, because the card is the reward.** The design opens a full
+/// `RewardCard` behind the covering wash rather than making a learner go and
+/// find it on the Cards tab — the collectible is the module's guide, and this
+/// is the moment it was earned.
 class _CardRow extends StatelessWidget {
   const _CardRow({required this.card});
 
@@ -167,6 +173,7 @@ class _CardRow extends StatelessWidget {
         size: _RailRow.markSize,
         color: mood.accent,
       ),
+      onTap: () => showRewardCardPreview(context, card),
     );
   }
 }
@@ -178,6 +185,7 @@ class _RailRow extends StatelessWidget {
     required this.kicker,
     required this.support,
     required this.well,
+    this.onTap,
   });
 
   /// The smallcaps label over the line — the design's accent kicker.
@@ -188,6 +196,9 @@ class _RailRow extends StatelessWidget {
 
   /// The mark inside the tinted well.
   final Widget well;
+
+  /// What opening this row does, for the rows that open onto something.
+  final VoidCallback? onTap;
 
   /// Edge of the well the mark sits in.
   static const double _wellSize = 34;
@@ -200,46 +211,53 @@ class _RailRow extends StatelessWidget {
     final mood = context.mood;
     return Semantics(
       label: '$kicker. $support',
+      button: onTap != null,
       excludeSemantics: true,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md,
-          vertical: AppSpacing.sm,
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: _wellSize,
-              height: _wellSize,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: mood.accentWash,
-                borderRadius: BorderRadius.circular(AppRadii.chrome),
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.sm,
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: _wellSize,
+                height: _wellSize,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: mood.accentWash,
+                  borderRadius: BorderRadius.circular(AppRadii.chrome),
+                ),
+                child: well,
               ),
-              child: well,
-            ),
-            const SizedBox(width: AppSpacing.sm),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // `accentText`, not raw accent: this is the accent picked
-                  // as a small label, which is the sentence that token owns.
-                  SmallcapsLabel(kicker, color: mood.accentText),
-                  const SizedBox(height: AppSpacing.xxs),
-                  Text(
-                    support,
-                    style: AppText.support(
-                      mood: mood,
-                      color: mood.ink,
-                      face: AppFace.control,
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // `accentText`, not raw accent: this is the accent picked
+                    // as a small label, which is the sentence that token owns.
+                    SmallcapsLabel(kicker, color: mood.accentText),
+                    const SizedBox(height: AppSpacing.xxs),
+                    Text(
+                      support,
+                      style: AppText.support(
+                        mood: mood,
+                        color: mood.ink,
+                        face: AppFace.control,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+              // The design's chevron, on the row that opens onto something.
+              if (onTap != null)
+                IconMark(AppIcon.chevron, size: markSize, color: mood.inkMute),
+            ],
+          ),
         ),
       ),
     );
