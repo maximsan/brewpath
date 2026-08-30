@@ -1,6 +1,6 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
-import 'package:brew_path/features/mini_games/domain/course_entitlement.dart';
+import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
 import 'package:brew_path/features/path/domain/visual_guide_providers.dart';
 import 'package:brew_path/features/path/domain/visual_guide_shelf.dart';
 import 'package:brew_path/features/path/presentation/visual_guide_sheet.dart';

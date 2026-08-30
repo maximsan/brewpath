@@ -67,6 +67,20 @@ final _ruledOut =
             'names the screen that hands one over ModuleRewardCardScreen, '
             'and the code already said MODULE_REWARDS (#106, #222)',
       ),
+      (
+        // Added with the Plus gate (#89). The paid tier is the highest-
+        // consequence copy in the app — it is what a learner reads at the
+        // moment they decide to pay — and the surface that got it wrong was
+        // the one the design made most prominent.
+        pattern: RegExp(r'\bPremium\b'),
+        term: 'Premium',
+        instead: 'Plus',
+        allow: const <String>{},
+        why:
+            'the paid tier is Plus everywhere (#30); the Profile card that '
+            'said Premium was deleted with #355, and the gate sheet that '
+            'replaced it must not reintroduce the word',
+      ),
     ];
 
 /// The live documentation — everything an agent reads as current.

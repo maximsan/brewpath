@@ -44,6 +44,17 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Hitting a lock now offers something.** A free learner whose shelf is full
+  used to get a one-line snackbar; they now get the Plus gate — a sheet that
+  opens on *what they just hit*, then makes the case for the course: the rest
+  of Beginner Foundations first, practice depth second, the Studios and the
+  bigger shelf last. One action, buy. No trial, no subscription, no plan to
+  choose between and no watch-an-ad path, because v1 sells a single one-time
+  purchase. Restore, Terms and Privacy sit under it, as the App Store requires.
+  Every number the pitch says — lessons left, games locked, reference terms,
+  the shelf cap — is counted from the shipped content, so authoring a lesson
+  can never make the paywall lie.
+
 - **The Coffee Tree has its own screen.** Tapping the tree on Profile opens it:
   the stage's name — Seed, Flowering, Near harvest — the tree at hero size, how
   far through the core course you are as a bar that fills, what the next stage
