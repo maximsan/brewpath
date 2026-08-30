@@ -70,15 +70,12 @@ class _StatRow extends StatelessWidget {
                   'COFFEE CHALLENGES',
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: mood.inkMute,
-                    fontWeight: FontWeight.w700,
                     letterSpacing: _eyebrowLetterSpacing,
                   ),
                 ),
                 Text(
                   '$brewed / $total',
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: theme.textTheme.labelLarge,
                 ),
               ],
             ),

@@ -28,10 +28,12 @@ class TapCue extends StatelessWidget {
     return Text(
       text,
       textAlign: TextAlign.center,
-      style: AppText.label(mood: context.mood, face: AppFace.mono).copyWith(
-        fontWeight: FontWeight.w400,
-        letterSpacing: _cueTracking,
-      ),
+      // Mono ships at 500 only, so the lighter cue this asked for was
+      // synthesised rather than loaded. The face carries the weight.
+      style: AppText.label(
+        mood: context.mood,
+        face: AppFace.mono,
+      ).copyWith(letterSpacing: _cueTracking),
     );
   }
 }

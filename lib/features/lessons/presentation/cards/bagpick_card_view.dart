@@ -119,9 +119,7 @@ class _BagpickCardViewState extends State<BagpickCardView> {
         const SizedBox(height: AppSpacing.lg),
         Text(
           card.prompt,
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+          style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: AppSpacing.md),
         for (final cue in card.cues) ...[
@@ -165,7 +163,6 @@ class _BagpickCardViewState extends State<BagpickCardView> {
               _verdict(card),
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 color: _wasCorrect ? context.mood.sage : context.mood.warn,
-                fontWeight: FontWeight.w600,
               ),
             ),
           ),

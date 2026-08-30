@@ -125,7 +125,7 @@ class _GuideBlock extends StatelessWidget {
             const SizedBox(height: AppSpacing.xxs),
             Text(
               guide.title,
-              style: text.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+              style: text.titleMedium,
             ),
             const SizedBox(height: AppSpacing.md),
           ],

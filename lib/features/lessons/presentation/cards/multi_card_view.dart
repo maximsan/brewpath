@@ -143,7 +143,6 @@ class _MultiCardViewState extends State<MultiCardView> {
               verdict,
               style: theme.textTheme.labelSmall?.copyWith(
                 color: _wasCorrect ? mood.sage : mood.berry,
-                fontWeight: FontWeight.w700,
               ),
             ),
           ),

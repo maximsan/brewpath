@@ -142,9 +142,7 @@ class _Blank extends StatelessWidget {
         ),
         child: Text(
           answer,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+          style: theme.textTheme.titleMedium,
         ),
       );
     }
@@ -202,7 +200,6 @@ class _MetaTable extends StatelessWidget {
                     row.first,
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: mood.inkMute,
-                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),

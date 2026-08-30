@@ -97,7 +97,6 @@ class _Intro extends StatelessWidget {
                       format.title,
                       style: theme.textTheme.headlineSmall?.copyWith(
                         color: mood.ink,
-                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),

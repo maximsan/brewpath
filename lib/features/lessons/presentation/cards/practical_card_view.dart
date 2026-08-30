@@ -89,7 +89,6 @@ class _Eyebrow extends StatelessWidget {
           style: theme.textTheme.labelSmall?.copyWith(
             color: mood.accentText,
             letterSpacing: _labelTracking,
-            fontWeight: FontWeight.w600,
           ),
         ),
       ],

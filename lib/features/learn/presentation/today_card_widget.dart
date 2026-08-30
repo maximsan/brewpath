@@ -89,7 +89,6 @@ class TodayCardWidget extends StatelessWidget {
               lesson.title,
               style: theme.textTheme.titleLarge?.copyWith(
                 color: mood.accentInk,
-                fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 4),
@@ -151,7 +150,6 @@ class _PointsPill extends StatelessWidget {
             '+$points PTS',
             style: theme.textTheme.labelMedium?.copyWith(
               color: mood.accentInk,
-              fontWeight: FontWeight.w600,
             ),
           ),
         ],

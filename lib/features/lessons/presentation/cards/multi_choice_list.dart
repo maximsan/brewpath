@@ -173,7 +173,6 @@ class _MultiOptionRow extends StatelessWidget {
               style: theme.textTheme.labelSmall?.copyWith(
                 color: mood.inkMute,
                 letterSpacing: _tagTracking,
-                fontWeight: FontWeight.w500,
               ),
             ),
         ],

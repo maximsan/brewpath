@@ -73,7 +73,6 @@ class MiniGameResultsView extends StatelessWidget {
                         '$score / $total',
                         style: theme.textTheme.displaySmall?.copyWith(
                           color: mood.ink,
-                          fontWeight: FontWeight.w700,
                         ),
                       ),
                       const SizedBox(height: AppSpacing.xs),

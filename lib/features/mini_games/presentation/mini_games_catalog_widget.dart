@@ -170,7 +170,6 @@ class _FormatRow extends StatelessWidget {
                       format.title,
                       style: theme.textTheme.titleSmall?.copyWith(
                         color: mood.ink,
-                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],

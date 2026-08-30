@@ -90,7 +90,6 @@ class PreferenceTile extends StatelessWidget {
                     trailingText!,
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: mood.inkMute,
-                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -102,7 +101,6 @@ class PreferenceTile extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
               color: mood.ink,
             ),
           ),
