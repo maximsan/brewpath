@@ -1,5 +1,6 @@
 import 'package:brew_path/app/app.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
 import 'package:brew_path/features/profile/presentation/widgets/lesson_progress_rollup.dart';
 import 'package:brew_path/features/profile/presentation/widgets/profile_progress_line.dart';
@@ -152,6 +153,18 @@ void main() {
         reason: '"$copy" is paywall copy the Profile design does not carry',
       );
     }
+  });
+
+  testWidgets('closes with the month this install was created', (tester) async {
+    // The harness builds the database inside the test, so the install stamp is
+    // this run's own clock — and the line is there before any lesson is
+    // finished, which is the whole change (#447).
+    await openProfile(tester);
+
+    expect(
+      find.text('Joined ${monthYear(DateTime.now())}'.toUpperCase()),
+      findsOneWidget,
+    );
   });
 
   testWidgets('header gear opens the Settings screen', (tester) async {

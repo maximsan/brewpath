@@ -186,6 +186,17 @@ The envelope of a device's progress that two devices converge under a pure
 merge ([#14](https://github.com/maximsan/brewpath/issues/14)). Stored at
 schema v6.
 
+**Install stamp**:
+The one recorded instant saying when this account began — written when the
+database is created, restamped by Delete Account, untouched by Reset. Stored at
+schema v11 and device-local: never in the progress snapshot, because it dates
+this copy of the app rather than the learner
+([ADR-0012](docs/adr/0012-the-joined-line-dates-the-install-and-old-devices-are-not-back-dated.md)).
+Absent on every database created before v11, and Profile's `Joined` line falls
+back to the earliest active day for those.
+_Avoid_: join date (the line's word, not the stored fact — the two differ
+exactly on the devices using the fallback)
+
 **Tombstone**:
 The record a Reset or Delete publishes so a syncing peer cannot walk the wipe
 back ([#93](https://github.com/maximsan/brewpath/pull/93)).

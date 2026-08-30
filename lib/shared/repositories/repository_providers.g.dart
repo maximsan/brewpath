@@ -311,3 +311,55 @@ final class SnapshotRepositoryProvider
 
 String _$snapshotRepositoryHash() =>
     r'93a9fe008652c6c4bb29f85cd883ad2ca783f66b';
+
+/// Provides the [InstallRepository].
+
+@ProviderFor(installRepository)
+final installRepositoryProvider = InstallRepositoryProvider._();
+
+/// Provides the [InstallRepository].
+
+final class InstallRepositoryProvider
+    extends
+        $FunctionalProvider<
+          InstallRepository,
+          InstallRepository,
+          InstallRepository
+        >
+    with $Provider<InstallRepository> {
+  /// Provides the [InstallRepository].
+  InstallRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'installRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$installRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<InstallRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  InstallRepository create(Ref ref) {
+    return installRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(InstallRepository value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<InstallRepository>(value),
+    );
+  }
+}
+
+String _$installRepositoryHash() => r'061f824af711ddf66e54b1fcc0456c346e544bb8';

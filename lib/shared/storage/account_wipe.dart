@@ -1,4 +1,5 @@
 import 'package:brew_path/shared/repositories/card_repository.dart';
+import 'package:brew_path/shared/repositories/install_repository.dart';
 import 'package:brew_path/shared/repositories/module_progress_repository.dart';
 import 'package:brew_path/shared/repositories/progress_repository.dart';
 import 'package:brew_path/shared/repositories/settings_repository.dart';
@@ -34,6 +35,7 @@ class AccountWipe {
 
   final SnapshotRepository _snapshots = SnapshotRepository();
   final SettingsRepository _settings = SettingsRepository();
+  final InstallRepository _install = InstallRepository();
 
   /// Clears everything the learner earned, and keeps everything they chose.
   ///
@@ -56,6 +58,10 @@ class AccountWipe {
     // "already introduced" bits fate-share, and here they share by being left
     // alone. Neither is progress: replaying the welcome flow or the Tour is not
     // what someone asks for when they ask to start the course over.
+    //
+    // The install stamp is left alone for the same reason, and it is the more
+    // obviously right of the two: starting the course over does not change the
+    // day you joined.
     await _clearLegacyTables();
   }
 
@@ -67,6 +73,13 @@ class AccountWipe {
   /// or the Tour's `tourSeen` bit to belong to. Dropping the whole row is also
   /// what keeps `onboardingCompleted` and `tourSeen` fate-sharing here: they go
   /// together because nothing gets the chance to clear one of them alone.
+  ///
+  /// The install stamp is **restamped, not kept and not cleared**. What is left
+  /// behind is a fresh install in every other respect — no progress, no
+  /// preferences, onboarding replayed — so the account this line dates is the
+  /// one beginning now. Keeping the old stamp would tell someone who just
+  /// erased everything that they joined months ago; clearing it would send the
+  /// line to a fallback meant for devices that never recorded anything.
   Future<void> deleteAccount() async {
     final stored = await _snapshots.read();
     await _snapshots.write(
@@ -75,6 +88,7 @@ class AccountWipe {
 
     await _clearLegacyTables();
     await _settings.deleteAll();
+    await _install.recordInstall(DateTime.fromMillisecondsSinceEpoch(_clock()));
   }
 
   /// The normalised tables the snapshot replaces but has not yet displaced.

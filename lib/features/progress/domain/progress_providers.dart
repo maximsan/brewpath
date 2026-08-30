@@ -1,6 +1,7 @@
 import 'package:brew_path/core/constants/points_values.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/progress/domain/grove_treatment.dart';
+import 'package:brew_path/features/progress/domain/joined_date.dart';
 import 'package:brew_path/features/progress/domain/streak_day_set.dart';
 import 'package:brew_path/features/progress/domain/streak_engine.dart';
 import 'package:brew_path/features/progress/domain/streak_status.dart';
@@ -137,20 +138,20 @@ Future<CoreLessonProgress> coreLessonProgress(Ref ref) async {
 
 /// The month the Profile's closing line names, or null before there is one.
 ///
-/// **The earliest recorded active day, not an install date.** The app stores no
-/// install timestamp, and adding one is a schema change; the first day the
-/// learner did anything is a real stored date and the closest thing available.
-/// It reads a month late for someone who installed and did not start — see
-/// [#447](https://github.com/maximsan/brewpath/issues/447).
-///
-/// Null before any activity, so the line is absent on a fresh install rather
-/// than naming today as the day they joined.
+/// The rule is [deriveJoinedDate]'s: the install stamp when the database
+/// recorded one, and the earliest active day for every device created before
+/// it did. The active-day set is read either way rather than only on the
+/// fallback, so a stamp arriving later cannot change which providers this one
+/// depends on mid-session.
 @riverpod
 Future<DateTime?> joinedDate(Ref ref) async {
-  final days = await ref.watch(activeDaySetProvider.future);
-  if (days.isEmpty) return null;
+  final daysFuture = ref.watch(activeDaySetProvider.future);
+  final installedAt = await ref.watch(installRepositoryProvider).installedAt();
 
-  return dateFromEpochDay(days.reduce((a, b) => a < b ? a : b));
+  return deriveJoinedDate(
+    installedAt: installedAt,
+    activeDays: await daysFuture,
+  );
 }
 
 /// The planted grove, resolved against the banks into one matrix and one scale.

@@ -1,6 +1,8 @@
 // Self-describing tokens / DTOs / storage infra; no per-member docs.
 // ignore_for_file: public_member_api_docs
 
+import 'package:brew_path/shared/repositories/install_repository.dart'
+    show InstallRepository;
 import 'package:brew_path/shared/repositories/settings_repository.dart'
     show SettingsRepository;
 import 'package:drift/drift.dart';
@@ -170,6 +172,25 @@ class ProgressSnapshots extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// The one row saying when this account began — Profile's `Joined` line.
+///
+/// **Its own table, not a column on [UserSettings].** That row is what the
+/// learner *chose*, and it deliberately does not exist until they choose
+/// something; a stamp written by the app on first run would have to create it,
+/// which is an invariant other code already depends on. Here, the row's mere
+/// existence carries the fact: a database created before the stamp shipped has
+/// none, and that absence is what sends the joined line to its fallback.
+@DataClassName('InstallRow')
+class AppInstalls extends Table {
+  IntColumn get id => integer()();
+
+  /// The instant the database was created, which is the app's first run.
+  DateTimeColumn get installedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 @DriftDatabase(
   tables: [
     ProgressRecords,
@@ -177,6 +198,7 @@ class ProgressSnapshots extends Table {
     UserSettings,
     ModuleProgressRecords,
     ProgressSnapshots,
+    AppInstalls,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -188,8 +210,14 @@ class AppDatabase extends _$AppDatabase {
   /// existing database rather than migrating it. It is invisible to users, and
   /// the persistence layer is scheduled for a destructive rebuild, so the
   /// rename would cost local data for no gain.
-  AppDatabase([QueryExecutor? executor])
-    : super(executor ?? driftDatabase(name: 'coffee_quest'));
+  ///
+  /// [clock] is injected so the install stamp written at creation is a test
+  /// input rather than the wall clock, the way `AccountWipe` takes its own.
+  AppDatabase([QueryExecutor? executor, DateTime Function()? clock])
+    : _clock = clock ?? DateTime.now,
+      super(executor ?? driftDatabase(name: 'coffee_quest'));
+
+  final DateTime Function() _clock;
 
   /// Schema version that added the onboarding columns to `user_settings`.
   static const int _onboardingColumnsVersion = 3;
@@ -228,15 +256,31 @@ class AppDatabase extends _$AppDatabase {
   /// Schema version that added the daily reminder's two settings.
   static const int _dailyReminderVersion = 10;
 
+  /// Schema version that added the install stamp.
+  static const int _installStampVersion = 11;
+
   /// The current version is whichever migration landed last.
-  static const int _schemaVersion = _dailyReminderVersion;
+  static const int _schemaVersion = _installStampVersion;
 
   @override
   int get schemaVersion => _schemaVersion;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-    onCreate: (m) => m.createAll(),
+    // A created database *is* the install, so this is the one place that can
+    // record it without guessing. The upgrade path below deliberately writes
+    // no row: a device arriving from an earlier version installed at some
+    // point this build cannot know, and stamping it now would tell a
+    // long-standing learner they joined today.
+    onCreate: (m) async {
+      await m.createAll();
+      await into(appInstalls).insert(
+        AppInstallsCompanion.insert(
+          id: const Value(InstallRepository.installId),
+          installedAt: _clock(),
+        ),
+      );
+    },
     onUpgrade: (m, from, to) async {
       // v1 → v2: review/mastery columns + the module-XP ledger table.
       if (from < 2) {
@@ -361,6 +405,18 @@ class AppDatabase extends _$AppDatabase {
       if (from < _dailyReminderVersion) {
         await m.addColumn(userSettings, userSettings.notificationsEnabled);
         await m.addColumn(userSettings, userSettings.dailyReminderTime);
+      }
+
+      // v10 → v11: the install stamp's table, created **empty**.
+      //
+      // The emptiness is the point, not an oversight. This device installed
+      // the app before anything recorded when, and the only instant available
+      // here is now — which is the one answer that is certainly wrong. An
+      // empty table says "not recorded", and the joined line falls back to the
+      // earliest day the learner was active, which is what it read before this
+      // version and is at least a date they were here for.
+      if (from < _installStampVersion) {
+        await m.createTable(appInstalls);
       }
     },
   );

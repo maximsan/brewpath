@@ -1,5 +1,6 @@
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/repositories/card_repository.dart';
+import 'package:brew_path/shared/repositories/install_repository.dart';
 import 'package:brew_path/shared/repositories/module_progress_repository.dart';
 import 'package:brew_path/shared/repositories/progress_repository.dart';
 import 'package:brew_path/shared/repositories/settings_repository.dart';
@@ -52,6 +53,7 @@ void main() {
   late ProgressRepository lessons;
   late ModuleProgressRepository modules;
   late CardRepository cards;
+  late InstallRepository install;
 
   setUp(() async {
     db = AppDatabase(NativeDatabase.memory());
@@ -61,6 +63,7 @@ void main() {
     lessons = ProgressRepository();
     modules = ModuleProgressRepository();
     cards = CardRepository();
+    install = InstallRepository();
     wipe = AccountWipe(deviceId: _thisDevice, clock: () => _wipedAt);
 
     await snapshots.write(_stored);
@@ -141,6 +144,16 @@ void main() {
       expect(after.tourSeen, true);
     });
 
+    test('leaves the day the learner joined where it was', () async {
+      // Starting the course over does not change when you started using the
+      // app, so the closing line must read the same month afterwards.
+      final before = await install.installedAt();
+
+      await wipe.resetProgress();
+
+      expect(await install.installedAt(), before);
+    });
+
     test('leaves the settings row alone entirely', () async {
       // There is nothing left on it for a reset to zero: the streak derives
       // from the day set this wipe empties, and the points total from the
@@ -213,6 +226,18 @@ void main() {
       final after = await settings.getSettings();
       expect(after.onboardingCompleted, false);
       expect(after.tourSeen, false);
+    });
+
+    test('restamps the day the learner joined to this wipe', () async {
+      // What is left behind is a fresh install in every other respect, so the
+      // account the closing line dates is the one beginning now — not the one
+      // that was just erased.
+      await wipe.deleteAccount();
+
+      expect(
+        await install.installedAt(),
+        DateTime.fromMillisecondsSinceEpoch(_wipedAt),
+      );
     });
 
     test('clears the tables the snapshot has not replaced yet', () async {

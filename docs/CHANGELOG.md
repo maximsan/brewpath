@@ -397,6 +397,15 @@ You can always edit this file by hand instead — the helpers just save effort.
   gated, the design marks the gated card itself.
 
 ### Fixed
+- **Profile says the month you actually joined.** The closing line read the
+  first day you did anything, so someone who installed the app and did not
+  start for three weeks was told they joined the following month. The app now
+  records its own first run, and reads the line from that. Devices that were
+  installed before this shipped are not back-dated to today — they keep the
+  earliest-activity reading, which is at least a day they were here for.
+  Starting the course over leaves the date alone; deleting the account sets it
+  to now, because what is left behind is a fresh install.
+
 - **The lesson's Continue is the same size as every other button that means
   the same thing.** It was Material's shorter default while the Continue on the
   screen after it stood taller — the most-pressed button in the app, visibly

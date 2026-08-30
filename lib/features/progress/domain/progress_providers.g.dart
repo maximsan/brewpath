@@ -478,28 +478,22 @@ String _$coreLessonProgressHash() =>
 
 /// The month the Profile's closing line names, or null before there is one.
 ///
-/// **The earliest recorded active day, not an install date.** The app stores no
-/// install timestamp, and adding one is a schema change; the first day the
-/// learner did anything is a real stored date and the closest thing available.
-/// It reads a month late for someone who installed and did not start — see
-/// [#447](https://github.com/maximsan/brewpath/issues/447).
-///
-/// Null before any activity, so the line is absent on a fresh install rather
-/// than naming today as the day they joined.
+/// The rule is [deriveJoinedDate]'s: the install stamp when the database
+/// recorded one, and the earliest active day for every device created before
+/// it did. The active-day set is read either way rather than only on the
+/// fallback, so a stamp arriving later cannot change which providers this one
+/// depends on mid-session.
 
 @ProviderFor(joinedDate)
 final joinedDateProvider = JoinedDateProvider._();
 
 /// The month the Profile's closing line names, or null before there is one.
 ///
-/// **The earliest recorded active day, not an install date.** The app stores no
-/// install timestamp, and adding one is a schema change; the first day the
-/// learner did anything is a real stored date and the closest thing available.
-/// It reads a month late for someone who installed and did not start — see
-/// [#447](https://github.com/maximsan/brewpath/issues/447).
-///
-/// Null before any activity, so the line is absent on a fresh install rather
-/// than naming today as the day they joined.
+/// The rule is [deriveJoinedDate]'s: the install stamp when the database
+/// recorded one, and the earliest active day for every device created before
+/// it did. The active-day set is read either way rather than only on the
+/// fallback, so a stamp arriving later cannot change which providers this one
+/// depends on mid-session.
 
 final class JoinedDateProvider
     extends
@@ -511,14 +505,11 @@ final class JoinedDateProvider
     with $FutureModifier<DateTime?>, $FutureProvider<DateTime?> {
   /// The month the Profile's closing line names, or null before there is one.
   ///
-  /// **The earliest recorded active day, not an install date.** The app stores no
-  /// install timestamp, and adding one is a schema change; the first day the
-  /// learner did anything is a real stored date and the closest thing available.
-  /// It reads a month late for someone who installed and did not start — see
-  /// [#447](https://github.com/maximsan/brewpath/issues/447).
-  ///
-  /// Null before any activity, so the line is absent on a fresh install rather
-  /// than naming today as the day they joined.
+  /// The rule is [deriveJoinedDate]'s: the install stamp when the database
+  /// recorded one, and the earliest active day for every device created before
+  /// it did. The active-day set is read either way rather than only on the
+  /// fallback, so a stamp arriving later cannot change which providers this one
+  /// depends on mid-session.
   JoinedDateProvider._()
     : super(
         from: null,
@@ -544,7 +535,7 @@ final class JoinedDateProvider
   }
 }
 
-String _$joinedDateHash() => r'530cd451d912b5db7006adb700e1d2c3a03152f0';
+String _$joinedDateHash() => r'c74627030e9873bdde731c55e3c522867982fe9f';
 
 /// The planted grove, resolved against the banks into one matrix and one scale.
 ///
