@@ -55,6 +55,18 @@ abstract class AppRoutes {
   static const profileStreak = AppRoute('profileStreak', 'streak');
   static const appGuide = AppRoute('appGuide', 'app-guide');
   static const profileTree = AppRoute('profileTree', 'tree');
+
+  /// Settings → `ACCOUNT` → Account and sync.
+  static const settingsAccount = AppRoute('settingsAccount', 'account');
+
+  /// Settings → `ACCOUNT` → Purchases.
+  static const settingsPurchases = AppRoute('settingsPurchases', 'purchases');
+
+  /// Settings → `SUPPORT` → Help and support, which hosts the App Guide.
+  static const settingsHelp = AppRoute('settingsHelp', 'help');
+
+  /// Settings → `SUPPORT` → About.
+  static const settingsAbout = AppRoute('settingsAbout', 'about');
 }
 
 /// Opening a dictionary term, from wherever the learner found it.

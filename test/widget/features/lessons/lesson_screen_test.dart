@@ -1,5 +1,8 @@
 import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_screen.dart';
+import 'package:brew_path/features/saved/presentation/saved_bookmark_button.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:flutter/material.dart';
@@ -67,14 +70,49 @@ void main() {
     await tester.pump(const Duration(milliseconds: 400));
   }
 
-  testWidgets('shows the module label, the title and the run position', (
+  testWidgets('shows the run position, and nothing else above the card', (
     tester,
   ) async {
+    // "The card is the screen": the design's player carries no lesson title
+    // and no module eyebrow, only close, position and save
+    // (`prototype/lesson.jsx:188`). Both were printed above every card until
+    // #395.
     await pumpLesson(tester, testLesson());
 
-    expect(find.text('MODULE 1 · BEANS'), findsOneWidget);
-    expect(find.text('What coffee actually is'), findsOneWidget);
     expect(find.text('01 / 02'), findsOneWidget);
+    expect(find.text('MODULE 1 · BEANS'), findsNothing);
+    expect(find.text('What coffee actually is'), findsNothing);
+  });
+
+  testWidgets('leaves by a close mark, not a back arrow', (tester) async {
+    // A player is a surface you exit, not a page you came from.
+    await pumpLesson(tester, testLesson());
+
+    Finder markInBar(AppIcon icon) => find.descendant(
+      of: find.byType(AppBar),
+      matching: find.byWidgetPredicate(
+        (widget) => widget is IconMark && widget.icon == icon,
+      ),
+    );
+
+    expect(markInBar(AppIcon.close), findsOneWidget);
+    expect(markInBar(AppIcon.back), findsNothing);
+  });
+
+  testWidgets('keeps the save control in the bar beside the position', (
+    tester,
+  ) async {
+    // The design bookmarks a lesson while it is being read; removing the
+    // title must not take the control that sat beside it.
+    await pumpLesson(tester, testLesson());
+
+    expect(
+      find.descendant(
+        of: find.byType(AppBar),
+        matching: find.byType(SavedBookmarkButton),
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('reports position without ever reporting a score', (

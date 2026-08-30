@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
+import 'package:brew_path/core/widgets/roast_meter.dart';
 import 'package:brew_path/features/lessons/domain/card_seed.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/features/lessons/presentation/cards/content_card_view.dart';
-import 'package:brew_path/features/lessons/presentation/lesson_progress_header.dart';
 import 'package:brew_path/features/saved/domain/saved_key.dart';
 import 'package:brew_path/features/saved/presentation/saved_bookmark_button.dart';
 import 'package:brew_path/services/analytics/analytics_provider.dart';
@@ -15,6 +17,7 @@ import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 /// Immersive single-lesson flow: plays each card, then routes to completion.
 class LessonScreen extends ConsumerStatefulWidget {
@@ -95,6 +98,15 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
       future: _lesson,
       builder: (context, snapshot) => Scaffold(
         appBar: AppBar(
+          // The player is a surface you leave, not a page you came from: the
+          // design gives it a close mark where a pushed screen would have a
+          // back arrow (`prototype/lesson.jsx:190`).
+          leading: IconButton(
+            icon: const IconMark(AppIcon.close),
+            tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+            onPressed: () => context.pop(),
+          ),
+          title: _position(snapshot.data),
           actions: [
             // The design bookmarks a lesson **while it is being read**, not
             // off a list afterwards.
@@ -107,6 +119,28 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
         ),
         body: _buildBody(context, snapshot),
       ),
+    );
+  }
+
+  /// The bar's centre: where the learner is, once there is a lesson to be in.
+  ///
+  /// The design puts the position *in the bar* and nothing else with it — no
+  /// lesson title, no module eyebrow, because the card is the screen
+  /// (`prototype/lesson.jsx:188`). It is the same [RoastMeter] the mini-game
+  /// player mounts, so the app has one idea of how-far-through.
+  ///
+  /// Null while the lesson is still loading — the bar keeps its close mark and
+  /// shows nothing else, rather than a position out of thin air.
+  Widget? _position(LessonModel? lesson) {
+    if (lesson == null) return null;
+
+    final played = playableCards(lesson.cards);
+    if (played.isEmpty) return null;
+
+    return RoastMeter(
+      position: _index + 1,
+      total: played.length,
+      semanticsLabel: 'Card ${_index + 1} of ${played.length}',
     );
   }
 
@@ -152,13 +186,6 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            LessonProgressHeader(
-              eyebrow: lesson.moduleLabel,
-              title: lesson.title,
-              current: _index + 1,
-              total: played.length,
-            ),
-            const SizedBox(height: AppSpacing.lg),
             // Keyed by card so each one mounts fresh: a latched card must
             // never be reused for the next question.
             if (card != null)

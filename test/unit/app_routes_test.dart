@@ -107,8 +107,16 @@ void main() {
     // Root navigator like Settings, and its own back-arrow bar — pushed is
     // about the chrome the learner sees, not the navigator underneath.
     'profileStreak': HeaderTier.pushed,
-    // Two pushes deep — Settings, then the guide — and it carries a back-arrow
-    // bar of its own, the same as the screen it was opened from.
+    // The four screens the design's ACCOUNT and SUPPORT rows lead to. Each
+    // wears the same back-arrow bar Settings does, which is what pushed
+    // means here.
+    'settingsAccount': HeaderTier.pushed,
+    'settingsPurchases': HeaderTier.pushed,
+    'settingsHelp': HeaderTier.pushed,
+    'settingsAbout': HeaderTier.pushed,
+    // Three pushes deep now — Settings, Help and support, then the guide —
+    // and it carries a back-arrow bar of its own, the same as the screen it
+    // was opened from.
     'appGuide': HeaderTier.pushed,
     // Its own bar with a close icon, over the shell — pushed, like the
     // streak view it sits beside.
