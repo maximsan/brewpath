@@ -1,8 +1,6 @@
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
-import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
-import 'package:brew_path/features/dictionary/presentation/dictionary_status_style.dart';
 import 'package:brew_path/features/dictionary/presentation/term_entry_body.dart';
 import 'package:brew_path/features/dictionary/presentation/term_peek_sheet.dart';
 import 'package:brew_path/features/saved/domain/saved_key.dart';
@@ -61,21 +59,12 @@ class _TermDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final status = dictionaryStatusOf(term, view.completedLessonIds);
-
     return Scaffold(
+      // The bar carries the way back and the bookmark, and nothing else: the
+      // term is a page heading below, where the design puts it, so it can set
+      // at display size and take a status chip beside it.
       appBar: AppBar(
-        title: Text(term.term),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(left: AppSpacing.md),
-            child: Center(
-              child: Text(
-                status.label,
-                style: Theme.of(context).textTheme.labelSmall,
-              ),
-            ),
-          ),
           SavedBookmarkButton(
             savedKey: formatSavedKey(SavedKind.term, term.id),
             label: term.term,
@@ -87,6 +76,7 @@ class _TermDetail extends StatelessWidget {
         child: TermEntryBody(
           view: view,
           term: term,
+          heading: true,
           // A related term opens as a peek, not a push: following a thread
           // through the vocabulary should not bury the entry you started on.
           onRelatedTap: (id) => showTermPeekSheet(context, id),

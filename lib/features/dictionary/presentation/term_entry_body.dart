@@ -2,9 +2,11 @@ import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_status_style.dart';
+import 'package:brew_path/features/dictionary/presentation/status_chip.dart';
 import 'package:brew_path/features/dictionary/presentation/term_self_check.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,6 +31,7 @@ class TermEntryBody extends ConsumerWidget {
     required this.view,
     required this.term,
     this.onRelatedTap,
+    this.heading = false,
     super.key,
   });
 
@@ -43,6 +46,12 @@ class TermEntryBody extends ConsumerWidget {
   /// the peek sheet does not stack peeks on itself.
   final ValueChanged<String>? onRelatedTap;
 
+  /// Whether to lead with the term as a page heading and its status chip.
+  ///
+  /// The full entry does; the peek sheet does not, because a sheet already
+  /// names what it is about in its own header.
+  final bool heading;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mood = context.mood;
@@ -52,15 +61,26 @@ class TermEntryBody extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (heading) ...[
+          Text(term.term, style: AppText.display(mood: mood)),
+          const SizedBox(height: AppSpacing.xs),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: StatusChip(status: status),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+        ],
         if (term.pronunciation != null)
           Text(
             term.pronunciation!,
             style: text.bodySmall?.copyWith(color: mood.inkMute),
           ),
         const SizedBox(height: AppSpacing.xs),
+        // The lead, not body copy: the design sets the short explanation a
+        // step above the deep one so the two are not read as one paragraph.
         Text(
           term.shortExplanation,
-          style: text.bodyLarge?.copyWith(color: mood.ink),
+          style: AppText.lead(mood: mood),
         ),
         if (term.deepExplanation != null) ...[
           const SizedBox(height: AppSpacing.md),
@@ -72,7 +92,8 @@ class TermEntryBody extends ConsumerWidget {
         if (term.example != null) ...[
           const SizedBox(height: AppSpacing.md),
           _Block(
-            label: 'In use',
+            label: 'IN PRACTICE',
+            accent: true,
             child: Text(
               term.example!,
               style: text.bodyMedium?.copyWith(color: mood.inkMute),
@@ -82,14 +103,14 @@ class TermEntryBody extends ConsumerWidget {
         if (term.check != null) ...[
           const SizedBox(height: AppSpacing.lg),
           _Block(
-            label: 'Check yourself',
+            label: 'KNOWLEDGE CHECK',
             child: TermSelfCheck(check: term.check!),
           ),
         ],
         if (onRelatedTap != null && term.relatedIds.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.lg),
           _Block(
-            label: 'Related',
+            label: 'RELATED TERMS',
             child: _RelatedChips(
               view: view,
               relatedIds: term.relatedIds,
@@ -217,17 +238,22 @@ class _PathBlock extends ConsumerWidget {
 
 /// A titled block: a smallcaps label over its content.
 class _Block extends StatelessWidget {
-  const _Block({required this.label, required this.child});
+  const _Block({required this.label, required this.child, this.accent = false});
 
   final String label;
   final Widget child;
+
+  /// Whether the label takes the accent. Only `IN PRACTICE` does
+  /// (`dictionary.jsx:614`) — it heads the one block that is an example rather
+  /// than more explanation.
+  final bool accent;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SmallcapsLabel(label),
+        SmallcapsLabel(label, color: accent ? context.mood.accentText : null),
         const SizedBox(height: AppSpacing.xs),
         child,
       ],

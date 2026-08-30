@@ -5,6 +5,8 @@ import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/section_header.dart';
+import 'package:brew_path/core/widgets/smallcaps_label.dart';
+import 'package:brew_path/features/dictionary/domain/category_glyph.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_filter_chips.dart';
@@ -12,6 +14,7 @@ import 'package:brew_path/features/dictionary/presentation/term_row.dart';
 import 'package:brew_path/shared/models/content/dictionary_category.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,15 +24,23 @@ class DictionaryHomeScreen extends ConsumerWidget {
   /// Creates a [DictionaryHomeScreen].
   const DictionaryHomeScreen({super.key});
 
-  /// The screen's title, and the header action that reaches it.
-  static const title = 'Dictionary';
+  /// The screen's name, and the header action that reaches it.
+  ///
+  /// `Coffee Dictionary` (`dictionary.jsx:297`), not `Dictionary`: the course
+  /// is about one subject and the shelf says so.
+  static const title = 'Coffee Dictionary';
+
+  /// The kicker over it.
+  static const kicker = 'REFERENCE';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final view = ref.watch(dictionaryViewProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text(title)),
+      // No bar title: the name is a page heading below, where the design puts
+      // it, so it can set at display size under its kicker.
+      appBar: AppBar(),
       body: view.when(
         loading: () => Semantics(
           label: 'Loading the dictionary',
@@ -40,6 +51,39 @@ class DictionaryHomeScreen extends ConsumerWidget {
           child: ErrorView(message: '$error'),
         ),
         data: (data) => _DictionaryBody(view: data),
+      ),
+    );
+  }
+}
+
+/// The kicker and the name, which the design leads the screen with.
+class _Masthead extends StatelessWidget {
+  const _Masthead();
+
+  @override
+  Widget build(BuildContext context) {
+    final mood = context.mood;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.gutter,
+        0,
+        AppSpacing.gutter,
+        AppSpacing.sm,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SmallcapsLabel(
+            DictionaryHomeScreen.kicker,
+            color: mood.accentText,
+          ),
+          const SizedBox(height: AppSpacing.xxs),
+          Text(
+            DictionaryHomeScreen.title,
+            style: AppText.display(mood: mood),
+          ),
+        ],
       ),
     );
   }
@@ -79,6 +123,7 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        const _Masthead(),
         Padding(
           padding: const EdgeInsets.fromLTRB(
             AppSpacing.gutter,
@@ -89,7 +134,7 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
           child: TextField(
             onChanged: (value) => setState(() => _query = value),
             decoration: const InputDecoration(
-              hintText: 'Search terms',
+              hintText: 'Search terms, e.g. crema, bloom…',
               prefixIcon: Icon(Icons.search),
               border: OutlineInputBorder(),
             ),
@@ -176,8 +221,9 @@ class _NoMatches extends StatelessWidget {
 
 /// A category's glyph and its one-line description, under the section header.
 ///
-/// The glyph is named in the bank but no drawings exist yet, so every category
-/// falls back to one generic mark rather than the app inventing eight.
+/// Every category wears its **own** mark. It wore one generic cup until now,
+/// because the drawings did not exist when this screen was built; #378 ported
+/// them and [categoryGlyph] is the mapping.
 class _CategoryGlyphNote extends StatelessWidget {
   const _CategoryGlyphNote({required this.category});
 
@@ -198,7 +244,7 @@ class _CategoryGlyphNote extends StatelessWidget {
         children: [
           ExcludeSemantics(
             child: IconMark(
-              AppIcon.cup,
+              categoryGlyph(category.id) ?? AppIcon.cup,
               size: AppSpacing.md,
               color: mood.inkMute,
             ),

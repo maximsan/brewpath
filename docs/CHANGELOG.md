@@ -397,6 +397,17 @@ You can always edit this file by hand instead — the helpers just save effort.
   gated, the design marks the gated card itself.
 
 ### Fixed
+
+- **The dictionary looks like part of the app now.** It leads with its own
+  name — *Coffee Dictionary*, under a kicker — instead of a bar title, and each
+  category wears its own mark rather than the same cup eight times over. The
+  three filters became one control, because they were always one choice.
+
+- **A term reads as an entry, not a settings row.** The word is a heading on
+  the page with its status beside it — a mark and a word together, so it does
+  not depend on colour alone — and the blocks under it carry the names the
+  design gives them: *in practice*, *knowledge check*, *related terms*.
+
 - **The lesson's Continue is the same size as every other button that means
   the same thing.** It was Material's shorter default while the Continue on the
   screen after it stood taller — the most-pressed button in the app, visibly

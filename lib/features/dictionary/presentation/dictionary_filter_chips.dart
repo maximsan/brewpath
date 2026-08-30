@@ -2,7 +2,11 @@ import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 
-/// The three filter chips, each showing how many terms sit behind it.
+/// The dictionary's filter: **one segmented control**, not three loose chips.
+///
+/// `DictFilter` (`dictionary.jsx:199`) draws a single pill divided in three —
+/// which says the three are one choice. Three separate chips say they are
+/// three independent toggles, and a learner has to try one to find out.
 ///
 /// The counts come from [DictionaryCounts], where to-learn already excludes
 /// reference terms — the number a learner reads has to be a promise the course
@@ -41,16 +45,19 @@ class DictionaryFilterChips extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
-      child: Wrap(
-        spacing: AppSpacing.xs,
-        children: [
+      child: SegmentedButton<DictionaryFilter>(
+        // No tick beside the label: the segment is already the selected one
+        // by its fill, and the mark costs the count its room on a phone.
+        showSelectedIcon: false,
+        segments: [
           for (final filter in DictionaryFilter.values)
-            ChoiceChip(
+            ButtonSegment<DictionaryFilter>(
+              value: filter,
               label: Text('${_labelFor(filter)} ${_countFor(filter)}'),
-              selected: filter == selected,
-              onSelected: (_) => onSelected(filter),
             ),
         ],
+        selected: {selected},
+        onSelectionChanged: (picked) => onSelected(picked.first),
       ),
     );
   }
