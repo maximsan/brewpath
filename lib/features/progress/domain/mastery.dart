@@ -14,21 +14,29 @@ import 'package:flutter/foundation.dart';
 /// [MasteryResult.band].
 enum MasteryBand {
   /// Two or more wrong answers.
-  needsPractice(rank: 0, label: 'Needs practice'),
+  needsPractice(rank: 0, label: 'Needs practice', short: 'Practice'),
 
   /// Exactly one wrong answer. The design calls this "Solid".
-  mastered(rank: 1, label: 'Solid'),
+  mastered(rank: 1, label: 'Solid', short: 'Solid'),
 
   /// A clean run.
-  perfect(rank: 2, label: 'Perfect');
+  perfect(rank: 2, label: 'Perfect', short: 'Perfect');
 
-  const MasteryBand({required this.rank, required this.label});
+  const MasteryBand({
+    required this.rank,
+    required this.label,
+    required this.short,
+  });
 
   /// Ordering, so callers can compare bands and never downgrade one.
   final int rank;
 
   /// User-facing name.
   final String label;
+
+  /// The one-word form, for a slot with room for a word rather than a phrase
+  /// — the design's `LESSON_STATES[…].short` (`data.jsx:2987`).
+  final String short;
 }
 
 /// One lesson's best graded result, stored as the **pair** `{correct, total}`

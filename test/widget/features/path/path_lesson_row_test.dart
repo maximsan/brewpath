@@ -1,4 +1,5 @@
 import 'package:brew_path/app/app_theme.dart';
+import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/widgets/bean_gauge.dart';
 import 'package:brew_path/features/path/domain/path_module_view.dart';
 import 'package:brew_path/features/path/presentation/path_lesson_row.dart';
@@ -17,6 +18,7 @@ Future<void> _pump(
   required bool isCompleted,
   required bool isCurrent,
   MasteryResult mastery = MasteryResult.unscored,
+  bool isLast = false,
 }) => tester.pumpWidget(
   MaterialApp(
     theme: AppTheme.darkRoast,
@@ -28,6 +30,7 @@ Future<void> _pump(
           isCurrent: isCurrent,
           mastery: mastery,
         ),
+        isLast: isLast,
       ),
     ),
   ),
@@ -92,7 +95,7 @@ void main() {
   testWidgets('the node sits on the page canvas, not the card surface', (
     tester,
   ) async {
-    await _pump(tester, isCompleted: false, isCurrent: true);
+    await _pump(tester, isCompleted: true, isCurrent: false);
 
     final well = tester.widget<Container>(
       find
@@ -108,9 +111,63 @@ void main() {
     expect(decoration.shape, BoxShape.circle);
   });
 
-  testWidgets('a completed lesson still offers Review', (tester) async {
+  testWidgets('the current lesson tints its own well', (tester) async {
+    // `.lesson-row.current .path-node` is the accent at 7% *over* the page,
+    // not the page. It stays opaque either way — a translucent disc would let
+    // the spine show through the stop it exists to punch.
+    await _pump(tester, isCompleted: false, isCurrent: true);
+
+    final well = tester.widget<Container>(
+      find
+          .ancestor(
+            of: find.byType(BeanGauge),
+            matching: find.byType(Container),
+          )
+          .first,
+    );
+    final decoration = well.decoration! as BoxDecoration;
+
+    expect(decoration.color, isNot(MoodColors.darkRoast.bg));
+    expect(decoration.color!.a, 1.0);
+  });
+
+  testWidgets('the row carries no Review button', (tester) async {
+    // The design's `.lesson-row` has no button in it: the whole row opens the
+    // lesson, and a finished one is replayed the same way it was played.
+    // `Review` belonged to the module screen, which is gone (#394, #435).
     await _pump(tester, isCompleted: true, isCurrent: false);
 
-    expect(find.text('Review'), findsOneWidget);
+    expect(find.text('Review'), findsNothing);
+    expect(find.byType(TextButton), findsNothing);
+  });
+
+  testWidgets('a lesson needing practice says so, once', (tester) async {
+    await _pump(
+      tester,
+      isCompleted: true,
+      isCurrent: false,
+      mastery: const MasteryResult(correct: 1, total: 4),
+    );
+
+    expect(find.text('PRACTICE'), findsOneWidget);
+  });
+
+  testWidgets('a lesson that went well says nothing', (tester) async {
+    await _pump(
+      tester,
+      isCompleted: true,
+      isCurrent: false,
+      mastery: const MasteryResult(correct: 4, total: 4),
+    );
+
+    // The bean's fill is the report; a second label would repeat it.
+    expect(find.text('PERFECT'), findsNothing);
+    expect(find.text('SOLID'), findsNothing);
+  });
+
+  testWidgets('the current lesson is named as current', (tester) async {
+    await _pump(tester, isCompleted: false, isCurrent: true);
+
+    expect(find.text(AppLabels.currentLesson.toUpperCase()), findsOneWidget);
   });
 }
