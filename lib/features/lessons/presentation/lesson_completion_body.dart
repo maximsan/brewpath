@@ -1,238 +1,95 @@
-import 'package:brew_path/core/constants/app_labels.dart';
-import 'package:brew_path/core/icons/app_icon.dart';
-import 'package:brew_path/core/utils/module_icons.dart';
-import 'package:brew_path/core/widgets/icon_badge.dart';
-import 'package:brew_path/core/widgets/primary_button.dart';
+import 'package:brew_path/core/widgets/sticky_action_bar.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_suggestion.dart';
-import 'package:brew_path/features/companion/domain/companion_reaction.dart';
-import 'package:brew_path/features/companion/presentation/companion_celebration.dart';
+import 'package:brew_path/features/lessons/domain/lesson_completion_actions.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
-import 'package:brew_path/features/lessons/domain/lesson_finish_result.dart';
+import 'package:brew_path/features/lessons/presentation/lesson_completion_beat.dart';
+import 'package:brew_path/features/lessons/presentation/lesson_completion_header.dart';
+import 'package:brew_path/features/lessons/presentation/lesson_completion_rail.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_reward.dart';
-import 'package:brew_path/shared/models/coffee_card_model.dart';
-import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/features/lessons/presentation/lesson_completion_tree.dart';
+import 'package:brew_path/features/progress/domain/mastery.dart';
+import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 
-/// Presentation for the post-lesson screen: a hero badge, outcome text and any
-/// reward card, then the Continue button. Pure view — it renders the loaded
-/// [LessonCompletionReward] and the run's graded result, and performs no I/O.
+/// The completion screen's content: the headline, the run's score, and the
+/// payout rail — over the shared sticky footer.
+///
+/// Pure view. Everything it renders is decided before it is built: the reward
+/// by the service, the footer's action and link by [completionActions]. It
+/// performs no I/O and makes no policy decision of its own.
 class LessonCompletionBody extends StatelessWidget {
   /// Creates a [LessonCompletionBody].
   const LessonCompletionBody({
     required this.lessonId,
+    required this.lessonTitle,
+    required this.mastery,
     required this.reward,
+    required this.actions,
     super.key,
-    this.celebrating = false,
-    this.moduleSummaryId,
   });
 
-  /// The loaded reward to render.
   /// The lesson that was just finished.
   final String lessonId;
+
+  /// Its name, which is the screen's headline.
+  final String lessonTitle;
+
+  /// **This run's** graded result — not the stored best.
+  ///
+  /// The two differ on a replay, and the design reports the run
+  /// (`prototype/rewards.jsx:57-73`). Showing the best instead would tell a
+  /// learner who has just played badly that they did well, and would withhold
+  /// the chip and the practice invitation from the exact run that earned them.
+  final MasteryResult mastery;
 
   /// What the run recorded, plus any card it unlocked.
   final LessonCompletionReward reward;
 
-  /// Whether this is a first completion, which is what earns the celebrating
-  /// companion. A review or practice run shows a static badge instead.
-  final bool celebrating;
-
-  /// When set, Continue routes to the module-summary recap for this module id
-  /// (the lesson just completed its module); otherwise it returns to Learn.
-  final String? moduleSummaryId;
+  /// The footer's resolved action and quiet link.
+  final CompletionActions actions;
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+    final link = actions.link;
+    return StickyActionBar(
+      label: actions.label,
+      onPressed: () => context.goTo(actions.destination),
+      link: link == null
+          ? null
+          : QuietLink(
+              label: link.label,
+              onTap: () => context.goTo(link.destination),
+            ),
+      // The design pins the Coffee Challenge offer to the footer rather than
+      // leaving it in the scroll, so it travels with the action it competes
+      // with. Twenty of the thirty-two lessons carry none, and the widget
+      // renders nothing at all for those — no gap, no divider.
+      preface: ChallengeSuggestion(lessonId: lessonId),
+      content: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            ..._content(context),
-            // Nothing at all when the lesson carries no challenge, which is
-            // twenty of the thirty-two — the widget renders no gap of its own.
-            ChallengeSuggestion(lessonId: lessonId),
-            const SizedBox(height: 32),
-            PrimaryButton(
-              label: AppLabels.continueLabel,
-              onPressed: () => _onContinue(context),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _onContinue(BuildContext context) {
-    final moduleId = moduleSummaryId;
-    context.goTo(moduleId != null ? moduleSummary(moduleId) : learnTab);
-  }
-
-  /// Total by construction: the run was a first completion or a replay, and
-  /// the service already decided which.
-  List<Widget> _content(BuildContext context) => reward.result.isReplay
-      ? _replayContent(context, reward.result)
-      : _completionContent(context, reward.result);
-
-  List<Widget> _completionContent(
-    BuildContext context,
-    LessonFinishResult completion,
-  ) {
-    final theme = Theme.of(context);
-    final mood = context.mood;
-    return [
-      _CompletionHero(celebrating: celebrating),
-      const SizedBox(height: 20),
-      Text(
-        'Lesson complete!',
-        textAlign: TextAlign.center,
-        style: theme.textTheme.headlineSmall,
-      ),
-      const SizedBox(height: 12),
-      Text(
-        '+${completion.pointsEarned} PTS',
-        textAlign: TextAlign.center,
-        style: theme.textTheme.titleLarge?.copyWith(
-          color: mood.accent,
-        ),
-      ),
-      // One number, ever. Closing a module used to add a second — a bonus that
-      // double-counted the lessons already paid for. What the module gives is
-      // the Module Reward card below (§5.1, #16).
-      if (completion.moduleCompleted) ...[
-        const SizedBox(height: 4),
-        Text(
-          'Module complete!',
-          textAlign: TextAlign.center,
-          style: theme.textTheme.titleMedium?.copyWith(color: mood.accent),
-        ),
-      ],
-      if (reward.card != null) ...[
-        const SizedBox(height: 24),
-        _RewardCard(card: reward.card!),
-      ],
-      if (completion.moduleCard != null) ...[
-        const SizedBox(height: 12),
-        _RewardCard(card: completion.moduleCard!),
-      ],
-    ];
-  }
-
-  List<Widget> _replayContent(BuildContext context, LessonFinishResult review) {
-    final theme = Theme.of(context);
-    final mood = context.mood;
-    return [
-      const _HeroBadge.mark(AppIcon.rematch),
-      const SizedBox(height: 20),
-      Text(
-        'Review complete!',
-        textAlign: TextAlign.center,
-        style: theme.textTheme.headlineSmall,
-      ),
-      const SizedBox(height: 12),
-      Text(
-        'Best score: ${review.mastery.correct} / ${review.mastery.total}',
-        textAlign: TextAlign.center,
-        style: theme.textTheme.titleLarge?.copyWith(
-          color: mood.accent,
-        ),
-      ),
-    ];
-  }
-}
-
-/// The first-completion hero: the celebratory companion (with a speech bubble
-/// when a line is available), falling back to the static badge if no handle is
-/// supplied.
-class _CompletionHero extends StatelessWidget {
-  const _CompletionHero({this.celebrating = false});
-
-  static const double _companionSize = 140;
-
-  final bool celebrating;
-
-  @override
-  Widget build(BuildContext context) {
-    if (!celebrating) return const _HeroBadge(icon: Icons.celebration);
-    return const Center(
-      child: CompanionCelebration(
-        reaction: CompanionReaction.lessonComplete,
-        size: _companionSize,
-      ),
-    );
-  }
-}
-
-/// Round tinted celebration/replay badge shown above the headline.
-class _HeroBadge extends StatelessWidget {
-  const _HeroBadge({required IconData icon}) : _icon = icon, _mark = null;
-
-  /// The design's own mark, where it has one for the occasion.
-  const _HeroBadge.mark(AppIcon mark) : _mark = mark, _icon = null;
-
-  /// Stock glyph, for a celebration the design draws no mark for.
-  final IconData? _icon;
-  final AppIcon? _mark;
-
-  static const double _size = 96;
-  static const double _iconSize = 48;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: _mark == null
-          ? IconBadge.circle(icon: _icon!, size: _size, iconSize: _iconSize)
-          : IconBadge.circleMark(
-              mark: _mark,
-              size: _size,
-              iconSize: _iconSize,
-            ),
-    );
-  }
-}
-
-/// Card-reward row shown when the completed lesson grants a collectible.
-class _RewardCard extends StatelessWidget {
-  const _RewardCard({required this.card});
-
-  final CoffeeCardModel card;
-
-  static const double _badgeSize = 48;
-  static const double _cardRadius = 12;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final mood = context.mood;
-    return Card(
-      margin: EdgeInsets.zero,
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Row(
-          children: [
-            IconBadge.roundedMark(
-              mark: moduleMark(card.iconName),
-              size: _badgeSize,
-              radius: _cardRadius,
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(card.title, style: theme.textTheme.titleSmall),
-                  const SizedBox(height: 2),
-                  Text(
-                    card.moduleTag,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: mood.inkMute,
-                    ),
-                  ),
-                ],
+            LessonCompletionHeader(
+              eyebrow: completionEyebrow(
+                isReplay: reward.result.isReplay,
               ),
+              title: lessonTitle,
+              mastery: mastery,
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            LessonCompletionTree(
+              fromStage: reward.result.treeStageBefore,
+              toStage: reward.result.treeStageAfter,
+              lessonsToNextStage: reward.result.lessonsToNextStage,
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            LessonCompletionRail(
+              pointsEarned: reward.result.pointsEarned,
+              freezeEarned: reward.result.freezeEarned,
+              lessonCard: reward.card,
+              moduleCard: reward.result.moduleCard,
             ),
           ],
         ),

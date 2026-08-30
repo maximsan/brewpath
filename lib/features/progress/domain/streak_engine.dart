@@ -96,3 +96,22 @@ class _StreakFold {
     frozenDays: Set.unmodifiable(_frozenDays),
   );
 }
+
+/// Whether growing the day set from [before] to [after] is what earned the
+/// freeze, read as of [today].
+///
+/// **A rise, not a state.** `freezeHeld` answers "is one in hand"; every run
+/// after the seventh would answer yes, and the design's `FREEZE EARNED` row
+/// belongs to the run that actually paid it out — *"the first time most users
+/// meet the word 'freeze' — before they ever need one"*. Only the transition
+/// says that, so only the transition is asked for.
+///
+/// Both folds run against the same [today], so nothing here can mistake a day
+/// rolling over for a freeze being earned.
+bool freezeEarnedBetween({
+  required Set<int> before,
+  required Set<int> after,
+  required int today,
+}) =>
+    !deriveStreak(activeDays: before, today: today).freezeHeld &&
+    deriveStreak(activeDays: after, today: today).freezeHeld;

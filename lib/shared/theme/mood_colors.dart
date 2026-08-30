@@ -178,6 +178,19 @@ class MoodColors extends ThemeExtension<MoodColors> {
   /// Highlight on a [water] fill.
   final Color waterHi;
 
+  /// [accent] washed over [surface] — the fill under an icon well or a chip.
+  ///
+  /// Derived rather than stored, so it follows the mood and keeps following it
+  /// mid-[lerp]. The design writes it as
+  /// `color-mix(in oklab, var(--accent) 12%, var(--surface))` and uses the one
+  /// strength everywhere it appears: the reward rail's wells, the mastery chip,
+  /// and the challenge offer's badge.
+  Color get accentWash =>
+      Color.alphaBlend(accent.withValues(alpha: _accentWashAlpha), surface);
+
+  /// How much accent the wash carries. The design's `12%`.
+  static const double _accentWashAlpha = 0.12;
+
   /// The page background pulled over the page, and the blur that goes with it.
   /// Derived from [bg] rather than stored, so it follows the mood — and keeps
   /// following it mid-[lerp].

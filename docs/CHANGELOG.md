@@ -221,6 +221,43 @@ You can always edit this file by hand instead — the helpers just save effort.
   Four more games opened on the two renderers: *Dial it in*, *Set the grind*,
   *Put it in order* and *Pour-over, in order*.
 
+- **Finishing a lesson finally says what you did.** The screen was a badge, the
+  words *Lesson complete!* and a points number: it never named the lesson you
+  had just finished, and it only showed your score if you were replaying. It
+  now opens on a full-screen beat from Roasty whose line changes with how the
+  run went, then names the lesson, prints the score, and gathers what the run
+  paid into one receipt card — the points, and any collectible it handed over.
+  A run that needs practice gets a chip in the action colour and an invitation
+  to play it again rather than a red mark, and there is a close button now, so
+  the celebration is not a screen you are held on.
+
+- **The tree grows when you finish a lesson.** The completion screen never
+  mentioned the Coffee Tree, which is the thing the whole app is a metaphor
+  for. It is on the screen now, and on the completion that crosses a growth
+  threshold it grows — the new stage fades up, settles, rings, and throws a few
+  leaves. Most completions do not cross one, so a still tree says how far the
+  next stage is rather than sitting there looking broken. Reduced motion keeps
+  the fade and drops everything that moves.
+
+- **The tree stopped finishing early.** Its ten stages were spread evenly over
+  the thirty-two lessons, so it reached full growth at lesson twenty-nine and
+  the last three lessons of Foundations grew nothing at all. The stages are
+  pinned to the five modules the way they were designed to be — one step at
+  each module's halfway point, one when you finish it — so a module boundary is
+  always a visible jump and the harvest waits for the final lesson.
+
+- **The card you just earned can be read where you earn it.** The completion
+  screen listed a new collectible by name and left you to go and find it. The
+  row opens now, onto the full card — its badge, its summary, and the keepsake
+  line the app has always assembled and never once shown.
+
+- **You meet the word "freeze" before you ever need one.** Seven qualifying
+  days in a row earn a streak freeze, and the app only ever mentioned freezes
+  *afterwards* — as the notice telling you a day had already been saved. The
+  lesson that earns one now says so on the spot, which is where the design put
+  it: the payout for keeping a streak, met before the day you need it rather
+  than at the moment you are told you lost one.
+
 ### Changed
 
 - **The path looks like a path.** Lessons on Path were separate cards; the
@@ -238,6 +275,13 @@ You can always edit this file by hand instead — the helpers just save effort.
   extractor reads both now, so *Blind bag*, *Taste fix*, *Calibrate* and
   *Sequence* have their marks and every group wears one. A kind can no longer
   be added without one.
+
+- **The lesson ending's button moved onto the shared sticky action bar**, and
+  now says where it goes: *Next lesson* while the course has one queued, *Back
+  to Path* when it does not. The Coffee Challenge a lesson sometimes unlocks
+  travels with that button instead of sitting in the scroll above it — the bar
+  learned to carry an offer over its action, which the duel and the module
+  ending will want too, and it still refuses a second button.
 
 - **The course lives in one place now, and Today is only today.** The app used
   to list every module on the Learn tab *and* on Path, and both opened a module

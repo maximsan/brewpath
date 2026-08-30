@@ -37,6 +37,14 @@ enum MasteryBand {
   /// The one-word form, for a slot with room for a word rather than a phrase
   /// — the design's `LESSON_STATES[…].short` (`data.jsx:2987`).
   final String short;
+
+  /// Whether this band is the one the design invites back to practise.
+  ///
+  /// Asked by the chip, by the completion footer's quiet link, and by anything
+  /// else that surfaces the invitation — one predicate rather than three
+  /// copies of `== needsPractice`, so the rule cannot be widened in one place
+  /// and not the others.
+  bool get invitesPractice => this == MasteryBand.needsPractice;
 }
 
 /// One lesson's best graded result, stored as the **pair** `{correct, total}`

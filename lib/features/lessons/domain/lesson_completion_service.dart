@@ -1,6 +1,9 @@
+import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/lessons/domain/lesson_finish_result.dart';
 import 'package:brew_path/features/progress/domain/activity_recorder.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
+import 'package:brew_path/features/progress/domain/streak_day_set.dart';
+import 'package:brew_path/features/progress/domain/streak_engine.dart';
 import 'package:brew_path/features/progress/domain/tree_growth.dart';
 import 'package:brew_path/services/analytics/analytics_provider.dart';
 import 'package:brew_path/services/analytics/analytics_service.dart';
@@ -17,6 +20,10 @@ import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'lesson_completion_service.g.dart';
+
+/// Where the Coffee Tree stood before a run and after it, and how far the next
+/// stage is from here.
+typedef TreeGrowth = ({int before, int after, int? toNext});
 
 /// Orchestrates everything that happens when a lesson finishes: persist
 /// progress, award points, unlock the lesson's card, mark the day, and hand
@@ -78,13 +85,44 @@ class LessonCompletionService {
     DateTime? now,
   }) async {
     final at = now ?? DateTime.now();
+    // Read before anything is written, because both writes below can add
+    // today to the day set — the completion row through the backfill, and the
+    // activity record directly. Sampled after the first of them, "before"
+    // would already contain today and no run could ever read as earning a
+    // freeze.
+    final daysBefore = await _qualifyingDays();
+
     final existing = await progressRepository.getByLessonId(lesson.id);
     // The record travels rather than being looked up again: a second read
     // could return null after Reset Progress landed between the two awaits,
     // and an invariant re-derived is an invariant that can fail.
-    return existing == null
-        ? _firstCompletion(lesson, mastery: mastery, now: at)
-        : _replay(lesson, existing, mastery: mastery, now: at);
+    final result = existing == null
+        ? await _firstCompletion(lesson, mastery: mastery, now: at)
+        : await _replay(lesson, existing, mastery: mastery, now: at);
+
+    return result.withFreezeEarned(
+      earned: freezeEarnedBetween(
+        before: daysBefore,
+        after: await _qualifyingDays(),
+        today: epochDay(at),
+      ),
+    );
+  }
+
+  /// The qualifying-day set as the stores hold it at this instant.
+  ///
+  /// Assembled by the same [streakDaySet] union every streak surface reads
+  /// through, so what the completion screen reports about the freeze and what
+  /// the streak screen shows can never be derived two different ways.
+  Future<Set<int>> _qualifyingDays() async {
+    final snapshot = await snapshotRepository.read();
+    final progress = snapshot.clearedByReset;
+    final completed = await progressRepository.getAllCompleted();
+    return streakDaySet(
+      activeDays: progress.activeDays,
+      dailyActivity: progress.dailyActivity,
+      firstCompletionDays: completed.map((record) => record.completedAt),
+    );
   }
 
   Future<LessonFinishResult> _firstCompletion(
@@ -121,7 +159,7 @@ class LessonCompletionService {
       now: now,
     );
 
-    await _growTree();
+    final growth = await _growTree();
 
     final module = await _maybeCompletedModule(lesson);
     final moduleCard = module == null ? null : await _awardModuleReward(module);
@@ -139,6 +177,9 @@ class LessonCompletionService {
       isReplay: false,
       pointsEarned: points,
       mastery: mastery,
+      treeStageBefore: growth.before,
+      treeStageAfter: growth.after,
+      lessonsToNextStage: growth.toNext,
       moduleCompleted: module != null,
       moduleCard: moduleCard,
     );
@@ -187,10 +228,16 @@ class LessonCompletionService {
       },
     );
 
+    final standing = await _treeStanding();
     return LessonFinishResult(
       isReplay: true,
       pointsEarned: 0,
       mastery: record.mastery,
+      // A replay grows nothing, so the pair is equal by construction — but the
+      // screen still shows the tree, and still says how far the next stage is.
+      treeStageBefore: standing.before,
+      treeStageAfter: standing.after,
+      lessonsToNextStage: standing.toNext,
     );
   }
 
@@ -261,20 +308,49 @@ class LessonCompletionService {
   /// write is raise-only, so a course
   /// that grows later cannot take a stage back, and a stage already reached on
   /// another device survives the merge by the same rule.
-  Future<void> _growTree() async {
+  Future<TreeGrowth> _growTree() async {
     final completed = await progressRepository.getAllCompleted();
-    final lessons = await contentRepository.getLessons();
+    final modules = await contentRepository.getModules();
+    final sizes = moduleSizesInOrder(modules);
     final stage = treeStageForProgress(
       completed: completed.length,
-      total: lessons.length,
+      moduleSizes: sizes,
+    );
+    final toNext = lessonsToNextStage(
+      completed: completed.length,
+      moduleSizes: sizes,
     );
 
     final snapshot = await snapshotRepository.read();
-    if (stage <= snapshot.clearedByReset.treeStage) return;
+    final before = snapshot.clearedByReset.treeStage;
+    if (stage <= before) {
+      return (before: before, after: before, toNext: toNext);
+    }
     await snapshotRepository.write(
       snapshot.copyWith(
         updatedAt: DateTime.now().millisecondsSinceEpoch,
         clearedByReset: snapshot.clearedByReset.withTreeStageAtLeast(stage),
+      ),
+    );
+    return (before: before, after: stage, toNext: toNext);
+  }
+
+  /// What the tree did, and how far the next stage is.
+  ///
+  /// Read out of the same call that writes the stage, so the screen cannot ask
+  /// a second time and get an answer the write has already moved past.
+  Future<TreeGrowth> _treeStanding() async {
+    final completed = await progressRepository.getAllCompleted();
+    final modules = await contentRepository.getModules();
+    final sizes = moduleSizesInOrder(modules);
+    final snapshot = await snapshotRepository.read();
+    final stage = snapshot.clearedByReset.treeStage;
+    return (
+      before: stage,
+      after: stage,
+      toNext: lessonsToNextStage(
+        completed: completed.length,
+        moduleSizes: sizes,
       ),
     );
   }

@@ -108,10 +108,10 @@ Future<List<String>> collectedCards(Ref ref) =>
 Future<int> treeStage(Ref ref) async {
   final snapshot = await ref.watch(snapshotRepositoryProvider).read();
   final completed = await ref.watch(completedLessonsProvider.future);
-  final lessons = await ref.watch(contentRepositoryProvider).getLessons();
+  final modules = await ref.watch(contentRepositoryProvider).getModules();
   final derived = treeStageForProgress(
     completed: completed.length,
-    total: lessons.length,
+    moduleSizes: moduleSizesInOrder(modules),
   );
   final stored = snapshot.clearedByReset.treeStage;
   return stored > derived ? stored : derived;

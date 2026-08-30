@@ -2,6 +2,7 @@ import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/lessons/domain/lesson_completion_service.dart';
 import 'package:brew_path/features/lessons/domain/lesson_finish_result.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
+import 'package:brew_path/features/progress/domain/streak_status.dart';
 import 'package:brew_path/features/progress/domain/tree_frames.dart';
 import 'package:brew_path/services/analytics/noop_analytics_service.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
@@ -133,6 +134,86 @@ void main() {
         (await entriesOn(at)).map((e) => parseActivityEntry(e).type),
         containsAll([ActivityType.lesson, ActivityType.replay]),
       );
+    });
+  });
+
+  // The design puts the FREEZE EARNED row on the completion screen, and it can
+  // only be right if the service reports the run that *earned* the freeze
+  // rather than the state of holding one.
+  group('the freeze the run earned', () {
+    /// Finishes one lesson per day across [days] consecutive days, and
+    /// returns what the last of them reported.
+    Future<LessonFinishResult> finishDaily(int days) async {
+      final lessons = await content.getLessons();
+      late LessonFinishResult last;
+      for (var day = 0; day < days; day++) {
+        last = await service.finishLesson(
+          lessons[day],
+          mastery: const MasteryResult(correct: 1, total: 1),
+          now: DateTime(2026, 5, 4).add(Duration(days: day)),
+        );
+      }
+      return last;
+    }
+
+    test('the seventh qualifying day reports it', () async {
+      expect((await finishDaily(freezeEarnDays)).freezeEarned, isTrue);
+    });
+
+    test('the sixth does not', () async {
+      expect((await finishDaily(freezeEarnDays - 1)).freezeEarned, isFalse);
+    });
+
+    test('the eighth does not — it was already held', () async {
+      expect((await finishDaily(freezeEarnDays + 1)).freezeEarned, isFalse);
+    });
+
+    // The whole reason "before" is sampled ahead of every write: today is
+    // already in the day set by the time the activity lands, so a sample taken
+    // afterwards would make the seventh day look like it changed nothing.
+    test('a replay on the earning day still reports it', () async {
+      final lessons = await content.getLessons();
+      for (var day = 0; day < freezeEarnDays - 1; day++) {
+        await service.finishLesson(
+          lessons[day],
+          mastery: const MasteryResult(correct: 1, total: 1),
+          now: DateTime(2026, 5, 4).add(Duration(days: day)),
+        );
+      }
+      final seventh = DateTime(2026, 5, 4).add(
+        const Duration(days: freezeEarnDays - 1),
+      );
+      // The seventh day is met by replaying a lesson already finished, which
+      // records the day exactly as a first completion does (§3).
+      final result = await service.finishLesson(
+        lessons.first,
+        mastery: const MasteryResult(correct: 1, total: 1),
+        now: seventh,
+      );
+
+      expect(result.isReplay, isTrue);
+      expect(result.freezeEarned, isTrue);
+    });
+
+    test('a second lesson on the earning day does not repeat it', () async {
+      final lessons = await content.getLessons();
+      for (var day = 0; day < freezeEarnDays; day++) {
+        await service.finishLesson(
+          lessons[day],
+          mastery: const MasteryResult(correct: 1, total: 1),
+          now: DateTime(2026, 5, 4).add(Duration(days: day)),
+        );
+      }
+      final sameDay = DateTime(2026, 5, 4).add(
+        const Duration(days: freezeEarnDays - 1, hours: 3),
+      );
+      final second = await service.finishLesson(
+        lessons[freezeEarnDays],
+        mastery: const MasteryResult(correct: 1, total: 1),
+        now: sameDay,
+      );
+
+      expect(second.freezeEarned, isFalse);
     });
   });
 

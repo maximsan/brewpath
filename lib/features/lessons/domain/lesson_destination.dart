@@ -101,6 +101,14 @@ RouteDestination moduleSummary(String moduleId) => RouteDestination(
 /// worth more here than the constant.
 final RouteDestination learnTab = RouteDestination(name: AppRoutes.learn.name);
 
+/// The Path tab — the course itself, which is where a finished run that has
+/// nothing queued behind it goes back to.
+///
+/// Named because the design's completion CTA reads *"Back to Path"*, and the
+/// course moved onto this tab (#394). Sending that button to Today instead
+/// would be a label pointing at the wrong place.
+final RouteDestination pathTab = RouteDestination(name: AppRoutes.path.name);
+
 /// Navigating by [RouteDestination], so no caller spells a path out.
 extension GoToDestination on BuildContext {
   /// Goes to [destination], replacing the current location.
