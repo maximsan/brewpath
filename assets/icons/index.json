@@ -2,7 +2,9 @@
   "sentinels": {
     "var(--surface)": "#FF00FF",
     "var(--surface-2)": "#FF00EE",
-    "var(--accent-ink)": "#FF00DD"
+    "var(--accent-ink)": "#FF00DD",
+    "var(--bg)": "#FF00CC",
+    "var(--accent)": "#FF00BB"
   },
   "sets": {
     "nav": {
@@ -341,6 +343,38 @@
       "set": "kinds",
       "label": "Flavour / tasting",
       "description": "A spoke wheel — the flavour-wheel game & lessons.",
+      "hasActive": false
+    },
+    {
+      "slug": "bagpick",
+      "name": "Bagpick",
+      "set": "kinds",
+      "label": "Blind bag",
+      "description": "An unlabelled bag with a bean inside — read the sample, name the process.",
+      "hasActive": false
+    },
+    {
+      "slug": "tastefix",
+      "name": "Tastefix",
+      "set": "kinds",
+      "label": "Taste fix",
+      "description": "A cup with a corrective arrow curving back — diagnose and dial in.",
+      "hasActive": false
+    },
+    {
+      "slug": "slider",
+      "name": "Slider",
+      "set": "kinds",
+      "label": "Calibrate",
+      "description": "A track with a handle on it — put the value where it belongs.",
+      "hasActive": false
+    },
+    {
+      "slug": "sequence",
+      "name": "Sequence",
+      "set": "kinds",
+      "label": "Sequence",
+      "description": "Three stops and their rules — put the steps in order.",
       "hasActive": false
     }
   ]
