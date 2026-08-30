@@ -109,8 +109,8 @@ void main() {
     await pumpWithProviders(tester, const BrewPathApp());
     await openProfile(tester);
 
-    // It moved to the App Guide. Left on Profile as well it would read as a
-    // fifth preference in Customize, which is what the design does not do.
+    // It moved to the App Guide. Profile carries no preferences at all now
+    // (#429), so a replay row here would be the only control on the screen.
     expect(find.byType(ReplayIntroRow), findsNothing);
   });
 

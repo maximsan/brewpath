@@ -7,6 +7,7 @@ import 'package:brew_path/features/profile/presentation/widgets/streak_card.dart
 import 'package:brew_path/features/profile/presentation/widgets/tree_hero_card.dart';
 import 'package:brew_path/features/progress/presentation/tree_ladder.dart';
 import 'package:brew_path/features/progress/presentation/week_strip.dart';
+import 'package:brew_path/features/studio/presentation/studio_door_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -54,19 +55,36 @@ void main() {
     );
   });
 
-  testWidgets('the preferences promise nothing Settings already has', (
+  testWidgets('carries no settings — the gear is the only way to them', (
     tester,
   ) async {
     await openProfile(tester);
 
-    // The reminder and the theme used to sit here reading "Soon"; both ship in
-    // Settings now, so a tile promising them would be offering a learner
-    // something they already have (#395).
-    expect(find.text('Sound'), findsOneWidget);
-    expect(find.text('Haptics'), findsOneWidget);
-    expect(find.text('Daily reminder'), findsNothing);
-    expect(find.text('Theme'), findsNothing);
-    expect(find.text('Soon'), findsNothing);
+    // The design keeps no preferences on Profile at all (#429). The app had
+    // grown a `Customize` grid of them beside the heading of that name.
+    expect(find.text('Customize'), findsNothing);
+    for (final tile in ['Sound', 'Haptics', 'Daily reminder', 'Theme']) {
+      expect(
+        find.text(tile),
+        findsNothing,
+        reason: '$tile belongs to Settings',
+      );
+    }
+    expect(
+      find.byType(Switch),
+      findsNothing,
+      reason: "a control that changes a preference is Settings' to draw",
+    );
+  });
+
+  testWidgets('keeps the Studio door the heading used to sit over', (
+    tester,
+  ) async {
+    // Deleting the grid takes its heading with it, not the door beneath —
+    // that entry is #428's to redraw, not this slice's to remove.
+    await openProfile(tester);
+
+    expect(find.byType(StudioDoorTile), findsOneWidget);
   });
 
   testWidgets('the three stat tiles become one line', (tester) async {
