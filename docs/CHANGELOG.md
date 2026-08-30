@@ -254,6 +254,13 @@ You can always edit this file by hand instead — the helpers just save effort.
   at the foot — drawn, but faded and unpressable until there are accounts to
   delete.
 
+- **Headings are drawn for the size they're set at.** Fraunces is a typeface
+  with a size axis: at small sizes it thickens its strokes and opens its
+  spacing, at large sizes it refines them. The app shipped one fixed drawing
+  for every size from 9.5 to 56px, so headings came out thin and small labels
+  came out cramped. It now carries the real typeface and asks it for the right
+  drawing at each step — about 64KB more in the app.
+
 - **Bold text is real bold now, or it isn't there.** 53 places asked for a
   weight the app doesn't ship — Flutter faked it by smearing the letterforms —
   and one asked for Roboto by accident. Emphasis now comes from the typeface

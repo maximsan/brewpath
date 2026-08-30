@@ -9,8 +9,9 @@ import 'package:flutter/material.dart';
 /// Fraunces on a collectible card and in Plex Sans elsewhere. A ladder that
 /// baked one face into each step could not express either.
 enum AppFace {
-  /// Fraunces at 400 — the display face, every headline step.
-  display('Fraunces', FontWeight.w400),
+  /// Fraunces at 400 — the display face, every headline step. The one face
+  /// that carries an optical size; see [isOpticallySized].
+  display('Fraunces', FontWeight.w400, isOpticallySized: true),
 
   /// IBM Plex Sans at 400 — body copy.
   ui('IBM Plex Sans', FontWeight.w400),
@@ -31,13 +32,20 @@ enum AppFace {
   /// supply it.
   inherit(null, null);
 
-  const AppFace(this.family, this.weight);
+  const AppFace(this.family, this.weight, {this.isOpticallySized = false});
 
   /// The `fonts:` family name from `pubspec.yaml`, or null to inherit.
   final String? family;
 
   /// The weight the design pairs with this face, or null to inherit.
   final FontWeight? weight;
+
+  /// Whether the bundled file carries an `opsz` axis to set.
+  ///
+  /// Only Fraunces does. The Plex faces ship as static cuts, and handing a
+  /// static font a variation it cannot answer puts noise on every span it
+  /// sets, so [AppText] asks only where there is something to ask.
+  final bool isOpticallySized;
 }
 
 /// One rung of the ladder: a size, and how text is set at that size.
@@ -66,6 +74,19 @@ enum _Rung {
   final double tracking;
 
   double get letterSpacing => tracking * size;
+
+  /// The bounds of Fraunces' `opsz` axis.
+  static const double _minOpticalSize = 9;
+  static const double _maxOpticalSize = 144;
+
+  /// The optical size this rung asks Fraunces to be drawn at.
+  ///
+  /// Its own size, which is what `font-optical-sizing: auto` means — the
+  /// browser hands the axis the size the text is rendered at. Derived rather
+  /// than tabled, so a rung cannot be given a size and an optical size that
+  /// disagree. Clamped because a rung outside the axis would otherwise ask for
+  /// a coordinate the font cannot answer.
+  double get opticalSize => size.clamp(_minOpticalSize, _maxOpticalSize);
 }
 
 /// The nine-step type ladder — `hero · display · title · heading · lead · body
@@ -208,6 +229,12 @@ abstract final class AppText {
     height: rung.height,
     letterSpacing: rung.letterSpacing,
     fontStyle: italic ? FontStyle.italic : null,
+    // The design's `font-optical-sizing: auto`, which only Fraunces can
+    // answer. A step's optical size is its own size, so the axis cannot drift
+    // from the ladder it is drawn at.
+    fontVariations: face.isOpticallySized
+        ? [FontVariation('opsz', rung.opticalSize)]
+        : null,
     color: override ?? roleColour,
   );
 }
