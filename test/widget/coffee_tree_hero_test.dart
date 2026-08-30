@@ -162,8 +162,11 @@ void main() {
 
     await openProfile(tester);
 
+    // The card is one button, so it announces once — its own label, which
+    // carries the stage name and the course position the tree's cannot. The
+    // tree keeps its label for every other surface it appears on.
     expect(
-      find.bySemanticsLabel('Your coffee tree, stage 7 of 10'),
+      find.bySemanticsLabel(RegExp(r'Your coffee tree\. Stage 7, Turning\.')),
       findsOneWidget,
     );
 

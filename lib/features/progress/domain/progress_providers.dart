@@ -135,6 +135,24 @@ Future<CoreLessonProgress> coreLessonProgress(Ref ref) async {
   return (completed: completed.length, total: lessons.length);
 }
 
+/// The month the Profile's closing line names, or null before there is one.
+///
+/// **The earliest recorded active day, not an install date.** The app stores no
+/// install timestamp, and adding one is a schema change; the first day the
+/// learner did anything is a real stored date and the closest thing available.
+/// It reads a month late for someone who installed and did not start — see
+/// [#447](https://github.com/maximsan/brewpath/issues/447).
+///
+/// Null before any activity, so the line is absent on a fresh install rather
+/// than naming today as the day they joined.
+@riverpod
+Future<DateTime?> joinedDate(Ref ref) async {
+  final days = await ref.watch(activeDaySetProvider.future);
+  if (days.isEmpty) return null;
+
+  return dateFromEpochDay(days.reduce((a, b) => a < b ? a : b));
+}
+
 /// The planted grove, resolved against the banks into one matrix and one scale.
 ///
 /// Joined here rather than in the widget so the tree stays ignorant of species

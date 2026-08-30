@@ -427,7 +427,7 @@ final class TreeStageProvider
   }
 }
 
-String _$treeStageHash() => r'b0c44f97033fd2ac052c14d89e26465c313f17f8';
+String _$treeStageHash() => r'00c8c29c4c6041beba826ae5152ea17cc9cad882';
 
 /// The learner's progress through the core course.
 
@@ -475,6 +475,76 @@ final class CoreLessonProgressProvider
 
 String _$coreLessonProgressHash() =>
     r'ad6fbf7e4293b231c2def4776ae73be186e6a5cf';
+
+/// The month the Profile's closing line names, or null before there is one.
+///
+/// **The earliest recorded active day, not an install date.** The app stores no
+/// install timestamp, and adding one is a schema change; the first day the
+/// learner did anything is a real stored date and the closest thing available.
+/// It reads a month late for someone who installed and did not start — see
+/// [#447](https://github.com/maximsan/brewpath/issues/447).
+///
+/// Null before any activity, so the line is absent on a fresh install rather
+/// than naming today as the day they joined.
+
+@ProviderFor(joinedDate)
+final joinedDateProvider = JoinedDateProvider._();
+
+/// The month the Profile's closing line names, or null before there is one.
+///
+/// **The earliest recorded active day, not an install date.** The app stores no
+/// install timestamp, and adding one is a schema change; the first day the
+/// learner did anything is a real stored date and the closest thing available.
+/// It reads a month late for someone who installed and did not start — see
+/// [#447](https://github.com/maximsan/brewpath/issues/447).
+///
+/// Null before any activity, so the line is absent on a fresh install rather
+/// than naming today as the day they joined.
+
+final class JoinedDateProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<DateTime?>,
+          DateTime?,
+          FutureOr<DateTime?>
+        >
+    with $FutureModifier<DateTime?>, $FutureProvider<DateTime?> {
+  /// The month the Profile's closing line names, or null before there is one.
+  ///
+  /// **The earliest recorded active day, not an install date.** The app stores no
+  /// install timestamp, and adding one is a schema change; the first day the
+  /// learner did anything is a real stored date and the closest thing available.
+  /// It reads a month late for someone who installed and did not start — see
+  /// [#447](https://github.com/maximsan/brewpath/issues/447).
+  ///
+  /// Null before any activity, so the line is absent on a fresh install rather
+  /// than naming today as the day they joined.
+  JoinedDateProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'joinedDateProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$joinedDateHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<DateTime?> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<DateTime?> create(Ref ref) {
+    return joinedDate(ref);
+  }
+}
+
+String _$joinedDateHash() => r'530cd451d912b5db7006adb700e1d2c3a03152f0';
 
 /// The planted grove, resolved against the banks into one matrix and one scale.
 ///

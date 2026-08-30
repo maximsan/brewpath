@@ -283,6 +283,24 @@ You can always edit this file by hand instead — the helpers just save effort.
   learned to carry an offer over its action, which the duel and the module
   ending will want too, and it still refuses a second button.
 
+- **Profile leads with the tree, and the streak gets a card of its own.** The
+  tab opened on a bare illustration and then four small tiles of numbers. The
+  tree is now a card that names the stage it has reached and how far through
+  the course that is; the streak has the full-width card the design gives it,
+  carrying the steam mark, the day count and the week; and the three remaining
+  tiles collapse into one quiet line of lessons and points. The screen closes
+  with the month you joined. The whole tab also moves onto the 24-point gutter
+  the design uses and the other tabs already keep, so everything on it — the
+  challenge row and the preferences grid included — sits a little wider.
+
+- **Mastery has a home outside the moment it is earned.** A card under the
+  streak shows how many lessons are solid and how many want another run, as one
+  bar, and taps through to the Path to practise them. It stays away until a
+  lesson holds a score — an empty bar under a heading reads as "you are behind"
+  to someone who simply has not started. Solid means at most one wrong answer,
+  which is the band the app already scores on; the design's 80% rule is
+  unreachable in 14 of 31 lessons and is not what is measured here.
+
 - **The course lives in one place now, and Today is only today.** The app used
   to list every module on the Learn tab *and* on Path, and both opened a module
   screen — so a learner met the same five modules three times, and the tab meant
