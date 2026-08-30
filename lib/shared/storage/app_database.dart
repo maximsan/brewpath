@@ -122,6 +122,26 @@ class UserSettings extends Table {
   /// needs representing.
   TextColumn get learnerName => text().nullable()();
 
+  /// Whether the learner asked for a daily reminder.
+  ///
+  /// Off by default: a notification nobody asked for is the fastest way to be
+  /// switched off for good, and the design's own row starts as a choice rather
+  /// than as something to undo.
+  ///
+  /// **Stored, not yet acted on.** Nothing schedules anything from this bit —
+  /// whether reminders ship at all has never been ruled, and the platform work
+  /// behind it is #443. Device-local either way: a reminder is a property of
+  /// the phone in your pocket, not of the account.
+  BoolColumn get notificationsEnabled =>
+      boolean().withDefault(const Constant(false))();
+
+  /// The time of day the reminder is set for, as one of the design's eight
+  /// slots (`prototype/settings.jsx:103`).
+  ///
+  /// Nullable rather than defaulted: "never chose a time" is a different fact
+  /// from "chose 8:00 AM", and the row reads *Off* for the first.
+  TextColumn get dailyReminderTime => text().nullable()();
+
   @override
   Set<Column> get primaryKey => {id};
 }
@@ -205,8 +225,11 @@ class AppDatabase extends _$AppDatabase {
   /// Schema version that added the learner's chosen name.
   static const int _learnerNameVersion = 9;
 
+  /// Schema version that added the daily reminder's two settings.
+  static const int _dailyReminderVersion = 10;
+
   /// The current version is whichever migration landed last.
-  static const int _schemaVersion = _learnerNameVersion;
+  static const int _schemaVersion = _dailyReminderVersion;
 
   @override
   int get schemaVersion => _schemaVersion;
@@ -330,6 +353,14 @@ class AppDatabase extends _$AppDatabase {
       // to.
       if (from < _learnerNameVersion) {
         await m.addColumn(userSettings, userSettings.learnerName);
+      }
+
+      // v9 -> v10: the daily reminder's switch and its time. Additive, and
+      // both arrive as "not asked for" — off, with no time — which is the
+      // truth for every device that upgrades into them.
+      if (from < _dailyReminderVersion) {
+        await m.addColumn(userSettings, userSettings.notificationsEnabled);
+        await m.addColumn(userSettings, userSettings.dailyReminderTime);
       }
     },
   );

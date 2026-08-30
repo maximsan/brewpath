@@ -1,6 +1,6 @@
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
-import 'package:brew_path/features/mini_games/domain/course_entitlement.dart';
+import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
 import 'package:brew_path/features/saved/domain/saved_cap.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/domain/saved_shelf.dart';

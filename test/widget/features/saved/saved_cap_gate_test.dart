@@ -1,10 +1,11 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
-import 'package:brew_path/features/mini_games/domain/course_entitlement.dart';
+import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
+import 'package:brew_path/features/monetization/domain/plus_copy.dart';
+import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/features/saved/domain/saved_cap.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/presentation/saved_bookmark_button.dart';
-import 'package:brew_path/features/saved/presentation/saved_gate.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -68,7 +69,8 @@ void main() {
       reason: 'nothing moved',
     );
     expect(findMark(AppIcon.bookmark, active: false), findsOneWidget);
-    expect(find.text(savedCapMessage), findsOneWidget);
+    // The refusal is the Plus gate now, not a snackbar.
+    expect(find.text(PlusCopy.title), findsOneWidget);
   });
 
   testWidgets('the refusal names the cap and offers Plus', (tester) async {
@@ -77,9 +79,13 @@ void main() {
     await tester.tap(find.byType(IconButton));
     await settleLoaders(tester);
 
-    // An offer, not an error.
-    expect(find.textContaining('$savedFreeMax'), findsOneWidget);
-    expect(find.textContaining('Plus'), findsOneWidget);
+    // An offer, not an error: the sheet opens on what was hit, and names the
+    // cap that stopped them.
+    expect(
+      find.text(const SavedShelfFull(cap: savedFreeMax).header),
+      findsOneWidget,
+    );
+    expect(find.text(PlusCopy.buy), findsOneWidget);
   });
 
   testWidgets('with Plus the sixth save takes', (tester) async {
@@ -89,7 +95,7 @@ void main() {
     await settleLoaders(tester);
 
     expect(await container.read(savedKeysProvider.future), {..._full, _sixth});
-    expect(find.text(savedCapMessage), findsNothing);
+    expect(find.text(PlusCopy.title), findsNothing);
   });
 
   testWidgets('an already-saved item still unsaves at the cap', (tester) async {
@@ -115,6 +121,6 @@ void main() {
       await container.read(savedKeysProvider.future),
       {'t:robusta', 't:cultivar', 't:typica', 't:bloom'},
     );
-    expect(find.text(savedCapMessage), findsNothing);
+    expect(find.text(PlusCopy.title), findsNothing);
   });
 }

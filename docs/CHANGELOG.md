@@ -44,6 +44,17 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Hitting a lock now offers something.** A free learner whose shelf is full
+  used to get a one-line snackbar; they now get the Plus gate — a sheet that
+  opens on *what they just hit*, then makes the case for the course: the rest
+  of Beginner Foundations first, practice depth second, the Studios and the
+  bigger shelf last. One action, buy. No trial, no subscription, no plan to
+  choose between and no watch-an-ad path, because v1 sells a single one-time
+  purchase. Restore, Terms and Privacy sit under it, as the App Store requires.
+  Every number the pitch says — lessons left, games locked, reference terms,
+  the shelf cap — is counted from the shipped content, so authoring a lesson
+  can never make the paywall lie.
+
 - **The Coffee Tree has its own screen.** Tapping the tree on Profile opens it:
   the stage's name — Seed, Flowering, Near harvest — the tree at hero size, how
   far through the core course you are as a bar that fills, what the next stage
@@ -53,6 +64,19 @@ You can always edit this file by hand instead — the helpers just save effort.
   forever, on the one screen you sit on — the Profile hero stays still, as the
   design has it, so a tab you leave open carries no permanent animation.
   Reduced motion holds the tree upright and fills the bar instantly.
+
+- **Settings has the four screens its rows always implied.** Account and sync,
+  Purchases, Help and support and About now exist and open from the rows that
+  name them, instead of being sections the app had no destination for. They are
+  frames rather than finished screens: each carries its real title and section
+  headings, and says in a line what is still to come. The **App Guide** moved
+  into Help and support, which is where it belongs — it sat on the Settings
+  root only because that screen did not exist yet.
+
+- **A daily reminder can be asked for.** Settings gains a Notifications switch
+  and a Daily reminder row that opens a sheet of eight times to pick from. The
+  choice is remembered; nothing is scheduled yet, because whether reminders
+  ship at all is still an open question.
 
 - **The app opens on a welcome screen it never had.** The first screen a new
   learner saw was the mascot's introduction wearing the welcome screen's slot:
@@ -212,6 +236,23 @@ You can always edit this file by hand instead — the helpers just save effort.
   module, the progress bar is gone — the grid is the progress — and the header
   is the bare `0 OF 30` in mono the design gives it, rather than a second
   "Collection" title under the one the shared header already shows.
+
+- **The lesson player is the card, and nothing else.** It used to print the
+  module name and the lesson title above every card, and leave by a back
+  arrow. Now the bar carries only what the design puts there: a close mark, the
+  roasting bean with its position beside it, and the save control. Nothing
+  competes with the question being asked.
+
+- **Settings is grouped the way the design groups it.** Appearance leads, the
+  sound and haptics switches move under **Practice** beside the new reminder
+  rows they belong with, and **Account** and **Support** carry the rows that
+  leave the screen. The version moved out of a labelled row into the centred
+  line that closes the screen. Rows are label-left, value-right over a
+  hairline, and none of them draws a leading icon any more: the design's
+  settings row has no icon slot at all, so the six stock glyphs the app had put
+  there were removals, not replacements. **Delete account** joins the two rows
+  at the foot — drawn, but faded and unpressable until there are accounts to
+  delete.
 
 - **Bold text is real bold now, or it isn't there.** 53 places asked for a
   weight the app doesn't ship — Flutter faked it by smearing the letterforms —
