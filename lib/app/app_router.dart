@@ -8,7 +8,7 @@ import 'package:brew_path/features/dictionary/presentation/term_detail_screen.da
 import 'package:brew_path/features/learn/domain/course_completion_providers.dart';
 import 'package:brew_path/features/learn/presentation/course_completion_screen.dart';
 import 'package:brew_path/features/learn/presentation/learn_screen.dart';
-import 'package:brew_path/features/learn/presentation/module_summary_screen.dart';
+import 'package:brew_path/features/learn/presentation/module_complete_screen.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_screen.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_intro_screen.dart';
@@ -217,7 +217,7 @@ GoRouter appRouter(Ref ref) {
                     path: AppRoutes.moduleSummary.path,
                     name: AppRoutes.moduleSummary.name,
                     parentNavigatorKey: _rootKey,
-                    builder: (context, state) => ModuleSummaryScreen(
+                    builder: (context, state) => ModuleCompleteScreen(
                       moduleId: state.pathParameters['moduleId']!,
                     ),
                   ),

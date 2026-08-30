@@ -1,3 +1,4 @@
+import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/models/module_model.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
@@ -18,6 +19,8 @@ class ModuleSummary {
   const ModuleSummary({
     required this.module,
     required this.earnedCards,
+    required this.hasNextModule,
+    required this.treeStage,
     this.moduleReward,
   });
 
@@ -30,6 +33,20 @@ class ModuleSummary {
   /// The module's own Module Reward card — the recap's reward — or null when it
   /// has not been collected.
   final CoffeeCardModel? moduleReward;
+
+  /// Whether a module follows this one in the course.
+  ///
+  /// The ending's action reads *Begin next module* where one does and *Back to
+  /// Path* where none does (`rewards.jsx:340`) — so the screen has to know
+  /// which module it just closed, not only that it closed one.
+  final bool hasNextModule;
+
+  /// Where the coffee tree stands now.
+  ///
+  /// The screen draws the tree at rest rather than growing it: the growth
+  /// belongs to the lesson that caused it, and the lesson-completion screen
+  /// has already played it by the time this one opens. See #458.
+  final int treeStage;
 }
 
 /// Builds the [ModuleSummary] for [moduleId] by joining content (module +
@@ -40,6 +57,9 @@ Future<ModuleSummary> moduleSummary(Ref ref, String moduleId) async {
   final modules = await content.getModules();
   final module = modules.firstWhere((m) => m.id == moduleId);
   final lessonIds = module.lessonIds.toSet();
+  // Position, not list order: the course is numbered, and a bank that ever
+  // ships out of order must not decide what "next" means.
+  final hasNextModule = modules.any((m) => m.n > module.n);
 
   final cards = await content.getCards();
   final collectedIds =
@@ -56,6 +76,8 @@ Future<ModuleSummary> moduleSummary(Ref ref, String moduleId) async {
   return ModuleSummary(
     module: module,
     earnedCards: earnedCards,
+    hasNextModule: hasNextModule,
+    treeStage: await ref.watch(treeStageProvider.future),
     moduleReward: moduleReward != null && collectedIds.contains(moduleReward.id)
         ? moduleReward
         : null,

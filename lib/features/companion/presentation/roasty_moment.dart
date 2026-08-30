@@ -27,15 +27,21 @@ class RoastyMoment extends StatefulWidget {
     required this.eyebrow,
     required this.title,
     required this.onDone,
+    this.hold = defaultHold,
     super.key,
   });
 
-  /// How long the beat holds before it hands over on its own.
-  ///
-  /// The design's `autoMs`. One value, not a parameter: the module ending
-  /// holds slightly longer, and the caller that needs that can widen this when
-  /// it arrives rather than the slot waiting empty for it.
-  static const Duration hold = Duration(milliseconds: 2000);
+  /// What a beat holds for unless its caller says otherwise — the design's
+  /// `autoMs` default.
+  static const Duration defaultHold = Duration(milliseconds: 2000);
+
+  /// The module ending's longer hold (`rewards.jsx:225`). It is the one beat
+  /// that overrides the default, and it says so here rather than at the call
+  /// site so the two durations sit together.
+  static const Duration moduleHold = Duration(milliseconds: 2200);
+
+  /// How long this beat holds before it hands over on its own.
+  final Duration hold;
 
   /// The one-shot the companion plays as the beat opens.
   final CompanionReaction reaction;
@@ -62,7 +68,7 @@ class _RoastyMomentState extends State<RoastyMoment>
   /// take it away.
   late final AnimationController _controller = AnimationController(
     vsync: this,
-    duration: RoastyMoment.hold,
+    duration: widget.hold,
   );
 
   Timer? _timer;
@@ -71,7 +77,7 @@ class _RoastyMomentState extends State<RoastyMoment>
   @override
   void initState() {
     super.initState();
-    _timer = Timer(RoastyMoment.hold, _finish);
+    _timer = Timer(widget.hold, _finish);
   }
 
   @override
