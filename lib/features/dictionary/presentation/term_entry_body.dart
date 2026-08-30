@@ -2,7 +2,6 @@ import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_status_style.dart';
-import 'package:brew_path/features/dictionary/presentation/status_chip.dart';
 import 'package:brew_path/features/dictionary/presentation/term_self_check.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -31,7 +30,6 @@ class TermEntryBody extends ConsumerWidget {
     required this.view,
     required this.term,
     this.onRelatedTap,
-    this.heading = false,
     super.key,
   });
 
@@ -46,12 +44,6 @@ class TermEntryBody extends ConsumerWidget {
   /// the peek sheet does not stack peeks on itself.
   final ValueChanged<String>? onRelatedTap;
 
-  /// Whether to lead with the term as a page heading and its status chip.
-  ///
-  /// The full entry does; the peek sheet does not, because a sheet already
-  /// names what it is about in its own header.
-  final bool heading;
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mood = context.mood;
@@ -61,26 +53,18 @@ class TermEntryBody extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (heading) ...[
-          Text(term.term, style: AppText.display(mood: mood)),
-          const SizedBox(height: AppSpacing.xs),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: StatusChip(status: status),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-        ],
         if (term.pronunciation != null)
           Text(
             term.pronunciation!,
             style: text.bodySmall?.copyWith(color: mood.inkMute),
           ),
         const SizedBox(height: AppSpacing.xs),
-        // The lead, not body copy: the design sets the short explanation a
-        // step above the deep one so the two are not read as one paragraph.
+        // The **display** face at the heading rung (`dictionary.jsx:665`), not
+        // body copy: the short explanation is the entry's answer, and setting
+        // it in the reading face made it a first paragraph of the deep one.
         Text(
           term.shortExplanation,
-          style: AppText.lead(mood: mood),
+          style: AppText.heading(mood: mood),
         ),
         if (term.deepExplanation != null) ...[
           const SizedBox(height: AppSpacing.md),
@@ -92,7 +76,7 @@ class TermEntryBody extends ConsumerWidget {
         if (term.example != null) ...[
           const SizedBox(height: AppSpacing.md),
           _Block(
-            label: 'IN PRACTICE',
+            label: 'In practice',
             accent: true,
             child: Text(
               term.example!,
@@ -103,14 +87,14 @@ class TermEntryBody extends ConsumerWidget {
         if (term.check != null) ...[
           const SizedBox(height: AppSpacing.lg),
           _Block(
-            label: 'KNOWLEDGE CHECK',
+            label: 'Knowledge check',
             child: TermSelfCheck(check: term.check!),
           ),
         ],
         if (onRelatedTap != null && term.relatedIds.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.lg),
           _Block(
-            label: 'RELATED TERMS',
+            label: 'Related terms',
             child: _RelatedChips(
               view: view,
               relatedIds: term.relatedIds,

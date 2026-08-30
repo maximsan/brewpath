@@ -1,23 +1,23 @@
 import 'dart:async';
 import 'package:brew_path/core/constants/app_routes.dart';
-import 'package:brew_path/core/icons/app_icon.dart';
-import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
-import 'package:brew_path/core/widgets/section_header.dart';
-import 'package:brew_path/core/widgets/smallcaps_label.dart';
-import 'package:brew_path/features/dictionary/domain/category_glyph.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
-import 'package:brew_path/features/dictionary/presentation/dictionary_filter_chips.dart';
-import 'package:brew_path/features/dictionary/presentation/term_row.dart';
+import 'package:brew_path/features/dictionary/presentation/category_index.dart';
+import 'package:brew_path/features/dictionary/presentation/dictionary_filter_control.dart';
+import 'package:brew_path/features/dictionary/presentation/dictionary_masthead.dart';
+import 'package:brew_path/features/dictionary/presentation/dictionary_term_list.dart';
+import 'package:brew_path/features/dictionary/presentation/search_mark.dart';
 import 'package:brew_path/shared/models/content/dictionary_category.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
-import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+/// The design's search mark, at its drawn size (`dictionary.jsx:179`).
+const double _searchMarkSize = 17;
 
 /// Dictionary home: search, filter, and every term under its category.
 class DictionaryHomeScreen extends ConsumerWidget {
@@ -30,8 +30,10 @@ class DictionaryHomeScreen extends ConsumerWidget {
   /// is about one subject and the shelf says so.
   static const title = 'Coffee Dictionary';
 
-  /// The kicker over it.
-  static const kicker = 'REFERENCE';
+  /// The kicker over it, which carries how many terms the shelf holds
+  /// (`dictionary.jsx:451`) — the count is the part that makes it inform
+  /// rather than decorate.
+  static String kickerFor(int terms) => 'Reference · $terms terms';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -56,39 +58,6 @@ class DictionaryHomeScreen extends ConsumerWidget {
   }
 }
 
-/// The kicker and the name, which the design leads the screen with.
-class _Masthead extends StatelessWidget {
-  const _Masthead();
-
-  @override
-  Widget build(BuildContext context) {
-    final mood = context.mood;
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.gutter,
-        0,
-        AppSpacing.gutter,
-        AppSpacing.sm,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SmallcapsLabel(
-            DictionaryHomeScreen.kicker,
-            color: mood.accentText,
-          ),
-          const SizedBox(height: AppSpacing.xxs),
-          Text(
-            DictionaryHomeScreen.title,
-            style: AppText.display(mood: mood),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _DictionaryBody extends StatefulWidget {
   const _DictionaryBody({required this.view});
 
@@ -102,16 +71,31 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
   String _query = '';
   DictionaryFilter _filter = DictionaryFilter.all;
 
-  /// The terms surviving both the filter and the query, in bank order.
-  List<DictionaryTerm> get _visible => searchDictionary(
-    filterDictionary(
-      widget.view.terms,
-      _filter,
-      widget.view.completedLessonIds,
-    ),
-    _query,
-    categories: widget.view.categories,
-  );
+  /// The category being browsed, or null on the index.
+  ///
+  /// The design opens on the index and drills in (`dictionary.jsx:414`): a
+  /// learner arrives wanting a subject, not a scroll of seventy-three terms.
+  DictionaryCategory? _category;
+
+  /// Whether the index is what to show — nothing narrowed, nothing searched.
+  bool get _onIndex =>
+      _category == null && _query.isEmpty && _filter == DictionaryFilter.all;
+
+  /// The terms surviving the category, the filter and the query, in bank
+  /// order.
+  List<DictionaryTerm> get _visible {
+    final inCategory = _category == null
+        ? widget.view.terms
+        : widget.view.terms
+              .where((term) => term.categoryId == _category!.id)
+              .toList();
+
+    return searchDictionary(
+      filterDictionary(inCategory, _filter, widget.view.completedLessonIds),
+      _query,
+      categories: widget.view.categories,
+    );
+  }
 
   void _openTerm(String termId) =>
       unawaited(context.pushDictionaryTerm(termId));
@@ -119,11 +103,16 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
   @override
   Widget build(BuildContext context) {
     final visible = _visible;
+    final mood = context.mood;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const _Masthead(),
+        DictionaryMasthead(
+          terms: widget.view.terms.length,
+          category: _category,
+          onClear: () => setState(() => _category = null),
+        ),
         Padding(
           padding: const EdgeInsets.fromLTRB(
             AppSpacing.gutter,
@@ -133,133 +122,47 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
           ),
           child: TextField(
             onChanged: (value) => setState(() => _query = value),
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               hintText: 'Search terms, e.g. crema, bloom…',
-              prefixIcon: Icon(Icons.search),
-              border: OutlineInputBorder(),
+              prefixIcon: Padding(
+                padding: const EdgeInsets.all(AppSpacing.sm),
+                child: SearchMark(size: _searchMarkSize, color: mood.inkMute),
+              ),
+              prefixIconConstraints: const BoxConstraints.tightFor(
+                width: _searchMarkSize + AppSpacing.md,
+                height: _searchMarkSize + AppSpacing.md,
+              ),
+              border: const OutlineInputBorder(),
             ),
           ),
         ),
-        DictionaryFilterChips(
+        DictionaryFilterControl(
           selected: _filter,
           counts: widget.view.counts,
           onSelected: (filter) => setState(() => _filter = filter),
         ),
         const SizedBox(height: AppSpacing.sm),
         Expanded(
-          child: visible.isEmpty
-              ? const _NoMatches()
-              : _TermList(
+          child: _onIndex
+              ? SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.gutter,
+                  ),
+                  child: CategoryIndex(
+                    categories: widget.view.categories,
+                    terms: widget.view.terms,
+                    onOpen: (category) => setState(() => _category = category),
+                  ),
+                )
+              : visible.isEmpty
+              ? const DictionaryNoMatches()
+              : DictionaryTermList(
                   view: widget.view,
                   visible: visible,
                   onOpen: _openTerm,
                 ),
         ),
       ],
-    );
-  }
-}
-
-/// The visible terms, grouped under their categories in bank order.
-class _TermList extends StatelessWidget {
-  const _TermList({
-    required this.view,
-    required this.visible,
-    required this.onOpen,
-  });
-
-  final DictionaryView view;
-  final List<DictionaryTerm> visible;
-  final ValueChanged<String> onOpen;
-
-  @override
-  Widget build(BuildContext context) {
-    final grouped = groupByCategory(visible, view.categories);
-
-    return ListView(
-      children: [
-        for (final entry in grouped.entries) ...[
-          SectionHeader(entry.key.label),
-          _CategoryGlyphNote(category: entry.key),
-          for (final term in entry.value)
-            TermRow(
-              term: term,
-              status: dictionaryStatusOf(term, view.completedLessonIds),
-              onTap: () => onOpen(term.id),
-            ),
-          const SizedBox(height: AppSpacing.md),
-        ],
-      ],
-    );
-  }
-}
-
-/// Shown when a search matches nothing, so the learner knows the word is
-/// absent rather than the app broken.
-class _NoMatches extends StatelessWidget {
-  const _NoMatches();
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      label: 'No terms match that search',
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Text(
-            'No terms match that search.',
-            textAlign: TextAlign.center,
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: context.mood.inkMute),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// A category's glyph and its one-line description, under the section header.
-///
-/// Every category wears its **own** mark. It wore one generic cup until now,
-/// because the drawings did not exist when this screen was built; #378 ported
-/// them and [categoryGlyph] is the mapping.
-class _CategoryGlyphNote extends StatelessWidget {
-  const _CategoryGlyphNote({required this.category});
-
-  final DictionaryCategory category;
-
-  @override
-  Widget build(BuildContext context) {
-    final mood = context.mood;
-
-    return Padding(
-      padding: const EdgeInsets.only(
-        left: AppSpacing.gutter,
-        right: AppSpacing.gutter,
-        bottom: AppSpacing.xs,
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ExcludeSemantics(
-            child: IconMark(
-              categoryGlyph(category.id) ?? AppIcon.cup,
-              size: AppSpacing.md,
-              color: mood.inkMute,
-            ),
-          ),
-          const SizedBox(width: AppSpacing.xs),
-          Expanded(
-            child: Text(
-              category.summary,
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(color: mood.inkMute),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

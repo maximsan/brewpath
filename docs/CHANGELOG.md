@@ -398,10 +398,12 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
-- **The dictionary looks like part of the app now.** It leads with its own
-  name — *Coffee Dictionary*, under a kicker — instead of a bar title, and each
-  category wears its own mark rather than the same cup eight times over. The
-  three filters became one control, because they were always one choice.
+- **The dictionary opens on its subjects, not on every word it knows.** Eight
+  categories, each with its own mark, what it covers and how many terms sit
+  behind it — one tap opens a subject, and one goes back. It leads with its own
+  name, *Coffee Dictionary*, under a kicker that counts the shelf. The three
+  filters became one control, because they were always one choice, and the
+  search field wears the design's own glass.
 
 - **A term reads as an entry, not a settings row.** The word is a heading on
   the page with its status beside it — a mark and a word together, so it does

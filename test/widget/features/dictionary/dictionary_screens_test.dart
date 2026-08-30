@@ -2,6 +2,7 @@ import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
+import 'package:brew_path/features/dictionary/presentation/category_index.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
 import 'package:brew_path/features/dictionary/presentation/status_chip.dart';
 import 'package:brew_path/features/dictionary/presentation/term_detail_screen.dart';
@@ -87,7 +88,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Coffee Dictionary'), findsOneWidget);
-      expect(find.text('REFERENCE'), findsOneWidget);
+      expect(find.text('REFERENCE · 2 TERMS'), findsOneWidget);
       // The shelf is about one subject, and says so — it read `Dictionary`.
       expect(find.text('Dictionary'), findsNothing);
       expect(find.widgetWithText(AppBar, 'Coffee Dictionary'), findsNothing);
@@ -115,16 +116,46 @@ void main() {
       expect(findMark(AppIcon.cup), findsNothing);
     });
 
-    testWidgets('renders each category with its terms', (tester) async {
+    testWidgets('opens on the category index, not a wall of terms', (
+      tester,
+    ) async {
       await tester.pumpWidget(_wrap(const DictionaryHomeScreen()));
       await tester.pumpAndSettle();
 
-      // The category names head sections, so they are smallcaps; the terms
-      // under them are not.
-      expect(find.text('BEANS AND BOTANY'), findsOneWidget);
-      expect(find.text('COFFEE TRADE'), findsOneWidget);
+      // A learner arrives wanting a subject. The index names each category,
+      // says what it covers, and counts what is behind it.
+      expect(find.byType(CategoryIndex), findsOneWidget);
+      expect(find.text('Beans and Botany'), findsOneWidget);
+      expect(find.text('Coffee Trade'), findsOneWidget);
+      expect(find.text('The plant, the seed, where it grows.'), findsOneWidget);
+      // Not the terms — those are one tap in.
+      expect(find.text('Arabica'), findsNothing);
+    });
+
+    testWidgets('a category opens its terms and names itself', (tester) async {
+      await tester.pumpWidget(_wrap(const DictionaryHomeScreen()));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Beans and Botany'));
+      await tester.pumpAndSettle();
+
       expect(find.text('Arabica'), findsOneWidget);
-      expect(find.text('TDS'), findsOneWidget);
+      // The other category's term is behind its own row.
+      expect(find.text('TDS'), findsNothing);
+      // The heading follows the learner, and offers the way back.
+      expect(find.text('All categories'), findsOneWidget);
+    });
+
+    testWidgets('leaving a category returns to the index', (tester) async {
+      await tester.pumpWidget(_wrap(const DictionaryHomeScreen()));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Beans and Botany'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('All categories'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(CategoryIndex), findsOneWidget);
     });
 
     testWidgets('narrows to the terms a query matches', (tester) async {

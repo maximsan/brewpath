@@ -1,22 +1,21 @@
 import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_status_style.dart';
-import 'package:brew_path/shared/theme/app_radii.dart';
+import 'package:brew_path/features/dictionary/presentation/status_mark.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// The dot's diameter, and the ring's weight when it is not filled.
-const double _markSize = 9;
-const double _ringWidth = 1.5;
-
-/// Wash behind the chip.
-const double _chipWash = 0.12;
+/// Tracking on the label — `StatusChipMini`'s 0.16em at the micro rung, wider
+/// than the ladder's own so the three words read as a status rather than as
+/// running text.
+const double _labelTracking = 1.52;
 
 /// Where a term sits on the path — a mark and a word, never one alone.
 ///
-/// The design pairs `StatusGlyph` with `StatusChipMini` (`dictionary.jsx:82`,
-/// `:120`) where the app printed a bare string. The mark carries it at a
+/// The design's `StatusChipMini` (`dictionary.jsx:120`) — a mark and a word in
+/// the status's own colour, with **no chip behind it**. It is not a pill; the
+/// name is the design's. The mark carries it at a
 /// glance; the word carries it for anyone the colour does not reach, which is
 /// why the two never separate — the three states differ by hue, and hue is the
 /// one thing a screen reader cannot report.
@@ -35,36 +34,20 @@ class StatusChip extends StatelessWidget {
     return Semantics(
       label: status.label,
       excludeSemantics: true,
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.xs,
-          vertical: AppSpacing.xxs,
-        ),
-        decoration: BoxDecoration(
-          color: colour.withValues(alpha: _chipWash),
-          borderRadius: BorderRadius.circular(AppRadii.pill),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: _markSize,
-              height: _markSize,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: status.isFilled ? colour : null,
-                border: status.isFilled
-                    ? null
-                    : Border.all(color: colour, width: _ringWidth),
-              ),
-            ),
-            const SizedBox(width: AppSpacing.xxs),
-            Text(
-              status.label,
-              style: AppText.micro(mood: mood, face: AppFace.mono),
-            ),
-          ],
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          StatusMark(status: status),
+          const SizedBox(width: AppSpacing.xs),
+          Text(
+            status.label.toUpperCase(),
+            style: AppText.micro(
+              mood: mood,
+              face: AppFace.mono,
+              color: colour,
+            ).copyWith(letterSpacing: _labelTracking),
+          ),
+        ],
       ),
     );
   }

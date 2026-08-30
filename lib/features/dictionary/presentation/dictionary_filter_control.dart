@@ -11,9 +11,9 @@ import 'package:flutter/material.dart';
 /// The counts come from [DictionaryCounts], where to-learn already excludes
 /// reference terms — the number a learner reads has to be a promise the course
 /// can keep.
-class DictionaryFilterChips extends StatelessWidget {
-  /// Creates a [DictionaryFilterChips].
-  const DictionaryFilterChips({
+class DictionaryFilterControl extends StatelessWidget {
+  /// Creates a [DictionaryFilterControl].
+  const DictionaryFilterControl({
     required this.selected,
     required this.counts,
     required this.onSelected,

@@ -1,15 +1,10 @@
 import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_status_style.dart';
+import 'package:brew_path/features/dictionary/presentation/status_mark.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
-
-/// The diameter of the status mark beside a term.
-const double _markSize = 10;
-
-/// The width of an unfilled status ring.
-const double _markStroke = 1.6;
 
 /// One term in a list: its name, its status mark, and its one-line meaning.
 class TermRow extends StatelessWidget {
@@ -51,7 +46,7 @@ class TermRow extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(top: AppSpacing.xxs),
-                  child: _StatusMark(status: status),
+                  child: StatusMark(status: status),
                 ),
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
@@ -80,28 +75,6 @@ class TermRow extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _StatusMark extends StatelessWidget {
-  const _StatusMark({required this.status});
-
-  final DictionaryStatus status;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = status.colorFrom(context.mood);
-    return Container(
-      width: _markSize,
-      height: _markSize,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: status.isFilled ? color : null,
-        border: status.isFilled
-            ? null
-            : Border.all(color: color, width: _markStroke),
       ),
     );
   }
