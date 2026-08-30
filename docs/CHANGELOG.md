@@ -231,6 +231,26 @@ You can always edit this file by hand instead — the helpers just save effort.
   to play it again rather than a red mark, and there is a close button now, so
   the celebration is not a screen you are held on.
 
+- **The tree grows when you finish a lesson.** The completion screen never
+  mentioned the Coffee Tree, which is the thing the whole app is a metaphor
+  for. It is on the screen now, and on the completion that crosses a growth
+  threshold it grows — the new stage fades up, settles, rings, and throws a few
+  leaves. Most completions do not cross one, so a still tree says how far the
+  next stage is rather than sitting there looking broken. Reduced motion keeps
+  the fade and drops everything that moves.
+
+- **The tree stopped finishing early.** Its ten stages were spread evenly over
+  the thirty-two lessons, so it reached full growth at lesson twenty-nine and
+  the last three lessons of Foundations grew nothing at all. The stages are
+  pinned to the five modules the way they were designed to be — one step at
+  each module's halfway point, one when you finish it — so a module boundary is
+  always a visible jump and the harvest waits for the final lesson.
+
+- **The card you just earned can be read where you earn it.** The completion
+  screen listed a new collectible by name and left you to go and find it. The
+  row opens now, onto the full card — its badge, its summary, and the keepsake
+  line the app has always assembled and never once shown.
+
 - **You meet the word "freeze" before you ever need one.** Seven qualifying
   days in a row earn a streak freeze, and the app only ever mentioned freezes
   *afterwards* — as the notice telling you a day had already been saved. The
