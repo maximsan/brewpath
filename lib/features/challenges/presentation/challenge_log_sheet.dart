@@ -73,7 +73,6 @@ class _LogSheetBodyState extends State<_LogSheetBody> {
           challenge.prompt,
           style: theme.textTheme.labelSmall?.copyWith(
             color: mood.inkMute,
-            fontWeight: FontWeight.w700,
             letterSpacing: _promptLetterSpacing,
           ),
         ),

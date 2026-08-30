@@ -103,7 +103,6 @@ class _Node extends StatelessWidget {
               label,
               style: theme.textTheme.labelSmall?.copyWith(
                 color: textTint,
-                fontWeight: FontWeight.w700,
               ),
             ),
           ],

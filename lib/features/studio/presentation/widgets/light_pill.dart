@@ -87,9 +87,13 @@ class LightPill extends StatelessWidget {
                 const SizedBox(width: AppSpacing.xs),
                 Text(
                   light.name,
+                  // Selection reads as weight, and the face is where weight
+                  // lives: the control cut at 500 against the body cut at 400,
+                  // the same rung either way.
                   style: AppText.support(
                     mood: mood,
-                  ).copyWith(fontWeight: selected ? FontWeight.w500 : null),
+                    face: selected ? AppFace.control : AppFace.ui,
+                  ),
                 ),
               ],
             ),

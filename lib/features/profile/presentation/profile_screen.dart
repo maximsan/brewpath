@@ -139,7 +139,6 @@ class _SectionTitle extends StatelessWidget {
     return Text(
       text,
       style: theme.textTheme.titleLarge?.copyWith(
-        fontWeight: FontWeight.w800,
         color: context.mood.ink,
       ),
     );

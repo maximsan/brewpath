@@ -78,9 +78,7 @@ class _CardDetailBody extends StatelessWidget {
           const SizedBox(height: AppSpacing.lg),
           Text(
             card.title,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+            style: theme.textTheme.headlineSmall,
           ),
           const SizedBox(height: AppSpacing.xs),
           Text(card.moduleTag, style: theme.textTheme.labelLarge),

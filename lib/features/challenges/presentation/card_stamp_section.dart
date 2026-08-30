@@ -83,7 +83,6 @@ class _Stamp extends StatelessWidget {
               'CHALLENGE',
               style: theme.textTheme.labelSmall?.copyWith(
                 color: mood.inkMute,
-                fontWeight: FontWeight.w700,
                 letterSpacing: _eyebrowLetterSpacing,
               ),
             ),

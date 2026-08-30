@@ -111,7 +111,6 @@ class _PointsChip extends StatelessWidget {
         '+$points points',
         style: Theme.of(context).textTheme.labelLarge?.copyWith(
           color: mood.bg,
-          fontWeight: FontWeight.w700,
         ),
       ),
     );
