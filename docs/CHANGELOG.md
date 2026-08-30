@@ -55,6 +55,21 @@ You can always edit this file by hand instead — the helpers just save effort.
   the shelf cap — is counted from the shipped content, so authoring a lesson
   can never make the paywall lie.
 
+- **You can choose what grows in your grove.** Profile gains a Studio door
+  onto *Your grove*: three coffee species and four lights, with the plant drawn
+  live under whatever you are considering — full-grown, so you are choosing the
+  tree you end up with rather than the seedling you start as. Each species
+  carries its real botany: the binomial, its share of the world's cups, where
+  it comes from, how it grows and what it tastes like. Nothing is written until
+  you confirm, and the confirm stays dark until the draft actually differs from
+  what is planted, so backing out costs nothing and re-picking what you already
+  have is not offered as a change. Every plant grows through all ten stages
+  either way — the choice is what it looks like, never how far it gets.
+
+  It is part of Plus. For everyone else the door is marked, and tapping it
+  opens the same offer every other lock does — naming the Studio, then making
+  the case for the course.
+
 - **The Coffee Tree has its own screen.** Tapping the tree on Profile opens it:
   the stage's name — Seed, Flowering, Near harvest — the tree at hero size, how
   far through the core course you are as a bar that fills, what the next stage

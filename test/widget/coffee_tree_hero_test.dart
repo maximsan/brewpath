@@ -28,12 +28,14 @@ void main() {
     await settleLoaders(tester);
   }
 
+  /// Profile draws two trees since #140 — the hero, and the thumbnail in the
+  /// Studio door below it. Every finder here takes the first, which is the
+  /// hero.
+  Finder hero() => find.byType(CoffeeTree).first;
+
   String heroAssetName(WidgetTester tester) {
     final image = tester.widget<Image>(
-      find.descendant(
-        of: find.byType(CoffeeTree),
-        matching: find.byType(Image),
-      ),
+      find.descendant(of: hero(), matching: find.byType(Image)).first,
     );
     return (image.image as AssetImage).assetName;
   }
@@ -41,7 +43,7 @@ void main() {
   testWidgets('a fresh install shows the tree at seed', (tester) async {
     await openProfile(tester);
 
-    expect(find.byType(CoffeeTree), findsOneWidget);
+    expect(find.byType(CoffeeTree), findsWidgets);
     expect(heroAssetName(tester), 'assets/images/trees/1.png');
   });
 
@@ -100,7 +102,7 @@ void main() {
     // wrapper should be in the tree at all.
     expect(
       find.descendant(
-        of: find.byType(CoffeeTree),
+        of: hero(),
         matching: find.byType(ColorFiltered),
       ),
       findsNothing,
@@ -130,14 +132,14 @@ void main() {
     // Robusta is wider than it is tall: scale(1.2, 0.9). Named rather than
     // found by position: the sway nests a second `Transform` around this one.
     final scaled = tester.widget<Transform>(
-      find.byKey(CoffeeTree.silhouetteKey),
+      find.byKey(CoffeeTree.silhouetteKey).first,
     );
     expect(scaled.transform.storage[0], closeTo(1.2, 1e-9));
     expect(scaled.transform.storage[5], closeTo(0.9, 1e-9));
 
     final tinted = tester.widget<ColorFiltered>(
       find.descendant(
-        of: find.byType(CoffeeTree),
+        of: hero(),
         matching: find.byType(ColorFiltered),
       ),
     );
