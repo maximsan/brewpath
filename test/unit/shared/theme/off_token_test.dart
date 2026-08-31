@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +32,34 @@ void main() {
               'literal that passed review once',
         );
       }
+    });
+
+    test('holds exactly two trackings, and they are the two rung-breakers', () {
+      // Tracking is the ladder's job since #410 — `AppTracking` carries the
+      // design's values, and only a spacing too wide to be a rung is an
+      // exception. Read off the source rather than the list, because the
+      // register types every entry as `double` and cannot tell a tracking
+      // from a padding.
+      final declared = RegExp(r'OffToken<double> (\w*Tracking) =')
+          .allMatches(
+            File('lib/shared/theme/off_token.dart').readAsStringSync(),
+          )
+          .map((match) => match.group(1))
+          .toList();
+
+      expect(
+        declared,
+        containsAllInOrder(<String>['tabLabelTracking', 'tapCueTracking']),
+      );
+      expect(
+        declared,
+        hasLength(2),
+        reason:
+            'a third tracking here means the register is growing into a '
+            'second type system beside AppTracking, which is the thing #410 '
+            'ruled against. If the design assigns it to an app component, it '
+            'belongs on the ladder: $declared',
+      );
     });
 
     test('holds the rewarded-ad ring and the canvas it sits on', () {

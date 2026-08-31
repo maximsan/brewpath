@@ -30,7 +30,6 @@ class TodayCardWidget extends StatelessWidget {
   final bool keepSharpDone;
 
   static const double _heroRadius = 12;
-  static const double _heroLetterSpacing = 0.6;
   static const double _mutedAlpha = 0.8;
   static const double _iconSm = 18;
 
@@ -79,7 +78,6 @@ class TodayCardWidget extends StatelessWidget {
                   "Today's lesson",
                   style: theme.textTheme.labelMedium?.copyWith(
                     color: mood.accentInk,
-                    letterSpacing: _heroLetterSpacing,
                   ),
                 ),
               ],

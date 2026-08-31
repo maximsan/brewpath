@@ -6,11 +6,6 @@ import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// Tracking on the label — `StatusChipMini`'s 0.16em at the micro rung, wider
-/// than the ladder's own so the three words read as a status rather than as
-/// running text.
-const double _labelTracking = 1.52;
-
 /// Where a term sits on the path — a mark and a word, never one alone.
 ///
 /// The design's `StatusChipMini` (`dictionary.jsx:120`) — a mark and a word in
@@ -45,7 +40,8 @@ class StatusChip extends StatelessWidget {
               mood: mood,
               face: AppFace.mono,
               color: colour,
-            ).copyWith(letterSpacing: _labelTracking),
+              tracking: AppTracking.marker,
+            ),
           ),
         ],
       ),

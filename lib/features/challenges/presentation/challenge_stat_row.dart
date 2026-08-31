@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const double _barHeight = 8;
 const double _emptyBarFraction = 0.02;
-const double _eyebrowLetterSpacing = 0.6;
 
 /// How many Coffee Challenges the learner has brewed, out of the course's own
 /// count.
@@ -70,7 +69,6 @@ class _StatRow extends StatelessWidget {
                   'COFFEE CHALLENGES',
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: mood.inkMute,
-                    letterSpacing: _eyebrowLetterSpacing,
                   ),
                 ),
                 Text(

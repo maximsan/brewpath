@@ -7,6 +7,7 @@ import 'package:brew_path/features/mini_games/domain/mini_game_tier.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_gate_sheet.dart';
 import 'package:brew_path/shared/models/content/mini_game_format.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -118,8 +119,6 @@ class _FormatRow extends StatelessWidget {
   final MiniGameFormat format;
   final bool hasCourse;
 
-  static const double _eyebrowLetterSpacing = 0.8;
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -160,9 +159,13 @@ class _FormatRow extends StatelessWidget {
                   children: [
                     Text(
                       format.topic,
-                      style: theme.textTheme.labelSmall?.copyWith(
+                      // The topic is the row's meta line, the same treatment
+                      // `.lesson-row .meta` takes: 0.08em, not the rung's
+                      // smallcaps 0.14em.
+                      style: AppText.label(
                         color: mood.inkMute,
-                        letterSpacing: _eyebrowLetterSpacing,
+                        face: AppFace.mono,
+                        tracking: AppTracking.meta,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.xxs),

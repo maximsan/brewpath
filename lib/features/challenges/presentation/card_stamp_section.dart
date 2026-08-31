@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const double _iconMd = 22;
-const double _eyebrowLetterSpacing = 0.6;
 
 /// The challenge stamped onto a collectible card.
 ///
@@ -83,7 +82,6 @@ class _Stamp extends StatelessWidget {
               'CHALLENGE',
               style: theme.textTheme.labelSmall?.copyWith(
                 color: mood.inkMute,
-                letterSpacing: _eyebrowLetterSpacing,
               ),
             ),
             const SizedBox(height: AppSpacing.xs),

@@ -5,14 +5,12 @@ import 'package:brew_path/features/lessons/presentation/cards/choice_list.dart';
 import 'package:brew_path/features/lessons/presentation/cards/multi_choice_box.dart';
 import 'package:brew_path/features/lessons/presentation/cards/multi_scoring.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
 /// The tag naming an answer the learner did not pick.
 const String _missedTag = 'MISSED';
-
-/// Tracking on that tag, which the design sets in mono small caps.
-const double _tagTracking = 1.4;
 
 /// The design keeps the outline hairline in every state — [CardOptionTile]'s
 /// default. Only a pre-submit pick reads heavier: `.ms-choice.on` lays
@@ -170,10 +168,12 @@ class _MultiOptionRow extends StatelessWidget {
           if (mark == MultiMark.missed)
             Text(
               _missedTag,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: mood.inkMute,
-                letterSpacing: _tagTracking,
-              ),
+              // `.ms-tag` (`index.html:671`, set on `lesson.jsx:479`) is the
+              // micro step in the row's own sage — not the label step in
+              // muted ink. The row is already sage to its border, box and
+              // check; a grey tag on it read as a separate remark rather than
+              // as the mark's own word.
+              style: AppText.micro(mood: mood, color: mood.sage),
             ),
         ],
       ),

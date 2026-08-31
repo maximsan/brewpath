@@ -128,18 +128,6 @@ abstract final class OffTokens {
         'the smallest stop reads as a gap between them.',
   );
 
-  /// The Cards tab count line's letter-spacing, in em — tighter than the label
-  /// rung it otherwise sits on.
-  static const OffToken<double> collectionCountTracking = OffToken(
-    0.08,
-    reason:
-        'The design tracks `{earned} of {total}` at 0.08em, where the label '
-        'rung tracks at 0.14em — the smallcaps value it owes its uppercase '
-        'siblings. This line is a figure rather than a kicker, and figures do '
-        'not want smallcaps tracking: at 0.14em the numerals drift apart and '
-        'the line stops reading as one count.',
-  );
-
   /// The tab label's letter-spacing, in em — wider than the micro rung the
   /// label otherwise sits on.
   static const OffToken<double> tabLabelTracking = OffToken(
@@ -185,7 +173,6 @@ abstract final class OffTokens {
     pickTilePadding,
     cardsFooterPadding,
     cardsFooterLineGap,
-    collectionCountTracking,
     introBlockGap,
     tapCueTracking,
     tabLabelTracking,
