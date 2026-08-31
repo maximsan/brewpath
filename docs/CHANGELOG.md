@@ -416,6 +416,13 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Removed
 
+- **Profile no longer carries settings.** The `Customize` grid — a Sound tile
+  and a Haptics tile — is gone, and the heading with it. Both toggles already
+  ship in Settings, under `Practice`, over the same stored record, so the grid
+  was a second set of controls for one preference. The gear at the top of
+  Profile is now the only way to a setting, which is what the design does. The
+  Studio door the heading sat over stays where it is.
+
 - **The Profile paywall card is gone.** "Go Premium" promised a subscription
   the app does not sell, used a word the glossary rules against, and offered to
   remove ads that do not exist. The design has no paywall slot on Profile at

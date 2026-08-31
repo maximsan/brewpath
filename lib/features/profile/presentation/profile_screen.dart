@@ -2,9 +2,7 @@ import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_stat_row.dart';
-import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:brew_path/features/profile/presentation/widgets/lesson_progress_rollup.dart';
-import 'package:brew_path/features/profile/presentation/widgets/preference_tile.dart';
 import 'package:brew_path/features/profile/presentation/widgets/profile_progress_line.dart';
 import 'package:brew_path/features/profile/presentation/widgets/streak_card.dart';
 import 'package:brew_path/features/profile/presentation/widgets/tree_hero_card.dart';
@@ -20,16 +18,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// Gap between Profile's stacked cards. The design sets 12 between the cards
-/// and 24 above the two it treats as headline — the tree and the streak.
+/// Gap between Profile's stacked cards: the design sets 12 between them, and
+/// 24 in the one place it wants air — under the tree, above the streak.
 const double _cardGap = AppSpacing.sm;
 const double _headlineGap = AppSpacing.gutter;
 
 /// Above the closing line — the design's 22, its own value on this screen.
 const double _joinedGap = AppSpacing.lg - 2;
 
-/// Profile tab: the tree, the streak, what has been learned, and — until #429
-/// moves them — the app's preferences.
+/// Profile tab: the tree, the streak, what has been learned, and the doors on
+/// out of it.
+///
+/// No preferences. Across the whole of the design's tab
+/// (`prototype/screens.jsx:2546-2808`) there is not one — they live in
+/// Settings, which the header gear opens.
 class ProfileScreen extends ConsumerWidget {
   /// Creates a [ProfileScreen].
   const ProfileScreen({super.key});
@@ -99,8 +101,13 @@ class ProfileScreen extends ConsumerWidget {
                 ],
                 const SizedBox(height: _cardGap),
                 const ChallengeStatRow(),
-                const SizedBox(height: _headlineGap),
-                const _CustomizeSection(),
+                const SizedBox(height: _cardGap),
+                // The one door left on this screen, and no heading over it:
+                // the `Customize` label belonged to the preferences, and they
+                // are Settings' (#429). 12 above it, which is what the design
+                // sets over its own card in this slot (`screens.jsx:2692`).
+                // #428 gives the door that card, beside Saved.
+                const StudioDoorTile(),
                 if (joined != null) ...[
                   const SizedBox(height: _joinedGap),
                   _JoinedLine(joined: joined),
@@ -129,85 +136,6 @@ class _JoinedLine extends StatelessWidget {
     return Text(
       'Joined ${monthYear(joined)}'.toUpperCase(),
       style: AppText.micro(mood: context.mood),
-    );
-  }
-}
-
-/// The Studio door and the app's preferences, still on Profile.
-///
-/// Its own widget so it reads its own settings: #429 moves the preferences to
-/// Settings, where the design keeps them, and a section that owns its state is
-/// a deletion rather than an unpicking. The door stays either way — #428 gives
-/// it the design's own entry card, beside Saved, now that #140 has built what
-/// it opens.
-class _CustomizeSection extends ConsumerWidget {
-  const _CustomizeSection();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final settings = ref.watch(settingsControllerProvider).asData?.value;
-    final controller = ref.read(settingsControllerProvider.notifier);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const SmallcapsLabel('Customize'),
-        const SizedBox(height: _cardGap),
-        const StudioDoorTile(),
-        const SizedBox(height: _cardGap),
-        _CustomizeGrid(
-          soundEnabled: settings?.soundEnabled ?? true,
-          hapticsEnabled: settings?.hapticsEnabled ?? true,
-          onToggleSound: controller.toggleSound,
-          onToggleHaptics: controller.toggleHaptics,
-        ),
-      ],
-    );
-  }
-}
-
-class _CustomizeGrid extends StatelessWidget {
-  const _CustomizeGrid({
-    required this.soundEnabled,
-    required this.hapticsEnabled,
-    required this.onToggleSound,
-    required this.onToggleHaptics,
-  });
-
-  final bool soundEnabled;
-  final bool hapticsEnabled;
-  final VoidCallback onToggleSound;
-  final VoidCallback onToggleHaptics;
-
-  @override
-  Widget build(BuildContext context) {
-    return GridView.count(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 2,
-      mainAxisSpacing: AppSpacing.sm,
-      crossAxisSpacing: AppSpacing.sm,
-      children: [
-        PreferenceTile.toggle(
-          icon: Icons.volume_up_outlined,
-          title: 'Sound',
-          subtitle: 'Lesson and mini-game audio',
-          value: soundEnabled,
-          onChanged: (_) => onToggleSound(),
-        ),
-        PreferenceTile.toggle(
-          icon: Icons.vibration,
-          title: 'Haptics',
-          subtitle: 'Subtle taps on actions',
-          value: hapticsEnabled,
-          onChanged: (_) => onToggleHaptics(),
-        ),
-        // The reminder and the theme used to sit here reading "Soon". Both
-        // ship in Settings now (#395), so the tiles were promising a learner
-        // something they already have — behind the gear at the top of this
-        // screen. Whether the two toggles left here should also defer to
-        // Settings is the Profile rebuild's call (#393).
-      ],
     );
   }
 }
