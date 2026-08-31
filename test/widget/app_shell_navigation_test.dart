@@ -79,10 +79,11 @@ void main() {
       container.read(appRouterProvider).go('/learn/dictionary');
       await settleLoaders(tester);
 
-      expect(
-        find.widgetWithText(AppBar, DictionaryHomeScreen.title),
-        findsOneWidget,
-      );
+      // The name is a page heading rather than a bar title since #398, so
+      // arrival is asserted on the screen and the bar is checked for being
+      // the pushed kind — which is what this test is actually about.
+      expect(find.byType(DictionaryHomeScreen), findsOneWidget);
+      expect(find.byType(AppBar), findsOneWidget);
       expect(
         _sharedHeader(),
         findsNothing,
@@ -131,7 +132,7 @@ void main() {
       await tester.tap(_dictionaryButton());
       await settleLoaders(tester);
 
-      expect(find.widgetWithText(AppBar, 'Dictionary'), findsOneWidget);
+      expect(find.byType(DictionaryHomeScreen), findsOneWidget);
       expect(_sharedHeader(), findsNothing);
     });
   });
@@ -164,7 +165,7 @@ void main() {
     container.read(appRouterProvider).go('/learn/dictionary');
     await settleLoaders(tester);
     expect(
-      find.widgetWithText(AppBar, DictionaryHomeScreen.title),
+      find.byType(DictionaryHomeScreen),
       findsOneWidget,
     );
 
@@ -178,7 +179,7 @@ void main() {
     // Learn kept its stack — still on the pushed page, still without the
     // header.
     expect(
-      find.widgetWithText(AppBar, DictionaryHomeScreen.title),
+      find.byType(DictionaryHomeScreen),
       findsOneWidget,
     );
     expect(_sharedHeader(), findsNothing);
