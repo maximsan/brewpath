@@ -271,6 +271,12 @@ You can always edit this file by hand instead — the helpers just save effort.
   letters its own. Nothing moved on the two lines that really are exceptions —
   the tab bar and the tap cue.
 
+- **The `MISSED` tag joins the answer it marks.** On a multi-select the row you
+  should have picked is green to its border, its box and its check — and then
+  said `MISSED` in small grey type, reading as a separate remark rather than as
+  the mark's own word. It is now green, and a size smaller, which is what the
+  design asked for all along.
+
 - **The path looks like a path.** Lessons on Path were separate cards; the
   design threads them on one hairline spine that each lesson's bean punches a
   stop out of, which is what makes a list of them read as a route rather than

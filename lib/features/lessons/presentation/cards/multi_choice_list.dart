@@ -5,6 +5,7 @@ import 'package:brew_path/features/lessons/presentation/cards/choice_list.dart';
 import 'package:brew_path/features/lessons/presentation/cards/multi_choice_box.dart';
 import 'package:brew_path/features/lessons/presentation/cards/multi_scoring.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -167,9 +168,12 @@ class _MultiOptionRow extends StatelessWidget {
           if (mark == MultiMark.missed)
             Text(
               _missedTag,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: mood.inkMute,
-              ),
+              // `.ms-tag` (`index.html:671`, set on `lesson.jsx:479`) is the
+              // micro step in the row's own sage — not the label step in
+              // muted ink. The row is already sage to its border, box and
+              // check; a grey tag on it read as a separate remark rather than
+              // as the mark's own word.
+              style: AppText.micro(mood: mood, color: mood.sage),
             ),
         ],
       ),
