@@ -11,9 +11,6 @@ import 'package:flutter/material.dart';
 /// The tag naming an answer the learner did not pick.
 const String _missedTag = 'MISSED';
 
-/// Tracking on that tag, which the design sets in mono small caps.
-const double _tagTracking = 1.4;
-
 /// The design keeps the outline hairline in every state — [CardOptionTile]'s
 /// default. Only a pre-submit pick reads heavier: `.ms-choice.on` lays
 /// `box-shadow: inset 0 0 0 1px` in the border's own colour over the 1px
@@ -172,7 +169,6 @@ class _MultiOptionRow extends StatelessWidget {
               _missedTag,
               style: theme.textTheme.labelSmall?.copyWith(
                 color: mood.inkMute,
-                letterSpacing: _tagTracking,
               ),
             ),
         ],

@@ -10,7 +10,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 const double _cardRadius = 12;
-const double _eyebrowLetterSpacing = 0.6;
 
 /// The capstone a finished module offers, or nothing at all.
 ///
@@ -76,7 +75,6 @@ class _Offer extends ConsumerWidget {
               'MODULE COFFEE CHALLENGE',
               style: theme.textTheme.labelSmall?.copyWith(
                 color: mood.accentText,
-                letterSpacing: _eyebrowLetterSpacing,
               ),
             ),
             const SizedBox(height: AppSpacing.xs),

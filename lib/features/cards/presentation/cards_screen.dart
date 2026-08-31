@@ -7,7 +7,6 @@ import 'package:brew_path/features/cards/presentation/cards_footer.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
-import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -134,8 +133,7 @@ class _CardsBody extends StatelessWidget {
 /// comes back with it.
 ///
 /// Its tracking is the design's own rather than the rung's — see
-/// [OffTokens.collectionCountTracking] for why a figure does not want the
-/// smallcaps value.
+/// [AppTracking.meta] for why a figure does not want the smallcaps value.
 class _CollectionCount extends StatelessWidget {
   const _CollectionCount({required this.earned, required this.total});
 
@@ -148,18 +146,20 @@ class _CollectionCount extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final count = '$earned of $total';
-    final style = AppText.label(mood: context.mood, face: AppFace.mono);
+    // A figure rather than a kicker: at the rung's smallcaps 0.14em the
+    // numerals drift apart and the line stops reading as one count.
+    final style = AppText.label(
+      mood: context.mood,
+      face: AppFace.mono,
+      tracking: AppTracking.meta,
+    );
 
     return Text(
       // Uppercased here rather than authored so, because the case is the
       // design's treatment of the line, not part of what it says — which is
       // also why the spoken label below keeps its own.
       count.toUpperCase(),
-      style: style.copyWith(
-        // In em, as the design writes it, so it follows the rung's size.
-        letterSpacing:
-            OffTokens.collectionCountTracking.value * (style.fontSize ?? 0),
-      ),
+      style: style,
       semanticsLabel: '$count cards collected',
     );
   }

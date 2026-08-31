@@ -3,9 +3,6 @@ import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// Tracking on the kicker, which the design sets in mono small caps.
-const double _kickerTracking = 1.6;
-
 /// The closing line a card sets off from its body — a rule, a takeaway, a note.
 ///
 /// One treatment for every card that has one: a hairline, a mono kicker, then
@@ -49,7 +46,6 @@ class CardTakeaway extends StatelessWidget {
               label.toUpperCase(),
               style: theme.textTheme.labelSmall?.copyWith(
                 color: mood.inkMute,
-                letterSpacing: _kickerTracking,
               ),
             ),
             const SizedBox(height: AppSpacing.xs),

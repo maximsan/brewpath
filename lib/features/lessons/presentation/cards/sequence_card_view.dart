@@ -195,7 +195,10 @@ class _SequenceCardViewState extends State<SequenceCardView> {
           // Muted rather than berry: the row is already marked, and a second
           // red thing on it would read as a second fault.
           if (mark == SequenceStepMark.wrong)
-            Text('GOES #${item.order}', style: AppText.micro(mood: mood)),
+            Text(
+              'GOES #${item.order}',
+              style: AppText.micro(mood: mood, tracking: AppTracking.hint),
+            ),
         ],
       ),
     );

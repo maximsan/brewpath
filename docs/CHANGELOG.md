@@ -260,6 +260,16 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **Small-caps labels are lettered by the design, not by eye.** Sixteen kickers
+  and eyebrows across Today, the challenge cards, the lesson cards, the mini-game
+  catalogue and the Cards tab each picked their own letter-spacing in pixels —
+  between a third and a half of what the design asks for, so a row of caps read
+  as crammed. The type ladder now carries tracking as its own axis beside size
+  and face: a label takes the design's small-caps spacing unless it is one of
+  the few lines the design tracks differently, and a test fails if a new screen
+  letters its own. Nothing moved on the two lines that really are exceptions —
+  the tab bar and the tap cue.
+
 - **The path looks like a path.** Lessons on Path were separate cards; the
   design threads them on one hairline spine that each lesson's bean punches a
   stop out of, which is what makes a list of them read as a route rather than
