@@ -14,6 +14,22 @@ abstract class AppLabels {
   static const tabProfile = 'Profile';
   static const continueLabel = 'Continue';
 
+  // The module ending. `MODULE COMPLETE` is the kicker and the module's own
+  // name is the headline — the design's way up, which the app had inverted.
+  static const moduleCompleteKicker = 'Module complete';
+  static const moduleCompleteTitle = "Look how far you've come.";
+  static const rewardWaiting = 'A reward card is waiting on the other side.';
+  static const turnItOver = 'Turn it over';
+  static const flipBack = 'Flip back';
+  static const rewardUnlocked = 'Reward unlocked';
+  static const newCollectibleCard = 'New collectible card';
+  static const beginNextModule = 'Begin next module';
+  static const backToPath = 'Back to Path';
+  static const close = 'Close';
+
+  /// What a screen reader is told the tree is showing.
+  static String treeAtStage(int stage) => 'Your coffee tree, stage $stage';
+
   // The eyebrow under the lesson the learner is on, in the path's own
   // list. Announced as written; the row letters it.
   static const currentLesson = 'Current';

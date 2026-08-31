@@ -2,7 +2,7 @@ import 'package:brew_path/features/cards/presentation/reward_card.dart';
 import 'package:brew_path/features/companion/presentation/companion.dart';
 import 'package:brew_path/features/companion/presentation/roasty_moment.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
-import 'package:brew_path/features/learn/presentation/module_summary_screen.dart';
+import 'package:brew_path/features/learn/presentation/module_complete_screen.dart';
 import 'package:brew_path/features/lessons/domain/lesson_completion_actions.dart';
 import 'package:brew_path/features/lessons/domain/lesson_completion_service.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_beat.dart';
@@ -107,7 +107,7 @@ Widget _app(Widget home) => MaterialApp(
 
 /// Taps past the opening beat and settles onto the content behind it.
 ///
-/// The beat hands over on its own after [RoastyMoment.hold]; tapping is
+/// The beat hands over on its own after [RoastyMoment.defaultHold]; tapping is
 /// what a learner who does not want to wait does, and asserting it here keeps
 /// the skip working.
 Future<void> skipBeat(WidgetTester tester) async {
@@ -637,7 +637,7 @@ void main() {
     await settleLoaders(tester);
     expect(find.byType(RoastyMoment), findsOneWidget);
 
-    await tester.pump(RoastyMoment.hold);
+    await tester.pump(RoastyMoment.defaultHold);
     await settleLoaders(tester);
 
     expect(find.byType(RoastyMoment), findsNothing);
@@ -786,7 +786,7 @@ void main() {
           path: '/learn/module-summary/:moduleId',
           name: 'moduleSummary',
           builder: (context, state) =>
-              ModuleSummaryScreen(moduleId: state.pathParameters['moduleId']!),
+              ModuleCompleteScreen(moduleId: state.pathParameters['moduleId']!),
         ),
       ],
     );
@@ -810,6 +810,6 @@ void main() {
     await tester.tap(find.text('Continue'));
     await settleLoaders(tester);
 
-    expect(find.byType(ModuleSummaryScreen), findsOneWidget);
+    expect(find.byType(ModuleCompleteScreen), findsOneWidget);
   });
 }

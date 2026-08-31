@@ -50,15 +50,23 @@ void main() {
     return container;
   }
 
-  test('joins the lesson cards the learner has actually collected', () async {
-    final container = harness();
-    await container.read(cardRepositoryProvider).collectCard(_card.id);
-
-    final summary = await container.read(moduleSummaryProvider('m1').future);
+  test('names the module that closed', () async {
+    final summary = await harness().read(moduleSummaryProvider('m1').future);
 
     expect(summary.module.id, 'm1');
-    expect(summary.earnedCards.map((c) => c.id), [_card.id]);
   });
+
+  test(
+    'the ending has nowhere further to go at the end of the course',
+    () async {
+      // One module in the fixture, so nothing follows it — the action reads
+      // *Back to Path* and goes there.
+      final summary = await harness().read(moduleSummaryProvider('m1').future);
+
+      expect(summary.nextLessonId, isNull);
+      expect(summary.hasNextModule, isFalse);
+    },
+  );
 
   test('carries the Module Reward card once it has been collected', () async {
     final container = harness();
@@ -67,8 +75,6 @@ void main() {
     final summary = await container.read(moduleSummaryProvider('m1').future);
 
     expect(summary.moduleReward?.id, _moduleReward.id);
-    // It is the module's own reward, not one of the lesson cards.
-    expect(summary.earnedCards, isEmpty);
   });
 
   test('carries no Module Reward card before it is collected', () async {

@@ -260,6 +260,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **Finishing a module is a moment again.** The recap was a companion, a
+  heading, a 72-pt badge and a caption. It is now the ending the design draws:
+  Roasty holds the screen with *"Look how far you've come."*, then the module's
+  own name leads over the coffee tree — and a card is waiting on the other
+  side. Turning it over rotates the whole screen to reveal the collectible as a
+  full reward card, with its spec rows and its keepsake line, and the way on
+  reads *Begin next module* or *Back to Path* rather than always *Continue*.
+  Reduced motion gets the far side without the rotation.
+
 - **Small-caps labels are lettered by the design, not by eye.** Sixteen kickers
   and eyebrows across Today, the challenge cards, the lesson cards, the mini-game
   catalogue, the dictionary and the Cards tab each picked their own
