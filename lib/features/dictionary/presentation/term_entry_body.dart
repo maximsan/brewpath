@@ -2,6 +2,7 @@ import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_status_style.dart';
+import 'package:brew_path/features/dictionary/presentation/speak_button.dart';
 import 'package:brew_path/features/dictionary/presentation/term_self_check.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -54,10 +55,7 @@ class TermEntryBody extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (term.pronunciation != null)
-          Text(
-            term.pronunciation!,
-            style: text.bodySmall?.copyWith(color: mood.inkMute),
-          ),
+          SpeakButton(word: term.term, respelling: term.pronunciation!),
         const SizedBox(height: AppSpacing.xs),
         // The **display** face at the heading rung (`dictionary.jsx:665`), not
         // body copy: the short explanation is the entry's answer, and setting

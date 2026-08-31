@@ -59,6 +59,12 @@ dependencies:
   # follow the mood.
   flutter_svg: ^2.3.0
 
+  # The pronunciation voice, behind `SpeechService`. Platform speech —
+  # AVSpeechSynthesizer offline, no network — chosen over the more popular
+  # flutter_tts because it is SPM-native and this project has no Podfile
+  # (ADR-0012).
+  stts: ^1.3.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

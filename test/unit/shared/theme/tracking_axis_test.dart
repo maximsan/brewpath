@@ -98,10 +98,21 @@ void main() {
 
   group('AppTracking', () {
     test('carries the design values, in em', () {
+      expect(AppTracking.reading.em, 0.02);
+      expect(AppTracking.figure.em, 0.04);
       expect(AppTracking.meta.em, 0.08);
       expect(AppTracking.hint.em, 0.12);
       expect(AppTracking.marker.em, 0.16);
     });
+
+    test(
+      'runs tightest to widest, so a step is comparable to its neighbour',
+      () {
+        final ems = AppTracking.values.map((step) => step.em).toList();
+
+        expect(ems, orderedEquals(List<double>.from(ems)..sort()));
+      },
+    );
 
     test('resolves against the rung it is used on', () {
       const labelSize = 11.0;

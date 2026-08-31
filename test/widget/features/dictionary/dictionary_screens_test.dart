@@ -146,6 +146,21 @@ void main() {
       expect(find.text('All categories'), findsOneWidget);
     });
 
+    testWidgets('a row says how the word sounds, beside the word', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_wrap(const DictionaryHomeScreen()));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Beans and Botany'));
+      await tester.pumpAndSettle();
+
+      // The respelling belongs on the row, not only in the entry
+      // (`dictionary.jsx:235`): scanning a list is where you meet a word you
+      // cannot pronounce.
+      expect(find.text('uh-RAB-ih-kuh'), findsOneWidget);
+    });
+
     testWidgets('leaving a category returns to the index', (tester) async {
       await tester.pumpWidget(_wrap(const DictionaryHomeScreen()));
       await tester.pumpAndSettle();
