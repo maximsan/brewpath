@@ -83,9 +83,11 @@ const double grinderUnitSize = 10;
 /// Its tracking — `0.22em` resolved at [grinderUnitSize], because Flutter
 /// wants logical units.
 ///
-/// A canvas value like the sizes above, **not** a step of `AppTracking`: the
-/// dial has no rung to letter against, and the design draws no grinder, so
-/// there is no `prototype/` rule to cite for it.
+/// **App-authored, like the sizes above**, and not a step of `AppTracking`:
+/// the design draws no grinder, so there is no `prototype/` rule to cite, and
+/// the dial has no rung to letter against. Ruled to stay as it is rather than
+/// snap to the ladder's smallcaps 0.14em — a canvas the design never drew is
+/// not made truer by borrowing a rule written for type on a rung.
 const double grinderUnitTracking = 0.22 * grinderUnitSize;
 
 /// Where the two readings sit relative to the face's centre, on the canvas

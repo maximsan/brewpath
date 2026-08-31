@@ -61,9 +61,11 @@ enum AppFace {
 ///
 /// **Only values something in `lib/` actually renders are here.** The design's
 /// app vocabulary at these two rungs runs one wider: 0.1em (`.cheer-points`,
-/// `index.html:1092`) is an app component too, not page chrome, and it is
-/// absent only because the app has no cheer burst to draw. A value with no
-/// call site would be vocabulary nobody speaks.
+/// `index.html:1092`) is an app component too, not page chrome. It is absent
+/// because the app has no points burst and is not getting one — #212 deleted
+/// the pose rather than renumber it, and ruled that a points-earned moment,
+/// if ever wanted, is authored against a screen with room for it. A value
+/// with no call site would be vocabulary nobody speaks.
 ///
 /// The two app values wide enough to restyle a whole rung — the tab bar's
 /// 0.18em and the tap cue's 0.24em — stay in `OffTokens` instead, where an
