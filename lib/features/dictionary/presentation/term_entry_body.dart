@@ -5,6 +5,7 @@ import 'package:brew_path/features/dictionary/presentation/dictionary_status_sty
 import 'package:brew_path/features/dictionary/presentation/term_self_check.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -58,9 +59,12 @@ class TermEntryBody extends ConsumerWidget {
             style: text.bodySmall?.copyWith(color: mood.inkMute),
           ),
         const SizedBox(height: AppSpacing.xs),
+        // The **display** face at the heading rung (`dictionary.jsx:665`), not
+        // body copy: the short explanation is the entry's answer, and setting
+        // it in the reading face made it a first paragraph of the deep one.
         Text(
           term.shortExplanation,
-          style: text.bodyLarge?.copyWith(color: mood.ink),
+          style: AppText.heading(mood: mood),
         ),
         if (term.deepExplanation != null) ...[
           const SizedBox(height: AppSpacing.md),
@@ -72,7 +76,8 @@ class TermEntryBody extends ConsumerWidget {
         if (term.example != null) ...[
           const SizedBox(height: AppSpacing.md),
           _Block(
-            label: 'In use',
+            label: 'In practice',
+            accent: true,
             child: Text(
               term.example!,
               style: text.bodyMedium?.copyWith(color: mood.inkMute),
@@ -82,14 +87,14 @@ class TermEntryBody extends ConsumerWidget {
         if (term.check != null) ...[
           const SizedBox(height: AppSpacing.lg),
           _Block(
-            label: 'Check yourself',
+            label: 'Knowledge check',
             child: TermSelfCheck(check: term.check!),
           ),
         ],
         if (onRelatedTap != null && term.relatedIds.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.lg),
           _Block(
-            label: 'Related',
+            label: 'Related terms',
             child: _RelatedChips(
               view: view,
               relatedIds: term.relatedIds,
@@ -217,17 +222,22 @@ class _PathBlock extends ConsumerWidget {
 
 /// A titled block: a smallcaps label over its content.
 class _Block extends StatelessWidget {
-  const _Block({required this.label, required this.child});
+  const _Block({required this.label, required this.child, this.accent = false});
 
   final String label;
   final Widget child;
+
+  /// Whether the label takes the accent. Only `IN PRACTICE` does
+  /// (`dictionary.jsx:614`) — it heads the one block that is an example rather
+  /// than more explanation.
+  final bool accent;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SmallcapsLabel(label),
+        SmallcapsLabel(label, color: accent ? context.mood.accentText : null),
         const SizedBox(height: AppSpacing.xs),
         child,
       ],

@@ -407,6 +407,19 @@ You can always edit this file by hand instead — the helpers just save effort.
   gated, the design marks the gated card itself.
 
 ### Fixed
+
+- **The dictionary opens on its subjects, not on every word it knows.** Eight
+  categories, each with its own mark, what it covers and how many terms sit
+  behind it — one tap opens a subject, and one goes back. It leads with its own
+  name, *Coffee Dictionary*, under a kicker that counts the shelf. The three
+  filters became one control, because they were always one choice, and the
+  search field wears the design's own glass.
+
+- **A term reads as an entry, not a settings row.** The word is a heading on
+  the page with its status beside it — a mark and a word together, so it does
+  not depend on colour alone — and the blocks under it carry the names the
+  design gives them: *in practice*, *knowledge check*, *related terms*.
+
 - **The lesson's Continue is the same size as every other button that means
   the same thing.** It was Material's shorter default while the Continue on the
   screen after it stood taller — the most-pressed button in the app, visibly
