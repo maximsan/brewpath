@@ -15,10 +15,6 @@ const EdgeInsets _chipPadding = EdgeInsets.fromLTRB(9, 5, 12, 5);
 const double _markBox = 16;
 const double _markSize = 15;
 
-/// 0.04em at the label rung — looser than running text, tighter than the
-/// smallcaps tracking the rung carries by default.
-const double _respellingTracking = 0.44;
-
 /// How long the second wave shows after a press (`dictionary.jsx:29`).
 const Duration _pulse = Duration(milliseconds: 620);
 
@@ -129,7 +125,8 @@ class _SpeakChipState extends ConsumerState<_SpeakChip> {
                 style: AppText.label(
                   mood: mood,
                   face: AppFace.mono,
-                ).copyWith(letterSpacing: _respellingTracking),
+                  tracking: AppTracking.figure,
+                ),
               ),
             ],
           ),

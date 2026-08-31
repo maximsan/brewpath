@@ -7,10 +7,6 @@ import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// 0.02em at the label rung — the row's respelling is set tighter than the
-/// entry's chip, which carries the design's 0.04em.
-const double _respellingTracking = 0.22;
-
 /// One term in a list: its name and respelling, its status mark, and its
 /// one-line meaning.
 class TermRow extends StatelessWidget {
@@ -80,7 +76,8 @@ class TermRow extends StatelessWidget {
                               style: AppText.label(
                                 mood: mood,
                                 face: AppFace.mono,
-                              ).copyWith(letterSpacing: _respellingTracking),
+                                tracking: AppTracking.reading,
+                              ),
                             ),
                         ],
                       ),

@@ -80,6 +80,18 @@ enum AppFace {
 /// differently, so they letter like every other kicker rather than at a
 /// hand-rounded value that only ever came from the eye.
 enum AppTracking {
+  /// 0.02em — barely loosened, for a line meant to be **read as words** rather
+  /// than scanned as a label: `.btn` (`index.html:255`), and the mono
+  /// respelling that sits inline beside a dictionary term
+  /// (`dictionary.jsx:235`).
+  reading(0.02),
+
+  /// 0.04em — mono given just enough air that a spelled-out run stays legible
+  /// without becoming a kicker: a score read as digits (`rewards.jsx:60`), a
+  /// terse spec chip (`.spec-chip`, `Design System.html:215`), and the
+  /// pronunciation chip's respelling (`dictionary.jsx:46`).
+  figure(0.04),
+
   /// 0.08em — a meta line or a figure, which wants to read as one run rather
   /// than as a kicker. At the rung's 0.14em a count's numerals drift apart and
   /// the line stops reading as a single quantity, which is the whole reason
