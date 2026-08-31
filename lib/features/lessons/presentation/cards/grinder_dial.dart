@@ -85,10 +85,7 @@ const double grinderUnitSize = 10;
 ///
 /// A canvas value like the sizes above, **not** a step of `AppTracking`: the
 /// dial has no rung to letter against, and the design draws no grinder, so
-/// there is no `prototype/` rule to cite. (0.22em does appear once in the
-/// design — `Mascot - Roasty.html:566`, the loading screen's brand row — but
-/// `index.html:1111` rules that line at 0.24em, so it is not a source for
-/// this either.)
+/// there is no `prototype/` rule to cite for it.
 const double grinderUnitTracking = 0.22 * grinderUnitSize;
 
 /// Where the two readings sit relative to the face's centre, on the canvas

@@ -146,8 +146,6 @@ class _CollectionCount extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final count = '$earned of $total';
-    // A figure rather than a kicker: at the rung's smallcaps 0.14em the
-    // numerals drift apart and the line stops reading as one count.
     final style = AppText.label(
       mood: context.mood,
       face: AppFace.mono,

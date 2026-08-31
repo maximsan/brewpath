@@ -55,22 +55,37 @@ enum AppFace {
 /// the design letters one rung at more than one width. `.lesson-row .meta` and
 /// `.challenge-kicker` are both uppercase label-family lines, and the design
 /// sets them 0.06em apart. A ladder that baked one tracking into each step
-/// could only ever letter them the same, which is how fourteen call sites came
-/// to name their own spacing in logical pixels instead.
+/// could only ever letter them the same, which is how fifteen call sites came
+/// to name their own spacing — fourteen in logical pixels, and the Cards
+/// count through an `OffToken` (#410).
 ///
-/// Only values the design assigns to an **app component** are here. The wider
-/// vocabulary across `prototype/*.html` runs 0.02–0.24em, but the extra values
-/// style the design documents' own pages rather than the product. The two app
-/// values wide enough to restyle a whole rung — the tab bar's 0.18em and the
-/// tap cue's 0.24em — stay in `OffTokens`, where an exception carries its
-/// reason.
+/// **Only values something in `lib/` actually renders are here.** The design's
+/// app vocabulary at these two rungs is wider — 0.1em (`.cheer-points`,
+/// `index.html:1092`) and 0.16em (`.collect-card .cc-sub`, `:712`) are app
+/// components too, not page chrome. They are absent because nothing draws them
+/// yet: the app has no cheer burst, and the collectible tile's sub-line is
+/// still unbuilt (#434 owns it, and letters it at 0.16em when it lands). A
+/// value with no call site would be vocabulary nobody speaks.
+///
+/// The two app values wide enough to restyle a whole rung — the tab bar's
+/// 0.18em and the tap cue's 0.24em — stay in `OffTokens` instead, where an
+/// exception carries its reason.
 ///
 /// Omitting this axis leaves a rung at its own tracking, which for [AppText]'s
-/// label and micro steps is the design's 0.14em smallcaps rule.
+/// label and micro steps is the design's 0.14em smallcaps rule — `.smallcaps`
+/// (`index.html:229`) and `.challenge-kicker` (`:502`). **A component the
+/// design does not letter specially takes that rule**, which is why most
+/// kickers pass no tracking at all: the app's own eyebrows (`KEEP SHARP`, a
+/// lesson card's label) have no counterpart in `prototype/` to letter them
+/// differently, so they letter like every other kicker rather than at a
+/// hand-rounded value that only ever came from the eye.
 enum AppTracking {
-  /// 0.08em — meta lines and figures, which read as one run rather than as a
-  /// kicker: `.lesson-row .meta` (`index.html:427`), `.challenge-pill`
-  /// (`:506`), `.bag-opt-s` (`:628`).
+  /// 0.08em — a meta line or a figure, which wants to read as one run rather
+  /// than as a kicker. At the rung's 0.14em a count's numerals drift apart and
+  /// the line stops reading as a single quantity, which is the whole reason
+  /// the design tracks these tighter than the smallcaps beside them:
+  /// `.lesson-row .meta` (`index.html:427`), `.challenge-pill` (`:506`),
+  /// `.bag-opt-s` (`:628`).
   meta(0.08),
 
   /// 0.12em — the sequence card's out-of-place hint, `.seq-hint`
@@ -107,14 +122,16 @@ enum _Rung {
 
   /// Letter spacing in `em`, as the design writes it. Flutter wants logical
   /// pixels, so it is multiplied by [size] on the way out.
+  ///
+  /// The 0.14em the two smallcaps steps carry is the design's own smallcaps
+  /// rule — `.smallcaps` (`index.html:229`), `.smallcaps-mono` (`:241`) and
+  /// `.challenge-kicker` (`:502`) all set it. A call site letters differently
+  /// only by naming an [AppTracking].
   final double tracking;
 
-  double get letterSpacing => letterSpacingFor(null);
-
-  /// This rung's letter spacing, in logical pixels, lettered at [override] if
-  /// the call site named a tracking and at the rung's own otherwise.
-  double letterSpacingFor(AppTracking? override) =>
-      (override?.em ?? tracking) * size;
+  /// This rung's letter spacing in logical pixels, lettered at [named] if the
+  /// call site asked for a tracking and at the rung's own otherwise.
+  double letterSpacingFor(AppTracking? named) => (named?.em ?? tracking) * size;
 
   /// The bounds of Fraunces' `opsz` axis.
   static const double _minOpticalSize = 9;
@@ -280,9 +297,10 @@ abstract final class AppText {
     labelSmall: label(mood: mood, face: AppFace.mono),
   );
 
-  /// [colour] is already resolved: every caller passes `color ?? mood?.role`,
-  /// so the precedence lives once at the top of this class rather than being a
-  /// second parameter each rung has to thread through.
+  /// [colour] arrives resolved. Each rung names its own role colour either
+  /// way — they differ, `ink` against `inkMute` — so folding the `??` into
+  /// that one line costs no repetition and spares every rung a second
+  /// parameter to thread through.
   static TextStyle _style(
     _Rung rung,
     AppFace face,

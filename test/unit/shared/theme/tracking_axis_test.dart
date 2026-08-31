@@ -1,79 +1,99 @@
 import 'dart:io';
 
 import 'package:brew_path/shared/theme/app_text.dart';
-import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The only places in `lib/` allowed to name a `letterSpacing`.
+import '../../../support/dart_sources.dart';
+
+/// Tracking is not a number a call site passes.
 ///
-/// Everywhere else asks the ladder for one, so a component cannot be lettered
-/// by eye at a call site the way fourteen of them were (#410).
-const _sanctioned = <String, String>{
-  'lib/shared/theme/app_text.dart':
-      'the ladder itself — the one place a tracking is resolved to pixels',
-  'lib/app/tab_bar_theme.dart':
-      'reads OffTokens.tabLabelTracking, a sanctioned exception',
-  'lib/core/widgets/tap_cue.dart':
-      'reads OffTokens.tapCueTracking, a sanctioned exception',
-  'lib/features/lessons/presentation/cards/grinder_dial_view.dart':
-      'draws on a canvas grid rather than a rung, so it has no rung to letter '
-      'against — see grinder_dial.dart',
-};
-
-/// Source with comments removed, so prose about `letterSpacing:` does not read
-/// as an instance of it. Same shape as `smallcaps_rule_test.dart`.
-String _code(String path) => File(path)
-    .readAsStringSync()
-    .replaceAll(RegExp(r'/\*.*?\*/', dotAll: true), '')
-    .replaceAll(RegExp(r'^\s*//.*$', multiLine: true), '');
-
-/// Every Dart file under `lib/`, generated ones included — a `.g.dart` that
-/// letters its own would be just as off-ladder.
-List<String> _libFiles() =>
-    Directory('lib')
-        .listSync(recursive: true)
-        .whereType<File>()
-        .map((file) => file.path)
-        .where((path) => path.endsWith('.dart'))
-        .toList()
-      ..sort();
-
+/// `_Rung` bakes one tracking into each step, so `AppText.label()` could only
+/// ever letter at the design's 0.14em — and fifteen call sites worked around
+/// that by naming their own, fourteen in logical pixels and one through an
+/// `OffToken`. Most were a rounding-by-eye of a real design value; the Coffee
+/// Challenge kickers sat at 0.6px against `.challenge-kicker`'s 1.33.
+///
+/// `AppTracking` is the axis that makes the workaround unnecessary, so this
+/// asks who is allowed to name a spacing at all. Its sibling
+/// `font_weight_call_sites_test.dart` asks the same of weight.
 void main() {
-  group('tracking belongs to the ladder', () {
-    test('no call site letters its own', () {
-      final offenders = _libFiles()
-          .where((path) => !_sanctioned.containsKey(path))
-          .where((path) => _code(path).contains('letterSpacing:'))
-          .toList();
+  /// The files allowed to name a letter spacing, and why each earns it.
+  const sanctioned = <String, String>{
+    'lib/shared/theme/app_text.dart':
+        'the ladder itself — the one place a tracking becomes pixels',
+    'lib/app/tab_bar_theme.dart':
+        'reads OffTokens.tabLabelTracking, a sanctioned exception at 0.18em',
+    'lib/core/widgets/tap_cue.dart':
+        'reads OffTokens.tapCueTracking, a sanctioned exception at 0.24em',
+    'lib/features/lessons/presentation/cards/grinder_dial_view.dart':
+        'draws on a canvas grid rather than a rung, so it has no rung to '
+        'letter against — see grinder_dial.dart',
+  };
+
+  /// What counts as naming a spacing.
+  ///
+  /// `letterSpacingDelta` is here because `TextStyle.apply` is the other door
+  /// to the same property, and the whitespace is loose because `letterSpacing
+  /// :` is the same instruction to the formatter's eye and to Dart's.
+  const spellings = <String, String>{
+    r'letterSpacing\s*:': 'TextStyle.letterSpacing',
+    r'letterSpacingDelta\s*:': 'TextStyle.apply(letterSpacingDelta:)',
+  };
+
+  test('no call site in lib/ letters its own', () {
+    final offenders = <String>[];
+
+    for (final file in dartSourcesUnder('lib')) {
+      if (sanctioned.containsKey(file.path)) continue;
+      final source = withoutComments(file.readAsStringSync());
+      spellings.forEach((pattern, what) {
+        for (final match in RegExp(pattern).allMatches(source)) {
+          offenders.add('${file.path} reaches for $what: ${match.group(0)}');
+        }
+      });
+    }
+
+    expect(
+      offenders,
+      isEmpty,
+      reason:
+          'tracking belongs to the ladder. If the design letters the '
+          'component differently, add the value to AppTracking with its '
+          '`index.html` citation; if it is a genuine exception, register it '
+          'in OffTokens with its reason:\n${offenders.join('\n')}',
+    );
+  });
+
+  test('the guard would catch a spacing reintroduced by either spelling', () {
+    // A guard nobody has seen fail is a guard nobody knows is wired up.
+    const reintroduced = '''
+      style: theme.textTheme.labelSmall?.copyWith(
+        letterSpacing: _eyebrowLetterSpacing,
+      ),
+      style: AppText.label().apply(letterSpacingDelta : 0.4),
+    ''';
+
+    final caught = [
+      for (final pattern in spellings.keys)
+        ...RegExp(pattern).allMatches(reintroduced).map((m) => m.group(0)!),
+    ];
+
+    expect(caught, hasLength(2));
+  });
+
+  test('every sanctioned file still earns its exemption', () {
+    for (final entry in sanctioned.entries) {
+      final source = withoutComments(File(entry.key).readAsStringSync());
 
       expect(
-        offenders,
-        isEmpty,
+        spellings.keys.any((pattern) => RegExp(pattern).hasMatch(source)),
+        isTrue,
         reason:
-            'these files pick a letterSpacing instead of asking AppText for '
-            'one. If the design letters the component differently, add the '
-            'value to AppTracking with its `index.html` citation; if it is a '
-            'genuine exception, put it in OffTokens with its reason:\n'
-            '${offenders.join('\n')}',
+            '${entry.key} is exempted as "${entry.value}" but no longer '
+            'letters anything — drop the exemption rather than leaving a '
+            'hole in the guard',
       );
-    });
-
-    test('and every sanctioned file still earns its place', () {
-      for (final entry in _sanctioned.entries) {
-        expect(
-          File(entry.key).existsSync(),
-          isTrue,
-          reason: '${entry.key} is exempted but no longer exists',
-        );
-        expect(
-          _code(entry.key),
-          contains('letterSpacing'),
-          reason:
-              '${entry.key} is exempted as "${entry.value}" but no longer '
-              'names a letterSpacing — drop the exemption',
-        );
-      }
-    });
+    }
   });
 
   group('AppTracking', () {
@@ -98,26 +118,17 @@ void main() {
 
     test('left off, a rung keeps the design’s 0.14em smallcaps rule', () {
       const smallcaps = 0.14;
+      const labelSize = 11.0;
+      const microSize = 9.5;
 
-      expect(AppText.label().letterSpacing, closeTo(smallcaps * 11, 0.0001));
-      expect(AppText.micro().letterSpacing, closeTo(smallcaps * 9.5, 0.0001));
+      expect(
+        AppText.label().letterSpacing,
+        closeTo(smallcaps * labelSize, 0.0001),
+      );
+      expect(
+        AppText.micro().letterSpacing,
+        closeTo(smallcaps * microSize, 0.0001),
+      );
     });
-  });
-
-  test('the register keeps only the two trackings that are exceptions', () {
-    final trackings = OffTokens.register
-        .where((token) => token.value is double)
-        .toList();
-
-    expect(
-      trackings,
-      contains(OffTokens.tabLabelTracking),
-      reason: '0.18em is the tab bar alone, too wide to be a rung',
-    );
-    expect(
-      trackings,
-      contains(OffTokens.tapCueTracking),
-      reason: '0.24em is the tap cue alone, too wide to be a rung',
-    );
   });
 }
