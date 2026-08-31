@@ -260,9 +260,10 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
-- **Small-caps labels are lettered by the design, not by eye.** Fifteen kickers
+- **Small-caps labels are lettered by the design, not by eye.** Sixteen kickers
   and eyebrows across Today, the challenge cards, the lesson cards, the mini-game
-  catalogue and the Cards tab each picked their own letter-spacing —
+  catalogue, the dictionary and the Cards tab each picked their own
+  letter-spacing —
   between a third and a half of what the design asks for, so a row of caps read
   as crammed. The type ladder now carries tracking as its own axis beside size
   and face: a label takes the design's small-caps spacing unless it is one of

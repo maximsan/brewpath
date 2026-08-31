@@ -8,8 +8,8 @@ import '../../../support/dart_sources.dart';
 /// Tracking is not a number a call site passes.
 ///
 /// `_Rung` bakes one tracking into each step, so `AppText.label()` could only
-/// ever letter at the design's 0.14em — and fifteen call sites worked around
-/// that by naming their own, fourteen in logical pixels and one through an
+/// ever letter at the design's 0.14em — and sixteen call sites worked around
+/// that by naming their own, fifteen in logical pixels and one through an
 /// `OffToken`. Most were a rounding-by-eye of a real design value; the Coffee
 /// Challenge kickers sat at 0.6px against `.challenge-kicker`'s 1.33.
 ///
@@ -100,6 +100,7 @@ void main() {
     test('carries the design values, in em', () {
       expect(AppTracking.meta.em, 0.08);
       expect(AppTracking.hint.em, 0.12);
+      expect(AppTracking.marker.em, 0.16);
     });
 
     test('resolves against the rung it is used on', () {

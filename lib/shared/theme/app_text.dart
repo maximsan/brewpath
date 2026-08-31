@@ -55,17 +55,15 @@ enum AppFace {
 /// the design letters one rung at more than one width. `.lesson-row .meta` and
 /// `.challenge-kicker` are both uppercase label-family lines, and the design
 /// sets them 0.06em apart. A ladder that baked one tracking into each step
-/// could only ever letter them the same, which is how fifteen call sites came
-/// to name their own spacing — fourteen in logical pixels, and the Cards
-/// count through an `OffToken` (#410).
+/// could only ever letter them the same, which is how sixteen call sites came
+/// to name their own spacing — fifteen in logical pixels, and the Cards count
+/// through an `OffToken` (#410).
 ///
 /// **Only values something in `lib/` actually renders are here.** The design's
-/// app vocabulary at these two rungs is wider — 0.1em (`.cheer-points`,
-/// `index.html:1092`) and 0.16em (`.collect-card .cc-sub`, `:712`) are app
-/// components too, not page chrome. They are absent because nothing draws them
-/// yet: the app has no cheer burst, and the collectible tile's sub-line is
-/// still unbuilt (#434 owns it, and letters it at 0.16em when it lands). A
-/// value with no call site would be vocabulary nobody speaks.
+/// app vocabulary at these two rungs runs one wider: 0.1em (`.cheer-points`,
+/// `index.html:1092`) is an app component too, not page chrome, and it is
+/// absent only because the app has no cheer burst to draw. A value with no
+/// call site would be vocabulary nobody speaks.
 ///
 /// The two app values wide enough to restyle a whole rung — the tab bar's
 /// 0.18em and the tap cue's 0.24em — stay in `OffTokens` instead, where an
@@ -90,7 +88,14 @@ enum AppTracking {
 
   /// 0.12em — the sequence card's out-of-place hint, `.seq-hint`
   /// (`index.html:1061`, set on `lesson.jsx:980`).
-  hint(0.12);
+  hint(0.12),
+
+  /// 0.16em — a mono micro line marking what a thing *is*, or where it sits in
+  /// a set, rather than heading the content under it. Wider than the smallcaps
+  /// rule so a two-word label reads as discrete: the dictionary's status chip
+  /// (`dictionary.jsx:124`) and the collectible tile's sub-line
+  /// (`.collect-card .cc-sub`, `index.html:712`, still unbuilt — #434).
+  marker(0.16);
 
   const AppTracking(this.em);
 
