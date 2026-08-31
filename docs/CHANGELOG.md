@@ -260,6 +260,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **Finishing a module is a moment again.** The recap was a companion, a
+  heading, a 72-pt badge and a caption. It is now the ending the design draws:
+  Roasty holds the screen with *"Look how far you've come."*, then the module's
+  own name leads over the coffee tree — and a card is waiting on the other
+  side. Turning it over rotates the whole screen to reveal the collectible as a
+  full reward card, with its spec rows and its keepsake line, and the way on
+  reads *Begin next module* or *Back to Path* rather than always *Continue*.
+  Reduced motion gets the far side without the rotation.
+
 - **The path looks like a path.** Lessons on Path were separate cards; the
   design threads them on one hairline spine that each lesson's bean punches a
   stop out of, which is what makes a list of them read as a route rather than
