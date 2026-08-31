@@ -44,7 +44,9 @@ Widget _wrap(DictionaryTerm term, FakeSpeechService speech) => ProviderScope(
   overrides: [speechServiceProvider.overrideWithValue(speech)],
   child: MaterialApp(
     theme: AppTheme.cupping,
-    home: Scaffold(body: TermEntryBody(view: _view, term: term)),
+    home: Scaffold(
+      body: TermEntryBody(view: _view, term: term),
+    ),
   ),
 );
 

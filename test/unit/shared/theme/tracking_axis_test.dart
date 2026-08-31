@@ -105,11 +105,14 @@ void main() {
       expect(AppTracking.marker.em, 0.16);
     });
 
-    test('runs tightest to widest, so a step is comparable to its neighbour', () {
-      final ems = AppTracking.values.map((step) => step.em).toList();
+    test(
+      'runs tightest to widest, so a step is comparable to its neighbour',
+      () {
+        final ems = AppTracking.values.map((step) => step.em).toList();
 
-      expect(ems, orderedEquals(List<double>.from(ems)..sort()));
-    });
+        expect(ems, orderedEquals(List<double>.from(ems)..sort()));
+      },
+    );
 
     test('resolves against the rung it is used on', () {
       const labelSize = 11.0;
