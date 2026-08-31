@@ -3,10 +3,16 @@ import 'package:brew_path/features/dictionary/presentation/dictionary_status_sty
 import 'package:brew_path/features/dictionary/presentation/status_mark.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// One term in a list: its name, its status mark, and its one-line meaning.
+/// 0.02em at the label rung — the row's respelling is set tighter than the
+/// entry's chip, which carries the design's 0.04em.
+const double _respellingTracking = 0.22;
+
+/// One term in a list: its name and respelling, its status mark, and its
+/// one-line meaning.
 class TermRow extends StatelessWidget {
   /// Creates a [TermRow].
   const TermRow({
@@ -53,11 +59,30 @@ class TermRow extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        term.term,
-                        style: Theme.of(
-                          context,
-                        ).textTheme.titleMedium?.copyWith(color: mood.ink),
+                      // The respelling sits beside the word, not under it —
+                      // it is how the word sounds, not a second fact about it
+                      // (`dictionary.jsx:235`). It wraps rather than
+                      // truncating, because half a respelling is worse than
+                      // none.
+                      Wrap(
+                        spacing: AppSpacing.xs,
+                        crossAxisAlignment: WrapCrossAlignment.end,
+                        children: [
+                          Text(
+                            term.term,
+                            style: Theme.of(
+                              context,
+                            ).textTheme.titleMedium?.copyWith(color: mood.ink),
+                          ),
+                          if (term.pronunciation != null)
+                            Text(
+                              term.pronunciation!,
+                              style: AppText.label(
+                                mood: mood,
+                                face: AppFace.mono,
+                              ).copyWith(letterSpacing: _respellingTracking),
+                            ),
+                        ],
                       ),
                       const SizedBox(height: AppSpacing.xxs),
                       Text(

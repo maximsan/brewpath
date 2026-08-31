@@ -44,6 +44,21 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **You can hear how a term is said.** Twenty-four of the dictionary's
+  seventy-three words carry a pronunciation, and the respelling beside them is
+  now a speaker you can press. It is the phone's own voice, offline — nothing
+  is recorded, nothing is sent, and no permission is asked, because speaking
+  aloud needs none. It reads in the language the course is written in rather
+  than the one the phone is set to, so an English term is not pronounced as
+  though it were French. Pressing again restarts the word instead of stacking a
+  second reading behind the first, and a term with no respelling shows no
+  control at all. Where a phone has no voice installed for the language, the
+  respelling still reads as text — only the speaker goes, because a button that
+  cannot do its one job is worse than none.
+
+  The respelling also shows on the list rows now, next to the word rather than
+  under it: scanning a list is where you meet a term you cannot say.
+
 - **Hitting a lock now offers something.** A free learner whose shelf is full
   used to get a one-line snackbar; they now get the Plus gate — a sheet that
   opens on *what they just hit*, then makes the case for the course: the rest
