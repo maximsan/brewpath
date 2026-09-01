@@ -30,12 +30,24 @@ A game only asks about words the learner can actually get to.
   lesson teaches at all stays paid-only, which is what `docs/decisions.md` §12
   already says.
 
-A lesson **mentions** a word when that word, or one of its other names, appears
-as a whole word in text the lesson actually puts on screen.
+A lesson **mentions** a word if that word turns up in the text the lesson shows
+on screen: its title, the writing on its cards, the answer choices, and so on.
+Some words have a second name, and those count too — "Staling" is also called
+"stale", so a lesson saying *"the coffee goes stale"* counts as mentioning it.
 
-- **Whole word**, or "scale" would count as saying "SCA".
-- **On screen**, because a lesson card also carries data we never display, like
-  an internal id or a colour.
+Two details decide whether this works:
+
+**We look for whole words, not for letters sitting inside other words.** One of
+the free lessons uses the word *"typical"*. The dictionary has a coffee variety
+called *Typica*, taught in a lesson you have to pay for. If we searched for
+letters inside words, we would find "Typica" inside "typical" and hand a paid
+word to someone who hasn't paid. The same trap catches *"cascara"*, which
+contains the letters of *SCA*.
+
+**We only search the text the learner actually sees.** A lesson card holds more
+than it displays — the colour used to draw a diagram, an internal name for which
+picture to show. If we searched that too, a lesson could "mention" a word that
+never appeared on screen.
 
 We don't save how many words each group gets. We work it out from the list of
 free lessons each time. ADR-0007 promised that growing the free tier means
