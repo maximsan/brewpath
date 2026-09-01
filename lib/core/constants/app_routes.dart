@@ -49,6 +49,11 @@ abstract class AppRoutes {
   static const dictionaryTerm = AppRoute('dictionaryTerm', 'term/:termId');
   static const path = AppRoute('path', '/path');
   static const cards = AppRoute('cards', '/cards');
+
+  /// One card, in detail — which is a **sheet over the collection**, not a
+  /// screen of its own (#385). Nothing in the app navigates here: the grid
+  /// opens the sheet directly. The path exists because #171 scopes the app's
+  /// universal links to it.
   static const cardDetail = AppRoute('cardDetail', ':cardId');
   static const profile = AppRoute('profile', '/profile');
   static const profileSettings = AppRoute('profileSettings', 'settings');

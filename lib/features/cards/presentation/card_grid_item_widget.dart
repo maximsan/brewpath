@@ -1,12 +1,13 @@
-import 'package:brew_path/core/constants/app_routes.dart';
+import 'dart:async';
+
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/icon_badge.dart';
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
+import 'package:brew_path/features/cards/presentation/card_sheet.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 /// One tile in the Cards grid. Collected → category icon badge, title, and
 /// tag, tappable; locked → muted silhouette with "???" and inert.
@@ -29,12 +30,9 @@ class CardGridItemWidget extends StatelessWidget {
     return Card(
       margin: EdgeInsets.zero,
       child: InkWell(
-        onTap: collected
-            ? () => context.goNamed(
-                AppRoutes.cardDetail.name,
-                pathParameters: {'cardId': item.card.id},
-              )
-            : null,
+        // A sheet, not a push: the design reads a card over the collection,
+        // so the grid never goes away and closing costs the learner nothing.
+        onTap: collected ? () => unawaited(showCardSheet(context, item)) : null,
         borderRadius: BorderRadius.circular(AppRadii.chrome),
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.base),
