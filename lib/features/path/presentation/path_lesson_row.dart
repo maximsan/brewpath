@@ -70,14 +70,16 @@ class PathLessonRow extends StatelessWidget {
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: entry.isCurrent
+        color: entry.readsAsCurrent
             ? mood.accent.withValues(alpha: _currentWash)
             : null,
         // The current row drops its rule too: the wash already separates it,
         // and a line under a highlighted row reads as a second edge.
         border: Border(
           bottom: BorderSide(
-            color: isLast || entry.isCurrent ? Colors.transparent : mood.rule,
+            color: isLast || entry.readsAsCurrent
+                ? Colors.transparent
+                : mood.rule,
           ),
         ),
       ),
@@ -167,7 +169,7 @@ class _Title extends StatelessWidget {
         // the row's height. Laid out in flow here instead: an eyebrow that
         // overlaps its neighbours at a large text size is worse than a row
         // that grows by one line.
-        if (entry.isCurrent) ...[
+        if (entry.readsAsCurrent) ...[
           const SizedBox(height: _eyebrowGap),
           Text(
             AppLabels.currentLesson.toUpperCase(),
@@ -283,7 +285,7 @@ class _LessonNode extends StatelessWidget {
       decoration: BoxDecoration(
         // Opaque either way — a translucent disc would let the spine show
         // through the stop it exists to punch.
-        color: entry.isCurrent
+        color: entry.readsAsCurrent
             ? Color.alphaBlend(
                 mood.accent.withValues(alpha: PathLessonRow._currentWash),
                 mood.bg,

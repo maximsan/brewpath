@@ -44,6 +44,18 @@ class PathLesson {
 
   /// The best stored result, driving how full the row's bean reads.
   final MasteryResult mastery;
+
+  /// Whether the row *presents* as the learner's next move — the accent wash
+  /// behind it and the `CURRENT` eyebrow under its title.
+  ///
+  /// A purchase-locked row does not, even when it is genuinely next in order:
+  /// the design drops both (`screens.jsx:1494`, `:1502`), because pointing
+  /// someone at a step they cannot take is not guidance.
+  ///
+  /// The **node** is deliberately not covered by this and still fills as
+  /// current (`screens.jsx:1483`) — it marks where the learner has got to,
+  /// which stays true whether or not they can go on.
+  bool get readsAsCurrent => isCurrent && !isPurchaseLocked;
 }
 
 /// One module as Path draws it.

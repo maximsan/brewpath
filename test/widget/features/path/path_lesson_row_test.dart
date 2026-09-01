@@ -269,6 +269,24 @@ void main() {
       expect(find.text(PlusCopy.title), findsOneWidget);
     });
 
+    testWidgets('the next lesson in order stops reading as current', (
+      tester,
+    ) async {
+      // It genuinely is next, and the design still drops the eyebrow and the
+      // wash: pointing at a step nobody can take is not guidance.
+      await _pump(
+        tester,
+        isCompleted: false,
+        isCurrent: true,
+        isPurchaseLocked: true,
+      );
+
+      expect(find.text(AppLabels.currentLesson.toUpperCase()), findsNothing);
+
+      // The bean still fills as current — it marks where the learner got to.
+      expect(_bean(tester).color, MoodColors.darkRoast.accent);
+    });
+
     testWidgets('an unlocked row carries no lock at all', (tester) async {
       await _pump(tester, isCompleted: false, isCurrent: false);
 
