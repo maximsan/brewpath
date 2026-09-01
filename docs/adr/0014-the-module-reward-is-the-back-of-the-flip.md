@@ -1,4 +1,4 @@
-# ADR-0012: The module reward is the back of the flip, not a screen after it
+# ADR-0014: The module reward is the back of the flip, not a screen after it
 
 - **Status:** accepted
 - **Date:** 2026-08-31
