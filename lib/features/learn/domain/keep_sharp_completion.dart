@@ -22,7 +22,7 @@ bool keepSharpRuleMet(
   PracticeType type, {
   required int distinctGamesToday,
   required bool replayedToday,
-  bool vocabRoundToday = false,
+  required bool vocabRoundToday,
 }) => switch (type) {
   PracticeType.miniGames => distinctGamesToday >= _twoDifferentGames,
   PracticeType.lessonReplay => replayedToday,

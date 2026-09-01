@@ -110,7 +110,7 @@ KeepSharpResolution? keepSharpResolutionFor({
   required List<String> playableFormatIds,
   required Set<String> formatsPlayedToday,
   required List<String> completedLessonIds,
-  int drillableTermCount = 0,
+  required int drillableTermCount,
 }) {
   final eligible = {
     if (playableFormatIds.length >= miniGamesPerQualifyingDay)

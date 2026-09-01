@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:brew_path/app/day_surfaces.dart';
+import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
@@ -17,7 +18,6 @@ import 'package:brew_path/features/dictionary/presentation/vocab/vocab_copy.dart
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_question_view.dart';
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_setup_view.dart';
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_teaching_view.dart';
-import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -68,12 +68,9 @@ class _VocabGameScreenState extends ConsumerState<VocabGameScreen> {
     length: _length,
   );
 
-  List<DictionaryTerm> _poolFor(VocabPools pools, VocabDeck deck) =>
-      deck == VocabDeck.saved ? pools.saved : pools.accessible;
-
   void _start(VocabPools pools) {
     final choice = _choiceFor(pools);
-    final pool = _poolFor(pools, choice.deck);
+    final pool = pools.forDeck(choice.deck);
     final seed = mintVocabSeed();
 
     setState(() {
@@ -102,10 +99,16 @@ class _VocabGameScreenState extends ConsumerState<VocabGameScreen> {
     if (_rounds[_index].isCorrect(index)) _score++;
   });
 
-  void _next() => setState(() {
-    _index++;
-    _picked = null;
-  });
+  void _next() {
+    setState(() {
+      _index++;
+      _picked = null;
+    });
+    // Recorded here rather than where the score is drawn: a repository write
+    // fired from `build` runs during the build phase, which is a hazard even
+    // when a guard flag keeps it to one write.
+    if (_index >= _rounds.length) _recordRoundOnce();
+  }
 
   /// Back to setup, with the rounds dropped so the drill is startable again.
   void _changeRound() => setState(() {
@@ -159,7 +162,7 @@ class _VocabGameScreenState extends ConsumerState<VocabGameScreen> {
       appBar: AppBar(
         leading: IconButton(
           icon: const IconMark(AppIcon.close),
-          tooltip: 'Close',
+          tooltip: AppLabels.close,
           onPressed: _done,
         ),
         title: _playing && _index < total
@@ -172,11 +175,11 @@ class _VocabGameScreenState extends ConsumerState<VocabGameScreen> {
       ),
       body: pools.when(
         loading: () => Semantics(
-          label: 'Loading the drill',
+          label: VocabCopy.loading,
           child: const LoadingIndicator(),
         ),
         error: (error, _) => Semantics(
-          label: 'This drill could not be loaded.',
+          label: VocabCopy.loadFailed,
           excludeSemantics: true,
           child: ErrorView(message: '$error'),
         ),
@@ -223,7 +226,6 @@ class _VocabGameScreenState extends ConsumerState<VocabGameScreen> {
   }
 
   Widget _results(VocabPools pools) {
-    _recordRoundOnce();
     final total = _rounds.length;
 
     return DrillResultsView(

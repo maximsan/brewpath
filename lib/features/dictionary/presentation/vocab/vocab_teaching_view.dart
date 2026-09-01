@@ -7,16 +7,12 @@ import 'package:flutter/material.dart';
 
 /// What the drill shows when the learner's pool cannot fill a question.
 ///
-/// **It never pads from the full glossary.** A four-option question built from
-/// terms the course has not taught is an exam for a class the learner could
-/// not attend — and for a free learner it would also hand over the premium
-/// term names the tier rule exists to withhold (#57). So the drill declines
-/// and points at the thing that would actually fix it.
+/// It never pads from the full glossary: that would hand a free learner the
+/// premium term names the tier rule exists to withhold (#57). So the drill
+/// declines and points at what would fix it.
 ///
-/// Unreachable on the shipped banks, where even the free tier's lessons
-/// mention well over four terms. It is here because the pool is *derived* —
-/// widen or narrow the free lesson list and this becomes reachable without
-/// anyone editing this screen.
+/// Unreachable on the shipped banks, and kept because the pool is derived —
+/// narrowing the free lesson list makes it reachable with no edit here.
 class VocabTeachingView extends StatelessWidget {
   /// Creates a [VocabTeachingView].
   const VocabTeachingView({required this.onDone, super.key});

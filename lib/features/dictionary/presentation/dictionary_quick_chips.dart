@@ -21,9 +21,6 @@ class DictionaryQuickChips extends StatelessWidget {
   /// Creates a [DictionaryQuickChips].
   const DictionaryQuickChips({super.key});
 
-  /// The mark's drawn size in a chip, from the design's own row.
-  static const double _markSize = 18;
-
   @override
   Widget build(BuildContext context) => const Row(
     children: [Expanded(child: _VocabChip())],
@@ -32,6 +29,9 @@ class DictionaryQuickChips extends StatelessWidget {
 
 class _VocabChip extends StatelessWidget {
   const _VocabChip();
+
+  /// The mark's drawn size in a chip, from the design's own row.
+  static const double _markSize = 18;
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +62,7 @@ class _VocabChip extends StatelessWidget {
             child: Row(
               children: [
                 VocabMark(
-                  size: DictionaryQuickChips._markSize,
+                  size: _markSize,
                   color: mood.inkMute,
                   accent: mood.accent,
                 ),

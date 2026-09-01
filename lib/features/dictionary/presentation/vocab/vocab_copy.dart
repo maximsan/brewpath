@@ -52,8 +52,10 @@ abstract final class VocabCopy {
   /// What the All deck holds, by tier.
   static const allDeckNote = 'Every term in the dictionary';
 
-  /// What a free learner's All deck holds.
-  static const yourTermsNote = 'Every term your lessons have taught';
+  /// What a free learner's All deck holds. *Mentioned*, not taught —
+  /// ADR-0014's rule, and the difference is a term a lesson named in
+  /// passing without stopping to teach it.
+  static const yourTermsNote = 'Every term your lessons mention';
 
   /// The whole-deck length card, shown when no offered length fits.
   static const wholeDeck = 'Every term in this deck';
@@ -90,11 +92,17 @@ abstract final class VocabCopy {
 
   /// The teaching state's body.
   static const teachingBody =
-      'The game draws on terms your lessons have taught, and it needs at '
+      'The game draws on the terms your lessons mention, and it needs at '
       'least $vocabMinimumPool. Play a lesson or two and come back.';
 
   /// The teaching state's way out.
   static const teachingAction = 'Back to learning';
+
+  /// What a screen reader is told while the pools resolve.
+  static const loading = 'Loading the drill';
+
+  /// And when they do not resolve.
+  static const loadFailed = 'This drill could not be loaded.';
 
   /// What a screen reader announces for the drill's progress.
   static String progress(int position, int total) =>

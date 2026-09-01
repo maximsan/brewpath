@@ -3,6 +3,7 @@ import 'package:brew_path/app/day_surfaces.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
+import 'package:brew_path/core/utils/drill_bands.dart';
 import 'package:brew_path/core/widgets/drill_results_view.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
@@ -145,7 +146,10 @@ class _MiniGamePlayerScreenState extends ConsumerState<MiniGamePlayerScreen> {
             score: _score,
             total: played.length,
           ),
-          celebratory: isCelebratoryRun(score: _score, total: played.length),
+          celebratory: isCelebratoryScore(
+            score: _score,
+            total: played.length,
+          ),
         ),
         primary: (label: 'Play again', onPressed: _playAgain),
         secondary: (label: 'Done', onPressed: _done),

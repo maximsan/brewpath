@@ -20,9 +20,18 @@ const double _bubbleStroke = 1.4;
 const double _markStroke = 1.3;
 
 /// The full stop under the question mark.
-const double _dotCentreX = 10.2;
-const double _dotCentreY = 11.5;
+const Offset _dot = Offset(10.2, 11.5);
 const double _dotRadius = 0.8;
+
+/// The hook of the question mark, transcribed control point for control point
+/// from the design source. Three cubic segments, each `(control, control,
+/// end)`, walked from [_hookStart].
+const Offset _hookStart = Offset(8.6, 7.6);
+const List<(Offset, Offset, Offset)> _hookCurves = [
+  (Offset(8.6, 6.6), Offset(9.4, 6), Offset(10.2, 6)),
+  (Offset(11.1, 6), Offset(11.8, 6.6), Offset(11.8, 7.5)),
+  (Offset(11.8, 8.7), Offset(10.3, 8.8), Offset(10.3, 9.9)),
+];
 
 /// The vocab game's mark: a speech bubble with a question mark inside it —
 /// a definition goes in, a term comes out.
@@ -92,39 +101,29 @@ class _VocabPainter extends CustomPainter {
       ..drawPath(bubble, _stroke(color, _bubbleStroke, scale))
       ..drawPath(_questionMark(at), _stroke(accent, _markStroke, scale))
       ..drawCircle(
-        at(_dotCentreX, _dotCentreY),
+        at(_dot.dx, _dot.dy),
         _dotRadius * scale,
         Paint()..color = accent,
       );
   }
 
-  /// The hook of the question mark, transcribed curve for curve.
-  Path _questionMark(Offset Function(double, double) at) => Path()
-    ..moveTo(at(8.6, 7.6).dx, at(8.6, 7.6).dy)
-    ..cubicTo(
-      at(8.6, 6.6).dx,
-      at(8.6, 6.6).dy,
-      at(9.4, 6).dx,
-      at(9.4, 6).dy,
-      at(10.2, 6).dx,
-      at(10.2, 6).dy,
-    )
-    ..cubicTo(
-      at(11.1, 6).dx,
-      at(11.1, 6).dy,
-      at(11.8, 6.6).dx,
-      at(11.8, 6.6).dy,
-      at(11.8, 7.5).dx,
-      at(11.8, 7.5).dy,
-    )
-    ..cubicTo(
-      at(11.8, 8.7).dx,
-      at(11.8, 8.7).dy,
-      at(10.3, 8.8).dx,
-      at(10.3, 8.8).dy,
-      at(10.3, 9.9).dx,
-      at(10.3, 9.9).dy,
-    );
+  /// The hook of the question mark, walked from its transcribed table.
+  Path _questionMark(Offset Function(double, double) at) {
+    Offset on(Offset point) => at(point.dx, point.dy);
+
+    final path = Path()..moveTo(on(_hookStart).dx, on(_hookStart).dy);
+    for (final (first, second, end) in _hookCurves) {
+      path.cubicTo(
+        on(first).dx,
+        on(first).dy,
+        on(second).dx,
+        on(second).dy,
+        on(end).dx,
+        on(end).dy,
+      );
+    }
+    return path;
+  }
 
   Paint _stroke(Color ink, double width, double scale) => Paint()
     ..color = ink

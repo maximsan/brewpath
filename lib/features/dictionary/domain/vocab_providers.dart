@@ -1,4 +1,5 @@
 import 'package:brew_path/features/dictionary/domain/vocab_pool.dart';
+import 'package:brew_path/features/dictionary/domain/vocab_setup.dart';
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
 import 'package:brew_path/features/saved/domain/saved_key.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
@@ -22,6 +23,7 @@ class VocabPools {
     required this.accessible,
     required this.saved,
     this.categoryLabels = const {},
+    this.hasCourse = false,
   });
 
   /// Every term this learner's tier may be drilled on.
@@ -36,6 +38,15 @@ class VocabPools {
   /// showing a stale category beside a fresh term is exactly the split the
   /// one-value rule above exists to prevent.
   final Map<String, String> categoryLabels;
+
+  /// Whether this learner owns the course — the All deck names itself for
+  /// what it actually holds, and "the whole glossary" is a claim only one
+  /// tier can make.
+  final bool hasCourse;
+
+  /// The terms [deck] can ask about.
+  List<DictionaryTerm> forDeck(VocabDeck deck) =>
+      deck == VocabDeck.saved ? saved : accessible;
 }
 
 /// The learner's drill pools, tier-scoped.
@@ -55,14 +66,16 @@ Future<VocabPools> vocabPools(Ref ref) async {
   final savedFuture = ref.watch(savedKeysProvider.future);
   final entitlement = ref.watch(courseEntitlementProvider);
 
+  final hasCourse = entitlement.asData?.value ?? false;
   final accessible = accessibleTerms(
     terms: await termsFuture,
     lessons: await lessonsFuture,
-    hasCourse: entitlement.asData?.value ?? false,
+    hasCourse: hasCourse,
   );
 
   return VocabPools(
     accessible: accessible,
+    hasCourse: hasCourse,
     categoryLabels: {
       for (final category in await categoriesFuture)
         category.id: category.label,

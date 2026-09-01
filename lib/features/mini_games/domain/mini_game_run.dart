@@ -81,18 +81,11 @@ int mintRunNonce() => mintLessonNonce();
 List<T> roundsForRun<T>(List<T> rounds, int nonce) =>
     shuffledBySeed(rounds, nonce);
 
-/// Whether the run earns the celebratory companion reaction.
-///
-/// The mark is the drills' shared one, not this game's own — see
-/// [isCelebratoryScore].
-bool isCelebratoryRun({required int score, required int total}) =>
-    isCelebratoryScore(score: score, total: total);
-
 /// The supporting line under the score.
 String runEncouragement({required int score, required int total}) {
   if (total == 0) return 'Nothing to play here yet.';
   if (score == total) return 'A clean sweep. Every one of them.';
-  if (isCelebratoryRun(score: score, total: total)) {
+  if (isCelebratoryScore(score: score, total: total)) {
     return 'Sharp work — that is the mark.';
   }
   if (score == 0) return 'Every one of these is worth another look.';

@@ -26,8 +26,10 @@ class PickCard extends StatelessWidget {
   /// Whether this card is the current selection.
   final bool selected;
 
-  /// Called when the card is tapped.
-  final VoidCallback onTap;
+  /// Called when the card is tapped. **Null disables the card** — which is
+  /// what a caller must pass for an option the rules cannot offer, because an
+  /// empty callback leaves the row announced as a button that does nothing.
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {

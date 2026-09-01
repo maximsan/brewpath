@@ -13,6 +13,9 @@ import 'package:flutter/material.dart';
 /// changing the deck can change which lengths are still honest.
 typedef VocabChoice = ({VocabDeck deck, int length});
 
+/// The design's wash over a choice the rules cannot offer yet.
+const double dimmedWhenUnavailable = 0.45;
+
 /// The drill's first screen: pick a deck, pick a length, start.
 ///
 /// The lengths offered are only those the active pool can fill. That is not
@@ -41,14 +44,10 @@ class VocabSetupView extends StatelessWidget {
   /// Deals the first round.
   final VoidCallback onStart;
 
-  /// The terms the active deck can ask about.
-  List<Object> get _activePool =>
-      choice.deck == VocabDeck.saved ? pools.saved : pools.accessible;
-
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
-    final poolSize = _activePool.length;
+    final poolSize = pools.forDeck(choice.deck).length;
     final fits = vocabLengthsFor(poolSize);
 
     return SafeArea(
@@ -75,6 +74,7 @@ class VocabSetupView extends StatelessWidget {
               choice: choice,
               size: pools.accessible.length,
               onChoice: onChoice,
+              hasCourse: pools.hasCourse,
             ),
             const SizedBox(height: AppSpacing.lg),
             const SectionHeader(VocabCopy.lengthHeading),
@@ -109,6 +109,7 @@ class _DeckCard extends StatelessWidget {
     required this.choice,
     required this.size,
     required this.onChoice,
+    this.hasCourse = false,
   });
 
   final VocabDeck deck;
@@ -116,40 +117,39 @@ class _DeckCard extends StatelessWidget {
   final int size;
   final ValueChanged<VocabChoice> onChoice;
 
+  /// Only the All deck reads this: its name is a claim about how much of the
+  /// dictionary is in play, and the two tiers hold different amounts.
+  final bool hasCourse;
+
   @override
   Widget build(BuildContext context) {
     final available = deck == VocabDeck.all || vocabDeckAvailable(size);
+    // Calling a free learner's pool "the whole glossary" would be a claim
+    // their own dictionary screen contradicts — it shows every entry to
+    // everyone, and the drill reaches only part of it.
     final title = switch (deck) {
       VocabDeck.saved => VocabCopy.savedDeck,
-      // The name changes with what the pool actually is: calling a free
-      // learner's seventeen terms "the whole glossary" would be a claim about
-      // the dictionary that their own dictionary screen contradicts.
-      VocabDeck.all => VocabCopy.yourTermsDeck,
+      VocabDeck.all => hasCourse ? VocabCopy.allDeck : VocabCopy.yourTermsDeck,
     };
     final note = switch (deck) {
       VocabDeck.saved =>
         available ? VocabCopy.savedDeckReady : VocabCopy.savedDeckShort,
-      VocabDeck.all => VocabCopy.yourTermsNote,
+      VocabDeck.all =>
+        hasCourse ? VocabCopy.allDeckNote : VocabCopy.yourTermsNote,
     };
 
-    return Semantics(
-      enabled: available,
-      child: Opacity(
-        opacity: available ? 1 : _dimmed,
-        child: PickCard(
-          title: '$title · $size',
-          description: note,
-          selected: choice.deck == deck,
-          onTap: available
-              ? () => onChoice((deck: deck, length: choice.length))
-              : () {},
-        ),
+    return Opacity(
+      opacity: available ? 1 : dimmedWhenUnavailable,
+      child: PickCard(
+        title: '$title · $size',
+        description: note,
+        selected: choice.deck == deck,
+        onTap: available
+            ? () => onChoice((deck: deck, length: choice.length))
+            : null,
       ),
     );
   }
-
-  /// The design's disabled wash on a deck that cannot be picked yet.
-  static const double _dimmed = 0.45;
 }
 
 /// The three length cards, or the whole-deck card when none of them fits.
@@ -173,7 +173,7 @@ class _Lengths extends StatelessWidget {
         title: '$poolSize',
         description: VocabCopy.wholeDeck,
         selected: true,
-        onTap: () {},
+        onTap: null,
       );
     }
 
@@ -188,14 +188,14 @@ class _Lengths extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(bottom: AppSpacing.xs),
             child: Opacity(
-              opacity: fits.contains(length) ? 1 : _DeckCard._dimmed,
+              opacity: fits.contains(length) ? 1 : dimmedWhenUnavailable,
               child: PickCard(
                 title: '$length',
                 description: VocabCopy.lengthNames[length] ?? '',
                 selected: active == length,
                 onTap: fits.contains(length)
                     ? () => onChoice((deck: choice.deck, length: length))
-                    : () {},
+                    : null,
               ),
             ),
           ),

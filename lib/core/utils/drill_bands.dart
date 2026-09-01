@@ -1,11 +1,8 @@
-/// The two switches a drill's results copy turns on.
+/// The two switches a drill's results copy turns on, shared by every drill.
 ///
-/// The design states them once, for every drill in the app: *"the results
-/// screen scores n / N and switches copy at 80% and 50%"* (`ds-content.js`,
-/// **Round length**). The **words** at each band belong to the drill — a
-/// mini-game and a vocab round should not read as though one wrote the other —
-/// but the marks themselves are one rule, and a second copy of `0.8` is a
-/// second rule waiting to disagree.
+/// The design states them once for all of them — *"the results screen scores
+/// n / N and switches copy at 80% and 50%"* (`ds-content.js`, **Round
+/// length**). The words at each band belong to the drill; the marks do not.
 library;
 
 /// The four-in-five mark the companion celebrates at.

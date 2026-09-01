@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/core/widgets/drill_results_view.dart';
+import 'package:brew_path/core/widgets/pick_card.dart';
 import 'package:brew_path/core/widgets/roast_meter.dart';
 import 'package:brew_path/features/dictionary/domain/vocab_providers.dart';
 import 'package:brew_path/features/dictionary/domain/vocab_round.dart';
@@ -42,11 +43,16 @@ final List<DictionaryTerm> _accessible = [
   _term('shot', 'Shot', 'espresso'),
 ];
 
-VocabPools _pools({List<DictionaryTerm>? accessible, int saved = 0}) {
+VocabPools _pools({
+  List<DictionaryTerm>? accessible,
+  int saved = 0,
+  bool hasCourse = false,
+}) {
   final pool = accessible ?? _accessible;
   return VocabPools(
     accessible: pool,
     saved: pool.take(saved).toList(),
+    hasCourse: hasCourse,
     categoryLabels: const {
       'beans': 'Beans and Botany',
       'espresso': 'Espresso',
@@ -224,6 +230,53 @@ void main() {
       await _pump(tester, pools: _pools(saved: vocabMinimumPool));
 
       expect(find.textContaining(VocabCopy.savedDeckReady), findsOneWidget);
+    });
+
+    testWidgets("a free learner's All deck is not called the glossary", (
+      tester,
+    ) async {
+      await _pump(tester);
+
+      expect(find.textContaining(VocabCopy.yourTermsDeck), findsOneWidget);
+      expect(find.textContaining(VocabCopy.yourTermsNote), findsOneWidget);
+      expect(find.textContaining(VocabCopy.allDeckNote), findsNothing);
+    });
+
+    testWidgets('a paying learner is told they get the whole glossary', (
+      tester,
+    ) async {
+      // The deck must not tell them the free learner's story: theirs really
+      // is every term, reference entries included.
+      await _pump(tester, pools: _pools(hasCourse: true));
+
+      expect(find.textContaining(VocabCopy.allDeck), findsOneWidget);
+      expect(find.textContaining(VocabCopy.allDeckNote), findsOneWidget);
+      expect(find.textContaining(VocabCopy.yourTermsNote), findsNothing);
+    });
+
+    testWidgets('a choice the rules cannot offer is disabled, not just faint', (
+      tester,
+    ) async {
+      // Eight terms, so Deep 12 cannot be filled and the Saved deck is short.
+      // A dimmed card that still answers taps reads to a screen reader as a
+      // button that does nothing.
+      await _pump(tester);
+
+      final deep = tester.widget<PickCard>(
+        find.ancestor(
+          of: find.text('${vocabLengths.last}'),
+          matching: find.byType(PickCard),
+        ),
+      );
+      final savedDeck = tester.widget<PickCard>(
+        find.ancestor(
+          of: find.textContaining(VocabCopy.savedDeck),
+          matching: find.byType(PickCard),
+        ),
+      );
+
+      expect(deep.onTap, isNull);
+      expect(savedDeck.onTap, isNull);
     });
   });
 
