@@ -22,12 +22,17 @@ bool keepSharpRuleMet(
   PracticeType type, {
   required int distinctGamesToday,
   required bool replayedToday,
+  required bool reviewedFlashcardsToday,
 }) => switch (type) {
   PracticeType.miniGames => distinctGamesToday >= _twoDifferentGames,
   PracticeType.lessonReplay => replayedToday,
+  // The card's rule is "review your saved terms", and one finished review is
+  // exactly what the drill records — so the rule is met by the same entry the
+  // streak reads, with nothing counted twice.
+  PracticeType.flashcards => reviewedFlashcardsToday,
   // No surface, no records; a surface that registers brings its own rule
-  // input the same way the two above do.
-  PracticeType.vocabGame || PracticeType.flashcards => false,
+  // input the same way the three above do.
+  PracticeType.vocabGame => false,
 };
 
 /// Whether any lesson was replayed among [entries] — one day's activity.
@@ -44,4 +49,14 @@ bool keepSharpRuleMet(
 /// inputs now come from one source, and none of them is stored for this.
 bool anyReplayToday(Iterable<String> entries) => entries.any(
   (entry) => parseActivityEntry(entry).type == ActivityType.replay,
+);
+
+/// Whether a flashcard review was finished among [entries] — one day's
+/// activity.
+///
+/// Read off the same record, for the same reason: the drill writes one entry
+/// when a review finishes, and an abandoned one writes none, so the presence
+/// of an entry *is* the rule being met. Nothing is stored for this.
+bool anyFlashcardReviewToday(Iterable<String> entries) => entries.any(
+  (entry) => parseActivityEntry(entry).type == ActivityType.flashcards,
 );

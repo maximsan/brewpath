@@ -3,6 +3,7 @@
 //
 // The provider used to read the clock itself, so none of this was assertable
 // without pumping. Every case below injects the day.
+import 'package:brew_path/features/dictionary/domain/flashcard_destination.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_destination.dart';
@@ -11,16 +12,21 @@ import 'package:flutter_test/flutter_test.dart';
 /// The two formats a free learner can actually play.
 const _playable = ['g-quiz', 'g-match'];
 
+/// A deck with cards in it — the state that makes flashcards eligible.
+const int _deck = 3;
+
 KeepSharpResolution? resolve({
   required int day,
   List<String> playable = _playable,
   Set<String> playedToday = const {},
   List<String> completed = const ['m1l1'],
+  int deck = _deck,
 }) => keepSharpResolutionFor(
   dayNumber: day,
   playableFormatIds: playable,
   formatsPlayedToday: playedToday,
   completedLessonIds: completed,
+  flashcardDeckSize: deck,
 );
 
 /// A day whose rotation lands on [type], searched rather than hardcoded so the
@@ -54,9 +60,28 @@ void main() {
       final day = dayLandingOn(PracticeType.miniGames);
 
       expect(
-        resolve(day: day, playable: const [])?.type,
+        resolve(day: day, playable: const [], deck: 0)?.type,
         PracticeType.lessonReplay,
       );
+    });
+
+    test('flashcards need a card in the deck', () {
+      final day = dayLandingOn(PracticeType.flashcards);
+
+      expect(resolve(day: day)?.type, PracticeType.flashcards);
+      expect(
+        resolve(day: day, deck: 0)?.type,
+        isNot(PracticeType.flashcards),
+        reason:
+            'the one type that can have no material — recommending it then '
+            'sends the learner to a screen with nothing for them',
+      );
+    });
+
+    test('its CTA opens the drill, which needs nothing naming', () {
+      final day = dayLandingOn(PracticeType.flashcards);
+
+      expect(resolve(day: day)!.destination, flashcardReview);
     });
 
     test('a replay needs a finished lesson', () {
@@ -71,16 +96,20 @@ void main() {
     test('nothing to offer resolves to nothing at all', () {
       for (var day = 0; day < PracticeType.values.length; day++) {
         expect(
-          resolve(day: day, playable: const [], completed: const []),
+          resolve(
+            day: day,
+            playable: const [],
+            completed: const [],
+            deck: 0,
+          ),
           isNull,
         );
       }
     });
 
-    test('vocab and flashcards stay out until their surfaces register', () {
-      // They qualify for the streak already; they have no screen.
+    test('the vocab game stays out until its surface registers', () {
+      // It qualifies for the streak already; it has no screen.
       expect(builtPracticeSurfaces, isNot(contains(PracticeType.vocabGame)));
-      expect(builtPracticeSurfaces, isNot(contains(PracticeType.flashcards)));
     });
   });
 

@@ -7,6 +7,7 @@ import 'package:brew_path/features/challenges/presentation/saved_challenges_list
 import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/learn/presentation/practice_any_lesson_widget.dart';
+import 'package:brew_path/features/learn/presentation/practice_drills_widget.dart';
 import 'package:brew_path/features/learn/presentation/today_card_widget.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_providers.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_games_catalog_widget.dart';
@@ -132,6 +133,11 @@ class LearnListView extends ConsumerWidget {
               ),
               _sectionGap,
               const SectionHeader(AppLabels.practiceGamesGroup),
+              _headerGap,
+              // The dictionary drills lead the group, ahead of the catalog:
+              // they are free for everyone and need no module unlocked, so
+              // they are the two rows a learner can always act on.
+              const PracticeDrillsWidget(),
               _headerGap,
               MiniGamesCatalogWidget(
                 formats: miniGames.asData?.value ?? const [],

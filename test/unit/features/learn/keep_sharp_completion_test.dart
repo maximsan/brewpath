@@ -17,6 +17,7 @@ void main() {
           PracticeType.miniGames,
           distinctGamesToday: 1,
           replayedToday: false,
+          reviewedFlashcardsToday: false,
         ),
         isFalse,
       );
@@ -25,6 +26,7 @@ void main() {
           PracticeType.miniGames,
           distinctGamesToday: 2,
           replayedToday: false,
+          reviewedFlashcardsToday: false,
         ),
         isTrue,
       );
@@ -36,6 +38,7 @@ void main() {
           PracticeType.lessonReplay,
           distinctGamesToday: 0,
           replayedToday: true,
+          reviewedFlashcardsToday: false,
         ),
         isTrue,
       );
@@ -46,18 +49,44 @@ void main() {
           PracticeType.miniGames,
           distinctGamesToday: 0,
           replayedToday: true,
+          reviewedFlashcardsToday: false,
         ),
         isFalse,
       );
     });
 
-    test('unrecorded types never acknowledge', () {
-      for (final type in [PracticeType.vocabGame, PracticeType.flashcards]) {
-        expect(
-          keepSharpRuleMet(type, distinctGamesToday: 2, replayedToday: true),
-          isFalse,
-        );
-      }
+    test('a finished review acknowledges only the flashcards pick', () {
+      expect(
+        keepSharpRuleMet(
+          PracticeType.flashcards,
+          distinctGamesToday: 0,
+          replayedToday: false,
+          reviewedFlashcardsToday: true,
+        ),
+        isTrue,
+      );
+      expect(
+        keepSharpRuleMet(
+          PracticeType.flashcards,
+          distinctGamesToday: 2,
+          replayedToday: true,
+          reviewedFlashcardsToday: false,
+        ),
+        isFalse,
+        reason: "a busy day of other practice is not the card's own rule",
+      );
+    });
+
+    test('the type with no surface never acknowledges', () {
+      expect(
+        keepSharpRuleMet(
+          PracticeType.vocabGame,
+          distinctGamesToday: 2,
+          replayedToday: true,
+          reviewedFlashcardsToday: true,
+        ),
+        isFalse,
+      );
     });
   });
 
@@ -106,6 +135,32 @@ void main() {
 
     test('an entry naming a type this build does not know is inert', () {
       expect(anyReplayToday({'seance:token-1:m1l1'}), isFalse);
+    });
+  });
+
+  group('anyFlashcardReviewToday', () {
+    test('a finished review counts', () {
+      expect(
+        anyFlashcardReviewToday(_entries([(ActivityType.flashcards, '')])),
+        isTrue,
+      );
+    });
+
+    test('a day of every other kind of practice does not', () {
+      expect(
+        anyFlashcardReviewToday(
+          _entries([
+            (ActivityType.miniGame, 'g-quiz'),
+            (ActivityType.replay, 'm1l1'),
+            (ActivityType.lesson, 'm1l2'),
+          ]),
+        ),
+        isFalse,
+      );
+    });
+
+    test('an abandoned review leaves no entry, so no day holds one', () {
+      expect(anyFlashcardReviewToday(const {}), isFalse);
     });
   });
 }

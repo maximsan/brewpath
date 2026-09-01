@@ -47,6 +47,7 @@ abstract class AppRoutes {
   static const saved = AppRoute('saved', 'saved');
   static const dictionary = AppRoute('dictionary', 'dictionary');
   static const dictionaryTerm = AppRoute('dictionaryTerm', 'term/:termId');
+  static const flashcards = AppRoute('flashcards', 'flashcards');
   static const path = AppRoute('path', '/path');
   static const cards = AppRoute('cards', '/cards');
   static const cardDetail = AppRoute('cardDetail', ':cardId');

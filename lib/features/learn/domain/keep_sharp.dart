@@ -6,6 +6,7 @@
 library;
 
 import 'package:brew_path/core/utils/date_utils.dart';
+import 'package:brew_path/features/dictionary/domain/flashcard_destination.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_destination.dart';
 import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
@@ -22,18 +23,19 @@ enum PracticeType {
   /// The vocabulary game. No surface yet; registers when built.
   vocabGame,
 
-  /// Flashcard review of saved terms. No surface yet; registers when built.
+  /// Flashcard review of saved terms.
   flashcards,
 
   /// Replaying a completed lesson.
   lessonReplay,
 }
 
-/// The practice types with a surface in this build. Vocab game and flashcards
-/// have no screens yet; they join the rotation by joining this set — no
-/// schema change, no new decision (#120's eligibility registry).
+/// The practice types with a surface in this build. The vocab game has no
+/// screen yet; it joins the rotation by joining this set — no schema change,
+/// no new decision (#120's eligibility registry).
 const Set<PracticeType> builtPracticeSurfaces = {
   PracticeType.miniGames,
+  PracticeType.flashcards,
   PracticeType.lessonReplay,
 };
 
@@ -106,10 +108,16 @@ KeepSharpResolution? keepSharpResolutionFor({
   required List<String> playableFormatIds,
   required Set<String> formatsPlayedToday,
   required List<String> completedLessonIds,
+  required int flashcardDeckSize,
 }) {
   final eligible = {
     if (playableFormatIds.length >= miniGamesPerQualifyingDay)
       PracticeType.miniGames,
+    // The one type that can have no material at all: the deck is what the
+    // learner bookmarked, so an empty one is an ordinary state rather than a
+    // gap in the content. Recommending it then would send them to a screen
+    // that can only explain why it has nothing for them.
+    if (flashcardDeckSize > 0) PracticeType.flashcards,
     if (completedLessonIds.isNotEmpty) PracticeType.lessonReplay,
   }.intersection(builtPracticeSurfaces);
 
@@ -128,8 +136,10 @@ KeepSharpResolution? keepSharpResolutionFor({
         keepSharpDailyChoice(dayNumber, completedLessonIds),
       ),
     ),
-    // Gated out by `builtPracticeSurfaces` until their surfaces register.
-    PracticeType.vocabGame || PracticeType.flashcards => null,
+    // No entry point to parameterise: the deck is the learner's saved terms.
+    PracticeType.flashcards => (type: pick, destination: flashcardReview),
+    // Gated out by `builtPracticeSurfaces` until its surface registers.
+    PracticeType.vocabGame => null,
   };
 }
 

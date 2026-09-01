@@ -7,6 +7,7 @@ import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
 import 'package:brew_path/features/dictionary/presentation/category_index.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_filter_control.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_masthead.dart';
+import 'package:brew_path/features/dictionary/presentation/dictionary_quick_chips.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_term_list.dart';
 import 'package:brew_path/features/dictionary/presentation/search_mark.dart';
 import 'package:brew_path/shared/models/content/dictionary_category.dart';
@@ -140,6 +141,19 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
           selected: _filter,
           counts: widget.view.counts,
           onSelected: (filter) => setState(() => _filter = filter),
+        ),
+        // Under the filters, over the list: the design puts practice between
+        // *narrowing the shelf* and *reading it* (`dictionary.jsx:405`),
+        // because drilling is a third thing to do here rather than a way of
+        // browsing.
+        const Padding(
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.gutter,
+            AppSpacing.sm,
+            AppSpacing.gutter,
+            0,
+          ),
+          child: DictionaryQuickChips(),
         ),
         const SizedBox(height: AppSpacing.sm),
         Expanded(

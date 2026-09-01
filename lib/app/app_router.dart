@@ -4,6 +4,7 @@ import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/cards/presentation/card_detail_screen.dart';
 import 'package:brew_path/features/cards/presentation/cards_screen.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
+import 'package:brew_path/features/dictionary/presentation/flashcards_screen.dart';
 import 'package:brew_path/features/dictionary/presentation/term_detail_screen.dart';
 import 'package:brew_path/features/learn/domain/course_completion_providers.dart';
 import 'package:brew_path/features/learn/presentation/course_completion_screen.dart';
@@ -178,6 +179,18 @@ GoRouter appRouter(Ref ref) {
                         ),
                       ),
                     ],
+                  ),
+                  // The flashcards drill, reached from the dictionary, the
+                  // shelf, the practice list and Keep Sharp. On the root
+                  // navigator like every other run, so a drill covers the
+                  // bottom nav rather than sitting inside it — and pushed, so
+                  // closing it returns the learner to whichever of the four
+                  // they came from.
+                  GoRoute(
+                    path: AppRoutes.flashcards.path,
+                    name: AppRoutes.flashcards.name,
+                    parentNavigatorKey: _rootKey,
+                    builder: (context, state) => const FlashcardsScreen(),
                   ),
                   // Immersive lesson flow: pushed on the root navigator so it
                   // covers the bottom-nav shell.

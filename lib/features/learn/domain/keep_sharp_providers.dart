@@ -1,4 +1,5 @@
 import 'package:brew_path/core/utils/date_utils.dart';
+import 'package:brew_path/features/dictionary/domain/flashcard_providers.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp_completion.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
@@ -34,8 +35,9 @@ class KeepSharpRecommendation {
 /// when no registered type has material.
 ///
 /// The reads are the material the rule is asked of: which formats are playable,
-/// which the learner already played today, and which lessons they have
-/// finished. Every decision made from them lives in [keepSharpResolutionFor].
+/// which the learner already played today, which lessons they have finished,
+/// and how many cards their deck holds. Every decision made from them lives in
+/// [keepSharpResolutionFor].
 @riverpod
 Future<KeepSharpRecommendation?> keepSharpRecommendation(Ref ref) async {
   final day = keepSharpDayNumber(DateTime.now());
@@ -43,9 +45,11 @@ Future<KeepSharpRecommendation?> keepSharpRecommendation(Ref ref) async {
   // across an async gap on a disposed ref.
   final formatsFuture = ref.watch(miniGameFormatsProvider.future);
   final completedFuture = ref.watch(completedLessonsProvider.future);
+  final deckSizeFuture = ref.watch(flashcardDeckSizeProvider.future);
   final snapshotFuture = ref.watch(snapshotRepositoryProvider).read();
   final formats = await formatsFuture;
   final completed = await completedFuture;
+  final deckSize = await deckSizeFuture;
   final snapshot = await snapshotFuture;
 
   final resolution = keepSharpResolutionFor(
@@ -58,6 +62,7 @@ Future<KeepSharpRecommendation?> keepSharpRecommendation(Ref ref) async {
       snapshot.clearedByReset.dailyActivity[day] ?? const {},
     ),
     completedLessonIds: [for (final record in completed) record.lessonId],
+    flashcardDeckSize: deckSize,
   );
 
   return resolution == null
@@ -93,5 +98,6 @@ Future<bool> keepSharpAcknowledgedToday(Ref ref) async {
     recommendation.type,
     distinctGamesToday: distinctMiniGameIds(entriesToday).length,
     replayedToday: anyReplayToday(entriesToday),
+    reviewedFlashcardsToday: anyFlashcardReviewToday(entriesToday),
   );
 }
