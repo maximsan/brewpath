@@ -4,6 +4,8 @@
 // The provider used to read the clock itself, so none of this was assertable
 // without pumping. Every case below injects the day.
 import 'package:brew_path/features/dictionary/domain/flashcard_destination.dart';
+import 'package:brew_path/features/dictionary/domain/vocab_destination.dart';
+import 'package:brew_path/features/dictionary/domain/vocab_setup.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_destination.dart';
@@ -12,28 +14,40 @@ import 'package:flutter_test/flutter_test.dart';
 /// The two formats a free learner can actually play.
 const _playable = ['g-quiz', 'g-match'];
 
-/// A deck with cards in it — the state that makes flashcards eligible.
-const int _deck = 3;
-
 KeepSharpResolution? resolve({
   required int day,
   List<String> playable = _playable,
   Set<String> playedToday = const {},
   List<String> completed = const ['m1l1'],
-  int deck = _deck,
+  int drillable = 0,
+  int deck = 0,
 }) => keepSharpResolutionFor(
   dayNumber: day,
-  playableFormatIds: playable,
-  formatsPlayedToday: playedToday,
-  completedLessonIds: completed,
-  flashcardDeckSize: deck,
+  material: (
+    playableFormatIds: playable,
+    formatsPlayedToday: playedToday,
+    completedLessonIds: completed,
+    drillableTermCount: drillable,
+    flashcardDeckSize: deck,
+  ),
 );
 
 /// A day whose rotation lands on [type], searched rather than hardcoded so the
 /// cases survive a change to the rotation order.
-int dayLandingOn(PracticeType type, {List<String> playable = _playable}) {
+int dayLandingOn(
+  PracticeType type, {
+  List<String> playable = _playable,
+  int drillable = 0,
+  int deck = 0,
+}) {
   for (var day = 0; day < PracticeType.values.length * 2; day++) {
-    if (resolve(day: day, playable: playable)?.type == type) return day;
+    final resolved = resolve(
+      day: day,
+      playable: playable,
+      drillable: drillable,
+      deck: deck,
+    );
+    if (resolved?.type == type) return day;
   }
   fail('no day in one full rotation lands on $type');
 }
@@ -60,28 +74,9 @@ void main() {
       final day = dayLandingOn(PracticeType.miniGames);
 
       expect(
-        resolve(day: day, playable: const [], deck: 0)?.type,
+        resolve(day: day, playable: const [])?.type,
         PracticeType.lessonReplay,
       );
-    });
-
-    test('flashcards need a card in the deck', () {
-      final day = dayLandingOn(PracticeType.flashcards);
-
-      expect(resolve(day: day)?.type, PracticeType.flashcards);
-      expect(
-        resolve(day: day, deck: 0)?.type,
-        isNot(PracticeType.flashcards),
-        reason:
-            'the one type that can have no material — recommending it then '
-            'sends the learner to a screen with nothing for them',
-      );
-    });
-
-    test('its CTA opens the drill, which needs nothing naming', () {
-      final day = dayLandingOn(PracticeType.flashcards);
-
-      expect(resolve(day: day)!.destination, flashcardReview);
     });
 
     test('a replay needs a finished lesson', () {
@@ -96,20 +91,73 @@ void main() {
     test('nothing to offer resolves to nothing at all', () {
       for (var day = 0; day < PracticeType.values.length; day++) {
         expect(
-          resolve(
-            day: day,
-            playable: const [],
-            completed: const [],
-            deck: 0,
-          ),
+          resolve(day: day, playable: const [], completed: const []),
           isNull,
         );
       }
     });
 
-    test('the vocab game stays out until its surface registers', () {
-      // It qualifies for the streak already; it has no screen.
-      expect(builtPracticeSurfaces, isNot(contains(PracticeType.vocabGame)));
+    test('the vocab game is offered once its pool can fill a question', () {
+      final day = dayLandingOn(
+        PracticeType.vocabGame,
+        drillable: vocabMinimumPool,
+      );
+
+      expect(
+        resolve(day: day, drillable: vocabMinimumPool)?.type,
+        PracticeType.vocabGame,
+      );
+    });
+
+    test('a pool too small for four options is never recommended', () {
+      // The card would state a rule the learner's material cannot satisfy —
+      // the same reason one playable mini-game format is never offered.
+      final day = dayLandingOn(
+        PracticeType.vocabGame,
+        drillable: vocabMinimumPool,
+      );
+
+      expect(
+        resolve(day: day, drillable: vocabMinimumPool - 1)?.type,
+        isNot(PracticeType.vocabGame),
+      );
+    });
+
+    test('the vocab CTA opens the drill, at its setup', () {
+      final day = dayLandingOn(
+        PracticeType.vocabGame,
+        drillable: vocabMinimumPool,
+      );
+
+      expect(
+        resolve(day: day, drillable: vocabMinimumPool)?.destination,
+        vocabGame,
+      );
+    });
+
+    test('every practice type has a surface now, and the registry stays', () {
+      // Not a formality: the next practice type authored joins this set
+      // unruled, and the set is where someone has to say so.
+      expect(builtPracticeSurfaces, PracticeType.values.toSet());
+    });
+
+    test('flashcards needs a card in the deck', () {
+      final day = dayLandingOn(PracticeType.flashcards, deck: 1);
+
+      expect(resolve(day: day, deck: 1)?.type, PracticeType.flashcards);
+      expect(
+        resolve(day: day)?.type,
+        isNot(PracticeType.flashcards),
+        reason:
+            "the one type whose material is the learner's own bookmarks — "
+            'recommending it empty sends them to a screen with nothing in it',
+      );
+    });
+
+    test('its CTA opens the drill, which needs nothing naming', () {
+      final day = dayLandingOn(PracticeType.flashcards, deck: 1);
+
+      expect(resolve(day: day, deck: 1)!.destination, flashcardReview);
     });
   });
 

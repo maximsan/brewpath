@@ -22,17 +22,16 @@ bool keepSharpRuleMet(
   PracticeType type, {
   required int distinctGamesToday,
   required bool replayedToday,
+  required bool vocabRoundToday,
   required bool reviewedFlashcardsToday,
 }) => switch (type) {
   PracticeType.miniGames => distinctGamesToday >= _twoDifferentGames,
   PracticeType.lessonReplay => replayedToday,
-  // The card's rule is "review your saved terms", and one finished review is
-  // exactly what the drill records — so the rule is met by the same entry the
-  // streak reads, with nothing counted twice.
+  // One finished round, which is the rule the card states.
+  PracticeType.vocabGame => vocabRoundToday,
+  // One finished review — every card seen — which is what the drill records
+  // and what its card asks for.
   PracticeType.flashcards => reviewedFlashcardsToday,
-  // No surface, no records; a surface that registers brings its own rule
-  // input the same way the three above do.
-  PracticeType.vocabGame => false,
 };
 
 /// Whether any lesson was replayed among [entries] — one day's activity.
@@ -51,12 +50,20 @@ bool anyReplayToday(Iterable<String> entries) => entries.any(
   (entry) => parseActivityEntry(entry).type == ActivityType.replay,
 );
 
+/// Whether a vocab round was finished among [entries] — one day's activity.
+///
+/// Read off the same activity record every other rule here reads, so the
+/// drill's acknowledgement needs no counter of its own.
+bool anyVocabRoundToday(Iterable<String> entries) => entries.any(
+  (entry) => parseActivityEntry(entry).type == ActivityType.vocab,
+);
+
 /// Whether a flashcard review was finished among [entries] — one day's
 /// activity.
 ///
-/// Read off the same record, for the same reason: the drill writes one entry
-/// when a review finishes, and an abandoned one writes none, so the presence
-/// of an entry *is* the rule being met. Nothing is stored for this.
+/// Same record, same reason: the drill writes one entry when every card has
+/// been seen, and an abandoned review writes none — so the entry's presence
+/// *is* the rule being met.
 bool anyFlashcardReviewToday(Iterable<String> entries) => entries.any(
   (entry) => parseActivityEntry(entry).type == ActivityType.flashcards,
 );

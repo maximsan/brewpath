@@ -128,8 +128,9 @@ void main() {
     'moduleSummary': HeaderTier.immersive,
     'miniGameIntro': HeaderTier.immersive,
     'miniGamePlay': HeaderTier.immersive,
-    // A drill, like a run: its own close and its own counter, and no tab bar
-    // offering a way out that would abandon the review silently.
+    // A drill, like a mini-game run: its own close button and no
+    // chrome, so nothing competes with the question being asked.
+    'vocabGame': HeaderTier.immersive,
     'flashcards': HeaderTier.immersive,
     'onboardingName': HeaderTier.immersive,
   };

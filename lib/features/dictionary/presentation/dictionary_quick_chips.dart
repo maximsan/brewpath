@@ -1,85 +1,162 @@
+import 'dart:async';
+
 import 'package:brew_path/core/constants/app_routes.dart';
-import 'package:brew_path/core/widgets/bordered_tap_row.dart';
 import 'package:brew_path/features/dictionary/domain/flashcard_providers.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_copy.dart';
+import 'package:brew_path/features/dictionary/presentation/flashcards_mark.dart';
+import 'package:brew_path/features/dictionary/presentation/vocab/vocab_copy.dart';
+import 'package:brew_path/features/dictionary/presentation/vocab/vocab_mark.dart';
+import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-/// The dictionary's practice row: one slim chip per drill
-/// (`dictionary.jsx:271-296`).
+/// The drill row on Dictionary home — one slim chip per practice surface the
+/// dictionary owns.
 ///
-/// **The row exists with one chip in it.** #98's *Guess the term* adds the
-/// second; building the row now rather than a lone button means that ticket
-/// adds a chip instead of re-laying-out this screen.
+/// Both chips now (#97, #98), in the design's own order: Flashcards leads
+/// because it drills what the learner chose to keep, and only it carries a
+/// count — the design gives *Guess the term* `null` there, since the whole
+/// glossary is not a number worth reading (`dictionary.jsx:285-289`).
 class DictionaryQuickChips extends ConsumerWidget {
   /// Creates a [DictionaryQuickChips].
   const DictionaryQuickChips({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Row(
-      children: [
-        Expanded(
-          child: _Chip(
-            label: FlashcardsCopy.title,
-            // The deck's own count, not the saved one. A chip promising
-            // twelve that opens onto four is exactly the lie the deck
-            // provider exists to prevent.
-            count: ref.watch(flashcardDeckSizeProvider).asData?.value,
-            onTap: () => context.pushFlashcards(),
+  Widget build(BuildContext context, WidgetRef ref) => Row(
+    children: [
+      Expanded(
+        // The deck's own count, not the saved set's: a chip promising twelve
+        // that opens onto four is the lie the deck provider exists to prevent.
+        child: _FlashcardsChip(
+          cards: ref.watch(flashcardDeckSizeProvider).asData?.value,
+        ),
+      ),
+      const SizedBox(width: AppSpacing.sm),
+      const Expanded(child: _VocabChip()),
+    ],
+  );
+}
+
+/// Flashcards, with how many cards are behind it.
+class _FlashcardsChip extends StatelessWidget {
+  const _FlashcardsChip({required this.cards});
+
+  /// Null while the deck is resolving, when the chip shows its name alone
+  /// rather than a zero it may have to take back.
+  final int? cards;
+
+  /// The mark's drawn size in a chip, from the design's own row.
+  static const double _markSize = 18;
+
+  @override
+  Widget build(BuildContext context) {
+    final mood = context.mood;
+
+    return Semantics(
+      button: true,
+      label: cards == null
+          ? FlashcardsCopy.title
+          : '${FlashcardsCopy.title}, ${FlashcardsCopy.deckLine(cards!)}',
+      excludeSemantics: true,
+      child: Material(
+        color: mood.surface,
+        borderRadius: BorderRadius.circular(AppRadii.chrome),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(AppRadii.chrome),
+          onTap: () => unawaited(context.pushFlashcards()),
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: mood.rule),
+              borderRadius: BorderRadius.circular(AppRadii.chrome),
+            ),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.sm,
+              vertical: AppSpacing.sm,
+            ),
+            child: Row(
+              children: [
+                FlashcardsMark(
+                  size: _markSize,
+                  color: mood.inkMute,
+                  accent: mood.accent,
+                ),
+                const SizedBox(width: AppSpacing.xs),
+                Expanded(
+                  child: Text(
+                    FlashcardsCopy.title,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppText.support(mood: mood),
+                  ),
+                ),
+                if (cards != null)
+                  Text(
+                    '$cards',
+                    style: AppText.micro(mood: mood, face: AppFace.mono),
+                  ),
+              ],
+            ),
           ),
         ),
-      ],
+      ),
     );
   }
 }
 
-/// One chip: what the drill is, and how much material it has.
-class _Chip extends StatelessWidget {
-  const _Chip({required this.label, required this.count, required this.onTap});
+class _VocabChip extends StatelessWidget {
+  const _VocabChip();
 
-  final String label;
-
-  /// How many cards are behind it — null while the deck is still resolving,
-  /// when the chip shows its name alone rather than a zero it may have to
-  /// take back.
-  final int? count;
-
-  final VoidCallback onTap;
+  /// The mark's drawn size in a chip, from the design's own row.
+  static const double _markSize = 18;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final mood = context.mood;
 
-    return BorderedTapRow(
-      semanticsLabel: count == null ? label : '$label, $count cards',
-      onTap: onTap,
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.sm,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Flexible(
-            child: Text(
-              label,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.titleSmall?.copyWith(color: mood.ink),
+    return Semantics(
+      button: true,
+      label: VocabCopy.title,
+      hint: VocabCopy.rowSubtitle,
+      excludeSemantics: true,
+      child: Material(
+        color: mood.surface,
+        borderRadius: BorderRadius.circular(AppRadii.chrome),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(AppRadii.chrome),
+          onTap: () => unawaited(
+            context.pushNamed(AppRoutes.vocabGame.name),
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: mood.rule),
+              borderRadius: BorderRadius.circular(AppRadii.chrome),
+            ),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.sm,
+              vertical: AppSpacing.sm,
+            ),
+            child: Row(
+              children: [
+                VocabMark(
+                  size: _markSize,
+                  color: mood.inkMute,
+                  accent: mood.accent,
+                ),
+                const SizedBox(width: AppSpacing.xs),
+                Expanded(
+                  child: Text(
+                    VocabCopy.title,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppText.support(mood: mood),
+                  ),
+                ),
+              ],
             ),
           ),
-          if (count != null) ...[
-            const SizedBox(width: AppSpacing.xs),
-            Text(
-              '$count',
-              style: AppText.label(mood: mood, face: AppFace.mono),
-            ),
-          ],
-        ],
+        ),
       ),
     );
   }

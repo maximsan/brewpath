@@ -7,6 +7,8 @@ library;
 
 import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/dictionary/domain/flashcard_destination.dart';
+import 'package:brew_path/features/dictionary/domain/vocab_destination.dart';
+import 'package:brew_path/features/dictionary/domain/vocab_setup.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_destination.dart';
 import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
@@ -20,7 +22,7 @@ enum PracticeType {
   /// intro. Two different ones mark the day (§5, #59).
   miniGames,
 
-  /// The vocabulary game. No surface yet; registers when built.
+  /// The vocabulary game — *Guess the term*.
   vocabGame,
 
   /// Flashcard review of saved terms.
@@ -30,11 +32,14 @@ enum PracticeType {
   lessonReplay,
 }
 
-/// The practice types with a surface in this build. The vocab game has no
-/// screen yet; it joins the rotation by joining this set — no schema change,
-/// no new decision (#120's eligibility registry).
+/// The practice types with a surface in this build — all four, now that the
+/// vocab game (#98) and flashcards (#97) have landed. A type joins the
+/// rotation by joining this set: no schema change, no new decision (#120's
+/// eligibility registry). The set stays, because the next practice type
+/// authored joins it unruled and the registry is where someone says so.
 const Set<PracticeType> builtPracticeSurfaces = {
   PracticeType.miniGames,
+  PracticeType.vocabGame,
   PracticeType.flashcards,
   PracticeType.lessonReplay,
 };
@@ -96,6 +101,30 @@ typedef KeepSharpResolution = ({
   RouteDestination destination,
 });
 
+/// Everything the rotation is asked of — one value, not one parameter per
+/// practice type.
+///
+/// It travels as a clump because it is one: every field is material some
+/// type's eligibility rule reads, they are gathered from one place and passed
+/// to one function, and the fifth type added here was the one that made the
+/// argument list longer than the rule it feeds.
+typedef PracticeMaterial = ({
+  /// The mini-game formats this build can actually run.
+  List<String> playableFormatIds,
+
+  /// Which of them the learner already played today.
+  Set<String> formatsPlayedToday,
+
+  /// The lessons they have finished, which a replay picks from.
+  List<String> completedLessonIds,
+
+  /// How many terms their tier can be drilled on (ADR-0014).
+  int drillableTermCount,
+
+  /// How many of those they have bookmarked — the flashcard deck.
+  int flashcardDeckSize,
+});
+
 /// The whole recommendation, as a function of the day and the learner's
 /// material. No clock, no storage, no widgets — the caller supplies the day.
 ///
@@ -105,18 +134,27 @@ typedef KeepSharpResolution = ({
 /// material makes impossible.
 KeepSharpResolution? keepSharpResolutionFor({
   required int dayNumber,
-  required List<String> playableFormatIds,
-  required Set<String> formatsPlayedToday,
-  required List<String> completedLessonIds,
-  required int flashcardDeckSize,
+  required PracticeMaterial material,
 }) {
+  final (
+    :playableFormatIds,
+    :formatsPlayedToday,
+    :completedLessonIds,
+    :drillableTermCount,
+    :flashcardDeckSize,
+  ) = material;
+
   final eligible = {
     if (playableFormatIds.length >= miniGamesPerQualifyingDay)
       PracticeType.miniGames,
-    // The one type that can have no material at all: the deck is what the
-    // learner bookmarked, so an empty one is an ordinary state rather than a
-    // gap in the content. Recommending it then would send them to a screen
-    // that can only explain why it has nothing for them.
+    // The drill's own rule, asked of the learner's material: a pool that
+    // cannot fill four options cannot honestly be recommended, and the card
+    // must never ask for something the material makes impossible.
+    if (drillableTermCount >= vocabMinimumPool) PracticeType.vocabGame,
+    // The one type whose material is the learner's own bookmarks rather than
+    // the course's content, so an empty pool is an ordinary state rather than
+    // a gap. Recommending it then sends them to a screen that can only
+    // explain why it has nothing for them.
     if (flashcardDeckSize > 0) PracticeType.flashcards,
     if (completedLessonIds.isNotEmpty) PracticeType.lessonReplay,
   }.intersection(builtPracticeSurfaces);
@@ -136,10 +174,12 @@ KeepSharpResolution? keepSharpResolutionFor({
         keepSharpDailyChoice(dayNumber, completedLessonIds),
       ),
     ),
-    // No entry point to parameterise: the deck is the learner's saved terms.
+    // The drill's setup, not a round: the deck and the length are the
+    // learner's to choose, and dealing straight into a round takes that away.
+    PracticeType.vocabGame => (type: pick, destination: vocabGame),
+    // No setup to choose and nothing to parameterise: the deck is whatever
+    // the learner has bookmarked.
     PracticeType.flashcards => (type: pick, destination: flashcardReview),
-    // Gated out by `builtPracticeSurfaces` until its surface registers.
-    PracticeType.vocabGame => null,
   };
 }
 

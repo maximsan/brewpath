@@ -9,15 +9,14 @@ import 'package:brew_path/core/widgets/drill_results_view.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/roast_meter.dart';
-import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
 import 'package:brew_path/features/dictionary/domain/flashcard_completion.dart';
 import 'package:brew_path/features/dictionary/domain/flashcard_providers.dart';
 import 'package:brew_path/features/dictionary/domain/flashcard_round.dart';
+import 'package:brew_path/features/dictionary/domain/vocab_providers.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_category_mark.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcard_deal_view.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_copy.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_empty_view.dart';
-import 'package:brew_path/features/dictionary/presentation/flashcards_mascot.dart';
 import 'package:brew_path/features/lessons/domain/card_seed.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
@@ -107,8 +106,8 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final pools = ref.watch(vocabPoolsProvider);
     final deck = ref.watch(flashcardDeckProvider);
-    final view = ref.watch(dictionaryViewProvider);
     final cards = deck.asData?.value ?? const <DictionaryTerm>[];
     final round = _roundFor(cards.length);
 
@@ -144,7 +143,11 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
           label: 'Your deck could not be loaded',
           child: ErrorView(message: '$error'),
         ),
-        data: (cards) => _body(cards, round, view.asData?.value),
+        data: (cards) => _body(
+          cards,
+          round,
+          pools.asData?.value.categoryLabels ?? const {},
+        ),
       ),
     );
   }
@@ -164,28 +167,27 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
   Widget _body(
     List<DictionaryTerm> cards,
     FlashcardRound round,
-    DictionaryView? view,
+    Map<String, String> categoryLabels,
   ) {
     if (cards.isEmpty) return const FlashcardsEmptyView();
 
     if (round.isFinished) {
-      return DrillResultsView(
-        companion: const FlashcardsMascot(),
-        kicker: FlashcardsCopy.resultsKicker,
-        value: '${cards.length}',
+      return DrillResultsView.counted(
+        headline: '${cards.length}',
         note: FlashcardsCopy.reviewedNote(cards.length),
         message: FlashcardsCopy.resultsMessage,
-        primaryLabel: FlashcardsCopy.goAgain,
-        onPrimary: () => _shuffle(cards.length),
-        secondaryLabel: FlashcardsCopy.done,
-        onSecondary: _close,
+        primary: (
+          label: FlashcardsCopy.goAgain,
+          onPressed: () => _shuffle(cards.length),
+        ),
+        secondary: (label: FlashcardsCopy.done, onPressed: _close),
       );
     }
 
     final term = cards[round.card];
     return FlashcardDealView(
       term: term,
-      category: _categoryOf(view, term),
+      category: _categoryOf(categoryLabels, term),
       round: round,
       deckSize: cards.length,
       onFlip: () => _flip(cards.length),
@@ -195,17 +197,13 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
     );
   }
 
-  /// [term]'s category, or [DictionaryCategoryMark.unresolved] while the view
-  /// is still loading — the deck resolves first, and a card is worth more than
-  /// the kicker over it.
+  /// [term]'s category, or [DictionaryCategoryMark.unresolved] before the
+  /// labels have resolved — a card is worth more than the kicker over it.
   DictionaryCategoryMark _categoryOf(
-    DictionaryView? view,
+    Map<String, String> labels,
     DictionaryTerm term,
   ) {
-    final label = view?.categories
-        .where((category) => category.id == term.categoryId)
-        .firstOrNull
-        ?.label;
+    final label = labels[term.categoryId];
     return label == null
         ? DictionaryCategoryMark.unresolved
         : DictionaryCategoryMark(

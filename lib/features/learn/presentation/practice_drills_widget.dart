@@ -1,62 +1,60 @@
+import 'dart:async';
+
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_copy.dart';
+import 'package:brew_path/features/dictionary/presentation/flashcards_mark.dart';
+import 'package:brew_path/features/dictionary/presentation/vocab/vocab_copy.dart';
+import 'package:brew_path/features/dictionary/presentation/vocab/vocab_mark.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
-/// The dictionary drills, leading the Games group (`screens.jsx:948-971`).
+/// The dictionary drills, leading the Learn tab's **Games** group.
 ///
-/// **Always here, and always free**, whatever the learner owns. The drill is
-/// over their own saved terms, so there is nothing in it to sell — which is
-/// why this row carries no lock and no tier check, unlike every game beneath
-/// it.
+/// ADR-0004 rules that the practice section lists all four practice types, and
+/// that these rows lead the Games group as its first entries rather than
+/// sitting beside it — one container for everything playable.
 ///
-/// **And always here when the deck is empty.** The row is how a learner finds
-/// out flashcards exist; hiding it until they have bookmarked something would
-/// mean only the learners who already knew could ever discover it. An empty
-/// deck opens the drill's teaching state, which is written for exactly this
-/// arrival.
+/// **Free, with no lock treatment, always visible.** The drills are content-
+/// scoped, never feature-gated: a free learner plays them over the terms their
+/// lessons reached, which is a smaller pool rather than a locked door. A lock
+/// mark here would say the opposite of what is true, and these are a free
+/// learner's cheapest streak path.
 ///
-/// #98's *Guess the term* is the second row this card is built to hold.
+/// Both rows now (#97, #98), in the design's order — Flashcards leads
+/// (`screens.jsx:950`).
 class PracticeDrillsWidget extends StatelessWidget {
   /// Creates a [PracticeDrillsWidget].
-  const PracticeDrillsWidget({required this.hasCourse, super.key});
-
-  /// Whether the learner owns the course. Changes nothing about what this row
-  /// does — only whether it is worth saying that it is free, which is news
-  /// beside a locked game and noise beside an unlocked one.
-  final bool hasCourse;
+  const PracticeDrillsWidget({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.zero,
-      child: _DrillRow(
-        title: FlashcardsCopy.title,
-        eyebrow: FlashcardsCopy.practiceRowEyebrow,
-        meta: hasCourse ? null : FlashcardsCopy.free,
-        onTap: () => context.pushFlashcards(),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => Card(
+    margin: EdgeInsets.zero,
+    child: Column(
+      children: [
+        const _FlashcardsRow(),
+        Divider(height: 1, color: context.mood.rule),
+        const _VocabRow(),
+      ],
+    ),
+  );
 }
 
-/// One drill, in the shape the game rows beside it take.
-class _DrillRow extends StatelessWidget {
-  const _DrillRow({
-    required this.title,
-    required this.eyebrow,
-    required this.meta,
-    required this.onTap,
-  });
+/// Flashcards: the deck of what the learner kept.
+///
+/// **Here whether or not the deck has cards.** This row is how a learner finds
+/// out flashcards exist; showing it only once something is bookmarked would
+/// mean only the learners who already knew could ever discover it. An empty
+/// deck opens the drill's teaching state, which is written for that arrival.
+class _FlashcardsRow extends StatelessWidget {
+  const _FlashcardsRow();
 
-  final String title;
-  final String eyebrow;
-  final String? meta;
-  final VoidCallback onTap;
+  /// The mark's drawn size, matching the kind glyphs it sits above.
+  static const double _markSize = 20;
 
   @override
   Widget build(BuildContext context) {
@@ -65,10 +63,12 @@ class _DrillRow extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: meta == null ? '$title. $eyebrow.' : '$title. $eyebrow. $meta.',
+      label:
+          '${FlashcardsCopy.title}. ${FlashcardsCopy.practiceRowEyebrow}. '
+          '${FlashcardsCopy.free}.',
       excludeSemantics: true,
       child: InkWell(
-        onTap: onTap,
+        onTap: () => unawaited(context.pushFlashcards()),
         child: Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.md,
@@ -76,15 +76,19 @@ class _DrillRow extends StatelessWidget {
           ),
           child: Row(
             children: [
+              FlashcardsMark(
+                size: _markSize,
+                color: mood.inkMute,
+                accent: mood.accent,
+              ),
+              const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      eyebrow.toUpperCase(),
-                      // The meta treatment the game rows beside it take:
-                      // 0.08em, not the smallcaps rung's 0.14em.
+                      FlashcardsCopy.practiceRowEyebrow.toUpperCase(),
                       style: AppText.label(
                         color: mood.inkMute,
                         face: AppFace.mono,
@@ -93,7 +97,7 @@ class _DrillRow extends StatelessWidget {
                     ),
                     const SizedBox(height: AppSpacing.xxs),
                     Text(
-                      title,
+                      FlashcardsCopy.title,
                       style: theme.textTheme.titleSmall?.copyWith(
                         color: mood.ink,
                       ),
@@ -102,13 +106,89 @@ class _DrillRow extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: AppSpacing.sm),
-              if (meta != null)
-                Text(
-                  meta!,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: mood.inkMute,
-                  ),
+              Text(
+                FlashcardsCopy.free.toUpperCase(),
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: mood.inkMute,
                 ),
+              ),
+              IconMark(AppIcon.chevron, color: mood.inkMute),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _VocabRow extends StatelessWidget {
+  const _VocabRow();
+
+  /// The mark's drawn size, matching the kind glyphs it sits above.
+  static const double _markSize = 20;
+
+  /// What the row promises about cost. Stated because the group it leads is
+  /// full of rows that are not free.
+  static const String _free = 'Free';
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final mood = context.mood;
+
+    return Semantics(
+      button: true,
+      label: '${VocabCopy.title}. ${VocabCopy.rowSubtitle}. $_free.',
+      excludeSemantics: true,
+      child: InkWell(
+        onTap: () => unawaited(
+          context.pushNamed(AppRoutes.vocabGame.name),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.sm,
+          ),
+          child: Row(
+            children: [
+              VocabMark(
+                size: _markSize,
+                color: mood.inkMute,
+                accent: mood.accent,
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      VocabCopy.rowSubtitle.toUpperCase(),
+                      // The eyebrow takes the meta treatment every practice
+                      // row's does — 0.08em, not the section's smallcaps.
+                      style: AppText.label(
+                        color: mood.inkMute,
+                        face: AppFace.mono,
+                        tracking: AppTracking.meta,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xxs),
+                    Text(
+                      VocabCopy.title,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        color: mood.ink,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Text(
+                _free.toUpperCase(),
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: mood.inkMute,
+                ),
+              ),
               IconMark(AppIcon.chevron, color: mood.inkMute),
             ],
           ),

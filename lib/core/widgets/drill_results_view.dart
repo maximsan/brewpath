@@ -1,66 +1,97 @@
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
+import 'package:brew_path/features/companion/domain/companion_reaction.dart';
+import 'package:brew_path/features/companion/presentation/companion_celebration.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// How a drill ends: the companion, one number, and the two ways out.
+/// What a finished drill scored, and the words that go under it.
 ///
-/// The design's shared results layout (`dictionary-extras.jsx:95`) — the drills
-/// and the Coffee Challenge all close on this shape, which is why it is here
-/// rather than beside the first screen to want it
-/// ([#389](https://github.com/maximsan/brewpath/issues/389)).
+/// The bands are shared; the words are the caller's, so a mini-game and a
+/// vocab drill do not read as though one wrote the other.
+typedef DrillOutcome = ({
+  int score,
+  int total,
+  String encouragement,
+  bool celebratory,
+});
+
+/// One of the two ways out of a results screen.
+typedef DrillAction = ({String label, VoidCallback onPressed});
+
+/// The end of a run: what was scored, a word about it, and the two ways out.
 ///
-/// **It reports, it does not judge.** The big value is whatever the drill
-/// counted, and the caller names what that count is; nothing here turns it into
-/// a score. `MiniGameResultsView` stays separate for exactly that reason: it
-/// carries a score out of a total and picks a pose from it, which is a
-/// different thing to say.
+/// One results screen for every drill in the app, so finishing cannot come to
+/// mean two different things — the roast meter's consolidation (#381) a layer
+/// up.
 ///
-/// The mascot arrives as a widget rather than being built here. Nothing else
-/// in `lib/core/` reaches into a feature, and the companion is one — so the
-/// drill that knows which pose it has earned passes the one it wants.
+/// Nothing here is written anywhere: the score lives as long as this screen
+/// does, and the *fact* that a run finished is recorded by the player.
 class DrillResultsView extends StatelessWidget {
-  /// Creates a [DrillResultsView].
+  /// A drill that was **scored**: so many right out of so many asked.
   const DrillResultsView({
-    required this.companion,
-    required this.kicker,
-    required this.value,
-    required this.note,
-    required this.message,
-    required this.primaryLabel,
-    required this.onPrimary,
-    required this.secondaryLabel,
-    required this.onSecondary,
+    required DrillOutcome outcome,
+    required this.primary,
+    required this.secondary,
     super.key,
-  });
+  }) : _headline = null,
+       _note = null,
+       _message = null,
+       _outcome = outcome;
 
-  /// The mascot at the top, already posed by whoever finished the drill.
-  final Widget companion;
+  /// A drill that was **counted**, not scored — [headline] things done, with
+  /// [note] naming what they were.
+  ///
+  /// Flashcards is the case: a review teaches and never marks, so there is no
+  /// score to report and `12 / 12` would invent one. The chassis is the same;
+  /// what changes is that the big value stands alone under a word.
+  const DrillResultsView.counted({
+    required String headline,
+    required String note,
+    required String message,
+    required this.primary,
+    required this.secondary,
+    super.key,
+  }) : _headline = headline,
+       _note = note,
+       _message = message,
+       _outcome = null;
 
-  /// The smallcaps line above the number — which drill this was.
-  final String kicker;
+  /// The score and the words for it, on a scored drill.
+  final DrillOutcome? _outcome;
 
-  /// The number itself, already written the way it should read.
-  final String value;
+  /// The value, the word under it and the line below, on a counted one.
+  final String? _headline;
+  final String? _note;
+  final String? _message;
 
-  /// What the number counts, under it.
-  final String note;
+  /// The filled action: running it back.
+  final DrillAction primary;
 
-  /// A sentence about what just happened, and what to do next.
-  final String message;
+  /// The quieter way out.
+  final DrillAction secondary;
 
-  /// The action that goes again.
-  final String primaryLabel;
+  static const double _companionSize = 120;
 
-  /// Runs [primaryLabel].
-  final VoidCallback onPrimary;
+  /// Nothing to celebrate *above* on a counted drill: finishing a deck is
+  /// finishing a deck, so it takes the lesson-sized pose either way.
+  bool get _celebratory => _outcome?.celebratory ?? false;
 
-  /// The action that leaves.
-  final String secondaryLabel;
+  /// The big value.
+  String get _value {
+    final outcome = _outcome;
+    return _headline ?? '${outcome!.score} / ${outcome.total}';
+  }
 
-  /// Runs [secondaryLabel].
-  final VoidCallback onSecondary;
+  /// The line under it.
+  String get _line => _message ?? _outcome!.encouragement;
+
+  /// One sentence, so a reader gets the result rather than three fragments.
+  String get _announcement => _outcome == null
+      ? '$_value $_note. $_line'
+      : 'Run complete. You scored ${_outcome.score} '
+            'out of ${_outcome.total}. ${_outcome.encouragement}';
 
   @override
   Widget build(BuildContext context) {
@@ -75,31 +106,37 @@ class DrillResultsView extends StatelessWidget {
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 child: Semantics(
-                  // One announcement for the whole block: read out piece by
-                  // piece, "FLASHCARDS / 12 / TERMS REVIEWED" is three
-                  // fragments where the learner needs one sentence.
-                  label: '$kicker. $value $note. $message',
+                  label: _announcement,
                   excludeSemantics: true,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      companion,
+                      // The score decides the pose: the module-sized
+                      // celebration at or above the mark, the lesson-sized one
+                      // below. No line — the encouragement below says it.
+                      CompanionCelebration(
+                        reaction: _celebratory
+                            ? CompanionReaction.moduleComplete
+                            : CompanionReaction.lessonComplete,
+                        size: _companionSize,
+                        builder: (context, companion, line) => companion,
+                      ),
                       const SizedBox(height: AppSpacing.lg),
-                      SmallcapsLabel(kicker),
-                      const SizedBox(height: AppSpacing.sm),
                       Text(
-                        value,
+                        _value,
                         style: theme.textTheme.displaySmall?.copyWith(
                           color: mood.ink,
                         ),
                       ),
                       const SizedBox(height: AppSpacing.xs),
-                      SmallcapsLabel(note),
-                      const SizedBox(height: AppSpacing.md),
+                      if (_note != null) ...[
+                        SmallcapsLabel(_note),
+                        const SizedBox(height: AppSpacing.sm),
+                      ],
                       Text(
-                        message,
+                        _line,
                         textAlign: TextAlign.center,
-                        style: theme.textTheme.bodyMedium?.copyWith(
+                        style: theme.textTheme.bodyLarge?.copyWith(
                           color: mood.inkMute,
                         ),
                       ),
@@ -118,13 +155,16 @@ class DrillResultsView extends StatelessWidget {
             ),
             child: Column(
               children: [
-                PrimaryButton(label: primaryLabel, onPressed: onPrimary),
+                PrimaryButton(
+                  label: primary.label,
+                  onPressed: primary.onPressed,
+                ),
                 const SizedBox(height: AppSpacing.xs),
                 SizedBox(
                   width: double.infinity,
                   child: TextButton(
-                    onPressed: onSecondary,
-                    child: Text(secondaryLabel),
+                    onPressed: secondary.onPressed,
+                    child: Text(secondary.label),
                   ),
                 ),
               ],

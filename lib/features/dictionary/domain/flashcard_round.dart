@@ -1,7 +1,7 @@
 /// Where a review has got to.
 library;
 
-import 'package:brew_path/features/dictionary/domain/flashcard_deck.dart';
+import 'package:brew_path/features/lessons/domain/card_seed.dart';
 import 'package:flutter/foundation.dart';
 
 /// The deal, the card in front of the learner, and which side is up.
@@ -105,4 +105,34 @@ class FlashcardRound {
     isRevealed: isRevealed,
     isFinished: false,
   );
+}
+
+/// The order one review deals in: display position → deck index.
+///
+/// [seededOrder]'s permutation, so a deal is reproducible from its nonce alone
+/// and the shuffle can be asserted without a clock. The lesson player's own
+/// shuffle, reused rather than re-invented.
+List<int> flashcardDeal(int size, {required int nonce}) =>
+    seededOrder(size, nonce);
+
+/// [order] made valid again for a deck that now holds [size] cards.
+///
+/// The saved set can move while the drill is open — the learner un-saves the
+/// card in front of them, or a peer device does — and a deal holding an index
+/// past the end of the deck would throw on the next card. So the deal is
+/// reconciled on every build rather than trusted.
+///
+/// Indices past the end are dropped. What survives is distinct (it came from a
+/// permutation), so surviving exactly [size] of them **is** a complete
+/// permutation of the smaller deck: the shuffle is kept, and the learner
+/// carries on. Anything else — a deck that grew, a deal that never fitted — is
+/// re-dealt in order, which is the one arrangement always valid for any size.
+List<int> reconcileFlashcardOrder(List<int> order, int size) {
+  final kept = [
+    for (final index in order)
+      if (index < size) index,
+  ];
+  return kept.length == size
+      ? kept
+      : List<int>.generate(size, (index) => index);
 }

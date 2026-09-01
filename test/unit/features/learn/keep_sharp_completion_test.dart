@@ -9,47 +9,43 @@ Set<String> _entries(List<(ActivityType, String)> completions) => {
     activityEntry(type: type, token: mintActivityToken(), subject: subject),
 };
 
+bool ruleMet(
+  PracticeType type, {
+  int distinctGamesToday = 0,
+  bool replayedToday = false,
+  bool vocabRoundToday = false,
+  bool reviewedFlashcardsToday = false,
+}) => keepSharpRuleMet(
+  type,
+  distinctGamesToday: distinctGamesToday,
+  replayedToday: replayedToday,
+  vocabRoundToday: vocabRoundToday,
+  reviewedFlashcardsToday: reviewedFlashcardsToday,
+);
+
 void main() {
   group('keepSharpRuleMet', () {
     test('mini-games need two different games — one game twice is not two', () {
-      expect(
-        keepSharpRuleMet(
-          PracticeType.miniGames,
-          distinctGamesToday: 1,
-          replayedToday: false,
-          reviewedFlashcardsToday: false,
-        ),
-        isFalse,
-      );
-      expect(
-        keepSharpRuleMet(
-          PracticeType.miniGames,
-          distinctGamesToday: 2,
-          replayedToday: false,
-          reviewedFlashcardsToday: false,
-        ),
-        isTrue,
-      );
+      expect(ruleMet(PracticeType.miniGames, distinctGamesToday: 1), isFalse);
+      expect(ruleMet(PracticeType.miniGames, distinctGamesToday: 2), isTrue);
     });
 
     test('a replay acknowledges only the replay recommendation', () {
-      expect(
-        keepSharpRuleMet(
-          PracticeType.lessonReplay,
-          distinctGamesToday: 0,
-          replayedToday: true,
-          reviewedFlashcardsToday: false,
-        ),
-        isTrue,
-      );
+      expect(ruleMet(PracticeType.lessonReplay, replayedToday: true), isTrue);
       // The same completed replay does not satisfy a mini-games
       // recommendation — each type is judged by its own rule.
+      expect(ruleMet(PracticeType.miniGames, replayedToday: true), isFalse);
+    });
+
+    test('a finished vocab round acknowledges only the vocab game', () {
+      expect(ruleMet(PracticeType.vocabGame, vocabRoundToday: true), isTrue);
+      expect(ruleMet(PracticeType.vocabGame), isFalse);
+      // Another type's completion is not this one's.
       expect(
-        keepSharpRuleMet(
+        ruleMet(
           PracticeType.miniGames,
-          distinctGamesToday: 0,
-          replayedToday: true,
-          reviewedFlashcardsToday: false,
+          distinctGamesToday: 1,
+          vocabRoundToday: true,
         ),
         isFalse,
       );
@@ -57,36 +53,65 @@ void main() {
 
     test('a finished review acknowledges only the flashcards pick', () {
       expect(
-        keepSharpRuleMet(
-          PracticeType.flashcards,
-          distinctGamesToday: 0,
-          replayedToday: false,
-          reviewedFlashcardsToday: true,
-        ),
+        ruleMet(PracticeType.flashcards, reviewedFlashcardsToday: true),
         isTrue,
       );
       expect(
-        keepSharpRuleMet(
+        ruleMet(
           PracticeType.flashcards,
           distinctGamesToday: 2,
           replayedToday: true,
-          reviewedFlashcardsToday: false,
+          vocabRoundToday: true,
         ),
         isFalse,
-        reason: "a busy day of other practice is not the card's own rule",
+        reason: "a busy day of other practice is not this card's own rule",
+      );
+    });
+  });
+
+  group('anyFlashcardReviewToday', () {
+    test('a finished review counts', () {
+      expect(
+        anyFlashcardReviewToday(_entries([(ActivityType.flashcards, '')])),
+        isTrue,
       );
     });
 
-    test('the type with no surface never acknowledges', () {
+    test('a day of every other kind of practice does not', () {
       expect(
-        keepSharpRuleMet(
-          PracticeType.vocabGame,
-          distinctGamesToday: 2,
-          replayedToday: true,
-          reviewedFlashcardsToday: true,
+        anyFlashcardReviewToday(
+          _entries([
+            (ActivityType.miniGame, 'g-quiz'),
+            (ActivityType.vocab, ''),
+            (ActivityType.replay, 'm1l1'),
+          ]),
         ),
         isFalse,
       );
+    });
+
+    test('an abandoned review leaves no entry, so no day holds one', () {
+      expect(anyFlashcardReviewToday(const {}), isFalse);
+    });
+  });
+
+  group('anyVocabRoundToday', () {
+    test("a finished round among the day's entries counts", () {
+      expect(
+        anyVocabRoundToday(_entries([(ActivityType.vocab, '')])),
+        isTrue,
+      );
+    });
+
+    test('another activity does not', () {
+      expect(
+        anyVocabRoundToday(_entries([(ActivityType.miniGame, 'g-quiz')])),
+        isFalse,
+      );
+    });
+
+    test('an empty day counts for nothing', () {
+      expect(anyVocabRoundToday(const <String>{}), isFalse);
     });
   });
 
@@ -135,32 +160,6 @@ void main() {
 
     test('an entry naming a type this build does not know is inert', () {
       expect(anyReplayToday({'seance:token-1:m1l1'}), isFalse);
-    });
-  });
-
-  group('anyFlashcardReviewToday', () {
-    test('a finished review counts', () {
-      expect(
-        anyFlashcardReviewToday(_entries([(ActivityType.flashcards, '')])),
-        isTrue,
-      );
-    });
-
-    test('a day of every other kind of practice does not', () {
-      expect(
-        anyFlashcardReviewToday(
-          _entries([
-            (ActivityType.miniGame, 'g-quiz'),
-            (ActivityType.replay, 'm1l1'),
-            (ActivityType.lesson, 'm1l2'),
-          ]),
-        ),
-        isFalse,
-      );
-    });
-
-    test('an abandoned review leaves no entry, so no day holds one', () {
-      expect(anyFlashcardReviewToday(const {}), isFalse);
     });
   });
 }

@@ -6,6 +6,7 @@ import 'package:brew_path/features/cards/presentation/cards_screen.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_screen.dart';
 import 'package:brew_path/features/dictionary/presentation/term_detail_screen.dart';
+import 'package:brew_path/features/dictionary/presentation/vocab/vocab_game_screen.dart';
 import 'package:brew_path/features/learn/domain/course_completion_providers.dart';
 import 'package:brew_path/features/learn/presentation/course_completion_screen.dart';
 import 'package:brew_path/features/learn/presentation/learn_screen.dart';
@@ -165,6 +166,11 @@ GoRouter appRouter(Ref ref) {
                     path: AppRoutes.saved.path,
                     name: AppRoutes.saved.name,
                     builder: (context, state) => const SavedScreen(),
+                  ),
+                  GoRoute(
+                    path: AppRoutes.vocabGame.path,
+                    name: AppRoutes.vocabGame.name,
+                    builder: (context, state) => const VocabGameScreen(),
                   ),
                   GoRoute(
                     path: AppRoutes.dictionary.path,

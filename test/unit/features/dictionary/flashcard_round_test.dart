@@ -159,4 +159,66 @@ void main() {
       }
     });
   });
+
+  group('the deal', () {
+    test('is every card exactly once', () {
+      final deal = flashcardDeal(4, nonce: 7);
+
+      expect(deal.toSet(), {0, 1, 2, 3});
+    });
+
+    test('the same nonce deals the same order', () {
+      expect(flashcardDeal(6, nonce: 99), flashcardDeal(6, nonce: 99));
+    });
+
+    test('an empty deck deals nothing rather than throwing', () {
+      expect(flashcardDeal(0, nonce: 1), isEmpty);
+    });
+  });
+
+  group('the deck shrinking under an open round', () {
+    test('keeps the shuffle when what survives still covers the deck', () {
+      // Five cards dealt, then one un-saved: index 4 is past the end now.
+      final reconciled = reconcileFlashcardOrder([3, 1, 4, 0, 2], 4);
+
+      expect(reconciled, [3, 1, 0, 2]);
+      expect(
+        reconciled.toSet(),
+        {0, 1, 2, 3},
+        reason: 'still every card of the smaller deck, exactly once',
+      );
+    });
+
+    test('re-deals in order when the deck grew', () {
+      expect(reconcileFlashcardOrder([1, 0], 4), [0, 1, 2, 3]);
+    });
+
+    test('an emptied deck reconciles to nothing', () {
+      expect(reconcileFlashcardOrder([2, 0, 1], 0), isEmpty);
+    });
+
+    test('a valid deal is left exactly as it was', () {
+      expect(reconcileFlashcardOrder([2, 0, 1], 3), [2, 0, 1]);
+    });
+
+    test(
+      'every prefix of un-saves leaves a round that can still be walked',
+      () {
+        var order = flashcardDeal(8, nonce: 42);
+
+        // Un-save one card at a time, all the way down: at no size may the deal
+        // hold an index the deck cannot answer for.
+        for (var size = 8; size >= 0; size--) {
+          order = reconcileFlashcardOrder(order, size);
+
+          expect(order, hasLength(size));
+          expect(
+            order.toSet(),
+            List<int>.generate(size, (index) => index).toSet(),
+            reason: 'the deal must stay a permutation of a $size-card deck',
+          );
+        }
+      },
+    );
+  });
 }
