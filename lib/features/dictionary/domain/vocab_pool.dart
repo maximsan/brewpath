@@ -1,10 +1,7 @@
-/// The terms a learner may be drilled on — the accessible set (ADR-0014).
+/// Which words a practice game may ask a learner about (ADR-0014).
 ///
-/// Distinct from what the dictionary *shows*, which `docs/decisions.md` §12
-/// splits into two access classes of its own and #217 builds. The two rules
-/// agree on reference terms and differ on lesson terms: a free learner may
-/// read a lesson term their course has not reached, and may not be drilled on
-/// it. #97 reads the same set.
+/// Not the same question as which words the dictionary shows them — that is
+/// `docs/decisions.md` §12, built by #217. #97 reads this set too.
 library;
 
 import 'package:brew_path/features/dictionary/domain/term_mentions.dart';
@@ -35,18 +32,15 @@ List<DictionaryTerm> accessibleTerms({
   );
   return [
     for (final term in eligible)
-      // A reference term is premium whatever mentions it (§12): no lesson
-      // teaches it, and #217 makes it invisible to a free learner — so
-      // drilling one would ask about a word they cannot even look up.
+      // No lesson teaches it, so it stays paid-only whatever mentions it.
       if (term.lessonId != null && mentioned.contains(term.id)) term,
   ];
 }
 
 /// The accessible terms the learner has bookmarked, in bank order.
 ///
-/// An intersection, never a filter of the shelf: a term saved from the
-/// ungated dictionary would otherwise walk back into a free learner's drill
-/// through the Saved deck.
+/// An intersection, not a filter of the shelf: a word saved before the course
+/// reached it would otherwise come back through the Saved deck.
 List<DictionaryTerm> savedAccessibleTerms({
   required List<DictionaryTerm> accessible,
   required Set<String> savedTermIds,
