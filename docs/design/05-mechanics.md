@@ -158,7 +158,7 @@ Small, optional **real-life** tasks. They never block learning, streaks, points,
 
 **Gated feature catalog** (`PLUS_FEATURES`): `dictionary`, `atlas`, `duel`, `saved`, `studio`.
 
-**In v1, `featureUnlocked()` hardcodes `dictionary` and `saved` to always-open** (`app.jsx:388`), and Saved is a free tier with a soft cap (now **5**, not 10). So **Studio is the only surviving _feature_ gate** — but it is no longer the only gate: **lessons** are now gated by tier, which is the first content gate either codebase has had, and the dictionary is tiered by *depth* rather than by term (free gets the short explanation; Plus adds the full one, and the 8 reference terms are Plus-only).
+**In v1, `featureUnlocked()` hardcodes `dictionary` and `saved` to always-open** (`app.jsx:519-522`), and Saved is a free tier with a soft cap (now **5**, not 10). So **Studio is the only surviving _feature_ gate** — but it is no longer the only gate: **lessons** are now gated by tier, which is the first content gate either codebase has had, and the dictionary is tiered by *depth* rather than by term (free gets the short explanation; Plus adds the full one, and the 8 reference terms are Plus-only).
 
 - Single funnel: `requestFeature(key)` → open it, or raise `PlusGateSheet`.
 - `FeatureLock` full-screen teaser, 3 styles: `blur` (default), `hard`, `curtain`.

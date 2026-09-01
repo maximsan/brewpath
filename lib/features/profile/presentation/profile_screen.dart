@@ -10,6 +10,7 @@ import 'package:brew_path/features/progress/domain/grove_treatment.dart';
 import 'package:brew_path/features/progress/domain/mastery_rollup.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/presentation/coffee_tree.dart';
+import 'package:brew_path/features/saved/presentation/saved_entry_card.dart';
 import 'package:brew_path/features/studio/presentation/studio_door_tile.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -102,12 +103,14 @@ class ProfileScreen extends ConsumerWidget {
                 const SizedBox(height: _cardGap),
                 const ChallengeStatRow(),
                 const SizedBox(height: _cardGap),
-                // The one door left on this screen, and no heading over it:
-                // the `Customize` label belonged to the preferences, and they
-                // are Settings' (#429). 12 above it, which is what the design
-                // sets over its own card in this slot (`screens.jsx:2692`).
-                // #428 gives the door that card, beside Saved.
+                // The entries the design closes on, in its order: the Studio
+                // door, then Saved. The Duel and Courses cards beside them are
+                // gated off in the design and are not owed for v1. No heading
+                // over them: `Customize` belonged to the preferences, and they
+                // are Settings' (#429).
                 const StudioDoorTile(),
+                const SizedBox(height: _cardGap),
+                const SavedEntryCard(),
                 if (joined != null) ...[
                   const SizedBox(height: _joinedGap),
                   _JoinedLine(joined: joined),

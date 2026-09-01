@@ -58,9 +58,9 @@ is easy to miss when reading it as "the stats screen".
 | 4 | Points line | — | **not tappable** | always. A quiet centred line: `PointsBean` + "{n} lesson/lessons · {n} points" |
 | 5 | **Mastery rollup** | `LESSON PROGRESS` | **button** → `onPractice` — deep-links to the Path to practise weak lessons | **only when `playedLessons.length > 0`** — hidden for a brand-new user |
 | 6 | **Coffee challenges** | — | `BrewChallengeStat` → `onOpenBrew` (7.4) | when the component exists |
-| 7 | **Studio card** | "Dress up Roasty" / "Hats, outfits and your plant" | **button** → `onOpenCustomize` | always. `PlusPill` when `lock('studio')` |
+| 7 | **Studio card** | "Dress up Roasty" / "Hats, outfits and your plant" | **button** → `onOpenCustomize` | always. `PlusPill` when `lock('studio')`. ⚠️ **The app says `GROVE · Choose your plant`** — the design's Studio is a hub of several doors and v1 ships only the grove chooser ([#140](https://github.com/maximsan/brewpath/issues/140)), so the card names what it opens. The mascot wardrobe returns with the hub in v2 |
 | 8 | **Duel card** | "Challenge a friend" / "Quick head-to-head quizzes" | **button** → `onOpenDuel('hub')` | **`showDuel` only — v2.** `PlusPill` when `lock('duel')` |
-| 9 | **Saved card** | "Your favorites" / "{n} saved to revisit" | **button** → `onOpenSaved` | always. `PlusPill` when `lock('saved')` |
+| 9 | **Saved card** | "Your favorites" / "{n} saved to revisit" | **button** → `onOpenSaved` | always. ⚠️ **The `PlusPill` branch here is dead**: `featureUnlocked('saved')` returns true unconditionally (`app.jsx:519-522`), because the shelf is free and what Plus lifts is the cap on saving past five, gated at the bookmark. Do not port a pill onto this card |
 | 10 | Joined date | — | — | always. "Joined May 2026", frozen ([§5](05-mechanics.md)) |
 
 Settings is reached from the header gear (`onOpenSettings`), not from a row.
