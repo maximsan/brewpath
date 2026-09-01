@@ -30,24 +30,23 @@ A game only asks about words the learner can actually get to.
   lesson teaches at all stays paid-only, which is what `docs/decisions.md` §12
   already says.
 
-A lesson **mentions** a word if that word turns up in the text the lesson shows
-on screen: its title, the writing on its cards, the answer choices, and so on.
-Some words have a second name, and those count too — "Staling" is also called
-"stale", so a lesson saying *"the coffee goes stale"* counts as mentioning it.
+**Whole-word search, ignoring capitals**, over the text the lesson puts on
+screen. We also match the other names the dictionary lists for a word: "Staling"
+carries "stale", so a lesson saying *"the coffee goes stale"* counts. There is no
+stemming — "beans" does not match "Bean" unless someone wrote it down as another
+name.
 
-Two details decide whether this works:
+Two parts of that are load-bearing.
 
-**We look for whole words, not for letters sitting inside other words.** One of
-the free lessons uses the word *"typical"*. The dictionary has a coffee variety
-called *Typica*, taught in a lesson you have to pay for. If we searched for
-letters inside words, we would find "Typica" inside "typical" and hand a paid
-word to someone who hasn't paid. The same trap catches *"cascara"*, which
-contains the letters of *SCA*.
+**Whole word.** One of the free lessons says *"typical"*, and the dictionary has
+a coffee variety called *Typica*, taught in a lesson you pay for. Matching
+letters inside words would find "Typica" in "typical" and hand a paid word to
+someone who hasn't paid. Same trap with *"cascara"*, which contains the letters
+of *SCA*.
 
-**We only search the text the learner actually sees.** A lesson card holds more
-than it displays — the colour used to draw a diagram, an internal name for which
-picture to show. If we searched that too, a lesson could "mention" a word that
-never appeared on screen.
+**On screen.** A lesson card stores more than it shows — the colour of a
+diagram, an internal name for which picture to use. Searching those too would
+let a lesson "mention" a word that never appeared.
 
 We don't save how many words each group gets. We work it out from the list of
 free lessons each time. ADR-0007 promised that growing the free tier means

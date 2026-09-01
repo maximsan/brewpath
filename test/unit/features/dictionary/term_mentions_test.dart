@@ -71,16 +71,21 @@ void main() {
       );
     });
 
-    test('a term buried inside a longer word is not a mention', () {
-      // The failure substring matching would introduce: `scale` is not SCA,
-      // and counting it would quietly widen the free pool with a term no
-      // lesson says.
+    test('a word buried inside a longer word is not a mention', () {
+      // Both collisions below are real: the free lessons say "cascara" and
+      // "typical", and the dictionary has SCA and Typica. Matching letters
+      // rather than words would put both into a free learner's pool —
+      // Typica is taught in m1l6, which is paid.
       expect(
-        _mentions('Set the scale to zero.', [_term('sca', 'SCA')]),
+        _mentions('Dried cherry husk is sold as cascara.', [
+          _term('sca', 'SCA', aliases: ['sca', 'specialty coffee association']),
+        ]),
         isEmpty,
       );
       expect(
-        _mentions('An atypical harvest.', [_term('typica', 'Typica')]),
+        _mentions('A typical harvest runs once a year.', [
+          _term('typica', 'Typica'),
+        ]),
         isEmpty,
       );
     });

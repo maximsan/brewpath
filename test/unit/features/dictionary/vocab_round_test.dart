@@ -4,21 +4,15 @@
 // on authored graded cards, asserted the same way.
 import 'package:brew_path/features/dictionary/domain/vocab_round.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
+import 'package:brew_path/shared/repositories/dictionary_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-DictionaryTerm _term(String id, String category) => DictionaryTerm(
-  id: id,
-  term: 'Term $id',
-  categoryId: category,
-  shortExplanation: 'What $id means.',
-);
+/// The shipped dictionary, so every round here is one the app could deal.
+late List<DictionaryTerm> _bank;
 
-/// Four categories of three, so a same-category draw always has candidates and
-/// "elsewhere" is never empty.
-final List<DictionaryTerm> _bank = [
-  for (final category in ['beans', 'brewing', 'roasting', 'trade'])
-    for (var index = 0; index < 3; index++) _term('$category$index', category),
-];
+/// One real category's terms — the Saved deck can hold a pool this narrow if a
+/// learner only ever bookmarks espresso words.
+late List<DictionaryTerm> _oneCategory;
 
 const int _seed = 4242;
 
@@ -35,6 +29,16 @@ List<VocabRound> _rounds({
 );
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUpAll(() async {
+    _bank = vocabEligible(await DictionaryRepository().getTerms());
+    _oneCategory = [
+      for (final term in _bank)
+        if (term.categoryId == 'espresso') term,
+    ];
+  });
+
   group('the invariant every round holds', () {
     test('exactly one choice is the answer', () {
       for (final round in _rounds(length: _bank.length)) {
@@ -116,29 +120,33 @@ void main() {
       }
     });
 
-    test('a thin category degrades to wrong answers from elsewhere', () {
-      // One term in its own category: there is no same-category distractor to
-      // be had, and the round must still offer four honest options.
-      final lonely = _term('lonely', 'sensory');
-      final source = [..._bank, lonely];
+    test('a lone term in its category still gets four options', () {
+      // Only one espresso term is reachable, so there is no same-category
+      // wrong answer to be had and the shortfall comes from elsewhere.
+      final lone = _oneCategory.first;
+      final source = [
+        lone,
+        for (final term in _bank)
+          if (term.categoryId != 'espresso') term,
+      ];
 
-      final round = _rounds(pool: [lonely], source: source, length: 1).single;
+      final round = _rounds(pool: [lone], source: source, length: 1).single;
 
       expect(round.choices, hasLength(vocabChoiceCount));
-      expect(round.choices.map((choice) => choice.id), contains(lonely.id));
+      expect(round.choices.map((choice) => choice.id), contains(lone.id));
     });
 
-    test('a single-category pool degrades back to that category', () {
-      // Nowhere "else" to draw from, so the shortfall returns to the category
-      // rather than shortening the question — the prototype stops at three.
-      final beans = [
-        for (final term in _bank)
-          if (term.categoryId == 'beans') term,
-      ];
-      final source = [...beans, _term('beans3', 'beans')];
+    test('a deck drawn from one category still gets four options', () {
+      // A learner who only bookmarks espresso words: the Saved deck has no
+      // "elsewhere" to reach for, so the shortfall goes back to the category
+      // rather than shortening the question. The prototype stops at three.
+      final round = _rounds(
+        pool: _oneCategory,
+        source: _oneCategory,
+        length: 1,
+      ).single;
 
-      final round = _rounds(pool: source, source: source, length: 1).single;
-
+      expect(_oneCategory.length, greaterThanOrEqualTo(vocabChoiceCount));
       expect(round.choices, hasLength(vocabChoiceCount));
     });
   });
@@ -158,15 +166,9 @@ void main() {
   });
 
   group('eligibility', () {
-    test('a term with no explanation cannot be asked about', () {
-      const blank = DictionaryTerm(
-        id: 'blank',
-        term: 'Blank',
-        categoryId: 'beans',
-        shortExplanation: '   ',
-      );
-
-      expect(vocabEligible([..._bank, blank]), isNot(contains(blank)));
+    test('every shipped term carries an explanation to ask with', () {
+      // The extractor refuses a term without one, so the whole bank is
+      // eligible. If that ever stops being true the drill quietly shrinks.
       expect(vocabEligible(_bank), hasLength(_bank.length));
     });
   });

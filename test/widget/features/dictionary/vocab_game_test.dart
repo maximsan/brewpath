@@ -23,24 +23,76 @@ import 'package:go_router/go_router.dart';
 
 import '../../../support/widget_harness.dart';
 
-DictionaryTerm _term(String id, String name, String category) => DictionaryTerm(
-  id: id,
-  term: name,
-  categoryId: category,
-  shortExplanation: 'The meaning of $name.',
-);
-
-/// Eight terms across two categories — enough for the Quick round, and enough
-/// that a same-category distractor always exists.
-final List<DictionaryTerm> _accessible = [
-  _term('arabica', 'Arabica', 'beans'),
-  _term('robusta', 'Robusta', 'beans'),
-  _term('cherry', 'Coffee Cherry', 'beans'),
-  _term('bean-belt', 'Bean Belt', 'beans'),
-  _term('crema', 'Crema', 'espresso'),
-  _term('espresso', 'Espresso', 'espresso'),
-  _term('tamp', 'Tamp', 'espresso'),
-  _term('shot', 'Shot', 'espresso'),
+/// Eight real terms from the shipped dictionary, four in each of two real
+/// categories — enough for the Quick round, and enough that a same-category
+/// wrong answer always exists. Copied from
+/// `assets/content/generated/dictionary_terms.json` so a question in a test
+/// reads exactly as one in the app does.
+const List<DictionaryTerm> _accessible = [
+  DictionaryTerm(
+    id: 'arabica',
+    term: 'Arabica',
+    categoryId: 'beans',
+    shortExplanation:
+        'The coffee species behind most specialty coffee — sweeter, more '
+        'aromatic, and more delicate to grow.',
+  ),
+  DictionaryTerm(
+    id: 'robusta',
+    term: 'Robusta',
+    categoryId: 'beans',
+    shortExplanation:
+        'A tougher coffee species with nearly double the caffeine — bolder, '
+        'more bitter, and easier to farm.',
+  ),
+  DictionaryTerm(
+    id: 'cherry',
+    term: 'Coffee Cherry',
+    categoryId: 'beans',
+    shortExplanation:
+        'The fruit of the coffee plant. Each cherry usually holds two seeds '
+        '— the “beans” we roast.',
+  ),
+  DictionaryTerm(
+    id: 'bean-belt',
+    term: 'Bean Belt',
+    categoryId: 'beans',
+    shortExplanation:
+        'The band around the equator, roughly 25°N to 25°S, where coffee '
+        'grows best.',
+  ),
+  DictionaryTerm(
+    id: 'espresso',
+    term: 'Espresso',
+    categoryId: 'espresso',
+    shortExplanation:
+        'A small, concentrated coffee pulled by forcing hot water through '
+        'finely ground coffee under about 9 bars of pressure.',
+  ),
+  DictionaryTerm(
+    id: 'crema',
+    term: 'Crema',
+    categoryId: 'espresso',
+    shortExplanation:
+        'The reddish-brown foam on top of an espresso shot, made of '
+        'emulsified oils and CO₂.',
+  ),
+  DictionaryTerm(
+    id: 'tamp',
+    term: 'Tamp',
+    categoryId: 'espresso',
+    shortExplanation:
+        'Pressing the espresso grounds flat and firm in the portafilter for '
+        'an even shot.',
+  ),
+  DictionaryTerm(
+    id: 'portafilter',
+    term: 'Portafilter',
+    categoryId: 'espresso',
+    shortExplanation:
+        'The handled basket that holds the coffee grounds and locks into an '
+        'espresso machine.',
+  ),
 ];
 
 VocabPools _pools({
@@ -90,12 +142,11 @@ Future<ProviderContainer> _pump(
 
 /// Answers the question on screen, correctly or not, and moves on.
 Future<void> answer(WidgetTester tester, {required bool correctly}) async {
-  final definition = tester.widget<Text>(
-    find.textContaining('The meaning of '),
+  final asked = _accessible.firstWhere(
+    (term) => find.text(term.shortExplanation).evaluate().isNotEmpty,
+    orElse: () => throw StateError('no question on screen'),
   );
-  final name = definition.data!
-      .replaceFirst('The meaning of ', '')
-      .replaceFirst('.', '');
+  final name = asked.term;
 
   final choices = find.byType(OutlinedButton);
   final labels = [
