@@ -13,9 +13,6 @@ import 'package:flutter/material.dart';
 /// changing the deck can change which lengths are still honest.
 typedef VocabChoice = ({VocabDeck deck, int length});
 
-/// The design's wash over a choice the rules cannot offer yet.
-const double dimmedWhenUnavailable = 0.45;
-
 /// The drill's first screen: pick a deck, pick a length, start.
 ///
 /// The lengths offered are only those the active pool can fill. That is not
@@ -138,16 +135,13 @@ class _DeckCard extends StatelessWidget {
         hasCourse ? VocabCopy.allDeckNote : VocabCopy.yourTermsNote,
     };
 
-    return Opacity(
-      opacity: available ? 1 : dimmedWhenUnavailable,
-      child: PickCard(
-        title: '$title · $size',
-        description: note,
-        selected: choice.deck == deck,
-        onTap: available
-            ? () => onChoice((deck: deck, length: choice.length))
-            : null,
-      ),
+    return PickCard(
+      title: '$title · $size',
+      description: note,
+      selected: choice.deck == deck,
+      onTap: available
+          ? () => onChoice((deck: deck, length: choice.length))
+          : null,
     );
   }
 }
@@ -187,16 +181,13 @@ class _Lengths extends StatelessWidget {
         for (final length in vocabLengths)
           Padding(
             padding: const EdgeInsets.only(bottom: AppSpacing.xs),
-            child: Opacity(
-              opacity: fits.contains(length) ? 1 : dimmedWhenUnavailable,
-              child: PickCard(
-                title: '$length',
-                description: VocabCopy.lengthNames[length] ?? '',
-                selected: active == length,
-                onTap: fits.contains(length)
-                    ? () => onChoice((deck: choice.deck, length: length))
-                    : null,
-              ),
+            child: PickCard(
+              title: '$length',
+              description: VocabCopy.lengthNames[length] ?? '',
+              selected: active == length,
+              onTap: fits.contains(length)
+                  ? () => onChoice((deck: choice.deck, length: length))
+                  : null,
             ),
           ),
       ],
