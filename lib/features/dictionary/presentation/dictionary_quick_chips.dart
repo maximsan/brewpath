@@ -1,13 +1,12 @@
 import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/core/widgets/bordered_tap_row.dart';
 import 'package:brew_path/features/dictionary/domain/flashcard_providers.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_copy.dart';
-import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 /// The dictionary's practice row: one slim chip per drill
 /// (`dictionary.jsx:271-296`).
@@ -30,7 +29,7 @@ class DictionaryQuickChips extends ConsumerWidget {
             // twelve that opens onto four is exactly the lie the deck
             // provider exists to prevent.
             count: ref.watch(flashcardDeckSizeProvider).asData?.value,
-            onTap: () => context.pushNamed(AppRoutes.flashcards.name),
+            onTap: () => context.pushFlashcards(),
           ),
         ),
       ],
@@ -56,47 +55,31 @@ class _Chip extends StatelessWidget {
     final theme = Theme.of(context);
     final mood = context.mood;
 
-    return Semantics(
-      button: true,
-      label: count == null ? label : '$label, $count cards',
-      excludeSemantics: true,
-      child: Material(
-        color: mood.surface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadii.chrome),
-          side: BorderSide(color: mood.rule),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.md,
-              vertical: AppSpacing.sm,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Flexible(
-                  child: Text(
-                    label,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      color: mood.ink,
-                    ),
-                  ),
-                ),
-                if (count != null) ...[
-                  const SizedBox(width: AppSpacing.xs),
-                  Text(
-                    '$count',
-                    style: AppText.label(mood: mood, face: AppFace.mono),
-                  ),
-                ],
-              ],
+    return BorderedTapRow(
+      semanticsLabel: count == null ? label : '$label, $count cards',
+      onTap: onTap,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Flexible(
+            child: Text(
+              label,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.titleSmall?.copyWith(color: mood.ink),
             ),
           ),
-        ),
+          if (count != null) ...[
+            const SizedBox(width: AppSpacing.xs),
+            Text(
+              '$count',
+              style: AppText.label(mood: mood, face: AppFace.mono),
+            ),
+          ],
+        ],
       ),
     );
   }

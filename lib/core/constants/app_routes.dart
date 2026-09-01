@@ -81,4 +81,11 @@ extension DictionaryNavigation on BuildContext {
     AppRoutes.dictionaryTerm.name,
     pathParameters: {'termId': termId},
   );
+
+  /// Opens the flashcards drill.
+  ///
+  /// Pushed, not gone to: the drill is opened from four places and closing it
+  /// has to return the learner to the one they were standing in.
+  Future<void> pushFlashcards() =>
+      GoRouter.of(this).pushNamed(AppRoutes.flashcards.name);
 }

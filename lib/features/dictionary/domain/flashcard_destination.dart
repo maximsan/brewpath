@@ -4,13 +4,15 @@ library;
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 
-/// Opening the drill.
+/// Opening the drill, for a caller that resolves a destination rather than
+/// navigating — which is Keep Sharp, and only Keep Sharp. The three screen
+/// entry points push through `BuildContext.pushFlashcards`.
 ///
-/// One destination for all four ways in — the dictionary's chip, the shelf's
-/// study row, the Learn tab's practice row and Keep Sharp — because the deck
-/// is the learner's saved terms wherever they were standing when they asked
-/// for it. There is nothing for a caller to parameterise and so nothing for a
-/// caller to get wrong.
+/// Nothing to parameterise either way: the deck is the learner's saved terms
+/// wherever they were standing when they asked for it.
+// Not `const`: Dart cannot evaluate a field access on a const object inside a
+// const expression, which is the same reason `learnTab` and `pathTab` are
+// final. Naming the route beats repeating its string either way.
 final RouteDestination flashcardReview = RouteDestination(
   name: AppRoutes.flashcards.name,
 );

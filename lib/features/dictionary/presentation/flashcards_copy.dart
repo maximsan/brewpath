@@ -37,11 +37,13 @@ abstract final class FlashcardsCopy {
   /// The link under a revealed card.
   static const viewEntry = 'View full entry';
 
-  /// Walking the deck.
-  static const previous = 'Prev';
+  /// Walking the deck. The chevrons are the design's own
+  /// (`dictionary-extras.jsx:275-276`) — they say which way each button goes
+  /// without a second word.
+  static const previous = '‹ Prev';
 
   /// The action on every card but the last.
-  static const next = 'Next';
+  static const next = 'Next ›';
 
   /// The action on the last card, which ends the review.
   static const finish = 'Finish';
@@ -77,4 +79,9 @@ abstract final class FlashcardsCopy {
 
   /// The eyebrow on the Learn tab's practice row (`screens.jsx:950`).
   static const practiceRowEyebrow = 'Flip and recall';
+
+  /// The meta the practice row carries for a learner who owns nothing yet —
+  /// the design's `meta={gamesLocked ? 'FREE' : '~2 MIN'}` (`screens.jsx:967`).
+  /// Said only to a free learner, because it is only news beside a lock.
+  static const free = 'Free';
 }

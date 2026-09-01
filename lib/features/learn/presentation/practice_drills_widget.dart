@@ -6,7 +6,6 @@ import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 /// The dictionary drills, leading the Games group (`screens.jsx:948-971`).
 ///
@@ -24,7 +23,12 @@ import 'package:go_router/go_router.dart';
 /// #98's *Guess the term* is the second row this card is built to hold.
 class PracticeDrillsWidget extends StatelessWidget {
   /// Creates a [PracticeDrillsWidget].
-  const PracticeDrillsWidget({super.key});
+  const PracticeDrillsWidget({required this.hasCourse, super.key});
+
+  /// Whether the learner owns the course. Changes nothing about what this row
+  /// does — only whether it is worth saying that it is free, which is news
+  /// beside a locked game and noise beside an unlocked one.
+  final bool hasCourse;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +37,8 @@ class PracticeDrillsWidget extends StatelessWidget {
       child: _DrillRow(
         title: FlashcardsCopy.title,
         eyebrow: FlashcardsCopy.practiceRowEyebrow,
-        onTap: () => context.pushNamed(AppRoutes.flashcards.name),
+        meta: hasCourse ? null : FlashcardsCopy.free,
+        onTap: () => context.pushFlashcards(),
       ),
     );
   }
@@ -44,11 +49,13 @@ class _DrillRow extends StatelessWidget {
   const _DrillRow({
     required this.title,
     required this.eyebrow,
+    required this.meta,
     required this.onTap,
   });
 
   final String title;
   final String eyebrow;
+  final String? meta;
   final VoidCallback onTap;
 
   @override
@@ -58,7 +65,7 @@ class _DrillRow extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: '$title. $eyebrow.',
+      label: meta == null ? '$title. $eyebrow.' : '$title. $eyebrow. $meta.',
       excludeSemantics: true,
       child: InkWell(
         onTap: onTap,
@@ -95,6 +102,13 @@ class _DrillRow extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: AppSpacing.sm),
+              if (meta != null)
+                Text(
+                  meta!,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: mood.inkMute,
+                  ),
+                ),
               IconMark(AppIcon.chevron, color: mood.inkMute),
             ],
           ),

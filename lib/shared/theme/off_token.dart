@@ -106,6 +106,18 @@ abstract final class OffTokens {
         'change, not a tidy-up.',
   );
 
+  /// The vertical room inside a flashcard's face.
+  static const OffToken<double> flashcardFacePadding = OffToken(
+    26,
+    reason:
+        'The design sets the card to `padding: 26px 24px`. The same 26 as '
+        'pickTilePadding, and for the same reason at a different scale: the '
+        'card is the whole screen, and the room around the word is what makes '
+        'it read as one thing to hold rather than a panel. Rounding to '
+        'AppSpacing.lg (24) would square it with the horizontal gutter, which '
+        'is exactly the difference the design is drawing.',
+  );
+
   /// The padding inside the Cards tab's "more to collect" block.
   static const OffToken<EdgeInsets> cardsFooterPadding = OffToken(
     EdgeInsets.symmetric(vertical: 20, horizontal: 18),
@@ -171,6 +183,7 @@ abstract final class OffTokens {
     seedStain,
     beanCrease,
     pickTilePadding,
+    flashcardFacePadding,
     cardsFooterPadding,
     cardsFooterLineGap,
     introBlockGap,

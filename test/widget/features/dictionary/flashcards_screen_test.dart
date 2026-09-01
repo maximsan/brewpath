@@ -210,6 +210,11 @@ void main() {
       findsOneWidget,
     );
     expect(find.text(FlashcardsCopy.goAgain), findsOneWidget);
+    expect(
+      find.text('02 / 02'),
+      findsOneWidget,
+      reason: 'the design leaves the counter full on the finished state',
+    );
   });
 
   testWidgets('a finished review is recorded once, and only once', (

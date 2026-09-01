@@ -1,16 +1,19 @@
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
+import 'package:brew_path/features/dictionary/presentation/dictionary_category_mark.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_copy.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 
-/// One side of a flashcard: a label, the content, and what a tap does next.
+/// One side of a flashcard: its category, which side this is, the content, and
+/// what a tap does next.
 ///
-/// Both faces are the same frame so the flip does not resize the card
-/// mid-turn. Only the tint differs — the front carries a wash of accent, the
-/// back is plain surface, which is the design's way of saying *this side is
-/// the question* without a word (`dictionary-extras.jsx:193-201`).
+/// Both faces are the same frame so the flip does not resize the card mid-turn.
+/// Only the tint differs — the front carries a wash of accent, the back is
+/// plain surface, which is how the design says *this side is the question*
+/// without a word (`dictionary-extras.jsx:193-201`).
 class FlashcardFace extends StatelessWidget {
   /// Creates a [FlashcardFace].
   const FlashcardFace({
@@ -23,7 +26,7 @@ class FlashcardFace extends StatelessWidget {
   });
 
   /// The category the term sits in, as its kicker.
-  final String category;
+  final DictionaryCategoryMark category;
 
   /// What this side is — the term, or the definition.
   final String label;
@@ -37,21 +40,30 @@ class FlashcardFace extends StatelessWidget {
   /// The face's content, centred in it.
   final Widget child;
 
-  /// The design's `borderRadius: 20` on the card.
+  /// The design's `borderRadius: 20` — inside `AppRadii.chrome`'s documented
+  /// 12–20 slack, at the loose end because this card *is* the screen.
   static const double _radius = 20;
 
-  /// The design's `padding: '26px 24px'`.
-  static const EdgeInsets _padding = EdgeInsets.symmetric(
-    horizontal: AppSpacing.gutter,
-    vertical: 26,
-  );
+  /// The design's `CatGlyph size={15}` on a face.
+  static const double _markSize = 15;
 
-  /// How much accent the front's wash carries — the design's
-  /// `color-mix(… accent 11%, surface)`.
-  static const double _frontWash = 0.11;
+  /// The front's wash: `color-mix(… accent 11%, surface)` fading to plain
+  /// surface by `64%` along the design's `158deg` sweep.
+  static const double _washStrength = 0.11;
+  static const double _washEnd = 0.64;
 
-  /// And how much its border carries — `… accent 22%, rule`.
-  static const double _frontEdge = 0.22;
+  /// And its border — `color-mix(… accent 22%, rule)`.
+  static const double _edgeStrength = 0.22;
+
+  /// `158deg`, which sweeps from the top-left corner toward the lower right.
+  static const Alignment _washFrom = Alignment.topLeft;
+  static const Alignment _washTo = Alignment.bottomRight;
+
+  /// The design's `boxShadow: 0 16px 36px rgba(0,0,0,0.18)` — what makes the
+  /// card sit *above* the page rather than be drawn on it.
+  static const List<BoxShadow> _lift = [
+    BoxShadow(color: Color(0x2E000000), blurRadius: 36, offset: Offset(0, 16)),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -59,24 +71,17 @@ class FlashcardFace extends StatelessWidget {
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: isFront
-            ? Color.alphaBlend(
-                mood.accent.withValues(alpha: _frontWash),
-                mood.surface,
-              )
-            : mood.surface,
+        color: isFront ? null : mood.surface,
+        gradient: isFront ? _wash(mood) : null,
         borderRadius: BorderRadius.circular(_radius),
-        border: Border.all(
-          color: isFront
-              ? Color.alphaBlend(
-                  mood.accent.withValues(alpha: _frontEdge),
-                  mood.rule,
-                )
-              : mood.rule,
-        ),
+        border: Border.all(color: isFront ? _edge(mood) : mood.rule),
+        boxShadow: _lift,
       ),
       child: Padding(
-        padding: _padding,
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.gutter,
+          vertical: OffTokens.flashcardFacePadding.value,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -84,7 +89,7 @@ class FlashcardFace extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Flexible(
-                  child: SmallcapsLabel(category, color: mood.accent),
+                  child: CategoryKicker(category: category, size: _markSize),
                 ),
                 const SizedBox(width: AppSpacing.xs),
                 SmallcapsLabel(label),
@@ -101,6 +106,24 @@ class FlashcardFace extends StatelessWidget {
       ),
     );
   }
+
+  LinearGradient _wash(MoodColors mood) => LinearGradient(
+    begin: _washFrom,
+    end: _washTo,
+    colors: [
+      Color.alphaBlend(
+        mood.accent.withValues(alpha: _washStrength),
+        mood.surface,
+      ),
+      mood.surface,
+    ],
+    stops: const [0, _washEnd],
+  );
+
+  Color _edge(MoodColors mood) => Color.alphaBlend(
+    mood.accent.withValues(alpha: _edgeStrength),
+    mood.rule,
+  );
 }
 
 /// The front: the word, and how to say it.
@@ -113,8 +136,8 @@ class FlashcardFront extends StatelessWidget {
     super.key,
   });
 
-  /// The term's category label.
-  final String category;
+  /// The term's category.
+  final DictionaryCategoryMark category;
 
   /// The word itself.
   final String term;
@@ -165,8 +188,8 @@ class FlashcardBack extends StatelessWidget {
     super.key,
   });
 
-  /// The term's category label.
-  final String category;
+  /// The term's category.
+  final DictionaryCategoryMark category;
 
   /// The word itself.
   final String term;

@@ -1,7 +1,5 @@
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
-import 'package:brew_path/features/companion/domain/companion_reaction.dart';
-import 'package:brew_path/features/companion/presentation/companion_celebration.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -18,9 +16,14 @@ import 'package:flutter/material.dart';
 /// a score. `MiniGameResultsView` stays separate for exactly that reason: it
 /// carries a score out of a total and picks a pose from it, which is a
 /// different thing to say.
+///
+/// The mascot arrives as a widget rather than being built here. Nothing else
+/// in `lib/core/` reaches into a feature, and the companion is one — so the
+/// drill that knows which pose it has earned passes the one it wants.
 class DrillResultsView extends StatelessWidget {
   /// Creates a [DrillResultsView].
   const DrillResultsView({
+    required this.companion,
     required this.kicker,
     required this.value,
     required this.note,
@@ -31,6 +34,9 @@ class DrillResultsView extends StatelessWidget {
     required this.onSecondary,
     super.key,
   });
+
+  /// The mascot at the top, already posed by whoever finished the drill.
+  final Widget companion;
 
   /// The smallcaps line above the number — which drill this was.
   final String kicker;
@@ -56,9 +62,6 @@ class DrillResultsView extends StatelessWidget {
   /// Runs [secondaryLabel].
   final VoidCallback onSecondary;
 
-  /// The design's `size={150}` on the results mascot.
-  static const double _companionSize = 150;
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -80,11 +83,7 @@ class DrillResultsView extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const CompanionCelebration(
-                        reaction: CompanionReaction.lessonComplete,
-                        size: _companionSize,
-                        builder: _companionOnly,
-                      ),
+                      companion,
                       const SizedBox(height: AppSpacing.lg),
                       SmallcapsLabel(kicker),
                       const SizedBox(height: AppSpacing.sm),
@@ -136,7 +135,3 @@ class DrillResultsView extends StatelessWidget {
     );
   }
 }
-
-/// The celebration's mascot without its line: the message below says it.
-Widget _companionOnly(BuildContext context, Widget companion, String? line) =>
-    companion;

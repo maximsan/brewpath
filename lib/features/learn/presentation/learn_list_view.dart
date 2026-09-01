@@ -137,7 +137,12 @@ class LearnListView extends ConsumerWidget {
               // The dictionary drills lead the group, ahead of the catalog:
               // they are free for everyone and need no module unlocked, so
               // they are the two rows a learner can always act on.
-              const PracticeDrillsWidget(),
+              PracticeDrillsWidget(
+                // Same read, same reason as the catalog below: unresolved
+                // entitlement is treated as owned, so a payer never catches a
+                // frame of free-tier framing on their own shelf.
+                hasCourse: entitlement.asData?.value ?? true,
+              ),
               _headerGap,
               MiniGamesCatalogWidget(
                 formats: miniGames.asData?.value ?? const [],

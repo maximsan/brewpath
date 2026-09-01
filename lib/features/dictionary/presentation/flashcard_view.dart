@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:brew_path/core/widgets/flip_geometry.dart';
+import 'package:brew_path/features/dictionary/presentation/dictionary_category_mark.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcard_face.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_copy.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
@@ -35,8 +36,8 @@ class FlashcardView extends StatefulWidget {
   /// The term this card carries.
   final DictionaryTerm term;
 
-  /// The label of the category it sits in.
-  final String category;
+  /// The category it sits in — its name and its mark.
+  final DictionaryCategoryMark category;
 
   /// Whether the definition is the side showing.
   final bool isRevealed;

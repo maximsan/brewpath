@@ -46,6 +46,9 @@ class FlashcardsEmptyView extends StatelessWidget {
       // One announcement: the mark carries no meaning a reader can use, and
       // the heading, the copy and the button are one thought.
       label: '${FlashcardsCopy.title}. ${FlashcardsCopy.emptyBody}',
+      // Excluded, or the heading and the copy are read once as this label and
+      // again as its children.
+      excludeSemantics: true,
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.gutter),
         child: Column(

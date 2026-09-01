@@ -144,9 +144,32 @@ void main() {
       expect(find.byType(FlashcardsScreen), findsOneWidget);
     });
 
-    testWidgets('is absent when there is no deck to study', (tester) async {
-      // A saved lesson puts rows on the shelf without putting a card in the
-      // deck, which is the case that separates the two counts.
+    testWidgets('stays when the terms are saved but not yet reachable', (
+      tester,
+    ) async {
+      // Saved, but the lesson that teaches it is unfinished — so the shelf has
+      // a terms group and the deck has nothing in it. The row is the learner's
+      // way to find out why, so it must not vanish; it drops the count rather
+      // than offering to study none.
+      await _seed([_cherry]);
+      await _openSaved(tester);
+
+      expect(find.byType(SavedStudyRow), findsOneWidget);
+      expect(find.text(FlashcardsCopy.studyRow(0)), findsNothing);
+      expect(find.text(FlashcardsCopy.title), findsOneWidget);
+
+      await tester.tap(find.byType(SavedStudyRow));
+      await settleLoaders(tester);
+
+      expect(find.byType(FlashcardsEmptyView), findsOneWidget);
+    });
+
+    testWidgets('is absent when the shelf holds no terms at all', (
+      tester,
+    ) async {
+      // A saved lesson puts rows on the shelf without putting a term under the
+      // heading this row belongs to — and the design draws it inside that
+      // group (`library.jsx:188`).
       await _seed(['l:m1l1']);
       await _openSaved(tester);
 
