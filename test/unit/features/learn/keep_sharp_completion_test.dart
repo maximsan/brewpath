@@ -9,55 +9,76 @@ Set<String> _entries(List<(ActivityType, String)> completions) => {
     activityEntry(type: type, token: mintActivityToken(), subject: subject),
 };
 
+bool ruleMet(
+  PracticeType type, {
+  int distinctGamesToday = 0,
+  bool replayedToday = false,
+  bool vocabRoundToday = false,
+}) => keepSharpRuleMet(
+  type,
+  distinctGamesToday: distinctGamesToday,
+  replayedToday: replayedToday,
+  vocabRoundToday: vocabRoundToday,
+);
+
 void main() {
   group('keepSharpRuleMet', () {
     test('mini-games need two different games — one game twice is not two', () {
-      expect(
-        keepSharpRuleMet(
-          PracticeType.miniGames,
-          distinctGamesToday: 1,
-          replayedToday: false,
-        ),
-        isFalse,
-      );
-      expect(
-        keepSharpRuleMet(
-          PracticeType.miniGames,
-          distinctGamesToday: 2,
-          replayedToday: false,
-        ),
-        isTrue,
-      );
+      expect(ruleMet(PracticeType.miniGames, distinctGamesToday: 1), isFalse);
+      expect(ruleMet(PracticeType.miniGames, distinctGamesToday: 2), isTrue);
     });
 
     test('a replay acknowledges only the replay recommendation', () {
-      expect(
-        keepSharpRuleMet(
-          PracticeType.lessonReplay,
-          distinctGamesToday: 0,
-          replayedToday: true,
-        ),
-        isTrue,
-      );
+      expect(ruleMet(PracticeType.lessonReplay, replayedToday: true), isTrue);
       // The same completed replay does not satisfy a mini-games
       // recommendation — each type is judged by its own rule.
+      expect(ruleMet(PracticeType.miniGames, replayedToday: true), isFalse);
+    });
+
+    test('a finished vocab round acknowledges only the vocab game', () {
+      expect(ruleMet(PracticeType.vocabGame, vocabRoundToday: true), isTrue);
+      expect(ruleMet(PracticeType.vocabGame), isFalse);
+      // Another type's completion is not this one's.
       expect(
-        keepSharpRuleMet(
+        ruleMet(
           PracticeType.miniGames,
-          distinctGamesToday: 0,
-          replayedToday: true,
+          distinctGamesToday: 1,
+          vocabRoundToday: true,
         ),
         isFalse,
       );
     });
 
-    test('unrecorded types never acknowledge', () {
-      for (final type in [PracticeType.vocabGame, PracticeType.flashcards]) {
-        expect(
-          keepSharpRuleMet(type, distinctGamesToday: 2, replayedToday: true),
-          isFalse,
-        );
-      }
+    test('flashcards has no record to read, so it never acknowledges', () {
+      expect(
+        ruleMet(
+          PracticeType.flashcards,
+          distinctGamesToday: 2,
+          replayedToday: true,
+          vocabRoundToday: true,
+        ),
+        isFalse,
+      );
+    });
+  });
+
+  group('anyVocabRoundToday', () {
+    test("a finished round among the day's entries counts", () {
+      expect(
+        anyVocabRoundToday(_entries([(ActivityType.vocab, '')])),
+        isTrue,
+      );
+    });
+
+    test('another activity does not', () {
+      expect(
+        anyVocabRoundToday(_entries([(ActivityType.miniGame, 'g-quiz')])),
+        isFalse,
+      );
+    });
+
+    test('an empty day counts for nothing', () {
+      expect(anyVocabRoundToday(const <String>{}), isFalse);
     });
   });
 
