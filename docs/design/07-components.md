@@ -427,7 +427,7 @@ screen are missing this.
 | `LessonCompleteScreen` | `lesson` | `LESSON COMPLETE` | `onContinue` · `onBack` · **`setPreview(true/false)`** — a tap-to-enlarge overlay on the earned card, dismissed by tapping the scrim (`stopPropagation` on the card itself) · `onPractice` · **`onDuel`** · `ChallengeSuggestion` → `onStart` / `onNotNow` |
 | `ModuleCompleteScreen` | `module`, `autoMs={2200}` | `MODULE COMPLETE`, "Look how far you've come." | `onContinue` · `onBack` · **`flipTo(true/false)`** — the **whole screen** turns over to the `RewardCard`; the back face's close control flips it back |
 
-`ModuleRewardCardScreen` (`card` · `REWARD UNLOCKED`, "You earned a card.") is defined beside them but **unreachable** — nothing in the flow navigates to `module-card`, and its body duplicates the flip's back face. Listed so it is not re-filed as a missing screen ([#230](https://github.com/maximsan/brewpath/issues/230), ADR-0012).
+`ModuleRewardCardScreen` (`card` · `REWARD UNLOCKED`, "You earned a card.") is defined beside them but **unreachable** — nothing in the flow navigates to `module-card`, and its body duplicates the flip's back face. Listed so it is not re-filed as a missing screen ([#230](https://github.com/maximsan/brewpath/issues/230), ADR-0014).
 
 **Duel has three entry points in the prototype** — Profile card (7.2), Learn
 card, and the lesson-complete screen — all behind `showDuel` / `!isV1`. Any v2
