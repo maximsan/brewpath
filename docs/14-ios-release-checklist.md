@@ -118,6 +118,17 @@ Two things move this file:
   FlutterFire Dart packages do **not** — the manifests come from the underlying
   Google Firebase SDKs resolved over SPM.
 
+- [ ] Before the first upload, read the App Store Connect response for
+      `ITMS-91053` / `ITMS-91061` warnings about third-party SDKs. Every Google
+      and plugin component in the bundle carries its own manifest **except
+      `GoogleAppMeasurement` and `FirebaseAnalytics`**, whose xcframeworks ship
+      none at the version we resolve — checked by hand in the `Runner.app` from
+      `flutter build ios --release`. That is only a problem if Firebase ships at
+      all, which is [#165](https://github.com/maximsan/brewpath/issues/165)'s
+      call; the upload is the only place it can actually be confirmed. Note that
+      `GoogleAdsOnDeviceConversion.framework` is linked in today purely as a
+      dependency of `firebase_analytics`, in an app with no ads.
+
 ---
 
 ## 7. App Icons
