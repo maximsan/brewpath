@@ -91,35 +91,32 @@ Open `ios/Runner/Info.plist` and verify these keys exist:
 
 Apple requires a Privacy Manifest for apps accessing certain APIs.
 
-- [ ] Create `ios/Runner/PrivacyInfo.xcprivacy` with the following content:
+- [x] Create `ios/Runner/PrivacyInfo.xcprivacy` — it lives at
+      [`ios/Runner/PrivacyInfo.xcprivacy`](../ios/Runner/PrivacyInfo.xcprivacy)
+      and its own comments carry the reasoning for each entry. Read the file, not
+      a copy of it.
+- [x] In Xcode: add `PrivacyInfo.xcprivacy` to the Runner target (Build Phases →
+      Copy Bundle Resources). Wired in `project.pbxproj`; the `iOS build` CI job
+      fails if it stops landing in `Runner.app`.
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
-    "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-  <key>NSPrivacyAccessedAPITypes</key>
-  <array>
-    <!-- File timestamp APIs — used by Drift/SQLite (sqlite3) for database file management -->
-    <dict>
-      <key>NSPrivacyAccessedAPIType</key>
-      <string>NSPrivacyAccessedAPICategoryFileTimestamp</string>
-      <key>NSPrivacyAccessedAPITypeReasons</key>
-      <array>
-        <string>C617.1</string>
-      </array>
-    </dict>
-  </array>
-  <key>NSPrivacyCollectedDataTypes</key>
-  <array/>
-  <key>NSPrivacyTracking</key>
-  <false/>
-</plist>
-```
+What the app declares today: **tracks nobody, collects nothing**, and one
+required-reason API — `NSPrivacyAccessedAPICategoryFileTimestamp` (`C617.1`),
+because SQLite stats its own database file. SQLite reaches the binary through
+`package:sqlite3`, which compiles it via a Dart build hook and ships no manifest,
+so the app has to declare it.
 
-- [ ] In Xcode: add `PrivacyInfo.xcprivacy` to the Runner target (Build Phases → Copy Bundle Resources)
-- [ ] Review Firebase SDK privacy manifests — FlutterFire packages include their own; verify in Xcode build log
+Two things move this file:
+
+- **Telemetry.** `NSPrivacyCollectedDataTypes` is empty only while `kUseFirebase`
+  is `false`. Turning crash reporting or analytics on adds entries here _and_
+  changes the App Store privacy labels — see
+  [#165](https://github.com/maximsan/brewpath/issues/165).
+- **New plugins.** A plugin that ships its own `PrivacyInfo.xcprivacy` needs
+  nothing from us; one that does not, and touches a required-reason API, has to
+  be declared here. Today `package_info_plus`, `share_plus`, `stts`,
+  `video_player_avfoundation` and `in_app_purchase_storekit` carry their own. The
+  FlutterFire Dart packages do **not** — the manifests come from the underlying
+  Google Firebase SDKs resolved over SPM.
 
 ---
 
@@ -229,7 +226,7 @@ Increment the build number (`+1`, `+2`, etc.) for every upload to App Store Conn
 - [ ] App record is created in App Store Connect
 - [ ] Xcode code signing is configured with a valid Distribution certificate
 - [ ] `Info.plist` has all required keys including `ITSAppUsesNonExemptEncryption = false`
-- [ ] `PrivacyInfo.xcprivacy` exists and is added to the Xcode target
+- [x] `PrivacyInfo.xcprivacy` exists and is added to the Xcode target
 - [ ] App icon at 1024×1024px is in the asset catalog
 - [ ] `flutter build ios --release` completes without errors
 - [ ] Archive uploaded to App Store Connect via Xcode Organizer

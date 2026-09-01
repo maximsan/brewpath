@@ -20,9 +20,14 @@ dependencies:
   go_router: ^17.2.3
 
   # Local persistence — Drift (SQLite). Replaced abandoned Isar 3.x.
+  # No sqlite3_flutter_libs here: package:sqlite3 3.x builds the amalgamation
+  # itself through a Dart build hook. 0.6.0+eol is an empty stub, and drift_flutter
+  # already pulls it in transitively to lock out the old 0.5.x build scripts, so
+  # declaring it directly only claimed an ownership we do not have. Dropped with
+  # the privacy manifest (#166), which had to name whatever really compiles
+  # SQLite into the binary.
   drift: ^2.33.0
   drift_flutter: ^0.3.0
-  sqlite3_flutter_libs: ^0.6.0
   path_provider: ^2.1.5
 
   # Firebase — Phase 8. Code is wired but inactive until `kUseFirebase`
