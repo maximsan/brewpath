@@ -1,20 +1,14 @@
-import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/features/lessons/domain/lesson_completion_actions.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-CompletionActions _actions({
-  MasteryBand? band,
-  String? nextLessonId,
-  String? moduleSummaryId,
-}) => completionActions(
-  lessonId: 'm1l1',
-  continueLabel: AppLabels.continueLabel,
-  band: band,
-  nextLessonId: nextLessonId,
-  moduleSummaryId: moduleSummaryId,
-);
+CompletionActions _actions({MasteryBand? band, String? nextLessonId}) =>
+    completionActions(
+      lessonId: 'm1l1',
+      band: band,
+      nextLessonId: nextLessonId,
+    );
 
 void main() {
   group('the primary action', () {
@@ -38,15 +32,18 @@ void main() {
       expect(_actions().destination, isNot(learnTab));
     });
 
-    test('a run that closed its module continues to the module recap', () {
-      final actions = _actions(
-        band: MasteryBand.perfect,
-        nextLessonId: 'm2l1',
-        moduleSummaryId: 'm1',
-      );
-
-      expect(actions.label, AppLabels.continueLabel);
-      expect(actions.destination, moduleSummary('m1'));
+    // There is no module case. A run that closes its module branches to the
+    // module ending and never reaches this screen (#458), so the rule has two
+    // outcomes rather than three — and no label to invent for a moment the
+    // design gives the lesson ending no word for.
+    test('never routes to a module recap, whatever the run did', () {
+      for (final actions in [
+        _actions(band: MasteryBand.perfect, nextLessonId: 'm2l1'),
+        _actions(band: MasteryBand.needsPractice),
+        _actions(),
+      ]) {
+        expect(actions.destination, isNot(moduleSummary('m1')));
+      }
     });
   });
 
@@ -85,18 +82,6 @@ void main() {
 
     test('a strong run with nothing queued gets no link at all', () {
       expect(_actions(band: MasteryBand.perfect).link, isNull);
-    });
-
-    // The invitation survives the module moment: closing a module and needing
-    // practice are independent, and only the primary action is the module's.
-    test('a weak run that closed a module keeps the invitation', () {
-      final actions = _actions(
-        band: MasteryBand.needsPractice,
-        moduleSummaryId: 'm1',
-      );
-
-      expect(actions.destination, moduleSummary('m1'));
-      expect(actions.link?.label, practiceAgainLabel);
     });
 
     test('an unscored run is not treated as weak', () {

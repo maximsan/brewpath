@@ -57,29 +57,22 @@ class CompletionActions {
 ///
 /// **Three rules, in this order.**
 ///
-/// 1. A run that closed its module continues to that module's own recap,
-///    under whatever [continueLabel] the caller hands in. **Open, not
-///    settled:** the design gives the lesson ending no word for this moment
-///    because it routes a closed module to its own screen, so the app's
-///    existing neutral label is carried forward rather than invented over.
-///    The module ending's beat structure is [#230]'s and [#384]'s, and the
-///    label belongs with it.
+/// **Two rules, and no module case.** A run that closes its module never
+/// reaches this screen — the design branches to the module ending instead of
+/// chaining through here (#458) — so there is no third branch and no label to
+/// invent for a moment the design gives the lesson ending no word for.
 ///
-/// [#230]: https://github.com/maximsan/brewpath/issues/230
-/// [#384]: https://github.com/maximsan/brewpath/issues/384
-/// 2. Otherwise the action is the next lesson when one is playable, and
+/// 1. The action is the next lesson when one is playable, and
 ///    [backToPathLabel] when the course has nothing left queued.
-/// 3. The quiet link is the weak run's practice invitation where there is one,
+/// 2. The quiet link is the weak run's practice invitation where there is one,
 ///    and [backToPathLabel] otherwise — never both. The design pairs the
 ///    invitation with the mastery chip and drops the plain return beside it
 ///    (`rewards.jsx:154-175`), so a weak run is asked to practise rather than
 ///    offered two ways out.
 CompletionActions completionActions({
   required String lessonId,
-  required String continueLabel,
   MasteryBand? band,
   String? nextLessonId,
-  String? moduleSummaryId,
 }) {
   final practice = (band?.invitesPractice ?? false)
       ? CompletionLink(
@@ -87,14 +80,6 @@ CompletionActions completionActions({
           destination: lessonRun(lessonId),
         )
       : null;
-
-  if (moduleSummaryId != null) {
-    return CompletionActions(
-      label: continueLabel,
-      destination: moduleSummary(moduleSummaryId),
-      link: practice,
-    );
-  }
 
   if (nextLessonId == null) {
     return CompletionActions(

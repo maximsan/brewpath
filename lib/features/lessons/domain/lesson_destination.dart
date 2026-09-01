@@ -88,10 +88,38 @@ RouteDestination lessonCompletion(
   queryParams: {'correct': '$correct', 'total': '$total'},
 );
 
-/// The module recap shown after the last lesson of a module.
-RouteDestination moduleSummary(String moduleId) => RouteDestination(
+/// The module ending — **the one ending a module's last lesson plays**.
+///
+/// The design branches rather than chaining (`app.jsx:960-964`): a lesson that
+/// closes its module goes straight here, and the lesson ending never runs. So
+/// this route also carries what that ending would have reported, because
+/// nothing else will say it.
+///
+/// [runLessonId] names the lesson that closed the module, which is where the
+/// screen reads the points it paid and the collectible it handed over.
+/// [freezeEarned] cannot be re-derived at all — it is a transition, true only
+/// on the run that crossed it. [fromStage] and [toStage] travel rather than
+/// being recomputed, so the tree the learner sees and the tree the run wrote
+/// can never disagree.
+///
+/// Every one is optional: opened without them — a deep link, a review — the
+/// screen simply shows the module and its reward, with nothing claimed about a
+/// run that did not happen.
+RouteDestination moduleSummary(
+  String moduleId, {
+  String? runLessonId,
+  bool freezeEarned = false,
+  int? fromStage,
+  int? toStage,
+}) => RouteDestination(
   name: AppRoutes.moduleSummary.name,
   pathParams: {'moduleId': moduleId},
+  queryParams: {
+    'lesson': ?runLessonId,
+    if (freezeEarned) 'freeze': 'true',
+    if (fromStage != null) 'from': '$fromStage',
+    if (toStage != null) 'to': '$toStage',
+  },
 );
 
 /// The Learn tab, where every lesson flow returns to.

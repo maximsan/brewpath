@@ -1,5 +1,4 @@
 import 'package:brew_path/app/day_surfaces.dart';
-import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
@@ -51,6 +50,9 @@ class _LessonCompletionScreenState
   /// Whether the opening beat has handed over. The content is not built until
   /// it has, which is the design's two-phase reveal.
   bool _beatDone = false;
+
+  /// Whether this run has already been handed to the module ending.
+  bool _handedOver = false;
 
   /// Persists the run exactly once. A first completion pays the lesson's flat
   /// ten and hands over its card, plus the module's Module Reward card where
@@ -126,11 +128,18 @@ class _LessonCompletionScreenState
     if (snap.hasError) return ErrorView(message: '${snap.error}');
     final reward = snap.data!;
 
+    // **A run that closed its module plays one ending, not two** (#458). The
+    // design branches here rather than chaining (`app.jsx:960-964`), so this
+    // screen hands the moment over whole — its own beat never plays, and the
+    // module ending reports what this lesson paid on its behalf.
+    if (reward.result.moduleCompleted) {
+      _handOverToModuleEnding(reward);
+      return const LoadingIndicator();
+    }
+
     if (!_beatDone) {
       return RoastyMoment(
-        reaction: reward.result.moduleCompleted
-            ? CompanionReaction.moduleComplete
-            : CompanionReaction.lessonComplete,
+        reaction: CompanionReaction.lessonComplete,
         eyebrow: completionEyebrow(isReplay: reward.result.isReplay),
         title: completionBeatTitle(widget.mastery.band),
         onDone: () {
@@ -157,6 +166,31 @@ class _LessonCompletionScreenState
     );
   }
 
+  /// Replaces this route with the module ending, carrying the run's own facts.
+  ///
+  /// Scheduled off the frame rather than called during `build`, which is the
+  /// only safe place to navigate from a builder. The latch makes it once: a
+  /// rebuild before the route changes would otherwise queue a second
+  /// navigation onto the same destination.
+  void _handOverToModuleEnding(LessonCompletionReward reward) {
+    if (_handedOver) return;
+    _handedOver = true;
+    final moduleId = _moduleId;
+    if (moduleId == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.goTo(
+        moduleSummary(
+          moduleId,
+          runLessonId: widget.lessonId,
+          freezeEarned: reward.result.freezeEarned,
+          fromStage: reward.result.treeStageBefore,
+          toStage: reward.result.treeStageAfter,
+        ),
+      );
+    });
+  }
+
   /// The screen reports **the run that reached it**, which on a replay is not
   /// the stored best: `LessonFinishResult.mastery` is the never-downgraded
   /// record, and the design prints the run (`prototype/rewards.jsx:57-73`).
@@ -168,10 +202,8 @@ class _LessonCompletionScreenState
     reward: reward,
     actions: completionActions(
       lessonId: widget.lessonId,
-      continueLabel: AppLabels.continueLabel,
       band: widget.mastery.band,
       nextLessonId: reward.nextLessonId,
-      moduleSummaryId: reward.result.moduleCompleted ? _moduleId : null,
     ),
   );
 }
