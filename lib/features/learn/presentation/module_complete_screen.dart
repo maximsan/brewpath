@@ -161,10 +161,6 @@ class _Flip extends StatelessWidget {
   /// about the celebration rather than about the footer.
   static const Alignment _origin = Alignment(0, -0.16);
 
-  /// Where the perspective term lives in a 4×4 transform: row 3, column 2.
-  static const int _perspectiveRow = 3;
-  static const int _perspectiveColumn = 2;
-
   @override
   Widget build(BuildContext context) {
     // The design's own easing. Read through a curve rather than baked into the
@@ -178,9 +174,10 @@ class _Flip extends StatelessWidget {
 
         return Transform(
           alignment: _origin,
-          transform: Matrix4.identity()
-            ..setEntry(_perspectiveRow, _perspectiveColumn, _perspective)
-            ..rotateY(flipAngle(turn.value)),
+          transform: flipTransform(
+            progress: turn.value,
+            perspective: _perspective,
+          ),
           child: showsBack
               // Turned again so the back reads upright rather than mirrored:
               // it is drawn on the far side of a card that is already half

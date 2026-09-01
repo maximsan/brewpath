@@ -85,6 +85,10 @@ const List<AppRoute> _immersiveRoutes = [
   AppRoutes.moduleSummary,
   AppRoutes.miniGameIntro,
   AppRoutes.miniGamePlay,
+  // A drill covers the shell the same way a run does: it carries its own
+  // close and its own counter, and the tab bar under it would offer a way
+  // out that abandons the review without saying so.
+  AppRoutes.flashcards,
 ];
 
 /// Which chrome [location] wears.

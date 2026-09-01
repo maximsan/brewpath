@@ -121,9 +121,10 @@ class _FlashcardViewState extends State<FlashcardView>
 
     return Transform(
       alignment: Alignment.center,
-      transform: Matrix4.identity()
-        ..setEntry(3, 2, _flashcardPerspective)
-        ..rotateY(flipAngle(progress)),
+      transform: flipTransform(
+        progress: progress,
+        perspective: _flashcardPerspective,
+      ),
       // Only one face is ever built. Both would occupy the same box, and the
       // one behind is seen mirror-imaged through the rest of the turn — what
       // the design's `backface-visibility: hidden` prevents and Flutter has no

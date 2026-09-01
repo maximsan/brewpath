@@ -18,6 +18,14 @@ import 'package:go_router/go_router.dart';
 ///
 /// The same state for all four ways in, which is why it is a view rather than
 /// something the dictionary's own screen draws.
+///
+/// **It answers one question, and there are two.** This copy is the design's,
+/// written for *nothing saved*. A free learner who bookmarked a term their
+/// lessons have not taught yet also lands here, and for them "bookmark terms
+/// and they become a deck" is untrue — they did, and it did not. The design
+/// never had that state, because its dictionary is gated where the app's is
+/// open; the copy that state is owed is
+/// [#468](https://github.com/maximsan/brewpath/issues/468).
 class FlashcardsEmptyView extends StatelessWidget {
   /// Creates a [FlashcardsEmptyView].
   const FlashcardsEmptyView({super.key});

@@ -13,6 +13,8 @@ library;
 
 import 'dart:math' as math;
 
+import 'package:flutter/widgets.dart';
+
 /// **The turn's own progress**, `0` face-on to `1` fully over.
 ///
 /// Not rotations: half a rotation *is* the whole turn here, so a value of
@@ -52,3 +54,23 @@ double flipVisibleFraction(double progress) =>
 /// the turn — the artefact the design's `backfaceVisibility` prevents, which
 /// Flutter has no equivalent of.
 bool flipShowsBack(double progress) => progress >= flipSwapPoint;
+
+/// Where the perspective term lives in a 4×4 transform: row 3, column 2.
+const int _perspectiveRow = 3;
+const int _perspectiveColumn = 2;
+
+/// The card's transform at [progress]: [perspective]'s depth, then the turn.
+///
+/// [perspective] is the reciprocal of the design's CSS `perspective` distance —
+/// `1 / 1800` for the module ending, `1 / 1400` for a flashcard — and each
+/// surface passes its own, because a nearer viewpoint turns a card harder.
+///
+/// Here rather than in either screen because the matrix slot is the same fact
+/// twice, and a screen that got it wrong would not fail: it would simply draw
+/// a flat turn nobody could name the reason for.
+Matrix4 flipTransform({
+  required double progress,
+  required double perspective,
+}) => Matrix4.identity()
+  ..setEntry(_perspectiveRow, _perspectiveColumn, perspective)
+  ..rotateY(flipAngle(progress));
