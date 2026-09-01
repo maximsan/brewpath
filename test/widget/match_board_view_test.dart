@@ -108,8 +108,6 @@ void main() {
     );
 
     expect(solved, 0);
-    // The design names the cost rather than only the miss: one wrong drop is
-    // `1 WRONG DROP`, and the count is why the board tracks drops not a flag.
     expect(find.text('1 WRONG DROP'), findsOneWidget);
   });
 

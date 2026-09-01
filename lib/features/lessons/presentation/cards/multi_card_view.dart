@@ -16,8 +16,7 @@ const String _cue = 'Select all that apply';
 const String _checkLabel = 'Check answers';
 
 /// Verdicts, which name the all-or-nothing rule rather than a score.
-const String _allCorrect = 'ALL CORRECT';
-const String _notQuite = 'NOT QUITE';
+const String _allCorrect = 'All correct';
 
 /// The select-all-that-apply card: pick freely, then commit the whole set.
 ///
@@ -106,7 +105,7 @@ class _MultiCardViewState extends State<MultiCardView> {
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
-    final verdict = _wasCorrect ? _allCorrect : _notQuite;
+    final verdict = _wasCorrect ? _allCorrect : notQuiteVerdict;
 
     return CardShell(
       latched: _submitted,

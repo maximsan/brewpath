@@ -281,7 +281,7 @@ void main() {
     await _dragTo(tester, 72);
     await _check(tester);
 
-    expect(find.bySemanticsLabel('DIALED IN'), findsOneWidget);
+    expect(find.bySemanticsLabel('Dialed in'), findsOneWidget);
     handle.dispose();
   });
 }

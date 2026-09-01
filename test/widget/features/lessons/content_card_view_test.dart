@@ -349,11 +349,13 @@ void main() {
       );
     });
 
-    for (final (process, verdict) in [
-      ('Washed', 'CALLED IT'),
-      ('Natural', 'WASHED, ACTUALLY'),
+    // Drawn uppercase, announced as authored — the block applies the case, so
+    // a caller that pre-shouted its verdict would make a reader shout it too.
+    for (final (process, drawn, spoken) in [
+      ('Washed', 'CALLED IT', 'Called it'),
+      ('Natural', 'WASHED, ACTUALLY', 'Washed, actually'),
     ]) {
-      testWidgets('$verdict is announced, not only drawn', (tester) async {
+      testWidgets('$drawn is announced, not only drawn', (tester) async {
         // Colour is what separates right from wrong here, and colour is the
         // one thing a screen reader cannot report. The option list marks the
         // call itself, but only this line names the outcome, and it arrives
@@ -362,8 +364,8 @@ void main() {
 
         await call(tester, process);
 
-        expect(find.text(verdict), findsOneWidget);
-        expect(_announces(tester, verdict), isTrue);
+        expect(find.text(drawn), findsOneWidget);
+        expect(_announces(tester, spoken), isTrue);
       });
     }
 
@@ -877,11 +879,15 @@ void main() {
       expect(find.text('ALL CORRECT'), findsOneWidget);
     });
 
-    for (final (picks, verdict) in [
-      (['Grind size', 'Water temperature', 'Brew time'], 'ALL CORRECT'),
-      (['Grind size'], 'NOT QUITE'),
+    for (final (picks, drawn, spoken) in [
+      (
+        ['Grind size', 'Water temperature', 'Brew time'],
+        'ALL CORRECT',
+        'All correct',
+      ),
+      (['Grind size'], 'NOT QUITE', 'Not quite'),
     ]) {
-      testWidgets('$verdict is announced, not only shown', (tester) async {
+      testWidgets('$drawn is announced, not only shown', (tester) async {
         // The per-choice marks say what each row was; only this line says
         // whether the card was passed. It appears with no focus change to
         // bring a reader to it, so without a live region a learner using one
@@ -891,8 +897,8 @@ void main() {
 
         await pickAndCheck(tester, picks);
 
-        expect(find.text(verdict), findsOneWidget);
-        expect(_announces(tester, verdict), isTrue);
+        expect(find.text(drawn), findsOneWidget);
+        expect(_announces(tester, spoken), isTrue);
       });
     }
 

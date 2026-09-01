@@ -281,7 +281,7 @@ You can always edit this file by hand instead — the helpers just save effort.
   the dictionary's self-check just revealed its explanation with no verdict at
   all. Now every one of them ends on the same block the design draws: the mascot
   taking the news, the verdict in small caps, then the explanation. Roasty had
-  never once reacted to an answer in the app; he does now, on all eight graded
+  never once reacted to an answer in the app; he does now, on all eleven graded
   kinds. The verdict is also spoken on every surface, which matters most where
   right and wrong differ only by colour — and the self-check, which said nothing
   aloud before, now says how it went.

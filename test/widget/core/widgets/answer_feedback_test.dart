@@ -40,7 +40,7 @@ void main() {
       await tester.pumpWidget(
         _host(
           const AnswerFeedback(
-            verdict: 'ALL CORRECT',
+            verdict: 'All correct',
             outcome: Verdict.right,
             explanation: 'Grind, temperature and time are the three.',
           ),
@@ -66,7 +66,7 @@ void main() {
       await tester.pumpWidget(
         _host(
           const AnswerFeedback(
-            verdict: 'NOT QUITE',
+            verdict: 'Not quite',
             outcome: Verdict.wrong,
             explanation: 'Puckering with no weight behind it is thin.',
           ),
@@ -87,10 +87,11 @@ void main() {
       // a wrong answer reads as a worse failure than missing a self-check is.
       await tester.pumpWidget(
         _host(
-          const AnswerFeedback.reference(
-            verdict: 'NOT QUITE',
+          const AnswerFeedback(
+            verdict: 'Not quite',
             outcome: Verdict.wrong,
             explanation: 'Burrs crush; blades chop.',
+            placement: VerdictPlacement.reference,
           ),
         ),
       );
@@ -106,11 +107,11 @@ void main() {
     // never the outcome.
     await tester.pumpWidget(
       _host(
-        const AnswerFeedback(verdict: 'CLEAN BOARD', outcome: Verdict.right),
+        const AnswerFeedback(verdict: 'Clean board', outcome: Verdict.right),
       ),
     );
 
-    expect(_announces(tester, 'CLEAN BOARD'), isTrue);
+    expect(_announces(tester, 'Clean board'), isTrue);
   });
 
   testWidgets('renders uppercase but is announced as written', (tester) async {
@@ -132,7 +133,7 @@ void main() {
     await tester.pumpWidget(
       _host(
         const AnswerFeedback(
-          verdict: 'IN ORDER',
+          verdict: 'In order',
           outcome: Verdict.right,
           explanation: 'Nailed the sequence.',
           extra: Text('Rinse → Bloom → Pour'),
@@ -146,7 +147,7 @@ void main() {
   testWidgets('holds a single frame under reduced motion', (tester) async {
     await tester.pumpWidget(
       _host(
-        const AnswerFeedback(verdict: 'NOT QUITE', outcome: Verdict.wrong),
+        const AnswerFeedback(verdict: 'Not quite', outcome: Verdict.wrong),
         reduceMotion: true,
       ),
     );

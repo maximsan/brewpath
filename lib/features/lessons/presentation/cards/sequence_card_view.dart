@@ -22,8 +22,7 @@ const String _submitLabel = 'Submit';
 const String _resetLabel = 'Reset';
 
 /// Verdicts, which name the all-or-nothing rule rather than a count of steps.
-const String _inOrder = 'IN ORDER';
-const String _notQuite = 'NOT QUITE';
+const String _inOrder = 'In order';
 
 const String _nailedIt = 'Nailed the sequence.';
 const String _wrongOrder = 'Not the right order this time.';
@@ -211,7 +210,7 @@ class _SequenceCardViewState extends State<SequenceCardView> {
   /// got it right still leaves the round with the order written out.
   List<Widget> _verdict(MoodColors mood) => [
     AnswerFeedback(
-      verdict: _wasCorrect ? _inOrder : _notQuite,
+      verdict: _wasCorrect ? _inOrder : notQuiteVerdict,
       outcome: _wasCorrect ? Verdict.right : Verdict.wrong,
       explanation: _wasCorrect ? _nailedIt : _wrongOrder,
       extra: Column(

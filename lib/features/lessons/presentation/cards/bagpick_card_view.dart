@@ -12,10 +12,10 @@ import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// How each process reads to a learner. The bank stores the key.
 /// The verdict on a call that was right.
-const String _calledIt = 'CALLED IT';
+const String _calledIt = 'Called it';
 
+/// How each process reads to a learner. The bank stores the key.
 const Map<String, String> _processLabels = {
   'washed': 'Washed',
   'honey': 'Honey',
@@ -85,8 +85,7 @@ class _BagpickCardViewState extends State<BagpickCardView> {
   /// app had been closing both readings with one the design does not write.
   String _verdict(BagpickCard card) => _wasCorrect
       ? _calledIt
-      : '${(_processLabels[card.answer] ?? card.answer).toUpperCase()}'
-            ', ACTUALLY';
+      : '${_processLabels[card.answer] ?? card.answer}, actually';
 
   /// Whether [cueId] is showing its text. Committing reveals them all, so the
   /// explanation can point at a cue the learner never opened.

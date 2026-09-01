@@ -8,10 +8,9 @@ import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// The verdict on a board that was cleared without a wrong drop, and the two
-/// lines that explain either outcome — the design's own wording, which says
-/// what the all-first-time rule is rather than only that it was missed.
-const String _cleanBoard = 'CLEAN BOARD';
+/// The two lines that explain either outcome — the design's own wording, which
+/// says what the all-first-time rule is rather than only that it was missed.
+/// The verdict itself is `matchBoardVerdict`, beside the board's other rules.
 const String _clearedClean =
     'Every pair first time. That is the one that '
     'counts.';
@@ -154,9 +153,7 @@ class _MatchBoardViewState extends State<MatchBoardView> {
         if (_cleared) ...[
           const SizedBox(height: AppSpacing.md),
           AnswerFeedback(
-            verdict: _faulted
-                ? '$_wrongDrops WRONG ${_wrongDrops == 1 ? 'DROP' : 'DROPS'}'
-                : _cleanBoard,
+            verdict: matchBoardVerdict(_wrongDrops),
             outcome: _faulted ? Verdict.wrong : Verdict.right,
             explanation: _faulted ? _clearedNotClean : _clearedClean,
           ),

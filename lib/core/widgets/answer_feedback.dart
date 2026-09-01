@@ -5,6 +5,14 @@ import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
+/// What a graded surface says when the answer was not right.
+///
+/// Shared because it was not: four surfaces each declared their own private
+/// `_notQuite` and two more wrote the literal, for the one line the design
+/// repeats more than any other. Six copies of a string is how the wording
+/// drifts, which is the same failure one verdict block exists to prevent.
+const String notQuiteVerdict = 'Not quite';
+
 /// Which way a graded surface went, and everything that follows from it.
 ///
 /// One enum rather than a `bool` and a colour and a mascot state passed
@@ -12,21 +20,61 @@ import 'package:flutter/material.dart';
 /// separately that let five copies drift — one reached for `mood.warn` where
 /// the rest used `mood.berry`, and nothing could tell that was a mistake.
 enum Verdict {
-  /// The learner got it.
+  /// The learner got it. Sage, and Roasty pleased.
   right(RoastyState.correct),
 
-  /// They did not.
+  /// They did not. The surface's own wrong tone, and Roasty sorry about it.
   wrong(RoastyState.wrong);
 
   const Verdict(this.mascotState);
 
   /// How Roasty takes the news.
   final RoastyState mascotState;
+}
 
-  /// The verdict line's own colour — sage when right, and when wrong the
-  /// [wrongTone] the surface asks for.
-  Color labelColour(MoodColors mood, Color wrongTone) =>
-      this == Verdict.right ? mood.sage : wrongTone;
+/// Where the block is standing — the whole of what varies between its hosts.
+///
+/// A mascot size, a body step and a wrong-answer tone, travelling as one
+/// value: the design moves them together, and passing them loose is what let
+/// five copies drift into combinations it never draws.
+enum VerdictPlacement {
+  /// A graded card in the lesson player.
+  card(mascot: _mascotOnCard, speaksInBody: false),
+
+  /// The cards the design sets a step larger — `decision` and `recall`, which
+  /// pass `bodySize="body"` (`active-cards.jsx:172`, `:227`).
+  ///
+  /// They talk back rather than mark an answer, and the design gives that
+  /// reading the body step the rest of the run reserves for prose.
+  conversational(mascot: _mascotOnCard, speaksInBody: true),
+
+  /// A term entry's self-check (`dictionary.jsx:491`), drawn smaller and toned
+  /// **accent** rather than berry.
+  ///
+  /// A term entry is reference rather than a graded run: berry is the colour
+  /// the lesson player spends on a wrong answer, and a look-up that answers
+  /// back in it reads as a worse failure than missing a self-check is.
+  reference(mascot: _mascotInReference, speaksInBody: false);
+
+  const VerdictPlacement({required this.mascot, required this.speaksInBody});
+
+  /// The design's mascot size on a graded card, and inside a term entry.
+  static const double _mascotOnCard = 72;
+  static const double _mascotInReference = 48;
+
+  /// How large Roasty is drawn here.
+  final double mascot;
+
+  /// Whether the explanation takes the body step rather than support.
+  final bool speaksInBody;
+
+  /// The colour a wrong answer is named in.
+  Color wrongTone(MoodColors mood) =>
+      this == VerdictPlacement.reference ? mood.accent : mood.berry;
+
+  /// How the explanation is set here.
+  TextStyle explanationStyle(MoodColors mood) =>
+      speaksInBody ? AppText.body(mood: mood) : AppText.support(mood: mood);
 }
 
 /// The verdict block that closes every graded surface in the product.
@@ -46,43 +94,29 @@ enum Verdict {
 ///
 /// Reduced motion needs nothing here: [Roasty] holds a single frame when
 /// `MediaQuery.disableAnimations` is set.
+///
+/// It sits in `core/` while reaching into `features/companion`, which nothing
+/// else here does. The mascot is half of what the design's block *is*, so the
+/// alternative is a shared widget that cannot draw it — or moving the whole
+/// companion out of `features/` to spare one import.
 class AnswerFeedback extends StatelessWidget {
-  /// Creates an [AnswerFeedback] — the graded-card treatment.
+  /// Creates an [AnswerFeedback].
   const AnswerFeedback({
     required this.verdict,
     required this.outcome,
     this.explanation,
     this.extra,
+    this.placement = VerdictPlacement.card,
     super.key,
-  }) : _mascotSize = _mascotOnCard,
-       _usesAccentWhenWrong = false;
+  });
 
-  /// The dictionary's self-check, which the design draws smaller and tones
-  /// **accent** rather than berry (`dictionary.jsx:491`).
+  /// The line itself — *All correct*, *Clean board*, *Not quite*.
   ///
-  /// A term entry is reference rather than a graded run: berry is the colour
-  /// the lesson player spends on a wrong answer, and a look-up that answers
-  /// back in it reads as a worse failure than missing a self-check is.
-  const AnswerFeedback.reference({
-    required this.verdict,
-    required this.outcome,
-    this.explanation,
-    super.key,
-  }) : extra = null,
-       _mascotSize = _mascotInReference,
-       _usesAccentWhenWrong = true;
-
-  /// The design's default mascot size on a graded card.
-  static const double _mascotOnCard = 72;
-
-  /// Its size inside a term entry, where the block sits in a tighter column.
-  static const double _mascotInReference = 48;
-
-  /// The line itself — `ALL CORRECT`, `CLEAN BOARD`, `NOT QUITE`.
-  ///
-  /// Rendered uppercase, because the case is the design's treatment of the
-  /// line rather than part of what it says. Assistive technology is given the
-  /// string as written, for the same reason `SmallcapsLabel` does it.
+  /// **Written in sentence case and rendered uppercase**, because the case
+  /// is the design's treatment of the line rather than part of what it says.
+  /// Assistive technology is given the string as written, for the same
+  /// reason `SmallcapsLabel` does it — a caller that pre-shouts its verdict
+  /// makes the screen reader shout it too.
   final String verdict;
 
   /// Which way it went.
@@ -95,17 +129,16 @@ class AnswerFeedback extends StatelessWidget {
   /// correct-order reveal is the one that needed it.
   final Widget? extra;
 
-  final double _mascotSize;
-  final bool _usesAccentWhenWrong;
+  /// Where this one is standing.
+  final VerdictPlacement placement;
 
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
-    final wrongTone = _usesAccentWhenWrong ? mood.accent : mood.berry;
 
     return Row(
       children: [
-        Roasty(state: outcome.mascotState, size: _mascotSize),
+        Roasty(state: outcome.mascotState, size: placement.mascot),
         const SizedBox(width: AppSpacing.base),
         Expanded(
           child: Column(
@@ -120,13 +153,18 @@ class AnswerFeedback extends StatelessWidget {
                   verdict.toUpperCase(),
                   style: AppText.label(
                     face: AppFace.mono,
-                    color: outcome.labelColour(mood, wrongTone),
+                    color: outcome == Verdict.right
+                        ? mood.sage
+                        : placement.wrongTone(mood),
                   ),
                 ),
               ),
               if (explanation != null) ...[
                 const SizedBox(height: AppSpacing.xs),
-                Text(explanation!, style: AppText.support(mood: mood)),
+                Text(
+                  explanation!,
+                  style: placement.explanationStyle(mood),
+                ),
               ],
               ?extra,
             ],

@@ -19,8 +19,7 @@ const String _cue = 'CALIBRATE · DIAL TO THE TARGET';
 const String _checkLabel = 'Check answer';
 
 /// Verdicts, which name the band rule rather than a distance.
-const String _dialedIn = 'DIALED IN';
-const String _notQuite = 'NOT QUITE';
+const String _dialedIn = 'Dialed in';
 
 /// What the readout above the track is saying, before and after the commit.
 const String _yourSetting = 'Your setting';
@@ -211,7 +210,7 @@ class _SliderCardViewState extends State<SliderCardView> {
   List<Widget> _verdict(MoodColors mood) => [
     const SizedBox(height: AppSpacing.md),
     AnswerFeedback(
-      verdict: _within ? _dialedIn : _notQuite,
+      verdict: _within ? _dialedIn : notQuiteVerdict,
       outcome: _within ? Verdict.right : Verdict.wrong,
       explanation: _card.feedback,
     ),

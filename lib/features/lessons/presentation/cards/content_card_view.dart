@@ -1,3 +1,4 @@
+import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/features/lessons/domain/card_seed.dart';
 import 'package:brew_path/features/lessons/presentation/cards/bagpick_card_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
@@ -237,6 +238,7 @@ PickerCopy _mcqCopy(McqCard card) => PickerCopy(
 );
 
 PickerCopy _recallCopy(RecallCard card) => PickerCopy(
+  placement: VerdictPlacement.conversational,
   label: card.label,
   prompt: card.question,
   explain: ({required wasCorrect}) => card.explanation,
@@ -244,6 +246,7 @@ PickerCopy _recallCopy(RecallCard card) => PickerCopy(
 );
 
 PickerCopy _decisionCopy(DecisionCard card) => PickerCopy(
+  placement: VerdictPlacement.conversational,
   label: card.label,
   title: card.title,
   scenario: card.scenario,
@@ -255,7 +258,7 @@ PickerCopy _decisionCopy(DecisionCard card) => PickerCopy(
   // And its verdict answers the judgement rather than grading it: a decision
   // is a call that pays off or backfires, not a fact you knew or did not.
   verdict: ({required wasCorrect}) =>
-      wasCorrect ? 'GOOD CALL' : 'THAT WOULD BACKFIRE',
+      wasCorrect ? 'Good call' : 'That would backfire',
   footnote: card.note,
 );
 
@@ -271,7 +274,7 @@ PickerCopy _tastefixCopy(TastefixCard card) => PickerCopy(
   prompt: card.prompt,
   explain: ({required wasCorrect}) => card.explanation,
   // A fix that worked, not an answer that was right.
-  verdict: ({required wasCorrect}) => wasCorrect ? 'GOOD FIX' : 'NOT QUITE',
+  verdict: ({required wasCorrect}) => wasCorrect ? 'Good fix' : notQuiteVerdict,
 );
 
 /// The tasting clue takes the scenario slot: it is what the learner is reading

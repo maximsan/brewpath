@@ -9,8 +9,7 @@ import 'package:flutter/material.dart';
 const _revealDuration = Duration(milliseconds: 200);
 
 /// The verdict on a self-check, in the design's own words (`dictionary.jsx`).
-const String _correct = 'CORRECT';
-const String _notQuite = 'NOT QUITE';
+const String _correct = 'Correct';
 
 /// A term's self-check: one question, a few choices, and an explanation that
 /// appears once the learner answers.
@@ -174,10 +173,11 @@ class _Explanation extends StatelessWidget {
     if (chosen == null) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(top: AppSpacing.sm),
-      child: AnswerFeedback.reference(
-        verdict: wasCorrect ? _correct : _notQuite,
+      child: AnswerFeedback(
+        verdict: wasCorrect ? _correct : notQuiteVerdict,
         outcome: wasCorrect ? Verdict.right : Verdict.wrong,
         explanation: text,
+        placement: VerdictPlacement.reference,
       ),
     );
   }
