@@ -260,7 +260,7 @@ void main() {
       findsOneWidget,
       reason: 'the mark is carried by colour alone unless it is spoken',
     );
-    expect(find.bySemanticsLabel('NOT QUITE'), findsOneWidget);
+    expect(find.bySemanticsLabel('Not quite'), findsOneWidget);
     handle.dispose();
   });
 }

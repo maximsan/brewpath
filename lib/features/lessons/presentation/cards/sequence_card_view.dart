@@ -1,9 +1,9 @@
+import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/core/widgets/link_button.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_option_tile.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_tints.dart';
-import 'package:brew_path/features/lessons/presentation/cards/card_verdict.dart';
 import 'package:brew_path/features/lessons/presentation/cards/sequence_order.dart';
 import 'package:brew_path/features/lessons/presentation/cards/sequence_step_number.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
@@ -22,8 +22,7 @@ const String _submitLabel = 'Submit';
 const String _resetLabel = 'Reset';
 
 /// Verdicts, which name the all-or-nothing rule rather than a count of steps.
-const String _inOrder = 'IN ORDER';
-const String _notQuite = 'NOT QUITE';
+const String _inOrder = 'In order';
 
 const String _nailedIt = 'Nailed the sequence.';
 const String _wrongOrder = 'Not the right order this time.';
@@ -210,27 +209,28 @@ class _SequenceCardViewState extends State<SequenceCardView> {
   /// The reveal follows either way, as the design source has it: a learner who
   /// got it right still leaves the round with the order written out.
   List<Widget> _verdict(MoodColors mood) => [
-    CardVerdict(
-      verdict: _wasCorrect ? _inOrder : _notQuite,
-      wasCorrect: _wasCorrect,
-      children: [
-        Text(
-          _wasCorrect ? _nailedIt : _wrongOrder,
-          style: AppText.body(mood: mood),
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        Text(
-          _correctOrder,
-          style: AppText.label(mood: mood, color: mood.sage),
-        ),
-        const SizedBox(height: AppSpacing.xxs),
-        Text(
-          [
-            for (final item in sequenceSolution(widget.items)) item.label,
-          ].join(_arrow),
-          style: AppText.support(mood: mood, color: mood.ink),
-        ),
-      ],
+    AnswerFeedback(
+      verdict: _wasCorrect ? _inOrder : notQuiteVerdict,
+      outcome: _wasCorrect ? Verdict.right : Verdict.wrong,
+      explanation: _wasCorrect ? _nailedIt : _wrongOrder,
+      extra: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            _correctOrder,
+            style: AppText.label(mood: mood, color: mood.sage),
+          ),
+          const SizedBox(height: AppSpacing.xxs),
+          Text(
+            [
+              for (final item in sequenceSolution(widget.items)) item.label,
+            ].join(_arrow),
+            style: AppText.support(mood: mood, color: mood.ink),
+          ),
+        ],
+      ),
     ),
   ];
 }

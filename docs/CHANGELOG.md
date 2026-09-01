@@ -289,6 +289,17 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **Roasty reacts when you answer, and every graded card closes the same way.**
+  Answering used to end in whatever the card felt like — one said `ALL CORRECT`
+  in green, another `Called it.` in amber, the match board wrote a sentence, and
+  the dictionary's self-check just revealed its explanation with no verdict at
+  all. Now every one of them ends on the same block the design draws: the mascot
+  taking the news, the verdict in small caps, then the explanation. Roasty had
+  never once reacted to an answer in the app; he does now, on all eleven graded
+  kinds. The verdict is also spoken on every surface, which matters most where
+  right and wrong differ only by colour — and the self-check, which said nothing
+  aloud before, now says how it went.
+
 - **Finishing a module is a moment again.** The recap was a companion, a
   heading, a 72-pt badge and a caption. It is now the ending the design draws:
   Roasty holds the screen with *"Look how far you've come."*, then the module's
