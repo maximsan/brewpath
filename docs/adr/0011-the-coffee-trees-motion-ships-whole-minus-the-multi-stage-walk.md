@@ -30,9 +30,10 @@ pure sibling `*_animation.dart`.
 
 ## Consequences
 
-A future course whose module sizes put two thresholds within one lesson of
-each other would silently skip a stage instead of walking it. `TREE_THRESHOLDS`'
-minimum gap is the guard; narrowing it revisits this record.
+The single-stage crossfade shows every stage only while consecutive
+`TREE_THRESHOLDS` sit more than one lesson apart — today the minimum gap is
+three (`[4, 7, 10, 13, 16, 19, 22, 25, 32]`, from `prototype/data.jsx:2963`).
+A content change that narrows any gap to one revisits this record.
 
 `onDone` wired to an animation completion callback will never fire under
 reduced motion, stalling the reward screens on a beat that never ends.
