@@ -34,9 +34,9 @@ side effect of re-picking which lessons are free.
 
 ## Consequences
 
-The invariant is invisible from every surface that can break it: the tier
-documents do not mention the streak, and the streak documents do not mention
-the tier. This record is the join.
+The invariant is invisible from every surface that can break it: none of the
+three rulings above states it, and each can be changed without reading the
+other two. This record is the join.
 
 The daily allowance is load-bearing from the other side: it caps a free user
 at two activities a day, and two mini-games spend both. Lowering that cap

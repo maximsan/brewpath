@@ -11,7 +11,7 @@ the whole cross-reference graph, and writes the JSON banks into
 `assets/content/generated/`, which ship inside the app. This arrangement had
 never been written down, and nothing said which shape either side expected —
 a prototype-side rename does not fail to compile, it surfaces as a null
-inside a lesson, in front of a learner.
+inside a lesson at runtime.
 
 ## Decision
 
