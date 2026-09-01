@@ -1,7 +1,6 @@
 import 'package:brew_path/app/analytics_navigator_observer.dart';
 import 'package:brew_path/app/app_shell.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
-import 'package:brew_path/features/cards/presentation/card_detail_screen.dart';
 import 'package:brew_path/features/cards/presentation/cards_screen.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
 import 'package:brew_path/features/dictionary/presentation/term_detail_screen.dart';
@@ -265,8 +264,11 @@ GoRouter appRouter(Ref ref) {
                   GoRoute(
                     path: AppRoutes.cardDetail.path,
                     name: AppRoutes.cardDetail.name,
-                    builder: (context, state) => CardDetailScreen(
-                      cardId: state.pathParameters['cardId']!,
+                    // No screen of its own: the design reads a card as a
+                    // sheet over the collection, so the route lands on the
+                    // grid and raises it (#385).
+                    builder: (context, state) => CardsScreen(
+                      openCardId: state.pathParameters['cardId'],
                     ),
                   ),
                 ],

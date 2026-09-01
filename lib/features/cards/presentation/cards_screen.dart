@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/features/cards/domain/cards_grid.dart';
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
 import 'package:brew_path/features/cards/presentation/card_grid_item_widget.dart';
+import 'package:brew_path/features/cards/presentation/card_sheet.dart';
 import 'package:brew_path/features/cards/presentation/cards_footer.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -28,7 +31,15 @@ const double _tileGap = AppSpacing.sm;
 /// and it is the next card the learner will earn.
 class CardsScreen extends ConsumerWidget {
   /// Creates a [CardsScreen].
-  const CardsScreen({super.key});
+  const CardsScreen({this.openCardId, super.key});
+
+  /// A card to open on arrival, or null to land on the grid alone.
+  ///
+  /// This is what the `cardDetail` route resolves to. The design has no card
+  /// screen, but #171 scopes the app's universal links to the card route, so
+  /// the link keeps its target: it lands on the collection with the card's
+  /// sheet already raised.
+  final String? openCardId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -50,19 +61,45 @@ class CardsScreen extends ConsumerWidget {
           excludeSemantics: true,
           child: ErrorView(message: '$error'),
         ),
-        data: (list) => _CardsBody(list: list),
+        data: (list) => _CardsBody(list: list, openCardId: openCardId),
       ),
     );
   }
 }
 
-class _CardsBody extends StatelessWidget {
-  const _CardsBody({required this.list});
+class _CardsBody extends StatefulWidget {
+  const _CardsBody({required this.list, this.openCardId});
 
   final List<CardWithCollection> list;
+  final String? openCardId;
+
+  @override
+  State<_CardsBody> createState() => _CardsBodyState();
+}
+
+class _CardsBodyState extends State<_CardsBody> {
+  @override
+  void initState() {
+    super.initState();
+    // After the first frame: the grid has to exist before a sheet can sit
+    // over it, and closing the sheet must land on the collection rather than
+    // on nothing.
+    WidgetsBinding.instance.addPostFrameCallback((_) => _openDeepLinked());
+  }
+
+  void _openDeepLinked() {
+    final id = widget.openCardId;
+    if (id == null || !mounted) return;
+
+    final match = widget.list.where((item) => item.card.id == id);
+    if (match.isEmpty) return;
+
+    unawaited(showCardSheet(context, match.first));
+  }
 
   @override
   Widget build(BuildContext context) {
+    final list = widget.list;
     final shown = cardsGridItems(list);
     final remaining = unearnedRemainder(list);
 

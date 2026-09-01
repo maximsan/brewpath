@@ -469,6 +469,16 @@ You can always edit this file by hand instead — the helpers just save effort.
   Starting the course over leaves the date alone; deleting the account sets it
   to now, because what is left behind is a fresh install.
 
+- **A card opens over your collection now, and finally says the thing worth
+  keeping.** Tapping a collectible used to take you to a screen of its own, so
+  closing it meant finding your place in the grid again; it opens as a sheet
+  over the grid, and closing puts you back on the tile you tapped. The card's
+  keepsake line — one true thing about it, written when the card was authored —
+  was being loaded and thrown away on every card. It reads under the summary
+  now, where the card was always meant to end. A challenge you have brewed
+  stamps the card, and the module name no longer repeats under the title where
+  the tile beside it already said it.
+
 - **The dictionary opens on its subjects, not on every word it knows.** Eight
   categories, each with its own mark, what it covers and how many terms sit
   behind it — one tap opens a subject, and one goes back. It leads with its own
