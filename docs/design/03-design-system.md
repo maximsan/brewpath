@@ -211,6 +211,21 @@ state, its demo, when it applies, and its token spec):
 > Term of the Day · Lesson reference card · Bean node · Roast meter ·
 > Fill-in-the-blank · Taste Fix card · Sheet layers · Toggle
 
+> ⚠️ **`Status chips` does not govern the Path lesson row.** The catalogue
+> (`ds-content.js:526`) gives a lesson row `CURRENT` / `PRACTICE` / `LOCKED`
+> chips; the running prototype draws a `CURRENT` mono eyebrow, the bare mastery
+> word, and a `LockMark` in the trailing slot (`screens.jsx:1495-1515`) — no
+> chip anywhere on Path. **The running prototype wins**
+> ([ADR-0009](../adr/0009-the-running-prototype-wins-over-the-design-system-catalogue.md)),
+> so the app is correct as built and Audit F's entry 7
+> ([#389](https://github.com/maximsan/brewpath/issues/389)) is not a defect on
+> its lesson half — it is one of the entries that ADR's closing warning is
+> about. The **term** half was real and shipped with
+> [#398](https://github.com/maximsan/brewpath/issues/398) as `StatusChip`. The
+> entry's app-side citation (`_ModuleStatus` / `_NodeStatus`, a
+> `LinearProgressIndicator`) names classes that no longer exist — Path was
+> rebuilt by #394 and #435.
+
 **38 patterns with documented rules** (`compRules` — purpose, example markup, and the rules that govern it):
 
 | Group | Patterns |

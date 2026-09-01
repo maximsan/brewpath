@@ -1,8 +1,13 @@
+import 'dart:async';
+
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/caret_mark.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/core/widgets/visual_guide_art.dart';
+import 'package:brew_path/features/monetization/domain/locked_row_copy.dart';
+import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
+import 'package:brew_path/features/monetization/presentation/plus_gate_sheet.dart';
 import 'package:brew_path/features/path/domain/visual_guide_providers.dart';
 import 'package:brew_path/features/path/domain/visual_guide_shelf.dart';
 import 'package:brew_path/features/path/presentation/visual_guide_sheet.dart';
@@ -16,8 +21,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Copy, ported as authored.
 const _title = 'Reference';
 const _openSubtitle = 'Visual guides from your lessons';
-const _lockedSubtitle = 'Visual guides unlock as lessons teach them';
 String _remainingLine(int remaining) => '$remaining more unlock as you learn';
+
+/// The locked shelf's line, which depends on who is reading it.
+///
+/// #260 shipped the prototype's one string — *"Visual guides unlock as lessons
+/// teach them"* — for both tiers, and recorded that it was honest to neither.
+/// The free tier is the first three lessons (ADR-0007) and the earliest guide
+/// is taught by the sixth, so "keep learning" is not an instruction a free
+/// learner can follow. The owner ruled the line tier-aware on #91; ADR-0015
+/// carries it.
+String _lockedSubtitle({required bool byPurchase, required String? nextTitle}) {
+  if (byPurchase) return LockedRowCopy.referenceLockedFree;
+  return nextTitle == null
+      ? _openSubtitle
+      : LockedRowCopy.referenceUnlocksWith(nextTitle);
+}
 
 /// The section's own glyph and its lock mark. Sized here rather than borrowed
 /// from `AppSpacing`, whose stops are for spacing — an icon that resizes when
@@ -62,12 +81,23 @@ class _ReferenceSectionState extends ConsumerState<ReferenceSection> {
       return const SizedBox.shrink();
     }
 
+    // Unresolved reads as locked-by-purchase, which is what every other
+    // entitlement caller does: the free line is the one that is true for
+    // someone who has bought nothing, and that is the safe way to be wrong.
+    final byPurchase =
+        ref.watch(referenceLockedByPurchaseProvider).asData?.value ?? true;
+    final subtitle = _lockedSubtitle(
+      byPurchase: byPurchase,
+      // Only asked for while the shelf is locked, and only true when the
+      // learner owns the course — a free reader never sees a lesson name.
+      nextTitle: ref.watch(nextGuideUnlockProvider).asData?.value,
+    );
     final isOpen = _isOpen && !shelf.isLocked;
 
     return Semantics(
       container: true,
       label: shelf.isLocked
-          ? '$_title, locked. $_lockedSubtitle'
+          ? '$_title, locked. $subtitle'
           : '$_title, ${shelf.earned.length} guides',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -75,11 +105,17 @@ class _ReferenceSectionState extends ConsumerState<ReferenceSection> {
           _Heading(
             isLocked: shelf.isLocked,
             isOpen: isOpen,
+            subtitle: shelf.isLocked ? subtitle : _openSubtitle,
             // A locked section refuses to open rather than opening onto
-            // nothing.
-            onTap: shelf.isLocked
-                ? null
-                : () => setState(() => _isOpen = !_isOpen),
+            // nothing — unless the lock is the purchase, which is a thing the
+            // learner can act on, so that one raises the offer instead.
+            onTap: !shelf.isLocked
+                ? () => setState(() => _isOpen = !_isOpen)
+                : byPurchase
+                ? () => unawaited(
+                    showPlusGate(context, const LockedGuides()),
+                  )
+                : null,
           ),
           _Expansion(
             isOpen: isOpen,
@@ -122,11 +158,16 @@ class _Heading extends StatelessWidget {
   const _Heading({
     required this.isLocked,
     required this.isOpen,
+    required this.subtitle,
     required this.onTap,
   });
 
   final bool isLocked;
   final bool isOpen;
+
+  /// The line under the title, already chosen for this learner.
+  final String subtitle;
+
   final VoidCallback? onTap;
 
   @override
@@ -136,8 +177,9 @@ class _Heading extends StatelessWidget {
 
     return Semantics(
       button: onTap != null,
-      // Null while locked: there is no expanded state to be in.
-      expanded: onTap == null ? null : isOpen,
+      // Null while there is no expanded state to be in — locked, or locked
+      // behind a purchase, where the tap opens an offer rather than the shelf.
+      expanded: onTap == null || isLocked ? null : isOpen,
       child: InkWell(
         onTap: onTap,
         child: Padding(
@@ -166,9 +208,7 @@ class _Heading extends StatelessWidget {
               const SizedBox(height: AppSpacing.xxs),
               Padding(
                 padding: const EdgeInsets.only(left: AppSpacing.xl),
-                child: SmallcapsLabel(
-                  isLocked ? _lockedSubtitle : _openSubtitle,
-                ),
+                child: SmallcapsLabel(subtitle),
               ),
             ],
           ),

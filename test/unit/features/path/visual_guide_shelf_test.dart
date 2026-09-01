@@ -2,6 +2,8 @@ import 'package:brew_path/features/path/domain/visual_guide_shelf.dart';
 import 'package:brew_path/shared/models/content/visual_guide.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/content_fixtures.dart';
+
 VisualGuide _guide(String subject, String lesson) => VisualGuide(
   id: 'g-$subject',
   subject: subject,
@@ -73,5 +75,62 @@ void main() {
     expect(shelf.earned, isEmpty);
     expect(shelf.remaining, 0);
     expect(shelf.isLocked, isTrue);
+  });
+
+  group('the next unlock', () {
+    /// Course order, in which `m1l6` comes first — the guide bank is drawn in
+    /// its own order, where the `m3l1` guide is listed first.
+    final course = [
+      for (final id in ['m1l6', 'm1l7', 'm3l1'])
+        testLesson(id: id, title: 'Lesson $id'),
+    ];
+
+    test('names the earliest unearned guide by course order, not bank '
+        'order', () {
+      final title = nextGuideUnlockTitle(
+        _guides,
+        const {},
+        courseLessons: course,
+      );
+
+      expect(
+        title,
+        'Lesson m1l6',
+        reason:
+            'the bank lists the m3l1 guide first; the learner meets m1l6 first',
+      );
+    });
+
+    test('moves on as guides are earned', () {
+      final title = nextGuideUnlockTitle(
+        _guides,
+        const {'m1l6'},
+        courseLessons: course,
+      );
+
+      expect(title, 'Lesson m1l7');
+    });
+
+    test('nothing left to promise says nothing', () {
+      final title = nextGuideUnlockTitle(
+        _guides,
+        const {'m1l6', 'm1l7', 'm3l1'},
+        courseLessons: course,
+      );
+
+      expect(title, isNull);
+    });
+
+    test('a hint nobody can source is left unsaid', () {
+      // No course order passed: the shelf declines to guess rather than
+      // pointing at whichever guide the bank happens to list first.
+      final title = nextGuideUnlockTitle(
+        _guides,
+        const {},
+        courseLessons: const [],
+      );
+
+      expect(title, isNull);
+    });
   });
 }

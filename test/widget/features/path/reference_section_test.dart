@@ -1,6 +1,10 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/widgets/visual_guide_art.dart';
+import 'package:brew_path/features/monetization/domain/locked_row_copy.dart';
+import 'package:brew_path/features/monetization/domain/plus_copy.dart';
+import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
+import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart';
 import 'package:brew_path/features/path/domain/visual_guide_providers.dart';
 import 'package:brew_path/features/path/domain/visual_guide_shelf.dart';
 import 'package:brew_path/features/path/presentation/reference_section.dart';
@@ -28,33 +32,55 @@ VisualGuide _guide(String subject, String title) => VisualGuide(
 final VisualGuide _variety = _guide('variety', 'The Variety Family Tree');
 final VisualGuide _roast = _guide('roast', 'Roast Levels');
 
-Widget _harness(VisualGuideShelf shelf, {bool disableAnimations = false}) =>
-    ProviderScope(
-      overrides: [
-        visualGuideShelfForProvider.overrideWith((ref) async => shelf),
-      ],
-      child: MaterialApp(
-        theme: AppTheme.cupping,
-        home: MediaQuery(
-          data: MediaQueryData(disableAnimations: disableAnimations),
-          child: Scaffold(
-            body: ListView(children: const [ReferenceSection()]),
-          ),
-        ),
+const _pitch = PlusPitch(
+  remainingLessons: 29,
+  lockedGames: 4,
+  referenceTerms: 8,
+  savedFreeCap: 5,
+);
+
+Widget _harness(
+  VisualGuideShelf shelf, {
+  bool disableAnimations = false,
+  bool byPurchase = false,
+  String? nextUnlock,
+}) => ProviderScope(
+  overrides: [
+    visualGuideShelfForProvider.overrideWith((ref) async => shelf),
+    referenceLockedByPurchaseProvider.overrideWith((ref) async => byPurchase),
+    nextGuideUnlockProvider.overrideWith((ref) async => nextUnlock),
+    plusPitchProvider.overrideWith((ref) async => _pitch),
+  ],
+  child: MaterialApp(
+    theme: AppTheme.cupping,
+    home: MediaQuery(
+      data: MediaQueryData(disableAnimations: disableAnimations),
+      child: Scaffold(
+        body: ListView(children: const [ReferenceSection()]),
       ),
-    );
+    ),
+  ),
+);
 
 void main() {
-  group('locked', () {
+  group('locked, and the learner owns the course', () {
+    // The honest hint: they can reach the lesson that opens the shelf.
     const locked = VisualGuideShelf(earned: [], remaining: 8);
+    const nextUnlock = 'Why two Ethiopias taste different';
 
-    testWidgets('says what would put something in it', (tester) async {
-      await tester.pumpWidget(_harness(locked));
+    testWidgets('names the lesson that would put something in it', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_harness(locked, nextUnlock: nextUnlock));
       await tester.pumpAndSettle();
 
       expect(find.text('Reference'), findsOneWidget);
       expect(
-        find.text('VISUAL GUIDES UNLOCK AS LESSONS TEACH THEM'),
+        find.text(
+          LockedRowCopy.referenceUnlocksWith(
+            'Why two Ethiopias taste different',
+          ).toUpperCase(),
+        ),
         findsOneWidget,
       );
       expect(findMark(AppIcon.lock), findsOneWidget);
@@ -63,7 +89,7 @@ void main() {
     testWidgets('refuses to open rather than opening onto nothing', (
       tester,
     ) async {
-      await tester.pumpWidget(_harness(locked));
+      await tester.pumpWidget(_harness(locked, nextUnlock: nextUnlock));
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Reference'));
@@ -71,6 +97,44 @@ void main() {
 
       expect(findMark(AppIcon.chevron), findsNothing);
       expect(find.text('8 more unlock as you learn'), findsNothing);
+    });
+  });
+
+  group('locked, and the learner has not bought the course', () {
+    // No lesson a free learner can finish reaches this shelf (ADR-0007), so
+    // naming one would be advice they cannot take.
+    const locked = VisualGuideShelf(earned: [], remaining: 8);
+    const nextUnlock = 'Why two Ethiopias taste different';
+
+    testWidgets('points at the purchase, not at a lesson', (tester) async {
+      await tester.pumpWidget(
+        _harness(locked, byPurchase: true, nextUnlock: nextUnlock),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text(LockedRowCopy.referenceLockedFree.toUpperCase()),
+        findsOneWidget,
+      );
+      expect(
+        find.textContaining('Ethiopias', findRichText: true),
+        findsNothing,
+        reason: 'a lesson they cannot reach is the defect being fixed',
+      );
+    });
+
+    testWidgets('raises the offer instead of refusing silently', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _harness(locked, byPurchase: true, nextUnlock: nextUnlock),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Reference'));
+      await tester.pumpAndSettle();
+
+      expect(find.text(PlusCopy.title), findsOneWidget);
     });
   });
 

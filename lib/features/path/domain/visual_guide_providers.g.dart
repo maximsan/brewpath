@@ -65,6 +65,119 @@ final class VisualGuideShelfForProvider
 String _$visualGuideShelfForHash() =>
     r'2dee6d1e6042e6099b48be5cefff18d269bbea2d';
 
+/// The lesson the Reference heading names as opening the next guide.
+///
+/// Its own provider rather than a field on the shelf: this is the only reader
+/// that needs the whole course in order, and putting it on the shelf would
+/// make every `earnedGuideFor` caller — lesson cards, the bookmark button —
+/// load the module and lesson banks to ask about one guide.
+///
+/// **Every `watch` happens before the first `await`.** Reading a `Ref` after
+/// an async gap throws once the provider has been disposed, which is what a
+/// widget test tearing down mid-load does.
+
+@ProviderFor(nextGuideUnlock)
+final nextGuideUnlockProvider = NextGuideUnlockProvider._();
+
+/// The lesson the Reference heading names as opening the next guide.
+///
+/// Its own provider rather than a field on the shelf: this is the only reader
+/// that needs the whole course in order, and putting it on the shelf would
+/// make every `earnedGuideFor` caller — lesson cards, the bookmark button —
+/// load the module and lesson banks to ask about one guide.
+///
+/// **Every `watch` happens before the first `await`.** Reading a `Ref` after
+/// an async gap throws once the provider has been disposed, which is what a
+/// widget test tearing down mid-load does.
+
+final class NextGuideUnlockProvider
+    extends $FunctionalProvider<AsyncValue<String?>, String?, FutureOr<String?>>
+    with $FutureModifier<String?>, $FutureProvider<String?> {
+  /// The lesson the Reference heading names as opening the next guide.
+  ///
+  /// Its own provider rather than a field on the shelf: this is the only reader
+  /// that needs the whole course in order, and putting it on the shelf would
+  /// make every `earnedGuideFor` caller — lesson cards, the bookmark button —
+  /// load the module and lesson banks to ask about one guide.
+  ///
+  /// **Every `watch` happens before the first `await`.** Reading a `Ref` after
+  /// an async gap throws once the provider has been disposed, which is what a
+  /// widget test tearing down mid-load does.
+  NextGuideUnlockProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'nextGuideUnlockProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$nextGuideUnlockHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<String?> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<String?> create(Ref ref) {
+    return nextGuideUnlock(ref);
+  }
+}
+
+String _$nextGuideUnlockHash() => r'e04b1cbddbf9cce92bc9ed5b818dc9682d4b44cf';
+
+/// Whether the Reference shelf's lock is the purchase rather than progress.
+///
+/// The two locks need different words, and only one of them is true for a
+/// given learner — the words themselves live in `LockedRowCopy`.
+
+@ProviderFor(referenceLockedByPurchase)
+final referenceLockedByPurchaseProvider = ReferenceLockedByPurchaseProvider._();
+
+/// Whether the Reference shelf's lock is the purchase rather than progress.
+///
+/// The two locks need different words, and only one of them is true for a
+/// given learner — the words themselves live in `LockedRowCopy`.
+
+final class ReferenceLockedByPurchaseProvider
+    extends $FunctionalProvider<AsyncValue<bool>, bool, FutureOr<bool>>
+    with $FutureModifier<bool>, $FutureProvider<bool> {
+  /// Whether the Reference shelf's lock is the purchase rather than progress.
+  ///
+  /// The two locks need different words, and only one of them is true for a
+  /// given learner — the words themselves live in `LockedRowCopy`.
+  ReferenceLockedByPurchaseProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'referenceLockedByPurchaseProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$referenceLockedByPurchaseHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<bool> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<bool> create(Ref ref) {
+    return referenceLockedByPurchase(ref);
+  }
+}
+
+String _$referenceLockedByPurchaseHash() =>
+    r'0135e42df79a28b9cde7c723090502400179da54';
+
 /// The earned guide covering [subject], or null when none is earned.
 ///
 /// Lives here rather than at the call site so nothing outside this feature has

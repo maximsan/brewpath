@@ -44,6 +44,23 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **A locked lesson now says what would unlock it.** The course path used to
+  look the same whether a lesson was yours or not — a free learner met the wall
+  only by tapping into one. Lessons and modules the free tier does not carry now
+  carry a mark, say *Part of Foundations*, and open the offer when tapped
+  instead of a lesson. What they say depends on who is reading: someone who owns
+  the course still sees *"Finish Beans to unlock"* on a module they have not
+  reached, because for them that is the true answer and finishing Beans is
+  something they can actually do. A lesson already finished never locks — the
+  wall can move behind you, and what you have played stays yours to replay.
+
+  The Reference shelf stops promising something it cannot deliver. It used to
+  tell every learner that guides "unlock as lessons teach them", which was not
+  true for a free one: the earliest guide is taught by the sixth lesson and the
+  free set is the first three, so no amount of learning would ever open it. Free
+  learners are now told plainly that guides come with the course; learners who
+  own it are told which lesson opens the next one, by name.
+
 - **The dictionary has a game now.** *Guess the term* reads you a definition
   and offers four words; you pick the one it describes. Choose a deck — the
   terms you bookmarked, or everything you can reach — and how long a round runs

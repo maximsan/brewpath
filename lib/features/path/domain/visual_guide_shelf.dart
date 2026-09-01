@@ -1,4 +1,5 @@
 import 'package:brew_path/shared/models/content/visual_guide.dart';
+import 'package:brew_path/shared/models/lesson_model.dart';
 
 /// What the Reference section shows: the guides a learner has earned, and how
 /// many are still ahead.
@@ -39,4 +40,37 @@ VisualGuideShelf deriveVisualGuideShelf(
     earned: earned,
     remaining: guides.length - earned.length,
   );
+}
+
+/// The title of the lesson that earns the **next** guide, or null when there
+/// is none to name.
+///
+/// Kept apart from [deriveVisualGuideShelf] because only the Reference
+/// heading needs it: the shelf itself is read by lesson cards and the bookmark
+/// button, and those must not have to supply the whole course to ask whether
+/// one guide is earned.
+///
+/// [courseLessons] is the course **in the order the learner walks it**, which
+/// is the only order in which "next" means anything — the guide bank is drawn
+/// in its own order, where the first entry unlocks at `m3l1` and the sixth at
+/// `m1l6`. Given an empty course, it answers null rather than guessing.
+String? nextGuideUnlockTitle(
+  List<VisualGuide> guides,
+  Set<String> completedLessonIds, {
+  required List<LessonModel> courseLessons,
+}) {
+  final position = {
+    for (var index = 0; index < courseLessons.length; index++)
+      courseLessons[index].id: index,
+  };
+
+  int? earliest;
+  for (final guide in guides) {
+    if (completedLessonIds.contains(guide.unlockLessonId)) continue;
+    final at = position[guide.unlockLessonId];
+    if (at == null) continue;
+    if (earliest == null || at < earliest) earliest = at;
+  }
+
+  return earliest == null ? null : courseLessons[earliest].title;
 }
