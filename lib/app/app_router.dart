@@ -1,7 +1,7 @@
 import 'package:brew_path/app/analytics_navigator_observer.dart';
 import 'package:brew_path/app/app_shell.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
-import 'package:brew_path/features/cards/presentation/card_detail_screen.dart';
+import 'package:brew_path/features/cards/presentation/card_deep_link.dart';
 import 'package:brew_path/features/cards/presentation/cards_screen.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_screen.dart';
@@ -278,8 +278,17 @@ GoRouter appRouter(Ref ref) {
                   GoRoute(
                     path: AppRoutes.cardDetail.path,
                     name: AppRoutes.cardDetail.name,
-                    builder: (context, state) => CardDetailScreen(
-                      cardId: state.pathParameters['cardId']!,
+                    // No screen of its own: the design reads a card as a
+                    // sheet over the collection (#385). The page is
+                    // transparent, so what the learner sees under the sheet is
+                    // the tab's own grid rather than a second copy of it
+                    // pushed on top.
+                    pageBuilder: (context, state) => CustomTransitionPage<void>(
+                      opaque: false,
+                      transitionsBuilder: (_, _, _, child) => child,
+                      child: CardDeepLink(
+                        cardId: state.pathParameters['cardId']!,
+                      ),
                     ),
                   ),
                 ],

@@ -1,9 +1,22 @@
+import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
 import 'package:brew_path/features/lessons/presentation/cards/choice_list.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
+
+/// A line the card writes once it knows how the answer went. Both of
+/// [PickerCopy]'s outcome-aware slots have this shape.
+typedef PickerLine = String Function({required bool wasCorrect});
+
+/// The verdict five of the six picking kinds close on (`lesson.jsx:410`,
+/// `:1496`, `:1546`, `active-cards.jsx:227`).
+///
+/// `decision` and `tastefix` answer in their own words instead — see
+/// [PickerCopy.verdict].
+String _defaultVerdict({required bool wasCorrect}) =>
+    wasCorrect ? 'Correct' : notQuiteVerdict;
 
 /// The copy slots the three graded picking kinds fill differently.
 ///
@@ -20,6 +33,8 @@ class PickerCopy {
     this.title,
     this.scenario,
     this.footnote,
+    this.verdict = _defaultVerdict,
+    this.placement = VerdictPlacement.card,
   });
 
   /// The question itself.
@@ -27,7 +42,7 @@ class PickerCopy {
 
   /// The explanation shown once committed. Takes whether the learner was
   /// right, because `decision` authors a separate reading for each outcome.
-  final String Function({required bool wasCorrect}) explain;
+  final PickerLine explain;
 
   /// Small-caps eyebrow.
   final String? label;
@@ -40,6 +55,16 @@ class PickerCopy {
 
   /// A closing line under the explanation — a takeaway, or a note.
   final String? footnote;
+
+  /// How the block is set. `decision` and `recall` talk back rather than
+  /// mark an answer, and the design gives them the body step for it.
+  final VerdictPlacement placement;
+
+  /// The line the verdict block leads with. Takes the outcome for the same
+  /// reason [explain] does: `decision` calls it *good call* against *that
+  /// would backfire*, and `tastefix` *good fix* — neither is a right-or-wrong
+  /// pair the default could reach.
+  final PickerLine verdict;
 }
 
 /// A graded card: pick one option, and the card latches on that choice.
@@ -115,10 +140,12 @@ class _GradedPickerState extends State<GradedPicker> {
           revealAnswer: true,
         ),
         if (_latched) ...[
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            copy.explain(wasCorrect: _wasCorrect),
-            style: theme.textTheme.bodyMedium,
+          const SizedBox(height: AppSpacing.md),
+          AnswerFeedback(
+            verdict: copy.verdict(wasCorrect: _wasCorrect),
+            outcome: _wasCorrect ? Verdict.right : Verdict.wrong,
+            explanation: copy.explain(wasCorrect: _wasCorrect),
+            placement: copy.placement,
           ),
           if (copy.footnote != null) ...[
             const SizedBox(height: AppSpacing.sm),

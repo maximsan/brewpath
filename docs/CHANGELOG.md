@@ -304,6 +304,17 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **Roasty reacts when you answer, and every graded card closes the same way.**
+  Answering used to end in whatever the card felt like — one said `ALL CORRECT`
+  in green, another `Called it.` in amber, the match board wrote a sentence, and
+  the dictionary's self-check just revealed its explanation with no verdict at
+  all. Now every one of them ends on the same block the design draws: the mascot
+  taking the news, the verdict in small caps, then the explanation. Roasty had
+  never once reacted to an answer in the app; he does now, on all eleven graded
+  kinds. The verdict is also spoken on every surface, which matters most where
+  right and wrong differ only by colour — and the self-check, which said nothing
+  aloud before, now says how it went.
+
 - **Finishing a module is a moment again.** The recap was a companion, a
   heading, a 72-pt badge and a caption. It is now the ending the design draws:
   Roasty holds the screen with *"Look how far you've come."*, then the module's
@@ -483,6 +494,16 @@ You can always edit this file by hand instead — the helpers just save effort.
   earliest-activity reading, which is at least a day they were here for.
   Starting the course over leaves the date alone; deleting the account sets it
   to now, because what is left behind is a fresh install.
+
+- **A card opens over your collection now, and finally says the thing worth
+  keeping.** Tapping a collectible used to take you to a screen of its own, so
+  closing it meant finding your place in the grid again; it opens as a sheet
+  over the grid, and closing puts you back on the tile you tapped. The card's
+  keepsake line — one true thing about it, written when the card was authored —
+  was being loaded and thrown away on every card. It reads under the summary
+  now, where the card was always meant to end. A challenge you have brewed
+  stamps the card, and the module name no longer repeats under the title where
+  the tile beside it already said it.
 
 - **The dictionary opens on its subjects, not on every word it knows.** Eight
   categories, each with its own mark, what it covers and how many terms sit

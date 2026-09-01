@@ -42,6 +42,23 @@ Future<Set<String>> completedChallenges(Ref ref) async {
   return (await snapshots.read()).clearedByReset.challengesCompleted;
 }
 
+/// Whether the challenge on [cardId] has been brewed.
+///
+/// The card's sheet asks this twice over — once for the seal on its header,
+/// once for the stamp block at its foot — so the three reads behind the answer
+/// live here rather than in either widget. A card with no challenge, or a bank
+/// still loading, answers *not tried*: the honest reading while there is
+/// nothing to say yes about.
+@riverpod
+Future<bool> cardChallengeTried(Ref ref, String cardId) async {
+  final bank = await ref.watch(challengeBankProvider.future);
+  final challenge = challengeForCard(bank, cardId);
+  if (challenge == null) return false;
+
+  final completed = await ref.watch(completedChallengesProvider.future);
+  return completed.contains(challenge.id);
+}
+
 /// Whether [challenge] has been earned by the learner's own progress.
 Future<bool> _isOfferable(
   BrewChallenge challenge,

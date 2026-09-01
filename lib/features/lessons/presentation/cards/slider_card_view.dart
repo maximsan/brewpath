@@ -1,8 +1,8 @@
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
+import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
-import 'package:brew_path/features/lessons/presentation/cards/card_verdict.dart';
 import 'package:brew_path/features/lessons/presentation/cards/grinder_dial_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/slider_dial.dart';
 import 'package:brew_path/features/lessons/presentation/cards/slider_track.dart';
@@ -19,8 +19,7 @@ const String _cue = 'CALIBRATE · DIAL TO THE TARGET';
 const String _checkLabel = 'Check answer';
 
 /// Verdicts, which name the band rule rather than a distance.
-const String _dialedIn = 'DIALED IN';
-const String _notQuite = 'NOT QUITE';
+const String _dialedIn = 'Dialed in';
 
 /// What the readout above the track is saying, before and after the commit.
 const String _yourSetting = 'Your setting';
@@ -210,10 +209,10 @@ class _SliderCardViewState extends State<SliderCardView> {
   /// sat; only this says whether the round was passed.
   List<Widget> _verdict(MoodColors mood) => [
     const SizedBox(height: AppSpacing.md),
-    CardVerdict(
-      verdict: _within ? _dialedIn : _notQuite,
-      wasCorrect: _within,
-      children: [Text(_card.feedback, style: AppText.body(mood: mood))],
+    AnswerFeedback(
+      verdict: _within ? _dialedIn : notQuiteVerdict,
+      outcome: _within ? Verdict.right : Verdict.wrong,
+      explanation: _card.feedback,
     ),
   ];
 }

@@ -155,6 +155,115 @@ final class CompletedChallengesProvider
 String _$completedChallengesHash() =>
     r'2467e35ae3c7023fe8fee777732928b15c86483a';
 
+/// Whether the challenge on [cardId] has been brewed.
+///
+/// The card's sheet asks this twice over — once for the seal on its header,
+/// once for the stamp block at its foot — so the three reads behind the answer
+/// live here rather than in either widget. A card with no challenge, or a bank
+/// still loading, answers *not tried*: the honest reading while there is
+/// nothing to say yes about.
+
+@ProviderFor(cardChallengeTried)
+final cardChallengeTriedProvider = CardChallengeTriedFamily._();
+
+/// Whether the challenge on [cardId] has been brewed.
+///
+/// The card's sheet asks this twice over — once for the seal on its header,
+/// once for the stamp block at its foot — so the three reads behind the answer
+/// live here rather than in either widget. A card with no challenge, or a bank
+/// still loading, answers *not tried*: the honest reading while there is
+/// nothing to say yes about.
+
+final class CardChallengeTriedProvider
+    extends $FunctionalProvider<AsyncValue<bool>, bool, FutureOr<bool>>
+    with $FutureModifier<bool>, $FutureProvider<bool> {
+  /// Whether the challenge on [cardId] has been brewed.
+  ///
+  /// The card's sheet asks this twice over — once for the seal on its header,
+  /// once for the stamp block at its foot — so the three reads behind the answer
+  /// live here rather than in either widget. A card with no challenge, or a bank
+  /// still loading, answers *not tried*: the honest reading while there is
+  /// nothing to say yes about.
+  CardChallengeTriedProvider._({
+    required CardChallengeTriedFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'cardChallengeTriedProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$cardChallengeTriedHash();
+
+  @override
+  String toString() {
+    return r'cardChallengeTriedProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<bool> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<bool> create(Ref ref) {
+    final argument = this.argument as String;
+    return cardChallengeTried(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CardChallengeTriedProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$cardChallengeTriedHash() =>
+    r'23d83be54362d989d4a73c393deeb50f39d70977';
+
+/// Whether the challenge on [cardId] has been brewed.
+///
+/// The card's sheet asks this twice over — once for the seal on its header,
+/// once for the stamp block at its foot — so the three reads behind the answer
+/// live here rather than in either widget. A card with no challenge, or a bank
+/// still loading, answers *not tried*: the honest reading while there is
+/// nothing to say yes about.
+
+final class CardChallengeTriedFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<bool>, String> {
+  CardChallengeTriedFamily._()
+    : super(
+        retry: null,
+        name: r'cardChallengeTriedProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Whether the challenge on [cardId] has been brewed.
+  ///
+  /// The card's sheet asks this twice over — once for the seal on its header,
+  /// once for the stamp block at its foot — so the three reads behind the answer
+  /// live here rather than in either widget. A card with no challenge, or a bank
+  /// still loading, answers *not tried*: the honest reading while there is
+  /// nothing to say yes about.
+
+  CardChallengeTriedProvider call(String cardId) =>
+      CardChallengeTriedProvider._(argument: cardId, from: this);
+
+  @override
+  String toString() => r'cardChallengeTriedProvider';
+}
+
 /// The challenges waiting in the saved queue, in bank order.
 ///
 /// Excludes whatever is in play and anything already logged, and drops any
