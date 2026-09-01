@@ -7,6 +7,7 @@
 library;
 
 import 'package:brew_path/core/utils/drill_bands.dart';
+import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/features/dictionary/domain/vocab_setup.dart';
 
 /// The drill's name, on every surface that opens it.
@@ -113,8 +114,14 @@ abstract final class VocabCopy {
       '$term, ${isCorrect ? 'correct' : 'incorrect'}';
 
   /// The verdict over an answered question.
+  ///
+  /// The wrong line names the term, which is the whole teaching moment — and
+  /// it is built from [notQuiteVerdict] rather than spelling the words again.
   static String verdict(String answer, {required bool isCorrect}) =>
-      isCorrect ? 'Correct' : 'Not quite — it is $answer';
+      isCorrect ? correctVerdict : "$notQuiteVerdict — it's $answer";
+
+  /// The right-answer line.
+  static const correctVerdict = 'Correct';
 
   /// The line under the score.
   ///

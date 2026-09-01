@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/core/widgets/drill_results_view.dart';
 import 'package:brew_path/core/widgets/link_button.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
@@ -101,8 +102,9 @@ class VocabQuestionView extends StatelessWidget {
 
 /// What the answer was, and the way into the full entry.
 ///
-/// A wrong guess still teaches — the verdict names the right term rather than
-/// only saying no, and the link goes to the entry that explains it.
+/// The app's one verdict block, at the size and accent tone the design gives
+/// a reference surface — a drill over the dictionary answers back the way a
+/// term's self-check does, not the way a lesson marks a run.
 class _Verdict extends StatelessWidget {
   const _Verdict({required this.round, required this.picked});
 
@@ -111,29 +113,19 @@ class _Verdict extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mood = context.mood;
     final isCorrect = round.isCorrect(picked);
 
     return Padding(
       padding: const EdgeInsets.only(top: AppSpacing.md),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Semantics(
-            liveRegion: true,
-            child: SmallcapsLabel(
-              VocabCopy.verdict(round.answer.term, isCorrect: isCorrect),
-              color: isCorrect ? mood.sage : mood.accentText,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          LinkButton(
-            label: VocabCopy.readEntry,
-            onPressed: () => unawaited(
-              context.pushDictionaryTerm(round.answer.id),
-            ),
-          ),
-        ],
+      child: AnswerFeedback(
+        verdict: VocabCopy.verdict(round.answer.term, isCorrect: isCorrect),
+        outcome: isCorrect ? Verdict.right : Verdict.wrong,
+        placement: VerdictPlacement.reference,
+        extra: LinkButton(
+          label: VocabCopy.readEntry,
+          onPressed: () =>
+              unawaited(context.pushDictionaryTerm(round.answer.id)),
+        ),
       ),
     );
   }
