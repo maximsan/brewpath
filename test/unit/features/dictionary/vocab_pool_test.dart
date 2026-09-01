@@ -99,6 +99,15 @@ void main() {
       );
     });
 
+    test('a reference term is never drilled to a free learner', () {
+      // Premium whatever mentions it (§12): no lesson teaches it, and #217
+      // makes it absent from a free learner's dictionary — so a question
+      // about one would ask about a word they cannot look up.
+      final free = poolFor(hasCourse: false);
+
+      expect(free.where((term) => term.lessonId == null), isEmpty);
+    });
+
     test('a premium term name never reaches a free learner', () {
       final free = idsFor(hasCourse: false);
       final premiumOnly = idsFor(hasCourse: true).difference(free);

@@ -1,7 +1,10 @@
 /// The terms a learner may be drilled on — the accessible set (ADR-0014).
 ///
-/// Not a gate on the dictionary, which shows every entry to everyone (#20):
-/// only on what a drill may ask. #97 reads the same set.
+/// Distinct from what the dictionary *shows*, which `docs/decisions.md` §12
+/// splits into two access classes of its own and #217 builds. The two rules
+/// agree on reference terms and differ on lesson terms: a free learner may
+/// read a lesson term their course has not reached, and may not be drilled on
+/// it. #97 reads the same set.
 library;
 
 import 'package:brew_path/features/dictionary/domain/term_mentions.dart';
@@ -32,7 +35,10 @@ List<DictionaryTerm> accessibleTerms({
   );
   return [
     for (final term in eligible)
-      if (mentioned.contains(term.id)) term,
+      // A reference term is premium whatever mentions it (§12): no lesson
+      // teaches it, and #217 makes it invisible to a free learner — so
+      // drilling one would ask about a word they cannot even look up.
+      if (term.lessonId != null && mentioned.contains(term.id)) term,
   ];
 }
 
