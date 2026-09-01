@@ -13,7 +13,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const double _cardRadius = 12;
-const double _eyebrowLetterSpacing = 0.6;
 const double _iconSm = 18;
 
 /// The Coffee Challenge in play, on Today.
@@ -145,7 +144,6 @@ class ActiveChallengeCard extends ConsumerWidget {
         'COFFEE CHALLENGE',
         style: theme.textTheme.labelSmall?.copyWith(
           color: mood.accentText,
-          letterSpacing: _eyebrowLetterSpacing,
         ),
       ),
     ],

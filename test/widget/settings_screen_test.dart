@@ -84,22 +84,38 @@ void main() {
     }
   });
 
-  testWidgets('haptics toggle flips and persists via SettingsController', (
+  testWidgets('the sound and haptics toggles flip and are written down', (
     tester,
   ) async {
+    // The only place either one lives now: #429 deleted Profile's Customize
+    // grid, which drew a second pair of controls over this same record.
     await openSettings(tester);
 
-    Finder hapticsRow() => find.ancestor(
-      of: find.text(SettingsCopy.hapticsRow),
+    Finder row(String label) => find.ancestor(
+      of: find.text(label),
       matching: find.byType(SettingsNavRow),
     );
 
-    expect(tester.widget<SettingsNavRow>(hapticsRow()).toggleValue, isTrue);
+    for (final label in [SettingsCopy.soundRow, SettingsCopy.hapticsRow]) {
+      expect(
+        tester.widget<SettingsNavRow>(row(label)).toggleValue,
+        isTrue,
+        reason: '$label starts on',
+      );
 
-    await tester.tap(find.text(SettingsCopy.hapticsRow));
-    await settleLoaders(tester);
+      await tester.tap(find.text(label));
+      await settleLoaders(tester);
 
-    expect(tester.widget<SettingsNavRow>(hapticsRow()).toggleValue, isFalse);
+      expect(
+        tester.widget<SettingsNavRow>(row(label)).toggleValue,
+        isFalse,
+        reason: '$label did not follow its own tap',
+      );
+    }
+
+    final stored = await SettingsRepository().getSettings();
+    expect(stored.soundEnabled, isFalse);
+    expect(stored.hapticsEnabled, isFalse);
   });
 
   testWidgets('the reminder row reads Off until it is asked for', (

@@ -82,6 +82,15 @@ const double grinderUnitSize = 10;
 
 /// Its tracking, as the design writes it — `0.22em` resolved at
 /// [grinderUnitSize], because Flutter wants logical units.
+///
+/// The design's own `GrinderDial` sets the readout `fontSize="10"
+/// letterSpacing="0.22em"` (`lesson.jsx:821`), which is this pair exactly.
+///
+/// **Not a step of `AppTracking`**, even so: the design writes it as an SVG
+/// attribute on a drawing, not as a rule on a rung, and this widget is scaled
+/// from [grinderCanvas] to whatever width the card gives it — so a value taken
+/// from the ladder would be multiplied by that fit and land somewhere nobody
+/// picked. A canvas unit, like the sizes above.
 const double grinderUnitTracking = 0.22 * grinderUnitSize;
 
 /// Where the two readings sit relative to the face's centre, on the canvas

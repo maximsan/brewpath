@@ -3,6 +3,7 @@ import 'package:brew_path/features/mini_games/domain/teaching_module.dart';
 import 'package:brew_path/shared/models/content/mini_game_format.dart';
 import 'package:brew_path/shared/models/module_model.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -68,8 +69,6 @@ class _Pitch extends StatelessWidget {
 
   final ModuleModel module;
 
-  static const double _eyebrowLetterSpacing = 0.8;
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -81,9 +80,13 @@ class _Pitch extends StatelessWidget {
       children: [
         Text(
           'TAUGHT IN MODULE ${module.n} · ${module.label}',
-          style: theme.textTheme.labelSmall?.copyWith(
+          // A meta line rather than a kicker — it names where the game is
+          // taught and carries a figure — so it takes the design's 0.08em
+          // instead of the rung's smallcaps 0.14em.
+          style: AppText.label(
             color: mood.accentText,
-            letterSpacing: _eyebrowLetterSpacing,
+            face: AppFace.mono,
+            tracking: AppTracking.meta,
           ),
         ),
         const SizedBox(height: AppSpacing.sm),

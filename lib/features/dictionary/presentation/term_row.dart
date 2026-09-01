@@ -1,17 +1,14 @@
 import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_status_style.dart';
+import 'package:brew_path/features/dictionary/presentation/status_mark.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// The diameter of the status mark beside a term.
-const double _markSize = 10;
-
-/// The width of an unfilled status ring.
-const double _markStroke = 1.6;
-
-/// One term in a list: its name, its status mark, and its one-line meaning.
+/// One term in a list: its name and respelling, its status mark, and its
+/// one-line meaning.
 class TermRow extends StatelessWidget {
   /// Creates a [TermRow].
   const TermRow({
@@ -51,18 +48,38 @@ class TermRow extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(top: AppSpacing.xxs),
-                  child: _StatusMark(status: status),
+                  child: StatusMark(status: status),
                 ),
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        term.term,
-                        style: Theme.of(
-                          context,
-                        ).textTheme.titleMedium?.copyWith(color: mood.ink),
+                      // The respelling sits beside the word, not under it —
+                      // it is how the word sounds, not a second fact about it
+                      // (`dictionary.jsx:235`). It wraps rather than
+                      // truncating, because half a respelling is worse than
+                      // none.
+                      Wrap(
+                        spacing: AppSpacing.xs,
+                        crossAxisAlignment: WrapCrossAlignment.end,
+                        children: [
+                          Text(
+                            term.term,
+                            style: Theme.of(
+                              context,
+                            ).textTheme.titleMedium?.copyWith(color: mood.ink),
+                          ),
+                          if (term.pronunciation != null)
+                            Text(
+                              term.pronunciation!,
+                              style: AppText.label(
+                                mood: mood,
+                                face: AppFace.mono,
+                                tracking: AppTracking.reading,
+                              ),
+                            ),
+                        ],
                       ),
                       const SizedBox(height: AppSpacing.xxs),
                       Text(
@@ -80,28 +97,6 @@ class TermRow extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _StatusMark extends StatelessWidget {
-  const _StatusMark({required this.status});
-
-  final DictionaryStatus status;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = status.colorFrom(context.mood);
-    return Container(
-      width: _markSize,
-      height: _markSize,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: status.isFilled ? color : null,
-        border: status.isFilled
-            ? null
-            : Border.all(color: color, width: _markStroke),
       ),
     );
   }

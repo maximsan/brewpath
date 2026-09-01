@@ -13,10 +13,6 @@ const String _defaultTag = 'HANDS ON';
 /// Label above a practical card's closing note.
 const String _takeawayLabel = 'Worth knowing';
 
-/// Tracking on the eyebrow, which the design sets wider than [CardShell]'s so
-/// it reads as mono rather than as a heading.
-const double _labelTracking = 1.6;
-
 /// Size of the tune mark beside the eyebrow.
 const double _tuneMarkSize = 14;
 
@@ -88,7 +84,6 @@ class _Eyebrow extends StatelessWidget {
           tag,
           style: theme.textTheme.labelSmall?.copyWith(
             color: mood.accentText,
-            letterSpacing: _labelTracking,
           ),
         ),
       ],

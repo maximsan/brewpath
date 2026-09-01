@@ -7,8 +7,6 @@ import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-const double _promptLetterSpacing = 0.6;
-
 /// What the learner did with the sheet.
 ///
 /// Three outcomes, and only one of them is a claim that the brew happened.
@@ -73,7 +71,6 @@ class _LogSheetBodyState extends State<_LogSheetBody> {
           challenge.prompt,
           style: theme.textTheme.labelSmall?.copyWith(
             color: mood.inkMute,
-            letterSpacing: _promptLetterSpacing,
           ),
         ),
         const SizedBox(height: AppSpacing.sm),
