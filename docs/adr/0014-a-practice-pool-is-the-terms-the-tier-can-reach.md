@@ -1,72 +1,86 @@
-# ADR-0014: Drills only quiz a learner on terms their tier can reach
+# ADR-0014: Which words a practice game can ask about
 
 - **Status:** accepted
 - **Date:** 2026-09-01
 
 ## Context
 
-The dictionary holds about 73 coffee terms. Two practice drills quiz the learner
-on them: the Vocab game ([#98](https://github.com/maximsan/brewpath/issues/98))
-and Flashcards ([#97](https://github.com/maximsan/brewpath/issues/97)).
+The dictionary has around 70 coffee words in it. Two practice games ask the
+learner about those words: the Vocab game
+([#98](https://github.com/maximsan/brewpath/issues/98)) and Flashcards
+([#97](https://github.com/maximsan/brewpath/issues/97)).
 
-Both tickets asked the same question, and neither could answer it alone: **which
-terms may a drill quiz a free learner on?**
+When we came to build them, both tickets ran into the same question, and
+neither one could answer it on its own:
 
-Two things stood in the way.
+**If someone hasn't paid for the course, which words should a game ask them
+about?**
 
-First, not every term is taught. Most have a lesson that teaches them. About
-eight do not — words you meet on a coffee bag rather than in the course. We call
-those **reference terms**, and `docs/decisions.md` §12 says they are for paying
-learners only.
+Two things made that hard to answer.
 
-Second, a free learner owns 3 of the 32 lessons
-([ADR-0007](0007-free-tier-is-the-first-three-lessons.md)). That ADR said a drill
-should use the terms those free lessons *mention*, not only the ones they
-*teach*, because teaching alone leaves too few terms to fill a round. But it
-never said how to tell whether a lesson mentions a term.
+First, not every word is taught. Most of them have a lesson that explains them.
+A handful don't — they're words you'd see on a bag of coffee, but no lesson
+covers them. We call those **reference words**, and `docs/decisions.md` §12 says
+they're for paying users only.
+
+Second, someone who hasn't paid gets 3 lessons out of 32
+([ADR-0007](0007-free-tier-is-the-first-three-lessons.md)). That ADR said a game
+should use the words those 3 lessons *mention*, rather than only the words they
+*teach*. The 3 free lessons teach 6 words between them, and the shortest round
+is 5 questions — so going by "teach" would mean almost the same 6 words every
+time you played. But ADR-0007 never said how to decide whether a lesson
+"mentions" a word.
 
 ## Decision
 
-A drill quizzes a learner only on terms their tier can reach.
+A game only asks about words the learner can actually get to.
 
-- **Paying learner:** every term, reference terms included.
-- **Free learner:** the term must be taught by some lesson *and* be named in one
-  of the three free lessons. Never a reference term, even if a free lesson
-  happens to name one.
+- **If they've paid:** any word in the dictionary, reference words included.
+- **If they haven't:** the word needs a lesson that teaches it, *and* it needs
+  to turn up in one of the 3 free lessons. Reference words are never included,
+  even if a free lesson happens to say one.
 
-A lesson **mentions** a term when the term's name, or one of its aliases,
-appears as a whole word in the text that lesson puts on screen. Both parts of
-that matter:
+A lesson **mentions** a word when that word, or one of its other names, appears
+as a whole word in text the lesson actually puts on screen.
 
-- *Whole word*, so that "scale" does not count as a mention of the term "SCA".
-- *Text on screen*, because a lesson card also carries data the app never
-  displays, such as an internal id or a colour value. Searching that too would
-  let a lesson "mention" a word the learner never sees.
+Two things there are deliberate:
 
-We never store how many terms a tier gets. We work it out from the list of free
-lessons each time it is needed. ADR-0007 promised that widening the free tier is
-a change to that one list; a stored count would break that promise.
+- **Whole word.** Otherwise "scale" would count as saying "SCA".
+- **Text on screen.** A lesson card also carries data we never display, like an
+  internal id or a colour. If we searched that too, a lesson could "mention" a
+  word the learner never saw.
 
-Flashcards (#97) uses this rule and does not decide it again.
+We don't save how many words each group gets. We work it out from the list of
+free lessons every time we need it. ADR-0007 promised that making the free tier
+bigger is a matter of editing that one list, and saving a count somewhere else
+would break that promise.
+
+Flashcards (#97) follows this same rule. It doesn't get to make up its own.
 
 ## Consequences
 
-**Reading a term and being quizzed on it are different, on purpose.** §12 decides
-what the dictionary *shows*; this ADR decides what a drill *asks*. Both agree
-reference terms are paid-only. They differ on taught terms: a free learner can
-look up a term from lesson 20 and read it, but will never be quizzed on it.
-Looking a word up is fine; being asked it implies the course taught you, and it
-has not. If someone later notices the two rules differ, that is intended. Please
-do not change one to match the other.
+**Looking a word up and being asked about it are two different things, on
+purpose.** §12 decides which words someone can look up in the dictionary. This
+file decides which words a game can ask them about.
 
-**A question's wrong answers come from the same list as its right one**, so a
-paid-only term cannot slip in as one of the three wrong options either.
+Both agree that reference words are for paying users. They disagree about taught
+words: someone who hasn't paid can look up a word from lesson 20 and read it,
+but a game will never ask them about it. Looking something up is fine. Asking a
+question about it suggests we already taught it, and we haven't.
 
-**The pool follows the lesson text.** If someone rewrites a free lesson and the
-word "crema" drops out of it, that term quietly leaves the free pool — no rule
-changed, only the wording. We accepted that. The tests check statements like "a
-free learner has enough terms to play a round" rather than exact numbers, so
-ordinary rewording does not fail the build.
+If you spot that these two rules don't line up, that's intentional. Please don't
+change one to match the other.
 
-**Revisit this** if the course is ever translated into a language that does not
-put spaces between words, because the whole-word rule assumes spaces.
+**The wrong answers come from the same list as the right one.** Every question
+has one correct answer and three wrong ones, and all four are picked from the
+list above. That way a paying-only word can't slip in as a wrong answer.
+
+**The word list depends on how the lessons are written.** If someone rewrites a
+free lesson and the word "crema" drops out of it, that word quietly leaves the
+free list. The rule didn't change — only the lesson text did. We decided that's
+an acceptable price. The tests check things like "someone who hasn't paid has
+enough words to play a round" instead of checking for an exact number, so normal
+rewording won't break the build.
+
+**Come back to this** if we ever translate the course into a language that
+doesn't put spaces between words. The "whole word" rule assumes spaces.
