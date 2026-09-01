@@ -6,12 +6,11 @@ import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 
-/// The check's drawn size, and the seal's own padding — tighter on the mark's
-/// side than the word's (`brew-challenge.jsx:171`).
+/// The check's drawn size.
 const double _markSize = 13;
-const EdgeInsets _sealPadding = EdgeInsets.fromLTRB(7, 5, 10, 5);
 
 /// Half-strength accent: a stamp pressed onto the card, not a control on it.
 const double _borderAlpha = 0.5;
@@ -39,7 +38,7 @@ class TriedSeal extends StatelessWidget {
       child: Transform.rotate(
         angle: _tilt,
         child: Container(
-          padding: _sealPadding,
+          padding: OffTokens.triedSealPadding.value,
           decoration: BoxDecoration(
             border: Border.all(
               color: mood.accent.withValues(alpha: _borderAlpha),

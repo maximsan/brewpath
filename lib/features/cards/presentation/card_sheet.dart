@@ -3,7 +3,6 @@ import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/app_sheet.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
-import 'package:brew_path/features/challenges/domain/challenge_bank.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/challenges/presentation/card_stamp_section.dart';
 import 'package:brew_path/features/challenges/presentation/tried_seal.dart';
@@ -33,7 +32,7 @@ Future<void> showCardSheet(BuildContext context, CardWithCollection item) =>
 /// line worth keeping.
 ///
 /// **The title is the sheet primitive's**, at the step every sheet shares.
-/// The design sets this one card an step larger than its sibling sheets —
+/// The design sets this one card a step larger than its sibling sheets —
 /// `--t-display` here against `--t-title` on the gate, the challenge and the
 /// duel — and the app keeps one sheet dressing rather than forking the
 /// primitive for a single caller. A deliberate divergence, recorded on #385.
@@ -57,10 +56,13 @@ class CardSheetBody extends ConsumerWidget {
     final text = Theme.of(context).textTheme;
     final card = item.card;
 
+    final tried =
+        ref.watch(cardChallengeTriedProvider(card.id)).asData?.value ?? false;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (_challengeTried(ref, card.id))
+        if (tried)
           // The design stamps this beside the title; the title belongs to the
           // primitive, so the seal sits under it — where the guide sheet puts
           // its bookmark, for the same reason.
@@ -79,26 +81,10 @@ class CardSheetBody extends ConsumerWidget {
         ),
         const SizedBox(height: AppSpacing.lg),
         _Keepsake(fact: card.fact),
+        const SizedBox(height: AppSpacing.lg),
         CardStampSection(cardId: card.id, isCollected: item.isCollected),
       ],
     );
-  }
-
-  /// Whether this card's challenge has been brewed.
-  ///
-  /// Absent bank or absent challenge both read as *not tried*, which is the
-  /// honest answer while the content is still loading.
-  bool _challengeTried(WidgetRef ref, String cardId) {
-    final bank = ref.watch(challengeBankProvider).asData?.value;
-    if (bank == null) return false;
-
-    final challenge = challengeForCard(bank, cardId);
-    if (challenge == null) return false;
-
-    final completed =
-        ref.watch(completedChallengesProvider).asData?.value ??
-        const <String>{};
-    return completed.contains(challenge.id);
   }
 }
 

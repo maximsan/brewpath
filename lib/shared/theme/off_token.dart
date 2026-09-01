@@ -106,6 +106,17 @@ abstract final class OffTokens {
         'change, not a tidy-up.',
   );
 
+  /// The padding inside the tried seal, tighter on the mark's side.
+  static const OffToken<EdgeInsets> triedSealPadding = OffToken(
+    EdgeInsets.fromLTRB(7, 5, 10, 5),
+    reason:
+        'The design sets the seal to `padding: 5px 10px 5px 7px` '
+        '(`brew-challenge.jsx:171`) and none of the three is a spacing stop. '
+        'The asymmetry is the point: the check needs less room on its side '
+        'than the word does on its, so a symmetric pad would sit the mark '
+        'off-centre in a shape only 13px tall.',
+  );
+
   /// The padding inside the Cards tab's "more to collect" block.
   static const OffToken<EdgeInsets> cardsFooterPadding = OffToken(
     EdgeInsets.symmetric(vertical: 20, horizontal: 18),
@@ -171,6 +182,7 @@ abstract final class OffTokens {
     seedStain,
     beanCrease,
     pickTilePadding,
+    triedSealPadding,
     cardsFooterPadding,
     cardsFooterLineGap,
     introBlockGap,

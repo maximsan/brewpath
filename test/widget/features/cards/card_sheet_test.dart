@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
+import 'package:brew_path/features/cards/presentation/card_deep_link.dart';
 import 'package:brew_path/features/cards/presentation/card_grid_item_widget.dart';
 import 'package:brew_path/features/cards/presentation/card_sheet.dart';
 import 'package:brew_path/features/cards/presentation/cards_screen.dart';
@@ -17,9 +20,10 @@ final List<CardWithCollection> _collection = [
   testCardWithCollection('b', collected: false),
 ];
 
+final _navigatorKey = GlobalKey<NavigatorState>();
+
 Future<void> _pump(
   WidgetTester tester, {
-  String? openCardId,
   Set<String> completedChallenges = const {},
 }) async {
   tester.view.physicalSize = const Size(420, 1400);
@@ -40,7 +44,23 @@ Future<void> _pump(
       ],
       child: MaterialApp(
         theme: AppTheme.darkRoast,
-        home: CardsScreen(openCardId: openCardId),
+        navigatorKey: _navigatorKey,
+        home: const CardsScreen(),
+      ),
+    ),
+  );
+  await tester.pumpAndSettle();
+}
+
+/// Arrives the way the `cardDetail` route does — a transparent page pushed
+/// over the grid, which is what the router builds.
+Future<void> _followLink(WidgetTester tester, String cardId) async {
+  await _pump(tester);
+  unawaited(
+    _navigatorKey.currentState!.push(
+      PageRouteBuilder<void>(
+        opaque: false,
+        pageBuilder: (_, _, _) => CardDeepLink(cardId: cardId),
       ),
     ),
   );
@@ -89,14 +109,38 @@ void main() {
     ) async {
       // #171 scopes universal links to the card route, so the link has to
       // keep resolving even though the screen it pointed at is gone.
-      await _pump(tester, openCardId: 'a');
+      await _followLink(tester, 'a');
 
       expect(find.byType(CardSheetBody), findsOneWidget);
+      // The grid under the sheet is the tab's own. The link's page paints
+      // nothing, so it cannot be a second copy pushed on top.
+      expect(find.byType(CardsScreen), findsOneWidget);
+    });
+
+    testWidgets('closing a linked card leaves the link route behind', (
+      tester,
+    ) async {
+      await _followLink(tester, 'a');
+      Navigator.of(tester.element(find.byType(CardSheetBody))).pop();
+      await tester.pumpAndSettle();
+
+      // Otherwise the learner is left on an empty route and has to press back
+      // through it to reach the collection they can already see.
+      expect(find.byType(CardDeepLink), findsNothing);
       expect(find.byType(CardGridItemWidget), findsWidgets);
     });
 
+    testWidgets('a link to an unearned card opens nothing', (tester) async {
+      // The grid masks an unearned card on purpose. Honouring the link would
+      // hand out through the URL exactly what the tile withholds.
+      await _followLink(tester, 'b');
+
+      expect(find.byType(CardSheetBody), findsNothing);
+      expect(find.byType(CardDeepLink), findsNothing);
+    });
+
     testWidgets('an unknown card id lands on the grid alone', (tester) async {
-      await _pump(tester, openCardId: 'no-such-card');
+      await _followLink(tester, 'no-such-card');
 
       expect(find.byType(CardSheetBody), findsNothing);
       expect(find.byType(CardGridItemWidget), findsWidgets);
@@ -121,8 +165,16 @@ void main() {
       await tester.pumpAndSettle();
 
       // The tile still names the module; the sheet does not repeat it, which
-      // is the design's header exactly.
-      expect(find.text('Beans'), findsOneWidget);
+      // is the design's header exactly. Asserted inside the sheet rather than
+      // by counting: a global count passes for the wrong reason the day the
+      // tile stops drawing its tag.
+      expect(
+        find.descendant(
+          of: find.byType(CardSheetBody),
+          matching: find.text('Beans'),
+        ),
+        findsNothing,
+      );
     });
 
     testWidgets('a brewed challenge stamps the card', (tester) async {
