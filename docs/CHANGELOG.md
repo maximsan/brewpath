@@ -44,6 +44,21 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **You can hear how a term is said.** Twenty-four of the dictionary's
+  seventy-three words carry a pronunciation, and the respelling beside them is
+  now a speaker you can press. It is the phone's own voice, offline — nothing
+  is recorded, nothing is sent, and no permission is asked, because speaking
+  aloud needs none. It reads in the language the course is written in rather
+  than the one the phone is set to, so an English term is not pronounced as
+  though it were French. Pressing again restarts the word instead of stacking a
+  second reading behind the first, and a term with no respelling shows no
+  control at all. Where a phone has no voice installed for the language, the
+  respelling still reads as text — only the speaker goes, because a button that
+  cannot do its one job is worse than none.
+
+  The respelling also shows on the list rows now, next to the word rather than
+  under it: scanning a list is where you meet a term you cannot say.
+
 - **Hitting a lock now offers something.** A free learner whose shelf is full
   used to get a one-line snackbar; they now get the Plus gate — a sheet that
   opens on *what they just hit*, then makes the case for the course: the rest
@@ -260,6 +275,32 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **Finishing a module is a moment again.** The recap was a companion, a
+  heading, a 72-pt badge and a caption. It is now the ending the design draws:
+  Roasty holds the screen with *"Look how far you've come."*, then the module's
+  own name leads over the coffee tree — and a card is waiting on the other
+  side. Turning it over rotates the whole screen to reveal the collectible as a
+  full reward card, with its spec rows and its keepsake line, and the way on
+  reads *Begin next module* or *Back to Path* rather than always *Continue*.
+  Reduced motion gets the far side without the rotation.
+
+- **Small-caps labels are lettered by the design, not by eye.** Sixteen kickers
+  and eyebrows across Today, the challenge cards, the lesson cards, the mini-game
+  catalogue, the dictionary and the Cards tab each picked their own
+  letter-spacing —
+  between a third and a half of what the design asks for, so a row of caps read
+  as crammed. The type ladder now carries tracking as its own axis beside size
+  and face: a label takes the design's small-caps spacing unless it is one of
+  the few lines the design tracks differently, and a test fails if a new screen
+  letters its own. Nothing moved on the two lines that really are exceptions —
+  the tab bar and the tap cue.
+
+- **The `MISSED` tag joins the answer it marks.** On a multi-select the row you
+  should have picked is green to its border, its box and its check — and then
+  said `MISSED` in small grey type, reading as a separate remark rather than as
+  the mark's own word. It is now green, and a size smaller, which is what the
+  design asked for all along.
+
 - **The path looks like a path.** Lessons on Path were separate cards; the
   design threads them on one hairline spine that each lesson's bean punches a
   stop out of, which is what makes a list of them read as a route rather than
@@ -390,6 +431,13 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Removed
 
+- **Profile no longer carries settings.** The `Customize` grid — a Sound tile
+  and a Haptics tile — is gone, and the heading with it. Both toggles already
+  ship in Settings, under `Practice`, over the same stored record, so the grid
+  was a second set of controls for one preference. The gear at the top of
+  Profile is now the only way to a setting, which is what the design does. The
+  Studio door the heading sat over stays where it is.
+
 - **The Profile paywall card is gone.** "Go Premium" promised a subscription
   the app does not sell, used a word the glossary rules against, and offered to
   remove ads that do not exist. The design has no paywall slot on Profile at
@@ -397,6 +445,7 @@ You can always edit this file by hand instead — the helpers just save effort.
   gated, the design marks the gated card itself.
 
 ### Fixed
+
 - **Profile says the month you actually joined.** The closing line read the
   first day you did anything, so someone who installed the app and did not
   start for three weeks was told they joined the following month. The app now
@@ -405,6 +454,18 @@ You can always edit this file by hand instead — the helpers just save effort.
   earliest-activity reading, which is at least a day they were here for.
   Starting the course over leaves the date alone; deleting the account sets it
   to now, because what is left behind is a fresh install.
+
+- **The dictionary opens on its subjects, not on every word it knows.** Eight
+  categories, each with its own mark, what it covers and how many terms sit
+  behind it — one tap opens a subject, and one goes back. It leads with its own
+  name, *Coffee Dictionary*, under a kicker that counts the shelf. The three
+  filters became one control, because they were always one choice, and the
+  search field wears the design's own glass.
+
+- **A term reads as an entry, not a settings row.** The word is a heading on
+  the page with its status beside it — a mark and a word together, so it does
+  not depend on colour alone — and the blocks under it carry the names the
+  design gives them: *in practice*, *knowledge check*, *related terms*.
 
 - **The lesson's Continue is the same size as every other button that means
   the same thing.** It was Material's shorter default while the Continue on the

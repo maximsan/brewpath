@@ -6,7 +6,7 @@ import 'package:drift/drift.dart';
 /// The row is written by `AppDatabase`'s `onCreate`, because creating the
 /// database is the app's first run. The only other writer is Delete Account,
 /// which begins a new account; see
-/// [ADR-0012](../../../docs/adr/0012-the-joined-line-dates-the-install-and-old-devices-are-not-back-dated.md).
+/// [ADR-0013](../../../docs/adr/0013-the-joined-line-dates-the-install-and-old-devices-are-not-back-dated.md).
 class InstallRepository {
   AppDatabase get _db => AppDatabaseService.instance;
 

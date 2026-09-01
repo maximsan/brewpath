@@ -191,7 +191,7 @@ The one recorded instant saying when this account began — written when the
 database is created, restamped by Delete Account, untouched by Reset. Stored at
 schema v11 and device-local: never in the progress snapshot, because it dates
 this copy of the app rather than the learner
-([ADR-0012](docs/adr/0012-the-joined-line-dates-the-install-and-old-devices-are-not-back-dated.md)).
+([ADR-0013](docs/adr/0013-the-joined-line-dates-the-install-and-old-devices-are-not-back-dated.md)).
 Absent on every database created before v11, and Profile's `Joined` line falls
 back to the earliest active day for those.
 _Avoid_: join date (the line's word, not the stored fact — the two differ

@@ -1,4 +1,4 @@
-# ADR-0012: The joined line dates the install, and old devices are not back-dated
+# ADR-0013: The joined line dates the install, and old devices are not back-dated
 
 - **Status:** accepted
 - **Date:** 2026-08-30

@@ -30,7 +30,6 @@ class KeepSharpCardBody extends StatelessWidget {
   /// derived per-day from existing activity records, stored nowhere.
   final bool acknowledged;
 
-  static const double _eyebrowLetterSpacing = 1.2;
   static const double _mutedAlpha = 0.8;
   static const double _iconSm = 18;
   static const double _ackRoastySize = 72;
@@ -62,7 +61,6 @@ class KeepSharpCardBody extends StatelessWidget {
                 'KEEP SHARP',
                 style: theme.textTheme.labelMedium?.copyWith(
                   color: mood.accentInk,
-                  letterSpacing: _eyebrowLetterSpacing,
                 ),
               ),
             ],

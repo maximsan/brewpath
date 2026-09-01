@@ -73,7 +73,7 @@ class AccountWipe {
   /// what keeps `onboardingCompleted` and `tourSeen` fate-sharing here: they go
   /// together because nothing gets the chance to clear one of them alone.
   ///
-  /// The install stamp is **restamped, not kept and not cleared** (ADR-0012):
+  /// The install stamp is **restamped, not kept and not cleared** (ADR-0013):
   /// what is left behind is a fresh install in every other respect, so the
   /// account Profile's closing line dates is the one beginning now.
   Future<void> deleteAccount() async {

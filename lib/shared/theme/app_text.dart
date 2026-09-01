@@ -48,6 +48,76 @@ enum AppFace {
   final bool isOpticallySized;
 }
 
+/// How wide the letters are set, in `em` — the design's tracking vocabulary
+/// for the two smallcaps rungs.
+///
+/// Tracking is a **separate axis from size**, for the same reason [AppFace] is:
+/// the design letters one rung at more than one width. `.lesson-row .meta` and
+/// `.challenge-kicker` are both uppercase label-family lines, and the design
+/// sets them 0.06em apart. A ladder that baked one tracking into each step
+/// could only ever letter them the same, which is how sixteen call sites came
+/// to name their own spacing — fifteen in logical pixels, and the Cards count
+/// through an `OffToken` (#410).
+///
+/// **Only values something in `lib/` actually renders are here.** The design's
+/// app vocabulary at these two rungs runs one wider: 0.1em (`.cheer-points`,
+/// `index.html:1092`) is an app component too, not page chrome. It is absent
+/// because the app has no points burst and is not getting one — #212 deleted
+/// the pose rather than renumber it, and ruled that a points-earned moment,
+/// if ever wanted, is authored against a screen with room for it. A value
+/// with no call site would be vocabulary nobody speaks.
+///
+/// The two app values wide enough to restyle a whole rung — the tab bar's
+/// 0.18em and the tap cue's 0.24em — stay in `OffTokens` instead, where an
+/// exception carries its reason.
+///
+/// Omitting this axis leaves a rung at its own tracking, which for [AppText]'s
+/// label and micro steps is the design's 0.14em smallcaps rule — `.smallcaps`
+/// (`index.html:229`) and `.challenge-kicker` (`:502`). **A component the
+/// design does not letter specially takes that rule**, which is why most
+/// kickers pass no tracking at all: the app's own eyebrows (`KEEP SHARP`, a
+/// lesson card's label) have no counterpart in `prototype/` to letter them
+/// differently, so they letter like every other kicker rather than at a
+/// hand-rounded value that only ever came from the eye.
+enum AppTracking {
+  /// 0.02em — barely loosened, for a line meant to be **read as words** rather
+  /// than scanned as a label: `.btn` (`index.html:255`), and the mono
+  /// respelling that sits inline beside a dictionary term
+  /// (`dictionary.jsx:235`).
+  reading(0.02),
+
+  /// 0.04em — mono given just enough air that a spelled-out run stays legible
+  /// without becoming a kicker: a score read as digits (`rewards.jsx:60`), a
+  /// terse spec chip (`.spec-chip`, `Design System.html:215`), and the
+  /// pronunciation chip's respelling (`dictionary.jsx:46`).
+  figure(0.04),
+
+  /// 0.08em — a meta line or a figure, which wants to read as one run rather
+  /// than as a kicker. At the rung's 0.14em a count's numerals drift apart and
+  /// the line stops reading as a single quantity, which is the whole reason
+  /// the design tracks these tighter than the smallcaps beside them:
+  /// `.lesson-row .meta` (`index.html:427`), `.challenge-pill` (`:506`),
+  /// `.bag-opt-s` (`:628`).
+  meta(0.08),
+
+  /// 0.12em — the sequence card's out-of-place hint, `.seq-hint`
+  /// (`index.html:1061`, set on `lesson.jsx:980`).
+  hint(0.12),
+
+  /// 0.16em — a mono micro line marking what a thing *is*, or where it sits in
+  /// a set, rather than heading the content under it. Wider than the smallcaps
+  /// rule so a two-word label reads as discrete: the dictionary's status chip
+  /// (`dictionary.jsx:124`) and the collectible tile's sub-line
+  /// (`.collect-card .cc-sub`, `index.html:712`, still unbuilt — #434).
+  marker(0.16);
+
+  const AppTracking(this.em);
+
+  /// The tracking in `em`, as the design writes it. Resolved against a rung's
+  /// size on the way out, because Flutter wants logical pixels.
+  final double em;
+}
+
 /// One rung of the ladder: a size, and how text is set at that size.
 ///
 /// Private on purpose — this is the only place a font size exists, so going
@@ -71,9 +141,16 @@ enum _Rung {
 
   /// Letter spacing in `em`, as the design writes it. Flutter wants logical
   /// pixels, so it is multiplied by [size] on the way out.
+  ///
+  /// The 0.14em the two smallcaps steps carry is the design's own smallcaps
+  /// rule — `.smallcaps` (`index.html:229`), `.smallcaps-mono` (`:241`) and
+  /// `.challenge-kicker` (`:502`) all set it. A call site letters differently
+  /// only by naming an [AppTracking].
   final double tracking;
 
-  double get letterSpacing => tracking * size;
+  /// This rung's letter spacing in logical pixels, lettered at [named] if the
+  /// call site asked for a tracking and at the rung's own otherwise.
+  double letterSpacingFor(AppTracking? named) => (named?.em ?? tracking) * size;
 
   /// The bounds of Fraunces' `opsz` axis.
   static const double _minOpticalSize = 9;
@@ -98,8 +175,11 @@ enum _Rung {
 /// number at a call site where nobody will see it. Sizes are transcribed from
 /// the `--t-*` block of the design bundle (`prototype/index.html`).
 ///
-/// Size and face are separate axes; see [AppFace]. Each step defaults to the
-/// face the design most often sets it in, and any step accepts any face.
+/// Size, face and tracking are separate axes; see [AppFace] and [AppTracking].
+/// Each step defaults to the face the design most often sets it in, and any
+/// step accepts any face. Tracking defaults to the step's own, which the two
+/// smallcaps steps set at the design's 0.14em; the label and micro steps take
+/// a tracking for the handful of components the design letters differently.
 ///
 /// Colour resolves in this order: an explicit `color`, then the step's role
 /// colour from `mood`, then nothing — in which case the surrounding
@@ -109,47 +189,67 @@ abstract final class AppText {
   /// Celebration numerals — a streak count, a score. Mono by default, because
   /// the design sets every figure in tabular mono.
   static TextStyle hero({MoodColors? mood, Color? color, AppFace? face}) =>
-      _style(_Rung.hero, face ?? AppFace.mono, mood?.ink, color);
+      _style(_Rung.hero, face ?? AppFace.mono, color ?? mood?.ink);
 
   /// Screen title.
   static TextStyle display({MoodColors? mood, Color? color, AppFace? face}) =>
-      _style(_Rung.display, face ?? AppFace.display, mood?.ink, color);
+      _style(_Rung.display, face ?? AppFace.display, color ?? mood?.ink);
 
   /// Card or section title.
   static TextStyle title({MoodColors? mood, Color? color, AppFace? face}) =>
-      _style(_Rung.title, face ?? AppFace.display, mood?.ink, color);
+      _style(_Rung.title, face ?? AppFace.display, color ?? mood?.ink);
 
   /// Card and row heading.
   static TextStyle heading({MoodColors? mood, Color? color, AppFace? face}) =>
-      _style(_Rung.heading, face ?? AppFace.display, mood?.ink, color);
+      _style(_Rung.heading, face ?? AppFace.display, color ?? mood?.ink);
 
   /// Lead paragraph — the sentence under a title.
   static TextStyle lead({MoodColors? mood, Color? color, AppFace? face}) =>
-      _style(_Rung.lead, face ?? AppFace.ui, mood?.ink, color);
+      _style(_Rung.lead, face ?? AppFace.ui, color ?? mood?.ink);
 
   /// Body copy.
   static TextStyle body({MoodColors? mood, Color? color, AppFace? face}) =>
-      _style(_Rung.body, face ?? AppFace.ui, mood?.ink, color);
+      _style(_Rung.body, face ?? AppFace.ui, color ?? mood?.ink);
 
   /// Support text under a heading or row — muted by default.
   static TextStyle support({MoodColors? mood, Color? color, AppFace? face}) =>
-      _style(_Rung.support, face ?? AppFace.ui, mood?.inkMute, color);
+      _style(_Rung.support, face ?? AppFace.ui, color ?? mood?.inkMute);
 
-  /// Labels and smallcaps — muted by default.
-  static TextStyle label({MoodColors? mood, Color? color, AppFace? face}) =>
-      _style(_Rung.label, face ?? AppFace.control, mood?.inkMute, color);
+  /// Labels and smallcaps — muted by default, lettered at the design's 0.14em
+  /// smallcaps rule unless the component is one the design tracks differently
+  /// (see [AppTracking]).
+  static TextStyle label({
+    MoodColors? mood,
+    Color? color,
+    AppFace? face,
+    AppTracking? tracking,
+  }) => _style(
+    _Rung.label,
+    face ?? AppFace.control,
+    color ?? mood?.inkMute,
+    tracking: tracking,
+  );
 
-  /// The smallest step: kickers and captions — muted by default.
-  static TextStyle micro({MoodColors? mood, Color? color, AppFace? face}) =>
-      _style(_Rung.micro, face ?? AppFace.mono, mood?.inkMute, color);
+  /// The smallest step: kickers and captions — muted by default, and tracked
+  /// like [label].
+  static TextStyle micro({
+    MoodColors? mood,
+    Color? color,
+    AppFace? face,
+    AppTracking? tracking,
+  }) => _style(
+    _Rung.micro,
+    face ?? AppFace.mono,
+    color ?? mood?.inkMute,
+    tracking: tracking,
+  );
 
   /// Italic Fraunces at the [heading] step, for the loading caption. Italic is
   /// a face treatment rather than a rung, so it does not add a step.
   static TextStyle headingItalic({MoodColors? mood, Color? color}) => _style(
     _Rung.heading,
     AppFace.display,
-    mood?.ink,
-    color,
+    color ?? mood?.ink,
     italic: true,
   );
 
@@ -216,18 +316,22 @@ abstract final class AppText {
     labelSmall: label(mood: mood, face: AppFace.mono),
   );
 
+  /// [colour] arrives resolved. Each rung names its own role colour either
+  /// way — they differ, `ink` against `inkMute` — so folding the `??` into
+  /// that one line costs no repetition and spares every rung a second
+  /// parameter to thread through.
   static TextStyle _style(
     _Rung rung,
     AppFace face,
-    Color? roleColour,
-    Color? override, {
+    Color? colour, {
     bool italic = false,
+    AppTracking? tracking,
   }) => TextStyle(
     fontFamily: face.family,
     fontWeight: face.weight,
     fontSize: rung.size,
     height: rung.height,
-    letterSpacing: rung.letterSpacing,
+    letterSpacing: rung.letterSpacingFor(tracking),
     fontStyle: italic ? FontStyle.italic : null,
     // The design's `font-optical-sizing: auto`, which only Fraunces can
     // answer. A step's optical size is its own size, so the axis cannot drift
@@ -235,6 +339,6 @@ abstract final class AppText {
     fontVariations: face.isOpticallySized
         ? [FontVariation('opsz', rung.opticalSize)]
         : null,
-    color: override ?? roleColour,
+    color: colour,
   );
 }

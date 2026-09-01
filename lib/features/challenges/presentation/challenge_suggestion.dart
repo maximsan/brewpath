@@ -8,8 +8,6 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-const double _eyebrowLetterSpacing = 0.6;
-
 /// Offers the Coffee Challenge a just-finished lesson carries — if it has one.
 ///
 /// **Twenty of the thirty-two lessons carry none**, so rendering nothing is
@@ -117,7 +115,6 @@ class _SuggestionState extends ConsumerState<_Suggestion> {
         textAlign: TextAlign.center,
         style: theme.textTheme.labelSmall?.copyWith(
           color: mood.accentText,
-          letterSpacing: _eyebrowLetterSpacing,
         ),
       ),
       const SizedBox(height: AppSpacing.xs),

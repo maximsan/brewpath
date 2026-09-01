@@ -15,7 +15,7 @@ import 'package:brew_path/core/utils/date_utils.dart';
 /// nothing shows no line rather than naming today.
 ///
 /// Ruled by
-/// [ADR-0012](../../../../docs/adr/0012-the-joined-line-dates-the-install-and-old-devices-are-not-back-dated.md).
+/// [ADR-0013](../../../../docs/adr/0013-the-joined-line-dates-the-install-and-old-devices-are-not-back-dated.md).
 DateTime? deriveJoinedDate({
   required DateTime? installedAt,
   required Set<int> activeDays,

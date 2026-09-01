@@ -171,7 +171,7 @@ class ProgressSnapshots extends Table {
 }
 
 /// The one row saying when this account began — Profile's `Joined` line, ruled
-/// by [ADR-0012](../../../docs/adr/0012-the-joined-line-dates-the-install-and-old-devices-are-not-back-dated.md).
+/// by [ADR-0013](../../../docs/adr/0013-the-joined-line-dates-the-install-and-old-devices-are-not-back-dated.md).
 ///
 /// Its own table rather than a column on [UserSettings], because that row
 /// deliberately does not exist until the learner chooses something. Here the
@@ -271,7 +271,7 @@ class AppDatabase extends _$AppDatabase {
   @override
   MigrationStrategy get migration => MigrationStrategy(
     // A created database *is* the install, so this is the one place that can
-    // record it without guessing (ADR-0012).
+    // record it without guessing (ADR-0013).
     onCreate: (m) async {
       await m.createAll();
       await into(appInstalls).insert(
@@ -411,7 +411,7 @@ class AppDatabase extends _$AppDatabase {
       //
       // The emptiness is the point, not an oversight. This device installed
       // the app before anything recorded when, and the only instant available
-      // here is now — the one answer that is certainly wrong (ADR-0012).
+      // here is now — the one answer that is certainly wrong (ADR-0013).
       if (from < _installStampVersion) {
         await m.createTable(appInstalls);
       }

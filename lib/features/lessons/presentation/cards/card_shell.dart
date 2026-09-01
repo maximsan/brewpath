@@ -22,9 +22,6 @@ class CardCommit {
   final VoidCallback? onCommit;
 }
 
-/// Letter-spacing for the small-caps eyebrow above a card's title.
-const double _eyebrowTracking = 1.2;
-
 /// The frame every card renders inside.
 ///
 /// It owns one rule, and it owns it in one place so no card can forget it:
@@ -82,7 +79,6 @@ class CardShell extends StatelessWidget {
             label!,
             style: theme.textTheme.labelSmall?.copyWith(
               color: mood.inkMute,
-              letterSpacing: _eyebrowTracking,
             ),
           ),
           const SizedBox(height: AppSpacing.xs),

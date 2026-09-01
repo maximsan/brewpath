@@ -2,13 +2,15 @@ import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
-import 'package:brew_path/features/dictionary/presentation/dictionary_status_style.dart';
+import 'package:brew_path/features/dictionary/presentation/status_chip.dart';
 import 'package:brew_path/features/dictionary/presentation/term_entry_body.dart';
 import 'package:brew_path/features/dictionary/presentation/term_peek_sheet.dart';
 import 'package:brew_path/features/saved/domain/saved_key.dart';
 import 'package:brew_path/features/saved/presentation/saved_bookmark_button.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -61,21 +63,12 @@ class _TermDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final status = dictionaryStatusOf(term, view.completedLessonIds);
-
     return Scaffold(
+      // The bar carries the way back and the bookmark, and nothing else: the
+      // term is a page heading below, where the design puts it, so it can set
+      // at display size and take a status chip beside it.
       appBar: AppBar(
-        title: Text(term.term),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(left: AppSpacing.md),
-            child: Center(
-              child: Text(
-                status.label,
-                style: Theme.of(context).textTheme.labelSmall,
-              ),
-            ),
-          ),
           SavedBookmarkButton(
             savedKey: formatSavedKey(SavedKind.term, term.id),
             label: term.term,
@@ -84,12 +77,27 @@ class _TermDetail extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.gutter),
-        child: TermEntryBody(
-          view: view,
-          term: term,
-          // A related term opens as a peek, not a push: following a thread
-          // through the vocabulary should not bury the entry you started on.
-          onRelatedTap: (id) => showTermPeekSheet(context, id),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // The page heading lives here rather than inside the entry: the
+            // screen owns the page's chrome, and the peek sheet reuses the
+            // same entry without wanting a second title above its own.
+            Text(term.term, style: AppText.display(mood: context.mood)),
+            const SizedBox(height: AppSpacing.xs),
+            StatusChip(
+              status: dictionaryStatusOf(term, view.completedLessonIds),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            TermEntryBody(
+              view: view,
+              term: term,
+              // A related term opens as a peek, not a push: following a
+              // thread through the vocabulary should not bury the entry you
+              // started on.
+              onRelatedTap: (id) => showTermPeekSheet(context, id),
+            ),
+          ],
         ),
       ),
     );
