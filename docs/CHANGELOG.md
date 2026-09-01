@@ -460,6 +460,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **Profile says the month you actually joined.** The closing line read the
+  first day you did anything, so someone who installed the app and did not
+  start for three weeks was told they joined the following month. The app now
+  records its own first run, and reads the line from that. Devices that were
+  installed before this shipped are not back-dated to today — they keep the
+  earliest-activity reading, which is at least a day they were here for.
+  Starting the course over leaves the date alone; deleting the account sets it
+  to now, because what is left behind is a fresh install.
+
 - **The dictionary opens on its subjects, not on every word it knows.** Eight
   categories, each with its own mark, what it covers and how many terms sit
   behind it — one tap opens a subject, and one goes back. It leads with its own

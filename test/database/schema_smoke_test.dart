@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../generated/schema.dart';
 import '../generated/schema_v1.dart' show DatabaseAtV1;
+import '../generated/schema_v10.dart' show DatabaseAtV10;
 import '../generated/schema_v2.dart' show DatabaseAtV2;
 import '../generated/schema_v3.dart' show DatabaseAtV3;
 import '../generated/schema_v4.dart' show DatabaseAtV4;
@@ -529,6 +530,68 @@ void main() {
         expect(row.read<bool>('notifications_enabled'), false);
         expect(row.readNullable<String>('daily_reminder_time'), null);
         expect(row.read<String>('learner_name'), 'Sam');
+      },
+    );
+  });
+
+  test('schema v10 database has no install table yet', () async {
+    final connection = await verifier.startAt(10);
+    final db = DatabaseAtV10(connection);
+
+    // Named against the catalogue rather than by selecting from the table and
+    // expecting a throw: any failure at all satisfies that, including one that
+    // has nothing to do with the table being absent.
+    final tables = await db
+        .customSelect("SELECT name FROM sqlite_master WHERE type = 'table'")
+        .get();
+    expect(
+      tables.map((row) => row.read<String>('name')),
+      isNot(contains('app_installs')),
+    );
+
+    await db.close();
+  });
+
+  test('a v10 database upgrades without inventing an install date', () async {
+    // The whole point of the step. This device installed the app before
+    // anything recorded when, and the only instant the migration could write
+    // is now — the one answer that is certainly wrong. The table therefore
+    // arrives empty, and Profile's closing line falls back to the earliest day
+    // the learner was active, which is what it read before v11 (#447).
+    await verifier.testWithDataIntegrity(
+      oldVersion: 10,
+      newVersion: _currentVersion,
+      createOld: DatabaseAtV10.new,
+      createNew: (executor) =>
+          GeneratedHelper().databaseForVersion(executor, _currentVersion),
+      openTestedDatabase: AppDatabase.new,
+      createItems: (batch, oldDb) => batch.insert(
+        oldDb.userSettings,
+        const RawValuesInsertable<dynamic>({
+          'id': Variable<int>(1),
+          'haptics_enabled': Variable<bool>(true),
+          'sound_enabled': Variable<bool>(true),
+          'total_xp': Variable<int>(0),
+          'onboarding_completed': Variable<bool>(true),
+          'theme_mode': Variable<String>('dark'),
+          'tour_seen': Variable<bool>(true),
+          'learner_name': Variable<String>('Sam'),
+        }),
+      ),
+      validateItems: (newDb) async {
+        final installs = await newDb
+            .customSelect('SELECT COUNT(*) AS n FROM app_installs')
+            .get();
+        expect(installs.single.read<int>('n'), 0);
+
+        // The row the step does not touch is asserted alongside, because a
+        // step that quietly rewrote what the learner chose would look the same
+        // from the new table's side.
+        final settings = await newDb
+            .customSelect('SELECT learner_name, tour_seen FROM user_settings')
+            .get();
+        expect(settings.single.read<String>('learner_name'), 'Sam');
+        expect(settings.single.read<bool>('tour_seen'), true);
       },
     );
   });

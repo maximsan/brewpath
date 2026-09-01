@@ -1,4 +1,5 @@
 import 'package:brew_path/shared/repositories/card_repository.dart';
+import 'package:brew_path/shared/repositories/install_repository.dart';
 import 'package:brew_path/shared/repositories/module_progress_repository.dart';
 import 'package:brew_path/shared/repositories/progress_repository.dart';
 import 'package:brew_path/shared/repositories/settings_repository.dart';
@@ -32,3 +33,7 @@ AccountWipe accountWipe(Ref ref) => AccountWipe();
 /// Provides the [SnapshotRepository].
 @riverpod
 SnapshotRepository snapshotRepository(Ref ref) => SnapshotRepository();
+
+/// Provides the [InstallRepository].
+@riverpod
+InstallRepository installRepository(Ref ref) => InstallRepository();
