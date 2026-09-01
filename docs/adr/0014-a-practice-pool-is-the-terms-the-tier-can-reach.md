@@ -1,55 +1,72 @@
-# ADR-0014: A practice pool is the terms the learner's tier can reach
+# ADR-0014: Drills only quiz a learner on terms their tier can reach
 
 - **Status:** accepted
 - **Date:** 2026-09-01
 
 ## Context
 
-What a drill may ask was an open question owned by nobody: the Vocab game
-([#98](https://github.com/maximsan/brewpath/issues/98)) and Flashcards
-([#97](https://github.com/maximsan/brewpath/issues/97)) each carried "are
-reference-only terms fair quiz material?", and neither could answer it alone.
+The dictionary holds about 73 coffee terms. Two practice drills quiz the learner
+on them: the Vocab game ([#98](https://github.com/maximsan/brewpath/issues/98))
+and Flashcards ([#97](https://github.com/maximsan/brewpath/issues/97)).
 
-[ADR-0007](0007-free-tier-is-the-first-three-lessons.md) had already named the
-rule — the practice vocab pool is the terms the free lessons **mention**, not
-the ones they teach — but nothing said how a mention is decided, and nothing in
-the app computed one.
+Both tickets asked the same question, and neither could answer it alone: **which
+terms may a drill quiz a free learner on?**
+
+Two things stood in the way.
+
+First, not every term is taught. Most have a lesson that teaches them. About
+eight do not — words you meet on a coffee bag rather than in the course. We call
+those **reference terms**, and `docs/decisions.md` §12 says they are for paying
+learners only.
+
+Second, a free learner owns 3 of the 32 lessons
+([ADR-0007](0007-free-tier-is-the-first-three-lessons.md)). That ADR said a drill
+should use the terms those free lessons *mention*, not only the ones they
+*teach*, because teaching alone leaves too few terms to fill a round. But it
+never said how to tell whether a lesson mentions a term.
 
 ## Decision
 
-**A practice pool is whatever the learner's tier can reach.** Plus is drilled on
-the whole glossary, reference terms included. Free is drilled on the **lesson
-terms its free lessons mention** — never a reference term, which
-`docs/decisions.md` §12 rules premium whatever mentions it.
+A drill quizzes a learner only on terms their tier can reach.
 
-**A mention is a term's name or one of its aliases appearing as a whole word in
-a lesson's *visible* copy** — what a card renders, not the authored data it does
-not (a cue's `tell` is an id; a visual card's subject is an axis slug). Whole
-word, or *scale* reads as a mention of *SCA*.
+- **Paying learner:** every term, reference terms included.
+- **Free learner:** the term must be taught by some lesson *and* be named in one
+  of the three free lessons. Never a reference term, even if a free lesson
+  happens to name one.
 
-**The pool is derived on every read and its size is stored nowhere**, which is
-what makes ADR-0007's promise — that widening the free tier is a change to one
-list — true rather than aspirational.
+A lesson **mentions** a term when the term's name, or one of its aliases,
+appears as a whole word in the text that lesson puts on screen. Both parts of
+that matter:
 
-#97 inherits this and owes no decision of its own.
+- *Whole word*, so that "scale" does not count as a mention of the term "SCA".
+- *Text on screen*, because a lesson card also carries data the app never
+  displays, such as an internal id or a colour value. Searching that too would
+  let a lesson "mention" a word the learner never sees.
+
+We never store how many terms a tier gets. We work it out from the list of free
+lessons each time it is needed. ADR-0007 promised that widening the free tier is
+a change to that one list; a stored count would break that promise.
+
+Flashcards (#97) uses this rule and does not decide it again.
 
 ## Consequences
 
-**What a drill may ask is not what the dictionary may show.** §12 governs the
-latter and [#217](https://github.com/maximsan/brewpath/issues/217) builds it;
-the two rules agree that reference terms are premium, and differ deliberately on
-lesson terms — a free learner may *read* one the course has not reached, and may
-not be *drilled* on it, because a question implies the course taught you. Neither
-rule may be adjusted to match the other by anyone who notices they differ.
+**Reading a term and being quizzed on it are different, on purpose.** §12 decides
+what the dictionary *shows*; this ADR decides what a drill *asks*. Both agree
+reference terms are paid-only. They differ on taught terms: a free learner can
+look up a term from lesson 20 and read it, but will never be quizzed on it.
+Looking a word up is fine; being asked it implies the course taught you, and it
+has not. If someone later notices the two rules differ, that is intended. Please
+do not change one to match the other.
 
-Both sides of a generated round are drawn from this one list, so scoping cannot
-be half-applied: a premium term cannot reach a free learner as a wrong answer
-either.
+**A question's wrong answers come from the same list as its right one**, so a
+paid-only term cannot slip in as one of the three wrong options either.
 
-The cost is that the pool follows lesson prose — re-authoring a free lesson can
-move it with no rule touched. Accepted, and bounded by tests asserting
-properties rather than totals: that free can fill the shortest round, and that
-it sits strictly between the taught-by reading and the glossary.
+**The pool follows the lesson text.** If someone rewrites a free lesson and the
+word "crema" drops out of it, that term quietly leaves the free pool — no rule
+changed, only the wording. We accepted that. The tests check statements like "a
+free learner has enough terms to play a round" rather than exact numbers, so
+ordinary rewording does not fail the build.
 
-Revisit if the mention rule has to survive a language whose word boundaries are
-not spaces.
+**Revisit this** if the course is ever translated into a language that does not
+put spaces between words, because the whole-word rule assumes spaces.
