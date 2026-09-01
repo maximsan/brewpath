@@ -5,45 +5,32 @@
 
 ## Context
 
-The domain model defines four practice types (mini-games, vocab game,
-flashcards, lesson replay); the streak counts all four
-([#33](https://github.com/maximsan/brewpath/issues/33)), the daily allowance
-counts all four ([#65](https://github.com/maximsan/brewpath/issues/65)), and
-Keep Sharp recommends all four from the Learn tab
-([#56](https://github.com/maximsan/brewpath/issues/56)). Yet the tab's
-`PRACTICE AGAIN` section (`screens.jsx:864-902`) lists only two — completed
-Lessons and Mini-games. The Vocab game and Flashcards live two taps away on
-Dictionary Home, even though they are a free user's *cheapest* streak paths
-(one activity protects the day; mini-games cost both under the daily cap).
+The domain model has four practice types — mini-games, the vocab game,
+flashcards, lesson replay — and the streak, the daily allowance and Keep Sharp
+all count all four. The Learn tab listed only two. The missing two are a free
+learner's cheapest streak paths: one activity protects the day, where
+mini-games cost both under the daily cap.
 
 ## Decision
 
-The section lists **all four practice types**. It renames to **`PRACTICE`**,
-and the Vocab game and Flashcards join as **slim rows** (single entry points,
-not collapsible groups). *Shape amended when the prototype landed (22 Aug
-2026, owner-accepted): the two rows lead the **Games** group as its first
-entries, marked FREE, rather than sitting beside the groups — one container
-for everything playable.*
-Both rows are **free with no lock treatment** — they are content-scoped, never
-feature-gated. This is an **explicit invention** over the prototype (the Keep
-Sharp precedent), ruled at
-[#182](https://github.com/maximsan/brewpath/issues/182).
+The section renames to **`PRACTICE`** and lists **all four types**. The vocab
+game and flashcards lead the Games group as its first entries, slim rows
+marked FREE (owner-accepted shape, 22 Aug 2026). Both are free with no lock
+treatment — content-scoped, never feature-gated — an explicit invention over
+the prototype, ruled at
+[practice rows](https://github.com/maximsan/brewpath/issues/182).
 
-**This adds an entry point and nothing else.** The rows open the same two
-surfaces Dictionary Home's quick chips open; the chips remain; pools, tier
-scoping, streak and allowance accounting are untouched, and no new state
-exists anywhere.
+**This adds entry points and nothing else.** The rows open the same surfaces
+Dictionary Home's quick chips open; the chips remain; pools, tier scoping,
+streak and allowance accounting are untouched; no new state exists.
 
 ## Consequences
 
-Free streak paths become discoverable where practice lives, feeding the daily
-loop that surfaces the paywall. Each row lands with its surface's build
-([#97](https://github.com/maximsan/brewpath/issues/97),
-[#98](https://github.com/maximsan/brewpath/issues/98)); the rename rides
-whichever builds first. The empty flashcards deck must not be a dead end —
-behavior defers to #97's open question, answered once for both entry points.
-The design docs describing `LearnTab` (`docs/design/07-components.md`, §4 IA)
-must be updated when the rows ship, and the prototype backfill batch
-([#154](https://github.com/maximsan/brewpath/issues/154)) carries the design
-prompt. Revisit if the practice family gains a fifth type — the section and
-Keep Sharp's rotation must stay the same list.
+Each row lands with its surface's build
+([flashcards](https://github.com/maximsan/brewpath/issues/97),
+[vocab game](https://github.com/maximsan/brewpath/issues/98)); the rename
+rides whichever builds first. An empty flashcards deck must not be a dead
+end — answered once, for both entry points, on the flashcards ticket.
+
+**Revisit if** the practice family gains a fifth type: this section and Keep
+Sharp's rotation must stay the same list.
