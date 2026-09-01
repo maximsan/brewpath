@@ -2139,6 +2139,208 @@ class ProgressSnapshotsCompanion extends UpdateCompanion<SnapshotRow> {
   }
 }
 
+class $AppInstallsTable extends AppInstalls
+    with TableInfo<$AppInstallsTable, InstallRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AppInstallsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _installedAtMeta = const VerificationMeta(
+    'installedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> installedAt = GeneratedColumn<DateTime>(
+    'installed_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, installedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'app_installs';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<InstallRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('installed_at')) {
+      context.handle(
+        _installedAtMeta,
+        installedAt.isAcceptableOrUnknown(
+          data['installed_at']!,
+          _installedAtMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_installedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  InstallRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return InstallRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      installedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}installed_at'],
+      )!,
+    );
+  }
+
+  @override
+  $AppInstallsTable createAlias(String alias) {
+    return $AppInstallsTable(attachedDatabase, alias);
+  }
+}
+
+class InstallRow extends DataClass implements Insertable<InstallRow> {
+  final int id;
+
+  /// The instant the database was created, which is the app's first run.
+  final DateTime installedAt;
+  const InstallRow({required this.id, required this.installedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['installed_at'] = Variable<DateTime>(installedAt);
+    return map;
+  }
+
+  AppInstallsCompanion toCompanion(bool nullToAbsent) {
+    return AppInstallsCompanion(id: Value(id), installedAt: Value(installedAt));
+  }
+
+  factory InstallRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return InstallRow(
+      id: serializer.fromJson<int>(json['id']),
+      installedAt: serializer.fromJson<DateTime>(json['installedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'installedAt': serializer.toJson<DateTime>(installedAt),
+    };
+  }
+
+  InstallRow copyWith({int? id, DateTime? installedAt}) => InstallRow(
+    id: id ?? this.id,
+    installedAt: installedAt ?? this.installedAt,
+  );
+  InstallRow copyWithCompanion(AppInstallsCompanion data) {
+    return InstallRow(
+      id: data.id.present ? data.id.value : this.id,
+      installedAt: data.installedAt.present
+          ? data.installedAt.value
+          : this.installedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('InstallRow(')
+          ..write('id: $id, ')
+          ..write('installedAt: $installedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, installedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is InstallRow &&
+          other.id == this.id &&
+          other.installedAt == this.installedAt);
+}
+
+class AppInstallsCompanion extends UpdateCompanion<InstallRow> {
+  final Value<int> id;
+  final Value<DateTime> installedAt;
+  const AppInstallsCompanion({
+    this.id = const Value.absent(),
+    this.installedAt = const Value.absent(),
+  });
+  AppInstallsCompanion.insert({
+    this.id = const Value.absent(),
+    required DateTime installedAt,
+  }) : installedAt = Value(installedAt);
+  static Insertable<InstallRow> custom({
+    Expression<int>? id,
+    Expression<DateTime>? installedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (installedAt != null) 'installed_at': installedAt,
+    });
+  }
+
+  AppInstallsCompanion copyWith({
+    Value<int>? id,
+    Value<DateTime>? installedAt,
+  }) {
+    return AppInstallsCompanion(
+      id: id ?? this.id,
+      installedAt: installedAt ?? this.installedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (installedAt.present) {
+      map['installed_at'] = Variable<DateTime>(installedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AppInstallsCompanion(')
+          ..write('id: $id, ')
+          ..write('installedAt: $installedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2151,6 +2353,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $ModuleProgressRecordsTable(this);
   late final $ProgressSnapshotsTable progressSnapshots =
       $ProgressSnapshotsTable(this);
+  late final $AppInstallsTable appInstalls = $AppInstallsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2161,6 +2364,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     userSettings,
     moduleProgressRecords,
     progressSnapshots,
+    appInstalls,
   ];
 }
 
@@ -3253,6 +3457,137 @@ typedef $$ProgressSnapshotsTableProcessedTableManager =
       SnapshotRow,
       PrefetchHooks Function()
     >;
+typedef $$AppInstallsTableCreateCompanionBuilder =
+    AppInstallsCompanion Function({
+      Value<int> id,
+      required DateTime installedAt,
+    });
+typedef $$AppInstallsTableUpdateCompanionBuilder =
+    AppInstallsCompanion Function({Value<int> id, Value<DateTime> installedAt});
+
+class $$AppInstallsTableFilterComposer
+    extends Composer<_$AppDatabase, $AppInstallsTable> {
+  $$AppInstallsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get installedAt => $composableBuilder(
+    column: $table.installedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$AppInstallsTableOrderingComposer
+    extends Composer<_$AppDatabase, $AppInstallsTable> {
+  $$AppInstallsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get installedAt => $composableBuilder(
+    column: $table.installedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$AppInstallsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $AppInstallsTable> {
+  $$AppInstallsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get installedAt => $composableBuilder(
+    column: $table.installedAt,
+    builder: (column) => column,
+  );
+}
+
+class $$AppInstallsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $AppInstallsTable,
+          InstallRow,
+          $$AppInstallsTableFilterComposer,
+          $$AppInstallsTableOrderingComposer,
+          $$AppInstallsTableAnnotationComposer,
+          $$AppInstallsTableCreateCompanionBuilder,
+          $$AppInstallsTableUpdateCompanionBuilder,
+          (
+            InstallRow,
+            BaseReferences<_$AppDatabase, $AppInstallsTable, InstallRow>,
+          ),
+          InstallRow,
+          PrefetchHooks Function()
+        > {
+  $$AppInstallsTableTableManager(_$AppDatabase db, $AppInstallsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AppInstallsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AppInstallsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$AppInstallsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<DateTime> installedAt = const Value.absent(),
+              }) => AppInstallsCompanion(id: id, installedAt: installedAt),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required DateTime installedAt,
+              }) =>
+                  AppInstallsCompanion.insert(id: id, installedAt: installedAt),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$AppInstallsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $AppInstallsTable,
+      InstallRow,
+      $$AppInstallsTableFilterComposer,
+      $$AppInstallsTableOrderingComposer,
+      $$AppInstallsTableAnnotationComposer,
+      $$AppInstallsTableCreateCompanionBuilder,
+      $$AppInstallsTableUpdateCompanionBuilder,
+      (
+        InstallRow,
+        BaseReferences<_$AppDatabase, $AppInstallsTable, InstallRow>,
+      ),
+      InstallRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3267,4 +3602,6 @@ class $AppDatabaseManager {
       $$ModuleProgressRecordsTableTableManager(_db, _db.moduleProgressRecords);
   $$ProgressSnapshotsTableTableManager get progressSnapshots =>
       $$ProgressSnapshotsTableTableManager(_db, _db.progressSnapshots);
+  $$AppInstallsTableTableManager get appInstalls =>
+      $$AppInstallsTableTableManager(_db, _db.appInstalls);
 }

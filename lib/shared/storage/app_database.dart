@@ -170,6 +170,27 @@ class ProgressSnapshots extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// The one row saying when this account began — Profile's `Joined` line, ruled
+/// by [ADR-0013](../../../docs/adr/0013-the-joined-line-dates-the-install-and-old-devices-are-not-back-dated.md).
+///
+/// Its own table rather than a column on [UserSettings], because that row
+/// deliberately does not exist until the learner chooses something. Here the
+/// row's mere existence carries the fact: a database created before the stamp
+/// shipped has none, and that absence is what sends the line to its fallback.
+@DataClassName('InstallRow')
+class AppInstalls extends Table {
+  /// Primary-key id of the singleton install row.
+  static const int singletonId = 1;
+
+  IntColumn get id => integer()();
+
+  /// The instant the database was created, which is the app's first run.
+  DateTimeColumn get installedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 @DriftDatabase(
   tables: [
     ProgressRecords,
@@ -177,6 +198,7 @@ class ProgressSnapshots extends Table {
     UserSettings,
     ModuleProgressRecords,
     ProgressSnapshots,
+    AppInstalls,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -188,8 +210,17 @@ class AppDatabase extends _$AppDatabase {
   /// existing database rather than migrating it. It is invisible to users, and
   /// the persistence layer is scheduled for a destructive rebuild, so the
   /// rename would cost local data for no gain.
-  AppDatabase([QueryExecutor? executor])
-    : super(executor ?? driftDatabase(name: 'coffee_quest'));
+  ///
+  /// [clock] is injected so the install stamp written at creation is a test
+  /// input rather than the wall clock, the way `AccountWipe` takes its own.
+  /// Positional rather than named, unlike that one, because Dart forbids a
+  /// signature carrying both optional positional and named parameters and
+  /// `executor` is positional at every call site in the suite.
+  AppDatabase([QueryExecutor? executor, DateTime Function()? clock])
+    : _clock = clock ?? DateTime.now,
+      super(executor ?? driftDatabase(name: 'coffee_quest'));
+
+  final DateTime Function() _clock;
 
   /// Schema version that added the onboarding columns to `user_settings`.
   static const int _onboardingColumnsVersion = 3;
@@ -228,15 +259,28 @@ class AppDatabase extends _$AppDatabase {
   /// Schema version that added the daily reminder's two settings.
   static const int _dailyReminderVersion = 10;
 
+  /// Schema version that added the install stamp.
+  static const int _installStampVersion = 11;
+
   /// The current version is whichever migration landed last.
-  static const int _schemaVersion = _dailyReminderVersion;
+  static const int _schemaVersion = _installStampVersion;
 
   @override
   int get schemaVersion => _schemaVersion;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-    onCreate: (m) => m.createAll(),
+    // A created database *is* the install, so this is the one place that can
+    // record it without guessing (ADR-0013).
+    onCreate: (m) async {
+      await m.createAll();
+      await into(appInstalls).insert(
+        AppInstallsCompanion.insert(
+          id: const Value(AppInstalls.singletonId),
+          installedAt: _clock(),
+        ),
+      );
+    },
     onUpgrade: (m, from, to) async {
       // v1 → v2: review/mastery columns + the module-XP ledger table.
       if (from < 2) {
@@ -361,6 +405,15 @@ class AppDatabase extends _$AppDatabase {
       if (from < _dailyReminderVersion) {
         await m.addColumn(userSettings, userSettings.notificationsEnabled);
         await m.addColumn(userSettings, userSettings.dailyReminderTime);
+      }
+
+      // v10 → v11: the install stamp's table, created **empty**.
+      //
+      // The emptiness is the point, not an oversight. This device installed
+      // the app before anything recorded when, and the only instant available
+      // here is now — the one answer that is certainly wrong (ADR-0013).
+      if (from < _installStampVersion) {
+        await m.createTable(appInstalls);
       }
     },
   );

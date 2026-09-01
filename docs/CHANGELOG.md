@@ -59,6 +59,20 @@ You can always edit this file by hand instead — the helpers just save effort.
   not done yet waits until you have done it. With no cards, the drill still
   opens and explains what a deck is made of rather than turning you away.
 
+- **Profile closes on the two doors the design gives it.** Under the streak and
+  the challenge row there are now entry cards for the Studio and for Saved —
+  each an art well, an accent kicker, what it opens and a line saying what is
+  behind it. Saved counts what the shelf actually holds and opens it, so the
+  things you kept are findable from the page about you rather than only from a
+  bookmark in the header. The Studio door already existed; it now shares one
+  row pattern with Saved instead of carrying its own, so the two cannot drift
+  apart. It also keeps its Plus mark and still raises the offer rather than the
+  chooser — Saved carries no mark, because the shelf is free for everyone and
+  what Plus lifts is the cap on saving past five.
+
+  Terms and Privacy on the Plus sheet now wrap onto a second line instead of
+  running off the edge when the text is scaled up.
+
 - **You can hear how a term is said.** Twenty-four of the dictionary's
   seventy-three words carry a pronunciation, and the respelling beside them is
   now a speaker you can press. It is the phone's own voice, offline — nothing
@@ -460,6 +474,15 @@ You can always edit this file by hand instead — the helpers just save effort.
   gated, the design marks the gated card itself.
 
 ### Fixed
+
+- **Profile says the month you actually joined.** The closing line read the
+  first day you did anything, so someone who installed the app and did not
+  start for three weeks was told they joined the following month. The app now
+  records its own first run, and reads the line from that. Devices that were
+  installed before this shipped are not back-dated to today — they keep the
+  earliest-activity reading, which is at least a day they were here for.
+  Starting the course over leaves the date alone; deleting the account sets it
+  to now, because what is left behind is a fresh install.
 
 - **The dictionary opens on its subjects, not on every word it knows.** Eight
   categories, each with its own mark, what it covers and how many terms sit
