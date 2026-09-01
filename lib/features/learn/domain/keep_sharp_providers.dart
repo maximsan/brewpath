@@ -1,4 +1,5 @@
 import 'package:brew_path/core/utils/date_utils.dart';
+import 'package:brew_path/features/dictionary/domain/vocab_providers.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp_completion.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
@@ -43,9 +44,11 @@ Future<KeepSharpRecommendation?> keepSharpRecommendation(Ref ref) async {
   // across an async gap on a disposed ref.
   final formatsFuture = ref.watch(miniGameFormatsProvider.future);
   final completedFuture = ref.watch(completedLessonsProvider.future);
+  final poolsFuture = ref.watch(vocabPoolsProvider.future);
   final snapshotFuture = ref.watch(snapshotRepositoryProvider).read();
   final formats = await formatsFuture;
   final completed = await completedFuture;
+  final pools = await poolsFuture;
   final snapshot = await snapshotFuture;
 
   final resolution = keepSharpResolutionFor(
@@ -58,6 +61,7 @@ Future<KeepSharpRecommendation?> keepSharpRecommendation(Ref ref) async {
       snapshot.clearedByReset.dailyActivity[day] ?? const {},
     ),
     completedLessonIds: [for (final record in completed) record.lessonId],
+    drillableTermCount: pools.accessible.length,
   );
 
   return resolution == null
@@ -93,5 +97,6 @@ Future<bool> keepSharpAcknowledgedToday(Ref ref) async {
     recommendation.type,
     distinctGamesToday: distinctMiniGameIds(entriesToday).length,
     replayedToday: anyReplayToday(entriesToday),
+    vocabRoundToday: anyVocabRoundToday(entriesToday),
   );
 }

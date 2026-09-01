@@ -1,3 +1,4 @@
+import 'package:brew_path/core/utils/drill_bands.dart';
 import 'package:brew_path/features/lessons/domain/card_seed.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_run.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -27,27 +28,27 @@ void main() {
     });
   });
 
-  group('isCelebratoryRun', () {
+  group('isCelebratoryScore', () {
     test('four in five is celebratory — the mark itself counts', () {
-      expect(isCelebratoryRun(score: 4, total: 5), isTrue);
+      expect(isCelebratoryScore(score: 4, total: 5), isTrue);
     });
 
     test('below the mark is ordinary', () {
-      expect(isCelebratoryRun(score: 3, total: 5), isFalse);
+      expect(isCelebratoryScore(score: 3, total: 5), isFalse);
     });
 
     test('a perfect run celebrates', () {
-      expect(isCelebratoryRun(score: 6, total: 6), isTrue);
+      expect(isCelebratoryScore(score: 6, total: 6), isTrue);
     });
 
     test('a scoreless run is ordinary', () {
-      expect(isCelebratoryRun(score: 0, total: 6), isFalse);
+      expect(isCelebratoryScore(score: 0, total: 6), isFalse);
     });
 
     test(
       'a run with no rounds never celebrates, and never divides by zero',
       () {
-        expect(isCelebratoryRun(score: 0, total: 0), isFalse);
+        expect(isCelebratoryScore(score: 0, total: 0), isFalse);
       },
     );
   });

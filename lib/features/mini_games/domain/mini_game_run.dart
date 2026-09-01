@@ -5,10 +5,8 @@
 /// and all of it is testable without pumping a widget (#121).
 library;
 
+import 'package:brew_path/core/utils/drill_bands.dart';
 import 'package:brew_path/features/lessons/domain/card_seed.dart';
-
-/// The four-in-five mark the companion celebrates at.
-const double _celebrationMark = 0.8;
 
 /// The games whose kind renderers exist in this build.
 ///
@@ -83,18 +81,11 @@ int mintRunNonce() => mintLessonNonce();
 List<T> roundsForRun<T>(List<T> rounds, int nonce) =>
     shuffledBySeed(rounds, nonce);
 
-/// Whether the run earns the celebratory companion reaction.
-///
-/// At or above the four-in-five mark. A run with no rounds never celebrates,
-/// which also keeps the ratio from dividing by zero.
-bool isCelebratoryRun({required int score, required int total}) =>
-    total > 0 && score / total >= _celebrationMark;
-
 /// The supporting line under the score.
 String runEncouragement({required int score, required int total}) {
   if (total == 0) return 'Nothing to play here yet.';
   if (score == total) return 'A clean sweep. Every one of them.';
-  if (isCelebratoryRun(score: score, total: total)) {
+  if (isCelebratoryScore(score: score, total: total)) {
     return 'Sharp work — that is the mark.';
   }
   if (score == 0) return 'Every one of these is worth another look.';

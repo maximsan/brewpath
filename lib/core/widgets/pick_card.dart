@@ -26,11 +26,34 @@ class PickCard extends StatelessWidget {
   /// Whether this card is the current selection.
   final bool selected;
 
-  /// Called when the card is tapped.
-  final VoidCallback onTap;
+  /// Called when the card is tapped. **Null disables the card** — which is
+  /// what a caller passes for an option the rules cannot offer, because an
+  /// empty callback leaves the row announced as a button that does nothing.
+  final VoidCallback? onTap;
+
+  /// The design's wash over a card the learner cannot choose
+  /// (`dictionary-extras.jsx:367`'s `dim()`).
+  static const double _unavailableOpacity = 0.45;
+
+  /// Whether to draw this card as unavailable.
+  ///
+  /// Untappable is **not** the same as unavailable, and the design draws the
+  /// difference: it dims a deck below its minimum and a round length the pool
+  /// cannot fill, but leaves the whole-deck card — `pick-card selected` at
+  /// `cursor: default` — at full strength. A card that is already the answer
+  /// is a statement, not a refused choice, so only an unselected card with
+  /// nowhere to go is dimmed.
+  bool get _isUnavailable => onTap == null && !selected;
 
   @override
   Widget build(BuildContext context) {
+    final card = _card(context);
+    return _isUnavailable
+        ? Opacity(opacity: _unavailableOpacity, child: card)
+        : card;
+  }
+
+  Widget _card(BuildContext context) {
     final mood = context.mood;
     final borderColor = selected ? mood.accent : mood.rule;
     return Material(

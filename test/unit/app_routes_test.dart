@@ -128,6 +128,9 @@ void main() {
     'moduleSummary': HeaderTier.immersive,
     'miniGameIntro': HeaderTier.immersive,
     'miniGamePlay': HeaderTier.immersive,
+    // A drill, like a mini-game run: its own close button and no
+    // chrome, so nothing competes with the question being asked.
+    'vocabGame': HeaderTier.immersive,
     'onboardingName': HeaderTier.immersive,
   };
 

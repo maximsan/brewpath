@@ -355,7 +355,7 @@ review."*
 | Active coffee challenge | `ActiveBrewCard` → `onBrewLog` · `onBrewSkip` · `onBrewDismiss` · `onBrewCard` (7.4) | `brewChallenge` |
 | Saved challenges | `SavedBrewList` → `onBrewAction(ch, 'available')` · `onBrewUnsave` | the queue is non-empty **and** each entry's source lesson is reached |
 | **Duel card** | **button** → `onOpenDuel('hub')` | **`showDuel` only — v2** |
-| Practice again | per row: **`isGame ? onGame(it) : onLesson(it.id)`** | collapsible; groups Lessons and Mini-games |
+| **Practice** | per row: **`isGame ? onGame(it) : onLesson(it.id)`**; the drill rows → `onVocabGame` / `onFlashcards` | groups Lessons and Games. [ADR-0004](../adr/0004-learn-tab-practice-section-lists-all-four-practice-types.md) renames the section and puts the two dictionary drills at the head of **Games**, free and always visible, with no lock treatment. *Guess the term* shipped with [#98](https://github.com/maximsan/brewpath/issues/98); Flashcards joins the same row group with [#97](https://github.com/maximsan/brewpath/issues/97) |
 
 > ⚠️ **`LearnTab` accepts six props it never uses:** `onStreak`, `onOpenModule`,
 > `onOpenSaved`, `onOpenDictionary`, `onOpenTermOfDay`, `brewPathMode`. Saved and

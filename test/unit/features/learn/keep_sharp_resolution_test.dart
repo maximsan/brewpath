@@ -3,6 +3,8 @@
 //
 // The provider used to read the clock itself, so none of this was assertable
 // without pumping. Every case below injects the day.
+import 'package:brew_path/features/dictionary/domain/vocab_destination.dart';
+import 'package:brew_path/features/dictionary/domain/vocab_setup.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_destination.dart';
@@ -16,18 +18,29 @@ KeepSharpResolution? resolve({
   List<String> playable = _playable,
   Set<String> playedToday = const {},
   List<String> completed = const ['m1l1'],
+  int drillable = 0,
 }) => keepSharpResolutionFor(
   dayNumber: day,
   playableFormatIds: playable,
   formatsPlayedToday: playedToday,
   completedLessonIds: completed,
+  drillableTermCount: drillable,
 );
 
 /// A day whose rotation lands on [type], searched rather than hardcoded so the
 /// cases survive a change to the rotation order.
-int dayLandingOn(PracticeType type, {List<String> playable = _playable}) {
+int dayLandingOn(
+  PracticeType type, {
+  List<String> playable = _playable,
+  int drillable = 0,
+}) {
   for (var day = 0; day < PracticeType.values.length * 2; day++) {
-    if (resolve(day: day, playable: playable)?.type == type) return day;
+    final resolved = resolve(
+      day: day,
+      playable: playable,
+      drillable: drillable,
+    );
+    if (resolved?.type == type) return day;
   }
   fail('no day in one full rotation lands on $type');
 }
@@ -77,9 +90,47 @@ void main() {
       }
     });
 
-    test('vocab and flashcards stay out until their surfaces register', () {
-      // They qualify for the streak already; they have no screen.
-      expect(builtPracticeSurfaces, isNot(contains(PracticeType.vocabGame)));
+    test('the vocab game is offered once its pool can fill a question', () {
+      final day = dayLandingOn(
+        PracticeType.vocabGame,
+        drillable: vocabMinimumPool,
+      );
+
+      expect(
+        resolve(day: day, drillable: vocabMinimumPool)?.type,
+        PracticeType.vocabGame,
+      );
+    });
+
+    test('a pool too small for four options is never recommended', () {
+      // The card would state a rule the learner's material cannot satisfy —
+      // the same reason one playable mini-game format is never offered.
+      final day = dayLandingOn(
+        PracticeType.vocabGame,
+        drillable: vocabMinimumPool,
+      );
+
+      expect(
+        resolve(day: day, drillable: vocabMinimumPool - 1)?.type,
+        isNot(PracticeType.vocabGame),
+      );
+    });
+
+    test('the vocab CTA opens the drill, at its setup', () {
+      final day = dayLandingOn(
+        PracticeType.vocabGame,
+        drillable: vocabMinimumPool,
+      );
+
+      expect(
+        resolve(day: day, drillable: vocabMinimumPool)?.destination,
+        vocabGame,
+      );
+    });
+
+    test('flashcards stays out until its surface registers', () {
+      // It qualifies for the streak already; it has no screen.
+      expect(builtPracticeSurfaces, contains(PracticeType.vocabGame));
       expect(builtPracticeSurfaces, isNot(contains(PracticeType.flashcards)));
     });
   });

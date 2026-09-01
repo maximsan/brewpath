@@ -22,12 +22,15 @@ bool keepSharpRuleMet(
   PracticeType type, {
   required int distinctGamesToday,
   required bool replayedToday,
+  required bool vocabRoundToday,
 }) => switch (type) {
   PracticeType.miniGames => distinctGamesToday >= _twoDifferentGames,
   PracticeType.lessonReplay => replayedToday,
+  // One finished round, which is the rule the card states.
+  PracticeType.vocabGame => vocabRoundToday,
   // No surface, no records; a surface that registers brings its own rule
-  // input the same way the two above do.
-  PracticeType.vocabGame || PracticeType.flashcards => false,
+  // input the same way the three above do.
+  PracticeType.flashcards => false,
 };
 
 /// Whether any lesson was replayed among [entries] — one day's activity.
@@ -44,4 +47,12 @@ bool keepSharpRuleMet(
 /// inputs now come from one source, and none of them is stored for this.
 bool anyReplayToday(Iterable<String> entries) => entries.any(
   (entry) => parseActivityEntry(entry).type == ActivityType.replay,
+);
+
+/// Whether a vocab round was finished among [entries] — one day's activity.
+///
+/// Read off the same activity record every other rule here reads, so the
+/// drill's acknowledgement needs no counter of its own.
+bool anyVocabRoundToday(Iterable<String> entries) => entries.any(
+  (entry) => parseActivityEntry(entry).type == ActivityType.vocab,
 );

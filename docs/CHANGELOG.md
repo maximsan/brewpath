@@ -44,6 +44,26 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The dictionary has a game now.** *Guess the term* reads you a definition
+  and offers four words; you pick the one it describes. Choose a deck — the
+  terms you bookmarked, or everything you can reach — and how long a round runs
+  (5, 8 or 12), and only the lengths your deck can honestly fill are offered,
+  so a round never repeats a word to reach its number. Get one wrong and it
+  names the right term and offers you the full entry rather than just marking
+  you down. Finishing a round protects your streak, the same as a lesson does;
+  walking out mid-round counts for nothing.
+
+  What the game may ask you about is what your lessons have actually reached.
+  A free learner is drilled on the words their three free lessons say — and the
+  wrong answers come from that same set, so the game never quietly shows a term
+  it has not taught. With the course, it draws on the whole glossary. If your
+  lessons have not yet reached four words, the game says so and points you back
+  at them instead of padding the round out with words you have never met.
+
+  It is reachable from a chip on the dictionary's home, from a free row leading
+  the Learn tab's practice list, and from Today when it is the day's
+  recommendation.
+
 - **Profile closes on the two doors the design gives it.** Under the streak and
   the challenge row there are now entry cards for the Studio and for Saved —
   each an art well, an accent kicker, what it opens and a line saying what is
