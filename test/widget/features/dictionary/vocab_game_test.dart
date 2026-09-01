@@ -1,0 +1,363 @@
+// The drill end to end: setup, a round, the score — and what reaching the
+// score writes down.
+import 'dart:async';
+
+import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/core/utils/date_utils.dart';
+import 'package:brew_path/core/widgets/drill_results_view.dart';
+import 'package:brew_path/core/widgets/roast_meter.dart';
+import 'package:brew_path/features/dictionary/domain/vocab_providers.dart';
+import 'package:brew_path/features/dictionary/domain/vocab_round.dart';
+import 'package:brew_path/features/dictionary/domain/vocab_setup.dart';
+import 'package:brew_path/features/dictionary/presentation/vocab/vocab_copy.dart';
+import 'package:brew_path/features/dictionary/presentation/vocab/vocab_game_screen.dart';
+import 'package:brew_path/features/dictionary/presentation/vocab/vocab_teaching_view.dart';
+import 'package:brew_path/shared/models/content/dictionary_term.dart';
+import 'package:brew_path/shared/repositories/repository_providers.dart';
+import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../support/widget_harness.dart';
+
+DictionaryTerm _term(String id, String name, String category) => DictionaryTerm(
+  id: id,
+  term: name,
+  categoryId: category,
+  shortExplanation: 'The meaning of $name.',
+);
+
+/// Eight terms across two categories — enough for the Quick round, and enough
+/// that a same-category distractor always exists.
+final List<DictionaryTerm> _accessible = [
+  _term('arabica', 'Arabica', 'beans'),
+  _term('robusta', 'Robusta', 'beans'),
+  _term('cherry', 'Coffee Cherry', 'beans'),
+  _term('bean-belt', 'Bean Belt', 'beans'),
+  _term('crema', 'Crema', 'espresso'),
+  _term('espresso', 'Espresso', 'espresso'),
+  _term('tamp', 'Tamp', 'espresso'),
+  _term('shot', 'Shot', 'espresso'),
+];
+
+VocabPools _pools({List<DictionaryTerm>? accessible, int saved = 0}) {
+  final pool = accessible ?? _accessible;
+  return VocabPools(
+    accessible: pool,
+    saved: pool.take(saved).toList(),
+    categoryLabels: const {
+      'beans': 'Beans and Botany',
+      'espresso': 'Espresso',
+    },
+  );
+}
+
+Future<ProviderContainer> _pump(
+  WidgetTester tester, {
+  VocabPools? pools,
+}) async {
+  tester.view.physicalSize = const Size(500, 1600);
+  tester.view.devicePixelRatio = 1.0;
+  addTearDown(tester.view.resetPhysicalSize);
+  addTearDown(tester.view.resetDevicePixelRatio);
+
+  await useInMemoryDatabase();
+
+  final container = ProviderContainer(
+    overrides: [
+      vocabPoolsProvider.overrideWith((ref) async => pools ?? _pools()),
+    ],
+  );
+  addTearDown(container.dispose);
+
+  await tester.pumpWidget(
+    UncontrolledProviderScope(
+      container: container,
+      child: const MaterialApp(home: VocabGameScreen()),
+    ),
+  );
+  await tester.pumpAndSettle();
+  return container;
+}
+
+/// Answers the question on screen, correctly or not, and moves on.
+Future<void> answer(WidgetTester tester, {required bool correctly}) async {
+  final definition = tester.widget<Text>(
+    find.textContaining('The meaning of '),
+  );
+  final name = definition.data!
+      .replaceFirst('The meaning of ', '')
+      .replaceFirst('.', '');
+
+  final choices = find.byType(OutlinedButton);
+  final labels = [
+    for (var index = 0; index < choices.evaluate().length; index++)
+      tester
+          .widget<Text>(
+            find
+                .descendant(of: choices.at(index), matching: find.byType(Text))
+                .first,
+          )
+          .data,
+  ];
+  final wanted = correctly
+      ? labels.indexOf(name)
+      : labels.indexWhere((label) => label != name);
+
+  await tester.tap(choices.at(wanted));
+  await tester.pumpAndSettle();
+}
+
+/// Bounded pumps rather than `pumpAndSettle`: the results screen's companion
+/// animates indefinitely, so settling would never return.
+Future<void> settle(WidgetTester tester) async {
+  await tester.pump();
+  await tester.pump(const Duration(milliseconds: 400));
+}
+
+Future<void> playThrough(
+  WidgetTester tester, {
+  required int rounds,
+  bool correctly = true,
+}) async {
+  for (var round = 0; round < rounds; round++) {
+    await answer(tester, correctly: correctly);
+    final isLast = round == rounds - 1;
+    await tester.tap(find.text(isLast ? VocabCopy.seeScore : VocabCopy.next));
+    if (isLast) {
+      await settle(tester);
+    } else {
+      await tester.pumpAndSettle();
+    }
+  }
+}
+
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  group('leaving the drill', () {
+    testWidgets('close returns where the drill was opened from', (
+      tester,
+    ) async {
+      // Both entry points push, so Close pops: a learner who was browsing the
+      // dictionary gets the dictionary back rather than being dropped on Today
+      // having lost their place.
+      await useInMemoryDatabase();
+
+      final router = GoRouter(
+        initialLocation: '/learn',
+        routes: [
+          GoRoute(
+            path: '/learn',
+            name: AppRoutes.learn.name,
+            builder: (_, _) => const Scaffold(body: Text('where I was')),
+            routes: [
+              GoRoute(
+                path: AppRoutes.vocabGame.path,
+                name: AppRoutes.vocabGame.name,
+                builder: (_, _) => const VocabGameScreen(),
+              ),
+            ],
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            vocabPoolsProvider.overrideWith((ref) async => _pools()),
+          ],
+          child: MaterialApp.router(routerConfig: router),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      unawaited(router.pushNamed<void>(AppRoutes.vocabGame.name));
+      await tester.pumpAndSettle();
+      expect(find.text(VocabCopy.start), findsOneWidget);
+
+      await tester.tap(find.byTooltip('Close'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('where I was'), findsOneWidget);
+    });
+  });
+
+  group('setup', () {
+    testWidgets('opens on the deck and length choices', (tester) async {
+      await _pump(tester);
+
+      expect(find.text(VocabCopy.title), findsOneWidget);
+      expect(find.text(VocabCopy.deckHeading.toUpperCase()), findsOneWidget);
+      expect(find.text(VocabCopy.lengthHeading.toUpperCase()), findsOneWidget);
+      expect(find.text(VocabCopy.start), findsOneWidget);
+    });
+
+    testWidgets('offers only the lengths the pool can fill', (tester) async {
+      // Eight terms: Quick and Standard fit, Deep does not — and the one that
+      // does not is shown dimmed rather than hidden, so the ladder is legible.
+      await _pump(tester);
+
+      for (final length in vocabLengths) {
+        expect(find.text('$length'), findsOneWidget);
+      }
+      expect(
+        find.text(VocabCopy.lengthNames[vocabLengths.first]!),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('the saved deck is unavailable until four are saved', (
+      tester,
+    ) async {
+      await _pump(tester, pools: _pools(saved: vocabMinimumPool - 1));
+
+      expect(find.textContaining(VocabCopy.savedDeckShort), findsOneWidget);
+    });
+
+    testWidgets('a full saved shelf opens the deck and is the default', (
+      tester,
+    ) async {
+      await _pump(tester, pools: _pools(saved: vocabMinimumPool));
+
+      expect(find.textContaining(VocabCopy.savedDeckReady), findsOneWidget);
+    });
+  });
+
+  group('playing a round', () {
+    testWidgets('start deals a question with four choices', (tester) async {
+      await _pump(tester);
+
+      await tester.tap(find.text(VocabCopy.start));
+      await tester.pumpAndSettle();
+
+      expect(find.text(VocabCopy.questionLead.toUpperCase()), findsOneWidget);
+      expect(find.byType(OutlinedButton), findsNWidgets(vocabChoiceCount));
+      expect(find.byType(RoastMeter), findsOneWidget);
+    });
+
+    testWidgets('the way on is disabled until the question is answered', (
+      tester,
+    ) async {
+      await _pump(tester);
+      await tester.tap(find.text(VocabCopy.start));
+      await tester.pumpAndSettle();
+
+      final button = tester.widget<FilledButton>(
+        find.ancestor(
+          of: find.text(VocabCopy.next),
+          matching: find.byType(FilledButton),
+        ),
+      );
+
+      expect(button.onPressed, isNull);
+    });
+
+    testWidgets('a wrong answer still names the right term', (tester) async {
+      await _pump(tester);
+      await tester.tap(find.text(VocabCopy.start));
+      await tester.pumpAndSettle();
+
+      await answer(tester, correctly: false);
+
+      expect(find.textContaining('NOT QUITE'), findsOneWidget);
+      expect(find.text(VocabCopy.readEntry.toUpperCase()), findsNothing);
+      expect(find.text(VocabCopy.readEntry), findsOneWidget);
+    });
+  });
+
+  group('the score', () {
+    testWidgets('a clean run scores every round', (tester) async {
+      await _pump(tester);
+      await tester.tap(find.text(VocabCopy.start));
+      await tester.pumpAndSettle();
+
+      await playThrough(tester, rounds: vocabLengths.first);
+
+      expect(find.byType(DrillResultsView), findsOneWidget);
+      expect(
+        find.text('${vocabLengths.first} / ${vocabLengths.first}'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('a run of wrong answers scores none of them', (tester) async {
+      await _pump(tester);
+      await tester.tap(find.text(VocabCopy.start));
+      await tester.pumpAndSettle();
+
+      await playThrough(tester, rounds: vocabLengths.first, correctly: false);
+
+      expect(find.text('0 / ${vocabLengths.first}'), findsOneWidget);
+    });
+
+    testWidgets('change round returns to setup', (tester) async {
+      await _pump(tester);
+      await tester.tap(find.text(VocabCopy.start));
+      await tester.pumpAndSettle();
+      await playThrough(tester, rounds: vocabLengths.first);
+
+      await tester.tap(find.text(VocabCopy.changeRound));
+      await tester.pumpAndSettle();
+
+      expect(find.text(VocabCopy.start), findsOneWidget);
+    });
+  });
+
+  group('what a finished drill records', () {
+    testWidgets('reaching the score writes one qualifying activity', (
+      tester,
+    ) async {
+      final container = await _pump(tester);
+      await tester.tap(find.text(VocabCopy.start));
+      await tester.pumpAndSettle();
+
+      await playThrough(tester, rounds: vocabLengths.first);
+      await settle(tester);
+
+      final progress = (await container.read(snapshotRepositoryProvider).read())
+          .clearedByReset;
+      final today = epochDay(DateTime.now());
+
+      expect(progress.dailyActivity[today], hasLength(1));
+      expect(
+        parseActivityEntry(progress.dailyActivity[today]!.single).type,
+        ActivityType.vocab,
+      );
+      expect(progress.activeDays, contains(today));
+    });
+
+    testWidgets('an abandoned drill records nothing', (tester) async {
+      final container = await _pump(tester);
+      await tester.tap(find.text(VocabCopy.start));
+      await tester.pumpAndSettle();
+
+      // One question answered, then the learner leaves.
+      await answer(tester, correctly: true);
+
+      final progress = (await container.read(snapshotRepositoryProvider).read())
+          .clearedByReset;
+
+      expect(progress.dailyActivity, isEmpty);
+      expect(progress.activeDays, isEmpty);
+    });
+  });
+
+  group('a pool too small to drill', () {
+    testWidgets('shows the teaching state and never pads the round', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        pools: _pools(accessible: _accessible.take(3).toList()),
+      );
+
+      expect(find.byType(VocabTeachingView), findsOneWidget);
+      expect(find.text(VocabCopy.teachingTitle), findsOneWidget);
+      expect(find.text(VocabCopy.start), findsNothing);
+    });
+  });
+}

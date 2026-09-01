@@ -6,6 +6,8 @@
 library;
 
 import 'package:brew_path/core/utils/date_utils.dart';
+import 'package:brew_path/features/dictionary/domain/vocab_destination.dart';
+import 'package:brew_path/features/dictionary/domain/vocab_setup.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_destination.dart';
 import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
@@ -19,7 +21,7 @@ enum PracticeType {
   /// intro. Two different ones mark the day (§5, #59).
   miniGames,
 
-  /// The vocabulary game. No surface yet; registers when built.
+  /// The vocabulary game — *Guess the term*.
   vocabGame,
 
   /// Flashcard review of saved terms. No surface yet; registers when built.
@@ -29,11 +31,13 @@ enum PracticeType {
   lessonReplay,
 }
 
-/// The practice types with a surface in this build. Vocab game and flashcards
-/// have no screens yet; they join the rotation by joining this set — no
-/// schema change, no new decision (#120's eligibility registry).
+/// The practice types with a surface in this build. Flashcards has no screen
+/// yet; it joins the rotation by joining this set — no schema change, no new
+/// decision (#120's eligibility registry). The vocab game joined here when its
+/// screen landed (#98), which is the whole ceremony the registry asks for.
 const Set<PracticeType> builtPracticeSurfaces = {
   PracticeType.miniGames,
+  PracticeType.vocabGame,
   PracticeType.lessonReplay,
 };
 
@@ -106,10 +110,15 @@ KeepSharpResolution? keepSharpResolutionFor({
   required List<String> playableFormatIds,
   required Set<String> formatsPlayedToday,
   required List<String> completedLessonIds,
+  int drillableTermCount = 0,
 }) {
   final eligible = {
     if (playableFormatIds.length >= miniGamesPerQualifyingDay)
       PracticeType.miniGames,
+    // The drill's own rule, asked of the learner's material: a pool that
+    // cannot fill four options cannot honestly be recommended, and the card
+    // must never ask for something the material makes impossible.
+    if (drillableTermCount >= vocabMinimumPool) PracticeType.vocabGame,
     if (completedLessonIds.isNotEmpty) PracticeType.lessonReplay,
   }.intersection(builtPracticeSurfaces);
 
@@ -128,8 +137,11 @@ KeepSharpResolution? keepSharpResolutionFor({
         keepSharpDailyChoice(dayNumber, completedLessonIds),
       ),
     ),
-    // Gated out by `builtPracticeSurfaces` until their surfaces register.
-    PracticeType.vocabGame || PracticeType.flashcards => null,
+    // The drill's setup, not a round: the deck and the length are the
+    // learner's to choose, and dealing straight into a round takes that away.
+    PracticeType.vocabGame => (type: pick, destination: vocabGame),
+    // Gated out by `builtPracticeSurfaces` until its surface registers.
+    PracticeType.flashcards => null,
   };
 }
 

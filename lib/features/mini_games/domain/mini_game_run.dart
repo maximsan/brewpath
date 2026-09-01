@@ -5,10 +5,8 @@
 /// and all of it is testable without pumping a widget (#121).
 library;
 
+import 'package:brew_path/core/utils/drill_bands.dart';
 import 'package:brew_path/features/lessons/domain/card_seed.dart';
-
-/// The four-in-five mark the companion celebrates at.
-const double _celebrationMark = 0.8;
 
 /// The games whose kind renderers exist in this build.
 ///
@@ -85,10 +83,10 @@ List<T> roundsForRun<T>(List<T> rounds, int nonce) =>
 
 /// Whether the run earns the celebratory companion reaction.
 ///
-/// At or above the four-in-five mark. A run with no rounds never celebrates,
-/// which also keeps the ratio from dividing by zero.
+/// The mark is the drills' shared one, not this game's own — see
+/// [isCelebratoryScore].
 bool isCelebratoryRun({required int score, required int total}) =>
-    total > 0 && score / total >= _celebrationMark;
+    isCelebratoryScore(score: score, total: total);
 
 /// The supporting line under the score.
 String runEncouragement({required int score, required int total}) {

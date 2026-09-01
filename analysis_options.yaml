@@ -116,6 +116,14 @@ dart_code_linter:
           # matters: that they still match `prototype/bean-anatomy.jsx`.
           - lib/features/lessons/presentation/cards/bagpick_bean.dart
           - lib/features/lessons/presentation/cards/bagpick_bean_view.dart
+          # The vocab game's mark — a speech bubble with a question mark,
+          # transcribed curve for curve from `prototype/screens.jsx:1147` on
+          # its own 20-unit box. The bubble's own anchors are named; what is
+          # left is the question mark's four bezier control points, which are
+          # meaningless individually and whose only useful property is that
+          # they still match the design source. Same reason `bean_shape.dart`
+          # and the guide marks are here.
+          - lib/features/dictionary/presentation/vocab/vocab_mark.dart
           - lib/features/companion/presentation/roasty.dart
           - lib/features/companion/presentation/roasty_animation.dart
           - lib/features/companion/presentation/roasty_body.dart

@@ -6,7 +6,7 @@
 ## Tabs (v1)
 | Tab | Screen | Content |
 |---|---|---|
-| **Today** (tab id `learn`) | `LearnTab` | Date header, freeze-save notice, Continue Learning card, active Coffee Challenge, saved challenges, Practice Again (collapsible: Lessons, Mini-games) |
+| **Today** (tab id `learn`) | `LearnTab` | Date header, freeze-save notice, Continue Learning card, active Coffee Challenge, saved challenges, **Practice** (Lessons, Games — the Games group led by the free dictionary drills, then the mini-game catalog by kind; [ADR-0004](../adr/0004-learn-tab-practice-section-lists-all-four-practice-types.md)) |
 | **Path** | `PathTab` | Vertical module path with lesson nodes, mastery bean fill, coffee-challenge nodes, and the four named coming-soon modules (`ComingSoonPath`) |
 | **Cards** | `CardsTab` | Collectible card grid; tap → `CardSheet` |
 | **Profile** | `ProfileTab` | Tree hero, streak card + week strip, points line, mastery rollup, coffee-challenge stat, Studio card, Saved card, joined date |
