@@ -36,6 +36,15 @@
         <string>C617.1</string>
       </array>
     </dict>
+
+    <!--
+      No UserDefaults entry, deliberately. #166 expected one, on the assumption
+      that shared_preferences was in the tree — it is not, and nothing in the app
+      or in ios/Runner touches NSUserDefaults. The one component in the bundle
+      that does, GoogleUtilities-UserDefaults, declares CA92.1 in its own
+      manifest. Declaring it here as well would claim an access the app does not
+      make. Add it if shared_preferences ever arrives.
+    -->
   </array>
 </dict>
 </plist>

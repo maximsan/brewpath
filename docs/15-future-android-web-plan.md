@@ -42,7 +42,9 @@ The following components require **no changes** to run on Android or Web:
 
 - [ ] `package:sqlite3` 3.x builds the native library itself through a Dart build
       hook, on Android as on iOS — no extra package needed. (`sqlite3_flutter_libs`
-      used to do this and was dropped in #166; it is an empty stub from 0.6.0 on.)
+      used to do this; dropped in
+      [#166](https://github.com/maximsan/brewpath/issues/166), see the note in
+      `pubspec.yaml`.)
 - [ ] Verify `AppDatabase` opens on the Android Emulator — no code changes required
 - [ ] Run `flutter test integration_test/ -d emulator-5554` and confirm smoke test passes
 
