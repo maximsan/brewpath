@@ -333,14 +333,14 @@ void main() {
     ) async {
       await tester.pumpWidget(_host(_bagpick, _Signals()));
       await call(tester, 'Natural');
-      final wrong = tester.widget<Text>(find.text('Washed, actually.'));
+      final wrong = tester.widget<Text>(find.text('WASHED, ACTUALLY'));
 
       // A bare re-pump reuses the same State, so the card would still be
       // latched on the wrong call and never reach the right one.
       await tester.pumpWidget(const SizedBox.shrink());
       await tester.pumpWidget(_host(_bagpick, _Signals()));
       await call(tester, 'Washed');
-      final right = tester.widget<Text>(find.text('Called it.'));
+      final right = tester.widget<Text>(find.text('CALLED IT'));
 
       expect(
         right.style?.color,
@@ -350,8 +350,8 @@ void main() {
     });
 
     for (final (process, verdict) in [
-      ('Washed', 'Called it.'),
-      ('Natural', 'Washed, actually.'),
+      ('Washed', 'CALLED IT'),
+      ('Natural', 'WASHED, ACTUALLY'),
     ]) {
       testWidgets('$verdict is announced, not only drawn', (tester) async {
         // Colour is what separates right from wrong here, and colour is the

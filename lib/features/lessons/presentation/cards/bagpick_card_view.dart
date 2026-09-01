@@ -1,3 +1,4 @@
+import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/core/widgets/dashed_rounded_border.dart';
 import 'package:brew_path/features/lessons/presentation/cards/bagpick_bean_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
@@ -12,6 +13,9 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
 /// How each process reads to a learner. The bank stores the key.
+/// The verdict on a call that was right.
+const String _calledIt = 'CALLED IT';
+
 const Map<String, String> _processLabels = {
   'washed': 'Washed',
   'honey': 'Honey',
@@ -74,11 +78,15 @@ class _BagpickCardViewState extends State<BagpickCardView> {
 
   bool get _wasCorrect => _called == widget.card.answer;
 
-  /// What the call came to. Named once, because it is both drawn and spoken
-  /// and the two must not be able to drift into saying different things.
+  /// What the call came to, in the design's own words — `CALLED IT`, or the
+  /// process it actually was (`bean-anatomy.jsx:261`).
+  ///
+  /// No full stop: it is a smallcaps kicker rather than a sentence, and the
+  /// app had been closing both readings with one the design does not write.
   String _verdict(BagpickCard card) => _wasCorrect
-      ? 'Called it.'
-      : '${_processLabels[card.answer] ?? card.answer}, actually.';
+      ? _calledIt
+      : '${(_processLabels[card.answer] ?? card.answer).toUpperCase()}'
+            ', ACTUALLY';
 
   /// Whether [cueId] is showing its text. Committing reveals them all, so the
   /// explanation can point at a cue the learner never opened.
@@ -145,29 +153,12 @@ class _BagpickCardViewState extends State<BagpickCardView> {
           revealAnswer: true,
         ),
         if (_latched) ...[
-          const SizedBox(height: AppSpacing.xs),
-          // Coloured by outcome, as the design's feedback block is. Right and
-          // wrong reading the same weight of type differ only in their
-          // wording, which a learner scanning back over a run will not catch.
-          //
-          // And announced as its own region, because colour is precisely what
-          // a screen reader cannot report. The option list marks the call, but
-          // only this line names the outcome, and it arrives with no focus
-          // change to bring a reader to it — the same rule the match board and
-          // the multi card's verdicts follow.
-          Semantics(
-            liveRegion: true,
-            label: _verdict(card),
-            excludeSemantics: true,
-            child: Text(
-              _verdict(card),
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                color: _wasCorrect ? context.mood.sage : context.mood.warn,
-              ),
-            ),
+          const SizedBox(height: AppSpacing.md),
+          AnswerFeedback(
+            verdict: _verdict(card),
+            outcome: _wasCorrect ? Verdict.right : Verdict.wrong,
+            explanation: card.explanation,
           ),
-          const SizedBox(height: AppSpacing.xxs),
-          Text(card.explanation, style: Theme.of(context).textTheme.bodyMedium),
         ],
       ],
     );

@@ -1,3 +1,4 @@
+import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -6,6 +7,10 @@ import 'package:flutter/material.dart';
 
 /// How long the explanation takes to appear once an answer is chosen.
 const _revealDuration = Duration(milliseconds: 200);
+
+/// The verdict on a self-check, in the design's own words (`dictionary.jsx`).
+const String _correct = 'CORRECT';
+const String _notQuite = 'NOT QUITE';
 
 /// A term's self-check: one question, a few choices, and an explanation that
 /// appears once the learner answers.
@@ -25,6 +30,13 @@ class TermSelfCheck extends StatefulWidget {
 
 class _TermSelfCheckState extends State<TermSelfCheck> {
   int? _chosen;
+
+  /// Whether the choice taken was the right one. False until one is taken,
+  /// which the verdict block never sees — it draws nothing until `_chosen`.
+  bool get _wasCorrect {
+    final chosen = _chosen;
+    return chosen != null && widget.check.choices[chosen].isCorrect;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,13 +75,18 @@ class _TermSelfCheckState extends State<TermSelfCheck> {
         // `performLayout` when asked to finish instantly, and the framework
         // asserts on it — so "no animation" has to mean no animator.
         if (reduceMotion)
-          _Explanation(chosen: _chosen, text: widget.check.explanation)
+          _Explanation(
+            chosen: _chosen,
+            wasCorrect: _wasCorrect,
+            text: widget.check.explanation,
+          )
         else
           AnimatedSize(
             duration: _revealDuration,
             alignment: Alignment.topCenter,
             child: _Explanation(
               chosen: _chosen,
+              wasCorrect: _wasCorrect,
               text: widget.check.explanation,
             ),
           ),
@@ -134,23 +151,33 @@ class _ChoiceTile extends StatelessWidget {
   }
 }
 
-/// The explanation under the choices, absent until the learner answers.
+/// The verdict under the choices, absent until the learner answers.
+///
+/// It used to reveal the explanation silently, with no verdict line and
+/// nothing announced — so a reader heard each tile's mark and never how the
+/// check went. It closes on the shared block now, like every graded surface.
 class _Explanation extends StatelessWidget {
-  const _Explanation({required this.chosen, required this.text});
+  const _Explanation({
+    required this.chosen,
+    required this.wasCorrect,
+    required this.text,
+  });
 
   final int? chosen;
+
+  /// Whether the choice they took was the right one.
+  final bool wasCorrect;
   final String text;
 
   @override
   Widget build(BuildContext context) {
     if (chosen == null) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.only(top: AppSpacing.xs),
-      child: Text(
-        text,
-        style: Theme.of(
-          context,
-        ).textTheme.bodySmall?.copyWith(color: context.mood.inkMute),
+      padding: const EdgeInsets.only(top: AppSpacing.sm),
+      child: AnswerFeedback.reference(
+        verdict: wasCorrect ? _correct : _notQuite,
+        outcome: wasCorrect ? Verdict.right : Verdict.wrong,
+        explanation: text,
       ),
     );
   }

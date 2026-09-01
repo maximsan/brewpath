@@ -1,9 +1,18 @@
+import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
 import 'package:brew_path/features/lessons/presentation/cards/choice_list.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
+
+/// The verdict five of the six picking kinds close on (`lesson.jsx:410`,
+/// `:1496`, `:1546`, `active-cards.jsx:227`).
+///
+/// `decision` and `tastefix` answer in their own words instead — see
+/// [PickerCopy.verdict].
+String defaultPickerVerdict({required bool wasCorrect}) =>
+    wasCorrect ? 'CORRECT' : 'NOT QUITE';
 
 /// The copy slots the three graded picking kinds fill differently.
 ///
@@ -20,6 +29,7 @@ class PickerCopy {
     this.title,
     this.scenario,
     this.footnote,
+    this.verdict = defaultPickerVerdict,
   });
 
   /// The question itself.
@@ -40,6 +50,12 @@ class PickerCopy {
 
   /// A closing line under the explanation — a takeaway, or a note.
   final String? footnote;
+
+  /// The line the verdict block leads with. Takes the outcome for the same
+  /// reason [explain] does: `decision` calls it *good call* against *that
+  /// would backfire*, and `tastefix` *good fix* — neither is a right-or-wrong
+  /// pair the default could reach.
+  final String Function({required bool wasCorrect}) verdict;
 }
 
 /// A graded card: pick one option, and the card latches on that choice.
@@ -115,10 +131,11 @@ class _GradedPickerState extends State<GradedPicker> {
           revealAnswer: true,
         ),
         if (_latched) ...[
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            copy.explain(wasCorrect: _wasCorrect),
-            style: theme.textTheme.bodyMedium,
+          const SizedBox(height: AppSpacing.md),
+          AnswerFeedback(
+            verdict: copy.verdict(wasCorrect: _wasCorrect),
+            outcome: _wasCorrect ? Verdict.right : Verdict.wrong,
+            explanation: copy.explain(wasCorrect: _wasCorrect),
           ),
           if (copy.footnote != null) ...[
             const SizedBox(height: AppSpacing.sm),

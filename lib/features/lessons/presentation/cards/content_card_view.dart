@@ -252,6 +252,10 @@ PickerCopy _decisionCopy(DecisionCard card) => PickerCopy(
   // has its own lesson, not a softer version of being right.
   explain: ({required wasCorrect}) =>
       wasCorrect ? card.rightExplanation : card.wrongExplanation,
+  // And its verdict answers the judgement rather than grading it: a decision
+  // is a call that pays off or backfires, not a fact you knew or did not.
+  verdict: ({required wasCorrect}) =>
+      wasCorrect ? 'GOOD CALL' : 'THAT WOULD BACKFIRE',
   footnote: card.note,
 );
 
@@ -266,6 +270,8 @@ PickerCopy _tastefixCopy(TastefixCard card) => PickerCopy(
   scenario: card.scenario,
   prompt: card.prompt,
   explain: ({required wasCorrect}) => card.explanation,
+  // A fix that worked, not an answer that was right.
+  verdict: ({required wasCorrect}) => wasCorrect ? 'GOOD FIX' : 'NOT QUITE',
 );
 
 /// The tasting clue takes the scenario slot: it is what the learner is reading

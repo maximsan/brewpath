@@ -1,3 +1,4 @@
+import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
 import 'package:brew_path/features/lessons/presentation/cards/match_board.dart';
@@ -6,6 +7,17 @@ import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
+
+/// The verdict on a board that was cleared without a wrong drop, and the two
+/// lines that explain either outcome — the design's own wording, which says
+/// what the all-first-time rule is rather than only that it was missed.
+const String _cleanBoard = 'CLEAN BOARD';
+const String _clearedClean =
+    'Every pair first time. That is the one that '
+    'counts.';
+const String _clearedNotClean =
+    'Cleared it, but not first time — the board only scores when every pair '
+    'lands on the first try.';
 
 /// A board of facts and the answers they sort into.
 ///
@@ -51,9 +63,15 @@ class MatchBoardView extends StatefulWidget {
 class _MatchBoardViewState extends State<MatchBoardView> {
   final Set<int> _placedFactIndices = {};
   int? _selectedFactIndex;
-  bool _faulted = false;
+
+  /// Wrong drops so far. A count rather than a flag because the design's
+  /// verdict names it — `2 WRONG DROPS` — and `_faulted` is derived from it so
+  /// the two cannot disagree about whether the board was clean.
+  int _wrongDrops = 0;
   bool _signalled = false;
   String? _feedback;
+
+  bool get _faulted => _wrongDrops > 0;
 
   bool get _cleared => matchBoardCleared(
     solvedCount: _placedFactIndices.length,
@@ -82,7 +100,7 @@ class _MatchBoardViewState extends State<MatchBoardView> {
         _placedFactIndices.add(selected);
         _feedback = null;
       } else {
-        _faulted = true;
+        _wrongDrops++;
         _feedback = 'Not that one — try it somewhere else.';
       }
     });
@@ -133,7 +151,16 @@ class _MatchBoardViewState extends State<MatchBoardView> {
             ),
           ),
         ],
-        if (_cleared) ..._verdict(theme, mood),
+        if (_cleared) ...[
+          const SizedBox(height: AppSpacing.md),
+          AnswerFeedback(
+            verdict: _faulted
+                ? '$_wrongDrops WRONG ${_wrongDrops == 1 ? 'DROP' : 'DROPS'}'
+                : _cleanBoard,
+            outcome: _faulted ? Verdict.wrong : Verdict.right,
+            explanation: _faulted ? _clearedNotClean : _clearedClean,
+          ),
+        ],
       ],
     );
   }
@@ -162,24 +189,4 @@ class _MatchBoardViewState extends State<MatchBoardView> {
       child: Text(target),
     ),
   );
-
-  /// What the board came to, announced as its own region — this line is the
-  /// card's score, and a learner who cannot see it still needs to hear it.
-  List<Widget> _verdict(ThemeData theme, MoodColors mood) {
-    final verdict = _faulted
-        ? 'Board cleared — but not on the first try.'
-        : 'Clean board.';
-    return [
-      const SizedBox(height: AppSpacing.sm),
-      Semantics(
-        liveRegion: true,
-        label: verdict,
-        excludeSemantics: true,
-        child: Text(
-          verdict,
-          style: theme.textTheme.bodyMedium?.copyWith(color: mood.inkMute),
-        ),
-      ),
-    ];
-  }
 }

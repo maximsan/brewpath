@@ -90,7 +90,7 @@ void main() {
     );
 
     expect(solved, 1);
-    expect(find.text('Clean board.'), findsOneWidget);
+    expect(find.text('CLEAN BOARD'), findsOneWidget);
   });
 
   // The rule this card exists for: the board still finishes, and still pays
@@ -108,10 +108,9 @@ void main() {
     );
 
     expect(solved, 0);
-    expect(
-      find.text('Board cleared — but not on the first try.'),
-      findsOneWidget,
-    );
+    // The design names the cost rather than only the miss: one wrong drop is
+    // `1 WRONG DROP`, and the count is why the board tracks drops not a flag.
+    expect(find.text('1 WRONG DROP'), findsOneWidget);
   });
 
   testWidgets('a wrong drop reacts in-card and leaves the fact in play', (

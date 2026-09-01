@@ -1,3 +1,4 @@
+import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
 import 'package:brew_path/features/lessons/presentation/cards/choice_list.dart';
@@ -104,10 +105,7 @@ class _MultiCardViewState extends State<MultiCardView> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final mood = context.mood;
-    // Named once, because it is both drawn and spoken and the two must not be
-    // able to drift into saying different things.
     final verdict = _wasCorrect ? _allCorrect : _notQuite;
 
     return CardShell(
@@ -129,25 +127,12 @@ class _MultiCardViewState extends State<MultiCardView> {
           onToggle: _toggle,
         ),
         if (_submitted) ...[
-          const SizedBox(height: AppSpacing.xs),
-          // Announced as its own region, as the match board's verdict is. The
-          // choice marks say what each row was; only this line says whether
-          // the card was passed, and it arrives with no focus change to bring
-          // a reader to it — so a learner who cannot see it hears every mark
-          // and never the outcome.
-          Semantics(
-            liveRegion: true,
-            label: verdict,
-            excludeSemantics: true,
-            child: Text(
-              verdict,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: _wasCorrect ? mood.sage : mood.berry,
-              ),
-            ),
+          const SizedBox(height: AppSpacing.md),
+          AnswerFeedback(
+            verdict: verdict,
+            outcome: _wasCorrect ? Verdict.right : Verdict.wrong,
+            explanation: widget.explanation,
           ),
-          const SizedBox(height: AppSpacing.xxs),
-          Text(widget.explanation, style: theme.textTheme.bodyMedium),
         ],
       ],
     );
