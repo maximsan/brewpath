@@ -95,10 +95,7 @@ class _CardsBody extends StatelessWidget {
               childAspectRatio: _tileAspect,
             ),
             delegate: SliverChildBuilderDelegate(
-              (context, index) => CardGridItemWidget(
-                placed: shown[index],
-                total: list.length,
-              ),
+              (context, index) => CardGridItemWidget(placed: shown[index]),
               childCount: shown.length,
             ),
           ),

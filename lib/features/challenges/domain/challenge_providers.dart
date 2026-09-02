@@ -1,5 +1,5 @@
 import 'package:brew_path/core/utils/date_utils.dart';
-import 'package:brew_path/features/cards/presentation/card_challenge_corner.dart';
+import 'package:brew_path/features/challenges/domain/card_challenge_state.dart';
 import 'package:brew_path/features/challenges/domain/challenge_bank.dart';
 import 'package:brew_path/features/challenges/domain/challenge_completion.dart';
 import 'package:brew_path/features/challenges/domain/challenge_lifecycle.dart';
@@ -49,16 +49,23 @@ Future<Set<String>> completedChallenges(Ref ref) async {
 /// be brewed, or one already brewed. The tile draws the last two differently —
 /// solid for done, dashed for an offer — so it needs to tell them apart, and
 /// the arithmetic lives here rather than in the widget.
+///
+/// **Every unbrewed challenge is an offer**, not only the one currently in
+/// play. The design's `challengeOpen` (`screens.jsx:1621`) is *earned, has a
+/// challenge, has not completed it* — so a learner sees every card that still
+/// owes them a brew, rather than the single one the lifecycle happens to have
+/// active. Reading the active challenge here would ring at most one tile and
+/// would blink off when its window lapsed.
 @riverpod
 Future<CardChallengeState> cardChallengeState(Ref ref, String cardId) async {
   if (await ref.watch(cardChallengeTriedProvider(cardId).future)) {
     return CardChallengeState.tried;
   }
 
-  final active = await ref.watch(activeChallengeProvider.future);
-  return active?.cardId == cardId
-      ? CardChallengeState.open
-      : CardChallengeState.none;
+  final bank = await ref.watch(challengeBankProvider.future);
+  return challengeForCard(bank, cardId) == null
+      ? CardChallengeState.none
+      : CardChallengeState.open;
 }
 
 /// Whether the challenge on [cardId] has been brewed.

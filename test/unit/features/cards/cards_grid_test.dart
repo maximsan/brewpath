@@ -84,6 +84,18 @@ void main() {
       expect(_places(grid), [1, 2, 3]);
     });
 
+    test('the number reads as a place in the whole set', () {
+      final grid = cardsGridItems([
+        testCardWithCollection('a', collected: true),
+        testCardWithCollection('b', collected: true),
+        testCardWithCollection('c', collected: false),
+      ]);
+
+      // Zero-padded to two, against the catalogue's size — not the grid's.
+      expect(formatCardPlace(grid.first), '01 / 3');
+      expect(formatCardPlace(grid.last), '03 / 3');
+    });
+
     test('an empty set draws nothing', () {
       expect(cardsGridItems(const []), isEmpty);
     });

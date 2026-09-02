@@ -6,6 +6,7 @@ import 'package:brew_path/features/cards/domain/cards_grid.dart';
 import 'package:brew_path/features/cards/presentation/card_challenge_corner.dart';
 import 'package:brew_path/features/cards/presentation/card_sheet.dart';
 import 'package:brew_path/features/cards/presentation/card_tint.dart';
+import 'package:brew_path/features/challenges/domain/card_challenge_state.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -31,6 +32,11 @@ const double _lockedMarkOpacity = 0.45;
 /// still says **which** card it is — `04 / 37` — so a gap in the collection is
 /// a known one rather than an anonymous blank.
 ///
+/// **The design's `VISUAL GUIDE` top line is not ported.** It replaces the
+/// `CARD NN` line for one kind, and no collectible in the bank is of that
+/// kind — the tint table keeps its row, so the branch comes back with the
+/// content rather than needing to be remembered.
+///
 /// **The artwork is the module's mark, not the card's own.** The design draws
 /// `CARD_ART[kind]` here — one illustration per collectible. All thirty-seven
 /// exist already, as static SVG in the prototype, and want extracting rather
@@ -39,23 +45,16 @@ const double _lockedMarkOpacity = 0.45;
 /// own.
 class CardGridItemWidget extends ConsumerWidget {
   /// Creates a [CardGridItemWidget].
-  const CardGridItemWidget({
-    required this.placed,
-    required this.total,
-    super.key,
-  });
+  const CardGridItemWidget({required this.placed, super.key});
 
-  /// The card, and where it sits in the catalogue.
+  /// The card, where it sits in the catalogue, and how big the catalogue is.
   final PlacedCard placed;
-
-  /// How many cards the catalogue holds.
-  final int total;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final item = placed.item;
     final mood = context.mood;
-    final number = formatCardPlace(placed.place, total);
+    final number = formatCardPlace(placed);
 
     if (!item.isCollected) {
       return Opacity(
@@ -94,10 +93,6 @@ class CardGridItemWidget extends ConsumerWidget {
     );
   }
 }
-
-/// `04 / 37` — the design's own padding and separator (`screens.jsx:2397`).
-String formatCardPlace(int place, int total) =>
-    '${place.toString().padLeft(2, '0')} / $total';
 
 /// The frame both branches share: a bordered card, its two lines pushed apart
 /// with whatever it draws in between.

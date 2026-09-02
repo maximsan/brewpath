@@ -19,7 +19,14 @@ import 'package:brew_path/features/cards/domain/cards_providers.dart';
 /// the grid shows gaps — 01, 04, 21 — and the number is what tells a learner
 /// *which* card this is rather than how many tiles precede it
 /// (`screens.jsx:2394`). It is 1-based, as the design prints it.
-typedef PlacedCard = ({CardWithCollection item, int place});
+typedef PlacedCard = ({CardWithCollection item, int place, int total});
+
+/// `04 / 37` — the design's own padding and separator (`screens.jsx:2397`).
+///
+/// Here rather than in the widget because it is arithmetic over the set, like
+/// everything else in this file, and it can be checked without pumping one.
+String formatCardPlace(PlacedCard placed) =>
+    '${placed.place.toString().padLeft(2, '0')} / ${placed.total}';
 
 /// The cards the grid draws, in authored order.
 ///
@@ -33,7 +40,7 @@ List<PlacedCard> cardsGridItems(List<CardWithCollection> all) {
   final shown = <PlacedCard>[];
   var teased = false;
   for (final (index, item) in all.indexed) {
-    final placed = (item: item, place: index + 1);
+    final placed = (item: item, place: index + 1, total: all.length);
     if (item.isCollected) {
       shown.add(placed);
     } else if (!teased) {

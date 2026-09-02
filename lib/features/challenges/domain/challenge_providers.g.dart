@@ -161,6 +161,13 @@ String _$completedChallengesHash() =>
 /// be brewed, or one already brewed. The tile draws the last two differently —
 /// solid for done, dashed for an offer — so it needs to tell them apart, and
 /// the arithmetic lives here rather than in the widget.
+///
+/// **Every unbrewed challenge is an offer**, not only the one currently in
+/// play. The design's `challengeOpen` (`screens.jsx:1621`) is *earned, has a
+/// challenge, has not completed it* — so a learner sees every card that still
+/// owes them a brew, rather than the single one the lifecycle happens to have
+/// active. Reading the active challenge here would ring at most one tile and
+/// would blink off when its window lapsed.
 
 @ProviderFor(cardChallengeState)
 final cardChallengeStateProvider = CardChallengeStateFamily._();
@@ -171,6 +178,13 @@ final cardChallengeStateProvider = CardChallengeStateFamily._();
 /// be brewed, or one already brewed. The tile draws the last two differently —
 /// solid for done, dashed for an offer — so it needs to tell them apart, and
 /// the arithmetic lives here rather than in the widget.
+///
+/// **Every unbrewed challenge is an offer**, not only the one currently in
+/// play. The design's `challengeOpen` (`screens.jsx:1621`) is *earned, has a
+/// challenge, has not completed it* — so a learner sees every card that still
+/// owes them a brew, rather than the single one the lifecycle happens to have
+/// active. Reading the active challenge here would ring at most one tile and
+/// would blink off when its window lapsed.
 
 final class CardChallengeStateProvider
     extends
@@ -188,6 +202,13 @@ final class CardChallengeStateProvider
   /// be brewed, or one already brewed. The tile draws the last two differently —
   /// solid for done, dashed for an offer — so it needs to tell them apart, and
   /// the arithmetic lives here rather than in the widget.
+  ///
+  /// **Every unbrewed challenge is an offer**, not only the one currently in
+  /// play. The design's `challengeOpen` (`screens.jsx:1621`) is *earned, has a
+  /// challenge, has not completed it* — so a learner sees every card that still
+  /// owes them a brew, rather than the single one the lifecycle happens to have
+  /// active. Reading the active challenge here would ring at most one tile and
+  /// would blink off when its window lapsed.
   CardChallengeStateProvider._({
     required CardChallengeStateFamily super.from,
     required String super.argument,
@@ -233,7 +254,7 @@ final class CardChallengeStateProvider
 }
 
 String _$cardChallengeStateHash() =>
-    r'8bedce13a568eea0410cec1908f9e90c9ee7a531';
+    r'b15e1791a5e19aaad2ab493d993acb01b86643ac';
 
 /// What [cardId]'s challenge is doing, as a tile shows it.
 ///
@@ -241,6 +262,13 @@ String _$cardChallengeStateHash() =>
 /// be brewed, or one already brewed. The tile draws the last two differently —
 /// solid for done, dashed for an offer — so it needs to tell them apart, and
 /// the arithmetic lives here rather than in the widget.
+///
+/// **Every unbrewed challenge is an offer**, not only the one currently in
+/// play. The design's `challengeOpen` (`screens.jsx:1621`) is *earned, has a
+/// challenge, has not completed it* — so a learner sees every card that still
+/// owes them a brew, rather than the single one the lifecycle happens to have
+/// active. Reading the active challenge here would ring at most one tile and
+/// would blink off when its window lapsed.
 
 final class CardChallengeStateFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<CardChallengeState>, String> {
@@ -259,6 +287,13 @@ final class CardChallengeStateFamily extends $Family
   /// be brewed, or one already brewed. The tile draws the last two differently —
   /// solid for done, dashed for an offer — so it needs to tell them apart, and
   /// the arithmetic lives here rather than in the widget.
+  ///
+  /// **Every unbrewed challenge is an offer**, not only the one currently in
+  /// play. The design's `challengeOpen` (`screens.jsx:1621`) is *earned, has a
+  /// challenge, has not completed it* — so a learner sees every card that still
+  /// owes them a brew, rather than the single one the lifecycle happens to have
+  /// active. Reading the active challenge here would ring at most one tile and
+  /// would blink off when its window lapsed.
 
   CardChallengeStateProvider call(String cardId) =>
       CardChallengeStateProvider._(argument: cardId, from: this);

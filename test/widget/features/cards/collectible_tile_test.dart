@@ -4,8 +4,8 @@ import 'package:brew_path/features/cards/presentation/card_challenge_corner.dart
 import 'package:brew_path/features/cards/presentation/card_sheet.dart';
 import 'package:brew_path/features/cards/presentation/card_tint.dart';
 import 'package:brew_path/features/cards/presentation/cards_screen.dart';
+import 'package:brew_path/features/challenges/domain/card_challenge_state.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
-import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,7 +25,6 @@ final List<CardWithCollection> _collection = [
 Future<void> _pump(
   WidgetTester tester, {
   Set<String> completedChallenges = const {},
-  BrewChallenge? active,
 }) async {
   tester.view.physicalSize = const Size(420, 1400);
   tester.view.devicePixelRatio = 1.0;
@@ -42,7 +41,6 @@ Future<void> _pump(
         completedChallengesProvider.overrideWith(
           (ref) async => completedChallenges,
         ),
-        activeChallengeProvider.overrideWith((ref) async => active),
       ],
       child: MaterialApp(
         theme: AppTheme.cupping,
@@ -123,10 +121,26 @@ void main() {
   });
 
   group('the challenge corner', () {
-    testWidgets('is absent when no challenge is in play', (tester) async {
+    testWidgets('marks only the card that has a challenge', (tester) async {
       await _pump(tester);
 
-      expect(find.byType(CardChallengeCorner), findsNothing);
+      // The bank attaches one challenge, to card `a`. Card `b` is earned and
+      // has none, so its corner is empty — the mark means *this card owes you
+      // a brew*, not *this card exists*.
+      expect(find.byType(CardChallengeCorner), findsOneWidget);
+    });
+
+    testWidgets('rings an unbrewed challenge, whether or not it is the one in '
+        'play', (tester) async {
+      await _pump(tester);
+
+      // Every unbrewed challenge is an offer (`screens.jsx:1621`). Reading the
+      // *active* challenge instead would ring at most one tile and would blink
+      // off when its window lapsed.
+      final corner = tester.widget<CardChallengeCorner>(
+        find.byType(CardChallengeCorner),
+      );
+      expect(corner.state, CardChallengeState.open);
     });
 
     testWidgets('stamps a card whose challenge is brewed', (tester) async {
@@ -136,15 +150,6 @@ void main() {
         find.byType(CardChallengeCorner),
       );
       expect(corner.state, CardChallengeState.tried);
-    });
-
-    testWidgets('rings a card whose challenge is waiting', (tester) async {
-      await _pump(tester, active: testChallenge(cardId: 'a'));
-
-      final corner = tester.widget<CardChallengeCorner>(
-        find.byType(CardChallengeCorner),
-      );
-      expect(corner.state, CardChallengeState.open);
     });
   });
 }

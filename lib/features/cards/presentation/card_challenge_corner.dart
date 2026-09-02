@@ -1,7 +1,7 @@
-import 'dart:math' as math;
-
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
+import 'package:brew_path/core/widgets/dashed_rounded_border.dart';
+import 'package:brew_path/features/challenges/domain/card_challenge_state.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -20,23 +20,15 @@ const double _triedBorder = 0.4;
 const double _openFill = 0.08;
 const double _openBorder = 0.5;
 
-/// What a card's Coffee Challenge is doing, as the tile shows it.
-enum CardChallengeState {
-  /// No challenge on this card, or none the learner can act on.
-  none,
-
-  /// There is one to brew — the design rings it, dashed, as an offer.
-  open,
-
-  /// Brewed. The design stamps it.
-  tried,
-}
-
 /// The mark in a tile's corner when its challenge is offered or done.
 ///
 /// Solid for a challenge that has been brewed, dashed for one still open: the
 /// design uses the same two languages the rest of the app does for *done* and
 /// *available*, so the pair reads without a legend.
+///
+/// The design writes the ring as a bare `1px dashed` and names no pattern, so
+/// it takes the app's own dash rhythm from [DashedRoundedBorder] rather than
+/// inventing a second one.
 class CardChallengeCorner extends StatelessWidget {
   const CardChallengeCorner._({required this.state});
 
@@ -57,6 +49,13 @@ class CardChallengeCorner extends StatelessWidget {
   Widget build(BuildContext context) {
     final mood = context.mood;
     final tried = state == CardChallengeState.tried;
+    final edge = BorderSide(
+      color: Color.lerp(
+        mood.rule,
+        mood.accent,
+        tried ? _triedBorder : _openBorder,
+      )!,
+    );
 
     return Semantics(
       label: tried ? 'Challenge tried' : 'Challenge to earn',
@@ -73,18 +72,10 @@ class CardChallengeCorner extends StatelessWidget {
           ),
           shape: tried
               ? RoundedRectangleBorder(
-                  side: BorderSide(
-                    color: Color.lerp(
-                      mood.rule,
-                      mood.accent,
-                      _triedBorder,
-                    )!,
-                  ),
+                  side: edge,
                   borderRadius: BorderRadius.circular(AppRadii.pill),
                 )
-              : _DashedCircleBorder(
-                  color: Color.lerp(mood.rule, mood.accent, _openBorder)!,
-                ),
+              : DashedRoundedBorder(radius: AppRadii.pill, side: edge),
         ),
         child: tried
             ? IconMark(AppIcon.check, size: _markSize, color: mood.accent)
@@ -95,69 +86,6 @@ class CardChallengeCorner extends StatelessWidget {
       ),
     );
   }
-}
-
-/// The design's dashed ring — an offer, not a state.
-class _DashedCircleBorder extends OutlinedBorder {
-  const _DashedCircleBorder({required this.color})
-    : super(side: BorderSide.none);
-
-  final Color color;
-
-  /// Dash and gap, in logical pixels on the ring itself.
-  static const double _dash = 3;
-  static const double _gap = 3;
-
-  @override
-  void paint(Canvas canvas, Rect rect, {TextDirection? textDirection}) {
-    final radius = rect.shortestSide / 2;
-    final centre = rect.center;
-    final circumference = 2 * math.pi * radius;
-    final step = (_dash + _gap) / radius;
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1;
-
-    for (var drawn = 0.0; drawn < circumference; drawn += _dash + _gap) {
-      final start = drawn / radius;
-      canvas.drawArc(
-        Rect.fromCircle(center: centre, radius: radius),
-        start,
-        step * (_dash / (_dash + _gap)),
-        false,
-        paint,
-      );
-    }
-  }
-
-  @override
-  void paintInterior(
-    Canvas canvas,
-    Rect rect,
-    Paint paint, {
-    TextDirection? textDirection,
-  }) => canvas.drawCircle(rect.center, rect.shortestSide / 2, paint);
-
-  @override
-  bool get preferPaintInterior => true;
-
-  @override
-  Path getInnerPath(Rect rect, {TextDirection? textDirection}) =>
-      getOuterPath(rect);
-
-  @override
-  Path getOuterPath(Rect rect, {TextDirection? textDirection}) =>
-      Path()..addOval(
-        Rect.fromCircle(center: rect.center, radius: rect.shortestSide / 2),
-      );
-
-  @override
-  ShapeBorder scale(double t) => this;
-
-  @override
-  _DashedCircleBorder copyWith({BorderSide? side, Color? color}) =>
-      _DashedCircleBorder(color: color ?? this.color);
 }
 
 /// The ringed dot inside an open challenge's corner (`screens.jsx:2437`).
