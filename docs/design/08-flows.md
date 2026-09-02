@@ -16,7 +16,7 @@ Open → Today shows the current lesson → Begin lesson → play 6–11 cards �
 3. If perfect → remember for the (v2) perfect-module gift.
 4. Award the lesson's `points` (10), mark complete.
 5. If last lesson in module → `module-complete` — the lesson recap does **not** play; the module screen replaces it — → *Turn it over* flips the screen to the collectible → Continue → module Coffee Challenge offer (`module-challenge`, if any; *Not now* saves it) → *(v2: perfect-module gift)* → next module's first lesson **if authored**, else Path.
-   ⚠️ **Dropped from this step: `module-card`.** Earlier revisions chained it after `module-complete`. It is unreachable in the running prototype — `continueFromModuleComplete` (`app.jsx:984`) is the only navigation to it and nothing calls it — and the collectible is the back of the flip instead. See [#230](https://github.com/maximsan/brewpath/issues/230) and ADR-0014.
+   ⚠️ **Dropped from this step: `module-card`.** Earlier revisions chained it after `module-complete`. It is unreachable in the running prototype — `continueFromModuleComplete` (`app.jsx:984`) is the only navigation to it and nothing calls it — and the collectible is the back of the flip instead. See [#230](https://github.com/maximsan/brewpath/issues/230) and ADR-0017.
 6. Otherwise → `lesson-complete` → Continue → next lesson **if authored**, else Path.
 
 ### Every reward screen is two phases, not one
