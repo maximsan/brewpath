@@ -93,6 +93,16 @@ You can always edit this file by hand instead — the helpers just save effort.
   the Learn tab's practice list, and from Today when it is the day's
   recommendation.
 
+- **The app now says on the record that it collects nothing.** Apple requires a
+  privacy manifest before a build can go to the store, and BrewPath ships one
+  that declares the truth: no tracking, no collected data, and a single
+  required-reason API — SQLite reading the size and date of its own database
+  file, which is how it opens the file at all. Firebase is compiled in but still
+  switched off, so there is nothing for it to declare. Turning telemetry on is
+  what would change this file, and the store's privacy labels with it. The build
+  now fails if the manifest ever stops reaching the app, because the alternative
+  is finding out from a rejection email.
+
 - **Profile closes on the two doors the design gives it.** Under the streak and
   the challenge row there are now entry cards for the Studio and for Saved —
   each an art well, an accent kicker, what it opens and a line saying what is
@@ -512,6 +522,14 @@ You can always edit this file by hand instead — the helpers just save effort.
   guard reads it instead of keeping a second copy.
 
 ### Removed
+
+- **A dependency that had stopped doing anything.** `sqlite3_flutter_libs` used
+  to compile SQLite into the app. From version 0.6.0 it is an empty package —
+  `package:sqlite3` builds SQLite itself now — and the version we were asking
+  for was that empty one. Writing the privacy manifest meant naming whatever
+  really puts SQLite in the binary, which is how it surfaced. Drift still pulls
+  the empty package in on its own, to keep the old build scripts out; we just no
+  longer claim to own it. Nothing about the database changes.
 
 - **Profile no longer carries settings.** The `Customize` grid — a Sound tile
   and a Haptics tile — is gone, and the heading with it. Both toggles already

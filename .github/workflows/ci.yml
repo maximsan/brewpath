@@ -119,6 +119,25 @@ jobs:
       - name: Verify build artifact
         run: ls -la build/ios/iphoneos/Runner.app
 
+      # The privacy manifest is wired into the Runner target by hand in
+      # project.pbxproj (#166). Nothing else notices if that entry is dropped in
+      # a merge — the app still builds and still boots, and the rejection only
+      # arrives from App Store Connect. So assert the file actually lands in the
+      # bundle, and still declares the SQLite file-timestamp reason.
+      - name: Verify privacy manifest is in the bundle
+        run: |
+          MANIFEST=build/ios/iphoneos/Runner.app/PrivacyInfo.xcprivacy
+          test -f "$MANIFEST" || {
+            echo "::error::$MANIFEST is missing — the Runner target lost it from Copy Bundle Resources."
+            exit 1
+          }
+          plutil -lint "$MANIFEST"
+          plutil -extract NSPrivacyAccessedAPITypes.0.NSPrivacyAccessedAPIType raw "$MANIFEST" \
+            | grep -qx NSPrivacyAccessedAPICategoryFileTimestamp || {
+            echo "::error::The file-timestamp reason is gone; SQLite still needs it."
+            exit 1
+          }
+
   # Push to main only. The suite needs a booted simulator, which is macOS-only
   # and costs a runner minute or two to start — too much to pay on every PR
   # push, and unnecessary, because what it guards against is *rot* rather than

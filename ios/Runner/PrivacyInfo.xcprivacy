@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+    "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!--
+    BrewPath collects nothing and tracks nobody. Firebase is compiled in but
+    gated off behind `kUseFirebase` (lib/core/config/firebase_flags.dart), there
+    are no ads, and every byte the app stores stays in its own container. If
+    telemetry is ever switched on, NSPrivacyCollectedDataTypes stops being empty
+    and the App Store privacy labels change with it — see #165.
+  -->
+  <key>NSPrivacyTracking</key>
+  <false/>
+
+  <key>NSPrivacyTrackingDomains</key>
+  <array/>
+
+  <key>NSPrivacyCollectedDataTypes</key>
+  <array/>
+
+  <key>NSPrivacyAccessedAPITypes</key>
+  <array>
+    <!--
+      SQLite reads the size and mtime of its own database file (stat/fstat in
+      the unix VFS) on every open. It reaches the binary through
+      `package:sqlite3`, which compiles the amalgamation via a Dart build hook
+      and ships no manifest of its own, so the declaration has to live here.
+      C617.1 — file metadata inside the app container.
+    -->
+    <dict>
+      <key>NSPrivacyAccessedAPIType</key>
+      <string>NSPrivacyAccessedAPICategoryFileTimestamp</string>
+      <key>NSPrivacyAccessedAPITypeReasons</key>
+      <array>
+        <string>C617.1</string>
+      </array>
+    </dict>
+
+    <!--
+      No UserDefaults entry, deliberately. #166 expected one, on the assumption
+      that shared_preferences was in the tree — it is not, and nothing in the app
+      or in ios/Runner touches NSUserDefaults. The one component in the bundle
+      that does, GoogleUtilities-UserDefaults, declares CA92.1 in its own
+      manifest. Declaring it here as well would claim an access the app does not
+      make. Add it if shared_preferences ever arrives.
+    -->
+  </array>
+</dict>
+</plist>

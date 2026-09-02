@@ -30,8 +30,8 @@ embedded copy drifted from the real file twice). What the jobs are, and why:
 | `changelog` | ubuntu | PRs only: requires a `docs/CHANGELOG.md` entry for product changes (`tool/check_changelog.sh`); skipped when the PR carries the `no-changelog` label |
 | `format` | ubuntu | `dart format` over `lib test integration_test` (after `pub get`, so the language version resolves) |
 | `analyze & test` | ubuntu | `flutter analyze`, the `dart_code_linter` metrics gate, then `flutter test` (Node pinned for the extractor test) |
-| `iOS build` | macos | `flutter build ios --release --no-codesign` — no CocoaPods (SPM) and no Firebase plist while `kUseFirebase == false` |
-| `smoke (simulator)` | macos | **Push to main only.** Boots an iPhone simulator and runs `integration_test/smoke_test.dart` — the only job that *runs* the app rather than compiling it. Capped at 20 minutes, because the failure it guards against is a hang (#187) |
+| `iOS build` | macos | `flutter build ios --release --no-codesign` — no CocoaPods (SPM) and no Firebase plist while `kUseFirebase == false`. Then asserts `PrivacyInfo.xcprivacy` reached `Runner.app`: it is wired into the target by hand, and nothing else notices if a merge drops it (#166) |
+| `smoke (simulator)` | macos | **Push to main only.** Boots an iPhone simulator and runs `integration_test/smoke_test.dart` — the only job that *runs* the app rather than compiling it. Capped at 35 minutes, because the failure it guards against is a hang (#187) |
 
 Generated files are committed, so no `build_runner` step runs in CI.
 

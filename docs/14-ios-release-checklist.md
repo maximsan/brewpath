@@ -91,35 +91,81 @@ Open `ios/Runner/Info.plist` and verify these keys exist:
 
 Apple requires a Privacy Manifest for apps accessing certain APIs.
 
-- [ ] Create `ios/Runner/PrivacyInfo.xcprivacy` with the following content:
+- [x] Create `ios/Runner/PrivacyInfo.xcprivacy` — it lives at
+      [`ios/Runner/PrivacyInfo.xcprivacy`](../ios/Runner/PrivacyInfo.xcprivacy)
+      and its own comments carry the reasoning for each entry. Read the file, not
+      a copy of it.
+- [x] In Xcode: add `PrivacyInfo.xcprivacy` to the Runner target (Build Phases →
+      Copy Bundle Resources). Wired in `project.pbxproj`; the `iOS build` CI job
+      fails if it stops landing in `Runner.app`.
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
-    "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-  <key>NSPrivacyAccessedAPITypes</key>
-  <array>
-    <!-- File timestamp APIs — used by Drift/SQLite (sqlite3) for database file management -->
-    <dict>
-      <key>NSPrivacyAccessedAPIType</key>
-      <string>NSPrivacyAccessedAPICategoryFileTimestamp</string>
-      <key>NSPrivacyAccessedAPITypeReasons</key>
-      <array>
-        <string>C617.1</string>
-      </array>
-    </dict>
-  </array>
-  <key>NSPrivacyCollectedDataTypes</key>
-  <array/>
-  <key>NSPrivacyTracking</key>
-  <false/>
-</plist>
-```
+What the app declares today: **tracks nobody, collects nothing**, and one
+required-reason API — `NSPrivacyAccessedAPICategoryFileTimestamp` (`C617.1`),
+because SQLite stats its own database file. SQLite reaches the binary through
+`package:sqlite3`, which compiles it via a Dart build hook and ships no manifest,
+so the app has to declare it.
 
-- [ ] In Xcode: add `PrivacyInfo.xcprivacy` to the Runner target (Build Phases → Copy Bundle Resources)
-- [ ] Review Firebase SDK privacy manifests — FlutterFire packages include their own; verify in Xcode build log
+Two things move this file:
+
+- **Telemetry.** `NSPrivacyCollectedDataTypes` is empty only while `kUseFirebase`
+  is `false`. Turning crash reporting or analytics on adds entries here _and_
+  changes the App Store privacy labels — see
+  [#165](https://github.com/maximsan/brewpath/issues/165).
+- **New plugins.** A plugin that ships its own `PrivacyInfo.xcprivacy` needs
+  nothing from us; one that does not, and touches a required-reason API, has to
+  be declared here. Today `package_info_plus`, `share_plus`, `stts`,
+  `video_player_avfoundation` and `in_app_purchase_storekit` carry their own. The
+  FlutterFire Dart packages do **not** — the manifests come from the underlying
+  Google Firebase SDKs resolved over SPM.
+
+### What analytics, tracking and ads each cost
+
+Apple means different things by these words, and only one of them makes the app
+ask the user for permission.
+
+- **Analytics** — you record what people do in your own app, and use it only for
+  your own app. "Forty people stopped at the paywall."
+- **Tracking** — you join that data with data other companies hold, or hand it to
+  a data broker. Normally to aim ads, or to check an ad worked.
+
+The same fact can be either one. "This device saw the paywall" is analytics while
+it stays with us. It becomes tracking the moment it is matched against an ad
+network's picture of that device. Only tracking needs
+`NSUserTrackingUsageDescription` in `Info.plist` and the system prompt that asks
+whether the app may track you.
+
+| If we ship | `NSPrivacyTracking` | `NSPrivacyCollectedDataTypes` | Also needed |
+| --- | --- | --- | --- |
+| Crash reporting | stays `false` | crash and performance data | — |
+| Analytics | stays `false` | usage and identifier entries | — |
+| Ads | flips to **`true`** | advertising and identifier entries | every ad server listed in `NSPrivacyTrackingDomains`, and `NSUserTrackingUsageDescription` in `Info.plist` |
+
+Take the exact entries from the SDK vendor's own data-collection page at the
+time, not from this table — Google's list changes between releases, and a
+manifest that over-declares is as wrong as one that under-declares.
+
+"Ads" here means an ad network's SDK — AdMob, currently commented out in
+`pubspec.yaml`, see [`docs/11-ads.md`](11-ads.md) — filling a slot on our own
+screen. The privacy cost is not the banner. It is the advertising identifier the
+SDK reads in order to aim and measure, which is what makes it tracking.
+
+Whatever changes here has to change in the App Store privacy labels in App Store
+Connect too. Apple reads the two together, and a disagreement between them is
+itself a rejection.
+
+- [ ] Before the first upload, read the App Store Connect response for
+      `ITMS-91053` / `ITMS-91061` warnings about third-party SDKs. Every Google
+      and plugin component in the bundle carries its own manifest except **four
+      Google binary frameworks — `FirebaseAnalytics`, `GoogleAppMeasurement`,
+      `GoogleAppMeasurementIdentitySupport` and `GoogleAdsOnDeviceConversion`** —
+      whose xcframeworks ship none at the versions we resolve. Checked by hand in
+      the `Runner.app` from `flutter build ios --release`, not inferred. That is
+      only a problem if Firebase ships at all, which is
+      [#165](https://github.com/maximsan/brewpath/issues/165)'s call, and the
+      upload is the only place it can actually be confirmed. Worth weighing
+      there: the last of the four is an **advertising attribution SDK**, linked
+      today only because `firebase_analytics` depends on it, in an app with no
+      ads.
 
 ---
 
@@ -229,7 +275,7 @@ Increment the build number (`+1`, `+2`, etc.) for every upload to App Store Conn
 - [ ] App record is created in App Store Connect
 - [ ] Xcode code signing is configured with a valid Distribution certificate
 - [ ] `Info.plist` has all required keys including `ITSAppUsesNonExemptEncryption = false`
-- [ ] `PrivacyInfo.xcprivacy` exists and is added to the Xcode target
+- [x] `PrivacyInfo.xcprivacy` exists and is added to the Xcode target
 - [ ] App icon at 1024×1024px is in the asset catalog
 - [ ] `flutter build ios --release` completes without errors
 - [ ] Archive uploaded to App Store Connect via Xcode Organizer
