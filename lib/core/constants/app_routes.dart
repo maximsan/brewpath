@@ -57,6 +57,12 @@ abstract class AppRoutes {
   /// opens the sheet directly. The path exists because #171 scopes the app's
   /// universal links to it.
   static const cardDetail = AppRoute('cardDetail', ':cardId');
+
+  /// The **public** address of one card — what a shared universal link says
+  /// (`https://brewpath.maximsan.dev/card/<id>`, ruled by #34). Singular, and
+  /// outside the tab, so it cannot be confused with the `/cards` branch it
+  /// forwards into; nothing in the app navigates here.
+  static const cardLink = AppRoute('cardLink', '/card/:cardId');
   static const profile = AppRoute('profile', '/profile');
   static const profileSettings = AppRoute('profileSettings', 'settings');
   static const profileStreak = AppRoute('profileStreak', 'streak');

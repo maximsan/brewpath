@@ -4,10 +4,13 @@ import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
 import 'package:brew_path/features/cards/presentation/card_deep_link.dart';
 import 'package:brew_path/features/cards/presentation/card_grid_item_widget.dart';
+import 'package:brew_path/features/cards/presentation/card_locked_face.dart';
 import 'package:brew_path/features/cards/presentation/card_sheet.dart';
 import 'package:brew_path/features/cards/presentation/cards_screen.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/challenges/presentation/tried_seal.dart';
+import 'package:brew_path/shared/models/lesson_model.dart';
+import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -19,6 +22,13 @@ final List<CardWithCollection> _collection = [
   testCardWithCollection('a', collected: true),
   testCardWithCollection('b', collected: false),
 ];
+
+/// The course behind the cards, so an unearned card can name the lesson that
+/// earns it through the real lookup rather than a stubbed answer.
+class _FakeContent extends ContentRepository {
+  @override
+  Future<List<LessonModel>> getLessons() async => [testLesson()];
+}
 
 final _navigatorKey = GlobalKey<NavigatorState>();
 
@@ -35,6 +45,7 @@ Future<void> _pump(
     ProviderScope(
       overrides: [
         cardsWithCollectionProvider.overrideWith((ref) async => _collection),
+        contentRepositoryProvider.overrideWith((ref) => _FakeContent()),
         challengeBankProvider.overrideWith(
           (ref) async => [testChallenge(cardId: 'a')],
         ),
@@ -130,13 +141,30 @@ void main() {
       expect(find.byType(CardGridItemWidget), findsWidgets);
     });
 
-    testWidgets('a link to an unearned card opens nothing', (tester) async {
-      // The grid masks an unearned card on purpose. Honouring the link would
-      // hand out through the URL exactly what the tile withholds.
+    testWidgets('a link to an unearned card shows its face', (tester) async {
+      // ADR-0015: the recipient of a shared card has usually not earned it,
+      // so showing them nothing empties the feature. They get the face.
       await _followLink(tester, 'b');
 
-      expect(find.byType(CardSheetBody), findsNothing);
-      expect(find.byType(CardDeepLink), findsNothing);
+      expect(find.byType(CardLockedFace), findsOneWidget);
+      expect(find.text('Card b'), findsWidgets);
+      expect(
+        find.text('Earn this by completing What coffee actually is'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('a link to an unearned card withholds its payload', (
+      tester,
+    ) async {
+      // The other half of ADR-0015. Ids read `c1`, `c-m2l1`, so the sheet is
+      // reachable by guessing — the summary and the keepsake line are the
+      // lesson's reward and stay behind it.
+      await _followLink(tester, 'b');
+
+      expect(find.text('What it is.'), findsNothing);
+      expect(find.text('Something true about it.'), findsNothing);
+      expect(find.text('FACT'), findsNothing);
     });
 
     testWidgets('an unknown card id lands on the grid alone', (tester) async {

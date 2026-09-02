@@ -1,5 +1,7 @@
 import 'package:brew_path/app/analytics_navigator_observer.dart';
+import 'package:brew_path/app/app_redirect.dart';
 import 'package:brew_path/app/app_shell.dart';
+import 'package:brew_path/app/pending_link.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/cards/presentation/card_deep_link.dart';
 import 'package:brew_path/features/cards/presentation/cards_screen.dart';
@@ -62,57 +64,32 @@ GoRouter appRouter(Ref ref) {
     navigatorKey: _rootKey,
     initialLocation: AppRoutes.loading.path,
     refreshListenable: refresh,
-    // Funnels the root (platform initial route, error-page "Home") to Loading
-    // and gates the rest of the app behind the onboarding flow.
-    redirect: (context, state) {
-      final path = state.uri.path;
-      if (path == '/') {
-        return AppRoutes.loading.path;
-      }
-      final completed = ref.read(onboardingCompletedProvider).value ?? false;
-      // The intro proper — the two screens a first run is walked through.
-      // Named once because the gate asks about them twice, in opposite
-      // directions: an unfinished learner must be let in, a finished one
-      // bounced out.
-      final isIntroRoute =
-          path == AppRoutes.welcome.path || path == AppRoutes.meetRoasty.path;
-      final isOnboardingRoute =
-          path == AppRoutes.loading.path ||
-          isIntroRoute ||
-          path.startsWith(AppRoutes.onboardingPrefix);
-      if (!completed && !isOnboardingRoute) {
-        return AppRoutes.welcome.path;
-      }
-      if (completed &&
-          (isIntroRoute || path.startsWith(AppRoutes.onboardingPrefix))) {
-        return AppRoutes.learn.path;
-      }
-      // The Studio is behind the entitlement, and the door is not the only way
-      // to reach it — a deep link is. The gate belongs here for the same
-      // reason every other gate→destination decision does: a screen that
-      // guards itself is a guard one route can be added around.
-      //
-      // Unresolved reads as not entitled, which sends a paying learner to
-      // Profile for one tick rather than showing a free one the chooser.
-      if (path.endsWith('/${AppRoutes.studio.path}') &&
-          !(ref.read(courseEntitlementProvider).value ?? false)) {
-        return AppRoutes.profile.path;
-      }
-
-      // The one-off completion moment intercepts arrival at Today only — the
-      // ending presents where the course lived, and never hijacks another
-      // tab. Presenting the screen writes the ack, which flips the gate off.
-      final completionDue =
-          ref.read(courseCompletionDueProvider).value ?? false;
-      if (completed && completionDue && path == AppRoutes.learn.path) {
-        return AppRoutes.courseComplete.path;
-      }
-      return null;
-    },
+    // Every gate lives in `redirectFor`, as one pure function — see there
+    // for the rules. This end reads the state they are decided from.
+    //
+    // Unresolved gates read as false, which sends a paying learner to Profile
+    // for one tick rather than showing a free one the chooser.
+    redirect: (context, state) => redirectFor(
+      location: state.uri,
+      onboardingCompleted: ref.read(onboardingCompletedProvider).value ?? false,
+      courseEntitled: ref.read(courseEntitlementProvider).value ?? false,
+      courseCompletionDue: ref.read(courseCompletionDueProvider).value ?? false,
+      pending: ref.read(pendingLinkProvider),
+    ),
     observers: [
       AnalyticsNavigatorObserver(ref.watch(analyticsServiceProvider)),
     ],
     routes: [
+      // The public card address forwards into the Cards tab. A shared link
+      // says `/card/<id>` (#34); the app reads a card as a sheet over its
+      // collection (#385), which lives at `/cards/<id>`. Forwarding keeps the
+      // published URL stable without giving a card a second home in the app.
+      GoRoute(
+        path: AppRoutes.cardLink.path,
+        name: AppRoutes.cardLink.name,
+        redirect: (context, state) =>
+            '${AppRoutes.cards.path}/${state.pathParameters['cardId']}',
+      ),
       GoRoute(
         path: AppRoutes.loading.path,
         name: AppRoutes.loading.name,

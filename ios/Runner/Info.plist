@@ -24,6 +24,13 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<!-- Flutter's own deep-link handling routes universal links into the
+	     Router API that go_router implements (#171). Its default flipped to on
+	     in Flutter 3.27; pubspec still admits >=3.22.0, where it defaults off
+	     and this key is the opt-in. Stated rather than inherited so the
+	     feature cannot depend on which toolchain built it. -->
+	<key>FlutterDeepLinkingEnabled</key>
+	<true/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIApplicationSceneManifest</key>

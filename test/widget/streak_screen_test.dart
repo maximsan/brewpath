@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:brew_path/core/constants/app_links.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/progress/domain/freeze_status_line.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
@@ -98,14 +99,17 @@ Future<void> _settle(WidgetTester tester) async {
 class _RecordingSharePresenter implements SharePresenter {
   Uint8List? bytes;
   String? fileName;
+  String? link;
 
   @override
   Future<void> sharePng({
     required Uint8List bytes,
     required String fileName,
+    String? link,
   }) async {
     this.bytes = bytes;
     this.fileName = fileName;
+    this.link = link;
   }
 }
 
@@ -254,6 +258,9 @@ void main() {
     }
 
     expect(presenter.fileName, 'brewpath-streak.png');
+    // A streak is a number about one person on one day, so the card carries
+    // the site rather than an address of its own (#34).
+    expect(presenter.link, AppLinks.site);
     final image = await tester.runAsync(() async {
       final codec = await ui.instantiateImageCodec(presenter.bytes!);
       return (await codec.getNextFrame()).image;

@@ -15,10 +15,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// `/cards` and leaves the learner on the grid rather than on an empty route
 /// they would have to press back through.
 ///
-/// **A card the learner has not earned opens nothing.** The grid deliberately
-/// masks an unearned card, so honouring a link to one would hand out through
-/// the URL exactly what the tile withholds — its title, its summary and its
-/// keepsake line.
+/// **A card the learner has not earned opens its face**
+/// ([ADR-0015](../../../../docs/adr/0015-a-link-to-an-unearned-card-shows-its-face-not-its-payload.md)):
+/// the art, the title and the lesson that earns it, with the summary and the
+/// keepsake line withheld. A recipient has usually not earned what was shared
+/// with them, so opening nothing would empty the link of its point.
+///
+/// **An id no build knows still opens nothing** and leaves the learner on the
+/// grid — version skew rather than user error, so it degrades silently.
 class CardDeepLink extends ConsumerStatefulWidget {
   /// Creates a [CardDeepLink] for [cardId].
   const CardDeepLink({required this.cardId, super.key});
@@ -52,11 +56,9 @@ class _CardDeepLinkState extends ConsumerState<CardDeepLink> {
     if (!mounted) return;
     final navigator = Navigator.of(context);
 
-    final earned = collection.where(
-      (item) => item.card.id == widget.cardId && item.isCollected,
-    );
-    if (earned.isNotEmpty) {
-      await showCardSheet(context, earned.first);
+    final known = collection.where((item) => item.card.id == widget.cardId);
+    if (known.isNotEmpty) {
+      await showCardSheet(context, known.first);
     }
 
     if (navigator.canPop()) navigator.pop();

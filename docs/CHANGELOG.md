@@ -44,6 +44,25 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **A shared BrewPath link opens the app, on the thing that was shared.** Tap
+  `brewpath.maximsan.dev/card/<id>` with the app installed and it opens that
+  collectible rather than a web page; without the app, the link goes to the App
+  Store. A card you have not earned yet shows you its face — the art, the name,
+  and the lesson that earns it — and keeps back the summary and the keepsake
+  line, because those are the reward for finishing the lesson and card
+  addresses are guessable. Sharing something the other person already has would
+  be pointless, so showing them nothing was the one thing that could not stand.
+
+  The link now survives being interrupted. Someone who installs the app
+  *because* a card was shared with them used to lose it at the welcome screen —
+  they onboarded and never saw the card. It is held through onboarding and
+  opens when they arrive. A link naming a card the installed build has never
+  heard of leaves them on the collection instead of an error, because a newer
+  build can mint an address an older one cannot resolve.
+
+  Sharing your streak now carries a link back to the app, where before it was a
+  picture with no way home.
+
 - **Locked lessons now say why they are locked.** Path looked the same whether
   or not a lesson was yours, so the only way to find the wall was to walk into
   it. Lessons and modules you have not bought now show a mark, say *Part of

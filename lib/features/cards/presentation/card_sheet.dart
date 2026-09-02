@@ -3,6 +3,7 @@ import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/app_sheet.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
+import 'package:brew_path/features/cards/presentation/card_locked_face.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/challenges/presentation/card_stamp_section.dart';
 import 'package:brew_path/features/challenges/presentation/tried_seal.dart';
@@ -55,6 +56,11 @@ class CardSheetBody extends ConsumerWidget {
     final mood = context.mood;
     final text = Theme.of(context).textTheme;
     final card = item.card;
+
+    // An unheld card shows its face and stops there (ADR-0015): no summary,
+    // no keepsake line, and no stamp block — a challenge cannot be logged
+    // against a card the learner has not got.
+    if (!item.isCollected) return CardLockedFace(card: card);
 
     final tried =
         ref.watch(cardChallengeTriedProvider(card.id)).asData?.value ?? false;
