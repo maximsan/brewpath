@@ -25,10 +25,10 @@ enum ActivityType {
   /// One completed standalone mini-game run.
   miniGame,
 
-  /// One vocab round. No surface writes this yet.
+  /// One vocab round, written when Guess the term finishes one.
   vocab,
 
-  /// One flashcard session. No surface writes this yet.
+  /// One flashcard review, written when every card in the deck has been seen.
   flashcards,
 }
 

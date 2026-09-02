@@ -49,9 +49,6 @@ abstract final class FlashcardsCopy {
   /// Re-deals the same cards in a new order.
   static const shuffle = 'Shuffle deck';
 
-  /// The results kicker.
-  static const resultsKicker = 'Flashcards';
-
   /// What the results number counts.
   static String reviewedNote(int cards) =>
       cards == 1 ? 'Term reviewed' : 'Terms reviewed';
@@ -77,8 +74,4 @@ abstract final class FlashcardsCopy {
 
   /// The eyebrow on the Learn tab's practice row.
   static const practiceRowEyebrow = 'Flip and recall';
-
-  /// The meta every drill row carries. Said because the group it leads is
-  /// full of rows that are not free.
-  static const free = 'Free';
 }

@@ -63,8 +63,9 @@ abstract class DictionaryTerm with _$DictionaryTerm {
     /// refuses a bank whose pointer does not.
     @JsonKey(name: 'cat') required String categoryId,
 
-    /// The one-line answer to *what does this word mean*. Every term has one;
-    /// for a quarter of them it is the whole entry, and that is not a gap.
+    /// The one-line answer to *what does this word mean*. Every term has one,
+    /// and it is what a free learner reads: the longer [deepExplanation] comes
+    /// with the course (`docs/decisions.md` §12).
     @JsonKey(name: 'short') required String shortExplanation,
 
     /// Ids of terms worth reading next. May be empty, never absent.
