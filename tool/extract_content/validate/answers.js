@@ -37,6 +37,80 @@ const CARD_KINDS = [
 const SLIDER_MIN = 0;
 const SLIDER_MAX = 100;
 
+/**
+ * How much longer than the runner-up the correct answer may be.
+ *
+ * The rulebook already forbids an answer that "is simply the longest or most
+ * specific option", and the tell is measurable: across graded choice-cards the
+ * correct answer was the single longest well above chance. The artifact is
+ * familiar — the true answer gains a qualifying clause while the wrong ones stay
+ * blunt — and it makes the card answerable with no coffee knowledge at all.
+ *
+ * Measured against the **runner-up**, not the mean or the shortest, because
+ * that is the comparison a guesser actually makes. 1.5 is a dial: zero cards
+ * exceed it today, while 1.25 would flag fifteen. A check born failing does not
+ * stop anything — it gets suppressed in bulk and teaches everyone to bypass it.
+ * Tightening after the authoring pass is a one-line change (#45).
+ */
+const LONGEST_ANSWER_RATIO = 1.5;
+
+/**
+ * Cards with fewer options than this are outside the check.
+ *
+ * The threshold was derived on 3- and 4-option cards, where picking the longest
+ * beats a 33% or 25% baseline. Two-option `decision` cards were not in that
+ * population, and two of them exceed 1.5x today — `m2l6` #7 and `m4l6` #6 —
+ * so including them here would land this check red on content that only the
+ * product owner can rewrite. They are reported to #45, which owns the content
+ * pass; widening this constant to 2 is the one-line change once they are done.
+ *
+ * This exclusion is stated rather than assumed: both #100 and #45 record "no
+ * card exceeds 1.50x today", and that is only true with these two set aside.
+ */
+const MIN_OPTIONS_FOR_TELL = 3;
+
+/**
+ * The correct answer is not conspicuously longer than its nearest rival.
+ *
+ * Ties are safe by construction: with two answers the same length the ratio is
+ * 1, so a card can never fail for being *equal* to its runner-up.
+ */
+function notLongestByTell(choices, where, report) {
+  if (choices.length < MIN_OPTIONS_FOR_TELL) return;
+  // The option itself, `t` — what the learner picks. A decision card also
+  // carries `sub`, a justification under each option, and it is deliberately
+  // **not** measured: the threshold was calibrated against option text, and
+  // counting `sub` moves it enough to flag three cards whose options are the
+  // same length (`Paper` against `Metal`). Whether a longer justification is
+  // its own tell is a real question, and it is #45's — tightening this check is
+  // a content pass, not a validator change.
+  const lengthOf = (choice) => (typeof choice.t === "string" ? choice.t.length : 0);
+
+  const texts = choices
+    .map((choice) => ({ correct: choice.correct === true, length: lengthOf(choice) }))
+    .filter((choice) => choice.length > 0);
+  if (texts.length < 2) return;
+
+  const correct = texts.find((choice) => choice.correct);
+  if (!correct) return;
+
+  const runnerUp = Math.max(
+    ...texts.filter((choice) => choice !== correct).map((choice) => choice.length),
+  );
+  if (runnerUp === 0) return;
+
+  const ratio = correct.length / runnerUp;
+  if (ratio >= LONGEST_ANSWER_RATIO) {
+    report(
+      where,
+      `the correct answer is ${ratio.toFixed(2)}x the length of the runner-up ` +
+        `(${correct.length} vs ${runnerUp} characters); at ${LONGEST_ANSWER_RATIO}x ` +
+        "or more the card is answerable by picking the longest option. " +
+        "Trim the answer, or give the distractors the same specificity.",
+    );
+  }
+}
+
 /** Exactly one entry of `field` carries `correct: true`. */
 const oneCorrect = (field) => (card, where, report) => {
   const choices = card[field];
@@ -46,7 +120,9 @@ const oneCorrect = (field) => (card, where, report) => {
   const correct = choices.filter((choice) => choice.correct === true).length;
   if (correct !== 1) {
     report(where, `has ${correct} correct ${field}, expected exactly 1`);
+    return;
   }
+  notLongestByTell(choices, where, report);
 };
 
 /**

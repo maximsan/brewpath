@@ -800,4 +800,135 @@ void main() {
       });
     });
   });
+
+  /// The invariants #100 adds, one seeded violation each — so a failure names
+  /// the invariant that broke rather than "the content is wrong somewhere".
+  group('the semantic invariants', () {
+    void seedCourse(String source, String from, String to) =>
+        seedCorruption(source, 'data.jsx', from, to);
+
+    void seedDictionary(String source, String from, String to) =>
+        seedCorruption(source, 'dictionary-data.jsx', from, to);
+
+    test('a term whose lesson never says the word is refused', () {
+      final source = seededSource();
+      // Crema is taught in the espresso lesson. Pointed at the lesson about
+      // what coffee is, the pointer still resolves and is simply false —
+      // the class of defect that makes #20's stored Learned state unsafe.
+      seedDictionary(
+        source,
+        "related: ['portafilter', 'robusta', 'channeling'], lesson: 'm5l7'",
+        "related: ['portafilter', 'robusta', 'channeling'], lesson: 'm1l1'",
+      );
+      expectRefusal(source, naming: ['crema', 'Crema', 'm1l1', 'wrong lesson']);
+    });
+
+    test('a term the lesson nearly says is told to add an alias', () {
+      final source = seededSource();
+      // m1l2 says "Arabica" throughout. A term spelled with a space is not a
+      // whole-word match, but the loose search finds it — which is the
+      // difference between "add an alias" and "this pointer is wrong".
+      seedDictionary(source, "term: 'Arabica'", "term: 'Ara bica'");
+      expectRefusal(source, naming: ['Ara bica', 'aliases']);
+    });
+
+    test('a substring match does not count as saying the word', () {
+      final source = seededSource();
+      // "Fines" must not be satisfied by "defines"; the term is renamed to a
+      // fragment that appears only inside longer words in its lesson.
+      seedDictionary(source, "term: 'Terroir'", "term: 'erroi'");
+      expectRefusal(source, naming: ['erroi']);
+    });
+
+    test('two lessons unlocking one collectible is refused', () {
+      final source = seededSource();
+      seedCourse(
+        source,
+        "{ id: 'c2', earned: false, unlock: { lesson: 'm1l3' }",
+        "{ id: 'c2', earned: false, unlock: { lesson: 'm1l1' }",
+      );
+      expectRefusal(source, naming: ['m1l1', 'collectibles']);
+    });
+
+    test('a lesson that pays out no collectible is refused', () {
+      final source = seededSource();
+      seedCourse(
+        source,
+        "{ id: 'c2', earned: false, unlock: { lesson: 'm1l3' }",
+        "{ id: 'c2', earned: false, unlock: { lesson: 'm1l1' }",
+      );
+      expectRefusal(source, naming: ['m1l3', 'pays out nothing']);
+    });
+
+    test('two collectibles sharing a name is refused', () {
+      final source = seededSource();
+      seedCourse(source, "title: 'The Coffee Cherry',", "title: 'Arabica',");
+      expectRefusal(source, naming: ['Arabica', 'm1l1', 'm1l2']);
+    });
+
+    test('a visual guide taking a mini-game id is refused', () {
+      final source = seededSource();
+      seedCourse(
+        source,
+        "{ id: 'g-roast', earned: false",
+        "{ id: 'g-match', earned: false",
+      );
+      expectRefusal(
+        source,
+        naming: ['g-match', 'mini-game format', 'visual guide'],
+      );
+    });
+
+    test('a correct answer far longer than its runner-up is refused', () {
+      final source = seededSource();
+      seedCourse(
+        source,
+        "t: 'Dried and sold as a tea called cascara'",
+        "t: 'Dried and sold as a tea called cascara, brewed and drunk widely'",
+      );
+      expectRefusal(source, naming: ['m1l1', 'longest option']);
+    });
+
+    test('a module label disagreeing with its module is refused', () {
+      final source = seededSource();
+      seedCourse(
+        source,
+        "moduleLabel: 'MODULE 1 · BEANS'",
+        "moduleLabel: 'MODULE 1 · BEENS'",
+      );
+      expectRefusal(source, naming: ['BEENS', 'generated from the module']);
+    });
+
+    test("a registry's copy of a lesson title disagreeing is refused", () {
+      final source = seededSource();
+      seedCourse(
+        source,
+        "{ id: 'm1l1', title: 'What coffee actually is'",
+        "{ id: 'm1l1', title: 'What coffee actually isnt'",
+      );
+      expectRefusal(source, naming: ['m1l1', 'title']);
+    });
+
+    test('the derived fields carry the value their source states', () {
+      final out = dir('out');
+      expect(_run(_prototype, out).exitCode, 0);
+
+      final modules = _items(out, 'modules.json');
+      final lessons = {
+        for (final lesson in _items(out, 'lessons.json'))
+          lesson['id'] as String: lesson,
+      };
+
+      for (final module in modules) {
+        final label = 'MODULE ${module['n']} · ${module['label']}';
+        for (final entry in (module['lessons'] as List).cast<Map>()) {
+          final lesson = lessons[entry['id']]!;
+          expect(lesson['moduleLabel'], label);
+          expect(entry['title'], lesson['title']);
+          expect(entry['points'], lesson['points']);
+          expect(entry['time'], lesson['time']);
+        }
+      }
+    });
+  });
 }

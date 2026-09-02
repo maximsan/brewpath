@@ -122,6 +122,7 @@ const {
   dropTrailingMember,
 } = require("./extract_content/slice");
 const { validate, GRADED_KINDS } = require("./extract_content/validate");
+const { derive } = require("./extract_content/derive");
 
 const REPO_ROOT = path.resolve(__dirname, "..");
 const DEFAULT_SOURCE = path.join(REPO_ROOT, "prototype");
@@ -231,42 +232,51 @@ function main(argv) {
     fail([error.message]);
   }
 
-  const errors = validate(banks);
+  // Derivation runs first and reports into the same list: a field generated
+  // from its source can disagree with the copy someone authored, and that is a
+  // content defect like any other. Validation then sees the derived shape, so
+  // no check is written against a value the app will never read.
+  const errors = [];
+  const { modules, lessons } = derive(banks, (where, message) =>
+    errors.push(`${where}: ${message}`),
+  );
+  const derived = { ...banks, modules, lessons };
+  errors.push(...validate(derived));
   if (errors.length > 0) fail(errors);
 
   writeBanks(out, [
-    bank("modules", "data.jsx", withRewards(banks)),
+    bank("modules", "data.jsx", withRewards(derived)),
     // The graded kinds ride along so the Dart union's `Gradable` markers can be
     // asserted against them. Two languages' idea of "graded" is the pair that
     // drifts silently, and mastery divides by it.
-    bank("lessons", "data.jsx", keyedToList(banks.lessons), {
+    bank("lessons", "data.jsx", keyedToList(derived.lessons), {
       gradedKinds: GRADED_KINDS,
     }),
-    bank("collectibles", "data.jsx", banks.collectibles),
-    bank("dictionary_terms", "dictionary-data.jsx", banks.terms),
-    bank("dictionary_categories", "dictionary-data.jsx", banks.categories),
-    bank("brew_challenges", "brew-challenge.jsx", banks.challenges),
-    bank("mini_games", "screens.jsx", banks.miniGames),
-    bank("card_kind_help", "lesson.jsx", helpToList(banks.cardKindHelp)),
+    bank("collectibles", "data.jsx", derived.collectibles),
+    bank("dictionary_terms", "dictionary-data.jsx", derived.terms),
+    bank("dictionary_categories", "dictionary-data.jsx", derived.categories),
+    bank("brew_challenges", "brew-challenge.jsx", derived.challenges),
+    bank("mini_games", "screens.jsx", derived.miniGames),
+    bank("card_kind_help", "lesson.jsx", helpToList(derived.cardKindHelp)),
     // Two sources, honestly: the bagpick rounds in this bank are authored in
     // `bean-anatomy.jsx`, and the envelope's provenance should say so.
     bank(
       "mini_game_content",
       "lesson.jsx + bean-anatomy.jsx",
-      contentToList(banks.miniGameContent),
+      contentToList(derived.miniGameContent),
     ),
     // Two banks rather than one with a second list bolted on: the axes are
     // orthogonal and co-equal — any light applies over any plant — so neither
     // is the other's auxiliary data, and each validates on its own terms.
-    bank("grove_varieties", "customize.jsx", banks.groveVarieties),
-    bank("grove_lights", "customize.jsx", banks.groveLights),
+    bank("grove_varieties", "customize.jsx", derived.groveVarieties),
+    bank("grove_lights", "customize.jsx", derived.groveLights),
     // Two sources, honestly: identity, unlock and the meta table are authored
     // in `data.jsx`, the words in `practical.jsx`, and a guide is only whole
     // once they are joined.
     bank(
       "visual_guides",
       "data.jsx + practical.jsx + bean-anatomy.jsx",
-      joinVisualGuides(banks),
+      joinVisualGuides(derived),
     ),
   ]);
 }
