@@ -13,12 +13,35 @@
  */
 
 /**
- * A card, reduced to what a learner would notice. Position and lesson are
- * deliberately excluded: the same card in two places is the defect, so what
- * makes it identical must not include where it sits.
+ * A card in canonical form, so two cards compare equal only if every value in
+ * them is equal.
+ *
+ * Keys are sorted at every depth rather than only the top, because two objects
+ * that differ solely in key order are the same card. `JSON.stringify`'s second
+ * argument does **not** do this: it is a property allow-list applied at every
+ * depth, so passing the top-level keys strips every nested object to `{}` —
+ * which erases exactly the choices and pairs that distinguish one question from
+ * another, and makes two unrelated cards with the same prompt collide.
+ */
+function canonical(value) {
+  if (Array.isArray(value)) return value.map(canonical);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.keys(value)
+        .sort()
+        .map((key) => [key, canonical(value[key])]),
+    );
+  }
+  return value;
+}
+
+/**
+ * Position and lesson are deliberately not part of this: the same card in two
+ * places is the defect, so what makes two cards identical must not include
+ * where they sit.
  */
 function fingerprint(card) {
-  return JSON.stringify(card, Object.keys(card).sort());
+  return JSON.stringify(canonical(card));
 }
 
 /**

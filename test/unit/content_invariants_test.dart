@@ -19,6 +19,29 @@ import 'package:path/path.dart' as p;
 /// something the extractor passed with no way to tell which is right.
 const _generated = 'assets/content/generated';
 
+/// A card in canonical form — keys sorted at every depth, so two cards that
+/// differ only in key order compare equal.
+///
+/// This has to agree with the extractor's own fingerprint. A bare `jsonEncode`
+/// preserves insertion order, which would let a reordered duplicate pass here
+/// while the extractor refuses it — the two sides disagreeing about the same
+/// rule, which is the failure this second seam exists to prevent.
+Object? _canonicalValue(Object? value) {
+  if (value is List) return value.map(_canonicalValue).toList();
+  if (value is Map) {
+    final keys = value.keys.cast<String>().toList()..sort();
+    return {for (final key in keys) key: _canonicalValue(value[key])};
+  }
+  return value;
+}
+
+String _canonical(Object? value) => jsonEncode(_canonicalValue(value));
+
+/// The option a learner picks. A decision card's `sub` is not measured, exactly
+/// as the extractor does not measure it.
+int _optionLength(Map<String, dynamic> option) =>
+    (option['t'] as String? ?? '').length;
+
 List<Map<String, dynamic>> _items(String bank) {
   final file = File(p.join(_generated, '$bank.json'));
   final envelope = jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
@@ -74,15 +97,46 @@ void main() {
     for (final lesson in lessons) {
       final cards = (lesson['cards'] as List).cast<Map<String, dynamic>>();
       cards.asMap().forEach((index, card) {
-        final key = jsonEncode(card);
         places
-            .putIfAbsent(key, () => [])
+            .putIfAbsent(_canonical(card), () => [])
             .add('${lesson['id']} card ${index + 1}');
       });
     }
 
     final repeated = Map.of(places)..removeWhere((_, at) => at.length < 2);
     expect(repeated, isEmpty, reason: 'a learner would meet one card twice');
+  });
+
+  test('the correct answer is not far longer than its runner-up', () {
+    // Structural, so decision 4 runs it on both sides. Scoped to 3+ options
+    // exactly as the extractor scopes it: the ratio was calibrated on that
+    // population (#100).
+    for (final lesson in lessons) {
+      for (final card
+          in (lesson['cards'] as List).cast<Map<String, dynamic>>()) {
+        final options = (card['choices'] ?? card['options']) as List<dynamic>?;
+        if (options == null || options.length < 3) continue;
+
+        final texts = options.cast<Map<String, dynamic>>();
+        final correct = texts.where((o) => o['correct'] == true).toList();
+        if (correct.length != 1) continue;
+
+        final answer = _optionLength(correct.single);
+        final runnerUp = texts
+            .where((o) => o['correct'] != true)
+            .map(_optionLength)
+            .fold(0, (a, b) => a > b ? a : b);
+        if (runnerUp == 0 || answer == 0) continue;
+
+        expect(
+          answer / runnerUp,
+          lessThan(1.5),
+          reason:
+              '${lesson['id']} ${card['kind']}: answer is $answer characters '
+              'against a runner-up of $runnerUp',
+        );
+      }
+    }
   });
 
   test('the g- namespace names one thing per id', () {

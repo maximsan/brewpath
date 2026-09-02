@@ -51,10 +51,17 @@ function mentionsWholeWord(haystack, needle) {
 }
 
 /**
- * Every string a learner could read in this lesson, joined.
+ * Every string on this lesson's cards, joined.
  *
- * Card bodies only, never the lesson title: today zero terms match on title
- * alone, so including it would only ever weaken the check.
+ * Cards only, never the lesson title — a title is a label, not teaching. The
+ * sweep is deliberately wide rather than accurate: a handful of the strings it
+ * collects are enum values a learner never reads (`answer: "natural"`, a cue
+ * `id`), and the keys holding them are the same keys that hold prose elsewhere,
+ * so no per-key rule separates them. That makes the check very slightly
+ * permissive in one direction — a term could in principle be satisfied by an
+ * enum that happens to spell it — and never permissive in the other, which is
+ * the trade that matters: a missed false pointer is cemented into every user's
+ * snapshot, a spurious failure is one message to an author.
  */
 function collectStrings(value, key, into) {
   if (typeof value === "string") {
