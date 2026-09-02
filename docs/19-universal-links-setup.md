@@ -86,7 +86,24 @@ the server guesses, iOS receives the wrong content type and the link silently
 never works.
 
 **At launch**, once the app has a real App Store id, add the fallback so a
-recipient without the app lands in the Store:
+recipient without the app lands in the Store.
+
+**What an App Store id is, and where to get it.** The number in every App Store
+URL — `apps.apple.com/app/id6448123456`. It names the *listing*, not a build,
+and you get it the moment you create the app record in **App Store Connect**.
+The app does not have to be submitted, let alone live, so you can have it early.
+
+It is a **third** id, separate from the two already in play, and they are easy
+to confuse:
+
+| Id | Looks like | Where it goes |
+| --- | --- | --- |
+| Team ID | `A1B2C3D4E5` | the AASA file |
+| Bundle id | `dev.maximsan.brewPath` | the AASA file, beside the Team ID |
+| App Store id | `6448123456` | this redirect, and nowhere else |
+
+Swapping it in is one file and one redeploy — no DNS change, no app rebuild, and
+every link shared before it keeps working.
 
 ```json
 {
