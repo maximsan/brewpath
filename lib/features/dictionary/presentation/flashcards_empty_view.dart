@@ -19,16 +19,26 @@ import 'package:go_router/go_router.dart';
 /// The same state for all four ways in, which is why it is a view rather than
 /// something the dictionary's own screen draws.
 ///
-/// **It answers one question, and there are two.** This copy is the design's,
-/// written for *nothing saved*. A free learner who bookmarked a term outside
-/// their tier's reach (ADR-0014) also lands here, and for them "bookmark terms
-/// and they become a deck" is untrue — they did, and it did not. The design
-/// never had that state, because its dictionary is gated where the app's is
-/// open; the copy that state is owed is
-/// [#468](https://github.com/maximsan/brewpath/issues/468).
+/// **It answers two questions, not one.** The design's copy is written for
+/// *nothing saved*. A free learner who bookmarked a term their tier cannot
+/// reach (ADR-0014) lands here too, and for them "bookmark terms and they
+/// become a deck" is untrue — they did, and it did not. The design never had
+/// that state, because its dictionary is gated where the app's is open (#20).
+/// So the body is chosen, and everything around it is the same.
 class FlashcardsEmptyView extends StatelessWidget {
   /// Creates a [FlashcardsEmptyView].
-  const FlashcardsEmptyView({super.key});
+  const FlashcardsEmptyView({this.isOutOfReach = false, super.key});
+
+  /// Whether they saved terms and none of them can be drilled.
+  ///
+  /// Defaults to the design's state, so a caller that has not thought about
+  /// the second one gets the copy that was written for *nothing saved*.
+  final bool isOutOfReach;
+
+  /// The body this state actually owes the learner.
+  String get _body => isOutOfReach
+      ? FlashcardsCopy.emptyOutOfReachBody
+      : FlashcardsCopy.emptyBody;
 
   /// The design's `size={44}` bookmark, at half opacity.
   static const double _markSize = 44;
@@ -45,7 +55,7 @@ class FlashcardsEmptyView extends StatelessWidget {
     return Semantics(
       // One announcement: the mark carries no meaning a reader can use, and
       // the heading, the copy and the button are one thought.
-      label: '${FlashcardsCopy.title}. ${FlashcardsCopy.emptyBody}',
+      label: '${FlashcardsCopy.title}. $_body',
       // Excluded, or the heading and the copy are read once as this label and
       // again as its children.
       excludeSemantics: true,
@@ -73,7 +83,7 @@ class FlashcardsEmptyView extends StatelessWidget {
                     child: Column(
                       children: [
                         Text(
-                          FlashcardsCopy.emptyBody,
+                          _body,
                           textAlign: TextAlign.center,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: mood.inkMute,

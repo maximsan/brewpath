@@ -147,6 +147,7 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
           cards,
           round,
           pools.asData?.value.categoryLabels ?? const {},
+          isOutOfReach: pools.asData?.value.savedIsOutOfReach ?? false,
         ),
       ),
     );
@@ -167,9 +168,12 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
   Widget _body(
     List<DictionaryTerm> cards,
     FlashcardRound round,
-    Map<String, String> categoryLabels,
-  ) {
-    if (cards.isEmpty) return const FlashcardsEmptyView();
+    Map<String, String> categoryLabels, {
+    required bool isOutOfReach,
+  }) {
+    if (cards.isEmpty) {
+      return FlashcardsEmptyView(isOutOfReach: isOutOfReach);
+    }
 
     if (round.isFinished) {
       return DrillResultsView.counted(

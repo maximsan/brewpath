@@ -22,6 +22,7 @@ class VocabPools {
   const VocabPools({
     required this.accessible,
     required this.saved,
+    required this.savedTotal,
     this.categoryLabels = const {},
     this.hasCourse = false,
   });
@@ -31,6 +32,24 @@ class VocabPools {
 
   /// The accessible terms they bookmarked — always a subset of [accessible].
   final List<DictionaryTerm> saved;
+
+  /// How many terms they bookmarked in all, whether their tier reaches them or
+  /// not. Required, not defaulted: a zero sitting beside a non-empty [saved]
+  /// is a state that cannot happen, and a default is how it would.
+  ///
+  /// Resolved here so a screen compares it against [saved] from the same read;
+  /// two providers could disagree by a rebuild.
+  final int savedTotal;
+
+  /// Whether they saved terms and none of them can be drilled.
+  ///
+  /// Guarded on the tier as well as the counts, because the copy this turns on
+  /// tells the learner their *free lessons* do not cover what they saved. That
+  /// is true of a free learner. Every term in the shipped bank carries the
+  /// short explanation a drill needs, so a paid learner reaches all of them
+  /// and cannot be here — but a term authored without one would put them here,
+  /// and the sentence would be false. So they get the design's copy instead.
+  bool get savedIsOutOfReach => !hasCourse && saved.isEmpty && savedTotal > 0;
 
   /// Category id to its label, for the eyebrow over a question.
   ///
@@ -73,19 +92,22 @@ Future<VocabPools> vocabPools(Ref ref) async {
     hasCourse: hasCourse,
   );
 
+  final savedTermIds = {
+    for (final raw in await savedFuture)
+      if (parseSavedKey(raw) case (kind: SavedKind.term, :final id)) id,
+  };
+
   return VocabPools(
     accessible: accessible,
     hasCourse: hasCourse,
+    savedTotal: savedTermIds.length,
     categoryLabels: {
       for (final category in await categoriesFuture)
         category.id: category.label,
     },
     saved: savedAccessibleTerms(
       accessible: accessible,
-      savedTermIds: {
-        for (final raw in await savedFuture)
-          if (parseSavedKey(raw) case (kind: SavedKind.term, :final id)) id,
-      },
+      savedTermIds: savedTermIds,
     ),
   );
 }
