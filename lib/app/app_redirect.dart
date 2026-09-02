@@ -1,4 +1,5 @@
 import 'package:brew_path/app/pending_link.dart';
+import 'package:brew_path/core/constants/app_links.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 
 /// Every gate→destination decision the app makes, as one pure function.
@@ -59,4 +60,29 @@ String? redirectFor({
     return AppRoutes.courseComplete.path;
   }
   return null;
+}
+
+/// Translates the **published** card address into the route that reads a card.
+///
+/// A shared link says `/card/<id>`; the app reads a card as a sheet over its
+/// collection, at `/cards/<id>`. Forwarding here rather than registering a
+/// route keeps the published address stable without giving a card a second
+/// home in the app — and catches what a route could not, because the AASA
+/// file claims `/card/*` and `*` matches across slashes.
+///
+/// Anything that is not one clean segment lands on the collection: version
+/// skew and mistyped links degrade silently, never onto an error screen.
+/// Returns null when [location] is not a card address at all.
+///
+/// Lives beside the gates but is **not** called by [redirectFor]: go_router
+/// runs no redirect for a location nothing matches, so this has to hang off a
+/// route that matches. The route calls it.
+String? forwardPublicCardAddress(Uri location) {
+  const prefix = AppLinks.cardPrefix;
+  final path = location.path;
+  if (path != prefix && !path.startsWith('$prefix/')) return null;
+
+  final id = path == prefix ? '' : path.substring(prefix.length + 1);
+  if (id.isEmpty || id.contains('/')) return AppRoutes.cards.path;
+  return location.replace(path: '${AppRoutes.cards.path}/$id').toString();
 }

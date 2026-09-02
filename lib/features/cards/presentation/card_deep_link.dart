@@ -1,7 +1,10 @@
+import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
+import 'package:brew_path/features/cards/presentation/card_locked_face.dart';
 import 'package:brew_path/features/cards/presentation/card_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 /// What the `cardDetail` route resolves to: nothing drawn, one sheet raised.
 ///
@@ -35,7 +38,17 @@ class CardDeepLink extends ConsumerStatefulWidget {
 }
 
 class _CardDeepLinkState extends ConsumerState<CardDeepLink> {
-  bool _handled = false;
+  /// The id this page has already resolved. Kept rather than a bare flag
+  /// because go_router updates this page in place when a second link arrives
+  /// while the first is open — same route, new id — and a flag would leave
+  /// the learner on a page that resolves nothing.
+  String? _resolved;
+
+  @override
+  void didUpdateWidget(CardDeepLink oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.cardId != widget.cardId) _resolved = null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +56,8 @@ class _CardDeepLinkState extends ConsumerState<CardDeepLink> {
 
     // The collection arrives asynchronously, so this waits for it rather than
     // resolving the link against a list that is not there yet.
-    if (collection != null && !_handled) {
-      _handled = true;
+    if (collection != null && _resolved != widget.cardId) {
+      _resolved = widget.cardId;
       WidgetsBinding.instance.addPostFrameCallback(
         (_) => _openThenLeave(collection),
       );
@@ -57,10 +70,16 @@ class _CardDeepLinkState extends ConsumerState<CardDeepLink> {
     final navigator = Navigator.of(context);
 
     final known = collection.where((item) => item.card.id == widget.cardId);
-    if (known.isNotEmpty) {
-      await showCardSheet(context, known.first);
-    }
+    final intent = known.isEmpty
+        ? null
+        : await showCardSheet(context, known.first);
 
+    // This page leaves before anything else is navigated to: it owns the
+    // route, so it has to be off it before the learner is sent elsewhere.
     if (navigator.canPop()) navigator.pop();
+
+    if (intent == CardSheetIntent.goToCourse && mounted) {
+      GoRouter.of(context).goNamed(AppRoutes.path.name);
+    }
   }
 }

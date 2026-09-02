@@ -55,14 +55,20 @@ void main() {
       locationOf(AppRoutes.cardDetail.name, pathParameters: {'cardId': 'c1'}),
       '/cards/c1',
     );
-    // The public address a shared link carries (#34). Singular, top-level,
-    // and distinct from the `/cards` branch it forwards into — if these two
-    // ever collapse into one path the AASA file stops matching what the app
-    // registers, and every shared link opens Safari.
-    expect(
-      locationOf(AppRoutes.cardLink.name, pathParameters: {'cardId': 'c1'}),
-      '/card/c1',
-    );
+  });
+
+  test('the published card address matches, so its redirect can run', () {
+    // go_router runs **no redirect** for a location nothing matches — it goes
+    // straight to the error page. So the forwarding rule is only reachable if
+    // the real router still matches `/card/<id>`; the rule itself is tested in
+    // `card_link_test.dart`.
+    for (final address in ['/card/c1', '/card/c-m2l1', '/card']) {
+      expect(
+        router.configuration.findMatch(Uri.parse(address)).isError,
+        isFalse,
+        reason: 'nothing matches $address, so a shared link cannot forward',
+      );
+    }
   });
 
   test('lesson and lessonComplete carry their query parameters', () {
@@ -111,10 +117,6 @@ void main() {
     'dictionary': HeaderTier.pushed,
     'dictionaryTerm': HeaderTier.pushed,
     'cardDetail': HeaderTier.pushed,
-    // Draws nothing ever — the public `/card/<id>` address redirects into
-    // `cardDetail` before a page is built. It takes that route's tier because
-    // that is what the learner actually lands on.
-    'cardLink': HeaderTier.pushed,
     'profileSettings': HeaderTier.pushed,
     // Root navigator like Settings, and its own back-arrow bar — pushed is
     // about the chrome the learner sees, not the navigator underneath.

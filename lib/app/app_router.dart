@@ -2,6 +2,7 @@ import 'package:brew_path/app/analytics_navigator_observer.dart';
 import 'package:brew_path/app/app_redirect.dart';
 import 'package:brew_path/app/app_shell.dart';
 import 'package:brew_path/app/pending_link.dart';
+import 'package:brew_path/core/constants/app_links.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/cards/presentation/card_deep_link.dart';
 import 'package:brew_path/features/cards/presentation/cards_screen.dart';
@@ -79,16 +80,25 @@ GoRouter appRouter(Ref ref) {
     observers: [
       AnalyticsNavigatorObserver(ref.watch(analyticsServiceProvider)),
     ],
+    // A universal link makes any URL reachable from outside the app, so an
+    // address the router cannot match is now something a stranger can hand
+    // the learner. #34 rules it degrades silently rather than onto a page
+    // that says the app is broken.
+    onException: (context, state, router) => router.go(AppRoutes.learn.path),
     routes: [
-      // The public card address forwards into the Cards tab. A shared link
-      // says `/card/<id>` (#34); the app reads a card as a sheet over its
-      // collection (#385), which lives at `/cards/<id>`. Forwarding keeps the
-      // published URL stable without giving a card a second home in the app.
+      // The published card address. Registered so it *matches* — go_router
+      // runs no redirect for a location nothing matches, it goes straight to
+      // the error page. The rule itself lives in `forwardPublicCardAddress`,
+      // beside the other routing rules and testable without a router.
       GoRoute(
-        path: AppRoutes.cardLink.path,
-        name: AppRoutes.cardLink.name,
-        redirect: (context, state) =>
-            '${AppRoutes.cards.path}/${state.pathParameters['cardId']}',
+        path: AppLinks.cardPrefix,
+        redirect: (context, state) => forwardPublicCardAddress(state.uri),
+        routes: [
+          GoRoute(
+            path: ':cardId',
+            redirect: (context, state) => forwardPublicCardAddress(state.uri),
+          ),
+        ],
       ),
       GoRoute(
         path: AppRoutes.loading.path,
@@ -275,6 +285,11 @@ GoRouter appRouter(Ref ref) {
                     // the tab's own grid rather than a second copy of it
                     // pushed on top.
                     pageBuilder: (context, state) => CustomTransitionPage<void>(
+                      // go_router reconciles a removed page against its match
+                      // list by key; without one an imperative pop here has
+                      // nothing to match, and a second link arriving over the
+                      // first updates the page in place instead of replacing.
+                      key: state.pageKey,
                       opaque: false,
                       transitionsBuilder: (_, _, _, child) => child,
                       child: CardDeepLink(

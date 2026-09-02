@@ -1,4 +1,3 @@
-import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
@@ -8,11 +7,16 @@ import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 /// The mark's size, matching the sheet's earned face so the two read as one
 /// card in two states rather than two layouts.
 const double _markSize = 96;
+
+/// What the learner asked for by closing the card sheet.
+enum CardSheetIntent {
+  /// They pressed the way in: take them to the course.
+  goToCourse,
+}
 
 /// A card the learner has not earned: its face, and nothing behind it.
 ///
@@ -57,12 +61,12 @@ class CardLockedFace extends ConsumerWidget {
         const SizedBox(height: AppSpacing.lg),
         PrimaryButton(
           label: 'Go to the course',
-          onPressed: () {
-            // Closes the sheet first, so the learner does not return to it
-            // behind the course when they press back.
-            Navigator.of(context).pop();
-            context.goNamed(AppRoutes.path.name);
-          },
+          // Answers the sheet rather than navigating from inside it. Whoever
+          // opened this owns the route it sits on and has to leave that route
+          // before going anywhere — a `go` from here would strand the page
+          // underneath, still holding a pop nobody coordinates.
+          onPressed: () =>
+              Navigator.of(context).pop(CardSheetIntent.goToCourse),
         ),
       ],
     );

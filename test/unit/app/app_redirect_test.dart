@@ -84,6 +84,19 @@ void main() {
       expect(pending.take(), '/cards/c1?from=share');
     });
 
+    test("the app's own navigation cannot clobber the arrival", () {
+      final pending = PendingLink();
+      redirect('/cards/c1', onboarded: false, pending: pending);
+
+      // Finishing onboarding writes the row and invalidates the gate, then
+      // navigates to Learn without waiting for the recompute — so the
+      // redirect runs for `/learn` while the gate still reads false. That
+      // internal hop must not become the thing the learner is resumed onto.
+      redirect('/learn', onboarded: false, pending: pending);
+
+      expect(redirect('/welcome', pending: pending), '/cards/c1');
+    });
+
     test('nothing is held when the learner never arrived on a link', () {
       final pending = PendingLink();
       redirect('/welcome', onboarded: false, pending: pending);

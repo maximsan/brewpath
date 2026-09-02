@@ -18,13 +18,17 @@ class PendingLink {
   String? _target;
 
   /// Remembers [location] as the place to resume once onboarding finishes.
-  /// A second call replaces the first: only the newest arrival is honoured.
   ///
-  /// A method, not a setter, because it pairs with [take] — the two are one
-  /// hold-and-release protocol, and `pending.target = x` would read as
-  /// ordinary state that anyone may also read back.
-  // ignore: use_setters_to_change_properties
-  void hold(String location) => _target = location;
+  /// **The first hold wins.** The redirect cannot tell an arrival from the app
+  /// navigating on its own, and the app does navigate: finishing onboarding
+  /// writes the row, invalidates the gate and pushes to Learn without waiting
+  /// for the recompute, so `/learn` reaches this method while the gate still
+  /// reads incomplete. Last-wins would let that hop overwrite the card the
+  /// learner actually tapped — the exact loss this class exists to prevent.
+  void hold(String location) {
+    if (_target != null) return;
+    _target = location;
+  }
 
   /// Returns the held target and forgets it, or null when none is held.
   ///

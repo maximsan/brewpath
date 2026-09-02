@@ -16,12 +16,16 @@ void main() {
       expect(link.take(), isNull);
     });
 
-    test('the last link wins', () {
+    test('the first arrival wins', () {
       final link = PendingLink()
         ..hold('/cards/c1')
-        ..hold('/cards/c2');
+        ..hold('/learn');
 
-      expect(link.take(), '/cards/c2');
+      // The app navigates on its own while the onboarding gate is still
+      // catching up, and that hop reaches `hold` exactly like an arrival
+      // does. Keeping the first means the link the learner actually tapped
+      // cannot be overwritten by the app walking past it.
+      expect(link.take(), '/cards/c1');
     });
   });
 }

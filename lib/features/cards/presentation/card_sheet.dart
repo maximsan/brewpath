@@ -22,12 +22,17 @@ const double _markSize = 96;
 /// A sheet, not a push: the design never takes the learner off the grid to
 /// read a card (`CardSheet`, `screens.jsx:2458`), so closing puts them back
 /// exactly where they were, on the tile they tapped.
-Future<void> showCardSheet(BuildContext context, CardWithCollection item) =>
-    showAppSheet<void>(
-      context: context,
-      title: item.card.title,
-      builder: (_) => CardSheetBody(item: item),
-    );
+/// Returns what the learner asked for on the way out, when they asked for
+/// anything — the sheet cannot navigate for itself, because the route it sits
+/// on belongs to whoever opened it.
+Future<CardSheetIntent?> showCardSheet(
+  BuildContext context,
+  CardWithCollection item,
+) => showAppSheet<CardSheetIntent>(
+  context: context,
+  title: item.card.title,
+  builder: (_) => CardSheetBody(item: item),
+);
 
 /// One collectible, as the sheet reads it: what it is, what it says, and the
 /// line worth keeping.
