@@ -126,7 +126,8 @@ void main() {
 
     for (final module in modules) {
       final label = 'MODULE ${module['n']} · ${module['label']}';
-      for (final entry in (module['lessons'] as List).cast<Map>()) {
+      for (final entry
+          in (module['lessons'] as List).cast<Map<String, dynamic>>()) {
         final lesson = byId[entry['id']];
         expect(
           lesson,
