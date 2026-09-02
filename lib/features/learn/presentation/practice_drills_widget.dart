@@ -25,8 +25,7 @@ import 'package:go_router/go_router.dart';
 /// mark here would say the opposite of what is true, and these are a free
 /// learner's cheapest streak path.
 ///
-/// Both rows now (#97, #98), in the design's order — Flashcards leads
-/// (`screens.jsx:950`).
+/// Both rows now (#97, #98), in the design's order — Flashcards leads.
 class PracticeDrillsWidget extends StatelessWidget {
   /// Creates a [PracticeDrillsWidget].
   const PracticeDrillsWidget({super.key});

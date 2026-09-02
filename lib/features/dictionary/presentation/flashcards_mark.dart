@@ -29,10 +29,10 @@ const double _backOpacity = 0.5;
 
 /// The flashcards mark: a card with a line of text, and another behind it.
 ///
-/// Drawn rather than taken from the icon family, the same call `SearchMark` and
-/// `VocabMark` make: the family is the design system's asset set and this is
-/// not one of them — it is drawn inline in the chip row it belongs to
-/// (`dictionary.jsx:287`).
+/// Drawn rather than taken from the icon family, the same call `SearchMark`
+/// and `VocabMark` make: the family is the design system's asset set and this
+/// is not one of them — the design draws it inline, in the chip row it
+/// belongs to.
 class FlashcardsMark extends StatelessWidget {
   /// Creates a [FlashcardsMark].
   const FlashcardsMark({

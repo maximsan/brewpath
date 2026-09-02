@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 /// Both faces are the same frame so the flip does not resize the card mid-turn.
 /// Only the tint differs — the front carries a wash of accent, the back is
 /// plain surface, which is how the design says *this side is the question*
-/// without a word (`dictionary-extras.jsx:193-201`).
+/// without a word.
 class FlashcardFace extends StatelessWidget {
   /// Creates a [FlashcardFace].
   const FlashcardFace({

@@ -20,9 +20,8 @@ const double _flashcardPerspective = 1 / 1400;
 /// One card, turning over when it is tapped.
 ///
 /// **The whole card is the button.** The design puts the tap on the card
-/// rather than under it (`dictionary-extras.jsx:229`), which is also what makes
-/// the drill work one-handed: a learner flipping through twelve terms should
-/// never have to aim.
+/// rather than under it, which is also what makes the drill work one-handed:
+/// a learner flipping through twelve terms should never have to aim.
 class FlashcardView extends StatefulWidget {
   /// Creates a [FlashcardView].
   const FlashcardView({

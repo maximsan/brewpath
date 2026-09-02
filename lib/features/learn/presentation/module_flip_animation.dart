@@ -1,7 +1,7 @@
 /// The module ending's card flip: how long it takes, and how it eases.
 ///
 /// The screen turns over on a 3D Y-rotation — the design's most distinctive
-/// moment (`rewards.jsx:236-241`). The geometry of that turn is shared with
+/// moment. The geometry of that turn is shared with
 /// the flashcard drill and lives in `flip_geometry.dart`; what is here is the
 /// half this screen owns, because the two turn at deliberately different
 /// speeds.

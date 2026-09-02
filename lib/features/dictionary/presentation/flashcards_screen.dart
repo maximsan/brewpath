@@ -153,7 +153,7 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
   }
 
   /// The position counter — held at the full count on the finished state,
-  /// which is where the design leaves it (`dictionary-extras.jsx:172`).
+  /// which is where the design leaves it.
   Widget? _meter(FlashcardRound round) {
     if (round.length == 0) return null;
     final card = round.isFinished ? round.length : round.position + 1;

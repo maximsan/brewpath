@@ -9,8 +9,7 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// *Study n terms as flashcards* — the shelf's way into the drill
-/// (`library.jsx:188-200`).
+/// *Study n terms as flashcards* — the shelf's way into the drill.
 ///
 /// **Drawn whenever the shelf has terms**, as the design draws it: this is one
 /// of the drill's three entry points, and one that came and went with the deck

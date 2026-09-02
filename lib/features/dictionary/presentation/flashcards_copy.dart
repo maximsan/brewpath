@@ -6,8 +6,7 @@
 /// features to a learner.
 library;
 
-/// The drill's copy, verbatim from `prototype/dictionary-extras.jsx:118-278`
-/// unless a line is noted otherwise.
+/// Every line is the design's own, verbatim, unless noted otherwise.
 abstract final class FlashcardsCopy {
   /// The screen's name, and what every entry point calls it.
   static const title = 'Flashcards';
@@ -37,9 +36,8 @@ abstract final class FlashcardsCopy {
   /// The link under a revealed card.
   static const viewEntry = 'View full entry';
 
-  /// Walking the deck. The chevrons are the design's own
-  /// (`dictionary-extras.jsx:275-276`) — they say which way each button goes
-  /// without a second word.
+  /// Walking the deck. The chevrons are the design's own — they say which
+  /// way each button goes without a second word.
   static const previous = '‹ Prev';
 
   /// The action on every card but the last.
@@ -73,15 +71,14 @@ abstract final class FlashcardsCopy {
   static String deckLine(int cards) =>
       '$cards saved ${cards == 1 ? 'term' : 'terms'}';
 
-  /// The shelf's row into the drill (`library.jsx:197`).
+  /// The shelf's row into the drill.
   static String studyRow(int cards) =>
       'Study $cards ${cards == 1 ? 'term' : 'terms'} as flashcards';
 
-  /// The eyebrow on the Learn tab's practice row (`screens.jsx:950`).
+  /// The eyebrow on the Learn tab's practice row.
   static const practiceRowEyebrow = 'Flip and recall';
 
-  /// The meta the practice row carries for a learner who owns nothing yet —
-  /// the design's `meta={gamesLocked ? 'FREE' : '~2 MIN'}` (`screens.jsx:967`).
-  /// Said only to a free learner, because it is only news beside a lock.
+  /// The meta every drill row carries. Said because the group it leads is
+  /// full of rows that are not free.
   static const free = 'Free';
 }

@@ -19,8 +19,8 @@ import 'package:go_router/go_router.dart';
 ///
 /// Both chips now (#97, #98), in the design's own order: Flashcards leads
 /// because it drills what the learner chose to keep, and only it carries a
-/// count — the design gives *Guess the term* `null` there, since the whole
-/// glossary is not a number worth reading (`dictionary.jsx:285-289`).
+/// count — the design gives *Guess the term* none, since the whole glossary
+/// is not a number worth reading.
 class DictionaryQuickChips extends ConsumerWidget {
   /// Creates a [DictionaryQuickChips].
   const DictionaryQuickChips({super.key});

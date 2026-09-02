@@ -123,9 +123,6 @@ class _Shelf extends StatelessWidget {
         const SizedBox(height: AppSpacing.lg),
         for (final group in groups) ...[
           SavedGroupSection(group: group, onOpen: onOpen),
-          // The offer to drill sits under the terms it drills, not at the foot
-          // of the shelf: it is about this group, and the design puts it there
-          // (`library.jsx:188`).
           if (group.kind == SavedKind.term) ...[
             const SizedBox(height: AppSpacing.sm),
             const SavedStudyRow(),
