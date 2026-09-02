@@ -65,6 +65,107 @@ final class VisualGuideShelfForProvider
 String _$visualGuideShelfForHash() =>
     r'2dee6d1e6042e6099b48be5cefff18d269bbea2d';
 
+/// The lesson the Reference heading names as opening the next guide.
+///
+/// Its own provider, not a field on the shelf: only this heading needs the
+/// whole course in order, and the shelf is also read by lesson cards and the
+/// bookmark button, which should not load the banks to ask about one guide.
+///
+/// Every `watch` runs before the first `await`. Reading a `Ref` after an async
+/// gap throws if the provider was disposed in the meantime.
+
+@ProviderFor(nextGuideUnlock)
+final nextGuideUnlockProvider = NextGuideUnlockProvider._();
+
+/// The lesson the Reference heading names as opening the next guide.
+///
+/// Its own provider, not a field on the shelf: only this heading needs the
+/// whole course in order, and the shelf is also read by lesson cards and the
+/// bookmark button, which should not load the banks to ask about one guide.
+///
+/// Every `watch` runs before the first `await`. Reading a `Ref` after an async
+/// gap throws if the provider was disposed in the meantime.
+
+final class NextGuideUnlockProvider
+    extends $FunctionalProvider<AsyncValue<String?>, String?, FutureOr<String?>>
+    with $FutureModifier<String?>, $FutureProvider<String?> {
+  /// The lesson the Reference heading names as opening the next guide.
+  ///
+  /// Its own provider, not a field on the shelf: only this heading needs the
+  /// whole course in order, and the shelf is also read by lesson cards and the
+  /// bookmark button, which should not load the banks to ask about one guide.
+  ///
+  /// Every `watch` runs before the first `await`. Reading a `Ref` after an async
+  /// gap throws if the provider was disposed in the meantime.
+  NextGuideUnlockProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'nextGuideUnlockProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$nextGuideUnlockHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<String?> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<String?> create(Ref ref) {
+    return nextGuideUnlock(ref);
+  }
+}
+
+String _$nextGuideUnlockHash() => r'e04b1cbddbf9cce92bc9ed5b818dc9682d4b44cf';
+
+/// Whether the Reference shelf is locked by the purchase rather than by
+/// progress. The two need different words; `LockedRowCopy` has them.
+
+@ProviderFor(referenceLockedByPurchase)
+final referenceLockedByPurchaseProvider = ReferenceLockedByPurchaseProvider._();
+
+/// Whether the Reference shelf is locked by the purchase rather than by
+/// progress. The two need different words; `LockedRowCopy` has them.
+
+final class ReferenceLockedByPurchaseProvider
+    extends $FunctionalProvider<AsyncValue<bool>, bool, FutureOr<bool>>
+    with $FutureModifier<bool>, $FutureProvider<bool> {
+  /// Whether the Reference shelf is locked by the purchase rather than by
+  /// progress. The two need different words; `LockedRowCopy` has them.
+  ReferenceLockedByPurchaseProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'referenceLockedByPurchaseProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$referenceLockedByPurchaseHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<bool> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<bool> create(Ref ref) {
+    return referenceLockedByPurchase(ref);
+  }
+}
+
+String _$referenceLockedByPurchaseHash() =>
+    r'0135e42df79a28b9cde7c723090502400179da54';
+
 /// The earned guide covering [subject], or null when none is earned.
 ///
 /// Lives here rather than at the call site so nothing outside this feature has

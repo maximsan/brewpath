@@ -44,6 +44,20 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Locked lessons now say why they are locked.** Path looked the same whether
+  or not a lesson was yours, so the only way to find the wall was to walk into
+  it. Lessons and modules you have not bought now show a mark, say *Part of
+  Foundations*, and open the offer when you tap them. What a row says depends on
+  who is reading it: if you own the course, a module you have not reached still
+  says *"Finish Beans to unlock"*, because that is something you can go and do.
+  A lesson you have already finished never locks.
+
+  The Reference shelf has stopped promising something it cannot give. It used to
+  tell everyone that guides "unlock as lessons teach them". That was not true if
+  you had not bought the course — the first guide is taught by the sixth lesson,
+  and only the first three are free. Now it says the guides come with the course.
+  If you own it, it names the lesson that opens the next one.
+
 - **Your saved terms are a flashcard deck now.** Bookmark a word in the
   dictionary and it joins a deck you can flip through: the term on the front,
   what it means on the back, and a link to the full entry once you have

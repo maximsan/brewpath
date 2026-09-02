@@ -58,6 +58,31 @@ class LockedLesson extends PlusGateTrigger {
   String get header => '"$title" is part of the full course.';
 }
 
+/// A module the free tier does not carry.
+///
+/// Unquoted, unlike [LockedLesson]: a module name is a section of the course,
+/// not a title.
+class LockedModule extends PlusGateTrigger {
+  /// Creates a [LockedModule] for the module called [title].
+  const LockedModule({required this.title});
+
+  /// The module's own name.
+  final String title;
+
+  @override
+  String get header => '$title is part of the full course.';
+}
+
+/// The visual guides, which no free lesson reaches: free is the first three
+/// lessons (ADR-0007) and the earliest guide is taught by the sixth.
+class LockedGuides extends PlusGateTrigger {
+  /// Creates a [LockedGuides].
+  const LockedGuides();
+
+  @override
+  String get header => 'The visual guides come with the full course.';
+}
+
 /// A game whose teaching lesson the free tier does not carry.
 class LockedGame extends PlusGateTrigger {
   /// Creates a [LockedGame] taught by [moduleTitle].

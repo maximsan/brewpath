@@ -1,8 +1,13 @@
+import 'dart:async';
+
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/module_glyph.dart';
 import 'package:brew_path/features/challenges/presentation/path_challenge_node.dart';
+import 'package:brew_path/features/monetization/domain/locked_row_copy.dart';
+import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
+import 'package:brew_path/features/monetization/presentation/plus_gate_sheet.dart';
 import 'package:brew_path/features/path/domain/path_density.dart';
 import 'package:brew_path/features/path/domain/path_module_view.dart';
 import 'package:brew_path/features/path/presentation/path_lesson_row.dart';
@@ -139,6 +144,22 @@ class _Heading extends StatelessWidget {
       ],
     );
 
+    // The one locked row that does something on tap: it is where someone who
+    // has not bought the course meets the wall, so it offers the way past.
+    if (module.isPurchaseLocked) {
+      return Semantics(
+        button: true,
+        label: LockedRowCopy.purchaseLockedSemantics(module.title),
+        excludeSemantics: true,
+        child: InkWell(
+          onTap: () => unawaited(
+            showPlusGate(context, LockedModule(title: module.title)),
+          ),
+          child: heading,
+        ),
+      );
+    }
+
     if (!module.density.canCollapse) {
       // Nothing to toggle: the row is a label, and wrapping it in a disabled
       // button would announce an action that does not exist.
@@ -157,17 +178,20 @@ class _Heading extends StatelessWidget {
     );
   }
 
-  /// The mono line under a module's title — **only a locked module has one**.
+  /// The mono line under a module's title. Only a locked module has one: an
+  /// active module lists its lessons instead, and a finished one says nothing.
   ///
-  /// The design prints it in `CompactModuleRow` alone; the expanded branch
-  /// guards its sub-line on `mod.locked && prereq`, which an expanded module
-  /// never is (`screens.jsx:1463`). So an active module states its lesson
-  /// count by listing the lessons, and a finished one goes quiet.
+  /// When a module is locked both ways, the purchase wins. Someone who has not
+  /// bought the course will never finish the module before it either, so
+  /// naming that module is advice they cannot take. ADR-0016.
   static String? _subLine(PathModule module, String? previousTitle) {
     if (!module.density.isLocked) return null;
+    if (module.isPurchaseLocked) {
+      return LockedRowCopy.purchasedModule(module.totalCount);
+    }
     return previousTitle == null
-        ? '${module.totalCount} lessons'
-        : 'Finish $previousTitle to unlock';
+        ? LockedRowCopy.moduleSize(module.totalCount)
+        : LockedRowCopy.finishToUnlock(previousTitle);
   }
 }
 
@@ -191,7 +215,16 @@ class _TrailingMark extends StatelessWidget {
     final mood = context.mood;
 
     if (module.density.isLocked) {
-      return IconMark(AppIcon.lock, size: size, color: mood.inkMute);
+      // Accent for the purchase, ink-mute for progression. Accent means
+      // there is something to do, and buying is the one they can do now.
+      return Semantics(
+        label: module.isPurchaseLocked ? LockedRowCopy.partOfFoundations : null,
+        child: IconMark(
+          AppIcon.lock,
+          size: size,
+          color: module.isPurchaseLocked ? mood.accent : mood.inkMute,
+        ),
+      );
     }
     if (!module.density.canCollapse) return const SizedBox.shrink();
 

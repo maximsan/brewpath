@@ -1,6 +1,9 @@
+import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
 import 'package:brew_path/features/path/domain/visual_guide_shelf.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/shared/models/content/visual_guide.dart';
+import 'package:brew_path/shared/models/lesson_model.dart';
+import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/visual_guide_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -20,6 +23,43 @@ Future<VisualGuideShelf> visualGuideShelfFor(Ref ref) async {
     for (final record in completed) record.lessonId,
   });
 }
+
+/// The lesson the Reference heading names as opening the next guide.
+///
+/// Its own provider, not a field on the shelf: only this heading needs the
+/// whole course in order, and the shelf is also read by lesson cards and the
+/// bookmark button, which should not load the banks to ask about one guide.
+///
+/// Every `watch` runs before the first `await`. Reading a `Ref` after an async
+/// gap throws if the provider was disposed in the meantime.
+@riverpod
+Future<String?> nextGuideUnlock(Ref ref) async {
+  final content = ref.watch(contentRepositoryProvider);
+  final guideRepository = ref.watch(visualGuideRepositoryProvider);
+  final completedLessons = ref.watch(completedLessonsProvider.future);
+
+  final guides = await guideRepository.getGuides();
+  final completed = await completedLessons;
+  final modules = await content.getModules();
+  final lessons = await content.getLessons();
+  final byId = {for (final lesson in lessons) lesson.id: lesson};
+
+  return nextGuideUnlockTitle(
+    guides,
+    {for (final record in completed) record.lessonId},
+    // The course in module order, which is the order it is worked through.
+    courseLessons: <LessonModel>[
+      for (final module in modules)
+        for (final lessonId in module.lessonIds) ?byId[lessonId],
+    ],
+  );
+}
+
+/// Whether the Reference shelf is locked by the purchase rather than by
+/// progress. The two need different words; `LockedRowCopy` has them.
+@riverpod
+Future<bool> referenceLockedByPurchase(Ref ref) async =>
+    !await ref.watch(courseEntitlementProvider.future);
 
 /// The earned guide covering [subject], or null when none is earned.
 ///

@@ -1,17 +1,31 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/constants/app_labels.dart';
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/bean_gauge.dart';
+import 'package:brew_path/features/monetization/domain/locked_row_copy.dart';
+import 'package:brew_path/features/monetization/domain/plus_copy.dart';
+import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
+import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart';
 import 'package:brew_path/features/path/domain/path_module_view.dart';
 import 'package:brew_path/features/path/presentation/path_lesson_row.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/content_fixtures.dart';
 
 final LessonModel _lesson = testLesson(title: 'Where coffee grows');
+
+const _pitch = PlusPitch(
+  remainingLessons: 29,
+  lockedGames: 4,
+  referenceTerms: 8,
+  savedFreeCap: 5,
+);
 
 Future<void> _pump(
   WidgetTester tester, {
@@ -19,18 +33,24 @@ Future<void> _pump(
   required bool isCurrent,
   MasteryResult mastery = MasteryResult.unscored,
   bool isLast = false,
+  bool isPurchaseLocked = false,
 }) => tester.pumpWidget(
-  MaterialApp(
-    theme: AppTheme.darkRoast,
-    home: Scaffold(
-      body: PathLessonRow(
-        entry: PathLesson(
-          lesson: _lesson,
-          isCompleted: isCompleted,
-          isCurrent: isCurrent,
-          mastery: mastery,
+  ProviderScope(
+    // A counted pitch, so tapping the lock does not wait on the banks.
+    overrides: [plusPitchProvider.overrideWith((ref) async => _pitch)],
+    child: MaterialApp(
+      theme: AppTheme.darkRoast,
+      home: Scaffold(
+        body: PathLessonRow(
+          entry: PathLesson(
+            lesson: _lesson,
+            isCompleted: isCompleted,
+            isCurrent: isCurrent,
+            isPurchaseLocked: isPurchaseLocked,
+            mastery: mastery,
+          ),
+          isLast: isLast,
         ),
-        isLast: isLast,
       ),
     ),
   ),
@@ -169,5 +189,113 @@ void main() {
     await _pump(tester, isCompleted: false, isCurrent: true);
 
     expect(find.text(AppLabels.currentLesson.toUpperCase()), findsOneWidget);
+  });
+
+  group('the purchase lock', () {
+    testWidgets("draws one mark, in the row's own trailing slot", (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        isCompleted: false,
+        isCurrent: false,
+        isPurchaseLocked: true,
+      );
+
+      // Exactly one — the spine beside it carries no lock of its own, which is
+      // the whole of #91's part 1.
+      final locks = find.byWidgetPredicate(
+        (widget) => widget is IconMark && widget.icon == AppIcon.lock,
+      );
+      expect(locks, findsOneWidget);
+      expect(
+        tester.widget<IconMark>(locks).color,
+        MoodColors.darkRoast.accent,
+        reason: 'accent, not ink-mute: buying is something to do',
+      );
+    });
+
+    testWidgets('fades the whole row rather than the mark alone', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        isCompleted: false,
+        isCurrent: false,
+        isPurchaseLocked: true,
+      );
+
+      final opacity = tester.widget<Opacity>(
+        find.descendant(
+          of: find.byType(PathLessonRow),
+          matching: find.byType(Opacity),
+        ),
+      );
+      expect(opacity.opacity, 0.4);
+    });
+
+    testWidgets('announces the state and its reason', (tester) async {
+      final handle = tester.ensureSemantics();
+      await _pump(
+        tester,
+        isCompleted: false,
+        isCurrent: false,
+        isPurchaseLocked: true,
+      );
+
+      expect(
+        find.bySemanticsLabel(
+          LockedRowCopy.purchaseLockedSemantics(_lesson.title),
+        ),
+        findsOneWidget,
+      );
+      handle.dispose();
+    });
+
+    testWidgets('raises the offer instead of opening the lesson', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        isCompleted: false,
+        isCurrent: false,
+        isPurchaseLocked: true,
+      );
+
+      await tester.tap(find.byType(PathLessonRow));
+      await tester.pumpAndSettle();
+
+      // The sheet, not a route: the row is the visible edge of the purchase.
+      expect(find.text(PlusCopy.title), findsOneWidget);
+    });
+
+    testWidgets('the next lesson in order stops reading as current', (
+      tester,
+    ) async {
+      // It genuinely is next, and the design still drops the eyebrow and the
+      // wash: pointing at a step nobody can take is not guidance.
+      await _pump(
+        tester,
+        isCompleted: false,
+        isCurrent: true,
+        isPurchaseLocked: true,
+      );
+
+      expect(find.text(AppLabels.currentLesson.toUpperCase()), findsNothing);
+
+      // The bean still fills as current — it marks where the learner got to.
+      expect(_bean(tester).color, MoodColors.darkRoast.accent);
+    });
+
+    testWidgets('an unlocked row carries no lock at all', (tester) async {
+      await _pump(tester, isCompleted: false, isCurrent: false);
+
+      expect(
+        find.byWidgetPredicate(
+          (widget) => widget is IconMark && widget.icon == AppIcon.lock,
+        ),
+        findsNothing,
+      );
+    });
   });
 }

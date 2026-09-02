@@ -37,6 +37,7 @@ List<PathModule> _course() {
     return PathModule(
       item: item,
       density: pathModuleDensity(item),
+      isPurchaseLocked: false,
       lessons: [
         for (var i = 0; i < lessonIds.length; i++)
           PathLesson(
@@ -46,6 +47,7 @@ List<PathModule> _course() {
             ),
             isCompleted: i < done,
             isCurrent: position == 2 && i == done,
+            isPurchaseLocked: false,
             mastery: MasteryResult.unscored,
           ),
       ],

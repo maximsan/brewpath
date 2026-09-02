@@ -140,11 +140,10 @@ class LearnListView extends ConsumerWidget {
               _headerGap,
               MiniGamesCatalogWidget(
                 formats: miniGames.asData?.value ?? const [],
-                // Unresolved entitlement reads as **owned**. A learner who
-                // bought the course must never catch a frame of locks on
-                // their own shelf; a missing lock for one frame costs the
-                // free learner nothing, and the wrong lock insults the payer.
-                hasCourse: entitlement.asData?.value ?? true,
+                // Unresolved reads as not owned, the rule `courseEntitlement`
+                // states. This row gates its tap on `hasCourse`, so an
+                // unlocked frame let someone start a paid game for free.
+                hasCourse: entitlement.asData?.value ?? false,
               ),
             ],
           ),

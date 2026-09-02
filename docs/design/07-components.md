@@ -369,10 +369,22 @@ Only 6 props, but one undocumented behaviour that changes how the screen reads.
 | Element | Action |
 |---|---|
 | Module header | **button** → `toggleMod(mod.id)`, but only when `canCollapse`; `disabled` when `mod.locked \|\| !canCollapse` |
-| Lesson node | **button** → `onLesson(lesson.id)`, guarded by `!isLocked` |
+| Lesson node | **button** → `onLesson(lesson.id)`, guarded by `!isLocked` — **except a purchase-locked one**, which stays live: `disabled={isLocked && !buyLocked}` (`screens.jsx:1487`) |
 | Challenge node | `PathChallengeNode` → `onBrewAction` (7.4) |
-| Compact module row | `CompactModuleRow` → `onOpenModule`, with `nav={false}` |
+| Compact module row | `CompactModuleRow` → **`onTap={onPurchaseTap}`** (`screens.jsx:1418`), and it is `interactive` **only** when `purchase` is true |
 | Coming-soon teaser | none — `ComingSoonPath compact` is inert ([§4](04-information-architecture.md)) |
+
+> **The purchase lock is a second lock, drawn differently.** `buyLocked =
+> !isComplete && purchaseLocked(lesson.id)` (`screens.jsx:1477`); a module takes
+> it from its **first** lesson (`:1417`). It draws the mark in **`--accent`**
+> where progression draws `--ink-mute` (`:1509` against `:1513`), labels it
+> `Part of Foundations`, and replaces the module sub-line's prereq hint with
+> `Part of Foundations · {n} lessons` (`:1345`). The row stays tappable and
+> raises the purchase sheet.
+>
+> The app follows this on all three locked surfaces, Reference included —
+> [ADR-0016](../adr/0016-a-locked-row-names-what-unlocks-it-for-this-learner.md),
+> which is where the rule and the owner's ruling behind it live.
 
 > **Completed modules collapse, and default to collapsed.**
 > `canCollapse = allDone && !mod.locked`; `open = !canCollapse || expandedMods[mod.id]`.

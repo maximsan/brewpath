@@ -211,6 +211,32 @@ state, its demo, when it applies, and its token spec):
 > Term of the Day · Lesson reference card · Bean node · Roast meter ·
 > Fill-in-the-blank · Taste Fix card · Sheet layers · Toggle
 
+> ⚠️ **`Status chips` does not govern the Path lesson row.** The catalogue
+> (`ds-content.js:526`) gives a lesson row `CURRENT` / `PRACTICE` / `LOCKED`
+> chips; the running prototype draws a `CURRENT` mono eyebrow, the bare mastery
+> word, and a `LockMark` in the trailing slot (`screens.jsx:1495-1515`) — no
+> chip anywhere on Path. **The running prototype wins**
+> ([ADR-0009](../adr/0009-the-running-prototype-wins-over-the-design-system-catalogue.md)),
+> so the app is correct as built and Audit F's entry 7
+> ([#389](https://github.com/maximsan/brewpath/issues/389)) is not a defect on
+> its lesson half — it is one of the entries that ADR's closing warning is
+> about. The **term** half was real and shipped with
+> [#398](https://github.com/maximsan/brewpath/issues/398) as `StatusChip`. The
+> entry's app-side citation (`_ModuleStatus` / `_NodeStatus`, a
+> `LinearProgressIndicator`) names classes that no longer exist — Path was
+> rebuilt by #394 and #435.
+>
+> ⚠️ **`Lesson row`'s "never boxed" rule is about the Path**, in its own words:
+> *"Rows are separated by a hairline, never boxed: **the Path** reads as one
+> column"* (`ds-content.js:515`). Path follows it (`PathLessonRow`, #435).
+> Audit F's entry 5 also cites Learn's `practice_any_lesson_widget.dart`, which
+> is boxed — but that is a replay list the running prototype does not have at
+> all, so the Path rule does not transfer to it unexamined. Its other half is
+> stale twice over: `module_lesson_card_widget.dart` was deleted by #394, and
+> the `Review` text button it names is gone. Left as a note rather than a
+> ticket, because what the rule *would* say about a screen the design never
+> drew is a question for the owner, not a defect to fix.
+
 **38 patterns with documented rules** (`compRules` — purpose, example markup, and the rules that govern it):
 
 | Group | Patterns |

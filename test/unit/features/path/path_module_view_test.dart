@@ -40,6 +40,7 @@ void main() {
         lessonsById: _lessons,
         completedIds: const {'m1l1'},
         masteryById: const {},
+        hasCourse: true,
       );
 
       expect(built.map((m) => m.density), [
@@ -54,6 +55,7 @@ void main() {
         lessonsById: _lessons,
         completedIds: const {},
         masteryById: const {},
+        hasCourse: true,
       );
 
       expect(built[0].lessons.map((l) => l.lesson.id), ['m1l1', 'm1l2']);
@@ -66,6 +68,7 @@ void main() {
         lessonsById: _lessons,
         completedIds: const {'m1l1', 'm1l2'},
         masteryById: const {},
+        hasCourse: true,
       );
 
       final current = [
@@ -85,6 +88,7 @@ void main() {
         lessonsById: _lessons,
         completedIds: const {'m1l1', 'm1l2', 'm2l1', 'm2l2'},
         masteryById: const {},
+        hasCourse: true,
       );
 
       final anyCurrent = built
@@ -100,6 +104,7 @@ void main() {
         lessonsById: _lessons,
         completedIds: const {'m1l1'},
         masteryById: const {'m1l1': MasteryResult(correct: 3, total: 4)},
+        hasCourse: true,
       );
 
       final first = built[0].lessons[0];
@@ -119,6 +124,7 @@ void main() {
           lessonsById: {'m1l1': testLesson(title: 'm1l1')},
           completedIds: const {},
           masteryById: const {},
+          hasCourse: true,
         );
 
         expect(built[0].lessons.map((l) => l.lesson.id), ['m1l1']);
@@ -135,9 +141,66 @@ void main() {
         lessonsById: {'m1l2': testLesson(id: 'm1l2', title: 'm1l2')},
         completedIds: const {},
         masteryById: const {},
+        hasCourse: true,
       );
 
       expect(built[0].lessons.single.isCurrent, isFalse);
+    });
+  });
+
+  group('the purchase lock', () {
+    // m1l1..m1l2 are the free set here; m2's lessons are not.
+    List<PathModule> built({
+      required bool hasCourse,
+      Set<String> done = const {},
+    }) => buildPathModules(
+      modules: _course(doneInFirst: done.length, doneInSecond: 0),
+      lessonsById: _lessons,
+      completedIds: done,
+      masteryById: const {},
+      hasCourse: hasCourse,
+    );
+
+    test('owning the course locks nothing', () {
+      final modules = built(hasCourse: true);
+      expect(modules.map((m) => m.isPurchaseLocked), [false, false]);
+      expect(
+        modules.expand((m) => m.lessons).map((l) => l.isPurchaseLocked),
+        everyElement(isFalse),
+      );
+    });
+
+    test('a free learner keeps the free lessons and loses the rest', () {
+      final lessons = {
+        for (final module in built(hasCourse: false))
+          for (final lesson in module.lessons)
+            lesson.lesson.id: lesson.isPurchaseLocked,
+      };
+
+      // ADR-0007's list, and nothing derived from the module id.
+      expect(lessons['m1l1'], isFalse);
+      expect(lessons['m1l2'], isFalse);
+      expect(lessons['m2l1'], isTrue);
+      expect(lessons['m2l2'], isTrue);
+    });
+
+    test('a module is locked by its first lesson', () {
+      expect(built(hasCourse: false).map((m) => m.isPurchaseLocked), [
+        false, // m1 opens on a free lesson
+        true, // m2 does not
+      ]);
+    });
+
+    test('a finished lesson is never taken back', () {
+      // The wall can move behind a learner — a completed lesson stays
+      // replayable, which is what the design's `!isComplete` guard protects.
+      final lessons = built(
+        hasCourse: false,
+        done: const {'m2l1'},
+      ).expand((m) => m.lessons);
+      final finished = lessons.firstWhere((l) => l.lesson.id == 'm2l1');
+
+      expect(finished.isPurchaseLocked, isFalse);
     });
   });
 }
