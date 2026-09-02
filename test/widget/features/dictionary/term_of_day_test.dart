@@ -13,6 +13,7 @@ import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/repositories/dictionary_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -250,6 +251,22 @@ void main() {
         find.text(today.term),
         findsOneWidget,
         reason: 'and the screen it opens names the same one',
+      );
+    });
+
+    testWidgets('is a button a screen reader can actually press', (
+      tester,
+    ) async {
+      await _openDictionary(tester);
+
+      final node = tester.getSemantics(find.byType(TermOfDayBanner));
+
+      expect(
+        node.getSemanticsData().hasAction(SemanticsAction.tap),
+        isTrue,
+        reason:
+            'excludeSemantics drops the InkWell tap along with the text, so '
+            'the label alone announces a button that cannot be pressed',
       );
     });
 

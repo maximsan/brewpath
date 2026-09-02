@@ -136,6 +136,12 @@ class _Banner extends StatelessWidget {
     return Semantics(
       button: true,
       label: _announcement,
+      // **The action, not just the flag.** `excludeSemantics` drops the
+      // InkWell's own semantics along with the text's, and a node that says
+      // "button" without carrying a tap leaves a screen reader announcing
+      // something it cannot then press. Measured: the shared `BorderedTapRow`
+      // builds such a node today (see #487).
+      onTap: onOpen,
       excludeSemantics: true,
       child: DecoratedBox(
         decoration: _frame(mood),
