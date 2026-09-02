@@ -31,10 +31,10 @@ depends on tier is recomputed. Growing the free tier later means changing
 this one list.
 
 Two options were rejected: keeping the two-lesson tier (it leaves the shipped
-quiz selling a lesson it already reveals), and freeing all of Module 1 (seven
-free lessons is about 22% of a 129-minute course; the owner judged that too
-much to give away, and accepted that the paywall therefore appears
-mid-module, at `m1l4`).
+quiz selling a lesson it already reveals), and freeing all of Module 1 (its seven
+lessons are 26 of the course's 129 minutes; the owner judged that too much
+to give away, and accepted that the paywall therefore appears mid-module,
+at `m1l4`).
 
 ## Consequences
 
