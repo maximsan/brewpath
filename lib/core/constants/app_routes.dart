@@ -57,6 +57,7 @@ abstract class AppRoutes {
   /// opens the sheet directly. The path exists because #171 scopes the app's
   /// universal links to it.
   static const cardDetail = AppRoute('cardDetail', ':cardId');
+
   static const profile = AppRoute('profile', '/profile');
   static const profileSettings = AppRoute('profileSettings', 'settings');
   static const profileStreak = AppRoute('profileStreak', 'streak');

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- The domain that vouches for this app, so a tapped link opens it
+	     instead of Safari. The subdomain only: a claim on maximsan.dev would
+	     open BrewPath for every link to the owner's own site (#34). -->
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:brewpath.maximsan.dev</string>
+	</array>
+</dict>
+</plist>

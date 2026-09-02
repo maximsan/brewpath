@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:brew_path/core/constants/app_links.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
@@ -78,7 +79,13 @@ class _StreakScreenState extends ConsumerState<StreakScreen> {
     );
     await ref
         .read(sharePresenterProvider)
-        .sharePng(bytes: bytes, fileName: 'brewpath-streak.png');
+        .sharePng(
+          bytes: bytes,
+          fileName: 'brewpath-streak.png',
+          // The site, not a streak of its own: there is nothing for a
+          // stranger to render at `/streak/<n>` (#34).
+          link: AppLinks.site,
+        );
   }
 
   @override

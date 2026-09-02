@@ -3,6 +3,7 @@ import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/app_sheet.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
+import 'package:brew_path/features/cards/presentation/card_locked_face.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/challenges/presentation/card_stamp_section.dart';
 import 'package:brew_path/features/challenges/presentation/tried_seal.dart';
@@ -21,12 +22,17 @@ const double _markSize = 96;
 /// A sheet, not a push: the design never takes the learner off the grid to
 /// read a card (`CardSheet`, `screens.jsx:2458`), so closing puts them back
 /// exactly where they were, on the tile they tapped.
-Future<void> showCardSheet(BuildContext context, CardWithCollection item) =>
-    showAppSheet<void>(
-      context: context,
-      title: item.card.title,
-      builder: (_) => CardSheetBody(item: item),
-    );
+/// Returns what the learner asked for on the way out, when they asked for
+/// anything — the sheet cannot navigate for itself, because the route it sits
+/// on belongs to whoever opened it.
+Future<CardSheetIntent?> showCardSheet(
+  BuildContext context,
+  CardWithCollection item,
+) => showAppSheet<CardSheetIntent>(
+  context: context,
+  title: item.card.title,
+  builder: (_) => CardSheetBody(item: item),
+);
 
 /// One collectible, as the sheet reads it: what it is, what it says, and the
 /// line worth keeping.
@@ -55,6 +61,11 @@ class CardSheetBody extends ConsumerWidget {
     final mood = context.mood;
     final text = Theme.of(context).textTheme;
     final card = item.card;
+
+    // An unheld card shows its face and stops there (ADR-0015): no summary,
+    // no keepsake line, and no stamp block — a challenge cannot be logged
+    // against a card the learner has not got.
+    if (!item.isCollected) return CardLockedFace(card: card);
 
     final tried =
         ref.watch(cardChallengeTriedProvider(card.id)).asData?.value ?? false;

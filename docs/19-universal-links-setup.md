@@ -21,14 +21,16 @@ the whole reason a domain is involved.
 - A Vercel account
 - An Apple Developer account
 
-## Step 1 — Get your Apple Team ID
+## Step 1 — Your Apple Team ID
 
-1. Sign in at **[developer.apple.com/account](https://developer.apple.com/account)**.
-2. Open **Membership details**.
-3. Copy **Team ID** — ten characters, like `A1B2C3D4E5`.
+**You already have it: `597GQ84U66`.** The Xcode project has signed with it
+since the runner was set up — `DEVELOPMENT_TEAM` in
+`ios/Runner.xcodeproj/project.pbxproj`.
 
-Already have the project open in Xcode? It is also at **Runner → Signing &
-Capabilities → Team**. Keep it to hand; step 2 needs it.
+To check it against Apple's own copy, sign in at
+**[developer.apple.com/account](https://developer.apple.com/account)** and open
+**Membership details**; it is also at **Runner → Signing & Capabilities → Team**
+in Xcode.
 
 ## Step 2 — Make the site (three files)
 
@@ -44,14 +46,14 @@ brewpath-links/
 
 ### `.well-known/apple-app-site-association`
 
-Replace `<TEAM_ID>` with the ten characters from step 1. Nothing else changes.
+Copy this verbatim — the Team ID and bundle id are already filled in.
 
 ```json
 {
   "applinks": {
     "details": [
       {
-        "appIDs": ["<TEAM_ID>.dev.maximsan.brewPath"],
+        "appIDs": ["597GQ84U66.dev.maximsan.brewPath"],
         "components": [
           { "/": "/", "comment": "the marketing entry" },
           { "/": "/card/*", "comment": "a shared collectible" }
@@ -202,14 +204,12 @@ https://app-site-association.cdn-apple.com/a/v1/brewpath.maximsan.dev
 
 ## Step 6 — Hand over
 
-The app half of [#171](https://github.com/maximsan/brewpath/issues/171) needs
-two things from you:
+**The app half is already built and merged** — the entitlement
+(`applinks:brewpath.maximsan.dev`), the `/card/<id>` route, the unearned-card
+face and the link that survives onboarding all ship in the app. Nothing is
+owed back to the app once step 5 passes.
 
-- the **Team ID**, and
-- confirmation that step 5 passed.
-
-The entitlement (`applinks:brewpath.maximsan.dev`), the router work and the
-tests are the agent's part.
+What remains after this doc: install a build on a device and tap a real link.
 
 ## When it doesn't work
 
