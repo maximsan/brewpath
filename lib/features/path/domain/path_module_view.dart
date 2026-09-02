@@ -35,26 +35,20 @@ class PathLesson {
 
   /// Whether the free tier does not carry this lesson.
   ///
-  /// **Not the same lock as [PathModuleDensity.locked].** That one is
-  /// progression — finish the module before and it opens. This one is the
-  /// purchase, and no amount of learning moves it. A row says which it is,
-  /// because "finish the lesson before" is a lie to someone whose next lesson
-  /// is behind a wall.
+  /// Not the same lock as [PathModuleDensity.locked]. That one opens when the
+  /// module before it is finished. This one only opens by buying the course.
+  /// ADR-0015.
   final bool isPurchaseLocked;
 
   /// The best stored result, driving how full the row's bean reads.
   final MasteryResult mastery;
 
-  /// Whether the row *presents* as the learner's next move — the accent wash
-  /// behind it and the `CURRENT` eyebrow under its title.
+  /// Whether the row draws itself as the next thing to do: the accent wash
+  /// behind it, and the `CURRENT` label under the title.
   ///
-  /// A purchase-locked row does not, even when it is genuinely next in order:
-  /// the design drops both (`screens.jsx:1494`, `:1502`), because pointing
-  /// someone at a step they cannot take is not guidance.
-  ///
-  /// The **node** is deliberately not covered by this and still fills as
-  /// current (`screens.jsx:1483`) — it marks where the learner has got to,
-  /// which stays true whether or not they can go on.
+  /// A purchase-locked row does not, even when it really is next. The bean is
+  /// deliberately left out of this and still fills as current, because it
+  /// marks how far the learner has got, which is true either way.
   bool get readsAsCurrent => isCurrent && !isPurchaseLocked;
 }
 
@@ -76,9 +70,7 @@ class PathModule {
 
   /// Whether the free tier does not carry this module.
   ///
-  /// Decided by its **first** lesson, as the design decides it
-  /// (`screens.jsx:1417`): the free set is a lesson list, so a module is
-  /// bought-or-not at the point a learner would enter it.
+  /// Decided by its first lesson, which is where a learner would go in.
   final bool isPurchaseLocked;
 
   /// Its lessons in course order, each paired to the learner's progress.
@@ -105,12 +97,8 @@ class PathModule {
 /// — otherwise one missing bank entry would promote a later lesson to
 /// "current" and point the learner past the one they actually owe.
 ///
-/// [hasCourse] is the learner's entitlement, and it decides the purchase lock
-/// alone — the free lesson list ([isLessonFree]) is the same one every other
-/// tier question is answered from (ADR-0007). **Pass `false` while it is
-/// unresolved**, which is what `courseEntitlement` asks of every caller: a
-/// lock shown to a payer for one frame is recoverable, a paid lesson opened
-/// for a free learner is not.
+/// [hasCourse] is the learner's entitlement. Pass `false` while it is still
+/// unresolved, which is what `courseEntitlement` asks of every caller.
 List<PathModule> buildPathModules({
   required List<ModuleWithProgress> modules,
   required Map<String, LessonModel> lessonsById,
@@ -120,9 +108,8 @@ List<PathModule> buildPathModules({
 }) {
   final currentId = firstUnfinishedLessonId(modules, completedIds);
 
-  // A finished lesson is never purchase-locked: replay is what a learner keeps
-  // when the wall moves behind them, and the design guards its own buy branch
-  // the same way (`screens.jsx:1477`).
+  // A finished lesson never locks. Someone who played it before the wall
+  // moved keeps it.
   bool lockedToPurchase(String lessonId, {required bool isCompleted}) =>
       !hasCourse && !isCompleted && !isLessonFree(lessonId);
 

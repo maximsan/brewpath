@@ -26,14 +26,12 @@ Future<VisualGuideShelf> visualGuideShelfFor(Ref ref) async {
 
 /// The lesson the Reference heading names as opening the next guide.
 ///
-/// Its own provider rather than a field on the shelf: this is the only reader
-/// that needs the whole course in order, and putting it on the shelf would
-/// make every `earnedGuideFor` caller — lesson cards, the bookmark button —
-/// load the module and lesson banks to ask about one guide.
+/// Its own provider, not a field on the shelf: only this heading needs the
+/// whole course in order, and the shelf is also read by lesson cards and the
+/// bookmark button, which should not load the banks to ask about one guide.
 ///
-/// **Every `watch` happens before the first `await`.** Reading a `Ref` after
-/// an async gap throws once the provider has been disposed, which is what a
-/// widget test tearing down mid-load does.
+/// Every `watch` runs before the first `await`. Reading a `Ref` after an async
+/// gap throws if the provider was disposed in the meantime.
 @riverpod
 Future<String?> nextGuideUnlock(Ref ref) async {
   final content = ref.watch(contentRepositoryProvider);
@@ -49,7 +47,7 @@ Future<String?> nextGuideUnlock(Ref ref) async {
   return nextGuideUnlockTitle(
     guides,
     {for (final record in completed) record.lessonId},
-    // The course flattened in module order — the order the learner walks it.
+    // The course in module order, which is the order it is worked through.
     courseLessons: <LessonModel>[
       for (final module in modules)
         for (final lessonId in module.lessonIds) ?byId[lessonId],
@@ -57,10 +55,8 @@ Future<String?> nextGuideUnlock(Ref ref) async {
   );
 }
 
-/// Whether the Reference shelf's lock is the purchase rather than progress.
-///
-/// The two locks need different words, and only one of them is true for a
-/// given learner — the words themselves live in `LockedRowCopy`.
+/// Whether the Reference shelf is locked by the purchase rather than by
+/// progress. The two need different words; `LockedRowCopy` has them.
 @riverpod
 Future<bool> referenceLockedByPurchase(Ref ref) async =>
     !await ref.watch(courseEntitlementProvider.future);

@@ -58,9 +58,8 @@ class PathLessonRow extends StatelessWidget {
   /// The design's `gap: 14px` between the node column and the title.
   static const double _columnGap = 14;
 
-  /// `.lesson-row.locked { opacity: 0.4 }` — the whole row fades, mark
-  /// included, so the lock reads as a property of the row rather than as one
-  /// more thing in its margin.
+  /// The design's `.lesson-row.locked { opacity: 0.4 }`. The whole row fades,
+  /// mark included, so the lock reads as something about the row.
   static const double _lockedOpacity = 0.4;
 
   @override
@@ -101,10 +100,8 @@ class PathLessonRow extends StatelessWidget {
 
   /// The tappable row itself.
   ///
-  /// Still tappable while purchase-locked, and deliberately so: the design
-  /// keeps the row live (`disabled={isLocked && !buyLocked}`) because it is
-  /// the visible edge of the purchase, and a dead row would refuse without
-  /// ever saying what it costs.
+  /// A purchase-locked row stays tappable on purpose. It is where someone
+  /// meets the wall, and a dead row would say no without saying what it costs.
   Widget _row(BuildContext context, String title) {
     final locked = entry.isPurchaseLocked;
 
@@ -131,9 +128,8 @@ class PathLessonRow extends StatelessWidget {
 
     if (!locked) return row;
 
-    // One sentence rather than three nodes: a reader meeting the title, then
-    // a bare mark, has to assemble the reason themselves. A locked row is
-    // never the current one, so no eyebrow is lost to `excludeSemantics`.
+    // One sentence, not three separate nodes. A locked row never shows the
+    // CURRENT label, so `excludeSemantics` loses nothing.
     return Semantics(
       button: true,
       label: LockedRowCopy.purchaseLockedSemantics(title),
@@ -188,9 +184,8 @@ class _Title extends StatelessWidget {
 /// Nothing is the common case, and it is deliberate — a finished lesson that
 /// went well says so by the fill of its bean, not by a second label.
 ///
-/// **One lock per row, and this is where it lives.** The design puts the mark
-/// in the row's own trailing slot (`screens.jsx:1509`); the spine beside it
-/// carries no lock of its own, so there is nothing here to double.
+/// One lock per row, and this is where it goes. The spine beside it carries
+/// no lock of its own, so there is nothing here to double up.
 class _Meta extends StatelessWidget {
   const _Meta({required this.entry});
 
@@ -206,12 +201,9 @@ class _Meta extends StatelessWidget {
   Widget build(BuildContext context) {
     final mood = context.mood;
 
-    // Ahead of every other arm: a locked row's state is what it is, whatever
-    // the learner scored on it before or where the course is pointing.
+    // Before every other arm: locked is locked, whatever the learner scored
+    // before or wherever the course is pointing.
     if (entry.isPurchaseLocked) {
-      // Accent, not ink-mute — the design colours *this* lock differently from
-      // a progression lock, because accent means there is something to do and
-      // buying is something the learner can do right now.
       return Semantics(
         label: LockedRowCopy.partOfFoundations,
         child: IconMark(

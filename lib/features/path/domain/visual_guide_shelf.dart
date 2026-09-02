@@ -42,18 +42,12 @@ VisualGuideShelf deriveVisualGuideShelf(
   );
 }
 
-/// The title of the lesson that earns the **next** guide, or null when there
-/// is none to name.
+/// The title of the lesson that earns the next guide, or null if there is
+/// none to name.
 ///
-/// Kept apart from [deriveVisualGuideShelf] because only the Reference
-/// heading needs it: the shelf itself is read by lesson cards and the bookmark
-/// button, and those must not have to supply the whole course to ask whether
-/// one guide is earned.
-///
-/// [courseLessons] is the course **in the order the learner walks it**, which
-/// is the only order in which "next" means anything — the guide bank is drawn
-/// in its own order, where the first entry unlocks at `m3l1` and the sixth at
-/// `m1l6`. Given an empty course, it answers null rather than guessing.
+/// [courseLessons] must be in course order, because the guide bank is not:
+/// its first entry unlocks at `m3l1` while its sixth unlocks at `m1l6`. Given
+/// an empty course this answers null rather than guessing.
 String? nextGuideUnlockTitle(
   List<VisualGuide> guides,
   Set<String> completedLessonIds, {

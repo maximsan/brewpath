@@ -29,9 +29,8 @@ Future<List<PathModule>> pathModules(Ref ref) async {
     masteryById: {
       for (final record in completed) record.lessonId: record.mastery,
     },
-    // Awaited, not `.value ?? false`: the screen is already behind a
-    // `FutureProvider`, so there is no frame in which a half-built Path is
-    // drawn, and the entitlement resolves with the rest of the banks.
+    // Awaited, not `.value ?? false`. The screen is already behind a
+    // `FutureProvider`, so no half-built Path is ever drawn.
     hasCourse: hasCourse,
   );
 }

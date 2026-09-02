@@ -144,9 +144,8 @@ class _Heading extends StatelessWidget {
       ],
     );
 
-    // A purchase-locked module is the one locked row that *does* something:
-    // the design makes it `interactive` and raises the purchase sheet
-    // (`screens.jsx:1318`), because it is where a free learner meets the wall.
+    // The one locked row that does something on tap: it is where someone who
+    // has not bought the course meets the wall, so it offers the way past.
     if (module.isPurchaseLocked) {
       return Semantics(
         button: true,
@@ -179,17 +178,12 @@ class _Heading extends StatelessWidget {
     );
   }
 
-  /// The mono line under a module's title — **only a locked module has one**.
+  /// The mono line under a module's title. Only a locked module has one: an
+  /// active module lists its lessons instead, and a finished one says nothing.
   ///
-  /// The design prints it in `CompactModuleRow` alone; the expanded branch
-  /// guards its sub-line on `mod.locked && prereq`, which an expanded module
-  /// never is (`screens.jsx:1463`). So an active module states its lesson
-  /// count by listing the lessons, and a finished one goes quiet.
-  ///
-  /// **The purchase wins over the prerequisite** (`screens.jsx:1345`). Both
-  /// can be true of one module, and only one of them is the learner's next
-  /// move: someone who cannot buy the course will never finish the module
-  /// before it either, so naming that module would be advice they cannot take.
+  /// When a module is locked both ways, the purchase wins. Someone who has not
+  /// bought the course will never finish the module before it either, so
+  /// naming that module is advice they cannot take. ADR-0015.
   static String? _subLine(PathModule module, String? previousTitle) {
     if (!module.density.isLocked) return null;
     if (module.isPurchaseLocked) {
@@ -221,9 +215,8 @@ class _TrailingMark extends StatelessWidget {
     final mood = context.mood;
 
     if (module.density.isLocked) {
-      // Accent for the purchase lock, ink-mute for progression
-      // (`screens.jsx:1336` against `:1338`). Accent means there is something
-      // to do, and buying is the one of the two a learner can act on now.
+      // Accent for the purchase, ink-mute for progression. Accent means
+      // there is something to do, and buying is the one they can do now.
       return Semantics(
         label: module.isPurchaseLocked ? LockedRowCopy.partOfFoundations : null,
         child: IconMark(

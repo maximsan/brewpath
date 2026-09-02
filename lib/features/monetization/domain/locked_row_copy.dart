@@ -1,50 +1,35 @@
-/// What a locked row says, on every surface that draws one.
+/// The words every locked row uses.
 ///
-/// **A locked row names what would unlock it _for this learner_.** Two locks
-/// look identical and are not: progression opens by learning, and the purchase
-/// does not open by learning at all. Telling a free learner to finish a lesson
-/// they cannot reach is the defect the owner ruled against on
-/// [#91](https://github.com/maximsan/brewpath/issues/91) — recorded as
-/// ADR-0015 — and it is the same defect on a lesson row, a module row and the
-/// Reference shelf, so the three read their words from here.
-///
-/// Pure strings: what is locked and for whom is decided by the caller, so
-/// every line can be asserted without pumping a widget.
+/// A locked row says what would unlock it for the learner reading it. Two
+/// locks look the same and are not: one opens by learning, the other only by
+/// buying. ADR-0015 has the rule.
 library;
 
 /// The strings a locked row uses.
 abstract final class LockedRowCopy {
-  /// The purchase lock, named as what it *is* rather than as a refusal.
-  ///
-  /// The course's own name, which is what the design puts on the mark
-  /// (`screens.jsx:1336`, `:1509`) — a learner who bought Foundations should
-  /// recognise the thing they are being offered.
+  /// The purchase lock. Named as what it is, not as a refusal.
   static const partOfFoundations = 'Part of Foundations';
 
-  /// A purchase-locked module's sub-line: what it is, and how much is in it.
-  ///
-  /// The count is the pitch — `Part of Foundations` alone says only *no*
-  /// (`screens.jsx:1345`).
+  /// A purchase-locked module. The count is the pitch.
   static String purchasedModule(int lessonCount) =>
       '$partOfFoundations · $lessonCount lessons';
 
-  /// A progress-locked module's sub-line, for a learner who can actually
-  /// finish the module named.
+  /// A module waiting on the one before it.
   static String finishToUnlock(String previousTitle) =>
       'Finish $previousTitle to unlock';
 
-  /// A module locked with nothing before it to finish — it states its size.
+  /// A locked module with nothing before it to finish.
   static String moduleSize(int lessonCount) => '$lessonCount lessons';
 
-  /// The Reference shelf, to a learner the free tier will never open it for.
+  /// The Reference shelf, to someone who has not bought the course.
   ///
-  /// The free set is the first three lessons (ADR-0007) and the earliest guide
-  /// is taught by the sixth, so no lesson a free learner can complete reaches
-  /// this shelf. The honest answer is *purchase*, not *keep learning*.
+  /// No lesson they can finish opens it: free is the first three lessons
+  /// (ADR-0007) and the earliest guide is taught by the sixth. So the true
+  /// answer is buy it, not keep going.
   static const referenceLockedFree = 'Visual guides come with the full course';
 
   /// The Reference shelf, to someone who owns the course but has not yet
-  /// reached the lesson that fills it — here the lesson hint is the true one.
+  /// reached the lesson that fills it.
   static String referenceUnlocksWith(String lessonTitle) =>
       'Unlocks with $lessonTitle';
 

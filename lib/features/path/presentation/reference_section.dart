@@ -23,14 +23,10 @@ const _title = 'Reference';
 const _openSubtitle = 'Visual guides from your lessons';
 String _remainingLine(int remaining) => '$remaining more unlock as you learn';
 
-/// The locked shelf's line, which depends on who is reading it.
+/// The locked shelf's line, which depends on who is reading it. ADR-0015.
 ///
-/// #260 shipped the prototype's one string — *"Visual guides unlock as lessons
-/// teach them"* — for both tiers, and recorded that it was honest to neither.
-/// The free tier is the first three lessons (ADR-0007) and the earliest guide
-/// is taught by the sixth, so "keep learning" is not an instruction a free
-/// learner can follow. The owner ruled the line tier-aware on #91; ADR-0015
-/// carries it.
+/// #260 shipped one string for everyone — "Visual guides unlock as lessons
+/// teach them" — and recorded that it was not true for either reader.
 String _lockedSubtitle({required bool byPurchase, required String? nextTitle}) {
   if (byPurchase) return LockedRowCopy.referenceLockedFree;
   return nextTitle == null
@@ -81,15 +77,12 @@ class _ReferenceSectionState extends ConsumerState<ReferenceSection> {
       return const SizedBox.shrink();
     }
 
-    // Unresolved reads as locked-by-purchase, which is what every other
-    // entitlement caller does: the free line is the one that is true for
-    // someone who has bought nothing, and that is the safe way to be wrong.
+    // Unresolved reads as locked by purchase, like every other entitlement
+    // caller. It is the safer of the two ways to be wrong for a moment.
     final byPurchase =
         ref.watch(referenceLockedByPurchaseProvider).asData?.value ?? true;
     final subtitle = _lockedSubtitle(
       byPurchase: byPurchase,
-      // Only asked for while the shelf is locked, and only true when the
-      // learner owns the course — a free reader never sees a lesson name.
       nextTitle: ref.watch(nextGuideUnlockProvider).asData?.value,
     );
     final isOpen = _isOpen && !shelf.isLocked;
@@ -106,9 +99,8 @@ class _ReferenceSectionState extends ConsumerState<ReferenceSection> {
             isLocked: shelf.isLocked,
             isOpen: isOpen,
             subtitle: shelf.isLocked ? subtitle : _openSubtitle,
-            // A locked section refuses to open rather than opening onto
-            // nothing — unless the lock is the purchase, which is a thing the
-            // learner can act on, so that one raises the offer instead.
+            // A locked section will not open onto nothing. If the lock is
+            // the purchase, it offers the way past instead.
             onTap: !shelf.isLocked
                 ? () => setState(() => _isOpen = !_isOpen)
                 : byPurchase

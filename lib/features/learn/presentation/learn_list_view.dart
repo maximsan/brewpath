@@ -140,14 +140,9 @@ class LearnListView extends ConsumerWidget {
               _headerGap,
               MiniGamesCatalogWidget(
                 formats: miniGames.asData?.value ?? const [],
-                // Unresolved reads as **not owned**, which is the rule
-                // `courseEntitlement` states and every other caller keeps.
-                // The comment here used to argue the opposite — that a missing
-                // lock for one frame cost the free learner nothing. It cost
-                // them the wall: this row gates its *tap* on `hasCourse`, so
-                // an unlocked frame let a free learner start a paid run. A
-                // lock shown to a payer for one frame is the recoverable half
-                // of the trade.
+                // Unresolved reads as not owned, the rule `courseEntitlement`
+                // states. This row gates its tap on `hasCourse`, so an
+                // unlocked frame let someone start a paid game for free.
                 hasCourse: entitlement.asData?.value ?? false,
               ),
             ],
