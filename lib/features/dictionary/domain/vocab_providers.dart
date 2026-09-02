@@ -1,4 +1,5 @@
 import 'package:brew_path/features/dictionary/domain/vocab_pool.dart';
+import 'package:brew_path/features/dictionary/domain/vocab_round.dart';
 import 'package:brew_path/features/dictionary/domain/vocab_setup.dart';
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
 import 'package:brew_path/features/saved/domain/saved_key.dart';
@@ -22,7 +23,7 @@ class VocabPools {
   const VocabPools({
     required this.accessible,
     required this.saved,
-    required this.savedTotal,
+    required this.savedEligible,
     this.categoryLabels = const {},
     this.hasCourse = false,
   });
@@ -33,23 +34,28 @@ class VocabPools {
   /// The accessible terms they bookmarked — always a subset of [accessible].
   final List<DictionaryTerm> saved;
 
-  /// How many terms they bookmarked in all, whether their tier reaches them or
-  /// not. Required, not defaulted: a zero sitting beside a non-empty [saved]
-  /// is a state that cannot happen, and a default is how it would.
+  /// How many of their bookmarks are words a drill could ask about at all,
+  /// before the tier narrows it — so **not** the raw count of saved keys.
   ///
-  /// Resolved here so a screen compares it against [saved] from the same read;
-  /// two providers could disagree by a rebuild.
-  final int savedTotal;
+  /// A bookmark on a term the bank no longer carries, or one authored without
+  /// the short explanation a question needs, is not a word any tier can be
+  /// drilled on. Counting those would make the copy below promise that buying
+  /// the course puts them in reach, and it would not.
+  ///
+  /// Required, not defaulted: a zero sitting beside a non-empty [saved] is a
+  /// state that cannot happen, and a default is how it would.
+  final int savedEligible;
 
-  /// Whether they saved terms and none of them can be drilled.
+  /// Whether they saved words a drill could ask about, and their tier reaches
+  /// none of them.
   ///
-  /// Guarded on the tier as well as the counts, because the copy this turns on
-  /// tells the learner their *free lessons* do not cover what they saved. That
-  /// is true of a free learner. Every term in the shipped bank carries the
-  /// short explanation a drill needs, so a paid learner reaches all of them
-  /// and cannot be here — but a term authored without one would put them here,
-  /// and the sentence would be false. So they get the design's copy instead.
-  bool get savedIsOutOfReach => !hasCourse && saved.isEmpty && savedTotal > 0;
+  /// Every clause is load-bearing, because this turns on copy that tells the
+  /// learner their *free lessons* do not cover what they saved and that the
+  /// full course would. [savedEligible] makes the second half true; the tier
+  /// check makes the first half true, since a paid learner reaches every
+  /// eligible word and cannot honestly be told this.
+  bool get savedIsOutOfReach =>
+      !hasCourse && saved.isEmpty && savedEligible > 0;
 
   /// Category id to its label, for the eyebrow over a question.
   ///
@@ -86,8 +92,9 @@ Future<VocabPools> vocabPools(Ref ref) async {
   final entitlement = ref.watch(courseEntitlementProvider);
 
   final hasCourse = entitlement.asData?.value ?? false;
+  final terms = await termsFuture;
   final accessible = accessibleTerms(
-    terms: await termsFuture,
+    terms: terms,
     lessons: await lessonsFuture,
     hasCourse: hasCourse,
   );
@@ -100,7 +107,12 @@ Future<VocabPools> vocabPools(Ref ref) async {
   return VocabPools(
     accessible: accessible,
     hasCourse: hasCourse,
-    savedTotal: savedTermIds.length,
+    // Intersected with every drillable word rather than counted off the keys:
+    // a bookmark no drill could ever ask about is not one the course unlocks.
+    savedEligible: savedAccessibleTerms(
+      accessible: vocabEligible(terms),
+      savedTermIds: savedTermIds,
+    ).length,
     categoryLabels: {
       for (final category in await categoriesFuture)
         category.id: category.label,

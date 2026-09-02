@@ -143,12 +143,7 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
           label: 'Your deck could not be loaded',
           child: ErrorView(message: '$error'),
         ),
-        data: (cards) => _body(
-          cards,
-          round,
-          pools.asData?.value.categoryLabels ?? const {},
-          isOutOfReach: pools.asData?.value.savedIsOutOfReach ?? false,
-        ),
+        data: (cards) => _body(cards, round, pools.asData?.value),
       ),
     );
   }
@@ -165,14 +160,18 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
     );
   }
 
+  /// Takes the pools whole rather than two values pulled off them: they are
+  /// resolved together so a screen cannot pair one rebuild's deck with the
+  /// next one's labels, and splitting them here would give that back.
   Widget _body(
     List<DictionaryTerm> cards,
     FlashcardRound round,
-    Map<String, String> categoryLabels, {
-    required bool isOutOfReach,
-  }) {
+    VocabPools? pools,
+  ) {
     if (cards.isEmpty) {
-      return FlashcardsEmptyView(isOutOfReach: isOutOfReach);
+      return FlashcardsEmptyView(
+        isOutOfReach: pools?.savedIsOutOfReach ?? false,
+      );
     }
 
     if (round.isFinished) {
@@ -191,7 +190,7 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
     final term = cards[round.card];
     return FlashcardDealView(
       term: term,
-      category: _categoryOf(categoryLabels, term),
+      category: _categoryOf(pools?.categoryLabels ?? const {}, term),
       round: round,
       deckSize: cards.length,
       onFlip: () => _flip(cards.length),

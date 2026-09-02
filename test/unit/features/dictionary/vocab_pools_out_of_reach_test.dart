@@ -12,27 +12,27 @@ const _term = DictionaryTerm(
 );
 
 VocabPools _pools({
-  required int savedTotal,
+  required int savedEligible,
   required bool hasCourse,
   List<DictionaryTerm> saved = const [],
 }) => VocabPools(
   accessible: const [_term],
   saved: saved,
-  savedTotal: savedTotal,
+  savedEligible: savedEligible,
   hasCourse: hasCourse,
 );
 
 void main() {
   test('saved terms none of which can be drilled', () {
     expect(
-      _pools(savedTotal: 1, hasCourse: false).savedIsOutOfReach,
+      _pools(savedEligible: 1, hasCourse: false).savedIsOutOfReach,
       isTrue,
     );
   });
 
   test("nothing saved is the design's own empty state, not this one", () {
     expect(
-      _pools(savedTotal: 0, hasCourse: false).savedIsOutOfReach,
+      _pools(savedEligible: 0, hasCourse: false).savedIsOutOfReach,
       isFalse,
     );
   });
@@ -40,7 +40,7 @@ void main() {
   test('a deck with cards in it is not an empty state at all', () {
     expect(
       _pools(
-        savedTotal: 2,
+        savedEligible: 2,
         hasCourse: false,
         saved: const [_term],
       ).savedIsOutOfReach,
@@ -54,7 +54,19 @@ void main() {
     // needs — but a term authored without one would land a paid learner here,
     // and the copy would be false for them.
     expect(
-      _pools(savedTotal: 1, hasCourse: true).savedIsOutOfReach,
+      _pools(savedEligible: 1, hasCourse: true).savedIsOutOfReach,
+      isFalse,
+    );
+  });
+
+  test('a bookmark no drill could ask about does not raise the line', () {
+    // The copy says the full course would put the saved terms in reach. A
+    // bookmark on a term the bank dropped, or one authored without the short
+    // explanation a question needs, is not reachable at any tier — so it is
+    // not counted, and the learner is not promised something buying cannot
+    // deliver.
+    expect(
+      _pools(savedEligible: 0, hasCourse: false).savedIsOutOfReach,
       isFalse,
     );
   });

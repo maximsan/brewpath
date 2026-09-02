@@ -106,7 +106,7 @@ VocabPools _pools({
     saved: pool.take(saved).toList(),
     // Every saved term here is one the pool reaches, which is what these
     // tests are about; the out-of-reach split is #468's, on Flashcards.
-    savedTotal: saved,
+    savedEligible: saved,
     hasCourse: hasCourse,
     categoryLabels: const {
       'beans': 'Beans and Botany',

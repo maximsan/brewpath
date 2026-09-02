@@ -115,6 +115,17 @@ void main() {
     );
   });
 
+  testWidgets('nothing saved reads the same whichever tier you are on', (
+    tester,
+  ) async {
+    // The design's copy is for *nothing saved*, and that state is not about
+    // tier at all — the second body must not leak into it.
+    await _pump(tester, hasCourse: false);
+
+    expect(find.text(FlashcardsCopy.emptyBody), findsOneWidget);
+    expect(find.text(FlashcardsCopy.emptyOutOfReachBody), findsNothing);
+  });
+
   testWidgets('saved, but none of it in reach, says so instead', (
     tester,
   ) async {

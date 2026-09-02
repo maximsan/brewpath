@@ -27,12 +27,11 @@ import 'package:go_router/go_router.dart';
 /// So the body is chosen, and everything around it is the same.
 class FlashcardsEmptyView extends StatelessWidget {
   /// Creates a [FlashcardsEmptyView].
-  const FlashcardsEmptyView({this.isOutOfReach = false, super.key});
+  const FlashcardsEmptyView({required this.isOutOfReach, super.key});
 
   /// Whether they saved terms and none of them can be drilled.
   ///
-  /// Defaults to the design's state, so a caller that has not thought about
-  /// the second one gets the copy that was written for *nothing saved*.
+  /// Required, so a second entry point cannot pick a body by forgetting to.
   final bool isOutOfReach;
 
   /// The body this state actually owes the learner.
