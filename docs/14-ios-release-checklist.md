@@ -118,6 +118,41 @@ Two things move this file:
   FlutterFire Dart packages do **not** — the manifests come from the underlying
   Google Firebase SDKs resolved over SPM.
 
+### What analytics, tracking and ads each cost
+
+Apple means different things by these words, and only one of them makes the app
+ask the user for permission.
+
+- **Analytics** — you record what people do in your own app, and use it only for
+  your own app. "Forty people stopped at the paywall."
+- **Tracking** — you join that data with data other companies hold, or hand it to
+  a data broker. Normally to aim ads, or to check an ad worked.
+
+The same fact can be either one. "This device saw the paywall" is analytics while
+it stays with us. It becomes tracking the moment it is matched against an ad
+network's picture of that device. Only tracking needs
+`NSUserTrackingUsageDescription` in `Info.plist` and the system prompt that asks
+whether the app may track you.
+
+| If we ship | `NSPrivacyTracking` | `NSPrivacyCollectedDataTypes` | Also needed |
+| --- | --- | --- | --- |
+| Crash reporting | stays `false` | crash and performance data | — |
+| Analytics | stays `false` | usage and identifier entries | — |
+| Ads | flips to **`true`** | advertising and identifier entries | every ad server listed in `NSPrivacyTrackingDomains`, and `NSUserTrackingUsageDescription` in `Info.plist` |
+
+Take the exact entries from the SDK vendor's own data-collection page at the
+time, not from this table — Google's list changes between releases, and a
+manifest that over-declares is as wrong as one that under-declares.
+
+"Ads" here means an ad network's SDK — AdMob, currently commented out in
+`pubspec.yaml`, see [`docs/11-ads.md`](11-ads.md) — filling a slot on our own
+screen. The privacy cost is not the banner. It is the advertising identifier the
+SDK reads in order to aim and measure, which is what makes it tracking.
+
+Whatever changes here has to change in the App Store privacy labels in App Store
+Connect too. Apple reads the two together, and a disagreement between them is
+itself a rejection.
+
 - [ ] Before the first upload, read the App Store Connect response for
       `ITMS-91053` / `ITMS-91061` warnings about third-party SDKs. Every Google
       and plugin component in the bundle carries its own manifest except **four
