@@ -5,37 +5,44 @@
 
 ## Context
 
-`prototype/` describes the module ending two ways. The running prototype plays
-one route that turns over to reveal the collectible. Four companion documents —
-`module.html` (M4), `lesson.html` (L3), `screens-overview.html` (screen 12) and
-`v1 Readiness Audit.html` — list the card as its own beat, and a finished
-`ModuleRewardCardScreen` exists to serve it.
-
-Argument and evidence: [#230](https://github.com/maximsan/brewpath/issues/230).
+The design source describes the end of a module in two conflicting ways. The
+running prototype plays **one screen** that turns over to reveal the earned
+collectible card. But four companion documents — `module.html`,
+`lesson.html`, `screens-overview.html` and `v1 Readiness Audit.html` — list
+the card as a **separate screen** that follows, and a finished
+`ModuleRewardCardScreen` exists in the code to be that screen. The full
+argument and evidence:
+[#230](https://github.com/maximsan/brewpath/issues/230).
 
 ## Decision
 
-**The module ending is one route**: a `RoastyMoment` held 2200 ms, the
-celebration face, then the whole screen turned over to the collectible. The
-flip is reversible — its back returns to the celebration.
+**Finishing a module shows one screen.** First a full-screen Roasty
+celebration (held 2.2 seconds), then the completion screen, and then — when
+the user taps *Turn it over* — the whole screen turns over and shows the
+card on its back. The back has a control that turns it back again.
 
-**`ModuleRewardCardScreen` does not ship.** Nothing sets its route:
-`continueFromModuleComplete` (`prototype/app.jsx:984`) is its only caller and is
-never invoked, so it is reachable solely through the `?screen=` review harness.
+**`ModuleRewardCardScreen` is not built.** In the running prototype it is
+unreachable: the only function that navigates to it
+(`continueFromModuleComplete` in `prototype/app.jsx`) is never called. It
+can be opened only through the `?screen=` URL parameter, which exists for
+design review. Its content is also a duplicate — the same heading, the same
+card, the same button as the back of the flip.
 
-The card cannot live in both places — the flip's back and a dedicated screen
-carry the same eyebrow, the same `RewardCard` and the same terminal button.
+The card cannot appear in both places: that would show the user the same
+card twice in a row, under the same heading, with the same button.
 
 ## Consequences
 
-The module ending is **two beats over one route**. Both *"two phases over two
-routes"* (#230 as filed) and *"four beats over two routes"*
-([Audit C](https://github.com/maximsan/brewpath/issues/373)) are wrong, having
-each counted a route that never runs.
+The end of a module is one route with two beats, not the "two routes" the
+original ticket described and not the "four beats over two routes"
+[Audit C](https://github.com/maximsan/brewpath/issues/373) corrected it to —
+both counted a screen that is never reached.
 
-A finished screen sits unreferenced in `prototype/`, and four companion
-documents still describe it as a step. An audit reading any of them will re-file
-it as a missing screen — this record is what says otherwise.
+A finished, unreachable screen stays in the prototype, and four companion
+documents still describe it as a real step. Anyone auditing against those
+documents will report a missing screen. This record is the answer to that
+report — it has already happened once.
 
-**Revisit if** the prototype wires `module-card` into the flow, which would make
-the missing call an omission rather than a superseded take.
+**Revisit if** the prototype ever wires `module-card` into the real flow.
+That would mean the missing call was a mistake to be fixed, not a leftover
+to be ignored.

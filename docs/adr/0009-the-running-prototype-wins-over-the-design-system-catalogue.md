@@ -5,40 +5,43 @@
 
 ## Context
 
-`prototype/` holds two descriptions of the same components: `index.html`, the
-running prototype the app is built against, and `Design System.html`, a
-catalogue with its own stylesheet. Where they disagree there was no rule for
-which to follow, and both were being quoted as authoritative in the same
-tracker on the same components — an audit marked the app wrong on two
-entries, citing the catalogue, while the app matched the running prototype
-(found on the lesson-card radii: the catalogue says 2px, the running
-prototype `var(--r)` = 14px). `docs/README.md` ranks the prototype above any
-derived doc, but said nothing about ranking the two prototype files against
+The design source contains two descriptions of the same components.
+`prototype/index.html` is the running prototype — the app people click
+through, and the thing the Flutter app is built to match.
+`prototype/Design System.html` is a catalogue of components with its own
+stylesheet. Where the two disagree, there was no rule saying which one to
+follow, and both were being cited as authoritative on the same components:
+an audit marked the app wrong on two components by citing the catalogue,
+while the app matched the running prototype. Example: the catalogue gives
+answer-choice tiles a 2px corner radius; the running prototype gives them
+`var(--r)`, which is 14px. `docs/README.md` already said the prototype beats
+any document derived from it, but said nothing about these two files against
 each other.
 
 ## Decision
 
-**When the two disagree, `prototype/index.html` wins.** It is what a learner
-would actually see, and it is the file that keeps moving.
+**Where the two files disagree, `prototype/index.html` wins.** It is what a
+user would actually see, and it is the file that is still being edited.
 
-The catalogue stays useful for components the running prototype does not
-exercise, and for the rules it states in prose. It is not authoritative on a
-value the running prototype also sets.
+The catalogue remains useful for two things: components the running
+prototype never shows, and rules it states in prose. It is not authoritative
+for any value the running prototype also sets.
 
-A derived doc that transcribed a catalogue value the running prototype
-contradicts is corrected to the running prototype, and says which value it
-dropped, so the next reader does not "fix" it back.
+Any derived document that copied a catalogue value is corrected to the
+running prototype's value, and must name the value it dropped — so the next
+reader does not "fix" it back to the catalogue.
 
 ## Consequences
 
-A divergence report is settled by reading one file. The catalogue is now a
-second-class source that still looks authoritative when opened on its own —
-this ADR is the only thing saying so. Both files have since been diffed in
-full: see *"The two prototype files, diffed in full"* in
+A disagreement about a component is now settled by reading one file. The
+catalogue still looks authoritative when opened on its own, and this ADR is
+the only thing that says it is not. The two files have since been compared
+line by line: see *"The two prototype files, diffed in full"* in
 `docs/design/03-design-system.md`.
 
-**Revisit if** the catalogue becomes the maintained artifact, or gains a
+**Revisit if** the catalogue becomes the file that is maintained, or gains a
 component the running prototype never shows.
 
-**Not settled here:** whether the catalogue's divergent values are stale or
-deliberate. This rules on which the app follows — the owner authors both.
+**Not settled here:** whether the catalogue's differing values are outdated
+or intentional. This ADR only rules on which file the app follows — the
+owner writes both.

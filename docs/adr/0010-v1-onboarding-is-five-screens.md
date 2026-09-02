@@ -5,44 +5,66 @@
 
 ## Context
 
-The Readiness Audit defers the personalisation questions to v2 — nothing
-reads the answers, so they cost taps and return nothing. The app built the
-flow anyway: goal and brewer ship, gating the whole app behind questions no
-screen reads. [The onboarding conflict](https://github.com/maximsan/brewpath/issues/370)
-asked which way it falls; it falls the audit's way, with the paywall closing
-the flow.
+The Readiness Audit moved the onboarding questions — goal, brewer, level,
+reminders — to v2. Its reason: no screen in v1 reads the answers, so the
+questions cost the user taps and give nothing back. The app had already
+built part of that flow anyway: the goal and brewer screens exist, and the
+app cannot be used until they are answered — even though nothing ever reads
+the answers. [The onboarding conflict](https://github.com/maximsan/brewpath/issues/370)
+asked which side wins. The audit's side wins, with one addition the audit
+does not have: the flow ends on the paywall
+([#242](https://github.com/maximsan/brewpath/issues/242)), not by dropping
+the user straight into the Learn tab.
 
 ## Decision
 
-**v1 onboarding is five screens, in order:** Loading (the boot screen, an
-onboarding step only by accident of ordering) → Welcome (no Roasty, by the
-design's own note) → Meet Roasty (its own screen, not collapsed into
-Welcome) → Name (optional, the only optional step) → Paywall.
+**v1 onboarding is these five screens, in this order:**
 
-**Goal, brewer, level and reminders leave the v1 flow** — v2, at the
-four-question depth v2 will ship.
+1. **Loading.** This is the app's boot screen, shown on every cold start. It
+   is first in the flow only because a first start is still a start. The
+   code lives under `features/onboarding/` purely as a filing choice.
+2. **Welcome** — "Learn coffee. / Grow a tree." over the seed-to-tree video.
+   Roasty does not appear here; the design's own comment on this screen says
+   so.
+3. **Meet Roasty** — its own screen. The app had merged it into Welcome; the
+   design keeps them separate.
+4. **Name** — the user may type a name or skip.
+5. **Paywall** — the Plus offer. The user may buy, or close it and go
+   straight into the app ([#242](https://github.com/maximsan/brewpath/issues/242);
+   the prototype's paywall has an `onClose` that does exactly this,
+   `app.jsx:1457`). Buying is never required to finish onboarding.
 
-**The name step stays, and the name becomes editable.** Nothing else in v1
-can supply a name — no account, no sign-in — and Profile's `Hello, {name}.`
-already carries a fallback for anyone who skips. Settings gains a row that
-writes `learnerName`, so a typo is correctable.
+Nothing in this flow is a gate: the name and the purchase are both optional.
+What remains mandatory is only passing through the screens once.
 
-**The router's gate stops depending on the questions.** `onboardingCompleted`
-still gates the app, but nothing downstream may read a goal or a brewer —
-after this, no learner supplies one.
+**The goal, brewer, level and reminders questions leave v1.** They return in
+v2, and v2 ships four questions — not more.
+
+**The name stays, and it becomes editable.** Nothing else in v1 can supply a
+name: there is no account and no sign-in. The one screen that uses it,
+Profile's "Hello, {name}.", already has a fallback for users who skip.
+Settings gains a row where the user can change the name later, so a typo is
+fixable.
+
+**The app's start-up gate stops depending on the questions.** The
+`onboardingCompleted` flag still decides whether onboarding runs, but no code
+may read a goal or a brewer — after this decision, no user ever enters one.
 
 ## Consequences
 
-**The name screen owes a design.** The prototype has no name step, so today
-it draws a stock Material text field no other screen uses. A recorded
-divergence, not an oversight, until the owner authors the screen.
+**The name screen still needs a design.** The prototype has no name screen at
+all, so there is nothing to copy: today it uses a stock Material text field
+that no other screen uses. This stays a known, recorded gap until the owner
+designs the screen in the design source.
 
-The Tour's trigger rules were defined against the longer flow and must be
-re-read — [the Tour map](https://github.com/maximsan/brewpath/issues/336).
+The Tour's rules about when it starts were written against the longer flow
+and have to be re-checked against this shorter one —
+[the Tour map](https://github.com/maximsan/brewpath/issues/336).
 
 Builds: [the intro screens](https://github.com/maximsan/brewpath/issues/383),
 [the onboarding paywall](https://github.com/maximsan/brewpath/issues/242),
-plus the cut itself and the Settings row.
+plus the removal of the questions and the Settings row.
 
-**Revisit** when something actually reads a goal or a brewer — deferring them
-is a statement about v1's readers, not about the questions.
+**Revisit** when some feature actually reads a goal or a brewer. The
+questions were deferred because nothing reads them — not because they are
+bad questions.

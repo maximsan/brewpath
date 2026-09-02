@@ -5,32 +5,37 @@
 
 ## Context
 
-The domain model has four practice types — mini-games, the vocab game,
-flashcards, lesson replay — and the streak, the daily allowance and Keep Sharp
-all count all four. The Learn tab listed only two. The missing two are a free
-learner's cheapest streak paths: one activity protects the day, where
-mini-games cost both under the daily cap.
+The app has four kinds of practice: mini-games, the vocab game, flashcards,
+and replaying a finished lesson. The streak counts all four; the daily limit
+counts all four; Keep Sharp recommends all four. But the Learn tab's practice
+section listed only two of them — lessons and mini-games. The two missing
+kinds are the cheapest way for a free user to keep a streak: one vocab round
+or one flashcard session protects the day, while mini-games need two runs and
+that uses up the whole daily limit.
 
 ## Decision
 
-The section renames to **`PRACTICE`** and lists **all four types**. The vocab
-game and flashcards lead the Games group as its first entries, slim rows
-marked FREE (owner-accepted shape, 22 Aug 2026). Both are free with no lock
-treatment — content-scoped, never feature-gated — an explicit invention over
-the prototype, ruled at
+The section is renamed to **`PRACTICE`** and lists **all four kinds**. The
+vocab game and flashcards appear as two slim rows marked FREE at the top of
+the Games group (shape accepted by the owner, 22 Aug 2026). Neither row ever
+shows a lock: what they contain depends on which lessons are free, but the
+features themselves are never paid. The prototype does not have these rows —
+adding them is a deliberate invention, ruled at
 [practice rows](https://github.com/maximsan/brewpath/issues/182).
 
-**This adds entry points and nothing else.** The rows open the same surfaces
-Dictionary Home's quick chips open; the chips remain; pools, tier scoping,
-streak and allowance accounting are untouched; no new state exists.
+**The rows are entry points and nothing more.** They open the same two
+screens that the quick chips on Dictionary Home already open. The chips
+stay. No pool, count, streak rule or limit changes, and no new state is
+stored.
 
 ## Consequences
 
-Each row lands with its surface's build
+Each row is built together with its screen
 ([flashcards](https://github.com/maximsan/brewpath/issues/97),
-[vocab game](https://github.com/maximsan/brewpath/issues/98)); the rename
-rides whichever builds first. An empty flashcards deck must not be a dead
-end — answered once, for both entry points, on the flashcards ticket.
+[vocab game](https://github.com/maximsan/brewpath/issues/98)); the section
+rename goes in with whichever of the two is built first. A user with no
+saved flashcards must still see something useful — that is decided once, on
+the flashcards ticket, for both entry points.
 
-**Revisit if** the practice family gains a fifth type: this section and Keep
-Sharp's rotation must stay the same list.
+**Revisit if** a fifth kind of practice is added: this section and Keep
+Sharp's rotation must always show the same list.

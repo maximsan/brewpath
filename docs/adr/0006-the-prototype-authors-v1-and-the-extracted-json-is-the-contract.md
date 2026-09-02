@@ -5,42 +5,45 @@
 
 ## Context
 
-Course content is authored in [`prototype/`](../../prototype/), which is
-read-only to this repository. `tool/extract_content.js` reads it, validates
-the whole cross-reference graph, and writes the JSON banks into
-`assets/content/generated/`, which ship inside the app. This arrangement had
-never been written down, and nothing said which shape either side expected —
-a prototype-side rename does not fail to compile, it surfaces as a null
-inside a lesson at runtime.
+All course content is written in [`prototype/`](../../prototype/), a React
+app that this repository treats as read-only. A script,
+`tool/extract_content.js`, reads the prototype, checks that every
+cross-reference resolves, and writes JSON files into
+`assets/content/generated/`. Those JSON files ship inside the app. This
+arrangement was never written down. It is also fragile in one specific way:
+if a field is renamed in the prototype, the app still compiles — the missing
+field shows up as a null inside a lesson at runtime.
 
 ## Decision
 
-**The prototype remains the authoring environment for v1.** Content is
-written there and nowhere else, and `prototype/` stays read-only here. In the
-prototype, **copy is data**: strings are never authored inside markup
+**Content is written in the prototype and nowhere else.** The prototype stays
+read-only here. Inside the prototype, **text is data**: strings live in data
+fields, never inside markup
 ([guide bodies](https://github.com/maximsan/brewpath/issues/271) closed the
-one gap).
+one exception).
 
-**The extracted JSON is the versioned contract.** Every generated bank
-carries a `schemaVersion`, stamped at the single function that builds every
-envelope. The app compares it for **exact equality** and refuses any bank
-that does not match, naming the asset and both numbers. Refusal is the whole
-behaviour — no fallback, no degraded mode: the banks ship inside the binary,
-so a mismatch is a build defect. An unstamped bank fails the same way. What
-counts as breaking versus additive is documented in the extractor's own
-header.
+**The extracted JSON is a versioned contract between the prototype and the
+app.** Every generated file carries a `schemaVersion`, written by the one
+function that wraps every file. On startup, the app compares that version to
+its own, and **refuses to load any file whose version is not exactly equal**,
+naming the file and both numbers. Refusing is the entire behaviour — there is
+no fallback and no degraded mode, because the files ship inside the app
+binary, so a mismatch means the build itself is broken. A file with no
+version fails the same way. The extractor's header documents which changes
+require bumping the version.
 
-**JSON becomes the canonical authored format at the first post-v1 course** —
-the first content the prototype was not built to hold. Until then extraction
-is one-way and the prototype is authoritative. Promotion supersedes this
-record; it is never amended into it.
+**The JSON becomes the place content is written the day a second course is
+started** — the first content the prototype was not built to hold. Until
+then, extraction runs one way and the prototype is the source of truth. That
+switch would be a new ADR replacing this one.
 
 ## Consequences
 
-A loader/bank mismatch is a loud refusal at startup instead of a null three
-layers deep. Content changes require a Node run and a commit of regenerated
-output, so a copy fix is not a one-line edit. The version exists twice — in
-JavaScript and in Dart, which cannot share a constant — and a test asserts
-the committed banks carry the Dart side's value, turning a one-sided bump
-into a CI failure. Content the prototype cannot express cannot be authored;
-that limit is exactly what makes the promotion trigger meaningful.
+A mismatch between the app and its content files fails loudly at startup
+instead of as a null deep inside a lesson. Fixing a typo in content requires
+running the extractor and committing its output — it is not a one-line edit.
+The version number exists in two places, the JavaScript extractor and the
+Dart loader, and they cannot share a constant; a test checks that the
+committed files carry the Dart side's number, so bumping only one side fails
+CI. Content the prototype cannot represent cannot be written at all — which
+is exactly what makes "a second course" the right moment to switch.

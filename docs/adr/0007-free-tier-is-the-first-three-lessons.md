@@ -2,42 +2,51 @@
 
 - **Status:** accepted
 - **Date:** 2026-08-22
-- **Reaffirmed** 2026-08-28: the Readiness Audit's line widening the free
-  taster to all of Module 1 is the stale artifact; this record had already
-  weighed and refused it ([#370](https://github.com/maximsan/brewpath/issues/370)).
+- **Reaffirmed** 2026-08-28: the Readiness Audit contains a line widening the
+  free tier to all of Module 1. That line is outdated — this record had
+  already considered exactly that and said no
+  ([#370](https://github.com/maximsan/brewpath/issues/370)).
 
 ## Context
 
-The free tier was the two preview lessons, and
+The free tier used to be the first two lessons, and
 [free tier scope](https://github.com/maximsan/brewpath/issues/175) asked
-whether all of Module 1 should replace them. Meanwhile the new catalog
-shipped a free game quizzing `m1l3` — a **paid** lesson at the time. A free
-user could sit an exam for a class they could not attend. Making `m1l3` free
-fixes it.
+whether all seven lessons of Module 1 should be free instead. While that was
+open, the new mini-game catalog shipped a free game that quizzes lesson
+`m1l3` — which was a *paid* lesson at the time. A free user could take a quiz
+about coffee origins while the lesson teaching origins sat behind the
+paywall. Making `m1l3` free fixes that.
 
 ## Decision
 
-Free is **the first three lessons** — `m1l1` *What coffee actually is* ·
-`m1l2` *Arabica vs Robusta* · `m1l3` *What origin means* — permanently, with
-unlimited replay.
+Free is **the first three lessons**, permanently, with unlimited replay:
+`m1l1` *What coffee actually is*, `m1l2` *Arabica vs Robusta*, `m1l3` *What
+origin means*.
 
-The free set is a **named lesson list**, and everything downstream derives
-from it: a game is free iff its topic's **teaching lesson** is free (never
-"its module is m1"), the free vocab pool is the free lessons' mentioned-in
-terms, and tier-dependent counts re-derive. Growing the free tier later is a
-change to one list.
+The free tier is defined as **this list of lesson ids**, and everything else
+is computed from the list: a game is free exactly when the lesson teaching
+its topic is on the list (never "when its module is Module 1"); the free
+vocabulary pool is the terms those three lessons mention; every count that
+depends on tier is recomputed. Growing the free tier later means changing
+this one list.
 
-Rejected: the preview pair (leaves the shipped catalog invalid) and all of
-Module 1 (~22% of a 129-minute product; the owner weighs the mid-module wall's
-cost below that — the wall stays at `m1l4`).
+Two options were rejected: keeping the two-lesson tier (it leaves the shipped
+quiz selling a lesson it already reveals), and freeing all of Module 1 (seven
+free lessons is about 22% of a 129-minute course; the owner judged that too
+much to give away, and accepted that the paywall therefore appears
+mid-module, at `m1l4`).
 
 ## Consequences
 
-Free practice becomes three games with a real choice under the
-two-different-games rule. [ADR-0001](0001-free-tier-carries-two-mini-game-formats.md)'s
-"exactly two" phrasing is superseded by this count; its invariant holds. The
-paywall needs no edit — every quantity derives. The prototype's
-`FREE_GAME_IDS` filter is correct by coincidence (module-bound) and owes the
-lesson-bound fix ([#225](https://github.com/maximsan/brewpath/issues/225)).
+Free practice becomes three games, which gives a free user an actual choice
+under the two-different-games streak rule.
+[ADR-0001](0001-free-tier-carries-two-mini-game-formats.md) said "exactly
+two" free games; the count is now three, and ADR-0001's underlying rule
+still holds. The paywall needs no edit, because every number on it is
+computed. One bug is owed: the prototype's `FREE_GAME_IDS` filter checks the
+module instead of the lesson — it gives the right answer with today's data,
+but by luck, and [#225](https://github.com/maximsan/brewpath/issues/225)
+carries the fix.
 
-**Revisit** only with post-launch data, as a change to the free-lesson list.
+**Revisit** only with data from real users after launch, by changing the
+free-lesson list.

@@ -3,45 +3,47 @@
 - **Status:** accepted
 - **Date:** 2026-08-16
 - **Restated** by [ADR-0005](0005-mini-games-are-many-games-per-kind-gated-by-topic.md)
-  ("format" became **game**) and [ADR-0007](0007-free-tier-is-the-first-three-lessons.md)
-  (two free games became three). The invariant below is the part that holds.
+  (the word "format" became **game**) and by
+  [ADR-0007](0007-free-tier-is-the-first-three-lessons.md) (two free games
+  became three). The rule below is the part that still holds.
 
 ## Context
 
-Three rulings, each sound alone, combine into an invariant none of them
-states:
+Three separate rulings combine into one rule that none of them states on its
+own:
 
-- The free tier is a small preview, not a generous tier.
-- A streak day earned from mini-games alone needs **two different games** —
-  the same game twice counts once.
-- Which games are free follows from which lessons are free, so the free game
-  list is derived, never picked.
+- The free tier is a small preview of the course.
+- To earn a streak day from mini-games alone, the user must finish **two
+  different games** that day. Playing the same game twice counts as one.
+- Which games are free is computed from which lessons are free. Nobody picks
+  the free games by hand.
 
-Together they mean the free tier only just contains enough games for a
-mini-game streak day. Nothing else says so. Argument:
+Put together: the free tier contains just enough free games for a free user
+to earn a streak day — and nothing guarantees that on purpose. Argument:
 [the mini-games decision](https://github.com/maximsan/brewpath/issues/22),
 [free practice content](https://github.com/maximsan/brewpath/issues/57),
 [the distinctness reversal](https://github.com/maximsan/brewpath/issues/59).
 
 ## Decision
 
-Any change to the free lesson list, the free game list, or the streak's
-two-different-games rule must keep this true: **a free learner can reach a
-qualifying streak day using only free content.**
+Any change to the free lesson list, to the free game list, or to the
+two-different-games rule must keep this true: **a free user can earn a streak
+day using only free content.**
 
-Breaking it is allowed — but deliberately, in a superseding ADR. Never as a
-side effect of re-picking which lessons are free.
+This rule may be broken — but only on purpose, recorded in a new ADR that
+supersedes this one. It must never break as a side effect of changing which
+lessons are free.
 
 ## Consequences
 
-The invariant is invisible from every surface that can break it: none of the
-three rulings above states it, and each can be changed without reading the
-other two. This record is the join.
+The rule is invisible from every place that can break it: none of the three
+rulings above mentions it, and each of them can be changed without reading
+the other two. This ADR is the only place the rule is written down.
 
-The daily allowance is load-bearing from the other side: it caps a free user
-at two activities a day, and two mini-games spend both. Lowering that cap
-below two removes this streak path without touching mini-games at all
-([the allowance decision](https://github.com/maximsan/brewpath/issues/65)).
+The daily limit matters here too: a free user may do two activities per day,
+and two mini-games use both. If that limit ever drops below two, the
+mini-game route to a streak day disappears without anyone touching
+mini-games ([the allowance decision](https://github.com/maximsan/brewpath/issues/65)).
 
-**Revisit if** the free lesson list, the game list, the distinctness rule, or
-the allowance cap moves.
+**Revisit if** the free lesson list, the free game list, the
+two-different-games rule, or the daily limit changes.
