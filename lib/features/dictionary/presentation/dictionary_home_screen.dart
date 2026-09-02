@@ -10,6 +10,7 @@ import 'package:brew_path/features/dictionary/presentation/dictionary_masthead.d
 import 'package:brew_path/features/dictionary/presentation/dictionary_quick_chips.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_term_list.dart';
 import 'package:brew_path/features/dictionary/presentation/search_mark.dart';
+import 'package:brew_path/features/dictionary/presentation/term_of_day_banner.dart';
 import 'package:brew_path/shared/models/content/dictionary_category.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -19,6 +20,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// The design's search mark, at its drawn size.
 const double _searchMarkSize = 17;
+
+/// The inset the practice chips take when they are fixed under the filters.
+const EdgeInsets _chipPadding = EdgeInsets.fromLTRB(
+  AppSpacing.gutter,
+  AppSpacing.sm,
+  AppSpacing.gutter,
+  0,
+);
 
 /// Dictionary home: search, filter, and every term under its category.
 class DictionaryHomeScreen extends ConsumerWidget {
@@ -141,29 +150,46 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
           counts: widget.view.counts,
           onSelected: (filter) => setState(() => _filter = filter),
         ),
-        // Under the filters, over the list: the design puts practice between
-        // *narrowing the shelf* and *reading it*, because drilling is a third
-        // thing to do here rather than a way of browsing.
-        const Padding(
-          padding: EdgeInsets.fromLTRB(
-            AppSpacing.gutter,
-            AppSpacing.sm,
-            AppSpacing.gutter,
-            0,
-          ),
-          child: DictionaryQuickChips(),
-        ),
-        const SizedBox(height: AppSpacing.sm),
+        // The practice chips: under the filters, over the list. The design
+        // puts practice between *narrowing the shelf* and *reading it*,
+        // because drilling is a third thing to do here rather than a way of
+        // browsing.
+        //
+        // Fixed only once the learner has started narrowing. On the index they
+        // travel inside the scroll below, under Term of the Day — which is
+        // where the design has both of them, and what keeps the offer from
+        // eating a phone's worth of height it never gives back.
+        if (!_onIndex) ...[
+          const Padding(padding: _chipPadding, child: DictionaryQuickChips()),
+          const SizedBox(height: AppSpacing.sm),
+        ],
         Expanded(
           child: _onIndex
               ? SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.gutter,
                   ),
-                  child: CategoryIndex(
-                    categories: widget.view.categories,
-                    terms: widget.view.terms,
-                    onOpen: (category) => setState(() => _category = category),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SizedBox(height: AppSpacing.sm),
+                      // Today's term leads the index, exactly as the design
+                      // draws it. Only here: a learner who has started
+                      // searching has already said what they came for, and the
+                      // offer would be in the way of it.
+                      TermOfDayBanner(
+                        onOpen: () => unawaited(context.pushTermOfDay()),
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      const DictionaryQuickChips(),
+                      const SizedBox(height: AppSpacing.md),
+                      CategoryIndex(
+                        categories: widget.view.categories,
+                        terms: widget.view.terms,
+                        onOpen: (category) =>
+                            setState(() => _category = category),
+                      ),
+                    ],
                   ),
                 )
               : visible.isEmpty
