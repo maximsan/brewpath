@@ -5,45 +5,37 @@
 
 ## Context
 
-The domain model defines four practice types (mini-games, vocab game,
-flashcards, lesson replay); the streak counts all four
-([#33](https://github.com/maximsan/brewpath/issues/33)), the daily allowance
-counts all four ([#65](https://github.com/maximsan/brewpath/issues/65)), and
-Keep Sharp recommends all four from the Learn tab
-([#56](https://github.com/maximsan/brewpath/issues/56)). Yet the tab's
-`PRACTICE AGAIN` section (`screens.jsx:864-902`) lists only two — completed
-Lessons and Mini-games. The Vocab game and Flashcards live two taps away on
-Dictionary Home, even though they are a free user's *cheapest* streak paths
-(one activity protects the day; mini-games cost both under the daily cap).
+The app has four kinds of practice: mini-games, the vocab game, flashcards,
+and replaying a finished lesson. The streak counts all four; the daily limit
+counts all four; Keep Sharp recommends all four. But the Learn tab's practice
+section listed only two of them — lessons and mini-games. The two missing
+kinds are the cheapest way for a free user to keep a streak: one vocab round
+or one flashcard session protects the day, while mini-games need two runs and
+that uses up the whole daily limit.
 
 ## Decision
 
-The section lists **all four practice types**. It renames to **`PRACTICE`**,
-and the Vocab game and Flashcards join as **slim rows** (single entry points,
-not collapsible groups). *Shape amended when the prototype landed (22 Aug
-2026, owner-accepted): the two rows lead the **Games** group as its first
-entries, marked FREE, rather than sitting beside the groups — one container
-for everything playable.*
-Both rows are **free with no lock treatment** — they are content-scoped, never
-feature-gated. This is an **explicit invention** over the prototype (the Keep
-Sharp precedent), ruled at
-[#182](https://github.com/maximsan/brewpath/issues/182).
+The section is renamed to **`PRACTICE`** and lists **all four kinds**. The
+vocab game and flashcards appear as two slim rows marked FREE at the top of
+the Games group (shape accepted by the owner, 22 Aug 2026). Neither row ever
+shows a lock: what they contain depends on which lessons are free, but the
+features themselves are never paid. The prototype does not have these rows —
+adding them is a deliberate invention, ruled at
+[practice rows](https://github.com/maximsan/brewpath/issues/182).
 
-**This adds an entry point and nothing else.** The rows open the same two
-surfaces Dictionary Home's quick chips open; the chips remain; pools, tier
-scoping, streak and allowance accounting are untouched, and no new state
-exists anywhere.
+**The rows are entry points and nothing more.** They open the same two
+screens that the quick chips on Dictionary Home already open. The chips
+stay. No pool, count, streak rule or limit changes, and no new state is
+stored.
 
 ## Consequences
 
-Free streak paths become discoverable where practice lives, feeding the daily
-loop that surfaces the paywall. Each row lands with its surface's build
-([#97](https://github.com/maximsan/brewpath/issues/97),
-[#98](https://github.com/maximsan/brewpath/issues/98)); the rename rides
-whichever builds first. The empty flashcards deck must not be a dead end —
-behavior defers to #97's open question, answered once for both entry points.
-The design docs describing `LearnTab` (`docs/design/07-components.md`, §4 IA)
-must be updated when the rows ship, and the prototype backfill batch
-([#154](https://github.com/maximsan/brewpath/issues/154)) carries the design
-prompt. Revisit if the practice family gains a fifth type — the section and
-Keep Sharp's rotation must stay the same list.
+Each row is built together with its screen
+([flashcards](https://github.com/maximsan/brewpath/issues/97),
+[vocab game](https://github.com/maximsan/brewpath/issues/98)); the section
+rename goes in with whichever of the two is built first. A user with no
+saved flashcards must still see something useful — that is decided once, on
+the flashcards ticket, for both entry points.
+
+**Revisit if** a fifth kind of practice is added: this section and Keep
+Sharp's rotation must always show the same list.

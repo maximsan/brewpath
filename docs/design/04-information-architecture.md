@@ -103,7 +103,7 @@ gating rule keeps *unauthored* modules locked; this component advertises
 **Lesson** — `lesson`, `lesson-grind`, `lesson-ratio`, `lesson-taste`, `lesson-layers`
 **Lesson cards (open a lesson at a given card kind)** — `card-predict`, `card-concept`, `card-flavor`, `card-mcq`, `card-multi`, `card-match`, `card-slider`, `card-sequence`, `card-decision`, `card-recall`, `card-visual`, `card-anatomy`, `card-bagpick`, `card-tastefix`, `card-practical`, `card-training`
 **Mini-games** — `game-intro`, `game-flavor`, `game-quiz`, `game-bagpick`, `game-tastefix`, `game-calibrate`, `game-sequence`
-**Rewards** — `lesson-complete`, `lesson-complete-weak`, `lesson-complete-perfect`, `module-complete`, `module-card`, `module-challenge`
+**Rewards** — `lesson-complete`, `lesson-complete-weak`, `lesson-complete-perfect`, `module-complete`, `module-card` *(harness-only — no flow navigates to it; the collectible is the back of `module-complete`'s flip)*, `module-challenge`
 **Coffee Challenge** — `today-challenge`, `today-challenge-done`, `today-nochallenge`, `today-challenge-log`, `path-challenge`, `path-challenge-open`, `card-stamp`, `card-stamp-locked`
 **Progress** — `streak`, `tree`
 **Cards** — `cardsheet`

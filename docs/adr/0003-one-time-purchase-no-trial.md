@@ -5,55 +5,41 @@
 
 ## Context
 
-[Offers, plans and the paywall pitch](https://github.com/maximsan/brewpath/issues/55)
-ruled monetization on one measured fact: **the whole course is 129 minutes**. A
-7-day trial gives the product away and is a gate made of waiting, which
-contradicts §7's founding principle (*"free access is limited by content, not by
-waiting"*) — the two preview lessons already are the trial. A subscription is
-dishonest from the other side: an engaged subscriber finishes in 16–32 days and
-churns (~$5–15 lifetime), and §1 rules out the content pipeline that would make
-renewal honest, so subscription upside comes mostly from low-usage payers —
-revenue that arrives with refunds and review damage.
-
-This supersedes the earlier "lifetime tier dropped" position
-(`docs/decisions.md`, `docs/design/PRODUCT.md` §11). That rejection was of
-lifetime as a **third SKU beside two subscriptions**; standing alone, a
-non-consumable has no renewal, expiry, plan-change or billing-retry state — it
-is *less* machinery than the subscriptions it replaces, and Restore is required
-for both types anyway.
+The whole course takes 129 minutes to complete. A 7-day free trial would give
+most of that away for nothing. A subscription has the opposite problem: a
+user who actually engages finishes the course within a month and cancels. An
+earlier ruling had rejected a lifetime purchase — but it rejected it as a
+*third* product beside two subscriptions. On its own, a one-time purchase
+needs less machinery than the subscriptions it replaces: no renewal, no
+expiry, no plan changes. Argument:
+[Offers, plans and the paywall pitch](https://github.com/maximsan/brewpath/issues/55).
 
 ## Decision
 
-**What v1 ships:** a **single non-consumable purchase** unlocking BrewPath
-Plus. No trial, no subscription SKUs. The paywall leads with the course (the
-remaining lessons), then practice depth, then the Studios, and carries
-Restore / Terms / Privacy.
+v1 sells a **single one-time purchase** that unlocks BrewPath Plus. No trial.
+No subscriptions. The paywall's pitch, in order: the rest of the course,
+deeper practice, the Studios. It carries the required Restore, Terms and
+Privacy links.
 
-**What stays open:** the monetization **model itself is not finally decided.**
-A post-launch experiment shows **different paywalls to different users** —
-one-time (this baseline) vs subscription (monthly + yearly) vs hybrid — and
-the data picks the model. The owner's stated expectation (Aug 2026) is that
-**hybrid or subscription wins** on revenue; the skepticism in Context is the
-counter-hypothesis the experiment exists to test, not a verdict. This ADR
-records the launch configuration and the baseline arm, not a terminal ruling
-on how BrewPath charges.
+**The pricing model is not finally decided.** After launch, an experiment
+will show different users different paywalls — one-time (this baseline),
+subscription, and hybrid — and the revenue data will pick the winner. The
+owner expects a subscription or hybrid to win. This ADR records what launches
+and what the baseline is, not the final answer.
+
+**No arm of that experiment carries a trial** (owner ruling): the free
+lessons are the trial. Free access is limited by content, not by waiting.
 
 ## Consequences
 
-- `PlanSheet`, the renewal/change-plan/cancel half of `SubscriptionScreen`,
-  `TRIAL_DAYS`, `trialDaysLeft` and `TrialBadge` do not port; the map's
-  no-clock warning stops applying to monetization.
-- The experiment (likely via RevenueCat) requires the build to keep
-  **entitlement, acquisition and paywall UI separated**
-  ([#176](https://github.com/maximsan/brewpath/issues/176)) — and because arms
-  run **concurrently per user**, not sequentially, the seam must support
-  stable per-user paywall assignment, with any arm's purchase honored by the
-  same entitlement forever, even after the experiment ends.
-- **The experiment resolves the model.** The bar for moving off the baseline:
-  beating it on 90-day revenue per user without elevated refunds or review
-  damage; Keep Sharp showing multi-month practice would independently supply
-  the renewable value that makes a recurring charge honest.
-- **No trial in any arm** (owner ruling, Aug 2026): the free content is the
-  trial. §7's principle — free access limited by content, not by waiting —
-  applies across the whole experiment, so subscription and hybrid arms carry
-  no intro free week either.
+- These prototype pieces are not built: `PlanSheet`, the
+  renew/change-plan/cancel parts of `SubscriptionScreen`, `TRIAL_DAYS`,
+  `trialDaysLeft`, `TrialBadge`.
+- The build must keep three things separated: knowing what the user owns
+  (entitlement), buying (acquisition), and the paywall screens
+  ([the entitlement seam](https://github.com/maximsan/brewpath/issues/176)).
+  The experiment shows different users different paywalls at the same time,
+  so each user must be assigned one paywall and keep it — and whatever they
+  buy, on any arm, stays owned forever through the same entitlement.
+- The baseline is replaced only if another arm beats it on 90-day revenue per
+  user without more refunds or worse reviews.

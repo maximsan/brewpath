@@ -5,37 +5,54 @@
 
 ## Context
 
-`CoffeePersona` and `AnimatedTree` specify the tree's motion in code rather
-than baking it into the art. [#136](https://github.com/maximsan/brewpath/issues/136)
-shipped the tree as a still frame and deferred the motion here, blocking two
-reward screens. Argument and evidence: [#88](https://github.com/maximsan/brewpath/issues/88).
+The design animates the Coffee Tree in code; nothing is baked into the
+images. There are five pieces: a slow permanent rocking (the sway), a
+cross-fade between stage images, a bounce when a new stage lands, an
+expanding ring of light, and drifting leaf particles.
+[#136](https://github.com/maximsan/brewpath/issues/136) shipped the tree as a
+still image and left the motion to this decision. Two reward screens
+([#382](https://github.com/maximsan/brewpath/issues/382),
+[#384](https://github.com/maximsan/brewpath/issues/384)) were waiting on it.
+The full argument and measurements:
+[#88](https://github.com/maximsan/brewpath/issues/88).
 
 ## Decision
 
-All five pieces ship: sway, crossfade, bounce, glow ring, leaf particles.
+**All five pieces are built**: sway, cross-fade, bounce, ring, leaves.
 
-**The multi-stage walk does not.** The crossfade is single-stage and `perSwap`
-is not ported — `TREE_THRESHOLDS` sit at least three lessons apart and a
-completion advances the count by one, so nothing but a CloudKit merge can
-cross two stages. **That merge lands without animating.**
+**One thing from the prototype is not built: animating through several stages
+in one go.** The prototype can play stage 3 → 4 → 5 as a sequence. The app
+never needs that, because one lesson can only ever grow the tree by one
+stage (see Consequences). The growth animation crosses exactly one stage.
 
-**Sway lives inside `CoffeeTree`**, on by default, with an `animate` flag to
-freeze it. **Growth lives in a separate widget wrapping it.**
+**The one exception is sync.** When progress made on another device arrives
+by CloudKit merge, the stored stage can jump several steps at once. That
+jump is shown without any growth animation: the animation belongs to the
+moment the user earned the stage, not to the moment a sync reported it.
 
-**Under reduced motion the cross-fade survives and everything that moves is
-dropped.** `onDone` still fires.
+**The sway is part of the tree widget itself**, on by default, with an
+`animate` flag to turn it off — the same design `Roasty` uses. **The growth
+animation is a separate widget that wraps the tree**, because it needs a
+start stage, an end stage and a completion callback, and the Profile screen
+needs none of that.
 
-The ring and the leaves are painted on `Canvas`, with their curve math in a
-pure sibling `*_animation.dart`.
+**With reduced motion turned on, only the cross-fade plays.** Nothing moves:
+no slide, no bounce, no ring, no leaves. The completion callback still
+fires — the reward screens wait on it, and a callback that never fires would
+freeze them.
+
+**The ring and the leaves are drawn on a `Canvas`** (the same way Roasty's
+glow is drawn), with the timing math in a plain Dart file beside the widget,
+so the numbers can be unit-tested without rendering anything.
 
 ## Consequences
 
-A future course whose module sizes put two thresholds within one lesson of
-each other would silently skip a stage instead of walking it. `TREE_THRESHOLDS`'
-minimum gap is the guard; narrowing it revisits this record.
-
-`onDone` wired to an animation completion callback will never fire under
-reduced motion, stalling the reward screens on a beat that never ends.
+The growth animation crosses one stage because one lesson causes at most
+one: the tree's growth points (`TREE_THRESHOLDS` in `prototype/data.jsx`)
+are several lessons apart, and finishing a lesson raises the completed count
+by one. If the course is ever restructured so that finishing one lesson
+crosses two growth points, the animation will show only the final stage and
+skip the one between — revisit this record then.
 
 Builds: [#382](https://github.com/maximsan/brewpath/issues/382),
 [#384](https://github.com/maximsan/brewpath/issues/384),
