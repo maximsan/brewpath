@@ -324,6 +324,14 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **Finishing a module is one celebration, not two.** The last lesson of a
+  module used to play its own ending — mascot, score, points, card — and then
+  hand you straight to the module ending for a second mascot and a second
+  celebration. Now it plays one: the module ending, which also reports what
+  that final lesson paid, so nothing you earned goes unmentioned. Its tree
+  grows as well, where before it stood still because the lesson ending had
+  already played the growth.
+
 - **Roasty reacts when you answer, and every graded card closes the same way.**
   Answering used to end in whatever the card felt like — one said `ALL CORRECT`
   in green, another `Called it.` in amber, the match board wrote a sentence, and

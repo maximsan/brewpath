@@ -30,6 +30,11 @@ abstract class AppLabels {
   /// What a screen reader is told the tree is showing.
   static String treeAtStage(int stage) => 'Your coffee tree, stage $stage';
 
+  /// Announced when the run being celebrated is the one that grew the tree, so
+  /// a screen reader is told what happened rather than only where it landed.
+  static String treeGrewTo(int stage) =>
+      'Your coffee tree grew to stage $stage';
+
   // The eyebrow under the lesson the learner is on, in the path's own
   // list. Announced as written; the row letters it.
   static const currentLesson = 'Current';

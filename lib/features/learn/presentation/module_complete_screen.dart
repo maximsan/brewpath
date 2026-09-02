@@ -29,10 +29,33 @@ import 'package:go_router/go_router.dart';
 /// finding).
 class ModuleCompleteScreen extends ConsumerStatefulWidget {
   /// Creates a [ModuleCompleteScreen].
-  const ModuleCompleteScreen({required this.moduleId, super.key});
+  const ModuleCompleteScreen({
+    required this.moduleId,
+    this.runLessonId,
+    this.freezeEarned = false,
+    this.fromStage,
+    this.toStage,
+    super.key,
+  });
 
   /// Id of the module that just closed.
   final String moduleId;
+
+  /// The lesson that closed it, when this ending was reached by finishing one.
+  ///
+  /// **This ending is that lesson's ending too** (#458): the design branches
+  /// rather than chaining, so nothing else will report what the lesson paid.
+  final String? runLessonId;
+
+  /// Whether that run is the one that earned the streak freeze.
+  final bool freezeEarned;
+
+  /// Where the tree stood before the run, and after it. Null when the ending
+  /// was opened outside the flow, which draws the tree at rest.
+  final int? fromStage;
+
+  /// See [fromStage].
+  final int? toStage;
 
   @override
   ConsumerState<ModuleCompleteScreen> createState() =>
@@ -41,9 +64,9 @@ class ModuleCompleteScreen extends ConsumerStatefulWidget {
 
 class _ModuleCompleteScreenState extends ConsumerState<ModuleCompleteScreen>
     with SingleTickerProviderStateMixin {
-  /// The module ending's longer hold (`rewards.jsx:225`) — the one beat that
-  /// overrides the default. It lives here, with the beat that asks for it,
-  /// rather than in the shared widget.
+  /// The module ending's longer hold — the one beat that overrides the
+  /// default. It lives here, with the beat that asks for it, rather than in
+  /// the shared widget.
   static const Duration _hold = Duration(milliseconds: 2200);
 
   /// The stage a tree stands at before any lesson has moved it — what the
@@ -105,8 +128,12 @@ class _ModuleCompleteScreenState extends ConsumerState<ModuleCompleteScreen>
   Widget build(BuildContext context) {
     final summary = ref.watch(moduleSummaryProvider(widget.moduleId));
     // Progress, read separately from the content join so a tree that grows
-    // does not re-run it.
+    // does not re-run it. It stands in for both ends when the ending was
+    // opened outside the flow and no run is being reported.
     final treeStage = ref.watch(treeStageProvider).asData?.value ?? _firstStage;
+    final run =
+        ref.watch(moduleEndingRunProvider(widget.runLessonId)).asData?.value ??
+        noModuleEndingRun;
 
     return Scaffold(
       body: SafeArea(
@@ -116,7 +143,10 @@ class _ModuleCompleteScreenState extends ConsumerState<ModuleCompleteScreen>
           data: (data) => _beatDone
               ? _Flip(
                   summary: data,
-                  treeStage: treeStage,
+                  run: run,
+                  freezeEarned: widget.freezeEarned,
+                  fromStage: widget.fromStage ?? treeStage,
+                  toStage: widget.toStage ?? treeStage,
                   flip: _flip,
                   onTurn: _turnOver,
                   onClose: _backToPath,
@@ -139,7 +169,10 @@ class _ModuleCompleteScreenState extends ConsumerState<ModuleCompleteScreen>
 class _Flip extends StatelessWidget {
   const _Flip({
     required this.summary,
-    required this.treeStage,
+    required this.run,
+    required this.freezeEarned,
+    required this.fromStage,
+    required this.toStage,
     required this.flip,
     required this.onTurn,
     required this.onClose,
@@ -147,7 +180,10 @@ class _Flip extends StatelessWidget {
   });
 
   final ModuleSummary summary;
-  final int treeStage;
+  final ModuleEndingRun run;
+  final bool freezeEarned;
+  final int fromStage;
+  final int toStage;
   final AnimationController flip;
   final void Function({required bool toBack}) onTurn;
   final VoidCallback onClose;
@@ -194,7 +230,10 @@ class _Flip extends StatelessWidget {
                 )
               : ModuleCompleteFront(
                   summary: summary,
-                  treeStage: treeStage,
+                  run: run,
+                  freezeEarned: freezeEarned,
+                  fromStage: fromStage,
+                  toStage: toStage,
                   onClose: onClose,
                   onTurnOver: () => onTurn(toBack: true),
                 ),

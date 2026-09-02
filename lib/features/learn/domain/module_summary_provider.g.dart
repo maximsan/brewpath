@@ -96,3 +96,112 @@ final class ModuleSummaryFamily extends $Family
   @override
   String toString() => r'moduleSummaryProvider';
 }
+
+/// What [lessonId] paid, for the module ending to report.
+///
+/// Content only: the lesson's authored points, and the collectible tied to it.
+/// Whether the learner *holds* that card is not asked — this run is the moment
+/// it was earned, so the answer is yes by construction, and a read against the
+/// card store would race the write that just happened.
+
+@ProviderFor(moduleEndingRun)
+final moduleEndingRunProvider = ModuleEndingRunFamily._();
+
+/// What [lessonId] paid, for the module ending to report.
+///
+/// Content only: the lesson's authored points, and the collectible tied to it.
+/// Whether the learner *holds* that card is not asked — this run is the moment
+/// it was earned, so the answer is yes by construction, and a read against the
+/// card store would race the write that just happened.
+
+final class ModuleEndingRunProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ModuleEndingRun>,
+          ModuleEndingRun,
+          FutureOr<ModuleEndingRun>
+        >
+    with $FutureModifier<ModuleEndingRun>, $FutureProvider<ModuleEndingRun> {
+  /// What [lessonId] paid, for the module ending to report.
+  ///
+  /// Content only: the lesson's authored points, and the collectible tied to it.
+  /// Whether the learner *holds* that card is not asked — this run is the moment
+  /// it was earned, so the answer is yes by construction, and a read against the
+  /// card store would race the write that just happened.
+  ModuleEndingRunProvider._({
+    required ModuleEndingRunFamily super.from,
+    required String? super.argument,
+  }) : super(
+         retry: null,
+         name: r'moduleEndingRunProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$moduleEndingRunHash();
+
+  @override
+  String toString() {
+    return r'moduleEndingRunProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<ModuleEndingRun> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ModuleEndingRun> create(Ref ref) {
+    final argument = this.argument as String?;
+    return moduleEndingRun(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ModuleEndingRunProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$moduleEndingRunHash() => r'6116959b14c9671fc5eba5aa7c80b04ee0aed7df';
+
+/// What [lessonId] paid, for the module ending to report.
+///
+/// Content only: the lesson's authored points, and the collectible tied to it.
+/// Whether the learner *holds* that card is not asked — this run is the moment
+/// it was earned, so the answer is yes by construction, and a read against the
+/// card store would race the write that just happened.
+
+final class ModuleEndingRunFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<ModuleEndingRun>, String?> {
+  ModuleEndingRunFamily._()
+    : super(
+        retry: null,
+        name: r'moduleEndingRunProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// What [lessonId] paid, for the module ending to report.
+  ///
+  /// Content only: the lesson's authored points, and the collectible tied to it.
+  /// Whether the learner *holds* that card is not asked — this run is the moment
+  /// it was earned, so the answer is yes by construction, and a read against the
+  /// card store would race the write that just happened.
+
+  ModuleEndingRunProvider call(String? lessonId) =>
+      ModuleEndingRunProvider._(argument: lessonId, from: this);
+
+  @override
+  String toString() => r'moduleEndingRunProvider';
+}
