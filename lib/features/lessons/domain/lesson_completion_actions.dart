@@ -65,10 +65,8 @@ class CompletionActions {
 /// 1. The action is the next lesson when one is playable, and
 ///    [backToPathLabel] when the course has nothing left queued.
 /// 2. The quiet link is the weak run's practice invitation where there is one,
-///    and [backToPathLabel] otherwise — never both. The design pairs the
-///    invitation with the mastery chip and drops the plain return beside it
-///    (`rewards.jsx:154-175`), so a weak run is asked to practise rather than
-///    offered two ways out.
+///    and [backToPathLabel] otherwise — never both. A weak run is asked to
+///    practise rather than offered two ways out.
 CompletionActions completionActions({
   required String lessonId,
   MasteryBand? band,

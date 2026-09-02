@@ -90,10 +90,9 @@ RouteDestination lessonCompletion(
 
 /// The module ending — **the one ending a module's last lesson plays**.
 ///
-/// The design branches rather than chaining (`app.jsx:960-964`): a lesson that
-/// closes its module goes straight here, and the lesson ending never runs. So
-/// this route also carries what that ending would have reported, because
-/// nothing else will say it.
+/// A lesson that closes its module comes straight here and plays no lesson
+/// ending of its own (#458). So this route also carries what that ending would
+/// have reported, because nothing else will say it.
 ///
 /// [runLessonId] names the lesson that closed the module, which is where the
 /// screen reads the points it paid and the collectible it handed over.

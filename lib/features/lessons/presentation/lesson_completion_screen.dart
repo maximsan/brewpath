@@ -128,10 +128,9 @@ class _LessonCompletionScreenState
     if (snap.hasError) return ErrorView(message: '${snap.error}');
     final reward = snap.data!;
 
-    // **A run that closed its module plays one ending, not two** (#458). The
-    // design branches here rather than chaining (`app.jsx:960-964`), so this
-    // screen hands the moment over whole — its own beat never plays, and the
-    // module ending reports what this lesson paid on its behalf.
+    // **A run that closed its module plays one ending, not two** (#458).
+    // This screen hands the moment over whole: its own beat never plays, and
+    // the module ending reports what this lesson paid on its behalf.
     if (reward.result.moduleCompleted) {
       _handOverToModuleEnding(reward);
       return const LoadingIndicator();
