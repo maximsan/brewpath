@@ -546,6 +546,17 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **A card you have not earned tells you which one it is.** A locked tile used
+  to read `???`, which said only that something was missing. It now carries its
+  place in the collection — `03 / 37` — so the gap is a card you can go and
+  earn rather than an anonymous blank, and with one locked tile on screen at a
+  time that tile is always the next one. Earned tiles gained the same line, and
+  each is washed in its own subject's colour, so the grid reads as a collection
+  instead of a table. A card whose Coffee Challenge you have brewed is stamped
+  in the corner; one with a challenge waiting is ringed. The module name under
+  each title is gone — the tile says what the card is, and the module was only
+  ever repeating what the card above it already said.
+
 - **Profile says the month you actually joined.** The closing line read the
   first day you did anything, so someone who installed the app and did not
   start for three weeks was told they joined the following month. The app now

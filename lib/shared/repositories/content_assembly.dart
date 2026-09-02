@@ -106,6 +106,7 @@ CoffeeCardModel _cardFor(
     fact: reward.fact,
     moduleTag: module.title,
     iconName: module.iconName,
+    kind: collectible.kind,
     lessonId: lesson?.id,
     moduleId: unlock.moduleId,
   );

@@ -155,6 +155,153 @@ final class CompletedChallengesProvider
 String _$completedChallengesHash() =>
     r'2467e35ae3c7023fe8fee777732928b15c86483a';
 
+/// What [cardId]'s challenge is doing, as a tile shows it.
+///
+/// Three states, not two: a card can have no challenge at all, one waiting to
+/// be brewed, or one already brewed. The tile draws the last two differently —
+/// solid for done, dashed for an offer — so it needs to tell them apart, and
+/// the arithmetic lives here rather than in the widget.
+///
+/// **Every unbrewed challenge is an offer**, not only the one currently in
+/// play. The design's `challengeOpen` (`screens.jsx:1621`) is *earned, has a
+/// challenge, has not completed it* — so a learner sees every card that still
+/// owes them a brew, rather than the single one the lifecycle happens to have
+/// active. Reading the active challenge here would ring at most one tile and
+/// would blink off when its window lapsed.
+
+@ProviderFor(cardChallengeState)
+final cardChallengeStateProvider = CardChallengeStateFamily._();
+
+/// What [cardId]'s challenge is doing, as a tile shows it.
+///
+/// Three states, not two: a card can have no challenge at all, one waiting to
+/// be brewed, or one already brewed. The tile draws the last two differently —
+/// solid for done, dashed for an offer — so it needs to tell them apart, and
+/// the arithmetic lives here rather than in the widget.
+///
+/// **Every unbrewed challenge is an offer**, not only the one currently in
+/// play. The design's `challengeOpen` (`screens.jsx:1621`) is *earned, has a
+/// challenge, has not completed it* — so a learner sees every card that still
+/// owes them a brew, rather than the single one the lifecycle happens to have
+/// active. Reading the active challenge here would ring at most one tile and
+/// would blink off when its window lapsed.
+
+final class CardChallengeStateProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<CardChallengeState>,
+          CardChallengeState,
+          FutureOr<CardChallengeState>
+        >
+    with
+        $FutureModifier<CardChallengeState>,
+        $FutureProvider<CardChallengeState> {
+  /// What [cardId]'s challenge is doing, as a tile shows it.
+  ///
+  /// Three states, not two: a card can have no challenge at all, one waiting to
+  /// be brewed, or one already brewed. The tile draws the last two differently —
+  /// solid for done, dashed for an offer — so it needs to tell them apart, and
+  /// the arithmetic lives here rather than in the widget.
+  ///
+  /// **Every unbrewed challenge is an offer**, not only the one currently in
+  /// play. The design's `challengeOpen` (`screens.jsx:1621`) is *earned, has a
+  /// challenge, has not completed it* — so a learner sees every card that still
+  /// owes them a brew, rather than the single one the lifecycle happens to have
+  /// active. Reading the active challenge here would ring at most one tile and
+  /// would blink off when its window lapsed.
+  CardChallengeStateProvider._({
+    required CardChallengeStateFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'cardChallengeStateProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$cardChallengeStateHash();
+
+  @override
+  String toString() {
+    return r'cardChallengeStateProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<CardChallengeState> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<CardChallengeState> create(Ref ref) {
+    final argument = this.argument as String;
+    return cardChallengeState(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CardChallengeStateProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$cardChallengeStateHash() =>
+    r'b15e1791a5e19aaad2ab493d993acb01b86643ac';
+
+/// What [cardId]'s challenge is doing, as a tile shows it.
+///
+/// Three states, not two: a card can have no challenge at all, one waiting to
+/// be brewed, or one already brewed. The tile draws the last two differently —
+/// solid for done, dashed for an offer — so it needs to tell them apart, and
+/// the arithmetic lives here rather than in the widget.
+///
+/// **Every unbrewed challenge is an offer**, not only the one currently in
+/// play. The design's `challengeOpen` (`screens.jsx:1621`) is *earned, has a
+/// challenge, has not completed it* — so a learner sees every card that still
+/// owes them a brew, rather than the single one the lifecycle happens to have
+/// active. Reading the active challenge here would ring at most one tile and
+/// would blink off when its window lapsed.
+
+final class CardChallengeStateFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<CardChallengeState>, String> {
+  CardChallengeStateFamily._()
+    : super(
+        retry: null,
+        name: r'cardChallengeStateProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// What [cardId]'s challenge is doing, as a tile shows it.
+  ///
+  /// Three states, not two: a card can have no challenge at all, one waiting to
+  /// be brewed, or one already brewed. The tile draws the last two differently —
+  /// solid for done, dashed for an offer — so it needs to tell them apart, and
+  /// the arithmetic lives here rather than in the widget.
+  ///
+  /// **Every unbrewed challenge is an offer**, not only the one currently in
+  /// play. The design's `challengeOpen` (`screens.jsx:1621`) is *earned, has a
+  /// challenge, has not completed it* — so a learner sees every card that still
+  /// owes them a brew, rather than the single one the lifecycle happens to have
+  /// active. Reading the active challenge here would ring at most one tile and
+  /// would blink off when its window lapsed.
+
+  CardChallengeStateProvider call(String cardId) =>
+      CardChallengeStateProvider._(argument: cardId, from: this);
+
+  @override
+  String toString() => r'cardChallengeStateProvider';
+}
+
 /// Whether the challenge on [cardId] has been brewed.
 ///
 /// The card's sheet asks this twice over — once for the seal on its header,

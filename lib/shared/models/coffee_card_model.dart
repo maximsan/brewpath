@@ -33,6 +33,11 @@ abstract class CoffeeCardModel with _$CoffeeCardModel {
     /// The glyph name to draw, resolved by `moduleIcon`.
     required String iconName,
 
+    /// What the card is *of* — `botanical`, `burrs`, `roastcurve`. The
+    /// collectible's own key, not its module's: it is what the design tints
+    /// the tile by, and eventually what it draws there.
+    required String kind,
+
     /// The lesson that awards this card, or null when a module does.
     String? lessonId,
 
