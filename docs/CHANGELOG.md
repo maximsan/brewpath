@@ -51,6 +51,24 @@ You can always edit this file by hand instead — the helpers just save effort.
   lessons, and names the two things that would change that: save a word one of
   your lessons mentions, or unlock the full course. With nothing saved at all,
   the original wording is unchanged.
+- **A shared BrewPath link opens the app, on the thing that was shared.** Tap
+  `brewpath.maximsan.dev/card/<id>` with the app installed and it opens that
+  collectible rather than a web page; without the app, the link goes to the App
+  Store. A card you have not earned yet shows you its face — the art, the name,
+  and the lesson that earns it — and keeps back the summary and the keepsake
+  line, because those are the reward for finishing the lesson and card
+  addresses are guessable. Sharing something the other person already has would
+  be pointless, so showing them nothing was the one thing that could not stand.
+
+  The link now survives being interrupted. Someone who installs the app
+  *because* a card was shared with them used to lose it at the welcome screen —
+  they onboarded and never saw the card. It is held through onboarding and
+  opens when they arrive. A link naming a card the installed build has never
+  heard of leaves them on the collection instead of an error, because a newer
+  build can mint an address an older one cannot resolve.
+
+  Sharing your streak now carries a link back to the app, where before it was a
+  picture with no way home.
 
 - **Locked lessons now say why they are locked.** Path looked the same whether
   or not a lesson was yours, so the only way to find the wall was to walk into
@@ -65,6 +83,16 @@ You can always edit this file by hand instead — the helpers just save effort.
   you had not bought the course — the first guide is taught by the sixth lesson,
   and only the first three are free. Now it says the guides come with the course.
   If you own it, it names the lesson that opens the next one.
+
+- **The dictionary has a Term of the Day.** A card at the top of the shelf
+  offers one word each day — what it is, how to say it, and what it means —
+  and opens a page of its own where you can save it or go on to the full
+  entry. The word changes at midnight, walks the whole dictionary before it
+  repeats, and is the same on every device you own, because it is worked out
+  from the date rather than stored anywhere. Which words are on offer depends
+  on what you have bought: the course opens up the reference words no lesson
+  teaches. Reading it does not count toward your streak — it is something to
+  notice, not a task.
 
 - **Your saved terms are a flashcard deck now.** Bookmark a word in the
   dictionary and it joins a deck you can flip through: the term on the front,
@@ -553,6 +581,17 @@ You can always edit this file by hand instead — the helpers just save effort.
   gated, the design marks the gated card itself.
 
 ### Fixed
+
+- **A card you have not earned tells you which one it is.** A locked tile used
+  to read `???`, which said only that something was missing. It now carries its
+  place in the collection — `03 / 37` — so the gap is a card you can go and
+  earn rather than an anonymous blank, and with one locked tile on screen at a
+  time that tile is always the next one. Earned tiles gained the same line, and
+  each is washed in its own subject's colour, so the grid reads as a collection
+  instead of a table. A card whose Coffee Challenge you have brewed is stamped
+  in the corner; one with a challenge waiting is ringed. The module name under
+  each title is gone — the tile says what the card is, and the module was only
+  ever repeating what the card above it already said.
 
 - **Profile says the month you actually joined.** The closing line read the
   first day you did anything, so someone who installed the app and did not

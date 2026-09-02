@@ -49,6 +49,7 @@ abstract class AppRoutes {
   static const vocabGame = AppRoute('vocabGame', 'vocab-game');
   static const dictionaryTerm = AppRoute('dictionaryTerm', 'term/:termId');
   static const flashcards = AppRoute('flashcards', 'flashcards');
+  static const termOfDay = AppRoute('termOfDay', 'term-of-the-day');
   static const path = AppRoute('path', '/path');
   static const cards = AppRoute('cards', '/cards');
 
@@ -57,6 +58,7 @@ abstract class AppRoutes {
   /// opens the sheet directly. The path exists because #171 scopes the app's
   /// universal links to it.
   static const cardDetail = AppRoute('cardDetail', ':cardId');
+
   static const profile = AppRoute('profile', '/profile');
   static const profileSettings = AppRoute('profileSettings', 'settings');
   static const profileStreak = AppRoute('profileStreak', 'streak');
@@ -94,4 +96,11 @@ extension DictionaryNavigation on BuildContext {
   /// has to return the learner to the one they were standing in.
   Future<void> pushFlashcards() =>
       GoRouter.of(this).pushNamed(AppRoutes.flashcards.name);
+
+  /// Opens today's term on a page of its own.
+  ///
+  /// Pushed, not gone to: the banner sits on the dictionary's index and
+  /// closing the page has to put the learner back on it.
+  Future<void> pushTermOfDay() =>
+      GoRouter.of(this).pushNamed(AppRoutes.termOfDay.name);
 }

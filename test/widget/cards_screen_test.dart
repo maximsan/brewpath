@@ -34,7 +34,10 @@ void main() {
     // nothing is earned, so the teaser is the only tile and the footer names
     // the rest (#396).
     expect(find.byType(CardGridItemWidget), findsOneWidget);
-    expect(find.text('???'), findsOneWidget);
+    // The teaser says which card it is — `01 / 37` against the real bank —
+    // rather than hiding behind `???`.
+    expect(find.text('—'), findsOneWidget);
+    expect(find.text('?'), findsOneWidget);
     expect(find.byType(CardsFooter), findsOneWidget);
   });
 

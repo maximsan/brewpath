@@ -118,6 +118,27 @@ abstract final class OffTokens {
         'is exactly the difference the design is drawing.',
   );
 
+  /// The inset on Term of the Day's banner.
+  static const OffToken<double> termOfDayBannerPadding = OffToken(
+    20,
+    reason:
+        'The design sets the banner to `padding: 20px 20px 18px`. 20 sits '
+        'between AppSpacing.md (16) and lg (24): the banner is the one card on '
+        'the index that is meant to read as an offer rather than a row, and '
+        'the room around the word is what does it. AppSpacing.md would make it '
+        'a panel.',
+  );
+
+  /// The banner's shorter bottom inset.
+  static const OffToken<double> termOfDayBannerFootPadding = OffToken(
+    18,
+    reason:
+        'The same `padding: 20px 20px 18px`. The foot is two short of the '
+        'sides because the *Open entry* line under it is uppercase mono, whose '
+        'own leading already reads as space — the optical inset matches, the '
+        'measured one does not.',
+  );
+
   /// The padding inside the tried seal, tighter on the mark's side.
   static const OffToken<EdgeInsets> triedSealPadding = OffToken(
     EdgeInsets.fromLTRB(7, 5, 10, 5),
@@ -195,6 +216,8 @@ abstract final class OffTokens {
     beanCrease,
     pickTilePadding,
     flashcardFacePadding,
+    termOfDayBannerPadding,
+    termOfDayBannerFootPadding,
     triedSealPadding,
     cardsFooterPadding,
     cardsFooterLineGap,

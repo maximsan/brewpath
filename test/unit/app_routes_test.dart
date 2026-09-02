@@ -57,6 +57,20 @@ void main() {
     );
   });
 
+  test('the published card address matches, so its redirect can run', () {
+    // go_router runs **no redirect** for a location nothing matches — it goes
+    // straight to the error page. So the forwarding rule is only reachable if
+    // the real router still matches `/card/<id>`; the rule itself is tested in
+    // `card_link_test.dart`.
+    for (final address in ['/card/c1', '/card/c-m2l1', '/card']) {
+      expect(
+        router.configuration.findMatch(Uri.parse(address)).isError,
+        isFalse,
+        reason: 'nothing matches $address, so a shared link cannot forward',
+      );
+    }
+  });
+
   test('lesson and lessonComplete carry their query parameters', () {
     expect(
       locationOf(
@@ -132,6 +146,7 @@ void main() {
     // chrome, so nothing competes with the question being asked.
     'vocabGame': HeaderTier.immersive,
     'flashcards': HeaderTier.immersive,
+    'termOfDay': HeaderTier.immersive,
     'onboardingName': HeaderTier.immersive,
   };
 

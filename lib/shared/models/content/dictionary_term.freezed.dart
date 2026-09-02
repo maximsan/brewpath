@@ -561,8 +561,9 @@ mixin _$DictionaryTerm {
  String get id;/// The word itself, as it is displayed.
  String get term;/// The category this term belongs to. Always resolves — the extractor
 /// refuses a bank whose pointer does not.
-@JsonKey(name: 'cat') String get categoryId;/// The one-line answer to *what does this word mean*. Every term has one;
-/// for a quarter of them it is the whole entry, and that is not a gap.
+@JsonKey(name: 'cat') String get categoryId;/// The one-line answer to *what does this word mean*. Every term has one,
+/// and it is what a free learner reads: the longer [deepExplanation] comes
+/// with the course (`docs/decisions.md` §12).
 @JsonKey(name: 'short') String get shortExplanation;/// Ids of terms worth reading next. May be empty, never absent.
 @JsonKey(name: 'related') List<String> get relatedIds;/// Other names the same thing goes by, matched by search.
  List<String> get aliases;/// The lesson that teaches this term. **Absent means no lesson teaches
@@ -797,8 +798,9 @@ class _DictionaryTerm extends DictionaryTerm {
 /// The category this term belongs to. Always resolves — the extractor
 /// refuses a bank whose pointer does not.
 @override@JsonKey(name: 'cat') final  String categoryId;
-/// The one-line answer to *what does this word mean*. Every term has one;
-/// for a quarter of them it is the whole entry, and that is not a gap.
+/// The one-line answer to *what does this word mean*. Every term has one,
+/// and it is what a free learner reads: the longer [deepExplanation] comes
+/// with the course (`docs/decisions.md` §12).
 @override@JsonKey(name: 'short') final  String shortExplanation;
 /// Ids of terms worth reading next. May be empty, never absent.
  final  List<String> _relatedIds;

@@ -13,10 +13,14 @@ class SystemSharePresenter implements SharePresenter {
   Future<void> sharePng({
     required Uint8List bytes,
     required String fileName,
+    String? link,
   }) async {
     await SharePlus.instance.share(
       ShareParams(
         files: [XFile.fromData(bytes, mimeType: 'image/png', name: fileName)],
+        // `text`, not `uri`: the package forbids `uri` beside files, and
+        // pairs `text` with them.
+        text: link,
       ),
     );
   }

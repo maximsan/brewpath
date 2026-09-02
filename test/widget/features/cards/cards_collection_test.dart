@@ -51,7 +51,7 @@ void main() {
     expect(find.byType(CardGridItemWidget), findsNWidgets(2));
     expect(find.text('Card a'), findsOneWidget);
     // The teaser shows as a locked tile; the two behind it are not drawn.
-    expect(find.text('???'), findsOneWidget);
+    expect(find.text('02 / 4'), findsOneWidget);
   });
 
   testWidgets('the footer counts the remainder, teaser included', (
@@ -75,7 +75,7 @@ void main() {
 
     expect(find.byType(CardGridItemWidget), findsNWidgets(2));
     expect(find.byType(CardsFooter), findsNothing);
-    expect(find.text('???'), findsNothing);
+    expect(find.text('?'), findsNothing);
   });
 
   testWidgets('a fresh collection is one teaser, not a wall of blanks', (
@@ -116,9 +116,14 @@ void main() {
     ]);
 
     // The two cards carry different module tags; neither becomes a heading.
+    // Stronger than it was: the design's tile prints no tag at all
+    // (`screens.jsx:2447`), so a module name anywhere on this screen could
+    // only be a section header — which is the thing being ruled out.
     expect(find.byType(CardGridItemWidget), findsNWidgets(2));
-    expect(find.text('Beans'), findsOneWidget);
-    expect(find.text('Taste'), findsOneWidget);
+    expect(find.text('Card a'), findsOneWidget);
+    expect(find.text('Card z'), findsOneWidget);
+    expect(find.text('Beans'), findsNothing);
+    expect(find.text('Taste'), findsNothing);
   });
 
   testWidgets('the count and the remainder are spoken', (tester) async {

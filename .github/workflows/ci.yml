@@ -138,6 +138,29 @@ jobs:
             exit 1
           }
 
+      # Same hazard as the manifest above, and the same shape of fix: the
+      # associated-domains entitlement is wired into the Runner target by hand
+      # (#171), the app builds and boots without it, and the only symptom is
+      # that every shared link opens Safari instead. This build is
+      # --no-codesign, so the entitlement never reaches the bundle — assert the
+      # wiring in the project file instead, which is the part a merge drops.
+      - name: Verify the associated-domains entitlement is still wired
+        run: |
+          ENTITLEMENTS=ios/Runner/Runner.entitlements
+          plutil -lint "$ENTITLEMENTS"
+          # PlistBuddy, not `plutil -extract`: plutil reads dots in a key path
+          # as separators, and this key name is all dots.
+          /usr/libexec/PlistBuddy -c 'Print :com.apple.developer.associated-domains:0' \
+            "$ENTITLEMENTS" | grep -qx 'applinks:brewpath.maximsan.dev' || {
+            echo "::error::$ENTITLEMENTS no longer claims brewpath.maximsan.dev."
+            exit 1
+          }
+          test "$(grep -c 'CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;' \
+            ios/Runner.xcodeproj/project.pbxproj)" = 3 || {
+            echo "::error::Expected all three Runner configs to name the entitlements file."
+            exit 1
+          }
+
   # Push to main only. The suite needs a booted simulator, which is macOS-only
   # and costs a runner minute or two to start — too much to pay on every PR
   # push, and unnecessary, because what it guards against is *rot* rather than

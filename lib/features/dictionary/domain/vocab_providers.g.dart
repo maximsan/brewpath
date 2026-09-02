@@ -64,4 +64,4 @@ final class VocabPoolsProvider
   }
 }
 
-String _$vocabPoolsHash() => r'8bbc8880f61c757ed37209f61db689633e04ab5d';
+String _$vocabPoolsHash() => r'd0186efd79a84c22c04a95f61b279c3c08b971e8';
