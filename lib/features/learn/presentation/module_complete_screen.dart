@@ -64,9 +64,9 @@ class ModuleCompleteScreen extends ConsumerStatefulWidget {
 
 class _ModuleCompleteScreenState extends ConsumerState<ModuleCompleteScreen>
     with SingleTickerProviderStateMixin {
-  /// The module ending's longer hold (`rewards.jsx:225`) — the one beat that
-  /// overrides the default. It lives here, with the beat that asks for it,
-  /// rather than in the shared widget.
+  /// The module ending's longer hold — the one beat that overrides the
+  /// default. It lives here, with the beat that asks for it, rather than in
+  /// the shared widget.
   static const Duration _hold = Duration(milliseconds: 2200);
 
   /// The stage a tree stands at before any lesson has moved it — what the
@@ -197,10 +197,6 @@ class _Flip extends StatelessWidget {
   /// about the celebration rather than about the footer.
   static const Alignment _origin = Alignment(0, -0.16);
 
-  /// Where the perspective term lives in a 4×4 transform: row 3, column 2.
-  static const int _perspectiveRow = 3;
-  static const int _perspectiveColumn = 2;
-
   @override
   Widget build(BuildContext context) {
     // The design's own easing. Read through a curve rather than baked into the
@@ -214,9 +210,10 @@ class _Flip extends StatelessWidget {
 
         return Transform(
           alignment: _origin,
-          transform: Matrix4.identity()
-            ..setEntry(_perspectiveRow, _perspectiveColumn, _perspective)
-            ..rotateY(flipAngle(turn.value)),
+          transform: flipTransform(
+            progress: turn.value,
+            perspective: _perspective,
+          ),
           child: showsBack
               // Turned again so the back reads upright rather than mirrored:
               // it is drawn on the far side of a card that is already half

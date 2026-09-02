@@ -44,6 +44,21 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Your saved terms are a flashcard deck now.** Bookmark a word in the
+  dictionary and it joins a deck you can flip through: the term on the front,
+  what it means on the back, and a link to the full entry once you have
+  answered yourself. Reach it three ways — a chip on the dictionary, a row
+  under the terms on your Saved shelf, and a free row in Learn's practice
+  list — and Today can recommend it once you have cards. Finishing a review
+  marks the day for your streak, the same as any other practice; walking away
+  part-way through counts for nothing, because you have not reviewed the deck.
+  Nothing is graded and nothing is scheduled: a flashcard teaches, it never
+  marks you.
+
+  The deck is what you saved *and* can reach, so a word from a lesson you have
+  not done yet waits until you have done it. With no cards, the drill still
+  opens and explains what a deck is made of rather than turning you away.
+
 - **The dictionary has a game now.** *Guess the term* reads you a definition
   and offers four words; you pick the one it describes. Choose a deck — the
   terms you bookmarked, or everything you can reach — and how long a round runs

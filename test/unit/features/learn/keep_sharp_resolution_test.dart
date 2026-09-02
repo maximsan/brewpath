@@ -3,6 +3,7 @@
 //
 // The provider used to read the clock itself, so none of this was assertable
 // without pumping. Every case below injects the day.
+import 'package:brew_path/features/dictionary/domain/flashcard_destination.dart';
 import 'package:brew_path/features/dictionary/domain/vocab_destination.dart';
 import 'package:brew_path/features/dictionary/domain/vocab_setup.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp.dart';
@@ -19,12 +20,16 @@ KeepSharpResolution? resolve({
   Set<String> playedToday = const {},
   List<String> completed = const ['m1l1'],
   int drillable = 0,
+  int deck = 0,
 }) => keepSharpResolutionFor(
   dayNumber: day,
-  playableFormatIds: playable,
-  formatsPlayedToday: playedToday,
-  completedLessonIds: completed,
-  drillableTermCount: drillable,
+  material: (
+    playableFormatIds: playable,
+    formatsPlayedToday: playedToday,
+    completedLessonIds: completed,
+    drillableTermCount: drillable,
+    flashcardDeckSize: deck,
+  ),
 );
 
 /// A day whose rotation lands on [type], searched rather than hardcoded so the
@@ -33,12 +38,14 @@ int dayLandingOn(
   PracticeType type, {
   List<String> playable = _playable,
   int drillable = 0,
+  int deck = 0,
 }) {
   for (var day = 0; day < PracticeType.values.length * 2; day++) {
     final resolved = resolve(
       day: day,
       playable: playable,
       drillable: drillable,
+      deck: deck,
     );
     if (resolved?.type == type) return day;
   }
@@ -128,10 +135,29 @@ void main() {
       );
     });
 
-    test('flashcards stays out until its surface registers', () {
-      // It qualifies for the streak already; it has no screen.
-      expect(builtPracticeSurfaces, contains(PracticeType.vocabGame));
-      expect(builtPracticeSurfaces, isNot(contains(PracticeType.flashcards)));
+    test('every practice type has a surface now, and the registry stays', () {
+      // Not a formality: the next practice type authored joins this set
+      // unruled, and the set is where someone has to say so.
+      expect(builtPracticeSurfaces, PracticeType.values.toSet());
+    });
+
+    test('flashcards needs a card in the deck', () {
+      final day = dayLandingOn(PracticeType.flashcards, deck: 1);
+
+      expect(resolve(day: day, deck: 1)?.type, PracticeType.flashcards);
+      expect(
+        resolve(day: day)?.type,
+        isNot(PracticeType.flashcards),
+        reason:
+            "the one type whose material is the learner's own bookmarks — "
+            'recommending it empty sends them to a screen with nothing in it',
+      );
+    });
+
+    test('its CTA opens the drill, which needs nothing naming', () {
+      final day = dayLandingOn(PracticeType.flashcards, deck: 1);
+
+      expect(resolve(day: day, deck: 1)!.destination, flashcardReview);
     });
   });
 

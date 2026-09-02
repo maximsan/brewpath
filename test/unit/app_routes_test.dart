@@ -131,6 +131,7 @@ void main() {
     // A drill, like a mini-game run: its own close button and no
     // chrome, so nothing competes with the question being asked.
     'vocabGame': HeaderTier.immersive,
+    'flashcards': HeaderTier.immersive,
     'onboardingName': HeaderTier.immersive,
   };
 

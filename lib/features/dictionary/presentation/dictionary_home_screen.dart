@@ -17,7 +17,7 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// The design's search mark, at its drawn size (`dictionary.jsx:179`).
+/// The design's search mark, at its drawn size.
 const double _searchMarkSize = 17;
 
 /// Dictionary home: search, filter, and every term under its category.
@@ -27,13 +27,12 @@ class DictionaryHomeScreen extends ConsumerWidget {
 
   /// The screen's name, and the header action that reaches it.
   ///
-  /// `Coffee Dictionary` (`dictionary.jsx:297`), not `Dictionary`: the course
-  /// is about one subject and the shelf says so.
+  /// `Coffee Dictionary`, not `Dictionary`: the course is about one subject
+  /// and the shelf says so.
   static const title = 'Coffee Dictionary';
 
-  /// The kicker over it, which carries how many terms the shelf holds
-  /// (`dictionary.jsx:451`) — the count is the part that makes it inform
-  /// rather than decorate.
+  /// The kicker over it, which carries how many terms the shelf holds — the
+  /// count is the part that makes it inform rather than decorate.
   static String kickerFor(int terms) => 'Reference · $terms terms';
 
   @override
@@ -74,8 +73,8 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
 
   /// The category being browsed, or null on the index.
   ///
-  /// The design opens on the index and drills in (`dictionary.jsx:414`): a
-  /// learner arrives wanting a subject, not a scroll of seventy-three terms.
+  /// The design opens on the index and drills in: a learner arrives wanting a
+  /// subject, not a scroll of seventy-three terms.
   DictionaryCategory? _category;
 
   /// Whether the index is what to show — nothing narrowed, nothing searched.
@@ -142,9 +141,16 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
           counts: widget.view.counts,
           onSelected: (filter) => setState(() => _filter = filter),
         ),
-        const SizedBox(height: AppSpacing.sm),
+        // Under the filters, over the list: the design puts practice between
+        // *narrowing the shelf* and *reading it*, because drilling is a third
+        // thing to do here rather than a way of browsing.
         const Padding(
-          padding: EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.gutter,
+            AppSpacing.sm,
+            AppSpacing.gutter,
+            0,
+          ),
           child: DictionaryQuickChips(),
         ),
         const SizedBox(height: AppSpacing.sm),

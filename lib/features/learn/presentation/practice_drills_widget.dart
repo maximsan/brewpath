@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
+import 'package:brew_path/features/dictionary/presentation/flashcards_copy.dart';
+import 'package:brew_path/features/dictionary/presentation/flashcards_mark.dart';
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_copy.dart';
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_mark.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -23,16 +25,99 @@ import 'package:go_router/go_router.dart';
 /// mark here would say the opposite of what is true, and these are a free
 /// learner's cheapest streak path.
 ///
-/// One row today. Flashcards (#97) is the second, and adds itself here.
+/// Both rows now (#97, #98), in the design's order — Flashcards leads.
 class PracticeDrillsWidget extends StatelessWidget {
   /// Creates a [PracticeDrillsWidget].
   const PracticeDrillsWidget({super.key});
 
   @override
-  Widget build(BuildContext context) => const Card(
+  Widget build(BuildContext context) => Card(
     margin: EdgeInsets.zero,
-    child: _VocabRow(),
+    child: Column(
+      children: [
+        const _FlashcardsRow(),
+        Divider(height: 1, color: context.mood.rule),
+        const _VocabRow(),
+      ],
+    ),
   );
+}
+
+/// Flashcards: the deck of what the learner kept.
+///
+/// **Here whether or not the deck has cards.** This row is how a learner finds
+/// out flashcards exist; showing it only once something is bookmarked would
+/// mean only the learners who already knew could ever discover it. An empty
+/// deck opens the drill's teaching state, which is written for that arrival.
+class _FlashcardsRow extends StatelessWidget {
+  const _FlashcardsRow();
+
+  /// The mark's drawn size, matching the kind glyphs it sits above.
+  static const double _markSize = 20;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final mood = context.mood;
+
+    return Semantics(
+      button: true,
+      label:
+          '${FlashcardsCopy.title}. ${FlashcardsCopy.practiceRowEyebrow}. '
+          '${FlashcardsCopy.free}.',
+      excludeSemantics: true,
+      child: InkWell(
+        onTap: () => unawaited(context.pushFlashcards()),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.sm,
+          ),
+          child: Row(
+            children: [
+              FlashcardsMark(
+                size: _markSize,
+                color: mood.inkMute,
+                accent: mood.accent,
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      FlashcardsCopy.practiceRowEyebrow.toUpperCase(),
+                      style: AppText.label(
+                        color: mood.inkMute,
+                        face: AppFace.mono,
+                        tracking: AppTracking.meta,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xxs),
+                    Text(
+                      FlashcardsCopy.title,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        color: mood.ink,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Text(
+                FlashcardsCopy.free.toUpperCase(),
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: mood.inkMute,
+                ),
+              ),
+              IconMark(AppIcon.chevron, color: mood.inkMute),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _VocabRow extends StatelessWidget {
