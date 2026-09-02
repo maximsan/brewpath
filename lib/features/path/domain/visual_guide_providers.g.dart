@@ -67,42 +67,36 @@ String _$visualGuideShelfForHash() =>
 
 /// The lesson the Reference heading names as opening the next guide.
 ///
-/// Its own provider rather than a field on the shelf: this is the only reader
-/// that needs the whole course in order, and putting it on the shelf would
-/// make every `earnedGuideFor` caller — lesson cards, the bookmark button —
-/// load the module and lesson banks to ask about one guide.
+/// Its own provider, not a field on the shelf: only this heading needs the
+/// whole course in order, and the shelf is also read by lesson cards and the
+/// bookmark button, which should not load the banks to ask about one guide.
 ///
-/// **Every `watch` happens before the first `await`.** Reading a `Ref` after
-/// an async gap throws once the provider has been disposed, which is what a
-/// widget test tearing down mid-load does.
+/// Every `watch` runs before the first `await`. Reading a `Ref` after an async
+/// gap throws if the provider was disposed in the meantime.
 
 @ProviderFor(nextGuideUnlock)
 final nextGuideUnlockProvider = NextGuideUnlockProvider._();
 
 /// The lesson the Reference heading names as opening the next guide.
 ///
-/// Its own provider rather than a field on the shelf: this is the only reader
-/// that needs the whole course in order, and putting it on the shelf would
-/// make every `earnedGuideFor` caller — lesson cards, the bookmark button —
-/// load the module and lesson banks to ask about one guide.
+/// Its own provider, not a field on the shelf: only this heading needs the
+/// whole course in order, and the shelf is also read by lesson cards and the
+/// bookmark button, which should not load the banks to ask about one guide.
 ///
-/// **Every `watch` happens before the first `await`.** Reading a `Ref` after
-/// an async gap throws once the provider has been disposed, which is what a
-/// widget test tearing down mid-load does.
+/// Every `watch` runs before the first `await`. Reading a `Ref` after an async
+/// gap throws if the provider was disposed in the meantime.
 
 final class NextGuideUnlockProvider
     extends $FunctionalProvider<AsyncValue<String?>, String?, FutureOr<String?>>
     with $FutureModifier<String?>, $FutureProvider<String?> {
   /// The lesson the Reference heading names as opening the next guide.
   ///
-  /// Its own provider rather than a field on the shelf: this is the only reader
-  /// that needs the whole course in order, and putting it on the shelf would
-  /// make every `earnedGuideFor` caller — lesson cards, the bookmark button —
-  /// load the module and lesson banks to ask about one guide.
+  /// Its own provider, not a field on the shelf: only this heading needs the
+  /// whole course in order, and the shelf is also read by lesson cards and the
+  /// bookmark button, which should not load the banks to ask about one guide.
   ///
-  /// **Every `watch` happens before the first `await`.** Reading a `Ref` after
-  /// an async gap throws once the provider has been disposed, which is what a
-  /// widget test tearing down mid-load does.
+  /// Every `watch` runs before the first `await`. Reading a `Ref` after an async
+  /// gap throws if the provider was disposed in the meantime.
   NextGuideUnlockProvider._()
     : super(
         from: null,
@@ -130,26 +124,20 @@ final class NextGuideUnlockProvider
 
 String _$nextGuideUnlockHash() => r'e04b1cbddbf9cce92bc9ed5b818dc9682d4b44cf';
 
-/// Whether the Reference shelf's lock is the purchase rather than progress.
-///
-/// The two locks need different words, and only one of them is true for a
-/// given learner — the words themselves live in `LockedRowCopy`.
+/// Whether the Reference shelf is locked by the purchase rather than by
+/// progress. The two need different words; `LockedRowCopy` has them.
 
 @ProviderFor(referenceLockedByPurchase)
 final referenceLockedByPurchaseProvider = ReferenceLockedByPurchaseProvider._();
 
-/// Whether the Reference shelf's lock is the purchase rather than progress.
-///
-/// The two locks need different words, and only one of them is true for a
-/// given learner — the words themselves live in `LockedRowCopy`.
+/// Whether the Reference shelf is locked by the purchase rather than by
+/// progress. The two need different words; `LockedRowCopy` has them.
 
 final class ReferenceLockedByPurchaseProvider
     extends $FunctionalProvider<AsyncValue<bool>, bool, FutureOr<bool>>
     with $FutureModifier<bool>, $FutureProvider<bool> {
-  /// Whether the Reference shelf's lock is the purchase rather than progress.
-  ///
-  /// The two locks need different words, and only one of them is true for a
-  /// given learner — the words themselves live in `LockedRowCopy`.
+  /// Whether the Reference shelf is locked by the purchase rather than by
+  /// progress. The two need different words; `LockedRowCopy` has them.
   ReferenceLockedByPurchaseProvider._()
     : super(
         from: null,

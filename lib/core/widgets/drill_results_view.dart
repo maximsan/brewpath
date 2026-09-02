@@ -1,4 +1,5 @@
 import 'package:brew_path/core/widgets/primary_button.dart';
+import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/companion/domain/companion_reaction.dart';
 import 'package:brew_path/features/companion/presentation/companion_celebration.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -28,16 +29,42 @@ typedef DrillAction = ({String label, VoidCallback onPressed});
 /// Nothing here is written anywhere: the score lives as long as this screen
 /// does, and the *fact* that a run finished is recorded by the player.
 class DrillResultsView extends StatelessWidget {
-  /// Creates a [DrillResultsView].
+  /// A drill that was **scored**: so many right out of so many asked.
   const DrillResultsView({
-    required this.outcome,
+    required DrillOutcome outcome,
     required this.primary,
     required this.secondary,
     super.key,
-  });
+  }) : _headline = null,
+       _note = null,
+       _message = null,
+       _outcome = outcome;
 
-  /// The score and the words for it.
-  final DrillOutcome outcome;
+  /// A drill that was **counted**, not scored — [headline] things done, with
+  /// [note] naming what they were.
+  ///
+  /// Flashcards is the case: a review teaches and never marks, so there is no
+  /// score to report and `12 / 12` would invent one. The chassis is the same;
+  /// what changes is that the big value stands alone under a word.
+  const DrillResultsView.counted({
+    required String headline,
+    required String note,
+    required String message,
+    required this.primary,
+    required this.secondary,
+    super.key,
+  }) : _headline = headline,
+       _note = note,
+       _message = message,
+       _outcome = null;
+
+  /// The score and the words for it, on a scored drill.
+  final DrillOutcome? _outcome;
+
+  /// The value, the word under it and the line below, on a counted one.
+  final String? _headline;
+  final String? _note;
+  final String? _message;
 
   /// The filled action: running it back.
   final DrillAction primary;
@@ -46,6 +73,25 @@ class DrillResultsView extends StatelessWidget {
   final DrillAction secondary;
 
   static const double _companionSize = 120;
+
+  /// Nothing to celebrate *above* on a counted drill: finishing a deck is
+  /// finishing a deck, so it takes the lesson-sized pose either way.
+  bool get _celebratory => _outcome?.celebratory ?? false;
+
+  /// The big value.
+  String get _value {
+    final outcome = _outcome;
+    return _headline ?? '${outcome!.score} / ${outcome.total}';
+  }
+
+  /// The line under it.
+  String get _line => _message ?? _outcome!.encouragement;
+
+  /// One sentence, so a reader gets the result rather than three fragments.
+  String get _announcement => _outcome == null
+      ? '$_value $_note. $_line'
+      : 'Run complete. You scored ${_outcome.score} '
+            'out of ${_outcome.total}. ${_outcome.encouragement}';
 
   @override
   Widget build(BuildContext context) {
@@ -60,9 +106,8 @@ class DrillResultsView extends StatelessWidget {
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 child: Semantics(
-                  label:
-                      'Run complete. You scored ${outcome.score} '
-                      'out of ${outcome.total}. ${outcome.encouragement}',
+                  label: _announcement,
+                  excludeSemantics: true,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -70,7 +115,7 @@ class DrillResultsView extends StatelessWidget {
                       // celebration at or above the mark, the lesson-sized one
                       // below. No line — the encouragement below says it.
                       CompanionCelebration(
-                        reaction: outcome.celebratory
+                        reaction: _celebratory
                             ? CompanionReaction.moduleComplete
                             : CompanionReaction.lessonComplete,
                         size: _companionSize,
@@ -78,14 +123,18 @@ class DrillResultsView extends StatelessWidget {
                       ),
                       const SizedBox(height: AppSpacing.lg),
                       Text(
-                        '${outcome.score} / ${outcome.total}',
+                        _value,
                         style: theme.textTheme.displaySmall?.copyWith(
                           color: mood.ink,
                         ),
                       ),
                       const SizedBox(height: AppSpacing.xs),
+                      if (_note != null) ...[
+                        SmallcapsLabel(_note),
+                        const SizedBox(height: AppSpacing.sm),
+                      ],
                       Text(
-                        outcome.encouragement,
+                        _line,
                         textAlign: TextAlign.center,
                         style: theme.textTheme.bodyLarge?.copyWith(
                           color: mood.inkMute,

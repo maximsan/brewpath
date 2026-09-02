@@ -12,6 +12,7 @@ import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/domain/saved_shelf.dart';
 import 'package:brew_path/features/saved/presentation/saved_empty_view.dart';
 import 'package:brew_path/features/saved/presentation/saved_group_section.dart';
+import 'package:brew_path/features/saved/presentation/saved_study_row.dart';
 import 'package:brew_path/features/saved/presentation/saved_upgrade_row.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -122,6 +123,10 @@ class _Shelf extends StatelessWidget {
         const SizedBox(height: AppSpacing.lg),
         for (final group in groups) ...[
           SavedGroupSection(group: group, onOpen: onOpen),
+          if (group.kind == SavedKind.term) ...[
+            const SizedBox(height: AppSpacing.sm),
+            const SavedStudyRow(),
+          ],
           const SizedBox(height: AppSpacing.lg),
         ],
       ],

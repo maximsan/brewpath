@@ -4,6 +4,7 @@ import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/cards/presentation/card_deep_link.dart';
 import 'package:brew_path/features/cards/presentation/cards_screen.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
+import 'package:brew_path/features/dictionary/presentation/flashcards_screen.dart';
 import 'package:brew_path/features/dictionary/presentation/term_detail_screen.dart';
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_game_screen.dart';
 import 'package:brew_path/features/learn/domain/course_completion_providers.dart';
@@ -185,6 +186,18 @@ GoRouter appRouter(Ref ref) {
                       ),
                     ],
                   ),
+                  // The flashcards drill, reached from the dictionary, the
+                  // shelf, the practice list and Keep Sharp. On the root
+                  // navigator like every other run, so a drill covers the
+                  // bottom nav rather than sitting inside it — and pushed, so
+                  // closing it returns the learner to whichever of the four
+                  // they came from.
+                  GoRoute(
+                    path: AppRoutes.flashcards.path,
+                    name: AppRoutes.flashcards.name,
+                    parentNavigatorKey: _rootKey,
+                    builder: (context, state) => const FlashcardsScreen(),
+                  ),
                   // Immersive lesson flow: pushed on the root navigator so it
                   // covers the bottom-nav shell.
                   GoRoute(
@@ -217,15 +230,23 @@ GoRouter appRouter(Ref ref) {
                       ),
                     ],
                   ),
-                  // Module-completion recap, pushed over the shell after the
-                  // last lesson's completion screen.
+                  // The module ending. A lesson that closes its module comes
+                  // straight here and plays no lesson ending, so the run's own
+                  // facts ride the query string — see `moduleSummary`.
                   GoRoute(
                     path: AppRoutes.moduleSummary.path,
                     name: AppRoutes.moduleSummary.name,
                     parentNavigatorKey: _rootKey,
-                    builder: (context, state) => ModuleCompleteScreen(
-                      moduleId: state.pathParameters['moduleId']!,
-                    ),
+                    builder: (context, state) {
+                      final query = state.uri.queryParameters;
+                      return ModuleCompleteScreen(
+                        moduleId: state.pathParameters['moduleId']!,
+                        runLessonId: query['lesson'],
+                        freezeEarned: query['freeze'] == 'true',
+                        fromStage: int.tryParse(query['from'] ?? ''),
+                        toStage: int.tryParse(query['to'] ?? ''),
+                      );
+                    },
                   ),
                   // Practice flows live under /learn so the back button
                   // returns to the Learn tab. Both push on the root navigator

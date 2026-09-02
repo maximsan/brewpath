@@ -86,6 +86,7 @@ const List<AppRoute> _immersiveRoutes = [
   AppRoutes.miniGameIntro,
   AppRoutes.miniGamePlay,
   AppRoutes.vocabGame,
+  AppRoutes.flashcards,
 ];
 
 /// Which chrome [location] wears.

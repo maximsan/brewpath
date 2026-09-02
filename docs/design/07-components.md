@@ -383,7 +383,7 @@ Only 6 props, but one undocumented behaviour that changes how the screen reads.
 > raises the purchase sheet.
 >
 > The app follows this on all three locked surfaces, Reference included —
-> [ADR-0015](../adr/0015-a-locked-row-names-what-unlocks-it-for-this-learner.md),
+> [ADR-0016](../adr/0016-a-locked-row-names-what-unlocks-it-for-this-learner.md),
 > which is where the rule and the owner's ruling behind it live.
 
 > **Completed modules collapse, and default to collapsed.**

@@ -2,7 +2,6 @@ import 'package:brew_path/features/cards/presentation/reward_card.dart';
 import 'package:brew_path/features/companion/presentation/companion.dart';
 import 'package:brew_path/features/companion/presentation/roasty_moment.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
-import 'package:brew_path/features/learn/presentation/module_complete_screen.dart';
 import 'package:brew_path/features/lessons/domain/lesson_completion_actions.dart';
 import 'package:brew_path/features/lessons/domain/lesson_completion_service.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_beat.dart';
@@ -405,34 +404,10 @@ void main() {
       );
     });
 
-    testWidgets('and says nothing extra when it did move', (tester) async {
-      final container = _buildContainer();
-      addTearDown(container.dispose);
-      container.listen(contentRepositoryProvider, (_, _) {});
-      container.listen(lessonCompletionServiceProvider, (_, _) {});
-
-      // Finish every lesson but the first, so the run under test is the one
-      // that closes the module — the single threshold this course has.
-      final content = container.read(contentRepositoryProvider);
-      final service = container.read(lessonCompletionServiceProvider);
-      for (final lesson in _testLessons.skip(1)) {
-        final loaded = await tester.runAsync(
-          () => content.getLessonById(lesson.id),
-        );
-        await tester.runAsync(
-          () => service.finishLesson(
-            loaded!,
-            mastery: const MasteryResult(correct: 5, total: 5),
-          ),
-        );
-      }
-
-      await pumpCompletion(tester, container);
-
-      final tree = tester.widget<GrowingTree>(find.byType(GrowingTree));
-      expect(tree.grows, isTrue);
-      expect(find.textContaining('TO THE NEXT STAGE'), findsNothing);
-    });
+    // A growing tree on *this* screen needs a run that crosses a threshold
+    // without closing its module, which a one-module fixture cannot produce:
+    // its only threshold is the module's own completion, and that run plays
+    // the module ending instead (#458). The growing case is asserted there.
   });
 
   // Row #47's other half: the rail's card row is the way into the collectible,
@@ -539,21 +514,17 @@ void main() {
   // Finishing the last lesson of a module pays the lesson's flat ten and
   // nothing more. What the module gives is its Module Reward card, so the
   // screen must show one number and one extra card — never a second number.
-  testWidgets('completion screen shows the Module Reward card, not a bonus', (
+  // **One ending, not two** (#458). A run that closes its module hands the
+  // moment to the module ending whole — this screen never draws its own, so
+  // there is no second celebration to sit through.
+  testWidgets('a run that closes its module plays no lesson ending', (
     tester,
   ) async {
     final container = _buildContainer();
     addTearDown(container.dispose);
-
-    // Live listeners keep these auto-dispose providers alive, so the throwaway
-    // container.read calls below don't schedule a Riverpod dispose timer that
-    // would outlive the test.
     container.listen(contentRepositoryProvider, (_, _) {});
     container.listen(lessonCompletionServiceProvider, (_, _) {});
 
-    // Finish every other lesson of the module directly via the service so the
-    // screen below completes the *last* remaining one and triggers the module
-    // moment.
     final content = container.read(contentRepositoryProvider);
     final service = container.read(lessonCompletionServiceProvider);
     for (final lesson in _testLessons.where((l) => l.id != 'm1l3')) {
@@ -568,22 +539,26 @@ void main() {
       );
     }
 
-    await pumpCompletion(tester, container, lessonId: 'm1l3');
-
-    // One number, and it is the lesson's. The bonus this replaced added a
-    // second — twenty-five for the module, double-counting lessons already
-    // paid for (#16).
-    expect(find.text('+10 PTS'), findsOneWidget);
-    expect(find.textContaining('+25'), findsNothing);
-    // The module's reward is the card, on the rail under its own kicker.
-    expect(find.text('Beans Field Guide'), findsOneWidget);
-    expect(
-      find.text(LessonCompletionRail.cardKicker.toUpperCase()),
-      findsWidgets,
+    final router = _completionRouter(lessonId: 'm1l3');
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
+          routerConfig: router,
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(disableAnimations: true),
+            child: child!,
+          ),
+        ),
+      ),
     );
-    // The design routes a closed module to its own screen instead of stacking
-    // a second headline here.
-    expect(find.text('Module complete!'), findsNothing);
+    await settleLoaders(tester);
+
+    // No beat of its own, no headline, no rail — it stepped aside entirely.
+    expect(find.byType(RoastyMoment), findsNothing);
+    expect(find.byType(LessonCompletionRail), findsNothing);
+    expect(find.text('Module ending'), findsOneWidget);
   });
 
   // The opening beat plays the celebratory companion; the content behind it
@@ -729,9 +704,11 @@ void main() {
 
   // Completing a module's last lesson, then tapping its action, routes to the
   // module-summary recap rather than back to the course.
-  testWidgets('module completion continues to the module summary', (
-    tester,
-  ) async {
+  // The hand-over carries the run's own facts, because the module ending is
+  // now the only screen that will report them: the points the lesson paid, the
+  // collectible it handed over, the freeze it may have earned, and the pair of
+  // stages its growth ran between.
+  testWidgets('the hand-over carries what the run paid', (tester) async {
     final container = _buildContainer();
     addTearDown(container.dispose);
     container.listen(contentRepositoryProvider, (_, _) {});
@@ -751,47 +728,8 @@ void main() {
       );
     }
 
-    final router = GoRouter(
-      initialLocation: '/learn/lesson/m1l3/complete?correct=5&total=5',
-      routes: [
-        GoRoute(
-          path: '/learn',
-          name: 'learn',
-          builder: (context, state) => const Scaffold(body: Text('Learn tab')),
-        ),
-        GoRoute(
-          path: '/path',
-          name: 'path',
-          builder: (context, state) => const Scaffold(body: Text('Path tab')),
-        ),
-        GoRoute(
-          path: '/learn/lesson/:lessonId',
-          name: 'lesson',
-          builder: (context, state) => const Scaffold(body: Text('Lesson')),
-        ),
-        GoRoute(
-          path: '/learn/lesson/:lessonId/complete',
-          name: 'lessonComplete',
-          builder: (context, state) => LessonCompletionScreen(
-            lessonId: state.pathParameters['lessonId']!,
-            mastery: MasteryResult(
-              correct:
-                  int.tryParse(state.uri.queryParameters['correct'] ?? '') ?? 0,
-              total:
-                  int.tryParse(state.uri.queryParameters['total'] ?? '') ?? 0,
-            ),
-          ),
-        ),
-        GoRoute(
-          path: '/learn/module-summary/:moduleId',
-          name: 'moduleSummary',
-          builder: (context, state) =>
-              ModuleCompleteScreen(moduleId: state.pathParameters['moduleId']!),
-        ),
-      ],
-    );
+    final router = _completionRouter(lessonId: 'm1l3');
     addTearDown(router.dispose);
-
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
@@ -805,11 +743,75 @@ void main() {
       ),
     );
     await settleLoaders(tester);
-    await skipBeat(tester);
 
-    await tester.tap(find.text('Continue'));
-    await settleLoaders(tester);
-
-    expect(find.byType(ModuleCompleteScreen), findsOneWidget);
+    expect(find.text('module=m1'), findsOneWidget);
+    expect(find.text('lesson=m1l3'), findsOneWidget);
+    // The last lesson of the course's only module: the tree lands on its final
+    // stage, from the one below it.
+    expect(find.text('grew=true'), findsOneWidget);
+    // The freeze rides the same hand-over. It cannot be *earned* by this run
+    // in one sitting — the eight completions that open the module's last
+    // lesson all land today, so the seventh qualifying day belongs to the
+    // first of them — so the carrying is asserted on the destination instead.
+    expect(find.text('freeze=false'), findsOneWidget);
   });
 }
+
+/// Stands the completion route up beside a **stub** module ending, so a test
+/// can see both that the hand-over happened and exactly what it carried.
+///
+/// A stub rather than the real screen: what is under test here is the branch
+/// and its payload, and the real ending needs its own content fixtures to say
+/// anything about them.
+GoRouter _completionRouter({required String lessonId}) => GoRouter(
+  initialLocation: '/learn/lesson/$lessonId/complete?correct=5&total=5',
+  routes: [
+    GoRoute(
+      path: '/learn',
+      name: 'learn',
+      builder: (context, state) => const Scaffold(body: Text('Learn tab')),
+    ),
+    GoRoute(
+      path: '/path',
+      name: 'path',
+      builder: (context, state) => const Scaffold(body: Text('Path tab')),
+    ),
+    GoRoute(
+      path: '/learn/lesson/:lessonId',
+      name: 'lesson',
+      builder: (context, state) => const Scaffold(body: Text('Lesson')),
+    ),
+    GoRoute(
+      path: '/learn/lesson/:lessonId/complete',
+      name: 'lessonComplete',
+      builder: (context, state) => LessonCompletionScreen(
+        lessonId: state.pathParameters['lessonId']!,
+        mastery: MasteryResult(
+          correct:
+              int.tryParse(state.uri.queryParameters['correct'] ?? '') ?? 0,
+          total: int.tryParse(state.uri.queryParameters['total'] ?? '') ?? 0,
+        ),
+      ),
+    ),
+    GoRoute(
+      path: '/learn/module-summary/:moduleId',
+      name: 'moduleSummary',
+      builder: (context, state) {
+        final query = state.uri.queryParameters;
+        final from = int.tryParse(query['from'] ?? '');
+        final to = int.tryParse(query['to'] ?? '');
+        return Scaffold(
+          body: Column(
+            children: [
+              const Text('Module ending'),
+              Text('module=${state.pathParameters['moduleId']}'),
+              Text('lesson=${query['lesson']}'),
+              Text('freeze=${query['freeze'] ?? 'false'}'),
+              Text('grew=${from != null && to != null && to > from}'),
+            ],
+          ),
+        );
+      },
+    ),
+  ],
+);

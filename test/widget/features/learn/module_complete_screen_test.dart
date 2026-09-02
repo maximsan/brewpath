@@ -6,6 +6,7 @@ import 'package:brew_path/features/companion/presentation/roasty_moment.dart';
 import 'package:brew_path/features/learn/domain/module_summary_provider.dart';
 import 'package:brew_path/features/learn/presentation/module_complete_screen.dart';
 import 'package:brew_path/features/learn/presentation/module_flip_animation.dart';
+import 'package:brew_path/features/lessons/presentation/lesson_completion_rail.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/presentation/growing_tree.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
@@ -52,22 +53,36 @@ Widget _app(Widget home, {bool reducedMotion = false}) => MaterialApp(
 );
 
 void main() {
-  Widget harness(ModuleSummary summary, {bool reducedMotion = false}) =>
-      ProviderScope(
-        overrides: [
-          moduleSummaryProvider('module_beans').overrideWith((ref) => summary),
-          streakProvider.overrideWith((ref) => 0),
-          companionLinesProvider.overrideWith(
-            (ref) => CompanionLines.fromJson(const {
-              'moduleComplete': ['Whole module brewed!'],
-            }),
-          ),
-        ],
-        child: _app(
-          const ModuleCompleteScreen(moduleId: 'module_beans'),
-          reducedMotion: reducedMotion,
-        ),
-      );
+  Widget harness(
+    ModuleSummary summary, {
+    bool reducedMotion = false,
+    ModuleEndingRun run = noModuleEndingRun,
+    String? runLessonId,
+    bool freezeEarned = false,
+    int? fromStage,
+    int? toStage,
+  }) => ProviderScope(
+    overrides: [
+      moduleSummaryProvider('module_beans').overrideWith((ref) => summary),
+      moduleEndingRunProvider(runLessonId).overrideWith((ref) => run),
+      streakProvider.overrideWith((ref) => 0),
+      companionLinesProvider.overrideWith(
+        (ref) => CompanionLines.fromJson(const {
+          'moduleComplete': ['Whole module brewed!'],
+        }),
+      ),
+    ],
+    child: _app(
+      ModuleCompleteScreen(
+        moduleId: 'module_beans',
+        runLessonId: runLessonId,
+        freezeEarned: freezeEarned,
+        fromStage: fromStage,
+        toStage: toStage,
+      ),
+      reducedMotion: reducedMotion,
+    ),
+  );
 
   // ⚠️ **Never `pumpAndSettle` on this screen.** The coffee tree sways for as
   // long as it is on screen, so nothing on the celebration face ever settles.
@@ -252,6 +267,134 @@ void main() {
 
       expect(find.text(AppLabels.backToPath), findsOneWidget);
       expect(find.text(AppLabels.beginNextModule), findsNothing);
+    });
+  });
+
+  // **This ending is the closing lesson's ending too** (#458). The design
+  // branches rather than chaining, so nothing else will report what that
+  // lesson paid — and the app carries it here rather than dropping it, which
+  // the design does.
+  group('what the closing lesson paid', () {
+    final lessonCard = testCoffeeCard(
+      id: 'c-m1l7',
+      title: 'Washed Process',
+      lessonId: 'm1l7',
+    );
+
+    Future<void> pumpFront(
+      WidgetTester tester, {
+      ModuleEndingRun run = noModuleEndingRun,
+      bool freezeEarned = false,
+    }) async {
+      await tester.pumpWidget(
+        harness(
+          _summary(),
+          reducedMotion: true,
+          runLessonId: 'm1l7',
+          run: run,
+          freezeEarned: freezeEarned,
+        ),
+      );
+      await tester.pump();
+      await tester.pump(_moduleHold);
+      await tester.pump();
+    }
+
+    testWidgets('the points the lesson paid are on the front', (tester) async {
+      await pumpFront(
+        tester,
+        run: (pointsEarned: 10, lessonCard: lessonCard),
+      );
+
+      expect(find.text('+10 PTS'), findsOneWidget);
+    });
+
+    testWidgets('so is the collectible it handed over', (tester) async {
+      await pumpFront(
+        tester,
+        run: (pointsEarned: 10, lessonCard: lessonCard),
+      );
+
+      expect(find.text('Washed Process'), findsOneWidget);
+      expect(
+        find.text(LessonCompletionRail.cardKicker.toUpperCase()),
+        findsOneWidget,
+      );
+    });
+
+    // The finding the audit called sharpest, and the one thing here that
+    // cannot be recovered later: the freeze is a transition, true only on the
+    // run that crossed it.
+    testWidgets('and the freeze, when that run earned one', (tester) async {
+      await pumpFront(
+        tester,
+        run: (pointsEarned: 10, lessonCard: lessonCard),
+        freezeEarned: true,
+      );
+
+      expect(
+        find.text(LessonCompletionRail.freezeKicker.toUpperCase()),
+        findsOneWidget,
+      );
+    });
+
+    // The module's own card lives on the other face. Drawing it here as well
+    // would show the same collectible twice in one turn.
+    testWidgets('the module reward stays on the back', (tester) async {
+      await pumpFront(
+        tester,
+        run: (pointsEarned: 10, lessonCard: lessonCard),
+      );
+
+      expect(find.text('Beans Field Guide'), findsNothing);
+    });
+
+    // Opened outside the flow — a review, a deep link — there is no run to
+    // report, and the rail must not appear as an empty box.
+    testWidgets('nothing at all when no run is being reported', (tester) async {
+      await pumpFront(tester);
+
+      expect(find.byType(LessonCompletionRail), findsNothing);
+      expect(find.textContaining('PTS'), findsNothing);
+    });
+  });
+
+  group('the tree', () {
+    testWidgets('grows, because this is the ending of the run that grew it', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        harness(
+          _summary(),
+          reducedMotion: true,
+          runLessonId: 'm1l7',
+          fromStage: 2,
+          toStage: 3,
+        ),
+      );
+      await tester.pump();
+      await tester.pump(_moduleHold);
+      await tester.pump();
+
+      final tree = tester.widget<GrowingTree>(find.byType(GrowingTree));
+      expect(tree.fromStage, 2);
+      expect(tree.toStage, 3);
+      expect(tree.grows, isTrue);
+    });
+
+    // The workaround this replaced: the ending used to draw the tree at rest,
+    // because the lesson ending had already played the growth by the time it
+    // opened. With one ending there is no earlier screen to have played it.
+    testWidgets('and rests only when no run is being reported', (tester) async {
+      await tester.pumpWidget(harness(_summary(), reducedMotion: true));
+      await tester.pump();
+      await tester.pump(_moduleHold);
+      await tester.pump();
+
+      expect(
+        tester.widget<GrowingTree>(find.byType(GrowingTree)).grows,
+        isFalse,
+      );
     });
   });
 }

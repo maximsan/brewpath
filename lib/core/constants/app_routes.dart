@@ -48,6 +48,7 @@ abstract class AppRoutes {
   static const dictionary = AppRoute('dictionary', 'dictionary');
   static const vocabGame = AppRoute('vocabGame', 'vocab-game');
   static const dictionaryTerm = AppRoute('dictionaryTerm', 'term/:termId');
+  static const flashcards = AppRoute('flashcards', 'flashcards');
   static const path = AppRoute('path', '/path');
   static const cards = AppRoute('cards', '/cards');
 
@@ -86,4 +87,11 @@ extension DictionaryNavigation on BuildContext {
     AppRoutes.dictionaryTerm.name,
     pathParameters: {'termId': termId},
   );
+
+  /// Opens the flashcards drill.
+  ///
+  /// Pushed, not gone to: the drill is opened from four places and closing it
+  /// has to return the learner to the one they were standing in.
+  Future<void> pushFlashcards() =>
+      GoRouter.of(this).pushNamed(AppRoutes.flashcards.name);
 }

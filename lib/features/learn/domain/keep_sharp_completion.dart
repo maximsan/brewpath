@@ -23,14 +23,15 @@ bool keepSharpRuleMet(
   required int distinctGamesToday,
   required bool replayedToday,
   required bool vocabRoundToday,
+  required bool reviewedFlashcardsToday,
 }) => switch (type) {
   PracticeType.miniGames => distinctGamesToday >= _twoDifferentGames,
   PracticeType.lessonReplay => replayedToday,
   // One finished round, which is the rule the card states.
   PracticeType.vocabGame => vocabRoundToday,
-  // No surface, no records; a surface that registers brings its own rule
-  // input the same way the three above do.
-  PracticeType.flashcards => false,
+  // One finished review — every card seen — which is what the drill records
+  // and what its card asks for.
+  PracticeType.flashcards => reviewedFlashcardsToday,
 };
 
 /// Whether any lesson was replayed among [entries] — one day's activity.
@@ -55,4 +56,14 @@ bool anyReplayToday(Iterable<String> entries) => entries.any(
 /// drill's acknowledgement needs no counter of its own.
 bool anyVocabRoundToday(Iterable<String> entries) => entries.any(
   (entry) => parseActivityEntry(entry).type == ActivityType.vocab,
+);
+
+/// Whether a flashcard review was finished among [entries] — one day's
+/// activity.
+///
+/// Same record, same reason: the drill writes one entry when every card has
+/// been seen, and an abandoned review writes none — so the entry's presence
+/// *is* the rule being met.
+bool anyFlashcardReviewToday(Iterable<String> entries) => entries.any(
+  (entry) => parseActivityEntry(entry).type == ActivityType.flashcards,
 );

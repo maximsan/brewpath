@@ -37,7 +37,7 @@ class PathLesson {
   ///
   /// Not the same lock as [PathModuleDensity.locked]. That one opens when the
   /// module before it is finished. This one only opens by buying the course.
-  /// ADR-0015.
+  /// ADR-0016.
   final bool isPurchaseLocked;
 
   /// The best stored result, driving how full the row's bean reads.

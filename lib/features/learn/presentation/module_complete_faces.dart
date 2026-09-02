@@ -5,6 +5,7 @@ import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/core/widgets/sticky_action_bar.dart';
 import 'package:brew_path/features/cards/presentation/reward_card.dart';
 import 'package:brew_path/features/learn/domain/module_summary_provider.dart';
+import 'package:brew_path/features/lessons/presentation/lesson_completion_rail.dart';
 import 'package:brew_path/features/progress/presentation/growing_tree.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -82,7 +83,10 @@ class ModuleCompleteFront extends StatelessWidget {
   /// Creates a [ModuleCompleteFront].
   const ModuleCompleteFront({
     required this.summary,
-    required this.treeStage,
+    required this.run,
+    required this.freezeEarned,
+    required this.fromStage,
+    required this.toStage,
     required this.onClose,
     required this.onTurnOver,
     super.key,
@@ -91,9 +95,25 @@ class ModuleCompleteFront extends StatelessWidget {
   /// The finished module and what it earned.
   final ModuleSummary summary;
 
-  /// Where the coffee tree stands. Passed in rather than joined into
-  /// [ModuleSummary]: that is a content read, and the tree is progress.
-  final int treeStage;
+  /// What the lesson that closed the module paid — its points, and the
+  /// collectible it handed over.
+  ///
+  /// **Reported here because nothing else will.** The design branches on a
+  /// module's last lesson, so that lesson's own ending never plays (#458).
+  final ModuleEndingRun run;
+
+  /// Whether that run is the one that earned the streak freeze. Carried for
+  /// the same reason, and it is the only one of these that cannot be
+  /// re-derived afterwards.
+  final bool freezeEarned;
+
+  /// Where the coffee tree stood before the run, and after it. Passed in
+  /// rather than joined into [ModuleSummary]: that is a content read, and the
+  /// tree is progress.
+  final int fromStage;
+
+  /// See [fromStage].
+  final int toStage;
 
   /// Leaves the moment.
   final VoidCallback onClose;
@@ -103,6 +123,14 @@ class ModuleCompleteFront extends StatelessWidget {
 
   /// The design's `AnimatedTree size={250}` on this screen.
   static const double _treeSize = 250;
+
+  /// Whether this ending has a run to report at all.
+  ///
+  /// **The module's own reward is not on this list**, and must not be: it
+  /// lives on the other face, and a rail that drew it here would show the same
+  /// card twice in one turn.
+  bool get _paidSomething =>
+      run.pointsEarned > 0 || freezeEarned || run.lessonCard != null;
 
   // ⚠️ The design's *Turn it over* also carries a flip glyph after its label
   // (`rewards.jsx:341-344`). `StickyActionBar` takes a label and a callback,
@@ -144,18 +172,35 @@ class ModuleCompleteFront extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: AppSpacing.xl),
-              // Still, not growing: the growth belongs to the lesson that
-              // caused it, and the lesson ending has already played it by the
-              // time this screen opens (#458).
+              // Growing, because this *is* the ending of the lesson that grew
+              // it — the design branches rather than chaining, so no earlier
+              // screen has played it (#458).
               Semantics(
-                label: AppLabels.treeAtStage(treeStage),
+                label: toStage > fromStage
+                    ? AppLabels.treeGrewTo(toStage)
+                    : AppLabels.treeAtStage(toStage),
                 excludeSemantics: true,
                 child: GrowingTree(
-                  fromStage: treeStage,
-                  toStage: treeStage,
+                  fromStage: fromStage,
+                  toStage: toStage,
                   size: _treeSize,
                 ),
               ),
+              // What the closing lesson paid. Absent entirely when the ending
+              // was opened outside the flow, where there is no run to report.
+              if (_paidSomething) ...[
+                const SizedBox(height: AppSpacing.xl),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.gutter,
+                  ),
+                  child: LessonCompletionRail(
+                    pointsEarned: run.pointsEarned,
+                    freezeEarned: freezeEarned,
+                    lessonCard: run.lessonCard,
+                  ),
+                ),
+              ],
             ],
           ),
         ),

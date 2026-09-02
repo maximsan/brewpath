@@ -44,22 +44,34 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
-- **A locked lesson now says what would unlock it.** The course path used to
-  look the same whether a lesson was yours or not — a free learner met the wall
-  only by tapping into one. Lessons and modules the free tier does not carry now
-  carry a mark, say *Part of Foundations*, and open the offer when tapped
-  instead of a lesson. What they say depends on who is reading: someone who owns
-  the course still sees *"Finish Beans to unlock"* on a module they have not
-  reached, because for them that is the true answer and finishing Beans is
-  something they can actually do. A lesson already finished never locks — the
-  wall can move behind you, and what you have played stays yours to replay.
+- **Locked lessons now say why they are locked.** Path looked the same whether
+  or not a lesson was yours, so the only way to find the wall was to walk into
+  it. Lessons and modules you have not bought now show a mark, say *Part of
+  Foundations*, and open the offer when you tap them. What a row says depends on
+  who is reading it: if you own the course, a module you have not reached still
+  says *"Finish Beans to unlock"*, because that is something you can go and do.
+  A lesson you have already finished never locks.
 
-  The Reference shelf stops promising something it cannot deliver. It used to
-  tell every learner that guides "unlock as lessons teach them", which was not
-  true for a free one: the earliest guide is taught by the sixth lesson and the
-  free set is the first three, so no amount of learning would ever open it. Free
-  learners are now told plainly that guides come with the course; learners who
-  own it are told which lesson opens the next one, by name.
+  The Reference shelf has stopped promising something it cannot give. It used to
+  tell everyone that guides "unlock as lessons teach them". That was not true if
+  you had not bought the course — the first guide is taught by the sixth lesson,
+  and only the first three are free. Now it says the guides come with the course.
+  If you own it, it names the lesson that opens the next one.
+
+- **Your saved terms are a flashcard deck now.** Bookmark a word in the
+  dictionary and it joins a deck you can flip through: the term on the front,
+  what it means on the back, and a link to the full entry once you have
+  answered yourself. Reach it three ways — a chip on the dictionary, a row
+  under the terms on your Saved shelf, and a free row in Learn's practice
+  list — and Today can recommend it once you have cards. Finishing a review
+  marks the day for your streak, the same as any other practice; walking away
+  part-way through counts for nothing, because you have not reviewed the deck.
+  Nothing is graded and nothing is scheduled: a flashcard teaches, it never
+  marks you.
+
+  The deck is what you saved *and* can reach, so a word from a lesson you have
+  not done yet waits until you have done it. With no cards, the drill still
+  opens and explains what a deck is made of rather than turning you away.
 
 - **The dictionary has a game now.** *Guess the term* reads you a definition
   and offers four words; you pick the one it describes. Choose a deck — the
@@ -325,6 +337,14 @@ You can always edit this file by hand instead — the helpers just save effort.
   than at the moment you are told you lost one.
 
 ### Changed
+
+- **Finishing a module is one celebration, not two.** The last lesson of a
+  module used to play its own ending — mascot, score, points, card — and then
+  hand you straight to the module ending for a second mascot and a second
+  celebration. Now it plays one: the module ending, which also reports what
+  that final lesson paid, so nothing you earned goes unmentioned. Its tree
+  grows as well, where before it stood still because the lesson ending had
+  already played the growth.
 
 - **Roasty reacts when you answer, and every graded card closes the same way.**
   Answering used to end in whatever the card felt like — one said `ALL CORRECT`

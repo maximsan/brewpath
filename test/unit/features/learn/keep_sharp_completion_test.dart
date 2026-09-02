@@ -14,11 +14,13 @@ bool ruleMet(
   int distinctGamesToday = 0,
   bool replayedToday = false,
   bool vocabRoundToday = false,
+  bool reviewedFlashcardsToday = false,
 }) => keepSharpRuleMet(
   type,
   distinctGamesToday: distinctGamesToday,
   replayedToday: replayedToday,
   vocabRoundToday: vocabRoundToday,
+  reviewedFlashcardsToday: reviewedFlashcardsToday,
 );
 
 void main() {
@@ -49,7 +51,11 @@ void main() {
       );
     });
 
-    test('flashcards has no record to read, so it never acknowledges', () {
+    test('a finished review acknowledges only the flashcards pick', () {
+      expect(
+        ruleMet(PracticeType.flashcards, reviewedFlashcardsToday: true),
+        isTrue,
+      );
       expect(
         ruleMet(
           PracticeType.flashcards,
@@ -58,7 +64,34 @@ void main() {
           vocabRoundToday: true,
         ),
         isFalse,
+        reason: "a busy day of other practice is not this card's own rule",
       );
+    });
+  });
+
+  group('anyFlashcardReviewToday', () {
+    test('a finished review counts', () {
+      expect(
+        anyFlashcardReviewToday(_entries([(ActivityType.flashcards, '')])),
+        isTrue,
+      );
+    });
+
+    test('a day of every other kind of practice does not', () {
+      expect(
+        anyFlashcardReviewToday(
+          _entries([
+            (ActivityType.miniGame, 'g-quiz'),
+            (ActivityType.vocab, ''),
+            (ActivityType.replay, 'm1l1'),
+          ]),
+        ),
+        isFalse,
+      );
+    });
+
+    test('an abandoned review leaves no entry, so no day holds one', () {
+      expect(anyFlashcardReviewToday(const {}), isFalse);
     });
   });
 

@@ -14,7 +14,7 @@ doc conflict.
 | [`docs/adr/`](adr/README.md) | **All new decisions**, product and engineering — one numbered file per ruling. |
 | [`docs/decisions.md`](decisions.md) | The **frozen ledger** of product-owner rulings up to Aug 2026. Stable `§` numbering; never grows. |
 | [`CONTEXT.md`](../CONTEXT.md) | The domain glossary — the vocabulary rulings and code must share. |
-| `docs/02, 09–15, 18` | Live single-owner docs: architecture, the deferred Firebase/payments/ads plans, testing, CI, release, platform plans, git workflow. |
+| `docs/02, 09–15, 18–19` | Live single-owner docs: architecture, the deferred Firebase/payments/ads plans, testing, CI, release, platform plans, git workflow, universal-links setup. |
 | [`docs/agents/`](agents/) | How agent skills consume this repo (issue tracker, triage labels, domain docs). |
 | [`docs/archive/`](archive/README.md) | The tombstone ledger for removed docs — nothing in it is current. |
 | [`docs/CHANGELOG.md`](CHANGELOG.md) | What actually changed, release by release, plus the build-milestone history. |

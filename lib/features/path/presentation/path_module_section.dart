@@ -183,7 +183,7 @@ class _Heading extends StatelessWidget {
   ///
   /// When a module is locked both ways, the purchase wins. Someone who has not
   /// bought the course will never finish the module before it either, so
-  /// naming that module is advice they cannot take. ADR-0015.
+  /// naming that module is advice they cannot take. ADR-0016.
   static String? _subLine(PathModule module, String? previousTitle) {
     if (!module.density.isLocked) return null;
     if (module.isPurchaseLocked) {

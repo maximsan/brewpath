@@ -2,7 +2,7 @@
 ///
 /// A locked row says what would unlock it for the learner reading it. Two
 /// locks look the same and are not: one opens by learning, the other only by
-/// buying. ADR-0015 has the rule.
+/// buying. ADR-0016 has the rule.
 library;
 
 /// The strings a locked row uses.

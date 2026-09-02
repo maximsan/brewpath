@@ -6,6 +6,7 @@ import 'package:brew_path/features/dictionary/presentation/vocab/vocab_copy.dart
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_mark.dart';
 import 'package:brew_path/features/learn/presentation/practice_drills_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
@@ -37,7 +38,9 @@ Future<String?> _pumpEntry(WidgetTester tester, Widget child) async {
   addTearDown(router.dispose);
 
   await tester.pumpWidget(
-    MaterialApp.router(theme: AppTheme.cupping, routerConfig: router),
+    ProviderScope(
+      child: MaterialApp.router(theme: AppTheme.cupping, routerConfig: router),
+    ),
   );
   await tester.pumpAndSettle();
 
@@ -58,7 +61,11 @@ void main() {
 
     testWidgets('wears the drill mark', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(home: Scaffold(body: DictionaryQuickChips())),
+        // Scoped because the row's Flashcards chip counts a deck (#97). It
+        // resolves to nothing here, which is what a chip with no count draws.
+        const ProviderScope(
+          child: MaterialApp(home: Scaffold(body: DictionaryQuickChips())),
+        ),
       );
 
       expect(find.byType(VocabMark), findsOneWidget);
@@ -70,7 +77,11 @@ void main() {
       final semantics = tester.ensureSemantics();
 
       await tester.pumpWidget(
-        const MaterialApp(home: Scaffold(body: DictionaryQuickChips())),
+        // Scoped because the row's Flashcards chip counts a deck (#97). It
+        // resolves to nothing here, which is what a chip with no count draws.
+        const ProviderScope(
+          child: MaterialApp(home: Scaffold(body: DictionaryQuickChips())),
+        ),
       );
 
       expect(find.bySemanticsLabel(VocabCopy.title), findsOneWidget);
@@ -90,10 +101,16 @@ void main() {
       // ADR-0004: the drills are content-scoped, never feature-gated. A lock
       // mark here would say the opposite of what is true.
       await tester.pumpWidget(
-        const MaterialApp(home: Scaffold(body: PracticeDrillsWidget())),
+        const ProviderScope(
+          child: MaterialApp(home: Scaffold(body: PracticeDrillsWidget())),
+        ),
       );
 
-      expect(find.text('FREE'), findsOneWidget);
+      expect(
+        find.text('FREE'),
+        findsNWidgets(2),
+        reason: 'both drills are free — flashcards joined the card (#97)',
+      );
       expect(find.text(VocabCopy.rowSubtitle.toUpperCase()), findsOneWidget);
     });
   });

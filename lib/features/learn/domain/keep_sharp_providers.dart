@@ -53,15 +53,21 @@ Future<KeepSharpRecommendation?> keepSharpRecommendation(Ref ref) async {
 
   final resolution = keepSharpResolutionFor(
     dayNumber: day,
-    playableFormatIds: [
-      for (final format in formats)
-        if (playableMiniGameIds.contains(format.id)) format.id,
-    ],
-    formatsPlayedToday: distinctMiniGameIds(
-      snapshot.clearedByReset.dailyActivity[day] ?? const {},
+    material: (
+      playableFormatIds: [
+        for (final format in formats)
+          if (playableMiniGameIds.contains(format.id)) format.id,
+      ],
+      formatsPlayedToday: distinctMiniGameIds(
+        snapshot.clearedByReset.dailyActivity[day] ?? const {},
+      ),
+      completedLessonIds: [for (final record in completed) record.lessonId],
+      drillableTermCount: pools.accessible.length,
+      // The same pools value: the deck a flashcard review deals is the saved
+      // half of it, so the two drills cannot disagree about the learner's own
+      // material.
+      flashcardDeckSize: pools.saved.length,
     ),
-    completedLessonIds: [for (final record in completed) record.lessonId],
-    drillableTermCount: pools.accessible.length,
   );
 
   return resolution == null
@@ -98,5 +104,6 @@ Future<bool> keepSharpAcknowledgedToday(Ref ref) async {
     distinctGamesToday: distinctMiniGameIds(entriesToday).length,
     replayedToday: anyReplayToday(entriesToday),
     vocabRoundToday: anyVocabRoundToday(entriesToday),
+    reviewedFlashcardsToday: anyFlashcardReviewToday(entriesToday),
   );
 }

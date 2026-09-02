@@ -23,7 +23,7 @@ const _title = 'Reference';
 const _openSubtitle = 'Visual guides from your lessons';
 String _remainingLine(int remaining) => '$remaining more unlock as you learn';
 
-/// The locked shelf's line, which depends on who is reading it. ADR-0015.
+/// The locked shelf's line, which depends on who is reading it. ADR-0016.
 ///
 /// #260 shipped one string for everyone — "Visual guides unlock as lessons
 /// teach them" — and recorded that it was not true for either reader.
