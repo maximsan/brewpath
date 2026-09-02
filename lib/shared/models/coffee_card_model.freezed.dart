@@ -19,7 +19,10 @@ mixin _$CoffeeCardModel {
  String get description;/// The keepsake line the reward carries under its summary.
  String get fact;/// The owning module's short name — what the Cards screen groups by.
  String get moduleTag;/// The glyph name to draw, resolved by `moduleIcon`.
- String get iconName;/// The lesson that awards this card, or null when a module does.
+ String get iconName;/// What the card is *of* — `botanical`, `burrs`, `roastcurve`. The
+/// collectible's own key, not its module's: it is what the design tints
+/// the tile by, and eventually what it draws there.
+ String get kind;/// The lesson that awards this card, or null when a module does.
  String? get lessonId;/// The module that awards this card, or null when a lesson does.
  String? get moduleId;
 /// Create a copy of CoffeeCardModel
@@ -32,16 +35,16 @@ $CoffeeCardModelCopyWith<CoffeeCardModel> get copyWith => _$CoffeeCardModelCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CoffeeCardModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.fact, fact) || other.fact == fact)&&(identical(other.moduleTag, moduleTag) || other.moduleTag == moduleTag)&&(identical(other.iconName, iconName) || other.iconName == iconName)&&(identical(other.lessonId, lessonId) || other.lessonId == lessonId)&&(identical(other.moduleId, moduleId) || other.moduleId == moduleId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CoffeeCardModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.fact, fact) || other.fact == fact)&&(identical(other.moduleTag, moduleTag) || other.moduleTag == moduleTag)&&(identical(other.iconName, iconName) || other.iconName == iconName)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.lessonId, lessonId) || other.lessonId == lessonId)&&(identical(other.moduleId, moduleId) || other.moduleId == moduleId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,title,description,fact,moduleTag,iconName,lessonId,moduleId);
+int get hashCode => Object.hash(runtimeType,id,title,description,fact,moduleTag,iconName,kind,lessonId,moduleId);
 
 @override
 String toString() {
-  return 'CoffeeCardModel(id: $id, title: $title, description: $description, fact: $fact, moduleTag: $moduleTag, iconName: $iconName, lessonId: $lessonId, moduleId: $moduleId)';
+  return 'CoffeeCardModel(id: $id, title: $title, description: $description, fact: $fact, moduleTag: $moduleTag, iconName: $iconName, kind: $kind, lessonId: $lessonId, moduleId: $moduleId)';
 }
 
 
@@ -52,7 +55,7 @@ abstract mixin class $CoffeeCardModelCopyWith<$Res>  {
   factory $CoffeeCardModelCopyWith(CoffeeCardModel value, $Res Function(CoffeeCardModel) _then) = _$CoffeeCardModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String title, String description, String fact, String moduleTag, String iconName, String? lessonId, String? moduleId
+ String id, String title, String description, String fact, String moduleTag, String iconName, String kind, String? lessonId, String? moduleId
 });
 
 
@@ -69,7 +72,7 @@ class _$CoffeeCardModelCopyWithImpl<$Res>
 
 /// Create a copy of CoffeeCardModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? description = null,Object? fact = null,Object? moduleTag = null,Object? iconName = null,Object? lessonId = freezed,Object? moduleId = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? description = null,Object? fact = null,Object? moduleTag = null,Object? iconName = null,Object? kind = null,Object? lessonId = freezed,Object? moduleId = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -77,6 +80,7 @@ as String,description: null == description ? _self.description : description // 
 as String,fact: null == fact ? _self.fact : fact // ignore: cast_nullable_to_non_nullable
 as String,moduleTag: null == moduleTag ? _self.moduleTag : moduleTag // ignore: cast_nullable_to_non_nullable
 as String,iconName: null == iconName ? _self.iconName : iconName // ignore: cast_nullable_to_non_nullable
+as String,kind: null == kind ? _self.kind : kind // ignore: cast_nullable_to_non_nullable
 as String,lessonId: freezed == lessonId ? _self.lessonId : lessonId // ignore: cast_nullable_to_non_nullable
 as String?,moduleId: freezed == moduleId ? _self.moduleId : moduleId // ignore: cast_nullable_to_non_nullable
 as String?,
@@ -164,10 +168,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String description,  String fact,  String moduleTag,  String iconName,  String? lessonId,  String? moduleId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String description,  String fact,  String moduleTag,  String iconName,  String kind,  String? lessonId,  String? moduleId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CoffeeCardModel() when $default != null:
-return $default(_that.id,_that.title,_that.description,_that.fact,_that.moduleTag,_that.iconName,_that.lessonId,_that.moduleId);case _:
+return $default(_that.id,_that.title,_that.description,_that.fact,_that.moduleTag,_that.iconName,_that.kind,_that.lessonId,_that.moduleId);case _:
   return orElse();
 
 }
@@ -185,10 +189,10 @@ return $default(_that.id,_that.title,_that.description,_that.fact,_that.moduleTa
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String description,  String fact,  String moduleTag,  String iconName,  String? lessonId,  String? moduleId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String description,  String fact,  String moduleTag,  String iconName,  String kind,  String? lessonId,  String? moduleId)  $default,) {final _that = this;
 switch (_that) {
 case _CoffeeCardModel():
-return $default(_that.id,_that.title,_that.description,_that.fact,_that.moduleTag,_that.iconName,_that.lessonId,_that.moduleId);case _:
+return $default(_that.id,_that.title,_that.description,_that.fact,_that.moduleTag,_that.iconName,_that.kind,_that.lessonId,_that.moduleId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -205,10 +209,10 @@ return $default(_that.id,_that.title,_that.description,_that.fact,_that.moduleTa
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String description,  String fact,  String moduleTag,  String iconName,  String? lessonId,  String? moduleId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String description,  String fact,  String moduleTag,  String iconName,  String kind,  String? lessonId,  String? moduleId)?  $default,) {final _that = this;
 switch (_that) {
 case _CoffeeCardModel() when $default != null:
-return $default(_that.id,_that.title,_that.description,_that.fact,_that.moduleTag,_that.iconName,_that.lessonId,_that.moduleId);case _:
+return $default(_that.id,_that.title,_that.description,_that.fact,_that.moduleTag,_that.iconName,_that.kind,_that.lessonId,_that.moduleId);case _:
   return null;
 
 }
@@ -220,7 +224,7 @@ return $default(_that.id,_that.title,_that.description,_that.fact,_that.moduleTa
 
 
 class _CoffeeCardModel implements CoffeeCardModel {
-  const _CoffeeCardModel({required this.id, required this.title, required this.description, required this.fact, required this.moduleTag, required this.iconName, this.lessonId, this.moduleId});
+  const _CoffeeCardModel({required this.id, required this.title, required this.description, required this.fact, required this.moduleTag, required this.iconName, required this.kind, this.lessonId, this.moduleId});
   
 
 @override final  String id;
@@ -234,6 +238,10 @@ class _CoffeeCardModel implements CoffeeCardModel {
 @override final  String moduleTag;
 /// The glyph name to draw, resolved by `moduleIcon`.
 @override final  String iconName;
+/// What the card is *of* — `botanical`, `burrs`, `roastcurve`. The
+/// collectible's own key, not its module's: it is what the design tints
+/// the tile by, and eventually what it draws there.
+@override final  String kind;
 /// The lesson that awards this card, or null when a module does.
 @override final  String? lessonId;
 /// The module that awards this card, or null when a lesson does.
@@ -249,16 +257,16 @@ _$CoffeeCardModelCopyWith<_CoffeeCardModel> get copyWith => __$CoffeeCardModelCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CoffeeCardModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.fact, fact) || other.fact == fact)&&(identical(other.moduleTag, moduleTag) || other.moduleTag == moduleTag)&&(identical(other.iconName, iconName) || other.iconName == iconName)&&(identical(other.lessonId, lessonId) || other.lessonId == lessonId)&&(identical(other.moduleId, moduleId) || other.moduleId == moduleId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CoffeeCardModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.fact, fact) || other.fact == fact)&&(identical(other.moduleTag, moduleTag) || other.moduleTag == moduleTag)&&(identical(other.iconName, iconName) || other.iconName == iconName)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.lessonId, lessonId) || other.lessonId == lessonId)&&(identical(other.moduleId, moduleId) || other.moduleId == moduleId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,title,description,fact,moduleTag,iconName,lessonId,moduleId);
+int get hashCode => Object.hash(runtimeType,id,title,description,fact,moduleTag,iconName,kind,lessonId,moduleId);
 
 @override
 String toString() {
-  return 'CoffeeCardModel(id: $id, title: $title, description: $description, fact: $fact, moduleTag: $moduleTag, iconName: $iconName, lessonId: $lessonId, moduleId: $moduleId)';
+  return 'CoffeeCardModel(id: $id, title: $title, description: $description, fact: $fact, moduleTag: $moduleTag, iconName: $iconName, kind: $kind, lessonId: $lessonId, moduleId: $moduleId)';
 }
 
 
@@ -269,7 +277,7 @@ abstract mixin class _$CoffeeCardModelCopyWith<$Res> implements $CoffeeCardModel
   factory _$CoffeeCardModelCopyWith(_CoffeeCardModel value, $Res Function(_CoffeeCardModel) _then) = __$CoffeeCardModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String title, String description, String fact, String moduleTag, String iconName, String? lessonId, String? moduleId
+ String id, String title, String description, String fact, String moduleTag, String iconName, String kind, String? lessonId, String? moduleId
 });
 
 
@@ -286,7 +294,7 @@ class __$CoffeeCardModelCopyWithImpl<$Res>
 
 /// Create a copy of CoffeeCardModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? description = null,Object? fact = null,Object? moduleTag = null,Object? iconName = null,Object? lessonId = freezed,Object? moduleId = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? description = null,Object? fact = null,Object? moduleTag = null,Object? iconName = null,Object? kind = null,Object? lessonId = freezed,Object? moduleId = freezed,}) {
   return _then(_CoffeeCardModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -294,6 +302,7 @@ as String,description: null == description ? _self.description : description // 
 as String,fact: null == fact ? _self.fact : fact // ignore: cast_nullable_to_non_nullable
 as String,moduleTag: null == moduleTag ? _self.moduleTag : moduleTag // ignore: cast_nullable_to_non_nullable
 as String,iconName: null == iconName ? _self.iconName : iconName // ignore: cast_nullable_to_non_nullable
+as String,kind: null == kind ? _self.kind : kind // ignore: cast_nullable_to_non_nullable
 as String,lessonId: freezed == lessonId ? _self.lessonId : lessonId // ignore: cast_nullable_to_non_nullable
 as String?,moduleId: freezed == moduleId ? _self.moduleId : moduleId // ignore: cast_nullable_to_non_nullable
 as String?,

@@ -65,6 +65,7 @@ CoffeeCardModel testCoffeeCard({
   String id = 'c1',
   String title = 'The Coffee Cherry',
   String moduleTag = 'Beans',
+  String kind = 'botanical',
   String? lessonId = 'm1l1',
   String? moduleId,
 }) => CoffeeCardModel(
@@ -74,6 +75,7 @@ CoffeeCardModel testCoffeeCard({
   fact: 'Something true about it.',
   moduleTag: moduleTag,
   iconName: 'beans',
+  kind: kind,
   lessonId: lessonId,
   moduleId: moduleId,
 );
@@ -84,8 +86,14 @@ CardWithCollection testCardWithCollection(
   String id, {
   required bool collected,
   String moduleTag = 'Beans',
+  String kind = 'botanical',
 }) => CardWithCollection(
-  card: testCoffeeCard(id: id, title: 'Card $id', moduleTag: moduleTag),
+  card: testCoffeeCard(
+    id: id,
+    title: 'Card $id',
+    moduleTag: moduleTag,
+    kind: kind,
+  ),
   isCollected: collected,
 );
 

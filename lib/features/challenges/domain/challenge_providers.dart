@@ -1,4 +1,5 @@
 import 'package:brew_path/core/utils/date_utils.dart';
+import 'package:brew_path/features/cards/presentation/card_challenge_corner.dart';
 import 'package:brew_path/features/challenges/domain/challenge_bank.dart';
 import 'package:brew_path/features/challenges/domain/challenge_completion.dart';
 import 'package:brew_path/features/challenges/domain/challenge_lifecycle.dart';
@@ -40,6 +41,24 @@ Future<BrewChallenge?> activeChallenge(Ref ref) async {
 Future<Set<String>> completedChallenges(Ref ref) async {
   final snapshots = ref.watch(snapshotRepositoryProvider);
   return (await snapshots.read()).clearedByReset.challengesCompleted;
+}
+
+/// What [cardId]'s challenge is doing, as a tile shows it.
+///
+/// Three states, not two: a card can have no challenge at all, one waiting to
+/// be brewed, or one already brewed. The tile draws the last two differently —
+/// solid for done, dashed for an offer — so it needs to tell them apart, and
+/// the arithmetic lives here rather than in the widget.
+@riverpod
+Future<CardChallengeState> cardChallengeState(Ref ref, String cardId) async {
+  if (await ref.watch(cardChallengeTriedProvider(cardId).future)) {
+    return CardChallengeState.tried;
+  }
+
+  final active = await ref.watch(activeChallengeProvider.future);
+  return active?.cardId == cardId
+      ? CardChallengeState.open
+      : CardChallengeState.none;
 }
 
 /// Whether the challenge on [cardId] has been brewed.

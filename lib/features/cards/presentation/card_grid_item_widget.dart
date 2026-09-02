@@ -1,85 +1,205 @@
 import 'dart:async';
 
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/utils/module_icons.dart';
-import 'package:brew_path/core/widgets/icon_badge.dart';
-import 'package:brew_path/features/cards/domain/cards_providers.dart';
+import 'package:brew_path/features/cards/domain/cards_grid.dart';
+import 'package:brew_path/features/cards/presentation/card_challenge_corner.dart';
 import 'package:brew_path/features/cards/presentation/card_sheet.dart';
+import 'package:brew_path/features/cards/presentation/card_tint.dart';
+import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// One tile in the Cards grid. Collected → category icon badge, title, and
-/// tag, tappable; locked → muted silhouette with "???" and inert.
-class CardGridItemWidget extends StatelessWidget {
+/// The tile's own metrics (`index.html:687`).
+const double _tilePadding = AppSpacing.base;
+const double _artSize = 56;
+
+/// How far a locked tile recedes, and how faint its two lines and its mark sit
+/// within that (`index.html:700`, `screens.jsx:2400`).
+const double _lockedOpacity = 0.32;
+const double _lockedLineOpacity = 0.55;
+const double _lockedMarkOpacity = 0.45;
+
+/// One tile in the Cards grid.
+///
+/// Earned, it names its place in the set, wears its kind's wash, and carries a
+/// corner when a Coffee Challenge is offered or done. Locked, it recedes but
+/// still says **which** card it is — `04 / 37` — so a gap in the collection is
+/// a known one rather than an anonymous blank.
+///
+/// **The artwork is the module's mark, not the card's own.** The design draws
+/// `CARD_ART[kind]` here — one illustration per collectible. All thirty-seven
+/// exist already, as static SVG in the prototype, and want extracting rather
+/// than drawing; that is its own job and #480 holds it. Until then the mark
+/// stands in, as it did before, and the wash under it is already the card's
+/// own.
+class CardGridItemWidget extends ConsumerWidget {
   /// Creates a [CardGridItemWidget].
-  const CardGridItemWidget({required this.item, super.key});
+  const CardGridItemWidget({
+    required this.placed,
+    required this.total,
+    super.key,
+  });
 
-  /// The card paired with its collected state.
-  final CardWithCollection item;
+  /// The card, and where it sits in the catalogue.
+  final PlacedCard placed;
 
-  static const double _badgeSize = 56;
-  static const double _iconSize = 28;
+  /// How many cards the catalogue holds.
+  final int total;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final item = placed.item;
+    final mood = context.mood;
+    final number = formatCardPlace(placed.place, total);
+
+    if (!item.isCollected) {
+      return Opacity(
+        opacity: _lockedOpacity,
+        child: _Tile(
+          surface: mood.surface,
+          // An em-dash where an earned card says CARD: the slot is spoken for,
+          // and what it is is not.
+          top: const _SubLine('—', opacity: _lockedLineOpacity),
+          bottom: _SubLine(number, opacity: _lockedLineOpacity),
+          child: const _UnknownMark(),
+        ),
+      );
+    }
+
+    final challenge =
+        ref.watch(cardChallengeStateProvider(item.card.id)).asData?.value ??
+        CardChallengeState.none;
+
+    return _Tile(
+      surface: cardTint(mood, item.card.kind),
+      onTap: () => unawaited(showCardSheet(context, item)),
+      corner: CardChallengeCorner.forState(challenge),
+      top: _SubLine('CARD $number'),
+      bottom: Text(
+        item.card.title,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        style: AppText.lead(mood: mood, face: AppFace.display),
+      ),
+      child: IconMark(
+        moduleMark(item.card.iconName),
+        size: _artSize,
+        color: mood.accent,
+      ),
+    );
+  }
+}
+
+/// `04 / 37` — the design's own padding and separator (`screens.jsx:2397`).
+String formatCardPlace(int place, int total) =>
+    '${place.toString().padLeft(2, '0')} / $total';
+
+/// The frame both branches share: a bordered card, its two lines pushed apart
+/// with whatever it draws in between.
+class _Tile extends StatelessWidget {
+  const _Tile({
+    required this.surface,
+    required this.top,
+    required this.bottom,
+    required this.child,
+    this.onTap,
+    this.corner,
+  });
+
+  final Color surface;
+  final Widget top;
+  final Widget bottom;
+  final Widget child;
+  final VoidCallback? onTap;
+  final Widget? corner;
 
   @override
   Widget build(BuildContext context) {
-    final collected = item.isCollected;
-    final theme = Theme.of(context);
     final mood = context.mood;
 
-    return Card(
-      margin: EdgeInsets.zero,
-      child: InkWell(
-        // A sheet, not a push: the design reads a card over the collection,
-        // so the grid never goes away and closing costs the learner nothing.
-        onTap: collected ? () => unawaited(showCardSheet(context, item)) : null,
+    return Material(
+      color: surface,
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: mood.rule),
         borderRadius: BorderRadius.circular(AppRadii.chrome),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.base),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // An uncollected card shows what it is not: the design draws no
-              // mark for "unknown", so that branch keeps a stock glyph while
-              // the collected one carries the module's own.
-              if (collected)
-                IconBadge.roundedMark(
-                  mark: moduleMark(item.card.iconName),
-                  size: _badgeSize,
-                  iconSize: _iconSize,
-                  background: mood.accent,
-                  foreground: mood.accentInk,
-                )
-              else
-                IconBadge.rounded(
-                  icon: Icons.help_outline,
-                  size: _badgeSize,
-                  iconSize: _iconSize,
-                  background: mood.surface2,
-                  foreground: mood.inkMute,
-                ),
-              const SizedBox(height: 10),
-              Text(
-                collected ? item.card.title : '???',
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  color: collected ? mood.ink : mood.inkMute,
-                ),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(_tilePadding),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  top,
+                  Expanded(child: Center(child: child)),
+                  bottom,
+                ],
               ),
-              if (collected) ...[
-                const SizedBox(height: 4),
-                Text(
-                  item.card.moduleTag,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: mood.inkMute,
-                  ),
-                ),
-              ],
-            ],
-          ),
+            ),
+            if (corner case final corner?)
+              Positioned(
+                top: AppSpacing.xs,
+                right: AppSpacing.xs,
+                child: corner,
+              ),
+          ],
         ),
+      ),
+    );
+  }
+}
+
+/// `.cc-sub` — mono at the micro step, lettered wide and set in caps.
+class _SubLine extends StatelessWidget {
+  const _SubLine(this.text, {this.opacity = 1});
+
+  final String text;
+  final double opacity;
+
+  @override
+  Widget build(BuildContext context) {
+    return Opacity(
+      opacity: opacity,
+      child: Text(
+        text,
+        style: AppText.micro(
+          mood: context.mood,
+          face: AppFace.mono,
+          tracking: AppTracking.marker,
+        ),
+      ),
+    );
+  }
+}
+
+/// What a locked tile draws where an earned one draws its card.
+///
+/// A mono question mark, which is what the design actually renders:
+/// `LockedSilhouette` branches on `'silhouette'` and `'dot'`, and a card's
+/// kind is never either — every real collectible falls through to the `?`
+/// (`screens.jsx:1743`, called at `:2400`). The two shapes above it are
+/// unreachable, so porting them would be porting dead code.
+class _UnknownMark extends StatelessWidget {
+  const _UnknownMark();
+
+  @override
+  Widget build(BuildContext context) {
+    final mood = context.mood;
+
+    return Opacity(
+      opacity: _lockedMarkOpacity,
+      child: Text(
+        '?',
+        style: AppText.title(mood: mood, face: AppFace.mono),
       ),
     );
   }
