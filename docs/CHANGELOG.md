@@ -77,6 +77,16 @@ You can always edit this file by hand instead — the helpers just save effort.
   and only the first three are free. Now it says the guides come with the course.
   If you own it, it names the lesson that opens the next one.
 
+- **The dictionary has a Term of the Day.** A card at the top of the shelf
+  offers one word each day — what it is, how to say it, and what it means —
+  and opens a page of its own where you can save it or go on to the full
+  entry. The word changes at midnight, walks the whole dictionary before it
+  repeats, and is the same on every device you own, because it is worked out
+  from the date rather than stored anywhere. Which words are on offer depends
+  on what you have bought: the course opens up the reference words no lesson
+  teaches. Reading it does not count toward your streak — it is something to
+  notice, not a task.
+
 - **Your saved terms are a flashcard deck now.** Bookmark a word in the
   dictionary and it joins a deck you can flip through: the term on the front,
   what it means on the back, and a link to the full entry once you have

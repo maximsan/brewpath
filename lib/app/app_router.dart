@@ -9,6 +9,7 @@ import 'package:brew_path/features/cards/presentation/cards_screen.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_screen.dart';
 import 'package:brew_path/features/dictionary/presentation/term_detail_screen.dart';
+import 'package:brew_path/features/dictionary/presentation/term_of_day_screen.dart';
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_game_screen.dart';
 import 'package:brew_path/features/learn/domain/course_completion_providers.dart';
 import 'package:brew_path/features/learn/presentation/course_completion_screen.dart';
@@ -184,6 +185,16 @@ GoRouter appRouter(Ref ref) {
                     name: AppRoutes.flashcards.name,
                     parentNavigatorKey: _rootKey,
                     builder: (context, state) => const FlashcardsScreen(),
+                  ),
+                  // Today's term, opened from the dictionary's banner. On
+                  // the root navigator for the same reason the drills are: it
+                  // is a page the learner steps into and closes, not a place
+                  // in the shell.
+                  GoRoute(
+                    path: AppRoutes.termOfDay.path,
+                    name: AppRoutes.termOfDay.name,
+                    parentNavigatorKey: _rootKey,
+                    builder: (context, state) => const TermOfDayScreen(),
                   ),
                   // Immersive lesson flow: pushed on the root navigator so it
                   // covers the bottom-nav shell.

@@ -83,6 +83,23 @@ class LockedGuides extends PlusGateTrigger {
   String get header => 'The visual guides come with the full course.';
 }
 
+/// The full entry behind a term the free tier reads only in short.
+///
+/// Term of the Day's one action promises the *full* entry, so for a learner
+/// without the course it has to raise this rather than deliver the short
+/// explanation they are already looking at — the design's own note at
+/// `dictionary-extras.jsx:56`.
+class LockedFullEntry extends PlusGateTrigger {
+  /// Creates a [LockedFullEntry] for the term called [term].
+  const LockedFullEntry({required this.term});
+
+  /// The word itself, so the sheet names what was tapped.
+  final String term;
+
+  @override
+  String get header => 'The full entry for "$term" comes with the course.';
+}
+
 /// A game whose teaching lesson the free tier does not carry.
 class LockedGame extends PlusGateTrigger {
   /// Creates a [LockedGame] taught by [moduleTitle].

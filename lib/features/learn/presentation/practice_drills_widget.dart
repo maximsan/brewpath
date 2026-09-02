@@ -43,6 +43,11 @@ class PracticeDrillsWidget extends StatelessWidget {
   );
 }
 
+/// What each drill row promises about cost. One home, because both rows say
+/// it for the same reason: the group they lead is full of rows that are not
+/// free.
+const String _freeMeta = 'Free';
+
 /// Flashcards: the deck of what the learner kept.
 ///
 /// **Here whether or not the deck has cards.** This row is how a learner finds
@@ -64,7 +69,7 @@ class _FlashcardsRow extends StatelessWidget {
       button: true,
       label:
           '${FlashcardsCopy.title}. ${FlashcardsCopy.practiceRowEyebrow}. '
-          '${FlashcardsCopy.free}.',
+          '$_freeMeta.',
       excludeSemantics: true,
       child: InkWell(
         onTap: () => unawaited(context.pushFlashcards()),
@@ -106,7 +111,7 @@ class _FlashcardsRow extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.sm),
               Text(
-                FlashcardsCopy.free.toUpperCase(),
+                _freeMeta.toUpperCase(),
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: mood.inkMute,
                 ),
@@ -128,8 +133,6 @@ class _VocabRow extends StatelessWidget {
 
   /// What the row promises about cost. Stated because the group it leads is
   /// full of rows that are not free.
-  static const String _free = 'Free';
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -137,7 +140,7 @@ class _VocabRow extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: '${VocabCopy.title}. ${VocabCopy.rowSubtitle}. $_free.',
+      label: '${VocabCopy.title}. ${VocabCopy.rowSubtitle}. $_freeMeta.',
       excludeSemantics: true,
       child: InkWell(
         onTap: () => unawaited(
@@ -183,7 +186,7 @@ class _VocabRow extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.sm),
               Text(
-                _free.toUpperCase(),
+                _freeMeta.toUpperCase(),
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: mood.inkMute,
                 ),

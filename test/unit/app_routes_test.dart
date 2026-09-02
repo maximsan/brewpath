@@ -146,6 +146,7 @@ void main() {
     // chrome, so nothing competes with the question being asked.
     'vocabGame': HeaderTier.immersive,
     'flashcards': HeaderTier.immersive,
+    'termOfDay': HeaderTier.immersive,
     'onboardingName': HeaderTier.immersive,
   };
 

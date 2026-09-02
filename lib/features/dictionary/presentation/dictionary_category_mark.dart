@@ -32,7 +32,12 @@ class DictionaryCategoryMark {
 /// The category as a kicker: mark, then name, in the accent.
 class CategoryKicker extends StatelessWidget {
   /// Creates a [CategoryKicker].
-  const CategoryKicker({required this.category, required this.size, super.key});
+  const CategoryKicker({
+    required this.category,
+    required this.size,
+    this.color,
+    super.key,
+  });
 
   /// What to name.
   final DictionaryCategoryMark category;
@@ -40,19 +45,24 @@ class CategoryKicker extends StatelessWidget {
   /// The mark's drawn size — the design's `CatGlyph size={15}` on a card face.
   final double size;
 
+  /// Mark and label colour. Defaults to the accent, which is what a card face
+  /// uses; Term of the Day's screen names its category in muted ink, under a
+  /// kicker that is already carrying the accent.
+  final Color? color;
+
   @override
   Widget build(BuildContext context) {
-    final accent = context.mood.accent;
+    final tint = color ?? context.mood.accent;
     final mark = category.mark;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         if (mark != null) ...[
-          IconMark(mark, size: size, color: accent),
+          IconMark(mark, size: size, color: tint),
           const SizedBox(width: AppSpacing.xs),
         ],
-        Flexible(child: SmallcapsLabel(category.label, color: accent)),
+        Flexible(child: SmallcapsLabel(category.label, color: tint)),
       ],
     );
   }
