@@ -57,6 +57,19 @@ class _EntryStub extends StatelessWidget {
       Scaffold(body: Center(child: Text('entry:$termId')));
 }
 
+/// Today's term for a free learner, against the real clock — what both
+/// surfaces should be naming when nothing is pinned.
+Future<DictionaryTerm> _todaysTerm(WidgetTester tester) async {
+  final term = await tester.runAsync(() async {
+    final terms = await DictionaryRepository().getTerms();
+    return termOfDay(
+      pool: termOfDayPool(terms: terms, hasCourse: false),
+      date: DateTime.now(),
+    );
+  });
+  return term!;
+}
+
 /// Opens the screen on [_pinnedDay] for a learner of the given tier.
 ///
 /// Hosted on a small router rather than a bare `MaterialApp`: the screen's one
@@ -214,14 +227,30 @@ void main() {
       expect(find.text(TermOfDayCopy.openEntry.toUpperCase()), findsOneWidget);
     });
 
-    testWidgets('opens the screen', (tester) async {
+    testWidgets('opens the screen, on the same word it was showing', (
+      tester,
+    ) async {
       await _openDictionary(tester);
+      // The real clock, not a pinned day: this is the path that proves the
+      // frozen date is gone, so it has to run against whatever today is.
+      final today = await _todaysTerm(tester);
+
+      expect(
+        find.text(today.term),
+        findsOneWidget,
+        reason: 'the banner names the term the pick chose for today',
+      );
 
       await tester.tap(find.text(TermOfDayCopy.openEntry.toUpperCase()));
       await _settle(tester);
 
       expect(find.byType(TermOfDayScreen), findsOneWidget);
       expect(find.text(TermOfDayCopy.readFullEntry), findsOneWidget);
+      expect(
+        find.text(today.term),
+        findsOneWidget,
+        reason: 'and the screen it opens names the same one',
+      );
     });
 
     testWidgets('scrolls with the index rather than overflowing it', (
