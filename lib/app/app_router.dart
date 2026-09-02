@@ -217,15 +217,23 @@ GoRouter appRouter(Ref ref) {
                       ),
                     ],
                   ),
-                  // Module-completion recap, pushed over the shell after the
-                  // last lesson's completion screen.
+                  // The module ending. A lesson that closes its module comes
+                  // straight here and plays no lesson ending, so the run's own
+                  // facts ride the query string — see `moduleSummary`.
                   GoRoute(
                     path: AppRoutes.moduleSummary.path,
                     name: AppRoutes.moduleSummary.name,
                     parentNavigatorKey: _rootKey,
-                    builder: (context, state) => ModuleCompleteScreen(
-                      moduleId: state.pathParameters['moduleId']!,
-                    ),
+                    builder: (context, state) {
+                      final query = state.uri.queryParameters;
+                      return ModuleCompleteScreen(
+                        moduleId: state.pathParameters['moduleId']!,
+                        runLessonId: query['lesson'],
+                        freezeEarned: query['freeze'] == 'true',
+                        fromStage: int.tryParse(query['from'] ?? ''),
+                        toStage: int.tryParse(query['to'] ?? ''),
+                      );
+                    },
                   ),
                   // Practice flows live under /learn so the back button
                   // returns to the Learn tab. Both push on the root navigator

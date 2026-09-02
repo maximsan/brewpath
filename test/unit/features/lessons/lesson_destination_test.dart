@@ -123,4 +123,41 @@ void main() {
       }
     });
   });
+
+  // The design branches on a module's last lesson, so that lesson's ending
+  // never plays and this route is the only screen that will report what the
+  // run paid (#458).
+  group('the module ending carries the run that closed it', () {
+    test('names the lesson, the stages and the freeze', () {
+      final destination = moduleSummary(
+        'm1',
+        runLessonId: 'm1l7',
+        freezeEarned: true,
+        fromStage: 2,
+        toStage: 3,
+      );
+
+      expect(destination.pathParams, {'moduleId': 'm1'});
+      expect(destination.queryParams, {
+        'lesson': 'm1l7',
+        'freeze': 'true',
+        'from': '2',
+        'to': '3',
+      });
+    });
+
+    // Opened outside the flow — a review, a deep link — it claims nothing
+    // about a run that did not happen.
+    test('carries nothing when there was no run', () {
+      expect(moduleSummary('m1').queryParams, isEmpty);
+    });
+
+    // Absent rather than 'false': the screen reads the flag's presence, and a
+    // run that earned no freeze must not put the word anywhere near the URL.
+    test('a run that earned no freeze says nothing about one', () {
+      final destination = moduleSummary('m1', runLessonId: 'm1l7');
+
+      expect(destination.queryParams.containsKey('freeze'), isFalse);
+    });
+  });
 }
