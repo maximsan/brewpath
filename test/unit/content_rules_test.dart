@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 
-/// The structural invariants, asserted against the **committed** banks.
+/// The structural content rules, checked against the **committed** banks.
 ///
 /// The extractor already refuses to write when any of these break, so on the
 /// face of it this is the same check twice. It is not: the extractor only ever

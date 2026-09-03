@@ -801,9 +801,9 @@ void main() {
     });
   });
 
-  /// The invariants #100 adds, one seeded violation each — so a failure names
-  /// the invariant that broke rather than "the content is wrong somewhere".
-  group('the semantic invariants', () {
+  /// The checks #100 adds, one seeded violation each — so a failure names
+  /// the rule that broke rather than "the content is wrong somewhere".
+  group('the content rules', () {
     void seedCourse(String source, String from, String to) =>
         seedCorruption(source, 'data.jsx', from, to);
 
