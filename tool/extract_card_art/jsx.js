@@ -115,6 +115,12 @@ function skipString(source, start) {
       index += 2;
       continue;
     }
+    // A template's `${…}` can hold another template, so the interpolation is
+    // skipped whole rather than scanned for the closing backtick.
+    if (quote === "`" && source[index] === "$" && source[index + 1] === "{") {
+      index = readBraced(source, index + 1);
+      continue;
+    }
     if (source[index] === quote) return index + 1;
     index += 1;
   }
@@ -193,9 +199,14 @@ function readElement(source, start) {
   const children = [];
   for (;;) {
     if (source.startsWith(`</${tag}`, index)) {
-      const close = source.indexOf(">", index);
-      if (close === -1) throw new Error(`unterminated </${tag}>`);
-      return { code: call(tag, props, children), end: close + 1 };
+      // The boundary matters: without it `</linearGradient>` would close a
+      // `<line>`, and the tree would be silently wrong rather than refused.
+      const after = source[index + tag.length + 2];
+      if (after === ">" || /\s/.test(after ?? "")) {
+        const close = source.indexOf(">", index);
+        if (close === -1) throw new Error(`unterminated </${tag}>`);
+        return { code: call(tag, props, children), end: close + 1 };
+      }
     }
     if (index >= source.length) throw new Error(`unterminated <${tag}>`);
 
@@ -243,9 +254,31 @@ const call = (tag, props, children) => {
   return `${PRAGMA}(${[type, bag, ...children].join(", ")})`;
 };
 
+/**
+ * The attributes SVG itself spells in camelCase, which must not be dashed.
+ *
+ * `clipPath` is **not** among them. It is camelCase as an *element*, which
+ * this never touches — the attribute is `clip-path`, and emitting the element
+ * spelling drops the clip silently: the parser reads `clip-path`, finds
+ * nothing, and draws the shape unclipped with no error anywhere.
+ */
+const SVG_CAMEL_ATTRIBUTES = new Set([
+  "viewBox",
+  "clipPathUnits",
+  "gradientUnits",
+  "gradientTransform",
+  "patternUnits",
+  "preserveAspectRatio",
+  "maskUnits",
+  "markerWidth",
+  "markerHeight",
+  "refX",
+  "refY",
+]);
+
 /** `strokeWidth` → `stroke-width`; SVG's own casing is left alone. */
 const attributeName = (name) =>
-  name === "viewBox" || name === "clipPath" || name === "clipPathUnits"
+  SVG_CAMEL_ATTRIBUTES.has(name)
     ? name
     : name.replace(ATTRIBUTE_CASE, (upper) => `-${upper.toLowerCase()}`);
 
@@ -259,6 +292,14 @@ function h(type, props, ...children) {
   return { tag: type, props: props ?? {}, children: flat };
 }
 
+/** What XML cannot carry raw, in a label or an attribute value. */
+const escapeXml = (text) =>
+  text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+
 /** Serialises a node tree to SVG markup. */
 function render(node) {
   if (node == null || node === false) return "";
@@ -267,10 +308,16 @@ function render(node) {
 
   const attributes = Object.entries(node.props)
     .filter(([name, value]) => !DROPPED_ATTRIBUTES.has(name) && name !== "children" && value != null && value !== false)
-    .map(([name, value]) => ` ${attributeName(name)}="${String(value)}"`)
+    .map(([name, value]) => ` ${attributeName(name)}="${escapeXml(String(value))}"`)
     .join("");
 
-  const inner = (node.children ?? []).map(render).join("");
+  const inner = (node.children ?? [])
+    .map((child) =>
+      typeof child === "string" || typeof child === "number"
+        ? escapeXml(String(child))
+        : render(child),
+    )
+    .join("");
   return inner ? `<${node.tag}${attributes}>${inner}</${node.tag}>` : `<${node.tag}${attributes}/>`;
 }
 

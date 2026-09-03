@@ -65,4 +65,68 @@ void main() {
     // The fallback the card sheet and the tile lean on.
     expect(cardArtAsset('not-a-kind'), isNull);
   });
+
+  test('no asset carries a CSS variable the renderer cannot read', () {
+    for (final kind in cardArtKinds) {
+      expect(
+        File(cardArtAsset(kind)!).readAsStringSync(),
+        isNot(contains('var(--')),
+        reason: '$kind kept a custom property, which paints nothing',
+      );
+    }
+  });
+
+  test('a clip travels as clip-path, not as the element spelling', () {
+    // `clipPath` is camelCase as an *element*; the attribute is `clip-path`.
+    // Emitting the element spelling drops the clip silently — the parser finds
+    // no `clip-path`, and the shape draws unclipped with no error anywhere.
+    for (final kind in cardArtKinds) {
+      final markup = File(cardArtAsset(kind)!).readAsStringSync();
+      expect(markup, isNot(contains('clipPath=')), reason: kind);
+    }
+    expect(
+      File(cardArtAsset('lightdark')!).readAsStringSync(),
+      contains('clip-path='),
+      reason: 'the bean in Light vs Dark is clipped by the design',
+    );
+  });
+
+  test('every paint in every asset maps to a token', () {
+    final sentinels =
+        ((jsonDecode(
+                      File('assets/card_art/index.json').readAsStringSync(),
+                    )
+                    as Map<String, dynamic>)['sentinels']
+                as Map<String, dynamic>)
+            .values
+            .cast<String>()
+            .toSet();
+    final literals =
+        ((jsonDecode(
+                      File('assets/card_art/index.json').readAsStringSync(),
+                    )
+                    as Map<String, dynamic>)['literals']
+                as Map<String, dynamic>)
+            .keys
+            .toSet();
+    final paint = RegExp(
+      '(?:fill|stroke|color|stop-color|flood-color|lighting-color)'
+      '="([^"]*)"',
+    );
+
+    for (final kind in cardArtKinds) {
+      for (final match in paint.allMatches(
+        File(cardArtAsset(kind)!).readAsStringSync(),
+      )) {
+        final value = match.group(1)!;
+        expect(
+          value == 'none' ||
+              sentinels.contains(value) ||
+              literals.contains(value),
+          isTrue,
+          reason: '$kind paints in $value, which follows no token',
+        );
+      }
+    }
+  });
 }

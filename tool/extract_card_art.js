@@ -178,9 +178,30 @@ function evaluateArts(block, problems) {
   return sandbox.__arts ?? null;
 }
 
-/** Every `fill=` and `stroke=` value in [markup]. */
+/**
+ * Every attribute in [markup] that carries a colour.
+ *
+ * Deliberately wider than `fill` and `stroke`: a gradient stop or a filter
+ * would put a colour on `stop-color` or `flood-color`, and one that reached
+ * the assets unchecked would be a fixed literal that never follows the mood —
+ * the exact failure this guard exists to prevent. No art uses one today, which
+ * is why the list has to be written before one does.
+ */
+const PAINT_ATTRIBUTES = [
+  "fill",
+  "stroke",
+  "color",
+  "stop-color",
+  "flood-color",
+  "lighting-color",
+];
+
 const paintsOf = (markup) =>
-  [...markup.matchAll(/(?:fill|stroke)="([^"]*)"/g)].map((match) => match[1]);
+  [
+    ...markup.matchAll(
+      new RegExp(`(?:${PAINT_ATTRIBUTES.join("|")})="([^"]*)"`, "g"),
+    ),
+  ].map((match) => match[1]);
 
 function assertPaint(kind, markup, problems) {
   for (const paint of paintsOf(markup)) {
@@ -202,11 +223,16 @@ const substituteSentinels = (markup) =>
 function main() {
   const options = { source: DEFAULT_SOURCE, out: DEFAULT_OUT };
   const argv = process.argv.slice(2);
-  for (let index = 0; index < argv.length; index += 2) {
-    if (argv[index] === "--source") options.source = path.resolve(argv[index + 1]);
-    if (argv[index] === "--out") options.out = path.resolve(argv[index + 1]);
+  for (let index = 0; index < argv.length; index += 1) {
+    const flag = argv[index];
+    if (flag !== "--source" && flag !== "--out") {
+      fail([`unknown argument \`${flag}\`. Usage: --source <dir> --out <dir>`]);
+    }
+    const value = argv[index + 1];
+    if (value === undefined) fail([`\`${flag}\` was given no value.`]);
+    options[flag === "--source" ? "source" : "out"] = path.resolve(value);
+    index += 1;
   }
-  process.env.CARD_ART_SOURCE = options.source;
 
   const problems = [];
   const block = sliceBlock(options.source, problems);

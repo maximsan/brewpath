@@ -37,12 +37,10 @@ const double _lockedMarkOpacity = 0.45;
 /// kind — the tint table keeps its row, so the branch comes back with the
 /// content rather than needing to be remembered.
 ///
-/// **The artwork is the module's mark, not the card's own.** The design draws
-/// `CARD_ART[kind]` here — one illustration per collectible. All thirty-seven
-/// exist already, as static SVG in the prototype, and want extracting rather
-/// than drawing; that is its own job and #480 holds it. Until then the mark
-/// stands in, as it did before, and the wash under it is already the card's
-/// own.
+/// **The artwork is the card's own.** All thirty-seven drawings are extracted
+/// from the design source rather than redrawn (#480), and the wash under them
+/// is the card's own too. A kind the design has not drawn falls back to its
+/// module's mark, which is what every card showed before.
 class CardGridItemWidget extends ConsumerWidget {
   /// Creates a [CardGridItemWidget].
   const CardGridItemWidget({required this.placed, super.key});

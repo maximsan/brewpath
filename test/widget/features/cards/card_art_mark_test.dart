@@ -113,7 +113,7 @@ void main() {
     }
   });
 
-  testWidgets('the well washes the art in the kind\'s own tint', (
+  testWidgets("the well washes the art in the kind's own tint", (
     tester,
   ) async {
     await _pump(
