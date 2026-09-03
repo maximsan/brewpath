@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/features/cards/domain/cards_grid.dart';
+import 'package:brew_path/features/cards/presentation/card_art_mark.dart';
 import 'package:brew_path/features/cards/presentation/card_challenge_corner.dart';
 import 'package:brew_path/features/cards/presentation/card_sheet.dart';
 import 'package:brew_path/features/cards/presentation/card_tint.dart';
@@ -85,10 +85,10 @@ class CardGridItemWidget extends ConsumerWidget {
         overflow: TextOverflow.ellipsis,
         style: AppText.lead(mood: mood, face: AppFace.display),
       ),
-      child: IconMark(
-        moduleMark(item.card.iconName),
+      child: CardArtMark(
+        kind: item.card.kind,
+        fallback: moduleMark(item.card.iconName),
         size: _artSize,
-        color: mood.accent,
       ),
     );
   }

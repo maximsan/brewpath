@@ -1,8 +1,8 @@
-import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/app_sheet.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
+import 'package:brew_path/features/cards/presentation/card_art_mark.dart';
 import 'package:brew_path/features/cards/presentation/card_locked_face.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/challenges/presentation/card_stamp_section.dart';
@@ -13,9 +13,8 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// The mark's size where the design has its per-kind drawing — see
-/// [CardSheetBody] for why this is still a mark.
-const double _markSize = 96;
+/// The well the design fills with a card's own drawing.
+const double _artSize = 150;
 
 /// Opens [item] over the collection.
 ///
@@ -43,12 +42,10 @@ Future<CardSheetIntent?> showCardSheet(
 /// duel — and the app keeps one sheet dressing rather than forking the
 /// primitive for a single caller. A deliberate divergence, recorded on #385.
 ///
-/// **The artwork is not here.** The design fills a tinted 150px well with a
-/// per-kind drawing, and `CARD_ART` is thirty-seven of them
-/// (`screens.jsx:2312`) with no counterpart in `lib/`. The tile needs the same
-/// family, and #434 holds the question open beside the one #87 asks of the
-/// grove — so the module's mark stands in, as it did on the screen this
-/// replaced, rather than half the set landing here.
+/// **The artwork is the card's own.** The design fills the well with a
+/// per-kind drawing, and all thirty-seven are extracted from the design source
+/// rather than redrawn (#480). A kind the design has not drawn falls back to
+/// its module's mark, which is what every card showed before.
 class CardSheetBody extends ConsumerWidget {
   /// Creates a [CardSheetBody].
   const CardSheetBody({required this.item, super.key});
@@ -79,10 +76,10 @@ class CardSheetBody extends ConsumerWidget {
           // its bookmark, for the same reason.
           const Align(alignment: Alignment.centerRight, child: TriedSeal()),
         Center(
-          child: IconMark(
-            moduleMark(card.iconName),
-            size: _markSize,
-            color: mood.accent,
+          child: CardArtMark(
+            kind: card.kind,
+            fallback: moduleMark(card.iconName),
+            size: _artSize,
           ),
         ),
         const SizedBox(height: AppSpacing.lg),

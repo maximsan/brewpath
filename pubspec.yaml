@@ -115,6 +115,9 @@ flutter:
     # one set shared by every grove variety (#136).
     - assets/images/trees/
     - assets/icons/
+    # Written by tool/extract_card_art.js from the prototype source — the
+    # thirty-seven collectible illustrations, extracted rather than redrawn.
+    - assets/card_art/
     - assets/video/
 
   # Declared as real font assets rather than fetched at runtime, so there is no

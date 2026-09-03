@@ -44,6 +44,16 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Every collectible now has its own picture.** A card used to show its
+  module's mark, so all nine cards in a module looked identical — the same
+  drawing nine times, on the tile and again in the card sheet. Each of the
+  thirty-seven cards now shows the illustration the design drew for it: the
+  cherry in section, the map of the bean belt, the roast curve, the specimen
+  label. They were never missing, only unbuilt — they are lifted straight out
+  of the design source rather than redrawn, so what you see is what was drawn,
+  and a card whose kind has no drawing still falls back to its module's mark
+  rather than showing a hole.
+
 - **Flashcards explains an empty deck it used to blame you for.** If you
   bookmarked words your free lessons do not cover, the drill still told you to
   "bookmark terms in the dictionary and they become a flashcard deck" — which

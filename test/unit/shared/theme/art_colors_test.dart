@@ -26,7 +26,7 @@ const _spec = <String, Color>{
   '--art-seed-crease': Color(0xFF5C6B52),
   '--art-ripe': Color(0xFFC8843A),
   '--art-sour': Color(0xFFB79A3C),
-  '--cream': Color(0xFFF0DCB8),
+  '--art-cream': Color(0xFFF0DCB8),
 };
 
 /// The palette as the app states it, by the design source's own token names.
@@ -123,7 +123,7 @@ void main() {
     test('returns the palette colour the design bundle names', () {
       expect(ArtColors.ofToken('--art-cherry-seed'), ArtColors.cherrySeed);
       expect(ArtColors.ofToken('--art-cherry-gel'), ArtColors.cherryGel);
-      expect(ArtColors.ofToken('--cream'), ArtColors.cream);
+      expect(ArtColors.ofToken('--art-cream'), ArtColors.cream);
     });
 
     test('resolves every token the palette carries', () {

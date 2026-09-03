@@ -134,7 +134,7 @@ abstract final class ArtColors {
     '--art-seed-crease': seedCrease,
     '--art-ripe': ripe,
     '--art-sour': sour,
-    '--cream': cream,
+    '--art-cream': cream,
   };
 
   /// The colour the design source names [token], e.g. `--art-cherry-seed`.
