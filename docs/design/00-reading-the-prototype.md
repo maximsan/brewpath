@@ -7,7 +7,7 @@
 
 | Thing | Where |
 |---|---|
-| App shell, phone frame, design tokens, CSS | `index.html` (1,350 lines) |
+| App shell, phone frame, design tokens, CSS | `index.html` (1,211 lines) |
 | Top-level state + routing + all flow wiring | `app.jsx` |
 | Course content (modules, lessons, cards, collectibles) | `data.jsx` |
 | Tab screens, streak, tree, card art, mini-game catalog | `screens.jsx` |

@@ -181,7 +181,7 @@ Paid access unlocks the remaining course and removes the daily activity limit.
 
 Paid access provides:
 
-Access beyond the two-lesson free preview.
+Access beyond the three-lesson free preview ([ADR-0007](adr/0007-free-tier-is-the-first-three-lessons.md)).
 Removal of the two-activity daily limit.
 Unlimited Saved items.
 Roasty Studio.
@@ -226,9 +226,9 @@ All the terms belong to no lesson at all are not accessible with the free tier a
 >
 > §12's opening sentence previously read _"All users may browse and search every published Dictionary term"_, which covered the 8 reference terms and so contradicted the ruling on this line. It has been **scoped into two access classes** above; the ruling itself is unchanged.
 >
-> **The tier arithmetic**, measured from source: **72 terms = 64 lesson terms + 8 reference terms.** Free sees the 64 at short. Premium adds **38 full explanations** (26 of the 64 are short-only, so premium adds nothing to them) **plus the 8 reference terms whole**.
+> **The tier arithmetic**, re-measured 2 Sep 2026 from the generated bank: **73 terms = 65 lesson terms + 8 reference terms**, and **every term now carries a full explanation**, so the short-only split this note once recorded is gone — free sees the 65 at short, premium adds the full explanation on all 65 **plus the 8 reference terms whole**. The counts move with the source; derive them, never hardcode (#96's rule).
 >
-> ⚠️ **This makes Term of the Day tier-dependent**, amending [the Coffee Dictionary decision](https://github.com/maximsan/brewpath/issues/20), which set its pool to the 46 terms carrying a full explanation as a **pure date function** — same term for everyone, zero storage. All 8 reference terms are in that pool, so it splits: **premium 46, free 38**. Product-owner ruling: the free rotation runs over 38. It stays a pure function of the date and still never repeats during the course, but it is now a function of `(date, tier)` rather than date alone. A free user's Term of the Day therefore always carries a full explanation they cannot read, making its _"Read the full entry"_ button a permanent upgrade prompt. The dictionary's live **category counts** become tier-dependent for the same reason.
+> ⚠️ **This makes Term of the Day tier-dependent**, amending [the Coffee Dictionary decision](https://github.com/maximsan/brewpath/issues/20), which set its pool to the 46 terms carrying a full explanation as a **pure date function** — same term for everyone, zero storage. All 8 reference terms are in that pool, so it splits: **premium 46, free 38** (with every term now full, re-measured 2 Sep 2026: premium 73, free 65). Product-owner ruling: the free rotation runs over 38. It stays a pure function of the date and still never repeats during the course, but it is now a function of `(date, tier)` rather than date alone. A free user's Term of the Day therefore always carries a full explanation they cannot read, making its _"Read the full entry"_ button a permanent upgrade prompt. The dictionary's live **category counts** become tier-dependent for the same reason.
 >
 > Recorded in full on [Free-tier practice content](https://github.com/maximsan/brewpath/issues/57).
 
@@ -254,7 +254,7 @@ Each section mapped onto [BrewPath v1 parity](https://github.com/maximsan/brewpa
 
 **1. ~~§5 "session" vs the calendar day.~~ RESOLVED.** §5 was rewritten to use the local calendar day, matching [Mini-games](https://github.com/maximsan/brewpath/issues/22). A closing line briefly allowed **two runs of the same game**, reversing that decision's *two different* rule; it was **withdrawn by the product owner** on [Mini-game streak unit](https://github.com/maximsan/brewpath/issues/59). §3 and §5 now say *two different*, the stored `{day → set of gameIds}` is unchanged, and **no field change is owed** to [Sync scope](https://github.com/maximsan/brewpath/issues/14). ⚠️ Recorded there: the *anti-farming* rationale both #22 and #59 gave for the rule is **false** — a mini-game completes with every answer wrong in ~10s, so both rules cost the same. The rule stands on **content variety** (11 distinct rounds vs 5 seen twice).
 
-**2. ~~§7 practice-content filtering.~~ RESOLVED** by §12 and the rewritten §5. Practice is scoped to terms the unlocked lessons **mention** (**12** for a free user, not the 4 a *taught-by* reading gives — which would have made the Vocab game unplayable, since its shortest round is 5). Mini-games gate **by format**, two free and five premium, which costs one module field on seven entries rather than the per-round authoring this looked like it needed. Full resolution: [Free-tier practice content](https://github.com/maximsan/brewpath/issues/57).
+**2. ~~§7 practice-content filtering.~~ RESOLVED** by §12 and the rewritten §5. Practice is scoped to terms the unlocked lessons **mention** (**12** for a free user, not the 4 a *taught-by* reading gives — which would have made the Vocab game unplayable, since its shortest round is 5). Mini-games gate **by format**, two free and five premium (since grown: 13 games, three free — #102), which costs one module field on seven entries rather than the per-round authoring this looked like it needed. Full resolution: [Free-tier practice content](https://github.com/maximsan/brewpath/issues/57).
 
 **3. §11 Saved scope.** The doc says _"across lessons and dictionary terms"_; the source counts **lessons, terms and guides** (`isSavedKey = /^(l|t|g):/`). Collectibles are already exempt. The resolution kept the source's behaviour — flag if guides were meant to be excluded.
 
