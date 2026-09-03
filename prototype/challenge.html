@@ -102,10 +102,11 @@
     const SECTIONS = [
       {
         title: 'Offer',
-        meta: '1 STATE · SUGGESTED',
-        desc: 'A challenge is never forced. When a module’s last lesson closes, right after the collectible card, the practical task is offered on its own screen — two buttons only: start it, or not now.',
+        meta: "2 STATES · SUGGESTED",
+        desc: 'A challenge is never forced, and the offer always rides the reward ceremony’s last screen — never its own interstitial. A lesson-carried challenge lands in the Lesson Complete footer; a module’s capstone challenge lands in the collectible card’s footer. Same compact row, one action — declining is simply continuing; the challenge waits on the Path.',
         games: [
-          ['module-challenge', 'C1', 'Module Coffee Challenge', 'The larger, practical task shown after the module reward card. Framed as an invitation, not an assignment — “Start challenge” accepts it; “Not now” moves on without penalty.', 'OFFER'],
+          ['lesson-complete-challenge', 'C1', 'Challenge offer · Lesson reward', 'A lesson that carries a hands-on task offers it in the completion footer — eyebrow, title · time, one Start button. Continuing past it declines without ceremony.', 'OFFER', true],
+          ['module-card', 'C2', 'Challenge offer · Module card', 'The compact offer above “Begin next module” on the card screen. An invitation, not an assignment — Start accepts it onto Today; continuing leaves it waiting on the Path.', 'OFFER', true],
         ],
       },
       {

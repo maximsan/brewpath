@@ -28,8 +28,9 @@ const COLORS = [
   ['--ink',        'Primary text',       'Body copy, titles, active glyphs. The default foreground.',                   '#1B1614', '#F3E7D2'],
   ['--ink-mute',   'Secondary text',     'Metadata, labels, captions, every inactive icon.',                            '#6B5F54', '#B59E84'],
   ['--rule',       'Hairline',           '1px borders and dividers. The structural grid of the whole UI.',              '#D8CFBF', '#44321E'],
-  ['--accent',     'Action / brand',     'The one brand colour — crema orange. Primary buttons, active tab, links, current step, selection, and the needs-practice signal — everything that invites a tap.', '#B8533A', '#E07A4F'],
+  ['--accent',     'Action / brand',     'The one brand colour — crema orange. Primary buttons, active tab, links, current step, selection, and the needs-practice signal — everything that invites a tap. Dark enough to be used AS text at 11px, so accent labels need no second token.', '#A6462F', '#E07A4F'],
   ['--accent-ink', 'On-accent text',     'Text and icons that sit ON an accent fill.',                                  '#FBF7EE', '#1A130E'],
+  ['--accent-text', 'Deprecated alias',   'Was a darkened accent for small text, from when --accent was too light to pass AA at 11px. --accent now clears it on its own, so this resolves to --accent unchanged — kept only so the shipped mobile token set keeps resolving. Never reach for it in new work.', '#A6462F', '#E07A4F'],
   ['--sage',       'Success',            'Correct answers, Learned terms, lessons scored at or above the pass mark, and the Atlas “lesson done” rank — all one idea: learned. Never used for actions.', '#5F6E55', '#97A285'],
   ['--warn',       'Celebration',        'Win crown, fastest answer, streak flame, completion glow. Celebration ONLY — illustrations that need warmth use the --art-* palette below, never this.', '#9A5F1C', '#E6A35C'],
   ['--berry',      'Alert',              'Wrong answers, the cross mark, destructive actions. The only red.',            '#A8362A', '#C75450'],
@@ -50,7 +51,7 @@ const ART = [
   ['--art-roast-dark',  'Dark roast',     'The dark end of the ramp. Stops short of espresso so it survives the dark mood.', '#54301C'],
   ['--art-ripe',        'Ripe cherry',    'Fruit at harvest, and the spectrum card tint.', '#C8843A'],
   ['--art-sour',        'Sour axis',      'The sour end of taste diagrams, opposite berry for bitter.',            '#B79A3C'],
-  ['--cream',           'Art highlight',  'The warm highlight on an illustration fill — crema shine, a snow cap, the gloss on a droplet.', '#F0DCB8'],
+  ['--art-cream',       'Art highlight',  'The warm highlight on an illustration fill — crema shine, a snow cap, the gloss on a droplet.', '#F0DCB8'],
   ['--art-cherry-skin', 'Cherry · skin',  'Outermost layer of the cherry in section. The ramp below is ONE definition shared by the Layers card and the practical cross-section.', '#A93227'],
   ['--art-cherry-pulp', 'Cherry · pulp',  'The thin layer of sweet fruit under the skin.',                        '#C9563A'],
   ['--art-cherry-gel',  'Cherry · gel',   'Mucilage — the honey-sweet gel washed, honey and natural argue over.',  '#D9A94C'],
@@ -104,12 +105,12 @@ function renderColors() {
 const TYPE = [
   { fam: 'Fraunces', cls: 'ff-display', role: 'Display / editorial',
     use: 'Screen titles, card & lesson names, big celebration numbers. The expressive voice.',
-    rule: 'One weight — 400. Optical sizing on, tracking −0.02em. Only at 30 / 26 / 19. Never for UI controls or data.',
-    sample: 'What coffee actually is', size: '36px' },
+    rule: 'One weight — 400. Optical sizing on, tracking −0.02em. Only at 30 / 26 / 22 / 19. Never for UI controls or data.',
+    sample: 'What coffee actually is', size: '30px' },
   { fam: 'Fraunces italic', cls: 'ff-display type-italic', role: 'Aside / spoken',
     use: 'Roasty’s own words and anything quoted or murmured: the loading caption, Roasty’s line under the mascot in onboarding, a recall card’s clue, the duel “vs”, the sleeping Zzz.',
     rule: 'Heading (19) or body (15), weight 400, usually ink-mute — ink only when it is the screen’s single line. It marks voice, never emphasis: never italicise a title, a label, a control, or a word inside body copy.',
-    sample: 'Brewing your lesson', size: '26px' },
+    sample: 'Brewing your lesson', size: '19px' },
   { fam: 'IBM Plex Sans', cls: 'ff-ui', role: 'Interface / body',
     use: 'All body copy, buttons, list titles, answer choices — and every smallcaps label. The default.',
     rule: 'Two weights — 400 body, 500 for controls, emphasis & smallcaps. Sizes 17 / 15 / 13 / 11 / 9.5. Smallcaps labels are UPPERCASE at 11 or 9.5, weight 500, 0.14em tracking (.smallcaps).',
@@ -138,10 +139,10 @@ function renderType() {
   const scale = el('div', { class: 'panel' },
     el('div', { class: 'mono eyebrow' }, 'Type scale'),
     el('div', { class: 'scale' },
-      ['Hero', 'Display', 'Title', 'Heading', 'Lead', 'Body', 'Support', 'Label', 'Micro'].map((s, i) => {
-        const px = [56, 30, 26, 19, 17, 15, 13, 11, 9.5][i];
+      ['Hero', 'Display', 'Title', 'Subtitle', 'Heading', 'Lead', 'Body', 'Support', 'Label', 'Micro'].map((s, i) => {
+        const px = [56, 30, 26, 22, 19, 17, 15, 13, 11, 9.5][i];
         return el('div', { class: 'scale-row' },
-          el('span', { class: i === 0 ? 'ff-mono' : i < 4 ? 'ff-display' : 'ff-ui', style: `font-size:${px}px;` }, i === 0 ? '7' : 'Coffee'),
+          el('span', { class: i === 0 ? 'ff-mono' : i < 5 ? 'ff-display' : 'ff-ui', style: `font-size:${px}px;` }, i === 0 ? '7' : 'Coffee'),
           el('span', { class: 'mono klabel' }, `${s.toUpperCase()} · ${px}PX`),
         );
       }),
@@ -149,7 +150,7 @@ function renderType() {
   );
   wrap.append(scale);
   return section('type', 'Foundations', 'Typography',
-    'Three families, four jobs — expressive, spoken, functional, factual. The split is strict: if it is a number or a label it is mono; if it is a control or a sentence it is Plex Sans; if it is a title it is Fraunces; if it is Roasty talking it is Fraunces italic. Smallcaps labels belong to Plex Sans, not mono — mono keeps the numbers and the brand marks. One nine-step ladder is shared by every screen, and it is enforced rather than described: the app has no literal font sizes left — every rule and every inline style reads a --t-* token, so an off-ladder size has to be added to the ladder before it can be used. The one exception is the iOS device frame, which follows Apple\'s own metrics.',
+    'Three families, four jobs — expressive, spoken, functional, factual. The split is strict: if it is a number or a label it is mono; if it is a control or a sentence it is Plex Sans; if it is a title it is Fraunces; if it is Roasty talking it is Fraunces italic. Smallcaps labels belong to Plex Sans, not mono — mono keeps the numbers and the brand marks. One ten-step ladder is shared by every screen, and it is enforced rather than described: the app has no literal font sizes left — every rule and every inline style reads a --t-* token, so an off-ladder size has to be added to the ladder before it can be used — which is exactly how --t-subtitle (22) got there. No exceptions remain.',
     wrap);
 }
 
@@ -206,7 +207,7 @@ const ICONS = {
     ],
   },
   duel: {
-    title: 'Coffee Duel types', count: '5 types',
+    title: 'Coffee Duel types \u00b7 v2', count: '5 types',
     rule: 'Each duel type names its subject by re-using the navigation concept vocabulary: the icon tells you what you are about to be quizzed on. Cup / Globe / Route are pulled straight from the shared nav family (window.Icons) — one drawing, one stroke (1.6). Only Tiles and Drop are duel-specific, matched to the same weight.',
     items: [
       ['Cup', 'Basics', 'Fundamentals — beans, species, where it grows. Same concept as the Learn tab — same drawing, from window.Icons.',
@@ -291,7 +292,7 @@ const ICONS = {
         svg('0 0 20 20', '<path d="M5.5 3.5h9a1 1 0 0 1 1 1v12l-5.5-3.2-5.5 3.2v-12a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>', 1.5)],
       ['Gear', 'Settings', 'Top-right entry to Settings from Profile.',
         svg('0 0 20 20', '<path d="M3 6h7 M16 6h1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M3 14h2 M11 14h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12.5" cy="6" r="2.3" stroke="currentColor" stroke-width="1.5"/><circle cx="7.5" cy="14" r="2.3" stroke="currentColor" stroke-width="1.5"/>', 1.5)],
-      ['Duel', 'Coffee Duel entry', 'Crossed coffee-stirrers — the persistent top-right duel button.',
+      ['Duel', 'Coffee Duel entry \u00b7 v2', 'Crossed coffee-stirrers — the top-right duel button. Designed, not rendered in v1.',
         svg('0 0 24 24', '<path d="M7 5.5l10 13M17 5.5l-10 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="7" cy="5.5" r="1.7" fill="currentColor"/><circle cx="17" cy="5.5" r="1.7" fill="currentColor"/>', 1.6)],
     ],
   },
@@ -400,17 +401,76 @@ function compStates(name, purpose, states, rules, min) {
   );
 }
 
-function comp(name, where, rule, exampleHTML) {
-  return el('div', { class: 'panel comp' },
-    el('div', { class: 'panel-head' },
-      el('div', { class: 'ff-display comp-title' }, name),
-    ),
-    el('div', { class: 'comp-demo', html: exampleHTML }),
-    el('div', { class: 'kv' },
-      el('div', null, el('span', { class: 'mono klabel' }, 'WHERE'), el('span', { class: 'kval' }, where)),
-      el('div', null, el('span', { class: 'mono klabel' }, 'RULE'), el('span', { class: 'kval' }, rule)),
-    ),
-  );
+// ── Cards the lesson engine ships that had no panel ──────────
+function visualGuideDemo() {
+  const rings = [['var(--art-cherry-skin)',34],['var(--art-cherry-pulp)',31],['var(--art-cherry-gel)',25],
+    ['var(--art-cherry-parchment)',22],['var(--art-cherry-silverskin)',19],['var(--art-cherry-seed)',17]];
+  return `<div style="max-width:260px;">
+    <div style="${SC}margin-bottom:12px;">VISUAL GUIDE</div>
+    <div class="ff-display" style="font-size:26px;font-weight:400;line-height:1.12;letter-spacing:-0.01em;color:var(--ink);margin-bottom:18px;">Inside a coffee cherry</div>
+    <svg viewBox="0 0 100 100" style="width:150px;height:150px;display:block;margin:0 auto;">${
+      rings.map(r => '<circle cx="50" cy="50" r="' + r[1] + '" fill="' + r[0] + '" stroke="rgba(27,22,20,0.22)" stroke-width="0.6"/>').join('')
+    }<line x1="50" y1="34" x2="50" y2="66" stroke="var(--art-seed-crease)" stroke-width="1.4"/></svg>
+    <div class="mono" style="display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-mute);margin-top:16px;"><svg width="13" height="16" viewBox="0 0 14 18" fill="none"><path d="M2 1.5h10v15l-5-4-5 4z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg> Save this guide</div>
+  </div>`;
+}
+function practicalDemo() {
+  return `<div style="max-width:280px;">
+    <div style="${SC}color:var(--accent);display:flex;align-items:center;gap:8px;margin-bottom:12px;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 6h7M16 6h1M3 14h2M11 14h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12.5" cy="6" r="2.3" stroke="currentColor" stroke-width="1.5"/><circle cx="7.5" cy="14" r="2.3" stroke="currentColor" stroke-width="1.5"/></svg> HANDS ON</div>
+    <div class="ff-display" style="font-size:26px;font-weight:400;line-height:1.12;letter-spacing:-0.01em;color:var(--ink);margin-bottom:16px;">Grind just before you brew</div>
+    <p style="font-size:15px;line-height:1.6;color:var(--ink);margin:0;text-wrap:pretty;">Ground coffee goes stale in minutes, not days — the aromatics leave as soon as the surface area opens up.</p>
+    ${takeawayDemo('Worth knowing', 'Buy whole bean even without a grinder: ask the shop to grind it the day you open the bag.')}
+  </div>`;
+}
+function rewardCardDemo() {
+  const row = (k, v) => '<div style="display:grid;grid-template-columns:1fr auto;align-items:baseline;padding:11px 0;border-bottom:1px solid var(--rule);"><span style="' + SC + 'font-size:9.5px;">' + k + '</span><span class="mono" style="font-size:12px;color:var(--ink);">' + v + '</span></div>';
+  return `<div style="max-width:280px;position:relative;background:var(--surface);border:1px solid color-mix(in oklab, var(--accent) 22%, var(--rule));border-radius:2px;padding:28px 22px 20px;box-shadow:0 18px 40px rgba(0,0,0,0.28);">
+    <div style="padding-right:70px;">
+      <div style="${SC}margin-bottom:8px;">FIELD GUIDE · BEANS</div>
+      <div class="ff-display" style="font-size:26px;font-weight:400;line-height:1.05;letter-spacing:-0.02em;color:var(--ink);">Arabica &amp; Robusta</div>
+    </div>
+    <div style="position:absolute;top:12px;right:12px;width:60px;height:60px;border-radius:999px;border:1.5px solid color-mix(in oklab, var(--accent) 45%, transparent);transform:rotate(-12deg);display:grid;place-items:center;"><span class="mono" style="font-size:8px;letter-spacing:0.12em;color:var(--accent);text-align:center;line-height:1.3;">M1<br/>DONE</span></div>
+    <p style="font-size:13px;line-height:1.5;color:var(--ink-mute);margin:18px 0 0;text-wrap:pretty;">The two species in almost every cup, and what separates them.</p>
+    <div style="margin-top:16px;">${row('SPECIES', '2')}${row('CAFFEINE', '1.5% / 2.7%')}</div>
+    <hr style="border:none;border-top:1px solid var(--rule);margin:14px 0 0;"/>
+    <div style="padding-top:12px;">
+      <div style="${SC}margin-bottom:6px;">MEMORABLE</div>
+      <p class="ff-display" style="font-size:19px;font-weight:400;line-height:1.3;letter-spacing:-0.01em;color:var(--ink);margin:0;text-wrap:pretty;">Robusta earns its place in espresso: more body, more crema.</p>
+    </div>
+  </div>`;
+}
+function coachTourDemo() {
+  return `<div style="position:relative;width:100%;max-width:240px;height:170px;background:var(--surface-2);border:1px solid var(--rule);border-radius:14px;overflow:hidden;">
+    <div style="position:absolute;inset:0;background:var(--dim-modal);"></div>
+    <div style="position:absolute;left:14px;top:12px;right:14px;height:44px;border-radius:12px;border:1px solid color-mix(in oklab, var(--accent) 55%, transparent);background:var(--surface);"></div>
+    <div style="position:absolute;left:12px;right:12px;bottom:12px;background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:11px 12px 9px;box-shadow:0 14px 30px rgba(0,0,0,0.24);">
+      <div class="mono" style="font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-mute);">1 of 4</div>
+      <div class="ff-display" style="font-size:19px;letter-spacing:-0.01em;color:var(--ink);margin-top:5px;line-height:1.15;">Today starts here</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;">
+        <span style="font-size:11px;color:var(--ink-mute);">Skip</span>
+        <span style="display:flex;gap:4px;"><span style="width:4px;height:4px;border-radius:999px;background:var(--accent);"></span><span style="width:4px;height:4px;border-radius:999px;background:var(--rule);"></span><span style="width:4px;height:4px;border-radius:999px;background:var(--rule);"></span><span style="width:4px;height:4px;border-radius:999px;background:var(--rule);"></span></span>
+        <span style="background:var(--accent);color:var(--accent-ink);border-radius:999px;padding:6px 13px;font-size:11px;font-weight:500;">Next</span>
+      </div>
+    </div>
+  </div>`;
+}
+function coachTipDemo() {
+  return `<div style="width:100%;max-width:240px;background:var(--surface);border:1px solid color-mix(in oklab, var(--accent) 30%, var(--rule));border-radius:14px;padding:13px 15px;box-shadow:0 14px 34px rgba(0,0,0,0.2);display:flex;gap:12px;align-items:flex-start;">
+    <span style="min-width:0;flex:1;">
+      <span style="${SC}color:var(--accent);">STREAK FREEZE</span>
+      <span style="display:block;font-size:13px;font-weight:500;color:var(--ink);margin-top:5px;">A safety net you’ve earned</span>
+      <span style="display:block;font-size:11px;line-height:1.5;color:var(--ink-mute);margin-top:3px;text-wrap:pretty;">Every 7 streak days earns a freeze; you hold one at a time.</span>
+    </span>
+    <span style="color:var(--ink-mute);font-size:15px;line-height:1;">×</span>
+  </div>`;
+}
+function flashFaceDemo(back) {
+  const head = '<div style="display:flex;align-items:center;justify-content:space-between;"><span style="' + SC + 'color:var(--accent);">SENSORY</span><span class="mono" style="font-size:9.5px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-mute);">' + (back ? 'DEFINITION' : 'TERM') + '</span></div>';
+  const foot = '<div class="mono" style="font-size:9.5px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-mute);text-align:center;margin-top:18px;">' + (back ? 'TAP TO FLIP BACK' : 'TAP TO REVEAL') + '</div>';
+  const body = back
+    ? '<p style="font-size:13px;line-height:1.55;color:var(--ink);margin:16px 0 0;text-wrap:pretty;">The bright, tangy liveliness in coffee — pleasant acidity tastes crisp, like citrus, not sour.</p>'
+    : '<div class="ff-display" style="font-size:26px;font-weight:400;letter-spacing:-0.02em;color:var(--ink);margin-top:18px;text-align:center;">Acidity</div>';
+  return '<div style="width:100%;max-width:210px;border-radius:18px;padding:20px 18px;border:1px solid ' + (back ? 'var(--rule)' : 'color-mix(in oklab, var(--accent) 22%, var(--rule))') + ';background:' + (back ? 'var(--surface)' : 'linear-gradient(158deg, color-mix(in oklab, var(--accent) 11%, var(--surface)) 0%, var(--surface) 64%)') + ';box-shadow:0 16px 36px rgba(0,0,0,0.16);">' + head + body + foot + '</div>';
 }
 
 const TAB_SVGS = ICONS.nav.items.map(i => i[3]);
@@ -580,10 +640,10 @@ function renderComponents() {
   wrap.append(compStates('Collectible card',
     'The Cards collection grid \u2014 3:4 portrait, Fraunces title, mono catalogue number.',
     [
-      { label: 'Earned', demo: '<div class="collect-card" style="width:120px;"><div class="cc-sub">CARD 04 / 36</div><div class="cc-title">The Coffee Cherry</div></div>',
+      { label: 'Earned', demo: '<div class="collect-card" style="width:120px;"><div class="cc-sub">CARD 04 / 37</div><div class="cc-title">The Coffee Cherry</div></div>',
         when: 'Unlocked by finishing the lesson that awards it.',
         spec: ['--surface', 'CARD nn / total'] },
-      { label: 'Locked', demo: '<div class="collect-card locked" style="width:120px;"><div class="cc-sub">\u2014</div><div class="cc-title">?</div><div class="cc-sub">05 / 36</div></div>',
+      { label: 'Locked', demo: '<div class="collect-card locked" style="width:120px;"><div class="cc-sub">\u2014</div><div class="cc-title">?</div><div class="cc-sub">05 / 37</div></div>',
         when: 'Not yet earned \u2014 only the next one in the catalogue is shown.',
         spec: ['opacity 0.32', 'no detail'] },
     ],
@@ -612,7 +672,7 @@ function renderComponents() {
          <span style="font-family:'IBM Plex Sans',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);display:inline-flex;align-items:center;gap:8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="color:var(--accent);flex-shrink:0;" aria-hidden="true"><path d="M13.6 5.9 Q 15.2 3.7 17.4 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="11.8" cy="13.2" r="7" stroke="currentColor" stroke-width="1.6"/><ellipse cx="11.8" cy="13.2" rx="2.9" ry="4.2" transform="rotate(-18 11.8 13.2)" stroke="currentColor" stroke-width="1.3"/></svg>Processing</span>
          <span class="mono" style="font-size:9.5px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-mute);display:inline-flex;align-items:center;gap:6px;"><span style="width:6px;height:6px;border-radius:999px;border:1px solid var(--rule);"></span>To learn</span>
        </div>
-       <div class="ff-display" style="font-size:32px;line-height:1.02;letter-spacing:-0.03em;color:var(--ink);margin:14px 0 0;">Fermentation</div>
+       <div class="ff-display" style="font-size:30px;line-height:1.02;letter-spacing:-0.03em;color:var(--ink);margin:14px 0 0;">Fermentation</div>
        <div style="margin-top:14px;"><span style="display:inline-flex;align-items:center;gap:8px;border:1px solid var(--rule);border-radius:999px;padding:5px 12px 5px 9px;"><svg width="15" height="15" viewBox="0 0 20 20" fill="none" style="color:var(--accent);"><path d="M4 8 H6.5 L10 4.5 V15.5 L6.5 12 H4 Z" fill="currentColor" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/><path d="M13 7.5 a3.5 3.5 0 0 1 0 5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity="0.7"/></svg><span class="mono" style="font-size:11px;letter-spacing:0.04em;color:var(--ink-mute);">fur-men-TAY-shun</span></span></div>
        <p class="ff-display" style="font-size:19px;line-height:1.35;letter-spacing:-0.01em;color:var(--ink);margin:18px 0 0;">The controlled breakdown of the fruit\u2019s sugars before the seed is dried.</p>
      </div>`, ['Three fixed lines: category eyebrow + status chip, term, pronunciation chip, definition.', 'The definition is set in Fraunces <b>heading</b>, not body \u2014 it is the entry\u2019s thesis.', 'No actions in the header: the bookmark lives in the top bar, the lesson action on the reference card below.']));
@@ -685,7 +745,7 @@ function renderComponents() {
     'Inside a term entry, below the teaching text \u2014 the optional \u201cdid that land?\u201d beat.',
     `<div style="background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:16px;">
        <div style="font-family:'IBM Plex Sans',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:12px;">Knowledge check</div>
-       <div class="ff-display" style="font-size:18px;line-height:1.35;color:var(--ink);margin-bottom:10px;">What does washed processing remove?</div>
+       <div class="ff-display" style="font-size:19px;line-height:1.35;color:var(--ink);margin-bottom:10px;">What does washed processing remove?</div>
        <div style="display:flex;flex-direction:column;gap:8px;">
          <span class="mcq-choice correct" style="font-size:13px;padding:12px 14px;">All the fruit, before drying</span>
          <span class="mcq-choice" style="font-size:13px;padding:12px 14px;">The silverskin</span>
@@ -742,7 +802,7 @@ function renderComponents() {
     'In-lesson bottom sheet when a tapped term needs a quick definition without leaving the lesson.',
     `<div>
        <div style="display:flex;align-items:center;gap:12px;">
-         <span class="ff-display" style="font-size:23px;color:var(--ink);flex:1;line-height:1;">Coffee Cherry</span>
+         <span class="ff-display" style="font-size:26px;color:var(--ink);flex:1;line-height:1;">Coffee Cherry</span>
          <span style="width:36px;height:36px;border-radius:999px;flex-shrink:0;display:grid;place-items:center;border:1px solid color-mix(in oklab, var(--sage) 55%, var(--rule));background:color-mix(in oklab, var(--sage) 12%, var(--surface));"><svg width="13" height="13" viewBox="0 0 10 10" fill="none"><path d="M1.5 5.2 L4 7.6 L8.5 2.6" stroke="var(--sage)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
          <span style="width:36px;height:36px;border-radius:999px;border:1px solid var(--rule);display:grid;place-items:center;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M5 3.5 H15 V17 L10 13.5 L5 17 Z" stroke="var(--ink-mute)" stroke-width="1.5" stroke-linejoin="round"/></svg></span>
        </div>
@@ -755,6 +815,24 @@ function renderComponents() {
      </div>`, ['Header is ONE 36px control row: term left, status cluster right.', 'Status cluster = sage check (only when learned) + bookmark, identical sizes \u2014 never a text chip.', 'No category tile: category belongs to the Dictionary and the full entry.', 'RELATED is the only label in the sheet; its chips carry a sage dot when learned.', 'Footer is a pair \u2014 ghost dismiss, primary Full entry.']));
 
 
+
+  wrap.append(compRules('Visual guide card \u00b7 window.VisualGuideCard',
+    'A diagram as a lesson step. Eight guides \u2014 roast, grind, extraction, ratio, variety, caffeine, anatomy, distribution \u2014 each drawn once in VISUAL_GUIDE_CONTENT and reused wherever it is needed.',
+    visualGuideDemo(),
+    ['The diagram carries <b>no header of its own</b>. The lesson supplies eyebrow \u2192 title \u2192 caption above it; a title inside the artwork repeats what is three lines up.',
+     'Caption placement is a content decision: <span class="mono">captionTop</span> puts it <b>above</b> when it tells you how to read the drawing, <b>below</b> when it is the conclusion drawn from it.',
+     'A caption that names what the diagram already shows is <b>deleted</b>, not reworded \u2014 four of the eight carry none.',
+     '<b>One definition, three surfaces:</b> the same entry renders as the lesson step, the Saved / Dictionary guide sheet, and a <span class="mono">VisualGuideThumb</span> in the Collection grid. Never redraw a guide for a new placement.',
+     'Colour comes from the <span class="mono">--art-*</span> palette only, so a guide reads the same in both moods.',
+     'Ungraded: it ends on Continue, and the save row is a mono bookmark that names where the guide went once saved.']));
+
+  wrap.append(compRules('Practical card \u00b7 window.PracticalCard',
+    'The \u201cdo it at the counter\u201d step \u2014 a real-world instruction inside a lesson.',
+    practicalDemo(),
+    ['Accent eyebrow with the tune mark; default <span class="mono">HANDS ON</span>, overridden by <span class="mono">card.tag</span>.',
+     'The body is <b>paragraphs, never a numbered list</b>. It is a thing to understand before the next brew, not a recipe to follow at the machine \u2014 the Coffee Challenge is where doing gets logged.',
+     'Its note always takes the <b>Worth knowing</b> takeaway, never Rule of thumb: the step already said what to do, so the note is an aside rather than a verdict.',
+     'No score, no verdict, no Roasty \u2014 nothing here can be answered, so nothing reacts.']));
 
   wrap.append(compSubhead('Feedback and progress', 'How the app answers back'));
 
@@ -774,7 +852,7 @@ function renderComponents() {
     ], 250));
 
   wrap.append(compStates('Card takeaway \u00b7 window.CardTakeaway',
-    'The rule a card leaves you with \u2014 <b>card.note</b>, on every kind that has one: the decision cards at the end of a lesson and the practical how-to steps. Two kickers, one treatment.',
+    'The rule a card leaves you with \u2014 card.note, on every kind that has one: the decision cards at the end of a lesson and the practical how-to steps. Two kickers, one treatment.',
     [
       { demo: takeawayDemo('Rule of thumb', 'Paper for clarity, metal for body. Match the filter to the coffee, not the habit.'),
         label: 'Rule of thumb', when: 'Decision cards. A portable rule you can carry to the next bag.',
@@ -830,7 +908,7 @@ function renderComponents() {
   wrap.append(compStates('Roast meter',
     'The top bar of any run of questions \u2014 a lesson, a mini-game, flashcards, Guess the term.',
     [
-      { label: 'First', demo: drillMeterDemo(1, 8), when: 'Opening question \u2014 raw green bean.', spec: ['--art-roast-light'] },
+      { label: 'First', demo: drillMeterDemo(1, 8), when: 'Opening question \u2014 raw green bean.', spec: ['--art-raw'] },
       { label: 'Mid-run', demo: drillMeterDemo(4, 8), when: 'Halfway \u2014 the bean has taken colour.', spec: ['ramp interpolated'] },
       { label: 'Last', demo: drillMeterDemo(8, 8), when: 'Final question \u2014 espresso.', spec: ['--art-roast-dark'] },
     ],
@@ -922,14 +1000,14 @@ function renderComponents() {
        <div style="${SC}color:var(--accent);display:flex;align-items:center;gap:8px;margin-bottom:28px;">${gBrewCup(15)} OPTIONAL COFFEE CHALLENGE</div>
        <div class="card" style="position:relative;background:color-mix(in oklab, var(--accent) 6%, var(--surface));border-color:color-mix(in oklab, var(--accent) 28%, var(--rule));">
          <div style="display:grid;grid-template-columns:1fr auto;align-items:start;gap:12px;">
-           <div class="ff-display" style="font-size:26px;font-weight:400;line-height:1.1;letter-spacing:-0.01em;color:var(--ink);">Name the origin</div>
+           <div class="ff-display" style="font-size:22px;font-weight:400;line-height:1.1;letter-spacing:-0.01em;color:var(--ink);">Name the origin</div>
            <span style="color:var(--ink-mute);width:38px;height:38px;display:grid;place-items:center;margin:-8px -6px 0 0;border-radius:999px;border:1px solid color-mix(in oklab, var(--accent) 28%, var(--rule));background:var(--surface);"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.25" stroke="currentColor" stroke-width="1.5"/><path d="M10 6.2V10l3 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
          </div>
          <p style="font-size:15px;line-height:1.5;color:var(--ink-mute);margin:10px 0 0;text-wrap:pretty;">Next time you open a bag, find the country it was grown in — and say it out loud.</p>
          <div class="mono" style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-mute);margin-top:14px;">NEXT BAG YOU OPEN · ~2 MIN</div>
          <div class="btn-primary" style="width:100%;margin-top:18px;padding:14px 24px;text-align:center;box-sizing:border-box;background:transparent;color:color-mix(in oklab, var(--accent) 62%, var(--ink));box-shadow:inset 0 0 0 1.5px var(--accent);">Log result</div>
        </div>
-     </div>`, ['The section kicker with the cup mark sits <b>outside</b> the card, and says <b>Optional</b> \u2014 it must not read as a second required task.', 'Accent-tinted surface, accent hairline; title 26, instruction 15.', 'Trigger and estimate join on one mono line; the CTA is full-width below \u2014 the same left-rail geometry as the lead card. While today\u2019s lesson is unfinished, Log result is outlined \u2014 Begin lesson keeps the only filled orange action.', 'Postpone is the <b>clock</b> in the round hairline button chrome (FavButton’s), top-right — tap slides the card to For Later, it never deletes. Never the bookmark: that glyph is the Favorites toggle and lands elsewhere. The clock also marks the For Later row.', 'Never scored: completion is self-reported.']));
+     </div>`, ['The section kicker with the cup mark sits <b>outside</b> the card, and says <b>Optional</b> \u2014 it must not read as a second required task.', 'Accent-tinted surface, accent hairline; title <b>22</b> (--t-subtitle — one step below a lesson title, because the challenge is optional), instruction 15.', 'Trigger and estimate join on one mono line; the CTA is full-width below \u2014 the same left-rail geometry as the lead card. While today\u2019s lesson is unfinished, Log result is outlined \u2014 Begin lesson keeps the only filled orange action.', 'Postpone is the <b>clock</b> in the round hairline button chrome (FavButton’s), top-right — tap slides the card to For Later, it never deletes. Never the bookmark: that glyph is the Favorites toggle and lands elsewhere. The clock also marks the For Later row.', 'Never scored: completion is self-reported.']));
 
   wrap.append(compRules('Keep Sharp card',
     'Today’s lead card once every lesson is done (allCaughtUp) — what a finished learner is offered instead of a dead end.',
@@ -968,7 +1046,7 @@ function renderComponents() {
        <div>
          <div style="${SMALLCAPS}margin-bottom:7px;">SECTION</div>
          <div style="${SMALLCAPS}margin-bottom:4px;">FREE</div>
-         <div style="font-size:14px;color:var(--ink);padding:12px 0;">All of Module 1, two practice formats, a shelf of 5.</div>
+         <div style="font-size:14px;color:var(--ink);padding:12px 0;">All of Module 1, five practice formats, a shelf of 5.</div>
        </div>
      </div>`,
     ['A card is a <b>container for facts</b> — a purchase date, a price, a countdown. Given facts, it earns its border.',
@@ -992,14 +1070,14 @@ function renderComponents() {
        ${roastyArt('correct', 54)}
        ${roastyArt('wrong', 54)}
        <a href="Mascot - Roasty.html" style="font-size:13px;color:var(--accent);">Open the Roasty study →</a>
-     </div>`, ['One shape, eleven states: idle, card, lesson, module, correct, wrong, sleep, gift, duel win/loss, tasting.', 'He reacts, he never instructs \u2014 copy carries the teaching.', 'Full state sheet and motion specs live in the Mascot study file.']));
+     </div>`, ['One shape, nine states: idle, card, lesson, module, points, correct, wrong, sleep, awake.', 'He reacts, he never instructs \u2014 copy carries the teaching.', 'Full state sheet and motion specs live in the Mascot study file.']));
 
   wrap.append(compRules('Course complete moment',
     'Full-screen, fired ONCE when the last of the 32 lessons lands — after the final reward chain, before Learn. The hand-off into Keep Sharp.',
     `<div style="max-width:290px;margin:0 auto;text-align:center;">
        <div style="position:relative;display:inline-block;background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:10px 14px;font-size:13px;line-height:1.45;color:var(--ink);">Beans to brew — you did the whole thing.</div>
        <div style="display:flex;justify-content:center;margin-top:10px;">${roastyArt('module', 84)}</div>
-       <div class="ff-display" style="font-size:26px;font-weight:600;letter-spacing:-0.02em;line-height:1.08;color:var(--ink);margin-top:10px;">You finished Foundations</div>
+       <div class="ff-display" style="font-size:26px;font-weight:400;letter-spacing:-0.02em;line-height:1.08;color:var(--ink);margin-top:10px;">You finished Foundations</div>
        <div style="text-align:left;margin-top:12px;">
          <div style="display:grid;grid-template-columns:1fr auto;align-items:baseline;padding:10px 2px;border-bottom:1px solid var(--rule);"><span style="${SC}">Lessons completed</span><span class="mono" style="font-size:15px;font-weight:500;color:var(--ink);">32</span></div>
          <div style="display:grid;grid-template-columns:1fr auto;align-items:baseline;padding:10px 2px;border-bottom:1px solid var(--rule);"><span style="${SC}">Cards collected</span><span class="mono" style="font-size:15px;font-weight:500;color:var(--ink);">37</span></div>
@@ -1031,7 +1109,7 @@ function renderComponents() {
     el('div', { class: 'comp-demo', html: tabBarHTML() }),
     el('div', { class: 'kv' },
       el('div', null, el('span', { class: 'mono klabel' }, 'WHERE'), el('span', { class: 'kval' }, 'Persistent navigation across the top-level destinations. Five are designed; v1 renders four — Atlas is filtered out of the array (shown dimmed above) and returns in v2.')),
-      el('div', null, el('span', { class: 'mono klabel' }, 'RULE'), el('span', { class: 'kval' }, 'Active tab is accent + filled icon; the rest are ink-mute outlines. Labels are 9px mono, always uppercase. The first tab reads TODAY; its id is learn, which is why the code and these notes use both words for the same destination.')),
+      el('div', null, el('span', { class: 'mono klabel' }, 'RULE'), el('span', { class: 'kval' }, 'Active tab is accent + filled icon; the rest are ink-mute outlines. Labels are --t-micro (9.5) Plex Sans, always uppercase. The first tab reads TODAY; its id is learn, which is why the code and these notes use both words for the same destination.')),
     ),
   ));
 
@@ -1039,7 +1117,7 @@ function renderComponents() {
     'The app\u2019s one modal pattern \u2014 Share, Reset confirm, Daily reminder, the purchase gate, and the dictionary & atlas peeks.',
     sheetDemo(),
     [
-      'Rises from the bottom over a 40% scrim: 36px handle, then content.',
+      'Rises from the bottom over --dim-modal: 36px handle, then content.',
       'Lead with a mono eyebrow, then a Fraunces title, then actions.',
       'Tap-scrim or \u201cNot now\u201d always dismisses \u2014 never trap the user.',
     ]));
@@ -1091,7 +1169,7 @@ function renderComponents() {
 
   wrap.append(compRules('Sticky action bar',
     'The footer that carries the single primary action on a scrolling screen — duel hub, lesson end, pickers.',
-    actionBarDemo(), ['The button sits over a transparent-to-bg gradient so content scrolls beneath it.', 'One primary action only; a quiet link may sit under it.', 'This and the tab bar are the app\u2019s only footers.']));
+    actionBarDemo(), ['The button sits over a transparent-to-bg gradient so content scrolls beneath it.', 'One primary action only; a quiet link may sit under it.', 'This and the tab bar are the app\u2019s only footers.', '<b>Nothing else is ever sticky.</b> Only this bar and screen headers may float; every other element — offer rows, cards, rollups — lives in the scroll flow and moves with the content.']));
 
   // ── Inputs & controls ──────────────────────────────────────
   wrap.append(compSubhead('Inputs and controls', 'How the user makes choices'));
@@ -1121,6 +1199,73 @@ function renderComponents() {
       'A row that fires a <b>network call</b> has a pending state: the label swaps to the present participle (“Restoring…”), drops to ink-mute, the chevron becomes a spinner and taps are refused until it settles. Never leave a row looking tappable while it is working.',
       'Rows are the register for a settings <b>action</b>. A quiet mono link is for purchase surfaces; a primary button is for the one thing a screen is for. Restore purchases is a row in Settings and a link on the paywall — same action, different surface.',
       'Six trailing variants, one row: mono value, chevron, external arrow, toggle, pending spinner, destructive. A row carrying a <b>toggle</b> is tappable across its full width \u2014 the 26px switch is never the only target \u2014 and the switch stops its own tap so the row cannot double-fire.']));
+
+  wrap.append(compSubhead('Completion and coaching', 'What fires when something lands, and what teaches the app itself'));
+
+  wrap.append(compStates('Completion chain',
+    'Every finished lesson and module runs the same two-beat sequence: a full-screen Roasty moment, then the screen that reports what happened. The moment is a beat, not a screen the user acts on.',
+    [
+      { label: 'Beat 1 \u00b7 Roasty moment', demo: '<div style="text-align:center;">' + roastyArt('lesson', 74) + '<div style="' + SC + 'margin-top:10px;">LESSON COMPLETE</div><div class="ff-display" style="font-size:26px;font-weight:400;letter-spacing:-0.02em;color:var(--ink);margin-top:4px;">Nice work.</div></div>',
+        when: 'Auto-advances after ~2s. state=lesson for a lesson, card for a module reward.',
+        spec: ['RoastyMoment', 'autoMs 2000'] },
+      { label: 'Beat 2 \u00b7 Lesson complete', demo: '<div style="width:100%;max-width:220px;text-align:center;"><div style="' + SC + '">LESSON COMPLETE</div><div class="ff-display" style="font-size:26px;font-weight:400;line-height:1.1;letter-spacing:-0.01em;color:var(--ink);margin-top:8px;">Two species, one cup</div><div class="mono" style="font-size:15px;letter-spacing:0.04em;color:var(--ink);margin-top:12px;">6 / 7 correct</div><div class="mono" style="margin-top:16px;display:flex;align-items:center;justify-content:center;gap:7px;font-size:13px;font-weight:500;letter-spacing:0.06em;color:var(--ink);">' + gPointsBean(15) + ' +10 pts</div></div>',
+        when: 'The tree animates its stage; the points line lands under it, then any freeze or card line.',
+        spec: ['AnimatedTree', 'points line'] },
+      { label: 'Beat 2 \u00b7 Module reward', demo: '<div style="width:100%;max-width:210px;text-align:center;"><div style="height:78px;border:1px solid color-mix(in oklab, var(--accent) 22%, var(--rule));border-radius:2px;background:var(--surface);box-shadow:0 12px 26px rgba(0,0,0,0.24);"></div></div>',
+        when: 'Only at the end of a module \u2014 it carries the card you earned.',
+        spec: ['RewardCard', 'sticky CTA'] },
+    ],
+    ['<b>The moment never carries an action.</b> No button, no dismiss \u2014 it times out into the report. A moment you can tap is a screen, and a screen owes the user something to read.',
+     'The report screen states the <b>result</b>, never a grade: score, points, tree movement \u2014 each a quiet line, no receipt box, no chips. A weak run\u2019s verdict lives in the accent practice button, not a label; the persistent chip belongs to the Path row.',
+     'When the tree does <b>not</b> cross a stage, the screen says how far the next one is \u2014 a still tree with no line reads as nothing happened.',
+     'The chain is fired once per completion and is not replayable; a lesson replayed later goes straight to its report with no points.',
+     'The <b>course</b> complete moment is a third case, documented separately \u2014 it fires once ever, after the last of the 32 lessons.'], 250));
+
+  wrap.append(compRules('Reward card \u00b7 window.RewardCard',
+    'The collectible you earn for finishing a module \u2014 one of 37. It is the module\u2019s field guide, not a receipt.',
+    rewardCardDemo(),
+    ['<b>Radius 2, not 14.</b> Every other card in the app is soft; this one is a printed card, and the square corner is the whole difference.',
+     'It carries the <b>content</b>: badge, title, one-line summary, spec rows, and a memorable fact in Fraunces. Deliberately <b>no points total</b> \u2014 points are paid per lesson and already reported by the completion chip.',
+     'The stamp is absolutely positioned top-right and the title reserves its gutter with <b>padding</b>, never a maxWidth \u2014 a hard cap lets a long title run under the ring.',
+     'It enters once with a ring pulse and a settle from rotate(-2deg); the animation never replays when the card is later viewed in the Collection.',
+     'Same component in three places: the reward screen, the Collection grid detail, and the Course complete ledger.',
+     '<b>No eyebrow on the card back faces.</b> The card carries its own title and badge — any headline over it (“CARD UNLOCKED”, “reward”) restates what the flip just showed. The only label is the “New card” row on the report face that leads here.',
+     '<b>One reveal grammar: the card lives on the back of the screen.</b> Both reward screens flip to it — the module screen flips automatically as the reward beat; Lesson Complete flips on demand from its “New card” line, back-arrow flips home. Never an overlay or scrim for a card.',
+     '<b>Close sits top-left, always.</b> On a card back face it is the back-arrow that flips home — same corner as every screen-level close, one close on screen at a time.']));
+
+  wrap.append(compStates('Coach marks \u00b7 guide.jsx',
+    'The teaching layer for the app itself: one four-step tour of Today, then single tips that appear the first time a secondary feature becomes relevant. The whole layer sits behind the guide tweak.',
+    [
+      { label: 'Tour step', demo: coachTourDemo(),
+        when: 'First run only. Four steps over Today \u2014 no tab navigation.',
+        spec: ['--dim-modal', 'spotlight + 1px accent', '320ms move'] },
+      { label: 'Coach tip', demo: coachTipDemo(),
+        when: 'Once ever per feature, when it first becomes relevant.',
+        spec: ['7 tips', 'accent 30% hairline'] },
+    ],
+    ['The spotlight is a <b>1400px box-shadow</b> over the target, not an overlay with a hole \u2014 that is what lets it animate between steps instead of cutting.',
+     '<b>One tip at a time, each id once ever.</b> A 12s gap after a dismissal stops two reading as a chain; changing surface is a natural boundary and shortens the wait to a beat.',
+     'A tip is <b>status, not a dialog</b>: it never blocks, never traps focus, and the screen underneath stays live. The tour is the opposite \u2014 it shields taps until it is done.',
+     'Copy is one eyebrow, one title, one sentence. A tip that needs two sentences is a feature that needs a better affordance.',
+     'The tour states <b>where things are</b>; a tip states <b>what a thing does</b>. Neither ever teaches coffee \u2014 that is the course\u2019s job.'], 250));
+
+  wrap.append(compStates('Flashcards \u00b7 window.FlashcardsScreen',
+    'Active recall over your saved terms \u2014 a free dictionary drill, reachable from Dictionary, Saved and Keep Sharp.',
+    [
+      { label: 'Front', demo: flashFaceDemo(false),
+        when: 'The term alone, on the accent-tinted face.',
+        spec: ['accent 11% gradient', 'radius 18'] },
+      { label: 'Back', demo: flashFaceDemo(true),
+        when: 'Flipped \u2014 the short definition on plain surface.',
+        spec: ['--surface', 'rotateY(180deg)'] },
+      { label: 'Empty', demo: '<div style="width:100%;max-width:200px;text-align:center;"><div style="opacity:0.45;font-size:34px;line-height:1;color:var(--ink-mute);">\u2394</div><p style="font-size:13px;line-height:1.55;color:var(--ink-mute);margin:14px 0 0;text-wrap:pretty;">Bookmark terms and they become a deck here.</p></div>',
+        when: 'Nothing saved yet \u2014 the only drill that can legitimately be empty.',
+        spec: ['CTA: Browse the dictionary'] },
+    ],
+    ['The deck is <b>saved \u2229 accessible</b>. A free user who saved a term that later fell outside the free set must never see its definition flash \u2014 the deck filters, it does not gate mid-run.',
+     '<b>Not scored.</b> There is no right answer to a flip, so the finish state counts <i>terms reviewed</i>, never a score. It is the one drill that reports a total rather than a result.',
+     'It uses the shared <span class="mono">DrillTopbar</span> and roast meter, so position in the deck reads the same as position in a lesson or a mini-game.',
+     'Shuffle only appears above one card, and re-shuffling resets to the first card rather than keeping position \u2014 a shuffled deck with a preserved index is a lie about what is left.']));
 
   // Component index. Sixty-plus panels in one section with no sub-nav is a
   // library you cannot look things up in — the group subheads exist but nothing
@@ -1333,7 +1478,7 @@ function mountRoastyArt(tries = 0) {
 function takeawayDemo(kicker, text) {
   return `<div style="padding-top:14px;border-top:1px solid var(--rule);">
     <div class="mono" style="font-size:10px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:9px;">${kicker}</div>
-    <p class="ff-display" style="font-size:17px;font-weight:400;line-height:1.3;letter-spacing:-0.01em;color:var(--ink);margin:0;text-wrap:pretty;">${text}</p>
+    <p class="ff-display" style="font-size:19px;font-weight:400;line-height:1.3;letter-spacing:-0.01em;color:var(--ink);margin:0;text-wrap:pretty;">${text}</p>
   </div>`;
 }
 function headerButtonsDemo() {
@@ -1428,9 +1573,9 @@ function favBtn(active) {
 }
 
 /* ============================================================================
-   6 · PLUS & PAYWALL — the monetization / gating layer
+   8 · MONETIZATION — the purchase gate and its experiment arms
    ========================================================================== */
-const SMALLCAPS = "font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);";
+const SMALLCAPS = "font-family:'IBM Plex Sans',sans-serif;font-size:9.5px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);";
 
 function gLockGlyph(size, sw) {
   return `<svg width="${size}" height="${size}" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="4.5" y="8.7" width="11" height="7.8" rx="1.7" fill="none" stroke="currentColor" stroke-width="${sw || 1.6}"/><path d="M7 8.7 V6.6 a3 3 0 0 1 6 0 V8.7" fill="none" stroke="currentColor" stroke-width="${sw || 1.6}" stroke-linecap="round"/></svg>`;
@@ -1595,59 +1740,26 @@ function renderGating() {
   wrap.append(treat);
 
   return section('plus', 'Monetization', 'Foundations and the purchase gate',
-    'The gating layer around Foundations. The shipping baseline is a one-time purchase — bought once, kept forever — with two experiment arms (subscription-only, and hybrid) switchable in the prototype; plans and selling copy live in one config, and entitlement logic never changes with the arm. Every lock names the product, states its price plainly, and offers a way in; none is a dead end. Free keeps all of Module 1, four practice formats (True or false, Match the facts, Flashcards, Guess the Term), lesson-earned dictionary terms and a Saved shelf of 5; Modules 2–5 are Foundations.',
+    'The gating layer around Foundations. The shipping baseline is a one-time purchase — bought once, kept forever — with two experiment arms (subscription-only, and hybrid) switchable in the prototype; plans and selling copy live in one config, and entitlement logic never changes with the arm. Every lock names the product, states its price plainly, and offers a way in; none is a dead end. Free keeps all of Module 1, five practice formats (True or false, Match the facts and Name the origin, plus Flashcards and Guess the Term), lesson-earned dictionary terms and a Saved shelf of 5; Modules 2–5 are Foundations.',
     wrap);
 }
 
 /* ============================================================================
-   7 · FLAGS — inconsistencies + proposed fixes
+   9 · FLAGS — inconsistencies + proposed fixes
    ========================================================================== */
-const FLAGS = [];
 function renderFlags() {
-  const list = el('div', { class: 'stack-cards' });
-  FLAGS.forEach(f => {
-    const body = el('div', { class: 'flag-body' },
-      el('div', null, el('span', { class: 'mono klabel' }, 'NOW'), el('span', { class: 'kval' }, f.problem)),
-      el('div', null, el('span', { class: 'mono klabel acc' }, f.done ? 'DECISION' : 'PROPOSED'), el('span', { class: 'kval' }, f.fix)),
-    );
-    if (f.done && f.applied) {
-      body.append(el('div', null, el('span', { class: 'mono klabel done' }, 'APPLIED'), el('span', { class: 'kval' }, f.applied)));
-    }
-    list.append(el('div', { class: 'flag flag-' + f.sev + (f.done ? ' flag-done' : '') },
+  return section('flags', 'Audit', 'Flags and fixes',
+    'Nothing open. Fixes are folded into the rule they changed rather than logged here, so this section only ever holds live drift. New findings get listed as they are made.',
+    el('div', { class: 'flag flag-low' },
       el('div', { class: 'flag-head' },
-        el('span', { class: 'mono sev sev-' + (f.done ? 'done' : f.sev) },
-          f.done ? 'RESOLVED' : f.sev === 'high' ? 'NEEDS DECISION' : f.sev === 'med' ? 'SHOULD FIX' : 'POLISH'),
-        el('div', { class: 'ff-display flag-title' }, f.title),
+        el('span', { class: 'mono sev sev-done' }, 'ALL CLEAR'),
+        el('div', { class: 'ff-display flag-title' }, 'No open flags'),
       ),
-      body,
     ));
-  });
-  if (!FLAGS.length) {
-    return section('flags', 'Audit', 'Flags and fixes',
-      'Nothing open. Fixes are folded into the rule they changed rather than logged here, so this section only ever holds live drift. New findings get listed as they are made.',
-      el('div', { class: 'flag flag-low' },
-        el('div', { class: 'flag-head' },
-          el('span', { class: 'mono sev sev-done' }, 'ALL CLEAR'),
-          el('div', { class: 'ff-display flag-title' }, 'No open flags'),
-        ),
-      ));
-  }
-  const doneCount = FLAGS.filter(f => f.done).length;
-  const WORDS = ['None', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve'];
-  const word = WORDS[doneCount] || String(doneCount);
-  let intro;
-  if (doneCount === 0) {
-    intro = 'Where the system still drifts from its own logic — with a proposed correction for each. Resolved flags are removed from this list once the fix ships, so what remains is the open work.';
-  } else if (doneCount === FLAGS.length) {
-    intro = `Where the system drifted from its own logic — with the correction made for each. All ${word.toLowerCase()} have been applied; the system is consistent with itself again.`;
-  } else {
-    intro = `Where the system already drifts from its own logic — with a proposed correction for each. ${word} ${doneCount === 1 ? 'has' : 'have'} been applied; the rest are decisions for you to make.`;
-  }
-  return section('flags', 'Audit', 'Flags and fixes', intro, list);
 }
 
 /* ==========================================================================
-   6 · GAMES  —  the two game systems and the full playable inventory
+   7 · GAMES  —  the two game systems and the full playable inventory
    ========================================================================== */
 
 // Every interactive card kind in the app, in the order a lesson uses them.
@@ -1796,7 +1908,7 @@ function accessInventory() {
 // The chip is the whole feature's UI. Three states, one line of copy each.
 function pairChipDemo() {
   const states = [
-    [0, 'Nothing played yet', 'DAILY PRACTICE \u00b7 0 OF 2 FORMATS', 'Play both free formats today to earn a practice activity.', 'var(--ink-mute)'],
+    [0, 'Nothing played yet', 'DAILY PRACTICE \u00b7 0 OF 2 FORMATS', 'Play any two free formats today to earn a practice activity.', 'var(--ink-mute)'],
     [1, 'One format done \u2014 the only state that names midnight', 'DAILY PRACTICE \u00b7 1 OF 2 FORMATS', 'One more format to earn today\u2019s practice \u00b7 resets at midnight', 'var(--accent)'],
     [2, 'Pair earned', 'DAILY PRACTICE \u00b7 EARNED', 'Practice done for today \u00b7 1 more activity available', 'var(--sage)'],
   ];
@@ -1845,25 +1957,25 @@ function renderGames() {
 
   wrap.append(accessInventory());
 
-  wrap.append(compRules('Daily practice pair',
-    'How a free user turns mini-games into one of their two daily activities. The chip is the whole feature \u2014 there is no separate screen.',
+  wrap.append(compRules('Daily practice pair \u00b7 v2',
+    'How a free user would turn mini-games into one of their two daily activities. Designed, not built \u2014 nothing in v1 implements the chip or the credit. The chip is the whole feature; there is no separate screen.',
     pairChipDemo(),
-    ['<b>Playing is never rationed.</b> Both free formats are unlimited, any time of day. The daily budget caps <b>credit</b>, not practice \u2014 opening a game never debits an activity.',
-     '<b>One of each is a pair.</b> Completing both free formats on the same local calendar day earns <b>one</b> standalone practice activity, and debits one of the free user\u2019s two dailies <b>at the moment the second format finishes</b>. Order does not matter.',
-     '<b>Twice through one format is not a pair</b> \u2014 it is the same exercise repeated, and it earns nothing. Announced before the round, never after: see <i>Repeat and ad rounds</i>.',
+    ['<b>Playing is never rationed.</b> All three free mini-games are unlimited, any time of day. The daily budget caps <b>credit</b>, not practice \u2014 opening a game never debits an activity.',
+     '<b>Two different formats make a pair.</b> Completing any <b>two of the three</b> free mini-games on the same local calendar day earns <b>one</b> standalone practice activity, and debits one of the free user\u2019s two dailies <b>at the moment the second format finishes</b>. Order does not matter.',
+     '<b>Twice through one format is not a pair</b> \u2014 it is the same exercise repeated, and it earns nothing. Announced before the round, never after: see <i>Repeat rounds</i>.',
      '<b>Nothing carries over.</b> Both halves must land on the same local day; the chip resets at local midnight. Midnight is named in the <b>1-of-2 state only</b> \u2014 at 0-of-2 there is nothing at risk and at earned it is already banked, so saying it in all three turns it into a disclaimer nobody reads.',
      '<b>A round is never resumed.</b> Leaving mid-round discards it; the next open is a fresh round. That is what makes \u201ccompleted on the same day\u201d unambiguous \u2014 no round can straddle midnight.',
-     '<b>Completion is per format, and it is the round\u2019s own end state:</b> True or false = all six answered; Match = board cleared. Match qualifies for the pair even with a misdrop \u2014 only a <b>clean</b> board scores. A daily obligation must not hinge on a perfect run.',
+     '<b>Completion is per format, and it is the round\u2019s own end state:</b> True or false = all six answered; Match = board cleared; Name the origin = every prompt placed. Match qualifies for the pair even with a misdrop \u2014 only a <b>clean</b> board scores. A daily obligation must not hinge on a perfect run.',
      'The pair is <b>practice</b>: like every mini-game it pays no lesson points and moves no progression.',
      '<b>Any remaining count is counting activities, never formats.</b> In the earned state the pips are both full, so a bare \u201c1 left\u201d beside them reads as one format still to play \u2014 name the unit (\u201c1 more activity available\u201d) or leave the number out.']));
 
-  wrap.append(compRules('Repeat rounds',
-    'The round that does not count, and where the app says so. The notice sits before the tap that starts the round \u2014 announced in advance reads as generous, discovered afterwards reads as a trick.',
+  wrap.append(compRules('Repeat rounds \u00b7 v2',
+    'The round that does not count, and where the app says so. Rides with the practice pair \u2014 no daily credit ships in v1, so there is nothing yet to exclude a round from. The notice sits before the tap that starts the round \u2014 announced in advance reads as generous, discovered afterwards reads as a trick.',
     repeatNoticeDemo(),
     ['A format already completed today shows <span class="mono">DONE TODAY</span> in its Practice Again <span class="mono">meta</span> slot, in place of the duration.',
      'Its intro screen carries one line directly above <b>Play</b>. The round stays fully playable \u2014 this is a label, not a lock.',
      '<b>Never move the notice to the results screen.</b>',
-     '<b>v2 \u00b7 ad-unlocked rounds.</b> No advertising ships in v1, so there is no ad path to label yet. When rewarded ads arrive: an ad-unlocked premium round is <b>practice only</b> and can never serve as half of a pair \u2014 if it could, every gated format would become a conditional free format, \u201ctwo fixed free formats\u201d would stop being true, and the upsell would argue against itself. Same line, same placement, shown <b>before</b> the ad rolls so nobody watches thirty seconds expecting credit.']));
+     '<b>v2 \u00b7 ad-unlocked rounds.</b> No advertising ships in v1, so there is no ad path to label yet. When rewarded ads arrive: an ad-unlocked premium round is <b>practice only</b> and can never serve as half of a pair \u2014 if it could, every gated format would become a conditional free format, \u201cthree fixed free formats\u201d would stop being true, and the upsell would argue against itself. Same line, same placement, shown <b>before</b> the ad rolls so nobody watches thirty seconds expecting credit.']));
 
   wrap.append(compRules('Card cue',
     'Above the question on every scored card \u2014 in a lesson and in a mini-game alike.',
@@ -1900,13 +2012,13 @@ function section(id, eyebrow, title, intro, body) {
 }
 
 /* ============================================================================
-   9 · INTRO & ONBOARDING
+   5 · INTRO & ONBOARDING
    ========================================================================== */
 function renderIntro() {
   const wrap = el('div', { class: 'comp-grid' });
 
   wrap.append(compRules('Intro screen skeleton',
-    'The three screens before the app exists — Loading (00), Welcome (01), Meet Roasty (01b).',
+    'The five screens before the app exists — Loading (00), Welcome (01), Meet Roasty (01b), Your name (01c), The offer (01d).',
     `<div style="width:100%;max-width:210px;aspect-ratio:9/16;border:1px solid var(--rule);border-radius:14px;background:var(--bg);display:flex;flex-direction:column;padding:18px 16px;gap:10px;">
        <div style="flex:1;border:1px dashed var(--rule);border-radius:14px;display:grid;place-items:center;"><span class="mono" style="font-size:9.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-mute);">Subject</span></div>
        <div style="${SC}color:var(--accent);">Eyebrow</div>
@@ -1916,7 +2028,7 @@ function renderIntro() {
      </div>`,
     ['Four parts in one order, every time: <b>subject</b> (video, mascot or animation), <b>eyebrow</b>, <b>display line</b>, <b>one sentence</b>. Then the exit affordance, pinned to the bottom.',
      'No chrome at all — no top bar, no tab bar, no header buttons, no progress dots. These screens run before the app frame exists.',
-     'The eyebrow is accent on Welcome and Meet Roasty because it names the brand or the character; it is ink-mute anywhere it is only a section label.',
+     'The eyebrow is accent on Welcome and Meet Roasty because it names the brand or the character; it is ink-mute anywhere it is only a section label. Your name (01c) drops the eyebrow entirely — Roasty above the headline already carries the voice, and a label over a question reads as tense.',
      'The exit affordance is centred on every intro screen even when the content above it is left-aligned — it belongs to the screen, not to the text column.',
      'One idea per screen. If a screen needs two sentences of body copy it is really two screens.']));
 
@@ -1935,6 +2047,34 @@ function renderIntro() {
      'Centred and bottom-anchored on every intro screen, whatever the alignment of the content above it: 80px from the bottom on a centred screen, flush with the content column’s end on a laid-out one.',
      'The whole screen is the target — the cue is a caption on that fact, never a button. It never gets a border, a fill, or a hit area of its own.',
      'It appears only when the tap is the <b>only</b> way forward. A screen with a real button (Meet Roasty) never shows it.']));
+
+  wrap.append(compRules('Name entry',
+    'The one free-text moment in the intro — what Roasty calls you (01c), between Meet Roasty and the offer.',
+    `<div style="display:flex;flex-direction:column;gap:12px;width:100%;max-width:230px;">
+       <div style="display:flex;align-items:center;background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:11px 14px;"><span style="font-size:12px;color:var(--ink-mute);">Your first name</span></div>
+       <div style="display:flex;align-items:center;background:var(--surface);border:1px solid var(--accent);border-radius:12px;padding:11px 14px;"><span style="font-size:12px;color:var(--ink);">Maya</span><span style="width:1px;height:14px;background:var(--accent);margin-left:1px;"></span><span class="mono" style="margin-left:auto;font-size:9.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-mute);">focus</span></div>
+     </div>`,
+    ['One field, one question. The text field is the dictionary search field without the glyph — surface fill, 1px rule, <b>12px</b> radius, body Plex Sans. Focus swaps the border to accent; never a glow.',
+     'Optional by design: the CTA disables until the field holds a character, and the ghost row beneath (“Skip for now”) leaves the name unset. Unset never shows a placeholder name — greetings fall back to the generic form (“Hello there.”), the avatar initial to a neutral dot, and Settings → Name reads “Not set” until it is.',
+     'The same field, in a sheet, is the edit path: Settings → Name opens a bottom sheet with the identical input — the name is asked once and editable forever.',
+     'The name feeds one string store (window.USER via the cq-user account store), so the profile greeting, the avatar initial and the export copy can never disagree.']));
+
+  wrap.append(compRules('The offer (01d)',
+    'The purchase screen, shown once as an intro step — right after Your name, before the app frame exists.',
+    `<div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+       <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
+         <span class="mono" style="font-size:9.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-mute);border:1px solid var(--rule);border-radius:999px;padding:4px 10px;">Intro · after your name</span>
+         <span class="mono" style="font-size:9.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-mute);border:1px solid var(--rule);border-radius:999px;padding:4px 10px;">In-app · any locked door</span>
+       </div>
+       <svg width="12" height="14" viewBox="0 0 12 14"><path d="M6 0v11M2 8l4 4 4-4" fill="none" stroke="var(--ink-mute)" stroke-width="1.4"/></svg>
+       <div style="border:1px solid var(--rule);border-radius:8px;background:var(--bg);padding:10px 16px;text-align:center;">
+         <div class="mono" style="font-size:9.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);">One paywall</div>
+         <div style="font-size:11px;color:var(--ink-mute);margin-top:4px;">renders from the active model</div>
+       </div>
+     </div>`,
+    ['Not a new screen — the SAME PaywallScreen as every in-app upgrade path. It renders from the active monetization model at open, so changing the model re-dresses this placement with the rest.',
+     'Neither exit blocks the path: “Maybe later” walks straight on into the app, buying celebrates on the purchase welcome first and then lands the same place. The offer is made once, never as a wall.',
+     'Because it is the shared screen, restore purchases and the legal links ride along automatically — store review requires them on every purchase surface, this one included.']));
 
   wrap.append(compRules('Brand mark',
     'The loading screen, first cycle only — the app’s one unaccompanied signature.',
@@ -1987,13 +2127,13 @@ function renderIntro() {
      'It always loops rather than ending, and a tap escapes it from the first frame. A loader that can finish would need a real completion signal.']));
 
   return section('intro', 'Flow', 'Intro and onboarding',
-    'Three screens run before the app frame exists — Loading, Welcome, Meet Roasty — and they are the first design the user ever sees. Because they sit outside the tab bar, the header and every screen chrome pattern, nothing else in the library governs them; without this section each one quietly invents its own tap cue, its own caption type and its own overlay colour. The shape is fixed: one subject, one eyebrow, one display line, one sentence, one way out.',
+    'Five screens run before the app frame exists — Loading, Welcome, Meet Roasty, Your name, The offer — and they are the first design the user ever sees. Because they sit outside the tab bar, the header and every screen chrome pattern, nothing else in the library governs them; without this section each one quietly invents its own tap cue, its own caption type and its own overlay colour. The shape is fixed: one subject, one eyebrow, one display line, one sentence, one way out.',
     wrap);
 }
 
 const SECTIONS = [
   ['color', 'Colour'], ['type', 'Type'], ['shape', 'Shape'],
-  ['icons', 'Icons'], ['intro', 'Intro'], ['components', 'Components'], ['games', 'Games'], ['plus', 'Plus'], ['flags', 'Flags'],
+  ['icons', 'Icons'], ['intro', 'Intro'], ['components', 'Components'], ['games', 'Games'], ['plus', 'Monetization'], ['flags', 'Flags'],
 ];
 
 function boot() {

@@ -145,8 +145,15 @@ function LessonPlayer({ lessonId, onClose, onComplete, isFav, onToggleFav, onTer
   const lesson = LESSONS[lessonId];
   // The opening `predict` card's guess, held at lesson scope so the closing
   // `recall` card can resolve it. Cleared whenever a new lesson opens.
-  const [prediction, setPrediction] = useStateL(null);
-  useEffectL(() => { setPrediction(null); }, [lessonId]);
+  // Deep-linking straight to the recall card (screens overview) skips the
+  // predict card, so seed a demo guess — otherwise the payoff never shows.
+  const [prediction, setPrediction] = useStateL(() => {
+    if (startKind !== 'recall' || !lesson) return null;
+    const p = lesson.cards.find(c => c.kind === 'predict');
+    return p ? { pick: p.options.find(o => o !== p.a) || p.options[0], a: p.a } : null;
+  });
+  const firstRunL = useRefL(true);
+  useEffectL(() => { if (firstRunL.current) { firstRunL.current = false; return; } setPrediction(null); }, [lessonId]);
 
   // overview routing straight to the MCQ / Match / Slider / Sequence card),
   // open the player on the first card of that kind.
@@ -1012,7 +1019,7 @@ function SequenceCard({ card, onContinue, onCorrect, onTermTap }) {
 }
 
 // Old CompletionScreen replaced by LessonCompleteScreen + ModuleCompleteScreen
-// + ModuleRewardCardScreen in rewards.jsx.
+// (the module card is its flip side) in rewards.jsx.
 
 // ───────────────────────────────────────────────────────────
 // STANDALONE MINI-GAMES
@@ -1161,8 +1168,8 @@ const MINI_GAME_CONTENT = {
   'g-quiz': [
     { kind: 'quiz', statement: 'A coffee bean is actually the seed of a fruit',
       answer: true, explain: 'True — it is the seed of the coffee cherry.' },
-    { kind: 'quiz', statement: "Most of the world's coffee grows in a band near the equator",
-      answer: true, explain: 'True — the "bean belt" runs roughly 25°N to 25°S.' },
+    { kind: 'quiz', statement: 'Most of the world’s coffee grows in a band near the equator',
+      answer: true, explain: 'True — the “bean belt” runs roughly 25°N to 25°S.' },
     { kind: 'quiz', statement: 'Espresso beans are a special species grown only for espresso',
       answer: false, explain: 'False — espresso is a brewing method, not a species. Any bean can be pulled as espresso.' },
     { kind: 'quiz', statement: 'A coffee cherry usually contains two seeds',

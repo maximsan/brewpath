@@ -106,7 +106,7 @@
         desc: 'A lesson is picked from its module — the current lesson is highlighted as the next thing to do. Tapping it drops straight into the card stack, which opens on a guess made before anything is taught.',
         games: [
           ['module',       'E1', 'Module overview', 'Module 1 · Beans. The lesson list threaded on a path spine; the current lesson is marked “continue”. Locked lessons wait their turn.', 'MODULE'],
-          ['card-predict', 'E2', 'Predict card',    'The opening guess. Never graded — the pick is sealed and held at lesson scope so the closing recall card can pay it off.', 'PREDICT'],
+          ['card-predict', 'E2', 'Predict card · Opening guess', 'The opening guess. Never graded — the pick is sealed and held at lesson scope so the closing recall card can pay it off.', 'PREDICT'],
         ],
       },
       {
@@ -140,9 +140,13 @@
         meta: '5 STATES · FINISH',
         desc: 'The close. The recall card lands the lesson in one line and resolves the opening guess, then the reward beats fire in sequence — points banked, module completed, a collectible card pressed, and the streak nudged.',
         games: [
-          ['card-recall',      'L0', 'Recall card',     'The last question. It answers the guess from the first screen, so the takeaway reads as earned rather than announced.', 'RECALL'],
+          ['card-recall',      'L0', 'Recall card · Resolves the guess', 'The last question. After answering, it resolves the opening guess — the payoff line below the verdict replies to the pick sealed on the first screen. (This frame enters with a demo guess already made.)', 'RECALL'],
           ['lesson-complete',  'L1', 'Lesson reward',   'Roasty celebrates, the lesson’s points land, and the tree grows toward its next stage.', 'REWARD', true],
+          ['lesson-complete-freeze', 'L1a', 'Lesson reward · Freeze earned', 'The 7th consecutive streak day pays out: a FREEZE EARNED row joins the rollup — the user meets the word before they ever need one.', 'REWARD', true],
+          ['lesson-complete-challenge', 'L1b', 'Lesson reward · Challenge offer', 'A lesson that carries a hands-on Coffee Challenge offers it compactly in the footer — one Start button; continuing declines. Full walkthrough on the challenge page.', 'REWARD', true],
+          ['lesson-complete-full', 'L1c', 'Lesson reward · Densest case', 'All three occasional rows at once — new card, freeze earned and a challenge offer — the list at its fullest.', 'REWARD', true],
           ['module-complete',  'L2', 'Module reward',   'The bigger beat when the final lesson closes a module — the whole module marked done and a collectible card pressed — the module’s own reward.', 'REWARD', true],
+          ['module-complete-freeze', 'L2a', 'Module reward · Freeze earned', 'A module close can also be the 7th streak day. Lesson Complete is skipped on this path, so the freeze-earned line lands here, under the points chip.', 'REWARD', true],
           ['module-card',      'L3', 'Collectible card', 'The module’s reward: a botanical specimen card pressed into your collection, earned by finishing every lesson.', 'CARD', true],
           ['streak',           'L4', 'Streak',          'The day counted toward your streak — a gentle nudge to come back tomorrow and keep the run alive.', 'STREAK', true],
         ],

@@ -21,7 +21,7 @@ const PLUS_FEATURES = {
                 blurb: 'The rest of the course, and everything around it.' },
   games:      { label: 'Practice formats',  blurb: 'The five palate-training formats, included with Foundations.',
                 items: ['Name the flavor notes', 'Read the green bean', 'Fix the cup', 'Dial it in', 'Put it in order'],
-                note: 'True or false, Match the facts, Flashcards and Guess the Term stay free.' },
+                note: 'True or false, Match the facts and Name the origin stay free, as do Flashcards and Guess the Term.' },
   dictionary: { label: 'Full Dictionary',   blurb: 'Every coffee term with its full entry — browse, search and Term of the Day across the whole glossary. Included with Foundations.' },
   atlas:      { label: 'Coffee Atlas',      blurb: 'Travel the coffee belt, explore origins and collect passport stamps.' },
   duel:       { label: 'Coffee Duel',       blurb: 'Challenge a friend to a quick, head-to-head coffee quiz.' },

@@ -134,6 +134,45 @@ function TimeSheet({ open, value, onClose, onSave }) {
   );
 }
 
+// ── TextField — THE free-text input for the whole app ─────────
+// The dictionary search field without the glyph: surface fill, 1px rule,
+// 12px radius, body Plex Sans. Focus swaps the border to accent — no glow.
+function TextField({ value, onChange, placeholder, maxLength, autoFocus, ariaLabel, onSubmit }) {
+  const ref = React.useRef(null);
+  const [focus, setFocus] = useStateS(false);
+  useEffectS(() => { if (autoFocus && ref.current) { const t = setTimeout(() => ref.current.focus(), 120); return () => clearTimeout(t); } }, [autoFocus]);
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', background: 'var(--surface)', border: '1px solid ' + (focus ? 'var(--accent)' : 'var(--rule)'), borderRadius: 12, padding: '13px 16px', transition: 'border-color 140ms ease' }}>
+      <input ref={ref} value={value} maxLength={maxLength} aria-label={ariaLabel || placeholder}
+        onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e) => { if (e.key === 'Enter' && onSubmit) onSubmit(); }}
+        onFocus={() => setFocus(true)} onBlur={() => setFocus(false)}
+        placeholder={placeholder}
+        style={{ flex: 1, minWidth: 0, appearance: 'none', border: 'none', outline: 'none', background: 'transparent', font: 'inherit', fontFamily: 'IBM Plex Sans, sans-serif', fontSize: 'var(--t-body)', color: 'var(--ink)' }}/>
+    </div>
+  );
+}
+
+// ── NameSheet — edit the display name (Settings → Name) ──────
+function NameSheet({ open, value, onClose, onSave }) {
+  const [name, setName] = useStateS(value || '');
+  useEffectS(() => { if (open) setName(value || ''); }, [open, value]);
+  const clean = name.trim();
+  const save = () => { if (clean) { onSave(clean); onClose(); } };
+  return (
+    <Sheet open={open} onClose={onClose}>
+          <SheetTitle>Your name</SheetTitle>
+          <p style={{ margin: '12px 0 0', fontSize: 'var(--t-body)', lineHeight: 1.55, color: 'var(--ink-mute)' }}>
+            How Roasty greets you, here and anywhere the app speaks to you.
+          </p>
+          <div style={{ marginTop: 18 }}>
+            <TextField value={name} onChange={setName} placeholder="Your first name" maxLength={24} autoFocus={open} ariaLabel="Your name" onSubmit={save}/>
+          </div>
+          <button className="btn btn-primary" style={{ marginTop: 22 }} disabled={!clean} onClick={save}>Save name</button>
+    </Sheet>
+  );
+}
+
 // ── SettingsRow — THE settings/nav row for the whole app ──────
 // One implementation, six trailing variants: value, chevron, external arrow,
 // toggle, pending spinner, and destructive. Settings, About, Account and sync,
@@ -218,6 +257,25 @@ function useScrollFlag(threshold = 40, resetKey) {
     setScrolled(false);
   }, [resetKey]);
   return [scrolled, onScroll, ref];
+}
+
+// Floating close/back over full-bleed screens (reward ceremonies, paywall,
+// atlas pages): transparent at rest, standard header chrome on scroll.
+function FloatTopbar({ scrolled, onBack, back = false, label, right = null }) {
+  return (
+    <div className="lesson-topbar" style={{
+      background: scrolled ? HEADER_FILL : 'transparent',
+      backdropFilter: scrolled ? HEADER_BLUR : 'none', WebkitBackdropFilter: scrolled ? HEADER_BLUR : 'none',
+      borderBottom: '1px solid ' + (scrolled ? 'var(--rule)' : 'transparent'),
+      transition: 'background 260ms ease, backdrop-filter 260ms ease, border-color 260ms ease',
+    }}>
+      <button className="close-btn" onClick={onBack} aria-label={label || (back ? 'Back' : 'Close')}>
+        {back ? <window.BackMark/> : <window.CloseMark/>}
+      </button>
+      <div/>
+      {right ? <div style={{ justifySelf: 'end' }}>{right}</div> : <div/>}
+    </div>
+  );
 }
 
 function StickyHeaderChrome({ scrolled, height = HEADER_H, children }) {
@@ -361,7 +419,7 @@ function AccountSyncScreen({ isPlus, onClose, onPurchases, onSignOut }) {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               background: 'var(--accent)', color: 'var(--accent-ink)',
               fontSize: 'var(--t-title)', fontWeight: 400, letterSpacing: '-0.02em',
-            }}>{(window.USER || {}).initial || 'm'}</div>
+            }}>{(window.USER || {}).initial || '·'}</div>
             <div style={{ minWidth: 0 }}>
               <div style={{ fontSize: 'var(--t-body)', color: 'var(--ink)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{(window.USER || {}).email}</div>
               <div className="smallcaps" style={{ marginTop: 4 }}>{isPlus ? 'FOUNDATIONS · PURCHASED' : 'FREE'}</div>
@@ -473,7 +531,7 @@ function PurchasesScreen({ owned, planId = 'lifetime', purchased = '8 May 2026',
         ) : (
           <div className="px-24" style={{ paddingTop: 26 }}>
             <div className="smallcaps" style={{ marginBottom: 4 }}>FREE</div>
-            <div style={{ fontSize: 'var(--t-body)', color: 'var(--ink)', padding: '16px 0' }}>All of Module 1, True or false and Match the facts, Flashcards and Guess the Term, and a Saved shelf of 5.</div>
+            <div style={{ fontSize: 'var(--t-body)', color: 'var(--ink)', padding: '16px 0' }}>All of Module 1, True or false, Match the facts and Name the origin, Flashcards and Guess the Term, and a Saved shelf of 5.</div>
           </div>
         )}
 
@@ -545,7 +603,7 @@ function PurchasesScreen({ owned, planId = 'lifetime', purchased = '8 May 2026',
 const FAQ_ITEMS = () => [
   { q: 'How does my streak work?', a: 'Finish at least one lesson a day to keep it alive. Every 7 days in a row you earn a streak freeze — you hold one at a time, and if you miss a day it\u2019s spent automatically, so your streak survives and that day shows as covered in your week. Nothing to switch on.' },
   { q: 'How does my tree grow?', a: 'Your tree tracks the core course only — it moves up a stage as you complete core lessons, through ten stages from bare seed to full harvest. Points from practice and reviews don’t grow it, and it never shrinks unless you reset your progress.' },
-  { q: 'What does Foundations include?', a: 'Modules 2–5, the five premium practice formats, the complete Dictionary, unlimited Saved and the Studio. All of Module 1, True or false, Match the facts, Flashcards, Guess the Term and your streak are free. ' + window.getMonetization().faq },
+  { q: 'What does Foundations include?', a: 'Modules 2–5, the five premium practice formats, the complete Dictionary, unlimited Saved and the Studio. All of Module 1, True or false, Match the facts, Name the origin, Flashcards, Guess the Term and your streak are free. ' + window.getMonetization().faq },
   { q: 'Can I learn offline?', a: 'Yes — modules you\u2019ve opened are kept on your phone. Progress syncs the next time you\u2019re online.' },
 ];
 
@@ -616,6 +674,7 @@ function HelpSupportScreen({ onClose, onAppGuide }) {
 window.SettingsToggle = SettingsToggle;
 window.SubScreenHeader = SubScreenHeader;
 window.StickyHeaderChrome = StickyHeaderChrome;
+window.FloatTopbar = FloatTopbar;
 window.HeaderCompactTitle = HeaderCompactTitle;
 window.HEADER_H = HEADER_H;
 window.HEADER_PAD = HEADER_PAD;
@@ -625,6 +684,8 @@ window.ConfirmSheet = ConfirmSheet;
 window.Sheet = Sheet;
 window.SheetTitle = SheetTitle;
 window.TimeSheet = TimeSheet;
+window.NameSheet = NameSheet;
+window.TextField = TextField;
 window.AboutScreen = AboutScreen;
 window.HelpSupportScreen = HelpSupportScreen;
 window.AccountSyncScreen = AccountSyncScreen;

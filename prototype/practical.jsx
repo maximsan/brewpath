@@ -442,24 +442,18 @@ window.VISUAL_GUIDE_CONTENT = VISUAL_GUIDE_CONTENT;
 if (window.syncVisualGuideText) window.syncVisualGuideText();
 
 // The full guide card — used inside lessons + the card-detail sheet.
-function VisualGuideCard({ visualGuide, hideHeader = false }) {
+// It renders the DIAGRAM ONLY, deliberately headerless: both hosts already
+// state the kind ("VISUAL GUIDE") and a title directly above it, and an inner
+// eyebrow + title repeated the same two lines a second time. The `label` still
+// earns its place where the guide appears as one row among others (Saved).
+function VisualGuideCard({ visualGuide }) {
   const t = VISUAL_GUIDE_CONTENT[visualGuide];
   if (!t) return null;
   return (
     <div style={{
       width: '100%', background: 'var(--surface)', border: '1px solid var(--rule)',
-      borderRadius: 16, padding: hideHeader ? '20px' : '20px 20px 22px',
-    }}>
-      {!hideHeader && (
-        <div className="smallcaps" style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--accent)', marginBottom: 10 }}>
-          <TuneMark size={14} color="var(--accent)"/> VISUAL GUIDE · {t.label}
-        </div>
-      )}
-      {!hideHeader && (
-        <h3 className="ff-display" style={{ fontSize: 'var(--t-heading)', fontWeight: 400, lineHeight: 1.1, letterSpacing: '-0.01em', margin: 0, color: 'var(--ink)' }}>{t.title}</h3>
-      )}
-      <div style={{ marginTop: hideHeader ? 0 : 18 }}>{t.body(t)}</div>
-    </div>
+      borderRadius: 16, padding: 20,
+    }}>{t.body(t)}</div>
   );
 }
 window.VisualGuideCard = VisualGuideCard;
@@ -476,7 +470,7 @@ function VisualLessonCard({ card, onContinue, saved, onToggleSave }) {
       {card.captionTop && card.caption && (
         <p style={{ fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink)', margin: '-6px 0 18px', textWrap: 'pretty' }}>{card.caption}</p>
       )}
-      <VisualGuideCard visualGuide={card.visualGuide} hideHeader={!!card.mergeHeader}/>
+      <VisualGuideCard visualGuide={card.visualGuide}/>
       {onToggleSave && (
         <button type="button" onClick={onToggleSave} aria-pressed={!!saved} style={{
           appearance: 'none', cursor: 'pointer', background: 'transparent', border: 'none',

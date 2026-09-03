@@ -59,7 +59,7 @@
     <div class="head">
       <div class="smallcaps">BREWPATH · ONBOARDING</div>
       <h1>First run, Roasty-led.</h1>
-      <p class="sub">A short, warm sign-up: introduce the app and the living coffee tree, meet the mascot, set expectations, then a handful of quick taps that personalise the path — goal, brewer, time, level, motivation — before handing off into the first lesson. Every state is a live frame below. Tap inside any to use it.</p>
+      <p class="sub">A short, warm sign-up: introduce the app and the living coffee tree, meet the mascot, say your name, see the one up-front offer, set expectations, then a handful of quick taps that personalise the path — goal, brewer, time, level, motivation — before handing off into the first lesson. Every state is a live frame below. Tap inside any to use it.</p>
       <a class="live" href="screens-overview.html">← Back to all screens</a>
       <a class="live" href="index.html" style="margin-left:10px;">Open full prototype →</a>
     </div>
@@ -71,13 +71,15 @@
     const SECTIONS = [
       {
         title: "Cold open",
-        meta: "4 STATES · ENTRY",
-        desc: "The unauthenticated opening — brand, mascot, and a clear promise of what the next minute holds before any questions are asked.",
+        meta: "6 STATES · ENTRY",
+        desc: "The unauthenticated opening — brand, mascot, your name and the one up-front offer, before any questions are asked.",
         games: [
           ["loading","A1","Loading","Brand splash while the app boots — the living coffee tree, front and centre.","SPLASH"],
           ["welcome","A2","Welcome","Introduces the app and the growing-tree metaphor. No Roasty yet; tap anywhere to advance.","INTRO"],
           ["meet","A3","Meet Roasty","The mascot appears — your talisman for the journey. Begin onboarding, or skip straight to lessons.","MASCOT"],
-          ["expectation","A4","Expectation","Sets expectations for what onboarding covers and how quick it is, so the questions feel purposeful.","PROMISE"],
+          ["name","A4","Your name","One field — what Roasty calls you. Optional, and editable any time in Settings → Name.","IDENTITY"],
+          ["offer","A5","The offer","Foundations, offered once up front. The same model-driven paywall as every selling surface — flip the monetization tweak and it re-renders.","PAYWALL"],
+          ["expectation","A6","Expectation","Sets expectations for what onboarding covers and how quick it is, so the questions feel purposeful.","PROMISE"],
         ],
       },
       {

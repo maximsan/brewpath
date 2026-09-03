@@ -279,18 +279,14 @@ function OriginProfile({ slug, state, fav, layout = 'scroll', states, favs, onAc
   if (!origin) return null;
   const tabbed = layout === 'tabbed';
   const activeTab = PROFILE_TABS.find(t => t.id === tab) || PROFILE_TABS[0];
+  const [tbScrolled, onTbScroll] = window.useScrollFlag();
 
   return (
     <div className="screen" data-screen-label="Atlas · Origin" style={{ background: 'var(--bg)' }}>
-      <div className="lesson-topbar" style={{ borderBottom: 'none', background: 'transparent' }}>
-        <button className="close-btn" onClick={onClose} aria-label="Back">
-          <window.BackMark/>
-        </button>
-        <div/>
-        {window.FavButton && <div style={{ justifySelf: 'end' }}><window.FavButton active={fav} onClick={() => onToggleFav(slug)}/></div>}
-      </div>
+      <window.FloatTopbar scrolled={tbScrolled} onBack={onClose} back label="Back"
+        right={window.FavButton ? <window.FavButton active={fav} onClick={() => onToggleFav(slug)}/> : null}/>
 
-      <div className="scroll" style={{ paddingTop: 108, paddingBottom: 28 }}>
+      <div className="scroll" onScroll={onTbScroll} style={{ paddingTop: 108, paddingBottom: 28 }}>
         {/* hero */}
         <div className="px-24">
           <div className="smallcaps" style={{ color: 'var(--accent)', marginBottom: 8 }}>{window.ATLAS_REGIONS[origin.region].label}</div>
@@ -372,16 +368,12 @@ function RegionScreen({ regionId, states, favs, onOpenOrigin, onClose }) {
   const list = window.atlasByRegion(regionId);
   if (!region) return null;
   const prog = list.reduce((a, o) => a + (window.atlasRank(states[o.slug]) >= 1 ? 1 : 0), 0);
+  const [tbScrolled, onTbScroll] = window.useScrollFlag();
 
   return (
     <div className="screen" data-screen-label="Atlas · Region" style={{ background: 'var(--bg)' }}>
-      <div className="lesson-topbar" style={{ borderBottom: 'none', background: 'transparent' }}>
-        <button className="close-btn" onClick={onClose} aria-label="Back">
-          <window.BackMark/>
-        </button>
-        <div/><div/>
-      </div>
-      <div className="scroll" style={{ paddingTop: 108, paddingBottom: 28 }}>
+      <window.FloatTopbar scrolled={tbScrolled} onBack={onClose} back label="Back"/>
+      <div className="scroll" onScroll={onTbScroll} style={{ paddingTop: 108, paddingBottom: 28 }}>
         <div className="px-24">
           <div className="smallcaps" style={{ color: 'var(--accent)', marginBottom: 8 }}>REGION</div>
           <h1 className="ff-display" style={{ fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.02, letterSpacing: '-0.02em', margin: 0, color: 'var(--ink)' }}>{region.label}</h1>

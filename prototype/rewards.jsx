@@ -12,39 +12,48 @@ function LessonCompleteScreen({ lesson, result, freezeEarned = false, lessonStat
   const prevStage = fromStage != null ? fromStage : 1;
   const newStage  = toStage   != null ? toStage   : 1;
 
-  // Lesson state (mastery) + its presentation. Only Needs Practice earns a
-  // chip — the score above it already says how the run went. It wears the
-  // action colour, because it is an invitation to replay, never a failure red.
-  const stateMeta = (window.LESSON_STATES || {})[lessonState] || null;
+  // Lesson state (mastery). Needs Practice shows no chip here — the accent
+  // practice button below carries both the verdict and the action, and the
+  // Path row wears the persistent chip. Saying it twice on one screen is noise.
   const weak = lessonState === 'needs-practice';
-  const stateTone = weak
-    ? { fg: 'var(--accent)', bg: 'color-mix(in oklab, var(--accent) 12%, var(--surface))', bd: 'color-mix(in oklab, var(--accent) 40%, var(--rule))' }
-    : null;
 
   const earned = newPoints - prevPoints;
+  // The challenge offer joins the reward list only while it is live.
+  const offerLive = !!(brewChallenge && window.ChallengeSuggestion && brewChallengeState !== 'completed' && brewChallengeState !== 'active');
 
   const [phase, setPhase] = useStateR('roasty');
-  const [preview, setPreview] = useStateR(false);
-  const [cState, setCState] = useStateR('suggested');
-  const startCh  = () => { setCState('started');   setTimeout(() => onStartChallenge && onStartChallenge(), 900); };
-  const notNowCh = () => { setCState('dismissed'); setTimeout(() => onNotNowChallenge && onNotNowChallenge(), 850); };
+  // Card peek = the same flip grammar as the module screen: the card lives on
+  // the back of the screen. Flip on demand here; modules flip as the reward beat.
+  const [flipped, setFlipped] = useStateR(false);
+  const [half, setHalf] = useStateR(false);   // toggles at the flip midpoint so exactly one face shows
+  const flipTo = (v) => { setFlipped(v); setTimeout(() => setHalf(v), 410); };
+  const [tbScrolled, onTbScroll] = window.useScrollFlag();
   if (phase === 'roasty') {
     const rtitle = weak ? 'Good start.' : lessonState === 'perfect' ? 'Perfect run!' : lessonState === 'mastered' ? 'Mastered it.' : 'Nice work.';
     return <RoastyMoment state="lesson" eyebrow="LESSON COMPLETE" title={rtitle}
                          onDone={() => setPhase('content')}/>;
   }
 
-  return (
-    <div className="screen" data-screen-label="Lesson Complete"
-         style={{ background: 'var(--bg)', position: 'relative', height: '100%' }}>
-      <div className="lesson-topbar" style={{ borderBottom: 'none', background: 'transparent' }}>
-        <button className="close-btn" onClick={onBack} aria-label="Back">
-          <window.CloseMark/>
-        </button>
-        <div/><div/>
-      </div>
+  const faceBase = {
+    position: 'absolute', inset: 0,
+    backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden',
+    overflow: 'hidden', borderRadius: 'inherit',
+  };
 
-      <div className="scroll" style={{ paddingTop: 90, paddingBottom: 0, display: 'flex', flexDirection: 'column' }}>
+  return (
+    <div className="screen" data-screen-label="Lesson Complete" style={{ background: 'var(--bg)' }}>
+      <div style={{ position: 'absolute', inset: 0, perspective: 1800, perspectiveOrigin: '50% 42%' }}>
+        <div style={{
+          position: 'absolute', inset: 0, transformStyle: 'preserve-3d',
+          transition: 'transform 820ms cubic-bezier(.62,.04,.2,1)',
+          transform: flipped ? 'rotateY(180deg)' : 'none',
+        }}>
+
+      {/* ───── FRONT · report ───── */}
+      <div style={{ ...faceBase, visibility: half ? 'hidden' : 'visible' }}>
+      <RewardTopbar scrolled={tbScrolled} onBack={onBack}/>
+
+      <div className="scroll" onScroll={onTbScroll} style={{ paddingTop: 90, paddingBottom: 0, display: 'flex', flexDirection: 'column', height: '100%' }}>
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
           <div className="px-24" style={{ textAlign: 'center' }}>
             <div className="smallcaps">LESSON COMPLETE</div>
@@ -54,21 +63,11 @@ function LessonCompleteScreen({ lesson, result, freezeEarned = false, lessonStat
             }}>
               {lesson.title}
             </h1>
-            {(result || (weak && stateMeta)) && (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginTop: 14 }}>
-                {result && (
-                  <span className="ff-mono" style={{ fontSize: 'var(--t-body)', letterSpacing: '0.04em', color: 'var(--ink)', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
-                    {result.correct} / {result.total}
-                  </span>
-                )}
-                {result && weak && stateMeta && <span style={{ width: 3, height: 3, borderRadius: 999, background: 'var(--ink-mute)', opacity: 0.6 }}/>}
-                {weak && stateMeta && stateTone && (
-                  <span className="ff-mono" style={{
-                    fontSize: 'var(--t-label)', letterSpacing: '0.14em', textTransform: 'uppercase',
-                    color: stateTone.fg, background: stateTone.bg, border: '1px solid ' + stateTone.bd,
-                    borderRadius: 999, padding: '5px 11px', whiteSpace: 'nowrap',
-                  }}>{stateMeta.label}</span>
-                )}
+            {result && (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 14 }}>
+                <span className="ff-mono" style={{ fontSize: 'var(--t-body)', letterSpacing: '0.04em', color: 'var(--ink)', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
+                  {result.correct} / {result.total} correct
+                </span>
               </div>
             )}
           </div>
@@ -76,129 +75,83 @@ function LessonCompleteScreen({ lesson, result, freezeEarned = false, lessonStat
           <div style={{ display: 'flex', justifyContent: 'center', padding: '36px 0 0', position: 'relative' }}>
             <AnimatedTree fromStage={prevStage} toStage={newStage} size={240}/>
           </div>
+          {/* Points land under the tree — what you earned feeds what grows.
+              Their own beat, not a fragment sharing the score's line. */}
+          {earned > 0 && (
+            <div className="ff-mono" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 14, fontSize: 'var(--t-support)', fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ink)', fontVariantNumeric: 'tabular-nums' }}>
+              <PointsBean size={18}/> +{earned} PTS
+            </div>
+          )}
           {/* Most completions do not cross a stage threshold. Say how far the next
               one is, so a still tree reads as progress rather than nothing. */}
           {newStage === prevStage && toNextStage > 0 && (
             <div className="ff-mono" style={{
-              textAlign: 'center', marginTop: 10, fontSize: 'var(--t-label)', letterSpacing: '0.12em',
+              textAlign: 'center', marginTop: 8, fontSize: 'var(--t-label)', letterSpacing: '0.12em',
               textTransform: 'uppercase', color: 'color-mix(in oklab, var(--ink-mute) 76%, var(--ink))',
             }}>{toNextStage} {toNextStage === 1 ? 'lesson' : 'lessons'} to the next stage</div>
           )}
-          <div className="px-24" style={{ width: '100%', marginTop: 28 }}>
-            <div style={{
-              background: 'var(--surface)', border: '1px solid var(--rule)', borderRadius: 16, overflow: 'hidden',
-            }}>
-              {/* points earned */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, padding: '14px 18px' }}>
-                <PointsBean size={18}/>
-                <span className="ff-mono" style={{ fontSize: 'var(--t-support)', fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
-                  +{earned} PTS
-                </span>
-              </div>
-
-              {/* Keeping the streak finally pays out something concrete. This is
-                  the first time most users meet the word "freeze" — before they
-                  ever need one, not at the moment they're told they lost a day. */}
-              {freezeEarned && (
-                <>
-                  <div style={{ height: 1, background: 'var(--rule)' }}/>
-                  <div style={{ padding: '13px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <span style={{ width: 34, height: 34, borderRadius: 12, flexShrink: 0, display: 'grid', placeItems: 'center', background: 'color-mix(in oklab, var(--accent) 12%, var(--surface))' }}>
-                      {window.FreezeMark ? <window.FreezeMark size={18}/> : null}
-                    </span>
-                    <span style={{ minWidth: 0, flex: 1 }}>
-                      <span className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--accent)', display: 'block' }}>FREEZE EARNED</span>
-                      <span style={{ fontSize: 'var(--t-support)', fontWeight: 500, color: 'var(--ink)', display: 'block', marginTop: 2 }}>You're covered for one missed day.</span>
-                    </span>
+          {/* Occasional beats — one list, one row anatomy (label + muted
+              detail, one trailing icon at most), hairlines between. */}
+          {(freezeEarned || (lesson.reward && lesson.reward.title) || offerLive) && (
+            <div className="px-24" style={{ width: '100%', marginTop: 26 }}>
+              <div>
+                {freezeEarned && (
+                  <div className="rw-li">
+                    <RewardRow label="Freeze earned" detail="One missed day is covered."/>
                   </div>
-                </>
-              )}
-
-              {lesson.reward && lesson.reward.title && (
-                <>
-                  <div style={{ height: 1, background: 'var(--rule)' }}/>
-                  <button onClick={() => setPreview(true)} style={{
-                    width: '100%', appearance: 'none', cursor: 'pointer', textAlign: 'left', background: 'transparent', border: 0,
-                    padding: '13px 16px', display: 'flex', alignItems: 'center', gap: 12,
-                  }}>
-                    <span style={{ width: 34, height: 34, borderRadius: 12, flexShrink: 0, display: 'grid', placeItems: 'center', background: 'color-mix(in oklab, var(--accent) 12%, var(--surface))' }}>
-                      <FlavorStamp size={26} rotate={-8}/>
-                    </span>
-                    <span style={{ minWidth: 0, flex: 1 }}>
-                      <span className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--accent)', display: 'block' }}>NEW CARD UNLOCKED</span>
-                      <span style={{ fontSize: 'var(--t-support)', fontWeight: 500, color: 'var(--ink)', display: 'block', marginTop: 2 }}>{lesson.reward.title}</span>
-                    </span>
-                    <window.Chevron/>
-                  </button>
-                </>
-              )}
+                )}
+                {lesson.reward && lesson.reward.title && (
+                  <div className="rw-li">
+                    <RewardRow label="New card" detail={lesson.reward.title} onPress={() => flipTo(true)}/>
+                  </div>
+                )}
+                {offerLive && (
+                  <div className="rw-li">
+                    <window.ChallengeSuggestion challenge={brewChallenge} realState={brewChallengeState} onStart={onStartChallenge}/>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
-        <div className="px-24" style={{ position: 'sticky', bottom: 0, marginTop: 'auto', paddingTop: 16, paddingBottom: 24, background: 'linear-gradient(to top, var(--bg) 74%, transparent)' }}>
-          {brewChallenge && window.ChallengeSuggestion && brewChallengeState !== 'completed' ? (
-            <>
-              <window.ChallengeSuggestion challenge={brewChallenge} state={cState} realState={brewChallengeState} onStart={startCh} onNotNow={notNowCh}/>
-              {/* The offer's own Start/Save advance the flow only while it's a
-                  live, un-acted suggestion. Once the challenge is already
-                  completed/active, or the user has started/dismissed it, the
-                  card is informational — so give an explicit way forward. */}
-              {!(cState === 'suggested' && brewChallengeState !== 'completed' && brewChallengeState !== 'active') && (
-                <button className="btn btn-primary" style={{ marginTop: 14 }} onClick={onContinue}>{nextPlayable ? 'Next lesson' : 'Back to Path'}</button>
-              )}
-            </>
-          ) : (
-            <>
-              <button className="btn btn-primary" onClick={onContinue}>{nextPlayable ? 'Next lesson' : 'Back to Path'}</button>
-              {(onDuel || (nextPlayable && !weak)) && (
-                <div style={{ display: 'flex', alignItems: 'stretch', gap: 10, marginTop: 10 }}>
-                  {onDuel && (
-                    <a className="btn btn-ghost" href="#" style={{ flex: 1, textAlign: 'center', textDecoration: 'none' }} onClick={(e) => { e.preventDefault(); onDuel(); }}>
-                      Duel a friend
-                    </a>
-                  )}
-                  {nextPlayable && !weak && (
-                    <a className="btn btn-ghost" href="#" style={{ flex: 1, textAlign: 'center', textDecoration: 'none' }} onClick={(e) => { e.preventDefault(); onBack(); }}>
-                      Back to Path
-                    </a>
-                  )}
-                </div>
-              )}
-            </>
-          )}
-          {weak && onPractice && (
+        <RewardExitFooter label={nextPlayable ? 'Next lesson' : 'Back to Path'} onContinue={onContinue}
+          ghostRow={onDuel ? (
+            <div style={{ marginTop: 10 }}>
+              <a className="btn btn-link" href="#" style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }} onClick={(e) => { e.preventDefault(); onDuel(); }}>
+                Duel a friend
+              </a>
+            </div>
+          ) : null}
+          alwaysRow={weak && onPractice ? (
             <div style={{ marginTop: 10 }}>
               <a className="btn btn-ghost" href="#" onClick={(e) => { e.preventDefault(); onPractice(); }}
                  style={{ display: 'block', textAlign: 'center', textDecoration: 'none', color: 'var(--accent)', borderColor: 'color-mix(in oklab, var(--accent) 45%, var(--rule))' }}>
                 Practice this lesson again
               </a>
             </div>
-          )}
-        </div>
+          ) : null}/>
+      </div>
       </div>
 
-      {preview && lesson.reward && (
-        <div onClick={() => setPreview(false)} style={{
-          position: 'absolute', inset: 0, zIndex: 20, display: 'flex', flexDirection: 'column',
-          alignItems: 'center', justifyContent: 'center', padding: '0 24px',
-          background: 'var(--veil-strong)', backdropFilter: 'blur(3px)',
-          overflowY: 'auto',
-          animation: 'tfFade .18s ease-out',
-        }}>
-          <style>{`@keyframes tfFade{from{opacity:0}to{opacity:1}}`}</style>
-          <button onClick={(e) => { e.stopPropagation(); setPreview(false); }} aria-label="Close preview" style={{
-            position: 'absolute', top: 16, right: 16, width: 40, height: 40, borderRadius: 999,
-            appearance: 'none', cursor: 'pointer', display: 'grid', placeItems: 'center',
-            background: 'var(--surface)', border: '1px solid var(--rule)', color: 'var(--ink)',
-          }}>
-            <window.CloseMark size={16}/>
-          </button>
-          <div onClick={(e) => e.stopPropagation()} style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-            <RewardCard reward={lesson.reward}/>
+      {/* ───── BACK · the card ───── */}
+      {lesson.reward && (
+        <div style={{ ...faceBase, visibility: half ? 'visible' : 'hidden', transform: 'rotateY(180deg)' }}>
+          <div aria-hidden="true" style={{
+            position: 'absolute', inset: 0, pointerEvents: 'none',
+            background: 'radial-gradient(ellipse at 50% 30%, color-mix(in oklab, var(--accent) 18%, transparent) 0%, transparent 55%)',
+          }}/>
+          <RewardTopbar scrolled={false} onBack={() => flipTo(false)} back label="Flip back"/>
+          <div className="scroll" style={{ paddingTop: 90, paddingBottom: 32, display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <div className="px-24" style={{ display: 'flex', justifyContent: 'center', flex: 1, alignItems: 'center' }}>
+              {half && <RewardCard reward={lesson.reward}/>}
+            </div>
           </div>
         </div>
       )}
+
+        </div>
+      </div>
     </div>
   );
 }
@@ -207,19 +160,21 @@ function LessonCompleteScreen({ lesson, result, freezeEarned = false, lessonStat
 // Module Complete — tree growth with a stronger emotional beat.
 // Continue → module reward card.
 // ───────────────────────────────────────────────────────────
-function ModuleCompleteScreen({ module, fromStage, toStage, prevPoints, newPoints, onContinue, onBack, reward, hasNext }) {
+function ModuleCompleteScreen({ module, fromStage, toStage, prevPoints, newPoints, onContinue, onBack, reward, hasNext, freezeEarned = false, brewChallenge, brewChallengeState, onStartChallenge, startFlipped = false }) {
   // Tree stages come from CORE-LESSON progress only (single source of truth).
   const prevStage = fromStage != null ? fromStage : 1;
   const newStage  = toStage   != null ? toStage   : 1;
   const earned = newPoints - prevPoints;
 
-  const [phase, setPhase] = useStateR('roasty');
-  const [flipped, setFlipped] = useStateR(false);
-  const [half, setHalf] = useStateR(false);   // toggles at the flip midpoint so exactly one face shows
+  const [phase, setPhase] = useStateR(startFlipped ? 'content' : 'roasty');
+  const [flipped, setFlipped] = useStateR(startFlipped);
+  const [half, setHalf] = useStateR(startFlipped);   // toggles at the flip midpoint so exactly one face shows
   const flipTo = (v) => {
     setFlipped(v);
     setTimeout(() => setHalf(v), 410);
   };
+  const [frontScrolled, onFrontScroll] = window.useScrollFlag();
+  const [backScrolled, onBackScroll] = window.useScrollFlag();
   if (phase === 'roasty') {
     return <RoastyMoment state="module" eyebrow="MODULE COMPLETE" title="Look how far you’ve come."
                          autoMs={2200} onDone={() => setPhase('content')}/>;
@@ -248,14 +203,9 @@ function ModuleCompleteScreen({ module, fromStage, toStage, prevPoints, newPoint
               position: 'absolute', inset: 0, pointerEvents: 'none',
               background: 'radial-gradient(circle at 50% 40%, color-mix(in oklab, var(--accent) 14%, transparent) 0%, transparent 60%)',
             }}/>
-            <div className="lesson-topbar" style={{ borderBottom: 'none', background: 'transparent' }}>
-              <button className="close-btn" onClick={onBack} aria-label="Back">
-                <window.CloseMark/>
-              </button>
-              <div/><div/>
-            </div>
+            <RewardTopbar scrolled={frontScrolled} onBack={onBack} label="Close"/>
 
-            <div className="scroll" style={{ paddingTop: 84, paddingBottom: 32, display: 'flex', flexDirection: 'column', position: 'relative', height: '100%' }}>
+            <div className="scroll" onScroll={onFrontScroll} style={{ paddingTop: 84, paddingBottom: 32, display: 'flex', flexDirection: 'column', position: 'relative', height: '100%' }}>
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                 <div className="px-24" style={{ textAlign: 'center' }}>
                   <div className="smallcaps" style={{ color: 'var(--accent)' }}>MODULE COMPLETE</div>
@@ -271,18 +221,19 @@ function ModuleCompleteScreen({ module, fromStage, toStage, prevPoints, newPoint
                   <AnimatedTree fromStage={prevStage} toStage={newStage} size={250}/>
                 </div>
 
-                <div className="px-24" style={{ textAlign: 'center', marginTop: 28 }}>
-                  <div style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 10,
-                    background: 'var(--surface)',
-                    border: '1px solid var(--rule)',
-                    padding: '10px 18px', borderRadius: 999,
-                  }}>
-                    <PointsBean size={18}/>
-                    <span className="ff-mono" style={{ fontSize: 'var(--t-support)', fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
-                      +{earned} PTS
-                    </span>
+                <div className="px-24" style={{ textAlign: 'center', marginTop: 14 }}>
+                  {/* Same borderless points line as Lesson Complete — no pill. */}
+                  <div className="ff-mono" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontSize: 'var(--t-support)', fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ink)', fontVariantNumeric: 'tabular-nums' }}>
+                    <PointsBean size={18}/> +{earned} PTS
                   </div>
+                  {/* Freeze earned on the module-closing lesson — Lesson Complete is
+                      skipped on this path, so the earn beat must land here or nowhere. */}
+                  {freezeEarned && (
+                    <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                      {window.FreezeMark ? <window.FreezeMark size={14}/> : null}
+                      <span className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--accent)' }}>FREEZE EARNED · ONE MISSED DAY COVERED</span>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -311,35 +262,19 @@ function ModuleCompleteScreen({ module, fromStage, toStage, prevPoints, newPoint
               position: 'absolute', inset: 0, pointerEvents: 'none',
               background: 'radial-gradient(ellipse at 50% 30%, color-mix(in oklab, var(--accent) 18%, transparent) 0%, transparent 55%)',
             }}/>
-            <div className="lesson-topbar" style={{ borderBottom: 'none', background: 'transparent' }}>
-              <button className="close-btn" onClick={() => flipTo(false)} aria-label="Flip back">
-                <window.BackMark/>
-              </button>
-              <div/><div/>
-            </div>
+            <RewardTopbar scrolled={backScrolled} onBack={() => flipTo(false)} back label="Flip back"/>
 
-            <div className="scroll" style={{ paddingTop: 90, paddingBottom: 32, display: 'flex', flexDirection: 'column', position: 'relative', height: '100%' }}>
-              <div className="px-24" style={{ textAlign: 'center' }}>
-                <div className="smallcaps" style={{ color: 'var(--accent)' }}>REWARD UNLOCKED</div>
-                <h1 className="ff-display" style={{
-                  fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.1, letterSpacing: '-0.01em',
-                  margin: '8px 0 0', color: 'var(--ink)',
-                }}>
-                  New collectible card
-                </h1>
-              </div>
-
-              <div className="px-24" style={{ paddingTop: 22, display: 'flex', justifyContent: 'center', position: 'relative' }}>
+            <div className="scroll" onScroll={onBackScroll} style={{ paddingTop: 90, paddingBottom: 32, display: 'flex', flexDirection: 'column', position: 'relative', height: '100%' }}>
+              <div className="px-24" style={{ paddingTop: 34, display: 'flex', justifyContent: 'center', position: 'relative' }}>
                 {half && <RewardCard reward={reward}/>}
               </div>
 
               <div style={{ flex: 1, minHeight: 24 }}/>
 
-              <div className="px-24" style={{ position: 'sticky', bottom: 0, paddingTop: 16, paddingBottom: 24, background: 'linear-gradient(to top, var(--bg) 74%, transparent)' }}>
-                <button className="btn btn-primary" onClick={onContinue}>
-                  {hasNext ? 'Begin next module' : 'Back to Path'}
-                </button>
-              </div>
+              <RewardExitFooter label={hasNext ? 'Begin next module' : 'Back to Path'} onContinue={onContinue}
+                offer={brewChallenge && window.ChallengeSuggestion && brewChallengeState !== 'completed' && brewChallengeState !== 'active'
+                  ? <window.ChallengeSuggestion challenge={brewChallenge} realState={brewChallengeState} onStart={onStartChallenge}/>
+                  : null}/>
             </div>
           </div>
 
@@ -349,55 +284,55 @@ function ModuleCompleteScreen({ module, fromStage, toStage, prevPoints, newPoint
   );
 }
 
+// Reward screens use the shared FloatTopbar (settings.jsx) — transparent at
+// rest, standard header chrome on scroll.
+const RewardTopbar = (props) => <window.FloatTopbar {...props}/>;
+
+// ── Reward list row — the one anatomy for every occasional beat on a reward
+// screen: label + muted detail, at most one trailing affordance. The challenge
+// offer row (ChallengeSuggestion) follows the same anatomy.
+function RewardRow({ label, detail, onPress }) {
+  const inner = (
+    <>
+      <div style={{ minWidth: 0, flex: 1, textAlign: 'left' }}>
+        <div style={{ fontSize: 'var(--t-support)', fontWeight: 500, color: 'var(--ink)' }}>{label}</div>
+        {detail && <div style={{ fontSize: 'var(--t-support)', color: 'var(--ink-mute)', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{detail}</div>}
+      </div>
+      {/* Same go-button anatomy as the challenge row — one affordance style
+          for every actionable reward row. Span, not button: the row itself
+          is the button. */}
+      {onPress && (
+        <span aria-hidden="true" style={{ width: 38, height: 38, borderRadius: 999, flexShrink: 0, display: 'grid', placeItems: 'center', background: 'var(--accent)', color: 'var(--accent-ink)' }}>
+          <svg width="16" height="16" viewBox="0 0 20 20"><path d="M4 10h11M11 5.5 16.5 10 11 14.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        </span>
+      )}
+    </>
+  );
+  const base = { display: 'flex', alignItems: 'center', gap: 12, padding: onPress ? '10px 0' : '12px 0', width: '100%' };
+  return onPress
+    ? <button onClick={onPress} style={{ ...base, appearance: 'none', cursor: 'pointer', background: 'transparent', border: 0, font: 'inherit', color: 'inherit' }}>{inner}</button>
+    : <div style={base}>{inner}</div>;
+}
+
 // ───────────────────────────────────────────────────────────
-// Module Reward Card — celebratory unlock screen for the
-// collectible card you earn by finishing a module.
-// ───────────────────────────────────────────────────────────
-function ModuleRewardCardScreen({ module, reward, onContinue, onBack, hasNext }) {
-  const [phase, setPhase] = useStateR('roasty');
-  if (phase === 'roasty') {
-    return <RoastyMoment state="card" eyebrow="REWARD UNLOCKED" title="You earned a card."
-                         onDone={() => setPhase('content')}/>;
-  }
+// Shared sticky footer for ALL reward screens: the exit CTA over the standard
+// gradient, with optional quiet rows. The challenge offer lives in the screen's
+// reward LIST (or, on the module card back, in `offer` above the CTA) — the
+// footer itself owns nothing but exits.
+function RewardExitFooter({ label, onContinue, offer = null, ghostRow = null, alwaysRow = null }) {
   return (
-    <div className="screen" data-screen-label="Module Reward"
-         style={{ background: 'var(--bg)', position: 'relative' }}>
-      <div aria-hidden="true" style={{
-        position: 'absolute', inset: 0, pointerEvents: 'none',
-        background: 'radial-gradient(ellipse at 50% 30%, color-mix(in oklab, var(--accent) 18%, transparent) 0%, transparent 55%)',
-      }}/>
-
-      <div className="lesson-topbar" style={{ borderBottom: 'none', background: 'transparent' }}>
-        <button className="close-btn" onClick={onBack} aria-label="Back">
-          <window.CloseMark/>
-        </button>
-        <div/><div/>
+    <>
+      {/* The offer lives in the scroll flow — it moves with the content.
+          Only the exit CTA floats: declining IS the CTA. */}
+      {offer && (
+        <div className="px-24" style={{ marginTop: 'auto', paddingTop: 8 }}>{offer}</div>
+      )}
+      <div className="px-24" style={{ position: 'sticky', bottom: 0, marginTop: offer ? undefined : 'auto', paddingTop: 16, paddingBottom: 24, background: 'linear-gradient(to top, var(--bg) 74%, transparent)' }}>
+        <button className="btn btn-primary" onClick={onContinue}>{label}</button>
+        {!offer && ghostRow}
+        {alwaysRow}
       </div>
-
-      <div className="scroll" style={{ paddingTop: 96, paddingBottom: 0, display: 'flex', flexDirection: 'column', position: 'relative', height: '100%' }}>
-        <div className="px-24" style={{ textAlign: 'center' }}>
-          <div className="smallcaps" style={{ color: 'var(--accent)' }}>REWARD UNLOCKED</div>
-          <h1 className="ff-display" style={{
-            fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.1, letterSpacing: '-0.01em',
-            margin: '8px 0 0', color: 'var(--ink)',
-          }}>
-            New collectible card
-          </h1>
-        </div>
-
-        <div className="px-24" style={{ paddingTop: 24, display: 'flex', justifyContent: 'center', position: 'relative' }}>
-          <RewardCard reward={reward}/>
-        </div>
-
-        <div style={{ flex: 1, minHeight: 24 }}/>
-
-        <div className="px-24" style={{ position: 'sticky', bottom: 0, paddingTop: 16, paddingBottom: 24, background: 'linear-gradient(to top, var(--bg) 74%, transparent)' }}>
-          <button className="btn btn-primary" onClick={onContinue}>
-            {hasNext ? 'Begin next module' : 'Back to Path'}
-          </button>
-        </div>
-      </div>
-    </div>
+    </>
   );
 }
 
@@ -537,6 +472,5 @@ function CourseCompleteScreen({ lessons = 32, cards = 37, streak = 0, onStart })
 
 window.LessonCompleteScreen = LessonCompleteScreen;
 window.ModuleCompleteScreen = ModuleCompleteScreen;
-window.ModuleRewardCardScreen = ModuleRewardCardScreen;
 window.RewardCard = RewardCard;
 window.CourseCompleteScreen = CourseCompleteScreen;

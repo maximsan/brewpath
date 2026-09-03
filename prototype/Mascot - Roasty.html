@@ -15,7 +15,8 @@
     --ink:       #1B1614;
     --ink-mute:  #6B5F54;
     --rule:      #D8CFBF;
-    --accent:    #B8533A;
+    --accent:    #A6462F;
+    --accent-text: var(--accent);
     --sage:      #5F6E55;
     --warn:      #9A5F1C;
 
@@ -294,7 +295,7 @@
     100% { transform: translateY(-60px); opacity: 0; }
   }
   .roasty[data-state="points"] .points-burst {
-    animation: points-rise 1.3s ease-out;
+    animation: points-rise 1.3s ease-out forwards;
   }
 
   @keyframes card-shimmer {
@@ -889,8 +890,8 @@
         <div><span class="num">01</span><span class="lbl">SPROUT</span></div>
         <span class="note">Two leaves; grows in stages as the user's coffee tree progresses.</span>
         <svg class="lead" width="120" height="40" style="top: 18px; right: -120px;">
-          <line x1="0" y1="20" x2="100" y2="20" stroke="#B8533A" stroke-width="1"/>
-          <circle cx="100" cy="20" r="2" fill="#B8533A"/>
+          <line x1="0" y1="20" x2="100" y2="20" stroke="var(--accent)" stroke-width="1"/>
+          <circle cx="100" cy="20" r="2" fill="var(--accent)"/>
         </svg>
       </div>
 
@@ -898,8 +899,8 @@
         <div><span class="num">02</span><span class="lbl">EYES</span></div>
         <span class="note">Slightly oversized; squint when happy, soften when wrong. Never blink in sync.</span>
         <svg class="lead" width="120" height="40" style="top: 12px; left: -110px;">
-          <line x1="0" y1="20" x2="110" y2="20" stroke="#B8533A" stroke-width="1"/>
-          <circle cx="0" cy="20" r="2" fill="#B8533A"/>
+          <line x1="0" y1="20" x2="110" y2="20" stroke="var(--accent)" stroke-width="1"/>
+          <circle cx="0" cy="20" r="2" fill="var(--accent)"/>
         </svg>
       </div>
 
@@ -907,8 +908,8 @@
         <div><span class="num">03</span><span class="lbl">BEAN CREASE</span></div>
         <span class="note">A soft S-curve; reads as "coffee bean" even without color.</span>
         <svg class="lead" width="130" height="40" style="top: 8px; right: -130px;">
-          <line x1="0" y1="20" x2="110" y2="20" stroke="#B8533A" stroke-width="1"/>
-          <circle cx="110" cy="20" r="2" fill="#B8533A"/>
+          <line x1="0" y1="20" x2="110" y2="20" stroke="var(--accent)" stroke-width="1"/>
+          <circle cx="110" cy="20" r="2" fill="var(--accent)"/>
         </svg>
       </div>
 
@@ -916,8 +917,8 @@
         <div><span class="num">04</span><span class="lbl">MOUTH</span></div>
         <span class="note">Single-stroke; five total shapes carry every emotion.</span>
         <svg class="lead" width="120" height="40" style="top: 8px; left: -100px;">
-          <line x1="0" y1="20" x2="100" y2="20" stroke="#B8533A" stroke-width="1"/>
-          <circle cx="0" cy="20" r="2" fill="#B8533A"/>
+          <line x1="0" y1="20" x2="100" y2="20" stroke="var(--accent)" stroke-width="1"/>
+          <circle cx="0" cy="20" r="2" fill="var(--accent)"/>
         </svg>
       </div>
 
@@ -925,8 +926,8 @@
         <div><span class="num">05</span><span class="lbl">BODY</span></div>
         <span class="note">Asymmetric oval — never a circle. Slight tilt gives personality.</span>
         <svg class="lead" width="140" height="40" style="top: -4px; right: -140px;">
-          <line x1="0" y1="20" x2="120" y2="20" stroke="#B8533A" stroke-width="1"/>
-          <circle cx="120" cy="20" r="2" fill="#B8533A"/>
+          <line x1="0" y1="20" x2="120" y2="20" stroke="var(--accent)" stroke-width="1"/>
+          <circle cx="120" cy="20" r="2" fill="var(--accent)"/>
         </svg>
       </div>
 
@@ -934,8 +935,8 @@
         <div><span class="num">06</span><span class="lbl">CHEEKS</span></div>
         <span class="note">Subtle blush; lifts the face from "graphic" to "alive".</span>
         <svg class="lead" width="120" height="40" style="top: -10px; left: -110px;">
-          <line x1="0" y1="20" x2="110" y2="20" stroke="#B8533A" stroke-width="1"/>
-          <circle cx="0" cy="20" r="2" fill="#B8533A"/>
+          <line x1="0" y1="20" x2="110" y2="20" stroke="var(--accent)" stroke-width="1"/>
+          <circle cx="0" cy="20" r="2" fill="var(--accent)"/>
         </svg>
       </div>
     </div>

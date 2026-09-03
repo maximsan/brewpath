@@ -10,6 +10,11 @@ const { useState: useStateRO, useEffect: useEffectRO, useRef: useRefRO } = React
 .roasty-wrap { display: inline-block; line-height: 0; }
 .roasty { overflow: visible; display: block; }
 
+/* The plate tone is deliberately NOT --surface: every surface token inverts
+   with the mood while the bean stays brown, so a mood-following plate merges
+   into the mascot in dark-roast. Pinned paper keeps the bean readable in both. */
+.roasty { --roasty-plate: #FBF7EE; }
+
 /* ── state→face visibility ── */
 .roasty .face-default,
 .roasty .face-correct,
@@ -130,7 +135,7 @@ const { useState: useStateRO, useEffect: useEffectRO, useRef: useRefRO } = React
   100% { transform: translateY(-50px); opacity: 0; }
 }
 .roasty[data-state="points"] .points-burst {
-  animation: roasty-points-rise 1.3s ease-out;
+  animation: roasty-points-rise 1.3s ease-out forwards;
 }
 
 /* ── card: shimmer ── */
@@ -334,7 +339,7 @@ function roastyHatArt(kind) {
 
 // ─── Roasty SVG component ─────────────────────────────────
 let _roastyCounter = 0;
-function Roasty({ state = 'idle', size = 160, replayKey, style, roast, hat, gear, sprout, pointsAmount = 10 }) {
+function Roasty({ state = 'idle', size = 160, replayKey, style, roast, hat, gear, sprout, pointsAmount = 10, plate }) {
   const idRef = useRefRO(null);
   if (idRef.current === null) idRef.current = 'r' + (++_roastyCounter);
   const u = idRef.current;
@@ -368,6 +373,12 @@ function Roasty({ state = 'idle', size = 160, replayKey, style, roast, hat, gear
             <stop offset="100%" stopColor="#E6C68A" stopOpacity="0"/>
           </radialGradient>
         </defs>
+
+        {/* paper plate — separates the bean from a dark or accent-filled
+           surface, where the roast browns otherwise merge into the ground.
+           plate={true} for pinned paper (mood-invariant, see --roasty-plate),
+           or pass a colour. r clears the contact shadow at cy 232. */}
+        {plate && <circle cx="100" cy="140" r="112" fill={plate === true ? 'var(--roasty-plate)' : plate}/>}
 
         {/* card glow */}
         <g className="card-glow">
@@ -814,7 +825,7 @@ window.RoastyLoadingScreen = RoastyLoadingScreen;
 // short line, then hands off to the screen that follows
 // (lesson complete, reward, streak…). Keeps the mascot out of
 // the content screens so they stay calm and legible.
-function RoastyMoment({ state = 'lesson', size = 184, eyebrow, title, autoMs = 2000, onDone }) {
+function RoastyMoment({ state = 'lesson', size = 184, eyebrow, title, autoMs = 2000, pointsAmount, onDone }) {
   const doneRef = useRefRO(false);
   const finish = () => { if (!doneRef.current) { doneRef.current = true; onDone && onDone(); } };
   useEffectRO(() => {
@@ -840,7 +851,7 @@ function RoastyMoment({ state = 'lesson', size = 184, eyebrow, title, autoMs = 2
         .rm-in-2 { animation: roastyMomentIn 460ms cubic-bezier(.2,.9,.3,1) 140ms both; }
       `}</style>
 
-      <div className="rm-in"><Roasty state={state} size={size}/></div>
+      <div className="rm-in"><Roasty state={state} size={size} pointsAmount={pointsAmount}/></div>
 
       {eyebrow && (
         <div className="smallcaps rm-in-2" style={{ marginTop: 8, color: 'var(--accent)' }}>{eyebrow}</div>

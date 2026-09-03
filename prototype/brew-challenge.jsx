@@ -180,36 +180,6 @@ function TriedSeal() {
 }
 window.TriedSeal = TriedSeal;
 
-// Shared button pair used on the Today card / suggestion / module screen.
-// Two buttons only, always: a primary + a quiet secondary. Never three.
-function BrewActions({ primaryLabel, secondaryLabel, onPrimary, onSecondary, inline = false }) {
-  if (inline) {
-    return (
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', alignItems: 'center', gap: 10 }}>
-        <button onClick={onPrimary} className="ff-ui" style={{
-          appearance: 'none', border: 'none', cursor: 'pointer',
-          background: 'var(--accent)', color: 'var(--accent-ink)',
-          borderRadius: 12, padding: '13px 16px', fontSize: 'var(--t-body)', fontWeight: 500,
-        }}>{primaryLabel}</button>
-        <button onClick={onSecondary} className="ff-ui" style={{
-          appearance: 'none', border: 'none', cursor: 'pointer', background: 'transparent',
-          color: 'var(--ink-mute)', padding: '13px 6px', fontSize: 'var(--t-support)', fontWeight: 500,
-        }}>{secondaryLabel}</button>
-      </div>
-    );
-  }
-  return (
-    <>
-      <button className="btn btn-primary" onClick={onPrimary}>{primaryLabel}</button>
-      <div style={{ marginTop: 10 }}>
-        <a className="btn btn-ghost" href="#" style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }} onClick={(e) => { e.preventDefault(); onSecondary(); }}>
-          {secondaryLabel}
-        </a>
-      </div>
-    </>
-  );
-}
-window.BrewActions = BrewActions;
 
 // ───────────────────────────────────────────────────────────
 // TODAY · ACTIVE COFFEE CHALLENGE CARD
@@ -305,8 +275,8 @@ function ActiveBrewCard({ challenge, mode, onLog, onSkip, onDismiss, onOpenCard,
       </div>
       <div className="card" role="group" aria-label={'Optional coffee challenge: ' + challenge.title} style={{ background: accentTint, borderColor: accentRule, position: 'relative', opacity: parking ? 0 : 1, transform: parking ? 'translateX(28px)' : 'none', transition: 'opacity 220ms ease, transform 220ms ease' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', alignItems: 'start', gap: 12 }}>
-          {/* One step below the lesson title (26px): the challenge stays optional. */}
-          <h2 className="ff-display" style={{ fontSize: 22, fontWeight: 400, lineHeight: 1.15, letterSpacing: '-0.01em', margin: 0, color: 'var(--ink)' }}>{challenge.title}</h2>
+          {/* One step below the lesson title: the challenge stays optional. */}
+          <h2 className="ff-display" style={{ fontSize: 'var(--t-subtitle)', fontWeight: 400, lineHeight: 1.15, letterSpacing: '-0.01em', margin: 0, color: 'var(--ink)' }}>{challenge.title}</h2>
           {/* Postpone control (settled in review): clock in the app's round hairline
               button chrome (same as FavButton) so it reads as tappable. Tap slides
               the card away immediately; it lands under For Later, it is not deleted.
@@ -441,144 +411,45 @@ function BrewRecapSheet({ challenge, open, onClose, onReplay }) {
 window.BrewRecapSheet = BrewRecapSheet;
 
 // ───────────────────────────────────────────────────────────
-// LESSON-COMPLETION SUGGESTION — "Try this in real life" block shown on the
-// lesson reward screen. Two buttons: Start Challenge / Not Now.
-// state: 'suggested' | 'started' | 'dismissed'
+// CHALLENGE OFFER — one row in the reward list (Lesson Complete) or above the
+// exit CTA (module card back). Same anatomy as every reward row: label +
+// muted detail, one trailing icon button as the only affordance. Manages its
+// own suggested → started morph; onStart fires after the morph beat.
+// Renders ONLY while the challenge is a live offer — once active or completed,
+// the reward screens show nothing: Today owns that status.
 // ───────────────────────────────────────────────────────────
-function ChallengeSuggestion({ challenge, state, realState, onStart, onNotNow }) {
+function ChallengeSuggestion({ challenge, realState, onStart }) {
+  const [st, setSt] = React.useState('suggested');
   if (!challenge) return null;
-  // If the challenge is already completed or currently active in real state,
-  // never offer Start / Save for later — show its true status instead, so a
-  // done challenge can't be "saved" into a contradictory state.
-  if (realState === 'completed' || realState === 'active') {
-    const isDone = realState === 'completed';
+  // Already active or completed → not an offer any more; render nothing.
+  if (realState === 'completed' || realState === 'active') return null;
+  const start = () => { if (st !== 'suggested') return; setSt('started'); setTimeout(() => onStart && onStart(), 900); };
+  const time = (challenge.effort || '').split('·').map(s => s.trim()).pop();
+  if (st === 'started') {
     return (
-      <div style={{
-        border: '1px solid ' + (isDone ? 'color-mix(in oklab, var(--sage) 34%, var(--rule))' : 'color-mix(in oklab, var(--accent) 30%, var(--rule))'),
-        borderRadius: 14, padding: '18px 20px', display: 'flex', alignItems: 'center', gap: 14,
-        background: isDone ? 'color-mix(in oklab, var(--sage) 8%, var(--surface))' : 'color-mix(in oklab, var(--accent) 8%, var(--surface))',
-      }}>
-        <span style={{ width: 34, height: 34, borderRadius: 999, flexShrink: 0, display: 'grid', placeItems: 'center', background: isDone ? 'var(--sage)' : 'var(--accent)' }}>
-          {isDone
-            ? <svg width="17" height="17" viewBox="0 0 20 20"><path d="M4 10.5l3.5 3.5L16 5.5" fill="none" stroke="var(--surface)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            : <BrewCup size={18} color="var(--accent-ink)"/>}
-        </span>
-        <div style={{ minWidth: 0 }}>
-          <div className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.16em', textTransform: 'uppercase', color: isDone ? 'var(--sage)' : 'var(--accent)' }}>{isDone ? 'CHALLENGE COMPLETED' : 'ON TODAY'}</div>
-          <div style={{ fontSize: 'var(--t-support)', lineHeight: 1.35, color: 'var(--ink)', marginTop: 3 }}>
-            <strong>{challenge.title}</strong>{isDone ? ' — nice work.' : ' is waiting on Today.'}
-          </div>
-        </div>
-      </div>
-    );
-  }
-  if (state === 'started' || state === 'dismissed') {
-    const started = state === 'started';
-    return (
-      <div style={{
-        border: '1px solid ' + (started ? 'color-mix(in oklab, var(--accent) 30%, var(--rule))' : 'var(--rule)'),
-        borderRadius: 14, padding: '18px 20px', display: 'flex', alignItems: 'center', gap: 14,
-        background: started ? 'color-mix(in oklab, var(--accent) 8%, var(--surface))' : 'var(--surface)',
-      }}>
-        <span style={{
-          width: 34, height: 34, borderRadius: 999, flexShrink: 0, display: 'grid', placeItems: 'center',
-          background: started ? 'var(--accent)' : 'var(--surface-2)',
-        }}>
-          {started
-            ? <svg width="17" height="17" viewBox="0 0 20 20"><path d="M4 10.5l3.5 3.5L16 5.5" fill="none" stroke="var(--accent-ink)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            : <BrewCup size={18} color="var(--ink-mute)"/>}
-        </span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 0', textAlign: 'left' }}>
         <div style={{ fontSize: 'var(--t-support)', lineHeight: 1.4, color: 'var(--ink)' }}>
-          {started
-            ? <>Added to <strong>Today</strong>. Log it whenever you next brew.</>
-            : <>Kept under <strong>For Later</strong> on Today, and on the Path.</>}
+          Added to <strong>Today</strong> — log it when you brew.
         </div>
       </div>
     );
   }
   return (
-    <div style={{
-      border: '1px solid color-mix(in oklab, var(--accent) 26%, var(--rule))', borderRadius: 14,
-      padding: 20, background: 'color-mix(in oklab, var(--accent) 7%, var(--surface))',
-    }}>
-      <div className="smallcaps" style={{ color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-        <BrewCup size={16} color="var(--accent)"/> COFFEE CHALLENGE UNLOCKED
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', textAlign: 'left' }}>
+      <div style={{ minWidth: 0, flex: 1 }}>
+        <div style={{ fontSize: 'var(--t-support)', fontWeight: 500, color: 'var(--ink)' }}>Optional challenge</div>
+        <div style={{ fontSize: 'var(--t-support)', color: 'var(--ink-mute)', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{challenge.title} ({time.toLowerCase()})</div>
       </div>
-      <h3 className="ff-display" style={{ fontSize: 'var(--t-heading)', fontWeight: 400, lineHeight: 1.12, letterSpacing: '-0.01em', margin: 0, color: 'var(--ink)' }}>{challenge.title}</h3>
-      <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: '8px 0 14px', textWrap: 'pretty' }}>{challenge.instruction}</p>
-      <div className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-mute)', marginBottom: 18 }}>{challenge.effort}</div>
-      <BrewActions inline primaryLabel="Start Challenge" secondaryLabel="Save for later" onPrimary={onStart} onSecondary={onNotNow}/>
+      {/* Declining is just continuing past the row; the challenge waits on the
+          Path either way, so the go button is the row's one affordance. */}
+      <button onClick={start} aria-label="Start challenge" style={{ appearance: 'none', cursor: 'pointer', width: 38, height: 38, borderRadius: 999, flexShrink: 0, display: 'grid', placeItems: 'center', background: 'var(--accent)', border: 'none', color: 'var(--accent-ink)' }}>
+        <svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11M11 5.5 16.5 10 11 14.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+      </button>
     </div>
   );
 }
 window.ChallengeSuggestion = ChallengeSuggestion;
 
-// ───────────────────────────────────────────────────────────
-// MODULE COFFEE CHALLENGE SCREEN — the larger, practical final task shown after
-// the module reward card. Optional. Two buttons: Start / Not Now.
-// state: 'suggested' | 'started' | 'dismissed'
-// ───────────────────────────────────────────────────────────
-function ModuleChallengeScreen({ module, challenge, onStart, onNotNow, onBack }) {
-  const [state, setState] = React.useState('suggested');
-  if (!challenge) { // safety — no module challenge, skip straight on
-    React.useEffect(() => { onNotNow && onNotNow(); }, []);
-    return null;
-  }
-  const start = () => { setState('started'); setTimeout(() => onStart(), 900); };
-  const notNow = () => { setState('dismissed'); setTimeout(() => onNotNow(), 850); };
-
-  return (
-    <div className="screen" data-screen-label="Module Coffee Challenge" style={{ background: 'var(--bg)' }}>
-      <div aria-hidden="true" style={{
-        position: 'absolute', inset: 0, pointerEvents: 'none',
-        background: 'radial-gradient(ellipse at 50% 26%, color-mix(in oklab, var(--accent) 14%, transparent) 0%, transparent 58%)',
-      }}/>
-      <div className="lesson-topbar" style={{ borderBottom: 'none', background: 'transparent' }}>
-        <button className="close-btn" onClick={onBack} aria-label="Back">
-          <window.BackMark/>
-        </button>
-        <div/><div/>
-      </div>
-
-      <div className="scroll" style={{ paddingTop: 92, paddingBottom: 28, display: 'flex', flexDirection: 'column', position: 'relative' }}>
-        <div className="px-24" style={{ textAlign: 'center' }}>
-          <div className="smallcaps" style={{ color: 'var(--accent)', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-            <BrewCup size={15} color="var(--accent)"/> MODULE COFFEE CHALLENGE
-          </div>
-          <h1 className="ff-display" style={{ fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.06, letterSpacing: '-0.02em', margin: '12px 0 0', color: 'var(--ink)', textWrap: 'pretty' }}>{challenge.title}</h1>
-        </div>
-
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '24px 0 0' }}>
-          <Roasty state="correct" size={128} gear="glasses"/>
-        </div>
-
-        <div className="px-24" style={{ paddingTop: 22 }}>
-          <div style={{ background: 'var(--surface)', border: '1px solid var(--rule)', borderRadius: 14, padding: '20px 22px' }}>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 10 }}>
-              <span className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--ink-mute)', border: '1px solid var(--rule)', borderRadius: 999, padding: '3px 9px', whiteSpace: 'nowrap' }}>Optional</span>
-            </div>
-            <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.5, color: 'var(--ink)', margin: 0, textWrap: 'pretty' }}>{challenge.instruction}</p>
-            <div className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-mute)', marginTop: 16 }}>{challenge.effort}</div>
-          </div>
-        </div>
-
-        <div style={{ flex: 1, minHeight: 20 }}/>
-
-        {state === 'suggested' && (
-          <div className="px-24" style={{ paddingTop: 24 }}>
-            <BrewActions primaryLabel="Start Module Challenge" secondaryLabel="Not Now" onPrimary={start} onSecondary={notNow}/>
-          </div>
-        )}
-        {state !== 'suggested' && (
-          <div className="px-24" style={{ paddingTop: 24 }}>
-            <ChallengeSuggestion challenge={challenge} state={state} onStart={() => {}} onNotNow={() => {}}/>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-window.ModuleChallengeScreen = ModuleChallengeScreen;
 
 // ───────────────────────────────────────────────────────────
 // CARD STAMP SECTION — rendered inside the card-detail sheet. Shows the

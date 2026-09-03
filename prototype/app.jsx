@@ -130,6 +130,8 @@ const SCREEN_ROUTES = {
   loading:          { view: 'loading' },
   welcome:          { view: 'onboarding-1' },
   meet:             { view: 'onboarding-meet' },
+  name:             { view: 'onboarding-name' },
+  offer:            { view: 'onboarding-paywall' },
   expectation:      { view: 'onboarding-flow', onbSlug: 'expectation' },
   goal:             { view: 'onboarding-flow', onbSlug: 'goal' },
   brewer:           { view: 'onboarding-flow', onbSlug: 'brewer' },
@@ -199,10 +201,16 @@ const SCREEN_ROUTES = {
   'lesson-complete':{ view: 'lesson-complete', lessonId: 'm1l2', prevPoints: 110, newPoints: 120 },
   'lesson-complete-weak':{ view: 'lesson-complete', lessonId: 'm1l2', prevPoints: 110, newPoints: 120, result: { correct: 2, total: 7 } },
   'lesson-complete-perfect':{ view: 'lesson-complete', lessonId: 'm1l2', prevPoints: 110, newPoints: 120, result: { correct: 7, total: 7 } },
+  // m1l1 carries a Coffee Challenge → the compact offer sits in the footer.
+  'lesson-complete-challenge':{ view: 'lesson-complete', lessonId: 'm1l1', prevPoints: 110, newPoints: 120, result: { correct: 3, total: 5 } },
+  // 7th consecutive day → the FREEZE EARNED row joins the rollup.
+  'lesson-complete-freeze':{ view: 'lesson-complete', lessonId: 'm1l2', prevPoints: 110, newPoints: 120, result: { correct: 6, total: 7 }, freezeEarned: true },
+  // Densest case: card + freeze + challenge — all three rows in one list.
+  'lesson-complete-full':{ view: 'lesson-complete', lessonId: 'm1l1', prevPoints: 110, newPoints: 120, result: { correct: 6, total: 7 }, freezeEarned: true },
   'module-complete':{ view: 'module-complete', lessonId: 'm1l3', prevPoints: 110, newPoints: 150 },
-  'module-card':    { view: 'module-card',     lessonId: 'm1l3', prevPoints: 110, newPoints: 150 },
-  // ── Active Coffee Challenge ──
-  'module-challenge':    { view: 'module-challenge', lessonId: 'm1l3', prevPoints: 110, newPoints: 150 },
+  'module-complete-freeze':{ view: 'module-complete', lessonId: 'm1l3', prevPoints: 110, newPoints: 150, freezeEarned: true },
+  // Deep-link alias: the card is the module-complete screen's back face.
+  'module-card':    { view: 'module-complete', lessonId: 'm1l3', prevPoints: 110, newPoints: 150, startFlipped: true },
   'course-complete':     { view: 'course-complete' },
   'today-challenge':     { view: 'app', tab: 'learn', brewToday: 'active' },
   'today-challenge-done':{ view: 'app', tab: 'learn', brewToday: 'completed' },
@@ -337,7 +345,7 @@ function App() {
   const [tab, setTab] = useStateA(_route && _route.tab ? _route.tab : 'learn');
   const [activeLessonId, setActiveLessonId] = useStateA(_route && _route.lessonId ? _route.lessonId : null);
   const [completedLesson, setCompletedLesson] = useStateA(
-    _route && _route.lessonId && (_route.view === 'lesson-complete' || _route.view === 'module-complete' || _route.view === 'module-card' || _route.view === 'module-challenge')
+    _route && _route.lessonId && (_route.view === 'lesson-complete' || _route.view === 'module-complete')
       ? (() => {
           const lesson = findLessonOrPlaceholder(_route.lessonId);
           // Demo seed so the deep-linked result screen previews score + state.
@@ -483,6 +491,20 @@ function App() {
   // PRESENTATION ONLY — gates read isPlus/featureUnlocked, never the plan; the
   // monetization model (monetization.jsx) decides what the paywall offers.
   const [entPlanId, setEntPlanId] = useStateA(_savedCustom.planId || 'lifetime');
+  // ── Account identity ── the display name Roasty greets you by. Seeded by
+  // data.jsx (demo account), set on the onboarding Name screen, editable in
+  // Settings → Name. Mirrored onto window.USER at render (same pattern as the
+  // Roasty config) so module-scope readers can never disagree with the state.
+  const [userName, setUserName] = useStateA(() => {
+    // '' is a real value — "skipped, no name" — so type-check rather than truth-check.
+    try { const s = JSON.parse(localStorage.getItem('cq-user')); if (s && typeof s.name === 'string') return s.name; } catch (e) {}
+    return (window.USER || {}).name || 'Maya';
+  });
+  useEffectA(() => { try { localStorage.setItem('cq-user', JSON.stringify({ name: userName })); } catch (e) {} }, [userName]);
+  if (window.USER) { window.USER.name = userName; window.USER.initial = userName ? userName.charAt(0).toLowerCase() : '·'; }
+  // Where the purchase-welcome screen should return to: 'app' (profile paywall)
+  // or 'onboarding' (the offer step), which resumes the intro flow instead.
+  const [plusFrom, setPlusFrom] = useStateA('app');
   // Where the Purchases screen should return to (reachable from both
   // Settings directly and Account and sync → Foundations).
   const [subFrom, setSubFrom]     = useStateA('account');
@@ -612,7 +634,9 @@ function App() {
   // Deriving held from frozenDays.length conflated the two: the moment the week
   // rolled over the strip cleared and every spent freeze was silently refunded.
   const [frozenDays, setFrozenDays] = useStateA([]);
-  const [freezesSpent, setFreezesSpent] = useStateA(0);
+  // The freeze demo route needs the earn visible: at seed streak 7 a freeze is
+  // already held (at cap) and the earn beat is absorbed, so mark one spent.
+  const [freezesSpent, setFreezesSpent] = useStateA(_route && _route.freezeEarned ? 1 : 0);
   const freezesHeld = Math.max(0, Math.min(FREEZE_CAP,
     Math.floor(progression.streak / FREEZE_EARN_DAYS) - freezesSpent));
   const nextFreezeIn = FREEZE_EARN_DAYS - (progression.streak % FREEZE_EARN_DAYS);
@@ -622,7 +646,7 @@ function App() {
   const freezeSaved = frozenDays.length > 0 && !freezeNoticeSeen;
   // The earn beat can't be derived here: the prototype's streak is fixed, so no
   // lesson completion crosses a 7-day boundary. Driven from the dev panel.
-  const [freezeEarnedBeat, setFreezeEarnedBeat] = useStateA(false);
+  const [freezeEarnedBeat, setFreezeEarnedBeat] = useStateA(!!(_route && _route.freezeEarned));
   // At the cap the earn is absorbed, so the payout row shows nothing rather than
   // announcing a freeze the user never receives. With real streak progression the
   // check belongs on the PRE-earn held count (heldBefore < FREEZE_CAP); the
@@ -980,18 +1004,10 @@ function App() {
     else { setView('app'); setTab('path'); }
   };
 
-  // From ModuleComplete → go to module reward card.
-  const continueFromModuleComplete = () => setView('module-card');
-
-  // From ModuleReward → offer the Module Coffee Challenge (if any), else advance.
-  const continueFromModuleReward = () => {
-    const ctx = completedLesson ? window.findLessonContext(completedLesson.id) : null;
-    const mod = ctx ? ctx.module : null;
-    if (mod && window.brewForModule && window.brewForModule(mod.id)) { setView('module-challenge'); return; }
-    advanceAfterModule();
-  };
-
-  // The original post-module routing (gift or next module / Path).
+  // From the module card (either screen) → advance. The Module Coffee Challenge
+  // is offered in the card's own footer, not on a separate screen — its Start
+  // and Save handlers are wired where the screens render.
+  // Post-module routing (gift or next module / Path).
   const advanceAfterModule = () => {
     // Course finished: the completion moment interposes before any landing.
     if (courseComplete && !courseAck) { setView('course-complete'); return; }
@@ -1034,6 +1050,13 @@ function App() {
     setView('app'); setTab('path');
   };
 
+  // Where onboarding resumes after the offer step — both paywall exits (buy,
+  // decline) land here: v1 drops onto Today, v2 enters the question flow.
+  const afterOnboardingPaywall = () => {
+    if (isV1) { setView('app'); setTab('learn'); }
+    else { setOnbStart('expectation'); setView('onboarding-flow'); }
+  };
+
   // ── Onboarding-guide store (the Guide tweak's persisted state) ──
   // Declared with the other stores so ACCOUNT_STORES can wipe it: a progress
   // reset re-arms the tour and every micro-tip.
@@ -1068,6 +1091,9 @@ function App() {
     // In-memory only (no key), but still progress that must go with the rest.
     { key: null, scope: 'progress', reset: () => { setFrozenDays([]); setFreezesSpent(0); setFreezeNoticeSeen(false); } },
     { key: 'cq-temp',          scope: 'account',  reset: () => setTempUnlocks({}) },
+    // The display name is account data — deleting the account returns it to the
+    // demo seed, and the next first run asks for it again on the Name screen.
+    { key: 'cq-user',          scope: 'account',  reset: () => setUserName('Maya') },
     { key: 'cq-custom',        scope: 'account',  reset: () => {
       setIsPlus(false);
       setEntPlanId('lifetime');
@@ -1202,15 +1228,27 @@ function App() {
   } else if (view === 'onboarding-1') {
     body = <OnboardingWelcome onNext={() => setView('onboarding-meet')}/>;
   } else if (view === 'onboarding-meet') {
-    // v1 hides the personalization question flow entirely: the user is met
-    // (Welcome), promised (Meet Roasty), then dropped straight onto Today.
+    // The intro runs Welcome → Meet Roasty → Your name → the offer; v1 then
+    // drops straight onto Today (the question flow is deferred to v2).
     body = <OnboardingRoasty
       isV1={isV1}
-      onStart={() => {
-        if (isV1) { setView('app'); setTab('learn'); }
-        else { setOnbStart('expectation'); setView('onboarding-flow'); }
-      }}
+      onStart={() => setView('onboarding-name')}
       onSkip={() => { setView('app'); setTab('learn'); }}
+    />;
+  } else if (view === 'onboarding-name') {
+    body = <window.OnboardingName
+      onContinue={(name) => { if (name) setUserName(name); setView('onboarding-paywall'); }}
+      onSkip={() => { setUserName(''); setView('onboarding-paywall'); }}
+    />;
+  } else if (view === 'onboarding-paywall') {
+    // The offer step — the SAME PaywallScreen as every other selling surface,
+    // so it re-renders from the active monetization model (monetization.jsx).
+    // Neither exit blocks the path: declining walks on, buying celebrates first.
+    body = <PaywallScreen
+      onPurchase={(planId) => { setIsPlus(true); setEntPlanId(planId || 'lifetime'); setPlusFrom('onboarding'); setView('plus-welcome'); }}
+      restoreOutcome={t.restoreOutcome}
+      onRestored={() => setIsPlus(true)}
+      onClose={afterOnboardingPaywall}
     />;
   } else if (view === 'onboarding-flow') {
     // The v1 cut never routes here (Meet Roasty goes straight to Learn), so this
@@ -1262,9 +1300,8 @@ function App() {
       newPoints={rewardNewPoints}
       nextPlayable={(() => { const nextId = window.findNextLessonId(completedLesson.id); return !!(nextId && window.LESSONS && window.LESSONS[nextId]); })()}
       brewChallenge={window.brewForLesson(completedLesson.id)}
-      brewChallengeState={(() => { const ch = window.brewForLesson(completedLesson.id); if (!ch) return null; if (brewActiveId === ch.id) return 'active'; if (brew.completed.has(ch.id)) return 'completed'; if (brew.saved.has(ch.id)) return 'saved'; return null; })()}
+      brewChallengeState={(() => { const ch = window.brewForLesson(completedLesson.id); if (!ch) return null; if (_route && _route.view === 'lesson-complete' && ch) return null; /* demo routes force the offer visible regardless of persisted brew state */ if (brewActiveId === ch.id) return 'active'; if (brew.completed.has(ch.id)) return 'completed'; if (brew.saved.has(ch.id)) return 'saved'; return null; })()}
       onStartChallenge={() => { const ch = window.brewForLesson(completedLesson.id); if (ch) startBrew(ch.id); setView('app'); setTab('learn'); }}
-      onNotNowChallenge={() => { const ch = window.brewForLesson(completedLesson.id); if (ch) saveBrew(ch.id); continueFromLessonComplete(); }}
       onContinue={continueFromLessonComplete}
       onDuel={isV1 ? undefined : () => openDuel('pick')}
       onBack={backToPath}
@@ -1273,38 +1310,24 @@ function App() {
     const ctx = window.findLessonContext(completedLesson.id);
     const mod = ctx ? ctx.module : MODULES[0];
     const reward = MODULE_REWARDS[mod.id] || MODULE_REWARDS.m1;
+    // The module's Coffee Challenge is offered in the card back's footer.
+    const moduleChallenge = window.brewForModule ? window.brewForModule(mod.id) : null;
+    const challengeProps = {
+      brewChallenge: moduleChallenge,
+      // Demo routes force the offer visible regardless of persisted brew state.
+      brewChallengeState: moduleChallenge ? (_route && _route.view === 'module-complete' ? null : brewActiveId === moduleChallenge.id ? 'active' : brew.completed.has(moduleChallenge.id) ? 'completed' : brew.saved.has(moduleChallenge.id) ? 'saved' : null) : null,
+      onStartChallenge: () => { if (moduleChallenge) startBrew(moduleChallenge.id); if (courseComplete && !courseAck) setView('course-complete'); else { setView('app'); setTab('learn'); } },
+    };
+    const shared = { module: mod, reward, hasNext: ctx && !ctx.isLastModule, onContinue: advanceAfterModule, onBack: backToPath, ...challengeProps };
     const _newCore = window.coreDoneCount(effectiveCompleted);
-    body = <ModuleCompleteScreen
-      module={mod}
+    body = <ModuleCompleteScreen {...shared}
+      startFlipped={!!(_route && _route.startFlipped)}
+      freezeEarned={freezeEarnedShown}
       fromStage={window.treeStageFromCore(Math.max(0, _newCore - 1))}
       toStage={window.treeStageFromCore(_newCore)}
       prevPoints={rewardPrevPoints}
       newPoints={rewardNewPoints}
-      reward={reward}
-      hasNext={ctx && !ctx.isLastModule}
-      onContinue={continueFromModuleReward}
-      onBack={backToPath}
     />;
-  } else if (view === 'module-card' && completedLesson) {
-    const ctx = window.findLessonContext(completedLesson.id);
-    const mod = ctx ? ctx.module : MODULES[0];
-    const reward = MODULE_REWARDS[mod.id] || MODULE_REWARDS.m1;
-    body = <ModuleRewardCardScreen
-      module={mod}
-      reward={reward}
-      hasNext={ctx && !ctx.isLastModule}
-      onContinue={continueFromModuleReward}
-      onBack={backToPath}
-    />;
-  } else if (view === 'module-challenge' && completedLesson) {
-    const ctx = window.findLessonContext(completedLesson.id);
-    const mod = ctx ? ctx.module : MODULES[0];
-    const moduleChallenge = window.brewForModule(mod.id);
-    body = <window.ModuleChallengeScreen
-      module={mod} challenge={moduleChallenge}
-      onStart={() => { if (moduleChallenge) startBrew(moduleChallenge.id); if (courseComplete && !courseAck) setView('course-complete'); else { setView('app'); setTab('learn'); } }}
-      onNotNow={() => { if (moduleChallenge) saveBrew(moduleChallenge.id); advanceAfterModule(); }}
-      onBack={backToPath}/>;
   } else if (view === 'course-complete') {
     // The Foundations completion moment. It grants nothing — no points, no tree
     // growth, no 38th card — and the only exit is the Keep Sharp hand-off.
@@ -1397,6 +1420,8 @@ function App() {
     body = <SettingsScreen
       theme={themePref}
       onTheme={setTheme}
+      userName={userName}
+      onUserName={setUserName}
       onClose={() => { setTab('profile'); setView('app'); }}
       onAbout={() => setView('about')}
       onAccount={() => setView('account')}
@@ -1451,7 +1476,7 @@ function App() {
     />;
   } else if (view === 'paywall') {
     body = <PaywallScreen
-      onPurchase={(planId) => { setIsPlus(true); setEntPlanId(planId || 'lifetime'); setView('plus-welcome'); }}
+      onPurchase={(planId) => { setIsPlus(true); setEntPlanId(planId || 'lifetime'); setPlusFrom('app'); setView('plus-welcome'); }}
       restoreOutcome={t.restoreOutcome}
       onRestored={() => setIsPlus(true)}
       onClose={() => { setTab('profile'); setView('app'); }}
@@ -1460,7 +1485,7 @@ function App() {
     body = <PlusWelcomeScreen
       planId={entPlanId}
       onOpenStudio={() => setView('studio')}
-      onClose={() => { setTab('profile'); setView('app'); }}
+      onClose={() => { if (plusFrom === 'onboarding') afterOnboardingPaywall(); else { setTab('profile'); setView('app'); } }}
     />;
   } else if (view === 'studio') {
     body = featureUnlocked('studio') ? (

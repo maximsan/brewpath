@@ -137,6 +137,47 @@ function OnboardingRoasty({ onStart, onSkip, isV1 }) {
   );
 }
 
+// Screen 01c — Your name. One field: what Roasty calls you. Sits between
+// Meet Roasty and the offer, in both cuts. Optional — skipping keeps the
+// seeded account name, and it stays editable in Settings → Name.
+function OnboardingName({ onContinue, onSkip }) {
+  const [name, setName] = useState('');
+  const clean = name.trim();
+  const TextField = window.TextField;
+  return (
+    <div className="screen" data-screen-label="01c Your name">
+      <div className="scroll" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', paddingTop: 64, paddingBottom: 40 }}>
+        <div className="px-24" style={{ paddingTop: 40, display: 'flex', justifyContent: 'center' }}>
+          <Roasty state="awake" size={148}/>
+        </div>
+        <div className="px-24" style={{ paddingBottom: 16, paddingTop: 24 }}>
+          <h1 className="ff-display" style={{
+            fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em',
+            margin: 0, color: 'var(--ink)', textWrap: 'pretty',
+          }}>
+            And you are…?
+          </h1>
+          <p style={{
+            fontSize: 'var(--t-body)', lineHeight: 1.5, color: 'var(--ink-mute)',
+            marginTop: 18, marginBottom: 24, fontWeight: 400, maxWidth: 330,
+          }}>
+            Just a first name — it’s how Roasty greets you.
+          </p>
+          {TextField && <TextField value={name} onChange={setName} placeholder="Your first name" maxLength={24} autoFocus ariaLabel="Your first name" onSubmit={() => clean && onContinue(clean)}/>}
+          <button className="btn btn-primary" disabled={!clean} onClick={() => onContinue(clean)} style={{ marginTop: 16 }}>
+            Continue
+          </button>
+          <div style={{ marginTop: 10 }}>
+            <a className="btn btn-ghost" href="#" style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }} onClick={(e) => { e.preventDefault(); onSkip(); }}>
+              Skip for now
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Small coffee glyphs used across streak / profile / tree ──
 function SteamMark({ color = 'var(--accent)', w = 26 }) {
   return (
@@ -258,9 +299,11 @@ function StreakScreen({ streak, frozenDays, freezesHeld = 0, freezeCap = 1, next
                          onDone={() => { streakBeatPlayed = true; setPhase('content'); }}/>;
   }
 
-  const milestones = [3, 7, 14, 30, 60, 100, 180, 365];
-  const nextMilestone = milestones.find(m => m > streak) || (Math.ceil((streak + 1) / 30) * 30);
-  const frac = Math.max(0.04, Math.min(1, streak / nextMilestone));
+  // No milestone system in the app — the ring simply fills over the current
+  // 7-day week of the streak (5 days on a 12-day streak = 5/7), so it pairs
+  // with the week strip below and closes every 7th day.
+  const weekDay = streak % 7 === 0 && streak > 0 ? 7 : streak % 7;
+  const frac = Math.max(0.04, Math.min(1, weekDay / 7));
 
   const R = 84, C = 2 * Math.PI * R;
 
@@ -298,11 +341,8 @@ function StreakScreen({ streak, frozenDays, freezesHeld = 0, freezeCap = 1, next
           </div>
         </div>
 
-        <div style={{ textAlign: 'center', paddingTop: 16 }}>
-          <span className="ff-mono" style={{ fontSize: 'var(--t-label)', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent)' }}>
-            {streak} of {nextMilestone} to your {nextMilestone}-day badge
-          </span>
-        </div>
+        {/* No caption under the ring — the fill and the week strip already
+            say where the week stands; a sentence restating them is noise. */}
 
         {/* week strip */}
         <div className="px-24" style={{ paddingTop: 30 }}>
@@ -500,7 +540,7 @@ function TreeScreen({ stage, coreDone, coreTotal, onClose }) {
 // account controls. The account rows route out to full screens (About,
 // Account and sync) or open confirmation sheets (Reset progress). The practice
 // rows are live toggles + a reminder-time sheet, managed locally.
-function SettingsScreen({ theme, onTheme, onClose, onAbout, onAccount, onPurchases, onHelp, isPlus, showDataExport, onReset, onDeleteAccount, progressSummary }) {
+function SettingsScreen({ theme, onTheme, userName, onUserName, onClose, onAbout, onAccount, onPurchases, onHelp, isPlus, showDataExport, onReset, onDeleteAccount, progressSummary }) {
   const [reminder, setReminder] = useState('8:00 AM');
   const [notify, setNotify] = useState(true);
   const [sound, setSound] = useState(true);
@@ -509,6 +549,8 @@ function SettingsScreen({ theme, onTheme, onClose, onAbout, onAccount, onPurchas
   const [resetOpen, setResetOpen] = useState(false);
   const [dataOpen, setDataOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [nameOpen, setNameOpen] = useState(false);
+  const NameSheet = window.NameSheet;
   const ConfirmSheet = window.ConfirmSheet;
   const TimeSheet = window.TimeSheet;
   const Toggle = window.SettingsToggle;
@@ -538,6 +580,7 @@ function SettingsScreen({ theme, onTheme, onClose, onAbout, onAccount, onPurchas
 
         <div className="px-24" style={{ paddingTop: 26 }}>
           <div className="smallcaps" style={{ marginBottom: 4 }}>ACCOUNT</div>
+          <SettingsRow label="Name" value={userName || 'Not set'} onClick={() => setNameOpen(true)}/>
           <SettingsRow label="Account and sync" value={(window.USER || {}).email} onClick={onAccount}/>
           <SettingsRow label="Purchases" value={isPlus ? 'Foundations' : 'Free'} onClick={onPurchases}/>
           {/* Data export is deferred to v2 — rendered only in the 'everything' scope. */}
@@ -566,6 +609,11 @@ function SettingsScreen({ theme, onTheme, onClose, onAbout, onAccount, onPurchas
         <TimeSheet open={timeOpen} value={reminder}
           onClose={() => setTimeOpen(false)}
           onSave={(v) => { setReminder(v); setNotify(true); setTimeOpen(false); }}/>
+      )}
+      {NameSheet && (
+        <NameSheet open={nameOpen} value={userName}
+          onClose={() => setNameOpen(false)}
+          onSave={(v) => onUserName && onUserName(v)}/>
       )}
       {ConfirmSheet && (
         <ConfirmSheet open={resetOpen} danger
@@ -665,7 +713,10 @@ const APP_HEADER_TITLES = {
   })(),
   path:  { eyebrow: 'YOUR PATH', title: 'Beginner Foundations' },
   cards: { eyebrow: 'YOUR DECK', title: 'Collection' },
-  profile: { eyebrow: 'PROFILE', title: 'Hello, ' + ((window.USER || {}).name || 'there') + '.' },
+  // The greeting reads the live name, so it is a getter — a value computed at
+  // module load would go stale the moment the user renames themselves.
+  // Name unset (skipped) → the generic greeting; never a placeholder name.
+  get profile() { const n = (window.USER || {}).name; return { eyebrow: 'PROFILE', title: n ? 'Hello, ' + n + '.' : 'Hello there.' }; },
 };
 
 function AppHeader({ tab, variant = 'default', scrolled, dictLocked, onDict, savedLocked, onSaved, savedCount = 0, showDuel, duelLocked, duelCount = 0, onDuel, onSettings }) {
@@ -838,7 +889,7 @@ function LearnTab({ freezeSaved = false, freezesHeld = 0, nextFreezeIn = 7, onDi
                   <h2 className="ff-display" style={{ fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.1, letterSpacing: '-0.01em', margin: 0, color: 'var(--accent-ink)' }}>{ksPick.title}</h2>
                   <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.5, color: 'var(--accent-ink)', opacity: 0.82, margin: '8px 0 0', textWrap: 'pretty' }}>{ksPick.rule}</p>
                 </div>
-                <Roasty state="idle" size={84} style={{ flexShrink: 0 }}/>
+                <Roasty state="idle" size={84} plate={true} style={{ flexShrink: 0 }}/>
               </div>
               <button className="btn" onClick={() => ksStart(ksPick.id)} aria-label={'Start: ' + ksPick.title}
                 style={{ width: '100%', marginTop: 18, background: 'var(--accent-ink)', color: 'var(--accent)', borderRadius: 'var(--r)', padding: '14px 24px' }}>Start</button>
@@ -1686,7 +1737,7 @@ function CardArtBotanical() {
       {/* cherry */}
       <circle cx="44" cy="62" r="16" fill="var(--berry)"/>
       <ellipse cx="38" cy="56" rx="6" ry="3.5" fill="var(--berry)" fillOpacity="0.55"/>
-      <ellipse cx="39" cy="55" rx="3" ry="1.6" fill="var(--cream)" fillOpacity="0.55"/>
+      <ellipse cx="39" cy="55" rx="3" ry="1.6" fill="var(--art-cream)" fillOpacity="0.55"/>
       {/* twig nub */}
       <circle cx="47" cy="50" r="2" fill="var(--sage)"/>
     </svg>
@@ -1721,7 +1772,7 @@ function CardArtSpecimen() {
     <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
       {/* double border */}
       <rect x="5" y="10" width="90" height="80" fill="none" stroke="var(--rule)" strokeWidth="1"/>
-      <rect x="9" y="14" width="82" height="72" fill="none" stroke="var(--cream)" strokeWidth="0.6" opacity="0.35"/>
+      <rect x="9" y="14" width="82" height="72" fill="none" stroke="var(--art-cream)" strokeWidth="0.6" opacity="0.35"/>
       {/* big type-as-art */}
       <text x="50" y="46" fontSize="26" fill="var(--ink)" fontFamily="Fraunces"
             textAnchor="middle" fontStyle="italic">Coffea</text>
@@ -1867,7 +1918,7 @@ function CardArtDroplet() {
   return (
     <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
       <path d="M50 24 C60 42 67 52 67 62 A17 17 0 0 1 33 62 C33 52 40 42 50 24 Z" fill="var(--accent)" fillOpacity="0.2" stroke="var(--accent)" strokeWidth="1.4" strokeLinejoin="round"/>
-      <path d="M43 60 A9 9 0 0 1 49 50" fill="none" stroke="var(--cream)" strokeWidth="1.1" strokeLinecap="round" opacity="0.7"/>
+      <path d="M43 60 A9 9 0 0 1 49 50" fill="none" stroke="var(--art-cream)" strokeWidth="1.1" strokeLinecap="round" opacity="0.7"/>
       <g fill="none" stroke="var(--ink-mute)" strokeLinecap="round" opacity="0.4">
         <path d="M28 84 Q50 77 72 84" strokeWidth="1"/>
         <path d="M36 91 Q50 86 64 91" strokeWidth="0.8"/>
@@ -2005,7 +2056,7 @@ function CardArtAltitude() {
       {/* peak */}
       <path d="M18 78 L44 30 L60 54 L70 40 L84 78 Z" fill="var(--surface-2)" stroke="var(--ink-mute)" strokeWidth="1.3" strokeLinejoin="round"/>
       {/* snow cap */}
-      <path d="M44 30 L36 45 Q44 41 51 46 L44 30 Z" fill="var(--cream)" opacity="0.6"/>
+      <path d="M44 30 L36 45 Q44 41 51 46 L44 30 Z" fill="var(--art-cream)" opacity="0.6"/>
       {/* specialty elevation band */}
       <rect x="8" y="50" width="84" height="14" fill="var(--sage)" fillOpacity="0.16"/>
       <line x1="8" y1="50" x2="92" y2="50" stroke="var(--sage)" strokeWidth="1" strokeDasharray="3 3"/>
@@ -2114,7 +2165,7 @@ function CardArtLightDark() {
         <rect x="50" y="26" width="20" height="52" fill="var(--art-roast-dark)"/>
       </g>
       <ellipse cx="50" cy="52" rx="20" ry="26" fill="none" stroke="var(--ink-mute)" strokeWidth="1.3"/>
-      <path d="M50 26 Q44 52 50 78" fill="none" stroke="var(--cream)" strokeWidth="1.2" opacity="0.7"/>
+      <path d="M50 26 Q44 52 50 78" fill="none" stroke="var(--art-cream)" strokeWidth="1.2" opacity="0.7"/>
       <text x="30" y="90" fontSize="6" fill="var(--art-roast-mid)" fontFamily="IBM Plex Mono" textAnchor="middle">LIGHT</text>
       <text x="70" y="90" fontSize="6" fill="var(--art-roast-dark)" fontFamily="IBM Plex Mono" textAnchor="middle">DARK</text>
     </svg>
@@ -2257,7 +2308,7 @@ function CardArtFieldGuideProcess() {
   return (
     <FieldGuideFrame tint="var(--accent)">
       <path d="M0 -13 C6 -3 10 3 10 8 A10 10 0 0 1 -10 8 C-10 3 -6 -3 0 -13 Z" fill="var(--accent)" fillOpacity="0.2" stroke="var(--accent)" strokeWidth="1.3" strokeLinejoin="round"/>
-      <path d="M-5 8 A6.5 6.5 0 0 1 -1 1.5" fill="none" stroke="var(--cream)" strokeWidth="1" strokeLinecap="round" opacity="0.7"/>
+      <path d="M-5 8 A6.5 6.5 0 0 1 -1 1.5" fill="none" stroke="var(--art-cream)" strokeWidth="1" strokeLinecap="round" opacity="0.7"/>
     </FieldGuideFrame>
   );
 }
@@ -2483,7 +2534,7 @@ function CardSheet({ card, open, onClose, brewCompleted, brewActive, onBrewTry, 
 
               {card.visualGuide && window.VisualGuideCard ? (
                 <div style={{ margin: '18px 0 20px' }}>
-                  <window.VisualGuideCard visualGuide={card.visualGuide} inSheet/>
+                  <window.VisualGuideCard visualGuide={card.visualGuide}/>
                 </div>
               ) : (() => {
                 const Art = CARD_ART[card.kind];
@@ -2510,7 +2561,7 @@ function CardSheet({ card, open, onClose, brewCompleted, brewActive, onBrewTry, 
                 margin: '0 0 20px',
               }}>{card.summary}</p>
 
-              {card.meta && (
+              {card.meta && !isVisualGuide && (
                 <div style={{ marginBottom: 24, display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {card.meta.map(([k, v], i) => (
                     <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr auto', alignItems: 'baseline', gap: 16 }}>
@@ -2567,7 +2618,7 @@ function ProfileTab({ state, brewDone, brewTotal, frozenDays, onOpenStreak, onOp
           <h1 className="ff-display" style={{
             fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em',
             margin: 0, color: 'var(--ink)',
-          }}>Hello, {(window.USER || {}).name || 'there'}.</h1>
+          }}>{(window.USER || {}).name ? <>Hello, {(window.USER || {}).name}.</> : <>Hello there.</>}</h1>
         </div>
 
         {/* Tree hero — one clear “I’m growing” signal */}
@@ -3097,6 +3148,7 @@ window.FREE_GAME_IDS = FREE_GAME_IDS;
 window.GameIntroScreen = GameIntroScreen;
 window.OnboardingWelcome = OnboardingWelcome;
 window.OnboardingRoasty = OnboardingRoasty;
+window.OnboardingName = OnboardingName;
 window.LearnTab = LearnTab;
 window.DictHeaderButton = DictHeaderButton;
 window.PathTab = PathTab;

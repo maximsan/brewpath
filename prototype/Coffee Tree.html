@@ -27,11 +27,11 @@
     --ink:       #1B1614;
     --ink-mute:  #6B5F54;
     --rule:      #D8CFBF;
-    --accent:    #B8533A;
+    /* Darkened from #B8533A so the accent clears AA as TEXT at 11px. */
+    --accent:    #A6462F;
     --accent-ink:#FBF7EE;
-    /* Accent used as TEXT: raw --accent is only ~4.3:1 on paper, so small accent
-       labels use this darkened mix. Glyphs and borders keep full --accent. */
-    --accent-text: color-mix(in oklab, var(--accent) 62%, var(--ink));
+    /* Deprecated alias, kept for the shipped mobile token set. */
+    --accent-text: var(--accent);
     --sage:      #5F6E55;
     --warn:      #9A5F1C;
     --berry:     #A8362A;
@@ -46,7 +46,8 @@
     --rule:      #44321E;
     --accent:    #E07A4F;
     --accent-ink:#1A130E;
-    --accent-text: color-mix(in oklab, var(--accent) 62%, var(--ink));
+    /* Deprecated alias. */
+    --accent-text: var(--accent);
     --sage:      #97A285;
     --warn:      #E6A35C;
     --berry:     #C75450;

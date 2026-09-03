@@ -512,8 +512,9 @@ function DuelResult({ run, reveal = 'tally', onSend, onClose }) {
   const points = window.duelPoints(run.correct, run.total);
   const [showReview, setShowReview] = useStateD(false);
   if (phase === 'roasty') {
-    return <RoastyMoment state={run.correct >= 4 ? 'correct' : 'idle'} eyebrow="ROUND COMPLETE"
-      title={run.correct >= 4 ? 'Sharp.' : 'Nice round.'} onDone={() => setPhase('content')}/>;
+    // Every duel pays out (15 + 4/correct), so the payoff face always applies.
+    return <RoastyMoment state="points" eyebrow="ROUND COMPLETE"
+      title={run.correct >= 4 ? 'Sharp.' : 'Nice round.'} pointsAmount={points} onDone={() => setPhase('content')}/>;
   }
   return (
     <div className="screen" data-screen-label="Duel · Your result" style={{ background: 'var(--bg)' }}>

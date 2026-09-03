@@ -230,14 +230,16 @@ function RecallCard({ card, onContinue, onCorrect, prediction }) {
       )}
 
       {/* Prediction payoff — closes the loop opened on the first card. Artless:
-          it is a reply to the guess, not a second verdict on this answer. */}
+          it is a reply to the guess, not a second verdict on this answer. The
+          guess and the answer render as fill-slots — the same chips the guess
+          was made with — so each word reads at a glance as yours vs the truth. */}
       {answered && prediction && (
         <window.AnswerFeedback art={false} borderTop marginTop={18} bodySize="body"
           state={guessedRight ? 'correct' : 'card'}
-          label={guessedRight ? 'You called it' : 'Your opening guess'}
+          label="Your opening guess"
           text={guessedRight
-            ? 'You guessed ' + prediction.pick + ' before the lesson started — and you were right.'
-            : 'You guessed ' + prediction.pick + ' before the lesson started. It\u2019s ' + prediction.a + ' \u2014 now you know why.'}/>
+            ? <>Before the lesson you guessed <window.FillSlot word={prediction.pick} state="right"/> — and you were right.</>
+            : <>Before the lesson you guessed <window.FillSlot word={prediction.pick} state="wrong"/>. It's <window.FillSlot word={prediction.a} state="right"/> — now you know why.</>}/>
       )}
 
       {answered && (

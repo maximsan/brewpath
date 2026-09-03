@@ -12,7 +12,7 @@
   :root {
     --bg:#F4EFE6; --surface:#FBF7EE; --surface-2:#EFE8DA;
     --ink:#1B1614; --ink-mute:#6B5F54; --rule:#D8CFBF;
-    --accent:#B8533A; --accent-ink:#FBF7EE;
+    --accent:#A6462F; --accent-ink:#FBF7EE; --accent-text:var(--accent);
     --sage:#5F6E55; --warn:#9A5F1C; --berry:#A8362A;
     --water:#5C93B8; --water-hi:#A9CFE3;
     --scrim:color-mix(in oklab, #1B1614 58%, transparent); --scrim-ink:#FBF7EE;
@@ -29,16 +29,16 @@
     --art-cherry-skin:#A93227; --art-cherry-pulp:#C9563A; --art-cherry-gel:#D9A94C;
     --art-cherry-parchment:#E3D2AE; --art-cherry-silverskin:#F1E8D6; --art-cherry-seed:#8FA184;
     --art-seed-crease:#5C6B52;
-    --cream:#F0DCB8;
+    --art-cream:#F0DCB8;
   }
+  /* scrim, scrim-ink and dim-modal are deliberately absent here: they sit on
+     media and behind sheets, so they do NOT swap with the mood. :root owns them. */
   [data-mood="dark-roast"] {
     --bg:#1A130E; --surface:#251B14; --surface-2:#30231A;
     --ink:#F3E7D2; --ink-mute:#B59E84; --rule:#44321E;
-    --accent:#E07A4F; --accent-ink:#1A130E;
+    --accent:#E07A4F; --accent-ink:#1A130E; --accent-text:var(--accent);
     --sage:#97A285; --warn:#E6A35C; --berry:#C75450;
     --water:#7FB4D6; --water-hi:#C2E0EF;
-    --scrim:color-mix(in oklab, #1B1614 58%, transparent); --scrim-ink:#FBF7EE;
-    --dim-modal:color-mix(in oklab, #0E0A07 62%, transparent);
   }
 
   * { box-sizing: border-box; }
@@ -51,7 +51,9 @@
   }
 
   .ff-display { font-family: 'Fraunces', serif; font-optical-sizing: auto; }
-  .mono { font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; }
+  .ff-mono, .mono { font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; }
+  .ff-ui { font-family: 'IBM Plex Sans', sans-serif; }
+  .smallcaps { font-family:'IBM Plex Sans',sans-serif; font-size:11px; font-weight:500; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-mute); }
 
   /* ── App component CSS (copied from index.html so demos render true) ── */
   .btn { appearance:none; border:none; cursor:pointer; font-family:'IBM Plex Sans',sans-serif; font-weight:500; font-size:15px; letter-spacing:0.02em; transition:transform 120ms ease, opacity 120ms ease; }
@@ -97,7 +99,7 @@
   input[type="range"].brew-slider { -webkit-appearance:none; appearance:none; width:100%; background:transparent; margin:12px 0 0; height:32px; }
   input[type="range"].brew-slider::-webkit-slider-runnable-track { height:1px; background:var(--rule); }
   input[type="range"].brew-slider::-webkit-slider-thumb { -webkit-appearance:none; appearance:none; width:28px; height:28px; border-radius:999px; background:var(--accent); border:2px solid var(--bg); margin-top:-14px; box-shadow:0 0 0 1px var(--accent); }
-  .tab .label { font-size:9.5px; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; }
+  .tab .label { font-family:'IBM Plex Sans',sans-serif; font-size:9.5px; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; }
 
   /* ── Documentation layout ────────────────────────────────────── */
   .topbar { position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between;
@@ -223,21 +225,12 @@
 
   /* flags */
   .flag { background:var(--surface); border:1px solid var(--rule); border-radius:2px; padding:22px 24px; border-left:3px solid var(--ink-mute); }
-  .flag-high { border-left-color:var(--berry); }
-  .flag-med { border-left-color:var(--warn); }
   .flag-low { border-left-color:var(--sage); }
   .flag-head { display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:14px; }
   .sev { font-size:9.5px; letter-spacing:0.14em; text-transform:uppercase; padding:4px 9px; border-radius:999px; white-space:nowrap; }
   .flag-head .flag-title { flex:1; min-width:200px; }
-  .sev-high { color:var(--berry); border:1px solid var(--berry); }
-  .sev-med { color:var(--warn); border:1px solid var(--warn); }
-  .sev-low { color:var(--sage); border:1px solid var(--sage); }
   .sev-done { color:var(--sage); border:1px solid var(--sage); background:color-mix(in oklab, var(--sage) 12%, transparent); }
-  .flag-done { border-left-color:var(--sage); }
-  .klabel.done { color:var(--sage); }
-  .flag-title { font-size:18px; font-weight:400; letter-spacing:-0.01em; }
-  .flag-body { display:flex; flex-direction:column; gap:12px; }
-  .flag-body > div { display:grid; grid-template-columns:92px 1fr; gap:14px; }
+  .flag-title { font-size:19px; font-weight:400; letter-spacing:-0.01em; }
 
   /* plus / paywall */
   .plus-pill { font-family:'IBM Plex Mono',monospace; font-size:8.5px; letter-spacing:0.16em; text-transform:uppercase; color:var(--accent); border:1px solid color-mix(in oklab, var(--accent) 45%, var(--rule)); border-radius:999px; padding:3px 8px; white-space:nowrap; }

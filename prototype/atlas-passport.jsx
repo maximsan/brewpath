@@ -169,17 +169,13 @@ function PassportScreen({ states, favs, empty, freshSlug, onOpenOrigin, onExplor
     { k: 'Tasted', v: prog.tasted, color: 'var(--accent)' },
   ];
   const isEmpty = prog.explored === 0;
+  const [tbScrolled, onTbScroll] = window.useScrollFlag();
 
   return (
     <div className="screen" data-screen-label="Atlas · Passport" style={{ background: 'var(--bg)' }}>
-      <div className="lesson-topbar" style={{ borderBottom: 'none', background: 'transparent' }}>
-        <button className="close-btn" onClick={onClose} aria-label="Back">
-          <window.BackMark/>
-        </button>
-        <div/><div/>
-      </div>
+      <window.FloatTopbar scrolled={tbScrolled} onBack={onClose} back label="Back"/>
 
-      <div className="scroll" style={{ paddingTop: 108, paddingBottom: 28 }}>
+      <div className="scroll" onScroll={onTbScroll} style={{ paddingTop: 108, paddingBottom: 28 }}>
         <StampAnimStyles/>
         <div className="px-24">
           <div className="smallcaps" style={{ color: 'var(--accent)', marginBottom: 8 }}>YOUR COFFEE PASSPORT</div>

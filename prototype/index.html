@@ -29,11 +29,13 @@
     --ink:       #1B1614;
     --ink-mute:  #6B5F54;
     --rule:      #D8CFBF;
-    --accent:    #B8533A;
+    /* Darkened from #B8533A so the accent clears AA as TEXT at 11px (~5.2:1 on
+       paper). One accent colour, no second rule to remember. */
+    --accent:    #A6462F;
     --accent-ink:#FBF7EE;
-    /* Accent used as TEXT: raw --accent lands at ~4.3:1 on paper, so small
-       accent labels use this darkened mix instead (AA at 11px). */
-    --accent-text: color-mix(in oklab, var(--accent) 62%, var(--ink));
+    /* Deprecated alias, kept so the shipped mobile token set still resolves.
+       New work uses --accent directly. */
+    --accent-text: var(--accent);
     --sage:      #5F6E55;
     --warn:      #9A5F1C;
     --berry:     #A8362A;
@@ -60,7 +62,8 @@
     --rule:      #44321E;
     --accent:    #E07A4F;
     --accent-ink:#1A130E;
-    --accent-text: color-mix(in oklab, var(--accent) 62%, var(--ink));
+    /* Deprecated alias. Light-on-dark already clears AA, so nothing to darken. */
+    --accent-text: var(--accent);
     --sage:      #97A285;
     --warn:      #E6A35C;
     --berry:     #C75450;
@@ -213,10 +216,10 @@
     --art-seed-crease:#5C6B52;
     /* highlight on illustration fills — was defined in the dark mood only, so every
        art highlight lost its colour in cupping. Literal, so it does not flip. */
-    --cream:#F0DCB8;
+    --art-cream:#F0DCB8;
   }
   :root {
-    --t-hero: 56px; --t-display: 30px; --t-title: 26px; --t-heading: 19px;
+    --t-hero: 56px; --t-display: 30px; --t-title: 26px; --t-subtitle: 22px; --t-heading: 19px;
     --t-lead: 17px; --t-body: 15px; --t-support: 13px; --t-label: 11px; --t-micro: 9.5px;
   }
   .ff-display { font-family: 'Fraunces', serif; font-optical-sizing: auto; }
@@ -508,7 +511,7 @@
     display: inline-flex; align-items: center; justify-content: center; gap: 6px; align-self: center;
     min-width: 76px; box-sizing: border-box;
   }
-  .challenge-pill.start { background: var(--accent); color: var(--bg); }
+  .challenge-pill.start { background: var(--accent); color: var(--accent-ink); }
   .challenge-pill.resume { border: 1px solid color-mix(in oklab, var(--accent) 60%, transparent); color: var(--accent); }
   .challenge-pill.live { color: var(--accent); padding-right: 4px; }
   .challenge-pill.done { color: var(--sage); padding-right: 4px; font-weight: 500; }
@@ -1116,6 +1119,8 @@
 
   /* utility */
   .px-24 { padding-left: 24px; padding-right: 24px; }
+  /* Reward-list rows: hairlines between rows only, no outer borders. */
+  .rw-li + .rw-li { border-top: 1px solid var(--rule); }
   .gap-12 { gap: 12px; }
   .stack { display: flex; flex-direction: column; }
 </style>

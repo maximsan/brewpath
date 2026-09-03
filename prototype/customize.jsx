@@ -133,6 +133,7 @@ function StudioTopbar({ onBack, kind = 'close' }) {
 function PaywallScreen({ onPurchase, onClose, restoreOutcome = 'owned', onRestored }) {
   const mon = window.getMonetization();
   const [planId, setPlanId] = useStateC(mon.defaultPlan);
+  const [tbScrolled, onTbScroll] = window.useScrollFlag();
   // Model can change under an open paywall (tweak flip): keep the pick valid.
   const plan = window.getPlan(mon.plans.indexOf(planId) >= 0 ? planId : mon.defaultPlan);
   // Same simulated StoreKit restore as PurchasesScreen: pending → one of three
@@ -173,9 +174,9 @@ function PaywallScreen({ onPurchase, onClose, restoreOutcome = 'owned', onRestor
         position: 'absolute', inset: 0, pointerEvents: 'none',
         background: 'radial-gradient(ellipse at 50% 16%, color-mix(in oklab, var(--accent) 16%, transparent) 0%, transparent 58%)',
       }}/>
-      <StudioTopbar onBack={onClose}/>
+      <window.FloatTopbar scrolled={tbScrolled} onBack={onClose} label="Close"/>
 
-      <div className="scroll" style={{ paddingTop: 64, paddingBottom: 24, display: 'flex', flexDirection: 'column' }}>
+      <div className="scroll" onScroll={onTbScroll} style={{ paddingTop: 64, paddingBottom: 24, display: 'flex', flexDirection: 'column' }}>
         {/* Hero — a dressed-up Roasty. Sized so the pitch AND the price land in
             one screen: a paywall that hides its own CTA below the fold is a
             worse paywall, whatever the hero gains. */}
