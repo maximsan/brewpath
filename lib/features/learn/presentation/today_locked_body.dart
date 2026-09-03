@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
+import 'package:brew_path/features/learn/presentation/today_card_widget.dart';
 import 'package:brew_path/features/monetization/domain/locked_row_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/features/monetization/presentation/plus_gate_sheet.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
+import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -18,9 +20,15 @@ import 'package:flutter/material.dart';
 /// the eyebrow is the wall, the count is what buying opens, and the action
 /// says what it costs instead of reading *Start* and then refusing.
 ///
-/// It keeps the accent hero it wears unlocked. This is the card the learner
-/// opens the app onto, and demoting it to a grey panel would make the wall
-/// read as the app breaking rather than as something for sale.
+/// It keeps the accent hero it wears unlocked, so the wall reads as a state of
+/// the day rather than as the app breaking. The design draws its own locked
+/// card on the surface colour — but its *unlocked* card is on the surface
+/// colour too, and this app's is not, so matching the tint would have copied
+/// the wrong half of the relationship the design states.
+///
+/// **One lock, on the action.** The design puts a single `<LockMark size={12}/>`
+/// on the button and none in the eyebrow, which already says the same thing in
+/// words; ADR-0016 keeps a row to one lock for the same reason.
 class TodayLockedBody extends StatelessWidget {
   /// Creates a [TodayLockedBody] for [lesson].
   const TodayLockedBody({
@@ -32,12 +40,17 @@ class TodayLockedBody extends StatelessWidget {
   /// The next lesson in course order — shown, not hidden.
   final LessonModel lesson;
 
-  /// Every lesson still ahead of the learner, course-wide.
-  final int lessonsAhead;
+  /// Every lesson still ahead of the learner, course-wide, or null while the
+  /// count is still being read.
+  ///
+  /// Null draws no line at all rather than a zero: `0 LESSONS AHEAD` on a card
+  /// whose whole point is how much course is left would be the wrong half of a
+  /// flash to show.
+  final int? lessonsAhead;
 
-  /// The hero card's corner, which the ink splash has to be clipped to.
-  static const double _heroRadius = 12;
-  static const double _iconSm = 18;
+  /// The design's `padding: 20px` on the hero card. No `AppSpacing` token sits
+  /// at 20; the unlocked body and the Keep Sharp body use the same figure.
+  static const double _cardPadding = 20;
 
   /// The design's `<LockMark size={12}/>` on the card's action.
   static const double _ctaLockSize = 12;
@@ -46,36 +59,47 @@ class TodayLockedBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final mood = context.mood;
+    final ahead = lessonsAhead;
 
     return InkWell(
       // Tappable anywhere, like the locked Path row: this is where someone
       // meets the wall, and a dead card would say no without saying what it
       // costs.
       onTap: () => _offer(context),
-      borderRadius: BorderRadius.circular(_heroRadius),
+      borderRadius: BorderRadius.circular(TodayCardWidget.heroRadius),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(_cardPadding),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             _eyebrow(theme, mood),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.xs),
             Text(
               lesson.title,
               style: theme.textTheme.titleLarge?.copyWith(
                 color: mood.accentInk,
               ),
             ),
-            const SizedBox(height: 8),
-            _lessonsAheadLine(mood),
-            const SizedBox(height: 16),
+            if (ahead != null) ...[
+              const SizedBox(height: AppSpacing.xs),
+              _lessonsAheadLine(mood, ahead),
+            ],
+            const SizedBox(height: AppSpacing.md),
             SizedBox(
               width: double.infinity,
               child: FilledButton.icon(
                 onPressed: () => _offer(context),
                 icon: const IconMark(AppIcon.lock, size: _ctaLockSize),
-                label: const Text(LockedRowCopy.unlockFoundations),
+                // Relabelled rather than left as its own words: the button is
+                // the one thing a screen reader is asked to activate, so it is
+                // where the lesson it would open belongs.
+                label: Semantics(
+                  container: true,
+                  label: LockedRowCopy.unlockToContinue(lesson.title),
+                  excludeSemantics: true,
+                  child: const Text(LockedRowCopy.unlockFoundations),
+                ),
               ),
             ),
           ],
@@ -85,36 +109,31 @@ class TodayLockedBody extends StatelessWidget {
   }
 
   /// The wall, stated once. The module number the unlocked card carries is
-  /// deliberately absent — the eyebrow has replaced it.
+  /// deliberately absent — this has replaced it.
+  ///
+  /// Given a semantics node of its own so it is announced as its own element
+  /// rather than only as the first words of the card's long merged label.
   Widget _eyebrow(ThemeData theme, MoodColors mood) => Semantics(
-    // A node of its own: excluding the descendants leaves the annotation with
-    // nothing to attach to, and the label is silently dropped.
     container: true,
     label: LockedRowCopy.continuesInFoundations,
     excludeSemantics: true,
-    child: Row(
-      children: [
-        IconMark(AppIcon.lock, size: _iconSm, color: mood.accentInk),
-        const SizedBox(width: 8),
-        Text(
-          LockedRowCopy.continuesInFoundations,
-          style: theme.textTheme.labelMedium?.copyWith(
-            color: mood.accentInk,
-          ),
-        ),
-      ],
+    child: Text(
+      LockedRowCopy.continuesInFoundations,
+      style: theme.textTheme.labelMedium?.copyWith(color: mood.accentInk),
     ),
   );
 
   /// What the purchase opens, counted rather than written down.
-  Widget _lessonsAheadLine(MoodColors mood) => Semantics(
+  Widget _lessonsAheadLine(MoodColors mood, int ahead) => Semantics(
+    // A node of its own: excluding the descendants leaves the annotation with
+    // nothing to attach to, and the label is silently dropped.
     container: true,
     // Spoken with what it is ahead *in*, which the uppercase line leaves to
     // the eyebrow above it.
-    label: LockedRowCopy.lessonsAheadSemantics(lessonsAhead),
+    label: LockedRowCopy.lessonsAheadSemantics(ahead),
     excludeSemantics: true,
     child: Text(
-      LockedRowCopy.lessonsAhead(lessonsAhead).toUpperCase(),
+      LockedRowCopy.lessonsAhead(ahead).toUpperCase(),
       style: AppText.label(
         mood: mood,
         color: mood.accentInk,

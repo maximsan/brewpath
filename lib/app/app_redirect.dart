@@ -1,9 +1,37 @@
 import 'package:brew_path/app/pending_link.dart';
-import 'package:brew_path/app/refused_lesson.dart';
 import 'package:brew_path/core/constants/app_links.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/monetization/domain/lesson_access.dart';
 import 'package:flutter/foundation.dart';
+
+/// What the gates decided: where to send the learner, and what a wall turned
+/// them away from on the way.
+///
+/// The refusal rides back rather than being written to a holder, so
+/// [redirectFor] stays a function of its arguments. The router is the only
+/// thing that can act on it — a sheet cannot be opened while a location is
+/// still being resolved — and it acts on it the moment it is handed over.
+@immutable
+class GateDecision {
+  /// The location asked for is allowed.
+  const GateDecision.allow() : location = null, refusedLesson = null;
+
+  /// Go to [location] instead.
+  const GateDecision.to(this.location) : refusedLesson = null;
+
+  /// Go to [location] instead, because the course wall refused
+  /// [refusedLesson].
+  const GateDecision.refusedLesson(
+    this.refusedLesson, {
+    required this.location,
+  });
+
+  /// Where to go instead, or null when [location] is allowed as asked.
+  final String? location;
+
+  /// The lesson the course wall turned away, or null when none was.
+  final String? refusedLesson;
+}
 
 /// The state every gate is decided from, read once at the router's end.
 ///
@@ -40,20 +68,20 @@ class GateState {
 
 /// Every gate→destination decision the app makes, as one pure function.
 ///
-/// Pure so the rules can be read and tested without a router: the widget-level
-/// version needs the whole app pumped and onboarding driven for real, which is
-/// why the pending-link rule below had no test until it had a defect.
+/// Readable and testable without a router: the widget-level version needs the
+/// whole app pumped and onboarding driven for real, which is why the
+/// pending-link rule below had no test until it had a defect.
 ///
-/// Returns the location to go to instead, or null to allow [location].
-String? redirectFor({
+/// Its one effect is on [pending], which by its nature outlives a single call
+/// — everything else the gates conclude comes back in the [GateDecision].
+GateDecision redirectFor({
   required Uri location,
   required GateState gates,
   required PendingLink pending,
-  required RefusedLesson refused,
 }) {
   final path = location.path;
   // The platform's initial route, and the error page's "Home".
-  if (path == '/') return AppRoutes.loading.path;
+  if (path == '/') return GateDecision.to(AppRoutes.loading.path);
 
   // The intro proper — the two screens a first run is walked through. Named
   // once because the gate asks about them twice, in opposite directions: an
@@ -66,19 +94,19 @@ String? redirectFor({
       path.startsWith(AppRoutes.onboardingPrefix);
 
   if (!gates.onboardingCompleted) {
-    if (isOnboardingRoute) return null;
+    if (isOnboardingRoute) return const GateDecision.allow();
     // The arrival that is about to be bounced is the whole reason the learner
     // opened the app. Held here, resumed below — otherwise someone who
     // installs because a card was shared with them never sees that card.
     pending.hold(location.toString());
-    return AppRoutes.welcome.path;
+    return GateDecision.to(AppRoutes.welcome.path);
   }
 
   final resumed = pending.take();
-  if (resumed != null) return resumed;
+  if (resumed != null) return GateDecision.to(resumed);
 
   if (isIntroRoute || path.startsWith(AppRoutes.onboardingPrefix)) {
-    return AppRoutes.learn.path;
+    return GateDecision.to(AppRoutes.learn.path);
   }
 
   // The Studio is behind the entitlement, and the door is not the only way to
@@ -86,7 +114,7 @@ String? redirectFor({
   // other gate→destination decision does: a screen that guards itself is a
   // guard one route can be added around.
   if (path.endsWith('/${AppRoutes.studio.path}') && !gates.courseEntitled) {
-    return AppRoutes.profile.path;
+    return GateDecision.to(AppRoutes.profile.path);
   }
 
   // The course wall. Every surface that draws a locked lesson also raises the
@@ -100,16 +128,18 @@ String? redirectFor({
         hasCourse: gates.courseEntitled,
         isCompleted: gates.completedLessonIds.contains(lessonId),
       )) {
-    refused.refuse(lessonId);
-    return AppRoutes.learn.path;
+    return GateDecision.refusedLesson(
+      lessonId,
+      location: AppRoutes.learn.path,
+    );
   }
 
   // The one-off completion moment intercepts arrival at Today only — the
   // ending presents where the course lived, and never hijacks another tab.
   if (gates.courseCompletionDue && path == AppRoutes.learn.path) {
-    return AppRoutes.courseComplete.path;
+    return GateDecision.to(AppRoutes.courseComplete.path);
   }
-  return null;
+  return const GateDecision.allow();
 }
 
 /// Translates the **published** card address into the route that reads a card.

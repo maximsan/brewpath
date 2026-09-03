@@ -108,6 +108,12 @@ String _$todayLessonHash() => r'774ffc3540c940bd7a15b792d141cacbecd430cb';
 ///
 /// Counted from the bank, never written down. A lesson authored into the
 /// course changes this number by existing.
+///
+/// **Not the same figure as the gate sheet's `remainingLessons`**, which
+/// counts what the free tier does not carry. They answer different questions —
+/// how much course is left, and how much of it the purchase adds — and only
+/// coincide for a learner who has finished exactly the free set. The design
+/// asks the card for the first of the two.
 
 @ProviderFor(lessonsAhead)
 final lessonsAheadProvider = LessonsAheadProvider._();
@@ -121,6 +127,12 @@ final lessonsAheadProvider = LessonsAheadProvider._();
 ///
 /// Counted from the bank, never written down. A lesson authored into the
 /// course changes this number by existing.
+///
+/// **Not the same figure as the gate sheet's `remainingLessons`**, which
+/// counts what the free tier does not carry. They answer different questions —
+/// how much course is left, and how much of it the purchase adds — and only
+/// coincide for a learner who has finished exactly the free set. The design
+/// asks the card for the first of the two.
 
 final class LessonsAheadProvider
     extends $FunctionalProvider<AsyncValue<int>, int, FutureOr<int>>
@@ -134,6 +146,12 @@ final class LessonsAheadProvider
   ///
   /// Counted from the bank, never written down. A lesson authored into the
   /// course changes this number by existing.
+  ///
+  /// **Not the same figure as the gate sheet's `remainingLessons`**, which
+  /// counts what the free tier does not carry. They answer different questions —
+  /// how much course is left, and how much of it the purchase adds — and only
+  /// coincide for a learner who has finished exactly the free set. The design
+  /// asks the card for the first of the two.
   LessonsAheadProvider._()
     : super(
         from: null,
@@ -159,7 +177,7 @@ final class LessonsAheadProvider
   }
 }
 
-String _$lessonsAheadHash() => r'f3aec21147c47b054c327a8ff76a4b07f8534084';
+String _$lessonsAheadHash() => r'3ccfffe4fc7bc055fc502980830830d9044e7aef';
 
 /// The lessons the learner has **finished**, in course order, each joined with
 /// its module so the Learn screen can group them without re-querying.

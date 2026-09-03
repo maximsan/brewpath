@@ -1,5 +1,6 @@
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
+import 'package:brew_path/features/learn/presentation/today_card_widget.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -14,8 +15,6 @@ class TodayLessonBody extends StatelessWidget {
   /// The lesson due today.
   final LessonModel lesson;
 
-  /// The hero card's corner, which the ink splash has to be clipped to.
-  static const double _heroRadius = 12;
   static const double _mutedAlpha = 0.8;
   static const double _iconSm = 18;
 
@@ -26,7 +25,7 @@ class TodayLessonBody extends StatelessWidget {
 
     return InkWell(
       onTap: () => context.goTo(lessonRun(lesson.id)),
-      borderRadius: BorderRadius.circular(_heroRadius),
+      borderRadius: BorderRadius.circular(TodayCardWidget.heroRadius),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(

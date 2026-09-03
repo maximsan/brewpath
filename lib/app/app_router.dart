@@ -1,10 +1,8 @@
-import 'dart:async';
-
 import 'package:brew_path/app/analytics_navigator_observer.dart';
 import 'package:brew_path/app/app_redirect.dart';
 import 'package:brew_path/app/app_shell.dart';
+import 'package:brew_path/app/locked_lesson_offer.dart';
 import 'package:brew_path/app/pending_link.dart';
-import 'package:brew_path/app/refused_lesson.dart';
 import 'package:brew_path/core/constants/app_links.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/cards/presentation/card_deep_link.dart';
@@ -23,8 +21,6 @@ import 'package:brew_path/features/lessons/presentation/lesson_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_intro_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_player_screen.dart';
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
-import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
-import 'package:brew_path/features/monetization/presentation/plus_gate_sheet.dart';
 import 'package:brew_path/features/onboarding/presentation/loading/loading_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/meet_roasty/meet_roasty_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/name/name_screen.dart';
@@ -42,7 +38,6 @@ import 'package:brew_path/features/saved/presentation/saved_screen.dart';
 import 'package:brew_path/features/studio/presentation/studio_screen.dart';
 import 'package:brew_path/features/tour/presentation/app_guide_screen.dart';
 import 'package:brew_path/services/analytics/analytics_provider.dart';
-import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -73,7 +68,15 @@ GoRouter appRouter(Ref ref) {
   ref.listen<AsyncValue<bool>>(courseEntitlementProvider, (prev, next) {
     refresh.value++;
   });
-  final refused = ref.watch(refusedLessonProvider);
+  // The finished set, for the same wall: a lesson already played never locks
+  // (ADR-0016). **Listened, not only read.** A bare `ref.read` of an
+  // auto-disposed future initialises it, hands back `loading`, and lets it go
+  // again — so the redirect would read an empty set every time, and the arm
+  // that keeps finished work would only happen to hold while some screen
+  // elsewhere was watching the same provider.
+  ref.listen<AsyncValue<Set<String>>>(completedLessonIdsProvider, (prev, next) {
+    refresh.value++;
+  });
   return GoRouter(
     navigatorKey: _rootKey,
     initialLocation: AppRoutes.loading.path,
@@ -84,7 +87,7 @@ GoRouter appRouter(Ref ref) {
     // Unresolved gates read as false, which sends a paying learner to Profile
     // for one tick rather than showing a free one the chooser.
     redirect: (context, state) {
-      final destination = redirectFor(
+      final decision = redirectFor(
         location: state.uri,
         gates: GateState(
           onboardingCompleted:
@@ -92,13 +95,19 @@ GoRouter appRouter(Ref ref) {
           courseEntitled: ref.read(courseEntitlementProvider).value ?? false,
           courseCompletionDue:
               ref.read(courseCompletionDueProvider).value ?? false,
-          completedLessonIds: _finishedLessons(ref),
+          completedLessonIds:
+              ref.read(completedLessonIdsProvider).value ?? const {},
         ),
         pending: ref.read(pendingLinkProvider),
-        refused: refused,
       );
-      _raiseOfferForRefusedLesson(ref, refused);
-      return destination;
+      if (decision.refusedLesson case final lessonId?) {
+        raiseLockedLessonOffer(
+          ref: ref,
+          lessonId: lessonId,
+          navigator: _rootKey,
+        );
+      }
+      return decision.location;
     },
     observers: [
       AnalyticsNavigatorObserver(ref.watch(analyticsServiceProvider)),
@@ -407,41 +416,4 @@ GoRouter appRouter(Ref ref) {
       ),
     ],
   );
-}
-
-/// The lessons the learner has finished, as the gate reads them.
-///
-/// Unresolved reads as none, which locks more rather than less — the direction
-/// `courseEntitlement` asks every caller to fail in.
-Set<String> _finishedLessons(Ref ref) =>
-    ref
-        .read(completedLessonsProvider)
-        .value
-        ?.map((record) => record.lessonId)
-        .toSet() ??
-    const <String>{};
-
-/// Raises the offer for a lesson the redirect just turned away.
-///
-/// **After the frame, not during.** The bounce is still being resolved when
-/// the redirect returns, and a sheet pushed inside a redirect has no route to
-/// sit on. The offer is opened from the root navigator's overlay, which is the
-/// context under it rather than its own.
-void _raiseOfferForRefusedLesson(Ref ref, RefusedLesson refused) {
-  final lessonId = refused.take();
-  if (lessonId == null) return;
-  WidgetsBinding.instance.addPostFrameCallback(
-    (_) => unawaited(_showLessonOffer(ref, lessonId)),
-  );
-}
-
-Future<void> _showLessonOffer(Ref ref, String lessonId) async {
-  final lesson = await ref
-      .read(contentRepositoryProvider)
-      .getLessonById(lessonId);
-  final context = _rootKey.currentState?.overlay?.context;
-  // An id no bank carries keeps the silent bounce it already got: a stranger's
-  // mistyped link is not a moment to sell into.
-  if (lesson == null || context == null || !context.mounted) return;
-  await showPlusGate(context, LockedLesson(title: lesson.title));
 }

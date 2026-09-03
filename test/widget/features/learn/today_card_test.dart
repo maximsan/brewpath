@@ -32,6 +32,7 @@ const int _ahead = 29;
 Future<void> _pump(
   WidgetTester tester, {
   required bool isLocked,
+  int? lessonsAhead = _ahead,
 }) => tester.pumpWidget(
   ProviderScope(
     // A counted pitch, so tapping the card does not wait on the banks.
@@ -42,7 +43,7 @@ Future<void> _pump(
         body: TodayCardWidget(
           today: _lesson,
           isLocked: isLocked,
-          lessonsAhead: _ahead,
+          lessonsAhead: lessonsAhead,
         ),
       ),
     ),
@@ -76,17 +77,29 @@ void main() {
       expect(find.text(_lesson.title), findsOneWidget);
     });
 
-    testWidgets('the eyebrow is the wall, and it carries the mark', (
-      tester,
-    ) async {
+    testWidgets('the eyebrow is the wall', (tester) async {
       await _pump(tester, isLocked: true);
 
       expect(find.text(LockedRowCopy.continuesInFoundations), findsOneWidget);
       // The module number the unlocked card prints is gone: the eyebrow has
       // replaced it, and two statements of place would say it twice.
       expect(find.text(_lesson.moduleLabel), findsNothing);
-      // One on the eyebrow, one on the action.
-      expect(_lockMarks(), findsNWidgets(2));
+    });
+
+    testWidgets('one lock, and it is on the action', (tester) async {
+      // The design draws a single mark, on the button. The eyebrow says the
+      // same thing in words, so a second lock there would state it twice —
+      // which is the rule ADR-0016 keeps a row to.
+      await _pump(tester, isLocked: true);
+
+      expect(_lockMarks(), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byType(FilledButton),
+          matching: _lockMarks(),
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('the count is what buying opens', (tester) async {
@@ -118,7 +131,26 @@ void main() {
         find.bySemanticsLabel(LockedRowCopy.lessonsAheadSemantics(_ahead)),
         findsOneWidget,
       );
+      // The action is the one thing there is to activate, so it names the
+      // lesson it would open rather than leaving that to the title above.
+      expect(
+        find.bySemanticsLabel(LockedRowCopy.unlockToContinue(_lesson.title)),
+        findsOneWidget,
+      );
       handle.dispose();
+    });
+
+    testWidgets('an uncounted card says nothing rather than zero', (
+      tester,
+    ) async {
+      // `0 LESSONS AHEAD` on a card whose whole point is how much course is
+      // left is the wrong half of a flash to show.
+      await _pump(tester, isLocked: true, lessonsAhead: null);
+
+      expect(find.textContaining('AHEAD'), findsNothing);
+      // Everything that does not depend on the count still stands.
+      expect(find.text(LockedRowCopy.continuesInFoundations), findsOneWidget);
+      expect(find.text(LockedRowCopy.unlockFoundations), findsOneWidget);
     });
 
     testWidgets('the action raises the offer', (tester) async {
@@ -139,13 +171,6 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text(PlusCopy.title), findsOneWidget);
-    });
-  });
-
-  group('the counted line reads as English', () {
-    test('one lesson is not one lessons', () {
-      expect(LockedRowCopy.lessonsAhead(1), '1 lesson ahead');
-      expect(LockedRowCopy.lessonsAhead(2), '2 lessons ahead');
     });
   });
 }

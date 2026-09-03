@@ -1,18 +1,16 @@
 import 'package:brew_path/app/app_redirect.dart';
 import 'package:brew_path/app/pending_link.dart';
-import 'package:brew_path/app/refused_lesson.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/monetization/domain/free_tier.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-String? redirect(
+GateDecision decide(
   String location, {
   bool onboarded = true,
   bool entitled = true,
   bool completionDue = false,
   Set<String> completed = const {},
   PendingLink? pending,
-  RefusedLesson? refused,
 }) => redirectFor(
   location: Uri.parse(location),
   gates: GateState(
@@ -22,8 +20,24 @@ String? redirect(
     completedLessonIds: completed,
   ),
   pending: pending ?? PendingLink(),
-  refused: refused ?? RefusedLesson(),
 );
+
+/// Where a location is sent, which is what most of these tests are about.
+String? redirect(
+  String location, {
+  bool onboarded = true,
+  bool entitled = true,
+  bool completionDue = false,
+  Set<String> completed = const {},
+  PendingLink? pending,
+}) => decide(
+  location,
+  onboarded: onboarded,
+  entitled: entitled,
+  completionDue: completionDue,
+  completed: completed,
+  pending: pending,
+).location;
 
 /// The free set's own first entry, so growing that list cannot leave these
 /// tests asserting about a lesson the tier no longer carries.
@@ -78,14 +92,13 @@ void main() {
       expect(redirect(_run(_freeLesson), entitled: false), isNull);
     });
 
-    test('a paid lesson is refused, and the refusal is recorded', () {
-      final refused = RefusedLesson();
+    test('a paid lesson is refused, and the refusal is reported', () {
+      final decision = decide(_run(_paidLesson), entitled: false);
 
-      expect(
-        redirect(_run(_paidLesson), entitled: false, refused: refused),
-        AppRoutes.learn.path,
-      );
-      expect(refused.take(), _paidLesson);
+      expect(decision.location, AppRoutes.learn.path);
+      // Named, so the bounce can be followed by an offer rather than leaving
+      // the learner somewhere they did not ask for with no word about why.
+      expect(decision.refusedLesson, _paidLesson);
     });
 
     test('owning the course opens it', () {
@@ -122,12 +135,12 @@ void main() {
       expect(redirect('/learn/saved', entitled: false), isNull);
     });
 
-    test('the refusal is one-shot', () {
-      final refused = RefusedLesson();
-      redirect(_run(_paidLesson), entitled: false, refused: refused);
-
-      expect(refused.take(), isNotNull);
-      expect(refused.take(), isNull);
+    test('nothing else reports a refusal', () {
+      // Every other gate moves the learner for a reason they can see, so an
+      // offer raised off one of those bounces would come out of nowhere.
+      expect(decide('/profile/studio', entitled: false).refusedLesson, isNull);
+      expect(decide('/learn', completionDue: true).refusedLesson, isNull);
+      expect(decide(_run(_freeLesson)).refusedLesson, isNull);
     });
   });
 

@@ -49,14 +49,20 @@ abstract final class LockedRowCopy {
   ///
   /// Not their position in one module: once the eyebrow is the wall, a
   /// *lesson 4 of 7* says nothing about what buying would give them.
-  static String lessonsAhead(int count) =>
-      count == 1 ? '1 lesson ahead' : '$count lessons ahead';
+  static String lessonsAhead(int count) => '$count lessons ahead';
 
   /// The Today card's action, named for what it opens.
   ///
   /// Honest at the point of tapping: the button on a locked card must never
   /// read *Begin* and then raise a wall.
   static const unlockFoundations = 'Unlock Foundations';
+
+  /// What a screen reader is told the locked card's action would do.
+  ///
+  /// The button is the one thing there is to activate, so the lesson it opens
+  /// belongs on it rather than only in the title above it.
+  static String unlockToContinue(String title) =>
+      '$unlockFoundations to continue: $title';
 
   /// What a screen reader is told the counted line means.
   static String lessonsAheadSemantics(int count) =>

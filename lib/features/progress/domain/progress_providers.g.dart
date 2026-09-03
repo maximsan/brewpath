@@ -326,6 +326,66 @@ final class CompletedLessonsProvider
 
 String _$completedLessonsHash() => r'c29c67109f5f475a6482b2f49c6e10eb5a32e746';
 
+/// The ids of the lessons the learner has finished.
+///
+/// Named once because the answer is asked for by things that have no use for
+/// the records themselves — the router's course wall, and the count of lessons
+/// still ahead — and re-deriving a set at each of them is a second place for
+/// the question to be answered differently.
+
+@ProviderFor(completedLessonIds)
+final completedLessonIdsProvider = CompletedLessonIdsProvider._();
+
+/// The ids of the lessons the learner has finished.
+///
+/// Named once because the answer is asked for by things that have no use for
+/// the records themselves — the router's course wall, and the count of lessons
+/// still ahead — and re-deriving a set at each of them is a second place for
+/// the question to be answered differently.
+
+final class CompletedLessonIdsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<Set<String>>,
+          Set<String>,
+          FutureOr<Set<String>>
+        >
+    with $FutureModifier<Set<String>>, $FutureProvider<Set<String>> {
+  /// The ids of the lessons the learner has finished.
+  ///
+  /// Named once because the answer is asked for by things that have no use for
+  /// the records themselves — the router's course wall, and the count of lessons
+  /// still ahead — and re-deriving a set at each of them is a second place for
+  /// the question to be answered differently.
+  CompletedLessonIdsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'completedLessonIdsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$completedLessonIdsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<Set<String>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<Set<String>> create(Ref ref) {
+    return completedLessonIds(ref);
+  }
+}
+
+String _$completedLessonIdsHash() =>
+    r'ded43c971e0605791b0e17a296c4ba3386588e12';
+
 /// The ids of all cards the user has collected.
 
 @ProviderFor(collectedCards)

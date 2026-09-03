@@ -28,10 +28,9 @@ cannot buy the course will never finish the module before it either.
 | Path lesson row | lock mark, `Part of Foundations`, tap opens the offer | no lock |
 | Path module row | lock mark, `Part of Foundations · {n} lessons`, tap opens the offer | `Finish {previous} to unlock` |
 | Reference shelf | `Visual guides come with the full course`, tap opens the offer | `Unlocks with {lesson}` |
-| Today's lead card | lock mark, `Continues in Foundations`, then `{n} lessons ahead`, tap opens the offer | the ordinary lesson card |
+| Today's lead card | `Continues in Foundations`, then `{n} lessons ahead`, a lock on its action, tap opens the offer | the ordinary lesson card |
 
-The purchase lock is drawn in accent, progression in ink-mute — except on
-Today's card, which *is* the accent, so its lock takes the accent's own ink. A
+The purchase lock is drawn in accent, progression in ink-mute. A
 purchase-locked row stays tappable, because it is where someone meets the wall
 and it should offer the way past. A lesson already finished never locks.
 

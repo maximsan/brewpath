@@ -99,6 +99,18 @@ Future<int> streak(Ref ref) async =>
 Future<List<ProgressRecord>> completedLessons(Ref ref) =>
     ref.watch(progressRepositoryProvider).getAllCompleted();
 
+/// The ids of the lessons the learner has finished.
+///
+/// Named once because the answer is asked for by things that have no use for
+/// the records themselves — the router's course wall, and the count of lessons
+/// still ahead — and re-deriving a set at each of them is a second place for
+/// the question to be answered differently.
+@riverpod
+Future<Set<String>> completedLessonIds(Ref ref) async {
+  final completed = await ref.watch(completedLessonsProvider.future);
+  return {for (final record in completed) record.lessonId};
+}
+
 /// The ids of all cards the user has collected.
 @riverpod
 Future<List<String>> collectedCards(Ref ref) =>

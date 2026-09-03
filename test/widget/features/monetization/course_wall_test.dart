@@ -1,6 +1,7 @@
 import 'package:brew_path/app/app.dart';
 import 'package:brew_path/app/app_router.dart';
 import 'package:brew_path/core/constants/app_labels.dart';
+import 'package:brew_path/features/learn/presentation/practice_any_lesson_widget.dart';
 import 'package:brew_path/features/learn/presentation/today_lesson_body.dart';
 import 'package:brew_path/features/learn/presentation/today_locked_body.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_screen.dart';
@@ -13,7 +14,7 @@ import 'package:brew_path/services/payments/granted_payments_service.dart';
 import 'package:brew_path/services/payments/payments_provider.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/progress_repository.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -133,6 +134,30 @@ void main() {
       expect(find.byType(TodayLockedBody), findsNothing);
       expect(find.text(LockedRowCopy.continuesInFoundations), findsNothing);
       expect(find.text('Start'), findsOneWidget);
+    });
+  });
+
+  group('the practice list', () {
+    testWidgets('offers only lessons the gate lets through', (tester) async {
+      // It is built from the finished set, and a finished lesson never locks
+      // (ADR-0016) — so there is nothing in it to lock, and this is what says
+      // so rather than leaving it assumed.
+      useTallViewport(tester);
+      await finishTheFreeLessons();
+
+      await pumpWithProviders(tester, const BrewPathApp());
+
+      final rows = find.descendant(
+        of: find.byType(PracticeAnyLessonWidget),
+        matching: find.byType(ListTile),
+      );
+      expect(rows, findsNWidgets(freeLessonIds.length));
+
+      await tester.tap(rows.first);
+      await settleLoaders(tester);
+
+      expect(find.byType(LessonScreen), findsOneWidget);
+      expect(find.text(PlusCopy.title), findsNothing);
     });
   });
 

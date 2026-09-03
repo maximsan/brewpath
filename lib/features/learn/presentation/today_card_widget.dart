@@ -18,7 +18,7 @@ class TodayCardWidget extends StatelessWidget {
   const TodayCardWidget({
     required this.today,
     this.isLocked = false,
-    this.lessonsAhead = 0,
+    this.lessonsAhead,
     this.keepSharp,
     this.keepSharpDone = false,
     super.key,
@@ -33,9 +33,10 @@ class TodayCardWidget extends StatelessWidget {
   /// here: the card draws the answer, it does not work it out.
   final bool isLocked;
 
-  /// Every lesson still ahead of the learner, course-wide. Read only while
-  /// [isLocked] — it is the locked card's pitch.
-  final int lessonsAhead;
+  /// Every lesson still ahead of the learner, course-wide, or null while the
+  /// count is still being read. Read only while [isLocked] — it is the locked
+  /// card's pitch.
+  final int? lessonsAhead;
 
   /// The day's Keep Sharp pick, shown when [today] is null. Null means no
   /// registered practice type has material (the quiet degenerate state).
@@ -43,6 +44,11 @@ class TodayCardWidget extends StatelessWidget {
 
   /// Whether today's recommendation already met its own completion rule.
   final bool keepSharpDone;
+
+  /// The hero card's corner. Public because each body clips its own ink
+  /// splash to it, and a second copy of the figure is a second thing to keep
+  /// in step.
+  static const double heroRadius = 12;
 
   @override
   Widget build(BuildContext context) {
