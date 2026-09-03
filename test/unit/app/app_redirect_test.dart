@@ -1,6 +1,8 @@
 import 'package:brew_path/app/app_redirect.dart';
 import 'package:brew_path/app/pending_link.dart';
+import 'package:brew_path/app/refused_lesson.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/features/monetization/domain/free_tier.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 String? redirect(
@@ -8,14 +10,30 @@ String? redirect(
   bool onboarded = true,
   bool entitled = true,
   bool completionDue = false,
+  Set<String> completed = const {},
   PendingLink? pending,
+  RefusedLesson? refused,
 }) => redirectFor(
   location: Uri.parse(location),
-  onboardingCompleted: onboarded,
-  courseEntitled: entitled,
-  courseCompletionDue: completionDue,
+  gates: GateState(
+    onboardingCompleted: onboarded,
+    courseEntitled: entitled,
+    courseCompletionDue: completionDue,
+    completedLessonIds: completed,
+  ),
   pending: pending ?? PendingLink(),
+  refused: refused ?? RefusedLesson(),
 );
+
+/// The free set's own first entry, so growing that list cannot leave these
+/// tests asserting about a lesson the tier no longer carries.
+final String _freeLesson = freeLessonIds.first;
+
+/// A lesson the free tier does not carry — checked against the rule below
+/// rather than trusted.
+const String _paidLesson = 'm5l4';
+
+String _run(String lessonId) => '/learn/lesson/$lessonId';
 
 void main() {
   group('the gates that were already there', () {
@@ -45,6 +63,91 @@ void main() {
     test('the completion moment intercepts Today only', () {
       expect(redirect('/learn', completionDue: true), '/course-complete');
       expect(redirect('/cards', completionDue: true), isNull);
+    });
+  });
+
+  group('the course wall', () {
+    test('the fixture is what these tests say it is', () {
+      // Guards every expectation below: if the free set ever grew to cover
+      // this lesson, the gate tests would pass by asserting nothing.
+      expect(isLessonFree(_paidLesson), isFalse);
+      expect(isLessonFree(_freeLesson), isTrue);
+    });
+
+    test('a free lesson opens, and opens again', () {
+      expect(redirect(_run(_freeLesson), entitled: false), isNull);
+    });
+
+    test('a paid lesson is refused, and the refusal is recorded', () {
+      final refused = RefusedLesson();
+
+      expect(
+        redirect(_run(_paidLesson), entitled: false, refused: refused),
+        AppRoutes.learn.path,
+      );
+      expect(refused.take(), _paidLesson);
+    });
+
+    test('owning the course opens it', () {
+      expect(redirect(_run(_paidLesson)), isNull);
+    });
+
+    test('a lesson already finished stays open (ADR-0016)', () {
+      expect(
+        redirect(
+          _run(_paidLesson),
+          entitled: false,
+          completed: {_paidLesson},
+        ),
+        isNull,
+      );
+    });
+
+    test("the run's ending is walled too", () {
+      // Otherwise the ending is a way of claiming a lesson never played.
+      expect(
+        redirect('${_run(_paidLesson)}/complete', entitled: false),
+        AppRoutes.learn.path,
+      );
+    });
+
+    test('an unresolved entitlement reads as locked', () {
+      // What every caller of `courseEntitlement` is asked to do: showing a
+      // lock briefly to a paying learner is recoverable, the other way is not.
+      expect(redirect(_run(_paidLesson), entitled: false), isNotNull);
+    });
+
+    test('the tab itself is not a lesson route', () {
+      expect(redirect('/learn', entitled: false), isNull);
+      expect(redirect('/learn/saved', entitled: false), isNull);
+    });
+
+    test('the refusal is one-shot', () {
+      final refused = RefusedLesson();
+      redirect(_run(_paidLesson), entitled: false, refused: refused);
+
+      expect(refused.take(), isNotNull);
+      expect(refused.take(), isNull);
+    });
+  });
+
+  group('reading a lesson out of a location', () {
+    test('both lesson routes name their lesson', () {
+      expect(lessonIdIn(Uri.parse('/learn/lesson/m2l1')), 'm2l1');
+      expect(lessonIdIn(Uri.parse('/learn/lesson/m2l1/complete')), 'm2l1');
+    });
+
+    test('a query string is not part of the id', () {
+      expect(
+        lessonIdIn(Uri.parse('/learn/lesson/m2l1/complete?correct=4&total=5')),
+        'm2l1',
+      );
+    });
+
+    test('anything else is not a lesson', () {
+      expect(lessonIdIn(Uri.parse('/learn')), isNull);
+      expect(lessonIdIn(Uri.parse('/learn/lesson/')), isNull);
+      expect(lessonIdIn(Uri.parse('/cards/c1')), isNull);
     });
   });
 

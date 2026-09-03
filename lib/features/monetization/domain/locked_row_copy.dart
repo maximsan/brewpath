@@ -36,4 +36,29 @@ abstract final class LockedRowCopy {
   /// What a screen reader is told about a purchase-locked row.
   static String purchaseLockedSemantics(String title) =>
       '$title. $partOfFoundations.';
+
+  /// The Today card's eyebrow once the learner is past the free lessons.
+  ///
+  /// A statement about the course rather than a refusal, and it is the whole
+  /// of the wall: the card drops its module number, because the eyebrow has
+  /// already said where the learner has got to.
+  static const continuesInFoundations = 'Continues in Foundations';
+
+  /// What the purchase opens, counted — every lesson still ahead of the
+  /// learner, course-wide.
+  ///
+  /// Not their position in one module: once the eyebrow is the wall, a
+  /// *lesson 4 of 7* says nothing about what buying would give them.
+  static String lessonsAhead(int count) =>
+      count == 1 ? '1 lesson ahead' : '$count lessons ahead';
+
+  /// The Today card's action, named for what it opens.
+  ///
+  /// Honest at the point of tapping: the button on a locked card must never
+  /// read *Begin* and then raise a wall.
+  static const unlockFoundations = 'Unlock Foundations';
+
+  /// What a screen reader is told the counted line means.
+  static String lessonsAheadSemantics(int count) =>
+      '${lessonsAhead(count)} in Foundations';
 }

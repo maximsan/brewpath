@@ -99,6 +99,68 @@ final class TodayLessonProvider
 
 String _$todayLessonHash() => r'774ffc3540c940bd7a15b792d141cacbecd430cb';
 
+/// Every lesson still ahead of the learner, course-wide.
+///
+/// **What the purchase opens, counted** — the figure Today's locked card
+/// pitches with. Course-wide rather than a position inside one module: once
+/// the wall is what the card is about, *lesson 4 of 7* says nothing about what
+/// buying would give them.
+///
+/// Counted from the bank, never written down. A lesson authored into the
+/// course changes this number by existing.
+
+@ProviderFor(lessonsAhead)
+final lessonsAheadProvider = LessonsAheadProvider._();
+
+/// Every lesson still ahead of the learner, course-wide.
+///
+/// **What the purchase opens, counted** — the figure Today's locked card
+/// pitches with. Course-wide rather than a position inside one module: once
+/// the wall is what the card is about, *lesson 4 of 7* says nothing about what
+/// buying would give them.
+///
+/// Counted from the bank, never written down. A lesson authored into the
+/// course changes this number by existing.
+
+final class LessonsAheadProvider
+    extends $FunctionalProvider<AsyncValue<int>, int, FutureOr<int>>
+    with $FutureModifier<int>, $FutureProvider<int> {
+  /// Every lesson still ahead of the learner, course-wide.
+  ///
+  /// **What the purchase opens, counted** — the figure Today's locked card
+  /// pitches with. Course-wide rather than a position inside one module: once
+  /// the wall is what the card is about, *lesson 4 of 7* says nothing about what
+  /// buying would give them.
+  ///
+  /// Counted from the bank, never written down. A lesson authored into the
+  /// course changes this number by existing.
+  LessonsAheadProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'lessonsAheadProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$lessonsAheadHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<int> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<int> create(Ref ref) {
+    return lessonsAhead(ref);
+  }
+}
+
+String _$lessonsAheadHash() => r'f3aec21147c47b054c327a8ff76a4b07f8534084';
+
 /// The lessons the learner has **finished**, in course order, each joined with
 /// its module so the Learn screen can group them without re-querying.
 ///

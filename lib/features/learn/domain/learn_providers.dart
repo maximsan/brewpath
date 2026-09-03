@@ -114,6 +114,23 @@ Future<LessonModel?> todayLesson(Ref ref) async {
   return nextId == null ? null : content.getLessonById(nextId);
 }
 
+/// Every lesson still ahead of the learner, course-wide.
+///
+/// **What the purchase opens, counted** — the figure Today's locked card
+/// pitches with. Course-wide rather than a position inside one module: once
+/// the wall is what the card is about, *lesson 4 of 7* says nothing about what
+/// buying would give them.
+///
+/// Counted from the bank, never written down. A lesson authored into the
+/// course changes this number by existing.
+@riverpod
+Future<int> lessonsAhead(Ref ref) async {
+  final lessons = await ref.watch(contentRepositoryProvider).getLessons();
+  final completed = await ref.watch(completedLessonsProvider.future);
+  final finished = {for (final record in completed) record.lessonId};
+  return lessons.where((lesson) => !finished.contains(lesson.id)).length;
+}
+
 /// One row per lesson plus its owning module, for the Learn screen's practice
 /// section.
 class LessonWithModule {

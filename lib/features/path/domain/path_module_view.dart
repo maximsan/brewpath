@@ -7,7 +7,7 @@ library;
 
 import 'package:brew_path/features/learn/domain/course_order.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
-import 'package:brew_path/features/monetization/domain/free_tier.dart';
+import 'package:brew_path/features/monetization/domain/lesson_access.dart';
 import 'package:brew_path/features/path/domain/path_density.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
@@ -108,10 +108,12 @@ List<PathModule> buildPathModules({
 }) {
   final currentId = firstUnfinishedLessonId(modules, completedIds);
 
-  // A finished lesson never locks. Someone who played it before the wall
-  // moved keeps it.
   bool lockedToPurchase(String lessonId, {required bool isCompleted}) =>
-      !hasCourse && !isCompleted && !isLessonFree(lessonId);
+      isLessonPurchaseLocked(
+        lessonId: lessonId,
+        hasCourse: hasCourse,
+        isCompleted: isCompleted,
+      );
 
   return [
     for (final item in modules)

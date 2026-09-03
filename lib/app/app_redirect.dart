@@ -1,6 +1,42 @@
 import 'package:brew_path/app/pending_link.dart';
+import 'package:brew_path/app/refused_lesson.dart';
 import 'package:brew_path/core/constants/app_links.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/features/monetization/domain/lesson_access.dart';
+import 'package:flutter/foundation.dart';
+
+/// The state every gate is decided from, read once at the router's end.
+///
+/// One value rather than five arguments: they are read together, in one place,
+/// and they travel together into the one function that judges them. A gate
+/// added later is a field here, not a sixth thing every caller has to pass.
+///
+/// **Every unresolved read is the locked answer.** Showing a lock briefly to a
+/// paying learner is recoverable and showing paid content briefly to a free one
+/// is not, so the router resolves each pending provider to `false` — and the
+/// finished-lesson set to empty — before handing it over.
+@immutable
+class GateState {
+  /// Creates a [GateState].
+  const GateState({
+    required this.onboardingCompleted,
+    required this.courseEntitled,
+    required this.courseCompletionDue,
+    required this.completedLessonIds,
+  });
+
+  /// Whether the learner has been through the intro.
+  final bool onboardingCompleted;
+
+  /// Whether they own the course.
+  final bool courseEntitled;
+
+  /// Whether the one-off course ending is owed to them.
+  final bool courseCompletionDue;
+
+  /// The lessons they have finished, which the course wall never takes back.
+  final Set<String> completedLessonIds;
+}
 
 /// Every gate→destination decision the app makes, as one pure function.
 ///
@@ -11,10 +47,9 @@ import 'package:brew_path/core/constants/app_routes.dart';
 /// Returns the location to go to instead, or null to allow [location].
 String? redirectFor({
   required Uri location,
-  required bool onboardingCompleted,
-  required bool courseEntitled,
-  required bool courseCompletionDue,
+  required GateState gates,
   required PendingLink pending,
+  required RefusedLesson refused,
 }) {
   final path = location.path;
   // The platform's initial route, and the error page's "Home".
@@ -30,7 +65,7 @@ String? redirectFor({
       isIntroRoute ||
       path.startsWith(AppRoutes.onboardingPrefix);
 
-  if (!onboardingCompleted) {
+  if (!gates.onboardingCompleted) {
     if (isOnboardingRoute) return null;
     // The arrival that is about to be bounced is the whole reason the learner
     // opened the app. Held here, resumed below — otherwise someone who
@@ -50,13 +85,28 @@ String? redirectFor({
   // reach it — a deep link is. The gate belongs here for the same reason every
   // other gate→destination decision does: a screen that guards itself is a
   // guard one route can be added around.
-  if (path.endsWith('/${AppRoutes.studio.path}') && !courseEntitled) {
+  if (path.endsWith('/${AppRoutes.studio.path}') && !gates.courseEntitled) {
     return AppRoutes.profile.path;
+  }
+
+  // The course wall. Every surface that draws a locked lesson also raises the
+  // offer from the row itself, so this is the backstop: a deep link, a
+  // *Next lesson* button on a completion screen, any future caller that
+  // navigates without asking. One of them getting it wrong must not be a way
+  // into the course.
+  if (lessonIdIn(location) case final lessonId?
+      when isLessonPurchaseLocked(
+        lessonId: lessonId,
+        hasCourse: gates.courseEntitled,
+        isCompleted: gates.completedLessonIds.contains(lessonId),
+      )) {
+    refused.refuse(lessonId);
+    return AppRoutes.learn.path;
   }
 
   // The one-off completion moment intercepts arrival at Today only — the
   // ending presents where the course lived, and never hijacks another tab.
-  if (courseCompletionDue && path == AppRoutes.learn.path) {
+  if (gates.courseCompletionDue && path == AppRoutes.learn.path) {
     return AppRoutes.courseComplete.path;
   }
   return null;
@@ -85,4 +135,25 @@ String? forwardPublicCardAddress(Uri location) {
   final id = path == prefix ? '' : path.substring(prefix.length + 1);
   if (id.isEmpty || id.contains('/')) return AppRoutes.cards.path;
   return location.replace(path: '${AppRoutes.cards.path}/$id').toString();
+}
+
+/// The lesson a location plays, or null when it is not a lesson route at all.
+///
+/// Reads the URL rather than go_router's path parameters because the gate is a
+/// pure function: it is handed a `Uri` and has no match to ask. Both the run
+/// and the ending it leads to are lesson routes — `/learn/lesson/<id>` and
+/// `/learn/lesson/<id>/complete` — and the wall stands in front of both, so an
+/// ending cannot be linked to as a way of claiming a lesson that was never
+/// played.
+String? lessonIdIn(Uri location) {
+  // Assembled from the routes themselves — the tab's path plus the lesson
+  // route's own first segment — so renaming either cannot leave a string
+  // literal here pointing at an address that no longer exists.
+  final prefix =
+      '${AppRoutes.learn.path}/${AppRoutes.lesson.path.split('/').first}/';
+  final path = location.path;
+  if (!path.startsWith(prefix)) return null;
+
+  final id = path.substring(prefix.length).split('/').first;
+  return id.isEmpty ? null : id;
 }
