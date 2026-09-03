@@ -21,7 +21,7 @@ import 'package:brew_path/shared/repositories/content_assembly.dart';
 ///
 /// When to bump is documented in the extractor's header, next to the code whose
 /// change triggers it.
-const int contentSchemaVersion = 1;
+const int contentSchemaVersion = 2;
 
 /// The records inside a decoded bank envelope, or a refusal naming the problem.
 ///

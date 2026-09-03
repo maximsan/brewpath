@@ -19,6 +19,9 @@ import 'package:path/path.dart' as p;
 /// something the extractor passed with no way to tell which is right.
 const _generated = 'assets/content/generated';
 
+/// The allowance list the extractor reads; the Dart mirror reads the same file.
+const _exceptions = 'tool/extract_content/exceptions.json';
+
 /// A card in canonical form — keys sorted at every depth, so two cards that
 /// differ only in key order compare equal.
 ///
@@ -108,14 +111,18 @@ void main() {
   });
 
   test('the correct answer is not far longer than its runner-up', () {
-    // Structural, so decision 4 runs it on both sides. Scoped to 3+ options
-    // exactly as the extractor scopes it: the ratio was calibrated on that
-    // population (#100).
+    // Structural, so decision 4 runs it on both sides. Two-option cards are
+    // inside the rule exactly as the extractor has it: with one wrong answer
+    // to compare against, the longer text is the strongest tell (#100).
     for (final lesson in lessons) {
       for (final card
           in (lesson['cards'] as List).cast<Map<String, dynamic>>()) {
+        // The kinds whose options are `{t, correct}` maps — the extractor's
+        // `oneCorrect` set. A bagpick's options are bare strings.
+        const gradedByChoice = {'mcq', 'recall', 'tastefix', 'decision'};
+        if (!gradedByChoice.contains(card['kind'])) continue;
         final options = (card['choices'] ?? card['options']) as List<dynamic>?;
-        if (options == null || options.length < 3) continue;
+        if (options == null || options.length < 2) continue;
 
         final texts = options.cast<Map<String, dynamic>>();
         final correct = texts.where((o) => o['correct'] == true).toList();
@@ -155,21 +162,82 @@ void main() {
     expect(shared, isEmpty, reason: 'one id has to mean one thing across both');
   });
 
-  test('a guide meta table is two or three label-and-value rows', () {
-    // Two or three, never "exactly three": `g-variety` and `g-distribution`
-    // carry two, so a stricter rule fails on landed content (#106).
+  test(
+    'a match card is not solvable by elimination unless allowed by name',
+    () {
+      // The same allowance list the extractor reads, so the two sides cannot
+      // disagree about which one-to-one sets are genuine (#100, decision 3).
+      final exceptions =
+          jsonDecode(File(_exceptions).readAsStringSync())
+              as Map<String, dynamic>;
+      final allowed = exceptions['matchEvenSplit'] as Map<String, dynamic>;
+
+      for (final lesson in lessons) {
+        final cards = (lesson['cards'] as List).cast<Map<String, dynamic>>();
+        for (var position = 0; position < cards.length; position++) {
+          final card = cards[position];
+          if (card['kind'] != 'match') continue;
+          final rights = (card['pairs'] as List)
+              .cast<Map<String, dynamic>>()
+              .map((pair) => pair['r'])
+              .toList();
+          final oneToOne =
+              rights.length > 1 && rights.toSet().length == rights.length;
+          final key = 'lesson ${lesson['id']} card ${position + 1}';
+          expect(
+            oneToOne && !allowed.containsKey(key),
+            isFalse,
+            reason:
+                '$key: every right item is used once, so the last pair '
+                'places itself — rebalance it, or allow it by name with a '
+                'reason',
+          );
+        }
+      }
+    },
+  );
+
+  test('no card, guide or mini-game text uses a straight quote mark', () {
+    // The course sets its quotes as “ ” and ’; a straight mark is the one
+    // place on the page set differently from every other (#100).
+    final straight = RegExp('["\']');
+    void sweep(Object? value, String where) {
+      if (value is String) {
+        expect(value, isNot(contains(straight)), reason: '$where: $value');
+      } else if (value is List) {
+        for (final item in value) {
+          sweep(item, where);
+        }
+      } else if (value is Map) {
+        value.forEach((key, child) {
+          if (key == 'kind' || key == 'visualGuide') return;
+          sweep(child, where);
+        });
+      }
+    }
+
+    for (final lesson in lessons) {
+      sweep(lesson['cards'], 'lesson ${lesson['id']}');
+    }
     for (final guide in _items('visual_guides')) {
-      final meta = (guide['meta'] as List?) ?? const [];
-      expect(
-        meta.length,
-        inInclusiveRange(2, 3),
-        reason: '${guide['id']} carries ${meta.length} meta rows',
-      );
-      for (final row in meta) {
+      sweep(guide, 'visual guide ${guide['id']}');
+    }
+    sweep(_items('mini_game_content'), 'mini-game content');
+  });
+
+  test('every guide level note has a term and a sentence', () {
+    for (final guide in _items('visual_guides')) {
+      final notes = (guide['notes'] as List?) ?? const [];
+      for (final note in notes.cast<Map<String, dynamic>>()) {
         expect(
-          row,
-          hasLength(2),
-          reason: '${guide['id']} has a row that is not a pair',
+          (note['term'] as String? ?? '').trim(),
+          isNotEmpty,
+          reason: '${guide['id']} has a level note with no term',
+        );
+        expect(
+          (note['detail'] as String? ?? '').trim(),
+          isNotEmpty,
+          reason: '${guide['id']} has a level note with no sentence',
         );
       }
     }

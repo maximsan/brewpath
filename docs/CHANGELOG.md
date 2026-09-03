@@ -384,6 +384,14 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **Visual guides explain each level under the drawing, not in a table.**
+  The roast and grind guides used to show a label/value table (`LIGHT ·
+  Bright · acidic`) with each level's explanation tucked under its row. The
+  design dropped that table, so the sheet now lists each level's name beside
+  its explanation, directly under the illustration. The content banks no
+  longer carry a guide `meta` field; the content schema moves to 2, and a
+  build reading the old banks refuses them at startup rather than showing a
+  guide with a hole in it.
 - **Finishing a module is one celebration, not two.** The last lesson of a
   module used to play its own ending — mascot, score, points, card — and then
   hand you straight to the module ending for a second mascot and a second

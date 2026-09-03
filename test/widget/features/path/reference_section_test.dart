@@ -23,9 +23,8 @@ VisualGuide _guide(String subject, String title) => VisualGuide(
   title: title,
   summary: 'What $subject is, in one line.',
   fact: 'The one thing worth repeating about $subject.',
-  meta: const [
-    ['LIGHT', 'Bright · acidic'],
-    ['DARK', 'Bitter · smoky'],
+  notes: [
+    VisualGuideNote(term: 'Light', detail: 'What light $subject is like.'),
   ],
 );
 
@@ -196,8 +195,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('What roast is, in one line.'), findsOneWidget);
-      expect(find.text('Bright · acidic'), findsOneWidget);
-      expect(find.text('Bitter · smoky'), findsOneWidget);
+      expect(find.text('What light roast is like.'), findsOneWidget);
       expect(
         find.text('The one thing worth repeating about roast.'),
         findsOneWidget,

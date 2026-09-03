@@ -14,8 +14,8 @@
  *   preference — unlocking at anything but the earliest means a learner is
  *   shown a reference as locked *after* being taught it. That is the earliest
  *   check, and it is what makes reordering lessons safe.
- * - Two guides carry two meta rows and the rest carry three, so an "exactly
- *   three" assumption is wrong in both directions.
+ * - A level's explanation is drawn under the illustration; a level with a
+ *   blank one renders a heading with nothing beneath it.
  */
 
 /** Copy a guide owes its sheet; an empty one renders a blank block. */
@@ -30,10 +30,6 @@ const GUIDE_COPY = ["label", "title", "summary", "fact"];
  * and be re-decided.
  */
 const GUIDE_COUNT = 8;
-
-/** A meta table is a short scannable pair list, never a paragraph. */
-const META_ROWS_MIN = 2;
-const META_ROWS_MAX = 3;
 
 /**
  * A coffee cherry has six layers, skin to seed.
@@ -62,8 +58,7 @@ function validateVisualGuides(banks, index, report) {
     const where = `visual guide ${guide.id}`;
     unlockResolves(guide, index, where, report);
     unlockIsEarliestTeachingLesson(guide, banks, where, report);
-    metaIsAShortPairList(guide, where, report);
-    everyNoteGlossesARow(guide, words, where, report);
+    levelNotesAreWhole(guide, words, where, report);
     servingRowsAreWhole(guide, words, where, report);
 
     for (const field of GUIDE_COPY) {
@@ -272,45 +267,23 @@ function everyLessonVisualHasAGuide(banks, guides, report) {
   }
 }
 
-function metaIsAShortPairList(guide, where, report) {
-  const meta = guide.meta ?? [];
-  if (meta.length < META_ROWS_MIN || meta.length > META_ROWS_MAX) {
-    report(
-      where,
-      `has ${meta.length} meta rows; a guide carries ` +
-        `${META_ROWS_MIN}–${META_ROWS_MAX}`,
-    );
-  }
-  for (const row of meta) {
-    if (!Array.isArray(row) || row.length !== 2 || row.some((cell) => !cell)) {
-      report(where, `has a meta row that is not a label and a value: ${row}`);
-    }
-  }
-}
-
 /**
- * Every note names a row of the table it glosses.
+ * A level that explains itself does so in whole words.
  *
- * The table and the prose are authored in two registries — `meta` on the card,
- * the level notes beside the words — so nothing forces their terms to agree.
- * The sheet joins them by name, which means a note naming a row that does not
- * exist is not an error anywhere: it simply never renders, and a guide quietly
- * loses the sentence that explains it. Matched case-insensitively, because the
- * table shouts (`LIGHT`) where the prose speaks (`Light`).
+ * Only `roast` and `grind` carry levels, and the app draws each level's
+ * explanation under the illustration as its own row. A level with a name and
+ * a blank note renders a heading over nothing; a note under a blank name
+ * renders a sentence nothing introduces.
  */
-function everyNoteGlossesARow(guide, words, where, report) {
-  const notes = words[guide.visualGuide]?.levels ?? [];
-  const labels = new Set(
-    (guide.meta ?? []).map((row) => String(row[0]).toLowerCase()),
-  );
-
-  for (const level of notes) {
-    if (!level.note) continue;
-    if (!labels.has(String(level.name).toLowerCase())) {
+function levelNotesAreWhole(guide, words, where, report) {
+  const levels = words[guide.visualGuide]?.levels ?? [];
+  for (const level of levels) {
+    if (level.note === undefined) continue;
+    const blank = (value) => typeof value !== "string" || value.trim() === "";
+    if (blank(level.name) || blank(level.note)) {
       report(
         where,
-        `glosses \`${level.name}\`, which is not a row of its meta table — ` +
-          "the sentence would never render",
+        `has a level whose name or note is blank: ${JSON.stringify(level)}`,
       );
     }
   }

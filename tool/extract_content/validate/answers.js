@@ -55,15 +55,14 @@ const SLIDER_MAX = 100;
 const LONGEST_ANSWER_RATIO = 1.5;
 
 /**
- * Cards with fewer options than this are outside the check.
+ * Cards with fewer options than this have no runner-up to compare against.
  *
- * The threshold was derived on 3- and 4-option cards, where picking the longest
- * beats a 33% or 25% baseline. Two-option `decision` cards were not in that
- * population and some exceed the ratio today, so including them would land this
- * check red on content only the product owner can rewrite. The register of which
- * cards, and the ruling on when to widen this to 2, is #100's.
+ * Two-option `decision` cards are inside the check: with one wrong answer to
+ * compare against, a long correct answer is the strongest tell of all, since
+ * picking the longer text beats a coin toss. The two cards that exceeded the
+ * ratio were rewritten by the owner before this widened (#100).
  */
-const MIN_OPTIONS_FOR_TELL = 3;
+const MIN_OPTIONS_FOR_TELL = 2;
 
 /**
  * The correct answer is not conspicuously longer than its nearest rival.

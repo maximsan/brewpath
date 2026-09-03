@@ -146,4 +146,4 @@ function validateMentions(banks, index, report) {
   }
 }
 
-module.exports = { validateMentions, mentionsWholeWord };
+module.exports = { validateMentions, mentionsWholeWord, collectStrings };

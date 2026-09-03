@@ -612,7 +612,15 @@ void main() {
           expect(guide[field], isNotNull, reason: '${guide['id']} $field');
         }
         expect((guide['unlock'] as Map)['lesson'], isNotNull);
-        expect((guide['meta'] as List).length, inInclusiveRange(2, 3));
+        // Only roast and grind explain their levels; the rest draw them.
+        if (guide['visualGuide'] == 'roast' ||
+            guide['visualGuide'] == 'grind') {
+          expect(
+            guide['notes'] as List,
+            isNotEmpty,
+            reason: guide['id'] as String,
+          );
+        }
       }
     });
 
@@ -661,8 +669,8 @@ void main() {
       // the shorter string finds the lesson's visual first.
       seedGuide(
         source,
-        "kind: 'visualGuide', visualGuide: 'distribution',",
-        "kind: 'visualGuide', visualGuide: 'roast',",
+        "kind: 'visualGuide', visualGuide: 'distribution' }",
+        "kind: 'visualGuide', visualGuide: 'roast' }",
       );
       expectRefusal(source, naming: ['second card', 'roast']);
     });
@@ -673,14 +681,15 @@ void main() {
       expectRefusal(source, naming: ['g-roast', 'title']);
     });
 
-    test('a meta row that is not a label and a value is refused', () {
+    test('a level whose explanation is blank is refused', () {
       final source = seededSource();
-      seedGuide(
+      seedWords(
         source,
-        "meta: [['LIGHT', 'Bright · acidic']",
-        "meta: [['LIGHT']",
+        "note: 'Acidic and fruity. "
+            "Can taste sharp or sour if under-extracted.'",
+        "note: '   '",
       );
-      expectRefusal(source, naming: ['g-roast', 'meta']);
+      expectRefusal(source, naming: ['g-roast', 'blank']);
     });
 
     /// The two data sets that reached no bank for a release.
@@ -887,6 +896,44 @@ void main() {
         "t: 'Dried and sold as a tea called cascara, brewed and drunk widely'",
       );
       expectRefusal(source, naming: ['m1l1', 'longest option']);
+    });
+
+    test('a two-option card whose right answer is far longer is refused', () {
+      // Two-option cards are inside the rule: with one wrong answer to compare
+      // against, the longer text is the strongest tell there is.
+      final source = seededSource();
+      seedCourse(
+        source,
+        "t: 'Whole bean, plus the grinder'",
+        "t: 'Whole bean, plus the grinder, a scale and a gooseneck kettle'",
+      );
+      expectRefusal(source, naming: ['m4l6', 'longest option']);
+    });
+
+    test('a match card solvable by elimination is refused', () {
+      // m1l4's altitude card uses one right item twice on purpose; making
+      // every right item distinct turns it into a card the last pair solves.
+      final source = seededSource();
+      seedCourse(
+        source,
+        "{ l: 'Dense, slow-ripened beans', r: 'Above 1,800 m' }",
+        "{ l: 'Dense, slow-ripened beans', r: 'Above 2,000 m' }",
+      );
+      expectRefusal(source, naming: ['m1l4', 'forces the last']);
+    });
+
+    test('an allowance for a card that is no longer one-to-one is refused', () {
+      // The cherry-layers card is allowed by name. Once it stops being
+      // one-to-one the allowance is a suppression nobody asked for.
+      final source = seededSource();
+      seedCourse(source, "r: 'Silverskin'", "r: 'Parchment'");
+      expectRefusal(source, naming: ['m1l7 card 7', 'stale entry']);
+    });
+
+    test('a straight quote mark in card prose is refused', () {
+      final source = seededSource();
+      seedCourse(source, '“bean belt”', '"bean belt"');
+      expectRefusal(source, naming: ['straight quote', 'bean belt']);
     });
 
     test('a module label disagreeing with its module is refused', () {
