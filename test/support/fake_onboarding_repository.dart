@@ -5,14 +5,12 @@ import 'package:brew_path/features/onboarding/data/onboarding_repository.dart';
 /// so onboarding logic can be exercised without Drift or platform channels.
 class FakeOnboardingRepository implements OnboardingRepository {
   FakeOnboardingRepository({OnboardingState? initialState})
-    : _state =
-          initialState ??
-          const OnboardingState(completed: false, goal: null, brewer: null);
+    : _state = initialState ?? const OnboardingState(completed: false);
 
   OnboardingState _state;
 
-  /// Args passed to each [markOnboardingComplete] call, in order.
-  final List<({String goal, String brewer, String? name})> completeCalls = [];
+  /// The name passed to each [markOnboardingComplete] call, in order.
+  final List<String?> completeCalls = [];
   int resetCalls = 0;
 
   /// Overrides the state returned by [getState] (e.g. to simulate a returning,
@@ -24,18 +22,14 @@ class FakeOnboardingRepository implements OnboardingRepository {
   Future<OnboardingState> getState() async => _state;
 
   @override
-  Future<void> markOnboardingComplete({
-    required String goal,
-    required String brewer,
-    String? name,
-  }) async {
-    completeCalls.add((goal: goal, brewer: brewer, name: name));
-    _state = OnboardingState(completed: true, goal: goal, brewer: brewer);
+  Future<void> markOnboardingComplete({String? name}) async {
+    completeCalls.add(name);
+    _state = const OnboardingState(completed: true);
   }
 
   @override
   Future<void> resetOnboarding() async {
     resetCalls++;
-    _state = const OnboardingState(completed: false, goal: null, brewer: null);
+    _state = const OnboardingState(completed: false);
   }
 }

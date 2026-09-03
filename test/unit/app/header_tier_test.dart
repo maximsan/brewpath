@@ -28,7 +28,6 @@ const _expectedTiers = <String, HeaderTier>{
   '/learn/mini-game/g-match/play': HeaderTier.immersive,
   '/welcome': HeaderTier.immersive,
   '/loading': HeaderTier.immersive,
-  '/onboarding/goal': HeaderTier.immersive,
   '/onboarding/name': HeaderTier.immersive,
   '/course-complete': HeaderTier.immersive,
 };

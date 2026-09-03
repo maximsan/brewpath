@@ -63,9 +63,10 @@ Services (analytics, crash reporting, remote config, ads, payments) are injected
 
 ### Route Structure
 
-Top-level (outside the shell): `/loading`, `/welcome`, `/onboarding/goal`,
-`/onboarding/brewer`, `/onboarding/name`. The router's `redirect` owns the onboarding gate —
-screens never duplicate gate→destination decisions (a CLAUDE.md rule).
+Top-level (outside the shell): `/loading`, `/welcome`, `/meet-roasty`,
+`/onboarding/name`, `/course-complete`. The router's `redirect` owns the
+onboarding gate — screens never duplicate gate→destination decisions (a
+CLAUDE.md rule).
 
 ```
 / (AppShell — StatefulShellRoute, bottom nav)

@@ -52,10 +52,19 @@ may read a goal or a brewer — after this decision, no user ever enters one.
 
 ## Consequences
 
-**The name screen still needs a design.** The prototype has no name screen at
-all, so there is nothing to copy: today it uses a stock Material text field
-that no other screen uses. This stays a known, recorded gap until the owner
-designs the screen in the design source.
+~~**The name screen still needs a design.**~~ **Resolved.** The owner designed
+it in the design source on 3 Sep 2026, and #407 built the screen to it — the
+question, the support line, the shared text field, and Continue beside a skip.
+It carries no step counter, because the design numbers none of the intro
+screens.
+
+**The two screens are deleted, not kept as unlisted routes.** The Readiness
+Audit suggested leaving them reachable by deep link for review. A route with
+no entry point is a second thing to keep working, and git has the screens, so
+#407 removed `GoalScreen`, `BrewerScreen` and their routes outright. Their two
+Drift columns stay: dropping a column is a schema version and a fixture to
+match, which is worth doing when the questions come back and not to tidy away
+two nulls.
 
 The Tour's rules about when it starts were written against the longer flow
 and have to be re-checked against this shorter one —

@@ -103,28 +103,36 @@ final class OnboardingCompletedProvider
 String _$onboardingCompletedHash() =>
     r'e1fecfc8c93e0325de999a927791f2c0d9060b27';
 
-/// In-memory selection draft carried across the goal + brewer screens.
-/// Reset and persisted to Drift by [complete]. `keepAlive: true` because
-/// the goal is picked on one screen and read on the next — without keepAlive,
-/// Riverpod auto-disposes the notifier between routes and the goal is lost.
+/// The name the learner typed, until [complete] writes it.
+///
+/// The whole draft since ADR-0010 cut the goal and brewer questions to v2:
+/// the name is the only answer v1 still asks for, and it is optional.
+///
+/// `keepAlive: true` so the notifier cannot be disposed between the screen
+/// reading it and the write finishing — an auto-disposed notifier throws on
+/// the `state =` inside [complete].
 
 @ProviderFor(OnboardingDraft)
 final onboardingDraftProvider = OnboardingDraftProvider._();
 
-/// In-memory selection draft carried across the goal + brewer screens.
-/// Reset and persisted to Drift by [complete]. `keepAlive: true` because
-/// the goal is picked on one screen and read on the next — without keepAlive,
-/// Riverpod auto-disposes the notifier between routes and the goal is lost.
+/// The name the learner typed, until [complete] writes it.
+///
+/// The whole draft since ADR-0010 cut the goal and brewer questions to v2:
+/// the name is the only answer v1 still asks for, and it is optional.
+///
+/// `keepAlive: true` so the notifier cannot be disposed between the screen
+/// reading it and the write finishing — an auto-disposed notifier throws on
+/// the `state =` inside [complete].
 final class OnboardingDraftProvider
-    extends
-        $NotifierProvider<
-          OnboardingDraft,
-          ({String? brewer, String? goal, String? name})
-        > {
-  /// In-memory selection draft carried across the goal + brewer screens.
-  /// Reset and persisted to Drift by [complete]. `keepAlive: true` because
-  /// the goal is picked on one screen and read on the next — without keepAlive,
-  /// Riverpod auto-disposes the notifier between routes and the goal is lost.
+    extends $NotifierProvider<OnboardingDraft, String?> {
+  /// The name the learner typed, until [complete] writes it.
+  ///
+  /// The whole draft since ADR-0010 cut the goal and brewer questions to v2:
+  /// the name is the only answer v1 still asks for, and it is optional.
+  ///
+  /// `keepAlive: true` so the notifier cannot be disposed between the screen
+  /// reading it and the write finishing — an auto-disposed notifier throws on
+  /// the `state =` inside [complete].
   OnboardingDraftProvider._()
     : super(
         from: null,
@@ -144,46 +152,36 @@ final class OnboardingDraftProvider
   OnboardingDraft create() => OnboardingDraft();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(
-    ({String? brewer, String? goal, String? name}) value,
-  ) {
+  Override overrideWithValue(String? value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride:
-          $SyncValueProvider<({String? brewer, String? goal, String? name})>(
-            value,
-          ),
+      providerOverride: $SyncValueProvider<String?>(value),
     );
   }
 }
 
-String _$onboardingDraftHash() => r'd653f308464caf87f4e88a476d7a585896b5b44f';
+String _$onboardingDraftHash() => r'9429fc68e5cf140f6d1a6ff3c06080bcb2aeb79f';
 
-/// In-memory selection draft carried across the goal + brewer screens.
-/// Reset and persisted to Drift by [complete]. `keepAlive: true` because
-/// the goal is picked on one screen and read on the next — without keepAlive,
-/// Riverpod auto-disposes the notifier between routes and the goal is lost.
+/// The name the learner typed, until [complete] writes it.
+///
+/// The whole draft since ADR-0010 cut the goal and brewer questions to v2:
+/// the name is the only answer v1 still asks for, and it is optional.
+///
+/// `keepAlive: true` so the notifier cannot be disposed between the screen
+/// reading it and the write finishing — an auto-disposed notifier throws on
+/// the `state =` inside [complete].
 
-abstract class _$OnboardingDraft
-    extends $Notifier<({String? brewer, String? goal, String? name})> {
-  ({String? brewer, String? goal, String? name}) build();
+abstract class _$OnboardingDraft extends $Notifier<String?> {
+  String? build();
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
-    final ref =
-        this.ref
-            as $Ref<
-              ({String? brewer, String? goal, String? name}),
-              ({String? brewer, String? goal, String? name})
-            >;
+    final ref = this.ref as $Ref<String?, String?>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<
-                ({String? brewer, String? goal, String? name}),
-                ({String? brewer, String? goal, String? name})
-              >,
-              ({String? brewer, String? goal, String? name}),
+              AnyNotifier<String?, String?>,
+              String?,
               Object?,
               Object?
             >;

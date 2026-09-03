@@ -18,54 +18,35 @@ Future<bool> onboardingCompleted(Ref ref) async {
   return state.completed;
 }
 
-/// In-memory selection draft carried across the goal + brewer screens.
-/// Reset and persisted to Drift by [complete]. `keepAlive: true` because
-/// the goal is picked on one screen and read on the next — without keepAlive,
-/// Riverpod auto-disposes the notifier between routes and the goal is lost.
+/// The name the learner typed, until [complete] writes it.
+///
+/// The whole draft since ADR-0010 cut the goal and brewer questions to v2:
+/// the name is the only answer v1 still asks for, and it is optional.
+///
+/// `keepAlive: true` so the notifier cannot be disposed between the screen
+/// reading it and the write finishing — an auto-disposed notifier throws on
+/// the `state =` inside [complete].
 @Riverpod(keepAlive: true)
 class OnboardingDraft extends _$OnboardingDraft {
   @override
-  ({String? goal, String? brewer, String? name}) build() =>
-      (goal: null, brewer: null, name: null);
-
-  /// Sets the chosen goal key.
-  void setGoal(String value) {
-    state = (goal: value, brewer: state.brewer, name: state.name);
-  }
-
-  /// Sets the chosen brewer key.
-  void setBrewer(String value) {
-    state = (goal: state.goal, brewer: value, name: state.name);
-  }
+  String? build() => null;
 
   /// Sets the name the learner asked to be called, or clears it when they
   /// skipped. Trimmed to empty is the same as skipping.
   void setName(String? value) {
     final trimmed = value?.trim();
-    state = (
-      goal: state.goal,
-      brewer: state.brewer,
-      name: trimmed == null || trimmed.isEmpty ? null : trimmed,
-    );
+    state = trimmed == null || trimmed.isEmpty ? null : trimmed;
   }
 
-  /// Persists the goal + brewer selections, then resets the draft.
+  /// Finishes onboarding, keeping the name if one was given.
+  ///
+  /// Never throws on a missing answer: the one step left is skippable, so
+  /// arriving here with nothing typed is the ordinary path.
   Future<void> complete() async {
-    final goal = state.goal;
-    final brewer = state.brewer;
-    if (goal == null || brewer == null) {
-      throw StateError(
-        'OnboardingDraft.complete() called before both selections were made.',
-      );
-    }
     // ignore: only_use_keep_alive_inside_keep_alive — one-shot read in an action method doesn't subscribe, so keepAlive is unaffected
     final repo = ref.read(onboardingRepositoryProvider);
-    await repo.markOnboardingComplete(
-      goal: goal,
-      brewer: brewer,
-      name: state.name,
-    );
-    state = (goal: null, brewer: null, name: null);
+    await repo.markOnboardingComplete(name: state);
+    state = null;
     ref.invalidate(onboardingCompletedProvider);
   }
 }

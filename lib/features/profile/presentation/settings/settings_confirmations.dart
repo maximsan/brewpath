@@ -90,9 +90,8 @@ Future<void> confirmRestartOnboarding(
     builder: (ctx) => AlertDialog(
       title: const Text('Restart onboarding?'),
       content: const Text(
-        "You'll go back through the Welcome screen and pick your goal and "
-        'brewer again. Your points, streak, and collected cards stay as they '
-        'are.',
+        "You'll go back through the Welcome screen and can set your name "
+        'again. Your points, streak, and collected cards stay as they are.',
       ),
       actions: [
         TextButton(

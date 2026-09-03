@@ -37,8 +37,7 @@ void main() {
   test('param-less routes resolve to their canonical paths', () {
     expect(locationOf(AppRoutes.loading.name), '/loading');
     expect(locationOf(AppRoutes.welcome.name), '/welcome');
-    expect(locationOf(AppRoutes.onboardingGoal.name), '/onboarding/goal');
-    expect(locationOf(AppRoutes.onboardingBrewer.name), '/onboarding/brewer');
+    expect(locationOf(AppRoutes.onboardingName.name), '/onboarding/name');
     expect(locationOf(AppRoutes.learn.name), '/learn');
     expect(locationOf(AppRoutes.path.name), '/path');
     expect(locationOf(AppRoutes.cards.name), '/cards');
@@ -107,8 +106,6 @@ void main() {
     // way forward.
     'meetRoasty': HeaderTier.immersive,
     'courseComplete': HeaderTier.immersive,
-    'onboardingGoal': HeaderTier.immersive,
-    'onboardingBrewer': HeaderTier.immersive,
     'learn': HeaderTier.tabRoot,
     'path': HeaderTier.tabRoot,
     'cards': HeaderTier.tabRoot,

@@ -28,11 +28,6 @@ abstract class AppRoutes {
   /// each step — and it reads it here rather than spelling it inline.
   static const onboardingPrefix = '/onboarding';
   static const meetRoasty = AppRoute('meetRoasty', '/meet-roasty');
-  static const onboardingGoal = AppRoute('onboardingGoal', '/onboarding/goal');
-  static const onboardingBrewer = AppRoute(
-    'onboardingBrewer',
-    '/onboarding/brewer',
-  );
   static const onboardingName = AppRoute('onboardingName', '/onboarding/name');
   static const learn = AppRoute('learn', '/learn');
   static const courseComplete = AppRoute('courseComplete', '/course-complete');

@@ -116,11 +116,7 @@ class _NeverResolvingOnboardingRepository implements OnboardingRepository {
   Future<OnboardingState> getState() => Completer<OnboardingState>().future;
 
   @override
-  Future<void> markOnboardingComplete({
-    required String goal,
-    required String brewer,
-    String? name,
-  }) async {}
+  Future<void> markOnboardingComplete({String? name}) async {}
 
   @override
   Future<void> resetOnboarding() async {}

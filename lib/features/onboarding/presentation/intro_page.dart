@@ -58,7 +58,8 @@ class IntroPage extends StatelessWidget {
   }
 }
 
-/// The widest the intro's copy sets before it wraps (`screens.jsx:82`, `:118`).
+/// The widest the intro's copy sets before it wraps — the design's
+/// `maxWidth: 330` on each intro support line.
 ///
 /// On [IntroPage] rather than on each screen: both set the same measure, and
 /// two names for one number is how they drift.

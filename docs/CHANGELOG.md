@@ -42,6 +42,22 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ## [Unreleased]
 
+### Changed
+
+- **Setting up the app is three screens shorter.** It used to ask what your
+  goal was and what you brew with, and you could not get past either one —
+  even though nothing in the app ever used the answers. Both questions are
+  gone. What is left is Welcome, Meet Roasty, and your name, and the name is
+  optional: type one and Roasty greets you by it, or skip and it greets you
+  plainly. You can set or change it later in Settings.
+
+  The name screen is the design's now rather than a stand-in: it asks *"And
+  you are…?"* with Roasty above it, and the plain box with a floating label it
+  used to show is gone. Continue and *Skip for now* are two buttons that are
+  both always there, where before one button quietly changed its own word
+  depending on what you had typed. It no longer calls itself step 3 of 3,
+  because there is no longer a step 3.
+
 ### Added
 
 - **Every collectible now has its own picture.** A card used to show its
