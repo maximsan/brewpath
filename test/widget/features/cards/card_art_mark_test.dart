@@ -5,6 +5,8 @@ import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/cards/presentation/card_art_mark.dart';
+import 'package:brew_path/features/cards/presentation/card_art_well.dart';
+import 'package:brew_path/features/cards/presentation/card_tint.dart';
 import 'package:brew_path/shared/theme/art_colors.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -109,5 +111,43 @@ void main() {
         reason: '${entry.key} maps to a colour from neither palette',
       );
     }
+  });
+
+  testWidgets('the well washes the art in the kind\'s own tint', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      const CardArtWell(kind: 'botanical', fallback: AppIcon.beans),
+    );
+
+    // The same wash the tile carries, so a card opened from the grid keeps
+    // the colour it was tapped on.
+    final well = tester.widget<ColoredBox>(
+      find.descendant(
+        of: find.byType(CardArtWell),
+        matching: find.byType(ColoredBox),
+      ),
+    );
+    expect(well.color, cardTint(MoodColors.darkRoast, 'botanical'));
+    expect(find.byType(SvgPicture), findsOneWidget);
+  });
+
+  testWidgets('a kind with no tint still gets a well, on the plain surface', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      const CardArtWell(kind: 'not-a-kind', fallback: AppIcon.beans),
+    );
+
+    final well = tester.widget<ColoredBox>(
+      find.descendant(
+        of: find.byType(CardArtWell),
+        matching: find.byType(ColoredBox),
+      ),
+    );
+    expect(well.color, MoodColors.darkRoast.surface);
+    expect(find.byType(IconMark), findsOneWidget);
   });
 }

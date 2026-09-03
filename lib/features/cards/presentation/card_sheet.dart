@@ -2,7 +2,7 @@ import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/app_sheet.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
-import 'package:brew_path/features/cards/presentation/card_art_mark.dart';
+import 'package:brew_path/features/cards/presentation/card_art_well.dart';
 import 'package:brew_path/features/cards/presentation/card_locked_face.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/challenges/presentation/card_stamp_section.dart';
@@ -12,9 +12,6 @@ import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-/// The well the design fills with a card's own drawing.
-const double _artSize = 150;
 
 /// Opens [item] over the collection.
 ///
@@ -75,13 +72,7 @@ class CardSheetBody extends ConsumerWidget {
           // primitive, so the seal sits under it — where the guide sheet puts
           // its bookmark, for the same reason.
           const Align(alignment: Alignment.centerRight, child: TriedSeal()),
-        Center(
-          child: CardArtMark(
-            kind: card.kind,
-            fallback: moduleMark(card.iconName),
-            size: _artSize,
-          ),
-        ),
+        CardArtWell(kind: card.kind, fallback: moduleMark(card.iconName)),
         const SizedBox(height: AppSpacing.lg),
         Text(
           card.description,

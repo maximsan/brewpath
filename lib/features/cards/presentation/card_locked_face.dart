@@ -1,16 +1,12 @@
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/features/cards/domain/card_unlock.dart';
-import 'package:brew_path/features/cards/presentation/card_art_mark.dart';
+import 'package:brew_path/features/cards/presentation/card_art_well.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-/// The well, matching the sheet's earned face so the two read as one card in
-/// two states rather than two layouts.
-const double _artSize = 150;
 
 /// What the learner asked for by closing the card sheet.
 enum CardSheetIntent {
@@ -44,13 +40,7 @@ class CardLockedFace extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Center(
-          child: CardArtMark(
-            kind: card.kind,
-            fallback: moduleMark(card.iconName),
-            size: _artSize,
-          ),
-        ),
+        CardArtWell(kind: card.kind, fallback: moduleMark(card.iconName)),
         const SizedBox(height: AppSpacing.lg),
         Text(
           earnLine(lessonTitle: lessonTitle, moduleTag: card.moduleTag),
