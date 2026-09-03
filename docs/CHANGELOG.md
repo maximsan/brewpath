@@ -44,6 +44,13 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Flashcards explains an empty deck it used to blame you for.** If you
+  bookmarked words your free lessons do not cover, the drill still told you to
+  "bookmark terms in the dictionary and they become a flashcard deck" — which
+  you had just done. It now says the terms you saved are not in your free
+  lessons, and names the two things that would change that: save a word one of
+  your lessons mentions, or unlock the full course. With nothing saved at all,
+  the original wording is unchanged.
 - **A shared BrewPath link opens the app, on the thing that was shared.** Tap
   `brewpath.maximsan.dev/card/<id>` with the app installed and it opens that
   collectible rather than a web page; without the app, the link goes to the App

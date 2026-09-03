@@ -19,6 +19,11 @@ import '../../../support/widget_harness.dart';
 const _arabica = 't:arabica';
 const _robusta = 't:robusta';
 
+/// A term no free lesson can reach: `cupping` carries no `lesson` at all, and
+/// `accessibleTerms` drops a lessonless term for a free learner whatever
+/// mentions it (ADR-0014). Saving it is the state #468 is about.
+const _cupping = 't:cupping';
+
 /// Saves [keys] the way the app does, before the drill is pumped.
 Future<void> _seed(List<String> keys) async {
   final container = ProviderContainer();
@@ -38,9 +43,14 @@ Future<void> _seed(List<String> keys) async {
 /// term they saved rather than only the ones they have been taught.
 ///
 /// Returns the container, so a test can read back what the review wrote.
-Future<ProviderContainer> _pump(WidgetTester tester) async {
+Future<ProviderContainer> _pump(
+  WidgetTester tester, {
+  bool hasCourse = true,
+}) async {
   final container = ProviderContainer(
-    overrides: [courseEntitlementProvider.overrideWith((ref) async => true)],
+    overrides: [
+      courseEntitlementProvider.overrideWith((ref) async => hasCourse),
+    ],
   );
   addTearDown(container.dispose);
   await tester.pumpWidget(
@@ -102,6 +112,34 @@ void main() {
       find.byType(RoastMeter),
       findsNothing,
       reason: 'there is no position to be in when there are no cards',
+    );
+  });
+
+  testWidgets('nothing saved reads the same whichever tier you are on', (
+    tester,
+  ) async {
+    // The design's copy is for *nothing saved*, and that state is not about
+    // tier at all — the second body must not leak into it.
+    await _pump(tester, hasCourse: false);
+
+    expect(find.text(FlashcardsCopy.emptyBody), findsOneWidget);
+    expect(find.text(FlashcardsCopy.emptyOutOfReachBody), findsNothing);
+  });
+
+  testWidgets('saved, but none of it in reach, says so instead', (
+    tester,
+  ) async {
+    // They did bookmark, and it did not become a deck. The design's copy is
+    // written for *nothing saved* and is untrue here (#468).
+    await _seed([_cupping]);
+    await _pump(tester, hasCourse: false);
+
+    expect(find.byType(FlashcardsEmptyView), findsOneWidget);
+    expect(find.text(FlashcardsCopy.emptyOutOfReachBody), findsOneWidget);
+    expect(
+      find.text(FlashcardsCopy.emptyBody),
+      findsNothing,
+      reason: 'telling them to bookmark terms is the lie this fixes',
     );
   });
 

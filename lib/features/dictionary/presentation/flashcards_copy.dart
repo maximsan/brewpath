@@ -18,6 +18,18 @@ abstract final class FlashcardsCopy {
       'Bookmark terms in the dictionary and they become a flashcard deck '
       'here — flip to test yourself.';
 
+  /// The empty state's other body: they *did* bookmark, and none of what they
+  /// saved is a word their free lessons cover, so the line above would be a
+  /// lie (#468). Not the design's — the design's dictionary is gated, so it
+  /// never had this state to write for.
+  ///
+  /// Names both ways out, because both are real: save a word a free lesson
+  /// mentions, or buy the course, after which every word is in reach.
+  static const emptyOutOfReachBody =
+      'The terms you saved are not in your free lessons, so there is nothing '
+      'to flip yet. Bookmark a term one of your lessons mentions, or unlock '
+      'the full course to practise all of them.';
+
   /// The empty state's one action.
   static const browse = 'Browse the dictionary';
 
