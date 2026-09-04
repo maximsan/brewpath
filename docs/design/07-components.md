@@ -186,23 +186,22 @@ third confirm label, **"Try again"**.
 
 ## 7.4 Coffee Challenges
 
-13 exported components in `brew-challenge.jsx`. [§5](05-mechanics.md) covers the rules; this is
+11 exported components in `brew-challenge.jsx`. [§5](05-mechanics.md) covers the rules; this is
 the surface inventory.
 
 | Component | Line | States / options |
 |---|---|---|
-| `ActiveBrewCard` | 220 | **`mode: 'active' \| 'completed'`**. `active` shows Log Result / Skip. `completed` is a **transient confirmation**: lingers, fades at 4800 ms, self-dismisses at 5600 ms (`autoHide`, defeatable). `showPoints` toggles the +5 display. ✕ always dismisses immediately |
-| `LogResultSheet` | 321 | Three reaction buttons from the challenge's own `reactions[3]`, under its own `prompt` |
-| `BrewRecapSheet` | 380 | Post-completion record; the **only** route back to an unlimited replay |
-| `ChallengeSuggestion` | 419 | **`state: 'suggested' \| 'started' \| 'dismissed'`** *and* a separate **`realState`**. If `realState` is `completed` or `active`, Start / Save are suppressed and true status shows instead — so a done challenge can't be "saved" into a contradictory state |
-| `PathChallengeNode` | 597 | Header comment documents 4 states; the code handles **5**: `locked` · `available` · `active` · `completed` · **`saved`**. ⚠️ See below |
-| `ModuleChallengeScreen` | 492 | Full-screen module capstone; Start / Not now |
-| `CardStampSection` | 559 | Inside the card sheet. Renders **only if the card is earned** — the locked teaser opens the same sheet and must not offer the challenge. `completed` + `active` combine into a distinct "Active again on Today" line |
-| `SavedBrewList` | 648 | The parked queue. Excludes the active one and anything completed; filters again by `reached` so a challenge tied to a lesson still ahead is never advertised |
-| `BrewChallengeStat` | 702 | Profile row, `done / total`. Progress fraction floors at `0.02` so an empty bar is still visible |
+| `ActiveBrewCard` | 201 | **`mode: 'active' \| 'completed'`**. `active` shows Log Result / Skip. `completed` is a **transient confirmation**: lingers, fades at 4800 ms, self-dismisses at 5600 ms (`autoHide`, defeatable). `showPoints` toggles the +5 display. ✕ always dismisses immediately |
+| `LogResultSheet` | 320 | Three reaction buttons from the challenge's own `reactions[3]`, under its own `prompt` |
+| `BrewRecapSheet` | 379 | Post-completion record; the **only** route back to an unlimited replay |
+| `ChallengeSuggestion` | 421 | One reward-screen row — label, muted detail, one go button. Its own **`suggested` → `started`** morph, *and* a separate **`realState`**: `completed` or `active` renders nothing at all, because Today owns that status. **No dismissal** — leaving the screen is the not-now |
+| `PathChallengeNode` | 497 | Header comment documents 4 states; the code handles **5**: `locked` · `available` · `active` · `completed` · **`saved`**. ⚠️ See below |
+| `CardStampSection` | 459 | Inside the card sheet. Renders **only if the card is earned** — the locked teaser opens the same sheet and must not offer the challenge. `completed` + `active` combine into a distinct "Active again on Today" line |
+| `SavedBrewList` | 550 | The parked queue. Excludes the active one and anything completed; filters again by `reached` so a challenge tied to a lesson still ahead is never advertised |
+| `BrewChallengeStat` | 618 | Profile row, `done / total`. Progress fraction floors at `0.02` so an empty bar is still visible |
+| `BrewCup` | 110 | The cup mark every challenge surface draws, with optional steam |
 | `BrewStamp` | 132 | `done` · **`press`** (the stamp-press animation) |
 | `TriedSeal` | 165 | The permanent "tried it for real" mark on a collectible |
-| `BrewActions` | 185 | Primary/secondary button pair, `inline` variant |
 | `BrewCup` | 110 | Icon; `steam` toggle |
 
 > ⚠️ **`PathChallengeNode`'s comment is out of date.** It documents
@@ -424,10 +423,10 @@ screen are missing this.
 
 | Screen | Roasty state | Eyebrow | Extra interactions |
 |---|---|---|---|
-| `LessonCompleteScreen` | `lesson` | `LESSON COMPLETE` | `onContinue` · `onBack` · **`setPreview(true/false)`** — a tap-to-enlarge overlay on the earned card, dismissed by tapping the scrim (`stopPropagation` on the card itself) · `onPractice` · **`onDuel`** · `ChallengeSuggestion` → `onStart` / `onNotNow` |
-| `ModuleCompleteScreen` | `module`, `autoMs={2200}` | `MODULE COMPLETE`, "Look how far you've come." | `onContinue` · `onBack` · **`flipTo(true/false)`** — the **whole screen** turns over to the `RewardCard`; the back face's close control flips it back |
+| `LessonCompleteScreen` | `lesson` | `LESSON COMPLETE` | `onContinue` · `onBack` · **`setPreview(true/false)`** — a tap-to-enlarge overlay on the earned card, dismissed by tapping the scrim (`stopPropagation` on the card itself) · `onPractice` · **`onDuel`** · `ChallengeSuggestion` → `onStart` (the `onNotNowChallenge` prop is vestigial — nothing passes it on) |
+| `ModuleCompleteScreen` | `module`, `autoMs={2200}` | `MODULE COMPLETE`, "Look how far you've come." | `onContinue` · `onBack` · **`flipTo(true/false)`** — the **whole screen** turns over to the `RewardCard`; the back face's close control flips it back · `ChallengeSuggestion` → `onStart`, above the exit CTA on that back face and only while the offer is live ([#464](https://github.com/maximsan/brewpath/issues/464)) |
 
-`ModuleRewardCardScreen` (`card` · `REWARD UNLOCKED`, "You earned a card.") is defined beside them but **unreachable** — nothing in the flow navigates to `module-card`, and its body duplicates the flip's back face. Listed so it is not re-filed as a missing screen ([#230](https://github.com/maximsan/brewpath/issues/230), ADR-0017).
+`ModuleRewardCardScreen` is **gone** — the 3 Sep drop deleted it, and its one surviving trace is the `module-card` demo route, which now opens `ModuleCompleteScreen` with `startFlipped` so it lands straight on the flip's back face. That is the ruling [#230](https://github.com/maximsan/brewpath/issues/230) and ADR-0017 already reached: the card is the back of the module ending, not a screen after it.
 
 **Duel has three entry points in the prototype** — Profile card (7.2), Learn
 card, and the lesson-complete screen — all behind `showDuel` / `!isV1`. Any v2
