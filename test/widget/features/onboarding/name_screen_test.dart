@@ -3,6 +3,7 @@ import 'package:brew_path/core/widgets/app_text_field.dart';
 import 'package:brew_path/core/widgets/ghost_button.dart';
 import 'package:brew_path/core/widgets/link_button.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
+import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/onboarding/presentation/name/name_copy.dart';
 import 'package:brew_path/features/onboarding/presentation/name/name_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/onboarding_providers.dart';
@@ -132,6 +133,48 @@ void main() {
     ]) {
       expect(tester.getSize(target).width, gutter);
     }
+  });
+
+  testWidgets('with the keyboard up, the actions stay on screen', (
+    tester,
+  ) async {
+    // The regression this pins: the mascot is 148 tall, and a raised keyboard
+    // takes about a third of the screen. With both, Continue and the skip
+    // sat below the fold and the learner had to scroll to finish the step.
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    tester.view.viewInsets = const FakeViewPadding(bottom: 336);
+    addTearDown(tester.view.reset);
+
+    await pump(tester);
+
+    expect(
+      find.byType(Roasty),
+      findsNothing,
+      reason: 'the drawing is the one thing here that says nothing',
+    );
+    for (final target in [
+      find.byType(AppTextField),
+      find.widgetWithText(PrimaryButton, NameCopy.continueLabel),
+      find.widgetWithText(GhostButton, NameCopy.skip),
+    ]) {
+      expect(target.hitTestable(), findsOneWidget);
+    }
+  });
+
+  testWidgets('the mascot is there when the keyboard is not', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
+    await pump(tester);
+
+    expect(find.byType(Roasty), findsOneWidget);
+    expect(
+      find.widgetWithText(PrimaryButton, NameCopy.continueLabel).hitTestable(),
+      findsOneWidget,
+      reason: 'the designed screen fits a phone without scrolling',
+    );
   });
 
   testWidgets('the skip is a ghost, not a bare link', (tester) async {

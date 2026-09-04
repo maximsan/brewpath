@@ -86,27 +86,34 @@ class _NameScreenState extends ConsumerState<NameScreen> {
   Widget build(BuildContext context) {
     final mood = context.mood;
 
+    // A raised keyboard takes roughly a third of the screen, and the mascot is
+    // the only thing here that says nothing: it gives way so the question, the
+    // field and both actions stay on screen together. Without this the learner
+    // has to scroll to find Continue, which is the step's whole point.
+    final keyboardUp = MediaQuery.viewInsetsOf(context).bottom > 0;
+
     return IntroPage(
       children: [
         // The design's `space-between`: the mascot holds the upper half, the
         // question and its actions sit at the foot. Flexible rather than fixed
         // so a short viewport shrinks the drawing instead of clipping the
         // field the screen exists to show.
-        const Flexible(
-          child: Padding(
-            padding: EdgeInsets.only(top: _mascotInset),
-            child: Center(
-              // Labelled by the question below it; the drawing itself says
-              // nothing a reader can act on.
-              child: ExcludeSemantics(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Roasty(state: RoastyState.awake, size: _mascotSize),
+        if (!keyboardUp)
+          const Flexible(
+            child: Padding(
+              padding: EdgeInsets.only(top: _mascotInset),
+              child: Center(
+                // Labelled by the question below it; the drawing itself says
+                // nothing a reader can act on.
+                child: ExcludeSemantics(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Roasty(state: RoastyState.awake, size: _mascotSize),
+                  ),
                 ),
               ),
             ),
           ),
-        ),
         Text(NameCopy.title, style: AppText.display(mood: mood)),
         SizedBox(height: _supportTop),
         ConstrainedBox(
@@ -118,7 +125,10 @@ class _NameScreenState extends ConsumerState<NameScreen> {
         ),
         const SizedBox(height: AppSpacing.lg),
         AppTextField(
-          autofocus: true,
+          // The design's field carries `autoFocus`, and this one does not: on
+          // a phone that opens the keyboard over the screen before the learner
+          // has read the question it asks. A web `<input>` raises nothing, so
+          // the design has no view on the cost. One tap buys the whole screen.
           enabled: !_controller.submitting,
           maxLength: _maxNameLength,
           placeholder: NameCopy.placeholder,
