@@ -18,10 +18,12 @@ Future<bool> onboardingCompleted(Ref ref) async {
   return state.completed;
 }
 
-/// The name the learner typed, until [complete] writes it.
+/// The answers the intro collects, until [complete] writes them.
 ///
-/// The whole draft since ADR-0010 cut the goal and brewer questions to v2:
-/// the name is the only answer v1 still asks for, and it is optional.
+/// **Only `name` is live.** ADR-0010 moved the goal and brewer questions to
+/// v2; their screens are parked rather than deleted (#407), so the two fields
+/// stay for those screens to compile against. Nothing a user can reach writes
+/// either one, and [complete] persists neither.
 ///
 /// `keepAlive: true` so the notifier cannot be disposed between the screen
 /// reading it and the write finishing — an auto-disposed notifier throws on
@@ -29,13 +31,28 @@ Future<bool> onboardingCompleted(Ref ref) async {
 @Riverpod(keepAlive: true)
 class OnboardingDraft extends _$OnboardingDraft {
   @override
-  String? build() => null;
+  ({String? goal, String? brewer, String? name}) build() =>
+      (goal: null, brewer: null, name: null);
+
+  /// Sets the chosen goal key. Parked — see the class doc.
+  void setGoal(String value) {
+    state = (goal: value, brewer: state.brewer, name: state.name);
+  }
+
+  /// Sets the chosen brewer key. Parked — see the class doc.
+  void setBrewer(String value) {
+    state = (goal: state.goal, brewer: value, name: state.name);
+  }
 
   /// Sets the name the learner asked to be called, or clears it when they
   /// skipped. Trimmed to empty is the same as skipping.
   void setName(String? value) {
     final trimmed = value?.trim();
-    state = trimmed == null || trimmed.isEmpty ? null : trimmed;
+    state = (
+      goal: state.goal,
+      brewer: state.brewer,
+      name: trimmed == null || trimmed.isEmpty ? null : trimmed,
+    );
   }
 
   /// Finishes onboarding, keeping the name if one was given.
@@ -45,8 +62,8 @@ class OnboardingDraft extends _$OnboardingDraft {
   Future<void> complete() async {
     // ignore: only_use_keep_alive_inside_keep_alive — one-shot read in an action method doesn't subscribe, so keepAlive is unaffected
     final repo = ref.read(onboardingRepositoryProvider);
-    await repo.markOnboardingComplete(name: state);
-    state = null;
+    await repo.markOnboardingComplete(name: state.name);
+    state = (goal: null, brewer: null, name: null);
     ref.invalidate(onboardingCompletedProvider);
   }
 }

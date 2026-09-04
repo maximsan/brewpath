@@ -86,11 +86,12 @@ class UserSettings extends Table {
   BoolColumn get onboardingCompleted =>
       boolean().withDefault(const Constant(false))();
 
-  /// Was the onboarding goal. Nothing reads or writes it since ADR-0010 moved
-  /// the question to v2; the column stays for the reason that ADR gives.
+  /// The onboarding goal. Nothing reads or writes it since ADR-0010 moved the
+  /// question to v2 and its screen was parked; the column stays for the
+  /// reason that ADR gives.
   TextColumn get onboardingGoal => text().nullable()();
 
-  /// Was the selected brewer. Same as [onboardingGoal].
+  /// The selected brewer. Same as [onboardingGoal].
   TextColumn get onboardingBrewer => text().nullable()();
 
   /// Appearance preference — `system` / `light` / `dark`, persisted as the

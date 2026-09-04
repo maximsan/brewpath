@@ -8,8 +8,8 @@ import 'package:flutter/material.dart';
 /// description on the left, a circular indicator on the right that fills when
 /// selected.
 ///
-/// Built for the onboarding goal and brewer screens, which ADR-0010 cut to
-/// v2; the vocab game's deck picker is what uses it now.
+/// Built for the onboarding goal and brewer screens, which ADR-0010 moved to
+/// v2 and #407 parked; the vocab game's deck picker is the live caller.
 class PickCard extends StatelessWidget {
   /// Creates a [PickCard].
   const PickCard({

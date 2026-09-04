@@ -52,11 +52,11 @@ may read a goal or a brewer — after this decision, no user ever enters one.
 
 ## Consequences
 
-**The two screens are deleted, not kept as unlisted routes.** The Readiness
-Audit suggested leaving them reachable by deep link for review; a route with
-no entry point is a second thing to keep working, and git has the screens.
-Their two Drift columns stay, because dropping a column costs a schema version
-and a fixture to match.
+**The two question screens are hidden, not deleted.** They stay in the tree
+for a possible post-v1 rethink, and hidden means hidden: no `GoRoute` answers
+to either, so no build a user runs can reach them. A developer opens one by
+running the widget. The cost is two screens and a draft field each that
+nothing exercises, which is the price of keeping the rethink cheap.
 
 The Tour's rules about when it starts were written against the longer flow
 and have to be re-checked against this shorter one —

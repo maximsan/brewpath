@@ -1229,11 +1229,12 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
   /// Defaults to `false` so rows migrated from schema v2 force the gate.
   final bool onboardingCompleted;
 
-  /// Was the onboarding goal. Nothing reads or writes it since ADR-0010 moved
-  /// the question to v2; the column stays for the reason that ADR gives.
+  /// The onboarding goal. Nothing reads or writes it since ADR-0010 moved the
+  /// question to v2 and its screen was parked; the column stays for the
+  /// reason that ADR gives.
   final String? onboardingGoal;
 
-  /// Was the selected brewer. Same as [onboardingGoal].
+  /// The selected brewer. Same as [onboardingGoal].
   final String? onboardingBrewer;
 
   /// Appearance preference — `system` / `light` / `dark`, persisted as the

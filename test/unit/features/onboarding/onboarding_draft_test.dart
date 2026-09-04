@@ -20,8 +20,40 @@ void main() {
   setUp(() => fake = FakeOnboardingRepository());
 
   group('OnboardingDraft', () {
-    test('starts with no name', () {
-      expect(makeContainer().read(onboardingDraftProvider), isNull);
+    test('starts with nothing answered', () {
+      expect(makeContainer().read(onboardingDraftProvider), (
+        goal: null,
+        brewer: null,
+        name: null,
+      ));
+    });
+
+    test('the parked setters still fill their fields', () {
+      // The goal and brewer screens are parked rather than deleted (#407), so
+      // these stay for them to compile against. Nothing a user can reach calls
+      // either, and `complete` persists neither — asserted below.
+      final container = makeContainer();
+      container.read(onboardingDraftProvider.notifier)
+        ..setGoal('brew_better')
+        ..setBrewer('v60');
+
+      expect(container.read(onboardingDraftProvider), (
+        goal: 'brew_better',
+        brewer: 'v60',
+        name: null,
+      ));
+    });
+
+    test('complete persists the name and neither parked answer', () async {
+      final container = makeContainer();
+      final notifier = container.read(onboardingDraftProvider.notifier)
+        ..setGoal('brew_better')
+        ..setBrewer('v60')
+        ..setName('Maya');
+
+      await notifier.complete();
+
+      expect(fake.completeCalls, ['Maya']);
     });
 
     test('a name given at the step is trimmed and persisted', () async {
@@ -29,12 +61,16 @@ void main() {
       final notifier = container.read(onboardingDraftProvider.notifier)
         ..setName('  Maya  ');
 
-      expect(container.read(onboardingDraftProvider), 'Maya');
+      expect(container.read(onboardingDraftProvider).name, 'Maya');
 
       await notifier.complete();
 
       expect(fake.completeCalls, ['Maya']);
-      expect(container.read(onboardingDraftProvider), isNull);
+      expect(container.read(onboardingDraftProvider), (
+        goal: null,
+        brewer: null,
+        name: null,
+      ));
     });
 
     test('a skipped or blank name persists as no name at all', () async {

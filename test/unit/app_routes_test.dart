@@ -34,6 +34,24 @@ void main() {
     queryParameters: queryParameters,
   );
 
+  test('the parked question screens carry no route', () {
+    // ADR-0010 moved the goal and brewer questions to v2, and the owner's
+    // ruling on #407 is hide-don't-delete: the screens stay in the tree, but
+    // no build a user runs may carry a way to reach them. The names still
+    // exist because the screens navigate by them; what must not exist is a
+    // `GoRoute` answering to either.
+    for (final parked in [
+      AppRoutes.onboardingGoal,
+      AppRoutes.onboardingBrewer,
+    ]) {
+      expect(
+        () => locationOf(parked.name),
+        throwsA(anything),
+        reason: '${parked.path} is reachable — hidden means hidden',
+      );
+    }
+  });
+
   test('param-less routes resolve to their canonical paths', () {
     expect(locationOf(AppRoutes.loading.name), '/loading');
     expect(locationOf(AppRoutes.welcome.name), '/welcome');

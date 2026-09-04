@@ -28,6 +28,17 @@ abstract class AppRoutes {
   /// each step — and it reads it here rather than spelling it inline.
   static const onboardingPrefix = '/onboarding';
   static const meetRoasty = AppRoute('meetRoasty', '/meet-roasty');
+
+  /// The two parked question screens. They carry **no `GoRoute`** — ADR-0010
+  /// moved the questions to v2, and the owner's ruling on #407 is that the
+  /// screens stay in the tree for a possible rethink but that no build a user
+  /// runs can reach them. The names stay because the screens navigate by them
+  /// and would not compile without.
+  static const onboardingGoal = AppRoute('onboardingGoal', '/onboarding/goal');
+  static const onboardingBrewer = AppRoute(
+    'onboardingBrewer',
+    '/onboarding/brewer',
+  );
   static const onboardingName = AppRoute('onboardingName', '/onboarding/name');
   static const learn = AppRoute('learn', '/learn');
   static const courseComplete = AppRoute('courseComplete', '/course-complete');
