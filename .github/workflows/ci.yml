@@ -274,8 +274,11 @@ jobs:
           fi
           echo "attempt 1 exited $status; last lines:"
           tail -40 smoke-attempt-1.log
-          if grep -q "Some tests failed" smoke-attempt-1.log; then
-            echo "a real test failure — not retrying"
+          # The tool's own wording, not the harness summary: a run that got
+          # as far as running tests prints per-test results and "test package
+          # returned with exit code". A launch hang prints neither.
+          if grep -q -E "test package returned with exit code|^(✅|❌)|::group::(✅|❌)" smoke-attempt-1.log; then
+            echo "the tests ran and failed — a real failure, not a launch hang; not retrying"
             exit "$status"
           fi
           echo "launch never completed — rebooting the simulator for one more attempt"
