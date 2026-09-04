@@ -27,6 +27,14 @@
  * `extract_card_art/jsx.js` reads the one dialect this file writes, and
  * refuses anything outside it.
  *
+ * ## The words in the drawings
+ *
+ * Nineteen arts have English words drawn into them. They ship as part of the
+ * picture and do not translate — a named exception to ADR-0008, ruled in
+ * ADR-0019. If that is ever revisited, the way back is to strip the `<text>`
+ * elements here: each already carries its position, size, anchor and colour
+ * token, which is everything Flutter would need to draw it instead.
+ *
  * ## Colour
  *
  * Nothing here bakes in a colour. Every paint is `none`, one of the

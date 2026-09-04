@@ -24,6 +24,10 @@ prototype stays English-only; translation happens after extraction.
 
 ## Consequences
 
+**One exception, named:** the words drawn inside the collectible illustrations
+stay English in every language — [ADR-0019](0019-the-card-art-keeps-its-english-words.md).
+Nothing else is exempt.
+
 Adding a language is adding a folder — no code change, no prototype change.
 An English fix marks the sibling entries stale by id (mechanism decided on
 the map). Interface strings move from the constants class into translation
