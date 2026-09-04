@@ -174,16 +174,18 @@ Future<BrewChallenge?> liveModuleChallengeOffer(
   Ref ref,
   String moduleId,
 ) async {
-  final challenge = await ref.watch(
-    moduleChallengeOfferProvider(moduleId).future,
-  );
+  // Every watch resolved before the first await, as the rest of this file
+  // does: a rebuild mid-flight must not find a watch on the far side of an
+  // async gap, where the old build's ref is already disposed.
+  final offer = ref.watch(moduleChallengeOfferProvider(moduleId).future);
+  final activeChallenge = ref.watch(activeChallengeProvider.future);
+  final completed = ref.watch(completedChallengesProvider.future);
+
+  final challenge = await offer;
   if (challenge == null) return null;
 
-  final active = await ref.watch(activeChallengeProvider.future);
-  if (active?.id == challenge.id) return null;
-
-  final completed = await ref.watch(completedChallengesProvider.future);
-  return completed.contains(challenge.id) ? null : challenge;
+  if ((await activeChallenge)?.id == challenge.id) return null;
+  return (await completed).contains(challenge.id) ? null : challenge;
 }
 
 /// Puts [id] in play, parking whatever it displaced.
