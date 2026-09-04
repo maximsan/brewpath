@@ -1,0 +1,178 @@
+{
+  "sentinels": {
+    "var(--ink)": "#FE0001",
+    "var(--ink-mute)": "#FE0002",
+    "var(--rule)": "#FE0003",
+    "var(--surface)": "#FE0004",
+    "var(--surface-2)": "#FE0005",
+    "var(--accent)": "#FE0006",
+    "var(--sage)": "#FE0007",
+    "var(--berry)": "#FE0008",
+    "var(--art-cream)": "#FE0011",
+    "var(--art-ripe)": "#FE0012",
+    "var(--art-sour)": "#FE0013",
+    "var(--art-roast-light)": "#FE0014",
+    "var(--art-roast-mid)": "#FE0015",
+    "var(--art-roast-dark)": "#FE0016",
+    "var(--art-seed-crease)": "#FE0017",
+    "var(--art-cherry-skin)": "#FE0021",
+    "var(--art-cherry-pulp)": "#FE0022",
+    "var(--art-cherry-gel)": "#FE0023",
+    "var(--art-cherry-parchment)": "#FE0024",
+    "var(--art-cherry-silverskin)": "#FE0025",
+    "var(--art-cherry-seed)": "#FE0026"
+  },
+  "literals": {
+    "rgba(27,22,20,0.24)": "the hairline between the cherry's six layers. Mood-independent, like the --art-* fills it separates, and the design gives it no token."
+  },
+  "arts": [
+    {
+      "kind": "botanical",
+      "slug": "botanical"
+    },
+    {
+      "kind": "layers",
+      "slug": "layers"
+    },
+    {
+      "kind": "map",
+      "slug": "map"
+    },
+    {
+      "kind": "specimen",
+      "slug": "specimen"
+    },
+    {
+      "kind": "dryingbed",
+      "slug": "dryingbed"
+    },
+    {
+      "kind": "ferment",
+      "slug": "ferment"
+    },
+    {
+      "kind": "label",
+      "slug": "label"
+    },
+    {
+      "kind": "roastscale",
+      "slug": "roastscale"
+    },
+    {
+      "kind": "crack",
+      "slug": "crack"
+    },
+    {
+      "kind": "calendar",
+      "slug": "calendar"
+    },
+    {
+      "kind": "gauge",
+      "slug": "gauge"
+    },
+    {
+      "kind": "droplet",
+      "slug": "droplet"
+    },
+    {
+      "kind": "spectrum",
+      "slug": "spectrum"
+    },
+    {
+      "kind": "scales",
+      "slug": "scales"
+    },
+    {
+      "kind": "hourglass",
+      "slug": "hourglass"
+    },
+    {
+      "kind": "burrs",
+      "slug": "burrs"
+    },
+    {
+      "kind": "particles",
+      "slug": "particles"
+    },
+    {
+      "kind": "burrblade",
+      "slug": "burrblade"
+    },
+    {
+      "kind": "grinddial",
+      "slug": "grinddial"
+    },
+    {
+      "kind": "altitude",
+      "slug": "altitude"
+    },
+    {
+      "kind": "varieties",
+      "slug": "varieties"
+    },
+    {
+      "kind": "drying",
+      "slug": "drying"
+    },
+    {
+      "kind": "anaerobic",
+      "slug": "anaerobic"
+    },
+    {
+      "kind": "decaf",
+      "slug": "decaf"
+    },
+    {
+      "kind": "roastcurve",
+      "slug": "roastcurve"
+    },
+    {
+      "kind": "lightdark",
+      "slug": "lightdark"
+    },
+    {
+      "kind": "caffeine",
+      "slug": "caffeine"
+    },
+    {
+      "kind": "grindbrewer",
+      "slug": "grindbrewer"
+    },
+    {
+      "kind": "extraction",
+      "slug": "extraction"
+    },
+    {
+      "kind": "filter",
+      "slug": "filter"
+    },
+    {
+      "kind": "firstcup",
+      "slug": "firstcup"
+    },
+    {
+      "kind": "shot",
+      "slug": "shot"
+    },
+    {
+      "kind": "fieldGuideBeans",
+      "slug": "field_guide_beans"
+    },
+    {
+      "kind": "fieldGuideProcess",
+      "slug": "field_guide_process"
+    },
+    {
+      "kind": "fieldGuideRoast",
+      "slug": "field_guide_roast"
+    },
+    {
+      "kind": "fieldGuideGrind",
+      "slug": "field_guide_grind"
+    },
+    {
+      "kind": "fieldGuideBrew",
+      "slug": "field_guide_brew"
+    }
+  ]
+}

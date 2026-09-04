@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/features/cards/domain/cards_grid.dart';
+import 'package:brew_path/features/cards/presentation/card_art_mark.dart';
 import 'package:brew_path/features/cards/presentation/card_challenge_corner.dart';
 import 'package:brew_path/features/cards/presentation/card_sheet.dart';
 import 'package:brew_path/features/cards/presentation/card_tint.dart';
@@ -17,7 +17,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// The tile's own metrics (`index.html:687`).
 const double _tilePadding = AppSpacing.base;
-const double _artSize = 56;
+
+/// The stamp the design drops in where a card has no art. A fixed size, not
+/// the height of the slot: the art fills the row, a stand-in mark does not.
+const double _fallbackMarkSize = 64;
 
 /// How far a locked tile recedes, and how faint its two lines and its mark sit
 /// within that (`index.html:700`, `screens.jsx:2400`).
@@ -37,12 +40,10 @@ const double _lockedMarkOpacity = 0.45;
 /// kind — the tint table keeps its row, so the branch comes back with the
 /// content rather than needing to be remembered.
 ///
-/// **The artwork is the module's mark, not the card's own.** The design draws
-/// `CARD_ART[kind]` here — one illustration per collectible. All thirty-seven
-/// exist already, as static SVG in the prototype, and want extracting rather
-/// than drawing; that is its own job and #480 holds it. Until then the mark
-/// stands in, as it did before, and the wash under it is already the card's
-/// own.
+/// **The artwork is the card's own.** All thirty-seven drawings are extracted
+/// from the design source rather than redrawn (#480), and the wash under them
+/// is the card's own too. A kind the design has not drawn falls back to its
+/// module's mark, which is what every card showed before.
 class CardGridItemWidget extends ConsumerWidget {
   /// Creates a [CardGridItemWidget].
   const CardGridItemWidget({required this.placed, super.key});
@@ -85,10 +86,11 @@ class CardGridItemWidget extends ConsumerWidget {
         overflow: TextOverflow.ellipsis,
         style: AppText.lead(mood: mood, face: AppFace.display),
       ),
-      child: IconMark(
-        moduleMark(item.card.iconName),
-        size: _artSize,
-        color: mood.accent,
+      child: CardArtMark(
+        kind: item.card.kind,
+        fallback: moduleMark(item.card.iconName),
+        fallbackSize: _fallbackMarkSize,
+        fallbackColor: mood.accent,
       ),
     );
   }

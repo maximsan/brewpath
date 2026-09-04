@@ -1,16 +1,12 @@
-import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/features/cards/domain/card_unlock.dart';
+import 'package:brew_path/features/cards/presentation/card_art_well.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-/// The mark's size, matching the sheet's earned face so the two read as one
-/// card in two states rather than two layouts.
-const double _markSize = 96;
 
 /// What the learner asked for by closing the card sheet.
 enum CardSheetIntent {
@@ -44,14 +40,12 @@ class CardLockedFace extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Center(
-          child: IconMark(
-            moduleMark(card.iconName),
-            size: _markSize,
-            // Muted rather than accented: the grid draws an unheld card as a
-            // silhouette, and this is the same card in the same state.
-            color: mood.inkMute,
-          ),
+        CardArtWell(
+          kind: card.kind,
+          fallback: moduleMark(card.iconName),
+          // Muted where the earned face takes the accent: a stand-in mark on
+          // an unheld card is the state the grid draws as a silhouette.
+          fallbackColor: mood.inkMute,
         ),
         const SizedBox(height: AppSpacing.lg),
         Text(
