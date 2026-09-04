@@ -31,7 +31,7 @@ embedded copy drifted from the real file twice). What the jobs are, and why:
 | `format` | ubuntu | `dart format` over `lib test integration_test` (after `pub get`, so the language version resolves) |
 | `analyze & test` | ubuntu | `flutter analyze`, the `dart_code_linter` metrics gate, then `flutter test` (Node pinned for the extractor test) |
 | `iOS build` | macos | `flutter build ios --release --no-codesign` — no CocoaPods (SPM) and no Firebase plist while `kUseFirebase == false`. Then asserts `PrivacyInfo.xcprivacy` reached `Runner.app`: it is wired into the target by hand, and nothing else notices if a merge drops it (#166) |
-| `smoke (simulator)` | macos | **Push to main only.** Boots an iPhone simulator and runs `integration_test/smoke_test.dart` — the only job that *runs* the app rather than compiling it. Capped at 35 minutes, because the failure it guards against is a hang (#187) |
+| `smoke (simulator)` | macos | **Push to main only.** Boots an iPhone simulator and runs `integration_test/smoke_test.dart` — the only job that *runs* the app rather than compiling it. The failure it guards against is a hang (#187): a launch that has not reported a test five minutes after the Xcode build is stopped and retried once on an erased, fully booted simulator (`tool/ci/smoke_attempt.sh`, `tool/ci/boot_simulator.sh`). The 60-minute cap only backstops a wedged runner |
 
 Generated files are committed, so no `build_runner` step runs in CI.
 

@@ -181,13 +181,12 @@ jobs:
     name: smoke (simulator)
     runs-on: macos-latest
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-    # A backstop, not the real guard. The walk bounds each of its own waits, and
-    # the Smoke step below bounds each launch attempt; this cap only exists so a
-    # wedged runner cannot burn an hour. Budget: pub ~1 min, a boot that has
-    # taken up to 7 min and is bounded at 12, the cold Xcode build ~5 min,
-    # then one launch attempt of at most 10 min — the retry is a bonus that
-    # fits only when the boot was quick.
-    timeout-minutes: 35
+    # A backstop, not the real guard: the Smoke step bounds the launch itself.
+    # This cap only exists so a wedged runner cannot burn an hour. Budget, all
+    # measured on this runner: pub ~1 min; a boot of 2 to 9 min, bounded at
+    # 12; the Xcode build 4 to 9 min; the launch bounded at 5 min; the tests
+    # ~1 min; then, only after a launch hang, a second boot and attempt.
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
 
@@ -201,7 +200,12 @@ jobs:
         run: flutter pub get
 
       # Whichever iPhone the runner image ships — pinning a model would break
-      # every time GitHub rolls the image forward.
+      # every time GitHub rolls the image forward. The boot itself lives in
+      # tool/ci/boot_simulator.sh, because the retry below must do exactly the
+      # same thing: erase, boot, and wait until the simulator can take a
+      # launch. A reboot that skipped the wait (shutdown, boot, and a
+      # bootstatus that answered "already booted, nothing to do") launched
+      # the app into a simulator that then never published its VM service.
       - name: Boot an iPhone simulator
         run: |
           UDID=$(xcrun simctl list devices available --json | python3 -c "
@@ -217,47 +221,15 @@ jobs:
           sys.exit('no available iPhone simulator on this runner')
           ")
           echo "Booting $UDID"
-          # The image's preinstalled device carries data from an older runtime
-          # build, and its first boot spends minutes in "Data Migration". On
-          # the first bounded run this never finished inside two minutes, and
-          # the app was launched into a simulator that was not ready. An erased
-          # device boots clean.
-          xcrun simctl shutdown "$UDID" || true
-          xcrun simctl erase "$UDID"
-          # `|| true`: already-booted is reported as an error, and is fine.
-          xcrun simctl boot "$UDID" || true
-          # A bounded poll rather than `simctl bootstatus`, which hangs
-          # indefinitely on some states — the one failure mode this whole
-          # ticket is about not shipping again.
-          for _ in $(seq 1 30); do
-            if xcrun simctl list devices | grep -q "$UDID.*Booted"; then
-              echo "Booted"
-              # "Booted" is the device; SpringBoard comes up after it, and an
-              # app launched before that is refused. bootstatus -b waits for
-              # SpringBoard. It is bounded by an alarm because it can hang on
-              # some states — and if it does not finish, the job fails here,
-              # with the reason on screen, rather than launching into a
-              # simulator that is still migrating.
-              # Measured on two dispatched runs: 2 min 11 s and 7 min 08 s.
-              if perl -e 'alarm 720; exec @ARGV' xcrun simctl bootstatus "$UDID" -b; then
-                echo "SIMULATOR_UDID=$UDID" >> "$GITHUB_ENV"
-                exit 0
-              fi
-              echo "simulator $UDID booted but never finished coming up (bootstatus did not reach a terminal state in 12 minutes)"
-              exit 1
-            fi
-            sleep 2
-          done
-          echo "simulator $UDID never reached Booted"
-          exit 1
+          tool/ci/boot_simulator.sh "$UDID"
+          echo "SIMULATOR_UDID=$UDID" >> "$GITHUB_ENV"
 
-      # The launch is the flaky part. On five of eight recent main runs the
-      # test built, then printed nothing for 26 minutes until the job cap
-      # killed it: the app never came up on the simulator and flutter test
-      # waited for it indefinitely (flutter/flutter#153433 is the same shape).
-      # So each attempt is bounded, its verbose log is kept, and a second
-      # attempt gets a freshly booted simulator. A genuine test failure still
-      # fails on the first attempt: only a bounded launch hang is retried.
+      # The launch is the flaky part: the test builds, the app is launched,
+      # and flutter test waits forever for a VM service that never appears.
+      # tool/ci/smoke_attempt.sh bounds that wait — five minutes from "Xcode
+      # build done" to the first test result — and keeps the verbose log.
+      # Only that hang (exit 142) is retried, on an erased and fully booted
+      # simulator. A failing test or build fails on the first attempt.
       - name: Smoke test
         run: |
           # GitHub runs this with `bash -e`, which would end the script on the
@@ -266,9 +238,8 @@ jobs:
           set +e
           set -o pipefail
           attempt() {
-            perl -e 'alarm 600; exec @ARGV' \
-              flutter test integration_test/smoke_test.dart -d "$SIMULATOR_UDID" -v \
-              > "smoke-attempt-$1.log" 2>&1
+            tool/ci/smoke_attempt.sh "$1" \
+              flutter test integration_test/smoke_test.dart -d "$SIMULATOR_UDID" -v
           }
           attempt 1; status=$?
           if [ "$status" -eq 0 ]; then
@@ -277,17 +248,12 @@ jobs:
           fi
           echo "attempt 1 exited $status; last lines:"
           tail -40 smoke-attempt-1.log
-          # The tool's own wording, not the harness summary: a run that got
-          # as far as running tests prints per-test results and "test package
-          # returned with exit code". A launch hang prints neither.
-          if grep -q -E "test package returned with exit code|^(✅|❌)|::group::(✅|❌)" smoke-attempt-1.log; then
-            echo "the tests ran and failed — a real failure, not a launch hang; not retrying"
+          if [ "$status" -ne 142 ]; then
+            echo "the build or the tests failed — not a launch hang; not retrying"
             exit "$status"
           fi
-          echo "launch never completed — rebooting the simulator for one more attempt"
-          xcrun simctl shutdown "$SIMULATOR_UDID" || true
-          xcrun simctl boot "$SIMULATOR_UDID" || true
-          perl -e 'alarm 120; exec @ARGV' xcrun simctl bootstatus "$SIMULATOR_UDID" -b || true
+          echo "launch never completed — erasing and rebooting the simulator for one more attempt"
+          tool/ci/boot_simulator.sh "$SIMULATOR_UDID" || exit 1
           attempt 2; status=$?
           if [ "$status" -eq 0 ]; then
             grep -E "All tests passed|Some tests failed" smoke-attempt-2.log | tail -2
