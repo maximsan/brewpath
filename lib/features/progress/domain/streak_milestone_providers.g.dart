@@ -57,4 +57,4 @@ final class StreakMilestoneDueProvider
 }
 
 String _$streakMilestoneDueHash() =>
-    r'fe3224547421ce285a03b317176516ce0d2bd071';
+    r'831716383521cd9565b577945288c5161b7a2efc';

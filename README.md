@@ -11,7 +11,8 @@ SQLite (offline persistence) · Freezed 3 + json_serializable (content models).
 `riverpod_lint` + `dart_code_linter` enabled via the `plugins:` block in
 `analysis_options.yaml` (native analysis_server_plugins — not dependencies, no
 `custom_lint`). `dart_code_linter` adds `no-magic-number` plus a CI metrics gate
-(`dart run dart_code_linter:metrics analyze lib`) for per-function size &
+(`dart run dart_code_linter:metrics analyze lib --set-exit-on-violation-level=warning`,
+exactly as CI runs it — without the flag a warning prints but does not fail) for per-function size &
 complexity.
 
 Architecture and conventions live in [`CLAUDE.md`](CLAUDE.md); the doc map and

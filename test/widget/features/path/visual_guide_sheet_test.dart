@@ -1,4 +1,5 @@
 import 'package:brew_path/app/app_theme.dart';
+import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/path/presentation/visual_guide_sheet.dart';
 import 'package:brew_path/shared/models/content/visual_guide.dart';
 import 'package:flutter/material.dart';
@@ -9,9 +10,9 @@ import '../../../support/widget_harness.dart';
 /// What a guide's entry shows once opened.
 ///
 /// The prose is the part worth pinning. Guides shipped for a while with their
-/// table and their fact and none of the sentences explaining them, which reads
-/// as a legend rather than a reference — the words existed the whole time,
-/// inside markup the extractor could not reach.
+/// fact and none of the sentences explaining their levels, which reads as a
+/// legend rather than a reference — the words existed the whole time, inside
+/// markup the extractor could not reach.
 VisualGuide _guide({List<VisualGuideNote> notes = const [], String? note}) =>
     VisualGuide(
       id: 'g-roast',
@@ -21,10 +22,6 @@ VisualGuide _guide({List<VisualGuideNote> notes = const [], String? note}) =>
       title: 'Roast Levels',
       summary: 'Light to dark: how the roast shifts taste.',
       fact: 'There is no best roast.',
-      meta: const [
-        ['LIGHT', 'Bright · acidic'],
-        ['DARK', 'Bitter · smoky'],
-      ],
       notes: notes,
       note: note,
     );
@@ -47,7 +44,7 @@ Future<void> _open(WidgetTester tester, VisualGuide guide) async {
 void main() {
   setUp(useInMemoryDatabase);
 
-  testWidgets('a table row carries the sentence that explains it', (
+  testWidgets('each level is shown with the sentence that explains it', (
     tester,
   ) async {
     await _open(
@@ -76,7 +73,9 @@ void main() {
     );
   });
 
-  testWidgets('the term is named once, not once per column', (tester) async {
+  testWidgets('a level is named once, beside its own sentence', (
+    tester,
+  ) async {
     await _open(
       tester,
       _guide(
@@ -86,29 +85,20 @@ void main() {
       ),
     );
 
-    // The gloss joins the row it belongs to, so the table is not shadowed by a
-    // second list repeating every label.
+    // The level's name is set in smallcaps, which upper-cases the text.
     expect(find.text('LIGHT'), findsOneWidget);
-  });
-
-  testWidgets('the gloss sits under the value it qualifies', (tester) async {
-    await _open(
-      tester,
-      _guide(
-        notes: const [
-          VisualGuideNote(term: 'Light', detail: 'Acidic and fruity.'),
-        ],
-      ),
+    final termY = tester.getTopLeft(find.text('LIGHT')).dy;
+    final detailY = tester.getTopLeft(find.text('Acidic and fruity.')).dy;
+    expect(
+      detailY,
+      greaterThanOrEqualTo(termY),
+      reason: 'the sentence sits in the same row as the level it explains',
     );
-
-    final valueY = tester.getTopLeft(find.text('Bright · acidic')).dy;
-    final glossY = tester.getTopLeft(find.text('Acidic and fruity.')).dy;
-    expect(glossY, greaterThan(valueY));
   });
 
-  testWidgets('a gloss is matched by name, not by position', (tester) async {
-    // Authored in the opposite order to the table, which is legal: the two
-    // sides live in different registries and nothing orders them together.
+  testWidgets('levels are shown in the order the design lists them', (
+    tester,
+  ) async {
     await _open(
       tester,
       _guide(
@@ -119,13 +109,9 @@ void main() {
       ),
     );
 
-    final lightY = tester.getTopLeft(find.text('Acidic and fruity.')).dy;
     final darkY = tester.getTopLeft(find.text('Heavier and bolder.')).dy;
-    expect(
-      lightY,
-      lessThan(darkY),
-      reason: 'each gloss should follow its own row, not the authored order',
-    );
+    final lightY = tester.getTopLeft(find.text('Acidic and fruity.')).dy;
+    expect(darkY, lessThan(lightY), reason: 'authored order is drawn order');
   });
 
   testWidgets('a closing thought is shown when the guide has one', (
@@ -138,14 +124,23 @@ void main() {
     expect(find.text(closing), findsOneWidget);
   });
 
-  testWidgets('a guide whose drawing is the reference shows only its table', (
+  testWidgets('a guide whose drawing is the reference shows summary and fact', (
     tester,
   ) async {
-    // Anatomy carries neither gloss nor closing thought: its cross-section is
-    // the explanation, so their absence is correct rather than missing.
+    // Anatomy carries neither level notes nor a closing thought: its
+    // cross-section is the explanation, so their absence is correct rather
+    // than missing, and the sheet is the summary, the drawing and the fact.
     await _open(tester, _guide());
 
-    expect(find.text('Bright · acidic'), findsOneWidget);
+    expect(
+      find.text('Light to dark: how the roast shifts taste.'),
+      findsOneWidget,
+    );
     expect(find.text('There is no best roast.'), findsOneWidget);
+    expect(
+      find.byType(SmallcapsLabel),
+      findsOneWidget,
+      reason: 'the kind label only',
+    );
   });
 }

@@ -10,6 +10,12 @@ const { validateGrove } = require("./validate/grove");
 const {
   validateVisualGuides,
 } = require("./validate/visual_guides");
+const { validateDuplication } = require("./validate/duplication");
+const { validateMentions } = require("./validate/mentions");
+const { validateIds } = require("./validate/ids");
+const { validateMatchSplit } = require("./validate/match_split");
+const { validatePunctuation } = require("./validate/punctuation");
+const exceptions = require("./exceptions.json");
 
 /**
  * Validates the whole cross-reference graph before a single file is written.
@@ -35,6 +41,11 @@ function validate(banks) {
   validateMiniGames(banks, index, report);
   validateGrove(banks, index, report);
   validateVisualGuides(banks, index, report);
+  validateDuplication(banks, index, report);
+  validateMentions(banks, index, report);
+  validateIds(banks, index, report);
+  validateMatchSplit(banks, index, report, exceptions);
+  validatePunctuation(banks, index, report);
 
   return errors;
 }

@@ -12,7 +12,7 @@
       "rule": "One tab, one coffee-vocabulary shape — drawn at 24×24, stroke 1.6. Outlined in ink-mute when inactive, filled in accent when active. This is the master icon family every other set should defer to. Five concepts are drawn; v1 ships four — Globe / Atlas is built and kept here so the family stays whole, but the tab is held back for v2."
     },
     "duel": {
-      "title": "Coffee Duel types",
+      "title": "Coffee Duel types · v2",
       "rule": "Each duel type names its subject by re-using the navigation concept vocabulary: the icon tells you what you are about to be quizzed on. Cup / Globe / Route are pulled straight from the shared nav family (window.Icons) — one drawing, one stroke (1.6). Only Tiles and Drop are duel-specific, matched to the same weight."
     },
     "dict": {
@@ -309,8 +309,8 @@
       "slug": "duel",
       "name": "Duel",
       "set": "action",
-      "label": "Coffee Duel entry",
-      "description": "Crossed coffee-stirrers — the persistent top-right duel button.",
+      "label": "Coffee Duel entry · v2",
+      "description": "Crossed coffee-stirrers — the top-right duel button. Designed, not rendered in v1.",
       "hasActive": false
     },
     {

@@ -384,6 +384,14 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **Visual guides explain each level under the drawing, not in a table.**
+  The roast and grind guides used to show a label/value table (`LIGHT ·
+  Bright · acidic`) with each level's explanation tucked under its row. The
+  design dropped that table, so the sheet now lists each level's name beside
+  its explanation, directly under the illustration. The content banks no
+  longer carry a guide `meta` field; the content schema moves to 2, and a
+  build reading the old banks refuses them at startup rather than showing a
+  guide with a hole in it.
 - **Finishing a module is one celebration, not two.** The last lesson of a
   module used to play its own ending — mascot, score, points, card — and then
   hand you straight to the module ending for a second mascot and a second
@@ -582,6 +590,17 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **Answering the Tour offer and leaving the Learn tab at once no longer
+  throws.** The answer was saved, but refreshing the screen that offered the
+  Tour after that screen was already gone raised an error in debug builds.
+  The answer is still saved; the refresh is skipped when there is nothing
+  left to refresh.
+- **The streak-freeze notice can no longer contradict the streak it describes.**
+  The Learn tab's "Your streak is safe" card, the streak it reads, and the
+  notice's own dismissal each asked the clock separately, so a phone left open
+  across midnight could show yesterday's save against today's streak. All
+  three now read the one app day that the overnight rollover already
+  refreshes.
 - **A card you have not earned tells you which one it is.** A locked tile used
   to read `???`, which said only that something was missing. It now carries its
   place in the collection — `03 / 37` — so the gap is a card you can go and

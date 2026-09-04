@@ -59,11 +59,6 @@ _VisualGuide _$VisualGuideFromJson(Map<String, dynamic> json) => _VisualGuide(
   title: json['title'] as String,
   summary: json['summary'] as String,
   fact: json['fact'] as String,
-  meta:
-      (json['meta'] as List<dynamic>?)
-          ?.map((e) => (e as List<dynamic>).map((e) => e as String).toList())
-          .toList() ??
-      const <List<String>>[],
   notes:
       (json['notes'] as List<dynamic>?)
           ?.map((e) => VisualGuideNote.fromJson(e as Map<String, dynamic>))
@@ -91,7 +86,6 @@ Map<String, dynamic> _$VisualGuideToJson(_VisualGuide instance) =>
       'title': instance.title,
       'summary': instance.summary,
       'fact': instance.fact,
-      'meta': instance.meta,
       'notes': instance.notes,
       'layers': instance.layers,
       'rows': instance.rows,

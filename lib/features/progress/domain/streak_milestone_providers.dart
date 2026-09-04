@@ -1,3 +1,4 @@
+import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/domain/streak_milestones.dart';
@@ -18,6 +19,7 @@ const String milestoneAckKey = 'streakMilestone';
 /// build's ref already disposed.
 @riverpod
 Future<bool> streakMilestoneDue(Ref ref) async {
+  final today = epochDay(ref.watch(currentDayProvider));
   final statusFuture = ref.watch(streakStatusProvider.future);
   final repository = ref.watch(snapshotRepositoryProvider);
   final status = await statusFuture;
@@ -25,7 +27,7 @@ Future<bool> streakMilestoneDue(Ref ref) async {
   return milestoneCelebrationDue(
     streak: status.streak,
     ackedDay: snapshot.clearedByReset.acks[milestoneAckKey],
-    today: epochDay(DateTime.now()),
+    today: today,
   );
 }
 

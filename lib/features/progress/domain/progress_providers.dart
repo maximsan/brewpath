@@ -1,3 +1,4 @@
+import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/core/constants/points_values.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/progress/domain/grove_treatment.dart';
@@ -69,18 +70,24 @@ Future<Set<int>> activeDaySet(Ref ref) async {
 /// never disagree about a day.
 @riverpod
 Future<List<StreakDay>> weekStripDays(Ref ref) async {
+  // Every watch before the first await, and the day from the provider the
+  // rollover invalidates — never a clock read at the point of use.
+  final today = ref.watch(currentDayProvider);
   final statusFuture = ref.watch(streakStatusProvider.future);
   final days = await ref.watch(activeDaySetProvider.future);
   final status = await statusFuture;
-  return weekStrip(activeDays: days, status: status, today: DateTime.now());
+  return weekStrip(activeDays: days, status: status, today: today);
 }
 
 /// The derived streak state — the engine's fold over [activeDaySet].
 @riverpod
-Future<StreakStatus> streakStatus(Ref ref) async => deriveStreak(
-  activeDays: await ref.watch(activeDaySetProvider.future),
-  today: epochDay(DateTime.now()),
-);
+Future<StreakStatus> streakStatus(Ref ref) async {
+  final today = epochDay(ref.watch(currentDayProvider));
+  return deriveStreak(
+    activeDays: await ref.watch(activeDaySetProvider.future),
+    today: today,
+  );
+}
 
 /// The user's current streak in days.
 @riverpod
