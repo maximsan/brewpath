@@ -292,6 +292,27 @@ function h(type, props, ...children) {
   return { tag: type, props: props ?? {}, children: flat };
 }
 
+/**
+ * Decimal places kept on a computed coordinate.
+ *
+ * Eight of the arts place elements with `Math.cos`/`Math.sin`, and the last
+ * bits of those differ between platforms — macOS produced
+ * `-2.296100594190538` where Linux produced `-2.2961005941905377`. Emitting
+ * full precision therefore bakes the build machine into the assets, and the
+ * check that the committed files match a fresh extraction can only pass on
+ * whichever machine wrote them.
+ *
+ * Four places is 0.0001 of a 100-unit viewBox — far below anything that can
+ * be seen, and far above where the platforms disagree.
+ */
+const PRECISION = 4;
+
+/** Rounds long decimals so the same source gives the same bytes anywhere. */
+const roundNumbers = (value) =>
+  value.replace(/-?\d*\.\d{5,}/g, (number) =>
+    String(Number(Number(number).toFixed(PRECISION))),
+  );
+
 /** What XML cannot carry raw, in a label or an attribute value. */
 const escapeXml = (text) =>
   text
@@ -308,7 +329,10 @@ function render(node) {
 
   const attributes = Object.entries(node.props)
     .filter(([name, value]) => !DROPPED_ATTRIBUTES.has(name) && name !== "children" && value != null && value !== false)
-    .map(([name, value]) => ` ${attributeName(name)}="${escapeXml(String(value))}"`)
+    .map(
+      ([name, value]) =>
+        ` ${attributeName(name)}="${escapeXml(roundNumbers(String(value)))}"`,
+    )
     .join("");
 
   const inner = (node.children ?? [])
