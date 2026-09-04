@@ -31,6 +31,31 @@ void main() {
     expect((await SettingsRepository().getSettings()).learnerName, 'Maya');
   });
 
+  test('skipping leaves a name the learner already had', () async {
+    // Reachable: Settings' *Restart onboarding* replays the flow and does not
+    // touch `learnerName`, so a learner who set a name and then replays the
+    // intro would have it erased by declining to type it again.
+    final settings = SettingsRepository();
+    final stored = await settings.getSettings()
+      ..learnerName = 'Maya';
+    await settings.saveSettings(stored);
+
+    await repo.markOnboardingComplete();
+
+    expect((await settings.getSettings()).learnerName, 'Maya');
+  });
+
+  test('a name given at the step replaces the stored one', () async {
+    final settings = SettingsRepository();
+    final stored = await settings.getSettings()
+      ..learnerName = 'Maya';
+    await settings.saveSettings(stored);
+
+    await repo.markOnboardingComplete(name: 'Sam');
+
+    expect((await settings.getSettings()).learnerName, 'Sam');
+  });
+
   test('finishing without a name closes the gate all the same', () async {
     // The one question v1 asks is optional (ADR-0010).
     await repo.markOnboardingComplete();

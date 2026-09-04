@@ -25,11 +25,17 @@ class OnboardingRepository {
   }
 
   /// Marks onboarding complete, keeping [name] when the learner gave one.
+  ///
+  /// A null [name] — the learner skipped — leaves the stored name **alone**
+  /// rather than clearing it. Skipping is declining to answer, not asking for
+  /// the answer to be forgotten, and the two differ for anyone who already has
+  /// a name: Settings' *Restart onboarding* replays the flow without touching
+  /// `learnerName`, so a clear here would erase a name they set on purpose.
+  /// Clearing one is Settings' job (#406).
   Future<void> markOnboardingComplete({String? name}) async {
-    final s = await _settings.getSettings();
-    s
-      ..onboardingCompleted = true
-      ..learnerName = name;
+    final s = await _settings.getSettings()
+      ..onboardingCompleted = true;
+    if (name != null) s.learnerName = name;
     await _settings.saveSettings(s);
   }
 

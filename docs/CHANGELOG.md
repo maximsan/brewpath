@@ -58,6 +58,12 @@ You can always edit this file by hand instead — the helpers just save effort.
   depending on what you had typed. It no longer calls itself step 3 of 3,
   because there is no longer a step 3.
 
+  Skipping it no longer erases a name you already had. Restarting onboarding
+  from Settings keeps your name, so declining to type it again used to wipe
+  it — skipping means *not now*, not *forget it*. The keyboard no longer
+  covers the buttons either: the field waits for you to tap it, and Roasty
+  steps aside while you type.
+
 - **The offer to buy now has a visible way to decline.** The Plus sheet had
   one button on it, and saying no meant guessing that you could swipe it away.
   It now carries *Not now* under the buy button, which is what every other

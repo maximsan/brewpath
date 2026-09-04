@@ -10,6 +10,11 @@ class FakeOnboardingRepository implements OnboardingRepository {
   OnboardingState _state;
 
   /// The name passed to each [markOnboardingComplete] call, in order.
+  ///
+  /// What the real repository then *does* with a null — leave the stored name
+  /// alone rather than clear it — is its own rule, and is covered against a
+  /// real database in `onboarding_repository_test.dart`. This records the
+  /// argument only, so nothing here can appear to confirm that rule.
   final List<String?> completeCalls = [];
   int resetCalls = 0;
 
