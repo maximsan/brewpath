@@ -19,6 +19,7 @@ class AppTextField extends StatefulWidget {
   /// Creates an [AppTextField].
   const AppTextField({
     required this.onChanged,
+    this.initialValue,
     this.placeholder,
     this.semanticsLabel,
     this.maxLength,
@@ -30,6 +31,10 @@ class AppTextField extends StatefulWidget {
 
   /// Called on every keystroke with the raw text.
   final ValueChanged<String> onChanged;
+
+  /// What the field opens holding. Read once, on mount; a later change to it
+  /// does not rewrite what the learner typed.
+  final String? initialValue;
 
   /// The empty-field prompt.
   final String? placeholder;
@@ -68,11 +73,13 @@ class AppTextField extends StatefulWidget {
 
 class _AppTextFieldState extends State<AppTextField> {
   late final FocusNode _focus;
+  late final TextEditingController _controller;
 
   @override
   void initState() {
     super.initState();
     _focus = FocusNode()..addListener(_onFocusChanged);
+    _controller = TextEditingController(text: widget.initialValue);
   }
 
   void _onFocusChanged() {
@@ -84,6 +91,7 @@ class _AppTextFieldState extends State<AppTextField> {
     _focus
       ..removeListener(_onFocusChanged)
       ..dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -104,6 +112,7 @@ class _AppTextFieldState extends State<AppTextField> {
         vertical: AppTextField._verticalPadding,
       ),
       child: TextField(
+        controller: _controller,
         focusNode: _focus,
         autofocus: widget.autofocus,
         enabled: widget.enabled,

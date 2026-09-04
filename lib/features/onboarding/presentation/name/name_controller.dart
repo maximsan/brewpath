@@ -1,3 +1,4 @@
+import 'package:brew_path/features/profile/domain/learner_name.dart';
 import 'package:flutter/foundation.dart';
 
 /// Holds the typed name and submission state for `NameScreen`, keeping the
@@ -28,15 +29,9 @@ class NameController extends ChangeNotifier {
   /// Whether a submission is currently in flight.
   bool get submitting => _submitting;
 
-  /// The name as it would be kept: trimmed, or null when nothing was typed.
-  ///
-  /// Trailing spaces are not a name, and a learner who typed only spaces has
-  /// given none — so both collapse to the same "no name" the greeting already
-  /// handles.
-  String? get name {
-    final trimmed = _typed.trim();
-    return trimmed.isEmpty ? null : trimmed;
-  }
+  /// The name as it would be kept: trimmed, or null when nothing was typed —
+  /// the one collapse [LearnerName] makes for every field that writes it.
+  String? get name => LearnerName.normalize(_typed);
 
   /// Whether the name can be kept. False on an empty or blank field, which is
   /// what greys the design's Continue out.

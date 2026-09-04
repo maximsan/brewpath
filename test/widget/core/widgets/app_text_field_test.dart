@@ -89,9 +89,8 @@ void main() {
       reason: 'a counter is a second line under a field that has only one',
     );
     // The cap still applies — only its counter is suppressed. Read off the
-    // `EditableText` the field actually drives: `AppTextField` passes no
-    // controller, so `TextField.controller` is null and asserting through it
-    // would pass on a field with no cap at all.
+    // `EditableText` the field actually drives, not the `TextField`'s
+    // decoration, which would pass on a field with no cap at all.
     await tester.enterText(find.byType(TextField), 'a' * 30);
     await tester.pump();
     expect(
@@ -155,6 +154,24 @@ void main() {
     expect(fields, hasLength(1));
     expect(fields.single.label, 'Your name');
     handle.dispose();
+  });
+
+  testWidgets('opens holding the value it was given', (tester) async {
+    // The Settings name sheet edits a stored name, so the field has to start
+    // on it rather than empty — otherwise a one-letter fix means retyping.
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.darkRoast,
+        home: Scaffold(
+          body: AppTextField(initialValue: 'Maya', onChanged: (_) {}),
+        ),
+      ),
+    );
+
+    expect(
+      tester.widget<EditableText>(find.byType(EditableText)).controller.text,
+      'Maya',
+    );
   });
 
   testWidgets('does not animate the focus fade under reduced motion', (

@@ -1,16 +1,14 @@
 /// Every word the onboarding name step says.
 library;
 
-/// The step's strings, as the design writes them.
+/// The step's strings, as the design writes them. The field's own prompt is
+/// `LearnerName.placeholder`, shared with the Settings sheet that asks again.
 abstract final class NameCopy {
   /// The question.
   static const title = 'And you are…?';
 
   /// The line under it, which says why the app is asking.
   static const support = 'Just a first name — it’s how Roasty greets you.';
-
-  /// The empty field's prompt, and what a screen reader calls the field.
-  static const placeholder = 'Your first name';
 
   /// The action that keeps the name.
   static const continueLabel = 'Continue';

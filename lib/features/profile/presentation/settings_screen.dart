@@ -3,12 +3,14 @@ import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/settings_nav_row.dart';
 import 'package:brew_path/features/profile/domain/daily_reminder.dart';
+import 'package:brew_path/features/profile/domain/learner_name.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_confirmations.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_sub_screen.dart';
 import 'package:brew_path/features/profile/presentation/widgets/appearance_selector.dart';
 import 'package:brew_path/features/profile/presentation/widgets/daily_reminder_sheet.dart';
+import 'package:brew_path/features/profile/presentation/widgets/name_sheet.dart';
 import 'package:brew_path/shared/storage/settings_record.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
@@ -69,9 +71,9 @@ class SettingsScreen extends ConsumerWidget {
             label: SettingsCopy.practiceSection,
             children: [_PracticeRows(settings: settings)],
           ),
-          const SettingsSection(
+          SettingsSection(
             label: SettingsCopy.accountSection,
-            children: [_AccountRows()],
+            children: [_AccountRows(settings: settings)],
           ),
           const SettingsSection(
             label: SettingsCopy.supportSection,
@@ -147,26 +149,51 @@ class _PracticeRows extends ConsumerWidget {
   }
 }
 
-/// `ACCOUNT`: where the learner's identity and purchases will live.
-class _AccountRows extends StatelessWidget {
-  const _AccountRows();
+/// `ACCOUNT`: the learner's identity and purchases.
+///
+/// The name row is the other half of ADR-0010's ruling: the onboarding step
+/// stays optional *because* the answer can be changed here afterwards.
+class _AccountRows extends ConsumerWidget {
+  const _AccountRows({required this.settings});
+
+  final AsyncValue<UserSettingsRecord> settings;
+
+  Future<void> _editName(
+    BuildContext context,
+    WidgetRef ref,
+    String? current,
+  ) async {
+    final picked = await NameSheet.show(context, current: current);
+    if (picked == null) return;
+
+    await ref.read(settingsControllerProvider.notifier).setLearnerName(picked);
+  }
 
   @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      SettingsNavRow(
-        label: SettingsCopy.accountRow,
-        onTap: () => context.pushNamed(AppRoutes.settingsAccount.name),
-      ),
-      SettingsNavRow(
-        label: SettingsCopy.purchasesRow,
-        // Every learner is on the free tier: the payments service is a no-op
-        // stub, so there is no purchase for this to report.
-        value: SettingsCopy.freeTier,
-        onTap: () => context.pushNamed(AppRoutes.settingsPurchases.name),
-      ),
-    ],
+  Widget build(BuildContext context, WidgetRef ref) => settings.when(
+    loading: () => const SettingsPlaceholder('Reading your details…'),
+    error: (error, _) => SettingsPlaceholder('$error'),
+    data: (state) => Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SettingsNavRow(
+          label: SettingsCopy.nameRow,
+          value: LearnerName.rowValue(state.learnerName),
+          onTap: () => _editName(context, ref, state.learnerName),
+        ),
+        SettingsNavRow(
+          label: SettingsCopy.accountRow,
+          onTap: () => context.pushNamed(AppRoutes.settingsAccount.name),
+        ),
+        SettingsNavRow(
+          label: SettingsCopy.purchasesRow,
+          // Every learner is on the free tier: the payments service is a no-op
+          // stub, so there is no purchase for this to report.
+          value: SettingsCopy.freeTier,
+          onTap: () => context.pushNamed(AppRoutes.settingsPurchases.name),
+        ),
+      ],
+    ),
   );
 }
 

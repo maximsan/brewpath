@@ -74,6 +74,16 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **You can change your name in Settings.** The name Roasty greets you by was
+  asked once, on the setup screen, and then nowhere: a typo or a skipped step
+  stuck until you restarted the whole intro. Settings now carries a *Name* row
+  under Account — it reads *Not set* until you give one — that opens the same
+  field the setup screen uses, holding what you typed before. Saving a blank
+  is not possible, so an empty sheet changes nothing. Resetting your progress
+  keeps the name: it is who you are, not what you earned. Profile's greeting
+  without a name is now *Hello there.* rather than *Hello, there.*, as the
+  design writes it.
+
 - **Finishing a module offers its Coffee Challenge.** The module ending used to
   hand you straight back to the Path. Turn it over to the reward card and the
   module's optional real-life brew now sits above the way out — what it is and

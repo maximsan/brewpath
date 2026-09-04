@@ -1,8 +1,11 @@
 import 'package:brew_path/app/app.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/core/widgets/settings_nav_row.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/profile/domain/daily_reminder.dart';
+import 'package:brew_path/features/profile/domain/learner_name.dart';
+import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_sub_screen.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
@@ -163,6 +166,105 @@ void main() {
     expect(stored.notificationsEnabled, isTrue);
   });
 
+  testWidgets('the Name row sets, changes and clears what Profile greets by', (
+    tester,
+  ) async {
+    // ADR-0010 keeps the optional onboarding name step on condition that the
+    // answer can be changed afterwards. This row is that condition.
+    final container = await pumpWithProviders(tester, const BrewPathApp());
+    tester.view.physicalSize = const Size(400, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    Finder nameRow() => find.ancestor(
+      of: find.text(SettingsCopy.nameRow),
+      matching: find.byType(SettingsNavRow),
+    );
+    Future<void> toProfile() async {
+      await tester.tap(findMark(AppIcon.leaf, active: false));
+      await settleLoaders(tester);
+    }
+
+    Future<void> toSettings() async {
+      await tester.tap(findMark(AppIcon.gear));
+      await settleLoaders(tester);
+    }
+
+    Future<void> saveName(String name) async {
+      await tester.tap(find.text(SettingsCopy.nameRow));
+      await tester.pumpAndSettle();
+      expect(find.text(LearnerName.sheetTitle), findsWidgets);
+      await tester.enterText(find.byType(TextField), name);
+      await tester.pump();
+      await tester.tap(find.text(LearnerName.sheetAction));
+      await settleLoaders(tester);
+    }
+
+    await toProfile();
+    expect(find.text('Hello there.'), findsOneWidget);
+    await toSettings();
+    expect(tester.widget<SettingsNavRow>(nameRow()).value, LearnerName.notSet);
+
+    // Set.
+    await saveName('Maya');
+    expect(tester.widget<SettingsNavRow>(nameRow()).value, 'Maya');
+    expect((await SettingsRepository().getSettings()).learnerName, 'Maya');
+    await tester.tap(findMark(AppIcon.back));
+    await settleLoaders(tester);
+    expect(find.text('Hello, Maya.'), findsOneWidget);
+
+    // Change: the sheet opens holding the stored name.
+    await toSettings();
+    await tester.tap(find.text(SettingsCopy.nameRow));
+    await tester.pumpAndSettle();
+    expect(find.widgetWithText(TextField, 'Maya'), findsOneWidget);
+    await tester.enterText(find.byType(TextField), 'Mia');
+    await tester.pump();
+    await tester.tap(find.text(LearnerName.sheetAction));
+    await settleLoaders(tester);
+    expect(tester.widget<SettingsNavRow>(nameRow()).value, 'Mia');
+    await tester.tap(findMark(AppIcon.back));
+    await settleLoaders(tester);
+    expect(find.text('Hello, Mia.'), findsOneWidget);
+
+    // Clear. The sheet keeps the design's rule — Save is dead while the field
+    // is blank — so a blank sheet changes nothing; the clear goes through the
+    // same seam the row writes, and the greeting falls back to its plain form.
+    await toSettings();
+    await tester.tap(find.text(SettingsCopy.nameRow));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), '   ');
+    await tester.pump();
+    expect(
+      tester
+          .widget<PrimaryButton>(
+            find.ancestor(
+              of: find.text(LearnerName.sheetAction),
+              matching: find.byType(PrimaryButton),
+            ),
+          )
+          .onPressed,
+      isNull,
+      reason: 'a blank sheet is not a request to be greeted by nobody',
+    );
+    await tester.tap(find.text(LearnerName.sheetAction), warnIfMissed: false);
+    await tester.pumpAndSettle();
+    expect((await SettingsRepository().getSettings()).learnerName, 'Mia');
+    await tester.tapAt(const Offset(200, 20));
+    await tester.pumpAndSettle();
+
+    await container
+        .read(settingsControllerProvider.notifier)
+        .setLearnerName('');
+    await settleLoaders(tester);
+    expect(tester.widget<SettingsNavRow>(nameRow()).value, LearnerName.notSet);
+    expect((await SettingsRepository().getSettings()).learnerName, isNull);
+    await tester.tap(findMark(AppIcon.back));
+    await settleLoaders(tester);
+    expect(find.text('Hello there.'), findsOneWidget);
+  });
+
   testWidgets('the destructive block draws Delete account, inert', (
     tester,
   ) async {
@@ -226,7 +328,9 @@ void main() {
     );
     await CardRepository().collectCard('card_a');
     final settings = await SettingsRepository().getSettings();
-    settings.hapticsEnabled = false;
+    settings
+      ..hapticsEnabled = false
+      ..learnerName = 'Maya';
     await SettingsRepository().saveSettings(settings);
 
     await openSettings(tester);
@@ -239,8 +343,10 @@ void main() {
     expect(await ProgressRepository().getAllCompleted(), isEmpty);
     expect(await CardRepository().getAllCollectedCardIds(), isEmpty);
     final after = await SettingsRepository().getSettings();
-    // Preferences are preserved.
+    // Preferences are preserved, and so is the name: it is account data, not
+    // progress.
     expect(after.hapticsEnabled, isFalse);
+    expect(after.learnerName, 'Maya');
 
     expect(find.text('Progress reset.'), findsOneWidget);
 

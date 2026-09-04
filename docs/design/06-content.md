@@ -309,7 +309,7 @@ Default Roasty: `{ roast: 'medium', hat: 'none', gear: 'none', sprout: 'leaf' }`
 
 **Appearance** — theme row (Light / Dark / System)
 **Practice** — Notifications toggle · Daily reminder (`REMINDER_TIMES`, 8 presets: 6:30, 7:00, 7:30, 8:00, 8:30 AM · 12:30 PM · 6:00, 8:30 PM; default 8:00 AM) · Sound effects toggle · Haptics toggle
-**Account** — Account and sync · Subscription (Free / Trial / Plus) · *Download my data (v2 only)*
+**Account** — Name (`Not set` until given; opens `NameSheet`, the one text field, max 24, Save disabled while empty) · Account and sync · Subscription (Free / Trial / Plus) · *Download my data (v2 only)*
 **Support** — Help and support · About
 **Destructive** — Reset progress · Delete account
 
