@@ -1,5 +1,6 @@
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
+import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -56,7 +57,7 @@ class GhostButton extends StatelessWidget {
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(AppRadii.chrome)),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
         ),
         child: Text(
           label,

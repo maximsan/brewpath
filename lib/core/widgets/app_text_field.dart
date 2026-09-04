@@ -1,6 +1,7 @@
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 
 /// The design's single-line text field: a filled well on a hairline that takes
@@ -54,8 +55,9 @@ class AppTextField extends StatefulWidget {
   static const double _radius = 12;
 
   /// The design's `padding: 13px 16px`. The horizontal half is a spacing stop;
-  /// the vertical is not, and is what sets the field's height.
-  static const double _verticalPadding = 13;
+  /// the vertical is not, so it comes from the register with its reason.
+  static final double _verticalPadding =
+      OffTokens.textFieldVerticalPadding.value;
 
   /// The design's `transition: border-color 140ms ease`.
   static const Duration _focusFade = Duration(milliseconds: 140);
@@ -97,7 +99,7 @@ class _AppTextFieldState extends State<AppTextField> {
     );
 
     final field = Padding(
-      padding: const EdgeInsets.symmetric(
+      padding: EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
         vertical: AppTextField._verticalPadding,
       ),
@@ -106,6 +108,9 @@ class _AppTextFieldState extends State<AppTextField> {
         autofocus: widget.autofocus,
         enabled: widget.enabled,
         maxLength: widget.maxLength,
+        // Not in the design, which is a web `<input>` and has no say in a
+        // phone keyboard. A first-name field that opens lower-case makes the
+        // learner reach for shift on the one word the app will greet them by.
         textCapitalization: TextCapitalization.words,
         textInputAction: TextInputAction.done,
         style: AppText.body(mood: mood),

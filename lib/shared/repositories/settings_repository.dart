@@ -24,8 +24,6 @@ class SettingsRepository {
         soundEnabled: row.soundEnabled,
         totalXp: row.totalXp,
         onboardingCompleted: row.onboardingCompleted,
-        onboardingGoal: row.onboardingGoal,
-        onboardingBrewer: row.onboardingBrewer,
         themeMode: AppThemeMode.fromStorage(row.themeMode),
         tourSeen: row.tourSeen,
         learnerName: row.learnerName,
@@ -51,8 +49,10 @@ class SettingsRepository {
             soundEnabled: settings.soundEnabled,
             totalXp: settings.totalXp,
             onboardingCompleted: Value(settings.onboardingCompleted),
-            onboardingGoal: Value(settings.onboardingGoal),
-            onboardingBrewer: Value(settings.onboardingBrewer),
+            // `onboardingGoal` and `onboardingBrewer` are deliberately
+            // absent: ADR-0010 retired both questions, and a `Value` left off
+            // an upsert keeps whatever the column already holds rather than
+            // writing null over an old install's answer.
             themeMode: Value(settings.themeMode.storageValue),
             tourSeen: Value(settings.tourSeen),
             learnerName: Value(settings.learnerName),
@@ -65,7 +65,7 @@ class SettingsRepository {
   /// Deletes the singleton row, so reads fall back to first-launch defaults.
   ///
   /// **Delete Account only.** This row is the device-local store — appearance,
-  /// haptics, sound, the onboarding answers and the Tour's `tourSeen` bit —
+  /// haptics, sound, the onboarding gate and the Tour's `tourSeen` bit —
   /// which a progress reset keeps deliberately. Delete is the one wipe it does
   /// not survive, and it takes `onboardingCompleted` and `tourSeen` together,
   /// which is the fate-sharing rule those two are owed.

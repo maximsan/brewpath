@@ -58,6 +58,14 @@ You can always edit this file by hand instead — the helpers just save effort.
   depending on what you had typed. It no longer calls itself step 3 of 3,
   because there is no longer a step 3.
 
+- **The offer to buy now has a visible way to decline.** The Plus sheet had
+  one button on it, and saying no meant guessing that you could swipe it away.
+  It now carries *Not now* under the buy button, which is what every other
+  screen that asks you for something does. Nothing about the sheet was
+  actually harder to close than before — the exit was just invisible. The
+  locked-mini-game sheet's *Not now* was a bare link and is now the same
+  button as everywhere else.
+
 ### Added
 
 - **Every collectible now has its own picture.** A card used to show its

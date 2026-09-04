@@ -8,8 +8,10 @@ import 'package:brew_path/features/onboarding/presentation/intro_page.dart';
 import 'package:brew_path/features/onboarding/presentation/name/name_controller.dart';
 import 'package:brew_path/features/onboarding/presentation/name/name_copy.dart';
 import 'package:brew_path/features/onboarding/presentation/onboarding_providers.dart';
+import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -22,14 +24,13 @@ const double _mascotInset = 40;
 /// than the 184 of his introduction one screen earlier.
 const double _mascotSize = 148;
 
-/// The design's `marginTop: 18` under the question and `marginBottom: 24`
-/// above the field.
-const double _supportTop = 18;
-const double _supportBottom = 24;
+/// The gap under the question, above the line that explains it. Off the
+/// spacing scale on purpose — see the register entry.
+final double _supportTop = OffTokens.introSupportGap.value;
 
-/// `marginTop: 16` on Continue, and `marginTop: 10` on the skip beneath it.
-const double _actionGap = 16;
-const double _skipGap = 10;
+/// The gap above the skip. Off the scale too, and shared with every other
+/// ghost that sits under a primary.
+final double _skipGap = OffTokens.ghostUnderPrimaryGap.value;
 
 /// Screen 01c of the intro: what the learner would like to be called.
 ///
@@ -107,7 +108,7 @@ class _NameScreenState extends ConsumerState<NameScreen> {
           ),
         ),
         Text(NameCopy.title, style: AppText.display(mood: mood)),
-        const SizedBox(height: _supportTop),
+        SizedBox(height: _supportTop),
         ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: introCopyMaxWidth),
           child: Text(
@@ -115,7 +116,7 @@ class _NameScreenState extends ConsumerState<NameScreen> {
             style: AppText.body(mood: mood, color: mood.inkMute),
           ),
         ),
-        const SizedBox(height: _supportBottom),
+        const SizedBox(height: AppSpacing.lg),
         AppTextField(
           autofocus: true,
           enabled: !_controller.submitting,
@@ -124,12 +125,12 @@ class _NameScreenState extends ConsumerState<NameScreen> {
           onChanged: _controller.type,
           onSubmitted: _controller.submit,
         ),
-        const SizedBox(height: _actionGap),
+        const SizedBox(height: AppSpacing.md),
         PrimaryButton(
           label: NameCopy.continueLabel,
           onPressed: _controller.canContinue ? _controller.submit : null,
         ),
-        const SizedBox(height: _skipGap),
+        SizedBox(height: _skipGap),
         GhostButton(
           label: NameCopy.skip,
           onPressed: _controller.submitting ? null : _controller.skip,
