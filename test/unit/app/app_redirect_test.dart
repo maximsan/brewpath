@@ -1,23 +1,112 @@
 import 'package:brew_path/app/app_redirect.dart';
 import 'package:brew_path/app/pending_link.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/features/monetization/domain/free_tier.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+GateDecision decide(
+  String location, {
+  bool onboarded = true,
+  bool entitled = true,
+  bool completionDue = false,
+  bool purchaseStateKnown = true,
+  Set<String> completed = const {},
+  PendingLink? pending,
+}) => redirectFor(
+  location: Uri.parse(location),
+  gates: GateState(
+    onboardingCompleted: onboarded,
+    courseEntitled: entitled,
+    courseCompletionDue: completionDue,
+    completedLessonIds: completed,
+    purchaseStateKnown: purchaseStateKnown,
+  ),
+  pending: pending ?? PendingLink(),
+);
+
+/// Where a location is sent, which is what most of these tests are about.
 String? redirect(
   String location, {
   bool onboarded = true,
   bool entitled = true,
   bool completionDue = false,
+  bool purchaseStateKnown = true,
+  Set<String> completed = const {},
   PendingLink? pending,
-}) => redirectFor(
-  location: Uri.parse(location),
-  onboardingCompleted: onboarded,
-  courseEntitled: entitled,
-  courseCompletionDue: completionDue,
-  pending: pending ?? PendingLink(),
-);
+}) => decide(
+  location,
+  onboarded: onboarded,
+  entitled: entitled,
+  completionDue: completionDue,
+  purchaseStateKnown: purchaseStateKnown,
+  completed: completed,
+  pending: pending,
+).location;
+
+/// The free set's own first entry, so growing that list cannot leave these
+/// tests asserting about a lesson the tier no longer carries.
+final String _freeLesson = freeLessonIds.first;
+
+/// A lesson the free tier does not carry — checked against the rule below
+/// rather than trusted.
+const String _paidLesson = 'm5l4';
+
+String _run(String lessonId) => '/learn/lesson/$lessonId';
 
 void main() {
+  group('a wall that is not yet sure of itself', () {
+    // On a cold start the store and the progress store have not answered.
+    // Both reads fall back to the locked side, which is the safe direction for
+    // the *content* — but selling on a fallback is not safe, because a modal
+    // sheet is not something the next redirect can take back.
+    const paid = 'm2l1';
+
+    test('still refuses the lesson', () {
+      expect(
+        redirect(
+          '/learn/lesson/$paid',
+          entitled: false,
+          purchaseStateKnown: false,
+        ),
+        AppRoutes.learn.path,
+      );
+    });
+
+    test('but does not sell the course to someone who may own it', () {
+      final decision = decide(
+        '/learn/lesson/$paid',
+        entitled: false,
+        purchaseStateKnown: false,
+      );
+
+      // The bounce corrects itself when the real answer lands. A Plus sheet
+      // raised over an owner does not.
+      expect(decision.refusedLesson, isNull);
+    });
+
+    test('and sells it once the refusal is a fact', () {
+      final decision = decide('/learn/lesson/$paid', entitled: false);
+
+      expect(decision.refusedLesson, paid);
+    });
+  });
+
+  group('the lesson route the wall reads', () {
+    // The wall finds the lesson id by matching the route's own prefix. Renaming
+    // the route moves both sides together; **re-parenting it does not** — the
+    // prefix would stop matching, `lessonIdIn` would return null, and a null
+    // lesson id is an open wall rather than a closed one. Pinned because that
+    // failure is silent.
+    test('is where the catalogue says it is', () {
+      expect(
+        lessonIdIn(Uri.parse('/learn/lesson/m2l1')),
+        'm2l1',
+        reason: 'the prefix must follow AppRoutes, not a literal',
+      );
+      expect(lessonIdIn(Uri.parse('/learn/lesson/m2l1/complete')), 'm2l1');
+      expect(lessonIdIn(Uri.parse('/path/lesson/m2l1')), isNull);
+    });
+  });
   group('the gates that were already there', () {
     test('the platform root funnels to Loading', () {
       expect(redirect('/'), AppRoutes.loading.path);
@@ -45,6 +134,90 @@ void main() {
     test('the completion moment intercepts Today only', () {
       expect(redirect('/learn', completionDue: true), '/course-complete');
       expect(redirect('/cards', completionDue: true), isNull);
+    });
+  });
+
+  group('the course wall', () {
+    test('the fixture is what these tests say it is', () {
+      // Guards every expectation below: if the free set ever grew to cover
+      // this lesson, the gate tests would pass by asserting nothing.
+      expect(isLessonFree(_paidLesson), isFalse);
+      expect(isLessonFree(_freeLesson), isTrue);
+    });
+
+    test('a free lesson opens, and opens again', () {
+      expect(redirect(_run(_freeLesson), entitled: false), isNull);
+    });
+
+    test('a paid lesson is refused, and the refusal is reported', () {
+      final decision = decide(_run(_paidLesson), entitled: false);
+
+      expect(decision.location, AppRoutes.learn.path);
+      // Named, so the bounce can be followed by an offer rather than leaving
+      // the learner somewhere they did not ask for with no word about why.
+      expect(decision.refusedLesson, _paidLesson);
+    });
+
+    test('owning the course opens it', () {
+      expect(redirect(_run(_paidLesson)), isNull);
+    });
+
+    test('a lesson already finished stays open (ADR-0016)', () {
+      expect(
+        redirect(
+          _run(_paidLesson),
+          entitled: false,
+          completed: {_paidLesson},
+        ),
+        isNull,
+      );
+    });
+
+    test("the run's ending is walled too", () {
+      // Otherwise the ending is a way of claiming a lesson never played.
+      expect(
+        redirect('${_run(_paidLesson)}/complete', entitled: false),
+        AppRoutes.learn.path,
+      );
+    });
+
+    test('an unresolved entitlement reads as locked', () {
+      // What every caller of `courseEntitlement` is asked to do: showing a
+      // lock briefly to a paying learner is recoverable, the other way is not.
+      expect(redirect(_run(_paidLesson), entitled: false), isNotNull);
+    });
+
+    test('the tab itself is not a lesson route', () {
+      expect(redirect('/learn', entitled: false), isNull);
+      expect(redirect('/learn/saved', entitled: false), isNull);
+    });
+
+    test('nothing else reports a refusal', () {
+      // Every other gate moves the learner for a reason they can see, so an
+      // offer raised off one of those bounces would come out of nowhere.
+      expect(decide('/profile/studio', entitled: false).refusedLesson, isNull);
+      expect(decide('/learn', completionDue: true).refusedLesson, isNull);
+      expect(decide(_run(_freeLesson)).refusedLesson, isNull);
+    });
+  });
+
+  group('reading a lesson out of a location', () {
+    test('both lesson routes name their lesson', () {
+      expect(lessonIdIn(Uri.parse('/learn/lesson/m2l1')), 'm2l1');
+      expect(lessonIdIn(Uri.parse('/learn/lesson/m2l1/complete')), 'm2l1');
+    });
+
+    test('a query string is not part of the id', () {
+      expect(
+        lessonIdIn(Uri.parse('/learn/lesson/m2l1/complete?correct=4&total=5')),
+        'm2l1',
+      );
+    });
+
+    test('anything else is not a lesson', () {
+      expect(lessonIdIn(Uri.parse('/learn')), isNull);
+      expect(lessonIdIn(Uri.parse('/learn/lesson/')), isNull);
+      expect(lessonIdIn(Uri.parse('/cards/c1')), isNull);
     });
   });
 

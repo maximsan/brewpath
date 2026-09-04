@@ -1,6 +1,7 @@
 import 'package:brew_path/app/analytics_navigator_observer.dart';
 import 'package:brew_path/app/app_redirect.dart';
 import 'package:brew_path/app/app_shell.dart';
+import 'package:brew_path/app/locked_lesson_offer.dart';
 import 'package:brew_path/app/pending_link.dart';
 import 'package:brew_path/core/constants/app_links.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
@@ -30,6 +31,7 @@ import 'package:brew_path/features/profile/presentation/profile_screen.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_destinations.dart';
 import 'package:brew_path/features/profile/presentation/settings_screen.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
+import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/presentation/streak_screen.dart';
 import 'package:brew_path/features/progress/presentation/tree_screen.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
@@ -60,6 +62,21 @@ GoRouter appRouter(Ref ref) {
   ref.listen<AsyncValue<bool>>(courseCompletionDueProvider, (prev, next) {
     refresh.value++;
   });
+  // And for the course wall: a purchase changes what the learner may open, and
+  // the redirect has to be asked again rather than leaving them standing in
+  // front of a wall they have just paid to remove.
+  ref.listen<AsyncValue<bool>>(courseEntitlementProvider, (prev, next) {
+    refresh.value++;
+  });
+  // The finished set, for the same wall: a lesson already played never locks
+  // (ADR-0016). **Listened, not only read.** A bare `ref.read` of an
+  // auto-disposed future initialises it, hands back `loading`, and lets it go
+  // again — so the redirect would read an empty set every time, and the arm
+  // that keeps finished work would only happen to hold while some screen
+  // elsewhere was watching the same provider.
+  ref.listen<AsyncValue<Set<String>>>(completedLessonIdsProvider, (prev, next) {
+    refresh.value++;
+  });
   return GoRouter(
     navigatorKey: _rootKey,
     initialLocation: AppRoutes.loading.path,
@@ -69,13 +86,21 @@ GoRouter appRouter(Ref ref) {
     //
     // Unresolved gates read as false, which sends a paying learner to Profile
     // for one tick rather than showing a free one the chooser.
-    redirect: (context, state) => redirectFor(
-      location: state.uri,
-      onboardingCompleted: ref.read(onboardingCompletedProvider).value ?? false,
-      courseEntitled: ref.read(courseEntitlementProvider).value ?? false,
-      courseCompletionDue: ref.read(courseCompletionDueProvider).value ?? false,
-      pending: ref.read(pendingLinkProvider),
-    ),
+    redirect: (context, state) {
+      final decision = redirectFor(
+        location: state.uri,
+        gates: _gatesNow(ref),
+        pending: ref.read(pendingLinkProvider),
+      );
+      if (decision.refusedLesson case final lessonId?) {
+        raiseLockedLessonOffer(
+          ref: ref,
+          lessonId: lessonId,
+          navigator: _rootKey,
+        );
+      }
+      return decision.location;
+    },
     observers: [
       AnalyticsNavigatorObserver(ref.watch(analyticsServiceProvider)),
     ],
@@ -382,5 +407,25 @@ GoRouter appRouter(Ref ref) {
         ],
       ),
     ],
+  );
+}
+
+/// Reads every gate the redirect judges, in one place.
+///
+/// **An unresolved read is the locked answer** — showing a lock briefly to a
+/// paying learner is recoverable and showing paid content briefly to a free one
+/// is not. `purchaseStateKnown` carries whether that answer was read or
+/// assumed, so the wall can close on an assumption while the offer waits for a
+/// fact.
+GateState _gatesNow(Ref ref) {
+  final entitlement = ref.read(courseEntitlementProvider);
+  final completed = ref.read(completedLessonIdsProvider);
+
+  return GateState(
+    onboardingCompleted: ref.read(onboardingCompletedProvider).value ?? false,
+    courseEntitled: entitlement.value ?? false,
+    courseCompletionDue: ref.read(courseCompletionDueProvider).value ?? false,
+    completedLessonIds: completed.value ?? const {},
+    purchaseStateKnown: entitlement.hasValue && completed.hasValue,
   );
 }

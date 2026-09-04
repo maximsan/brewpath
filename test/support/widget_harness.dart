@@ -102,15 +102,23 @@ Future<void> settleLoaders(WidgetTester tester) async {
   await tester.pumpAndSettle(const Duration(milliseconds: 50));
 }
 
+/// Pumps [child] under a real container.
+///
+/// Pass a [container] built with overrides to stand somewhere the app cannot
+/// put itself — owning the course, say, which no shipped build can do until
+/// the store is real. The container arrives whole rather than as a list of
+/// overrides because Riverpod 3 does not export the `Override` type, so the
+/// list cannot be named in a signature.
 Future<ProviderContainer> pumpWithProviders(
   WidgetTester tester,
-  Widget child,
-) async {
-  final container = ProviderContainer();
-  addTearDown(container.dispose);
+  Widget child, {
+  ProviderContainer? container,
+}) async {
+  final scope = container ?? ProviderContainer();
+  addTearDown(scope.dispose);
   await tester.pumpWidget(
-    UncontrolledProviderScope(container: container, child: child),
+    UncontrolledProviderScope(container: scope, child: child),
   );
   await settleLoaders(tester);
-  return container;
+  return scope;
 }

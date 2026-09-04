@@ -61,12 +61,19 @@ Troubleshooting:
 Debug toggles compiled in via `bool.fromEnvironment`. All default to off, so
 release builds are unaffected.
 
-| Flag           | Effect                                                             | Run with                                                     |
-| -------------- | ------------------------------------------------------------------ | ------------------------------------------------------------ |
-| `LOOP_LOADING` | Loops the Roasty wake-up forever; disables auto-advance + tap-skip | `flutter run -d "iPhone 17" --dart-define=LOOP_LOADING=true` |
+| Flag            | Effect                                                             | Run with                                                      |
+| --------------- | ------------------------------------------------------------------ | -------------------------------------------------------------- |
+| `LOOP_LOADING`  | Loops the Roasty wake-up forever; disables auto-advance + tap-skip | `flutter run -d "iPhone 17" --dart-define=LOOP_LOADING=true`  |
+| `GRANT_COURSE`  | Hands the learner the course entitlement, so the paid lessons open | `flutter run -d "iPhone 17" --dart-define=GRANT_COURSE=true`  |
 
 > With **Reduce Motion** enabled, `LOOP_LOADING` holds a static "brewing" frame
 > instead of animating the loop.
+
+> `GRANT_COURSE` is the only way past the course wall until the store is real
+> (#421): the shipped payments stub reports no entitlement, so an ordinary
+> build can open the first three lessons and nothing else. It swaps the stub
+> for `GrantedPaymentsService`, which grants the entitlement and touches no
+> store.
 
 ## Versioning
 

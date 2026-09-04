@@ -114,6 +114,28 @@ Future<LessonModel?> todayLesson(Ref ref) async {
   return nextId == null ? null : content.getLessonById(nextId);
 }
 
+/// Every lesson still ahead of the learner, course-wide.
+///
+/// **What the purchase opens, counted** — the figure Today's locked card
+/// pitches with. Course-wide rather than a position inside one module: once
+/// the wall is what the card is about, *lesson 4 of 7* says nothing about what
+/// buying would give them.
+///
+/// Counted from the bank, never written down. A lesson authored into the
+/// course changes this number by existing.
+///
+/// **Not the same figure as the gate sheet's `remainingLessons`**, which
+/// counts what the free tier does not carry. They answer different questions —
+/// how much course is left, and how much of it the purchase adds — and only
+/// coincide for a learner who has finished exactly the free set. The design
+/// asks the card for the first of the two.
+@riverpod
+Future<int> lessonsAhead(Ref ref) async {
+  final lessons = await ref.watch(contentRepositoryProvider).getLessons();
+  final finished = await ref.watch(completedLessonIdsProvider.future);
+  return lessons.where((lesson) => !finished.contains(lesson.id)).length;
+}
+
 /// One row per lesson plus its owning module, for the Learn screen's practice
 /// section.
 class LessonWithModule {
