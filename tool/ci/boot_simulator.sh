@@ -1,8 +1,7 @@
 #!/bin/bash
 # Boots the simulator whose UDID is $1 from a clean slate and returns once it
-# can take an app launch. Used by the CI smoke job for the first boot and for
-# the reboot before a retry — both must go through the same wait, because an
-# app launched into a simulator that is still coming up hangs `flutter test`.
+# can take an app launch. Used by the CI smoke job before it runs the app;
+# an app launched into a simulator that is still coming up is refused.
 #
 # The runner image's preinstalled iPhone carries data from an older runtime
 # build, and its first boot spends minutes in "Data Migration" (measured on

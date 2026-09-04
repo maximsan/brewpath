@@ -181,11 +181,10 @@ jobs:
     name: smoke (simulator)
     runs-on: macos-latest
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-    # A backstop, not the real guard: the Smoke step bounds the launch itself.
-    # This cap only exists so a wedged runner cannot burn an hour. Budget, all
-    # measured on this runner: pub ~1 min; a boot of 2 to 9 min, bounded at
-    # 12; the Xcode build 4 to 9 min; the launch bounded at 5 min; the tests
-    # ~1 min; then, only after a launch hang, a second boot and attempt.
+    # A backstop so a wedged runner cannot burn an hour, not a bound on any
+    # one step. Budget, all measured on this runner: pub ~1 min; a boot of 2
+    # to 9 min, bounded at 12; the Flutter build 4 to 10 min; Xcode's own
+    # build and the tests after it.
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
@@ -200,12 +199,10 @@ jobs:
         run: flutter pub get
 
       # Whichever iPhone the runner image ships — pinning a model would break
-      # every time GitHub rolls the image forward. The boot itself lives in
-      # tool/ci/boot_simulator.sh, because the retry below must do exactly the
-      # same thing: erase, boot, and wait until the simulator can take a
-      # launch. A reboot that skipped the wait (shutdown, boot, and a
-      # bootstatus that answered "already booted, nothing to do") launched
-      # the app into a simulator that then never published its VM service.
+      # every time GitHub rolls the image forward. tool/ci/boot_simulator.sh
+      # erases it, boots it, and waits until it can take an app launch; the
+      # image's preinstalled device migrates its data on first boot for
+      # minutes, and an app launched before that is refused.
       - name: Boot an iPhone simulator
         run: |
           UDID=$(xcrun simctl list devices available --json | python3 -c "
@@ -224,53 +221,50 @@ jobs:
           tool/ci/boot_simulator.sh "$UDID"
           echo "SIMULATOR_UDID=$UDID" >> "$GITHUB_ENV"
 
-      # The launch is the flaky part: the test builds, the app is launched,
-      # and flutter test waits forever for a VM service that never appears.
-      # tool/ci/smoke_attempt.sh bounds that wait — five minutes from "Xcode
-      # build done" to the first test result — and keeps the verbose log.
-      # Only that hang (exit 142) is retried, on an erased and fully booted
-      # simulator. A failing test or build fails on the first attempt.
+      # Build the app with the smoke test as its entry point. `flutter build`
+      # rather than `xcodebuild` alone, because the Flutter tool is what raises
+      # the generated plugin package's platform floor to the project's 16.0;
+      # left at the package's default 13.0, the Firebase packages refuse to
+      # build (the "minimum platform version" error tool/reset_ios_spm.sh
+      # exists for).
+      - name: Build the smoke test app
+        run: flutter build ios --simulator --debug -t integration_test/smoke_test.dart
+
+      # Xcode launches the app and reports every Dart test as an XCTest result
+      # (ios/RunnerTests/RunnerTests.m). Not `flutter test integration_test`:
+      # that launches the app itself and then waits for "The Dart VM service
+      # is listening on" to arrive on a `log stream` it starts *after* the
+      # launch. A live stream shows nothing from before it attached, so when
+      # the app prints first — which this runner's slower spawn allowed on
+      # half of the pushes to main — the tool waits forever. Reproduced on
+      # 2026-09-04 by launching the app and attaching the stream three
+      # seconds later: the line was in the simulator's log, never in the
+      # stream.
       - name: Smoke test
         run: |
-          # GitHub runs this with `bash -e`, which would end the script on the
-          # first failed attempt — before the log tail and the retry. Errors
-          # are handled explicitly below, so errexit is off for this step.
-          set +e
           set -o pipefail
-          attempt() {
-            tool/ci/smoke_attempt.sh "$1" \
-              flutter test integration_test/smoke_test.dart -d "$SIMULATOR_UDID" -v
-          }
-          attempt 1; status=$?
-          if [ "$status" -eq 0 ]; then
-            grep -E "All tests passed|Some tests failed" smoke-attempt-1.log | tail -2
-            exit 0
-          fi
-          echo "attempt 1 exited $status; last lines:"
-          tail -40 smoke-attempt-1.log
-          if [ "$status" -ne 142 ]; then
-            echo "the build or the tests failed — not a launch hang; not retrying"
-            exit "$status"
-          fi
-          echo "launch never completed — erasing and rebooting the simulator for one more attempt"
-          tool/ci/boot_simulator.sh "$SIMULATOR_UDID" || exit 1
-          attempt 2; status=$?
-          if [ "$status" -eq 0 ]; then
-            grep -E "All tests passed|Some tests failed" smoke-attempt-2.log | tail -2
-            exit 0
-          fi
-          echo "attempt 2 exited $status; last lines:"
-          tail -60 smoke-attempt-2.log
-          exit "$status"
+          # No parallel testing: with it on, Xcode clones the simulator and
+          # runs on the clone, which has to boot all over again — the wait
+          # the boot step above already paid for.
+          xcodebuild test \
+            -workspace ios/Runner.xcworkspace -scheme Runner -configuration Debug \
+            -destination "platform=iOS Simulator,id=$SIMULATOR_UDID" \
+            -parallel-testing-enabled NO \
+            -derivedDataPath build/ios_integ \
+            -resultBundlePath smoke.xcresult \
+            2>&1 | tee smoke-xcodebuild.log \
+            | grep -E 'Test Case|Test Suite|Executed|error:|\*\* TEST'
 
-      # The verbose logs outlive the step whatever kills it — the alarm, the
-      # job cap, a cancel — so a hang can be read afterwards instead of
-      # reconstructed from silence.
+      # The full log and Xcode's result bundle outlive the step whatever ends
+      # it — the job cap, a cancel — so a failure can be read afterwards
+      # instead of reconstructed from silence.
       - name: Keep the smoke logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: smoke-attempt-logs
-          path: smoke-attempt-*.log
+          name: smoke-logs
+          path: |
+            smoke-xcodebuild.log
+            smoke.xcresult
           if-no-files-found: ignore
           retention-days: 14
