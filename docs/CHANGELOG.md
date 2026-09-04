@@ -656,6 +656,11 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **Flinging the Path list to its end no longer trips a debug error.** When a
+  fling ran past the end of the list, the header's collapse was applied while
+  the list was still being laid out, which debug builds report as "Build
+  scheduled during frame". The collapse now waits for that frame to finish;
+  in release builds nothing visible changes.
 - **Answering the Tour offer and leaving the Learn tab at once no longer
   throws.** The answer was saved, but refreshing the screen that offered the
   Tour after that screen was already gone raised an error in debug builds.

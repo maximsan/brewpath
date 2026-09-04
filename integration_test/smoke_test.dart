@@ -53,6 +53,23 @@ const _name = 'Maya';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
+  // When Xcode hosts this run (`xcodebuild test`, the way CI runs it), its
+  // accessibility client attaches to the app at the first frame it shows,
+  // and the framework then holds a SemanticsHandle of its own. A test in
+  // which that happened fails with "A SemanticsHandle was active at the end
+  // of the test", because the tester records the handle count when the test
+  // starts. So show a frame before any test starts, and give the client a
+  // moment to attach. Under `flutter test` nothing attaches and the wait
+  // simply runs out.
+  setUpAll(() async {
+    runApp(const SizedBox.shrink());
+    final platform = WidgetsBinding.instance.platformDispatcher;
+    final deadline = DateTime.now().add(const Duration(seconds: 5));
+    while (!platform.semanticsEnabled && DateTime.now().isBefore(deadline)) {
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+    }
+  });
+
   /// Pumps in real time until [target] can be tapped — or is gone, when
   /// [present] is false — and fails naming what never happened.
   ///

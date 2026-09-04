@@ -9,6 +9,7 @@ import 'package:brew_path/features/tour/presentation/tour_stop.dart';
 import 'package:brew_path/features/tour/presentation/tour_stops.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:go_router/go_router.dart';
 
 /// Bottom-nav scaffold wrapping the four `StatefulShellRoute` branches. Each
@@ -55,7 +56,21 @@ class _AppShellState extends State<AppShell> {
       maxScrollExtent: metrics.maxScrollExtent,
       axis: metrics.axis,
     );
-    if (_collapsedByBranch[index] != collapsed) {
+    if (_collapsedByBranch[index] == collapsed) {
+      return false;
+    }
+    // A scroll can end while the list is still being laid out (the viewport
+    // learns its content shrank and stops the fling), and a setState from
+    // inside layout is "Build scheduled during frame". Apply it after the
+    // frame in that case; every other notification arrives between frames.
+    if (SchedulerBinding.instance.schedulerPhase ==
+        SchedulerPhase.persistentCallbacks) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          setState(() => _collapsedByBranch[index] = collapsed);
+        }
+      });
+    } else {
       setState(() => _collapsedByBranch[index] = collapsed);
     }
     return false;
