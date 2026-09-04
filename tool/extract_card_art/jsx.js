@@ -92,6 +92,16 @@ function transform(source) {
       index = end + 2;
       continue;
     }
+    // A regex literal would be scanned as division, and a `/` or a quote
+    // inside it would desynchronise everything after — silently, which is the
+    // one thing this reader must never do. The block has none; if one
+    // arrives, it is a refusal rather than a corrupt drawing.
+    if (char === "/" && atExpression()) {
+      throw new Error(
+        "a regex literal is not read here — the arts use none, and guessing " +
+          "at one would corrupt every element after it",
+      );
+    }
 
     if (char === "<" && /[A-Za-z]/.test(source[index + 1] ?? "") && atExpression()) {
       const { code, end } = readElement(source, index);
