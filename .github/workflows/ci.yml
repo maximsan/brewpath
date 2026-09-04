@@ -212,6 +212,13 @@ jobs:
           sys.exit('no available iPhone simulator on this runner')
           ")
           echo "Booting $UDID"
+          # The image's preinstalled device carries data from an older runtime
+          # build, and its first boot spends minutes in "Data Migration". On
+          # the first bounded run this never finished inside two minutes, and
+          # the app was launched into a simulator that was not ready. An erased
+          # device boots clean.
+          xcrun simctl shutdown "$UDID" || true
+          xcrun simctl erase "$UDID"
           # `|| true`: already-booted is reported as an error, and is fine.
           xcrun simctl boot "$UDID" || true
           # A bounded poll rather than `simctl bootstatus`, which hangs
@@ -222,11 +229,16 @@ jobs:
               echo "Booted"
               # "Booted" is the device; SpringBoard comes up after it, and an
               # app launched before that is refused. bootstatus -b waits for
-              # SpringBoard, bounded by an alarm because it can hang on some
-              # simulator states.
-              perl -e 'alarm 120; exec @ARGV' xcrun simctl bootstatus "$UDID" -b || true
-              echo "SIMULATOR_UDID=$UDID" >> "$GITHUB_ENV"
-              exit 0
+              # SpringBoard. It is bounded by an alarm because it can hang on
+              # some states — and if it does not finish, the job fails here,
+              # with the reason on screen, rather than launching into a
+              # simulator that is still migrating.
+              if perl -e 'alarm 480; exec @ARGV' xcrun simctl bootstatus "$UDID" -b; then
+                echo "SIMULATOR_UDID=$UDID" >> "$GITHUB_ENV"
+                exit 0
+              fi
+              echo "simulator $UDID booted but never finished coming up (bootstatus did not reach a terminal state in 8 minutes)"
+              exit 1
             fi
             sleep 2
           done
