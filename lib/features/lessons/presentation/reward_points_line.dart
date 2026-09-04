@@ -11,8 +11,12 @@ import 'package:flutter/material.dart';
 /// grows"*. It used to be the first row of a bordered receipt, which read as
 /// bookkeeping beside the thing it was supposed to explain.
 ///
-/// Borderless on both endings: no pill, no well, no panel. A run that paid
-/// nothing draws nothing, which is every replay.
+/// Borderless on both endings: no pill, no well, no panel.
+///
+/// **Zero draws nothing on the lesson ending, and is not reached on the
+/// module's.** A replay pays nothing, and a line reading `+0 PTS` under a tree
+/// that did not move announces the absence; the module ending is only opened
+/// by a run that closed a module, which always paid.
 class RewardPointsLine extends StatelessWidget {
   /// Creates a [RewardPointsLine].
   const RewardPointsLine({required this.points, super.key});

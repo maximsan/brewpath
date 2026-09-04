@@ -118,15 +118,23 @@ class StickyActionBar extends StatefulWidget {
   final GhostAction? ghost;
 
   /// The optional quiet link under the action.
+  ///
+  /// **No caller in v1.** The design's footer puts *Duel a friend* here on the
+  /// lesson ending, and the duel is v2 — so the slot is drawn and tested but
+  /// nothing production passes it yet. Kept rather than removed and re-added:
+  /// it is a slot the design has, not one the app invented.
   final QuietLink? link;
 
   /// Optional content pinned **above** the action, inside the bar.
   ///
-  /// The design puts a whole card here on the lesson ending — the Coffee
-  /// Challenge offer (`prototype/rewards.jsx:139`) — and a support paragraph
-  /// on the duel. Both belong to the footer rather than to the scrolling
-  /// content: they travel with the action, and the gradient has to sit behind
-  /// them.
+  /// A sentence the action needs read first — the module ending's *"A reward
+  /// card is waiting on the other side."* It belongs to the footer rather than
+  /// to the scrolling content: it travels with the action, and the gradient
+  /// has to sit behind it.
+  ///
+  /// The lesson ending's Coffee Challenge offer used to live here. It is a row
+  /// of that screen's reward list now, with the freeze and the new card, so
+  /// the three read as one list rather than one of them being footer chrome.
   ///
   /// **Still not a second action.** The primary is a label and a callback and
   /// nothing here changes that, so the design's *"one primary action only"*

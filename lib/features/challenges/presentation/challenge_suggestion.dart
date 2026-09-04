@@ -42,11 +42,10 @@ class ChallengeSuggestion extends ConsumerStatefulWidget {
   /// What the row is called before it is taken up.
   static const String offerLabel = 'Optional challenge';
 
-  /// What it says once it has been.
-  static const String acceptedLabel = 'Added to Today';
-
-  /// And the line under that.
-  static const String acceptedDetail = 'Log it when you brew.';
+  /// What it says once it has been — the design's one sentence, not a label
+  /// with a line under it: there is nothing left to act on, so the row has
+  /// nothing to name and explain separately.
+  static const String acceptedLabel = 'Added to Today — log it when you brew.';
 
   /// The challenge on offer.
   final BrewChallenge challenge;
@@ -77,10 +76,7 @@ class _ChallengeSuggestionState extends ConsumerState<ChallengeSuggestion> {
   @override
   Widget build(BuildContext context) {
     if (_accepted) {
-      return const RewardRow(
-        label: ChallengeSuggestion.acceptedLabel,
-        detail: ChallengeSuggestion.acceptedDetail,
-      );
+      return const RewardRow(label: ChallengeSuggestion.acceptedLabel);
     }
     return RewardRow(
       label: ChallengeSuggestion.offerLabel,

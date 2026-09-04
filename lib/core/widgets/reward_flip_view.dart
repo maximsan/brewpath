@@ -22,8 +22,12 @@ class RewardFlipView extends StatelessWidget {
     super.key,
   });
 
-  /// The turn's controller. `0` face-on, `1` fully over.
-  final AnimationController turn;
+  /// The turn's progress, already eased. `0` face-on, `1` fully over.
+  ///
+  /// An [Animation], not the controller: a `CurvedAnimation` built here would
+  /// be built on **every frame of the turn** and never disposed, each one
+  /// leaving a status listener on the controller it wrapped.
+  final Animation<double> turn;
 
   /// The report side.
   final WidgetBuilder front;
@@ -33,19 +37,15 @@ class RewardFlipView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Read through a curve rather than baked into the controller, so the
-    // controller's value stays the plain 0→1 the geometry is written in.
-    final progress = CurvedAnimation(parent: turn, curve: rewardFlipCurve);
-
     return AnimatedBuilder(
-      animation: progress,
+      animation: turn,
       builder: (context, _) => Transform(
         alignment: rewardFlipOrigin,
         transform: flipTransform(
-          progress: progress.value,
+          progress: turn.value,
           perspective: rewardFlipPerspective,
         ),
-        child: flipShowsBack(progress.value)
+        child: flipShowsBack(turn.value)
             // Turned again so the back reads upright rather than mirrored: it
             // is drawn on the far side of a card already half way round.
             ? Transform(
@@ -68,17 +68,25 @@ class RewardFlipView extends StatelessWidget {
 /// rotation in depth has no gentle version.
 mixin RewardFlipController<T extends StatefulWidget> on State<T>
     implements TickerProvider {
-  /// The turn itself.
+  /// The turn itself, driven `0` → `1`.
   ///
   /// Built in [initState] rather than lazily: a `late final` the learner never
   /// turns is first created by `dispose()` reaching for it, and `createTicker`
   /// then looks up an ancestor of a widget that is already deactivated.
   late final AnimationController flip;
 
+  /// The same turn, eased — what a face is drawn from.
+  ///
+  /// Built once beside the controller, because a curve built in `build` is
+  /// built on every frame of the turn and disposed on none of them. The
+  /// controller keeps the plain 0→1 the geometry is written in.
+  late final CurvedAnimation flipProgress;
+
   @override
   void initState() {
     super.initState();
     flip = AnimationController(vsync: this, duration: rewardFlipDuration);
+    flipProgress = CurvedAnimation(parent: flip, curve: rewardFlipCurve);
   }
 
   /// Whether the card face is the one showing.
@@ -98,6 +106,7 @@ mixin RewardFlipController<T extends StatefulWidget> on State<T>
 
   @override
   void dispose() {
+    flipProgress.dispose();
     flip.dispose();
     super.dispose();
   }

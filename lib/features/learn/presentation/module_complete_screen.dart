@@ -110,7 +110,7 @@ class _ModuleCompleteScreenState extends ConsumerState<ModuleCompleteScreen>
           error: (error, _) => ErrorView(message: '$error'),
           data: (data) => _beatDone
               ? RewardFlipView(
-                  turn: flip,
+                  turn: flipProgress,
                   front: (context) => ModuleCompleteFront(
                     summary: data,
                     run: run,

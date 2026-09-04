@@ -5,8 +5,8 @@ import 'package:brew_path/features/companion/application/companion_providers.dar
 import 'package:brew_path/features/companion/domain/companion_lines.dart';
 import 'package:brew_path/features/companion/presentation/roasty_moment.dart';
 import 'package:brew_path/features/learn/domain/module_summary_provider.dart';
-import 'package:brew_path/features/learn/presentation/module_complete_faces.dart';
 import 'package:brew_path/features/learn/presentation/module_complete_screen.dart';
+import 'package:brew_path/features/learn/presentation/module_ending_marks.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/presentation/growing_tree.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';

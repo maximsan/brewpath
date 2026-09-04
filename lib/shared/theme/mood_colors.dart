@@ -88,9 +88,7 @@ class MoodColors extends ThemeExtension<MoodColors> {
   /// screen under it is meant to stay readable.
   static const veilBlurRadius = 0.0;
 
-  /// Blur behind [veilStrong] — the design's *"3px for a covering wash"*, which
-  /// the bundle also writes out on the card preview that is the wash's one host
-  /// (`prototype/rewards.jsx:185`).
+  /// Blur behind [veilStrong] — the design's *"3px for a covering wash"*.
   static const veilStrongBlurRadius = 3.0;
 
   /// Page canvas.

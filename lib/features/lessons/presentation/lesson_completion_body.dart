@@ -16,6 +16,7 @@ import 'package:brew_path/features/lessons/presentation/lesson_completion_tree.d
 import 'package:brew_path/features/lessons/presentation/reward_points_line.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
+import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,6 +32,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Pure view. Everything it renders is decided before it is built: the reward
 /// by the service, the footer's action by [completionActions]. It performs no
 /// I/O and makes no policy decision of its own.
+///
+/// **One slot of the design's footer is empty here.** It puts *Duel a friend*
+/// under the action as a quiet link; the duel is v2, so the slot exists on
+/// `StickyActionBar` and nothing passes it.
 class LessonCompletionBody extends StatefulWidget {
   /// Creates a [LessonCompletionBody].
   const LessonCompletionBody({
@@ -75,7 +80,7 @@ class _LessonCompletionBodyState extends State<LessonCompletionBody>
   @override
   Widget build(BuildContext context) {
     return RewardFlipView(
-      turn: flip,
+      turn: flipProgress,
       front: _report,
       back: _card,
     );
@@ -175,7 +180,7 @@ class _LessonCompletionBodyState extends State<LessonCompletionBody>
 ///
 /// Renders nothing at all when a run earned none — which is most replays — so
 /// there is no gap where a list would have been.
-class RewardBeats extends ConsumerWidget {
+class RewardBeats extends ConsumerStatefulWidget {
   /// Creates a [RewardBeats].
   const RewardBeats({
     required this.lessonId,
@@ -207,20 +212,40 @@ class RewardBeats extends ConsumerWidget {
   static const String cardLabel = 'New card';
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final card = this.card;
-    // Asked as one question, so an absent offer contributes no row and
-    // therefore no hairline.
-    final offer = ref
-        .watch(lessonChallengeOfferProvider(lessonId))
+  ConsumerState<RewardBeats> createState() => _RewardBeatsState();
+}
+
+class _RewardBeatsState extends ConsumerState<RewardBeats> {
+  /// The offer this screen arrived with.
+  ///
+  /// **Latched, not watched.** Taking the offer up puts the challenge in play,
+  /// which is exactly what stops it being an offer — so a list that kept
+  /// asking would drop the row at the moment it is meant to confirm, and the
+  /// learner would tap and watch it vanish. The list reports what this run
+  /// earned; it does not re-decide that mid-celebration.
+  BrewChallenge? _offer;
+
+  @override
+  Widget build(BuildContext context) {
+    final card = widget.card;
+    _offer ??= ref
+        .watch(lessonChallengeOfferProvider(widget.lessonId))
         .asData
         ?.value;
+    final offer = _offer;
 
     final rows = <Widget>[
-      if (freezeEarned)
-        const RewardRow(label: freezeLabel, detail: freezeDetail),
+      if (widget.freezeEarned)
+        const RewardRow(
+          label: RewardBeats.freezeLabel,
+          detail: RewardBeats.freezeDetail,
+        ),
       if (card != null)
-        RewardRow(label: cardLabel, detail: card.title, onPress: onOpenCard),
+        RewardRow(
+          label: RewardBeats.cardLabel,
+          detail: card.title,
+          onPress: widget.onOpenCard,
+        ),
       if (offer != null) ChallengeSuggestion(challenge: offer),
     ];
     if (rows.isEmpty) return const SizedBox.shrink();
