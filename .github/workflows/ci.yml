@@ -178,10 +178,10 @@ jobs:
     name: smoke (simulator)
     runs-on: macos-latest
     if: github.event_name == 'push'
-    # A backstop, not the real guard. Each step of the walk bounds its own wait
-    # and fails in seconds, so a hang is caught there; this only exists so a
-    # wedged runner cannot burn an hour. The cold Xcode build is most of the
-    # job — around fifteen minutes — so the cap has to clear that comfortably.
+    # A backstop, not the real guard. The walk bounds each of its own waits, and
+    # the Smoke step below bounds each launch attempt; this cap only exists so a
+    # wedged runner cannot burn an hour. Budget: pub + boot ~2 min, the cold
+    # Xcode build ~5 min, then two launch attempts of at most 10 min each.
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
@@ -220,6 +220,11 @@ jobs:
           for _ in $(seq 1 30); do
             if xcrun simctl list devices | grep -q "$UDID.*Booted"; then
               echo "Booted"
+              # "Booted" is the device; SpringBoard comes up after it, and an
+              # app launched before that is refused. bootstatus -b waits for
+              # SpringBoard, bounded by an alarm because it can hang on some
+              # simulator states.
+              perl -e 'alarm 120; exec @ARGV' xcrun simctl bootstatus "$UDID" -b || true
               echo "SIMULATOR_UDID=$UDID" >> "$GITHUB_ENV"
               exit 0
             fi
@@ -228,5 +233,41 @@ jobs:
           echo "simulator $UDID never reached Booted"
           exit 1
 
+      # The launch is the flaky part. On five of eight recent main runs the
+      # test built, then printed nothing for 26 minutes until the job cap
+      # killed it: the app never came up on the simulator and flutter test
+      # waited for it indefinitely (flutter/flutter#153433 is the same shape).
+      # So each attempt is bounded, its verbose log is kept, and a second
+      # attempt gets a freshly booted simulator. A genuine test failure still
+      # fails on the first attempt: only a bounded launch hang is retried.
       - name: Smoke test
-        run: flutter test integration_test/smoke_test.dart -d "$SIMULATOR_UDID"
+        run: |
+          set -o pipefail
+          attempt() {
+            perl -e 'alarm 600; exec @ARGV' \
+              flutter test integration_test/smoke_test.dart -d "$SIMULATOR_UDID" -v \
+              > "smoke-attempt-$1.log" 2>&1
+          }
+          attempt 1; status=$?
+          if [ "$status" -eq 0 ]; then
+            grep -E "All tests passed|Some tests failed" smoke-attempt-1.log | tail -2
+            exit 0
+          fi
+          echo "attempt 1 exited $status; last lines:"
+          tail -40 smoke-attempt-1.log
+          if grep -q "Some tests failed" smoke-attempt-1.log; then
+            echo "a real test failure — not retrying"
+            exit "$status"
+          fi
+          echo "launch never completed — rebooting the simulator for one more attempt"
+          xcrun simctl shutdown "$SIMULATOR_UDID" || true
+          xcrun simctl boot "$SIMULATOR_UDID" || true
+          perl -e 'alarm 120; exec @ARGV' xcrun simctl bootstatus "$SIMULATOR_UDID" -b || true
+          attempt 2; status=$?
+          if [ "$status" -eq 0 ]; then
+            grep -E "All tests passed|Some tests failed" smoke-attempt-2.log | tail -2
+            exit 0
+          fi
+          echo "attempt 2 exited $status; last lines:"
+          tail -60 smoke-attempt-2.log
+          exit "$status"
