@@ -133,6 +133,23 @@ You can always edit this file by hand instead — the helpers just save effort.
   and only the first three are free. Now it says the guides come with the course.
   If you own it, it names the lesson that opens the next one.
 
+- **The course wall holds now, and Today sells the lesson behind it.** Past the
+  free lessons, the day's card pointed at a lesson you did not own and opened
+  it anyway. It now shows that lesson as what it is: *Continues in
+  Foundations*, how many lessons are still ahead of you, and one action reading
+  *Unlock Foundations* rather than *Start*. Tapping anywhere on it opens the
+  offer.
+
+  The lock is enforced by the app's own navigation rather than screen by
+  screen, so there is no way round it — a shared link, or the *Next lesson*
+  button after your last free lesson, raises the offer instead of the player.
+  Lessons you have already finished still open, and replay as often as you
+  like.
+
+  Developers: `--dart-define=GRANT_COURSE=true` hands a build the entitlement.
+  It is the only way to open the paid course until the store is real, because
+  the shipped payments stub grants nothing.
+
 - **The dictionary has a Term of the Day.** A card at the top of the shelf
   offers one word each day — what it is, how to say it, and what it means —
   and opens a page of its own where you can save it or go on to the full
@@ -658,6 +675,11 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **Flinging the Path list to its end no longer trips a debug error.** When a
+  fling ran past the end of the list, the header's collapse was applied while
+  the list was still being laid out, which debug builds report as "Build
+  scheduled during frame". The collapse now waits for that frame to finish;
+  in release builds nothing visible changes.
 - **Answering the Tour offer and leaving the Learn tab at once no longer
   throws.** The answer was saved, but refreshing the screen that offered the
   Tour after that screen was already gone raised an error in debug builds.

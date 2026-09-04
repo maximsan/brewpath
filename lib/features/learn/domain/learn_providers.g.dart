@@ -99,6 +99,86 @@ final class TodayLessonProvider
 
 String _$todayLessonHash() => r'774ffc3540c940bd7a15b792d141cacbecd430cb';
 
+/// Every lesson still ahead of the learner, course-wide.
+///
+/// **What the purchase opens, counted** — the figure Today's locked card
+/// pitches with. Course-wide rather than a position inside one module: once
+/// the wall is what the card is about, *lesson 4 of 7* says nothing about what
+/// buying would give them.
+///
+/// Counted from the bank, never written down. A lesson authored into the
+/// course changes this number by existing.
+///
+/// **Not the same figure as the gate sheet's `remainingLessons`**, which
+/// counts what the free tier does not carry. They answer different questions —
+/// how much course is left, and how much of it the purchase adds — and only
+/// coincide for a learner who has finished exactly the free set. The design
+/// asks the card for the first of the two.
+
+@ProviderFor(lessonsAhead)
+final lessonsAheadProvider = LessonsAheadProvider._();
+
+/// Every lesson still ahead of the learner, course-wide.
+///
+/// **What the purchase opens, counted** — the figure Today's locked card
+/// pitches with. Course-wide rather than a position inside one module: once
+/// the wall is what the card is about, *lesson 4 of 7* says nothing about what
+/// buying would give them.
+///
+/// Counted from the bank, never written down. A lesson authored into the
+/// course changes this number by existing.
+///
+/// **Not the same figure as the gate sheet's `remainingLessons`**, which
+/// counts what the free tier does not carry. They answer different questions —
+/// how much course is left, and how much of it the purchase adds — and only
+/// coincide for a learner who has finished exactly the free set. The design
+/// asks the card for the first of the two.
+
+final class LessonsAheadProvider
+    extends $FunctionalProvider<AsyncValue<int>, int, FutureOr<int>>
+    with $FutureModifier<int>, $FutureProvider<int> {
+  /// Every lesson still ahead of the learner, course-wide.
+  ///
+  /// **What the purchase opens, counted** — the figure Today's locked card
+  /// pitches with. Course-wide rather than a position inside one module: once
+  /// the wall is what the card is about, *lesson 4 of 7* says nothing about what
+  /// buying would give them.
+  ///
+  /// Counted from the bank, never written down. A lesson authored into the
+  /// course changes this number by existing.
+  ///
+  /// **Not the same figure as the gate sheet's `remainingLessons`**, which
+  /// counts what the free tier does not carry. They answer different questions —
+  /// how much course is left, and how much of it the purchase adds — and only
+  /// coincide for a learner who has finished exactly the free set. The design
+  /// asks the card for the first of the two.
+  LessonsAheadProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'lessonsAheadProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$lessonsAheadHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<int> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<int> create(Ref ref) {
+    return lessonsAhead(ref);
+  }
+}
+
+String _$lessonsAheadHash() => r'3ccfffe4fc7bc055fc502980830830d9044e7aef';
+
 /// The lessons the learner has **finished**, in course order, each joined with
 /// its module so the Learn screen can group them without re-querying.
 ///

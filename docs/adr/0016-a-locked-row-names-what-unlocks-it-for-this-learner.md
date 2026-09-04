@@ -28,6 +28,7 @@ cannot buy the course will never finish the module before it either.
 | Path lesson row | lock mark, `Part of Foundations`, tap opens the offer | no lock |
 | Path module row | lock mark, `Part of Foundations · {n} lessons`, tap opens the offer | `Finish {previous} to unlock` |
 | Reference shelf | `Visual guides come with the full course`, tap opens the offer | `Unlocks with {lesson}` |
+| Today's lead card | `Continues in Foundations`, then `{n} lessons ahead`, a lock on its action, tap opens the offer | the ordinary lesson card |
 
 The purchase lock is drawn in accent, progression in ink-mute. A
 purchase-locked row stays tappable, because it is where someone meets the wall
@@ -38,7 +39,12 @@ and it should offer the way past. A lesson already finished never locks.
 Every row that draws a lock now needs to know whether the reader owns the
 course, not just how far they have got. Path reads that once, in
 `pathModulesProvider`, and passes it down; otherwise every row widget would
-reach for a provider of its own.
+reach for a provider of its own. Today reads it the same way, in
+`LearnListView`.
+
+Which lock applies is one function, `isLessonPurchaseLocked`, because three
+surfaces and the router all have to give the same answer — and a rule copied
+four times is four rules waiting to disagree.
 
 While the entitlement is still loading, treat it as **not owned**. That is what
 `courseEntitlement` asks of every caller.

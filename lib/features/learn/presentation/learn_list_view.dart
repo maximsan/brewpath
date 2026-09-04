@@ -12,6 +12,7 @@ import 'package:brew_path/features/learn/presentation/today_card_widget.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_providers.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_games_catalog_widget.dart';
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
+import 'package:brew_path/features/monetization/domain/lesson_access.dart';
 import 'package:brew_path/features/progress/presentation/freeze_save_notice_card.dart';
 import 'package:brew_path/features/tour/domain/tour_copy.dart';
 import 'package:brew_path/features/tour/domain/tour_providers.dart';
@@ -62,6 +63,19 @@ class LearnListView extends ConsumerWidget {
     final entitlement = ref.watch(courseEntitlementProvider);
     final challenge = ref.watch(activeChallengeProvider).asData?.value;
     final tourRunning = ref.watch(tourRunningProvider);
+    // Unresolved reads as not owned, the rule `courseEntitlement` states, and
+    // it is read once here rather than in each row that needs it.
+    final hasCourse = entitlement.asData?.value ?? false;
+    final todayLesson = today.asData?.value;
+    // Today's lesson is by definition the first *unfinished* one, so the
+    // "a finished lesson never locks" arm of ADR-0016 can never apply to it.
+    final todayLocked =
+        todayLesson != null &&
+        isLessonPurchaseLocked(
+          lessonId: todayLesson.id,
+          hasCourse: hasCourse,
+          isCompleted: false,
+        );
 
     return ListView(
       padding: _padding,
@@ -98,7 +112,9 @@ class LearnListView extends ConsumerWidget {
                 _headerGap,
               ],
               TodayCardWidget(
-                today: today.asData?.value,
+                today: todayLesson,
+                isLocked: todayLocked,
+                lessonsAhead: ref.watch(lessonsAheadProvider).asData?.value,
                 keepSharp: keepSharp.asData?.value,
                 keepSharpDone: keepSharpDone.asData?.value ?? false,
               ),
@@ -140,10 +156,9 @@ class LearnListView extends ConsumerWidget {
               _headerGap,
               MiniGamesCatalogWidget(
                 formats: miniGames.asData?.value ?? const [],
-                // Unresolved reads as not owned, the rule `courseEntitlement`
-                // states. This row gates its tap on `hasCourse`, so an
-                // unlocked frame let someone start a paid game for free.
-                hasCourse: entitlement.asData?.value ?? false,
+                // This row gates its tap on `hasCourse`, so an unlocked
+                // frame let someone start a paid game for free.
+                hasCourse: hasCourse,
               ),
             ],
           ),
