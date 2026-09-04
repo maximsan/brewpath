@@ -1,3 +1,5 @@
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/widgets/ghost_button.dart';
 import 'package:brew_path/core/widgets/link_button.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -25,11 +27,30 @@ const double _estimatedBarHeight =
 /// acting on it would set state every frame.
 const double _measurementNoise = 0.5;
 
+/// The bordered action a bar may carry under its primary.
+///
+/// **Not a second primary.** It is the design's `btn-ghost` — an outline in the
+/// accent, which is how a verdict that deserves more than a link still reads as
+/// quieter than the way forward. The lesson ending's *Practice this lesson
+/// again* is the case it exists for: the screen's verdict on a weak run, paired
+/// with the action that acts on it.
+@immutable
+class GhostAction {
+  /// Creates a [GhostAction].
+  const GhostAction({required this.label, required this.onPressed});
+
+  /// What the button reads.
+  final String label;
+
+  /// Pressed. Null shows it disabled rather than hiding it.
+  final VoidCallback? onPressed;
+}
+
 /// The quiet link a bar may carry under its action.
 ///
 /// A value type rather than a `label`/`onTap` pair on [StickyActionBar], so the
 /// two cannot be passed half-set — and so the bar's signature says plainly that
-/// the second slot is a *link*, never a second button.
+/// the slot is a *link*, never a button.
 @immutable
 class QuietLink {
   /// Creates a [QuietLink].
@@ -44,11 +65,17 @@ class QuietLink {
 
 /// The footer that carries a screen's single primary action.
 ///
-/// **One primary action, and at most a quiet link beneath it.** The signature
-/// takes a label and a callback rather than a widget, so a second filled button
-/// is not something a caller can pass. The design's rule that *"this and the
-/// tab bar are the app's only footers"* is then enforceable by the absence of
-/// any other pinned-footer widget.
+/// **One primary action.** The signature takes a label and a callback rather
+/// than a widget, so a second filled button is not something a caller can
+/// pass. The design's rule that *"this and the tab bar are the app's only
+/// footers"* is then enforceable by the absence of any other pinned-footer
+/// widget.
+///
+/// Under it the bar carries at most two quieter things, and neither can be
+/// mistaken for a second primary: a [ghost] — a bordered button the design
+/// gives a verdict that deserves weight, like *Practice this lesson again* —
+/// and a [link]. Both are value types for the same reason the primary is a
+/// label and a callback: a caller cannot hand either one a filled button.
 ///
 /// **It owns the scroll.** [content] is plain — the bar wraps it, centres it
 /// when it fits and scrolls it when it does not, matching the design's
@@ -67,6 +94,8 @@ class StickyActionBar extends StatefulWidget {
     required this.content,
     required this.label,
     required this.onPressed,
+    this.trailingMark,
+    this.ghost,
     this.link,
     this.preface,
     super.key,
@@ -81,6 +110,12 @@ class StickyActionBar extends StatefulWidget {
   /// The primary action. Null shows it disabled rather than hiding it, so the
   /// learner can see what the screen wants before they have done it.
   final VoidCallback? onPressed;
+
+  /// A mark after the primary's label — see [PrimaryButton.trailingMark].
+  final AppIcon? trailingMark;
+
+  /// The optional bordered action under the primary.
+  final GhostAction? ghost;
 
   /// The optional quiet link under the action.
   final QuietLink? link;
@@ -204,6 +239,7 @@ class _StickyActionBarState extends State<StickyActionBar> {
 
   Widget _bar() {
     final mood = context.mood;
+    final ghost = widget.ghost;
     final link = widget.link;
     final preface = widget.preface;
 
@@ -231,7 +267,15 @@ class _StickyActionBarState extends State<StickyActionBar> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               ?preface,
-              PrimaryButton(label: widget.label, onPressed: widget.onPressed),
+              PrimaryButton(
+                label: widget.label,
+                onPressed: widget.onPressed,
+                trailingMark: widget.trailingMark,
+              ),
+              if (ghost != null) ...[
+                const SizedBox(height: AppSpacing.xs),
+                GhostButton(label: ghost.label, onPressed: ghost.onPressed),
+              ],
               if (link != null)
                 LinkButton(label: link.label, onPressed: link.onTap),
             ],

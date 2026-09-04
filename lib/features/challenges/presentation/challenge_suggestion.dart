@@ -1,63 +1,69 @@
-import 'package:brew_path/features/challenges/domain/challenge_bank.dart';
+import 'dart:async';
+
+import 'package:brew_path/core/widgets/reward_row.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
-import 'package:brew_path/shared/theme/app_radii.dart';
-import 'package:brew_path/shared/theme/app_spacing.dart';
-import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Offers the Coffee Challenge a just-finished lesson carries — if it has one.
+/// The last `·`-separated part of an effort line, which is where the design
+/// keeps the time — `Two cups · 5 min` reads as *(5 min)* beside the title.
 ///
-/// **Twenty of the thirty-two lessons carry none**, so rendering nothing is
-/// the common case rather than the exception, and it renders *nothing at all*:
-/// no gap, no divider, no placeholder. The completion screen without a
-/// challenge must be indistinguishable from a completion screen that never had
-/// the possibility of one. It sits in the completion screen's sticky footer,
-/// above the action, and carries the gap between the two itself — the bar
-/// contributes none, so an absent offer leaves no band where it would have
-/// been.
-class ChallengeSuggestion extends ConsumerWidget {
+/// Lowercased, because the row writes it inside a sentence rather than as a
+/// label. Returns the whole string when there is no separator, so an effort
+/// authored as a bare duration still says something.
+String challengeEffortTime(String effort) =>
+    effort.split('·').last.trim().toLowerCase();
+
+/// How a reward list writes an offer's detail: what it is, and how long.
+String challengeOfferDetail(BrewChallenge challenge) =>
+    '${challenge.title} (${challengeEffortTime(challenge.effort)})';
+
+/// Offers a Coffee Challenge as one row of a reward list.
+///
+/// **A row, not a card of its own.** It is one of the occasional beats an
+/// ending reports, so it takes the same anatomy as the freeze and the new
+/// card: a label, a quiet detail, one affordance.
+///
+/// **There is no decline.** Declining is continuing past the row — the
+/// challenge waits on the Path either way, so the go button is the row's one
+/// affordance and the screen's own way out is the not-now. That is why the
+/// *Save for later* action is gone: it was the app's own, and it named a
+/// choice the design does not ask the learner to make here.
+///
+/// Whether there is an offer at all is [lessonChallengeOfferProvider]'s
+/// question, asked by whoever builds the list — a row that decided its own
+/// absence would still take a hairline from the row above it.
+class ChallengeSuggestion extends ConsumerStatefulWidget {
   /// Creates a [ChallengeSuggestion].
-  const ChallengeSuggestion({required this.lessonId, super.key});
+  const ChallengeSuggestion({required this.challenge, super.key});
 
-  /// The lesson that was just finished.
-  final String lessonId;
+  /// What the row is called before it is taken up.
+  static const String offerLabel = 'Optional challenge';
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final bank = ref.watch(challengeBankProvider).asData?.value;
-    if (bank == null) return const SizedBox.shrink();
+  /// What it says once it has been.
+  static const String acceptedLabel = 'Added to Today';
 
-    final challenge = challengeForLesson(bank, lessonId);
-    if (challenge == null) return const SizedBox.shrink();
+  /// And the line under that.
+  static const String acceptedDetail = 'Log it when you brew.';
 
-    // The gap belongs to the offer rather than to its host: the sticky bar
-    // adds no spacer of its own, so a lesson with no challenge leaves no trace
-    // in the footer at all.
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.base),
-      child: _Suggestion(challenge: challenge),
-    );
-  }
-}
-
-class _Suggestion extends ConsumerStatefulWidget {
-  const _Suggestion({required this.challenge});
-
+  /// The challenge on offer.
   final BrewChallenge challenge;
 
   @override
-  ConsumerState<_Suggestion> createState() => _SuggestionState();
+  ConsumerState<ChallengeSuggestion> createState() =>
+      _ChallengeSuggestionState();
 }
 
-class _SuggestionState extends ConsumerState<_Suggestion> {
-  /// What the learner did with the offer, so the strip can confirm it without
-  /// the screen navigating away from the completion it is celebrating.
-  String? _confirmation;
+class _ChallengeSuggestionState extends ConsumerState<ChallengeSuggestion> {
+  /// Whether the offer has been taken up, so the row can confirm it without
+  /// the screen navigating away from the celebration it is showing.
+  bool _accepted = false;
 
   Future<void> _start() async {
+    if (_accepted) return;
+    setState(() => _accepted = true);
     await startChallenge(
       ref.read(snapshotRepositoryProvider),
       id: widget.challenge.id,
@@ -66,80 +72,20 @@ class _SuggestionState extends ConsumerState<_Suggestion> {
     ref
       ..invalidate(activeChallengeProvider)
       ..invalidate(savedChallengesProvider);
-    if (mounted) {
-      setState(() => _confirmation = 'Added to Today. Log it when you brew.');
-    }
-  }
-
-  Future<void> _saveForLater() async {
-    await saveChallengeForLater(
-      ref.read(snapshotRepositoryProvider),
-      id: widget.challenge.id,
-      now: DateTime.now(),
-    );
-    ref.invalidate(savedChallengesProvider);
-    if (mounted) {
-      setState(() => _confirmation = 'Saved. Find it under Saved challenges.');
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final mood = context.mood;
-    final confirmation = _confirmation;
-
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: mood.surface,
-        borderRadius: BorderRadius.circular(AppRadii.editorial),
-        border: Border.all(color: mood.accent),
-      ),
-      child: confirmation != null
-          ? Text(
-              confirmation,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(color: mood.inkMute),
-            )
-          : _offer(theme, mood),
+    if (_accepted) {
+      return const RewardRow(
+        label: ChallengeSuggestion.acceptedLabel,
+        detail: ChallengeSuggestion.acceptedDetail,
+      );
+    }
+    return RewardRow(
+      label: ChallengeSuggestion.offerLabel,
+      detail: challengeOfferDetail(widget.challenge),
+      onPress: () => unawaited(_start()),
     );
   }
-
-  Widget _offer(ThemeData theme, MoodColors mood) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      Text(
-        'COFFEE CHALLENGE UNLOCKED',
-        textAlign: TextAlign.center,
-        style: theme.textTheme.labelSmall?.copyWith(
-          color: mood.accentText,
-        ),
-      ),
-      const SizedBox(height: AppSpacing.xs),
-      Text(
-        widget.challenge.title,
-        textAlign: TextAlign.center,
-        style: theme.textTheme.titleMedium,
-      ),
-      const SizedBox(height: AppSpacing.xxs),
-      Text(
-        widget.challenge.instruction,
-        textAlign: TextAlign.center,
-        style: theme.textTheme.bodyMedium?.copyWith(color: mood.inkMute),
-      ),
-      const SizedBox(height: AppSpacing.sm),
-      // An action inside a suggestion block, not the screen's CTA — the
-      // lesson's own Continue is below it and owns that role.
-      FilledButton(
-        onPressed: _start,
-        child: const Text('Start Challenge'),
-      ),
-      TextButton(
-        onPressed: _saveForLater,
-        child: const Text('Save for later'),
-      ),
-    ],
-  );
 }

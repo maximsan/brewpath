@@ -1,12 +1,12 @@
 import 'package:brew_path/core/constants/app_labels.dart';
+import 'package:brew_path/core/widgets/reward_flip.dart';
 import 'package:brew_path/features/cards/presentation/reward_card.dart';
 import 'package:brew_path/features/companion/application/companion_providers.dart';
 import 'package:brew_path/features/companion/domain/companion_lines.dart';
 import 'package:brew_path/features/companion/presentation/roasty_moment.dart';
 import 'package:brew_path/features/learn/domain/module_summary_provider.dart';
+import 'package:brew_path/features/learn/presentation/module_complete_faces.dart';
 import 'package:brew_path/features/learn/presentation/module_complete_screen.dart';
-import 'package:brew_path/features/learn/presentation/module_flip_animation.dart';
-import 'package:brew_path/features/lessons/presentation/lesson_completion_rail.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/presentation/growing_tree.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
@@ -109,7 +109,7 @@ void main() {
   Future<void> turn(WidgetTester tester, Finder control) async {
     await tester.tap(control);
     await tester.pump();
-    await tester.pump(flipDuration);
+    await tester.pump(rewardFlipDuration);
     await tester.pump();
   }
 
@@ -271,16 +271,10 @@ void main() {
   });
 
   // **This ending is the closing lesson's ending too** (#458). The design
-  // branches rather than chaining, so nothing else will report what that
-  // lesson paid — and the app carries it here rather than dropping it, which
-  // the design does.
+  // branches rather than chaining, so nothing else reports what that lesson
+  // paid — and what the restyled ending reports of it is the points and the
+  // freeze, on one centred line each (#490).
   group('what the closing lesson paid', () {
-    final lessonCard = testCoffeeCard(
-      id: 'c-m1l7',
-      title: 'Washed Process',
-      lessonId: 'm1l7',
-    );
-
     Future<void> pumpFront(
       WidgetTester tester, {
       ModuleEndingRun run = noModuleEndingRun,
@@ -303,23 +297,20 @@ void main() {
     testWidgets('the points the lesson paid are on the front', (tester) async {
       await pumpFront(
         tester,
-        run: (pointsEarned: 10, lessonCard: lessonCard),
+        run: (pointsEarned: 10),
       );
 
       expect(find.text('+10 PTS'), findsOneWidget);
     });
 
-    testWidgets('so is the collectible it handed over', (tester) async {
-      await pumpFront(
-        tester,
-        run: (pointsEarned: 10, lessonCard: lessonCard),
-      );
+    // The collectible the closing lesson handed over is **not** announced
+    // here. The restyled ending has no reward list, and its one card is the
+    // module's on the other face — the lesson's is still collected, and is on
+    // the Cards tab.
+    testWidgets('but not the collectible it handed over', (tester) async {
+      await pumpFront(tester, run: (pointsEarned: 10));
 
-      expect(find.text('Washed Process'), findsOneWidget);
-      expect(
-        find.text(LessonCompletionRail.cardKicker.toUpperCase()),
-        findsOneWidget,
-      );
+      expect(find.text('Washed Process'), findsNothing);
     });
 
     // The finding the audit called sharpest, and the one thing here that
@@ -328,12 +319,12 @@ void main() {
     testWidgets('and the freeze, when that run earned one', (tester) async {
       await pumpFront(
         tester,
-        run: (pointsEarned: 10, lessonCard: lessonCard),
+        run: (pointsEarned: 10),
         freezeEarned: true,
       );
 
       expect(
-        find.text(LessonCompletionRail.freezeKicker.toUpperCase()),
+        find.text(FreezeEarnedLine.label.toUpperCase()),
         findsOneWidget,
       );
     });
@@ -343,7 +334,7 @@ void main() {
     testWidgets('the module reward stays on the back', (tester) async {
       await pumpFront(
         tester,
-        run: (pointsEarned: 10, lessonCard: lessonCard),
+        run: (pointsEarned: 10),
       );
 
       expect(find.text('Beans Field Guide'), findsNothing);
@@ -354,8 +345,8 @@ void main() {
     testWidgets('nothing at all when no run is being reported', (tester) async {
       await pumpFront(tester);
 
-      expect(find.byType(LessonCompletionRail), findsNothing);
       expect(find.textContaining('PTS'), findsNothing);
+      expect(find.byType(FreezeEarnedLine), findsNothing);
     });
   });
 

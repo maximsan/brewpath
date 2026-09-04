@@ -8,36 +8,36 @@ import 'package:flutter/foundation.dart';
 /// The design's CTA when another lesson is queued behind this one.
 const String nextLessonLabel = 'Next lesson';
 
-/// The design's CTA when nothing is queued — and the quiet link beside
-/// [nextLessonLabel] when something is.
+/// The design's CTA when nothing is queued.
 const String backToPathLabel = 'Back to Path';
 
 /// The invitation a weak run gets, in the action colour rather than a
 /// failure red.
 const String practiceAgainLabel = 'Practice this lesson again';
 
-/// The quiet link under the action, or null when the footer offers none.
+/// A labelled way off the screen that is not the primary action.
 @immutable
 class CompletionLink {
   /// Creates a [CompletionLink].
   const CompletionLink({required this.label, required this.destination});
 
-  /// What the link reads.
+  /// What it reads.
   final String label;
 
   /// Where it goes.
   final RouteDestination destination;
 }
 
-/// One primary action and at most one quiet link — the shape the shared
-/// sticky action bar takes, resolved before any widget is built.
+/// One primary action, and at most the practice invitation under it — the
+/// shape the shared sticky action bar takes, resolved before any widget is
+/// built.
 @immutable
 class CompletionActions {
   /// Creates a [CompletionActions].
   const CompletionActions({
     required this.label,
     required this.destination,
-    this.link,
+    this.practice,
   });
 
   /// What the primary action reads.
@@ -46,16 +46,14 @@ class CompletionActions {
   /// Where the primary action goes.
   final RouteDestination destination;
 
-  /// The quiet link under it, if this run earns one.
-  final CompletionLink? link;
+  /// The bordered invitation under it, on a run that earned one.
+  final CompletionLink? practice;
 }
 
 /// What the footer offers after finishing [lessonId].
 ///
 /// Pure, so every branch is asserted without pumping a widget — which matters
 /// because the branches are copy the learner reads, not styling.
-///
-/// **Three rules, in this order.**
 ///
 /// **Two rules, and no module case.** A run that closes its module never
 /// reaches this screen — the design branches to the module ending instead of
@@ -64,9 +62,12 @@ class CompletionActions {
 ///
 /// 1. The action is the next lesson when one is playable, and
 ///    [backToPathLabel] when the course has nothing left queued.
-/// 2. The quiet link is the weak run's practice invitation where there is one,
-///    and [backToPathLabel] otherwise — never both. A weak run is asked to
-///    practise rather than offered two ways out.
+/// 2. A weak run is invited to practise, under the action.
+///
+/// **There is no second way out.** The footer used to carry a *Back to Path*
+/// link beside *Next lesson*; the design's footer has no such slot, and the
+/// screen's own close already goes there. Offering it twice made declining
+/// look like a decision rather than the default.
 CompletionActions completionActions({
   required String lessonId,
   MasteryBand? band,
@@ -83,15 +84,13 @@ CompletionActions completionActions({
     return CompletionActions(
       label: backToPathLabel,
       destination: pathTab,
-      link: practice,
+      practice: practice,
     );
   }
 
   return CompletionActions(
     label: nextLessonLabel,
     destination: lessonRun(nextLessonId),
-    link:
-        practice ??
-        CompletionLink(label: backToPathLabel, destination: pathTab),
+    practice: practice,
   );
 }

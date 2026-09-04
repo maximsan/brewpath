@@ -1,3 +1,4 @@
+import 'package:brew_path/core/widgets/reward_row.dart';
 import 'package:brew_path/features/cards/presentation/reward_card.dart';
 import 'package:brew_path/features/companion/presentation/companion.dart';
 import 'package:brew_path/features/companion/presentation/roasty_moment.dart';
@@ -5,7 +6,7 @@ import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/lessons/domain/lesson_completion_actions.dart';
 import 'package:brew_path/features/lessons/domain/lesson_completion_service.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_beat.dart';
-import 'package:brew_path/features/lessons/presentation/lesson_completion_rail.dart';
+import 'package:brew_path/features/lessons/presentation/lesson_completion_body.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_screen.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_tree.dart';
 import 'package:brew_path/features/progress/domain/activity_recorder.dart';
@@ -348,10 +349,10 @@ void main() {
       await pumpCompletion(tester, container);
 
       expect(
-        find.text(LessonCompletionRail.freezeKicker.toUpperCase()),
+        find.text(RewardBeats.freezeLabel),
         findsOneWidget,
       );
-      expect(find.text(LessonCompletionRail.freezeSupport), findsOneWidget);
+      expect(find.text(RewardBeats.freezeDetail), findsOneWidget);
     });
 
     testWidgets('an ordinary day does not', (tester) async {
@@ -364,7 +365,7 @@ void main() {
       await pumpCompletion(tester, container);
 
       expect(
-        find.text(LessonCompletionRail.freezeKicker.toUpperCase()),
+        find.text(RewardBeats.freezeLabel),
         findsNothing,
       );
     });
@@ -414,17 +415,19 @@ void main() {
   // because the card *is* the module's guide and this is the moment it was
   // earned — not something to go and find on the Cards tab later.
   group('the card the run handed over', () {
-    testWidgets('opens its preview when tapped', (tester) async {
+    testWidgets('turns the screen over when its row is pressed', (
+      tester,
+    ) async {
       final container = _buildContainer();
       addTearDown(container.dispose);
 
       await pumpCompletion(tester, container);
       expect(
-        find.text(LessonCompletionRail.cardKicker.toUpperCase()),
+        find.text(RewardBeats.cardLabel),
         findsOneWidget,
       );
 
-      final row = find.text(LessonCompletionRail.cardKicker.toUpperCase());
+      final row = find.text(RewardBeats.cardLabel);
       await tester.ensureVisible(row);
       await tester.pumpAndSettle();
       await tester.tap(row);
@@ -448,7 +451,7 @@ void main() {
       final freeze = tester.getSemantics(
         find
             .ancestor(
-              of: find.text(LessonCompletionRail.freezeKicker.toUpperCase()),
+              of: find.text(RewardBeats.freezeLabel),
               matching: find.byType(Semantics),
             )
             .first,
@@ -467,7 +470,10 @@ void main() {
       await pumpCompletion(tester, container);
 
       expect(find.text(nextLessonLabel), findsOneWidget);
-      expect(find.text(backToPathLabel), findsOneWidget);
+      // The design's footer carries no second way out: the topbar's close
+      // already goes to the Path, and offering it again made declining look
+      // like a decision rather than the default.
+      expect(find.text(backToPathLabel), findsNothing);
     });
 
     // The reachable case for the plain return: the course is finished, so
@@ -557,7 +563,7 @@ void main() {
 
     // No beat of its own, no headline, no rail — it stepped aside entirely.
     expect(find.byType(RoastyMoment), findsNothing);
-    expect(find.byType(LessonCompletionRail), findsNothing);
+    expect(find.byType(RewardList), findsNothing);
     expect(find.text('Module ending'), findsOneWidget);
   });
 
@@ -658,7 +664,7 @@ void main() {
     expect(find.textContaining('PTS'), findsNothing);
     // A replay pays nothing, so the rail has no row to draw at all.
     expect(
-      find.text(LessonCompletionRail.cardKicker.toUpperCase()),
+      find.text(RewardBeats.cardLabel),
       findsNothing,
     );
   });

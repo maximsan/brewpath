@@ -47,45 +47,37 @@ void main() {
     });
   });
 
-  group('the quiet link', () {
-    test('a weak run is invited to practise', () {
+  group('the practice invitation', () {
+    test('a weak run is invited to practise, under the action', () {
       final actions = _actions(
         band: MasteryBand.needsPractice,
         nextLessonId: 'm1l2',
       );
 
-      expect(actions.link?.label, practiceAgainLabel);
-      expect(actions.link?.destination, lessonRun('m1l1'));
+      expect(actions.practice?.label, practiceAgainLabel);
+      expect(actions.practice?.destination, lessonRun('m1l1'));
     });
 
-    // The design drops the plain return beside the invitation, so a weak run
-    // is asked to practise rather than handed two ways out.
-    test('and is not also offered the way back', () {
-      expect(
-        _actions(
-          band: MasteryBand.needsPractice,
-          nextLessonId: 'm1l2',
-        ).link?.label,
-        isNot(backToPathLabel),
-      );
+    test('a strong run is not', () {
+      expect(_actions(band: MasteryBand.mastered).practice, isNull);
+      expect(_actions(band: MasteryBand.perfect).practice, isNull);
     });
 
-    test('a strong run with a next lesson keeps the way back', () {
+    test('an unscored run is not treated as weak', () {
+      expect(_actions(nextLessonId: 'm1l2').practice, isNull);
+    });
+
+    // The design's footer has no second way out: the screen's own close goes
+    // to the Path, and offering it again made declining look like a decision
+    // rather than the default.
+    test('nothing else joins the footer beside it', () {
       final actions = _actions(
         band: MasteryBand.mastered,
         nextLessonId: 'm1l2',
       );
 
-      expect(actions.link?.label, backToPathLabel);
-      expect(actions.link?.destination, pathTab);
-    });
-
-    test('a strong run with nothing queued gets no link at all', () {
-      expect(_actions(band: MasteryBand.perfect).link, isNull);
-    });
-
-    test('an unscored run is not treated as weak', () {
-      expect(_actions(nextLessonId: 'm1l2').link?.label, backToPathLabel);
+      expect(actions.label, nextLessonLabel);
+      expect(actions.practice, isNull);
     });
   });
 }

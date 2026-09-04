@@ -1,11 +1,12 @@
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
-import 'package:brew_path/core/icons/icon_mark.dart';
+import 'package:brew_path/core/widgets/float_topbar.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/core/widgets/sticky_action_bar.dart';
 import 'package:brew_path/features/cards/presentation/reward_card.dart';
 import 'package:brew_path/features/learn/domain/module_summary_provider.dart';
-import 'package:brew_path/features/lessons/presentation/lesson_completion_rail.dart';
+import 'package:brew_path/features/lessons/presentation/reward_points_line.dart';
+import 'package:brew_path/features/progress/presentation/freeze_mark.dart';
 import 'package:brew_path/features/progress/presentation/growing_tree.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -124,94 +125,85 @@ class ModuleCompleteFront extends StatelessWidget {
   /// The design's `AnimatedTree size={250}` on this screen.
   static const double _treeSize = 250;
 
-  /// Whether this ending has a run to report at all.
-  ///
-  /// **The module's own reward is not on this list**, and must not be: it
-  /// lives on the other face, and a rail that drew it here would show the same
-  /// card twice in one turn.
-  bool get _paidSomething =>
-      run.pointsEarned > 0 || freezeEarned || run.lessonCard != null;
-
-  // ⚠️ The design's *Turn it over* also carries a flip glyph after its label
-  // (`rewards.jsx:341-344`). `StickyActionBar` takes a label and a callback,
-  // so a mark beside it would mean changing the shared footer (#412) for one
-  // caller. Left as words, recorded here rather than dropped quietly.
-
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
 
-    return Stack(
-      children: [
-        CelebrationGlow.celebration,
-        StickyActionBar(
-          label: AppLabels.turnItOver,
-          onPressed: onTurnOver,
-          preface: Padding(
-            padding: const EdgeInsets.only(bottom: AppSpacing.md),
-            child: Text(
-              AppLabels.rewardWaiting,
-              textAlign: TextAlign.center,
-              style: AppText.support(mood: mood),
+    return FloatTopbarScrollScope(
+      builder: (context, {required isScrolled}) => Stack(
+        children: [
+          CelebrationGlow.celebration,
+          StickyActionBar(
+            label: AppLabels.turnItOver,
+            trailingMark: AppIcon.rematch,
+            onPressed: onTurnOver,
+            preface: Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.md),
+              child: Text(
+                AppLabels.rewardWaiting,
+                textAlign: TextAlign.center,
+                style: AppText.support(mood: mood),
+              ),
             ),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SmallcapsLabel(
-                AppLabels.moduleCompleteKicker,
-                color: mood.accent,
-              ),
-              const SizedBox(height: AppSpacing.xs),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                child: Text(
-                  summary.module.title,
-                  textAlign: TextAlign.center,
-                  style: AppText.display(mood: mood),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SmallcapsLabel(
+                  AppLabels.moduleCompleteKicker,
+                  color: mood.accent,
                 ),
-              ),
-              const SizedBox(height: AppSpacing.xl),
-              // Growing, because this *is* the ending of the lesson that grew
-              // it — the design branches rather than chaining, so no earlier
-              // screen has played it (#458).
-              Semantics(
-                label: toStage > fromStage
-                    ? AppLabels.treeGrewTo(toStage)
-                    : AppLabels.treeAtStage(toStage),
-                excludeSemantics: true,
-                child: GrowingTree(
-                  fromStage: fromStage,
-                  toStage: toStage,
-                  size: _treeSize,
-                ),
-              ),
-              // What the closing lesson paid. Absent entirely when the ending
-              // was opened outside the flow, where there is no run to report.
-              if (_paidSomething) ...[
-                const SizedBox(height: AppSpacing.xl),
+                const SizedBox(height: AppSpacing.xs),
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.gutter,
+                    horizontal: AppSpacing.lg,
                   ),
-                  child: LessonCompletionRail(
-                    pointsEarned: run.pointsEarned,
-                    freezeEarned: freezeEarned,
-                    lessonCard: run.lessonCard,
+                  child: Text(
+                    summary.module.title,
+                    textAlign: TextAlign.center,
+                    style: AppText.display(mood: mood),
                   ),
                 ),
+                const SizedBox(height: AppSpacing.xl),
+                // Growing, because this *is* the ending of the lesson that grew
+                // it — the design branches rather than chaining, so no earlier
+                // screen has played it (#458).
+                Semantics(
+                  label: toStage > fromStage
+                      ? AppLabels.treeGrewTo(toStage)
+                      : AppLabels.treeAtStage(toStage),
+                  excludeSemantics: true,
+                  child: GrowingTree(
+                    fromStage: fromStage,
+                    toStage: toStage,
+                    size: _treeSize,
+                  ),
+                ),
+                // What the closing lesson paid, under the tree it fed. Absent
+                // entirely when the ending was opened outside the flow, where
+                // there is no run to report.
+                const SizedBox(height: AppSpacing.base),
+                RewardPointsLine(points: run.pointsEarned),
+                // **A line, not a row.** The lesson ending lists its
+                // occasional beats; this one has only ever a single beat to
+                // report, and the design sets it centred under the points
+                // rather than opening a list for one entry.
+                if (freezeEarned) ...[
+                  const SizedBox(height: AppSpacing.sm),
+                  const FreezeEarnedLine(),
+                ],
               ],
-            ],
+            ),
           ),
-        ),
-        // Chrome, not content: the bar centres what it scrolls, and a control
-        // pinned to the top of the screen must not travel with it.
-        _FaceTopBar(
-          icon: AppIcon.close,
-          label: AppLabels.close,
-          onTap: onClose,
-        ),
-      ],
+          // Chrome, not content: the bar centres what it scrolls, and a
+          // control pinned to the top of the screen must not travel with it.
+          FloatTopbar(
+            icon: AppIcon.close,
+            label: AppLabels.close,
+            onPressed: onClose,
+            isScrolled: isScrolled,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -244,70 +236,77 @@ class ModuleCompleteBack extends StatelessWidget {
     final mood = context.mood;
     final reward = summary.moduleReward;
 
-    return Stack(
-      children: [
-        CelebrationGlow.reward,
-        StickyActionBar(
-          label: summary.hasNextModule
-              ? AppLabels.beginNextModule
-              : AppLabels.backToPath,
-          onPressed: onContinue,
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SmallcapsLabel(AppLabels.rewardUnlocked, color: mood.accent),
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                AppLabels.newCollectibleCard,
-                textAlign: TextAlign.center,
-                style: AppText.title(mood: mood),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              // A module with no collected reward keeps the face rather than
-              // the card: the flip is the screen's shape, and an empty back
-              // would strand the learner mid-turn.
-              if (reward != null) RewardCard(card: reward),
-            ],
+    return FloatTopbarScrollScope(
+      builder: (context, {required isScrolled}) => Stack(
+        children: [
+          CelebrationGlow.reward,
+          StickyActionBar(
+            label: summary.hasNextModule
+                ? AppLabels.beginNextModule
+                : AppLabels.backToPath,
+            onPressed: onContinue,
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SmallcapsLabel(AppLabels.rewardUnlocked, color: mood.accent),
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  AppLabels.newCollectibleCard,
+                  textAlign: TextAlign.center,
+                  style: AppText.title(mood: mood),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                // A module with no collected reward keeps the face rather than
+                // the card: the flip is the screen's shape, and an empty back
+                // would strand the learner mid-turn.
+                if (reward != null) RewardCard(card: reward),
+              ],
+            ),
           ),
-        ),
-        _FaceTopBar(
-          icon: AppIcon.back,
-          label: AppLabels.flipBack,
-          onTap: onFlipBack,
-        ),
-      ],
+          FloatTopbar(
+            icon: AppIcon.back,
+            label: AppLabels.flipBack,
+            onPressed: onFlipBack,
+            isScrolled: isScrolled,
+          ),
+        ],
+      ),
     );
   }
 }
 
-/// A face's one control, in the design's `.lesson-topbar` slot: no rule, no
-/// fill, just the mark.
-class _FaceTopBar extends StatelessWidget {
-  const _FaceTopBar({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
+/// *Freeze earned*, as the module ending says it: one centred line under the
+/// points rather than a list of one.
+class FreezeEarnedLine extends StatelessWidget {
+  /// Creates a [FreezeEarnedLine].
+  const FreezeEarnedLine({super.key});
 
-  final AppIcon icon;
-  final String label;
-  final VoidCallback onTap;
+  /// The whole line, written as one sentence because it is drawn as one.
+  static const String label = 'Freeze earned · One missed day covered';
 
-  /// The design's 44×44 header control, fixed during its own QA.
-  static const double _hitSize = 44;
+  /// The design's `FreezeMark size={14}` here.
+  static const double markSize = 14;
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.topLeft,
-      child: IconButton(
-        onPressed: onTap,
-        tooltip: label,
-        constraints: const BoxConstraints.tightFor(
-          width: _hitSize,
-          height: _hitSize,
-        ),
-        icon: IconMark(icon, color: context.mood.ink, semanticLabel: label),
+    final mood = context.mood;
+
+    return Semantics(
+      label: label,
+      excludeSemantics: true,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          FreezeMark(color: mood.accent, size: markSize),
+          const SizedBox(width: AppSpacing.xs),
+          Flexible(
+            child: Text(
+              label.toUpperCase(),
+              textAlign: TextAlign.center,
+              style: AppText.micro(mood: mood, color: mood.accentText),
+            ),
+          ),
+        ],
       ),
     );
   }

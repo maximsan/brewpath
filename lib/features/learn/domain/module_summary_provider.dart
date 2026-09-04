@@ -76,28 +76,29 @@ Future<ModuleSummary> moduleSummary(Ref ref, String moduleId) async {
 /// What the run that closed the module paid out.
 ///
 /// The design branches on a module's last lesson, so that lesson's own ending
-/// never plays (#458) — and the lesson still paid its points and still handed
-/// over its collectible. This is what the module ending reports on its behalf.
-typedef ModuleEndingRun = ({int pointsEarned, CoffeeCardModel? lessonCard});
+/// never plays (#458) — and the lesson still paid its points. This is what the
+/// module ending reports on its behalf.
+///
+/// **Points only.** The closing lesson's own collectible used to travel here
+/// too, and the ending listed it. The restyled ending has no list: it reports
+/// the points and the freeze, and its one card is the module's, on the other
+/// face. The lesson's card is still collected — it is on the Cards tab — it is
+/// simply not announced a second time in a moment that already hands over a
+/// bigger one (#490).
+typedef ModuleEndingRun = ({int pointsEarned});
 
 /// A run that paid nothing, for a module ending opened outside the flow — a
 /// review, or a deep link. It claims nothing about a run that did not happen.
-const ModuleEndingRun noModuleEndingRun = (pointsEarned: 0, lessonCard: null);
+const ModuleEndingRun noModuleEndingRun = (pointsEarned: 0);
 
 /// What [lessonId] paid, for the module ending to report.
 ///
-/// Content only: the lesson's authored points, and the collectible tied to it.
-/// Whether the learner *holds* that card is not asked — this run is the moment
-/// it was earned, so the answer is yes by construction, and a read against the
-/// card store would race the write that just happened.
+/// Content only: the lesson's authored points.
 @riverpod
 Future<ModuleEndingRun> moduleEndingRun(Ref ref, String? lessonId) async {
   if (lessonId == null) return noModuleEndingRun;
   final content = ref.watch(contentRepositoryProvider);
   final lesson = await content.getLessonById(lessonId);
   if (lesson == null) return noModuleEndingRun;
-  return (
-    pointsEarned: lesson.points,
-    lessonCard: await content.getCardForLesson(lessonId),
-  );
+  return (pointsEarned: lesson.points);
 }
