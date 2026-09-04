@@ -29,12 +29,12 @@ void main() {
 
     test('onboarding routes are left alone while it runs', () {
       expect(redirect('/welcome', onboarded: false), isNull);
-      expect(redirect('/onboarding/goal', onboarded: false), isNull);
+      expect(redirect('/onboarding/name', onboarded: false), isNull);
     });
 
     test('a finished learner is bounced out of the intro', () {
       expect(redirect('/welcome'), AppRoutes.learn.path);
-      expect(redirect('/onboarding/goal'), AppRoutes.learn.path);
+      expect(redirect('/onboarding/name'), AppRoutes.learn.path);
     });
 
     test('the Studio needs the entitlement', () {

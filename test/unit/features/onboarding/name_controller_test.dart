@@ -24,22 +24,41 @@ void main() {
     expect(finished, 1);
   });
 
-  test('nothing typed is a skip, not an empty name', () async {
+  test('Continue does nothing without a name to keep', () async {
+    // Guarded as well as greyed out: the button is not the only caller — the
+    // keyboard's done key submits too.
     await make().submit();
 
-    expect(submitted, [null]);
+    expect(submitted, isEmpty);
+    expect(finished, 0);
   });
 
-  test('whitespace alone is a skip too', () async {
+  test('whitespace alone cannot be submitted either', () async {
     final controller = make()..type('   ');
 
     await controller.submit();
 
-    expect(submitted, [null]);
+    expect(submitted, isEmpty);
   });
 
-  test('the step can always be finished — it is optional', () {
-    expect(make().canSubmit, isTrue);
+  test('Continue is dead until a name is typed', () {
+    final controller = make();
+    expect(controller.canContinue, isFalse);
+
+    controller.type('Maya');
+    expect(controller.canContinue, isTrue);
+
+    controller.type('   ');
+    expect(controller.canContinue, isFalse, reason: 'blank is not a name');
+  });
+
+  test('skip keeps nothing, even with something in the field', () async {
+    final controller = make()..type('Maya');
+
+    await controller.skip();
+
+    expect(submitted, [null]);
+    expect(finished, 1);
   });
 
   test('a second submit while the first is in flight is ignored', () async {

@@ -37,25 +37,23 @@ void main() {
   });
 
   test('default settings row reports onboarding incomplete', () async {
-    final repo = SettingsRepository();
-    final s = await repo.getSettings();
-    expect(s.onboardingCompleted, isFalse);
-    expect(s.onboardingGoal, isNull);
-    expect(s.onboardingBrewer, isNull);
+    expect(
+      (await SettingsRepository().getSettings()).onboardingCompleted,
+      isFalse,
+    );
   });
 
-  test('saveSettings round-trips the onboarding fields', () async {
+  test('saveSettings round-trips the onboarding gate', () async {
+    // The gate is all the DTO carries now. The goal and brewer columns are
+    // still in the table above — ADR-0010 retired the questions, and #407
+    // took their two fields off the record rather than keep reading and
+    // writing answers nothing asks for.
     final repo = SettingsRepository();
     final s = await repo.getSettings()
-      ..onboardingCompleted = true
-      ..onboardingGoal = 'brew_better'
-      ..onboardingBrewer = 'v60';
+      ..onboardingCompleted = true;
     await repo.saveSettings(s);
 
-    final reloaded = await repo.getSettings();
-    expect(reloaded.onboardingCompleted, isTrue);
-    expect(reloaded.onboardingGoal, 'brew_better');
-    expect(reloaded.onboardingBrewer, 'v60');
+    expect((await repo.getSettings()).onboardingCompleted, isTrue);
   });
 
   test('user_settings has the Tour column', () async {

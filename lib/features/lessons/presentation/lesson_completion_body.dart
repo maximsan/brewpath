@@ -99,7 +99,9 @@ class _LessonCompletionBodyState extends State<LessonCompletionBody>
             onPressed: () => context.goTo(widget.actions.destination),
             ghost: practice == null
                 ? null
-                : GhostAction(
+                // The one ghost the design draws in the accent: it invites a
+                // weak run back rather than dismissing anything.
+                : GhostAction.accent(
                     label: practice.label,
                     onPressed: () => context.goTo(practice.destination),
                   ),

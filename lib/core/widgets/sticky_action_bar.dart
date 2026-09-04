@@ -36,14 +36,23 @@ const double _measurementNoise = 0.5;
 /// with the action that acts on it.
 @immutable
 class GhostAction {
-  /// Creates a [GhostAction].
-  const GhostAction({required this.label, required this.onPressed});
+  /// Creates a [GhostAction] — neutral, which is what a dismiss or a skip is.
+  const GhostAction({required this.label, required this.onPressed})
+    : isAccent = false;
+
+  /// The inviting variant, for the one ghost the design draws in the accent:
+  /// the lesson ending's *Practice this lesson again*.
+  const GhostAction.accent({required this.label, required this.onPressed})
+    : isAccent = true;
 
   /// What the button reads.
   final String label;
 
   /// Pressed. Null shows it disabled rather than hiding it.
   final VoidCallback? onPressed;
+
+  /// Whether the button invites rather than dismisses.
+  final bool isAccent;
 }
 
 /// The quiet link a bar may carry under its action.
@@ -282,7 +291,16 @@ class _StickyActionBarState extends State<StickyActionBar> {
               ),
               if (ghost != null) ...[
                 const SizedBox(height: AppSpacing.xs),
-                GhostButton(label: ghost.label, onPressed: ghost.onPressed),
+                if (ghost.isAccent)
+                  GhostButton.accent(
+                    label: ghost.label,
+                    onPressed: ghost.onPressed,
+                  )
+                else
+                  GhostButton(
+                    label: ghost.label,
+                    onPressed: ghost.onPressed,
+                  ),
               ],
               if (link != null)
                 LinkButton(label: link.label, onPressed: link.onTap),

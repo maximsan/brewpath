@@ -80,8 +80,6 @@ void main() {
         soundEnabled: false,
         totalXp: 50,
         onboardingCompleted: true,
-        onboardingGoal: 'brew_better',
-        onboardingBrewer: 'v60',
         themeMode: AppThemeMode.light,
         tourSeen: true,
       ),
@@ -128,8 +126,6 @@ void main() {
       expect(after.hapticsEnabled, false);
       expect(after.soundEnabled, false);
       expect(after.onboardingCompleted, true);
-      expect(after.onboardingGoal, 'brew_better');
-      expect(after.onboardingBrewer, 'v60');
       expect(after.tourSeen, true);
     });
 
@@ -214,7 +210,7 @@ void main() {
       final after = await settings.getSettings();
       expect(after.themeMode, AppThemeMode.fallback);
       expect(after.onboardingCompleted, false);
-      expect(after.onboardingGoal, isNull);
+      expect(after.learnerName, isNull);
       expect(after.totalXp, 0);
     });
 

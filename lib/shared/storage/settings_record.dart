@@ -13,8 +13,6 @@ class UserSettingsRecord {
     required this.totalXp,
     this.id = 1,
     this.onboardingCompleted = false,
-    this.onboardingGoal,
-    this.onboardingBrewer,
     this.themeMode = AppThemeMode.fallback,
     this.tourSeen = false,
     this.learnerName,
@@ -27,8 +25,6 @@ class UserSettingsRecord {
   bool soundEnabled;
   int totalXp;
   bool onboardingCompleted;
-  String? onboardingGoal;
-  String? onboardingBrewer;
   AppThemeMode themeMode;
   bool tourSeen;
   String? learnerName;

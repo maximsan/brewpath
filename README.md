@@ -173,6 +173,39 @@ node tool/extract_icons.js                          # the usual run
 node tool/extract_icons.js --source DIR --out DIR   # used by the tests
 ```
 
+### `tool/extract_card_art.js` — regenerate the collectible artwork
+
+Node script (no dependencies). Run after the design prototype's card art
+changes. Writes the design's 37 collectible illustrations as SVG into
+`assets/card_art/`, plus the `index.json` naming each kind and its file, and
+sweeps any drawing the design has dropped.
+
+**It runs the source rather than reading it.** Unlike the icons, these are not
+flat markup: five arts compose a prop-taking frame and eight compute their
+geometry with `Array.from` and `Math`, so the components have to be executed.
+The prototype executes them with React and Babel from a CDN, which is not
+available offline and would be this repo's first npm dependency — so
+`tool/extract_card_art/jsx.js` reads that one dialect and refuses anything
+outside it.
+
+Colour is not baked in. Mood tokens (`--sage`, `--ink`, …) become sentinel
+magentas that `CardArtMark` maps to `MoodColors`; the `--art-*` family, which
+the design declares once for both moods, maps to `ArtColors`. A paint
+belonging to neither fails the run — as does a moved art block, an art that
+draws nothing, and any JSX construct the reader does not know. Its output is
+generated: regenerate it, never hand-edit it. `prototype/` is opened for
+reading only.
+
+Computed coordinates are rounded to four decimal places, because `Math.cos`
+and `Math.sin` disagree in their last bits between platforms and the assets
+would otherwise carry whichever machine wrote them.
+
+```bash
+node tool/extract_card_art.js                          # the usual run
+node tool/extract_card_art.js --source DIR --out DIR   # used by the tests
+```
+
+
 ### `tool/release.js` — cut a release
 
 Node script (no dependencies). Run when shipping a build to TestFlight / the App

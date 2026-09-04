@@ -37,6 +37,11 @@ abstract final class PlusCopy {
   /// While the store call is in flight.
   static const working = 'Working…';
 
+  /// The way out. The design puts a ghost under the buy button on every gate,
+  /// so declining is something the learner does rather than something they
+  /// have to guess at by swiping the sheet away.
+  static const notNow = 'Not now';
+
   /// Recovering a purchase made elsewhere.
   static const restore = 'Restore purchase';
 
