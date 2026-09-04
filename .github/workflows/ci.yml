@@ -183,8 +183,10 @@ jobs:
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     # A backstop, not the real guard. The walk bounds each of its own waits, and
     # the Smoke step below bounds each launch attempt; this cap only exists so a
-    # wedged runner cannot burn an hour. Budget: pub + boot ~2 min, the cold
-    # Xcode build ~5 min, then two launch attempts of at most 10 min each.
+    # wedged runner cannot burn an hour. Budget: pub ~1 min, a boot that has
+    # taken up to 7 min and is bounded at 12, the cold Xcode build ~5 min,
+    # then one launch attempt of at most 10 min — the retry is a bonus that
+    # fits only when the boot was quick.
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
@@ -236,11 +238,12 @@ jobs:
               # some states — and if it does not finish, the job fails here,
               # with the reason on screen, rather than launching into a
               # simulator that is still migrating.
-              if perl -e 'alarm 480; exec @ARGV' xcrun simctl bootstatus "$UDID" -b; then
+              # Measured on two dispatched runs: 2 min 11 s and 7 min 08 s.
+              if perl -e 'alarm 720; exec @ARGV' xcrun simctl bootstatus "$UDID" -b; then
                 echo "SIMULATOR_UDID=$UDID" >> "$GITHUB_ENV"
                 exit 0
               fi
-              echo "simulator $UDID booted but never finished coming up (bootstatus did not reach a terminal state in 8 minutes)"
+              echo "simulator $UDID booted but never finished coming up (bootstatus did not reach a terminal state in 12 minutes)"
               exit 1
             fi
             sleep 2
