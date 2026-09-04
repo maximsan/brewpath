@@ -1,3 +1,4 @@
+import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/progress/domain/freeze_save_notice.dart';
 import 'package:brew_path/features/progress/presentation/freeze_save_notice_card.dart';
@@ -8,13 +9,18 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../support/widget_harness.dart';
 
+/// The day the whole test runs on. Pinned, and handed to the card through
+/// [currentDayProvider], so seeding and deriving agree on what "yesterday" is
+/// even when the suite runs across midnight — which once made this test fail.
+final DateTime _today = DateTime(2026, 9, 4);
+
 /// Seeds a real seven-day run ending the day before yesterday, so the engine
 /// derives an earned freeze spent on yesterday: the exact state the notice
-/// exists for. No provider is overridden — the card is exercised against the
+/// exists for. Only the day is overridden — the card is exercised against the
 /// same derivation chain the app ships.
 Future<void> seedCoveredYesterday() async {
   final repo = SnapshotRepository();
-  final today = epochDay(DateTime.now());
+  final today = epochDay(_today);
   final snapshot = await repo.read();
   var progress = snapshot.clearedByReset;
   const runLength = 7;
@@ -27,8 +33,9 @@ Future<void> seedCoveredYesterday() async {
 
 Future<void> pumpCard(WidgetTester tester) async {
   await tester.pumpWidget(
-    const ProviderScope(
-      child: MaterialApp(
+    ProviderScope(
+      overrides: [currentDayProvider.overrideWithValue(_today)],
+      child: const MaterialApp(
         home: Scaffold(body: FreezeSaveNoticeCard()),
       ),
     ),
@@ -79,7 +86,7 @@ void main() {
     final stored = await SnapshotRepository().read();
     expect(
       stored.clearedByReset.acks[freezeSaveAckKey],
-      epochDay(DateTime.now()) - 1,
+      epochDay(_today) - 1,
     );
   });
 

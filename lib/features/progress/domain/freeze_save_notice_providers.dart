@@ -1,3 +1,4 @@
+import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/progress/domain/freeze_save_notice.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
@@ -14,6 +15,7 @@ part 'freeze_save_notice_providers.g.dart';
 /// side of an async gap.
 @riverpod
 Future<int?> freezeSaveNoticeDay(Ref ref) async {
+  final today = epochDay(ref.watch(currentDayProvider));
   final statusFuture = ref.watch(streakStatusProvider.future);
   final daysFuture = ref.watch(activeDaySetProvider.future);
   final repository = ref.watch(snapshotRepositoryProvider);
@@ -24,7 +26,7 @@ Future<int?> freezeSaveNoticeDay(Ref ref) async {
     activeDays: activeDays,
     status: status,
     ackedDay: snapshot.clearedByReset.acks[freezeSaveAckKey],
-    today: epochDay(DateTime.now()),
+    today: today,
   );
 }
 
