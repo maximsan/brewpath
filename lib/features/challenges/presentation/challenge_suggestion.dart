@@ -28,9 +28,11 @@ String challengeOfferDetail(BrewChallenge challenge) =>
 ///
 /// **There is no decline.** Declining is continuing past the row — the
 /// challenge waits on the Path either way, so the go button is the row's one
-/// affordance and the screen's own way out is the not-now. That is why the
-/// *Save for later* action is gone: it was the app's own, and it named a
-/// choice the design does not ask the learner to make here.
+/// affordance and the screen's own way out is the not-now. That retires the
+/// offer's *Save for later*: parking something never started was this screen's
+/// own idea, and the design does not ask the learner to make that choice here.
+/// Parking a challenge already **in play** is untouched — that is the log
+/// sheet's *Save for later* on Today, which is a different act.
 ///
 /// Whether there is an offer at all is [lessonChallengeOfferProvider]'s
 /// question, asked by whoever builds the list — a row that decided its own
