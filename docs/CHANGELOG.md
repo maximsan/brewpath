@@ -590,6 +590,11 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **Answering the Tour offer and leaving the Learn tab at once no longer
+  throws.** The answer was saved, but refreshing the screen that offered the
+  Tour after that screen was already gone raised an error in debug builds.
+  The answer is still saved; the refresh is skipped when there is nothing
+  left to refresh.
 - **The streak-freeze notice can no longer contradict the streak it describes.**
   The Learn tab's "Your streak is safe" card, the streak it reads, and the
   notice's own dismissal each asked the clock separately, so a phone left open
