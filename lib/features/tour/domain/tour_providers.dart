@@ -55,11 +55,18 @@ class TourReplayRequest extends _$TourReplayRequest {
 /// Takes a [WidgetRef] rather than a provider [Ref] because the caller is a
 /// button handler and owns the lifetime of this async work — the same shape
 /// `resetProgress` uses for the wipe.
+///
+/// The write is what matters; the refresh is best effort. By the time the
+/// write lands, the screen that offered the Tour may be gone — a learner who
+/// answers and switches tab at once, or the smoke walk finishing — and a
+/// `WidgetRef` on an unmounted widget throws. The flag is on disk either way,
+/// and the provider re-reads it on its next build.
 Future<void> markTourSeen(WidgetRef ref) async {
   final repo = ref.read(settingsRepositoryProvider);
   final settings = await repo.getSettings()
     ..tourSeen = true;
   await repo.saveSettings(settings);
 
+  if (!ref.context.mounted) return;
   ref.invalidate(tourSeenProvider);
 }
