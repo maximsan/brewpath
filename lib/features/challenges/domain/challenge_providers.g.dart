@@ -553,3 +553,129 @@ final class ModuleChallengeOfferFamily extends $Family
   @override
   String toString() => r'moduleChallengeOfferProvider';
 }
+
+/// The capstone [moduleId] is offering **right now**, or null.
+///
+/// A reward screen shows the offer only while it is live — the design's
+/// `offerLive`: the challenge is neither in play nor already brewed. A saved
+/// challenge is still live; parking it was the learner saying *not yet*.
+///
+/// Eligibility is not re-derived here. [moduleChallengeOfferProvider] owns the
+/// gate — a module challenge needs its module's every lesson complete (#143) —
+/// and this only narrows what that gate returns.
+
+@ProviderFor(liveModuleChallengeOffer)
+final liveModuleChallengeOfferProvider = LiveModuleChallengeOfferFamily._();
+
+/// The capstone [moduleId] is offering **right now**, or null.
+///
+/// A reward screen shows the offer only while it is live — the design's
+/// `offerLive`: the challenge is neither in play nor already brewed. A saved
+/// challenge is still live; parking it was the learner saying *not yet*.
+///
+/// Eligibility is not re-derived here. [moduleChallengeOfferProvider] owns the
+/// gate — a module challenge needs its module's every lesson complete (#143) —
+/// and this only narrows what that gate returns.
+
+final class LiveModuleChallengeOfferProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<BrewChallenge?>,
+          BrewChallenge?,
+          FutureOr<BrewChallenge?>
+        >
+    with $FutureModifier<BrewChallenge?>, $FutureProvider<BrewChallenge?> {
+  /// The capstone [moduleId] is offering **right now**, or null.
+  ///
+  /// A reward screen shows the offer only while it is live — the design's
+  /// `offerLive`: the challenge is neither in play nor already brewed. A saved
+  /// challenge is still live; parking it was the learner saying *not yet*.
+  ///
+  /// Eligibility is not re-derived here. [moduleChallengeOfferProvider] owns the
+  /// gate — a module challenge needs its module's every lesson complete (#143) —
+  /// and this only narrows what that gate returns.
+  LiveModuleChallengeOfferProvider._({
+    required LiveModuleChallengeOfferFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'liveModuleChallengeOfferProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$liveModuleChallengeOfferHash();
+
+  @override
+  String toString() {
+    return r'liveModuleChallengeOfferProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<BrewChallenge?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<BrewChallenge?> create(Ref ref) {
+    final argument = this.argument as String;
+    return liveModuleChallengeOffer(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is LiveModuleChallengeOfferProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$liveModuleChallengeOfferHash() =>
+    r'bf3e850ab19d10a9da47d2bf68ce1dd0579d6987';
+
+/// The capstone [moduleId] is offering **right now**, or null.
+///
+/// A reward screen shows the offer only while it is live — the design's
+/// `offerLive`: the challenge is neither in play nor already brewed. A saved
+/// challenge is still live; parking it was the learner saying *not yet*.
+///
+/// Eligibility is not re-derived here. [moduleChallengeOfferProvider] owns the
+/// gate — a module challenge needs its module's every lesson complete (#143) —
+/// and this only narrows what that gate returns.
+
+final class LiveModuleChallengeOfferFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<BrewChallenge?>, String> {
+  LiveModuleChallengeOfferFamily._()
+    : super(
+        retry: null,
+        name: r'liveModuleChallengeOfferProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The capstone [moduleId] is offering **right now**, or null.
+  ///
+  /// A reward screen shows the offer only while it is live — the design's
+  /// `offerLive`: the challenge is neither in play nor already brewed. A saved
+  /// challenge is still live; parking it was the learner saying *not yet*.
+  ///
+  /// Eligibility is not re-derived here. [moduleChallengeOfferProvider] owns the
+  /// gate — a module challenge needs its module's every lesson complete (#143) —
+  /// and this only narrows what that gate returns.
+
+  LiveModuleChallengeOfferProvider call(String moduleId) =>
+      LiveModuleChallengeOfferProvider._(argument: moduleId, from: this);
+
+  @override
+  String toString() => r'liveModuleChallengeOfferProvider';
+}

@@ -74,6 +74,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Finishing a module offers its Coffee Challenge.** The module ending used to
+  hand you straight back to the Path. Turn it over to the reward card and the
+  module's optional real-life brew now sits above the way out — what it is and
+  how long it takes, with one button that puts it on Today and tells you where
+  it went. Continuing past it is the not-now: the challenge waits on the Path
+  either way. The row appears only while there is something to offer — every
+  lesson in the module finished, and the brew neither already in play nor
+  logged.
+
 - **Every collectible now has its own picture.** A card used to show its
   module's mark, so all nine cards in a module looked identical — the same
   drawing nine times, on the tile and again in the card sheet. Each of the
