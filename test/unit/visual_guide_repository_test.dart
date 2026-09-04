@@ -171,17 +171,18 @@ void main() {
     }
   });
 
-  test('each meta table is two or three label/value pairs', () async {
-    for (final guide in await guides.getGuides()) {
-      expect(
-        guide.metaRows.length,
-        inInclusiveRange(2, 3),
-        reason:
-            '${guide.id} — two guides carry two rows, so three is not a rule',
-      );
-      for (final row in guide.metaRows) {
-        expect(row.label, isNotEmpty, reason: guide.id);
-        expect(row.value, isNotEmpty, reason: guide.id);
+  test('the roast and grind guides explain each of their levels', () async {
+    // Only these two guides carry levels in the design; every other guide's
+    // drawing is its own explanation, so an empty list there is correct.
+    final bySubject = {
+      for (final guide in await guides.getGuides()) guide.subject: guide,
+    };
+    for (final subject in const ['roast', 'grind']) {
+      final notes = bySubject[subject]!.notes;
+      expect(notes, isNotEmpty, reason: '$subject draws its levels explained');
+      for (final note in notes) {
+        expect(note.term.trim(), isNotEmpty, reason: subject);
+        expect(note.detail.trim(), isNotEmpty, reason: subject);
       }
     }
   });

@@ -1107,10 +1107,9 @@ mixin _$VisualGuide {
 @JsonKey(name: 'visualGuide') String get subject;/// The lesson that earns it: the earliest one that teaches it, which the
 /// extractor refuses to let drift.
  VisualGuideUnlock get unlock; String get label; String get title; String get summary;/// The one thing worth repeating to somebody else.
- String get fact;/// The meta table on the wire: two or three label/value pairs.
- List<List<String>> get meta;/// What each term in the table actually means. Empty for the guides whose
-/// drawing carries the explanation — anatomy's cross-section is the
-/// reference, so it has no rows to gloss.
+ String get fact;/// The explanation of each level, drawn under the illustration. Only the
+/// roast and grind guides carry them; every other guide's drawing is its
+/// own explanation.
  List<VisualGuideNote> get notes;/// The cherry's six layers, outside in. Only the anatomy guide carries
 /// them; every other guide's reference is the drawing itself.
  List<CherryLayer> get layers;/// The servings table, where the guide has one. Only caffeine does.
@@ -1129,16 +1128,16 @@ $VisualGuideCopyWith<VisualGuide> get copyWith => _$VisualGuideCopyWithImpl<Visu
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is VisualGuide&&(identical(other.id, id) || other.id == id)&&(identical(other.subject, subject) || other.subject == subject)&&(identical(other.unlock, unlock) || other.unlock == unlock)&&(identical(other.label, label) || other.label == label)&&(identical(other.title, title) || other.title == title)&&(identical(other.summary, summary) || other.summary == summary)&&(identical(other.fact, fact) || other.fact == fact)&&const DeepCollectionEquality().equals(other.meta, meta)&&const DeepCollectionEquality().equals(other.notes, notes)&&const DeepCollectionEquality().equals(other.layers, layers)&&const DeepCollectionEquality().equals(other.rows, rows)&&(identical(other.note, note) || other.note == note));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is VisualGuide&&(identical(other.id, id) || other.id == id)&&(identical(other.subject, subject) || other.subject == subject)&&(identical(other.unlock, unlock) || other.unlock == unlock)&&(identical(other.label, label) || other.label == label)&&(identical(other.title, title) || other.title == title)&&(identical(other.summary, summary) || other.summary == summary)&&(identical(other.fact, fact) || other.fact == fact)&&const DeepCollectionEquality().equals(other.notes, notes)&&const DeepCollectionEquality().equals(other.layers, layers)&&const DeepCollectionEquality().equals(other.rows, rows)&&(identical(other.note, note) || other.note == note));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,subject,unlock,label,title,summary,fact,const DeepCollectionEquality().hash(meta),const DeepCollectionEquality().hash(notes),const DeepCollectionEquality().hash(layers),const DeepCollectionEquality().hash(rows),note);
+int get hashCode => Object.hash(runtimeType,id,subject,unlock,label,title,summary,fact,const DeepCollectionEquality().hash(notes),const DeepCollectionEquality().hash(layers),const DeepCollectionEquality().hash(rows),note);
 
 @override
 String toString() {
-  return 'VisualGuide(id: $id, subject: $subject, unlock: $unlock, label: $label, title: $title, summary: $summary, fact: $fact, meta: $meta, notes: $notes, layers: $layers, rows: $rows, note: $note)';
+  return 'VisualGuide(id: $id, subject: $subject, unlock: $unlock, label: $label, title: $title, summary: $summary, fact: $fact, notes: $notes, layers: $layers, rows: $rows, note: $note)';
 }
 
 
@@ -1149,7 +1148,7 @@ abstract mixin class $VisualGuideCopyWith<$Res>  {
   factory $VisualGuideCopyWith(VisualGuide value, $Res Function(VisualGuide) _then) = _$VisualGuideCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'visualGuide') String subject, VisualGuideUnlock unlock, String label, String title, String summary, String fact, List<List<String>> meta, List<VisualGuideNote> notes, List<CherryLayer> layers, List<ServingRow> rows, String? note
+ String id,@JsonKey(name: 'visualGuide') String subject, VisualGuideUnlock unlock, String label, String title, String summary, String fact, List<VisualGuideNote> notes, List<CherryLayer> layers, List<ServingRow> rows, String? note
 });
 
 
@@ -1166,7 +1165,7 @@ class _$VisualGuideCopyWithImpl<$Res>
 
 /// Create a copy of VisualGuide
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? subject = null,Object? unlock = null,Object? label = null,Object? title = null,Object? summary = null,Object? fact = null,Object? meta = null,Object? notes = null,Object? layers = null,Object? rows = null,Object? note = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? subject = null,Object? unlock = null,Object? label = null,Object? title = null,Object? summary = null,Object? fact = null,Object? notes = null,Object? layers = null,Object? rows = null,Object? note = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,subject: null == subject ? _self.subject : subject // ignore: cast_nullable_to_non_nullable
@@ -1175,8 +1174,7 @@ as VisualGuideUnlock,label: null == label ? _self.label : label // ignore: cast_
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,summary: null == summary ? _self.summary : summary // ignore: cast_nullable_to_non_nullable
 as String,fact: null == fact ? _self.fact : fact // ignore: cast_nullable_to_non_nullable
-as String,meta: null == meta ? _self.meta : meta // ignore: cast_nullable_to_non_nullable
-as List<List<String>>,notes: null == notes ? _self.notes : notes // ignore: cast_nullable_to_non_nullable
+as String,notes: null == notes ? _self.notes : notes // ignore: cast_nullable_to_non_nullable
 as List<VisualGuideNote>,layers: null == layers ? _self.layers : layers // ignore: cast_nullable_to_non_nullable
 as List<CherryLayer>,rows: null == rows ? _self.rows : rows // ignore: cast_nullable_to_non_nullable
 as List<ServingRow>,note: freezed == note ? _self.note : note // ignore: cast_nullable_to_non_nullable
@@ -1274,10 +1272,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'visualGuide')  String subject,  VisualGuideUnlock unlock,  String label,  String title,  String summary,  String fact,  List<List<String>> meta,  List<VisualGuideNote> notes,  List<CherryLayer> layers,  List<ServingRow> rows,  String? note)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'visualGuide')  String subject,  VisualGuideUnlock unlock,  String label,  String title,  String summary,  String fact,  List<VisualGuideNote> notes,  List<CherryLayer> layers,  List<ServingRow> rows,  String? note)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _VisualGuide() when $default != null:
-return $default(_that.id,_that.subject,_that.unlock,_that.label,_that.title,_that.summary,_that.fact,_that.meta,_that.notes,_that.layers,_that.rows,_that.note);case _:
+return $default(_that.id,_that.subject,_that.unlock,_that.label,_that.title,_that.summary,_that.fact,_that.notes,_that.layers,_that.rows,_that.note);case _:
   return orElse();
 
 }
@@ -1295,10 +1293,10 @@ return $default(_that.id,_that.subject,_that.unlock,_that.label,_that.title,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'visualGuide')  String subject,  VisualGuideUnlock unlock,  String label,  String title,  String summary,  String fact,  List<List<String>> meta,  List<VisualGuideNote> notes,  List<CherryLayer> layers,  List<ServingRow> rows,  String? note)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'visualGuide')  String subject,  VisualGuideUnlock unlock,  String label,  String title,  String summary,  String fact,  List<VisualGuideNote> notes,  List<CherryLayer> layers,  List<ServingRow> rows,  String? note)  $default,) {final _that = this;
 switch (_that) {
 case _VisualGuide():
-return $default(_that.id,_that.subject,_that.unlock,_that.label,_that.title,_that.summary,_that.fact,_that.meta,_that.notes,_that.layers,_that.rows,_that.note);case _:
+return $default(_that.id,_that.subject,_that.unlock,_that.label,_that.title,_that.summary,_that.fact,_that.notes,_that.layers,_that.rows,_that.note);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1315,10 +1313,10 @@ return $default(_that.id,_that.subject,_that.unlock,_that.label,_that.title,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'visualGuide')  String subject,  VisualGuideUnlock unlock,  String label,  String title,  String summary,  String fact,  List<List<String>> meta,  List<VisualGuideNote> notes,  List<CherryLayer> layers,  List<ServingRow> rows,  String? note)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'visualGuide')  String subject,  VisualGuideUnlock unlock,  String label,  String title,  String summary,  String fact,  List<VisualGuideNote> notes,  List<CherryLayer> layers,  List<ServingRow> rows,  String? note)?  $default,) {final _that = this;
 switch (_that) {
 case _VisualGuide() when $default != null:
-return $default(_that.id,_that.subject,_that.unlock,_that.label,_that.title,_that.summary,_that.fact,_that.meta,_that.notes,_that.layers,_that.rows,_that.note);case _:
+return $default(_that.id,_that.subject,_that.unlock,_that.label,_that.title,_that.summary,_that.fact,_that.notes,_that.layers,_that.rows,_that.note);case _:
   return null;
 
 }
@@ -1330,7 +1328,7 @@ return $default(_that.id,_that.subject,_that.unlock,_that.label,_that.title,_tha
 @JsonSerializable()
 
 class _VisualGuide extends VisualGuide {
-  const _VisualGuide({required this.id, @JsonKey(name: 'visualGuide') required this.subject, required this.unlock, required this.label, required this.title, required this.summary, required this.fact, final  List<List<String>> meta = const <List<String>>[], final  List<VisualGuideNote> notes = const <VisualGuideNote>[], final  List<CherryLayer> layers = const <CherryLayer>[], final  List<ServingRow> rows = const <ServingRow>[], this.note}): _meta = meta,_notes = notes,_layers = layers,_rows = rows,super._();
+  const _VisualGuide({required this.id, @JsonKey(name: 'visualGuide') required this.subject, required this.unlock, required this.label, required this.title, required this.summary, required this.fact, final  List<VisualGuideNote> notes = const <VisualGuideNote>[], final  List<CherryLayer> layers = const <CherryLayer>[], final  List<ServingRow> rows = const <ServingRow>[], this.note}): _notes = notes,_layers = layers,_rows = rows,super._();
   factory _VisualGuide.fromJson(Map<String, dynamic> json) => _$VisualGuideFromJson(json);
 
 @override final  String id;
@@ -1345,22 +1343,13 @@ class _VisualGuide extends VisualGuide {
 @override final  String summary;
 /// The one thing worth repeating to somebody else.
 @override final  String fact;
-/// The meta table on the wire: two or three label/value pairs.
- final  List<List<String>> _meta;
-/// The meta table on the wire: two or three label/value pairs.
-@override@JsonKey() List<List<String>> get meta {
-  if (_meta is EqualUnmodifiableListView) return _meta;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_meta);
-}
-
-/// What each term in the table actually means. Empty for the guides whose
-/// drawing carries the explanation — anatomy's cross-section is the
-/// reference, so it has no rows to gloss.
+/// The explanation of each level, drawn under the illustration. Only the
+/// roast and grind guides carry them; every other guide's drawing is its
+/// own explanation.
  final  List<VisualGuideNote> _notes;
-/// What each term in the table actually means. Empty for the guides whose
-/// drawing carries the explanation — anatomy's cross-section is the
-/// reference, so it has no rows to gloss.
+/// The explanation of each level, drawn under the illustration. Only the
+/// roast and grind guides carry them; every other guide's drawing is its
+/// own explanation.
 @override@JsonKey() List<VisualGuideNote> get notes {
   if (_notes is EqualUnmodifiableListView) return _notes;
   // ignore: implicit_dynamic_type
@@ -1404,16 +1393,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VisualGuide&&(identical(other.id, id) || other.id == id)&&(identical(other.subject, subject) || other.subject == subject)&&(identical(other.unlock, unlock) || other.unlock == unlock)&&(identical(other.label, label) || other.label == label)&&(identical(other.title, title) || other.title == title)&&(identical(other.summary, summary) || other.summary == summary)&&(identical(other.fact, fact) || other.fact == fact)&&const DeepCollectionEquality().equals(other._meta, _meta)&&const DeepCollectionEquality().equals(other._notes, _notes)&&const DeepCollectionEquality().equals(other._layers, _layers)&&const DeepCollectionEquality().equals(other._rows, _rows)&&(identical(other.note, note) || other.note == note));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VisualGuide&&(identical(other.id, id) || other.id == id)&&(identical(other.subject, subject) || other.subject == subject)&&(identical(other.unlock, unlock) || other.unlock == unlock)&&(identical(other.label, label) || other.label == label)&&(identical(other.title, title) || other.title == title)&&(identical(other.summary, summary) || other.summary == summary)&&(identical(other.fact, fact) || other.fact == fact)&&const DeepCollectionEquality().equals(other._notes, _notes)&&const DeepCollectionEquality().equals(other._layers, _layers)&&const DeepCollectionEquality().equals(other._rows, _rows)&&(identical(other.note, note) || other.note == note));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,subject,unlock,label,title,summary,fact,const DeepCollectionEquality().hash(_meta),const DeepCollectionEquality().hash(_notes),const DeepCollectionEquality().hash(_layers),const DeepCollectionEquality().hash(_rows),note);
+int get hashCode => Object.hash(runtimeType,id,subject,unlock,label,title,summary,fact,const DeepCollectionEquality().hash(_notes),const DeepCollectionEquality().hash(_layers),const DeepCollectionEquality().hash(_rows),note);
 
 @override
 String toString() {
-  return 'VisualGuide(id: $id, subject: $subject, unlock: $unlock, label: $label, title: $title, summary: $summary, fact: $fact, meta: $meta, notes: $notes, layers: $layers, rows: $rows, note: $note)';
+  return 'VisualGuide(id: $id, subject: $subject, unlock: $unlock, label: $label, title: $title, summary: $summary, fact: $fact, notes: $notes, layers: $layers, rows: $rows, note: $note)';
 }
 
 
@@ -1424,7 +1413,7 @@ abstract mixin class _$VisualGuideCopyWith<$Res> implements $VisualGuideCopyWith
   factory _$VisualGuideCopyWith(_VisualGuide value, $Res Function(_VisualGuide) _then) = __$VisualGuideCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'visualGuide') String subject, VisualGuideUnlock unlock, String label, String title, String summary, String fact, List<List<String>> meta, List<VisualGuideNote> notes, List<CherryLayer> layers, List<ServingRow> rows, String? note
+ String id,@JsonKey(name: 'visualGuide') String subject, VisualGuideUnlock unlock, String label, String title, String summary, String fact, List<VisualGuideNote> notes, List<CherryLayer> layers, List<ServingRow> rows, String? note
 });
 
 
@@ -1441,7 +1430,7 @@ class __$VisualGuideCopyWithImpl<$Res>
 
 /// Create a copy of VisualGuide
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? subject = null,Object? unlock = null,Object? label = null,Object? title = null,Object? summary = null,Object? fact = null,Object? meta = null,Object? notes = null,Object? layers = null,Object? rows = null,Object? note = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? subject = null,Object? unlock = null,Object? label = null,Object? title = null,Object? summary = null,Object? fact = null,Object? notes = null,Object? layers = null,Object? rows = null,Object? note = freezed,}) {
   return _then(_VisualGuide(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,subject: null == subject ? _self.subject : subject // ignore: cast_nullable_to_non_nullable
@@ -1450,8 +1439,7 @@ as VisualGuideUnlock,label: null == label ? _self.label : label // ignore: cast_
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,summary: null == summary ? _self.summary : summary // ignore: cast_nullable_to_non_nullable
 as String,fact: null == fact ? _self.fact : fact // ignore: cast_nullable_to_non_nullable
-as String,meta: null == meta ? _self._meta : meta // ignore: cast_nullable_to_non_nullable
-as List<List<String>>,notes: null == notes ? _self._notes : notes // ignore: cast_nullable_to_non_nullable
+as String,notes: null == notes ? _self._notes : notes // ignore: cast_nullable_to_non_nullable
 as List<VisualGuideNote>,layers: null == layers ? _self._layers : layers // ignore: cast_nullable_to_non_nullable
 as List<CherryLayer>,rows: null == rows ? _self._rows : rows // ignore: cast_nullable_to_non_nullable
 as List<ServingRow>,note: freezed == note ? _self.note : note // ignore: cast_nullable_to_non_nullable

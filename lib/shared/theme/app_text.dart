@@ -127,6 +127,7 @@ enum _Rung {
   hero(56, height: 0.95, tracking: -0.02),
   display(30, height: 1.05, tracking: -0.02),
   title(26, height: 1.1, tracking: -0.01),
+  subtitle(22, height: 1.15, tracking: -0.01),
   heading(19, height: 1.14, tracking: -0.01),
   lead(17, height: 1.15),
   body(15, height: 1.5),
@@ -166,8 +167,9 @@ enum _Rung {
   double get opticalSize => size.clamp(_minOpticalSize, _maxOpticalSize);
 }
 
-/// The nine-step type ladder — `hero · display · title · heading · lead · body
-/// · support · label · micro` at 56 / 30 / 26 / 19 / 17 / 15 / 13 / 11 / 9.5.
+/// The ten-step type ladder — `hero · display · title · subtitle · heading ·
+/// lead · body · support · label · micro` at 56 / 30 / 26 / 22 / 19 / 17 / 15
+/// / 13 / 11 / 9.5.
 ///
 /// **There is no `fontSize` parameter.** A size that is not a step cannot be
 /// asked for: the sizes live in one private table, so going off-ladder means
@@ -198,6 +200,12 @@ abstract final class AppText {
   /// Card or section title.
   static TextStyle title({MoodColors? mood, Color? color, AppFace? face}) =>
       _style(_Rung.title, face ?? AppFace.display, color ?? mood?.ink);
+
+  /// A title one step below a lesson's — the design gives it to the Coffee
+  /// Challenge card, because the challenge is optional. Set at line-height
+  /// 1.15 and -0.01em, as the design's `h2` for that card is.
+  static TextStyle subtitle({MoodColors? mood, Color? color, AppFace? face}) =>
+      _style(_Rung.subtitle, face ?? AppFace.display, color ?? mood?.ink);
 
   /// Card and row heading.
   static TextStyle heading({MoodColors? mood, Color? color, AppFace? face}) =>
