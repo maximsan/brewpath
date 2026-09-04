@@ -3,7 +3,9 @@ import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/learn/presentation/today_card_widget.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
+import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 
 /// The Today card when the lesson is the learner's to open: what it is, where
@@ -27,7 +29,7 @@ class TodayLessonBody extends StatelessWidget {
       onTap: () => context.goTo(lessonRun(lesson.id)),
       borderRadius: BorderRadius.circular(TodayCardWidget.heroRadius),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(OffTokens.todayHeroPadding.value),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -39,7 +41,7 @@ class TodayLessonBody extends StatelessWidget {
                   size: _iconSm,
                   color: mood.accentInk,
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.xs),
                 Text(
                   "Today's lesson",
                   style: theme.textTheme.labelMedium?.copyWith(
@@ -48,14 +50,14 @@ class TodayLessonBody extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.xs),
             Text(
               lesson.title,
               style: theme.textTheme.titleLarge?.copyWith(
                 color: mood.accentInk,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: AppSpacing.xxs),
             Text(
               // Where in the course this sits. The lessons bank authors no
               // blurb, and the module label is what the design prints here.
@@ -66,7 +68,7 @@ class TodayLessonBody extends StatelessWidget {
                 color: mood.accentInk.withValues(alpha: _mutedAlpha),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             Row(
               children: [
                 _PointsPill(points: lesson.points),
@@ -86,6 +88,11 @@ class TodayLessonBody extends StatelessWidget {
 }
 
 /// Compact `+PTS` reward chip shown on the hero card.
+/// The points pill's own padding — the design's `padding: 6px 10px`, neither
+/// of which is a spacing stop.
+const double _pillPadX = 10;
+const double _pillPadY = 6;
+
 class _PointsPill extends StatelessWidget {
   const _PointsPill({required this.points});
 
@@ -100,7 +107,10 @@ class _PointsPill extends StatelessWidget {
     final theme = Theme.of(context);
     final mood = context.mood;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(
+        horizontal: _pillPadX,
+        vertical: _pillPadY,
+      ),
       decoration: BoxDecoration(
         color: mood.accentInk.withValues(alpha: _pillAlpha),
         borderRadius: BorderRadius.circular(_pillRadius),

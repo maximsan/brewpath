@@ -51,6 +51,7 @@ class GateState {
     required this.courseEntitled,
     required this.courseCompletionDue,
     required this.completedLessonIds,
+    this.purchaseStateKnown = true,
   });
 
   /// Whether the learner has been through the intro.
@@ -58,6 +59,21 @@ class GateState {
 
   /// Whether they own the course.
   final bool courseEntitled;
+
+  /// Whether [courseEntitled] and [completedLessonIds] are answers rather than
+  /// placeholders.
+  ///
+  /// The wall closes either way — content stays behind it while the store and
+  /// the progress store are still being read, because that is the direction it
+  /// is safe to be wrong in.
+  ///
+  /// **The offer does not follow the wall here.** A bounce made on an
+  /// unresolved read corrects itself the moment the real answer lands; a Plus
+  /// sheet raised on one does not, because nothing that re-runs the redirect
+  /// can close a modal. On a cold start every read is unresolved, so without
+  /// this a learner who *owns* the course and opens a deep link to a paid
+  /// lesson is sold the thing they have already bought.
+  final bool purchaseStateKnown;
 
   /// Whether the one-off course ending is owed to them.
   final bool courseCompletionDue;
@@ -128,10 +144,10 @@ GateDecision redirectFor({
         hasCourse: gates.courseEntitled,
         isCompleted: gates.completedLessonIds.contains(lessonId),
       )) {
-    return GateDecision.refusedLesson(
-      lessonId,
-      location: AppRoutes.learn.path,
-    );
+    // Refused either way; sold to only when the refusal is a fact.
+    return gates.purchaseStateKnown
+        ? GateDecision.refusedLesson(lessonId, location: AppRoutes.learn.path)
+        : GateDecision.to(AppRoutes.learn.path);
   }
 
   // The one-off completion moment intercepts arrival at Today only — the

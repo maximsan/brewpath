@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/learn/presentation/today_card_widget.dart';
@@ -10,6 +9,7 @@ import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 
 /// The Today card when the next lesson is behind the purchase.
@@ -25,6 +25,13 @@ import 'package:flutter/material.dart';
 /// card on the surface colour — but its *unlocked* card is on the surface
 /// colour too, and this app's is not, so matching the tint would have copied
 /// the wrong half of the relationship the design states.
+///
+/// **That choice has a cost, and it is not yet ruled on.** ADR-0016 says the
+/// purchase lock is drawn in accent and progression in ink-mute. On an accent
+/// ground there is no accent left to draw it in — the eyebrow, the count and
+/// the lock all take `accentInk`, so nothing here separates a purchase lock
+/// from a progression one by colour. The words carry it instead. Both halves
+/// of this are the owner's to settle, on #215.
 ///
 /// **One lock, on the action.** The design puts a single `<LockMark size={12}/>`
 /// on the button and none in the eyebrow, which already says the same thing in
@@ -48,10 +55,6 @@ class TodayLockedBody extends StatelessWidget {
   /// flash to show.
   final int? lessonsAhead;
 
-  /// The design's `padding: 20px` on the hero card. No `AppSpacing` token sits
-  /// at 20; the unlocked body and the Keep Sharp body use the same figure.
-  static const double _cardPadding = 20;
-
   /// The design's `<LockMark size={12}/>` on the card's action.
   static const double _ctaLockSize = 12;
 
@@ -68,7 +71,7 @@ class TodayLockedBody extends StatelessWidget {
       onTap: () => _offer(context),
       borderRadius: BorderRadius.circular(TodayCardWidget.heroRadius),
       child: Padding(
-        padding: const EdgeInsets.all(_cardPadding),
+        padding: EdgeInsets.all(OffTokens.todayHeroPadding.value),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,

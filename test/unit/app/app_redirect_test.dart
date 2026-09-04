@@ -9,6 +9,7 @@ GateDecision decide(
   bool onboarded = true,
   bool entitled = true,
   bool completionDue = false,
+  bool purchaseStateKnown = true,
   Set<String> completed = const {},
   PendingLink? pending,
 }) => redirectFor(
@@ -18,6 +19,7 @@ GateDecision decide(
     courseEntitled: entitled,
     courseCompletionDue: completionDue,
     completedLessonIds: completed,
+    purchaseStateKnown: purchaseStateKnown,
   ),
   pending: pending ?? PendingLink(),
 );
@@ -28,6 +30,7 @@ String? redirect(
   bool onboarded = true,
   bool entitled = true,
   bool completionDue = false,
+  bool purchaseStateKnown = true,
   Set<String> completed = const {},
   PendingLink? pending,
 }) => decide(
@@ -35,6 +38,7 @@ String? redirect(
   onboarded: onboarded,
   entitled: entitled,
   completionDue: completionDue,
+  purchaseStateKnown: purchaseStateKnown,
   completed: completed,
   pending: pending,
 ).location;
@@ -50,6 +54,59 @@ const String _paidLesson = 'm5l4';
 String _run(String lessonId) => '/learn/lesson/$lessonId';
 
 void main() {
+  group('a wall that is not yet sure of itself', () {
+    // On a cold start the store and the progress store have not answered.
+    // Both reads fall back to the locked side, which is the safe direction for
+    // the *content* — but selling on a fallback is not safe, because a modal
+    // sheet is not something the next redirect can take back.
+    const paid = 'm2l1';
+
+    test('still refuses the lesson', () {
+      expect(
+        redirect(
+          '/learn/lesson/$paid',
+          entitled: false,
+          purchaseStateKnown: false,
+        ),
+        AppRoutes.learn.path,
+      );
+    });
+
+    test('but does not sell the course to someone who may own it', () {
+      final decision = decide(
+        '/learn/lesson/$paid',
+        entitled: false,
+        purchaseStateKnown: false,
+      );
+
+      // The bounce corrects itself when the real answer lands. A Plus sheet
+      // raised over an owner does not.
+      expect(decision.refusedLesson, isNull);
+    });
+
+    test('and sells it once the refusal is a fact', () {
+      final decision = decide('/learn/lesson/$paid', entitled: false);
+
+      expect(decision.refusedLesson, paid);
+    });
+  });
+
+  group('the lesson route the wall reads', () {
+    // The wall finds the lesson id by matching the route's own prefix. Renaming
+    // the route moves both sides together; **re-parenting it does not** — the
+    // prefix would stop matching, `lessonIdIn` would return null, and a null
+    // lesson id is an open wall rather than a closed one. Pinned because that
+    // failure is silent.
+    test('is where the catalogue says it is', () {
+      expect(
+        lessonIdIn(Uri.parse('/learn/lesson/m2l1')),
+        'm2l1',
+        reason: 'the prefix must follow AppRoutes, not a literal',
+      );
+      expect(lessonIdIn(Uri.parse('/learn/lesson/m2l1/complete')), 'm2l1');
+      expect(lessonIdIn(Uri.parse('/path/lesson/m2l1')), isNull);
+    });
+  });
   group('the gates that were already there', () {
     test('the platform root funnels to Loading', () {
       expect(redirect('/'), AppRoutes.loading.path);

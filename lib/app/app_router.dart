@@ -89,15 +89,7 @@ GoRouter appRouter(Ref ref) {
     redirect: (context, state) {
       final decision = redirectFor(
         location: state.uri,
-        gates: GateState(
-          onboardingCompleted:
-              ref.read(onboardingCompletedProvider).value ?? false,
-          courseEntitled: ref.read(courseEntitlementProvider).value ?? false,
-          courseCompletionDue:
-              ref.read(courseCompletionDueProvider).value ?? false,
-          completedLessonIds:
-              ref.read(completedLessonIdsProvider).value ?? const {},
-        ),
+        gates: _gatesNow(ref),
         pending: ref.read(pendingLinkProvider),
       );
       if (decision.refusedLesson case final lessonId?) {
@@ -415,5 +407,25 @@ GoRouter appRouter(Ref ref) {
         ],
       ),
     ],
+  );
+}
+
+/// Reads every gate the redirect judges, in one place.
+///
+/// **An unresolved read is the locked answer** — showing a lock briefly to a
+/// paying learner is recoverable and showing paid content briefly to a free one
+/// is not. `purchaseStateKnown` carries whether that answer was read or
+/// assumed, so the wall can close on an assumption while the offer waits for a
+/// fact.
+GateState _gatesNow(Ref ref) {
+  final entitlement = ref.read(courseEntitlementProvider);
+  final completed = ref.read(completedLessonIdsProvider);
+
+  return GateState(
+    onboardingCompleted: ref.read(onboardingCompletedProvider).value ?? false,
+    courseEntitled: entitlement.value ?? false,
+    courseCompletionDue: ref.read(courseCompletionDueProvider).value ?? false,
+    completedLessonIds: completed.value ?? const {},
+    purchaseStateKnown: entitlement.hasValue && completed.hasValue,
   );
 }

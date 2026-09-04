@@ -150,6 +150,17 @@ abstract final class OffTokens {
         'off-centre in a shape only 13px tall.',
   );
 
+  /// The inner padding of Today's hero card.
+  static const OffToken<double> todayHeroPadding = OffToken(
+    20,
+    reason:
+        'The design sets the hero card to `padding: 20px`, and 20 is not a '
+        'spacing stop: it sits between AppSpacing.md (16) and lg (24). Three '
+        'bodies draw this one card — the lesson, the locked pitch and Keep '
+        'Sharp — so the figure was written three times, each with its own '
+        'comment saying no token fits. It is one card and one value.',
+  );
+
   /// The padding inside the Cards tab's "more to collect" block.
   static const OffToken<EdgeInsets> cardsFooterPadding = OffToken(
     EdgeInsets.symmetric(vertical: 20, horizontal: 18),
@@ -247,6 +258,7 @@ abstract final class OffTokens {
     termOfDayBannerPadding,
     termOfDayBannerFootPadding,
     triedSealPadding,
+    todayHeroPadding,
     cardsFooterPadding,
     cardsFooterLineGap,
     introBlockGap,

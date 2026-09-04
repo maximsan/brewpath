@@ -114,8 +114,7 @@ class LearnListView extends ConsumerWidget {
               TodayCardWidget(
                 today: todayLesson,
                 isLocked: todayLocked,
-                lessonsAhead:
-                    ref.watch(lessonsAheadProvider).asData?.value ?? 0,
+                lessonsAhead: ref.watch(lessonsAheadProvider).asData?.value,
                 keepSharp: keepSharp.asData?.value,
                 keepSharpDone: keepSharpDone.asData?.value ?? false,
               ),

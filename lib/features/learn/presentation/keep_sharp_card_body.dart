@@ -7,6 +7,7 @@ import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 
 /// The Keep Sharp state of the Today card: one recommended practice type for
@@ -34,10 +35,6 @@ class KeepSharpCardBody extends StatelessWidget {
   static const double _iconSm = 18;
   static const double _ackRoastySize = 72;
 
-  /// The hero card's inner padding — matches the lesson body in
-  /// `today_card_dart`; no `AppSpacing` token sits at 20.
-  static const double _cardPadding = 20;
-
   /// Shown until the authored lines load; never persisted.
   static const String _fallbackPhrase = 'Done for today.';
 
@@ -48,7 +45,7 @@ class KeepSharpCardBody extends StatelessWidget {
     final recommended = recommendation;
 
     return Padding(
-      padding: const EdgeInsets.all(_cardPadding),
+      padding: EdgeInsets.all(OffTokens.todayHeroPadding.value),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
