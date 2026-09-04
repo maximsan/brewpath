@@ -12,9 +12,8 @@ import 'package:go_router/go_router.dart';
 /// paths alone throws `unknown route name` on the very tap these tests exist
 /// to make, and a hand-rolled one drifts from the real router silently.
 ///
-/// The step *after* the intro is a stub: where the flow goes next is
-/// [AppRoutes.onboardingGoal]'s today and #407's to change, and pinning it
-/// here would make these tests fail on a change they do not cover.
+/// The step *after* the intro is a stub: these tests cover the intro screens,
+/// not what the name step does once it is reached.
 GoRouter introRouter({String? initialLocation}) => GoRouter(
   initialLocation: initialLocation ?? AppRoutes.loading.path,
   routes: [
@@ -34,8 +33,8 @@ GoRouter introRouter({String? initialLocation}) => GoRouter(
       builder: (_, _) => const MeetRoastyScreen(),
     ),
     GoRoute(
-      path: AppRoutes.onboardingGoal.path,
-      name: AppRoutes.onboardingGoal.name,
+      path: AppRoutes.onboardingName.path,
+      name: AppRoutes.onboardingName.name,
       builder: (_, _) => const Scaffold(body: Text(nextStepStub)),
     ),
     GoRoute(

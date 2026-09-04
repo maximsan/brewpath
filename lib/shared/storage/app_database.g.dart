@@ -1229,11 +1229,12 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
   /// Defaults to `false` so rows migrated from schema v2 force the gate.
   final bool onboardingCompleted;
 
-  /// User-selected onboarding goal (e.g. "brew_better"). Nullable so an
-  /// in-progress install does not coerce a value.
+  /// The onboarding goal. Nothing reads or writes it since ADR-0010 moved the
+  /// question to v2 and its screen was parked; the column stays for the
+  /// reason that ADR gives.
   final String? onboardingGoal;
 
-  /// User-selected brewer (e.g. "v60", "aeropress", "not_sure"). Nullable.
+  /// The selected brewer. Same as [onboardingGoal].
   final String? onboardingBrewer;
 
   /// Appearance preference — `system` / `light` / `dark`, persisted as the

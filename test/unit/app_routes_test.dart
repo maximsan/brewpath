@@ -34,11 +34,28 @@ void main() {
     queryParameters: queryParameters,
   );
 
+  test('the parked question screens carry no route', () {
+    // ADR-0010 moved the goal and brewer questions to v2, and the owner's
+    // ruling on #407 is hide-don't-delete: the screens stay in the tree, but
+    // no build a user runs may carry a way to reach them. The names still
+    // exist because the screens navigate by them; what must not exist is a
+    // `GoRoute` answering to either.
+    for (final parked in [
+      AppRoutes.onboardingGoal,
+      AppRoutes.onboardingBrewer,
+    ]) {
+      expect(
+        () => locationOf(parked.name),
+        throwsA(anything),
+        reason: '${parked.path} is reachable — hidden means hidden',
+      );
+    }
+  });
+
   test('param-less routes resolve to their canonical paths', () {
     expect(locationOf(AppRoutes.loading.name), '/loading');
     expect(locationOf(AppRoutes.welcome.name), '/welcome');
-    expect(locationOf(AppRoutes.onboardingGoal.name), '/onboarding/goal');
-    expect(locationOf(AppRoutes.onboardingBrewer.name), '/onboarding/brewer');
+    expect(locationOf(AppRoutes.onboardingName.name), '/onboarding/name');
     expect(locationOf(AppRoutes.learn.name), '/learn');
     expect(locationOf(AppRoutes.path.name), '/path');
     expect(locationOf(AppRoutes.cards.name), '/cards');
@@ -107,8 +124,6 @@ void main() {
     // way forward.
     'meetRoasty': HeaderTier.immersive,
     'courseComplete': HeaderTier.immersive,
-    'onboardingGoal': HeaderTier.immersive,
-    'onboardingBrewer': HeaderTier.immersive,
     'learn': HeaderTier.tabRoot,
     'path': HeaderTier.tabRoot,
     'cards': HeaderTier.tabRoot,

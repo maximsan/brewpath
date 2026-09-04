@@ -1,4 +1,5 @@
 import 'package:brew_path/core/widgets/app_sheet.dart';
+import 'package:brew_path/core/widgets/ghost_button.dart';
 import 'package:brew_path/features/mini_games/domain/teaching_module.dart';
 import 'package:brew_path/shared/models/content/mini_game_format.dart';
 import 'package:brew_path/shared/models/module_model.dart';
@@ -54,9 +55,13 @@ class _GateBody extends ConsumerWidget {
           _ => const _FallbackPitch(),
         },
         const SizedBox(height: AppSpacing.lg),
-        TextButton(
+        // A ghost, not a text button. The design system is explicit that a
+        // dismiss of this kind — it names *Not now* among its examples — is
+        // *"a ghost, never a bare link"*; a link is reserved for tertiary
+        // actions inline in running content.
+        GhostButton(
+          label: 'Not now',
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Not now'),
         ),
       ],
     );

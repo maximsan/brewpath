@@ -52,10 +52,11 @@ may read a goal or a brewer — after this decision, no user ever enters one.
 
 ## Consequences
 
-**The name screen still needs a design.** The prototype has no name screen at
-all, so there is nothing to copy: today it uses a stock Material text field
-that no other screen uses. This stays a known, recorded gap until the owner
-designs the screen in the design source.
+**The two question screens are hidden, not deleted.** They stay in the tree
+for a possible post-v1 rethink, and hidden means hidden: no `GoRoute` answers
+to either, so no build a user runs can reach them. A developer opens one by
+running the widget. The cost is two screens and a draft field each that
+nothing exercises, which is the price of keeping the rethink cheap.
 
 The Tour's rules about when it starts were written against the longer flow
 and have to be re-checked against this shorter one —

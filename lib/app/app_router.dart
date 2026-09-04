@@ -20,8 +20,6 @@ import 'package:brew_path/features/lessons/presentation/lesson_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_intro_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_player_screen.dart';
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
-import 'package:brew_path/features/onboarding/presentation/brewer/brewer_screen.dart';
-import 'package:brew_path/features/onboarding/presentation/goal/goal_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/loading/loading_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/meet_roasty/meet_roasty_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/name/name_screen.dart';
@@ -121,16 +119,6 @@ GoRouter appRouter(Ref ref) {
         path: AppRoutes.courseComplete.path,
         name: AppRoutes.courseComplete.name,
         builder: (context, state) => const CourseCompletionScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.onboardingGoal.path,
-        name: AppRoutes.onboardingGoal.name,
-        builder: (context, state) => const GoalScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.onboardingBrewer.path,
-        name: AppRoutes.onboardingBrewer.name,
-        builder: (context, state) => const BrewerScreen(),
       ),
       GoRoute(
         path: AppRoutes.onboardingName.path,

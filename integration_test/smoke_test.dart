@@ -168,25 +168,10 @@ void main() {
       describe: 'the Meet Roasty screen',
     );
 
-    await tapWhenReady(
-      tester,
-      find.text('Brew better at home'),
-      describe: 'the goal picker',
-    );
-    await tapWhenReady(
-      tester,
-      liveButton('Continue'),
-      describe: 'the goal picker accepting an answer',
-    );
-
-    await tapWhenReady(tester, find.text('V60'), describe: 'the brewer picker');
-    await tapWhenReady(
-      tester,
-      liveButton('Continue'),
-      describe: 'the brewer picker accepting an answer',
-    );
-
-    // The third step, and the only one that takes typing rather than a tap.
+    // The last step, and the only one that takes typing rather than a tap.
+    // The goal and brewer pickers used to sit between here and Meet Roasty;
+    // ADR-0010 cut both, so Meet Roasty hands straight over to the name.
+    //
     // A name is entered rather than skipped so the walk proves the field
     // reaches storage — the returning launch below reads it back.
     await pumpUntil(tester, find.byType(TextField), describe: 'the name step');

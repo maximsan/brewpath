@@ -188,11 +188,39 @@ abstract final class OffTokens {
   static const OffToken<double> introBlockGap = OffToken(
     28,
     reason:
-        'The design sets 28 twice on the intro — under the Welcome hero and '
-        'above the Meet Roasty CTA (`screens.jsx:72`, `:120`). It sits midway '
-        'between AppSpacing.lg (24) and xl (32), belonging to neither, and '
+        'The design sets `marginBottom: 28` twice on the intro — under the '
+        'Welcome hero and above the Meet Roasty CTA. It sits midway between '
+        'AppSpacing.lg (24) and xl (32), belonging to neither, and '
         'these are the only two screens in the app that use it. Snapping it '
         'onto a rung would retune two screens to spare one entry.',
+  );
+
+  /// The gap the intro screens set between a question and the line under it.
+  static const OffToken<double> introSupportGap = OffToken(
+    18,
+    reason:
+        "The design sets `marginTop: 18` on the intro's support line, between "
+        'AppSpacing.md (16) and lg (24) and on neither. It is the measure the '
+        'intro sets under a display heading, and nothing else in the app sets '
+        'a gap there at all.',
+  );
+
+  /// The gap between a primary CTA and the ghost beneath it.
+  static const OffToken<double> ghostUnderPrimaryGap = OffToken(
+    10,
+    reason:
+        'The design sets `marginTop: 10` on every ghost that sits under a '
+        'primary. It is tighter than AppSpacing.sm (12) on purpose — the two '
+        'buttons are one stack, and a rung-width gap reads as two.',
+  );
+
+  /// The text field's vertical padding, which is what sets its height.
+  static const OffToken<double> textFieldVerticalPadding = OffToken(
+    13,
+    reason:
+        "The design's field is `padding: 13px 16px`. The horizontal half is a "
+        'spacing stop and the vertical half is not; it is a height chosen '
+        'against the body rung, not a rhythm the rest of the page shares.',
   );
 
   /// The tap cue's letter-spacing, in logical pixels at the label step.
@@ -222,6 +250,9 @@ abstract final class OffTokens {
     cardsFooterPadding,
     cardsFooterLineGap,
     introBlockGap,
+    introSupportGap,
+    ghostUnderPrimaryGap,
+    textFieldVerticalPadding,
     tapCueTracking,
     tabLabelTracking,
   ];

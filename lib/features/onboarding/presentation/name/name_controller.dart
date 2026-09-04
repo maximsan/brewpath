@@ -3,9 +3,14 @@ import 'package:flutter/foundation.dart';
 /// Holds the typed name and submission state for `NameScreen`, keeping the
 /// orchestration out of the widget so it can be unit-tested without pumping.
 ///
-/// Persistence and navigation are injected, matching `BrewerController`:
-/// `onSubmit` receives the name to keep — null when the learner skipped or
-/// typed only whitespace — and `onFinished` runs once submission completes.
+/// Persistence and navigation are injected: `onSubmit` receives the name to
+/// keep — null when the learner skipped — and `onFinished` runs once the write
+/// completes.
+///
+/// **Continue and skip are two answers, not one button in two moods.** The
+/// design gives the step both, and skip keeps nothing even when the field has
+/// something in it: a learner who types and then skips has changed their mind,
+/// and saving what they abandoned would be reading the field over the choice.
 class NameController extends ChangeNotifier {
   /// Creates a [NameController].
   NameController({
@@ -25,17 +30,17 @@ class NameController extends ChangeNotifier {
 
   /// The name as it would be kept: trimmed, or null when nothing was typed.
   ///
-  /// Trailing spaces are not a name, and a learner who typed only spaces meant
-  /// to skip — so both collapse to the same "no name given" the greeting
-  /// already handles.
+  /// Trailing spaces are not a name, and a learner who typed only spaces has
+  /// given none — so both collapse to the same "no name" the greeting already
+  /// handles.
   String? get name {
     final trimmed = _typed.trim();
     return trimmed.isEmpty ? null : trimmed;
   }
 
-  /// Whether the step can be finished. Always true when idle: this step is
-  /// skippable, and an empty field is a valid answer.
-  bool get canSubmit => !_submitting;
+  /// Whether the name can be kept. False on an empty or blank field, which is
+  /// what greys the design's Continue out.
+  bool get canContinue => !_submitting && name != null;
 
   /// Records what the learner has typed. Ignored once submission is in flight.
   void type(String value) {
@@ -44,9 +49,19 @@ class NameController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Persists via `onSubmit`, then invokes `onFinished`. Guards re-entry.
+  /// Finishes the step keeping the typed name.
   Future<void> submit() async {
-    if (!canSubmit) return;
+    if (!canContinue) return;
+    await _finish(name);
+  }
+
+  /// Finishes the step keeping nothing.
+  Future<void> skip() async {
+    if (_submitting) return;
+    await _finish(null);
+  }
+
+  Future<void> _finish(String? name) async {
     _submitting = true;
     notifyListeners();
     await _onSubmit(name);

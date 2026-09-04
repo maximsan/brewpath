@@ -14,8 +14,8 @@ import 'package:go_router/go_router.dart';
 /// Room above the mascot before he is introduced.
 const double _mascotInset = 40;
 
-/// How large the mascot is drawn here (`screens.jsx:103`) — his introduction,
-/// so the largest he appears anywhere in the app.
+/// How large the mascot is drawn here — the design's `size={184}`. His
+/// introduction, so the largest he appears anywhere in the app.
 const double _mascotSize = 184;
 
 /// The gap above the CTA. Off the spacing scale on purpose — see the
@@ -77,7 +77,7 @@ class MeetRoastyScreen extends StatelessWidget {
         SizedBox(height: _blockGap),
         PrimaryButton(
           label: 'Start learning',
-          onPressed: () => context.goNamed(AppRoutes.onboardingGoal.name),
+          onPressed: () => context.goNamed(AppRoutes.onboardingName.name),
         ),
       ],
     );
