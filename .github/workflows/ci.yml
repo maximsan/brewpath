@@ -242,6 +242,10 @@ jobs:
       # fails on the first attempt: only a bounded launch hang is retried.
       - name: Smoke test
         run: |
+          # GitHub runs this with `bash -e`, which would end the script on the
+          # first failed attempt — before the log tail and the retry. Errors
+          # are handled explicitly below, so errexit is off for this step.
+          set +e
           set -o pipefail
           attempt() {
             perl -e 'alarm 600; exec @ARGV' \
@@ -271,3 +275,15 @@ jobs:
           echo "attempt 2 exited $status; last lines:"
           tail -60 smoke-attempt-2.log
           exit "$status"
+
+      # The verbose logs outlive the step whatever kills it — the alarm, the
+      # job cap, a cancel — so a hang can be read afterwards instead of
+      # reconstructed from silence.
+      - name: Keep the smoke logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-attempt-logs
+          path: smoke-attempt-*.log
+          if-no-files-found: ignore
+          retention-days: 14
