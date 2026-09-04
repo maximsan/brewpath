@@ -198,6 +198,17 @@ void main() {
       describe: 'the name step accepting a name',
     );
 
+    // The Tour is offered on the first launch that reaches Learn with it
+    // unseen — this one. The offer is a non-dismissible modal, and it is
+    // triggered by the same event that draws the Today card, so a walk that
+    // waits for the card without answering the offer is a race: on a slow
+    // runner the card is found first and the test passes, on a fast machine
+    // the offer covers it and the test fails. Answer it, then look for Learn.
+    await tapWhenReady(
+      tester,
+      find.widgetWithText(TextButton, TourCopy.introDecline),
+      describe: 'the Tour offer on the first launch that reaches Learn',
+    );
     await pumpUntil(
       tester,
       find.text("Today's lesson"),
@@ -218,17 +229,6 @@ void main() {
     // Merging the two is not a shortcut, it is the fix.
     await launch(tester);
 
-    // The Tour is offered on the first launch that reaches Learn with it
-    // unseen, which this is — the previous test finished onboarding and never
-    // got here. Asserted and dismissed rather than guarded by an `if`: it is
-    // deterministic, and a walk that shrugs at a missing sheet is the silent
-    // failure this file keeps warning about.
-    await tapWhenReady(
-      tester,
-      find.widgetWithText(TextButton, TourCopy.introDecline),
-      describe: 'the Tour offer on a returning launch',
-    );
-
     // Storage: the answers the previous test gave were written to an on-disk
     // database, and a fresh process reads them back. Nothing else in the repo
     // exercises that — every widget test seeds the flag in memory instead.
@@ -236,6 +236,16 @@ void main() {
       tester,
       find.text("Today's lesson"),
       describe: 'the Learn tab on a returning launch',
+    );
+
+    // The previous launch answered the Tour offer, and that answer was
+    // written to the same on-disk database. A returning launch that offered
+    // the Tour again would mean the write did not survive the process.
+    await pumpUntil(
+      tester,
+      find.widgetWithText(TextButton, TourCopy.introDecline),
+      describe: 'no second Tour offer on a returning launch',
+      present: false,
     );
     expect(
       find.text('What brings you here?'),
