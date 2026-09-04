@@ -86,18 +86,11 @@ class UserSettings extends Table {
   BoolColumn get onboardingCompleted =>
       boolean().withDefault(const Constant(false))();
 
-  /// Was the onboarding goal. **Nothing reads or writes it any more** —
-  /// ADR-0010 moved the question to v2 and #407 removed the screen that asked
-  /// it, so on every install from that point on it stays null.
-  ///
-  /// Kept rather than dropped because the schema fixtures under
-  /// `test/generated/` are frozen at the versions that carry it: removing the
-  /// column is a new schema version and a new fixture, which is worth doing
-  /// when the question comes back, not to tidy away two nulls.
+  /// Was the onboarding goal. Nothing reads or writes it since ADR-0010 moved
+  /// the question to v2; the column stays for the reason that ADR gives.
   TextColumn get onboardingGoal => text().nullable()();
 
-  /// Was the selected brewer. Left in place for the same reason as
-  /// [onboardingGoal], and read by nothing.
+  /// Was the selected brewer. Same as [onboardingGoal].
   TextColumn get onboardingBrewer => text().nullable()();
 
   /// Appearance preference — `system` / `light` / `dark`, persisted as the

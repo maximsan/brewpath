@@ -1229,18 +1229,11 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
   /// Defaults to `false` so rows migrated from schema v2 force the gate.
   final bool onboardingCompleted;
 
-  /// Was the onboarding goal. **Nothing reads or writes it any more** —
-  /// ADR-0010 moved the question to v2 and #407 removed the screen that asked
-  /// it, so on every install from that point on it stays null.
-  ///
-  /// Kept rather than dropped because the schema fixtures under
-  /// `test/generated/` are frozen at the versions that carry it: removing the
-  /// column is a new schema version and a new fixture, which is worth doing
-  /// when the question comes back, not to tidy away two nulls.
+  /// Was the onboarding goal. Nothing reads or writes it since ADR-0010 moved
+  /// the question to v2; the column stays for the reason that ADR gives.
   final String? onboardingGoal;
 
-  /// Was the selected brewer. Left in place for the same reason as
-  /// [onboardingGoal], and read by nothing.
+  /// Was the selected brewer. Same as [onboardingGoal].
   final String? onboardingBrewer;
 
   /// Appearance preference — `system` / `light` / `dark`, persisted as the
