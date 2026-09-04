@@ -182,6 +182,34 @@ Future<BrewChallenge?> moduleChallengeOffer(Ref ref, String moduleId) async {
   return offerable ? challenge : null;
 }
 
+/// The capstone [moduleId] is offering **right now**, or null.
+///
+/// A reward screen shows the offer only while it is live — the design's
+/// `offerLive`: the challenge is neither in play nor already brewed. A saved
+/// challenge is still live; parking it was the learner saying *not yet*.
+///
+/// Eligibility is not re-derived here. [moduleChallengeOfferProvider] owns the
+/// gate — a module challenge needs its module's every lesson complete (#143) —
+/// and this only narrows what that gate returns.
+@riverpod
+Future<BrewChallenge?> liveModuleChallengeOffer(
+  Ref ref,
+  String moduleId,
+) async {
+  // Every watch resolved before the first await, as the rest of this file
+  // does: a rebuild mid-flight must not find a watch on the far side of an
+  // async gap, where the old build's ref is already disposed.
+  final offer = ref.watch(moduleChallengeOfferProvider(moduleId).future);
+  final activeChallenge = ref.watch(activeChallengeProvider.future);
+  final completed = ref.watch(completedChallengesProvider.future);
+
+  final challenge = await offer;
+  if (challenge == null) return null;
+
+  if ((await activeChallenge)?.id == challenge.id) return null;
+  return (await completed).contains(challenge.id) ? null : challenge;
+}
+
 /// Puts [id] in play, parking whatever it displaced.
 ///
 /// Returns the challenge that was pushed out, if any. Starting a second

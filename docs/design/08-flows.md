@@ -15,8 +15,8 @@ Open → Today shows the current lesson → Begin lesson → play 6–11 cards �
 2. If review mode → return to origin, no points, no reward screen. **Stop.**
 3. If perfect → remember for the (v2) perfect-module gift.
 4. Award the lesson's `points` (10), mark complete.
-5. If last lesson in module → `module-complete` — the lesson recap does **not** play; the module screen replaces it — → *Turn it over* flips the screen to the collectible → Continue → module Coffee Challenge offer (`module-challenge`, if any; *Not now* saves it) → *(v2: perfect-module gift)* → next module's first lesson **if authored**, else Path.
-   ⚠️ **Dropped from this step: `module-card`.** Earlier revisions chained it after `module-complete`. It is unreachable in the running prototype — `continueFromModuleComplete` (`app.jsx:984`) is the only navigation to it and nothing calls it — and the collectible is the back of the flip instead. See [#230](https://github.com/maximsan/brewpath/issues/230) and ADR-0017.
+5. If last lesson in module → `module-complete` — the lesson recap does **not** play; the module screen replaces it — → *Turn it over* flips the screen to the collectible → the module's Coffee Challenge, when one is live, is offered on that face above the exit CTA → Continue → *(v2: perfect-module gift)* → next module's first lesson **if authored**, else Path.
+   ⚠️ **Dropped from this step: `module-card` and `module-challenge`.** Earlier revisions chained a card screen and then a capstone screen after `module-complete`; the 3 Sep drop deleted both. The collectible is the back of the flip, and the challenge is a row above the way out — *"no separate step"*, and continuing past it is the not-now, because the challenge waits on the Path either way. See [#230](https://github.com/maximsan/brewpath/issues/230), ADR-0017 and [#464](https://github.com/maximsan/brewpath/issues/464).
 6. Otherwise → `lesson-complete` → Continue → next lesson **if authored**, else Path.
 
 ### Every reward screen is two phases, not one
@@ -32,7 +32,7 @@ in front of it.
 | Lesson complete | `lesson` | `LESSON COMPLETE` | default |
 | Module complete | `module` | `MODULE COMPLETE` — "Look how far you've come." | `autoMs={2200}` |
 
-`ModuleRewardCardScreen` (`card` · `REWARD UNLOCKED`) also exists in `rewards.jsx` and is two-phase, but **no flow reaches it** — it is served only by the `?screen=module-card` review harness, and its content duplicates the flip's back face. Do not count it as a reward beat.
+`ModuleRewardCardScreen` is **gone** from `rewards.jsx`. The `?screen=module-card` review harness now opens `ModuleCompleteScreen` with `startFlipped`, landing on the flip's back face. It was never a reward beat and there is no longer a screen to mistake for one.
 
 **Phase two of `lesson-complete` shows:** score, mastery state, animated tree
 from→to stage, points payout, streak-freeze-earned row (suppressed at the cap),

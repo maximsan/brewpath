@@ -1,6 +1,8 @@
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/widgets/reward_flip.dart';
 import 'package:brew_path/features/cards/presentation/reward_card.dart';
+import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
+import 'package:brew_path/features/challenges/presentation/challenge_offer_row.dart';
 import 'package:brew_path/features/companion/application/companion_providers.dart';
 import 'package:brew_path/features/companion/domain/companion_lines.dart';
 import 'package:brew_path/features/companion/presentation/roasty_moment.dart';
@@ -10,6 +12,7 @@ import 'package:brew_path/features/learn/presentation/module_ending_marks.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/presentation/growing_tree.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
+import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:brew_path/shared/models/module_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -61,10 +64,16 @@ void main() {
     bool freezeEarned = false,
     int? fromStage,
     int? toStage,
+    BrewChallenge? offer,
   }) => ProviderScope(
     overrides: [
       moduleSummaryProvider('module_beans').overrideWith((ref) => summary),
       moduleEndingRunProvider(runLessonId).overrideWith((ref) => run),
+      // The module's capstone, or none — the common case. Overridden rather
+      // than read, because the gate behind it is the offer's own test.
+      liveModuleChallengeOfferProvider(
+        _module.id,
+      ).overrideWith((ref) async => offer),
       streakProvider.overrideWith((ref) => 0),
       companionLinesProvider.overrideWith(
         (ref) => CompanionLines.fromJson(const {
@@ -347,6 +356,52 @@ void main() {
 
       expect(find.textContaining('PTS'), findsNothing);
       expect(find.byType(FreezeEarnedLine), findsNothing);
+    });
+  });
+
+  // The module's optional Coffee Challenge is offered here and nowhere else:
+  // the design deleted the separate hand-off screen and made the offer a row
+  // above the exit CTA, *"no separate step"* (#464).
+  group('the challenge it unlocks', () {
+    final capstone = testChallenge(scope: ChallengeScope.module);
+
+    testWidgets('is offered on the reward face, above the way out', (
+      tester,
+    ) async {
+      await tester.pumpWidget(harness(_summary(), offer: capstone));
+      await pastTheBeat(tester);
+      await turn(tester, find.text(AppLabels.turnItOver));
+
+      expect(find.text(ChallengeOfferRow.kicker), findsOneWidget);
+      expect(find.text(AppLabels.beginNextModule), findsOneWidget);
+      // Above it, not merely present with it: the offer is met on the way to
+      // the exit, and an offer under the CTA is one nobody reads.
+      expect(
+        tester.getBottomLeft(find.byType(ChallengeOfferRow)).dy,
+        lessThanOrEqualTo(
+          tester.getTopLeft(find.text(AppLabels.beginNextModule)).dy,
+        ),
+      );
+    });
+
+    // The offer belongs to the reward beat, not to the celebration: the
+    // learner meets it once, on the face that hands things over.
+    testWidgets('and not on the celebration face', (tester) async {
+      await tester.pumpWidget(harness(_summary(), offer: capstone));
+      await pastTheBeat(tester);
+
+      expect(find.byType(ChallengeOfferRow), findsNothing);
+    });
+
+    testWidgets('a module with no live challenge advances exactly as before', (
+      tester,
+    ) async {
+      await tester.pumpWidget(harness(_summary()));
+      await pastTheBeat(tester);
+      await turn(tester, find.text(AppLabels.turnItOver));
+
+      expect(find.byType(ChallengeOfferRow), findsNothing);
+      expect(find.text(AppLabels.beginNextModule), findsOneWidget);
     });
   });
 
