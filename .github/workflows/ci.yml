@@ -4,6 +4,9 @@ on:
   push:
     branches: [main]
   pull_request:
+  # Run by hand on any branch — the only way to exercise the smoke job
+  # before a change to it reaches main.
+  workflow_dispatch:
 
 env:
   FLUTTER_VERSION: "3.44.1"
@@ -177,7 +180,7 @@ jobs:
   smoke:
     name: smoke (simulator)
     runs-on: macos-latest
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     # A backstop, not the real guard. The walk bounds each of its own waits, and
     # the Smoke step below bounds each launch attempt; this cap only exists so a
     # wedged runner cannot burn an hour. Budget: pub + boot ~2 min, the cold
