@@ -179,6 +179,23 @@ explaining a mechanic. Auto-runs once per device when Learn first shows with
 activity.
 _Avoid_: walking tour, walkthrough, coach marks
 
+## Content pipeline
+
+**Carried** (authored field):
+A field the extractor reads out of the prototype into a bank — copied as is,
+or folded into another value
+([#485](https://github.com/maximsan/brewpath/issues/485)).
+
+**Skipped** (authored field):
+A field left behind on purpose, with its reason on record beside the
+extractor ([#485](https://github.com/maximsan/brewpath/issues/485)).
+
+**Forgotten** (authored field):
+A field that is neither carried nor skipped. The extractor refuses to run
+until it becomes one or the other
+([#485](https://github.com/maximsan/brewpath/issues/485)).
+_Avoid_: "ignored", "unused" — neither says whether anyone decided.
+
 ## Sync and storage
 
 **Progress snapshot**:
