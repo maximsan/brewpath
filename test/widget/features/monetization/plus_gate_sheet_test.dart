@@ -1,4 +1,5 @@
 import 'package:brew_path/app/app_theme.dart';
+import 'package:brew_path/core/widgets/ghost_button.dart';
 import 'package:brew_path/features/monetization/domain/plus_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
@@ -10,8 +11,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/widget_harness.dart';
 
-/// The sheet a lock raises: what it says, the one way out, and what it refuses
-/// to offer.
+/// The sheet a lock raises: what it says, the one way to buy, the way to
+/// decline, and what it refuses to offer.
 void main() {
   setUp(useInMemoryDatabase);
 
@@ -89,7 +90,7 @@ void main() {
     expect(find.textContaining('29 more lessons'), findsOneWidget);
   });
 
-  testWidgets('there is exactly one way out, and it is buying', (tester) async {
+  testWidgets('there is exactly one way to buy', (tester) async {
     await openWith(tester, const SavedShelfFull(cap: 5));
 
     expect(find.text(PlusCopy.buy), findsOneWidget);
@@ -127,6 +128,24 @@ void main() {
     expect(find.text(PlusCopy.restore), findsOneWidget);
     expect(find.text(PlusCopy.terms), findsOneWidget);
     expect(find.text(PlusCopy.privacy), findsOneWidget);
+  });
+
+  testWidgets('declining is a button, not a swipe to discover', (tester) async {
+    await openWith(tester, const SavedShelfFull(cap: 5));
+
+    // The design puts a ghost under the buy action on every gate. The sheet
+    // was always dismissible by the handle or the scrim; what was missing was
+    // an exit the learner could see.
+    expect(
+      find.widgetWithText(GhostButton, PlusCopy.notNow),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.text(PlusCopy.notNow));
+    await tester.pumpAndSettle();
+
+    expect(find.text(PlusCopy.title), findsNothing);
+    expect(find.text('open'), findsOneWidget);
   });
 
   testWidgets('dismissing changes nothing', (tester) async {

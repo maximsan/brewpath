@@ -42,6 +42,36 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ## [Unreleased]
 
+### Changed
+
+- **Setting up the app is three screens shorter.** It used to ask what your
+  goal was and what you brew with, and you could not get past either one —
+  even though nothing in the app ever used the answers. Both questions are
+  gone. What is left is Welcome, Meet Roasty, and your name, and the name is
+  optional: type one and Roasty greets you by it, or skip and it greets you
+  plainly. You can set or change it later in Settings.
+
+  The name screen is the design's now rather than a stand-in: it asks *"And
+  you are…?"* with Roasty above it, and the plain box with a floating label it
+  used to show is gone. Continue and *Skip for now* are two buttons that are
+  both always there, where before one button quietly changed its own word
+  depending on what you had typed. It no longer calls itself step 3 of 3,
+  because there is no longer a step 3.
+
+  Skipping it no longer erases a name you already had. Restarting onboarding
+  from Settings keeps your name, so declining to type it again used to wipe
+  it — skipping means *not now*, not *forget it*. The keyboard no longer
+  covers the buttons either: the field waits for you to tap it, and Roasty
+  steps aside while you type.
+
+- **The offer to buy now has a visible way to decline.** The Plus sheet had
+  one button on it, and saying no meant guessing that you could swipe it away.
+  It now carries *Not now* under the buy button, which is what every other
+  screen that asks you for something does. Nothing about the sheet was
+  actually harder to close than before — the exit was just invisible. The
+  locked-mini-game sheet's *Not now* was a bare link and is now the same
+  button as everywhere else.
+
 ### Added
 
 - **Finishing a module offers its Coffee Challenge.** The module ending used to
@@ -52,6 +82,17 @@ You can always edit this file by hand instead — the helpers just save effort.
   either way. The row appears only while there is something to offer — every
   lesson in the module finished, and the brew neither already in play nor
   logged.
+
+- **Every collectible now has its own picture.** A card used to show its
+  module's mark, so all nine cards in a module looked identical — the same
+  drawing nine times, on the tile and again in the card sheet. Each of the
+  thirty-seven cards now shows the illustration the design drew for it: the
+  cherry in section, the map of the bean belt, the roast curve, the specimen
+  label. They were never missing, only unbuilt — they are lifted straight out
+  of the design source rather than redrawn, so what you see is what was drawn,
+  and a card whose kind has no drawing still falls back to its module's mark
+  rather than showing a hole.
+
 - **Flashcards explains an empty deck it used to blame you for.** If you
   bookmarked words your free lessons do not cover, the drill still told you to
   "bookmark terms in the dictionary and they become a flashcard deck" — which
@@ -598,6 +639,11 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **Answering the Tour offer and leaving the Learn tab at once no longer
+  throws.** The answer was saved, but refreshing the screen that offered the
+  Tour after that screen was already gone raised an error in debug builds.
+  The answer is still saved; the refresh is skipped when there is nothing
+  left to refresh.
 - **The streak-freeze notice can no longer contradict the streak it describes.**
   The Learn tab's "Your streak is safe" card, the streak it reads, and the
   notice's own dismissal each asked the clock separately, so a phone left open

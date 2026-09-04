@@ -1,5 +1,6 @@
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/widgets/ghost_button.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_intro_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_player_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_games_catalog_widget.dart';
@@ -475,7 +476,9 @@ void main() {
 
       await tester.tap(find.text(lockedTitle));
       await tester.pumpAndSettle();
-      await tester.tap(find.widgetWithText(TextButton, 'Not now'));
+      // A ghost, not a text button: the design reserves a bare link for
+      // tertiary actions in running content, never for a dismiss.
+      await tester.tap(find.widgetWithText(GhostButton, 'Not now'));
       await tester.pumpAndSettle();
 
       expect(find.text('TAUGHT IN MODULE 4 · GRIND'), findsNothing);
@@ -510,7 +513,7 @@ void main() {
       // at rest rather than partway through a slide.
       await tester.pump();
 
-      expect(find.text('Not now'), findsOneWidget);
+      expect(find.widgetWithText(GhostButton, 'Not now'), findsOneWidget);
     });
 
     testWidgets('an unlocked game opens its intro, never the offer', (

@@ -196,7 +196,7 @@ final class WeekStripDaysProvider
   }
 }
 
-String _$weekStripDaysHash() => r'3a214a34f33565306490049caddf4e4bcf264195';
+String _$weekStripDaysHash() => r'5e751b5da062605576b2c316ab0b9385410ead7b';
 
 /// The derived streak state — the engine's fold over [activeDaySet].
 
@@ -240,7 +240,7 @@ final class StreakStatusProvider
   }
 }
 
-String _$streakStatusHash() => r'7ecb80964f632e911995c2d8b3c58beca869a9a4';
+String _$streakStatusHash() => r'323891ffdb6a12228e1d8c1c2a5720dc240fddb8';
 
 /// The user's current streak in days.
 

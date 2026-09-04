@@ -1,4 +1,5 @@
 import 'package:brew_path/core/widgets/app_sheet.dart';
+import 'package:brew_path/core/widgets/ghost_button.dart';
 import 'package:brew_path/core/widgets/link_button.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/features/monetization/domain/plus_copy.dart';
@@ -18,10 +19,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// answers the question the learner actually asked, then the ranked bullets,
 /// then a single action.
 ///
-/// **Exactly one way out: buy.** No ad path (there are no ads in v1 and the
+/// **Exactly one way to buy**, and no ad path (there are no ads in v1 and the
 /// design's watch-an-ad route is dead), no trial and no plan chooser (ADR-0003
 /// sells one non-consumable). Restore, Terms and Privacy are present because
 /// the App Store requires them of one.
+///
+/// **Declining is a button, not a guess.** The design draws a ghost *Not now*
+/// under the buy action on every gate it draws. The sheet was dismissible all
+/// along — by the handle or the scrim — so the button adds no exit that did
+/// not exist; it stops the exit being one the learner has to discover.
 ///
 /// Dismissal writes nothing and changes nothing: looking is free.
 Future<void> showPlusGate(BuildContext context, PlusGateTrigger trigger) =>
@@ -61,6 +67,13 @@ class _PlusGateBody extends ConsumerWidget {
           onPressed: purchase == PlusPurchaseState.working
               ? null
               : () => ref.read(plusPurchaseProvider.notifier).buy(),
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        GhostButton(
+          label: PlusCopy.notNow,
+          onPressed: purchase == PlusPurchaseState.working
+              ? null
+              : () => Navigator.of(context).pop(),
         ),
         const SizedBox(height: AppSpacing.xs),
         Center(

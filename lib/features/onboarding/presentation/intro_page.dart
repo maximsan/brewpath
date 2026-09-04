@@ -2,9 +2,15 @@ import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// The design's page inset for the intro screens — 64 above, 40 below.
+/// The design's page inset for the intro screens — `paddingTop: 64` above.
 const double _topInset = 64;
-const double _bottomInset = 40;
+
+/// And below, 56: the page's own `paddingBottom: 40` plus the
+/// `paddingBottom: 16` every one of these screens sets on the block that
+/// reaches the foot. Both halves are the design's, and the foot only clears
+/// the edge correctly with both — the shell used to carry the outer one
+/// alone.
+const double _bottomInset = 40 + 16;
 
 /// One intro beat: a column that fills the viewport, and scrolls once it
 /// cannot.
@@ -58,7 +64,8 @@ class IntroPage extends StatelessWidget {
   }
 }
 
-/// The widest the intro's copy sets before it wraps (`screens.jsx:82`, `:118`).
+/// The widest the intro's copy sets before it wraps — the design's
+/// `maxWidth: 330` on each intro support line.
 ///
 /// On [IntroPage] rather than on each screen: both set the same measure, and
 /// two names for one number is how they drift.
