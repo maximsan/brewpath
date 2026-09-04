@@ -17,7 +17,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// The tile's own metrics (`index.html:687`).
 const double _tilePadding = AppSpacing.base;
-const double _artSize = 56;
+
+/// The stamp the design drops in where a card has no art. A fixed size, not
+/// the height of the slot: the art fills the row, a stand-in mark does not.
+const double _fallbackMarkSize = 64;
 
 /// How far a locked tile recedes, and how faint its two lines and its mark sit
 /// within that (`index.html:700`, `screens.jsx:2400`).
@@ -86,7 +89,8 @@ class CardGridItemWidget extends ConsumerWidget {
       child: CardArtMark(
         kind: item.card.kind,
         fallback: moduleMark(item.card.iconName),
-        size: _artSize,
+        fallbackSize: _fallbackMarkSize,
+        fallbackColor: mood.accent,
       ),
     );
   }

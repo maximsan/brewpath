@@ -86,23 +86,27 @@ class _ArtColorMapper extends ColorMapper {
   int get hashCode => mood.hashCode;
 }
 
-/// Draws one collectible's own illustration.
+/// Draws one collectible's own illustration, filling whatever box it is given.
 ///
 /// This is the only way the app should draw one: the arts paint in sentinel
 /// colours, and reaching for `SvgPicture` directly would render them
 /// literally — magenta where the design drew a cherry.
 ///
-/// **A kind the design has not drawn falls back to [fallback]**, the module's
-/// mark, which is what every card showed before the art existed. Content can
-/// name a new kind before anyone re-runs the extractor, and a card with no
-/// picture is better than a card with a hole in it.
+/// **The art fills; the fallback does not.** The design sizes neither by hand
+/// — the art is `width: 100%; height: 100%` inside the slot it is given, and
+/// where there is no art it drops in a stamp at a fixed size (64 on the tile,
+/// 72 in the sheet's well) rather than blowing a small mark up to fill the
+/// space. A kind the design has not drawn takes [fallback], the module's mark,
+/// at [fallbackSize]: content can name a new kind before anyone re-runs the
+/// extractor, and a card with no picture is better than one with a hole in it.
 class CardArtMark extends StatelessWidget {
-  /// Draws the art for [kind] at [size], or [fallback] where there is none.
+  /// Draws the art for [kind], or [fallback] at [fallbackSize] where the
+  /// design has drawn none.
   const CardArtMark({
     required this.kind,
     required this.fallback,
-    required this.size,
-    this.semanticLabel,
+    required this.fallbackSize,
+    this.fallbackColor,
     super.key,
   });
 
@@ -112,30 +116,32 @@ class CardArtMark extends StatelessWidget {
   /// The mark to draw when the design has drawn no art for [kind].
   final AppIcon fallback;
 
-  /// The square box the art is drawn into.
-  final double size;
+  /// The fixed size that mark takes — never the size of the slot.
+  final double fallbackSize;
 
-  /// Read out in place of the drawing.
-  final String? semanticLabel;
+  /// The mark's ink. Defaults to the accent, which is what the tile and the
+  /// sheet gave it before any art existed.
+  final Color? fallbackColor;
 
   @override
   Widget build(BuildContext context) {
     final asset = cardArtAsset(kind);
     if (asset == null) {
-      return IconMark(
-        fallback,
-        size: size,
-        semanticLabel: semanticLabel,
+      return Center(
+        child: IconMark(
+          fallback,
+          size: fallbackSize,
+          color: fallbackColor ?? context.mood.accent,
+        ),
       );
     }
 
-    return SvgPicture.asset(
-      asset,
-      width: size,
-      height: size,
-      colorMapper: _ArtColorMapper(context.mood),
-      semanticsLabel: semanticLabel,
-      excludeFromSemantics: semanticLabel == null,
+    return SizedBox.expand(
+      child: SvgPicture.asset(
+        asset,
+        colorMapper: _ArtColorMapper(context.mood),
+        excludeFromSemantics: true,
+      ),
     );
   }
 }

@@ -29,7 +29,7 @@ did, and every listed snippet had drifted from the real APIs).
 | `test/unit/features/` | Per-feature domain tests (onboarding, companion, learn, lessons, progress) |
 | `test/unit/shared/theme/` | The token suite — mood colours, art colours, overlays, radii, text — including drift guards against the prototype's palette |
 | `test/unit/shared/storage/` + `storage/snapshot/` | Drift records, the progress-snapshot merge laws, JSON round-trips, account wipe + tombstones |
-| `test/unit/tool/` | The content extractor (shells out to `node tool/extract_content.js`) |
+| `test/unit/tool/` | The extractors, each shelling out to its script — content (`node tool/extract_content.js`) and collectible art (`node tool/extract_card_art.js`), including what each refuses to write |
 | `test/unit/core/icons/` | The icon family — the catalogue against the written marks, and both against a fresh `node tool/extract_icons.js` |
 | `test/database/` | Schema smoke + migration tests over the real Drift schema history (`drift_schemas/`) |
 | `test/widget/` | Screens, games, shell navigation, shared widgets |

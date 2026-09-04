@@ -40,7 +40,13 @@ class CardLockedFace extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CardArtWell(kind: card.kind, fallback: moduleMark(card.iconName)),
+        CardArtWell(
+          kind: card.kind,
+          fallback: moduleMark(card.iconName),
+          // Muted where the earned face takes the accent: a stand-in mark on
+          // an unheld card is the state the grid draws as a silhouette.
+          fallbackColor: mood.inkMute,
+        ),
         const SizedBox(height: AppSpacing.lg),
         Text(
           earnLine(lessonTitle: lessonTitle, moduleTag: card.moduleTag),

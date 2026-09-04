@@ -13,6 +13,11 @@ import 'package:flutter/material.dart';
 const double _wellHeight = 150;
 const double _artScale = 1.15;
 
+/// The stamp the design drops in where a card has no art — a fixed size, not
+/// the height of the band, so a small mark is not blown up and then cropped
+/// by the scale above.
+const double _fallbackMarkSize = 72;
+
 /// A card's drawing, in the tinted band the design sets it in.
 ///
 /// The band takes the same wash as the card's tile, so a card opened from the
@@ -22,7 +27,7 @@ class CardArtWell extends StatelessWidget {
   const CardArtWell({
     required this.kind,
     required this.fallback,
-    this.semanticLabel,
+    this.fallbackColor,
     super.key,
   });
 
@@ -32,8 +37,8 @@ class CardArtWell extends StatelessWidget {
   /// The mark to draw when the design has drawn no art for [kind].
   final AppIcon fallback;
 
-  /// Read out in place of the drawing.
-  final String? semanticLabel;
+  /// The fallback mark's ink, where the design has drawn no art.
+  final Color? fallbackColor;
 
   @override
   Widget build(BuildContext context) {
@@ -50,8 +55,8 @@ class CardArtWell extends StatelessWidget {
               child: CardArtMark(
                 kind: kind,
                 fallback: fallback,
-                size: _wellHeight,
-                semanticLabel: semanticLabel,
+                fallbackSize: _fallbackMarkSize,
+                fallbackColor: fallbackColor,
               ),
             ),
           ),

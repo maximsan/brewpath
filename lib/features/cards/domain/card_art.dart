@@ -3,7 +3,7 @@
 /// Every entry has a matching `assets/card_art/<slug>.svg`, written from the
 /// design source by `tool/extract_card_art.js` — nothing here draws anything,
 /// it only names what the design drew. A kind with no file, a file no kind
-/// names, or a bank kind missing from this set fails
+/// names, and a bank kind missing from this set each fail
 /// `test/unit/features/cards/card_art_test.dart`, which is what keeps the
 /// three of them from drifting apart.
 const cardArtKinds = <String>{

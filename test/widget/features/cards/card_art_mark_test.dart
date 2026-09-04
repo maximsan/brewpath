@@ -13,12 +13,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const _size = 56.0;
+const double _fallbackSize = 64;
+const MoodColors _mood = MoodColors.darkRoast;
 
 Future<void> _pump(WidgetTester tester, Widget child) => tester.pumpWidget(
   MaterialApp(
     theme: AppTheme.darkRoast,
-    home: Scaffold(body: Center(child: child)),
+    home: Scaffold(
+      body: Center(child: SizedBox(width: 150, child: child)),
+    ),
   ),
 );
 
@@ -26,8 +29,6 @@ SvgAssetLoader _loaderOf(WidgetTester tester) =>
     tester.widget<SvgPicture>(find.byType(SvgPicture)).bytesLoader
         as SvgAssetLoader;
 
-/// The sentinels the extractor actually wrote, so this cannot pass by agreeing
-/// with a stale copy of the list.
 Map<String, String> get _sentinels =>
     ((jsonDecode(File('assets/card_art/index.json').readAsStringSync())
                 as Map<String, dynamic>)['sentinels']
@@ -37,117 +38,186 @@ Map<String, String> get _sentinels =>
 Color _hex(String value) =>
     Color(0xFF000000 | int.parse(value.substring(1), radix: 16));
 
+ColorMapper _mapperOf(WidgetTester tester) => _loaderOf(tester).colorMapper!;
+
+Color _mapped(WidgetTester tester, String token) => _mapperOf(
+  tester,
+).substitute('id', 'path', 'fill', _hex(_sentinels[token]!));
+
 void main() {
-  testWidgets('draws the art the design drew for the kind', (tester) async {
-    await _pump(
-      tester,
-      const CardArtMark(
-        kind: 'botanical',
-        fallback: AppIcon.beans,
-        size: _size,
-      ),
-    );
-
-    expect(_loaderOf(tester).assetName, 'assets/card_art/botanical.svg');
-  });
-
-  testWidgets('a kind with no art falls back to the module mark', (
-    tester,
-  ) async {
-    // Content can name a kind before anyone re-runs the extractor. A card with
-    // no picture beats a card with a hole in it.
-    await _pump(
-      tester,
-      const CardArtMark(
-        kind: 'not-a-kind',
-        fallback: AppIcon.beans,
-        size: _size,
-      ),
-    );
-
-    expect(find.byType(SvgPicture), findsOneWidget);
-    expect(find.byType(IconMark), findsOneWidget);
-  });
-
-  testWidgets('every sentinel the extractor writes is mapped to a token', (
-    tester,
-  ) async {
-    await _pump(
-      tester,
-      const CardArtMark(
-        kind: 'layers',
-        fallback: AppIcon.beans,
-        size: _size,
-      ),
-    );
-    final mapper = _loaderOf(tester).colorMapper;
-    expect(mapper, isNotNull);
-
-    const mood = MoodColors.darkRoast;
-    for (final entry in _sentinels.entries) {
-      final sentinel = _hex(entry.value);
-      final mapped = mapper!.substitute('id', 'path', 'fill', sentinel);
-
-      expect(
-        mapped,
-        isNot(sentinel),
-        reason:
-            '${entry.key} still renders as its stand-in, which paints magenta '
-            'over the drawing',
+  group('what it draws', () {
+    testWidgets('the art the design drew for the kind', (tester) async {
+      await _pump(
+        tester,
+        const CardArtMark(
+          kind: 'botanical',
+          fallback: AppIcon.beans,
+          fallbackSize: _fallbackSize,
+        ),
       );
-      // Mood tokens flip; the illustration palette does not. Both are real
-      // colours from a real palette, which is all this can assert generically.
-      expect(
-        mapped == mood.ink ||
-            mapped == mood.inkMute ||
-            mapped == mood.rule ||
-            mapped == mood.surface ||
-            mapped == mood.surface2 ||
-            mapped == mood.accent ||
-            mapped == mood.sage ||
-            mapped == mood.berry ||
-            ArtColors.byTokenName.containsValue(mapped),
-        isTrue,
-        reason: '${entry.key} maps to a colour from neither palette',
+
+      expect(_loaderOf(tester).assetName, 'assets/card_art/botanical.svg');
+    });
+
+    testWidgets('a kind with no art falls back to the module mark', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        const CardArtMark(
+          kind: 'not-a-kind',
+          fallback: AppIcon.beans,
+          fallbackSize: _fallbackSize,
+        ),
       );
-    }
+
+      // `IconMark` is itself an `SvgPicture`, so asserting one exists proves
+      // nothing — what matters is which asset is loaded.
+      expect(find.byType(IconMark), findsOneWidget);
+      expect(
+        _loaderOf(tester).assetName,
+        isNot(startsWith('assets/card_art/')),
+      );
+    });
+
+    testWidgets('the fallback keeps the accent the mark had before', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        const CardArtMark(
+          kind: 'not-a-kind',
+          fallback: AppIcon.beans,
+          fallbackSize: _fallbackSize,
+        ),
+      );
+
+      // The tile and the sheet both drew the module mark in the accent. The
+      // ambient IconTheme is muted ink, so leaving the colour off would have
+      // quietly changed it.
+      expect(
+        tester.widget<IconMark>(find.byType(IconMark)).color,
+        _mood.accent,
+      );
+    });
+
+    testWidgets('the fallback takes its own size, not the slot’s', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        const CardArtMark(
+          kind: 'not-a-kind',
+          fallback: AppIcon.beans,
+          fallbackSize: _fallbackSize,
+        ),
+      );
+
+      // Blown up to the slot it would be cropped by the well's scale.
+      expect(
+        tester.widget<IconMark>(find.byType(IconMark)).size,
+        _fallbackSize,
+      );
+    });
   });
 
-  testWidgets("the well washes the art in the kind's own tint", (
-    tester,
-  ) async {
-    await _pump(
+  group('the colours it maps', () {
+    testWidgets('a mood token becomes the mood’s own colour', (
       tester,
-      const CardArtWell(kind: 'botanical', fallback: AppIcon.beans),
-    );
+    ) async {
+      await _pump(
+        tester,
+        const CardArtMark(
+          kind: 'layers',
+          fallback: AppIcon.beans,
+          fallbackSize: _fallbackSize,
+        ),
+      );
 
-    // The same wash the tile carries, so a card opened from the grid keeps
-    // the colour it was tapped on.
-    final well = tester.widget<ColoredBox>(
+      // Named one by one: a loop that accepts "any token" passes a sentinel
+      // wired to the wrong one.
+      expect(_mapped(tester, 'var(--sage)'), _mood.sage);
+      expect(_mapped(tester, 'var(--berry)'), _mood.berry);
+      expect(_mapped(tester, 'var(--ink)'), _mood.ink);
+      expect(_mapped(tester, 'var(--ink-mute)'), _mood.inkMute);
+      expect(_mapped(tester, 'var(--rule)'), _mood.rule);
+      expect(_mapped(tester, 'var(--surface)'), _mood.surface);
+      expect(_mapped(tester, 'var(--surface-2)'), _mood.surface2);
+      expect(_mapped(tester, 'var(--accent)'), _mood.accent);
+    });
+
+    testWidgets('an illustration token becomes the palette’s', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        const CardArtMark(
+          kind: 'layers',
+          fallback: AppIcon.beans,
+          fallbackSize: _fallbackSize,
+        ),
+      );
+
+      expect(_mapped(tester, 'var(--art-cherry-skin)'), ArtColors.cherrySkin);
+      expect(_mapped(tester, 'var(--art-cherry-seed)'), ArtColors.cherrySeed);
+      expect(_mapped(tester, 'var(--art-cream)'), ArtColors.cream);
+      expect(_mapped(tester, 'var(--art-ripe)'), ArtColors.ripe);
+      expect(_mapped(tester, 'var(--art-roast-dark)'), ArtColors.roastDark);
+      expect(_mapped(tester, 'var(--art-seed-crease)'), ArtColors.seedCrease);
+    });
+
+    testWidgets('every sentinel the extractor writes is mapped', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        const CardArtMark(
+          kind: 'layers',
+          fallback: AppIcon.beans,
+          fallbackSize: _fallbackSize,
+        ),
+      );
+
+      for (final entry in _sentinels.entries) {
+        expect(
+          _mapped(tester, entry.key),
+          isNot(_hex(entry.value)),
+          reason:
+              '${entry.key} still renders as its stand-in, which paints '
+              'magenta over the drawing',
+        );
+      }
+    });
+  });
+
+  group('the well it sits in', () {
+    ColoredBox wellOf(WidgetTester tester) => tester.widget<ColoredBox>(
       find.descendant(
         of: find.byType(CardArtWell),
         matching: find.byType(ColoredBox),
       ),
     );
-    expect(well.color, cardTint(MoodColors.darkRoast, 'botanical'));
-    expect(find.byType(SvgPicture), findsOneWidget);
-  });
 
-  testWidgets('a kind with no tint still gets a well, on the plain surface', (
-    tester,
-  ) async {
-    await _pump(
+    testWidgets('washes the art in the kind’s own tint', (tester) async {
+      await _pump(
+        tester,
+        const CardArtWell(kind: 'botanical', fallback: AppIcon.beans),
+      );
+
+      expect(wellOf(tester).color, cardTint(_mood, 'botanical'));
+      expect(_loaderOf(tester).assetName, 'assets/card_art/botanical.svg');
+    });
+
+    testWidgets('a kind with no tint still gets a well, on the surface', (
       tester,
-      const CardArtWell(kind: 'not-a-kind', fallback: AppIcon.beans),
-    );
+    ) async {
+      await _pump(
+        tester,
+        const CardArtWell(kind: 'not-a-kind', fallback: AppIcon.beans),
+      );
 
-    final well = tester.widget<ColoredBox>(
-      find.descendant(
-        of: find.byType(CardArtWell),
-        matching: find.byType(ColoredBox),
-      ),
-    );
-    expect(well.color, MoodColors.darkRoast.surface);
-    expect(find.byType(IconMark), findsOneWidget);
+      expect(wellOf(tester).color, _mood.surface);
+      expect(find.byType(IconMark), findsOneWidget);
+    });
   });
 }

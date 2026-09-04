@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:brew_path/features/cards/domain/card_art.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:path/path.dart' as p;
 
 /// Guards the three lists that have to agree about collectible art: the files
 /// `tool/extract_card_art.js` wrote, the kinds the content bank names, and
@@ -128,5 +129,27 @@ void main() {
         );
       }
     }
+  });
+
+  test('no file on disk is unnamed by any kind', () {
+    // The direction every other check here misses: they all run from the
+    // manifest outwards, so a drawing the design dropped would stay in the
+    // bundle — the pubspec entry is the whole directory — unseen.
+    final onDisk = Directory('assets/card_art')
+        .listSync()
+        .whereType<File>()
+        .map((file) => p.basename(file.path))
+        .where((name) => name.endsWith('.svg'))
+        .toSet();
+    final named = cardArtKinds
+        .map((kind) => '${cardArtSlug(kind)}.svg')
+        .toSet();
+
+    expect(
+      onDisk.difference(named),
+      isEmpty,
+      reason: 'a stale art still ships',
+    );
+    expect(named.difference(onDisk), isEmpty);
   });
 }

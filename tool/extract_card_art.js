@@ -50,6 +50,9 @@
  * - `CARD_ART` names a component the file does not define, or the JSX uses a
  *   construct `jsx.js` does not read;
  * - an art renders no drawable element, which would ship a blank tile.
+ *
+ * A successful run also sweeps `--out` of any `.svg` it did not just write,
+ * so a drawing the design has dropped leaves the bundle with it.
  */
 
 const fs = require("node:fs");
@@ -267,6 +270,16 @@ function main() {
   fs.mkdirSync(options.out, { recursive: true });
   for (const { slug, markup } of drawn) {
     fs.writeFileSync(path.join(options.out, `${slug}.svg`), `${markup}\n`);
+  }
+
+  // A drawing the design has dropped would otherwise stay on disk, stay in
+  // the bundle — the pubspec entry is the whole directory — and be caught by
+  // nothing, since every check runs from what was written outwards.
+  const written = new Set(drawn.map(({ slug }) => `${slug}.svg`));
+  for (const file of fs.readdirSync(options.out)) {
+    if (file.endsWith(".svg") && !written.has(file)) {
+      fs.unlinkSync(path.join(options.out, file));
+    }
   }
 
   fs.writeFileSync(
