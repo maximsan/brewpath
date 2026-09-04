@@ -59,7 +59,7 @@
  *   grow. Each variety's `drop` is emitted but read by nothing: all three
  *   species ship, and a rollout note must not be able to re-defer that.
  * - **The visual guides are one bank joined from three files.** Identity,
- *   unlock and the meta table come from `VISUAL_GUIDE_CARDS` (`data.jsx`); the
+ *   unlock come from `VISUAL_GUIDE_CARDS` (`data.jsx`); the
  *   words from `VISUAL_GUIDE_CONTENT` (`practical.jsx`); and the cherry's six
  *   layers from `CHERRY_LAYERS` (`bean-anatomy.jsx`), which is authored beside
  *   the cross-section that draws them rather than with the other guides. The second is the only
@@ -122,6 +122,7 @@ const {
   dropTrailingMember,
 } = require("./extract_content/slice");
 const { validate, GRADED_KINDS } = require("./extract_content/validate");
+const { derive } = require("./extract_content/derive");
 
 const REPO_ROOT = path.resolve(__dirname, "..");
 const DEFAULT_SOURCE = path.join(REPO_ROOT, "prototype");
@@ -141,7 +142,7 @@ const DO_NOT_EDIT =
  * reads the committed banks and asserts they carry the Dart side's value:
  * bumping one alone fails the suite rather than a learner's app.
  */
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = 2;
 
 function main(argv) {
   const { source, out } = parseArgs(argv);
@@ -231,42 +232,51 @@ function main(argv) {
     fail([error.message]);
   }
 
-  const errors = validate(banks);
+  // Derivation runs first and reports into the same list: a field generated
+  // from its source can disagree with the copy someone authored, and that is a
+  // content defect like any other. Validation then sees the derived shape, so
+  // no check is written against a value the app will never read.
+  const errors = [];
+  const { modules, lessons } = derive(banks, (where, message) =>
+    errors.push(`${where}: ${message}`),
+  );
+  const derived = { ...banks, modules, lessons };
+  errors.push(...validate(derived));
   if (errors.length > 0) fail(errors);
 
   writeBanks(out, [
-    bank("modules", "data.jsx", withRewards(banks)),
+    bank("modules", "data.jsx", withRewards(derived)),
     // The graded kinds ride along so the Dart union's `Gradable` markers can be
     // asserted against them. Two languages' idea of "graded" is the pair that
     // drifts silently, and mastery divides by it.
-    bank("lessons", "data.jsx", keyedToList(banks.lessons), {
+    bank("lessons", "data.jsx", keyedToList(derived.lessons), {
       gradedKinds: GRADED_KINDS,
     }),
-    bank("collectibles", "data.jsx", banks.collectibles),
-    bank("dictionary_terms", "dictionary-data.jsx", banks.terms),
-    bank("dictionary_categories", "dictionary-data.jsx", banks.categories),
-    bank("brew_challenges", "brew-challenge.jsx", banks.challenges),
-    bank("mini_games", "screens.jsx", banks.miniGames),
-    bank("card_kind_help", "lesson.jsx", helpToList(banks.cardKindHelp)),
+    bank("collectibles", "data.jsx", derived.collectibles),
+    bank("dictionary_terms", "dictionary-data.jsx", derived.terms),
+    bank("dictionary_categories", "dictionary-data.jsx", derived.categories),
+    bank("brew_challenges", "brew-challenge.jsx", derived.challenges),
+    bank("mini_games", "screens.jsx", derived.miniGames),
+    bank("card_kind_help", "lesson.jsx", helpToList(derived.cardKindHelp)),
     // Two sources, honestly: the bagpick rounds in this bank are authored in
     // `bean-anatomy.jsx`, and the envelope's provenance should say so.
     bank(
       "mini_game_content",
       "lesson.jsx + bean-anatomy.jsx",
-      contentToList(banks.miniGameContent),
+      contentToList(derived.miniGameContent),
     ),
     // Two banks rather than one with a second list bolted on: the axes are
     // orthogonal and co-equal — any light applies over any plant — so neither
     // is the other's auxiliary data, and each validates on its own terms.
-    bank("grove_varieties", "customize.jsx", banks.groveVarieties),
-    bank("grove_lights", "customize.jsx", banks.groveLights),
+    bank("grove_varieties", "customize.jsx", derived.groveVarieties),
+    bank("grove_lights", "customize.jsx", derived.groveLights),
     // Two sources, honestly: identity, unlock and the meta table are authored
     // in `data.jsx`, the words in `practical.jsx`, and a guide is only whole
     // once they are joined.
     bank(
       "visual_guides",
       "data.jsx + practical.jsx + bean-anatomy.jsx",
-      joinVisualGuides(banks),
+      joinVisualGuides(derived),
     ),
   ]);
 }
@@ -334,12 +344,12 @@ function bank(name, sourceFile, items, extra = {}) {
  * the database — and the second is a renderer hint the app does not need,
  * since a guide is only ever drawn as a guide.
  *
- * **`notes` and `note` are the guide's prose**, and they are not the same
- * thing as `meta`. `meta` is a separately authored summary table — the drawing
- * said in words — while these explain it: `LIGHT / Bright · acidic` is the
- * table, "Acidic and fruity. Can taste sharp or sour if under-extracted" is
- * the note. Both are carried because a reference that only labels is a legend,
- * not a reference.
+ * **`notes` and `note` are the guide's prose.** A note explains one level of
+ * the drawing — "Acidic and fruity. Can taste sharp or sour if
+ * under-extracted" under *Light* — and the app draws each one beneath the
+ * illustration. The design once paired them with a separately authored
+ * label/value table (`meta`); that table was dropped from the design, so it
+ * is not carried, and the notes stand on their own.
  *
  * Guides differ in shape, so every field below the four every guide owns is
  * optional by construction: only `roast` and `grind` carry `levels`, four
@@ -382,7 +392,6 @@ function joinVisualGuides(banks) {
       title: words.title,
       summary: words.summary,
       fact: words.fact,
-      meta: card.meta,
       notes,
       ...(words.rows ? { rows: words.rows } : {}),
       ...(layers.length > 0 ? { layers } : {}),

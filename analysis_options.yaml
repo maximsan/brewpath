@@ -64,6 +64,12 @@ dart_code_linter:
     # file. Splitting the union to satisfy the metric would forfeit the exhaustive
     # switch that makes an unhandled kind a compile error.
     - lib/shared/models/content/content_card.dart
+    # The type ladder: one accessor per rung, by construction — there is no
+    # fontSize parameter, so every step the design declares is a method here.
+    # Its count (13) is the design's ten rungs plus headingItalic, textTheme
+    # and the private _style, so number-of-methods measures the design's
+    # ladder rather than anything about this file.
+    - lib/shared/theme/app_text.dart
     # The progress scope's one hand-listed copy. Its parameter count is, by
     # design, the number of fields that have a writer — the class deliberately
     # exposes no general `copyWith`, because an arbitrary replace is the one

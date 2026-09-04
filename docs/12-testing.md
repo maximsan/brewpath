@@ -25,7 +25,7 @@ did, and every listed snippet had drifted from the real APIs).
 
 | Directory | What lives there |
 |---|---|
-| `test/unit/` (top level) | Domain + repository logic: points, streak, lesson completion, module unlock, routes, monetization stubs, no-op services, content + progress + module-progress repositories |
+| `test/unit/` (top level) | Domain + repository logic: points, streak, lesson completion, module unlock, routes, monetization stubs, no-op services, content + progress + module-progress repositories. Also the content rules checked over the **committed** banks, which catch a hand-edit or a half-applied regeneration that a fresh extraction cannot see |
 | `test/unit/features/` | Per-feature domain tests (onboarding, companion, learn, lessons, progress) |
 | `test/unit/shared/theme/` | The token suite — mood colours, art colours, overlays, radii, text — including drift guards against the prototype's palette |
 | `test/unit/shared/storage/` + `storage/snapshot/` | Drift records, the progress-snapshot merge laws, JSON round-trips, account wipe + tombstones |

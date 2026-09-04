@@ -5,13 +5,14 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The design's nine-step ladder, transcribed from the `--t-*` block in
+/// The design's ten-step ladder, transcribed from the `--t-*` block in
 /// `prototype/index.html`. Nothing sits off it: a size that is not here cannot
 /// be asked for, because no step carries it and the API takes no `fontSize`.
 const _ladder = <String, double>{
   'hero': 56,
   'display': 30,
   'title': 26,
+  'subtitle': 22,
   'heading': 19,
   'lead': 17,
   'body': 15,
@@ -24,6 +25,7 @@ Map<String, TextStyle> _steps(MoodColors mood) => {
   'hero': AppText.hero(mood: mood),
   'display': AppText.display(mood: mood),
   'title': AppText.title(mood: mood),
+  'subtitle': AppText.subtitle(mood: mood),
   'heading': AppText.heading(mood: mood),
   'lead': AppText.lead(mood: mood),
   'body': AppText.body(mood: mood),
@@ -100,7 +102,7 @@ Iterable<String> _declaredSlotNames() => const TextTheme()
 
 void main() {
   group('the ladder', () {
-    test("is nine steps at the design's sizes", () {
+    test("is ten steps at the design's sizes", () {
       final sizes = _steps(
         MoodColors.darkRoast,
       ).map((name, style) => MapEntry(name, style.fontSize));

@@ -21,8 +21,8 @@ Future<void> showVisualGuideSheet(BuildContext context, VisualGuide guide) =>
       builder: (_) => VisualGuideSheetBody(guide: guide),
     );
 
-/// A guide's whole entry: what it is, the drawing, the idea, the table, and
-/// the one thing worth repeating.
+/// A guide's whole entry: what it is, the drawing, the idea, each level
+/// explained, and the one thing worth repeating.
 class VisualGuideSheetBody extends StatelessWidget {
   /// Creates a [VisualGuideSheetBody].
   const VisualGuideSheetBody({required this.guide, super.key});
@@ -60,9 +60,9 @@ class VisualGuideSheetBody extends StatelessWidget {
           guide.summary,
           style: text.bodyLarge?.copyWith(color: mood.ink),
         ),
-        if (guide.metaRows.isNotEmpty) ...[
+        if (guide.notes.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.lg),
-          _MetaTable(rows: guide.metaRows),
+          _LevelList(notes: guide.notes),
         ],
         if (guide.note case final note?) ...[
           const SizedBox(height: AppSpacing.lg),
@@ -75,11 +75,12 @@ class VisualGuideSheetBody extends StatelessWidget {
   }
 }
 
-/// The guide's two or three key rows — the diagram, in words.
-class _MetaTable extends StatelessWidget {
-  const _MetaTable({required this.rows});
+/// Each level of the drawing explained, in the order the design lists them:
+/// the level's name in one column, what living with it is like in the other.
+class _LevelList extends StatelessWidget {
+  const _LevelList({required this.notes});
 
-  final List<VisualGuideMetaRow> rows;
+  final List<VisualGuideNote> notes;
 
   @override
   Widget build(BuildContext context) {
@@ -88,35 +89,21 @@ class _MetaTable extends StatelessWidget {
 
     return Column(
       children: [
-        for (final row in rows)
+        for (final note in notes)
           Padding(
             padding: const EdgeInsets.only(bottom: AppSpacing.xs),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
-                  width: _metaLabelWidth,
-                  child: SmallcapsLabel(row.label),
+                  width: _termColumnWidth,
+                  child: SmallcapsLabel(note.term),
                 ),
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        row.value,
-                        style: text.bodyMedium?.copyWith(color: mood.ink),
-                      ),
-                      // The value names the term; this says what living with
-                      // it is like. Only the guides that gloss have it.
-                      if (row.detail case final detail?) ...[
-                        const SizedBox(height: AppSpacing.xs),
-                        Text(
-                          detail,
-                          style: text.bodySmall?.copyWith(color: mood.inkMute),
-                        ),
-                      ],
-                    ],
+                  child: Text(
+                    note.detail,
+                    style: text.bodyMedium?.copyWith(color: mood.ink),
                   ),
                 ),
               ],
@@ -127,8 +114,8 @@ class _MetaTable extends StatelessWidget {
   }
 }
 
-/// How much of the row the label column takes, so values line up.
-const double _metaLabelWidth = 108;
+/// How much of the row the term column takes, so explanations line up.
+const double _termColumnWidth = 108;
 
 class _Fact extends StatelessWidget {
   const _Fact({required this.fact});

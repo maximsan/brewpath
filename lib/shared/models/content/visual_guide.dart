@@ -19,21 +19,11 @@ abstract class VisualGuideUnlock with _$VisualGuideUnlock {
       _$VisualGuideUnlockFromJson(json);
 }
 
-/// One row of a guide's meta table — a label and the value beside it.
+/// One level of a guide explained — *Light*, *Medium*, *Dark* for the roast
+/// guide — in the order the design draws them under the illustration.
 ///
-/// The textual counterpart of the guide's own diagram: `LIGHT / Bright ·
-/// acidic` is what the drawing says in words, which is why the drawings carry
-/// none.
-/// One row of the guide's table: what it is called, what it is, and — where
-/// the guide glosses its terms — the sentence saying what that is like.
-typedef VisualGuideMetaRow = ({String label, String value, String? detail});
-
-/// One term of a guide explained — the sentence under a row of its table.
-///
-/// Distinct from a meta row on purpose: `LIGHT / Bright · acidic` labels the
-/// roast, and this says what living with it is like. Paired by [term] rather
-/// than by position, because the table and the prose are authored in two
-/// different registries and nothing forces their order to agree.
+/// The design once paired these with a label/value table; that table was
+/// dropped, so a note is now the whole of what the sheet says about a level.
 @freezed
 abstract class VisualGuideNote with _$VisualGuideNote {
   /// Creates a [VisualGuideNote].
@@ -135,12 +125,9 @@ abstract class VisualGuide with _$VisualGuide {
     /// The one thing worth repeating to somebody else.
     required String fact,
 
-    /// The meta table on the wire: two or three label/value pairs.
-    @Default(<List<String>>[]) List<List<String>> meta,
-
-    /// What each term in the table actually means. Empty for the guides whose
-    /// drawing carries the explanation — anatomy's cross-section is the
-    /// reference, so it has no rows to gloss.
+    /// The explanation of each level, drawn under the illustration. Only the
+    /// roast and grind guides carry them; every other guide's drawing is its
+    /// own explanation.
     @Default(<VisualGuideNote>[]) List<VisualGuideNote> notes,
 
     /// The cherry's six layers, outside in. Only the anatomy guide carries
@@ -163,28 +150,4 @@ abstract class VisualGuide with _$VisualGuide {
 
   /// The lesson that earns this guide.
   String get unlockLessonId => unlock.lesson;
-
-  /// The meta table as named rows, each carrying its gloss where one exists.
-  ///
-  /// The table and the prose are authored in two different registries, so they
-  /// are joined **by term** rather than by position — case-insensitively,
-  /// because the table shouts (`LIGHT`) where the prose speaks (`Light`). The
-  /// extractor refuses to write a note whose term names no row, so a gloss can
-  /// never go quietly missing here.
-  List<VisualGuideMetaRow> get metaRows => [
-    for (final row in meta)
-      (
-        label: row.first,
-        value: row.last,
-        detail: _detailFor(row.first),
-      ),
-  ];
-
-  String? _detailFor(String label) {
-    final wanted = label.toLowerCase();
-    for (final note in notes) {
-      if (note.term.toLowerCase() == wanted) return note.detail;
-    }
-    return null;
-  }
 }

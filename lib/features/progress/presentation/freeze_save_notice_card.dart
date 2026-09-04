@@ -1,3 +1,4 @@
+import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/progress/domain/freeze_save_notice.dart';
@@ -21,17 +22,21 @@ class FreezeSaveNoticeCard extends ConsumerWidget {
   /// Creates a [FreezeSaveNoticeCard].
   const FreezeSaveNoticeCard({super.key});
 
-  Future<void> _dismiss(WidgetRef ref, int coveredDay) async {
+  Future<void> _dismiss(WidgetRef ref, int coveredDay, DateTime today) async {
     await ackFreezeSave(
       ref.read(snapshotRepositoryProvider),
       coveredDay,
-      DateTime.now(),
+      today,
     );
     ref.invalidate(freezeSaveNoticeDayProvider);
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // The same day the notice was derived against, from the provider the
+    // rollover invalidates — three separate clock reads once let this card
+    // describe yesterday against a streak computed for today.
+    final today = ref.watch(currentDayProvider);
     final coveredDay = ref.watch(freezeSaveNoticeDayProvider).asData?.value;
     final status = ref.watch(streakStatusProvider).asData?.value;
     if (coveredDay == null || status == null) return const SizedBox.shrink();
@@ -40,7 +45,7 @@ class FreezeSaveNoticeCard extends ConsumerWidget {
     final body = freezeSaveNoticeBody(
       coveredDay: coveredDay,
       status: status,
-      today: DateTime.now(),
+      today: today,
     );
     return Semantics(
       label: '$freezeSaveNoticeTitle $body',
@@ -80,7 +85,7 @@ class FreezeSaveNoticeCard extends ConsumerWidget {
               iconSize: AppSpacing.md,
               color: mood.inkMute,
               tooltip: 'Dismiss',
-              onPressed: () => _dismiss(ref, coveredDay),
+              onPressed: () => _dismiss(ref, coveredDay, today),
             ),
           ],
         ),

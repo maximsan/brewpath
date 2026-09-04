@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// The illustration palette, transcribed from the design bundle CSS
-/// (`prototype/index.html`, the `--art-*` / `--cream` block). Literal coffee:
+/// (`prototype/index.html`, the `--art-*` block). Literal coffee:
 /// identical in both moods, because a ripe cherry is the same colour under any
 /// theme. Any drift between this table and [ArtColors] is a bug in the app,
 /// never in the table — and `design bundle` below proves the table itself has
@@ -157,7 +157,7 @@ void main() {
     final css = File('prototype/index.html').readAsStringSync();
     final declared = <String, Color>{};
     for (final match in RegExp(
-      r'(--(?:art-[a-z-]+|cream))\s*:\s*#([0-9A-Fa-f]{6})',
+      r'(--art-[a-z-]+)\s*:\s*#([0-9A-Fa-f]{6})',
     ).allMatches(css)) {
       declared[match.group(1)!] = Color(
         0xFF000000 | int.parse(match.group(2)!, radix: 16),
