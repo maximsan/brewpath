@@ -38,11 +38,11 @@ original ticket described and not the "four beats over two routes"
 [Audit C](https://github.com/maximsan/brewpath/issues/373) corrected it to —
 both counted a screen that is never reached.
 
-A finished, unreachable screen stays in the prototype, and four companion
-documents still describe it as a real step. Anyone auditing against those
-documents will report a missing screen. This record is the answer to that
-report — it has already happened once.
+Four companion documents still describe the card as a real step. Anyone
+auditing against those documents will report a missing screen. This record is
+the answer to that report — it has already happened once.
 
-**Revisit if** the prototype ever wires `module-card` into the real flow.
-That would mean the missing call was a mistake to be fixed, not a leftover
-to be ignored.
+**Settled by the design, 3 Sep 2026.** The `05ac53d` drop deleted
+`ModuleRewardCardScreen`, and `?screen=module-card` now opens the module ending
+already flipped. The revisit clause this record carried — *if the prototype
+ever wires `module-card` into the real flow* — can no longer be triggered.

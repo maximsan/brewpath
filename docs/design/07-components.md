@@ -199,7 +199,6 @@ the surface inventory.
 | `CardStampSection` | 459 | Inside the card sheet. Renders **only if the card is earned** — the locked teaser opens the same sheet and must not offer the challenge. `completed` + `active` combine into a distinct "Active again on Today" line |
 | `SavedBrewList` | 550 | The parked queue. Excludes the active one and anything completed; filters again by `reached` so a challenge tied to a lesson still ahead is never advertised |
 | `BrewChallengeStat` | 618 | Profile row, `done / total`. Progress fraction floors at `0.02` so an empty bar is still visible |
-| `BrewCup` | 110 | The cup mark every challenge surface draws, with optional steam |
 | `BrewStamp` | 132 | `done` · **`press`** (the stamp-press animation) |
 | `TriedSeal` | 165 | The permanent "tried it for real" mark on a collectible |
 | `BrewCup` | 110 | Icon; `steam` toggle |

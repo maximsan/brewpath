@@ -2,6 +2,7 @@ import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/challenges/domain/challenge_bank.dart';
+import 'package:brew_path/features/challenges/presentation/challenge_suggestion.dart';
 import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -9,6 +10,12 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
 /// The Coffee Challenge offer, as one row of a reward screen.
+///
+/// The app's port of the design's `ChallengeSuggestion`. It is not the only
+/// one yet: the lesson ending still runs [ChallengeSuggestion], an older
+/// bordered card with its own *Save for later*, and converging the two onto
+/// this row is #490's job rather than this one's. Until then the confirmation
+/// sentence and the write exist in both places, deliberately.
 ///
 /// **One affordance, and no way to say no.** The design gives the row a go
 /// button and nothing else: declining is walking past it, because the challenge
@@ -72,7 +79,8 @@ class ChallengeOfferRow extends StatelessWidget {
         onTap: onStart,
         child: Padding(
           // The design trims this row to `padding: 10px 0` — tighter than a
-          // plain one, because the go button sets the height instead.
+          // plain one, because the go button sets the height instead. Snapped
+          // to the nearest stop, keeping it tighter than the plain row below.
           padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
           child: Row(
             children: [
@@ -150,8 +158,8 @@ class ChallengeStartedRow extends StatelessWidget {
       label: added,
       excludeSemantics: true,
       child: Padding(
-        // The design's `padding: 13px 0` — a plain row, with no button in it
-        // to set the height.
+        // The design's `padding: 13px 0`, on the scale: a plain row, with no
+        // button in it to set the height, so it sits a stop above the offer's.
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
         child: Text.rich(
           TextSpan(

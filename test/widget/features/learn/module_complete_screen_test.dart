@@ -383,6 +383,14 @@ void main() {
 
       expect(find.text(ChallengeOfferRow.kicker), findsOneWidget);
       expect(find.text(AppLabels.beginNextModule), findsOneWidget);
+      // Above it, not merely present with it: the offer is met on the way to
+      // the exit, and an offer under the CTA is one nobody reads.
+      expect(
+        tester.getBottomLeft(find.byType(ChallengeOfferRow)).dy,
+        lessThanOrEqualTo(
+          tester.getTopLeft(find.text(AppLabels.beginNextModule)).dy,
+        ),
+      );
     });
 
     // The offer belongs to the reward beat, not to the celebration: the

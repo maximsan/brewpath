@@ -257,6 +257,12 @@ class ModuleCompleteBack extends StatelessWidget {
           // in this flow: the design puts it above the exit CTA on this face,
           // *"no separate step"* (#464). Continuing past it is the not-now —
           // the challenge waits on the Path either way.
+          //
+          // ⚠️ The design lets the offer scroll with the content and floats
+          // only the CTA. `StickyActionBar` pins its preface, so here the two
+          // travel together. Order and spacing match; on a face this short
+          // nothing scrolls anyway, and prising the offer out of the shared
+          // footer (#412) for one caller would cost more than it buys.
           preface: ModuleChallengeOffer(moduleId: summary.module.id),
           content: Column(
             mainAxisSize: MainAxisSize.min,

@@ -1,3 +1,4 @@
+import 'package:brew_path/core/widgets/sticky_action_bar.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_offer_row.dart';
 import 'package:brew_path/shared/models/content/brew_challenge.dart';
@@ -30,23 +31,35 @@ class ModuleChallengeOffer extends ConsumerStatefulWidget {
 }
 
 class _ModuleChallengeOfferState extends ConsumerState<ModuleChallengeOffer> {
-  /// Whether the learner accepted the offer while this screen was open.
+  /// Whether the challenge is now on Today, put there from this row.
   ///
-  /// Set before the write rather than after it, which is both the design's
-  /// optimistic morph and the guard against a second tap starting the same
-  /// challenge twice while the first write is still in flight.
+  /// Set **after** the write lands: the row says *Added to Today*, so a write
+  /// that threw must leave the offer standing rather than a sentence claiming
+  /// something that did not happen.
   bool _accepted = false;
 
-  Future<void> _start(BrewChallenge challenge) async {
-    if (_accepted) return;
-    setState(() => _accepted = true);
+  /// Whether a write is in flight — the guard that stops a second tap starting
+  /// the same challenge twice before the first has landed.
+  bool _starting = false;
 
-    await startChallenge(
-      ref.read(snapshotRepositoryProvider),
-      id: challenge.id,
-      now: DateTime.now(),
-    );
+  Future<void> _start(BrewChallenge challenge) async {
+    if (_starting || _accepted) return;
+    _starting = true;
+    try {
+      await startChallenge(
+        ref.read(snapshotRepositoryProvider),
+        id: challenge.id,
+        now: DateTime.now(),
+      );
+    } finally {
+      _starting = false;
+    }
     if (!mounted) return;
+
+    // Confirmed before the providers are invalidated, not after: accepting is
+    // exactly what stops the offer being live, so a rebuild in between would
+    // blank the row at the moment it has something to say.
+    setState(() => _accepted = true);
     ref
       ..invalidate(activeChallengeProvider)
       ..invalidate(savedChallengesProvider);
@@ -71,11 +84,8 @@ class _ModuleChallengeOfferState extends ConsumerState<ModuleChallengeOffer> {
   }
 }
 
-/// The gap between the offer and the action under it.
-///
-/// Carried here rather than by the footer, which adds no spacer of its own: an
-/// offer that renders nothing must leave nothing behind, and a gap the bar
-/// contributed would show as a phantom band on every ending without one.
+/// The design's 16 px between the offer and the exit CTA, carried by the offer
+/// because [StickyActionBar.preface] contributes none.
 class _Slot extends StatelessWidget {
   const _Slot({required this.child});
 
@@ -83,7 +93,6 @@ class _Slot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    // The design's 16 px between the offer and the exit CTA.
     padding: const EdgeInsets.only(bottom: AppSpacing.md),
     child: child,
   );
