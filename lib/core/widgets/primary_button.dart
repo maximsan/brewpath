@@ -1,4 +1,7 @@
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
+import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +28,7 @@ class PrimaryButton extends StatelessWidget {
   const PrimaryButton({
     required this.label,
     required this.onPressed,
+    this.trailingMark,
     super.key,
   });
 
@@ -38,6 +42,17 @@ class PrimaryButton extends StatelessWidget {
 
   /// Tap handler; `null` disables the button.
   final VoidCallback? onPressed;
+
+  /// A mark after the label, for an action whose *gesture* is worth drawing —
+  /// the module ending's *Turn it over* carries the flip glyph, because the
+  /// button is the ceremony's beat rather than a way onward.
+  ///
+  /// Decoration, not a second affordance: it is inside the button and
+  /// excluded from semantics, so the label remains the whole announcement.
+  final AppIcon? trailingMark;
+
+  /// The mark's size beside a control-step label.
+  static const double _markSize = 18;
 
   @override
   Widget build(BuildContext context) {
@@ -60,13 +75,30 @@ class PrimaryButton extends StatelessWidget {
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16),
         ),
-        child: Text(
-          label,
-          style: AppText.body(
-            mood: mood,
-            color: foreground,
-            face: AppFace.control,
-          ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                label,
+                style: AppText.body(
+                  mood: mood,
+                  color: foreground,
+                  face: AppFace.control,
+                ),
+              ),
+            ),
+            if (trailingMark != null) ...[
+              const SizedBox(width: AppSpacing.xs),
+              ExcludeSemantics(
+                child: IconMark(
+                  trailingMark!,
+                  size: _markSize,
+                  color: foreground,
+                ),
+              ),
+            ],
+          ],
         ),
       ),
     );

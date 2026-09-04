@@ -1,3 +1,5 @@
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/widgets/ghost_button.dart';
 import 'package:brew_path/core/widgets/link_button.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -25,11 +27,39 @@ const double _estimatedBarHeight =
 /// acting on it would set state every frame.
 const double _measurementNoise = 0.5;
 
+/// The bordered action a bar may carry under its primary.
+///
+/// **Not a second primary.** It is the design's `btn-ghost` — an outline in the
+/// accent, which is how a verdict that deserves more than a link still reads as
+/// quieter than the way forward. The lesson ending's *Practice this lesson
+/// again* is the case it exists for: the screen's verdict on a weak run, paired
+/// with the action that acts on it.
+@immutable
+class GhostAction {
+  /// Creates a [GhostAction] — neutral, which is what a dismiss or a skip is.
+  const GhostAction({required this.label, required this.onPressed})
+    : isAccent = false;
+
+  /// The inviting variant, for the one ghost the design draws in the accent:
+  /// the lesson ending's *Practice this lesson again*.
+  const GhostAction.accent({required this.label, required this.onPressed})
+    : isAccent = true;
+
+  /// What the button reads.
+  final String label;
+
+  /// Pressed. Null shows it disabled rather than hiding it.
+  final VoidCallback? onPressed;
+
+  /// Whether the button invites rather than dismisses.
+  final bool isAccent;
+}
+
 /// The quiet link a bar may carry under its action.
 ///
 /// A value type rather than a `label`/`onTap` pair on [StickyActionBar], so the
 /// two cannot be passed half-set — and so the bar's signature says plainly that
-/// the second slot is a *link*, never a second button.
+/// the slot is a *link*, never a button.
 @immutable
 class QuietLink {
   /// Creates a [QuietLink].
@@ -44,11 +74,17 @@ class QuietLink {
 
 /// The footer that carries a screen's single primary action.
 ///
-/// **One primary action, and at most a quiet link beneath it.** The signature
-/// takes a label and a callback rather than a widget, so a second filled button
-/// is not something a caller can pass. The design's rule that *"this and the
-/// tab bar are the app's only footers"* is then enforceable by the absence of
-/// any other pinned-footer widget.
+/// **One primary action.** The signature takes a label and a callback rather
+/// than a widget, so a second filled button is not something a caller can
+/// pass. The design's rule that *"this and the tab bar are the app's only
+/// footers"* is then enforceable by the absence of any other pinned-footer
+/// widget.
+///
+/// Under it the bar carries at most two quieter things, and neither can be
+/// mistaken for a second primary: a [ghost] — a bordered button the design
+/// gives a verdict that deserves weight, like *Practice this lesson again* —
+/// and a [link]. Both are value types for the same reason the primary is a
+/// label and a callback: a caller cannot hand either one a filled button.
 ///
 /// **It owns the scroll.** [content] is plain — the bar wraps it, centres it
 /// when it fits and scrolls it when it does not, matching the design's
@@ -67,6 +103,8 @@ class StickyActionBar extends StatefulWidget {
     required this.content,
     required this.label,
     required this.onPressed,
+    this.trailingMark,
+    this.ghost,
     this.link,
     this.preface,
     super.key,
@@ -82,16 +120,30 @@ class StickyActionBar extends StatefulWidget {
   /// learner can see what the screen wants before they have done it.
   final VoidCallback? onPressed;
 
+  /// A mark after the primary's label — see [PrimaryButton.trailingMark].
+  final AppIcon? trailingMark;
+
+  /// The optional bordered action under the primary.
+  final GhostAction? ghost;
+
   /// The optional quiet link under the action.
+  ///
+  /// **No caller in v1.** The design's footer puts *Duel a friend* here on the
+  /// lesson ending, and the duel is v2 — so the slot is drawn and tested but
+  /// nothing production passes it yet. Kept rather than removed and re-added:
+  /// it is a slot the design has, not one the app invented.
   final QuietLink? link;
 
   /// Optional content pinned **above** the action, inside the bar.
   ///
-  /// The design puts a whole card here on the lesson ending — the Coffee
-  /// Challenge offer (`prototype/rewards.jsx:139`) — and a support paragraph
-  /// on the duel. Both belong to the footer rather than to the scrolling
-  /// content: they travel with the action, and the gradient has to sit behind
-  /// them.
+  /// A sentence the action needs read first — the module ending's *"A reward
+  /// card is waiting on the other side."* It belongs to the footer rather than
+  /// to the scrolling content: it travels with the action, and the gradient
+  /// has to sit behind it.
+  ///
+  /// The lesson ending's Coffee Challenge offer used to live here. It is a row
+  /// of that screen's reward list now, with the freeze and the new card, so
+  /// the three read as one list rather than one of them being footer chrome.
   ///
   /// **Still not a second action.** The primary is a label and a callback and
   /// nothing here changes that, so the design's *"one primary action only"*
@@ -204,6 +256,7 @@ class _StickyActionBarState extends State<StickyActionBar> {
 
   Widget _bar() {
     final mood = context.mood;
+    final ghost = widget.ghost;
     final link = widget.link;
     final preface = widget.preface;
 
@@ -231,7 +284,24 @@ class _StickyActionBarState extends State<StickyActionBar> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               ?preface,
-              PrimaryButton(label: widget.label, onPressed: widget.onPressed),
+              PrimaryButton(
+                label: widget.label,
+                onPressed: widget.onPressed,
+                trailingMark: widget.trailingMark,
+              ),
+              if (ghost != null) ...[
+                const SizedBox(height: AppSpacing.xs),
+                if (ghost.isAccent)
+                  GhostButton.accent(
+                    label: ghost.label,
+                    onPressed: ghost.onPressed,
+                  )
+                else
+                  GhostButton(
+                    label: ghost.label,
+                    onPressed: ghost.onPressed,
+                  ),
+              ],
               if (link != null)
                 LinkButton(label: link.label, onPressed: link.onTap),
             ],

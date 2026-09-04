@@ -43,6 +43,28 @@ Future<Set<String>> completedChallenges(Ref ref) async {
   return (await snapshots.read()).clearedByReset.challengesCompleted;
 }
 
+/// The challenge [lessonId] carries, **only while it is still an offer**.
+///
+/// Null covers all three ways there is nothing to offer: the lesson carries no
+/// challenge (twenty of the thirty-two do not), the learner has already
+/// started it, or they have already finished it. Resolved as one question
+/// because the reward list needs one answer — a row that rendered itself empty
+/// would still take a hairline from the row above it.
+@riverpod
+Future<BrewChallenge?> lessonChallengeOffer(Ref ref, String lessonId) async {
+  final challenge = challengeForLesson(
+    await ref.watch(challengeBankProvider.future),
+    lessonId,
+  );
+  if (challenge == null) return null;
+
+  final active = await ref.watch(activeChallengeProvider.future);
+  if (active?.id == challenge.id) return null;
+
+  final completed = await ref.watch(completedChallengesProvider.future);
+  return completed.contains(challenge.id) ? null : challenge;
+}
+
 /// What [cardId]'s challenge is doing, as a tile shows it.
 ///
 /// Three states, not two: a card can have no challenge at all, one waiting to
@@ -51,7 +73,7 @@ Future<Set<String>> completedChallenges(Ref ref) async {
 /// the arithmetic lives here rather than in the widget.
 ///
 /// **Every unbrewed challenge is an offer**, not only the one currently in
-/// play. The design's `challengeOpen` (`screens.jsx:1621`) is *earned, has a
+/// play. The design's `challengeOpen` is *earned, has a
 /// challenge, has not completed it* — so a learner sees every card that still
 /// owes them a brew, rather than the single one the lifecycle happens to have
 /// active. Reading the active challenge here would ring at most one tile and
@@ -253,32 +275,6 @@ Future<void> saveActiveChallengeForLater(
             writerId: snapshot.deviceId,
           )
           .withActiveChallenge(null, at: at, writerId: snapshot.deviceId),
-    ),
-  );
-}
-
-/// Parks [id] for later without touching whatever is in play.
-///
-/// The lesson-complete offer's *Save for later*: the learner is parking a
-/// challenge they never started, so clearing Today would throw away a
-/// different challenge they are part-way through.
-Future<void> saveChallengeForLater(
-  SnapshotRepository repository, {
-  required String id,
-  required DateTime now,
-}) async {
-  final snapshot = await repository.read();
-  final progress = snapshot.clearedByReset;
-  final at = now.millisecondsSinceEpoch;
-
-  await repository.write(
-    snapshot.copyWith(
-      updatedAt: at,
-      clearedByReset: progress.withChallengesSaved(
-        parkChallenge(progress.challengesSaved.value, id),
-        at: at,
-        writerId: snapshot.deviceId,
-      ),
     ),
   );
 }

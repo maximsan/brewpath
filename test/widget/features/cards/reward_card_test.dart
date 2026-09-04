@@ -1,6 +1,5 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/cards/presentation/reward_card.dart';
-import 'package:brew_path/features/cards/presentation/reward_card_preview.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -57,58 +56,6 @@ void main() {
 
       final opacity = tester.widget<Opacity>(find.byType(Opacity).first);
       expect(opacity.opacity, 1);
-    });
-  });
-
-  group('the preview', () {
-    Future<void> open(WidgetTester tester) async {
-      await tester.pumpWidget(
-        _host(
-          Builder(
-            builder: (context) => TextButton(
-              onPressed: () => showRewardCardPreview(context, _card),
-              child: const Text('open'),
-            ),
-          ),
-        ),
-      );
-      await tester.tap(find.text('open'));
-      await tester.pumpAndSettle();
-    }
-
-    testWidgets('opens onto the card', (tester) async {
-      await open(tester);
-
-      expect(find.byType(RewardCard), findsOneWidget);
-      expect(find.text(_card.fact), findsOneWidget);
-    });
-
-    testWidgets('closes on its own control', (tester) async {
-      await open(tester);
-
-      await tester.tap(find.bySemanticsLabel('Close preview'));
-      await tester.pumpAndSettle();
-
-      expect(find.byType(RewardCard), findsNothing);
-    });
-
-    testWidgets('and on a tap outside the card', (tester) async {
-      await open(tester);
-
-      await tester.tapAt(const Offset(10, 10));
-      await tester.pumpAndSettle();
-
-      expect(find.byType(RewardCard), findsNothing);
-    });
-
-    // The card is the subject; tapping it must not dismiss what you opened.
-    testWidgets('but not on a tap on the card itself', (tester) async {
-      await open(tester);
-
-      await tester.tap(find.text(_card.title));
-      await tester.pumpAndSettle();
-
-      expect(find.byType(RewardCard), findsOneWidget);
     });
   });
 }

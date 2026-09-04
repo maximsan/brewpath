@@ -1,14 +1,12 @@
-import 'dart:async';
-
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
+import 'package:brew_path/core/widgets/reward_flip_view.dart';
 import 'package:brew_path/features/companion/domain/companion_reaction.dart';
 import 'package:brew_path/features/companion/presentation/roasty_moment.dart';
 import 'package:brew_path/features/learn/domain/module_summary_provider.dart';
 import 'package:brew_path/features/learn/presentation/module_complete_faces.dart';
-import 'package:brew_path/features/learn/presentation/module_flip_animation.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:flutter/material.dart';
@@ -63,7 +61,7 @@ class ModuleCompleteScreen extends ConsumerStatefulWidget {
 }
 
 class _ModuleCompleteScreenState extends ConsumerState<ModuleCompleteScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, RewardFlipController {
   /// The module ending's longer hold — the one beat that overrides the
   /// default. It lives here, with the beat that asks for it, rather than in
   /// the shared widget.
@@ -75,36 +73,6 @@ class _ModuleCompleteScreenState extends ConsumerState<ModuleCompleteScreen>
 
   /// Whether the opening beat has handed over.
   bool _beatDone = false;
-
-  /// Built in [initState], not lazily: a `late final` controller that the
-  /// learner never turns is first created by `dispose()` calling it, and
-  /// `createTicker` then looks up an ancestor of a widget that is already
-  /// deactivated.
-  late final AnimationController _flip;
-
-  @override
-  void initState() {
-    super.initState();
-    _flip = AnimationController(vsync: this, duration: flipDuration);
-  }
-
-  @override
-  void dispose() {
-    _flip.dispose();
-    super.dispose();
-  }
-
-  void _turnOver({required bool toBack}) {
-    if (MediaQuery.disableAnimationsOf(context)) {
-      // Reduced motion gets the *result* of the turn, not a faster turn: the
-      // flip is a rotation in depth, and there is no gentle version of it.
-      _flip.value = flipRestValue(showingBack: toBack);
-      return;
-    }
-    // The turn is fire-and-forget: nothing waits on it finishing, and the
-    // faces swap off the controller's value rather than off its future.
-    unawaited(toBack ? _flip.forward() : _flip.reverse());
-  }
 
   /// Leaves for the Path — the way out when the course has nothing queued.
   void _backToPath() => context.goNamed(AppRoutes.path.name);
@@ -141,16 +109,22 @@ class _ModuleCompleteScreenState extends ConsumerState<ModuleCompleteScreen>
           loading: () => const LoadingIndicator(),
           error: (error, _) => ErrorView(message: '$error'),
           data: (data) => _beatDone
-              ? _Flip(
-                  summary: data,
-                  run: run,
-                  freezeEarned: widget.freezeEarned,
-                  fromStage: widget.fromStage ?? treeStage,
-                  toStage: widget.toStage ?? treeStage,
-                  flip: _flip,
-                  onTurn: _turnOver,
-                  onClose: _backToPath,
-                  onContinue: () => _continue(data),
+              ? RewardFlipView(
+                  turn: flipProgress,
+                  front: (context) => ModuleCompleteFront(
+                    summary: data,
+                    run: run,
+                    freezeEarned: widget.freezeEarned,
+                    fromStage: widget.fromStage ?? treeStage,
+                    toStage: widget.toStage ?? treeStage,
+                    onClose: _backToPath,
+                    onTurnOver: () => turnTo(showCard: true),
+                  ),
+                  back: (context) => ModuleCompleteBack(
+                    summary: data,
+                    onFlipBack: () => turnTo(showCard: false),
+                    onContinue: () => _continue(data),
+                  ),
                 )
               : RoastyMoment(
                   reaction: CompanionReaction.moduleComplete,
@@ -161,84 +135,6 @@ class _ModuleCompleteScreenState extends ConsumerState<ModuleCompleteScreen>
                 ),
         ),
       ),
-    );
-  }
-}
-
-/// The two faces, and the turn between them.
-class _Flip extends StatelessWidget {
-  const _Flip({
-    required this.summary,
-    required this.run,
-    required this.freezeEarned,
-    required this.fromStage,
-    required this.toStage,
-    required this.flip,
-    required this.onTurn,
-    required this.onClose,
-    required this.onContinue,
-  });
-
-  final ModuleSummary summary;
-  final ModuleEndingRun run;
-  final bool freezeEarned;
-  final int fromStage;
-  final int toStage;
-  final AnimationController flip;
-  final void Function({required bool toBack}) onTurn;
-  final VoidCallback onClose;
-  final VoidCallback onContinue;
-
-  /// The design's `perspective: 1800` — the depth that makes the turn read as
-  /// a card rather than a squash. Matrix4 wants its reciprocal.
-  static const double _perspective = 1 / 1800;
-
-  /// `perspectiveOrigin: 50% 42%` — slightly above centre, so the turn pivots
-  /// about the celebration rather than about the footer.
-  static const Alignment _origin = Alignment(0, -0.16);
-
-  @override
-  Widget build(BuildContext context) {
-    // The design's own easing. Read through a curve rather than baked into the
-    // controller so `flip.value` stays the plain 0→1 the maths is written in.
-    final turn = CurvedAnimation(parent: flip, curve: flipCurve);
-
-    return AnimatedBuilder(
-      animation: turn,
-      builder: (context, _) {
-        final showsBack = flipShowsBack(turn.value);
-
-        return Transform(
-          alignment: _origin,
-          transform: flipTransform(
-            progress: turn.value,
-            perspective: _perspective,
-          ),
-          child: showsBack
-              // Turned again so the back reads upright rather than mirrored:
-              // it is drawn on the far side of a card that is already half
-              // way round.
-              ? Transform(
-                  alignment: Alignment.center,
-                  transform: Matrix4.identity()
-                    ..rotateY(flipAngle(flipTurnedOver)),
-                  child: ModuleCompleteBack(
-                    summary: summary,
-                    onFlipBack: () => onTurn(toBack: false),
-                    onContinue: onContinue,
-                  ),
-                )
-              : ModuleCompleteFront(
-                  summary: summary,
-                  run: run,
-                  freezeEarned: freezeEarned,
-                  fromStage: fromStage,
-                  toStage: toStage,
-                  onClose: onClose,
-                  onTurnOver: () => onTurn(toBack: true),
-                ),
-        );
-      },
     );
   }
 }
