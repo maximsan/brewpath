@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
+import 'package:brew_path/core/widgets/page_large_title.dart';
+import 'package:brew_path/core/widgets/sub_screen_scaffold.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
 import 'package:brew_path/features/monetization/presentation/activity_start.dart';
@@ -20,6 +22,12 @@ import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+/// How far the shelf scrolls before its bar arrives.
+///
+/// The design gives this one screen its own threshold — 72 where every other
+/// page takes the hook's default 40.
+const double _shelfScrollThreshold = 72;
 
 /// Everything the learner has bookmarked, in three groups.
 ///
@@ -60,9 +68,13 @@ class SavedScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final shelf = ref.watch(savedShelfProvider);
 
-    return Scaffold(
-      appBar: AppBar(title: const Text(title)),
-      body: shelf.when(
+    return SubScreenScaffold(
+      title: title,
+      // The one screen the design gives its own threshold: the shelf waits
+      // until 72 where every other page's bar arrives at 40.
+      threshold: _shelfScrollThreshold,
+      onBack: () => Navigator.of(context).maybePop(),
+      body: (context, scrollPadding) => shelf.when(
         loading: () => Semantics(
           label: 'Loading your saved items',
           child: const LoadingIndicator(),
@@ -73,9 +85,13 @@ class SavedScreen extends ConsumerWidget {
           label: 'Your saved items could not be loaded',
           child: ErrorView(message: '$error'),
         ),
+        // The shelf is titled whether or not it holds anything: the page's
+        // large title is what names it at rest, and an empty shelf is still
+        // the shelf.
         data: (groups) => groups.isEmpty
-            ? const SavedEmptyView()
+            ? _Empty(scrollPadding: scrollPadding)
             : _Shelf(
+                scrollPadding: scrollPadding,
                 groups: groups,
                 // Unresolved entitlement reads as free — the offer is the
                 // safe thing to show while the answer is still coming.
@@ -87,12 +103,35 @@ class SavedScreen extends ConsumerWidget {
   }
 }
 
+/// The shelf with nothing on it — still titled, still the shelf.
+class _Empty extends StatelessWidget {
+  const _Empty({required this.scrollPadding});
+
+  final EdgeInsets scrollPadding;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(AppSpacing.gutter) + scrollPadding,
+      children: const [
+        PageLargeTitle(SavedScreen.title),
+        SizedBox(height: AppSpacing.lg),
+        SavedEmptyView(),
+      ],
+    );
+  }
+}
+
 class _Shelf extends StatelessWidget {
   const _Shelf({
+    required this.scrollPadding,
     required this.groups,
     required this.isPlus,
     required this.onOpen,
   });
+
+  /// The room the bar floating over this list leaves at the top.
+  final EdgeInsets scrollPadding;
 
   final List<SavedGroup> groups;
   final bool isPlus;
@@ -103,8 +142,10 @@ class _Shelf extends StatelessWidget {
     final count = savedShelfCount(groups);
 
     return ListView(
-      padding: const EdgeInsets.all(AppSpacing.gutter),
+      padding: const EdgeInsets.all(AppSpacing.gutter) + scrollPadding,
       children: [
+        const PageLargeTitle(SavedScreen.title),
+        const SizedBox(height: AppSpacing.sm),
         Text(
           savedCountLine(count: count, isPlus: isPlus),
           style: Theme.of(

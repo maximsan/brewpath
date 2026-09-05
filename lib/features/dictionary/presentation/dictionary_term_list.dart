@@ -11,6 +11,11 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
 /// The visible terms, grouped under their categories in bank order.
+///
+/// A sliver rather than a list of its own: the page scrolls as one now, so
+/// that the shelf's title can leave the top the way the design has it — and a
+/// sliver is what keeps seventy-odd rows building as they are reached rather
+/// than all at once.
 class DictionaryTermList extends StatelessWidget {
   /// Creates a [DictionaryTermList].
   const DictionaryTermList({
@@ -33,7 +38,7 @@ class DictionaryTermList extends StatelessWidget {
   Widget build(BuildContext context) {
     final grouped = groupByCategory(visible, view.categories);
 
-    return ListView(
+    return SliverList.list(
       children: [
         for (final entry in grouped.entries) ...[
           SectionHeader(entry.key.label),

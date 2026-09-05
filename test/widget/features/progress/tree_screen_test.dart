@@ -81,8 +81,9 @@ void main() {
     await pumpWithProviders(tester, const BrewPathApp());
     await openTree(tester);
 
-    // A fresh learner is at the seed with nothing finished.
-    expect(find.text(TreeScreen.title), findsOneWidget);
+    // A fresh learner is at the seed with nothing finished. The screen's own
+    // name is the bar's, and the bar is wordless until the page scrolls, so
+    // what titles the page here is the stage the tree has reached (#513).
     expect(find.text('Seed'), findsOneWidget);
     expect(find.text('STAGE 1 OF $treeStageCount'), findsOneWidget);
     expect(find.text('CORE LESSONS COMPLETED'), findsOneWidget);
