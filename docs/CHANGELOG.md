@@ -42,6 +42,14 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ## [Unreleased]
 
+### Added
+
+- **Roasty holds your guess on the opening card of a lesson.** Pick one of the
+  two answers and he appears beside it holding a card, labelled with the guess
+  you took, and the line that keeps the question open beside him. He does not
+  say whether you were right — the card at the end of the lesson still does
+  that.
+
 ### Changed
 
 - **Your progress now lives in one place.** Finishing a lesson used to write
@@ -58,6 +66,11 @@ You can always edit this file by hand instead — the helpers just save effort.
   worth one thing on the Profile and another on the lesson that paid it.
 
 ### Fixed
+
+- **The explanation under a verdict is grey again on the decision and recall
+  cards.** Those two are set a size larger than the rest, and the app was
+  reading full black ink off that larger step. Only the size was meant to
+  change.
 
 - **The module's reward card is no longer introduced twice.** Turning the
   module ending over showed *Reward unlocked* and *New collectible card*

@@ -2,18 +2,12 @@
 /// discrete app event. A reaction plays its (non-looping) animation, then the
 /// companion reverts to its current `CompanionMood`.
 ///
-/// Whether the values marked unwired below ever ship — and what they would
-/// displace on screens that already celebrate — is open on
-/// [#219](https://github.com/maximsan/brewpath/issues/219). A points-earned
-/// value was deleted rather than wired (#212): it stated a payout no rule
-/// produced.
+/// **Every member is fired by a surface.** A face a widget simply draws — the
+/// verdict block's, the predict card's held guess — is set on the mascot
+/// directly, the way the design does it, so it is not a reaction. Three
+/// members that named such faces and fired nowhere were deleted under
+/// [#219](https://github.com/maximsan/brewpath/issues/219).
 enum CompanionReaction {
-  /// Right answer (unwired in v1 — inline mini-game feedback handles it).
-  correct,
-
-  /// Wrong answer (unwired in v1).
-  wrong,
-
   /// A lesson was completed.
   lessonComplete,
 
@@ -28,9 +22,6 @@ enum CompanionReaction {
 
   /// A Coffee Challenge was logged — a real brew, made away from the app.
   challengeComplete,
-
-  /// A collectible card was earned (unwired in v1 — card screen has no mascot).
-  cardEarned,
 
   /// A fresh streak milestone — the streak screen's opening beat (#236).
   streakMilestone,

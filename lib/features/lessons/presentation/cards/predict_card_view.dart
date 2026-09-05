@@ -1,9 +1,9 @@
+import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
 import 'package:brew_path/features/lessons/presentation/cards/pick_tile_row.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
-import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
 /// The opening card: a framing paragraph and one binary guess.
@@ -18,6 +18,9 @@ import 'package:flutter/material.dart';
 /// one picking moment in the course that is not graded should not look like
 /// the ones that are. It also stays changeable right up to Continue, because
 /// nothing is scored and so nothing is protected by latching.
+///
+/// Once a guess is taken, Roasty holds it on a card: the same block every
+/// graded card closes on, in the one standing that marks nothing.
 class PredictCardView extends StatefulWidget {
   /// Creates a [PredictCardView].
   const PredictCardView({
@@ -46,7 +49,6 @@ class _PredictCardViewState extends State<PredictCardView> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final mood = context.mood;
     final card = widget.card;
     final latched = _selectedIndex != null;
 
@@ -68,14 +70,13 @@ class _PredictCardViewState extends State<PredictCardView> {
           chosenIndex: _selectedIndex,
           onChoose: (index) => setState(() => _selectedIndex = index),
         ),
-        if (latched) ...[
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            card.hold,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: mood.inkMute,
-              fontStyle: FontStyle.italic,
-            ),
+        if (_selectedIndex case final chosen?) ...[
+          const SizedBox(height: AppSpacing.md),
+          AnswerFeedback(
+            verdict: 'Your guess · ${widget.options[chosen]}',
+            outcome: Verdict.held,
+            explanation: card.hold,
+            placement: VerdictPlacement.heldGuess,
           ),
         ],
       ],
