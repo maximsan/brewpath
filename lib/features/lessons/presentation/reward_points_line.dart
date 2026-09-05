@@ -27,28 +27,40 @@ class RewardPointsLine extends StatelessWidget {
   /// The design's `PointsBean size={18}`.
   static const double beanSize = 18;
 
+  /// The room the design leaves between the tree and this line
+  /// (`marginTop: 14`).
+  ///
+  /// **Carried here, not by the caller.** A gap left outside survives the
+  /// line it belongs to: at zero the line collapsed and its space did not,
+  /// pushing everything below a replay's still tree down by a line that was
+  /// not there.
+  static const double gapAbove = AppSpacing.base;
+
   @override
   Widget build(BuildContext context) {
     if (points <= 0) return const SizedBox.shrink();
     final mood = context.mood;
 
-    return Semantics(
-      label: '$points points earned',
-      excludeSemantics: true,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          IconMark(AppIcon.bean, size: beanSize, color: mood.accent),
-          const SizedBox(width: AppSpacing.xs),
-          Text(
-            '+$points PTS',
-            style: AppText.support(
-              mood: mood,
-              color: mood.ink,
-              face: AppFace.mono,
+    return Padding(
+      padding: const EdgeInsets.only(top: gapAbove),
+      child: Semantics(
+        label: '$points points earned',
+        excludeSemantics: true,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IconMark(AppIcon.bean, size: beanSize, color: mood.accent),
+            const SizedBox(width: AppSpacing.xs),
+            Text(
+              '+$points PTS',
+              style: AppText.support(
+                mood: mood,
+                color: mood.ink,
+                face: AppFace.mono,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
