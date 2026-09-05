@@ -1,5 +1,6 @@
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/utils/module_icons.dart';
+import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart';
 import 'package:brew_path/shared/models/content/dictionary_category.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -35,27 +36,29 @@ class CategoryIndex extends StatelessWidget {
   /// The categories, in bank order.
   final List<DictionaryCategory> categories;
 
-  /// Every term, for the per-category counts.
+  /// Every term this learner can see, for the per-category counts.
   final List<DictionaryTerm> terms;
 
   /// Called with the category the learner picked.
   final ValueChanged<DictionaryCategory> onOpen;
 
-  int _countFor(DictionaryCategory category) =>
-      terms.where((term) => term.categoryId == category.id).length;
-
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
 
+    // Grouped by the same rule the list uses, so a category with nothing
+    // behind it for this tier is absent rather than a row that opens onto an
+    // empty shelf.
+    final grouped = groupByCategory(terms, categories);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        for (final category in categories)
+        for (final entry in grouped.entries)
           _CategoryRow(
-            category: category,
-            count: _countFor(category),
-            onOpen: () => onOpen(category),
+            category: entry.key,
+            count: entry.value.length,
+            onOpen: () => onOpen(entry.key),
             mood: mood,
           ),
       ],

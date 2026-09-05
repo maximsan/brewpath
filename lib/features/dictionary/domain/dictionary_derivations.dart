@@ -26,7 +26,8 @@ enum DictionaryStatus {
 
 /// Which terms the home screen is showing.
 enum DictionaryFilter {
-  /// Every term, reference included.
+  /// Every term on the shelf — reference terms included, when the tier
+  /// carries them.
   all,
 
   /// Only terms whose teaching lesson is complete.
@@ -35,6 +36,29 @@ enum DictionaryFilter {
   /// Only terms still ahead on the path — never reference terms.
   toLearn,
 }
+
+/// The terms this learner's tier may see at all, in bank order.
+///
+/// `docs/decisions.md` §12 splits the bank into two access classes: a lesson
+/// term is browsable by everyone, and a reference term — one no lesson
+/// teaches — comes with the course. For a free learner a reference term is
+/// **absent, not locked**: it is not in search, not in a category, not
+/// counted, and its id resolves to nothing. Every dictionary surface reads
+/// this once, through `DictionaryView`, so no screen can carry a wider shelf
+/// than the tier allows.
+///
+/// Derived on every read. The bank has changed size three times, so the
+/// numbers in §12's note are what it measured on the day, and this is the
+/// rule that outlived them.
+List<DictionaryTerm> visibleTerms({
+  required List<DictionaryTerm> terms,
+  required bool hasCourse,
+}) => hasCourse
+    ? terms
+    : [
+        for (final term in terms)
+          if (term.lessonId != null) term,
+      ];
 
 /// Resolves [term]'s status against the lessons this learner has completed.
 ///
@@ -112,7 +136,8 @@ class DictionaryCounts {
     required this.toLearn,
   });
 
-  /// Every term, reference included.
+  /// Every term on the shelf — reference terms included, when the tier
+  /// carries them.
   final int all;
 
   /// Terms whose teaching lesson is complete.
