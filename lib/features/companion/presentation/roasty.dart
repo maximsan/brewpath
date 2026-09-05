@@ -6,14 +6,14 @@ import 'package:brew_path/features/companion/presentation/roasty_animation.dart'
 import 'package:brew_path/features/companion/presentation/roasty_body.dart';
 import 'package:brew_path/features/companion/presentation/roasty_faces.dart';
 import 'package:brew_path/features/companion/presentation/roasty_particles.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// Animated Roasty mascot. Reproduces the geometry + per-state animations
-/// from the design bundle (`prototype/roasty.jsx`)
-/// using Flutter's Canvas + a single [AnimationController]. Public API:
-/// `Roasty(state: …, size: …, replayKey: …)`. The `replayKey` mimics the
-/// prototype's `key={state + ':' + replayKey}` so one-shot animations
-/// restart on demand.
+/// Animated Roasty mascot. Reproduces the design's mascot geometry and
+/// per-state animations using Flutter's Canvas + a single
+/// [AnimationController]. Public API: `Roasty(state: …, size: …,
+/// replayKey: …)`. The `replayKey` mimics the design's
+/// `key={state + ':' + replayKey}` so one-shot animations restart on demand.
 class Roasty extends StatefulWidget {
   /// Creates a [Roasty].
   const Roasty({
@@ -31,7 +31,7 @@ class Roasty extends StatefulWidget {
   /// Rendered width/height in logical pixels.
   final double size;
 
-  /// Changing this restarts one-shot animations (mirrors the prototype key).
+  /// Changing this restarts one-shot animations (mirrors the design's key).
   final Object? replayKey;
 
   /// Whether the mascot animates. When false — or when the platform requests
@@ -130,8 +130,9 @@ class _RoastyState extends State<Roasty> with SingleTickerProviderStateMixin {
           builder: (context, _) => CustomPaint(
             painter: _RoastyPainter(
               state: widget.state,
-              t: _controller.value,
+              progress: _controller.value,
               sproutScale: widget.sproutScale,
+              mood: context.mood,
             ),
           ),
         ),
@@ -141,15 +142,25 @@ class _RoastyState extends State<Roasty> with SingleTickerProviderStateMixin {
 }
 
 /// Paints the bean body, current-state face, sprout, and the state-specific
-/// particle layer onto a 200x280 logical canvas (matches the prototype's
-/// SVG viewBox so geometry copies 1:1 from roasty.jsx). Drawing is delegated
+/// particle layer onto a 200x280 logical canvas (the design's own viewBox, so
+/// geometry copies 1:1). Drawing is delegated
 /// to the sibling `roasty_body` / `roasty_faces` / `roasty_particles` modules;
 /// the animation math lives in `roasty_animation`.
 class _RoastyPainter extends CustomPainter {
-  _RoastyPainter({required this.state, required this.t, this.sproutScale});
+  _RoastyPainter({
+    required this.state,
+    required this.progress,
+    required this.mood,
+    this.sproutScale,
+  });
 
   final RoastyState state;
-  final double t;
+  final double progress;
+
+  /// The ambient mood, for the marks the design gives to the theme rather
+  /// than to the mascot's palette: the celebration warn, the wrong badge's
+  /// berry, the sleeping `z`s' muted ink.
+  final MoodColors mood;
 
   /// When non-null, overrides the state-derived sprout scale (used by the
   /// loading screen to grow the sprout out of Roasty's head during wake-up).
@@ -163,15 +174,18 @@ class _RoastyPainter extends CustomPainter {
     canvas.save();
     final sx = size.width / _vbW;
     final sy = size.height / _vbH;
-    final s = math.min(sx, sy);
-    canvas.translate((size.width - _vbW * s) / 2, (size.height - _vbH * s) / 2);
-    canvas.scale(s, s);
+    final scale = math.min(sx, sy);
+    canvas.translate(
+      (size.width - _vbW * scale) / 2,
+      (size.height - _vbH * scale) / 2,
+    );
+    canvas.scale(scale, scale);
 
-    paintRoastyParticlesBack(canvas, state, t);
-    paintRoastySprout(canvas, state, t, sproutScale);
-    paintRoastyBody(canvas, state, t);
+    paintRoastyParticlesBack(canvas, state, progress, mood);
+    paintRoastySprout(canvas, state, progress, sproutScale);
+    paintRoastyBody(canvas, state, progress);
     _paintFace(canvas);
-    paintRoastyParticlesFront(canvas, state, t);
+    paintRoastyParticlesFront(canvas, state, progress, mood);
 
     canvas.restore();
   }
@@ -179,16 +193,19 @@ class _RoastyPainter extends CustomPainter {
   /// Faces ride along with the body transform, so apply it before drawing.
   void _paintFace(Canvas canvas) {
     canvas.save();
-    final offset = roastyBodyOffset(state, t);
+    final offset = roastyBodyOffset(state, progress);
     canvas.translate(100 + offset.dx, 158 + offset.dy);
-    canvas.rotate(roastyBodyRotation(state, t));
-    canvas.scale(roastyBodyScale(state, t));
+    canvas.rotate(roastyBodyRotation(state, progress));
+    canvas.scale(roastyBodyScale(state, progress));
     canvas.translate(-100, -158);
-    paintRoastyFace(canvas, state);
+    paintRoastyFace(canvas, state, mood);
     canvas.restore();
   }
 
   @override
   bool shouldRepaint(covariant _RoastyPainter old) =>
-      old.state != state || old.t != t || old.sproutScale != sproutScale;
+      old.state != state ||
+      old.progress != progress ||
+      old.sproutScale != sproutScale ||
+      old.mood != mood;
 }

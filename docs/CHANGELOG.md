@@ -42,7 +42,21 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ## [Unreleased]
 
+### Fixed
+
+- **Roasty's sleeping z's and wrong-answer badge follow the mood.** In Dark
+  Roast the sleeping `z`s were drawn in the light mood's grey and all but
+  vanished against the dark background, and the badge on a wrong answer kept
+  the light mood's red. Both, plus the stars and rays of a finished module and
+  two of the four sparkles, now take the colours of whichever mood is on, as
+  the design draws them. The happy face's right cheek also blushes as strongly
+  as the left, as the design draws it.
+
 ### Changed
+
+- **Roasty's colours live in one place.** The mascot's browns, greens and face
+  colours are one named palette pinned to the design, instead of 37 loose
+  values across three drawings, so a retone reaches every drawing at once.
 
 - **Setting up the app is three screens shorter.** It used to ask what your
   goal was and what you brew with, and you could not get past either one —
