@@ -215,8 +215,8 @@ void main() {
     // `practical` are read, not asked, so Continue is live from the first
     // frame; `multi` shows *Check answers* in its place until it commits, as
     // the design's single swapping button has it. Each is covered where its
-    // own rule lives, and the switch-pair test at the foot of this file is
-    // what keeps every kind covered.
+    // own rule lives, and the build sweep at the foot of this file is what
+    // keeps every kind covered.
     final cards = <String, ContentCard>{
       'predict': _predict,
       'concept': _concept,

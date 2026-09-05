@@ -10,7 +10,6 @@ import 'package:brew_path/features/lessons/presentation/cards/content_card_view.
 import 'package:brew_path/features/saved/domain/saved_key.dart';
 import 'package:brew_path/features/saved/presentation/saved_bookmark_button.dart';
 import 'package:brew_path/services/analytics/analytics_provider.dart';
-import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/models/content/content_card_grading.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
@@ -71,8 +70,8 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
   /// has already shown the learner what it needed to, inside the card.
   void _onSolved() => _correctCount++;
 
-  void _onContinue(LessonModel lesson, List<ContentCard> played) {
-    if (_index + 1 < played.length) {
+  void _onContinue(LessonModel lesson) {
+    if (_index + 1 < lesson.cards.length) {
       setState(() => _index++);
       return;
     }
@@ -83,7 +82,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
         // Mastery is scored over the cards that could be got wrong. Counting
         // the concept cards a learner only reads would cap every result below
         // full marks for having been taught something.
-        total: gradedCards(played).length,
+        total: gradedCards(lesson.cards).length,
       ),
     );
   }
@@ -100,7 +99,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
         appBar: AppBar(
           // The player is a surface you leave, not a page you came from: the
           // design gives it a close mark where a pushed screen would have a
-          // back arrow (`prototype/lesson.jsx:190`).
+          // back arrow.
           leading: IconButton(
             icon: const IconMark(AppIcon.close),
             tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
@@ -125,8 +124,8 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
   /// The bar's centre: where the learner is, once there is a lesson to be in.
   ///
   /// The design puts the position *in the bar* and nothing else with it — no
-  /// lesson title, no module eyebrow, because the card is the screen
-  /// (`prototype/lesson.jsx:188`). It is the same [RoastMeter] the mini-game
+  /// lesson title, no module eyebrow, because the card is the screen. It is
+  /// the same [RoastMeter] the mini-game
   /// player mounts, so the app has one idea of how-far-through.
   ///
   /// Null while the lesson is still loading — the bar keeps its close mark and
@@ -158,9 +157,6 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
       return const ErrorView(message: 'Lesson not found');
     }
 
-    // A lesson with nothing in it. It used to be the same branch as a lesson
-    // holding only cards this build could not draw; that second case is gone
-    // (#418), so the message says the one thing left that is true.
     if (lesson.cards.isEmpty) {
       return Semantics(
         label: 'This lesson has no cards.',
@@ -170,16 +166,16 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
     }
 
     _logStartedOnce(lesson);
-    return _lessonContent(lesson, lesson.cards);
+    return _lessonContent(lesson);
   }
 
-  Widget _lessonContent(LessonModel lesson, List<ContentCard> played) {
+  Widget _lessonContent(LessonModel lesson) {
     final card = contentCardView(
-      played[_index],
+      lesson.cards[_index],
       nonce: _nonce,
       cardIndex: _index,
       onSolved: _onSolved,
-      onContinue: () => _onContinue(lesson, played),
+      onContinue: () => _onContinue(lesson),
     );
 
     return SafeArea(

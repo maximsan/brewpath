@@ -25,11 +25,8 @@ import 'package:flutter/widgets.dart';
 /// function until the kind is handled, which is the guarantee the union was
 /// chosen for.
 ///
-/// **It always returns a widget** (#418). It was nullable while a kind could
-/// arrive ahead of its renderer, and a `hasRenderer` check beside it let a
-/// host leave those cards out until the renderer was built. Every kind renders
-/// as of #124, so that escape hatch is closed: a card this app cannot draw is
-/// no longer a state it can be in, and the switch below is what holds that.
+/// **It always returns a widget** — a card this app cannot draw is not a state
+/// it can be in, and the switch below is what holds that (#418).
 ///
 /// `visual` is the one that reports no success: it is a reference a lesson
 /// shows, never a question, so it latches on arrival and mastery cannot move

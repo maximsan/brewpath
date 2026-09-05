@@ -74,9 +74,8 @@ void main() {
     tester,
   ) async {
     // "The card is the screen": the design's player carries no lesson title
-    // and no module eyebrow, only close, position and save
-    // (`prototype/lesson.jsx:188`). Both were printed above every card until
-    // #395.
+    // and no module eyebrow, only close, position and save. Both were printed
+    // above every card until #395.
     await pumpLesson(tester, testLesson());
 
     expect(find.text('01 / 02'), findsOneWidget);

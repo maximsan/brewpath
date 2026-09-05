@@ -83,10 +83,9 @@ void main() {
       expect(gradedCards(lesson.cards).length, 5);
     });
 
-    // The counts the two tickets were written against. Pinned, not derived:
-    // a content edit that drops a card would otherwise slip past the
-    // per-lesson property below, which only checks authored == playable and
-    // is happy when both fall together.
+    // The counts the two tickets were written against. Pinned, not derived,
+    // so a content edit that drops one of these cards is caught by a number
+    // rather than by a rule that both sides of could fall together.
     test(
       'the bank still carries the authored practical and multi cards',
       () async {
@@ -97,13 +96,12 @@ void main() {
       },
     );
 
-    // Two tests stood here — that the played cards kept their authored order,
-    // and that none went missing. Both compared the lesson's cards against the
-    // same cards passed through `playableCards`, so both became a value
-    // compared with itself when that filter was retired (#418). The count
-    // above still proves the bank carries them.
+    // Two tests stood here, on the order and the count of those cards. Both
+    // compared a lesson's cards with the same cards passed through
+    // `playableCards`, so both became a value compared with itself when that
+    // filter was retired (#418).
 
-    test('every playable multi card counts toward mastery', () async {
+    test('every multi card counts toward mastery', () async {
       final lessons = await repo.getLessons();
       var counted = 0;
       for (final lesson in lessons) {

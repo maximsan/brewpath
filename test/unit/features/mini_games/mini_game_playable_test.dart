@@ -17,7 +17,7 @@ import 'package:flutter_test/flutter_test.dart';
 /// the day they were authored and entered the catalog three days after the
 /// list was last written (#311).
 ///
-/// So the rule is stated the other way round: a game that has rounds to play is
+/// So the rule is stated the other way round: a game with rounds to play is
 /// playable **unless someone named a reason it is not**. An addition to the
 /// catalog then fails this suite until it is ruled on — the "someone said so"
 /// property expressed as something a build can check rather than something a
@@ -41,22 +41,19 @@ void main() {
     };
   });
 
-  /// Whether [gameId] has a run in it.
+  /// Whether [gameId] has rounds to play, read from the shipped bank rather
+  /// than from a list of kind names.
   ///
-  /// This used to ask a second question as well — whether every round could be
-  /// *drawn* — against a `hasRenderer` check beside the player's own switch.
-  /// That check is gone (#418): `contentCardView` is exhaustive over the card
-  /// union and always returns a widget, so a round this build cannot draw is
-  /// not a state that compiles. Having rounds is the whole of what is left to
-  /// ask, and the answer still comes from the shipped bank rather than a list
-  /// of kind names.
-  bool playableThrough(String gameId) =>
+  /// It used to also ask whether every round could be *drawn*. A round this
+  /// build cannot draw is no longer a state that compiles (#418), so this is
+  /// the whole of what is left to ask.
+  bool hasRounds(String gameId) =>
       (banks[gameId] ?? const <ContentCard>[]).isNotEmpty;
 
-  test('every game that can be drawn is playable, or says why not', () {
+  test('every game with rounds is playable, or says why not', () {
     final unruled = [
       for (final game in catalog)
-        if (playableThrough(game.id) &&
+        if (hasRounds(game.id) &&
             !playableMiniGameIds.contains(game.id) &&
             !deliberatelyNotPlayable.containsKey(game.id))
           game.id,
@@ -66,7 +63,8 @@ void main() {
       unruled,
       isEmpty,
       reason:
-          'These games render but are not playable, and no reason is recorded. '
+          'These games have rounds but are not playable, and no reason is '
+          'recorded. '
           'Either add them to playableMiniGameIds, or name them in '
           'deliberatelyNotPlayable with the reason they are held back.',
     );
@@ -82,7 +80,7 @@ void main() {
     // becoming impossible to compile.
     final empty = [
       for (final id in playableMiniGameIds)
-        if (!playableThrough(id)) id,
+        if (!hasRounds(id)) id,
     ];
 
     expect(
