@@ -111,7 +111,8 @@ You can always edit this file by hand instead — the helpers just save effort.
 - **Free now gets two activities a day.** Lessons, replays, mini-game runs,
   vocab rounds and flashcard reviews all count as one each; the third start in
   a day opens the Plus offer instead of the surface, so you find out on the tap
-  rather than after sitting through a screen you cannot use. Coffee Challenges,
+  rather than after sitting through a screen you cannot use — and *Play again*
+  at the end of a drill is a start like any other. Coffee Challenges,
   reading the dictionary and browsing your shelf and cards stay free at any
   count, and the day's count resets at local midnight. Plus is not capped.
 

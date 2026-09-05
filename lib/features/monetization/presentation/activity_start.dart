@@ -11,55 +11,44 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Opening a surface that spends one of a free day's two activities (§8).
 ///
-/// **The cap is asked here rather than in the router.** Every other gate is a
-/// gate→destination decision and lives in `redirectFor`; this one cannot,
-/// because a completion is recorded while the learner is still standing on the
-/// route that recorded it. A redirect re-run at that moment — and one is due,
-/// since the same write invalidates what the redirect reads — would throw them
-/// off the results of the activity they had just finished. Asked at the tap,
-/// the question is only ever about a surface nobody is on yet.
+/// **The cap is asked at the tap, not in the router** — ADR-0020, which also
+/// records what that costs.
 ///
-/// Nothing outside the app can reach an activity route: the universal-link
-/// claim is `/card/*` and nothing else (`AppLinks`), so these taps are the
-/// whole way in. `BuildContext.goTo` asserts against the ones that belong
-/// here, so a new call site that reaches for the plain navigator fails loudly
-/// rather than quietly handing out a third activity.
-///
-/// On [BuildContext] rather than `WidgetRef` — the reason `showTermPeekSheet`
+/// On [BuildContext] rather than `WidgetRef`, the reason `showTermPeekSheet`
 /// is: a dozen of the rows that start an activity are plain widgets deep in a
-/// tree, and this is a one-shot read on a tap, not a subscription. Converting
-/// them all to consumers would buy nothing back.
+/// tree, and this is a one-shot read on a tap, not a subscription.
 extension StartActivity on BuildContext {
   /// Goes to [destination], selling instead when the day has no room left.
+  ///
+  /// A destination that starts no activity is waved through, which is what
+  /// lets the screens that navigate to a destination they were *handed* — Keep
+  /// Sharp's card, a lesson ending — ask without knowing what they hold.
   Future<void> goToActivity(RouteDestination destination) async {
-    final hasRoom = await _hasRoomForActivity(destination);
-    if (!mounted || !hasRoom) return;
+    if (!await _allowed(destination)) return;
     goToAfterAllowance(destination);
   }
 
   /// Pushes [destination] under the same rule, for a drill whose close has to
   /// return the learner to whichever screen opened it.
   Future<void> pushActivity(RouteDestination destination) async {
-    final hasRoom = await _hasRoomForActivity(destination);
-    if (!mounted || !hasRoom) return;
+    if (!await _allowed(destination)) return;
     await pushAfterAllowance(destination);
   }
 
-  /// Whether [destination] may be opened now — and, when it may not, raises
-  /// the offer in place of the surface.
+  /// Whether another activity may start now — and, when it may not, raises the
+  /// offer in place of it.
   ///
-  /// A destination that starts no activity is waved through, which is what
-  /// lets the two screens that navigate to a destination they were *handed* —
-  /// Keep Sharp's card and a lesson ending — ask without knowing what they
-  /// hold.
+  /// **Public because a drill restarts without navigating.** *Play again* and
+  /// *Shuffle and go again* deal a fresh round on the screen the learner is
+  /// already standing on, and that round records a completion exactly as the
+  /// first one did. A guard that only watched navigation would have let one
+  /// drill run the day out from inside itself.
   ///
   /// The allowance is **awaited, never read as a placeholder**. An unresolved
   /// gate elsewhere resolves to the locked answer because a wrong bounce
   /// corrects itself; a sheet raised on a guess does not, because nothing that
   /// re-runs can close a modal (#215).
-  Future<bool> _hasRoomForActivity(RouteDestination destination) async {
-    if (!destination.startsActivity) return true;
-
+  Future<bool> mayStartAnotherActivity() async {
     final hasRoom = await activityAllowanceNow(
       ProviderScope.containerOf(this, listen: false),
     );
@@ -71,5 +60,11 @@ extension StartActivity on BuildContext {
       const DailyAllowanceSpent(cap: freeDailyActivities),
     );
     return false;
+  }
+
+  Future<bool> _allowed(RouteDestination destination) async {
+    if (!destination.startsActivity) return true;
+    final hasRoom = await mayStartAnotherActivity();
+    return hasRoom && mounted;
   }
 }

@@ -14,9 +14,7 @@ part of 'daily_allowance_providers.dart';
 /// in the activity record — a stored quota would be neither monotonic nor an
 /// outcome, and #65 refused that shape three times before this landed.
 ///
-/// Day-dependent, so it is on `invalidateDaySurfaces`: the record it counts is
-/// written by the same completions that mark the day, and a stale answer here
-/// either sells to a learner who has room or lets a spent day start a third.
+/// **Read it through [activityAllowanceNow], never straight from the cache.**
 
 @ProviderFor(canStartActivity)
 final canStartActivityProvider = CanStartActivityProvider._();
@@ -27,9 +25,7 @@ final canStartActivityProvider = CanStartActivityProvider._();
 /// in the activity record — a stored quota would be neither monotonic nor an
 /// outcome, and #65 refused that shape three times before this landed.
 ///
-/// Day-dependent, so it is on `invalidateDaySurfaces`: the record it counts is
-/// written by the same completions that mark the day, and a stale answer here
-/// either sells to a learner who has room or lets a spent day start a third.
+/// **Read it through [activityAllowanceNow], never straight from the cache.**
 
 final class CanStartActivityProvider
     extends $FunctionalProvider<AsyncValue<bool>, bool, FutureOr<bool>>
@@ -40,9 +36,7 @@ final class CanStartActivityProvider
   /// in the activity record — a stored quota would be neither monotonic nor an
   /// outcome, and #65 refused that shape three times before this landed.
   ///
-  /// Day-dependent, so it is on `invalidateDaySurfaces`: the record it counts is
-  /// written by the same completions that mark the day, and a stale answer here
-  /// either sells to a learner who has room or lets a spent day start a third.
+  /// **Read it through [activityAllowanceNow], never straight from the cache.**
   CanStartActivityProvider._()
     : super(
         from: null,

@@ -8,7 +8,6 @@ import 'package:brew_path/features/companion/presentation/companion_celebration.
 import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
-import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/features/monetization/presentation/activity_start.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';

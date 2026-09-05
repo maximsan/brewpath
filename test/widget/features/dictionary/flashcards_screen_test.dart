@@ -6,6 +6,8 @@ import 'package:brew_path/features/dictionary/presentation/flashcards_copy.dart'
 import 'package:brew_path/features/dictionary/presentation/flashcards_empty_view.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_screen.dart';
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
+import 'package:brew_path/features/monetization/domain/plus_copy.dart';
+import 'package:brew_path/features/progress/domain/activity_recorder.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
@@ -305,6 +307,41 @@ void main() {
     await _settleWrite(tester);
 
     expect(_reviews(await _activityToday(container)), 2);
+  });
+
+  testWidgets('a free learner cannot go again past the day', (tester) async {
+    // One activity already done, so this review is the day's second and
+    // *Go again* would be the third. The re-deal never navigates, so nothing
+    // but the screen's own check stands between it and a fourth (#216).
+    await _seed([_arabica]);
+    final spender = ProviderContainer();
+    addTearDown(spender.dispose);
+    await recordActivity(
+      spender.read(snapshotRepositoryProvider),
+      type: ActivityType.vocab,
+      subject: '',
+      now: DateTime.now(),
+    );
+
+    final container = await _pump(tester, hasCourse: false);
+
+    await tester.tap(find.text(FlashcardsCopy.finish));
+    await _settle(tester);
+    await _settleWrite(tester);
+    expect(_reviews(await _activityToday(container)), 1);
+
+    await tester.tap(find.text(FlashcardsCopy.goAgain));
+    // Bounded, and with real time let through: the refusal reads the database
+    // before it raises the sheet, and the results screen behind it animates
+    // indefinitely so nothing here can settle.
+    await _settleWrite(tester);
+
+    expect(find.text(PlusCopy.title), findsOneWidget);
+    expect(
+      _reviews(await _activityToday(container)),
+      1,
+      reason: 'the refused re-deal must not leave a review behind it',
+    );
   });
 
   testWidgets('one card is not worth a shuffle', (tester) async {

@@ -17,10 +17,6 @@ part 'daily_allowance_providers.g.dart';
 /// outcome, and #65 refused that shape three times before this landed.
 ///
 /// **Read it through [activityAllowanceNow], never straight from the cache.**
-/// This gates an action, so it is a question about *now*: a value recalled
-/// from before the learner's last completion either sells to someone who has
-/// room or waves a third activity through. That was not theoretical — the
-/// second read in one session returned the first read's answer.
 @riverpod
 Future<bool> canStartActivity(Ref ref) async {
   // Watches before awaits: a mid-flight rebuild must not reach a watch across

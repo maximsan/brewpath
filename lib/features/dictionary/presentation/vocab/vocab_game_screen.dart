@@ -18,6 +18,7 @@ import 'package:brew_path/features/dictionary/presentation/vocab/vocab_copy.dart
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_question_view.dart';
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_setup_view.dart';
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_teaching_view.dart';
+import 'package:brew_path/features/monetization/presentation/activity_start.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -68,7 +69,15 @@ class _VocabGameScreenState extends ConsumerState<VocabGameScreen> {
     length: _length,
   );
 
-  void _start(VocabPools pools) {
+  /// Deals a round, if the day still holds one.
+  ///
+  /// **The round is the activity, not the setup**, so the cap is asked here as
+  /// well as at the way in: *Play again* and *Change round* both come back
+  /// through this without navigating, and each round records itself (#216).
+  /// The first round of a visit always passes — the way in has just asked.
+  Future<void> _start(VocabPools pools) async {
+    if (!await context.mayStartAnotherActivity() || !mounted) return;
+
     final choice = _choiceFor(pools);
     final pool = pools.forDeck(choice.deck);
     final seed = mintVocabSeed();

@@ -11,7 +11,6 @@
 library;
 
 import 'package:brew_path/core/constants/app_routes.dart';
-import 'package:brew_path/features/monetization/domain/daily_allowance.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
@@ -156,15 +155,16 @@ extension GoToDestination on BuildContext {
   /// Goes to [destination], replacing the current location.
   ///
   /// **Not for a destination that starts an activity.** Those go through
-  /// `WidgetRef.goToActivity`, which asks the free day's allowance first. The
-  /// assert is what stops a new call site from routing around the cap: it
-  /// fires in debug and in every test, where a leak is cheap to find, and the
-  /// alternative is a rule that holds only where someone remembered it.
+  /// `BuildContext.goToActivity`, which asks the free day's allowance first
+  /// (ADR-0020). The assert catches a new call site that reached for the
+  /// obvious method: it fires in debug and in every test, where a leak is
+  /// cheap to find. It is a backstop, not a wall — the two methods below are
+  /// public and assert nothing, because the guard itself has to call them.
   void goTo(RouteDestination destination) {
     assert(
       !destination.startsActivity,
-      'an activity destination goes through goToActivity — a free day holds '
-      'only $freeDailyActivities of them',
+      'an activity destination goes through goToActivity, which asks the '
+      "free day's allowance first",
     );
     goToAfterAllowance(destination);
   }
@@ -173,7 +173,7 @@ extension GoToDestination on BuildContext {
   /// day's allowance.
   ///
   /// Deliberately unpleasant to reach for: the one caller is
-  /// `WidgetRef.goToActivity`, and a name this specific cannot be typed by
+  /// `BuildContext.goToActivity`, and a name this specific cannot be typed by
   /// accident the way [goTo] can.
   void goToAfterAllowance(RouteDestination destination) => goNamed(
     destination.name,
@@ -181,7 +181,8 @@ extension GoToDestination on BuildContext {
     queryParameters: destination.queryParams,
   );
 
-  /// Pushes [destination] for a caller that has already asked the allowance.
+  /// Pushes [destination] for a caller that has already asked the allowance —
+  /// the one caller being `BuildContext.pushActivity`.
   ///
   /// Pushed rather than gone to where closing the surface has to return the
   /// learner to whichever screen opened it — the drills, which are reached
