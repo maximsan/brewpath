@@ -44,6 +44,18 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **The module's reward card is no longer introduced twice.** Turning the
+  module ending over showed *Reward unlocked* and *New collectible card*
+  stacked directly above the card, which carries its own title — so the card
+  announced itself twice under a generic heading. The heading is gone and the
+  card speaks for itself, which is what the lesson ending's card side already
+  did.
+
+- **A replay no longer leaves a gap where its points would have been.** A
+  lesson you replay pays nothing, so the points line under the tree correctly
+  drew nothing — but the space above it stayed, pushing everything below down
+  by a line that was not there.
+
 - **Roasty's sleeping z's and wrong-answer badge follow the mood.** In Dark
   Roast the sleeping `z`s were drawn in the light mood's grey and all but
   vanished against the dark background, and the badge on a wrong answer kept
