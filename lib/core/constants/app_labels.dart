@@ -21,8 +21,6 @@ abstract class AppLabels {
   static const rewardWaiting = 'A reward card is waiting on the other side.';
   static const turnItOver = 'Turn it over';
   static const flipBack = 'Flip back';
-  static const rewardUnlocked = 'Reward unlocked';
-  static const newCollectibleCard = 'New collectible card';
   static const beginNextModule = 'Begin next module';
   static const backToPath = 'Back to Path';
   static const close = 'Close';
