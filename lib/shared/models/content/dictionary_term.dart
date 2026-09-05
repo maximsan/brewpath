@@ -97,4 +97,14 @@ abstract class DictionaryTerm with _$DictionaryTerm {
   /// Creates a [DictionaryTerm] from decoded JSON.
   factory DictionaryTerm.fromJson(Map<String, dynamic> json) =>
       _$DictionaryTermFromJson(json);
+
+  /// Whether the course adds anything to the short explanation — the deep
+  /// explanation, the example, the self-check or the sources
+  /// (`docs/decisions.md` §12). A term with none is a short-only entry, and
+  /// offering to unlock its full entry would offer nothing.
+  bool get hasFullEntry =>
+      deepExplanation != null ||
+      example != null ||
+      check != null ||
+      sources.isNotEmpty;
 }

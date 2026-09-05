@@ -19,9 +19,13 @@ part 'course_entitlement.g.dart';
 /// none, which is what ships today: the app is in the free state by
 /// construction, and the entitled path is exercised by overriding this.
 ///
-/// **Unresolved reads as locked.** Every caller resolves the pending state to
-/// `false`, because showing a lock briefly to a paying learner is recoverable
-/// and showing paid content briefly to a free one is not.
+/// **Unresolved reads as locked.** A caller that draws while the answer is
+/// pending resolves it to `false`, because showing a lock briefly to a paying
+/// learner is recoverable and showing paid content briefly to a free one is
+/// not. A caller that builds one value from it — the Path's modules, the
+/// dictionary's shelf — awaits the answer instead, and shows nothing until it
+/// lands: the same safe direction, without a first emission that a one-shot
+/// reader would keep.
 @riverpod
 Future<bool> courseEntitlement(Ref ref) =>
     ref.watch(paymentsServiceProvider).hasActiveEntitlement();

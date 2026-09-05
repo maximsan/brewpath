@@ -4,6 +4,7 @@ import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/app_sheet.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
 import 'package:brew_path/features/dictionary/presentation/term_entry_body.dart';
+import 'package:brew_path/features/dictionary/presentation/term_entry_copy.dart';
 import 'package:brew_path/features/saved/domain/saved_key.dart';
 import 'package:brew_path/features/saved/presentation/saved_bookmark_button.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -66,7 +67,13 @@ class TermPeekSheet extends ConsumerWidget {
                 Navigator.of(context).pop();
                 unawaited(opener(termId));
               },
-              child: const Text('Read the full entry'),
+              // Same page either way; only the promise changes. Without the
+              // course the page is not the full entry, so this does not say so.
+              child: Text(
+                view.hasCourse
+                    ? TermEntryCopy.readFullEntry
+                    : TermEntryCopy.openEntry,
+              ),
             ),
           ],
         ),

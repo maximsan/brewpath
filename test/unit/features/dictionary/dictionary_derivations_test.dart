@@ -216,4 +216,42 @@ void main() {
       expect(grouped.keys.map((c) => c.id), ['beans', 'trade']);
     });
   });
+
+  group('tier', () {
+    final terms = [
+      _term('a', lesson: 'm1l1'),
+      _term('d'), // reference
+      _term('c', lesson: 'm5l4'),
+      _term('e', category: 'trade'), // reference
+    ];
+
+    test('Plus sees every term, reference included, in bank order', () {
+      expect(
+        visibleTerms(terms: terms, hasCourse: true).map((t) => t.id),
+        ['a', 'd', 'c', 'e'],
+      );
+    });
+
+    test('free sees only the lesson terms, in bank order', () {
+      expect(
+        visibleTerms(terms: terms, hasCourse: false).map((t) => t.id),
+        ['a', 'c'],
+        reason: 'a reference term is absent for free — not locked, absent',
+      );
+    });
+
+    test('the free shelf carries no reference term for a count to find', () {
+      final free = visibleTerms(terms: terms, hasCourse: false);
+      final counts = dictionaryCounts(free, const {'m1l1'});
+
+      expect(counts.all, 2);
+      expect(counts.learned, 1);
+      expect(counts.toLearn, 1);
+      expect(
+        groupByCategory(free, const [_beans, _trade]).keys.map((c) => c.id),
+        ['beans'],
+        reason: 'a category holding only reference terms is absent for free',
+      );
+    });
+  });
 }

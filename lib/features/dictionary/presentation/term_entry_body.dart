@@ -3,6 +3,8 @@ import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart
 import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_status_style.dart';
 import 'package:brew_path/features/dictionary/presentation/speak_button.dart';
+import 'package:brew_path/features/dictionary/presentation/term_entry_copy.dart';
+import 'package:brew_path/features/dictionary/presentation/term_full_entry_gate.dart';
 import 'package:brew_path/features/dictionary/presentation/term_self_check.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -22,9 +24,17 @@ const _referenceNote =
 /// A term's entry: pronunciation, explanations, example, self-check, related
 /// terms, sources, and where on the path it sits.
 ///
-/// Shared by the full screen and the peek sheet. A term carrying only a short
-/// explanation simply renders fewer blocks — a quarter of the dictionary is
-/// short-only, and that is not a gap to advertise.
+/// Shared by the full screen and the peek sheet.
+///
+/// **What it renders depends on the tier** (`docs/decisions.md` §12). With
+/// the course, everything the term carries. Without it, the entry stops at
+/// the short explanation and a gated row stands where the deep explanation,
+/// the example, the self-check and the sources would be — none of which is
+/// built, so none of which can leak. Pronunciation, related terms and the
+/// path block are not course content and stay on both sides.
+///
+/// A term carrying only a short explanation simply renders fewer blocks; the
+/// model still allows one, and a brief entry is not a gap to advertise.
 class TermEntryBody extends ConsumerWidget {
   /// Creates a [TermEntryBody].
   const TermEntryBody({
@@ -50,6 +60,10 @@ class TermEntryBody extends ConsumerWidget {
     final mood = context.mood;
     final text = Theme.of(context).textTheme;
     final status = dictionaryStatusOf(term, view.completedLessonIds);
+    // Resolved up front: an id with no term behind it — a reference term on
+    // a free learner's shelf, or content that moved — is dropped, and a block
+    // whose every chip dropped is not drawn at all.
+    final related = [for (final id in term.relatedIds) ?view.termById(id)];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,45 +78,53 @@ class TermEntryBody extends ConsumerWidget {
           term.shortExplanation,
           style: AppText.heading(mood: mood),
         ),
-        if (term.deepExplanation != null) ...[
-          const SizedBox(height: AppSpacing.md),
-          Text(
-            term.deepExplanation!,
-            style: text.bodyMedium?.copyWith(color: mood.ink),
-          ),
-        ],
-        if (term.example != null) ...[
-          const SizedBox(height: AppSpacing.md),
-          _Block(
-            label: 'In practice',
-            accent: true,
-            child: Text(
-              term.example!,
-              style: text.bodyMedium?.copyWith(color: mood.inkMute),
-            ),
-          ),
-        ],
-        if (term.check != null) ...[
+        // The gate stands only where something stands behind it: a term the
+        // course adds nothing to has no full entry to promise.
+        if (!view.hasCourse && term.hasFullEntry) ...[
           const SizedBox(height: AppSpacing.lg),
           _Block(
-            label: 'Knowledge check',
-            child: TermSelfCheck(check: term.check!),
+            label: TermEntryCopy.fullExplanation,
+            accent: true,
+            child: TermFullEntryGate(term: term.term),
           ),
         ],
-        if (onRelatedTap != null && term.relatedIds.isNotEmpty) ...[
+        if (view.hasCourse) ...[
+          if (term.deepExplanation != null) ...[
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              term.deepExplanation!,
+              style: text.bodyMedium?.copyWith(color: mood.ink),
+            ),
+          ],
+          if (term.example != null) ...[
+            const SizedBox(height: AppSpacing.md),
+            _Block(
+              label: 'In practice',
+              accent: true,
+              child: Text(
+                term.example!,
+                style: text.bodyMedium?.copyWith(color: mood.inkMute),
+              ),
+            ),
+          ],
+          if (term.check != null) ...[
+            const SizedBox(height: AppSpacing.lg),
+            _Block(
+              label: 'Knowledge check',
+              child: TermSelfCheck(check: term.check!),
+            ),
+          ],
+        ],
+        if (onRelatedTap != null && related.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.lg),
           _Block(
             label: 'Related terms',
-            child: _RelatedChips(
-              view: view,
-              relatedIds: term.relatedIds,
-              onTap: onRelatedTap!,
-            ),
+            child: _RelatedChips(related: related, onTap: onRelatedTap!),
           ),
         ],
         const SizedBox(height: AppSpacing.lg),
         _PathBlock(status: status, lessonId: term.lessonId),
-        if (term.sources.isNotEmpty) ...[
+        if (view.hasCourse && term.sources.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.lg),
           _Block(
             label: 'Sources',
@@ -117,16 +139,12 @@ class TermEntryBody extends ConsumerWidget {
 /// Related terms, shown by name rather than by id.
 ///
 /// A learner reading *Cold Brew* should see *Gooseneck kettle*, not
-/// `gooseneck`. An id with no term behind it is dropped rather than shown raw.
+/// `gooseneck`. Already resolved against the learner's shelf, so every chip
+/// here opens onto a term they can have.
 class _RelatedChips extends StatelessWidget {
-  const _RelatedChips({
-    required this.view,
-    required this.relatedIds,
-    required this.onTap,
-  });
+  const _RelatedChips({required this.related, required this.onTap});
 
-  final DictionaryView view;
-  final List<String> relatedIds;
+  final List<DictionaryTerm> related;
   final ValueChanged<String> onTap;
 
   @override
@@ -134,12 +152,8 @@ class _RelatedChips extends StatelessWidget {
     return Wrap(
       spacing: AppSpacing.xs,
       children: [
-        for (final id in relatedIds)
-          if (view.termById(id) case final related?)
-            ActionChip(
-              label: Text(related.term),
-              onPressed: () => onTap(id),
-            ),
+        for (final term in related)
+          ActionChip(label: Text(term.term), onPressed: () => onTap(term.id)),
       ],
     );
   }
@@ -225,9 +239,10 @@ class _Block extends StatelessWidget {
   final String label;
   final Widget child;
 
-  /// Whether the label takes the accent. Only `IN PRACTICE` does
-  /// (`dictionary.jsx:614`) — it heads the one block that is an example rather
-  /// than more explanation.
+  /// Whether the label takes the accent. `IN PRACTICE` does — it heads the
+  /// one block that is an example rather than more explanation — and so does
+  /// the gated expansion, because a purchase lock is drawn in accent
+  /// (ADR-0016).
   final bool accent;
 
   @override

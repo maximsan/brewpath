@@ -6,7 +6,13 @@ import 'package:brew_path/features/dictionary/presentation/category_index.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
 import 'package:brew_path/features/dictionary/presentation/status_chip.dart';
 import 'package:brew_path/features/dictionary/presentation/term_detail_screen.dart';
+import 'package:brew_path/features/dictionary/presentation/term_entry_copy.dart';
+import 'package:brew_path/features/dictionary/presentation/term_full_entry_gate.dart';
 import 'package:brew_path/features/dictionary/presentation/term_peek_sheet.dart';
+import 'package:brew_path/features/monetization/domain/plus_copy.dart';
+import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
+import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
+import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/dictionary_category.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
@@ -63,10 +69,26 @@ const _stub = DictionaryTerm(
   shortExplanation: 'Total dissolved solids.',
 );
 
-DictionaryView _view({Set<String> completed = const {}}) => DictionaryView(
-  terms: const [_full, _stub],
+/// The view as the provider would build it for a learner of the given tier:
+/// with the course, the whole bank; without it, the lesson terms only, which
+/// is what `visibleTerms` leaves. The view is handed in already narrowed
+/// because that is what every screen receives — none of them re-derive it.
+DictionaryView _view({
+  Set<String> completed = const {},
+  bool hasCourse = true,
+}) => DictionaryView(
+  terms: visibleTerms(terms: const [_full, _stub], hasCourse: hasCourse),
   categories: const [_beans, _trade],
   completedLessonIds: completed,
+  hasCourse: hasCourse,
+);
+
+/// A counted pitch, so the gate's assertions do not wait on the banks.
+const _pitch = PlusPitch(
+  remainingLessons: 29,
+  lockedGames: 4,
+  referenceTerms: 8,
+  savedFreeCap: 5,
 );
 
 Widget _wrap(Widget child, {DictionaryView? view}) => ProviderScope(
@@ -75,6 +97,7 @@ Widget _wrap(Widget child, {DictionaryView? view}) => ProviderScope(
     lessonTitleProvider(
       'm1l2',
     ).overrideWith((ref) async => 'Arabica vs Robusta'),
+    plusPitchProvider.overrideWith((ref) async => _pitch),
   ],
   child: MaterialApp(theme: AppTheme.cupping, home: child),
 );
@@ -372,6 +395,188 @@ void main() {
       await tester.tapAt(const Offset(10, 10));
       await tester.pumpAndSettle();
       expect(find.text('Total dissolved solids.'), findsNothing);
+    });
+  });
+
+  group('without the course', () {
+    final free = _view(hasCourse: false);
+
+    testWidgets('the shelf holds the lesson terms and nothing else', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_wrap(const DictionaryHomeScreen(), view: free));
+      await tester.pumpAndSettle();
+
+      // One reference term in the fixture, and it is gone from the kicker,
+      // the filter counts and the category index alike — absent, not locked.
+      expect(find.text('REFERENCE · 1 TERMS'), findsOneWidget);
+      expect(find.text('All 1'), findsOneWidget);
+      expect(find.text('Beans and Botany'), findsOneWidget);
+      expect(find.text('Coffee Trade'), findsNothing);
+    });
+
+    testWidgets('no search finds a reference term', (tester) async {
+      await tester.pumpWidget(_wrap(const DictionaryHomeScreen(), view: free));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField), 'tds');
+      await tester.pumpAndSettle();
+
+      expect(find.text('TDS'), findsNothing);
+      expect(find.text('No terms match that search.'), findsOneWidget);
+    });
+
+    testWidgets('a link to a reference term lands on nothing', (tester) async {
+      await tester.pumpWidget(
+        _wrap(const TermDetailScreen(termId: 'tds'), view: free),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('That term is not in the dictionary.'), findsOneWidget);
+      expect(find.text('Total dissolved solids.'), findsNothing);
+    });
+
+    testWidgets('an entry stops at its short explanation', (tester) async {
+      await tester.pumpWidget(
+        _wrap(const TermDetailScreen(termId: 'arabica'), view: free),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('The species behind most specialty coffee.'),
+        findsOneWidget,
+      );
+      expect(find.byType(TermFullEntryGate), findsOneWidget);
+      expect(
+        find.text(TermEntryCopy.fullExplanation.toUpperCase()),
+        findsOneWidget,
+      );
+      // None of the course's content is built, so none of it can be found.
+      expect(find.text('Roughly 60% of world coffee.'), findsNothing);
+      expect(find.text('IN PRACTICE'), findsNothing);
+      expect(find.text('KNOWLEDGE CHECK'), findsNothing);
+      expect(find.text('SOURCES'), findsNothing);
+      expect(find.text('More caffeine'), findsNothing);
+      expect(find.text('https://sca.coffee/research'), findsNothing);
+      // What is not course content stays: how to say it, and where it sits.
+      expect(find.text('uh-RAB-ih-kuh'), findsOneWidget);
+      expect(find.text("Where you'll learn it".toUpperCase()), findsOneWidget);
+    });
+
+    testWidgets('a short-only term offers nothing to unlock', (tester) async {
+      // Every shipped term carries a full entry today; the model still allows
+      // one that does not, and a gate in front of nothing is a lie.
+      const brief = DictionaryTerm(
+        id: 'bloom',
+        term: 'Bloom',
+        categoryId: 'beans',
+        shortExplanation: 'The puff of gas when water first hits the grounds.',
+        lessonId: 'm1l2',
+      );
+      await tester.pumpWidget(
+        _wrap(
+          const TermDetailScreen(termId: 'bloom'),
+          view: const DictionaryView(
+            terms: [brief],
+            categories: [_beans],
+            completedLessonIds: {},
+            hasCourse: false,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text(brief.shortExplanation), findsOneWidget);
+      expect(find.byType(TermFullEntryGate), findsNothing);
+      expect(find.text(TermEntryCopy.readFullEntry), findsNothing);
+    });
+
+    testWidgets('a related reference term is not offered', (tester) async {
+      await tester.pumpWidget(
+        _wrap(const TermDetailScreen(termId: 'arabica'), view: free),
+      );
+      await tester.pumpAndSettle();
+
+      // Arabica relates to TDS; for a free learner that chip would open a
+      // term they cannot have, so the block has nothing to draw.
+      expect(find.widgetWithText(ActionChip, 'TDS'), findsNothing);
+      expect(find.text('RELATED TERMS'), findsNothing);
+    });
+
+    testWidgets('reading the full entry raises the gate, not the entry', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _wrap(const TermDetailScreen(termId: 'arabica'), view: free),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text(TermEntryCopy.readFullEntry));
+      await tester.pumpAndSettle();
+
+      expect(find.text(PlusCopy.title), findsOneWidget);
+      expect(
+        find.text(const LockedFullEntry(term: 'Arabica').header),
+        findsOneWidget,
+        reason: 'the sheet names the word that was tapped',
+      );
+      expect(find.text('Roughly 60% of world coffee.'), findsNothing);
+    });
+
+    testWidgets('the gated row is one button a screen reader can press', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _wrap(const TermDetailScreen(termId: 'arabica'), view: free),
+      );
+      await tester.pumpAndSettle();
+
+      final semantics = tester.getSemantics(find.byType(TermFullEntryGate));
+      expect(semantics.label, TermEntryCopy.gateSemantics);
+      expect(semantics.flagsCollection.isButton, isTrue);
+    });
+
+    testWidgets('the peek offers the entry without promising it whole', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _wrap(
+          Builder(
+            builder: (context) => Scaffold(
+              body: TextButton(
+                onPressed: () => showTermPeekSheet(context, 'arabica'),
+                child: const Text('peek'),
+              ),
+            ),
+          ),
+          view: free,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('peek'));
+      await tester.pumpAndSettle();
+
+      // The gated row carries the *full entry* promise; the way through to
+      // the page says what it is.
+      expect(find.byType(TermFullEntryGate), findsOneWidget);
+      expect(find.text(TermEntryCopy.openEntry), findsOneWidget);
+      expect(find.text(TermEntryCopy.readFullEntry), findsOneWidget);
+      expect(find.text('Roughly 60% of world coffee.'), findsNothing);
+    });
+  });
+
+  group('with the course', () {
+    testWidgets('an entry is whole, with nothing to sell', (tester) async {
+      await tester.pumpWidget(_wrap(const TermDetailScreen(termId: 'arabica')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Roughly 60% of world coffee.'), findsOneWidget);
+      expect(find.text('IN PRACTICE'), findsOneWidget);
+      expect(find.text('KNOWLEDGE CHECK'), findsOneWidget);
+      expect(find.text('SOURCES'), findsOneWidget);
+      expect(find.byType(TermFullEntryGate), findsNothing);
+      expect(find.text(TermEntryCopy.readFullEntry), findsNothing);
     });
   });
 }
