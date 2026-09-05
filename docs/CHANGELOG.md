@@ -42,6 +42,19 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ## [Unreleased]
 
+### Added
+
+- **Roasty keeps you company on the Keep Sharp card.** Once you have finished
+  the course, the day's recommendation shows him resting beside it, on a paper
+  plate, before you start. He used to appear only after you had done it.
+
+### Fixed
+
+- **Screen readers read the Keep Sharp card once, not three times.** The card
+  announced its heading and its texts and then the same words again as a
+  sentence. It now reads one sentence, and the Start button says what it
+  starts.
+
 ### Changed
 
 - **Setting up the app is three screens shorter.** It used to ask what your

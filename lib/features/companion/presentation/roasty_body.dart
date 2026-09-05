@@ -10,6 +10,28 @@ import 'package:flutter/material.dart';
 const Offset _sproutGrowAnchor = Offset(100, 88);
 const Offset _sproutDefaultAnchor = Offset(100, 75);
 
+/// The paper plate's tone, pinned rather than read from the mood. Every
+/// surface token inverts with the mood while the bean stays brown, so a
+/// mood-following plate would merge into the mascot in Dark Roast. The
+/// design's `--roasty-plate: #FBF7EE`.
+///
+/// Not an `ArtColors` token: it is Cupping's surface value held still, and
+/// that palette's guard forbids any art colour that equals a mood token. It
+/// lives with the mascot's other draw colours instead.
+const Color roastyPlate = Color(0xFFFBF7EE);
+
+const Offset _plateCenter = Offset(100, 140);
+
+/// Clears the contact shadow at y 232, so the bean never hangs off its plate.
+const double _plateRadius = 112;
+
+/// Paints the paper plate that separates the bean from a dark or accent-filled
+/// ground, where the roast browns otherwise merge into it. Goes under
+/// everything else Roasty draws.
+void paintRoastyPlate(Canvas canvas) {
+  canvas.drawCircle(_plateCenter, _plateRadius, Paint()..color = roastyPlate);
+}
+
 /// Paints the sprout (stem + leaves) above the bean. [sproutScale] overrides
 /// the state-derived scale when non-null (used by the loading wake-up grow).
 void paintRoastySprout(
