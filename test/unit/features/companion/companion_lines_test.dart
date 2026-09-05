@@ -9,10 +9,10 @@ void main() {
     test('fromJson parses reaction-keyed variant lists', () {
       final lines = CompanionLines.fromJson(const {
         'lessonComplete': ['a', 'b'],
-        'wrong': ['c'],
+        'challengeComplete': ['c'],
       });
       expect(
-        lines.lineFor(CompanionReaction.wrong),
+        lines.lineFor(CompanionReaction.challengeComplete),
         'c',
       );
     });

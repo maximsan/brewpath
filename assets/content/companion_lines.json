@@ -10,19 +10,6 @@
     "Full pot finished — that's mastery.",
     "You roasted the whole module. Bravo!"
   ],
-  "correct": [
-    "Spot on!",
-    "That's it!",
-    "Perfectly extracted."
-  ],
-  "wrong": [
-    "Close — give it another go.",
-    "Not quite, but you've got this."
-  ],
-  "cardEarned": [
-    "A new card for your shelf!",
-    "Fresh card unlocked."
-  ],
   "courseComplete": [
     "Every lesson. Every module. You finished the whole course!",
     "From first crack to final cup — you did it all.",
