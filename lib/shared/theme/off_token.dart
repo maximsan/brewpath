@@ -161,6 +161,17 @@ abstract final class OffTokens {
         'comment saying no token fits. It is one card and one value.',
   );
 
+  /// The gap above the Keep Sharp card's Start button.
+  static const OffToken<double> keepSharpStartGap = OffToken(
+    18,
+    reason:
+        "The design sets the hero card's Start to `margin-top: 18px`, and 18 "
+        'is not a spacing stop: it sits between AppSpacing.md (16) and lg '
+        '(24). The step below is 16, which the lesson body already rounds '
+        'its own row to; Keep Sharp keeps the figure so the button sits '
+        'where the design puts it under the wrapped rule.',
+  );
+
   /// The padding inside the Cards tab's "more to collect" block.
   static const OffToken<EdgeInsets> cardsFooterPadding = OffToken(
     EdgeInsets.symmetric(vertical: 20, horizontal: 18),
@@ -259,6 +270,7 @@ abstract final class OffTokens {
     termOfDayBannerFootPadding,
     triedSealPadding,
     todayHeroPadding,
+    keepSharpStartGap,
     cardsFooterPadding,
     cardsFooterLineGap,
     introBlockGap,

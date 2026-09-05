@@ -22,12 +22,26 @@ import 'package:flutter/material.dart';
 /// `opacity: 0.35`, for the reason [PrimaryButton] gives: the fade is
 /// invisible against the dark-roast background.
 class GhostButton extends StatelessWidget {
-  /// Creates a [GhostButton].
+  /// Creates a [GhostButton] — the neutral one, which is nearly every one.
   const GhostButton({
     required this.label,
     required this.onPressed,
     super.key,
-  });
+  }) : _isAccent = false;
+
+  /// A ghost in the accent: the same button, wearing the override the design
+  /// applies to *one* of them.
+  ///
+  /// The lesson ending's *Practice this lesson again* is drawn `.btn-ghost`
+  /// and then given `color: var(--accent)` and a border mixed 45% toward it.
+  /// It is the odd one out because it is the only ghost that **invites**
+  /// rather than dismisses — every other is a skip, a back or a not-now, and
+  /// those stay neutral.
+  const GhostButton.accent({
+    required this.label,
+    required this.onPressed,
+    super.key,
+  }) : _isAccent = true;
 
   /// Text shown on the button.
   final String label;
@@ -35,10 +49,28 @@ class GhostButton extends StatelessWidget {
   /// Tap handler; `null` disables the button.
   final VoidCallback? onPressed;
 
+  /// Whether this is the inviting variant.
+  final bool _isAccent;
+
+  /// How far the accent variant's border is mixed toward the accent — the
+  /// design's `color-mix(in oklab, var(--accent) 45%, var(--rule))`.
+  static const double _accentBorderTint = 0.45;
+
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
-    final foreground = onPressed == null ? mood.inkMute : mood.ink;
+    final enabled = onPressed != null;
+    final foreground = !enabled
+        ? mood.inkMute
+        : _isAccent
+        ? mood.accentText
+        : mood.ink;
+    final border = enabled && _isAccent
+        ? Color.alphaBlend(
+            mood.accent.withValues(alpha: _accentBorderTint),
+            mood.rule,
+          )
+        : mood.rule;
     return SizedBox(
       width: double.infinity,
       height: PrimaryButton.height,
@@ -50,7 +82,7 @@ class GhostButton extends StatelessWidget {
           backgroundColor: Colors.transparent,
           foregroundColor: foreground,
           disabledForegroundColor: mood.inkMute,
-          side: BorderSide(color: mood.rule),
+          side: BorderSide(color: border),
           // Declared here as well as on `AppTheme`, for the reason
           // `PrimaryButton` documents: `context.mood` falls back to Dark Roast
           // in a themeless `MaterialApp`, where an unshaped button is a pill.

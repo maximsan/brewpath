@@ -85,8 +85,8 @@ void main() {
       );
       expect(
         tabHeaderFor('/profile', today: today)?.title,
-        'Hello, there.',
-        reason: 'they skipped it, and the same sentence still greets them',
+        'Hello there.',
+        reason: 'they skipped it: the plain form, never a placeholder name',
       );
     });
 

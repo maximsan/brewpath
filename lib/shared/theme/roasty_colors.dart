@@ -66,6 +66,17 @@ abstract final class RoastyColors {
   /// The gold confetti pieces.
   static const confettiGold = Color(0xFFC8843A);
 
+  /// The paper plate under the bean — the design's `--roasty-plate`, the one
+  /// mascot colour the component itself names.
+  ///
+  /// Pinned rather than read from the mood: every surface token inverts with
+  /// the mood while the bean stays brown, so a mood-following plate would
+  /// merge into the mascot in Dark Roast. It is Cupping's surface value held
+  /// still, which is why it is here and not on `ArtColors`, whose guard
+  /// forbids an art colour that equals a mood token. Guarded by
+  /// `test/unit/features/companion/roasty_plate_token_test.dart`.
+  static const plate = Color(0xFFFBF7EE);
+
   /// The bean's radial gradient, centre out: lit → mid → edge.
   static const beanGradient = <Color>[beanWarm, beanBody, beanDeep];
 

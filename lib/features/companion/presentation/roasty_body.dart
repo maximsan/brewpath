@@ -11,6 +11,22 @@ import 'package:flutter/material.dart';
 const Offset _sproutGrowAnchor = Offset(100, 88);
 const Offset _sproutDefaultAnchor = Offset(100, 75);
 
+const Offset _plateCenter = Offset(100, 140);
+
+/// Clears the contact shadow at y 232, so the bean never hangs off its plate.
+const double _plateRadius = 112;
+
+/// Paints the paper plate that separates the bean from a dark or accent-filled
+/// ground, where the roast browns otherwise merge into it. Goes under
+/// everything else Roasty draws.
+void paintRoastyPlate(Canvas canvas) {
+  canvas.drawCircle(
+    _plateCenter,
+    _plateRadius,
+    Paint()..color = RoastyColors.plate,
+  );
+}
+
 /// Paints the sprout (stem + leaves) above the bean. [sproutScale] overrides
 /// the state-derived scale when non-null (used by the loading wake-up grow).
 void paintRoastySprout(

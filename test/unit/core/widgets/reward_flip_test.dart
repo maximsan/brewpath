@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:brew_path/features/learn/presentation/module_flip_animation.dart';
+import 'package:brew_path/core/widgets/reward_flip.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -56,8 +56,8 @@ void main() {
 
   group('the design’s numbers', () {
     test('820ms, on its own curve', () {
-      expect(flipDuration, const Duration(milliseconds: 820));
-      expect(flipCurve, const Cubic(0.62, 0.04, 0.2, 1));
+      expect(rewardFlipDuration, const Duration(milliseconds: 820));
+      expect(rewardFlipCurve, const Cubic(0.62, 0.04, 0.2, 1));
     });
   });
 }

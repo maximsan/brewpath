@@ -36,6 +36,10 @@ abstract final class SettingsCopy {
   /// Row: vibration on taps and answers.
   static const hapticsRow = 'Haptics';
 
+  /// Row: what Roasty calls the learner. Its value and sheet are
+  /// `LearnerName`'s.
+  static const nameRow = 'Name';
+
   /// Row: into [accountSyncTitle].
   static const accountRow = 'Account and sync';
 

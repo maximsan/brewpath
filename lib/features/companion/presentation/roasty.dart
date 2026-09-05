@@ -7,13 +7,14 @@ import 'package:brew_path/features/companion/presentation/roasty_body.dart';
 import 'package:brew_path/features/companion/presentation/roasty_faces.dart';
 import 'package:brew_path/features/companion/presentation/roasty_particles.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/roasty_colors.dart';
 import 'package:flutter/material.dart';
 
-/// Animated Roasty mascot. Reproduces the design's mascot geometry and
-/// per-state animations using Flutter's Canvas + a single
-/// [AnimationController]. Public API: `Roasty(state: …, size: …,
-/// replayKey: …)`. The `replayKey` mimics the design's
-/// `key={state + ':' + replayKey}` so one-shot animations restart on demand.
+/// Animated Roasty mascot. Reproduces the design's geometry + per-state
+/// animations using Flutter's Canvas + a single [AnimationController]. Public
+/// API: `Roasty(state: …, size: …, replayKey: …, plate: …)`. The `replayKey`
+/// mimics the design's `key={state + ':' + replayKey}` so one-shot animations
+/// restart on demand.
 class Roasty extends StatefulWidget {
   /// Creates a [Roasty].
   const Roasty({
@@ -22,6 +23,7 @@ class Roasty extends StatefulWidget {
     this.replayKey,
     this.sproutScale,
     this.animate = true,
+    this.plate = false,
     super.key,
   });
 
@@ -43,6 +45,12 @@ class Roasty extends StatefulWidget {
   /// loading screen) drive the wake-up grow. When null the sprout follows the
   /// state-based default (shrunk while sleeping, full otherwise).
   final double? sproutScale;
+
+  /// Whether Roasty sits on a paper plate. The plate keeps the bean readable
+  /// on a dark or accent-filled ground, and is pinned to one tone
+  /// ([RoastyColors.plate]) so it never follows the mood into the bean's own
+  /// browns.
+  final bool plate;
 
   @override
   State<Roasty> createState() => _RoastyState();
@@ -132,6 +140,7 @@ class _RoastyState extends State<Roasty> with SingleTickerProviderStateMixin {
               state: widget.state,
               progress: _controller.value,
               sproutScale: widget.sproutScale,
+              plate: widget.plate,
               mood: context.mood,
             ),
           ),
@@ -142,20 +151,22 @@ class _RoastyState extends State<Roasty> with SingleTickerProviderStateMixin {
 }
 
 /// Paints the bean body, current-state face, sprout, and the state-specific
-/// particle layer onto a 200x280 logical canvas (the design's own viewBox, so
-/// geometry copies 1:1). Drawing is delegated
+/// particle layer onto a 200x280 logical canvas (the design's SVG
+/// `viewBox="0 0 200 280"`, so geometry copies 1:1). Drawing is delegated
 /// to the sibling `roasty_body` / `roasty_faces` / `roasty_particles` modules;
 /// the animation math lives in `roasty_animation`.
 class _RoastyPainter extends CustomPainter {
   _RoastyPainter({
     required this.state,
     required this.progress,
+    required this.plate,
     required this.mood,
     this.sproutScale,
   });
 
   final RoastyState state;
   final double progress;
+  final bool plate;
 
   /// The ambient mood, for the marks the design gives to the theme rather
   /// than to the mascot's palette: the celebration warn, the wrong badge's
@@ -181,6 +192,7 @@ class _RoastyPainter extends CustomPainter {
     );
     canvas.scale(scale, scale);
 
+    if (plate) paintRoastyPlate(canvas);
     paintRoastyParticlesBack(canvas, state, progress, mood);
     paintRoastySprout(canvas, state, progress, sproutScale);
     paintRoastyBody(canvas, state, progress);
@@ -207,5 +219,6 @@ class _RoastyPainter extends CustomPainter {
       old.state != state ||
       old.progress != progress ||
       old.sproutScale != sproutScale ||
+      old.plate != plate ||
       old.mood != mood;
 }

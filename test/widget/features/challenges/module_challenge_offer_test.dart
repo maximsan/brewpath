@@ -160,13 +160,19 @@ void main() {
   // Parking it was *not yet*, not *no* — the offer is still live.
   testWidgets('but a saved challenge is still offered', (tester) async {
     await completeModuleOne(tester);
-    await tester.runAsync(
-      () => saveChallengeForLater(
-        SnapshotRepository(),
+    // Parked the way a learner parks one: started, then set aside from the
+    // log sheet on Today. The offer that parked a challenge never started was
+    // retired with the lesson ending's *Save for later* (#490), so reaching
+    // this state through it would test a path nothing can walk.
+    await tester.runAsync(() async {
+      final snapshots = SnapshotRepository();
+      await startChallenge(snapshots, id: 'bc-m1', now: DateTime.now());
+      await saveActiveChallengeForLater(
+        snapshots,
         id: 'bc-m1',
         now: DateTime.now(),
-      ),
-    );
+      );
+    });
     await pump(tester);
 
     expect(find.byType(ChallengeOfferRow), findsOneWidget);

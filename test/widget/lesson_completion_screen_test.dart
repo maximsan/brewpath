@@ -1,11 +1,14 @@
+import 'package:brew_path/core/constants/app_labels.dart';
+import 'package:brew_path/core/widgets/reward_row.dart';
 import 'package:brew_path/features/cards/presentation/reward_card.dart';
+import 'package:brew_path/features/challenges/presentation/challenge_suggestion.dart';
 import 'package:brew_path/features/companion/presentation/companion.dart';
 import 'package:brew_path/features/companion/presentation/roasty_moment.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/lessons/domain/lesson_completion_actions.dart';
 import 'package:brew_path/features/lessons/domain/lesson_completion_service.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_beat.dart';
-import 'package:brew_path/features/lessons/presentation/lesson_completion_rail.dart';
+import 'package:brew_path/features/lessons/presentation/lesson_completion_body.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_screen.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_tree.dart';
 import 'package:brew_path/features/progress/domain/activity_recorder.dart';
@@ -283,7 +286,7 @@ void main() {
         mastery: const MasteryResult(correct: 4, total: 5),
       );
 
-      expect(find.text('4 / 5'), findsOneWidget);
+      expect(find.text('4 / 5 correct'), findsOneWidget);
     });
 
     testWidgets('an unscored run prints no score line', (tester) async {
@@ -301,7 +304,7 @@ void main() {
   });
 
   group('the weak run is invited back', () {
-    testWidgets('the chip and the invitation appear together', (tester) async {
+    testWidgets('by the button, and by nothing else', (tester) async {
       final container = _buildContainer();
       addTearDown(container.dispose);
 
@@ -311,11 +314,14 @@ void main() {
         mastery: const MasteryResult(correct: 1, total: 5),
       );
 
+      expect(find.text(practiceAgainLabel), findsOneWidget);
+      // The design drops the chip: the score above already reports how the
+      // run went, the button carries the verdict, and the Path row wears the
+      // persistent one. Three times on one screen is noise.
       expect(
         find.text(MasteryBand.needsPractice.label.toUpperCase()),
-        findsOneWidget,
+        findsNothing,
       );
-      expect(find.text(practiceAgainLabel), findsOneWidget);
     });
 
     testWidgets('a clean run earns neither', (tester) async {
@@ -348,10 +354,10 @@ void main() {
       await pumpCompletion(tester, container);
 
       expect(
-        find.text(LessonCompletionRail.freezeKicker.toUpperCase()),
+        find.text(RewardBeats.freezeLabel),
         findsOneWidget,
       );
-      expect(find.text(LessonCompletionRail.freezeSupport), findsOneWidget);
+      expect(find.text(RewardBeats.freezeDetail), findsOneWidget);
     });
 
     testWidgets('an ordinary day does not', (tester) async {
@@ -364,7 +370,7 @@ void main() {
       await pumpCompletion(tester, container);
 
       expect(
-        find.text(LessonCompletionRail.freezeKicker.toUpperCase()),
+        find.text(RewardBeats.freezeLabel),
         findsNothing,
       );
     });
@@ -413,18 +419,101 @@ void main() {
   // Row #47's other half: the rail's card row is the way into the collectible,
   // because the card *is* the module's guide and this is the moment it was
   // earned — not something to go and find on the Cards tab later.
+  group('the reward list', () {
+    testWidgets('lists the beats in the design order', (tester) async {
+      final container = _buildContainer();
+      addTearDown(container.dispose);
+      container.listen(lessonCompletionServiceProvider, (_, _) {});
+      container.listen(contentRepositoryProvider, (_, _) {});
+
+      // The run that earns all three: the freeze crosses on this day, the
+      // lesson hands over a card, and it carries a challenge.
+      await qualifyDaysBefore(tester, freezeEarnDays - 1);
+      await pumpCompletion(tester, container);
+
+      final freeze = tester.getRect(find.text(RewardBeats.freezeLabel)).top;
+      final card = tester.getRect(find.text(RewardBeats.cardLabel)).top;
+      final offer = tester
+          .getRect(find.text(ChallengeSuggestion.offerLabel))
+          .top;
+
+      expect(freeze, lessThan(card));
+      expect(card, lessThan(offer));
+    });
+
+    testWidgets('and hairlines them only between rows', (tester) async {
+      final container = _buildContainer();
+      addTearDown(container.dispose);
+      container.listen(lessonCompletionServiceProvider, (_, _) {});
+      container.listen(contentRepositoryProvider, (_, _) {});
+
+      await qualifyDaysBefore(tester, freezeEarnDays - 1);
+      await pumpCompletion(tester, container);
+
+      expect(
+        find.descendant(
+          of: find.byType(RewardList),
+          matching: find.byType(Divider),
+        ),
+        findsNWidgets(2),
+        reason:
+            'three beats have two gaps — none above the first or below '
+            'the last',
+      );
+    });
+  });
+
+  group('the flip', () {
+    testWidgets('the topbar turns it back to the report', (tester) async {
+      final container = _buildContainer();
+      addTearDown(container.dispose);
+
+      await pumpCompletion(tester, container);
+      await tester.tap(find.text(RewardBeats.cardLabel));
+      await tester.pumpAndSettle();
+      expect(find.byType(RewardCard), findsOneWidget);
+
+      await tester.tap(find.byTooltip(AppLabels.flipBack));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(RewardCard), findsNothing);
+      expect(find.text(RewardBeats.cardLabel), findsOneWidget);
+    });
+
+    testWidgets('exactly one face is built at a time', (tester) async {
+      final container = _buildContainer();
+      addTearDown(container.dispose);
+
+      await pumpCompletion(tester, container);
+
+      // The report's own controls are gone once the card is up. Both faces in
+      // the tree would show the far one mirror-imaged through the turn — and
+      // would put its controls in the reading order twice.
+      expect(find.byTooltip(AppLabels.flipBack), findsNothing);
+
+      await tester.tap(find.text(RewardBeats.cardLabel));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(RewardCard), findsOneWidget);
+      expect(find.text(nextLessonLabel), findsNothing);
+      expect(find.text(RewardBeats.cardLabel), findsNothing);
+    });
+  });
+
   group('the card the run handed over', () {
-    testWidgets('opens its preview when tapped', (tester) async {
+    testWidgets('turns the screen over when its row is pressed', (
+      tester,
+    ) async {
       final container = _buildContainer();
       addTearDown(container.dispose);
 
       await pumpCompletion(tester, container);
       expect(
-        find.text(LessonCompletionRail.cardKicker.toUpperCase()),
+        find.text(RewardBeats.cardLabel),
         findsOneWidget,
       );
 
-      final row = find.text(LessonCompletionRail.cardKicker.toUpperCase());
+      final row = find.text(RewardBeats.cardLabel);
       await tester.ensureVisible(row);
       await tester.pumpAndSettle();
       await tester.tap(row);
@@ -448,7 +537,7 @@ void main() {
       final freeze = tester.getSemantics(
         find
             .ancestor(
-              of: find.text(LessonCompletionRail.freezeKicker.toUpperCase()),
+              of: find.text(RewardBeats.freezeLabel),
               matching: find.byType(Semantics),
             )
             .first,
@@ -467,7 +556,10 @@ void main() {
       await pumpCompletion(tester, container);
 
       expect(find.text(nextLessonLabel), findsOneWidget);
-      expect(find.text(backToPathLabel), findsOneWidget);
+      // The design's footer carries no second way out: the topbar's close
+      // already goes to the Path, and offering it again made declining look
+      // like a decision rather than the default.
+      expect(find.text(backToPathLabel), findsNothing);
     });
 
     // The reachable case for the plain return: the course is finished, so
@@ -557,7 +649,7 @@ void main() {
 
     // No beat of its own, no headline, no rail — it stepped aside entirely.
     expect(find.byType(RoastyMoment), findsNothing);
-    expect(find.byType(LessonCompletionRail), findsNothing);
+    expect(find.byType(RewardList), findsNothing);
     expect(find.text('Module ending'), findsOneWidget);
   });
 
@@ -652,13 +744,13 @@ void main() {
     );
 
     expect(find.text(reviewEyebrow.toUpperCase()), findsOneWidget);
-    expect(find.text('4 / 5'), findsOneWidget);
+    expect(find.text('4 / 5 correct'), findsOneWidget);
     // No payout line of any kind: the screen used to read '+2 PTS · Practice'
     // or 'Practice points already earned today'.
     expect(find.textContaining('PTS'), findsNothing);
     // A replay pays nothing, so the rail has no row to draw at all.
     expect(
-      find.text(LessonCompletionRail.cardKicker.toUpperCase()),
+      find.text(RewardBeats.cardLabel),
       findsNothing,
     );
   });
@@ -693,12 +785,10 @@ void main() {
       mastery: const MasteryResult(correct: 1, total: 5),
     );
 
-    expect(find.text('1 / 5'), findsOneWidget);
-    expect(find.text('5 / 5'), findsNothing);
-    expect(
-      find.text(MasteryBand.needsPractice.label.toUpperCase()),
-      findsOneWidget,
-    );
+    expect(find.text('1 / 5 correct'), findsOneWidget);
+    expect(find.text('5 / 5 correct'), findsNothing);
+    // The band still drives what the run is offered, even with no chip to
+    // show it: the weak replay gets the invitation the clean run did not.
     expect(find.text(practiceAgainLabel), findsOneWidget);
   });
 

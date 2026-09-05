@@ -8,6 +8,7 @@ import 'package:brew_path/features/onboarding/presentation/intro_page.dart';
 import 'package:brew_path/features/onboarding/presentation/name/name_controller.dart';
 import 'package:brew_path/features/onboarding/presentation/name/name_copy.dart';
 import 'package:brew_path/features/onboarding/presentation/onboarding_providers.dart';
+import 'package:brew_path/features/profile/domain/learner_name.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -54,9 +55,6 @@ class NameScreen extends ConsumerStatefulWidget {
 
 class _NameScreenState extends ConsumerState<NameScreen> {
   late final NameController _controller;
-
-  /// Longer than any name worth greeting, and the design's own cap.
-  static const int _maxNameLength = 24;
 
   @override
   void initState() {
@@ -130,8 +128,8 @@ class _NameScreenState extends ConsumerState<NameScreen> {
           // has read the question it asks. A web `<input>` raises nothing, so
           // the design has no view on the cost. One tap buys the whole screen.
           enabled: !_controller.submitting,
-          maxLength: _maxNameLength,
-          placeholder: NameCopy.placeholder,
+          maxLength: LearnerName.maxLength,
+          placeholder: LearnerName.placeholder,
           onChanged: _controller.type,
           onSubmitted: _controller.submit,
         ),
