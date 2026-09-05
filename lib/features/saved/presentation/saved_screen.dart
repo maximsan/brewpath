@@ -23,6 +23,12 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+/// How far the shelf scrolls before its bar arrives.
+///
+/// The design gives this one screen its own threshold — 72 where every other
+/// page takes the hook's default 40.
+const double _shelfScrollThreshold = 72;
+
 /// Everything the learner has bookmarked, in three groups.
 ///
 /// **Named "Saved", once.** The prototype calls this screen both "Saved" and
@@ -64,6 +70,9 @@ class SavedScreen extends ConsumerWidget {
 
     return SubScreenScaffold(
       title: title,
+      // The one screen the design gives its own threshold: the shelf waits
+      // until 72 where every other page's bar arrives at 40.
+      threshold: _shelfScrollThreshold,
       onBack: () => Navigator.of(context).maybePop(),
       body: (context, scrollPadding) => shelf.when(
         loading: () => Semantics(
@@ -103,9 +112,7 @@ class _Empty extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.all(
-        AppSpacing.gutter,
-      ).add(scrollPadding).resolve(TextDirection.ltr),
+      padding: const EdgeInsets.all(AppSpacing.gutter) + scrollPadding,
       children: const [
         PageLargeTitle(SavedScreen.title),
         SizedBox(height: AppSpacing.lg),
@@ -135,9 +142,7 @@ class _Shelf extends StatelessWidget {
     final count = savedShelfCount(groups);
 
     return ListView(
-      padding: const EdgeInsets.all(
-        AppSpacing.gutter,
-      ).add(scrollPadding).resolve(TextDirection.ltr),
+      padding: const EdgeInsets.all(AppSpacing.gutter) + scrollPadding,
       children: [
         const PageLargeTitle(SavedScreen.title),
         const SizedBox(height: AppSpacing.sm),

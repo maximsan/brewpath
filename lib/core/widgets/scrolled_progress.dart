@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 
+/// The design's `transition: … 260ms ease` on a bar's fill, rule and blur.
+///
+/// One value for every bar, because it is one line in the design: the sticky
+/// header, the back bar and the floating close control all fade at it.
+const Duration scrolledFade = Duration(milliseconds: 260);
+
 /// The 0→1 a bar's chrome fades in on as the page under it scrolls.
 ///
 /// Every top bar in the design fades the same way — *"transition: background

@@ -5,9 +5,6 @@ import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// The design's `transition: … 260ms ease` on the bar's fill, rule and blur.
-const Duration floatTopbarFade = Duration(milliseconds: 260);
-
 /// A floating close or back control over a full-bleed screen: transparent at
 /// rest, standard header chrome once the content has moved under it.
 ///
@@ -55,7 +52,7 @@ class FloatTopbar extends StatelessWidget {
 
     return ScrolledProgress(
       isScrolled: isScrolled,
-      duration: floatTopbarFade,
+      duration: scrolledFade,
       child: SafeArea(
         bottom: false,
         child: Align(

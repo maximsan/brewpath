@@ -1,4 +1,6 @@
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/widgets/header_chrome.dart';
+import 'package:brew_path/core/widgets/page_large_title.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/core/widgets/sub_screen_scaffold.dart';
@@ -15,6 +17,12 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+/// How far below the status bar the design opens this page.
+///
+/// 84 rather than the 108 a page with a large title takes: what is at the
+/// top here is the eyebrow and the stage, set tighter under the bar.
+const double _designScrollPad = 84;
 
 /// The Coffee Tree's own screen, reached by tapping the tree on Profile.
 ///
@@ -53,6 +61,7 @@ class TreeScreen extends ConsumerWidget {
     return SubScreenScaffold(
       title: title,
       mark: AppIcon.close,
+      scrollPad: HeaderChrome.belowDesignStatusBar(_designScrollPad),
       onBack: () => context.pop(),
       body: (context, scrollPadding) => stage.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -115,16 +124,14 @@ class _TreeBody extends StatelessWidget {
       children: [
         Padding(
           padding: gutter,
-          child: Column(
-            children: [
-              SmallcapsLabel(_eyebrow, color: mood.accent),
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                treeStageName(stage),
-                style: AppText.display(mood: mood),
-                textAlign: TextAlign.center,
-              ),
-            ],
+          // The page's own title, as every pushed page carries one — the stage
+          // the tree has reached, under the screen's name as its kicker. The
+          // design centres this one, over the drawing below it.
+          child: PageLargeTitle(
+            treeStageName(stage),
+            kicker: _eyebrow,
+            kickerColor: mood.accent,
+            isCentred: true,
           ),
         ),
         const SizedBox(height: AppSpacing.xs),

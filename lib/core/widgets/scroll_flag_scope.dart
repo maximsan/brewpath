@@ -4,19 +4,19 @@ import 'package:flutter/material.dart';
 ///
 /// Far enough that settling the content by a few pixels does not flash a bar
 /// on and off, near enough that a learner who has begun reading has a bar to
-/// go back from. The design sets it once, as the default of the one hook every
-/// screen-level bar reads, so a page cannot pick its own.
-///
-/// The tab header is the exception, and it says why: it waits until the tab's
-/// large title has gone all the way under it, which is further.
+/// go back from. It is the **default** of the design's one scroll hook, which
+/// nearly every screen takes as it stands — but the hook does take an
+/// argument, and two screens pass one: the Saved shelf waits until 72, and the
+/// tab header waits until its large title has gone all the way under it.
 const double scrollFlagThreshold = 40;
 
-/// Whether a page scrolled to [offset] has passed the threshold.
+/// Whether a page scrolled to [offset] has passed [threshold].
 ///
 /// Pure, so the rule is assertable without a scroll gesture — and named,
 /// because a bare `> 40` at a call site is the kind of number that drifts
 /// between the screens that share a bar.
-bool isScrolledPast(double offset) => offset > scrollFlagThreshold;
+bool isScrolledPast(double offset, {double threshold = scrollFlagThreshold}) =>
+    offset > threshold;
 
 /// Reports whether the scrollable beneath it has passed the threshold.
 ///
@@ -37,6 +37,7 @@ class ScrollFlagScope extends StatefulWidget {
   const ScrollFlagScope({
     required this.builder,
     this.resetKey,
+    this.threshold = scrollFlagThreshold,
     super.key,
   });
 
@@ -48,6 +49,10 @@ class ScrollFlagScope extends StatefulWidget {
   /// clears — because the content it described has gone.
   final Object? resetKey;
 
+  /// How far this page scrolls before its bar takes chrome. The design's
+  /// default suits every screen but the Saved shelf, which waits longer.
+  final double threshold;
+
   @override
   State<ScrollFlagScope> createState() => _ScrollFlagScopeState();
 }
@@ -57,7 +62,10 @@ class _ScrollFlagScopeState extends State<ScrollFlagScope> {
 
   bool _onScroll(ScrollNotification notification) {
     if (notification.depth != 0) return false;
-    final scrolled = isScrolledPast(notification.metrics.pixels);
+    final scrolled = isScrolledPast(
+      notification.metrics.pixels,
+      threshold: widget.threshold,
+    );
     if (scrolled != _isScrolled) setState(() => _isScrolled = scrolled);
     return false;
   }

@@ -18,6 +18,13 @@ import 'package:flutter/material.dart';
 /// raises a small copy of the same words only once that large one has gone
 /// under it. Which is why [title] is the page's title rather than a bar
 /// caption: the two are one title seen at two sizes, not two labels.
+///
+/// **The design's `solid` variant is not ported.** It pins the bar filled and
+/// titled for a page with no large title to collapse, and its one host is the
+/// Roasty dress-up screen, which this app has not built. The two pages here
+/// that open on a hero instead of a title — the streak and the grove — are
+/// **not** that case: the design passes them the ordinary scrolled flag, so
+/// their bar arrives on scroll like every other. See #513.
 class SubHeader extends StatelessWidget {
   /// Creates a [SubHeader].
   const SubHeader({
@@ -26,38 +33,49 @@ class SubHeader extends StatelessWidget {
     this.eyebrow,
     this.onBack,
     this.mark = AppIcon.back,
-    this.backLabel,
     this.trailing,
     this.isRinged = false,
     super.key,
   });
 
-  /// The design's sub-screen bar, measured from the top of the screen.
+  /// The design's sub-screen bar and the room it leaves under itself, both
+  /// measured from the top of the screen. Stated as a pair because they are
+  /// one: content that cleared a bar of one height under a pad written for
+  /// another is the drift the design exports both numbers to prevent.
   static const double _heightWithStatusBar = 96;
-
-  /// The room the design leaves under it in the scroll, measured the same way.
-  /// The pair is stated together because it is a pair: content that cleared a
-  /// bar of one height under a pad written for another is the drift the design
-  /// exports both constants to prevent.
   static const double _scrollPadWithStatusBar = 108;
 
-  /// The design's 54px status bar, which on a device is the top inset instead.
-  static const double _designStatusBarHeight = 54;
+  /// How tall the bar stands below the status bar.
+  static const double height =
+      _heightWithStatusBar - HeaderChrome.designStatusBarHeight;
 
-  /// How tall the bar stands **below** the status bar.
-  static const double height = _heightWithStatusBar - _designStatusBarHeight;
-
-  /// How far below the status bar the page's own content starts, so it clears
-  /// the bar rather than opening under it. Unlike a tab root — whose large
-  /// title deliberately sits behind an invisible bar — a pushed page has a
-  /// control up there at every scroll position, and its title must not run
-  /// into it.
+  /// How far below the status bar a page's own content starts, so it clears
+  /// the bar rather than opening under it — the design's 108, the companion of
+  /// the 96 above. Unlike a tab root, whose large title deliberately sits
+  /// behind an invisible bar, a pushed page has a control up there at every
+  /// scroll position and its title must not run into it.
+  ///
+  /// A page that opens on a hero rather than a title takes less; the design
+  /// gives the tree and the streak 84 and the grove 100, and each says so.
   static const double scrollPad =
-      _scrollPadWithStatusBar - _designStatusBarHeight;
+      _scrollPadWithStatusBar - HeaderChrome.designStatusBarHeight;
 
-  /// The design's 44×44 header control, and the smaller ringed variant.
+  /// The design's 44×44 header control, and the smaller ringed variant, which
+  /// it draws as a 32px circle instead.
   static const double _controlSize = 44;
   static const double _ringedControlSize = 32;
+
+  /// How large the mark inside is drawn: the design's `size={ringBack ? 15 :
+  /// 18}`. The bare control's box is a hit target rather than a drawing — the
+  /// design gives it `padding: 4px` and widens the *touch* area to 44 with a
+  /// pseudo-element — so the mark stays small inside a box the thumb can find.
+  static const double _markSize = 18;
+  static const double _ringedMarkSize = 15;
+
+  /// The design pulls the bare control 4 left, so its mark sits optically on
+  /// the bar's own inset rather than 4 inside it. The ringed one is a drawn
+  /// shape and stays where it is put.
+  static const double _bareControlNudge = -4;
 
   /// The gap between the control, the title and the trailing controls.
   static const double _gap = 10;
@@ -84,10 +102,6 @@ class SubHeader extends StatelessWidget {
   /// [AppIcon.close] on one you dismiss.
   final AppIcon mark;
 
-  /// What the control is called, for the tooltip and the screen reader.
-  /// Defaults to the mark's own word.
-  final String? backLabel;
-
   /// Controls on the right — the bookmark on a term, and nothing else so far.
   final Widget? trailing;
 
@@ -112,7 +126,7 @@ class SubHeader extends StatelessWidget {
             if (onBack != null) ...[
               _BackControl(
                 mark: mark,
-                label: backLabel ?? _defaultLabel,
+                label: _defaultLabel,
                 isRinged: isRinged,
                 onPressed: onBack!,
               ),
@@ -175,12 +189,13 @@ class _BackControl extends StatelessWidget {
         ? SubHeader._ringedControlSize
         : SubHeader._controlSize;
 
-    return IconButton(
+    final button = IconButton(
       onPressed: onPressed,
       tooltip: label,
       // The ring is a border on the control, not a different control: the
       // design draws the same mark inside a hairline circle so the bar's two
-      // ends carry one weight.
+      // ends carry one weight, and mutes its ink to sit beside rather than
+      // compete with whatever the circle balances.
       style: isRinged
           ? IconButton.styleFrom(
               shape: RoundedRectangleBorder(
@@ -191,7 +206,18 @@ class _BackControl extends StatelessWidget {
             )
           : null,
       constraints: BoxConstraints.tightFor(width: size, height: size),
-      icon: IconMark(mark, color: mood.ink, semanticLabel: label),
+      icon: IconMark(
+        mark,
+        size: isRinged ? SubHeader._ringedMarkSize : SubHeader._markSize,
+        color: isRinged ? mood.inkMute : mood.ink,
+        semanticLabel: label,
+      ),
+    );
+
+    if (isRinged) return button;
+    return Transform.translate(
+      offset: const Offset(SubHeader._bareControlNudge, 0),
+      child: button,
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:brew_path/core/widgets/header_chrome.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/core/widgets/sub_screen_scaffold.dart';
@@ -40,6 +41,12 @@ const String _promise =
 const String _plantLabel = 'Plant in my grove';
 const String _plantedLabel = 'Already planted';
 
+/// How far below the status bar the design opens this page.
+///
+/// 100 rather than 108, for the same reason it carries no large title: the
+/// preview of the plant is what is at the top.
+const double _designScrollPad = 100;
+
 /// Your grove: the plant, the light it stands in, and one confirm.
 ///
 /// The draft is local until confirmed, so backing out changes nothing —
@@ -64,6 +71,7 @@ class _StudioScreenState extends ConsumerState<StudioScreen> {
     // there is no display-size heading for the bar to take over from.
     return SubScreenScaffold(
       title: 'Your grove',
+      scrollPad: HeaderChrome.belowDesignStatusBar(_designScrollPad),
       onBack: () => Navigator.of(context).maybePop(),
       body: (context, scrollPadding) => grove.when(
         loading: () => const Center(

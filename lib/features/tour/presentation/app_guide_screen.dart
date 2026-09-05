@@ -39,7 +39,7 @@ class AppGuideScreen extends StatelessWidget {
       title: AppGuideCopy.title,
       onBack: () => context.pop(),
       body: (context, scrollPadding) => ListView(
-        padding: _pagePadding.add(scrollPadding).resolve(TextDirection.ltr),
+        padding: _pagePadding + scrollPadding,
         children: [
           const Padding(
             padding: _gutter,

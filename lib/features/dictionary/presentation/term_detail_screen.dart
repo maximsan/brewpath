@@ -14,6 +14,12 @@ import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+/// What the page is called when the id names no term the learner may see.
+///
+/// A saved link to a reference term lands here for a free learner, so it is a
+/// real page rather than an error box: it is titled, and it can be left.
+const String _notFoundTitle = 'Not in the dictionary';
+
 /// The full entry for one dictionary term.
 class TermDetailScreen extends ConsumerWidget {
   /// Creates a [TermDetailScreen].
@@ -43,13 +49,15 @@ class TermDetailScreen extends ConsumerWidget {
         final term = data.termById(termId);
         if (term == null) {
           return SubScreenScaffold(
-            title: 'Not in the dictionary',
+            title: _notFoundTitle,
             onBack: () => Navigator.of(context).maybePop(),
-            body: (context, scrollPadding) => Padding(
-              padding: scrollPadding,
-              child: const ErrorView(
-                message: 'That term is not in the dictionary.',
-              ),
+            body: (context, scrollPadding) => ListView(
+              padding: const EdgeInsets.all(AppSpacing.gutter) + scrollPadding,
+              children: const [
+                PageLargeTitle(_notFoundTitle),
+                SizedBox(height: AppSpacing.lg),
+                ErrorView(message: 'That term is not in the dictionary.'),
+              ],
             ),
           );
         }
@@ -81,9 +89,7 @@ class _TermDetail extends StatelessWidget {
         label: term.term,
       ),
       body: (context, scrollPadding) => SingleChildScrollView(
-        padding: const EdgeInsets.all(
-          AppSpacing.gutter,
-        ).add(scrollPadding).resolve(TextDirection.ltr),
+        padding: const EdgeInsets.all(AppSpacing.gutter) + scrollPadding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

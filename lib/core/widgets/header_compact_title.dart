@@ -12,9 +12,12 @@ import 'package:flutter/material.dart';
 /// at rest is what makes "once" true rather than nearly true, for a screen
 /// reader and for a test as much as for the eye.
 ///
-/// Its eyebrow is what the tab is, its title what the tab says: `TODAY` over
-/// the day, `YOUR DECK` over `Collection`. The pair is the same tab heading
-/// the tab's own large title reads, so the two cannot drift apart.
+/// The title is the screen's own, seen small: `Collection` over the Cards
+/// tab, `Settings` over Settings, a term over its page. The eyebrow says what
+/// kind of thing it is — `TODAY` over the day, `YOUR DECK` over the deck, a
+/// term's category over the term — and most pushed pages have none. Both come
+/// from the same place the screen's large title does, so the two sizes of one
+/// title cannot drift apart.
 class HeaderCompactTitle extends StatelessWidget {
   /// Creates a [HeaderCompactTitle].
   const HeaderCompactTitle({
@@ -32,7 +35,7 @@ class HeaderCompactTitle extends StatelessWidget {
   /// screen reader to stop on.
   final String? eyebrow;
 
-  /// The line the tab is titled by.
+  /// The line the screen is titled by.
   final String title;
 
   /// Whether the page beneath has scrolled far enough to need it.

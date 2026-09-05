@@ -16,7 +16,13 @@ import 'package:flutter/material.dart';
 /// two sizes of one title cannot drift apart.
 class PageLargeTitle extends StatelessWidget {
   /// Creates a [PageLargeTitle].
-  const PageLargeTitle(this.title, {this.kicker, this.kickerColor, super.key});
+  const PageLargeTitle(
+    this.title, {
+    this.kicker,
+    this.kickerColor,
+    this.isCentred = false,
+    super.key,
+  });
 
   /// What the page is called.
   final String title;
@@ -29,6 +35,10 @@ class PageLargeTitle extends StatelessWidget {
   /// by default, as `SmallcapsLabel` is.
   final Color? kickerColor;
 
+  /// Whether the pair is centred. The design centres exactly one page's — the
+  /// coffee tree, whose heading sits over a drawing rather than over text.
+  final bool isCentred;
+
   /// The gap the design leaves under a kicker before the title it heads.
   static const double _kickerGap = AppSpacing.xs;
 
@@ -36,13 +46,19 @@ class PageLargeTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     final heading = Semantics(
       header: true,
-      child: Text(title, style: AppText.display(mood: context.mood)),
+      child: Text(
+        title,
+        textAlign: isCentred ? TextAlign.center : null,
+        style: AppText.display(mood: context.mood),
+      ),
     );
 
     if (kicker == null) return heading;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: isCentred
+          ? CrossAxisAlignment.center
+          : CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         SmallcapsLabel(kicker!, color: kickerColor),

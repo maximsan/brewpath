@@ -50,7 +50,7 @@ void main() {
           'a pushed page goes through SubScreenScaffold, which carries the '
           "design's bar, the scroll flag and the room the scroll leaves for "
           'it. A stock AppBar is a solid strip that never gets out of the '
-          "way, and it is not what the design draws. Found:\n"
+          'way, and it is not what the design draws. Found:\n'
           '${offenders.join('\n')}',
     );
   });

@@ -34,11 +34,11 @@ class SubScreenScaffold extends StatelessWidget {
     this.eyebrow,
     this.onBack,
     this.mark = AppIcon.back,
-    this.backLabel,
     this.trailing,
     this.isRinged = false,
     this.resetKey,
-    this.floatingActionButton,
+    this.scrollPad = SubHeader.scrollPad,
+    this.threshold = scrollFlagThreshold,
     super.key,
   });
 
@@ -57,9 +57,6 @@ class SubScreenScaffold extends StatelessWidget {
   /// Back on a page you came into, close on one you dismiss.
   final AppIcon mark;
 
-  /// What the control is called, where the mark's own word is not enough.
-  final String? backLabel;
-
   /// Controls on the right of the bar.
   final Widget? trailing;
 
@@ -70,21 +67,28 @@ class SubScreenScaffold extends StatelessWidget {
   /// without leaving. See [ScrollFlagScope.resetKey].
   final Object? resetKey;
 
-  /// Passed through to the `Scaffold`, for the pages that carry one.
-  final Widget? floatingActionButton;
+  /// How far below the status bar the page's own content starts.
+  ///
+  /// The design's 108 where the page opens on a large title, and less where it
+  /// opens on a hero instead — the tree and the streak at 84, the grove at
+  /// 100. A page that has no title to clear does not need the room for one.
+  final double scrollPad;
+
+  /// How far this page scrolls before its bar takes chrome.
+  final double threshold;
 
   @override
   Widget build(BuildContext context) {
     // The bar reaches up under the status bar, so the page's own content has
     // to start below both.
     final scrollPadding = EdgeInsets.only(
-      top: MediaQuery.paddingOf(context).top + SubHeader.scrollPad,
+      top: MediaQuery.paddingOf(context).top + scrollPad,
     );
 
     return ScrollFlagScope(
       resetKey: resetKey,
+      threshold: threshold,
       builder: (context, {required isScrolled}) => Scaffold(
-        floatingActionButton: floatingActionButton,
         body: Stack(
           fit: StackFit.expand,
           children: [
@@ -107,7 +111,6 @@ class SubScreenScaffold extends StatelessWidget {
                 eyebrow: eyebrow,
                 onBack: onBack,
                 mark: mark,
-                backLabel: backLabel,
                 trailing: trailing,
                 isRinged: isRinged,
               ),

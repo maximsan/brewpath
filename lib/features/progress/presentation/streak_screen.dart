@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:brew_path/core/constants/app_links.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/widgets/header_chrome.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/core/widgets/sub_screen_scaffold.dart';
@@ -24,6 +25,12 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+/// How far below the status bar the design opens this page.
+///
+/// 84 rather than 108: the ring starts where a large title would have,
+/// because there is no large title.
+const double _designScrollPad = 84;
 
 /// The streak screen — a milestone beat when one is due, then the day count
 /// at hero size inside its milestone ring, the week strip, and the one-line
@@ -117,6 +124,7 @@ class _StreakScreenState extends ConsumerState<StreakScreen> {
     return SubScreenScaffold(
       title: 'Your streak',
       mark: AppIcon.close,
+      scrollPad: HeaderChrome.belowDesignStatusBar(_designScrollPad),
       onBack: () => context.pop(),
       body: (context, scrollPadding) => status.when(
         loading: () => Semantics(
@@ -218,9 +226,7 @@ class _StreakBody extends StatelessWidget {
     final statusLine = freezeStatusLine(status: status, today: DateTime.now());
     final milestone = nextMilestone(status.streak);
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(
-        AppSpacing.lg,
-      ).add(scrollPadding).resolve(TextDirection.ltr),
+      padding: const EdgeInsets.all(AppSpacing.lg) + scrollPadding,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
