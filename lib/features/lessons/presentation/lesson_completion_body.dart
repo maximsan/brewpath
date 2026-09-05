@@ -132,8 +132,8 @@ class _LessonCompletionBodyState extends State<LessonCompletionBody>
                     lessonsToNextStage: reward.result.lessonsToNextStage,
                   ),
                   // Points land under the tree — what you earned feeds what
-                  // grows.
-                  const SizedBox(height: AppSpacing.base),
+                  // grows. The line brings its own gap, so a replay that paid
+                  // nothing leaves none.
                   RewardPointsLine(points: reward.result.pointsEarned),
                   RewardBeats(
                     lessonId: widget.lessonId,
