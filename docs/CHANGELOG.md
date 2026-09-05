@@ -42,6 +42,16 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ## [Unreleased]
 
+### Added
+
+- **Roasty has a ninth face: the wink he gives a payout.** The design's mascot
+  has always had it — one eye still open, the other arched shut, and a mouth
+  that lifts on the winking side — over a `+N PTS` plate that rises and fades
+  above his head. Nothing in the app plays it yet: the design gives the pose to
+  Coffee Duel's round-complete beat, and Duel is held to v2. The amount is the
+  caller's to supply and cannot be left out, so the mascot still names no
+  payout of its own.
+
 ### Fixed
 
 - **Roasty's face is the design's on every state.** Five of his eight

@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
+import 'package:brew_path/features/companion/presentation/roasty_animation.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/roasty_colors.dart';
@@ -29,16 +30,23 @@ void paintRoastyParticlesBack(
 }
 
 /// Particle layer painted in front of the bean body (sparkles, confetti,
-/// wrong badge, sleep zzz).
+/// wrong badge, points burst, sleep zzz).
 ///
-/// Two sparkles, the wrong badge and the sleeping `z`s follow the mood in the
-/// design (warn, berry and muted ink); the confetti is palette-fixed.
+/// Two sparkles, the wrong badge, the points burst and the sleeping `z`s
+/// follow the mood in the design (warn, berry, accent and muted ink); the
+/// confetti is palette-fixed.
+///
+/// [pointsAmount] is what the burst says, and only [RoastyState.points] reads
+/// it. The mascot names no payout of its own (#16), so with nothing passed the
+/// burst has nothing to state and draws nothing; `Roasty` asserts the pairing
+/// so a half-drawn pose cannot reach a screen.
 void paintRoastyParticlesFront(
   Canvas canvas,
   RoastyState state,
   double progress,
-  MoodColors mood,
-) {
+  MoodColors mood, {
+  int? pointsAmount,
+}) {
   switch (state) {
     case RoastyState.correct:
       _paintSparkles(canvas, progress, mood);
@@ -47,6 +55,10 @@ void paintRoastyParticlesFront(
       _paintConfetti(canvas, progress);
     case RoastyState.wrong:
       _paintWrongBadge(canvas, mood);
+    case RoastyState.points:
+      if (pointsAmount != null) {
+        _paintPointsBurst(canvas, progress, mood, pointsAmount);
+      }
     case RoastyState.sleep:
       _paintSleepZzz(canvas, progress, mood);
     default:
@@ -240,6 +252,75 @@ void _paintWrongBadge(Canvas canvas, MoodColors mood) {
   );
   canvas.drawCircle(const Offset(148, 82), 1.6, bar);
 
+  canvas.restore();
+}
+
+/// The plate the burst's line sits on, above the bean.
+const _pointsBurstRect = Rect.fromLTWH(68, 42, 64, 24);
+const _pointsBurstRadius = Radius.circular(2);
+
+/// The burst's type size and letter-spacing, in the mascot's own canvas units.
+///
+/// Off the type ladder, for the reason `grinder_dial_view.dart` is: this is
+/// drawn on a canvas grid rather than set on a rung, so the same label reaches
+/// the screen at a different size on every host. 13 here is never 13 logical
+/// pixels, and 1 beside it is a ratio to it rather than a width `AppTracking`
+/// could resolve.
+const double _pointsBurstFontSize = 13;
+const double _pointsBurstTracking = 1;
+
+/// What the burst says: a signed amount in the design's `+N PTS` shape.
+///
+/// The amount is the caller's. A lesson pays what it authors (§5.1, #16), so
+/// nothing in the mascot layer may name one — this only knows how to spell an
+/// amount it is handed.
+String roastyPointsBurstLabel(int amount) => '+$amount PTS';
+
+/// The style of the burst's line: the design's mono on the mood's accent fill,
+/// so it takes [MoodColors.accentInk] — the ink that reads on that fill.
+///
+/// Face from the ladder, size and tracking from the drawing, the same split
+/// [roastySleepZStyle] makes.
+TextStyle roastyPointsBurstStyle({
+  required MoodColors mood,
+  required double opacity,
+}) => TextStyle(
+  color: mood.accentInk.withValues(alpha: opacity.clamp(0.0, 1.0)),
+  fontSize: _pointsBurstFontSize,
+  letterSpacing: _pointsBurstTracking,
+  fontFamily: AppFace.mono.family,
+  fontWeight: AppFace.mono.weight,
+);
+
+void _paintPointsBurst(
+  Canvas canvas,
+  double progress,
+  MoodColors mood,
+  int amount,
+) {
+  final rise = roastyPointsBurstRise(progress);
+  if (rise.opacity <= 0) return;
+
+  canvas.save();
+  canvas.translate(0, rise.dy);
+  canvas.drawRRect(
+    RRect.fromRectAndRadius(_pointsBurstRect, _pointsBurstRadius),
+    Paint()..color = mood.accent.withValues(alpha: rise.opacity),
+  );
+  final line = TextPainter(
+    text: TextSpan(
+      text: roastyPointsBurstLabel(amount),
+      style: roastyPointsBurstStyle(mood: mood, opacity: rise.opacity),
+    ),
+    textDirection: TextDirection.ltr,
+  )..layout();
+  line.paint(
+    canvas,
+    Offset(
+      _pointsBurstRect.center.dx - line.width / 2,
+      _pointsBurstRect.center.dy - line.height / 2,
+    ),
+  );
   canvas.restore();
 }
 

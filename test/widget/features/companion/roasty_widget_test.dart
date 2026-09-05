@@ -11,7 +11,17 @@ Widget _wrap(Widget child) => Directionality(
 void main() {
   testWidgets('renders each Roasty state without exceptions', (tester) async {
     for (final state in RoastyState.values) {
-      await tester.pumpWidget(_wrap(Roasty(state: state, size: 120)));
+      // The points pose is the only one that needs an amount, and the only
+      // one allowed to be given one.
+      await tester.pumpWidget(
+        _wrap(
+          Roasty(
+            state: state,
+            size: 120,
+            pointsAmount: state == RoastyState.points ? 12 : null,
+          ),
+        ),
+      );
       await tester.pump(const Duration(milliseconds: 100));
       expect(
         find.byType(Roasty),
@@ -35,6 +45,28 @@ void main() {
     key++;
     await tester.pumpWidget(build(RoastyState.correct));
     await tester.pump(const Duration(milliseconds: 50));
+
+    expect(find.byType(Roasty), findsOneWidget);
+  });
+
+  testWidgets('the points pose and its amount cannot be split', (tester) async {
+    // The mascot names no payout of its own (#16), so the amount arrives from
+    // the caller — and a burst with nothing in it is half the pose.
+    expect(
+      () => Roasty(state: RoastyState.points, size: 120),
+      throwsAssertionError,
+    );
+    expect(
+      () => Roasty(state: RoastyState.correct, size: 120, pointsAmount: 12),
+      throwsAssertionError,
+    );
+
+    await tester.pumpWidget(
+      _wrap(
+        const Roasty(state: RoastyState.points, size: 120, pointsAmount: 12),
+      ),
+    );
+    await tester.pump(const Duration(milliseconds: 100));
 
     expect(find.byType(Roasty), findsOneWidget);
   });

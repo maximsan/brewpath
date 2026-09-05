@@ -20,6 +20,8 @@ Duration roastyDuration(RoastyState state) {
       return const Duration(milliseconds: 1100); // jump one-shot
     case RoastyState.module:
       return const Duration(milliseconds: 900); // grow one-shot
+    case RoastyState.points:
+      return const Duration(milliseconds: 1300); // burst rise one-shot
     case RoastyState.card:
       return const Duration(milliseconds: 1600); // shimmer loop
     case RoastyState.sleep:
@@ -34,7 +36,13 @@ Duration roastyDuration(RoastyState state) {
 /// body math is at rest at `t = 0`, and the face is state-driven (not
 /// `t`-driven) so the right expression still shows. Pure, so a frame can be
 /// frozen without a ticker.
-double roastyStaticFrame(RoastyState state) => 0;
+///
+/// [RoastyState.points] is the exception, and holds at [pointsBurstFadeIn]
+/// instead. Its payload is the burst, which *is* `t`-driven: at zero the burst
+/// has not faded in yet, so stillness would leave a wink with nothing to wink
+/// about. The fade-in stop is the first instant the burst is fully opaque.
+double roastyStaticFrame(RoastyState state) =>
+    state == RoastyState.points ? pointsBurstFadeIn : 0;
 
 /// Whether [state]'s animation repeats (vs. plays once).
 bool roastyLoops(RoastyState state) {
@@ -47,9 +55,37 @@ bool roastyLoops(RoastyState state) {
     case RoastyState.wrong:
     case RoastyState.lesson:
     case RoastyState.module:
+    case RoastyState.points:
     case RoastyState.awake:
       return false;
   }
+}
+
+/// How far the points burst lifts across its beat, in the mascot's own canvas
+/// units.
+const double _pointsBurstLift = 50;
+
+/// The fraction of the beat the burst spends fading in. The design's keyframes
+/// put it at full opacity a fifth of the way through, then fade it out across
+/// the rest.
+const double pointsBurstFadeIn = 0.2;
+
+/// Where the points burst sits, and how solid it is, at controller progress
+/// [progress] (0..1) — the design's `roasty-points-rise`.
+///
+/// Eased per keyframe interval rather than once across the whole beat, which
+/// is what a CSS `ease-out` on a multi-keyframe animation actually does: fade
+/// the opacity globally instead and it would reach full a fifth too early.
+({double dy, double opacity}) roastyPointsBurstRise(double progress) {
+  final clamped = progress.clamp(0.0, 1.0);
+  final dy = -_pointsBurstLift * Curves.easeOut.transform(clamped);
+  final opacity = clamped < pointsBurstFadeIn
+      ? Curves.easeOut.transform(clamped / pointsBurstFadeIn)
+      : 1 -
+            Curves.easeOut.transform(
+              (clamped - pointsBurstFadeIn) / (1 - pointsBurstFadeIn),
+            );
+  return (dy: dy, opacity: opacity);
 }
 
 /// Body translation for [state] at controller progress [t] (0..1).
