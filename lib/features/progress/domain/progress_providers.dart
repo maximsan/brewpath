@@ -115,7 +115,7 @@ Future<CompletedLessons> completedLessons(Ref ref) async {
   final progress = snapshot.clearedByReset;
   return CompletedLessons(
     completedOn: progress.completedLessons,
-    best: progress.bestResults,
+    mastery: progress.bestResults,
   );
 }
 
@@ -150,14 +150,21 @@ Future<List<String>> collectedCards(Ref ref) async {
 /// for the same learner and the stored floor wins.
 @riverpod
 Future<int> treeStage(Ref ref) async {
-  final snapshot = await ref.watch(snapshotRepositoryProvider).read();
-  final completed = await ref.watch(completedLessonsProvider.future);
-  final modules = await ref.watch(contentRepositoryProvider).getModules();
+  // Every watch resolved before the first await, and **one read** of the
+  // snapshot: the stored stage and the completions it is compared against
+  // must come from the same moment, or a completion landing between two reads
+  // would be counted on one side of the max and not the other.
+  final content = ref.watch(contentRepositoryProvider);
+  final snapshots = ref.watch(snapshotRepositoryProvider);
+
+  final progress = (await snapshots.read()).clearedByReset;
+  final modules = await content.getModules();
+
   final derived = treeStageForProgress(
-    completed: completed.count,
+    completed: progress.completedLessons.length,
     moduleSizes: moduleSizesInOrder(modules),
   );
-  final stored = snapshot.clearedByReset.treeStage;
+  final stored = progress.treeStage;
   return stored > derived ? stored : derived;
 }
 
@@ -174,9 +181,9 @@ typedef CoreLessonProgress = ({int completed, int total});
 /// The learner's progress through the core course.
 @riverpod
 Future<CoreLessonProgress> coreLessonProgress(Ref ref) async {
-  final completed = await ref.watch(completedLessonsProvider.future);
+  final completedFuture = ref.watch(completedLessonsProvider.future);
   final lessons = await ref.watch(contentRepositoryProvider).getLessons();
-  return (completed: completed.count, total: lessons.length);
+  return (completed: (await completedFuture).count, total: lessons.length);
 }
 
 /// The month the Profile's closing line names, or null before there is one.

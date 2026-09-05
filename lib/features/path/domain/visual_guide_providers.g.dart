@@ -63,7 +63,7 @@ final class VisualGuideShelfForProvider
 }
 
 String _$visualGuideShelfForHash() =>
-    r'eb99453a7c2503cf4bc06955cacd7938b9ea1a9c';
+    r'60fb6b0929763a1bf112c850c2f8fb20e9075b61';
 
 /// The lesson the Reference heading names as opening the next guide.
 ///

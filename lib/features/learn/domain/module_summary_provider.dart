@@ -49,7 +49,10 @@ class ModuleSummary {
 /// cards) with persisted progress (collected cards).
 @riverpod
 Future<ModuleSummary> moduleSummary(Ref ref, String moduleId) async {
+  // Every watch resolved before the first await: a rebuild mid-flight must not
+  // find a watch on the far side of an async gap.
   final content = ref.watch(contentRepositoryProvider);
+  final snapshots = ref.watch(snapshotRepositoryProvider);
   final modules = await content.getModules();
   final module = modules.firstWhere((m) => m.id == moduleId);
 
@@ -59,9 +62,8 @@ Future<ModuleSummary> moduleSummary(Ref ref, String moduleId) async {
     ..sort((a, b) => a.n.compareTo(b.n));
   final nextLessonId = later.firstOrNull?.lessonIds.firstOrNull;
 
-  final collectedIds = (await ref.watch(snapshotRepositoryProvider).read())
-      .clearedByReset
-      .ownedCollectibles;
+  final collectedIds =
+      (await snapshots.read()).clearedByReset.ownedCollectibles;
   final moduleReward = await content.getCardForModule(moduleId);
 
   return ModuleSummary(

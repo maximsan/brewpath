@@ -20,18 +20,21 @@ import 'package:flutter/foundation.dart';
 @immutable
 class CompletedLessons {
   /// Creates a [CompletedLessons].
-  const CompletedLessons({this.completedOn = const {}, this.best = const {}});
+  const CompletedLessons({
+    this.completedOn = const {},
+    this.mastery = const {},
+  });
 
   /// Lesson id → the day it was **first** finished, as days since epoch.
   final Map<String, int> completedOn;
 
-  /// Lesson id → the best graded result stored for it.
+  /// Lesson id → its mastery, the best `{correct, total}` pair ever scored.
   ///
-  /// A lesson finished before results were stored has an entry here only if
-  /// one was ever recorded, so a lookup can miss on a lesson that is
-  /// genuinely complete — read it through [masteryOf], which answers
-  /// [MasteryResult.unscored] rather than null.
-  final Map<String, MasteryResult> best;
+  /// A lesson finished without a stored score is **absent here while present
+  /// in [completedOn]** — the two maps are not the same key set, and a reader
+  /// that assumes they are will report a lesson as unfinished for want of a
+  /// score it never had.
+  final Map<String, MasteryResult> mastery;
 
   /// The finished lessons' ids.
   Set<String> get ids => completedOn.keys.toSet();
@@ -51,21 +54,16 @@ class CompletedLessons {
   /// Whether [lessonId] is finished.
   bool contains(String lessonId) => completedOn.containsKey(lessonId);
 
-  /// The best result stored for [lessonId], or [MasteryResult.unscored] when
-  /// none is — which is what a lesson finished without a score reads as.
-  MasteryResult masteryOf(String lessonId) =>
-      best[lessonId] ?? MasteryResult.unscored;
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is CompletedLessons &&
           mapEquals(other.completedOn, completedOn) &&
-          mapEquals(other.best, best);
+          mapEquals(other.mastery, mastery);
 
   @override
   int get hashCode => Object.hash(
     Object.hashAllUnordered(completedOn.keys),
-    Object.hashAllUnordered(best.keys),
+    Object.hashAllUnordered(mastery.keys),
   );
 }

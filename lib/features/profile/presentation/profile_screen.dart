@@ -53,7 +53,7 @@ class ProfileScreen extends ConsumerWidget {
 
     final records = lessons.asData?.value ?? const CompletedLessons();
     final rollup = rollUpMastery(
-      records.best.values,
+      records.mastery.values,
       total: course?.total ?? records.count,
     );
 

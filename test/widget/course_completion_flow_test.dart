@@ -38,7 +38,7 @@ void main() {
 
   const completed = CompletedLessons(
     completedOn: {'m1l1': 20680},
-    best: {'m1l1': MasteryResult(correct: 1, total: 1)},
+    mastery: {'m1l1': MasteryResult(correct: 1, total: 1)},
   );
 
   const lines = CompanionLines({

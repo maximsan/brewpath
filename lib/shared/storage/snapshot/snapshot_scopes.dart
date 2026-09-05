@@ -97,9 +97,15 @@ class ClearedByReset {
 
   /// Lesson id → the day it was **first** completed.
   ///
-  /// The date is not decoration: the daily free allowance counts first
-  /// completions dated today, which closes the two-device leak where a phone
-  /// and a tablet would each grant a full day's quota.
+  /// The day is not decoration: it is what backfills the streak for a learner
+  /// whose history predates the day set — `streakDaySet` unions these in, and
+  /// it is the only thing that reads them. Merging keeps the **earliest** of
+  /// two devices' answers, so a lesson stays dated when it was actually
+  /// finished.
+  ///
+  /// It does **not** feed the free daily allowance, which this doc claimed
+  /// until #115: `canStartActivity` counts today's [dailyActivity] entries and
+  /// never looks here.
   final Map<String, int> completedLessons;
 
   /// Lesson id → best graded result, never downgraded.
@@ -227,9 +233,8 @@ class ClearedByReset {
   ///
   /// **The earliest day wins, and the result only rises.** The merge resolves
   /// two devices with `min` and `MasteryResult.best`; a local write that
-  /// disagreed would move a first completion later than it happened, or take
-  /// back a run the learner has already had — and the daily allowance counts
-  /// first completions dated today, so the day is not decoration.
+  /// disagreed would move a first completion later than it happened — which
+  /// the streak backfills from — or take back a run the learner has had.
   ClearedByReset withLessonCompleted(
     String lessonId, {
     required int day,
@@ -364,6 +369,12 @@ class ClearedByReset {
   /// landed beside a field rename in #150/#104 and left `main` uncompilable —
   /// so a new writer takes a parameter here rather than spelling the scope out
   /// again.
+  ///
+  /// ⚠️ **A parameter here makes its field replaceable, so monotonicity stops
+  /// being structural for it.** A field with no parameter cannot be lowered by
+  /// any writer; one with a parameter can. Every writer that passes a
+  /// parameter must therefore add, union or fold — never overwrite — which is
+  /// what the writers above do and what their tests pin.
   ClearedByReset _copy({
     Map<String, int>? acks,
     Map<String, int>? completedLessons,

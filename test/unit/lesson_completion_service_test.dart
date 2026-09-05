@@ -265,6 +265,8 @@ void main() {
         lesson,
         mastery: const MasteryResult(correct: 4, total: 5),
       );
+      final heldBefore = (await recorded()).ownedCollectibles;
+
       final replay = await service.finishLesson(
         lesson,
         mastery: const MasteryResult(correct: 4, total: 5),
@@ -277,6 +279,9 @@ void main() {
       // which §5.1's "replays pay 0" never allowed and which was farmable
       // past the whole course's worth in five days (#16).
       expect(await bankedPoints(), 10);
+      // And no second collectible: the card is handed over once, by the
+      // completion that earned it.
+      expect((await recorded()).ownedCollectibles, heldBefore);
     });
 
     test(
@@ -410,8 +415,8 @@ void main() {
         final after = await recorded();
         expect(after.completedLessons, contains(lesson.id));
         expect(await bankedPoints(), bankedBefore);
-        // The day a lesson was **first** finished on, which the free daily
-        // allowance counts — a replay must not move it to today.
+        // The day a lesson was **first** finished on, which the streak
+        // backfills from — a replay must not move it to today.
         expect(after.completedLessons[lesson.id], firstFinishedOn);
         expect(await holdsCard('c1'), isTrue);
       },

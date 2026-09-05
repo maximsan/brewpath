@@ -21,7 +21,7 @@ final CompletedLessons _completed = CompletedLessons(
   completedOn: {
     for (var i = 0; i < _lessonCount; i++) 'l$i': 20680,
   },
-  best: {
+  mastery: {
     for (var i = 0; i < _lessonCount; i++)
       'l$i': const MasteryResult(correct: 1, total: 1),
   },

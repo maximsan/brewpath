@@ -16,10 +16,11 @@ part 'visual_guide_providers.g.dart';
 /// reward lands without a restart, and a reset locks it again for free.
 @riverpod
 Future<VisualGuideShelf> visualGuideShelfFor(Ref ref) async {
+  // Every watch resolved before the first await, as the sibling below does.
+  final completedFuture = ref.watch(completedLessonsProvider.future);
   final guides = await ref.watch(visualGuideRepositoryProvider).getGuides();
-  final completed = await ref.watch(completedLessonsProvider.future);
 
-  return deriveVisualGuideShelf(guides, completed.ids);
+  return deriveVisualGuideShelf(guides, (await completedFuture).ids);
 }
 
 /// The lesson the Reference heading names as opening the next guide.

@@ -2,6 +2,7 @@ import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/lessons/domain/lesson_finish_result.dart';
 import 'package:brew_path/features/progress/domain/activity_recorder.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
+import 'package:brew_path/features/progress/domain/progress_write.dart';
 import 'package:brew_path/features/progress/domain/streak_day_set.dart';
 import 'package:brew_path/features/progress/domain/streak_engine.dart';
 import 'package:brew_path/features/progress/domain/tree_growth.dart';
@@ -67,9 +68,9 @@ class LessonCompletionService {
   /// Both paths record the day. There is no branch through a finished run that
   /// writes nothing.
   ///
-  /// [now] fixes the calendar day this run is recorded against — the decision
-  /// a test needs to pin. Row-level write stamps still read the clock
-  /// directly.
+  /// [now] fixes the calendar day this run is recorded against, and stamps
+  /// every snapshot write it makes — so a pinned run leaves nothing behind
+  /// that read the wall clock.
   Future<LessonFinishResult> finishLesson(
     LessonModel lesson, {
     required MasteryResult mastery,
@@ -317,27 +318,11 @@ class LessonCompletionService {
     );
   }
 
-  /// Reads the progress scope, applies [change], and writes it back stamped
-  /// at [now].
-  ///
-  /// The one write path this service has, and it returns what it wrote: a
-  /// caller that needs to report what it just recorded reads it off the
-  /// result rather than asking the store a second time, where Reset Progress
-  /// could have landed in between.
+  /// This service's every progress write, through the shared writer.
   Future<ClearedByReset> _updateProgress(
     ClearedByReset Function(ClearedByReset progress) change, {
     required DateTime now,
-  }) async {
-    final snapshot = await snapshotRepository.read();
-    final next = change(snapshot.clearedByReset);
-    await snapshotRepository.write(
-      snapshot.copyWith(
-        updatedAt: now.millisecondsSinceEpoch,
-        clearedByReset: next,
-      ),
-    );
-    return next;
-  }
+  }) => updateProgress(snapshotRepository, change, now: now);
 
   /// Advances the Coffee Tree to the stage this completion has earned.
   ///
@@ -348,8 +333,7 @@ class LessonCompletionService {
   Future<TreeGrowth> _growTree({required DateTime now}) async {
     final modules = await contentRepository.getModules();
     final sizes = moduleSizesInOrder(modules);
-    final snapshot = await snapshotRepository.read();
-    final progress = snapshot.clearedByReset;
+    final progress = (await snapshotRepository.read()).clearedByReset;
     final finished = progress.completedLessons.length;
 
     final stage = treeStageForProgress(
@@ -362,11 +346,9 @@ class LessonCompletionService {
     if (stage <= before) {
       return (before: before, after: before, toNext: toNext);
     }
-    await snapshotRepository.write(
-      snapshot.copyWith(
-        updatedAt: now.millisecondsSinceEpoch,
-        clearedByReset: progress.withTreeStageAtLeast(stage),
-      ),
+    await _updateProgress(
+      (progress) => progress.withTreeStageAtLeast(stage),
+      now: now,
     );
     return (before: before, after: stage, toNext: toNext);
   }

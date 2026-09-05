@@ -346,7 +346,7 @@ final class CompletedLessonsProvider
   }
 }
 
-String _$completedLessonsHash() => r'24018915ef67f2d2fb43dcd28e5758f8c1946eae';
+String _$completedLessonsHash() => r'0e4e21bf097fdda5d742ff4cfaea3c38940f68a7';
 
 /// The ids of the lessons the learner has finished.
 ///
@@ -521,7 +521,7 @@ final class TreeStageProvider
   }
 }
 
-String _$treeStageHash() => r'dc0629ab6d7c7e6be4985860e807520753610190';
+String _$treeStageHash() => r'7cbadb3b2897f16b1ae4deb444d49e6b8335090b';
 
 /// The learner's progress through the core course.
 
@@ -568,7 +568,7 @@ final class CoreLessonProgressProvider
 }
 
 String _$coreLessonProgressHash() =>
-    r'e88dbd387fafcd156a0e57dfd7c10c3afe974715';
+    r'f871cef902b7eb561382140b452faf6eaf4fa846';
 
 /// The month the Profile's closing line names, or null before there is one.
 ///
