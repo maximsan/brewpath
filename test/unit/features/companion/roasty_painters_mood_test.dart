@@ -112,8 +112,7 @@ void main() {
       });
 
       test("the burst's line is the ink that reads on that accent", () {
-        final style = roastyPointsBurstStyle(mood: mood, opacity: 1);
-        expect(style.color, mood.accentInk.withValues(alpha: 1));
+        expect(roastyPointsBurstStyle(mood: mood).color, mood.accentInk);
       });
 
       test("the sleeping z is the mood's muted ink", () {

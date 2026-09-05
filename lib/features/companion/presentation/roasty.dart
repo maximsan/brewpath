@@ -65,6 +65,10 @@ class Roasty extends StatefulWidget {
   /// challenge pays its own rule (§5.1, #16), so a number the mascot held
   /// would be right about neither. Required with the pose and rejected without
   /// it — see the assert on the constructor.
+  ///
+  /// **A caller reaching the pose through `roastyStateFor` has no channel for
+  /// this**, so wiring the pose to a reaction means giving the amount a way
+  /// through as well, not just adding a mapping row.
   final int? pointsAmount;
 
   @override

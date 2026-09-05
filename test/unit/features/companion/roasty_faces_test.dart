@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
+import 'package:brew_path/features/companion/presentation/roasty_animation.dart';
 import 'package:brew_path/features/companion/presentation/roasty_faces.dart';
 import 'package:brew_path/features/companion/presentation/roasty_particles.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -362,6 +363,30 @@ void main() {
         );
       }
     });
+  });
+
+  test('the points burst fades as one group, not mark by mark', () {
+    // The line is drawn on the plate, so fading each mark would let the accent
+    // show through its own lettering — the defect the wrong badge names below.
+    const halfway = 0.6;
+    final faded = roastyPointsBurstRise(halfway).opacity;
+
+    final canvas = _RecordingCanvas();
+    paintRoastyParticlesFront(
+      canvas,
+      RoastyState.points,
+      halfway,
+      MoodColors.darkRoast,
+      pointsAmount: 12,
+    );
+
+    expect(canvas.layerOpacities, hasLength(1));
+    expect(canvas.layerOpacities.single, closeTo(faded, _channel));
+    expect(
+      canvas.marks.map((mark) => mark.colour.a),
+      everyElement(closeTo(1, _channel)),
+      reason: "a mark carries its own fade as well as the group's",
+    );
   });
 
   group('the stars the design draws by hand', () {
