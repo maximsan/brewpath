@@ -72,9 +72,8 @@ class _CardsBody extends StatelessWidget {
       physics: const AlwaysScrollableScrollPhysics(),
       slivers: [
         SliverPadding(
-          // The design opens the grid below this block at 24. Nothing above
-          // the title but the status bar, which `TabLargeTitle` insets for:
-          // the shared header floats over this list rather than above it.
+          // The design opens the grid below this block at 24. No room at
+          // the top: `TabLargeTitle` leaves it.
           padding: const EdgeInsets.fromLTRB(
             AppSpacing.gutter,
             0,
@@ -85,7 +84,7 @@ class _CardsBody extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TabLargeTitle(AppRoutes.cards.path),
+                const TabLargeTitle(AppRoutes.cards),
                 const SizedBox(height: AppSpacing.xs),
                 _CollectionCount(
                   earned: earnedCount(list),

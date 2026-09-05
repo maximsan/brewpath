@@ -13,7 +13,7 @@ import '../support/widget_harness.dart';
 /// The day the header test freezes to, so the two agree on what Learn says.
 final _today = DateTime(2026, 5, 8);
 
-Widget _harness(String location, {EdgeInsets padding = EdgeInsets.zero}) {
+Widget _harness(AppRoute route, {EdgeInsets padding = EdgeInsets.zero}) {
   return ProviderScope(
     overrides: [currentDayProvider.overrideWithValue(_today)],
     child: MaterialApp(
@@ -21,7 +21,7 @@ Widget _harness(String location, {EdgeInsets padding = EdgeInsets.zero}) {
       home: MediaQuery(
         data: MediaQueryData(padding: padding),
         child: Scaffold(
-          body: SingleChildScrollView(child: TabLargeTitle(location)),
+          body: SingleChildScrollView(child: TabLargeTitle(route)),
         ),
       ),
     ),
@@ -35,10 +35,10 @@ void main() {
     tester,
   ) async {
     for (final root in [
-      AppRoutes.learn.path,
-      AppRoutes.path.path,
-      AppRoutes.cards.path,
-      AppRoutes.profile.path,
+      AppRoutes.learn,
+      AppRoutes.path,
+      AppRoutes.cards,
+      AppRoutes.profile,
     ]) {
       await tester.pumpWidget(_harness(root));
       await tester.pumpAndSettle();
@@ -47,15 +47,15 @@ void main() {
       // and the compact one in the bar read the same heading, so they cannot
       // come to disagree about what the screen is called.
       expect(
-        find.text(tabHeaderFor(root, today: _today)!.title),
+        find.text(tabHeaderFor(root.path, today: _today)!.title),
         findsOneWidget,
-        reason: '$root titles itself',
+        reason: '${root.path} titles itself',
       );
     }
   });
 
   testWidgets('it is set at the display step, as a heading', (tester) async {
-    await tester.pumpWidget(_harness(AppRoutes.cards.path));
+    await tester.pumpWidget(_harness(AppRoutes.cards));
     await tester.pumpAndSettle();
 
     expect(
@@ -73,15 +73,12 @@ void main() {
   ) async {
     const inset = 44.0;
 
-    await tester.pumpWidget(_harness(AppRoutes.cards.path));
+    await tester.pumpWidget(_harness(AppRoutes.cards));
     await tester.pumpAndSettle();
     final withoutInset = tester.getTopLeft(find.text('Collection')).dy;
 
     await tester.pumpWidget(
-      _harness(
-        AppRoutes.cards.path,
-        padding: const EdgeInsets.only(top: inset),
-      ),
+      _harness(AppRoutes.cards, padding: const EdgeInsets.only(top: inset)),
     );
     await tester.pumpAndSettle();
 
@@ -94,10 +91,8 @@ void main() {
     );
   });
 
-  testWidgets('a location that is not a tab root draws nothing', (
-    tester,
-  ) async {
-    await tester.pumpWidget(_harness('/learn/dictionary'));
+  testWidgets('a route that is not a tab root draws nothing', (tester) async {
+    await tester.pumpWidget(_harness(AppRoutes.dictionary));
     await tester.pumpAndSettle();
 
     expect(find.byType(Text), findsNothing);

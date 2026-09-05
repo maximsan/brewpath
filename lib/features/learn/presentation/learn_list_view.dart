@@ -31,9 +31,7 @@ class LearnListView extends ConsumerWidget {
   /// Creates a [LearnListView].
   const LearnListView({super.key});
 
-  /// Nothing above the title but the status bar: the shared header floats
-  /// over this list rather than standing above it, so the room at the top is
-  /// [TabLargeTitle]'s to leave.
+  /// No room at the top: [TabLargeTitle] leaves it.
   static const _padding = EdgeInsets.fromLTRB(
     AppSpacing.md,
     0,
@@ -94,7 +92,7 @@ class LearnListView extends ConsumerWidget {
           ? const ScrollCacheExtent.viewport(_tourCacheViewports)
           : null,
       children: [
-        TabLargeTitle(AppRoutes.learn.path),
+        const TabLargeTitle(AppRoutes.learn),
         _sectionGap,
         // The save beat leads the tab: someone returning after a miss is
         // the most fragile learner in the app, and reassurance comes

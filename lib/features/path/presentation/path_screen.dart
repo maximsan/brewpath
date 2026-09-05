@@ -9,6 +9,7 @@ import 'package:brew_path/features/path/domain/path_providers.dart';
 import 'package:brew_path/features/path/presentation/path_module_section.dart';
 import 'package:brew_path/features/path/presentation/reference_section.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -56,8 +57,7 @@ class _PathScreenState extends ConsumerState<PathScreen> {
         loading: () => const LoadingIndicator(),
         error: (error, _) => ErrorView(message: '$error'),
         data: (list) => ListView(
-          // No room at the top: the header floats over this list, so
-          // `TabLargeTitle` is what leaves the status bar its inset.
+          // No room at the top: `TabLargeTitle` leaves it.
           padding: const EdgeInsets.fromLTRB(
             AppSpacing.md,
             0,
@@ -66,7 +66,13 @@ class _PathScreenState extends ConsumerState<PathScreen> {
           ),
           physics: const AlwaysScrollableScrollPhysics(),
           children: [
-            TabLargeTitle(AppRoutes.path.path),
+            TabLargeTitle(
+              AppRoutes.path,
+              topGap: OffTokens.pathTitleTopGap.value,
+            ),
+            // The design sets 10 here and 8 on the Cards tab. Both are one
+            // stacked label rather than two blocks, so both take the hairline
+            // pair's stop; the 2 is not a measure either screen is built on.
             const SizedBox(height: AppSpacing.xs),
             _CourseTally(modules: list),
             const SizedBox(height: AppSpacing.lg),

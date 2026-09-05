@@ -183,6 +183,18 @@ abstract final class OffTokens {
         'the smallest stop reads as a gap between them.',
   );
 
+  /// How far below the status bar the Path tab opens its title.
+  static const OffToken<double> pathTitleTopGap = OffToken(
+    64,
+    reason:
+        'The design opens the Path tab at `paddingTop: 64` where Learn, Cards '
+        'and Profile open at 24. It is not a spacing stop, it is well past '
+        'AppSpacing.xxl (48), and Path is the only tab set at it — so it '
+        'belongs to that screen rather than to the scale. Carried rather than '
+        'rounded onto the other three, because 40px is a difference the eye '
+        'reads: the tab would open somewhere else than the design opens it.',
+  );
+
   /// The gap the intro screens set between a block and the next one.
   static const OffToken<double> introBlockGap = OffToken(
     28,
@@ -251,6 +263,7 @@ abstract final class OffTokens {
     todayHeroPadding,
     cardsFooterPadding,
     cardsFooterLineGap,
+    pathTitleTopGap,
     introBlockGap,
     introSupportGap,
     ghostUnderPrimaryGap,

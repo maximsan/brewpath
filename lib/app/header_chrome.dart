@@ -1,4 +1,4 @@
-import 'package:brew_path/shared/theme/app_overlay.dart';
+import 'package:brew_path/core/widgets/scrolled_progress.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -71,12 +71,9 @@ class HeaderChrome extends StatelessWidget {
     // has to be blurred all the way to the top of the screen.
     final barHeight = MediaQuery.paddingOf(context).top + height;
 
-    return TweenAnimationBuilder<double>(
-      tween: Tween<double>(begin: 0, end: isScrolled ? 1 : 0),
-      duration: MediaQuery.disableAnimationsOf(context)
-          ? Duration.zero
-          : _duration,
-      curve: Curves.ease,
+    return ScrolledProgress(
+      isScrolled: isScrolled,
+      duration: _duration,
       child: SizedBox(
         height: barHeight,
         child: Align(alignment: Alignment.bottomLeft, child: child),
@@ -87,7 +84,7 @@ class HeaderChrome extends StatelessWidget {
           children: [
             Positioned.fill(
               child: IgnorePointer(
-                child: _Paint(
+                child: _PaintedBar(
                   mood: mood,
                   progress: progress,
                   barHeight: barHeight,
@@ -103,8 +100,8 @@ class HeaderChrome extends StatelessWidget {
 }
 
 /// The bar's painted half at [progress] of the way from invisible to filled.
-class _Paint extends StatelessWidget {
-  const _Paint({
+class _PaintedBar extends StatelessWidget {
+  const _PaintedBar({
     required this.mood,
     required this.progress,
     required this.barHeight,
@@ -116,33 +113,23 @@ class _Paint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final headerFill = mood.headerFill;
+    // The whole token, scaled: the tint, the blur and the saturation it is
+    // written with arrive together and fade in together — and at rest there is
+    // no filter at all, which is what keeps an invisible bar from paying for a
+    // `saveLayer`.
+    final headerFill = mood.headerFill.at(progress);
     final bar = SizedBox(
       height: barHeight,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: headerFill.color.withValues(
-            alpha: headerFill.color.a * progress,
-          ),
+          color: headerFill.color,
           border: Border(
             bottom: BorderSide(color: mood.rule.withValues(alpha: progress)),
           ),
         ),
       ),
     );
-
-    // The whole token, scaled: the blur and the saturation it is written with
-    // arrive together and fade in together — and at rest there is no filter at
-    // all, which is what keeps an invisible bar from paying for a `saveLayer`.
-    final filter = AppOverlay(
-      color: headerFill.color,
-      blurRadius: headerFill.blurRadius * progress,
-      saturation: _lerp(
-        AppOverlay.unsaturated,
-        headerFill.saturation,
-        progress,
-      ),
-    ).backdropFilter;
+    final filter = headerFill.backdropFilter;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -189,7 +176,3 @@ class _EdgeFade extends StatelessWidget {
     );
   }
 }
-
-/// [a] to [b] at [progress]. `ui.lerpDouble` is nullable on both ends; this
-/// one is not, because neither end here can be absent.
-double _lerp(double a, double b, double progress) => a + (b - a) * progress;

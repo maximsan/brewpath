@@ -61,6 +61,20 @@ class AppOverlay {
   /// Whether this overlay lifts saturation at all.
   bool get isSaturated => saturation != unsaturated;
 
+  /// This overlay [progress] of the way in from nothing.
+  ///
+  /// A bar the design fades in fades the *whole* filter, not the tint with a
+  /// blur snapping on behind it — so the scaling belongs to the token, where
+  /// both halves are, rather than to each thing that fades one in. At zero it
+  /// is a fully transparent, unfiltered overlay, and [backdropFilter] is then
+  /// null: a bar on its way in pays for no `saveLayer` until it has something
+  /// to blur.
+  AppOverlay at(double progress) => AppOverlay(
+    color: color.withValues(alpha: color.a * progress),
+    blurRadius: blurRadius * progress,
+    saturation: unsaturated + (saturation - unsaturated) * progress,
+  );
+
   /// Whether this overlay blurs at all.
   ///
   /// False for exactly one of the four: the plain veil, which the design leaves

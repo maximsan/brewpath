@@ -1,3 +1,4 @@
+import 'package:brew_path/core/widgets/scrolled_progress.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -48,12 +49,9 @@ class HeaderCompactTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     final mood = context.mood;
 
-    return TweenAnimationBuilder<double>(
-      tween: Tween<double>(begin: 0, end: isVisible ? 1 : 0),
-      duration: MediaQuery.disableAnimationsOf(context)
-          ? Duration.zero
-          : _duration,
-      curve: Curves.ease,
+    return ScrolledProgress(
+      isScrolled: isVisible,
+      duration: _duration,
       // The bar mirrors a title the screen already states, so a screen reader
       // is given it once — by the screen — rather than twice by the two halves
       // of one crossfade. Pointer events pass through for the same reason the
@@ -85,13 +83,13 @@ class HeaderCompactTitle extends StatelessWidget {
           ),
         ),
       ),
-      builder: (context, progress, title) => progress == 0
+      builder: (context, progress, stack) => progress == 0
           ? const SizedBox.shrink()
           : Opacity(
               opacity: progress,
               child: Transform.translate(
                 offset: Offset(0, (1 - progress) * _rise),
-                child: title,
+                child: stack,
               ),
             ),
     );

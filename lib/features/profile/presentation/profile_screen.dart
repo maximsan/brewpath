@@ -59,8 +59,7 @@ class ProfileScreen extends ConsumerWidget {
       body: CustomScrollView(
         slivers: [
           SliverPadding(
-            // No room at the top: the shared header floats over this list, so
-            // `TabLargeTitle` is what leaves the status bar its inset.
+            // No room at the top: `TabLargeTitle` leaves it.
             padding: const EdgeInsets.fromLTRB(
               AppSpacing.gutter,
               0,
@@ -69,7 +68,7 @@ class ProfileScreen extends ConsumerWidget {
             ),
             sliver: SliverList.list(
               children: [
-                TabLargeTitle(AppRoutes.profile.path),
+                const TabLargeTitle(AppRoutes.profile),
                 const SizedBox(height: _headlineGap),
                 treeStage.when(
                   data: (stage) => TreeHeroCard(

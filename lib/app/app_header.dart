@@ -70,9 +70,12 @@ class AppHeader extends ConsumerWidget {
       height: HeaderChrome.tabHeight,
       isScrolled: isCollapsed,
       child: Padding(
-        // The design closes the bar 14 above its bottom edge. The gutter it
-        // opens on is the app's own rather than the design's 18, so the
-        // compact title lines up with the tab content it stands in for.
+        // The design closes the bar 14 above its bottom edge, which is the
+        // one of the three it and the app agree on: the design sets the sides
+        // to 18 either way, and the bar keeps the app's own gutter on the left
+        // and its standard inset on the right, so the compact title lines up
+        // with the tab content it stands in for and the entries sit where
+        // every other screen's do.
         padding: const EdgeInsets.fromLTRB(
           AppSpacing.gutter,
           0,

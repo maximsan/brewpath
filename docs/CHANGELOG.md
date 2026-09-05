@@ -56,6 +56,10 @@ You can always edit this file by hand instead — the helpers just save effort.
   The Cards tab gets its *Collection* heading back, which it had to give up
   when the bar was drawing one of its own.
 
+  The close bar on the two reward screens now blurs the same way. It was a
+  flat panel that appeared as you scrolled; it is the same frosted strip the
+  tab bar is, so the celebration underneath still shows through it.
+
 - **Setting up the app is three screens shorter.** It used to ask what your
   goal was and what you brew with, and you could not get past either one —
   even though nothing in the app ever used the answers. Both questions are

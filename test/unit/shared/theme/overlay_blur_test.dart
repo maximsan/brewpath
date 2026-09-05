@@ -194,6 +194,39 @@ void main() {
     });
   });
 
+  group('an overlay part of the way in', () {
+    const overlay = AppOverlay(
+      color: Color(0xFF102030),
+      blurRadius: 16,
+      saturation: 1.5,
+    );
+
+    test('at nothing is transparent, unblurred and unfiltered', () {
+      final none = overlay.at(0);
+
+      expect(none.color.a, 0);
+      expect(none.blurRadius, 0);
+      expect(none.saturation, AppOverlay.unsaturated);
+      expect(
+        none.backdropFilter,
+        isNull,
+        reason: 'a bar on its way in pays for no saveLayer until it blurs',
+      );
+    });
+
+    test('all the way in is the token itself', () {
+      expect(overlay.at(1), overlay);
+    });
+
+    test('halfway is halfway on all three, so the filter cannot pop', () {
+      final half = overlay.at(0.5);
+
+      expect(half.color.a, closeTo(overlay.color.a / 2, 0.0001));
+      expect(half.blurRadius, 8);
+      expect(half.saturation, closeTo(1.25, 0.0001));
+    });
+  });
+
   group('the sticky header fill', () {
     test('is the page at the opacity the design mixes it to', () {
       final mix = RegExp(

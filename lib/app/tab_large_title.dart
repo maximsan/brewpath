@@ -1,5 +1,6 @@
 import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/app/header_tier.dart';
+import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -21,25 +22,31 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// in a tab root is above the content to make room. Every tab root opens with
 /// this, which is what keeps the rule in one place.
 class TabLargeTitle extends ConsumerWidget {
-  /// Creates the large title for the tab root at [location].
-  const TabLargeTitle(this.location, {super.key});
+  /// Creates the large title for the tab root at [route], opening [topGap]
+  /// below the status bar.
+  const TabLargeTitle(this.route, {this.topGap = AppSpacing.lg, super.key});
 
-  /// The tab root this titles — one of the four branch paths.
-  final String location;
+  /// The tab root this titles. A route rather than a path string, so a tab can
+  /// only be named by the catalogue that defines it.
+  final AppRoute route;
+
+  /// How far below the status bar the title sits. The design opens three of
+  /// the four tabs at 24 and Path a good deal lower, so the tab states its
+  /// own rather than this widget assuming they agree.
+  final double topGap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tab = tabHeaderFor(
-      location,
+      route.path,
       today: ref.watch(currentDayProvider),
       learnerName: ref.watch(learnerNameProvider).asData?.value,
     );
     if (tab == null) return const SizedBox.shrink();
 
     return Padding(
-      // The design opens a tab 24 below the status bar.
       padding: EdgeInsets.only(
-        top: MediaQuery.paddingOf(context).top + AppSpacing.lg,
+        top: MediaQuery.paddingOf(context).top + topGap,
       ),
       child: Semantics(
         header: true,

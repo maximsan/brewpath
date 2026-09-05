@@ -46,7 +46,7 @@ void main() {
       for (final tab in [
         (AppIcon.route, 'Beginner Foundations'),
         (AppIcon.cards, 'Collection'),
-        (AppIcon.leaf, 'Hello, there.'),
+        (AppIcon.leaf, 'Hello there.'),
       ]) {
         await tester.tap(findMark(tab.$1, active: false));
         await settleLoaders(tester);
