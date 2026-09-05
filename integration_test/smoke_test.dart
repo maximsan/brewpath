@@ -133,13 +133,20 @@ void main() {
   /// Onboarding's Continue is dead until its controller accepts the answer, so
   /// a walk that taps on the frame after choosing taps nothing at all — and
   /// `tap` on a disabled button succeeds, which is the silent failure again.
-  Finder liveButton(String label) => find.byWidgetPredicate(
-    (widget) =>
-        widget is FilledButton &&
-        widget.onPressed != null &&
-        widget.child is Text &&
-        (widget.child! as Text).data == label,
-    description: 'an enabled "$label" button',
+  ///
+  /// ⚠️ **The label is looked for anywhere under the button, never as its
+  /// direct child.** This read `child is Text` until the button grew an
+  /// optional trailing mark and wrapped its label in a `Row` — after which
+  /// every wait here timed out against a button that was on screen the whole
+  /// time, and the gate stayed red across five merges. What the walk needs is
+  /// *an enabled button that says this*; how the button lays its label out is
+  /// the button's business.
+  Finder liveButton(String label) => find.ancestor(
+    of: find.text(label),
+    matching: find.byWidgetPredicate(
+      (widget) => widget is FilledButton && widget.onPressed != null,
+      description: 'an enabled "$label" button',
+    ),
   );
 
   /// Launches the app and skips the wake-up, leaving the caller on whatever
