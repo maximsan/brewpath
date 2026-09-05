@@ -19,10 +19,6 @@ RoastyState roastyStateFor({
 
 RoastyState _reactionState(CompanionReaction reaction) {
   switch (reaction) {
-    case CompanionReaction.correct:
-      return RoastyState.correct;
-    case CompanionReaction.wrong:
-      return RoastyState.wrong;
     case CompanionReaction.lessonComplete:
       return RoastyState.lesson;
     case CompanionReaction.moduleComplete:
@@ -40,9 +36,7 @@ RoastyState _reactionState(CompanionReaction reaction) {
     // a lesson, and a notch below the module pose the course moments use.
     case CompanionReaction.challengeComplete:
       return RoastyState.lesson;
-    case CompanionReaction.cardEarned:
-      return RoastyState.card;
-    // The streak beat keeps the prototype's pose for it — Roasty at
+    // The streak beat keeps the design's pose for it — Roasty at
     // correct, a personal win rather than a course-sized one (#26).
     case CompanionReaction.streakMilestone:
       return RoastyState.correct;

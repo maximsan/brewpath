@@ -42,6 +42,21 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ## [Unreleased]
 
+### Added
+
+- **Roasty holds your guess on the opening card of a lesson.** Pick one of the
+  two answers and he appears beside it holding a card, labelled with the guess
+  you took, and the line that keeps the question open beside him. He does not
+  say whether you were right — the card at the end of the lesson still does
+  that.
+
+### Fixed
+
+- **The explanation under a verdict is grey again on the decision and recall
+  cards.** Those two are set a size larger than the rest, and the app was
+  reading full black ink off that larger step. Only the size was meant to
+  change.
+
 ### Fixed
 
 - **The module's reward card is no longer introduced twice.** Turning the

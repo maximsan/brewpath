@@ -13,23 +13,40 @@ import 'package:flutter/material.dart';
 /// drifts, which is the same failure one verdict block exists to prevent.
 const String notQuiteVerdict = 'Not quite';
 
-/// Which way a graded surface went, and everything that follows from it.
+/// How the surface stands, and everything that follows from it.
 ///
 /// One enum rather than a `bool` and a colour and a mascot state passed
 /// separately: those three always move together, and it was passing them
 /// separately that let five copies drift — one reached for `mood.warn` where
 /// the rest used `mood.berry`, and nothing could tell that was a mistake.
+///
+/// Three standings, not two, because the design has three: its block reads
+/// `graded = true | false | null`, and the null branch is the predict card's
+/// held guess.
 enum Verdict {
   /// The learner got it. Sage, and Roasty pleased.
   right(RoastyState.correct),
 
   /// They did not. The surface's own wrong tone, and Roasty sorry about it.
-  wrong(RoastyState.wrong);
+  wrong(RoastyState.wrong),
+
+  /// Nothing has been graded. Roasty holds the answer on a card rather than
+  /// marking it, and the line stays ink-mute — the design colours the label
+  /// with meaning, so an ungraded line may take neither the right colour nor
+  /// the wrong one.
+  held(RoastyState.card);
 
   const Verdict(this.mascotState);
 
   /// How Roasty takes the news.
   final RoastyState mascotState;
+
+  /// The colour the line is named in, here.
+  Color tone(MoodColors mood, VerdictPlacement placement) => switch (this) {
+    Verdict.right => mood.sage,
+    Verdict.wrong => placement.wrongTone(mood),
+    Verdict.held => mood.inkMute,
+  };
 }
 
 /// Where the block is standing — the whole of what varies between its hosts.
@@ -42,24 +59,33 @@ enum VerdictPlacement {
   card(mascot: _mascotOnCard, speaksInBody: false),
 
   /// The cards the design sets a step larger — `decision` and `recall`, which
-  /// pass `bodySize="body"` (`active-cards.jsx:172`, `:227`).
+  /// pass `bodySize="body"`.
   ///
   /// They talk back rather than mark an answer, and the design gives that
   /// reading the body step the rest of the run reserves for prose.
   conversational(mascot: _mascotOnCard, speaksInBody: true),
 
-  /// A term entry's self-check (`dictionary.jsx:491`), drawn smaller and toned
-  /// **accent** rather than berry.
+  /// A term entry's self-check, drawn smaller and toned **accent** rather than
+  /// berry.
   ///
   /// A term entry is reference rather than a graded run: berry is the colour
   /// the lesson player spends on a wrong answer, and a look-up that answers
   /// back in it reads as a worse failure than missing a self-check is.
-  reference(mascot: _mascotInReference, speaksInBody: false);
+  reference(mascot: _mascotInReference, speaksInBody: false),
+
+  /// The predict card's held guess — the design's `size={64} bodySize="body"`.
+  ///
+  /// Smaller than a graded card's mascot and set at the body step: the block
+  /// is repeating the learner's own guess back to them, which reads as prose
+  /// rather than as a mark.
+  heldGuess(mascot: _mascotOnHold, speaksInBody: true);
 
   const VerdictPlacement({required this.mascot, required this.speaksInBody});
 
-  /// The design's mascot size on a graded card, and inside a term entry.
+  /// The design's mascot size on a graded card, holding a guess, and inside a
+  /// term entry.
   static const double _mascotOnCard = 72;
+  static const double _mascotOnHold = 64;
   static const double _mascotInReference = 48;
 
   /// How large Roasty is drawn here.
@@ -73,14 +99,21 @@ enum VerdictPlacement {
       this == VerdictPlacement.reference ? mood.accent : mood.berry;
 
   /// How the explanation is set here.
-  TextStyle explanationStyle(MoodColors mood) =>
-      speaksInBody ? AppText.body(mood: mood) : AppText.support(mood: mood);
+  ///
+  /// **Muted at either step.** The design's block colours this text
+  /// `var(--ink-mute)` whatever `bodySize` it is given — the step says how
+  /// much room the explanation takes, never how loudly it speaks — and
+  /// `AppText.body` defaults to full ink, so the colour has to be named.
+  TextStyle explanationStyle(MoodColors mood) => speaksInBody
+      ? AppText.body(color: mood.inkMute)
+      : AppText.support(mood: mood);
 }
 
-/// The verdict block that closes every graded surface in the product.
+/// The block that closes every graded surface in the product — and holds the
+/// one guess that is never graded.
 ///
-/// The design's `AnswerFeedback` (`prototype/roasty.jsx:744`): the mascot, then
-/// a mono verdict line and the explanation under it. **One component, and the
+/// The design's `AnswerFeedback`: the mascot, then a mono verdict line and the
+/// explanation under it. **One component, and the
 /// design source says why** — nine hand-rolled copies of it once drifted apart
 /// in the prototype, and the five this replaced in `lib/` had already started
 /// to, on type step (`labelSmall` against `titleSmall`) and on wrong-state
@@ -119,7 +152,7 @@ class AnswerFeedback extends StatelessWidget {
   /// makes the screen reader shout it too.
   final String verdict;
 
-  /// Which way it went.
+  /// How it stands — graded either way, or held.
   final Verdict outcome;
 
   /// What the surface explains under the line, if it explains anything.
@@ -153,9 +186,7 @@ class AnswerFeedback extends StatelessWidget {
                   verdict.toUpperCase(),
                   style: AppText.label(
                     face: AppFace.mono,
-                    color: outcome == Verdict.right
-                        ? mood.sage
-                        : placement.wrongTone(mood),
+                    color: outcome.tone(mood, placement),
                   ),
                 ),
               ),
