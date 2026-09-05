@@ -169,6 +169,13 @@ never a qualifying activity
 _Avoid_: a Learn-tab or Today surface (the prototype's Learn-tab hook is dead
 code; ruled out)
 
+**Miss** (vocab):
+A term answered wrongly in a vocab round, until a later round answers it
+correctly — whichever happened last decides, on any device
+([#298](https://github.com/maximsan/brewpath/issues/298)). The **Misses
+deck** is the vocab game's third deck: every current miss, offered once there
+are four.
+
 ## Onboarding
 
 **Tour**:
