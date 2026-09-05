@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
@@ -8,6 +10,7 @@ import 'package:brew_path/features/companion/presentation/roasty_moment.dart';
 import 'package:brew_path/features/learn/domain/module_summary_provider.dart';
 import 'package:brew_path/features/learn/presentation/module_complete_faces.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
+import 'package:brew_path/features/monetization/presentation/activity_start.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -89,7 +92,7 @@ class _ModuleCompleteScreenState extends ConsumerState<ModuleCompleteScreen>
       _backToPath();
       return;
     }
-    context.goTo(lessonRun(next));
+    unawaited(context.goToActivity(lessonRun(next)));
   }
 
   @override

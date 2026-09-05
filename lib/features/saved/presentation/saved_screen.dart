@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
+import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
+import 'package:brew_path/features/monetization/presentation/activity_start.dart';
 import 'package:brew_path/features/path/domain/visual_guide_providers.dart';
 import 'package:brew_path/features/path/presentation/visual_guide_sheet.dart';
 import 'package:brew_path/features/saved/domain/saved_cap.dart';
@@ -18,7 +20,6 @@ import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 /// Everything the learner has bookmarked, in three groups.
 ///
@@ -43,12 +44,7 @@ class SavedScreen extends ConsumerWidget {
       case SavedKind.term:
         unawaited(context.pushDictionaryTerm(item.id));
       case SavedKind.lesson:
-        unawaited(
-          context.pushNamed(
-            AppRoutes.lesson.name,
-            pathParameters: {'lessonId': item.id},
-          ),
-        );
+        unawaited(context.pushActivity(lessonRun(item.id)));
       case SavedKind.guide:
         // Awaited, not read for its current value: nothing has asked for this
         // guide before, so a synchronous read is still unresolved and the
