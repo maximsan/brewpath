@@ -30,9 +30,10 @@ class TabLargeTitle extends ConsumerWidget {
   /// only be named by the catalogue that defines it.
   final AppRoute route;
 
-  /// How far below the status bar the title sits. The design opens three of
-  /// the four tabs at 24 and Path a good deal lower, so the tab states its
-  /// own rather than this widget assuming they agree.
+  /// How far below the status bar the title sits. Cards opens at the design's
+  /// 24; the three whose titles are not fixed strings open below the header's
+  /// entries instead (`OffTokens.tabTitleClearOfEntries`). The tab states its
+  /// own, because which of the two it wants is a fact about its title.
   final double topGap;
 
   @override
