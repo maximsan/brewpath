@@ -42,6 +42,19 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ## [Unreleased]
 
+### Added
+
+- **Roasty keeps you company on the Keep Sharp card.** Once you have finished
+  the course, the day's recommendation shows him resting beside it, on a paper
+  plate, before you start. He used to appear only after you had done it.
+
+### Fixed
+
+- **Screen readers read the Keep Sharp card once, not three times.** The card
+  announced its heading and its texts and then the same words again as a
+  sentence. It now reads one sentence, and the Start button says what it
+  starts.
+
 ### Changed
 
 - **The bar at the top of a tab gets out of the way.** It used to sit there
@@ -59,6 +72,17 @@ You can always edit this file by hand instead — the helpers just save effort.
   The close bar on the two reward screens now blurs the same way. It was a
   flat panel that appeared as you scrolled; it is the same frosted strip the
   tab bar is, so the celebration underneath still shows through it.
+
+- **The dictionary now reads by tier.** Without the course, a term opens on
+  its short explanation and stops there: the deep explanation, the example,
+  the self-check and the sources sit behind a *Read the full entry* row that
+  opens the Plus offer, and the same row appears when you peek at a term
+  from another entry. The terms no lesson teaches are simply not there
+  for a free learner — not in search, not in a category, not in the counts,
+  and a saved link to one lands on *not in the dictionary* rather than on
+  the term. With the course nothing changes: every term, whole, with no offer
+  in the way. The counts on the category index and the filter follow the
+  tier, so the number in front of you is the number you can open.
 
 - **Setting up the app is three screens shorter.** It used to ask what your
   goal was and what you brew with, and you could not get past either one —

@@ -173,6 +173,7 @@ A pure-SVG coffee bean character, fully parametric. **9 animation states** (`ROA
 > currency throughout. `?screen=anim-points`, not `anim-xp`.
 
 Roasty accepts `roast`, `hat`, `gear`, `sprout` props, read from `window.ROASTY_CONFIG`, so every instance app-wide reflects the user's Studio look.
+A `plate` prop seats him on a paper plate pinned to `--roasty-plate: #FBF7EE` — deliberately not `--surface`, which would follow the mood and merge into the bean in Dark Roast. Keep Sharp's resting Roasty uses it.
 Also in the file: `RoastyLoadingScreen` (branded splash, auto-advances), `RoastyMoment` (full-screen celebration beat), `ReplayButton`, `RoastyAnimScreen`.
 
 ## Icon set (`flavor-wheel.jsx`, all inline SVG)

@@ -1,6 +1,8 @@
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/companion/application/companion_providers.dart';
 import 'package:brew_path/features/companion/domain/companion_lines.dart';
+import 'package:brew_path/features/companion/domain/roasty_state.dart';
+import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
 import 'package:brew_path/features/learn/presentation/today_card_widget.dart';
@@ -16,13 +18,21 @@ final _miniGames = KeepSharpRecommendation(
   destination: miniGameRun('g-quiz'),
 );
 
-/// Pumps the card inside a real router so the CTA's named navigation can be
-/// exercised, with marker screens standing in for the practice surfaces.
+/// The design seats him at `size={84}` beside the title and rule.
+const double _designRoastySize = 84;
+
+/// Accessibility's largest common step, on a small phone: the rule wraps
+/// to several lines and the mascot must not push the text off the card.
+const double _largeTextScale = 2;
+const double _narrowPhoneWidth = 320;
+
 /// One deterministic acknowledgement phrase.
 const _lines = CompanionLines({
   'keepSharpComplete': ['Done for today. Sharp as ever.'],
 });
 
+/// Pumps the card inside a real router so the CTA's named navigation can be
+/// exercised, with marker screens standing in for the practice surfaces.
 Future<void> _pump(
   WidgetTester tester, {
   KeepSharpRecommendation? keepSharp,
@@ -219,5 +229,90 @@ void main() {
       find.bySemanticsLabel(RegExp('Keep Sharp.*Mini-games')),
       findsOneWidget,
     );
+  });
+
+  testWidgets('the recommendation seats Roasty at rest on his plate', (
+    tester,
+  ) async {
+    await _pump(tester, keepSharp: _miniGames);
+
+    final roasty = tester.widget<Roasty>(find.byType(Roasty));
+    expect(roasty.state, RoastyState.idle);
+    expect(roasty.plate, isTrue);
+    expect(roasty.size, _designRoastySize);
+  });
+
+  testWidgets('the resting Roasty is decorative', (tester) async {
+    await _pump(tester, keepSharp: _miniGames);
+
+    expect(
+      find.ancestor(
+        of: find.byType(Roasty),
+        matching: find.byType(ExcludeSemantics),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.bySemanticsLabel(
+        "Keep Sharp: today's recommendation is Mini-games. "
+        'Play two different games today.',
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('the pick is read once, then the button names it', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await _pump(tester, keepSharp: _miniGames);
+
+    expect(find.bySemanticsLabel('KEEP SHARP'), findsNothing);
+    expect(find.bySemanticsLabel('Mini-games'), findsNothing);
+    expect(find.bySemanticsLabel('Start: Mini-games'), findsOneWidget);
+    handle.dispose();
+  });
+
+  testWidgets('the layout holds when the rule wraps at a large text size', (
+    tester,
+  ) async {
+    final replay = KeepSharpRecommendation(
+      type: PracticeType.lessonReplay,
+      destination: lessonRun('lesson_where_coffee'),
+    );
+    await tester.pumpWidget(
+      MediaQuery(
+        data: const MediaQueryData(
+          textScaler: TextScaler.linear(_largeTextScale),
+        ),
+        child: MaterialApp(
+          home: Scaffold(
+            // Scrolls like the Learn screen does, so only a sideways
+            // overflow can fail this.
+            body: SingleChildScrollView(
+              child: SizedBox(
+                width: _narrowPhoneWidth,
+                child: TodayCardWidget(today: null, keepSharp: replay),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Start'), findsOneWidget);
+    // The text column gives way; he keeps the design's size.
+    expect(tester.getSize(find.byType(Roasty)).width, _designRoastySize);
+  });
+
+  testWidgets('the completed state is unchanged: one Roasty, no plate', (
+    tester,
+  ) async {
+    await _pump(tester, keepSharp: _miniGames, acknowledged: true);
+
+    final roasty = tester.widget<Roasty>(find.byType(Roasty));
+    expect(roasty.plate, isFalse);
   });
 }
