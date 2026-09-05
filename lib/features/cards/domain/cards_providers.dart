@@ -18,18 +18,18 @@ class CardWithCollection {
   final bool isCollected;
 }
 
-/// Reads collected IDs from `cardRepositoryProvider` directly rather than
-/// chaining through `collectedCardsProvider.future`. The chained form hits a
-/// Riverpod 3.2.1 internal-pause-state assertion (issue #4709) when the
+/// Reads the collected ids **off the snapshot directly** rather than chaining
+/// through `collectedCardsProvider.future`. The chained form hits a Riverpod
+/// 3.2.1 internal-pause-state assertion (issue #4709) when the
 /// `StatefulShellRoute` toggles `TickerMode` after the lesson-completion
 /// screen invalidates the inner provider. Callers that mutate collected
 /// cards must invalidate this provider alongside `collectedCardsProvider`.
 @riverpod
 Future<List<CardWithCollection>> cardsWithCollection(Ref ref) async {
-  final cards = await ref.watch(contentRepositoryProvider).getCards();
-  final collected =
-      (await ref.watch(cardRepositoryProvider).getAllCollectedCardIds())
-          .toSet();
+  final content = ref.watch(contentRepositoryProvider);
+  final snapshots = ref.watch(snapshotRepositoryProvider);
+  final cards = await content.getCards();
+  final collected = (await snapshots.read()).clearedByReset.ownedCollectibles;
   return cards
       .map(
         (c) =>

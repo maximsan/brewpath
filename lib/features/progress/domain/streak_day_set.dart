@@ -1,7 +1,6 @@
 /// Gathering the day set the fold reads, from every store that knows a day.
 library;
 
-import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/progress/domain/qualifying_day.dart';
 
 /// Every local calendar day the learner is known to have shown up on.
@@ -31,9 +30,9 @@ import 'package:brew_path/features/progress/domain/qualifying_day.dart';
 Set<int> streakDaySet({
   required Set<int> activeDays,
   required Map<int, Set<String>> dailyActivity,
-  required Iterable<DateTime> firstCompletionDays,
+  required Iterable<int> firstCompletionDays,
 }) => {
   ...activeDays,
   ...qualifyingDays(dailyActivity),
-  ...firstCompletionDays.map(epochDay),
+  ...firstCompletionDays,
 };

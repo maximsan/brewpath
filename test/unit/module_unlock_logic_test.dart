@@ -1,11 +1,12 @@
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
-import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
-import 'package:brew_path/shared/repositories/progress_repository.dart';
+import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../support/progress_seed.dart';
 
 /// Module unlock lives in `modulesWithProgressProvider`: the first module is
 /// always open, and every later one waits on the module before it.
@@ -39,16 +40,8 @@ void main() {
     return modules.firstWhere((m) => m.id == moduleId).lessonIds;
   }
 
-  Future<void> complete(Iterable<String> lessonIds) async {
-    final repo = ProgressRepository();
-    for (final id in lessonIds) {
-      await repo.saveCompletion(
-        lessonId: id,
-        xpEarned: 10,
-        mastery: const MasteryResult(correct: 5, total: 5),
-      );
-    }
-  }
+  Future<void> complete(Iterable<String> lessonIds) =>
+      seedCompletedLessons(SnapshotRepository(), lessonIds);
 
   test('the first module is always unlocked', () async {
     expect((await lockedByModule())['m1'], isFalse);

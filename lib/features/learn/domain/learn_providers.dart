@@ -3,7 +3,6 @@ import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/models/module_model.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
-import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'learn_providers.g.dart';
@@ -56,11 +55,9 @@ class ModuleWithProgress {
 @riverpod
 Future<List<ModuleWithProgress>> modulesWithProgress(Ref ref) async {
   final content = ref.watch(contentRepositoryProvider);
+  final completedFuture = ref.watch(completedLessonIdsProvider.future);
   final modules = await content.getModules();
-  final completed = await ref
-      .watch(progressRepositoryProvider)
-      .getAllCompleted();
-  final completedIds = completed.map((r) => r.lessonId).toSet();
+  final completedIds = await completedFuture;
 
   bool moduleComplete(ModuleModel m) =>
       m.lessonIds.isNotEmpty && m.lessonIds.every(completedIds.contains);
@@ -93,11 +90,9 @@ bool _isReached(ModuleModel module, Map<int, bool> completeByPosition) {
 @riverpod
 Future<LessonModel?> todayLesson(Ref ref) async {
   final content = ref.watch(contentRepositoryProvider);
+  final completedFuture = ref.watch(completedLessonIdsProvider.future);
   final modules = await content.getModules();
-  final completed = await ref
-      .watch(progressRepositoryProvider)
-      .getAllCompleted();
-  final completedIds = completed.map((r) => r.lessonId).toSet();
+  final completedIds = await completedFuture;
   // Wrapped so the shared rule can read a module's lesson ids; the lock state
   // is irrelevant to "what is next in order" and is not consulted.
   final inOrder = [
@@ -161,7 +156,7 @@ class LessonWithModule {
 Future<List<LessonWithModule>> completedLessonsWithModule(Ref ref) async {
   final content = ref.watch(contentRepositoryProvider);
   final completed = await ref.watch(completedLessonsProvider.future);
-  final finished = {for (final record in completed) record.lessonId};
+  final finished = completed.ids;
   if (finished.isEmpty) return const [];
 
   final modules = await content.getModules();

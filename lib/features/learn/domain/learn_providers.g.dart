@@ -53,7 +53,7 @@ final class ModulesWithProgressProvider
 }
 
 String _$modulesWithProgressHash() =>
-    r'45160b369ab85aeae0c66800ddabbe5556c04d4a';
+    r'eb71ca0e1afe014bc66f2c92195dfbcddaaa5dda';
 
 /// The next uncompleted lesson in order, or null if all are complete.
 
@@ -97,7 +97,7 @@ final class TodayLessonProvider
   }
 }
 
-String _$todayLessonHash() => r'774ffc3540c940bd7a15b792d141cacbecd430cb';
+String _$todayLessonHash() => r'9cf8ce217bb6b8574bd949e7188e6d72caa27310';
 
 /// Every lesson still ahead of the learner, course-wide.
 ///
@@ -246,4 +246,4 @@ final class CompletedLessonsWithModuleProvider
 }
 
 String _$completedLessonsWithModuleHash() =>
-    r'3393110394f9a8db8e6844e5e6fa57bb67c57257';
+    r'050654fa0e8a7cf3e305e202f2e7bf8b33a2c16b';

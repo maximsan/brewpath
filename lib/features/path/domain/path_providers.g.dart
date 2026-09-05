@@ -68,4 +68,4 @@ final class PathModulesProvider
   }
 }
 
-String _$pathModulesHash() => r'06c67924ef515a624e92d496ca51ccfec6307516';
+String _$pathModulesHash() => r'840093498683490d8c0cf048c2386b022391ace5';

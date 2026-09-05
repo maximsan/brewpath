@@ -219,6 +219,64 @@ class ClearedByReset {
     activeDays: marksDay ? {...activeDays, day} : activeDays,
   );
 
+  /// A copy recording [lessonId] as first completed on [day], scoring
+  /// [mastery].
+  ///
+  /// Both halves move together because they are one event: the day is when the
+  /// lesson was finished, the result is how it went.
+  ///
+  /// **The earliest day wins, and the result only rises.** The merge resolves
+  /// two devices with `min` and `MasteryResult.best`; a local write that
+  /// disagreed would move a first completion later than it happened, or take
+  /// back a run the learner has already had — and the daily allowance counts
+  /// first completions dated today, so the day is not decoration.
+  ClearedByReset withLessonCompleted(
+    String lessonId, {
+    required int day,
+    required MasteryResult mastery,
+  }) {
+    final first = completedLessons[lessonId];
+    return _copy(
+      completedLessons: {
+        ...completedLessons,
+        lessonId: first == null || day < first ? day : first,
+      },
+      bestResults: _bestResultsWith(lessonId, mastery),
+    );
+  }
+
+  /// A copy with [mastery] folded into [lessonId]'s stored best.
+  ///
+  /// What a replay writes, and all it writes: it pays nothing and collects
+  /// nothing, but it can lift a result. Raise-only, so a bad run never takes
+  /// back a good one.
+  ClearedByReset withBestResult(String lessonId, MasteryResult mastery) =>
+      _copy(bestResults: _bestResultsWith(lessonId, mastery));
+
+  /// [bestResults] with [mastery] folded in at [lessonId], never downgraded.
+  Map<String, MasteryResult> _bestResultsWith(
+    String lessonId,
+    MasteryResult mastery,
+  ) {
+    final stored = bestResults[lessonId];
+    return {
+      ...bestResults,
+      lessonId: stored == null ? mastery : MasteryResult.best(stored, mastery),
+    };
+  }
+
+  /// A copy with the collectible [cardId] earned.
+  ///
+  /// A union, so collecting one already held changes nothing — which is what
+  /// lets the module reward go without a ledger guarding it.
+  ClearedByReset withCollectible(String cardId) =>
+      _copy(ownedCollectibles: {...ownedCollectibles, cardId});
+
+  /// A copy with [moduleId] marked complete. A module that later grows stays
+  /// complete, so this only ever adds.
+  ClearedByReset withModuleCompleted(String moduleId) =>
+      _copy(completedModules: {...completedModules, moduleId});
+
   /// Whether the one-off moment named [key] has been acknowledged.
   bool hasAck(String key) => acks.containsKey(key);
 
@@ -308,6 +366,10 @@ class ClearedByReset {
   /// again.
   ClearedByReset _copy({
     Map<String, int>? acks,
+    Map<String, int>? completedLessons,
+    Map<String, MasteryResult>? bestResults,
+    Set<String>? ownedCollectibles,
+    Set<String>? completedModules,
     int? treeStage,
     Map<int, Set<String>>? dailyActivity,
     Set<int>? activeDays,
@@ -317,12 +379,12 @@ class ClearedByReset {
     Timestamped<Set<String>>? challengesSaved,
     Timestamped<Set<String>>? favourites,
   }) => ClearedByReset(
-    completedLessons: completedLessons,
-    bestResults: bestResults,
+    completedLessons: completedLessons ?? this.completedLessons,
+    bestResults: bestResults ?? this.bestResults,
     activeDays: activeDays ?? this.activeDays,
     acks: acks ?? this.acks,
-    ownedCollectibles: ownedCollectibles,
-    completedModules: completedModules,
+    ownedCollectibles: ownedCollectibles ?? this.ownedCollectibles,
+    completedModules: completedModules ?? this.completedModules,
     treeStage: treeStage ?? this.treeStage,
     challengesCompleted: challengesCompleted ?? this.challengesCompleted,
     learnedTerms: learnedTerms,

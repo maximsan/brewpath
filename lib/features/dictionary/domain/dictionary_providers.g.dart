@@ -77,7 +77,7 @@ final class DictionaryViewProvider
   }
 }
 
-String _$dictionaryViewHash() => r'd3d257f26278146a2baaa087abc0db235e9f5456';
+String _$dictionaryViewHash() => r'1259ca50e681c4fc4dac31cb565e2e68af1839ba';
 
 /// The title of the lesson [lessonId] names, or null when it names none.
 ///

@@ -90,7 +90,7 @@ final class SettingsControllerProvider
 }
 
 String _$settingsControllerHash() =>
-    r'3556807372026ce73ece41f3075efe5288e618a5';
+    r'83b6361e6913851b47f7c85431bb74a6b00bcc41';
 
 /// Mutable settings state for the Profile screen. Class form because the
 /// haptics/sound toggles mutate and persist state (per CLAUDE.md provider

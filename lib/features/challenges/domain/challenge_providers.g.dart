@@ -582,7 +582,7 @@ final class SavedChallengesProvider
   }
 }
 
-String _$savedChallengesHash() => r'13fce43c195c1b64a2087698f563c5c5a66959d8';
+String _$savedChallengesHash() => r'c08b48809b441c453abd142ea10a6530d02a3f1c';
 
 /// The capstone [moduleId] offers, or null when it has none or is unearned.
 
@@ -645,7 +645,7 @@ final class ModuleChallengeOfferProvider
 }
 
 String _$moduleChallengeOfferHash() =>
-    r'752d8e6a56ef38fec222a25ae0a6bc8438b3e347';
+    r'e90b9819e00b7c4879d97ab7ac2608ce648820ad';
 
 /// The capstone [moduleId] offers, or null when it has none or is unearned.
 

@@ -6,12 +6,14 @@
 // joined today, and nothing throws anywhere.
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
-import 'package:brew_path/shared/repositories/progress_repository.dart';
+import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:brew_path/shared/storage/account_wipe.dart';
 import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../../../support/progress_seed.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -19,12 +21,10 @@ void main() {
   final firstRun = DateTime(2026, 3, 14, 9, 30);
 
   late AppDatabase db;
-  late ProgressRepository progress;
 
   setUp(() {
     db = AppDatabase(NativeDatabase.memory(), () => firstRun);
     AppDatabaseService.instance = db;
-    progress = ProgressRepository();
   });
   tearDown(() async => db.close());
 
@@ -32,17 +32,13 @@ void main() {
   /// before schema v11 — the migration adds the table and writes no row.
   Future<void> asAnInstallPredatingTheStamp() => db.delete(db.appInstalls).go();
 
-  /// A completion record backdated to [at]; `saveCompletion` stamps now.
-  Future<void> completedOn(String lessonId, DateTime at) async {
-    await progress.saveCompletion(
-      lessonId: lessonId,
-      xpEarned: 10,
-      mastery: const MasteryResult(correct: 1, total: 1),
-    );
-    final record = (await progress.getByLessonId(lessonId))!;
-    record.completedAt = at;
-    await progress.saveProgress(record);
-  }
+  /// A completion recorded against [at].
+  Future<void> completedOn(String lessonId, DateTime at) => seedCompletedLesson(
+    SnapshotRepository(),
+    lessonId,
+    at: at,
+    mastery: const MasteryResult(correct: 1, total: 1),
+  );
 
   Future<DateTime?> joined() {
     final container = ProviderContainer();

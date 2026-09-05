@@ -2,16 +2,15 @@ import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_offer_row.dart';
 import 'package:brew_path/features/challenges/presentation/module_challenge_offer.dart';
-import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
-import 'package:brew_path/shared/repositories/progress_repository.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/content_fixtures.dart';
+import '../../../support/progress_seed.dart';
 import '../../../support/widget_harness.dart';
 
 /// The capstone offer, over the real course: a module is finished by finishing
@@ -34,14 +33,7 @@ void main() {
       final modules = await ContentRepository().getModules();
       final lessonIds = modules.firstWhere((m) => m.id == 'm1').lessonIds;
 
-      final progress = ProgressRepository();
-      for (final id in lessonIds) {
-        await progress.saveCompletion(
-          lessonId: id,
-          xpEarned: 10,
-          mastery: const MasteryResult(correct: 5, total: 5),
-        );
-      }
+      await seedCompletedLessons(SnapshotRepository(), lessonIds);
     });
   }
 

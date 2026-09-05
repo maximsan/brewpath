@@ -63,7 +63,7 @@ final class VisualGuideShelfForProvider
 }
 
 String _$visualGuideShelfForHash() =>
-    r'2dee6d1e6042e6099b48be5cefff18d269bbea2d';
+    r'eb99453a7c2503cf4bc06955cacd7938b9ea1a9c';
 
 /// The lesson the Reference heading names as opening the next guide.
 ///
@@ -122,7 +122,7 @@ final class NextGuideUnlockProvider
   }
 }
 
-String _$nextGuideUnlockHash() => r'e04b1cbddbf9cce92bc9ed5b818dc9682d4b44cf';
+String _$nextGuideUnlockHash() => r'747384ed8fccfb6cc8ad1b56e108664474cab43e';
 
 /// Whether the Reference shelf is locked by the purchase rather than by
 /// progress. The two need different words; `LockedRowCopy` has them.

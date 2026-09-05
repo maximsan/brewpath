@@ -133,15 +133,11 @@ Future<bool> _isOfferable(
 Future<List<BrewChallenge>> savedChallenges(Ref ref) async {
   final snapshots = ref.watch(snapshotRepositoryProvider);
   final content = ref.watch(contentRepositoryProvider);
-  final progressRepo = ref.watch(progressRepositoryProvider);
   final bank = await ref.watch(challengeBankProvider.future);
   final nowMillis = DateTime.now().millisecondsSinceEpoch;
 
   final progress = (await snapshots.read()).clearedByReset;
-  final completedLessons = await progressRepo.getAllCompleted();
-  final completedLessonIds = {
-    for (final record in completedLessons) record.lessonId,
-  };
+  final completedLessonIds = progress.completedLessons.keys.toSet();
 
   final offerable = <String>{};
   for (final challenge in bank) {
@@ -167,17 +163,17 @@ Future<List<BrewChallenge>> savedChallenges(Ref ref) async {
 @riverpod
 Future<BrewChallenge?> moduleChallengeOffer(Ref ref, String moduleId) async {
   final content = ref.watch(contentRepositoryProvider);
-  final progress = ref.watch(progressRepositoryProvider);
+  final snapshots = ref.watch(snapshotRepositoryProvider);
   final bank = await ref.watch(challengeBankProvider.future);
 
   final challenge = challengeForModule(bank, moduleId);
   if (challenge == null) return null;
 
-  final completed = await progress.getAllCompleted();
+  final progress = (await snapshots.read()).clearedByReset;
   final offerable = await _isOfferable(
     challenge,
     content,
-    {for (final record in completed) record.lessonId},
+    progress.completedLessons.keys.toSet(),
   );
   return offerable ? challenge : null;
 }

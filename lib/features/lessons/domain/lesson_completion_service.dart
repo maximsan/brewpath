@@ -10,13 +10,11 @@ import 'package:brew_path/services/analytics/analytics_service.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/models/module_model.dart';
-import 'package:brew_path/shared/repositories/card_repository.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
-import 'package:brew_path/shared/repositories/progress_repository.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
-import 'package:brew_path/shared/storage/progress_record.dart';
 import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
+import 'package:brew_path/shared/storage/snapshot/snapshot_scopes.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'lesson_completion_service.g.dart';
@@ -41,23 +39,16 @@ typedef TreeGrowth = ({int before, int after, int? toNext});
 class LessonCompletionService {
   /// Creates a [LessonCompletionService].
   const LessonCompletionService({
-    required this.progressRepository,
-    required this.cardRepository,
     required this.contentRepository,
     required this.snapshotRepository,
     required this.analyticsService,
   });
 
-  /// Lesson-completion records.
-  final ProgressRepository progressRepository;
-
-  /// Collected coffee cards.
-  final CardRepository cardRepository;
-
   /// Content (modules and lessons).
   final ContentRepository contentRepository;
 
-  /// The progress snapshot, which holds the Coffee Tree's stage.
+  /// The progress snapshot — **the record** of what a learner has finished,
+  /// what they scored, and what they hold (#115).
   final SnapshotRepository snapshotRepository;
 
   /// Analytics sink.
@@ -92,13 +83,13 @@ class LessonCompletionService {
     // freeze.
     final daysBefore = await _qualifyingDays();
 
-    final existing = await progressRepository.getByLessonId(lesson.id);
-    // The record travels rather than being looked up again: a second read
-    // could return null after Reset Progress landed between the two awaits,
-    // and an invariant re-derived is an invariant that can fail.
-    final result = existing == null
-        ? await _firstCompletion(lesson, mastery: mastery, now: at)
-        : await _replay(lesson, existing, mastery: mastery, now: at);
+    final finished = (await snapshotRepository.read())
+        .clearedByReset
+        .completedLessons
+        .containsKey(lesson.id);
+    final result = finished
+        ? await _replay(lesson, mastery: mastery, now: at)
+        : await _firstCompletion(lesson, mastery: mastery, now: at);
 
     return result.withFreezeEarned(
       earned: freezeEarnedBetween(
@@ -115,13 +106,11 @@ class LessonCompletionService {
   /// through, so what the completion screen reports about the freeze and what
   /// the streak screen shows can never be derived two different ways.
   Future<Set<int>> _qualifyingDays() async {
-    final snapshot = await snapshotRepository.read();
-    final progress = snapshot.clearedByReset;
-    final completed = await progressRepository.getAllCompleted();
+    final progress = (await snapshotRepository.read()).clearedByReset;
     return streakDaySet(
       activeDays: progress.activeDays,
       dailyActivity: progress.dailyActivity,
-      firstCompletionDays: completed.map((record) => record.completedAt),
+      firstCompletionDays: progress.completedLessons.values,
     );
   }
 
@@ -134,23 +123,29 @@ class LessonCompletionService {
     // input left once steps became cards: a lesson's card count is a shape of
     // its teaching, not a measure of what finishing it is worth.
     final points = lesson.points;
-    // Recorded on the completion, and only there. The running total used to be
-    // banked into a settings counter alongside this row; it is now summed off
-    // these rows on read, so there is no second copy to drift.
-    await progressRepository.saveCompletion(
-      lessonId: lesson.id,
-      xpEarned: points,
-      mastery: mastery,
+    final card = await contentRepository.getCardForLesson(lesson.id);
+
+    // The completion and the card it hands over, in **one write**: they are
+    // one event, and a learner who closed the app between two writes would
+    // have finished a lesson that never gave them its card. Nothing records
+    // the points — a lesson pays what it authors, so the total is summed off
+    // the course rather than off a copy of it banked here.
+    await _updateProgress(
+      (progress) {
+        final completed = progress.withLessonCompleted(
+          lesson.id,
+          day: epochDay(now),
+          mastery: mastery,
+        );
+        return card == null ? completed : completed.withCollectible(card.id);
+      },
+      now: now,
     );
     await analyticsService.logEvent(
       'points_earned',
       parameters: {'amount': points, 'source': 'lesson'},
     );
-
-    await _collect(
-      await contentRepository.getCardForLesson(lesson.id),
-      source: {'lesson_id': lesson.id},
-    );
+    await _reportCollected(card, source: {'lesson_id': lesson.id});
 
     await recordActivity(
       snapshotRepository,
@@ -159,10 +154,12 @@ class LessonCompletionService {
       now: now,
     );
 
-    final growth = await _growTree();
+    final growth = await _growTree(now: now);
 
     final module = await _maybeCompletedModule(lesson);
-    final moduleCard = module == null ? null : await _awardModuleReward(module);
+    final moduleCard = module == null
+        ? null
+        : await _awardModuleReward(module, now: now);
 
     await analyticsService.logEvent(
       'lesson_completed',
@@ -199,16 +196,21 @@ class LessonCompletionService {
   /// What a replay is still worth is real: it can lift mastery, and it protects
   /// the day.
   Future<LessonFinishResult> _replay(
-    LessonModel lesson,
-    ProgressRecord record, {
+    LessonModel lesson, {
     required MasteryResult mastery,
     required DateTime now,
   }) async {
     final at = now;
-    // Never downgrade: band rank first, ratio only as a tiebreak.
-    record.mastery = MasteryResult.best(record.mastery, mastery);
-
-    await progressRepository.saveProgress(record);
+    // Never downgrade: the writer folds with `MasteryResult.best`, band rank
+    // first and ratio only as a tiebreak.
+    // Read back off what was written rather than by asking again: a second
+    // read could land after Reset Progress and report a lesson that is no
+    // longer finished.
+    final progress = await _updateProgress(
+      (progress) => progress.withBestResult(lesson.id, mastery),
+      now: at,
+    );
+    final best = progress.bestResults[lesson.id] ?? mastery;
     // A replay that reaches the final card protects the day (§3) — the rule
     // that lets a streak outlive the last authored lesson.
     await recordActivity(
@@ -232,7 +234,7 @@ class LessonCompletionService {
     return LessonFinishResult(
       isReplay: true,
       pointsEarned: 0,
-      mastery: record.mastery,
+      mastery: best,
       // A replay grows nothing, so the pair is equal by construction — but the
       // screen still shows the tree, and still says how far the next stage is.
       treeStageBefore: standing.before,
@@ -253,9 +255,12 @@ class LessonCompletionService {
         .firstOrNull;
     if (module == null) return null;
 
-    final completed = await progressRepository.getAllCompleted();
-    final completedIds = completed.map((record) => record.lessonId).toSet();
-    return module.lessonIds.every(completedIds.contains) ? module : null;
+    final finished = (await snapshotRepository.read())
+        .clearedByReset
+        .completedLessons
+        .keys
+        .toSet();
+    return module.lessonIds.every(finished.contains) ? module : null;
   }
 
   /// Hands over [module]'s Module Reward card and reports the module after
@@ -270,9 +275,18 @@ class LessonCompletionService {
   /// **No ledger guards it, because the card is its own ledger.** Collecting a
   /// card already held is a no-op, where paying a bonus twice was not, so the
   /// idempotence the old ledger bought is now a property of the thing awarded.
-  Future<CoffeeCardModel?> _awardModuleReward(ModuleModel module) async {
+  Future<CoffeeCardModel?> _awardModuleReward(
+    ModuleModel module, {
+    required DateTime now,
+  }) async {
     final card = await contentRepository.getCardForModule(module.id);
-    await _collect(card, source: {'module_id': module.id});
+    // The module and its card together: a module recorded complete without
+    // the card it pays would leave the moment's whole reward behind.
+    await _updateProgress((progress) {
+      final completed = progress.withModuleCompleted(module.id);
+      return card == null ? completed : completed.withCollectible(card.id);
+    }, now: now);
+    await _reportCollected(card, source: {'module_id': module.id});
 
     // Completing this module unlocks the one after it. Modules open in course
     // order, so the module gated on this one is the one at the next position.
@@ -286,20 +300,43 @@ class LessonCompletionService {
     return card;
   }
 
-  /// Collects [card] and reports it, or does nothing when there is no card.
+  /// Reports [card] as unlocked, or says nothing when there is no card.
   ///
-  /// [source] names what awarded it — a lesson or a module — which is the only
+  /// **Reporting only** — the card is written into the snapshot beside the
+  /// thing that earned it, so that a completion and its collectible cannot
+  /// land separately. [source] names what awarded it, which is the only
   /// difference between the two award paths.
-  Future<void> _collect(
+  Future<void> _reportCollected(
     CoffeeCardModel? card, {
     required Map<String, Object> source,
   }) async {
     if (card == null) return;
-    await cardRepository.collectCard(card.id);
     await analyticsService.logEvent(
       'card_unlocked',
       parameters: {'card_id': card.id, ...source},
     );
+  }
+
+  /// Reads the progress scope, applies [change], and writes it back stamped
+  /// at [now].
+  ///
+  /// The one write path this service has, and it returns what it wrote: a
+  /// caller that needs to report what it just recorded reads it off the
+  /// result rather than asking the store a second time, where Reset Progress
+  /// could have landed in between.
+  Future<ClearedByReset> _updateProgress(
+    ClearedByReset Function(ClearedByReset progress) change, {
+    required DateTime now,
+  }) async {
+    final snapshot = await snapshotRepository.read();
+    final next = change(snapshot.clearedByReset);
+    await snapshotRepository.write(
+      snapshot.copyWith(
+        updatedAt: now.millisecondsSinceEpoch,
+        clearedByReset: next,
+      ),
+    );
+    return next;
   }
 
   /// Advances the Coffee Tree to the stage this completion has earned.
@@ -308,28 +345,27 @@ class LessonCompletionService {
   /// write is raise-only, so a course
   /// that grows later cannot take a stage back, and a stage already reached on
   /// another device survives the merge by the same rule.
-  Future<TreeGrowth> _growTree() async {
-    final completed = await progressRepository.getAllCompleted();
+  Future<TreeGrowth> _growTree({required DateTime now}) async {
     final modules = await contentRepository.getModules();
     final sizes = moduleSizesInOrder(modules);
-    final stage = treeStageForProgress(
-      completed: completed.length,
-      moduleSizes: sizes,
-    );
-    final toNext = lessonsToNextStage(
-      completed: completed.length,
-      moduleSizes: sizes,
-    );
-
     final snapshot = await snapshotRepository.read();
-    final before = snapshot.clearedByReset.treeStage;
+    final progress = snapshot.clearedByReset;
+    final finished = progress.completedLessons.length;
+
+    final stage = treeStageForProgress(
+      completed: finished,
+      moduleSizes: sizes,
+    );
+    final toNext = lessonsToNextStage(completed: finished, moduleSizes: sizes);
+
+    final before = progress.treeStage;
     if (stage <= before) {
       return (before: before, after: before, toNext: toNext);
     }
     await snapshotRepository.write(
       snapshot.copyWith(
-        updatedAt: DateTime.now().millisecondsSinceEpoch,
-        clearedByReset: snapshot.clearedByReset.withTreeStageAtLeast(stage),
+        updatedAt: now.millisecondsSinceEpoch,
+        clearedByReset: progress.withTreeStageAtLeast(stage),
       ),
     );
     return (before: before, after: stage, toNext: toNext);
@@ -340,16 +376,15 @@ class LessonCompletionService {
   /// Read out of the same call that writes the stage, so the screen cannot ask
   /// a second time and get an answer the write has already moved past.
   Future<TreeGrowth> _treeStanding() async {
-    final completed = await progressRepository.getAllCompleted();
     final modules = await contentRepository.getModules();
     final sizes = moduleSizesInOrder(modules);
-    final snapshot = await snapshotRepository.read();
-    final stage = snapshot.clearedByReset.treeStage;
+    final progress = (await snapshotRepository.read()).clearedByReset;
+    final stage = progress.treeStage;
     return (
       before: stage,
       after: stage,
       toNext: lessonsToNextStage(
-        completed: completed.length,
+        completed: progress.completedLessons.length,
         moduleSizes: sizes,
       ),
     );
@@ -360,8 +395,6 @@ class LessonCompletionService {
 @riverpod
 LessonCompletionService lessonCompletionService(Ref ref) =>
     LessonCompletionService(
-      progressRepository: ref.watch(progressRepositoryProvider),
-      cardRepository: ref.watch(cardRepositoryProvider),
       contentRepository: ref.watch(contentRepositoryProvider),
       snapshotRepository: ref.watch(snapshotRepositoryProvider),
       analyticsService: ref.watch(analyticsServiceProvider),

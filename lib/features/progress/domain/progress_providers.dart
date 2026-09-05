@@ -1,6 +1,7 @@
 import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/core/constants/points_values.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
+import 'package:brew_path/features/progress/domain/completed_lessons.dart';
 import 'package:brew_path/features/progress/domain/grove_treatment.dart';
 import 'package:brew_path/features/progress/domain/joined_date.dart';
 import 'package:brew_path/features/progress/domain/streak_day_set.dart';
@@ -10,31 +11,39 @@ import 'package:brew_path/features/progress/domain/streak_week.dart';
 import 'package:brew_path/features/progress/domain/tree_growth.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
-import 'package:brew_path/shared/storage/progress_record.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'progress_providers.g.dart';
 
 /// The learner's points total — **derived, never stored**.
 ///
-/// Two payouts exist and both already leave a record: a lesson's flat ten is
-/// written onto its completion row, and a challenge's five is implied by its id
-/// sitting in the completed set. Summing them here means the total cannot drift
-/// from what was actually earned, and Reset Progress needs no rule of its own —
-/// clearing the completions clears the total by construction.
+/// Two payouts exist and both leave a record: a finished lesson is worth the
+/// flat ten it authors, and a challenge's five is implied by its id sitting in
+/// the completed set. Summing them here means the total cannot drift from what
+/// was actually earned, and Reset Progress needs no rule of its own — clearing
+/// the completions clears the total by construction.
 ///
-/// It used to be a counter on the settings row that every payout incremented.
-/// A counter is a second copy of a derivable fact, and the fact it copied was
-/// computed under rules the app no longer plays (#16).
+/// **The payout is read off the course, not off a copy of it.** The old
+/// completions table banked the points on the row; the snapshot stores which
+/// lessons are finished and nothing about what they paid, because what a
+/// lesson is worth is a fact about the lesson. A finished lesson the content
+/// no longer carries therefore pays nothing, which is the same answer a
+/// dropped row would have given.
 @riverpod
 Future<int> totalPoints(Ref ref) async {
-  final completed = await ref.watch(completedLessonsProvider.future);
-  final snapshot = await ref.watch(snapshotRepositoryProvider).read();
+  // Every watch resolved before the first await: a rebuild mid-flight must not
+  // find a watch on the far side of an async gap.
+  final completedFuture = ref.watch(completedLessonsProvider.future);
+  final content = ref.watch(contentRepositoryProvider);
+  final snapshots = ref.watch(snapshotRepositoryProvider);
 
-  final fromLessons = completed.fold<int>(
-    0,
-    (sum, record) => sum + record.xpEarned,
-  );
+  final lessons = await content.getLessons();
+  final snapshot = await snapshots.read();
+  final completed = await completedFuture;
+
+  final fromLessons = lessons
+      .where((lesson) => completed.contains(lesson.id))
+      .fold<int>(0, (sum, lesson) => sum + lesson.points);
   final challengesLogged = snapshot.clearedByReset.challengesCompleted.length;
 
   return fromLessons + challengesLogged * PointsValues.challengeCompletion;
@@ -61,7 +70,7 @@ Future<Set<int>> activeDaySet(Ref ref) async {
   return streakDaySet(
     activeDays: progress.activeDays,
     dailyActivity: progress.dailyActivity,
-    firstCompletionDays: completed.map((record) => record.completedAt),
+    firstCompletionDays: completed.firstCompletionDays,
   );
 }
 
@@ -94,10 +103,21 @@ Future<StreakStatus> streakStatus(Ref ref) async {
 Future<int> streak(Ref ref) async =>
     (await ref.watch(streakStatusProvider.future)).streak;
 
-/// All of the user's completed-lesson records.
+/// The lessons the learner has finished, off the progress snapshot.
+///
+/// **The snapshot is the record** (#115). It used to be the completions
+/// table, which is now written by nothing and dropped by #116; the two fields
+/// read here — the day each lesson was first finished, and the best result
+/// stored for it — are what those rows carried that anything still asks for.
 @riverpod
-Future<List<ProgressRecord>> completedLessons(Ref ref) =>
-    ref.watch(progressRepositoryProvider).getAllCompleted();
+Future<CompletedLessons> completedLessons(Ref ref) async {
+  final snapshot = await ref.watch(snapshotRepositoryProvider).read();
+  final progress = snapshot.clearedByReset;
+  return CompletedLessons(
+    completedOn: progress.completedLessons,
+    best: progress.bestResults,
+  );
+}
 
 /// The ids of the lessons the learner has finished.
 ///
@@ -106,15 +126,19 @@ Future<List<ProgressRecord>> completedLessons(Ref ref) =>
 /// still ahead — and re-deriving a set at each of them is a second place for
 /// the question to be answered differently.
 @riverpod
-Future<Set<String>> completedLessonIds(Ref ref) async {
-  final completed = await ref.watch(completedLessonsProvider.future);
-  return {for (final record in completed) record.lessonId};
-}
+Future<Set<String>> completedLessonIds(Ref ref) async =>
+    (await ref.watch(completedLessonsProvider.future)).ids;
 
-/// The ids of all cards the user has collected.
+/// The ids of all cards the user has collected, off the progress snapshot.
+///
+/// Stored in full rather than derived from the finished lessons: the lesson id
+/// space has been rewritten once already on this project, and a derived set
+/// would have silently revoked every card the rename touched.
 @riverpod
-Future<List<String>> collectedCards(Ref ref) =>
-    ref.watch(cardRepositoryProvider).getAllCollectedCardIds();
+Future<List<String>> collectedCards(Ref ref) async {
+  final snapshot = await ref.watch(snapshotRepositoryProvider).read();
+  return snapshot.clearedByReset.ownedCollectibles.toList();
+}
 
 /// Highest tree stage ever reached: `max(stored, derived)`, as the field has
 /// always described itself.
@@ -130,7 +154,7 @@ Future<int> treeStage(Ref ref) async {
   final completed = await ref.watch(completedLessonsProvider.future);
   final modules = await ref.watch(contentRepositoryProvider).getModules();
   final derived = treeStageForProgress(
-    completed: completed.length,
+    completed: completed.count,
     moduleSizes: moduleSizesInOrder(modules),
   );
   final stored = snapshot.clearedByReset.treeStage;
@@ -152,7 +176,7 @@ typedef CoreLessonProgress = ({int completed, int total});
 Future<CoreLessonProgress> coreLessonProgress(Ref ref) async {
   final completed = await ref.watch(completedLessonsProvider.future);
   final lessons = await ref.watch(contentRepositoryProvider).getLessons();
-  return (completed: completed.length, total: lessons.length);
+  return (completed: completed.count, total: lessons.length);
 }
 
 /// The month the Profile's closing line names, or null before there is one.

@@ -2,11 +2,11 @@ import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/companion/application/companion_providers.dart';
 import 'package:brew_path/features/companion/domain/companion_lines.dart';
 import 'package:brew_path/features/learn/presentation/course_completion_screen.dart';
+import 'package:brew_path/features/progress/domain/completed_lessons.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:brew_path/shared/storage/app_database.dart';
-import 'package:brew_path/shared/storage/progress_record.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,16 +17,15 @@ const _lessonCount = 32;
 const _cardCount = 37;
 const _streakDays = 12;
 
-final List<ProgressRecord> _completed = [
-  for (var i = 0; i < _lessonCount; i++)
-    ProgressRecord(
-      lessonId: 'l$i',
-      isCompleted: true,
-      xpEarned: 10,
-      completedAt: DateTime(2026, 8, 15),
-      mastery: const MasteryResult(correct: 1, total: 1),
-    ),
-];
+final CompletedLessons _completed = CompletedLessons(
+  completedOn: {
+    for (var i = 0; i < _lessonCount; i++) 'l$i': 20680,
+  },
+  best: {
+    for (var i = 0; i < _lessonCount; i++)
+      'l$i': const MasteryResult(correct: 1, total: 1),
+  },
+);
 
 final List<String> _cards = [for (var i = 0; i < _cardCount; i++) 'c$i'];
 

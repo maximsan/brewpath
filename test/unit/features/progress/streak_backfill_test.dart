@@ -5,38 +5,35 @@
 // streak reads zero, with nothing throwing anywhere.
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
-import 'package:brew_path/shared/repositories/progress_repository.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
+import 'package:brew_path/shared/storage/account_wipe.dart';
 import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/progress_seed.dart';
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late AppDatabase db;
-  late ProgressRepository progress;
 
   setUp(() {
     db = AppDatabase(NativeDatabase.memory());
     AppDatabaseService.instance = db;
-    progress = ProgressRepository();
   });
   tearDown(() async => db.close());
 
-  /// A completion record dated [at] — the shape an install carries from before
-  /// anything wrote a day. `saveCompletion` stamps now, so it is backdated.
-  Future<void> completedOn(String lessonId, DateTime at) async {
-    await progress.saveCompletion(
-      lessonId: lessonId,
-      xpEarned: 10,
-      mastery: const MasteryResult(correct: 1, total: 1),
-    );
-    final record = (await progress.getByLessonId(lessonId))!;
-    record.completedAt = at;
-    await progress.saveProgress(record);
-  }
+  /// A completion dated [at], with **no active day beside it** — the shape an
+  /// install carries from before anything wrote a day, which is the whole
+  /// case this file covers.
+  Future<void> completedOn(String lessonId, DateTime at) => seedCompletedLesson(
+    SnapshotRepository(),
+    lessonId,
+    at: at,
+    mastery: const MasteryResult(correct: 1, total: 1),
+  );
 
   /// Midday, [back] whole calendar days ago.
   ///
@@ -93,8 +90,9 @@ void main() {
     await completedOn('l1', daysAgo(0));
     expect(await streak(), 1);
 
-    // What `AccountWipe` does to the legacy tables.
-    await progress.deleteAll();
+    // What `AccountWipe` publishes: an empty progress scope, which takes the
+    // completions and the days they backfilled with it.
+    await AccountWipe().resetProgress();
 
     expect(await streak(), 0);
   });
