@@ -108,6 +108,13 @@ You can always edit this file by hand instead — the helpers just save effort.
   without a name is now *Hello there.* rather than *Hello, there.*, as the
   design writes it.
 
+- **Free now gets two activities a day.** Lessons, replays, mini-game runs,
+  vocab rounds and flashcard reviews all count as one each; the third start in
+  a day opens the Plus offer instead of the surface, so you find out on the tap
+  rather than after sitting through a screen you cannot use. Coffee Challenges,
+  reading the dictionary and browsing your shelf and cards stay free at any
+  count, and the day's count resets at local midnight. Plus is not capped.
+
 - **Finishing a module offers its Coffee Challenge.** The module ending used to
   hand you straight back to the Path. Turn it over to the reward card and the
   module's optional real-life brew now sits above the way out — what it is and

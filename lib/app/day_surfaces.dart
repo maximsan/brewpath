@@ -25,6 +25,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// all three is what stops this list from being knowledge each caller has to
 /// hold correctly.
 ///
+/// **The free day's allowance is deliberately not on this list.** It would
+/// qualify — it is derived against today, and every path that records an
+/// activity does reach this function. It stays off because of what it costs
+/// to be wrong: a surface that misses an invalidation shows yesterday's
+/// number until the next rebuild, while an allowance that misses one hands
+/// out a free activity. So it re-derives on every read instead
+/// (`activityAllowanceNow`), and owes this register nothing.
+///
 /// It lives in `app/` because the trio spans progress and learn and belongs to
 /// neither: the day it turns on is the app's, not a feature's.
 void invalidateDaySurfaces(WidgetRef ref) {
