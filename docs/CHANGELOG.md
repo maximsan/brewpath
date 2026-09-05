@@ -67,7 +67,10 @@ You can always edit this file by hand instead — the helpers just save effort.
   the Settings gear stay where they were the whole time.
 
   The Cards tab gets its *Collection* heading back, which it had to give up
-  when the bar was drawing one of its own.
+  when the bar was drawing one of its own. Today, Path and Profile open their
+  title below the two buttons rather than beside them, so a long date or a
+  long name reads all the way to its end instead of disappearing behind
+  them.
 
   The close bar on the two reward screens now blurs the same way. It was a
   flat panel that appeared as you scrolled; it is the same frosted strip the

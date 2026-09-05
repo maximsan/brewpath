@@ -21,6 +21,7 @@ import 'package:brew_path/features/tour/domain/tour_providers.dart';
 import 'package:brew_path/features/tour/presentation/tour_stop.dart';
 import 'package:brew_path/features/tour/presentation/tour_stops.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -92,7 +93,12 @@ class LearnListView extends ConsumerWidget {
           ? const ScrollCacheExtent.viewport(_tourCacheViewports)
           : null,
       children: [
-        const TabLargeTitle(AppRoutes.learn),
+        // Below the header's entries, not beside them: the day's date is not
+        // a fixed string, and the long ones reach across to where they float.
+        TabLargeTitle(
+          AppRoutes.learn,
+          topGap: OffTokens.tabTitleClearOfEntries.value,
+        ),
         _sectionGap,
         // The save beat leads the tab: someone returning after a miss is
         // the most fragile learner in the app, and reassurance comes

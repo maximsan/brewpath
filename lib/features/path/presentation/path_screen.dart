@@ -68,7 +68,7 @@ class _PathScreenState extends ConsumerState<PathScreen> {
           children: [
             TabLargeTitle(
               AppRoutes.path,
-              topGap: OffTokens.pathTitleTopGap.value,
+              topGap: OffTokens.tabTitleClearOfEntries.value,
             ),
             // The design sets 10 here and 8 on the Cards tab. Both are one
             // stacked label rather than two blocks, so both take the hairline
