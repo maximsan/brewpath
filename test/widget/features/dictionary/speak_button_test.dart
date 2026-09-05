@@ -38,6 +38,7 @@ const _view = DictionaryView(
   terms: [_spoken, _silent],
   categories: [_beans],
   completedLessonIds: {},
+  hasCourse: true,
 );
 
 Widget _wrap(DictionaryTerm term, FakeSpeechService speech) => ProviderScope(

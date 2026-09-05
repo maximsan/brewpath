@@ -99,20 +99,14 @@ final class ModuleSummaryFamily extends $Family
 
 /// What [lessonId] paid, for the module ending to report.
 ///
-/// Content only: the lesson's authored points, and the collectible tied to it.
-/// Whether the learner *holds* that card is not asked — this run is the moment
-/// it was earned, so the answer is yes by construction, and a read against the
-/// card store would race the write that just happened.
+/// Content only: the lesson's authored points.
 
 @ProviderFor(moduleEndingRun)
 final moduleEndingRunProvider = ModuleEndingRunFamily._();
 
 /// What [lessonId] paid, for the module ending to report.
 ///
-/// Content only: the lesson's authored points, and the collectible tied to it.
-/// Whether the learner *holds* that card is not asked — this run is the moment
-/// it was earned, so the answer is yes by construction, and a read against the
-/// card store would race the write that just happened.
+/// Content only: the lesson's authored points.
 
 final class ModuleEndingRunProvider
     extends
@@ -124,10 +118,7 @@ final class ModuleEndingRunProvider
     with $FutureModifier<ModuleEndingRun>, $FutureProvider<ModuleEndingRun> {
   /// What [lessonId] paid, for the module ending to report.
   ///
-  /// Content only: the lesson's authored points, and the collectible tied to it.
-  /// Whether the learner *holds* that card is not asked — this run is the moment
-  /// it was earned, so the answer is yes by construction, and a read against the
-  /// card store would race the write that just happened.
+  /// Content only: the lesson's authored points.
   ModuleEndingRunProvider._({
     required ModuleEndingRunFamily super.from,
     required String? super.argument,
@@ -172,14 +163,11 @@ final class ModuleEndingRunProvider
   }
 }
 
-String _$moduleEndingRunHash() => r'6116959b14c9671fc5eba5aa7c80b04ee0aed7df';
+String _$moduleEndingRunHash() => r'3edad810f3c687c73d0f68a7ab2af7eda92bbdb6';
 
 /// What [lessonId] paid, for the module ending to report.
 ///
-/// Content only: the lesson's authored points, and the collectible tied to it.
-/// Whether the learner *holds* that card is not asked — this run is the moment
-/// it was earned, so the answer is yes by construction, and a read against the
-/// card store would race the write that just happened.
+/// Content only: the lesson's authored points.
 
 final class ModuleEndingRunFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<ModuleEndingRun>, String?> {
@@ -194,10 +182,7 @@ final class ModuleEndingRunFamily extends $Family
 
   /// What [lessonId] paid, for the module ending to report.
   ///
-  /// Content only: the lesson's authored points, and the collectible tied to it.
-  /// Whether the learner *holds* that card is not asked — this run is the moment
-  /// it was earned, so the answer is yes by construction, and a read against the
-  /// card store would race the write that just happened.
+  /// Content only: the lesson's authored points.
 
   ModuleEndingRunProvider call(String? lessonId) =>
       ModuleEndingRunProvider._(argument: lessonId, from: this);

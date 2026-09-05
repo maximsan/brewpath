@@ -8,12 +8,30 @@ part of 'dictionary_providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Loads the dictionary and the learner's completed lessons together.
+/// Loads the dictionary, the learner's completed lessons and their tier
+/// together.
+///
+/// **The tier is awaited, not read as it stands.** The shelf is one value
+/// that every dictionary surface — and the Saved shelf — resolves once and
+/// keeps, so it waits for the answer rather than emitting a free shelf and
+/// then a wider one: a paying learner would watch their reference terms
+/// arrive a frame late, and a one-shot reader that finished on the first
+/// emission would hold the wrong shelf for good. While it waits nothing is
+/// shown, which is the same safe direction every gate resolves in.
 
 @ProviderFor(dictionaryView)
 final dictionaryViewProvider = DictionaryViewProvider._();
 
-/// Loads the dictionary and the learner's completed lessons together.
+/// Loads the dictionary, the learner's completed lessons and their tier
+/// together.
+///
+/// **The tier is awaited, not read as it stands.** The shelf is one value
+/// that every dictionary surface — and the Saved shelf — resolves once and
+/// keeps, so it waits for the answer rather than emitting a free shelf and
+/// then a wider one: a paying learner would watch their reference terms
+/// arrive a frame late, and a one-shot reader that finished on the first
+/// emission would hold the wrong shelf for good. While it waits nothing is
+/// shown, which is the same safe direction every gate resolves in.
 
 final class DictionaryViewProvider
     extends
@@ -23,7 +41,16 @@ final class DictionaryViewProvider
           FutureOr<DictionaryView>
         >
     with $FutureModifier<DictionaryView>, $FutureProvider<DictionaryView> {
-  /// Loads the dictionary and the learner's completed lessons together.
+  /// Loads the dictionary, the learner's completed lessons and their tier
+  /// together.
+  ///
+  /// **The tier is awaited, not read as it stands.** The shelf is one value
+  /// that every dictionary surface — and the Saved shelf — resolves once and
+  /// keeps, so it waits for the answer rather than emitting a free shelf and
+  /// then a wider one: a paying learner would watch their reference terms
+  /// arrive a frame late, and a one-shot reader that finished on the first
+  /// emission would hold the wrong shelf for good. While it waits nothing is
+  /// shown, which is the same safe direction every gate resolves in.
   DictionaryViewProvider._()
     : super(
         from: null,
@@ -50,7 +77,7 @@ final class DictionaryViewProvider
   }
 }
 
-String _$dictionaryViewHash() => r'325ec489594e01ac4bdcd896411b91bc9a333cfa';
+String _$dictionaryViewHash() => r'd3d257f26278146a2baaa087abc0db235e9f5456';
 
 /// The title of the lesson [lessonId] names, or null when it names none.
 ///

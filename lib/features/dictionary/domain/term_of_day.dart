@@ -7,6 +7,7 @@
 library;
 
 import 'package:brew_path/core/utils/date_utils.dart';
+import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 
 /// The terms Term of the Day may pick from, in bank order.
@@ -17,20 +18,16 @@ import 'package:brew_path/shared/models/content/dictionary_term.dart';
 /// entry, so a term whose whole content is its one-liner would put a button
 /// there with nothing behind it.
 ///
-/// **The tier can reach it.** A term no lesson teaches is reference-only, and
-/// a free learner's dictionary does not carry it at all — offering it as
-/// today's term would name a word they cannot go and look up.
-///
-/// Derived from the bank on every read. The tier arithmetic in
-/// `docs/decisions.md` §12 was measured against an earlier bank and no longer
-/// matches it; the rule is what survived, not the numbers.
+/// **The tier can reach it.** A free learner's dictionary does not carry the
+/// reference terms at all — offering one as today's term would name a word
+/// they cannot go and look up. That is [visibleTerms]'s rule, read rather
+/// than restated, so the pool and the shelf cannot disagree about it.
 List<DictionaryTerm> termOfDayPool({
   required List<DictionaryTerm> terms,
   required bool hasCourse,
 }) => [
-  for (final term in terms)
-    if (term.deepExplanation != null && (hasCourse || term.lessonId != null))
-      term,
+  for (final term in visibleTerms(terms: terms, hasCourse: hasCourse))
+    if (term.deepExplanation != null) term,
 ];
 
 /// The term [date] lands on in [pool], or null when the pool is empty.

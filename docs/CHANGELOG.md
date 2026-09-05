@@ -63,6 +63,17 @@ You can always edit this file by hand instead — the helpers just save effort.
   colours are one named palette pinned to the design, instead of 37 loose
   values across three drawings, so a retone reaches every drawing at once.
 
+- **The dictionary now reads by tier.** Without the course, a term opens on
+  its short explanation and stops there: the deep explanation, the example,
+  the self-check and the sources sit behind a *Read the full entry* row that
+  opens the Plus offer, and the same row appears when you peek at a term
+  from another entry. The terms no lesson teaches are simply not there
+  for a free learner — not in search, not in a category, not in the counts,
+  and a saved link to one lands on *not in the dictionary* rather than on
+  the term. With the course nothing changes: every term, whole, with no offer
+  in the way. The counts on the category index and the filter follow the
+  tier, so the number in front of you is the number you can open.
+
 - **Setting up the app is three screens shorter.** It used to ask what your
   goal was and what you brew with, and you could not get past either one —
   even though nothing in the app ever used the answers. Both questions are
