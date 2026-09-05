@@ -42,13 +42,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ## [Unreleased]
 
-### Added
-
-- **Roasty keeps you company on the Keep Sharp card.** Once you have finished
-  the course, the day's recommendation shows him resting beside it, on a paper
-  plate, before you start. He used to appear only after you had done it.
-
 ### Fixed
+
+- **Roasty's sleeping z's and wrong-answer badge follow the mood.** In Dark
+  Roast the sleeping `z`s were drawn in the light mood's grey and all but
+  vanished against the dark background, and the badge on a wrong answer kept
+  the light mood's red. Both, plus the stars and rays of a finished module and
+  two of the four sparkles, now take the colours of whichever mood is on, as
+  the design draws them. The happy face's right cheek also blushes as strongly
+  as the left, as the design draws it.
 
 - **Screen readers read the Keep Sharp card once, not three times.** The card
   announced its heading and its texts and then the same words again as a
@@ -56,6 +58,10 @@ You can always edit this file by hand instead — the helpers just save effort.
   starts.
 
 ### Changed
+
+- **Roasty's colours live in one place.** The mascot's browns, greens and face
+  colours are one named palette pinned to the design, instead of 37 loose
+  values across three drawings, so a retone reaches every drawing at once.
 
 - **The dictionary now reads by tier.** Without the course, a term opens on
   its short explanation and stops there: the deep explanation, the example,
@@ -97,6 +103,10 @@ You can always edit this file by hand instead — the helpers just save effort.
   button as everywhere else.
 
 ### Added
+
+- **Roasty keeps you company on the Keep Sharp card.** Once you have finished
+  the course, the day's recommendation shows him resting beside it, on a paper
+  plate, before you start. He used to appear only after you had done it.
 
 - **You can change your name in Settings.** The name Roasty greets you by was
   asked once, on the setup screen, and then nowhere: a typo or a skipped step

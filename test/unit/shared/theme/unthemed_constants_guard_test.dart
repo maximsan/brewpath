@@ -17,6 +17,7 @@ import 'package:flutter_test/flutter_test.dart';
 const _unthemedFiles = <String>[
   'lib/shared/theme/art_colors.dart',
   'lib/shared/theme/overlay_colors.dart',
+  'lib/shared/theme/roasty_colors.dart',
   'lib/shared/theme/app_radii.dart',
   'lib/shared/theme/app_spacing.dart',
   'lib/shared/theme/off_token.dart',
