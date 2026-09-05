@@ -1,6 +1,6 @@
-import 'package:brew_path/core/icons/app_icon.dart';
-import 'package:brew_path/core/icons/icon_mark.dart';
+import 'package:brew_path/core/widgets/page_large_title.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
+import 'package:brew_path/core/widgets/sub_screen_scaffold.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -30,16 +30,11 @@ class SettingsSubScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        leading: IconButton(
-          icon: const IconMark(AppIcon.back),
-          onPressed: () => context.pop(),
-        ),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.only(bottom: AppSpacing.xl),
+    return SubScreenScaffold(
+      title: title,
+      onBack: () => context.pop(),
+      body: (context, scrollPadding) => ListView(
+        padding: scrollPadding.copyWith(bottom: AppSpacing.xl),
         children: [
           SettingsScreenHeading(title: title),
           ...children,
@@ -51,9 +46,10 @@ class SettingsSubScreen extends StatelessWidget {
 
 /// The screen's name as the display heading the sections hang under.
 ///
-/// The design prints it twice — in the bar, and again in the page
-/// (`prototype/screens.jsx:523`, `prototype/settings.jsx:585`) — so the title
-/// is there to read once the bar has scrolled to a compact strip.
+/// The design prints it twice — small in the bar once the page has scrolled,
+/// and large here at the top, where it is what titles the page at rest. This
+/// is the page's half of that pair, which is `PageLargeTitle`; the padding
+/// around it is what a settings screen opens on.
 class SettingsScreenHeading extends StatelessWidget {
   /// Creates the heading for [title].
   const SettingsScreenHeading({required this.title, super.key});
@@ -69,10 +65,7 @@ class SettingsScreenHeading extends StatelessWidget {
       AppSpacing.gutter,
       AppSpacing.md,
     ),
-    child: Semantics(
-      header: true,
-      child: Text(title, style: AppText.display(mood: context.mood)),
-    ),
+    child: PageLargeTitle(title),
   );
 }
 

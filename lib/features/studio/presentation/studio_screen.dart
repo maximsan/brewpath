@@ -1,9 +1,8 @@
 import 'dart:async';
 
-import 'package:brew_path/core/icons/app_icon.dart';
-import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
+import 'package:brew_path/core/widgets/sub_screen_scaffold.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/presentation/coffee_tree.dart';
 import 'package:brew_path/features/studio/domain/grove_draft.dart';
@@ -60,15 +59,13 @@ class _StudioScreenState extends ConsumerState<StudioScreen> {
   Widget build(BuildContext context) {
     final grove = ref.watch(studioGroveProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Your grove'),
-        leading: IconButton(
-          icon: const IconMark(AppIcon.back),
-          onPressed: () => Navigator.of(context).maybePop(),
-        ),
-      ),
-      body: grove.when(
+    // No `PageLargeTitle`: the design opens this screen on the live preview of
+    // the plant being chosen and names it at the title step under that, so
+    // there is no display-size heading for the bar to take over from.
+    return SubScreenScaffold(
+      title: 'Your grove',
+      onBack: () => Navigator.of(context).maybePop(),
+      body: (context, scrollPadding) => grove.when(
         loading: () => const Center(
           child: _Loading(),
         ),
@@ -82,6 +79,7 @@ class _StudioScreenState extends ConsumerState<StudioScreen> {
           ),
         ),
         data: (bank) => _Chooser(
+          scrollPadding: scrollPadding,
           bank: bank,
           draft: _draft ??= GroveDraft.of(bank.planted),
           onDraft: (next) => setState(() => _draft = next),
@@ -126,11 +124,15 @@ class _Loading extends StatelessWidget {
 
 class _Chooser extends StatelessWidget {
   const _Chooser({
+    required this.scrollPadding,
     required this.bank,
     required this.draft,
     required this.onDraft,
     required this.onPlant,
   });
+
+  /// The room the bar floating over this list leaves at the top.
+  final EdgeInsets scrollPadding;
 
   final StudioGrove bank;
   final GroveDraft draft;
@@ -144,7 +146,7 @@ class _Chooser extends StatelessWidget {
     final dirty = draft.isDirtyAgainst(bank.planted);
 
     return ListView(
-      padding: const EdgeInsets.only(bottom: AppSpacing.xl),
+      padding: scrollPadding.copyWith(bottom: AppSpacing.xl),
       children: [
         SizedBox(
           height: _previewSize,

@@ -1,7 +1,6 @@
 import 'package:brew_path/core/constants/app_routes.dart';
-import 'package:brew_path/core/icons/app_icon.dart';
-import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/settings_nav_row.dart';
+import 'package:brew_path/core/widgets/sub_screen_scaffold.dart';
 import 'package:brew_path/features/profile/domain/daily_reminder.dart';
 import 'package:brew_path/features/profile/domain/learner_name.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
@@ -47,21 +46,15 @@ class SettingsScreen extends ConsumerWidget {
     final settings = ref.watch(settingsControllerProvider);
     final version = ref.watch(appVersionShortProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(SettingsCopy.title),
-        leading: IconButton(
-          icon: const IconMark(AppIcon.back),
-          onPressed: () => context.pop(),
-        ),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.only(bottom: AppSpacing.xl),
+    return SubScreenScaffold(
+      title: SettingsCopy.title,
+      onBack: () => context.pop(),
+      body: (context, scrollPadding) => ListView(
+        padding: scrollPadding.copyWith(bottom: AppSpacing.xl),
         children: [
-          // The design draws the name twice: once in the bar, once as the
-          // display heading the sections hang under
-          // (`prototype/screens.jsx:523`). The four screens behind this one do
-          // the same, through `SettingsSubScreen`.
+          // The design draws the name twice: large here, and small in the
+          // bar once this has scrolled under it. The four screens behind this
+          // one do the same, through `SettingsSubScreen`.
           const SettingsScreenHeading(title: SettingsCopy.title),
           const SettingsSection(
             label: SettingsCopy.appearanceSection,

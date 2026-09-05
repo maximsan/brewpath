@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:brew_path/core/constants/app_links.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
-import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
+import 'package:brew_path/core/widgets/sub_screen_scaffold.dart';
 import 'package:brew_path/features/companion/domain/companion_reaction.dart';
 import 'package:brew_path/features/companion/presentation/companion_celebration.dart';
 import 'package:brew_path/features/progress/domain/freeze_status_line.dart';
@@ -98,15 +98,27 @@ class _StreakScreenState extends ConsumerState<StreakScreen> {
         (_) => _presentMilestone(reducedMotion: reducedMotion),
       );
     }
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Your streak'),
-        leading: IconButton(
-          icon: const IconMark(AppIcon.back),
-          onPressed: () => context.pop(),
+    // The beat is the whole screen while it plays, chrome included — the
+    // design renders it *instead of* the streak page rather than inside it, so
+    // there is no bar over a celebration and nothing to go back to mid-beat.
+    final beat = _showBeat ? status.asData?.value : null;
+    if (beat != null) {
+      return Scaffold(
+        body: _MilestoneBeat(
+          streak: beat.streak,
+          onContinue: () => setState(() => _showBeat = false),
         ),
-      ),
-      body: status.when(
+      );
+    }
+
+    // Close, not back: the design gives this screen an X. No `PageLargeTitle`
+    // either — it opens on the ring, which is the subject, and the design puts
+    // no display heading over it.
+    return SubScreenScaffold(
+      title: 'Your streak',
+      mark: AppIcon.close,
+      onBack: () => context.pop(),
+      body: (context, scrollPadding) => status.when(
         loading: () => Semantics(
           label: 'Loading your streak',
           child: const LoadingIndicator(),
@@ -117,17 +129,12 @@ class _StreakScreenState extends ConsumerState<StreakScreen> {
             child: Text('$error'),
           ),
         ),
-        data: (value) => _showBeat
-            ? _MilestoneBeat(
-                streak: value.streak,
-                onContinue: () => setState(() => _showBeat = false),
-              )
-            : _StreakBody(
-                status: value,
-                weekDays:
-                    ref.watch(weekStripDaysProvider).asData?.value ?? const [],
-                onShare: _share,
-              ),
+        data: (value) => _StreakBody(
+          scrollPadding: scrollPadding,
+          status: value,
+          weekDays: ref.watch(weekStripDaysProvider).asData?.value ?? const [],
+          onShare: _share,
+        ),
       ),
     );
   }
@@ -192,10 +199,14 @@ class _MilestoneBeat extends StatelessWidget {
 
 class _StreakBody extends StatelessWidget {
   const _StreakBody({
+    required this.scrollPadding,
     required this.status,
     required this.weekDays,
     required this.onShare,
   });
+
+  /// The room the bar floating over this scroll leaves at the top.
+  final EdgeInsets scrollPadding;
 
   final StreakStatus status;
   final List<StreakDay> weekDays;
@@ -206,55 +217,55 @@ class _StreakBody extends StatelessWidget {
     final mood = context.mood;
     final statusLine = freezeStatusLine(status: status, today: DateTime.now());
     final milestone = nextMilestone(status.streak);
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // One spoken phrase for the pair — the caption is part of the
-            // number's meaning, not a second announcement. The ring is
-            // decorative; the badge line below speaks its numbers.
-            Semantics(
-              label: '${status.streak} day streak',
-              excludeSemantics: true,
-              child: MilestoneRing(
-                fraction: milestoneRingFraction(status.streak),
-                trackColor: mood.rule,
-                fillColor: mood.accent,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text('${status.streak}', style: AppText.hero(mood: mood)),
-                    const SizedBox(height: AppSpacing.xxs),
-                    Text('DAY STREAK', style: AppText.label(mood: mood)),
-                  ],
-                ),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(
+        AppSpacing.lg,
+      ).add(scrollPadding).resolve(TextDirection.ltr),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // One spoken phrase for the pair — the caption is part of the
+          // number's meaning, not a second announcement. The ring is
+          // decorative; the badge line below speaks its numbers.
+          Semantics(
+            label: '${status.streak} day streak',
+            excludeSemantics: true,
+            child: MilestoneRing(
+              fraction: milestoneRingFraction(status.streak),
+              trackColor: mood.rule,
+              fillColor: mood.accent,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('${status.streak}', style: AppText.hero(mood: mood)),
+                  const SizedBox(height: AppSpacing.xxs),
+                  Text('DAY STREAK', style: AppText.label(mood: mood)),
+                ],
               ),
             ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              '${status.streak} of $milestone to your $milestone-day badge',
-              textAlign: TextAlign.center,
-              style: AppText.micro(mood: mood),
-            ),
-            if (weekDays.isNotEmpty) ...[
-              const SizedBox(height: AppSpacing.lg),
-              WeekStrip(days: weekDays),
-            ],
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            '${status.streak} of $milestone to your $milestone-day badge',
+            textAlign: TextAlign.center,
+            style: AppText.micro(mood: mood),
+          ),
+          if (weekDays.isNotEmpty) ...[
             const SizedBox(height: AppSpacing.lg),
-            Text(
-              statusLine,
-              textAlign: TextAlign.center,
-              style: AppText.support(mood: mood),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            TextButton(
-              onPressed: onShare,
-              child: const Text('Share your streak'),
-            ),
+            WeekStrip(days: weekDays),
           ],
-        ),
+          const SizedBox(height: AppSpacing.lg),
+          Text(
+            statusLine,
+            textAlign: TextAlign.center,
+            style: AppText.support(mood: mood),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          TextButton(
+            onPressed: onShare,
+            child: const Text('Share your streak'),
+          ),
+        ],
       ),
     );
   }

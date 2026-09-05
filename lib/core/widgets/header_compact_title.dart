@@ -18,14 +18,19 @@ import 'package:flutter/material.dart';
 class HeaderCompactTitle extends StatelessWidget {
   /// Creates a [HeaderCompactTitle].
   const HeaderCompactTitle({
-    required this.eyebrow,
     required this.title,
     required this.isVisible,
+    this.eyebrow,
     super.key,
   });
 
-  /// The smallcaps line above — `TODAY`, `YOUR PATH`.
-  final String eyebrow;
+  /// The smallcaps line above — `TODAY`, `YOUR PATH`, a term's category.
+  ///
+  /// Null on most pushed pages, which title themselves in one line. The design
+  /// draws the line only where there is one to draw (`marginTop: eyebrow ? 2 :
+  /// 0`), so an absent eyebrow costs no height and leaves no empty node for a
+  /// screen reader to stop on.
+  final String? eyebrow;
 
   /// The line the tab is titled by.
   final String title;
@@ -63,16 +68,18 @@ class HeaderCompactTitle extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                eyebrow.toUpperCase(),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppText.micro(
-                  mood: mood,
-                  tracking: AppTracking.chrome,
+              if (eyebrow != null && eyebrow!.isNotEmpty) ...[
+                Text(
+                  eyebrow!.toUpperCase(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppText.micro(
+                    mood: mood,
+                    tracking: AppTracking.chrome,
+                  ),
                 ),
-              ),
-              const SizedBox(height: _stackGap),
+                const SizedBox(height: _stackGap),
+              ],
               Text(
                 title,
                 maxLines: 1,

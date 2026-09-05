@@ -33,7 +33,11 @@ class DictionaryTermList extends StatelessWidget {
   Widget build(BuildContext context) {
     final grouped = groupByCategory(visible, view.categories);
 
-    return ListView(
+    // A column, not a list of its own: the page scrolls as one now, so that
+    // the shelf's title can leave the top the way the design has it. Nothing
+    // is lost — every row was built eagerly here in any case.
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         for (final entry in grouped.entries) ...[
           SectionHeader(entry.key.label),

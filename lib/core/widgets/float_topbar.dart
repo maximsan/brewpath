@@ -5,22 +5,8 @@ import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// How far a reward screen scrolls before its topbar takes chrome.
-///
-/// Far enough that settling the content by a few pixels does not flash a
-/// header on and off, near enough that a learner who has begun reading has a
-/// bar to close from.
-const double floatTopbarThreshold = 40;
-
 /// The design's `transition: … 260ms ease` on the bar's fill, rule and blur.
 const Duration floatTopbarFade = Duration(milliseconds: 260);
-
-/// Whether a bar scrolled to [offset] has taken its chrome.
-///
-/// Pure so the threshold is assertable without a scroll gesture — and named,
-/// because a bare `> 40` at a call site is the kind of number that drifts
-/// between the two screens that share this bar.
-bool floatTopbarIsScrolled(double offset) => offset > floatTopbarThreshold;
 
 /// A floating close or back control over a full-bleed screen: transparent at
 /// rest, standard header chrome once the content has moved under it.
@@ -115,41 +101,4 @@ class FloatTopbar extends StatelessWidget {
       },
     );
   }
-}
-
-/// Reports whether the scrollable beneath it has passed the bar's threshold.
-///
-/// A listener rather than a `ScrollController`, because the reward screens do
-/// not own their scrollable — `StickyActionBar` does, so there is no
-/// controller for a caller to attach. The notification is filtered to depth 0
-/// so a nested scroller inside the content cannot flip the page's bar, which
-/// is the same rule the design writes as *"currentTarget, not target"*.
-class FloatTopbarScrollScope extends StatefulWidget {
-  /// Creates a [FloatTopbarScrollScope].
-  const FloatTopbarScrollScope({required this.builder, super.key});
-
-  /// Builds the screen, given whether it has scrolled past the threshold.
-  final Widget Function(BuildContext context, {required bool isScrolled})
-  builder;
-
-  @override
-  State<FloatTopbarScrollScope> createState() => _FloatTopbarScrollScopeState();
-}
-
-class _FloatTopbarScrollScopeState extends State<FloatTopbarScrollScope> {
-  bool _isScrolled = false;
-
-  bool _onScroll(ScrollNotification notification) {
-    if (notification.depth != 0) return false;
-    final scrolled = floatTopbarIsScrolled(notification.metrics.pixels);
-    if (scrolled != _isScrolled) setState(() => _isScrolled = scrolled);
-    return false;
-  }
-
-  @override
-  Widget build(BuildContext context) =>
-      NotificationListener<ScrollNotification>(
-        onNotification: _onScroll,
-        child: widget.builder(context, isScrolled: _isScrolled),
-      );
 }

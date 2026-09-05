@@ -59,6 +59,20 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **The pages you open from a tab get the same treatment.** Settings, the
+  Coffee Dictionary, a term, your saved shelf, the coffee tree, your streak,
+  your grove and the app guide used to sit under a solid grey strip with a
+  small title in it. Each one now opens on its own name, set large at the top
+  of the page, with only a back arrow floating over it — and the strip fades
+  in as you scroll, blurred, carrying the name you have just scrolled past.
+  Your saved shelf is named even when it is empty, and a term's page shows its
+  category above its name once the bar takes over.
+
+  Drilling into a dictionary category no longer leaves the old title stranded
+  at the top: the page and the bar go back to the beginning together. Backing
+  out of a category returns you to the index rather than leaving the
+  dictionary altogether.
+
 - **The bar at the top of a tab gets out of the way.** It used to sit there
   the whole time, printing the tab's name over the page whether you needed it
   or not. Now the top of a tab is the tab: Today opens on the date, Path on
