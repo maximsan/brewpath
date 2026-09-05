@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/roasty_colors.dart';
@@ -95,16 +93,16 @@ void _paintIdleFace(Canvas canvas) {
   canvas.drawPath(mouth, _mouthStroke);
 }
 
-/// The delighted eyes and blush the correct and lesson faces share. Only the
+/// The arched eyes and blush the correct and lesson faces share. Only the
 /// mouth below them tells the two apart.
-void _paintDelightedBrow(Canvas canvas) {
+void _paintDelightedEyesAndCheeks(Canvas canvas) {
   _paintEyeArchUp(canvas, 80, 148);
   _paintEyeArchUp(canvas, 120, 148);
   _paintCheeks(canvas, cy: 170, rx: 7, ry: 3.5, opacity: 0.55);
 }
 
 void _paintCorrectFace(Canvas canvas) {
-  _paintDelightedBrow(canvas);
+  _paintDelightedEyesAndCheeks(canvas);
   final mouth = Path()
     ..moveTo(86, 178)
     ..quadraticBezierTo(100, 192, 114, 178);
@@ -115,7 +113,7 @@ void _paintCorrectFace(Canvas canvas) {
 /// the design says so with the mouth: a filled open grin with a tongue in it,
 /// where [_paintCorrectFace] draws a stroked smile.
 void _paintLessonFace(Canvas canvas) {
-  _paintDelightedBrow(canvas);
+  _paintDelightedEyesAndCheeks(canvas);
   final mouth = Path()
     ..moveTo(84, 178)
     ..quadraticBezierTo(100, 198, 116, 178)
@@ -162,34 +160,37 @@ void _paintWrongFace(Canvas canvas) {
   _paintCheeks(canvas, cy: 174, rx: 5, ry: 2.5, opacity: 0.3);
 }
 
-/// Draws a five-pointed star centered at (cx, cy). Shared by the module face
-/// and the correct-state sparkle particles.
-void paintStar(
-  Canvas canvas,
-  double cx,
-  double cy,
-  double radius,
-  Color color,
-) {
-  final path = Path();
-  for (var i = 0; i < 10; i++) {
-    final angle = -math.pi / 2 + i * math.pi / 5;
-    final pointRadius = i.isEven ? radius : radius * 0.42;
-    final pointX = cx + math.cos(angle) * pointRadius;
-    final pointY = cy + math.sin(angle) * pointRadius;
-    if (i == 0) {
-      path.moveTo(pointX, pointY);
-    } else {
-      path.lineTo(pointX, pointY);
-    }
+/// The module face's star eye, as the design draws it.
+///
+/// Transcribed rather than generated. The design's star is hand-drawn and
+/// slightly irregular — its inner points sit at radii 4.24 and 5.39 rather
+/// than on one circle, and it reaches further below the centre than above —
+/// so a computed regular star loses the very thing that makes it look drawn.
+const _starEye = <Offset>[
+  Offset(0, -11),
+  Offset(3, -3),
+  Offset(11, -3),
+  Offset(5, 2),
+  Offset(7, 10),
+  Offset(0, 5),
+  Offset(-7, 10),
+  Offset(-5, 2),
+  Offset(-11, -3),
+  Offset(-3, -3),
+];
+
+void _paintStarEye(Canvas canvas, double cx, double cy, Color colour) {
+  final path = Path()..moveTo(cx + _starEye.first.dx, cy + _starEye.first.dy);
+  for (final point in _starEye.skip(1)) {
+    path.lineTo(cx + point.dx, cy + point.dy);
   }
   path.close();
-  canvas.drawPath(path, Paint()..color = color);
+  canvas.drawPath(path, Paint()..color = colour);
 }
 
 void _paintModuleFace(Canvas canvas, MoodColors mood) {
-  paintStar(canvas, 80, 148, 11, mood.warn);
-  paintStar(canvas, 120, 148, 11, mood.warn);
+  _paintStarEye(canvas, 80, 148, mood.warn);
+  _paintStarEye(canvas, 120, 148, mood.warn);
   _paintCheeks(canvas, cy: 172, rx: 7, ry: 3.5, opacity: 0.55);
   canvas.drawOval(
     Rect.fromCenter(center: const Offset(100, 185), width: 16, height: 18),

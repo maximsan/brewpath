@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
-import 'package:brew_path/features/companion/presentation/roasty_faces.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/roasty_colors.dart';
@@ -104,6 +103,14 @@ void _paintSparkles(Canvas canvas, double progress, MoodColors mood) {
     Offset(170, 200),
   ];
   const delays = [0.0, 0.25, 0.5, 0.75];
+  // The design gives each sparkle its own size; the app drew one size for all
+  // four.
+  const sizes = <({double outer, double inner})>[
+    (outer: 6, inner: 1.5),
+    (outer: 5, inner: 1.2),
+    (outer: 4, inner: 1),
+    (outer: 6, inner: 1.5),
+  ];
   final colors = [
     mood.warn,
     RoastyColors.confettiMoss,
@@ -119,9 +126,32 @@ void _paintSparkles(Canvas canvas, double progress, MoodColors mood) {
     canvas.save();
     canvas.translate(centers[i].dx, centers[i].dy);
     canvas.scale(scale);
-    paintStar(canvas, 0, 0, 5, sparkle.color);
+    _paintTwinkle(canvas, sizes[i], sparkle.color);
     canvas.restore();
   }
+}
+
+/// One sparkle: the design's **four**-pointed twinkle, where the app had been
+/// drawing the same five-pointed star it uses for the module face's eyes.
+///
+/// Drawn about the origin — the caller has already translated and scaled to
+/// the sparkle's place in its beat.
+void _paintTwinkle(
+  Canvas canvas,
+  ({double outer, double inner}) size,
+  Color colour,
+) {
+  final path = Path()
+    ..moveTo(0, -size.outer)
+    ..lineTo(size.inner, -size.inner)
+    ..lineTo(size.outer, 0)
+    ..lineTo(size.inner, size.inner)
+    ..lineTo(0, size.outer)
+    ..lineTo(-size.inner, size.inner)
+    ..lineTo(-size.outer, 0)
+    ..lineTo(-size.inner, -size.inner)
+    ..close();
+  canvas.drawPath(path, Paint()..color = colour);
 }
 
 void _paintConfetti(Canvas canvas, double progress) {
@@ -167,6 +197,17 @@ void _paintConfetti(Canvas canvas, double progress) {
   }
 }
 
+/// The design's group opacity on the wrong badge.
+const _wrongBadgeOpacity = 0.85;
+
+const _wrongBadgeCenter = Offset(148, 76);
+const _wrongBadgeRadius = 13.0;
+const _wrongBadgeStroke = 2.0;
+
+/// The layer the badge composites into: its disc plus the stroke that rides
+/// on the edge of it.
+const double _wrongBadgeExtent = _wrongBadgeRadius + _wrongBadgeStroke;
+
 void _paintWrongBadge(Canvas canvas, MoodColors mood) {
   // The design's `opacity="0.85"` sits on the badge's *group*, and that is not
   // the same as fading each mark: the stroke and the exclamation are drawn on
@@ -186,7 +227,7 @@ void _paintWrongBadge(Canvas canvas, MoodColors mood) {
   final stroke = Paint()
     ..color = mood.berry
     ..style = PaintingStyle.stroke
-    ..strokeWidth = 2;
+    ..strokeWidth = _wrongBadgeStroke;
   canvas.drawCircle(_wrongBadgeCenter, _wrongBadgeRadius, fill);
   canvas.drawCircle(_wrongBadgeCenter, _wrongBadgeRadius, stroke);
   final bar = Paint()..color = mood.berry;
@@ -201,16 +242,6 @@ void _paintWrongBadge(Canvas canvas, MoodColors mood) {
 
   canvas.restore();
 }
-
-/// The design's group opacity on the wrong badge.
-const _wrongBadgeOpacity = 0.85;
-
-const _wrongBadgeCenter = Offset(148, 76);
-const _wrongBadgeRadius = 13.0;
-
-/// The layer the badge composites into: its disc plus the stroke that rides
-/// on the edge of it.
-const double _wrongBadgeExtent = _wrongBadgeRadius + 2;
 
 void _paintSleepZzz(Canvas canvas, double progress, MoodColors mood) {
   const letters = <({double x, double y, double size, double delay})>[

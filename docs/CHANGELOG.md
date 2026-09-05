@@ -51,7 +51,9 @@ You can always edit this file by hand instead — the helpers just save effort.
   into a proper grin instead of borrowing the same small smile he gives a
   correct answer, and finishing a module shows a tongue in it. The badge on a
   wrong answer sits at the weight the design gives it rather than full
-  strength.
+  strength. The sparkles that burst on a right answer are the design's
+  four-pointed twinkles at three sizes, where they had all been one
+  five-pointed star.
 
 - **Roasty's sleeping z's and wrong-answer badge follow the mood.** In Dark
   Roast the sleeping `z`s were drawn in the light mood's grey and all but
