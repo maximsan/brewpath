@@ -67,7 +67,7 @@ void main() {
         .map((file) => (file.path, withoutComments(file.readAsStringSync())))
         .where(
           (source) => RegExp(
-            r'\b(dimModal|scrim|veil|veilStrong)\.color\b',
+            r'\b(dimModal|scrim|veil|veilStrong|headerFill)\.color\b',
           ).hasMatch(source.$2),
         )
         .where(

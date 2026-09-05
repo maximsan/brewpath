@@ -59,6 +59,25 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **The bar at the top of a tab gets out of the way.** It used to sit there
+  the whole time, printing the tab's name over the page whether you needed it
+  or not. Now the top of a tab is the tab: Today opens on the date, Path on
+  *Beginner Foundations*, Cards on *Collection* and Profile on the greeting,
+  each set large where the page starts. Scroll, and the bar arrives — a
+  blurred, tinted strip with a hairline under it, carrying the name you have
+  just scrolled past. Scroll back and it goes again. Saved, the Dictionary and
+  the Settings gear stay where they were the whole time.
+
+  The Cards tab gets its *Collection* heading back, which it had to give up
+  when the bar was drawing one of its own. Today, Path and Profile open their
+  title below the two buttons rather than beside them, so a long date or a
+  long name reads all the way to its end instead of disappearing behind
+  them.
+
+  The close bar on the two reward screens now blurs the same way. It was a
+  flat panel that appeared as you scrolled; it is the same frosted strip the
+  tab bar is, so the celebration underneath still shows through it.
+
 - **Roasty's colours live in one place.** The mascot's browns, greens and face
   colours are one named palette pinned to the design, instead of 37 loose
   values across three drawings, so a retone reaches every drawing at once.

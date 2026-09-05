@@ -1,6 +1,5 @@
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
-import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 
 /// The nav family is drawn on a 24×24 grid. The marks themselves are stock
@@ -34,17 +33,13 @@ Color _tabInk(MoodColors mood, Set<WidgetState> states) =>
     states.contains(WidgetState.selected) ? mood.accent : mood.inkMute;
 
 /// The tab label: the ladder's micro step in the control face, lettered at the
-/// design's own [OffTokens.tabLabelTracking] rather than the rung's.
+/// chrome tracking rather than the rung's own.
 ///
-/// Tracking is written in em and multiplied by the size on the way out, the
-/// way `AppText` does it — so the size is read back off the style rather than
-/// restated here, where it could drift from the rung.
-TextStyle tabLabelStyle(MoodColors mood) {
-  final base = AppText.micro(mood: mood, face: AppFace.control);
-  // Never null: every `AppText` style takes its size from the ladder.
-  final size = base.fontSize!;
-
-  return base.copyWith(
-    letterSpacing: OffTokens.tabLabelTracking.value * size,
-  );
-}
+/// The bar and the sticky header's compact eyebrow are the two things the
+/// design letters at 0.18em, which is why the width is a named step on
+/// [AppTracking] rather than this bar's private exception.
+TextStyle tabLabelStyle(MoodColors mood) => AppText.micro(
+  mood: mood,
+  face: AppFace.control,
+  tracking: AppTracking.chrome,
+);

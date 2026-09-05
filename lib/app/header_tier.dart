@@ -157,10 +157,11 @@ TabHeader? tabHeaderFor(
 
 /// How far a tab scrolls before its header collapses.
 ///
-/// Enough to be a deliberate scroll rather than a thumb resting on the screen,
-/// small enough that the header is out of the way by the time the learner is
-/// reading.
-const double collapseThreshold = 12;
+/// The design's own 72, and it is a measurement rather than a taste: the bar
+/// must not raise its compact title until the tab's large title has gone under
+/// it, or the screen is titled twice for the length of the transition. It is
+/// also comfortably past a thumb resting on the screen.
+const double collapseThreshold = 72;
 
 /// Whether a tab scrolled to [pixels] should wear a collapsed header.
 ///

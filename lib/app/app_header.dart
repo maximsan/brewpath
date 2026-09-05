@@ -1,9 +1,10 @@
 import 'package:brew_path/app/current_day.dart';
+import 'package:brew_path/app/header_chrome.dart';
+import 'package:brew_path/app/header_compact_title.dart';
 import 'package:brew_path/app/header_tier.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
-import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
@@ -19,18 +20,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// How long the collapse takes when motion is allowed.
-const _collapseDuration = Duration(milliseconds: 180);
-
 /// The one header the four tabs share, owned by the shell.
 ///
 /// Rendered **once**, above the branch navigators, exactly as the design
 /// renders it once at app level beside the tab bar. The shell decides whether
 /// it draws at all; this decides what it says.
 ///
-/// It consumes the status-bar inset itself, because it is the only thing here
-/// that needs to: a page pushed inside a branch brings its own `AppBar`, which
-/// handles its own.
+/// **It floats over the tab rather than standing above it**, and at rest it
+/// draws nothing but its entries: the tab's own `TabLargeTitle` is what titles
+/// the screen there. Scrolled, the bar materialises and the compact title
+/// slides in to replace the large one that has just gone under it — so the
+/// screen is titled exactly once at every point of the scroll, which is the
+/// pairing the design is built on and the reason the Cards tab had no title of
+/// its own until now (#441).
+///
+/// The entries stay put the whole way through. They are the only part of the
+/// bar that was ever meant to be visible at the top of a tab.
+///
+/// It consumes the status-bar inset itself, because the bar has to reach up
+/// under the status bar to blur what passes beneath it. A tab root's content
+/// starts under that inset and scrolls up through it; a page pushed inside a
+/// branch brings its own `AppBar`, which handles its own.
 class AppHeader extends ConsumerWidget {
   /// Creates an [AppHeader].
   const AppHeader({
@@ -56,88 +66,49 @@ class AppHeader extends ConsumerWidget {
     );
     if (tab == null) return const SizedBox.shrink();
 
-    final heading = Padding(
-      padding: EdgeInsets.fromLTRB(
-        AppSpacing.gutter,
-        AppSpacing.sm,
-        AppSpacing.md,
-        isCollapsed ? AppSpacing.xs : AppSpacing.lg,
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Expanded(
-            child: _Heading(tab: tab, isCollapsed: isCollapsed),
-          ),
-          // Tour stop 3 frames the pair rather than either entry: the design
-          // introduces Saved and the Dictionary as one place things you keep
-          // end up, and a frame around one button would name half of it.
-          TourStop(
-            stopKey: TourStops.header,
-            title: TourCopy.headerTitle,
-            description: TourCopy.headerBody,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                for (final action in tab.actions) _ActionButton(action: action),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-
-    return SafeArea(
-      bottom: false,
-      // Sized by its content, not to a pair of constants: collapsing drops the
-      // eyebrow and the box follows. A fixed height overflows for the few
-      // frames after a restore, when the eyebrow is back but the box has not
-      // grown yet.
-      //
-      // ⚠️ **Reduced motion drops the animator, rather than giving it a zero
-      // duration.** `AnimatedSize` re-dirties itself inside its own
-      // `performLayout` when asked to finish instantly, which the framework
-      // asserts on — so the honest reading of "no animation" is no animator.
-      child: MediaQuery.disableAnimationsOf(context)
-          ? heading
-          : AnimatedSize(
-              duration: _collapseDuration,
-              curve: Curves.easeOut,
-              alignment: Alignment.topCenter,
-              child: heading,
-            ),
-    );
-  }
-}
-
-class _Heading extends StatelessWidget {
-  const _Heading({required this.tab, required this.isCollapsed});
-
-  final TabHeader tab;
-  final bool isCollapsed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        if (!isCollapsed) ...[
-          SmallcapsLabel(tab.eyebrow),
-          const SizedBox(height: AppSpacing.xxs),
-        ],
-        Semantics(
-          header: true,
-          child: Text(
-            tab.title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(
-              context,
-            ).textTheme.headlineSmall?.copyWith(color: context.mood.ink),
-          ),
+    return HeaderChrome(
+      height: HeaderChrome.tabHeight,
+      isScrolled: isCollapsed,
+      child: Padding(
+        // The design closes the bar 14 above its bottom edge, which is the
+        // one of the three it and the app agree on: the design sets the sides
+        // to 18 either way, and the bar keeps the app's own gutter on the left
+        // and its standard inset on the right, so the compact title lines up
+        // with the tab content it stands in for and the entries sit where
+        // every other screen's do.
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.gutter,
+          0,
+          AppSpacing.md,
+          AppSpacing.base,
         ),
-      ],
+        child: Row(
+          children: [
+            Expanded(
+              child: HeaderCompactTitle(
+                eyebrow: tab.eyebrow,
+                title: tab.title,
+                isVisible: isCollapsed,
+              ),
+            ),
+            // Tour stop 3 frames the pair rather than either entry: the design
+            // introduces Saved and the Dictionary as one place things you keep
+            // end up, and a frame around one button would name half of it.
+            TourStop(
+              stopKey: TourStops.header,
+              title: TourCopy.headerTitle,
+              description: TourCopy.headerBody,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (final action in tab.actions)
+                    _ActionButton(action: action),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -1,3 +1,5 @@
+import 'package:brew_path/app/tab_large_title.dart';
+import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
@@ -7,6 +9,7 @@ import 'package:brew_path/features/path/domain/path_providers.dart';
 import 'package:brew_path/features/path/presentation/path_module_section.dart';
 import 'package:brew_path/features/path/presentation/reference_section.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -18,9 +21,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// thirty-two lessons fit because each module draws at the density its state
 /// earns; see [PathModuleDensity].
 ///
-/// The screen's own header is the lesson tally alone: the course name is the
-/// shell's, printed once by `AppHeader` for this tab, so repeating it here
-/// would title the page twice.
+/// The tab carries its own large title, as every tab root does: the shared
+/// header is invisible until this list scrolls under it, and prints the same
+/// course name compactly only once the large one has gone. The tally sits
+/// under it, the way the design stacks the pair.
 class PathScreen extends ConsumerStatefulWidget {
   /// Creates a [PathScreen].
   const PathScreen({super.key});
@@ -53,9 +57,23 @@ class _PathScreenState extends ConsumerState<PathScreen> {
         loading: () => const LoadingIndicator(),
         error: (error, _) => ErrorView(message: '$error'),
         data: (list) => ListView(
-          padding: const EdgeInsets.all(AppSpacing.md),
+          // No room at the top: `TabLargeTitle` leaves it.
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.md,
+            0,
+            AppSpacing.md,
+            AppSpacing.md,
+          ),
           physics: const AlwaysScrollableScrollPhysics(),
           children: [
+            TabLargeTitle(
+              AppRoutes.path,
+              topGap: OffTokens.tabTitleClearOfEntries.value,
+            ),
+            // The design sets 10 here and 8 on the Cards tab. Both are one
+            // stacked label rather than two blocks, so both take the hairline
+            // pair's stop; the 2 is not a measure either screen is built on.
+            const SizedBox(height: AppSpacing.xs),
             _CourseTally(modules: list),
             const SizedBox(height: AppSpacing.lg),
             for (var i = 0; i < list.length; i++)

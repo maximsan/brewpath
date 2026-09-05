@@ -194,16 +194,22 @@ abstract final class OffTokens {
         'the smallest stop reads as a gap between them.',
   );
 
-  /// The tab label's letter-spacing, in em — wider than the micro rung the
-  /// label otherwise sits on.
-  static const OffToken<double> tabLabelTracking = OffToken(
-    0.18,
+  /// How far below the status bar a tab opens its title when the title has to
+  /// clear the header's entries.
+  static const OffToken<double> tabTitleClearOfEntries = OffToken(
+    64,
     reason:
-        'The design letters the tab label at 0.18em where the ladder tracks '
-        'its micro rung at 0.14em (`index.html:361` against the rung table in '
-        '`app_text.dart`). The bar is the only place in the shipped design '
-        'lettered this wide, so widening the rung would restyle every other '
-        'micro line to letter one bar.',
+        'The design opens the Path tab at `paddingTop: 64` where Learn, Cards '
+        'and Profile open at 24. It is not a spacing stop, it is well past '
+        "AppSpacing.xxl (48), and it is the design's own answer to a title "
+        'that would otherwise run under the entries floating over it. Learn '
+        'and Profile take it too, which the design does not: their titles are '
+        'not fixed strings. The widest date `longDate` can make sets 350.5pt '
+        'in Fraunces at the display rung, and on a 393pt phone the entries '
+        'begin 269pt into the title — so at 24 the tail of an ordinary '
+        'Wednesday paints behind the two buttons, which the frozen `Friday, '
+        "May 8` in the design never does. Cards keeps the design's 24: "
+        '`Collection` is a fixed string and nowhere near that wide.',
   );
 
   /// The gap the intro screens set between a block and the next one.
@@ -252,8 +258,10 @@ abstract final class OffTokens {
         '`.tap-cue` letters at 0.24em (`index.html:1111`), half again as wide '
         'as any other mono label in the design and the thing that makes it '
         'read as an instruction rather than a heading. 2.64 is that em value '
-        'at the 11px label step. Same case as tabLabelTracking: widening the '
-        'rung would reletter every micro line to style one cue.',
+        'at the 11px label step. It stays an exception because the cue is the '
+        'one component set at it: a width only one thing speaks is that '
+        "thing's, where a width two things share is vocabulary and belongs on "
+        'AppTracking.',
   );
 
   /// Every sanctioned exception, so the register can be read — and tested — as
@@ -273,11 +281,11 @@ abstract final class OffTokens {
     keepSharpStartGap,
     cardsFooterPadding,
     cardsFooterLineGap,
+    tabTitleClearOfEntries,
     introBlockGap,
     introSupportGap,
     ghostUnderPrimaryGap,
     textFieldVerticalPadding,
     tapCueTracking,
-    tabLabelTracking,
   ];
 }

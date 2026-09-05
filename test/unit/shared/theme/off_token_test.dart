@@ -34,12 +34,13 @@ void main() {
       }
     });
 
-    test('holds exactly two trackings, and they are the two rung-breakers', () {
+    test('holds one tracking, and it is the one component that owns it', () {
       // Tracking is the ladder's job since #410 — `AppTracking` carries the
-      // design's values, and only a spacing too wide to be a rung is an
-      // exception. Read off the source rather than the list, because the
-      // register types every entry as `double` and cannot tell a tracking
-      // from a padding.
+      // design's values, and a spacing is an exception only while exactly one
+      // component is set at it. The tab label left when the sticky header's
+      // compact eyebrow turned out to be lettered at the same 0.18em (#441).
+      // Read off the source rather than the list, because the register types
+      // every entry as `double` and cannot tell a tracking from a padding.
       final declared = RegExp(r'OffToken<double> (\w*Tracking) =')
           .allMatches(
             File('lib/shared/theme/off_token.dart').readAsStringSync(),
@@ -47,19 +48,7 @@ void main() {
           .map((match) => match.group(1))
           .toList();
 
-      expect(
-        declared,
-        containsAllInOrder(<String>['tabLabelTracking', 'tapCueTracking']),
-      );
-      expect(
-        declared,
-        hasLength(2),
-        reason:
-            'a third tracking here means the register is growing into a '
-            'second type system beside AppTracking, which is the thing #410 '
-            'ruled against. If the design assigns it to an app component, it '
-            'belongs on the ladder: $declared',
-      );
+      expect(declared, <String>['tapCueTracking']);
     });
 
     test('holds the rewarded-ad ring and the canvas it sits on', () {
