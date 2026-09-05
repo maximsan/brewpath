@@ -1,6 +1,7 @@
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/profile/domain/daily_reminder.dart';
+import 'package:brew_path/features/profile/domain/learner_name.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
@@ -60,6 +61,14 @@ class SettingsController extends _$SettingsController {
       ..dailyReminderTime = time
       ..notificationsEnabled = true;
   });
+
+  /// Keeps [name] as what the learner is greeted by, or clears it.
+  ///
+  /// Blank collapses to none — the same answer the onboarding step gives a
+  /// skipped field — so Profile falls back to its plain greeting rather than
+  /// greeting an empty string.
+  Future<void> setLearnerName(String name) =>
+      _update((s) => s.learnerName = LearnerName.normalize(name));
 
   Future<void> _update(void Function(UserSettingsRecord) mutate) async {
     final repo = ref.read(settingsRepositoryProvider);
