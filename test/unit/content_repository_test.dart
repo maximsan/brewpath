@@ -1,4 +1,3 @@
-import 'package:brew_path/features/lessons/presentation/cards/content_card_view.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/models/content/content_card_grading.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
@@ -98,49 +97,18 @@ void main() {
       },
     );
 
-    test('practical and multi cards keep their authored order', () async {
-      final lessons = await repo.getLessons();
-      for (final lesson in lessons) {
-        final authored = lesson.cards
-            .where((card) => card is PracticalCard || card is MultiCard)
-            .toList();
-        final played = playableCards(
-          lesson.cards,
-        ).where((card) => card is PracticalCard || card is MultiCard).toList();
-        expect(
-          played,
-          authored,
-          reason:
-              '${lesson.id} reorders cards the learner should meet in '
-              'the order they were authored',
-        );
-      }
-    });
-
-    test('every authored practical and multi card reaches a learner', () async {
-      final lessons = await repo.getLessons();
-      for (final lesson in lessons) {
-        final authored = lesson.cards
-            .where((card) => card is PracticalCard || card is MultiCard)
-            .length;
-        final playable = playableCards(
-          lesson.cards,
-        ).where((card) => card is PracticalCard || card is MultiCard).length;
-        expect(
-          playable,
-          authored,
-          reason: '${lesson.id} drops a card the learner should see',
-        );
-      }
-    });
+    // Two tests stood here — that the played cards kept their authored order,
+    // and that none went missing. Both compared the lesson's cards against the
+    // same cards passed through `playableCards`, so both became a value
+    // compared with itself when that filter was retired (#418). The count
+    // above still proves the bank carries them.
 
     test('every playable multi card counts toward mastery', () async {
       final lessons = await repo.getLessons();
       var counted = 0;
       for (final lesson in lessons) {
-        final played = playableCards(lesson.cards);
-        final graded = gradedCards(played);
-        for (final card in played.whereType<MultiCard>()) {
+        final graded = gradedCards(lesson.cards);
+        for (final card in lesson.cards.whereType<MultiCard>()) {
           expect(
             graded,
             contains(card),

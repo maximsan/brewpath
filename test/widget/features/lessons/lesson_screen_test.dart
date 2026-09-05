@@ -156,18 +156,16 @@ void main() {
     expect(completedWith['total'], '1');
   });
 
-  // A test that fed this lesson an undrawable card stood here, alongside the
-  // one below. It cannot be written any more: every kind of the union draws as
-  // of #124, so there is no card to build one from. The screen still filters
-  // through `playableCards` for the next kind that arrives ahead of its
-  // renderer, and the exhaustive switches make that arrival a build failure
-  // rather than something a test has to catch.
+  // A test that fed this lesson an undrawable card stood here. It cannot be
+  // written any more: every kind draws as of #124, and #418 removed the filter
+  // that used to leave the others out — a card this build cannot draw is now
+  // something the app will not compile with, rather than something a test has
+  // to catch.
 
-  testWidgets('says so when a lesson has nothing it can draw', (tester) async {
-    // A lesson with no playable card left, which is now only an empty one.
+  testWidgets('says so when a lesson has no cards', (tester) async {
     await pumpLesson(tester, testLesson(cards: []));
 
-    expect(find.text('This lesson cannot be played yet.'), findsOneWidget);
+    expect(find.text('This lesson has no cards.'), findsOneWidget);
   });
 
   testWidgets('says so when the lesson does not exist', (tester) async {

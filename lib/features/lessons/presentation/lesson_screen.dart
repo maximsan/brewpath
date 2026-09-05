@@ -134,13 +134,13 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
   Widget? _position(LessonModel? lesson) {
     if (lesson == null) return null;
 
-    final played = playableCards(lesson.cards);
-    if (played.isEmpty) return null;
+    final cards = lesson.cards;
+    if (cards.isEmpty) return null;
 
     return RoastMeter(
       position: _index + 1,
-      total: played.length,
-      semanticsLabel: 'Card ${_index + 1} of ${played.length}',
+      total: cards.length,
+      semanticsLabel: 'Card ${_index + 1} of ${cards.length}',
     );
   }
 
@@ -158,17 +158,19 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
       return const ErrorView(message: 'Lesson not found');
     }
 
-    final played = playableCards(lesson.cards);
-    if (played.isEmpty) {
+    // A lesson with nothing in it. It used to be the same branch as a lesson
+    // holding only cards this build could not draw; that second case is gone
+    // (#418), so the message says the one thing left that is true.
+    if (lesson.cards.isEmpty) {
       return Semantics(
-        label: 'This lesson cannot be played yet.',
+        label: 'This lesson has no cards.',
         excludeSemantics: true,
-        child: const ErrorView(message: 'This lesson cannot be played yet.'),
+        child: const ErrorView(message: 'This lesson has no cards.'),
       );
     }
 
     _logStartedOnce(lesson);
-    return _lessonContent(lesson, played);
+    return _lessonContent(lesson, lesson.cards);
   }
 
   Widget _lessonContent(LessonModel lesson, List<ContentCard> played) {
@@ -188,8 +190,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
           children: [
             // Keyed by card so each one mounts fresh: a latched card must
             // never be reused for the next question.
-            if (card != null)
-              KeyedSubtree(key: ValueKey('${_nonce}_$_index'), child: card),
+            KeyedSubtree(key: ValueKey('${_nonce}_$_index'), child: card),
           ],
         ),
       ),
