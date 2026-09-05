@@ -10,6 +10,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../support/widget_harness.dart';
+
 /// Pumps [child] under a router whose vocab route only records that it was
 /// reached — the drill itself is tested elsewhere.
 Future<String?> _pumpEntry(WidgetTester tester, Widget child) async {
@@ -45,12 +47,16 @@ Future<String?> _pumpEntry(WidgetTester tester, Widget child) async {
   await tester.pumpAndSettle();
 
   await tester.tap(find.text(VocabCopy.title));
-  await tester.pumpAndSettle();
+  // Not pumpAndSettle: the row asks the free day's allowance before it opens
+  // the drill (#216), and that read is real database I/O.
+  await settleLoaders(tester);
 
   return reached;
 }
 
 void main() {
+  setUp(useInMemoryDatabase);
+
   group("the dictionary's quick chip", () {
     testWidgets('names the drill and opens it', (tester) async {
       expect(

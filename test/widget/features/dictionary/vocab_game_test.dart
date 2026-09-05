@@ -13,6 +13,8 @@ import 'package:brew_path/features/dictionary/domain/vocab_setup.dart';
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_copy.dart';
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_game_screen.dart';
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_teaching_view.dart';
+import 'package:brew_path/features/monetization/domain/plus_copy.dart';
+import 'package:brew_path/features/progress/domain/activity_recorder.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
@@ -435,6 +437,38 @@ void main() {
         ActivityType.vocab,
       );
       expect(progress.activeDays, contains(today));
+    });
+
+    testWidgets('a free day with one left deals one round, not two', (
+      tester,
+    ) async {
+      // One activity already done, so the round below is the day's second and
+      // *Play again* would be the third. It re-deals in place without
+      // navigating, so only the screen's own check refuses it (#216).
+      final container = await _pump(tester);
+      await recordActivity(
+        container.read(snapshotRepositoryProvider),
+        type: ActivityType.flashcards,
+        subject: '',
+        now: DateTime.now(),
+      );
+
+      await tester.tap(find.text(VocabCopy.start));
+      await tester.pumpAndSettle();
+      await playThrough(tester, rounds: vocabLengths.first);
+      await settle(tester);
+
+      await tester.tap(find.text(VocabCopy.playAgain));
+      await settle(tester);
+
+      expect(find.text(PlusCopy.title), findsOneWidget);
+      final progress = (await container.read(snapshotRepositoryProvider).read())
+          .clearedByReset;
+      expect(
+        progress.dailyActivity[epochDay(DateTime.now())],
+        hasLength(2),
+        reason: 'the refused round must not deal, and so must not record',
+      );
     });
 
     testWidgets('an abandoned drill records nothing', (tester) async {

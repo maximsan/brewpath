@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/widgets/float_topbar.dart';
@@ -8,12 +10,12 @@ import 'package:brew_path/features/cards/presentation/reward_card.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_suggestion.dart';
 import 'package:brew_path/features/lessons/domain/lesson_completion_actions.dart';
-import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_beat.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_header.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_reward.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_tree.dart';
 import 'package:brew_path/features/lessons/presentation/reward_points_line.dart';
+import 'package:brew_path/features/monetization/presentation/activity_start.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/models/content/brew_challenge.dart';
@@ -96,14 +98,16 @@ class _LessonCompletionBodyState extends State<LessonCompletionBody>
         children: [
           StickyActionBar(
             label: widget.actions.label,
-            onPressed: () => context.goTo(widget.actions.destination),
+            onPressed: () =>
+                unawaited(context.goToActivity(widget.actions.destination)),
             ghost: practice == null
                 ? null
                 // The one ghost the design draws in the accent: it invites a
                 // weak run back rather than dismissing anything.
                 : GhostAction.accent(
                     label: practice.label,
-                    onPressed: () => context.goTo(practice.destination),
+                    onPressed: () =>
+                        unawaited(context.goToActivity(practice.destination)),
                   ),
             content: Padding(
               padding: const EdgeInsets.symmetric(

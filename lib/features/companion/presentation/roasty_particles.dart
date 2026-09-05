@@ -3,6 +3,8 @@ import 'dart:math' as math;
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty_faces.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/roasty_colors.dart';
 import 'package:flutter/material.dart';
 
 // The front particle dispatch handles the states with particles and defaults
@@ -10,62 +12,78 @@ import 'package:flutter/material.dart';
 // ignore_for_file: no_default_cases
 
 /// Particle layer painted behind the bean body (rays / glow).
-void paintRoastyParticlesBack(Canvas canvas, RoastyState state, double t) {
+///
+/// The rays are the mood's warn in the design, so the host passes [mood] in;
+/// the glow is palette-fixed.
+void paintRoastyParticlesBack(
+  Canvas canvas,
+  RoastyState state,
+  double progress,
+  MoodColors mood,
+) {
   if (state == RoastyState.module) {
-    _paintModuleRays(canvas, t);
+    _paintModuleRays(canvas, progress, mood);
   }
   if (state == RoastyState.card) {
-    _paintCardGlow(canvas, t);
+    _paintCardGlow(canvas, progress);
   }
 }
 
 /// Particle layer painted in front of the bean body (sparkles, confetti,
 /// wrong badge, sleep zzz).
-void paintRoastyParticlesFront(Canvas canvas, RoastyState state, double t) {
+///
+/// Two sparkles, the wrong badge and the sleeping `z`s follow the mood in the
+/// design (warn, berry and muted ink); the confetti is palette-fixed.
+void paintRoastyParticlesFront(
+  Canvas canvas,
+  RoastyState state,
+  double progress,
+  MoodColors mood,
+) {
   switch (state) {
     case RoastyState.correct:
-      _paintSparkles(canvas, t);
+      _paintSparkles(canvas, progress, mood);
     case RoastyState.lesson:
     case RoastyState.module:
-      _paintConfetti(canvas, t);
+      _paintConfetti(canvas, progress);
     case RoastyState.wrong:
-      _paintWrongBadge(canvas);
+      _paintWrongBadge(canvas, mood);
     case RoastyState.sleep:
-      _paintSleepZzz(canvas, t);
+      _paintSleepZzz(canvas, progress, mood);
     default:
       break;
   }
 }
 
 // ── Particles back (behind body) ───────────────────────────────────────
-void _paintModuleRays(Canvas canvas, double t) {
+void _paintModuleRays(Canvas canvas, double progress, MoodColors mood) {
   canvas.save();
   const cx = 100.0;
   const cy = 158.0;
   canvas.translate(cx, cy);
-  canvas.rotate(t * math.pi * 2);
+  canvas.rotate(progress * math.pi * 2);
   final paint = Paint()
-    ..color = const Color(0xFFC8843A).withValues(alpha: 0.55)
+    ..color = mood.warn.withValues(alpha: 0.55)
     ..strokeWidth = 2
     ..strokeCap = StrokeCap.round
     ..style = PaintingStyle.stroke;
   for (var i = 0; i < 8; i++) {
-    final a = (i / 8) * math.pi * 2;
-    final x1 = math.cos(a) * 80;
-    final y1 = math.sin(a) * 80;
-    final x2 = math.cos(a) * 62;
-    final y2 = math.sin(a) * 62;
+    final angle = (i / 8) * math.pi * 2;
+    final x1 = math.cos(angle) * 80;
+    final y1 = math.sin(angle) * 80;
+    final x2 = math.cos(angle) * 62;
+    final y2 = math.sin(angle) * 62;
     canvas.drawLine(Offset(x1, y1), Offset(x2, y2), paint);
   }
   canvas.restore();
 }
 
-void _paintCardGlow(Canvas canvas, double t) {
-  final pulse = math.sin(t * math.pi * 2) * 0.5 + 0.5;
+void _paintCardGlow(Canvas canvas, double progress) {
+  final pulse = math.sin(progress * math.pi * 2) * 0.5 + 0.5;
   final gradient = RadialGradient(
     colors: [
-      const Color(0xFFE6C68A).withValues(alpha: 0.6 * pulse),
-      const Color(0xFFE6C68A).withValues(alpha: 0),
+      RoastyColors.cardGlow.withValues(alpha: 0.6 * pulse),
+      RoastyColors.cardGlow.withValues(alpha: 0),
     ],
   );
   final rect = Rect.fromCenter(
@@ -78,7 +96,7 @@ void _paintCardGlow(Canvas canvas, double t) {
 }
 
 // ── Particles in front ─────────────────────────────────────────────────
-void _paintSparkles(Canvas c, double t) {
+void _paintSparkles(Canvas canvas, double progress, MoodColors mood) {
   const centers = [
     Offset(36, 80),
     Offset(168, 100),
@@ -86,27 +104,27 @@ void _paintSparkles(Canvas c, double t) {
     Offset(170, 200),
   ];
   const delays = [0.0, 0.25, 0.5, 0.75];
-  const colors = [
-    Color(0xFFC8843A),
-    Color(0xFF7A8471),
-    Color(0xFFB8533A),
-    Color(0xFFC8843A),
+  final colors = [
+    mood.warn,
+    RoastyColors.confettiMoss,
+    RoastyColors.confettiEmber,
+    mood.warn,
   ];
   for (var i = 0; i < centers.length; i++) {
-    final phase = (t - delays[i]) % 1.0;
+    final phase = (progress - delays[i]) % 1.0;
     final wave = phase < 0 ? 0.0 : math.sin(phase * math.pi).abs();
     final opacity = wave;
     final scale = 0.3 + wave * 0.7;
-    final p = Paint()..color = colors[i].withValues(alpha: opacity);
-    c.save();
-    c.translate(centers[i].dx, centers[i].dy);
-    c.scale(scale);
-    paintStar(c, 0, 0, 5, p.color);
-    c.restore();
+    final sparkle = Paint()..color = colors[i].withValues(alpha: opacity);
+    canvas.save();
+    canvas.translate(centers[i].dx, centers[i].dy);
+    canvas.scale(scale);
+    paintStar(canvas, 0, 0, 5, sparkle.color);
+    canvas.restore();
   }
 }
 
-void _paintConfetti(Canvas c, double t) {
+void _paintConfetti(Canvas canvas, double progress) {
   const pieces = [
     [40.0, 60.0, 0.0],
     [158.0, 50.0, 0.2],
@@ -118,18 +136,18 @@ void _paintConfetti(Canvas c, double t) {
     [140.0, 40.0, 0.7],
   ];
   const colors = [
-    Color(0xFFB8533A),
-    Color(0xFF7A8471),
-    Color(0xFFC8843A),
-    Color(0xFFB8533A),
-    Color(0xFF7A8471),
-    Color(0xFFC8843A),
-    Color(0xFF7A8471),
-    Color(0xFFB8533A),
+    RoastyColors.confettiEmber,
+    RoastyColors.confettiMoss,
+    RoastyColors.confettiGold,
+    RoastyColors.confettiEmber,
+    RoastyColors.confettiMoss,
+    RoastyColors.confettiGold,
+    RoastyColors.confettiMoss,
+    RoastyColors.confettiEmber,
   ];
   for (var i = 0; i < pieces.length; i++) {
     final piece = pieces[i];
-    final phase = (t + piece[2]) % 1.0;
+    final phase = (progress + piece[2]) % 1.0;
     final dy = -30 + phase * 210;
     final rotate = phase * 540 * math.pi / 180;
     final opacity = phase < 0.2
@@ -137,67 +155,80 @@ void _paintConfetti(Canvas c, double t) {
         : (phase > 0.95 ? (1 - phase) / 0.05 : 1.0);
     final paint = Paint()
       ..color = colors[i].withValues(alpha: opacity.clamp(0, 1));
-    c.save();
-    c.translate(piece[0], piece[1] + dy);
-    c.rotate(rotate);
+    canvas.save();
+    canvas.translate(piece[0], piece[1] + dy);
+    canvas.rotate(rotate);
     if (i.isEven) {
-      c.drawRect(const Rect.fromLTWH(-3, -4, 6, 8), paint);
+      canvas.drawRect(const Rect.fromLTWH(-3, -4, 6, 8), paint);
     } else {
-      c.drawCircle(Offset.zero, 3, paint);
+      canvas.drawCircle(Offset.zero, 3, paint);
     }
-    c.restore();
+    canvas.restore();
   }
 }
 
-void _paintWrongBadge(Canvas c) {
-  final fill = Paint()..color = const Color(0xFFFBF7EE);
+void _paintWrongBadge(Canvas canvas, MoodColors mood) {
+  final fill = Paint()..color = RoastyColors.eyeWhite;
   final stroke = Paint()
-    ..color = const Color(0xFFB8533A)
+    ..color = mood.berry
     ..style = PaintingStyle.stroke
     ..strokeWidth = 2;
-  c.drawCircle(const Offset(148, 76), 13, fill);
-  c.drawCircle(const Offset(148, 76), 13, stroke);
-  final bar = Paint()..color = const Color(0xFFB8533A);
-  c.drawRRect(
+  canvas.drawCircle(const Offset(148, 76), 13, fill);
+  canvas.drawCircle(const Offset(148, 76), 13, stroke);
+  final bar = Paint()..color = mood.berry;
+  canvas.drawRRect(
     RRect.fromRectAndRadius(
       const Rect.fromLTWH(146, 68, 4, 9),
       const Radius.circular(1),
     ),
     bar,
   );
-  c.drawCircle(const Offset(148, 82), 1.6, bar);
+  canvas.drawCircle(const Offset(148, 82), 1.6, bar);
 }
 
-void _paintSleepZzz(Canvas c, double t) {
+void _paintSleepZzz(Canvas canvas, double progress, MoodColors mood) {
   const letters = <({double x, double y, double size, double delay})>[
     (x: 148, y: 80, size: 18, delay: 0.0),
     (x: 158, y: 68, size: 14, delay: 0.6 / 2.6),
     (x: 166, y: 58, size: 11, delay: 1.2 / 2.6),
   ];
-  for (final l in letters) {
-    final raw = (t - l.delay) % 1.0;
-    final p = raw < 0 ? raw + 1 : raw;
-    final opacity = p < 0.3 ? p / 0.3 : (p > 0.7 ? (1 - p) / 0.3 : 1.0);
-    final dx = p * 8;
-    final dy = -p * 12;
-    final tp = TextPainter(
+  for (final letter in letters) {
+    final raw = (progress - letter.delay) % 1.0;
+    final phase = raw < 0 ? raw + 1 : raw;
+    final opacity = phase < 0.3
+        ? phase / 0.3
+        : (phase > 0.7 ? (1 - phase) / 0.3 : 1.0);
+    final dx = phase * 8;
+    final dy = -phase * 12;
+    final painter = TextPainter(
       text: TextSpan(
         text: 'z',
-        // Face from the ladder, size from the drawing — the same split
-        // `grinder_dial_view.dart` makes, so a rename in the pubspec reaches
-        // this `z` too.
-        style: TextStyle(
-          color: const Color(
-            0xFF6B5F54,
-          ).withValues(alpha: opacity.clamp(0.0, 1.0)),
-          fontStyle: FontStyle.italic,
-          fontSize: l.size,
-          fontFamily: AppFace.display.family,
-          fontWeight: AppFace.display.weight,
+        style: roastySleepZStyle(
+          mood: mood,
+          size: letter.size,
+          opacity: opacity,
         ),
       ),
       textDirection: TextDirection.ltr,
     )..layout();
-    tp.paint(c, Offset(l.x + dx, l.y + dy));
+    painter.paint(canvas, Offset(letter.x + dx, letter.y + dy));
   }
 }
+
+/// The style of one sleeping `z`: the mood's muted ink at [opacity], italic,
+/// at the drawing's own [size].
+///
+/// Face from the ladder, size from the drawing — the same split
+/// `grinder_dial_view.dart` makes, so a rename in the pubspec reaches this `z`
+/// too.
+TextStyle roastySleepZStyle({
+  required MoodColors mood,
+  required double size,
+  required double opacity,
+}) => TextStyle(
+  color: mood.inkMute.withValues(alpha: opacity.clamp(0.0, 1.0)),
+  fontStyle: FontStyle.italic,
+  fontSize: size,
+  fontFamily: AppFace.display.family,
+  fontWeight: AppFace.display.weight,
+);

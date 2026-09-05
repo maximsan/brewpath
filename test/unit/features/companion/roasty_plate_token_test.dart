@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:brew_path/features/companion/presentation/roasty_body.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/roasty_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -18,7 +18,7 @@ void main() {
 
     expect(declared, isNotNull, reason: 'the design no longer pins a plate');
     expect(
-      roastyPlate,
+      RoastyColors.plate,
       Color(0xFF000000 | int.parse(declared!.group(1)!, radix: 16)),
     );
   });
@@ -26,7 +26,7 @@ void main() {
   test('the plate does not follow the mood into Dark Roast', () {
     // The point of pinning it: on the dark surface the bean would otherwise
     // sit on a plate the same colour as the ground behind it.
-    expect(roastyPlate, isNot(MoodColors.darkRoast.surface));
-    expect(roastyPlate, isNot(MoodColors.darkRoast.accent));
+    expect(RoastyColors.plate, isNot(MoodColors.darkRoast.surface));
+    expect(RoastyColors.plate, isNot(MoodColors.darkRoast.accent));
   });
 }

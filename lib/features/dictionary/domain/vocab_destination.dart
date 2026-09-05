@@ -11,4 +11,5 @@ import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 /// const expression.
 final RouteDestination vocabGame = RouteDestination(
   name: AppRoutes.vocabGame.name,
+  startsActivity: true,
 );

@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/learn/presentation/today_card_widget.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
+import 'package:brew_path/features/monetization/presentation/activity_start.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -26,7 +29,7 @@ class TodayLessonBody extends StatelessWidget {
     final mood = context.mood;
 
     return InkWell(
-      onTap: () => context.goTo(lessonRun(lesson.id)),
+      onTap: () => unawaited(context.goToActivity(lessonRun(lesson.id))),
       borderRadius: BorderRadius.circular(TodayCardWidget.heroRadius),
       child: Padding(
         padding: EdgeInsets.all(OffTokens.todayHeroPadding.value),
@@ -74,7 +77,8 @@ class TodayLessonBody extends StatelessWidget {
                 _PointsPill(points: lesson.points),
                 const Spacer(),
                 FilledButton.icon(
-                  onPressed: () => context.goTo(lessonRun(lesson.id)),
+                  onPressed: () =>
+                      unawaited(context.goToActivity(lessonRun(lesson.id))),
                   icon: const Icon(Icons.play_arrow),
                   label: const Text('Start'),
                 ),

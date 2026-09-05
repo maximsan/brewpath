@@ -12,4 +12,5 @@ import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 RouteDestination miniGameRun(String formatId) => RouteDestination(
   name: AppRoutes.miniGameIntro.name,
   pathParams: {'gameId': formatId},
+  startsActivity: true,
 );

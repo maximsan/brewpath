@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty_animation.dart';
+import 'package:brew_path/shared/theme/roasty_colors.dart';
 import 'package:flutter/material.dart';
 
 /// Scale origin while the host drives the grow: the stem base sits at the
@@ -9,16 +10,6 @@ import 'package:flutter/material.dart';
 /// in mid-air. The default sleeping shrink keeps its original (100, 75) pivot.
 const Offset _sproutGrowAnchor = Offset(100, 88);
 const Offset _sproutDefaultAnchor = Offset(100, 75);
-
-/// The paper plate's tone, pinned rather than read from the mood. Every
-/// surface token inverts with the mood while the bean stays brown, so a
-/// mood-following plate would merge into the mascot in Dark Roast. The
-/// design's `--roasty-plate: #FBF7EE`.
-///
-/// Not an `ArtColors` token: it is Cupping's surface value held still, and
-/// that palette's guard forbids any art colour that equals a mood token. It
-/// lives with the mascot's other draw colours instead.
-const Color roastyPlate = Color(0xFFFBF7EE);
 
 const Offset _plateCenter = Offset(100, 140);
 
@@ -29,7 +20,11 @@ const double _plateRadius = 112;
 /// ground, where the roast browns otherwise merge into it. Goes under
 /// everything else Roasty draws.
 void paintRoastyPlate(Canvas canvas) {
-  canvas.drawCircle(_plateCenter, _plateRadius, Paint()..color = roastyPlate);
+  canvas.drawCircle(
+    _plateCenter,
+    _plateRadius,
+    Paint()..color = RoastyColors.plate,
+  );
 }
 
 /// Paints the sprout (stem + leaves) above the bean. [sproutScale] overrides
@@ -58,7 +53,7 @@ void paintRoastySprout(
   canvas.translate(-anchor.dx, -anchor.dy);
 
   final stem = Paint()
-    ..color = const Color(0xFF5E7148)
+    ..color = RoastyColors.leafDeep
     ..strokeWidth = 3
     ..strokeCap = StrokeCap.round
     ..style = PaintingStyle.stroke;
@@ -70,7 +65,7 @@ void paintRoastySprout(
   const leafGradient = RadialGradient(
     center: Alignment(-0.3, -0.4),
     radius: 0.75,
-    colors: [Color(0xFFB5C497), Color(0xFF5E7148)],
+    colors: RoastyColors.leafGradient,
   );
   const leafRect = Rect.fromLTWH(60, 55, 80, 30);
   final leafPaint = Paint()..shader = leafGradient.createShader(leafRect);
@@ -89,7 +84,7 @@ void paintRoastySprout(
   canvas.drawPath(leafR, leafPaint);
 
   final vein = Paint()
-    ..color = const Color(0xFF5E7148).withValues(alpha: 0.6)
+    ..color = RoastyColors.leafDeep.withValues(alpha: 0.6)
     ..strokeWidth = 1
     ..style = PaintingStyle.stroke
     ..strokeCap = StrokeCap.round;
@@ -118,18 +113,18 @@ void paintRoastyBody(Canvas canvas, RoastyState state, double t) {
 
   // contact shadow
   final shadow = Paint()
-    ..color = const Color(0xFF2F1A0E).withValues(alpha: 0.18);
+    ..color = RoastyColors.beanShadow.withValues(alpha: 0.18);
   canvas.drawOval(
     Rect.fromCenter(center: const Offset(100, 232), width: 112, height: 12),
     shadow,
   );
 
-  // bean body — radial gradient #8C5634 → #6B3E22 → #4A2B19
+  // bean body — the design's radial gradient, lit side to edge
   const bodyRect = Rect.fromLTWH(38, 90, 124, 136);
   const bodyGradient = RadialGradient(
     center: Alignment(-0.36, -0.36),
     radius: 0.75,
-    colors: [Color(0xFF8C5634), Color(0xFF6B3E22), Color(0xFF4A2B19)],
+    colors: RoastyColors.beanGradient,
     stops: [0.0, 0.55, 1.0],
   );
   final bodyPaint = Paint()..shader = bodyGradient.createShader(bodyRect);
@@ -144,7 +139,7 @@ void paintRoastyBody(Canvas canvas, RoastyState state, double t) {
 
   // top highlight
   final highlight = Paint()
-    ..color = const Color(0xFFA26945).withValues(alpha: 0.45);
+    ..color = RoastyColors.beanHighlight.withValues(alpha: 0.45);
   canvas.drawOval(
     Rect.fromCenter(center: const Offset(78, 115), width: 44, height: 28),
     highlight,
@@ -152,7 +147,7 @@ void paintRoastyBody(Canvas canvas, RoastyState state, double t) {
 
   // bean crease
   final crease = Paint()
-    ..color = const Color(0xFF2F1A0E).withValues(alpha: 0.55)
+    ..color = RoastyColors.beanShadow.withValues(alpha: 0.55)
     ..style = PaintingStyle.stroke
     ..strokeWidth = 2.5
     ..strokeCap = StrokeCap.round;

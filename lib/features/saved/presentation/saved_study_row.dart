@@ -1,9 +1,12 @@
-import 'package:brew_path/core/constants/app_routes.dart';
+import 'dart:async';
+
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/bordered_tap_row.dart';
+import 'package:brew_path/features/dictionary/domain/flashcard_destination.dart';
 import 'package:brew_path/features/dictionary/domain/flashcard_providers.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_copy.dart';
+import 'package:brew_path/features/monetization/presentation/activity_start.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -37,7 +40,7 @@ class SavedStudyRow extends ConsumerWidget {
 
     return BorderedTapRow(
       semanticsLabel: label,
-      onTap: () => context.pushFlashcards(),
+      onTap: () => unawaited(context.pushActivity(flashcardReview)),
       padding: const EdgeInsets.all(AppSpacing.md),
       child: Row(
         children: [

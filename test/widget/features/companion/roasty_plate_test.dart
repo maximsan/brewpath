@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
-import 'package:brew_path/features/companion/presentation/roasty_body.dart';
+import 'package:brew_path/shared/theme/roasty_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -77,13 +77,13 @@ void main() {
   testWidgets('with a plate he sits on pinned paper', (tester) async {
     final colour = await _sampleAt(tester, _plated, _aboveTheSprout);
 
-    expect(colour, roastyPlate);
+    expect(colour, RoastyColors.plate);
   });
 
   testWidgets('the plate goes under the bean, not over it', (tester) async {
     final colour = await _sampleAt(tester, _plated, _onTheBean);
 
     expect(colour.a, _opaque);
-    expect(colour, isNot(roastyPlate));
+    expect(colour, isNot(RoastyColors.plate));
   });
 }

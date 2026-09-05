@@ -42,13 +42,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ## [Unreleased]
 
-### Added
-
-- **Roasty keeps you company on the Keep Sharp card.** Once you have finished
-  the course, the day's recommendation shows him resting beside it, on a paper
-  plate, before you start. He used to appear only after you had done it.
-
 ### Fixed
+
+- **Roasty's sleeping z's and wrong-answer badge follow the mood.** In Dark
+  Roast the sleeping `z`s were drawn in the light mood's grey and all but
+  vanished against the dark background, and the badge on a wrong answer kept
+  the light mood's red. Both, plus the stars and rays of a finished module and
+  two of the four sparkles, now take the colours of whichever mood is on, as
+  the design draws them. The happy face's right cheek also blushes as strongly
+  as the left, as the design draws it.
 
 - **Screen readers read the Keep Sharp card once, not three times.** The card
   announced its heading and its texts and then the same words again as a
@@ -75,6 +77,10 @@ You can always edit this file by hand instead — the helpers just save effort.
   The close bar on the two reward screens now blurs the same way. It was a
   flat panel that appeared as you scrolled; it is the same frosted strip the
   tab bar is, so the celebration underneath still shows through it.
+
+- **Roasty's colours live in one place.** The mascot's browns, greens and face
+  colours are one named palette pinned to the design, instead of 37 loose
+  values across three drawings, so a retone reaches every drawing at once.
 
 - **The dictionary now reads by tier.** Without the course, a term opens on
   its short explanation and stops there: the deep explanation, the example,
@@ -117,6 +123,10 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Roasty keeps you company on the Keep Sharp card.** Once you have finished
+  the course, the day's recommendation shows him resting beside it, on a paper
+  plate, before you start. He used to appear only after you had done it.
+
 - **You can change your name in Settings.** The name Roasty greets you by was
   asked once, on the setup screen, and then nowhere: a typo or a skipped step
   stuck until you restarted the whole intro. Settings now carries a *Name* row
@@ -126,6 +136,14 @@ You can always edit this file by hand instead — the helpers just save effort.
   keeps the name: it is who you are, not what you earned. Profile's greeting
   without a name is now *Hello there.* rather than *Hello, there.*, as the
   design writes it.
+
+- **Free now gets two activities a day.** Lessons, replays, mini-game runs,
+  vocab rounds and flashcard reviews all count as one each; the third start in
+  a day opens the Plus offer instead of the surface, so you find out on the tap
+  rather than after sitting through a screen you cannot use — and *Play again*
+  at the end of a drill is a start like any other. Coffee Challenges,
+  reading the dictionary and browsing your shelf and cards stay free at any
+  count, and the day's count resets at local midnight. Plus is not capped.
 
 - **Finishing a module offers its Coffee Challenge.** The module ending used to
   hand you straight back to the Path. Turn it over to the reward card and the

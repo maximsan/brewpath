@@ -132,6 +132,16 @@ One activity only, if that is all the user wants.
 
 A free user cannot complete two new lessons in one day.
 
+> ⚠️ **Superseded (Sep 2026):** this line no longer binds, and the allowed
+> combinations above are no longer exhaustive — **two new lessons is two
+> activities, and is allowed**.
+> [ADR-0021](adr/0021-two-new-lessons-in-a-day-is-two-activities.md), ruled at
+> [#508](https://github.com/maximsan/brewpath/issues/508). It was written for a
+> two-lesson preview paced a lesson a day; ADR-0007 made the free tier a fixed
+> set of three. Every other line of this section stands, and the two-activity
+> count is enforced as written
+> ([#216](https://github.com/maximsan/brewpath/issues/216)).
+
 The first qualifying activity maintains the streak.
 The second does not add another streak day.
 Coffee Challenges and passive browsing do not consume the daily allowance.

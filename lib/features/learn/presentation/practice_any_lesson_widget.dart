@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/caret_mark.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
@@ -5,6 +7,7 @@ import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/icon_badge.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
+import 'package:brew_path/features/monetization/presentation/activity_start.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -114,7 +117,7 @@ class _LessonRow extends StatelessWidget {
       // A replay, not a throwaway run: reaching the final card records the day
       // (§3), exactly as replaying from the course path does. Where the learner
       // started it has never been what decides whether it counts.
-      onTap: () => context.goTo(lessonRun(entry.lesson.id)),
+      onTap: () => unawaited(context.goToActivity(lessonRun(entry.lesson.id))),
     );
   }
 }

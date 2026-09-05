@@ -129,6 +129,10 @@ dart_code_linter:
           # only useful property is that it still matches the design source.
           # Same reason `bean_shape.dart` and the guide marks are here.
           - lib/features/dictionary/presentation/vocab/vocab_mark.dart
+          # The mascot's drawings, on the design's own 200x280 box. The
+          # literals are that box's coordinates and the design's own alphas;
+          # the colours are not among them — they live on `RoastyColors`, and
+          # `roasty_colors_test.dart` fails the painters on any colour literal.
           - lib/features/companion/presentation/roasty.dart
           - lib/features/companion/presentation/roasty_animation.dart
           - lib/features/companion/presentation/roasty_body.dart
@@ -141,5 +145,6 @@ dart_code_linter:
           - lib/shared/theme/app_text.dart
           - lib/shared/theme/mood_colors.dart
           - lib/shared/theme/art_colors.dart
+          - lib/shared/theme/roasty_colors.dart
           - lib/shared/theme/overlay_colors.dart
           - lib/shared/theme/off_token.dart
