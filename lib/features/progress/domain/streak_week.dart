@@ -1,12 +1,36 @@
-/// The week strip's seven cells, derived from the active-day set (#26).
+/// The streak's week: the strip's seven cells, derived from the active-day
+/// set (#26), and how far into a week the count itself stands (#498).
 library;
 
 import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/progress/domain/streak_status.dart';
 import 'package:flutter/foundation.dart';
 
-/// Cells in the strip — Monday through Sunday.
+/// Days in a week: the strip's cells, Monday through Sunday, and the span the
+/// ring fills over.
 const int daysPerWeek = 7;
+
+/// How far [streak] stands into its current week: 1 to 7, or 0 with no streak
+/// at all.
+///
+/// The week here is the streak's own, counted from the day it began, not the
+/// calendar week the strip below draws — so the two agree on length and
+/// nothing else.
+///
+/// A closing day reads 7 rather than 0. Day 7 finishes a week rather than
+/// starting an empty one, so the ring closes before it begins again — the
+/// design's *"5 days on a 12-day streak = 5/7 … closes every 7th day"*.
+int streakWeekDay(int streak) {
+  if (streak <= 0) return 0;
+  final dayOfWeek = streak % daysPerWeek;
+  return dayOfWeek == 0 ? daysPerWeek : dayOfWeek;
+}
+
+/// The hero ring's fill over the current week, 0..1 (#498).
+///
+/// Only the fill wraps: the count inside the ring, the week strip and the
+/// freeze cadence all keep running off the streak itself.
+double weekRingFraction(int streak) => streakWeekDay(streak) / daysPerWeek;
 
 /// What one cell of the week strip says about its day.
 enum StreakDayMark {

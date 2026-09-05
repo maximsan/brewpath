@@ -59,6 +59,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **The streak ring now fills over your week.** It used to creep toward the
+  next badge — on a 12-day streak it sat almost full at 12 of 14, and after
+  that badge it dropped back to a sliver with 30 days to cross. It now fills
+  over the seven days you are in and closes every seventh day, matching the
+  week strip right below it. The count in the middle still reads your whole
+  streak, the freeze countdown still runs on it, and the celebration on days
+  3, 7, 14 and 30 still plays. The line under the ring that counted down to a
+  badge is gone — the ring and the strip already say where the week stands.
+
 - **The bar at the top of a tab gets out of the way.** It used to sit there
   the whole time, printing the tab's name over the page whether you needed it
   or not. Now the top of a tab is the tab: Today opens on the date, Path on
