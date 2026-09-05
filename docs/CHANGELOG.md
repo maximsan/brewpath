@@ -44,6 +44,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **Roasty's face is the design's on every state.** Five of his eight
+  expressions had no blush at all — caught out, holding a card, asleep and
+  waking — and the design blushes every one of them, harder or softer
+  depending on the mood of the moment. Finishing a lesson now opens his mouth
+  into a proper grin instead of borrowing the same small smile he gives a
+  correct answer, and finishing a module shows a tongue in it. The badge on a
+  wrong answer sits at the weight the design gives it rather than full
+  strength.
+
 - **Roasty's sleeping z's and wrong-answer badge follow the mood.** In Dark
   Roast the sleeping `z`s were drawn in the light mood's grey and all but
   vanished against the dark background, and the badge on a wrong answer kept

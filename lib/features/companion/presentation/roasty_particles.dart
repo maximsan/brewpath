@@ -168,13 +168,27 @@ void _paintConfetti(Canvas canvas, double progress) {
 }
 
 void _paintWrongBadge(Canvas canvas, MoodColors mood) {
+  // The design's `opacity="0.85"` sits on the badge's *group*, and that is not
+  // the same as fading each mark: the stroke and the exclamation are drawn on
+  // the badge's own white disc, so per-mark alpha would let the disc show
+  // through them. `saveLayer` composites the badge first and fades it once.
+  //
+  // Only the layer paint's alpha is read, so this dims `Paint`'s own default
+  // colour rather than naming one the mascot does not have.
+  final fade = Paint();
+  fade.color = fade.color.withValues(alpha: _wrongBadgeOpacity);
+  canvas.saveLayer(
+    Rect.fromCircle(center: _wrongBadgeCenter, radius: _wrongBadgeExtent),
+    fade,
+  );
+
   final fill = Paint()..color = RoastyColors.eyeWhite;
   final stroke = Paint()
     ..color = mood.berry
     ..style = PaintingStyle.stroke
     ..strokeWidth = 2;
-  canvas.drawCircle(const Offset(148, 76), 13, fill);
-  canvas.drawCircle(const Offset(148, 76), 13, stroke);
+  canvas.drawCircle(_wrongBadgeCenter, _wrongBadgeRadius, fill);
+  canvas.drawCircle(_wrongBadgeCenter, _wrongBadgeRadius, stroke);
   final bar = Paint()..color = mood.berry;
   canvas.drawRRect(
     RRect.fromRectAndRadius(
@@ -184,7 +198,19 @@ void _paintWrongBadge(Canvas canvas, MoodColors mood) {
     bar,
   );
   canvas.drawCircle(const Offset(148, 82), 1.6, bar);
+
+  canvas.restore();
 }
+
+/// The design's group opacity on the wrong badge.
+const _wrongBadgeOpacity = 0.85;
+
+const _wrongBadgeCenter = Offset(148, 76);
+const _wrongBadgeRadius = 13.0;
+
+/// The layer the badge composites into: its disc plus the stroke that rides
+/// on the edge of it.
+const double _wrongBadgeExtent = _wrongBadgeRadius + 2;
 
 void _paintSleepZzz(Canvas canvas, double progress, MoodColors mood) {
   const letters = <({double x, double y, double size, double delay})>[

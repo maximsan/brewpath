@@ -14,8 +14,9 @@ void paintRoastyFace(Canvas canvas, RoastyState state, MoodColors mood) {
     case RoastyState.idle:
       _paintIdleFace(canvas);
     case RoastyState.correct:
+      _paintCorrectFace(canvas);
     case RoastyState.lesson:
-      _paintHappyFace(canvas);
+      _paintLessonFace(canvas);
     case RoastyState.wrong:
       _paintWrongFace(canvas);
     case RoastyState.module:
@@ -30,14 +31,40 @@ void paintRoastyFace(Canvas canvas, RoastyState state, MoodColors mood) {
 }
 
 // ── Face primitives ────────────────────────────────────────────────────
+/// The tongue inside an open mouth, on the two faces that open one.
+const _tongueOpacity = 0.7;
+
 Paint get _eyeWhite => Paint()..color = RoastyColors.eyeWhite;
 Paint get _pupil => Paint()..color = RoastyColors.mouth;
-Paint get _cheek => Paint()..color = RoastyColors.blush.withValues(alpha: 0.45);
+Paint get _mouthFill => Paint()..color = RoastyColors.mouth;
+Paint get _tongue =>
+    Paint()..color = RoastyColors.blush.withValues(alpha: _tongueOpacity);
 Paint get _mouthStroke => Paint()
   ..color = RoastyColors.mouth
   ..style = PaintingStyle.stroke
   ..strokeWidth = 2.5
   ..strokeCap = StrokeCap.round;
+
+/// The blush pair, mirrored about the face at the design's own height.
+///
+/// Every face blushes and no two agree on the size or the alpha, so each
+/// states its own rather than sharing one cheek: how hard Roasty blushes is
+/// part of what makes a state read as sleepy, delighted or caught out.
+void _paintCheeks(
+  Canvas canvas, {
+  required double cy,
+  required double rx,
+  required double ry,
+  required double opacity,
+}) {
+  final paint = Paint()..color = RoastyColors.blush.withValues(alpha: opacity);
+  for (final cx in const [68.0, 132.0]) {
+    canvas.drawOval(
+      Rect.fromCenter(center: Offset(cx, cy), width: rx * 2, height: ry * 2),
+      paint,
+    );
+  }
+}
 
 void _paintEyeOpen(Canvas canvas, double cx, double cy) {
   canvas.drawOval(
@@ -61,36 +88,46 @@ void _paintEyeArchUp(Canvas canvas, double cx, double cy) {
 void _paintIdleFace(Canvas canvas) {
   _paintEyeOpen(canvas, 80, 148);
   _paintEyeOpen(canvas, 120, 148);
-  canvas.drawOval(
-    Rect.fromCenter(center: const Offset(68, 172), width: 12, height: 6),
-    _cheek,
-  );
-  canvas.drawOval(
-    Rect.fromCenter(center: const Offset(132, 172), width: 12, height: 6),
-    _cheek,
-  );
+  _paintCheeks(canvas, cy: 172, rx: 6, ry: 3, opacity: 0.45);
   final mouth = Path()
     ..moveTo(90, 180)
     ..quadraticBezierTo(100, 188, 110, 180);
   canvas.drawPath(mouth, _mouthStroke);
 }
 
-void _paintHappyFace(Canvas canvas) {
+/// The delighted eyes and blush the correct and lesson faces share. Only the
+/// mouth below them tells the two apart.
+void _paintDelightedBrow(Canvas canvas) {
   _paintEyeArchUp(canvas, 80, 148);
   _paintEyeArchUp(canvas, 120, 148);
-  final cheek = _cheek..color = RoastyColors.blush.withValues(alpha: 0.55);
-  canvas.drawOval(
-    Rect.fromCenter(center: const Offset(68, 170), width: 14, height: 7),
-    cheek,
-  );
-  canvas.drawOval(
-    Rect.fromCenter(center: const Offset(132, 170), width: 14, height: 7),
-    cheek,
-  );
+  _paintCheeks(canvas, cy: 170, rx: 7, ry: 3.5, opacity: 0.55);
+}
+
+void _paintCorrectFace(Canvas canvas) {
+  _paintDelightedBrow(canvas);
   final mouth = Path()
     ..moveTo(86, 178)
     ..quadraticBezierTo(100, 192, 114, 178);
   canvas.drawPath(mouth, _mouthStroke..strokeWidth = 3);
+}
+
+/// Finishing a lesson is a bigger moment than getting one answer right, and
+/// the design says so with the mouth: a filled open grin with a tongue in it,
+/// where [_paintCorrectFace] draws a stroked smile.
+void _paintLessonFace(Canvas canvas) {
+  _paintDelightedBrow(canvas);
+  final mouth = Path()
+    ..moveTo(84, 178)
+    ..quadraticBezierTo(100, 198, 116, 178)
+    ..quadraticBezierTo(100, 188, 84, 178)
+    ..close();
+  canvas.drawPath(mouth, _mouthFill);
+  final tongue = Path()
+    ..moveTo(92, 186)
+    ..quadraticBezierTo(100, 192, 108, 186)
+    ..quadraticBezierTo(100, 190, 92, 186)
+    ..close();
+  canvas.drawPath(tongue, _tongue);
 }
 
 void _paintWrongFace(Canvas canvas) {
@@ -122,6 +159,7 @@ void _paintWrongFace(Canvas canvas) {
     ..moveTo(91, 184)
     ..quadraticBezierTo(100, 180, 109, 184);
   canvas.drawPath(mouth, _mouthStroke);
+  _paintCheeks(canvas, cy: 174, rx: 5, ry: 2.5, opacity: 0.3);
 }
 
 /// Draws a five-pointed star centered at (cx, cy). Shared by the module face
@@ -152,17 +190,14 @@ void paintStar(
 void _paintModuleFace(Canvas canvas, MoodColors mood) {
   paintStar(canvas, 80, 148, 11, mood.warn);
   paintStar(canvas, 120, 148, 11, mood.warn);
-  canvas.drawOval(
-    Rect.fromCenter(center: const Offset(68, 172), width: 14, height: 7),
-    _cheek,
-  );
-  canvas.drawOval(
-    Rect.fromCenter(center: const Offset(132, 172), width: 14, height: 7),
-    _cheek,
-  );
+  _paintCheeks(canvas, cy: 172, rx: 7, ry: 3.5, opacity: 0.55);
   canvas.drawOval(
     Rect.fromCenter(center: const Offset(100, 185), width: 16, height: 18),
-    _pupil,
+    _mouthFill,
+  );
+  canvas.drawOval(
+    Rect.fromCenter(center: const Offset(100, 188), width: 10, height: 8),
+    _tongue,
   );
 }
 
@@ -186,9 +221,10 @@ void _paintCardFace(Canvas canvas) {
     _pupil,
   );
   canvas.drawCircle(const Offset(123, 145), 2, _eyeWhite);
+  _paintCheeks(canvas, cy: 172, rx: 7, ry: 3.5, opacity: 0.5);
   canvas.drawOval(
     Rect.fromCenter(center: const Offset(100, 184), width: 10, height: 12),
-    _pupil,
+    _mouthFill,
   );
 }
 
@@ -200,6 +236,7 @@ void _paintSleepFace(Canvas canvas) {
     ..strokeCap = StrokeCap.round;
   canvas.drawLine(const Offset(71, 150), const Offset(89, 150), closed);
   canvas.drawLine(const Offset(111, 150), const Offset(129, 150), closed);
+  _paintCheeks(canvas, cy: 172, rx: 6, ry: 3, opacity: 0.35);
   final mouth = Path()
     ..moveTo(95, 182)
     ..quadraticBezierTo(100, 184, 105, 182);
@@ -226,8 +263,9 @@ void _paintAwakeFace(Canvas canvas) {
     _pupil,
   );
   canvas.drawCircle(const Offset(123, 145), 2, _eyeWhite);
+  _paintCheeks(canvas, cy: 172, rx: 6, ry: 3, opacity: 0.4);
   canvas.drawOval(
     Rect.fromCenter(center: const Offset(100, 184), width: 8, height: 10),
-    _pupil,
+    _mouthFill,
   );
 }
