@@ -13,9 +13,9 @@ out.
 That clause was written when §7 gave the free tier **two** preview lessons and
 the plan around it was a lesson a day. Pacing was the point.
 [ADR-0007](0007-free-tier-is-the-first-three-lessons.md) replaced that with a
-fixed set of three named lessons, so the free learner now reaches the same wall
-whatever pace they take — the clause only decides whether that takes two days
-or three.
+fixed set of three named lessons, so a free learner runs out of free lessons at
+the same point whatever pace they take. The clause only decided whether getting
+there took two days or three.
 
 The count and the clause also disagree about the same tap.
 [#216](https://github.com/maximsan/brewpath/issues/216) requires that *"the
@@ -38,7 +38,7 @@ Nothing in the app enforces a rule about *what kind* of activity was spent —
   content, not by waiting, which is what §7 says.
 - §8's allowed-combinations list is no longer exhaustive. It carries an
   amendment note pointing here, as §7's count does to ADR-0007.
-- The cap stays a rule about volume alone. Had the clause been kept, the gate
-  would need a second refusal that the Plus pitch cannot honestly sell —
-  removing the *daily cap* is a named benefit, and this refusal would not have
-  been one.
+- The cap stays a rule about how much, never about what. Keeping the clause
+  would have meant a second kind of refusal that the Plus sheet could not
+  honestly explain: what Plus removes is the daily cap, and this would not have
+  been the daily cap.

@@ -11,8 +11,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Opening a surface that spends one of a free day's two activities (§8).
 ///
-/// **The cap is asked at the tap, not in the router** — ADR-0020, which also
-/// records what that costs.
+/// **The cap is checked here rather than in the router** — ADR-0020, which
+/// also records what that costs: nothing catches a new way in that forgets to
+/// ask.
 ///
 /// On [BuildContext] rather than `WidgetRef`, the reason `showTermPeekSheet`
 /// is: a dozen of the rows that start an activity are plain widgets deep in a
