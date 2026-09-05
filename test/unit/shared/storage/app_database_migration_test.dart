@@ -80,10 +80,10 @@ void main() {
   });
 
   test('user_settings has the micro-tips column', () async {
-    final cols = await db
+    final columns = await db
         .customSelect('PRAGMA table_info(user_settings)')
         .get();
-    final names = cols.map((r) => r.read<String>('name')).toSet();
+    final names = columns.map((row) => row.read<String>('name')).toSet();
     expect(names, contains('tips_seen'));
   });
 
@@ -93,9 +93,9 @@ void main() {
 
   test('saveSettings round-trips the seen list', () async {
     final repo = SettingsRepository();
-    final s = await repo.getSettings()
+    final settings = await repo.getSettings()
       ..tipsSeen = 'dictionary,path';
-    await repo.saveSettings(s);
+    await repo.saveSettings(settings);
 
     expect((await repo.getSettings()).tipsSeen, 'dictionary,path');
   });

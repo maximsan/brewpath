@@ -104,14 +104,6 @@ enum MicroTip {
 
   /// What assistive technology is read when the card appears.
   String get announcement => '$eyebrow. $title. $body';
-
-  /// The tip with [id], or null where nothing answers to it.
-  static MicroTip? byId(String id) {
-    for (final tip in MicroTip.values) {
-      if (tip.id == id) return tip;
-    }
-    return null;
-  }
 }
 
 /// The seen list as it is stored: ids separated by commas.

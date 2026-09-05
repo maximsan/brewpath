@@ -107,17 +107,13 @@ void main() {
       final stored = MicroTipsSeen.withTip('atlas', MicroTip.path);
 
       expect(MicroTipsSeen.decode(stored), {'atlas', MicroTip.path.id});
-      expect(MicroTip.byId('atlas'), isNull);
+      expect(MicroTip.values.map((tip) => tip.id), isNot(contains('atlas')));
     });
 
     test('adding a tip already on the list changes nothing', () {
       final once = MicroTipsSeen.withTip('', MicroTip.tree);
 
       expect(MicroTipsSeen.withTip(once, MicroTip.tree), once);
-    });
-
-    test('names a tip by its stored id', () {
-      expect(MicroTip.byId(MicroTip.studio.id), MicroTip.studio);
     });
   });
 }

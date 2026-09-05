@@ -97,6 +97,19 @@ void main() {
       );
     });
 
+    test('still explains a freeze earned and already spent', () {
+      // The other half of the design's condition. Nothing is held by the time
+      // the learner is back on Learn, and they were still shown a safety net
+      // nobody has explained.
+      expect(
+        candidateAt(
+          TipPlace.learnTab,
+          signals: const MicroTipSignals(freezeJustEarned: true),
+        ),
+        MicroTip.freeze,
+      );
+    });
+
     test('a quiet Learn tab says nothing', () {
       expect(candidateAt(TipPlace.learnTab), isNull);
     });

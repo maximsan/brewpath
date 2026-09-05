@@ -1,5 +1,6 @@
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
+import 'package:brew_path/features/progress/domain/streak_status.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/tour/domain/micro_tip_providers.dart';
 import 'package:brew_path/shared/repositories/progress_repository.dart';
@@ -84,6 +85,60 @@ void main() {
       await container.read(savedKeysProvider.future);
 
       expect(container.read(saveMadeThisSessionProvider), isFalse);
+    });
+  });
+
+  group('a freeze earned this session', () {
+    StreakStatus statusWith({required bool freezeHeld}) => StreakStatus(
+      streak: 7,
+      freezeHeld: freezeHeld,
+      daysToNextFreeze: freezeHeld ? null : 3,
+      freezesSpent: freezeHeld ? 0 : 1,
+      frozenDays: freezeHeld ? const {} : const {12},
+    );
+
+    test('is armed by the earn, and outlives spending it', () async {
+      // The streak is fed by hand here because what is under test is the
+      // flag's memory of a rise, not how a day set comes to earn a freeze.
+      var held = false;
+      final container = ProviderContainer(
+        overrides: [
+          streakStatusProvider.overrideWith(
+            (ref) async => statusWith(freezeHeld: held),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await container.read(streakStatusProvider.future);
+      expect(container.read(freezeEarnedThisSessionProvider), isFalse);
+
+      held = true;
+      container.invalidate(streakStatusProvider);
+      await container.read(streakStatusProvider.future);
+      expect(container.read(freezeEarnedThisSessionProvider), isTrue);
+
+      // Spent on a missed day, which is what makes this flag worth keeping:
+      // the learner was shown a safety net and now holds none.
+      held = false;
+      container.invalidate(streakStatusProvider);
+      await container.read(streakStatusProvider.future);
+      expect(container.read(freezeEarnedThisSessionProvider), isTrue);
+    });
+
+    test('is not armed by a freeze the learner arrived holding', () async {
+      final container = ProviderContainer(
+        overrides: [
+          streakStatusProvider.overrideWith(
+            (ref) async => statusWith(freezeHeld: true),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await container.read(streakStatusProvider.future);
+
+      expect(container.read(freezeEarnedThisSessionProvider), isFalse);
     });
   });
 

@@ -7,11 +7,13 @@ import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/tour/domain/micro_tip.dart';
 import 'package:brew_path/features/tour/domain/micro_tip_candidate.dart';
+import 'package:brew_path/features/tour/domain/micro_tip_layout.dart';
 import 'package:brew_path/features/tour/domain/micro_tip_pacing.dart';
 import 'package:brew_path/features/tour/domain/micro_tip_place.dart';
 import 'package:brew_path/features/tour/domain/micro_tip_providers.dart';
 import 'package:brew_path/features/tour/domain/tour_providers.dart';
 import 'package:brew_path/features/tour/presentation/micro_tip_card.dart';
+import 'package:brew_path/features/tour/presentation/micro_tip_fade_up.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -109,23 +111,21 @@ class _MicroTipHostState extends ConsumerState<MicroTipHost> {
     setState(() => _showing = null);
   }
 
-  /// Applies the layer's rules to [moment], after the frame it was read from.
+  /// Applies the layer's rules to the frame just built: where the learner is,
+  /// and what could be said there.
   ///
   /// Deferred rather than done in `build` because both outcomes write state:
   /// leaving a screen retires the card, and showing one records the tip as
   /// seen. Neither belongs in a build that may run more than once a frame.
-  void _settle(_TipMoment moment) {
+  void _settle(String screen, MicroTip? candidate) {
     if (!mounted) return;
-    if (_screen != moment.screen) {
-      _leave(moment.screen);
-    }
-    if (_showing != null || moment.candidate == null || _quiet != null) return;
+    if (_screen != screen) _leave(screen);
+    if (_showing != null || candidate == null || _quiet != null) return;
 
-    final tip = moment.candidate!;
-    setState(() => _showing = tip);
+    setState(() => _showing = candidate);
     // Seen on show, not on dismissal: a tip the learner has read and walked
     // away from has done its job.
-    unawaited(markMicroTipSeen(ref, tip));
+    unawaited(markMicroTipSeen(ref, candidate));
   }
 
   /// Retires whatever was up and buys the new screen some silence, longer when
@@ -137,21 +137,14 @@ class _MicroTipHostState extends ConsumerState<MicroTipHost> {
     if (wasShowing) setState(() => _showing = null);
   }
 
-  /// How far above the bottom the card sits.
-  ///
-  /// The design places it 112 from the foot of the screen where the tab bar
-  /// shows and 40 where it does not, over a frame that reserves 28 for the home
-  /// indicator. Here the phone's own inset stands in for that 28, the bar's
-  /// real height stands in for the design's 88, and what is left is the
-  /// clearance the design draws: a section gap over the bar, a hairline gap
-  /// over the screen edge.
-  double _bottomInset(BuildContext context, {required bool raised}) {
-    final safeBottom = MediaQuery.paddingOf(context).bottom;
-    if (!raised) return safeBottom + AppSpacing.sm;
-    final barHeight =
-        Theme.of(context).navigationBarTheme.height ?? _navigationBarHeight;
-    return safeBottom + barHeight + AppSpacing.lg;
-  }
+  /// The two measurements [microTipBottomInset] needs, read off this context.
+  double _bottomInset(BuildContext context, {required bool raised}) =>
+      microTipBottomInset(
+        safeBottom: MediaQuery.paddingOf(context).bottom,
+        tabBarHeight:
+            Theme.of(context).navigationBarTheme.height ?? _navigationBarHeight,
+        raised: raised,
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -160,8 +153,7 @@ class _MicroTipHostState extends ConsumerState<MicroTipHost> {
     // than a provider.
     final router = ref.watch(appRouterProvider);
     final inputs = _TipInputs(
-      // Unresolved reads as "everything seen" — a tip is never spent against a
-      // list the layer has not read yet.
+      // Null while the list is still loading; `_layer` reads that as silence.
       seen: ref.watch(microTipsSeenProvider).asData?.value,
       suppressed: ref.watch(tourRunningProvider) || anyOverlayBarrierOpen.value,
       signals: MicroTipSignals(
@@ -173,6 +165,7 @@ class _MicroTipHostState extends ConsumerState<MicroTipHost> {
         lessonJustCompleted: ref.watch(lessonFinishedThisSessionProvider),
         freezeHeld:
             ref.watch(streakStatusProvider).asData?.value.freezeHeld ?? false,
+        freezeJustEarned: ref.watch(freezeEarnedThisSessionProvider),
       ),
     );
 
@@ -196,25 +189,29 @@ class _MicroTipHostState extends ConsumerState<MicroTipHost> {
     final matches = router.routerDelegate.currentConfiguration;
     final location = matches.isEmpty ? '' : router.state.uri.path;
     final place = tipPlaceFor(location);
-    final welcome = !inputs.suppressed && place.takesTips;
-    final moment = _TipMoment(
-      screen: location,
-      candidate: microTipCandidate(
-        place: place,
-        signals: inputs.signals,
-        seen: inputs.seen ?? const {},
-        suppressed: inputs.suppressed || inputs.seen == null,
-      ),
+    final candidate = microTipCandidate(
+      place: place,
+      signals: inputs.signals,
+      seen: inputs.seen ?? const {},
+      // An unread seen list counts as silence: a tip must never be spent
+      // against a list the layer has not read yet.
+      suppressed: inputs.suppressed || inputs.seen == null,
     );
-    WidgetsBinding.instance.addPostFrameCallback((_) => _settle(moment));
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _settle(location, candidate),
+    );
 
     final tip = _showing;
+    final welcome = microTipsWelcome(
+      place: place,
+      suppressed: inputs.suppressed,
+    );
     if (tip == null || !welcome) return const SizedBox.shrink();
     return Positioned(
       left: AppSpacing.md,
       right: AppSpacing.md,
       bottom: _bottomInset(context, raised: place.showsTabBar),
-      child: _FadeUp(
+      child: MicroTipFadeUp(
         key: ValueKey(tip),
         child: MicroTipCard(tip: tip, onDismiss: _dismiss),
       ),
@@ -235,44 +232,4 @@ class _TipInputs {
   final Set<String>? seen;
   final bool suppressed;
   final MicroTipSignals signals;
-}
-
-/// One frame's answer: where the learner is, and what could be said there.
-@immutable
-class _TipMoment {
-  const _TipMoment({required this.screen, required this.candidate});
-
-  final String screen;
-  final MicroTip? candidate;
-}
-
-/// The design's `fade-up`: 260ms ease-out, from four pixels down.
-///
-/// Reduced motion gets no animator at all rather than a zero-duration one —
-/// the honest reading of "no animation", and the app's rule elsewhere.
-class _FadeUp extends StatelessWidget {
-  const _FadeUp({required this.child, super.key});
-
-  static const Duration _duration = Duration(milliseconds: 260);
-  static const double _rise = 4;
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    if (MediaQuery.disableAnimationsOf(context)) return child;
-    return TweenAnimationBuilder<double>(
-      tween: Tween<double>(begin: 0, end: 1),
-      duration: _duration,
-      curve: Curves.easeOut,
-      builder: (context, progress, child) => Opacity(
-        opacity: progress,
-        child: Transform.translate(
-          offset: Offset(0, _rise * (1 - progress)),
-          child: child,
-        ),
-      ),
-      child: child,
-    );
-  }
 }

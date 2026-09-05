@@ -237,3 +237,90 @@ abstract class _$LessonFinishedThisSession extends $Notifier<bool> {
     return element.handleCreate(ref, build);
   }
 }
+
+/// Whether a streak freeze has been earned since the app opened.
+///
+/// The design fires the freeze tip on a freeze being *held* or on the
+/// freeze-earned beat having shown. The beat is drawn from the rise this
+/// watches, and the two part company in one case the design's `or` exists for:
+/// a freeze earned at a lesson's ending and spent on a missed day before the
+/// learner is next on the Learn tab. Held is false by then; they were still
+/// shown a freeze they never had explained.
+
+@ProviderFor(FreezeEarnedThisSession)
+final freezeEarnedThisSessionProvider = FreezeEarnedThisSessionProvider._();
+
+/// Whether a streak freeze has been earned since the app opened.
+///
+/// The design fires the freeze tip on a freeze being *held* or on the
+/// freeze-earned beat having shown. The beat is drawn from the rise this
+/// watches, and the two part company in one case the design's `or` exists for:
+/// a freeze earned at a lesson's ending and spent on a missed day before the
+/// learner is next on the Learn tab. Held is false by then; they were still
+/// shown a freeze they never had explained.
+final class FreezeEarnedThisSessionProvider
+    extends $NotifierProvider<FreezeEarnedThisSession, bool> {
+  /// Whether a streak freeze has been earned since the app opened.
+  ///
+  /// The design fires the freeze tip on a freeze being *held* or on the
+  /// freeze-earned beat having shown. The beat is drawn from the rise this
+  /// watches, and the two part company in one case the design's `or` exists for:
+  /// a freeze earned at a lesson's ending and spent on a missed day before the
+  /// learner is next on the Learn tab. Held is false by then; they were still
+  /// shown a freeze they never had explained.
+  FreezeEarnedThisSessionProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'freezeEarnedThisSessionProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$freezeEarnedThisSessionHash();
+
+  @$internal
+  @override
+  FreezeEarnedThisSession create() => FreezeEarnedThisSession();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+}
+
+String _$freezeEarnedThisSessionHash() =>
+    r'8e3101a3caca96543f83fff5f00b4d162eaec0e9';
+
+/// Whether a streak freeze has been earned since the app opened.
+///
+/// The design fires the freeze tip on a freeze being *held* or on the
+/// freeze-earned beat having shown. The beat is drawn from the rise this
+/// watches, and the two part company in one case the design's `or` exists for:
+/// a freeze earned at a lesson's ending and spent on a missed day before the
+/// learner is next on the Learn tab. Held is false by then; they were still
+/// shown a freeze they never had explained.
+
+abstract class _$FreezeEarnedThisSession extends $Notifier<bool> {
+  bool build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<bool, bool>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<bool, bool>,
+              bool,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}

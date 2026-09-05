@@ -73,6 +73,27 @@ class LessonFinishedThisSession extends _$LessonFinishedThisSession {
   }
 }
 
+/// Whether a streak freeze has been earned since the app opened.
+///
+/// The design fires the freeze tip on a freeze being *held* or on the
+/// freeze-earned beat having shown. The beat is drawn from the rise this
+/// watches, and the two part company in one case the design's `or` exists for:
+/// a freeze earned at a lesson's ending and spent on a missed day before the
+/// learner is next on the Learn tab. Held is false by then; they were still
+/// shown a freeze they never had explained.
+@Riverpod(keepAlive: true)
+class FreezeEarnedThisSession extends _$FreezeEarnedThisSession {
+  @override
+  bool build() {
+    ref.listen(streakStatusProvider, (previous, next) {
+      final before = previous?.value?.freezeHeld;
+      final after = next.value?.freezeHeld;
+      if (before == false && after == true) state = true;
+    });
+    return false;
+  }
+}
+
 /// Whether [after] is a rise over [before], with an unresolved read counting as
 /// no news.
 ///

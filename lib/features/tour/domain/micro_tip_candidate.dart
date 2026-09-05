@@ -16,6 +16,7 @@ class MicroTipSignals {
     this.challengeActive = false,
     this.lessonJustCompleted = false,
     this.freezeHeld = false,
+    this.freezeJustEarned = false,
   });
 
   /// Whether a save has landed since the app opened.
@@ -37,11 +38,15 @@ class MicroTipSignals {
   final bool lessonJustCompleted;
 
   /// Whether an unspent streak freeze is held.
-  ///
-  /// The design also fires this tip on the freeze-earned beat. Here that is the
-  /// same fact: earning a freeze is what raises this bit, and the beat that
-  /// announces it is drawn from the same rise.
   final bool freezeHeld;
+
+  /// Whether the freeze-earned beat has shown since the app opened.
+  ///
+  /// The other half of the design's condition, and not the same fact as
+  /// [freezeHeld]: a freeze earned at a lesson's ending and spent on a missed
+  /// day before the learner is next on Learn leaves nothing held, and they were
+  /// still shown a safety net nobody explained.
+  final bool freezeJustEarned;
 }
 
 /// The one tip worth showing right now, or null.
@@ -66,12 +71,21 @@ MicroTip? microTipCandidate({
   required Set<String> seen,
   required bool suppressed,
 }) {
-  if (suppressed || !place.takesTips) return null;
+  if (!microTipsWelcome(place: place, suppressed: suppressed)) return null;
   for (final tip in _inPriorityOrder(place, signals)) {
     if (!seen.contains(tip.id)) return tip;
   }
   return null;
 }
+
+/// Whether the layer may have anything on screen here at all.
+///
+/// Named once because two callers ask it: this file, deciding whether there is
+/// a tip to choose, and the host, deciding whether to draw the one it is
+/// already holding. Two copies of the rule would let a card stay up on a screen
+/// that would not have raised it.
+bool microTipsWelcome({required TipPlace place, required bool suppressed}) =>
+    !suppressed && place.takesTips;
 
 Iterable<MicroTip> _inPriorityOrder(
   TipPlace place,
@@ -90,7 +104,9 @@ Iterable<MicroTip> _inPriorityOrder(
     case TipPlace.learnTab:
       if (signals.challengeActive) yield MicroTip.brew;
       if (signals.lessonJustCompleted) yield MicroTip.tree;
-      if (signals.freezeHeld) yield MicroTip.freeze;
+      if (signals.freezeHeld || signals.freezeJustEarned) {
+        yield MicroTip.freeze;
+      }
     case TipPlace.termOfDay || TipPlace.otherInShell || TipPlace.elsewhere:
       break;
   }
