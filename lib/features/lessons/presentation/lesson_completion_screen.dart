@@ -1,6 +1,4 @@
 import 'package:brew_path/app/day_surfaces.dart';
-import 'package:brew_path/core/icons/app_icon.dart';
-import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
@@ -147,22 +145,10 @@ class _LessonCompletionScreenState
       );
     }
 
-    return Stack(
-      children: [
-        Positioned.fill(child: _content(reward)),
-        // The design keeps the lesson topbar's X here, so the celebration is
-        // never a screen the learner is held on.
-        Positioned(
-          top: 0,
-          left: 0,
-          child: IconButton(
-            icon: const IconMark(AppIcon.close),
-            tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-            onPressed: () => context.goTo(pathTab),
-          ),
-        ),
-      ],
-    );
+    // The close lives on the body's own topbar now: it belongs to the face
+    // showing, and the back face's control is a *flip back* rather than a way
+    // out. A close pinned over both would leave the card with two backs.
+    return _content(reward);
   }
 
   /// Replaces this route with the module ending, carrying the run's own facts.
@@ -192,8 +178,8 @@ class _LessonCompletionScreenState
 
   /// The screen reports **the run that reached it**, which on a replay is not
   /// the stored best: `LessonFinishResult.mastery` is the never-downgraded
-  /// record, and the design prints the run (`prototype/rewards.jsx:57-73`).
-  /// Every band-driven surface below therefore reads `widget.mastery`.
+  /// record, and the design prints the run. Every band-driven surface below
+  /// therefore reads `widget.mastery`.
   Widget _content(LessonCompletionReward reward) => LessonCompletionBody(
     lessonId: widget.lessonId,
     lessonTitle: reward.lesson.title,
@@ -204,5 +190,6 @@ class _LessonCompletionScreenState
       band: widget.mastery.band,
       nextLessonId: reward.nextLessonId,
     ),
+    onClose: () => context.goTo(pathTab),
   );
 }

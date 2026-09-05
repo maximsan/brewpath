@@ -1,6 +1,5 @@
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
-import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -11,7 +10,7 @@ import 'package:flutter/material.dart';
 ///
 /// **The name is the headline.** The app used to make `Lesson complete!` the
 /// title and never say which lesson it was — the eyebrow says what happened,
-/// and the h1 says what it happened to (`prototype/rewards.jsx:50-56`).
+/// and the h1 says what it happened to.
 class LessonCompletionHeader extends StatelessWidget {
   /// Creates a [LessonCompletionHeader].
   const LessonCompletionHeader({
@@ -52,95 +51,32 @@ class LessonCompletionHeader extends StatelessWidget {
   }
 }
 
-/// The score, and the chip beside it when the run earned one.
+/// The run's score, and nothing beside it.
+///
+/// **No chip.** The design drops it: the score already reports how the run
+/// went, the accent practice button under the action carries the verdict, and
+/// the Path row wears the persistent one. Saying it three times on one screen
+/// is noise.
 class _ScoreLine extends StatelessWidget {
   const _ScoreLine({required this.mastery});
 
   final MasteryResult mastery;
 
-  /// The dot that parts the score from the chip.
-  static const double _dotSize = 3;
-
-  /// How present that dot is — the design's `opacity: 0.6`.
-  static const double _dotOpacity = 0.6;
+  /// The design writes the line out in words — `3 / 5 correct` — rather than
+  /// leaving a bare ratio to be read as anything.
+  static String read(MasteryResult mastery) =>
+      '${mastery.correct} / ${mastery.total} correct';
 
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
-    final chip = MasteryChip.forBand(mastery.band);
     return Semantics(
       label: 'Scored ${mastery.correct} out of ${mastery.total}',
-      excludeSemantics: chip == null,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            '${mastery.correct} / ${mastery.total}',
-            style: AppText.body(
-              mood: mood,
-              color: mood.ink,
-              face: AppFace.mono,
-            ),
-          ),
-          if (chip != null) ...[
-            const SizedBox(width: AppSpacing.sm),
-            Container(
-              width: _dotSize,
-              height: _dotSize,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: mood.inkMute.withValues(alpha: _dotOpacity),
-              ),
-            ),
-            const SizedBox(width: AppSpacing.sm),
-            chip,
-          ],
-        ],
+      excludeSemantics: true,
+      child: Text(
+        read(mastery),
+        style: AppText.body(mood: mood, color: mood.ink, face: AppFace.mono),
       ),
-    );
-  }
-}
-
-/// The mastery chip — **only a weak run earns one**.
-///
-/// The design says why in as many words: the score above it already reports
-/// how the run went, so a chip on a good run adds nothing. And it wears the
-/// action colour rather than a failure red, *"because it is an invitation to
-/// replay, never a failure"* — which is the same colour as the
-/// "Practice this lesson again" link it is paired with.
-class MasteryChip extends StatelessWidget {
-  /// Creates a [MasteryChip].
-  const MasteryChip({required this.band, super.key});
-
-  /// The chip for [band], or null for a band the design gives no chip.
-  static MasteryChip? forBand(MasteryBand? band) =>
-      band != null && band.invitesPractice ? MasteryChip(band: band) : null;
-
-  /// The band the chip names.
-  final MasteryBand band;
-
-  /// How much accent the chip's hairline carries, over the structural rule.
-  static const double _borderTint = 0.4;
-
-  @override
-  Widget build(BuildContext context) {
-    final mood = context.mood;
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.sm,
-        vertical: AppSpacing.xxs,
-      ),
-      decoration: BoxDecoration(
-        color: mood.accentWash,
-        border: Border.all(
-          color: Color.alphaBlend(
-            mood.accent.withValues(alpha: _borderTint),
-            mood.rule,
-          ),
-        ),
-        borderRadius: BorderRadius.circular(AppRadii.pill),
-      ),
-      child: SmallcapsLabel(band.label, color: mood.accentText),
     );
   }
 }

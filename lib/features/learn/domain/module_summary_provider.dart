@@ -76,28 +76,35 @@ Future<ModuleSummary> moduleSummary(Ref ref, String moduleId) async {
 /// What the run that closed the module paid out.
 ///
 /// The design branches on a module's last lesson, so that lesson's own ending
-/// never plays (#458) — and the lesson still paid its points and still handed
-/// over its collectible. This is what the module ending reports on its behalf.
-typedef ModuleEndingRun = ({int pointsEarned, CoffeeCardModel? lessonCard});
+/// never plays (#458) — and the lesson still paid its points. This is what the
+/// module ending reports on its behalf.
+///
+/// **Points only.** The closing lesson's own collectible used to travel here
+/// too, and the ending listed it. The restyled ending has no list: it reports
+/// the points and the freeze, and its one card is the module's, on the other
+/// face.
+///
+/// That leaves the lesson's own card earned and never shown — five times
+/// across the course, once per module. It is still collected, and still on the
+/// Cards tab; what is missing is the beat. Deliberate rather than overlooked:
+/// the design has no slot for it, and the app is not inventing a second
+/// answer. Written down at
+/// [#504](https://github.com/maximsan/brewpath/issues/504), which is blocked
+/// on the design source.
+typedef ModuleEndingRun = ({int pointsEarned});
 
 /// A run that paid nothing, for a module ending opened outside the flow — a
 /// review, or a deep link. It claims nothing about a run that did not happen.
-const ModuleEndingRun noModuleEndingRun = (pointsEarned: 0, lessonCard: null);
+const ModuleEndingRun noModuleEndingRun = (pointsEarned: 0);
 
 /// What [lessonId] paid, for the module ending to report.
 ///
-/// Content only: the lesson's authored points, and the collectible tied to it.
-/// Whether the learner *holds* that card is not asked — this run is the moment
-/// it was earned, so the answer is yes by construction, and a read against the
-/// card store would race the write that just happened.
+/// Content only: the lesson's authored points.
 @riverpod
 Future<ModuleEndingRun> moduleEndingRun(Ref ref, String? lessonId) async {
   if (lessonId == null) return noModuleEndingRun;
   final content = ref.watch(contentRepositoryProvider);
   final lesson = await content.getLessonById(lessonId);
   if (lesson == null) return noModuleEndingRun;
-  return (
-    pointsEarned: lesson.points,
-    lessonCard: await content.getCardForLesson(lessonId),
-  );
+  return (pointsEarned: lesson.points);
 }

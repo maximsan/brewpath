@@ -86,6 +86,16 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **You can change your name in Settings.** The name Roasty greets you by was
+  asked once, on the setup screen, and then nowhere: a typo or a skipped step
+  stuck until you restarted the whole intro. Settings now carries a *Name* row
+  under Account — it reads *Not set* until you give one — that opens the same
+  field the setup screen uses, holding what you typed before. Saving a blank
+  is not possible, so an empty sheet changes nothing. Resetting your progress
+  keeps the name: it is who you are, not what you earned. Profile's greeting
+  without a name is now *Hello there.* rather than *Hello, there.*, as the
+  design writes it.
+
 - **Finishing a module offers its Coffee Challenge.** The module ending used to
   hand you straight back to the Path. Turn it over to the reward card and the
   module's optional real-life brew now sits above the way out — what it is and
@@ -461,6 +471,25 @@ You can always edit this file by hand instead — the helpers just save effort.
   than at the moment you are told you lost one.
 
 ### Changed
+
+- **Both endings now read as one screen, and both turn over.** Finishing a
+  lesson and finishing a module used to look like two unrelated celebrations.
+  What you earned beyond the lesson itself — a streak freeze, a new card, the
+  optional challenge — is now one quiet list of plain rows rather than a
+  bordered receipt of icons and labels, and your points sit directly under the
+  tree they fed. The card a lesson hands you lives on the **back of the
+  screen**: the New-card row turns it over, the same way the module ending
+  does, instead of covering the celebration with a sheet. A run that went badly
+  is offered "Practice this lesson again" as a real button under the way
+  forward, and the screen no longer stamps a "needs practice" badge next to
+  your score — the score already said it, and the button is the invitation.
+
+  Two smaller consequences. The optional challenge is now a single row you
+  either take or scroll past, so the separate "Save for later" is gone —
+  declining is just carrying on, and the challenge waits on the Path either
+  way. And the module ending no longer re-announces the collectible its last
+  lesson gave you: it is still yours and still on the Cards tab, but that
+  moment is already handing you the module's own card.
 
 - **Visual guides explain each level under the drawing, not in a table.**
   The roast and grind guides used to show a label/value table (`LIGHT ·

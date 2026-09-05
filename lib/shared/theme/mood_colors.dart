@@ -88,9 +88,7 @@ class MoodColors extends ThemeExtension<MoodColors> {
   /// screen under it is meant to stay readable.
   static const veilBlurRadius = 0.0;
 
-  /// Blur behind [veilStrong] — the design's *"3px for a covering wash"*, which
-  /// the bundle also writes out on the card preview that is the wash's one host
-  /// (`prototype/rewards.jsx:185`).
+  /// Blur behind [veilStrong] — the design's *"3px for a covering wash"*.
   static const veilStrongBlurRadius = 3.0;
 
   /// Opacity of [headerFill] — the design's
@@ -223,10 +221,13 @@ class MoodColors extends ThemeExtension<MoodColors> {
   /// [veil] at full strength, for content that must be obscured rather than
   /// softened.
   ///
-  /// **No call site.** The covering wash's job is the earned-card preview at
-  /// the end of a lesson (`prototype/rewards.jsx:185`), a screen the app has
-  /// not built: it is #384's reward card, with the preview overlay itself in
-  /// #382.
+  /// **No call site, and no longer one owed.** It was written for the
+  /// earned-card preview at the end of a lesson, and briefly had it. The
+  /// restyled endings put that card on the *back of the screen* rather than
+  /// under a wash (#490), so there is nothing left for a covering overlay to
+  /// cover. Kept because the overlay ladder is the design's, not a set of
+  /// call sites: a wash this strong is what the next screen that must hide
+  /// what is behind it should reach for.
   AppOverlay get veilStrong => AppOverlay(
     color: bg.withValues(alpha: veilStrongOpacity),
     blurRadius: veilStrongBlurRadius,

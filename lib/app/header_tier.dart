@@ -144,12 +144,11 @@ TabHeader? tabHeaderFor(
       actions: _sharedActions,
     ),
     // The design's greeting, and its fallback: `Hello, {name}.` where the
-    // learner gave one at onboarding, `Hello, there.` where they skipped —
-    // the same sentence either way, so the tab reads as addressed to them
-    // whether or not they answered.
+    // learner gave one, `Hello there.` where they did not — never a
+    // placeholder name, and no comma where there is nothing to set off.
     _ when location == AppRoutes.profile.path => TabHeader(
       eyebrow: 'PROFILE',
-      title: 'Hello, ${learnerName ?? 'there'}.',
+      title: learnerName == null ? 'Hello there.' : 'Hello, $learnerName.',
       actions: [HeaderAction.settings],
     ),
     _ => null,
