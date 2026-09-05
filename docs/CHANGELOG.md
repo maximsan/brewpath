@@ -44,6 +44,18 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **The bar at the top of a tab gets out of the way.** It used to sit there
+  the whole time, printing the tab's name over the page whether you needed it
+  or not. Now the top of a tab is the tab: Today opens on the date, Path on
+  *Beginner Foundations*, Cards on *Collection* and Profile on the greeting,
+  each set large where the page starts. Scroll, and the bar arrives — a
+  blurred, tinted strip with a hairline under it, carrying the name you have
+  just scrolled past. Scroll back and it goes again. Saved, the Dictionary and
+  the Settings gear stay where they were the whole time.
+
+  The Cards tab gets its *Collection* heading back, which it had to give up
+  when the bar was drawing one of its own.
+
 - **Setting up the app is three screens shorter.** It used to ask what your
   goal was and what you brew with, and you could not get past either one —
   even though nothing in the app ever used the answers. Both questions are

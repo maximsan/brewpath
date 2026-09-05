@@ -1,7 +1,6 @@
 import 'package:brew_path/app/tab_bar_theme.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
-import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -83,18 +82,18 @@ void main() {
       expect(style.fontSize, micro.fontSize);
     });
 
-    test('is lettered at the design tracking, not the rung it borrows', () {
+    test('is lettered at the chrome tracking, not the rung it borrows', () {
       final style = tabLabelStyle(MoodColors.darkRoast);
       final micro = AppText.micro(mood: MoodColors.darkRoast);
       final size = micro.fontSize!;
 
-      expect(style.letterSpacing, OffTokens.tabLabelTracking.value * size);
+      expect(style.letterSpacing, AppTracking.chrome.em * size);
       expect(
         style.letterSpacing,
         isNot(micro.letterSpacing),
         reason:
-            'the whole reason the tracking is an off-token is that the '
-            'rung does not carry it',
+            'the bar is lettered wider than the rung it sits on — that is '
+            'the whole reason the width is named at all',
       );
     });
   });

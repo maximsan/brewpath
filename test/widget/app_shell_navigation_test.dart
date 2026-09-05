@@ -1,6 +1,7 @@
 import 'package:brew_path/app/app.dart';
 import 'package:brew_path/app/app_header.dart';
 import 'package:brew_path/app/app_router.dart';
+import 'package:brew_path/app/tab_large_title.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
@@ -27,23 +28,32 @@ void main() {
     testWidgets('start on Learn, under the shared header', (tester) async {
       await pumpWithProviders(tester, const BrewPathApp());
       expect(_sharedHeader(), findsOneWidget);
-      expect(_headerTitled('TODAY'), findsOneWidget);
+      expect(
+        find.byType(TabLargeTitle),
+        findsOneWidget,
+        reason: 'the tab carries the screen while the bar is invisible',
+      );
     });
 
-    testWidgets('each names itself in the design vocabulary', (tester) async {
+    testWidgets('each names itself in the design vocabulary, once', (
+      tester,
+    ) async {
       await pumpWithProviders(tester, const BrewPathApp());
 
-      await tester.tap(findMark(AppIcon.route, active: false));
-      await settleLoaders(tester);
-      expect(_headerTitled('Beginner Foundations'), findsOneWidget);
+      // The name is the tab's own large title now, and the bar stays wordless
+      // until the tab scrolls under it — so `findsOneWidget` is the whole
+      // point of the pair, not an incidental count (#441).
+      for (final tab in [
+        (AppIcon.route, 'Beginner Foundations'),
+        (AppIcon.cards, 'Collection'),
+        (AppIcon.leaf, 'Hello, there.'),
+      ]) {
+        await tester.tap(findMark(tab.$1, active: false));
+        await settleLoaders(tester);
 
-      await tester.tap(findMark(AppIcon.cards, active: false));
-      await settleLoaders(tester);
-      expect(_headerTitled('Collection'), findsOneWidget);
-
-      await tester.tap(findMark(AppIcon.leaf, active: false));
-      await settleLoaders(tester);
-      expect(_headerTitled('PROFILE'), findsOneWidget);
+        expect(find.text(tab.$2), findsOneWidget);
+        expect(_headerTitled(tab.$2), findsNothing);
+      }
     });
 
     testWidgets('carry the Dictionary button, except Profile', (tester) async {
@@ -120,7 +130,7 @@ void main() {
       await settleLoaders(tester);
 
       expect(
-        _headerTitled('Beginner Foundations'),
+        find.text('Beginner Foundations'),
         findsOneWidget,
         reason: 'checking what you kept must not cost you your tab',
       );
@@ -171,7 +181,7 @@ void main() {
 
     await tester.tap(findMark(AppIcon.route, active: false));
     await settleLoaders(tester);
-    expect(_headerTitled('Beginner Foundations'), findsOneWidget);
+    expect(find.text('Beginner Foundations'), findsOneWidget);
 
     await tester.tap(findMark(AppIcon.cup, active: false));
     await settleLoaders(tester);
@@ -186,68 +196,74 @@ void main() {
   });
 
   group('collapse on scroll', () {
-    /// The header's height right now. Its collapse is a height change, so this
-    /// is the honest thing to assert — not an internal flag.
-    double headerHeight(WidgetTester tester) =>
-        tester.getSize(find.byType(AppHeader)).height;
-
-    /// Drags the visible tab upward far enough to pass the threshold.
+    /// Drags the visible tab upward past the design's 72.
     Future<void> scrollTab(WidgetTester tester) async {
       await tester.drag(find.byType(Scrollable).first, const Offset(0, -240));
       await tester.pumpAndSettle();
     }
 
-    testWidgets('scrolling a tab collapses its header', (tester) async {
+    testWidgets('at the top the bar is wordless and the tab is titled', (
+      tester,
+    ) async {
       await pumpWithProviders(tester, const BrewPathApp());
-      final atRest = headerHeight(tester);
-      expect(_headerTitled('TODAY'), findsOneWidget);
 
-      await scrollTab(tester);
-
-      expect(headerHeight(tester), lessThan(atRest));
       expect(
         _headerTitled('TODAY'),
         findsNothing,
-        reason: 'the eyebrow goes; the title is what the learner still needs',
+        reason: 'the design keeps the bar invisible until the tab scrolls',
+      );
+      expect(
+        find.byType(TabLargeTitle),
+        findsOneWidget,
+        reason: 'the tab carries the screen at the top, as the design pairs it',
       );
     });
 
-    testWidgets('scrolling back to the top restores it', (tester) async {
+    testWidgets('scrolling a tab raises its compact title', (tester) async {
       await pumpWithProviders(tester, const BrewPathApp());
-      final atRest = headerHeight(tester);
 
       await scrollTab(tester);
-      expect(headerHeight(tester), lessThan(atRest));
+
+      expect(
+        _headerTitled('TODAY'),
+        findsOneWidget,
+        reason: 'the bar takes the screen over once the large title has gone',
+      );
+    });
+
+    testWidgets('scrolling back to the top puts it away again', (tester) async {
+      await pumpWithProviders(tester, const BrewPathApp());
+
+      await scrollTab(tester);
+      expect(_headerTitled('TODAY'), findsOneWidget);
 
       await tester.drag(find.byType(Scrollable).first, const Offset(0, 400));
       await tester.pumpAndSettle();
 
-      expect(headerHeight(tester), atRest);
-      expect(_headerTitled('TODAY'), findsOneWidget);
+      expect(_headerTitled('TODAY'), findsNothing);
     });
 
     testWidgets('each tab keeps its own collapse across a switch', (
       tester,
     ) async {
       await pumpWithProviders(tester, const BrewPathApp());
-      final atRest = headerHeight(tester);
 
       await scrollTab(tester);
-      expect(headerHeight(tester), lessThan(atRest));
+      expect(_headerTitled('TODAY'), findsOneWidget);
 
       await tester.tap(findMark(AppIcon.route, active: false));
       await settleLoaders(tester);
       expect(
-        headerHeight(tester),
-        atRest,
+        _headerTitled('YOUR PATH'),
+        findsNothing,
         reason: 'Path was never scrolled, so it must not inherit the collapse',
       );
 
       await tester.tap(findMark(AppIcon.cup, active: false));
       await settleLoaders(tester);
       expect(
-        headerHeight(tester),
-        lessThan(atRest),
+        _headerTitled('TODAY'),
+        findsOneWidget,
         reason: 'Learn is found exactly as it was left',
       );
     });

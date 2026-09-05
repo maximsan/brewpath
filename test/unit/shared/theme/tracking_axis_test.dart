@@ -21,8 +21,6 @@ void main() {
   const sanctioned = <String, String>{
     'lib/shared/theme/app_text.dart':
         'the ladder itself — the one place a tracking becomes pixels',
-    'lib/app/tab_bar_theme.dart':
-        'reads OffTokens.tabLabelTracking, a sanctioned exception at 0.18em',
     'lib/core/widgets/tap_cue.dart':
         'reads OffTokens.tapCueTracking, a sanctioned exception at 0.24em',
     'lib/features/lessons/presentation/cards/grinder_dial_view.dart':
@@ -103,6 +101,7 @@ void main() {
       expect(AppTracking.meta.em, 0.08);
       expect(AppTracking.hint.em, 0.12);
       expect(AppTracking.marker.em, 0.16);
+      expect(AppTracking.chrome.em, 0.18);
     });
 
     test(

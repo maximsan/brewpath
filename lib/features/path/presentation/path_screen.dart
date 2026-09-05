@@ -1,3 +1,5 @@
+import 'package:brew_path/app/tab_large_title.dart';
+import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
@@ -18,9 +20,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// thirty-two lessons fit because each module draws at the density its state
 /// earns; see [PathModuleDensity].
 ///
-/// The screen's own header is the lesson tally alone: the course name is the
-/// shell's, printed once by `AppHeader` for this tab, so repeating it here
-/// would title the page twice.
+/// The tab carries its own large title, as every tab root does: the shared
+/// header is invisible until this list scrolls under it, and prints the same
+/// course name compactly only once the large one has gone. The tally sits
+/// under it, the way the design stacks the pair.
 class PathScreen extends ConsumerStatefulWidget {
   /// Creates a [PathScreen].
   const PathScreen({super.key});
@@ -53,9 +56,18 @@ class _PathScreenState extends ConsumerState<PathScreen> {
         loading: () => const LoadingIndicator(),
         error: (error, _) => ErrorView(message: '$error'),
         data: (list) => ListView(
-          padding: const EdgeInsets.all(AppSpacing.md),
+          // No room at the top: the header floats over this list, so
+          // `TabLargeTitle` is what leaves the status bar its inset.
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.md,
+            0,
+            AppSpacing.md,
+            AppSpacing.md,
+          ),
           physics: const AlwaysScrollableScrollPhysics(),
           children: [
+            TabLargeTitle(AppRoutes.path.path),
+            const SizedBox(height: AppSpacing.xs),
             _CourseTally(modules: list),
             const SizedBox(height: AppSpacing.lg),
             for (var i = 0; i < list.length; i++)

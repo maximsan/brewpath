@@ -183,18 +183,6 @@ abstract final class OffTokens {
         'the smallest stop reads as a gap between them.',
   );
 
-  /// The tab label's letter-spacing, in em — wider than the micro rung the
-  /// label otherwise sits on.
-  static const OffToken<double> tabLabelTracking = OffToken(
-    0.18,
-    reason:
-        'The design letters the tab label at 0.18em where the ladder tracks '
-        'its micro rung at 0.14em (`index.html:361` against the rung table in '
-        '`app_text.dart`). The bar is the only place in the shipped design '
-        'lettered this wide, so widening the rung would restyle every other '
-        'micro line to letter one bar.',
-  );
-
   /// The gap the intro screens set between a block and the next one.
   static const OffToken<double> introBlockGap = OffToken(
     28,
@@ -241,8 +229,10 @@ abstract final class OffTokens {
         '`.tap-cue` letters at 0.24em (`index.html:1111`), half again as wide '
         'as any other mono label in the design and the thing that makes it '
         'read as an instruction rather than a heading. 2.64 is that em value '
-        'at the 11px label step. Same case as tabLabelTracking: widening the '
-        'rung would reletter every micro line to style one cue.',
+        'at the 11px label step. It stays an exception because the cue is the '
+        'one component set at it: a width only one thing speaks is that '
+        "thing's, where a width two things share is vocabulary and belongs on "
+        'AppTracking.',
   );
 
   /// Every sanctioned exception, so the register can be read — and tested — as
@@ -266,6 +256,5 @@ abstract final class OffTokens {
     ghostUnderPrimaryGap,
     textFieldVerticalPadding,
     tapCueTracking,
-    tabLabelTracking,
   ];
 }

@@ -1,3 +1,4 @@
+import 'package:brew_path/app/tab_large_title.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
@@ -58,14 +59,18 @@ class ProfileScreen extends ConsumerWidget {
       body: CustomScrollView(
         slivers: [
           SliverPadding(
+            // No room at the top: the shared header floats over this list, so
+            // `TabLargeTitle` is what leaves the status bar its inset.
             padding: const EdgeInsets.fromLTRB(
               AppSpacing.gutter,
-              AppSpacing.xs,
+              0,
               AppSpacing.gutter,
               AppSpacing.gutter,
             ),
             sliver: SliverList.list(
               children: [
+                TabLargeTitle(AppRoutes.profile.path),
+                const SizedBox(height: _headlineGap),
                 treeStage.when(
                   data: (stage) => TreeHeroCard(
                     stage: stage,

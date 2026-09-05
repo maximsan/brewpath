@@ -49,6 +49,9 @@ String get _blurRuling {
   return ruling.single;
 }
 
+/// The design's own header constants, read out of the bundle.
+String _headerSource() => File('prototype/settings.jsx').readAsStringSync();
+
 void main() {
   group("the design's blur ruling", () {
     test('names a radius per role, and the tokens carry those radii', () {
@@ -138,7 +141,7 @@ void main() {
       );
     });
 
-    test('is one value: colour and radius compare together', () {
+    test('is one value: colour, radius and saturation compare together', () {
       const color = Color(0xFF102030);
       const overlay = AppOverlay(color: color, blurRadius: 5);
 
@@ -149,9 +152,88 @@ void main() {
         isNot(const AppOverlay(color: Color(0xFF302010), blurRadius: 5)),
       );
       expect(
+        overlay,
+        isNot(
+          const AppOverlay(color: color, blurRadius: 5, saturation: 1.3),
+        ),
+      );
+      expect(
         overlay.hashCode,
         const AppOverlay(color: color, blurRadius: 5).hashCode,
       );
+    });
+
+    test('asks for no saturation unless the design writes one', () {
+      const overlay = AppOverlay(color: Color(0xFF000000), blurRadius: 5);
+
+      expect(overlay.saturation, AppOverlay.unsaturated);
+      expect(overlay.isSaturated, isFalse);
+      expect(
+        overlay.backdropFilter,
+        ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+        reason:
+            'an overlay the design gives no lift pays for no colour matrix — '
+            'and the identity is what makes the lift safe to fade in from, '
+            'since the bar starts every scroll at no filter at all',
+      );
+    });
+
+    test('composes the lift over the blur when the design writes both', () {
+      const overlay = AppOverlay(
+        color: Color(0xFF000000),
+        blurRadius: 5,
+        saturation: 1.3,
+      );
+
+      expect(overlay.isSaturated, isTrue);
+      expect(
+        overlay.backdropFilter,
+        isNot(ImageFilter.blur(sigmaX: 5, sigmaY: 5)),
+        reason: 'the saturation half must reach the filter, not be dropped',
+      );
+    });
+  });
+
+  group('the sticky header fill', () {
+    test('is the page at the opacity the design mixes it to', () {
+      final mix = RegExp(
+        r"HEADER_FILL = 'color-mix\(in oklab, var\(--bg\) (\d+)%",
+      ).firstMatch(_headerSource());
+
+      expect(
+        mix,
+        isNotNull,
+        reason: 'the bundle no longer mixes a header fill',
+      );
+      expect(
+        double.parse(mix!.group(1)!) / 100,
+        MoodColors.headerFillOpacity,
+      );
+
+      for (final mood in [MoodColors.cupping, MoodColors.darkRoast]) {
+        expect(
+          mood.headerFill.color,
+          mood.bg.withValues(alpha: MoodColors.headerFillOpacity),
+          reason: 'the bar is the page pulled over itself, not a new colour',
+        );
+      }
+    });
+
+    test('blurs and lifts by the two halves of the design filter', () {
+      final filter = RegExp(
+        r"HEADER_BLUR = 'blur\((\d+)px\) saturate\(([\d.]+)\)'",
+      ).firstMatch(_headerSource());
+
+      expect(filter, isNotNull, reason: 'the bundle no longer filters the bar');
+      expect(
+        double.parse(filter!.group(1)!),
+        MoodColors.headerFillBlurRadius,
+      );
+      expect(
+        double.parse(filter.group(2)!),
+        MoodColors.headerFillSaturation,
+      );
+      expect(MoodColors.darkRoast.headerFill.isSaturated, isTrue);
     });
   });
 }

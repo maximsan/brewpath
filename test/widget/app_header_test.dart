@@ -49,16 +49,22 @@ Widget _harness({
     child: MaterialApp(
       home: MediaQuery(
         data: MediaQueryData(disableAnimations: disableAnimations),
-        // In a Column, as the shell places it: the header takes its natural
-        // height and the tab gets the rest.
+        // In a stack, as the shell places it: the header floats over the tab
+        // rather than standing above it, so it takes no room of its own.
         child: Scaffold(
-          body: Column(
+          body: Stack(
+            fit: StackFit.expand,
             children: [
-              AppHeader(
-                location: location.isEmpty ? AppRoutes.learn.path : location,
-                isCollapsed: isCollapsed,
+              const SizedBox(),
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: AppHeader(
+                  location: location.isEmpty ? AppRoutes.learn.path : location,
+                  isCollapsed: isCollapsed,
+                ),
               ),
-              const Expanded(child: SizedBox()),
             ],
           ),
         ),
@@ -71,13 +77,44 @@ double _height(WidgetTester tester) =>
     tester.getSize(find.byType(AppHeader)).height;
 
 void main() {
-  testWidgets('collapsing drops the eyebrow and keeps the day', (tester) async {
+  testWidgets('at rest the bar says nothing — the tab titles itself', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       _harness(isCollapsed: false, disableAnimations: true),
     );
     await tester.pumpAndSettle();
+
+    expect(
+      find.text('TODAY'),
+      findsNothing,
+      reason: 'the design keeps the bar invisible until the tab scrolls',
+    );
+    expect(find.text('Friday, May 8'), findsNothing);
+    expect(
+      find.byTooltip(SavedScreen.title),
+      findsOneWidget,
+      reason: 'the entries are the one part of the bar always on show',
+    );
+  });
+
+  testWidgets('scrolled, the compact title arrives — eyebrow and all', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _harness(isCollapsed: true, disableAnimations: true),
+    );
+    await tester.pumpAndSettle();
+
     expect(find.text('TODAY'), findsOneWidget);
     expect(find.text('Friday, May 8'), findsOneWidget);
+  });
+
+  testWidgets('the bar keeps its height either way', (tester) async {
+    await tester.pumpWidget(
+      _harness(isCollapsed: false, disableAnimations: true),
+    );
+    await tester.pumpAndSettle();
     final atRest = _height(tester);
 
     await tester.pumpWidget(
@@ -85,23 +122,22 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('TODAY'), findsNothing);
     expect(
-      find.text('Friday, May 8'),
-      findsOneWidget,
-      reason: 'the title is what the learner still needs on the way down',
+      _height(tester),
+      atRest,
+      reason:
+          'the collapse is a fill and a title arriving, not a box changing '
+          "size — the tab's own content never shifts under it",
     );
-    expect(_height(tester), lessThan(atRest));
   });
 
-  testWidgets('reduced motion settles the collapse in one frame', (
+  testWidgets('reduced motion puts the title there in one frame', (
     tester,
   ) async {
     await tester.pumpWidget(
       _harness(isCollapsed: false, disableAnimations: true),
     );
     await tester.pumpAndSettle();
-    final atRest = _height(tester);
 
     await tester.pumpWidget(
       _harness(isCollapsed: true, disableAnimations: true),
@@ -109,18 +145,19 @@ void main() {
     await tester.pump();
 
     expect(
-      _height(tester),
-      lessThan(atRest),
+      find.text('Friday, May 8'),
+      findsOneWidget,
       reason: 'no transition to wait out when the system asks for none',
     );
   });
 
-  testWidgets('with motion allowed, the collapse takes frames', (tester) async {
+  testWidgets('with motion allowed, the title fades in over frames', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       _harness(isCollapsed: false, disableAnimations: false),
     );
     await tester.pumpAndSettle();
-    final atRest = _height(tester);
 
     await tester.pumpWidget(
       _harness(isCollapsed: true, disableAnimations: false),
@@ -128,14 +165,13 @@ void main() {
     await tester.pump();
 
     expect(
-      _height(tester),
-      atRest,
-      reason:
-          'the first frame has not moved yet — this is what reduced '
-          'motion is skipping',
+      find.text('Friday, May 8'),
+      findsNothing,
+      reason: 'it has not arrived yet — this is what reduced motion skips',
     );
+
     await tester.pumpAndSettle();
-    expect(_height(tester), lessThan(atRest));
+    expect(find.text('Friday, May 8'), findsOneWidget);
   });
 
   group('the Saved entry', () {

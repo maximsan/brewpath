@@ -1,4 +1,6 @@
+import 'package:brew_path/app/tab_large_title.dart';
 import 'package:brew_path/core/constants/app_labels.dart';
+import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/section_header.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
@@ -29,7 +31,15 @@ class LearnListView extends ConsumerWidget {
   /// Creates a [LearnListView].
   const LearnListView({super.key});
 
-  static const _padding = EdgeInsets.all(AppSpacing.md);
+  /// Nothing above the title but the status bar: the shared header floats
+  /// over this list rather than standing above it, so the room at the top is
+  /// [TabLargeTitle]'s to leave.
+  static const _padding = EdgeInsets.fromLTRB(
+    AppSpacing.md,
+    0,
+    AppSpacing.md,
+    AppSpacing.md,
+  );
   static const _sectionGap = SizedBox(height: AppSpacing.lg);
   static const _headerGap = SizedBox(height: AppSpacing.sm);
 
@@ -84,6 +94,8 @@ class LearnListView extends ConsumerWidget {
           ? const ScrollCacheExtent.viewport(_tourCacheViewports)
           : null,
       children: [
+        TabLargeTitle(AppRoutes.learn.path),
+        _sectionGap,
         // The save beat leads the tab: someone returning after a miss is
         // the most fragile learner in the app, and reassurance comes
         // before the day's ask. Renders nothing when no save is due.

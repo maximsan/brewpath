@@ -93,6 +93,22 @@ class MoodColors extends ThemeExtension<MoodColors> {
   /// (`prototype/rewards.jsx:185`).
   static const veilStrongBlurRadius = 3.0;
 
+  /// Opacity of [headerFill] — the design's
+  /// `color-mix(in oklab, var(--bg) 94%, transparent)`.
+  static const headerFillOpacity = 0.94;
+
+  /// Blur behind [headerFill] — the design's `blur(16px)`, the first half of
+  /// the sticky header's `backdrop-filter`.
+  static const headerFillBlurRadius = 16.0;
+
+  /// The second half, `saturate(1.3)`: sixteen pixels of blur average a warm
+  /// page toward grey, and this is what puts the warmth back.
+  static const headerFillSaturation = 1.3;
+
+  /// Opacity at the top of the fade under the bar — the design's
+  /// `color-mix(in oklab, var(--bg) 88%, transparent)`, fading to nothing.
+  static const headerFadeOpacity = 0.88;
+
   /// Page canvas.
   final Color bg;
 
@@ -215,6 +231,23 @@ class MoodColors extends ThemeExtension<MoodColors> {
     color: bg.withValues(alpha: veilStrongOpacity),
     blurRadius: veilStrongBlurRadius,
   );
+
+  /// The sticky header's bar, once the tab beneath it has scrolled — the page
+  /// pulled over itself, blurred and lifted back to its own warmth.
+  ///
+  /// Derived from [bg] like the veils, so it follows the mood and keeps
+  /// following it mid-[lerp]. At rest the bar draws none of this: the design's
+  /// header is invisible until there is something for it to sit over.
+  AppOverlay get headerFill => AppOverlay(
+    color: bg.withValues(alpha: headerFillOpacity),
+    blurRadius: headerFillBlurRadius,
+    saturation: headerFillSaturation,
+  );
+
+  /// The top of the short gradient the design fades below the bar, so type
+  /// scrolling out from under it is never seen crossing an invisible edge. It
+  /// fades to transparent.
+  Color get headerFade => bg.withValues(alpha: headerFadeOpacity);
 
   @override
   MoodColors copyWith({
