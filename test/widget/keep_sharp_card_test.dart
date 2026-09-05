@@ -13,6 +13,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../support/widget_harness.dart';
+
 final _miniGames = KeepSharpRecommendation(
   type: PracticeType.miniGames,
   destination: miniGameRun('g-quiz'),
@@ -83,6 +85,10 @@ Future<void> _pump(
 }
 
 void main() {
+  // The CTA asks the free day's allowance before it navigates (#216), so the
+  // recommendation's two routing tests read a real database.
+  setUp(useInMemoryDatabase);
+
   testWidgets('the caught-up state recommends and states the rule', (
     tester,
   ) async {
@@ -107,7 +113,7 @@ void main() {
     await _pump(tester, keepSharp: _miniGames);
 
     await tester.tap(find.text('Start'));
-    await tester.pumpAndSettle();
+    await settleLoaders(tester);
 
     expect(find.text('game g-quiz'), findsOneWidget);
   });
@@ -127,7 +133,7 @@ void main() {
     );
 
     await tester.tap(find.text('Start'));
-    await tester.pumpAndSettle();
+    await settleLoaders(tester);
 
     expect(find.text('replay lesson_where_coffee'), findsOneWidget);
   });

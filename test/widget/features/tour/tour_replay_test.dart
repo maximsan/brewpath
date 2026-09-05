@@ -1,6 +1,6 @@
 import 'package:brew_path/app/app.dart';
-import 'package:brew_path/app/app_header.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/features/learn/presentation/learn_list_view.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
 import 'package:brew_path/features/tour/domain/app_guide_copy.dart';
 import 'package:brew_path/features/tour/domain/tour_copy.dart';
@@ -141,9 +141,9 @@ void main() {
 
     // The stops are anchored on Learn, so the row has to switch tabs — and
     // clear the two pushed screens it was tapped from — as well as start the
-    // Tour. Learn is named by the shared header's title, which is where the
-    // tab's identity lives now that the shell owns the chrome.
-    expect(find.widgetWithText(AppHeader, 'TODAY'), findsOneWidget);
+    // Tour. The tab's own list is what names it: the shared header is
+    // wordless until a tab scrolls under it (#441).
+    expect(find.byType(LearnListView), findsOneWidget);
   });
 
   testWidgets('replay writes nothing', (tester) async {

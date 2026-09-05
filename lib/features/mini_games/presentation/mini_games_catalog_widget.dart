@@ -1,16 +1,18 @@
-import 'package:brew_path/core/constants/app_routes.dart';
+import 'dart:async';
+
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/section_header.dart';
+import 'package:brew_path/features/mini_games/domain/mini_game_destination.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_kinds.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_tier.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_gate_sheet.dart';
+import 'package:brew_path/features/monetization/presentation/activity_start.dart';
 import 'package:brew_path/shared/models/content/mini_game_format.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 /// The Mini-games group under Learn → Practice again.
 ///
@@ -140,10 +142,7 @@ class _FormatRow extends StatelessWidget {
         // A lock is an offer, not a dead end: the tap that cannot start a run
         // opens the pitch for the module that teaches this game's topic.
         onTap: isOpen
-            ? () => context.goNamed(
-                AppRoutes.miniGameIntro.name,
-                pathParameters: {'gameId': format.id},
-              )
+            ? () => unawaited(context.goToActivity(miniGameRun(format.id)))
             : () => showMiniGameGateSheet(context: context, format: format),
         child: Padding(
           padding: const EdgeInsets.symmetric(

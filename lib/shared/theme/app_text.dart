@@ -67,9 +67,10 @@ enum AppFace {
 /// if ever wanted, is authored against a screen with room for it. A value
 /// with no call site would be vocabulary nobody speaks.
 ///
-/// The two app values wide enough to restyle a whole rung — the tab bar's
-/// 0.18em and the tap cue's 0.24em — stay in `OffTokens` instead, where an
-/// exception carries its reason.
+/// The line between a value here and one in `OffTokens` is how many components
+/// speak it. A width the design gives to **one** component is that component's
+/// exception and carries its reason there — the tap cue's 0.24em. A width more
+/// than one component is set at is vocabulary, and belongs on this axis.
 ///
 /// Omitting this axis leaves a rung at its own tracking, which for [AppText]'s
 /// label and micro steps is the design's 0.14em smallcaps rule — `.smallcaps`
@@ -109,7 +110,14 @@ enum AppTracking {
   /// rule so a two-word label reads as discrete: the dictionary's status chip
   /// (`dictionary.jsx:124`) and the collectible tile's sub-line
   /// (`.collect-card .cc-sub`, `index.html:712`, still unbuilt — #434).
-  marker(0.16);
+  marker(0.16),
+
+  /// 0.18em — the app's own chrome, lettered a step wider than the pages it
+  /// frames. The design sets `letter-spacing: 0.18em` on the two things that
+  /// frame every screen: the tab bar's label, and the eyebrow in the sticky
+  /// header's compact title. It was the tab bar's registered exception until
+  /// the header's compact title turned out to be set at it too.
+  chrome(0.18);
 
   const AppTracking(this.em);
 

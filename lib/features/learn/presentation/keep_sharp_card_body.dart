@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/companion/domain/companion_reaction.dart';
@@ -6,7 +8,7 @@ import 'package:brew_path/features/companion/presentation/companion_celebration.
 import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
-import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
+import 'package:brew_path/features/monetization/presentation/activity_start.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
@@ -162,7 +164,8 @@ class KeepSharpCardBody extends StatelessWidget {
         // Sized by Material, not `PrimaryButton`: this is an action
         // inside a card, not the screen's CTA.
         FilledButton(
-          onPressed: () => context.goTo(recommended.destination),
+          onPressed: () =>
+              unawaited(context.goToActivity(recommended.destination)),
           child: Text('Start', semanticsLabel: 'Start: ${copy.title}'),
         ),
       ],

@@ -1,18 +1,19 @@
 import 'dart:async';
 
-import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/features/dictionary/domain/flashcard_destination.dart';
 import 'package:brew_path/features/dictionary/domain/flashcard_providers.dart';
+import 'package:brew_path/features/dictionary/domain/vocab_destination.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_copy.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_mark.dart';
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_copy.dart';
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_mark.dart';
+import 'package:brew_path/features/monetization/presentation/activity_start.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 /// The drill row on Dictionary home — one slim chip per practice surface the
 /// dictionary owns.
@@ -67,7 +68,7 @@ class _FlashcardsChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadii.chrome),
         child: InkWell(
           borderRadius: BorderRadius.circular(AppRadii.chrome),
-          onTap: () => unawaited(context.pushFlashcards()),
+          onTap: () => unawaited(context.pushActivity(flashcardReview)),
           child: Container(
             decoration: BoxDecoration(
               border: Border.all(color: mood.rule),
@@ -126,9 +127,7 @@ class _VocabChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadii.chrome),
         child: InkWell(
           borderRadius: BorderRadius.circular(AppRadii.chrome),
-          onTap: () => unawaited(
-            context.pushNamed(AppRoutes.vocabGame.name),
-          ),
+          onTap: () => unawaited(context.pushActivity(vocabGame)),
           child: Container(
             decoration: BoxDecoration(
               border: Border.all(color: mood.rule),

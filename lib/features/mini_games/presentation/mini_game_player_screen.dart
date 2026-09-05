@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:brew_path/app/day_surfaces.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
@@ -12,6 +13,7 @@ import 'package:brew_path/features/lessons/presentation/cards/content_card_view.
 import 'package:brew_path/features/mini_games/domain/mini_game_completion.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_providers.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_run.dart';
+import 'package:brew_path/features/monetization/presentation/activity_start.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -72,14 +74,21 @@ class _MiniGamePlayerScreenState extends ConsumerState<MiniGamePlayerScreen> {
     );
   }
 
-  void _playAgain() => setState(() {
-    // A fresh run is a fresh completion: playing the same game twice leaves
-    // two entries, which the day's rule counts as one game.
-    _recorded = false;
-    _nonce = mintRunNonce();
-    _index = 0;
-    _score = 0;
-  });
+  /// Another run, if the day still holds one.
+  ///
+  /// Asked here as well as at the intro: this restarts an activity without
+  /// navigating, so nothing else would ask (#216).
+  Future<void> _playAgain() async {
+    if (!await context.mayStartAnotherActivity() || !mounted) return;
+    setState(() {
+      // A fresh run is a fresh completion: playing the same game twice leaves
+      // two entries, which the day's rule counts as one game.
+      _recorded = false;
+      _nonce = mintRunNonce();
+      _index = 0;
+      _score = 0;
+    });
+  }
 
   /// Leaves the mini-game entirely, back to the catalog it was launched from.
   ///

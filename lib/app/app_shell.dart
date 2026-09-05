@@ -96,27 +96,35 @@ class _AppShellState extends State<AppShell> {
       // navigated away from — the host itself never disposes on a tab switch.
       activeBranchIndex: widget.navigationShell.currentIndex,
       child: Scaffold(
-        body: Column(
+        // A stack, not a column: the design's header floats **over** the tab
+        // and is invisible until the tab scrolls under it, so it takes no room
+        // of its own. The tab root leaves the room instead, in the one place
+        // that always opens one — `TabLargeTitle`.
+        body: Stack(
+          fit: StackFit.expand,
           children: [
+            // Only a tab root's scrolling moves this header. A pushed page
+            // scrolls under its own bar, and letting it collapse a header it
+            // cannot see would leave the tab wrong when the learner pops back.
             if (showsHeader)
-              AppHeader(
-                location: location,
-                isCollapsed:
-                    _collapsedByBranch[widget.navigationShell.currentIndex] ??
-                    false,
+              NotificationListener<ScrollNotification>(
+                onNotification: _onScroll,
+                child: widget.navigationShell,
+              )
+            else
+              widget.navigationShell,
+            if (showsHeader)
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: AppHeader(
+                  location: location,
+                  isCollapsed:
+                      _collapsedByBranch[widget.navigationShell.currentIndex] ??
+                      false,
+                ),
               ),
-            Expanded(
-              // Only a tab root's scrolling moves this header. A pushed page
-              // scrolls under its own bar, and letting it collapse a header
-              // it cannot see would leave the tab wrong when the learner
-              // pops back.
-              child: showsHeader
-                  ? NotificationListener<ScrollNotification>(
-                      onNotification: _onScroll,
-                      child: widget.navigationShell,
-                    )
-                  : widget.navigationShell,
-            ),
           ],
         ),
         bottomNavigationBar: _tabBar(context.mood),

@@ -18,6 +18,7 @@ import 'package:brew_path/features/dictionary/presentation/flashcard_deal_view.d
 import 'package:brew_path/features/dictionary/presentation/flashcards_copy.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_empty_view.dart';
 import 'package:brew_path/features/lessons/domain/card_seed.dart';
+import 'package:brew_path/features/monetization/presentation/activity_start.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:flutter/material.dart';
@@ -61,11 +62,20 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
   FlashcardRound _roundFor(int size) =>
       (_round ?? FlashcardRound.deal(size, nonce: _nonce)).reconciled(size);
 
-  void _shuffle(int size) => setState(() {
-    _nonce = mintLessonNonce();
-    _round = FlashcardRound.deal(size, nonce: _nonce);
-    _recorded = false;
-  });
+  /// Deals again, if the day still holds another review.
+  ///
+  /// The cap is asked here and not only at the way in: a re-deal restarts the
+  /// activity without navigating, and the review it leads to records itself
+  /// exactly as the first one did (#216). Mid-round it always passes — the
+  /// entry is written on finishing, so the count has not moved yet.
+  Future<void> _shuffle(int size) async {
+    if (!await context.mayStartAnotherActivity() || !mounted) return;
+    setState(() {
+      _nonce = mintLessonNonce();
+      _round = FlashcardRound.deal(size, nonce: _nonce);
+      _recorded = false;
+    });
+  }
 
   void _flip(int size) => setState(() => _round = _roundFor(size).flipped());
 

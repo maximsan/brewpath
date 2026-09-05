@@ -14,6 +14,13 @@
 ## Global header (`AppHeader`)
 Pinned top-right: **Saved** (with count badge, lock badge if gated) and **Dictionary**. Profile variant swaps in a gear → Settings. Duel entry is present but `showDuel={!isV1}`.
 
+**The bar itself is invisible until the tab scrolls**, and the entries are the
+only part of it on show at the top of a tab: the header composes
+`StickyHeaderChrome` at height 116, so the eyebrow and title below appear only
+past `scrollTop > 72` ([§3](03-design-system.md)). What titles a tab at rest is
+the tab's *own* large title, in its scroll — the two are a pair, and building
+either one alone titles the screen twice or not at all.
+
 Per-tab eyebrow + title (`APP_HEADER_TITLES`, `screens.jsx:713`) — user-visible copy, declared in code rather than content:
 
 | Tab | Eyebrow | Title |

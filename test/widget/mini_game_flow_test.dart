@@ -4,12 +4,16 @@ import 'package:brew_path/core/widgets/ghost_button.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_intro_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_player_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_games_catalog_widget.dart';
+import 'package:brew_path/features/monetization/domain/plus_copy.dart';
+import 'package:brew_path/features/progress/domain/activity_recorder.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/models/content/content_reward.dart';
 import 'package:brew_path/shared/models/content/mini_game_format.dart';
 import 'package:brew_path/shared/models/module_model.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
+import 'package:brew_path/shared/repositories/repository_providers.dart';
+import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -681,6 +685,46 @@ void main() {
 
     expect(find.text('Play again'), findsNothing);
     expect(find.text('Continue'), findsOneWidget);
+  });
+
+  testWidgets("Play again stops at the free day's cap", (tester) async {
+    // One activity already done, so the run below is the day's second and
+    // *Play again* would be the third. It restarts in place without
+    // navigating, so only the player's own check stands in its way (#216).
+    final spender = ProviderContainer();
+    addTearDown(spender.dispose);
+    await recordActivity(
+      spender.read(snapshotRepositoryProvider),
+      type: ActivityType.vocab,
+      subject: '',
+      now: DateTime.now(),
+    );
+
+    await _pump(tester);
+    await tester.tap(find.text('True or false'));
+    await _settle(tester);
+    await tester.tap(find.text('Play'));
+    await _settle(tester);
+    for (var round = 0; round < _rounds.length; round++) {
+      await _answerTrueAndContinue(tester);
+    }
+
+    await tester.tap(find.text('Play again'));
+    // Real time let through: the refusal reads the database before it raises
+    // the sheet, and the results screen behind it animates indefinitely.
+    for (var attempt = 0; attempt < 10; attempt++) {
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 20)),
+      );
+      await tester.pump();
+    }
+
+    expect(find.text(PlusCopy.title), findsOneWidget);
+    expect(
+      find.text('Play again'),
+      findsOneWidget,
+      reason: 'the refused run leaves the learner on the results it offered',
+    );
   });
 
   testWidgets('results render statically under reduced motion', (tester) async {

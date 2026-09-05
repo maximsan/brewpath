@@ -1,5 +1,6 @@
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
+import 'package:brew_path/core/widgets/scrolled_progress.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +29,12 @@ bool floatTopbarIsScrolled(double offset) => offset > floatTopbarThreshold;
 /// stays reachable on a long ending — and takes a fill only when there is
 /// something behind it to separate from, which is what stops a control
 /// floating over a celebration from looking like a mistake.
+///
+/// The fill is the header's own [MoodColors.headerFill] — the page pulled over
+/// itself at 94%, blurred and lifted back to its warmth — because the design
+/// writes this bar and the sticky header with the same two constants. It is
+/// the whole token, so the blur cannot be left behind the way the first
+/// overlay port left four of them behind (#379).
 class FloatTopbar extends StatelessWidget {
   /// Creates a [FloatTopbar].
   const FloatTopbar({
@@ -60,18 +67,9 @@ class FloatTopbar extends StatelessWidget {
   Widget build(BuildContext context) {
     final mood = context.mood;
 
-    return AnimatedContainer(
+    return ScrolledProgress(
+      isScrolled: isScrolled,
       duration: floatTopbarFade,
-      curve: Curves.ease,
-      height: height + MediaQuery.paddingOf(context).top,
-      decoration: BoxDecoration(
-        color: isScrolled ? mood.bg : mood.bg.withValues(alpha: 0),
-        border: Border(
-          bottom: BorderSide(
-            color: isScrolled ? mood.rule : mood.rule.withValues(alpha: 0),
-          ),
-        ),
-      ),
       child: SafeArea(
         bottom: false,
         child: Align(
@@ -90,6 +88,31 @@ class FloatTopbar extends StatelessWidget {
           ),
         ),
       ),
+      builder: (context, progress, control) {
+        final headerFill = mood.headerFill.at(progress);
+        final bar = SizedBox(
+          height: height + MediaQuery.paddingOf(context).top,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: headerFill.color,
+              border: Border(
+                bottom: BorderSide(
+                  color: mood.rule.withValues(alpha: progress),
+                ),
+              ),
+            ),
+            child: control,
+          ),
+        );
+        final filter = headerFill.backdropFilter;
+
+        // No filter until there is a fill to go with it: an invisible bar must
+        // not pay for the `saveLayer` a `BackdropFilter` takes at any sigma.
+        if (filter == null) return bar;
+        return ClipRect(
+          child: BackdropFilter(filter: filter, child: bar),
+        );
+      },
     );
   }
 }

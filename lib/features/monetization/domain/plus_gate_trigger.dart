@@ -100,6 +100,24 @@ class LockedFullEntry extends PlusGateTrigger {
   String get header => 'The full entry for "$term" comes with the course.';
 }
 
+/// The free day's ration of activities, already spent.
+///
+/// The only trigger raised by *how much* a learner has done rather than by
+/// what they reached for, so the header counts rather than names. Removing the
+/// cap is what the pitch's *Practice without limits* sells, which is why the
+/// cap-hit opens this sheet instead of a dead "come back tomorrow" (#29, #216).
+class DailyAllowanceSpent extends PlusGateTrigger {
+  /// Creates a [DailyAllowanceSpent] for a day that holds [cap] activities.
+  const DailyAllowanceSpent({required this.cap});
+
+  /// How many a free day holds. Carried rather than written into the sentence
+  /// so the copy cannot outlive the rule.
+  final int cap;
+
+  @override
+  String get header => "You've done today's $cap free activities.";
+}
+
 /// A game whose teaching lesson the free tier does not carry.
 class LockedGame extends PlusGateTrigger {
   /// Creates a [LockedGame] taught by [moduleTitle].

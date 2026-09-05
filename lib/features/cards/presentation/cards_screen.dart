@@ -1,3 +1,5 @@
+import 'package:brew_path/app/tab_large_title.dart';
+import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/features/cards/domain/cards_grid.dart';
@@ -70,18 +72,25 @@ class _CardsBody extends StatelessWidget {
       physics: const AlwaysScrollableScrollPhysics(),
       slivers: [
         SliverPadding(
-          // The design opens both the header block and the grid below it at 24
-          // from what precedes them.
+          // The design opens the grid below this block at 24. No room at
+          // the top: `TabLargeTitle` leaves it.
           padding: const EdgeInsets.fromLTRB(
             AppSpacing.gutter,
-            AppSpacing.lg,
+            0,
             AppSpacing.gutter,
             AppSpacing.lg,
           ),
           sliver: SliverToBoxAdapter(
-            child: _CollectionCount(
-              earned: earnedCount(list),
-              total: list.length,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const TabLargeTitle(AppRoutes.cards),
+                const SizedBox(height: AppSpacing.xs),
+                _CollectionCount(
+                  earned: earnedCount(list),
+                  total: list.length,
+                ),
+              ],
             ),
           ),
         ),
@@ -124,13 +133,10 @@ class _CardsBody extends StatelessWidget {
 /// progress bar: the grid itself is the progress, and a second reading of it
 /// above the grid says nothing the tiles do not.
 ///
-/// It carries no title. The tab's name is the shared header's, and the design
-/// never states it twice on one screen.
-///
-/// The design does give this screen a large `Collection` title — paired with a
-/// header that is *invisible* until the tab scrolls. The app's header draws at
-/// rest, so the pair cannot be had here yet; #441 owns that, and the title
-/// comes back with it.
+/// It carries no title of its own: the tab's `TabLargeTitle` above it is the
+/// design's large `Collection`, and this is the count line under it. The pair
+/// is the design's, and the screen still says the word once — the shared
+/// header stays wordless until the grid has scrolled under it (#441).
 ///
 /// Its tracking is the design's own rather than the rung's — see
 /// [AppTracking.meta] for why a figure does not want the smallcaps value.

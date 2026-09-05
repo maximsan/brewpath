@@ -27,6 +27,7 @@ class RouteDestination {
     required this.name,
     this.pathParams = const {},
     this.queryParams = const {},
+    this.startsActivity = false,
   });
 
   /// The route's name, never its path.
@@ -39,17 +40,29 @@ class RouteDestination {
   /// this way because the completion screen is a separate route from the run.
   final Map<String, String> queryParams;
 
+  /// Whether following this begins a **full learning/practice activity** — one
+  /// of the two a free local day holds (§8, #216).
+  ///
+  /// It rides on the destination because the two screens that navigate to a
+  /// destination they were *handed* — Keep Sharp's card and a lesson ending —
+  /// cannot otherwise tell a replay from the Path tab. Deriving it from the
+  /// route name instead would put that knowledge in a second place, keyed on
+  /// something a rename changes.
+  final bool startsActivity;
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is RouteDestination &&
           other.name == name &&
+          other.startsActivity == startsActivity &&
           mapEquals(other.pathParams, pathParams) &&
           mapEquals(other.queryParams, queryParams);
 
   @override
   int get hashCode => Object.hash(
     name,
+    startsActivity,
     Object.hashAllUnordered(_pairs(pathParams)),
     Object.hashAllUnordered(_pairs(queryParams)),
   );
@@ -71,6 +84,7 @@ class RouteDestination {
 RouteDestination lessonRun(String lessonId) => RouteDestination(
   name: AppRoutes.lesson.name,
   pathParams: {'lessonId': lessonId},
+  startsActivity: true,
 );
 
 /// The completion screen for a finished run.
@@ -139,7 +153,41 @@ final RouteDestination pathTab = RouteDestination(name: AppRoutes.path.name);
 /// Navigating by [RouteDestination], so no caller spells a path out.
 extension GoToDestination on BuildContext {
   /// Goes to [destination], replacing the current location.
-  void goTo(RouteDestination destination) => goNamed(
+  ///
+  /// **Not for a destination that starts an activity.** Those go through
+  /// `BuildContext.goToActivity`, which asks the free day's allowance first
+  /// (ADR-0020). The assert catches a new call site that reached for the
+  /// obvious method: it fires in debug and in every test, where a leak is
+  /// cheap to find. It is a backstop, not a wall — the two methods below are
+  /// public and assert nothing, because the guard itself has to call them.
+  void goTo(RouteDestination destination) {
+    assert(
+      !destination.startsActivity,
+      'an activity destination goes through goToActivity, which asks the '
+      "free day's allowance first",
+    );
+    goToAfterAllowance(destination);
+  }
+
+  /// Goes to [destination] for a caller that has **already asked** the free
+  /// day's allowance.
+  ///
+  /// Deliberately unpleasant to reach for: the one caller is
+  /// `BuildContext.goToActivity`, and a name this specific cannot be typed by
+  /// accident the way [goTo] can.
+  void goToAfterAllowance(RouteDestination destination) => goNamed(
+    destination.name,
+    pathParameters: destination.pathParams,
+    queryParameters: destination.queryParams,
+  );
+
+  /// Pushes [destination] for a caller that has already asked the allowance —
+  /// the one caller being `BuildContext.pushActivity`.
+  ///
+  /// Pushed rather than gone to where closing the surface has to return the
+  /// learner to whichever screen opened it — the drills, which are reached
+  /// from four places each.
+  Future<void> pushAfterAllowance(RouteDestination destination) => pushNamed(
     destination.name,
     pathParameters: destination.pathParams,
     queryParameters: destination.queryParams,

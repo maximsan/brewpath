@@ -1,3 +1,4 @@
+import 'package:brew_path/app/tab_large_title.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
@@ -15,6 +16,7 @@ import 'package:brew_path/features/studio/presentation/studio_door_tile.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -58,14 +60,22 @@ class ProfileScreen extends ConsumerWidget {
       body: CustomScrollView(
         slivers: [
           SliverPadding(
+            // No room at the top: `TabLargeTitle` leaves it.
             padding: const EdgeInsets.fromLTRB(
               AppSpacing.gutter,
-              AppSpacing.xs,
+              0,
               AppSpacing.gutter,
               AppSpacing.gutter,
             ),
             sliver: SliverList.list(
               children: [
+                // Below the entries for Learn's reason: the greeting carries
+                // a name the learner typed, so its width is theirs to set.
+                TabLargeTitle(
+                  AppRoutes.profile,
+                  topGap: OffTokens.tabTitleClearOfEntries.value,
+                ),
+                const SizedBox(height: _headlineGap),
                 treeStage.when(
                   data: (stage) => TreeHeroCard(
                     stage: stage,
