@@ -215,8 +215,8 @@ void main() {
     // `practical` are read, not asked, so Continue is live from the first
     // frame; `multi` shows *Check answers* in its place until it commits, as
     // the design's single swapping button has it. Each is covered where its
-    // own rule lives, and the switch-pair test at the foot of this file is
-    // what keeps every kind covered.
+    // own rule lives, and the build sweep at the foot of this file is what
+    // keeps every kind covered.
     final cards = <String, ContentCard>{
       'predict': _predict,
       'concept': _concept,
@@ -1151,11 +1151,15 @@ void main() {
     });
   });
 
-  group('hasRenderer agrees with what contentCardView actually builds', () {
-    // Two exhaustive switches over the same sealed union. Adding a kind breaks
-    // both, but nothing stops the two from disagreeing about a kind they both
-    // already handle — which would either strand a playable card or drop a
-    // drawable one out of a lesson silently.
+  group('every kind of card builds without throwing', () {
+    // One of each kind, which is what makes this the file's only sweep across
+    // the whole union — five of them are built nowhere else here.
+    //
+    // It used to compare `hasRenderer` against what this function returned:
+    // two exhaustive switches that could drift about a kind they both already
+    // handled. There is one switch now (#418), so the drift it guarded against
+    // cannot happen, and what is left worth asking is whether every arm
+    // actually builds rather than throwing on the way.
     const cases = <String, ContentCard>{
       'predict': ContentCard.predict(
         label: 'LESSON 1',
@@ -1258,14 +1262,16 @@ void main() {
 
     for (final entry in cases.entries) {
       test(entry.key, () {
-        final built = contentCardView(
-          entry.value,
-          nonce: 1,
-          cardIndex: 0,
-          onSolved: () {},
-          onContinue: () {},
+        expect(
+          () => contentCardView(
+            entry.value,
+            nonce: 1,
+            cardIndex: 0,
+            onSolved: () {},
+            onContinue: () {},
+          ),
+          returnsNormally,
         );
-        expect(hasRenderer(entry.value), built != null);
       });
     }
   });

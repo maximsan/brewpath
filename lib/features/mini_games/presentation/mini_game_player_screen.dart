@@ -172,14 +172,6 @@ class _MiniGamePlayerScreenState extends ConsumerState<MiniGamePlayerScreen> {
       onSolved: _onSolved,
       onContinue: _onContinue,
     );
-    if (card == null) {
-      return Semantics(
-        label: 'This round cannot be shown yet.',
-        excludeSemantics: true,
-        child: const ErrorView(message: 'This round cannot be shown yet.'),
-      );
-    }
-
     return SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.lg),

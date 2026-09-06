@@ -119,6 +119,14 @@ You can always edit this file by hand instead — the helpers just save effort.
   out of a category returns you to the index rather than leaving the
   dictionary altogether.
 
+- **A new kind of lesson card now has to have its screen before it can ship.**
+  The app used to be able to carry a kind of card it could not draw yet,
+  leaving those cards out of the lesson until someone built the screen for
+  them. All fifteen kinds draw now, so that escape hatch is gone and adding a
+  kind without its screen stops the app building instead. The one message left
+  behind is for a lesson with no cards at all, and it now says that plainly
+  rather than hinting the app cannot show it.
+
 - **The bar at the top of a tab gets out of the way.** It used to sit there
   the whole time, printing the tab's name over the page whether you needed it
   or not. Now the top of a tab is the tab: Today opens on the date, Path on
