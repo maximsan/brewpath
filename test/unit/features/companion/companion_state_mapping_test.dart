@@ -22,20 +22,24 @@ void main() {
       expect(
         roastyStateFor(
           mood: CompanionMood.happy,
-          reaction: CompanionReaction.wrong,
+          reaction: CompanionReaction.lessonComplete,
         ),
-        RoastyState.wrong,
+        RoastyState.lesson,
       );
     });
 
     test('each reaction maps to its pose', () {
+      // Exhaustive on purpose: a reaction added without a pose decided for it
+      // is the kind of gap that reaches a learner as the wrong mascot.
       const expected = {
-        CompanionReaction.correct: RoastyState.correct,
-        CompanionReaction.wrong: RoastyState.wrong,
         CompanionReaction.lessonComplete: RoastyState.lesson,
         CompanionReaction.moduleComplete: RoastyState.module,
-        CompanionReaction.cardEarned: RoastyState.card,
+        CompanionReaction.courseComplete: RoastyState.module,
+        CompanionReaction.keepSharpComplete: RoastyState.lesson,
+        CompanionReaction.challengeComplete: RoastyState.lesson,
+        CompanionReaction.streakMilestone: RoastyState.correct,
       };
+      expect(expected.keys, unorderedEquals(CompanionReaction.values));
       for (final entry in expected.entries) {
         expect(
           roastyStateFor(mood: CompanionMood.idle, reaction: entry.key),

@@ -5,6 +5,7 @@ import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/widgets/float_topbar.dart';
 import 'package:brew_path/core/widgets/reward_flip_view.dart';
 import 'package:brew_path/core/widgets/reward_row.dart';
+import 'package:brew_path/core/widgets/scroll_flag_scope.dart';
 import 'package:brew_path/core/widgets/sticky_action_bar.dart';
 import 'package:brew_path/features/cards/presentation/reward_card.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
@@ -93,7 +94,7 @@ class _LessonCompletionBodyState extends State<LessonCompletionBody>
     final card = reward.card;
     final practice = widget.actions.practice;
 
-    return FloatTopbarScrollScope(
+    return ScrollFlagScope(
       builder: (context, {required isScrolled}) => Stack(
         children: [
           StickyActionBar(

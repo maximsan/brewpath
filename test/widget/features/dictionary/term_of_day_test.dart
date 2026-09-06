@@ -282,7 +282,16 @@ void main() {
       await settleLoaders(tester);
 
       expect(find.byType(TermOfDayBanner), findsOneWidget);
-      expect(find.byType(SingleChildScrollView), findsWidgets);
+      // Whatever kind of scroller the shelf uses — it is one sliver view now,
+      // so that the page's title can leave the top (#513) — the banner has to
+      // be inside it.
+      expect(
+        find.ancestor(
+          of: find.byType(TermOfDayBanner),
+          matching: find.byType(Scrollable),
+        ),
+        findsWidgets,
+      );
     });
 
     testWidgets('stands down once the learner starts searching', (

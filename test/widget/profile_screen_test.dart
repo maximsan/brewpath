@@ -144,7 +144,10 @@ void main() {
     await tester.tap(find.byType(StreakCard));
     await settleLoaders(tester);
 
-    expect(find.text('Your streak'), findsOneWidget);
+    // The design opens this page on the ring rather than a heading, and its
+    // bar stays wordless until the page scrolls (#513) — so what says the
+    // learner has arrived is the ring's own caption.
+    expect(find.text('DAY STREAK'), findsOneWidget);
     // A fresh user: no qualifying day yet, the full earn ahead.
     expect(find.text('Next freeze in 7 days'), findsOneWidget);
   });
@@ -199,10 +202,10 @@ void main() {
     await tester.tap(findMark(AppIcon.gear));
     await settleLoaders(tester);
 
-    // Twice: the bar, and the display heading the sections hang under — which
-    // is how the design draws every one of these screens
-    // (`prototype/screens.jsx:523`).
-    expect(find.text(SettingsCopy.title), findsNWidgets(2));
+    // Once: the design's bar is wordless until the page scrolls under it, so
+    // at the top the display heading is the only place the name is written
+    // (#513). Scrolled, the bar raises a second, smaller copy.
+    expect(find.text(SettingsCopy.title), findsOneWidget);
     expect(find.text(SettingsCopy.resetProgressRow), findsOneWidget);
   });
 }

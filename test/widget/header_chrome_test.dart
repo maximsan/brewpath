@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:brew_path/app/header_chrome.dart';
+import 'package:brew_path/core/widgets/header_chrome.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

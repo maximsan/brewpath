@@ -2,6 +2,7 @@ import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -99,6 +100,95 @@ void main() {
       expect(_verdictColour(tester, 'NOT QUITE'), _mood.accent);
       expect(_verdictColour(tester, 'NOT QUITE'), isNot(_mood.berry));
     });
+  });
+
+  group('a held guess', () {
+    testWidgets('leads in ink-mute — nothing has been graded yet', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _host(
+          const AnswerFeedback(
+            verdict: 'Your guess · Seed',
+            outcome: Verdict.held,
+            explanation: 'Hold that thought.',
+            placement: VerdictPlacement.heldGuess,
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(_verdictColour(tester, 'YOUR GUESS · SEED'), _mood.inkMute);
+      expect(_verdictColour(tester, 'YOUR GUESS · SEED'), isNot(_mood.sage));
+      expect(_verdictColour(tester, 'YOUR GUESS · SEED'), isNot(_mood.berry));
+    });
+
+    testWidgets('puts the mascot at the card face, holding it', (tester) async {
+      await tester.pumpWidget(
+        _host(
+          const AnswerFeedback(
+            verdict: 'Your guess · Seed',
+            outcome: Verdict.held,
+            placement: VerdictPlacement.heldGuess,
+          ),
+        ),
+      );
+      await tester.pump();
+
+      final roasty = tester.widget<Roasty>(find.byType(Roasty));
+      expect(roasty.state, RoastyState.card);
+      // The design draws him smaller here than on a graded card.
+      expect(roasty.size, lessThan(VerdictPlacement.card.mascot));
+    });
+
+    testWidgets('sets the hold at the body step, as the design does', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _host(
+          const AnswerFeedback(
+            verdict: 'Your guess · Seed',
+            outcome: Verdict.held,
+            explanation: 'Hold that thought.',
+            placement: VerdictPlacement.heldGuess,
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(
+        tester.widget<Text>(find.text('Hold that thought.')).style?.fontSize,
+        AppText.body(mood: _mood).fontSize,
+      );
+    });
+  });
+
+  testWidgets('the explanation stays muted at either step', (tester) async {
+    // The step says how much room the explanation takes, never how loudly it
+    // speaks: the design colours this text ink-mute whichever size it is set
+    // at, and `AppText.body` defaults to full ink.
+    for (final placement in VerdictPlacement.values) {
+      await tester.pumpWidget(
+        _host(
+          AnswerFeedback(
+            verdict: 'Not quite',
+            outcome: Verdict.wrong,
+            explanation: 'Burrs crush; blades chop.',
+            placement: placement,
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(
+        tester
+            .widget<Text>(find.text('Burrs crush; blades chop.'))
+            .style
+            ?.color,
+        _mood.inkMute,
+        reason: "$placement sets the explanation off the design's ink-mute",
+      );
+    }
   });
 
   testWidgets('the verdict is announced, not only drawn', (tester) async {

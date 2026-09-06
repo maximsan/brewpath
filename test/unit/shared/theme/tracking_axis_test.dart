@@ -23,6 +23,9 @@ void main() {
         'the ladder itself — the one place a tracking becomes pixels',
     'lib/core/widgets/tap_cue.dart':
         'reads OffTokens.tapCueTracking, a sanctioned exception at 0.24em',
+    'lib/features/tour/presentation/micro_tip_card.dart':
+        'reads OffTokens.microTipBodyTracking, a sanctioned exception at 0 — '
+        'prose set at a rung lettered for uppercase labels',
     'lib/features/lessons/presentation/cards/grinder_dial_view.dart':
         'draws on a canvas grid rather than a rung, so it has no rung to '
         'letter against — see grinder_dial.dart',

@@ -15,6 +15,7 @@ class UserSettingsRecord {
     this.onboardingCompleted = false,
     this.themeMode = AppThemeMode.fallback,
     this.tourSeen = false,
+    this.tipsSeen = '',
     this.learnerName,
     this.notificationsEnabled = false,
     this.dailyReminderTime,
@@ -27,6 +28,7 @@ class UserSettingsRecord {
   bool onboardingCompleted;
   AppThemeMode themeMode;
   bool tourSeen;
+  String tipsSeen;
   String? learnerName;
   bool notificationsEnabled;
   String? dailyReminderTime;

@@ -44,6 +44,20 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The app now explains a feature the first time it matters.** Seven small
+  cards — the Path, a Coffee Challenge, the tree, Saved, the Dictionary, the
+  streak freeze and the Studio — each appear once, at the bottom of the screen
+  they are about, and close with an X. One shows at a time, never inside a
+  lesson and never over the Tour or a sheet. What you have already been shown
+  survives Reset progress and goes with Delete account, the way the Tour's own
+  flag does.
+
+- **Roasty holds your guess on the opening card of a lesson.** Pick one of the
+  two answers and he appears beside it holding a card, labelled with the guess
+  you took, and the line that keeps the question open beside him. He does not
+  say whether you were right — the card at the end of the lesson still does
+  that.
+
 - **Roasty has a ninth face: the wink he gives a payout.** The design's mascot
   has always had it — one eye still open, the other arched shut, and a mouth
   that lifts on the winking side — over a `+N PTS` plate that rises and fades
@@ -53,6 +67,11 @@ You can always edit this file by hand instead — the helpers just save effort.
   payout of its own.
 
 ### Fixed
+
+- **The explanation under a verdict is grey again on the decision and recall
+  cards.** Those two are set a size larger than the rest, and the app was
+  reading full black ink off that larger step. Only the size was meant to
+  change.
 
 - **Roasty's face is the design's on every state.** Five of his eight
   expressions had no blush at all — caught out, holding a card, asleep and
@@ -91,6 +110,20 @@ You can always edit this file by hand instead — the helpers just save effort.
   starts.
 
 ### Changed
+
+- **The pages you open from a tab get the same treatment.** Settings, the
+  Coffee Dictionary, a term, your saved shelf, the coffee tree, your streak,
+  your grove and the app guide used to sit under a solid grey strip with a
+  small title in it. Each one now opens on its own name, set large at the top
+  of the page, with only a back arrow floating over it — and the strip fades
+  in as you scroll, blurred, carrying the name you have just scrolled past.
+  Your saved shelf is named even when it is empty, and a term's page shows its
+  category above its name once the bar takes over.
+
+  Drilling into a dictionary category no longer leaves the old title stranded
+  at the top: the page and the bar go back to the beginning together. Backing
+  out of a category returns you to the index rather than leaving the
+  dictionary altogether.
 
 - **The bar at the top of a tab gets out of the way.** It used to sit there
   the whole time, printing the tab's name over the page whether you needed it

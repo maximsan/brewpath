@@ -36,23 +36,26 @@ class HeaderChrome extends StatelessWidget {
     super.key,
   });
 
+  /// The status bar the design measures every bar height over. On a device it
+  /// is the top inset instead, which is why a height here is written as the
+  /// design's own number minus this, rather than as one figure nobody can
+  /// trace back. Stated once, so two bars cannot answer it differently.
+  static const double designStatusBarHeight = 54;
+
+  /// [designHeight] — a number the design measures from the top of the screen
+  /// — as the height below the status bar that a device actually has room for.
+  static double belowDesignStatusBar(double designHeight) =>
+      designHeight - designStatusBarHeight;
+
   /// The design's tab header, measured from the top of the screen.
   static const double _tabHeightWithStatusBar = 116;
 
-  /// The status bar the design measures that height over. On a device it is
-  /// the top inset instead, which is why the two are subtracted rather than
-  /// one number being written down.
-  static const double _designStatusBarHeight = 54;
-
-  /// How tall the tab header stands **below** the status bar.
+  /// How tall the tab header stands below the status bar.
   static const double tabHeight =
-      _tabHeightWithStatusBar - _designStatusBarHeight;
+      _tabHeightWithStatusBar - designStatusBarHeight;
 
   /// The gradient that fades below the bar.
   static const double fadeHeight = 22;
-
-  /// How long the bar takes to materialise when motion is allowed.
-  static const Duration _duration = Duration(milliseconds: 260);
 
   /// How tall the bar stands below the status bar.
   final double height;
@@ -73,7 +76,7 @@ class HeaderChrome extends StatelessWidget {
 
     return ScrolledProgress(
       isScrolled: isScrolled,
-      duration: _duration,
+      duration: scrolledFade,
       child: SizedBox(
         height: barHeight,
         child: Align(alignment: Alignment.bottomLeft, child: child),

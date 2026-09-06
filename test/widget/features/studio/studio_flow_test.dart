@@ -133,14 +133,8 @@ void main() {
     await settle(tester);
 
     await tapAfterScroll(tester, find.widgetWithText(PlantRow, 'Liberica'));
-    // Leave without confirming — the bar's back button, which is the only
-    // IconButton the chooser draws.
-    await tester.tap(
-      find.descendant(
-        of: find.byType(AppBar),
-        matching: find.byType(IconButton),
-      ),
-    );
+    // Leave without confirming, through the bar's own way back.
+    await tester.tap(find.byTooltip('Back'));
     await settle(tester);
 
     final stored =

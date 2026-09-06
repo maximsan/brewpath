@@ -1,6 +1,7 @@
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/widgets/float_topbar.dart';
+import 'package:brew_path/core/widgets/scroll_flag_scope.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/core/widgets/sticky_action_bar.dart';
 import 'package:brew_path/features/cards/presentation/reward_card.dart';
@@ -69,7 +70,7 @@ class ModuleCompleteFront extends StatelessWidget {
   Widget build(BuildContext context) {
     final mood = context.mood;
 
-    return FloatTopbarScrollScope(
+    return ScrollFlagScope(
       builder: (context, {required isScrolled}) => Stack(
         children: [
           CelebrationGlow.celebration,
@@ -174,7 +175,7 @@ class ModuleCompleteBack extends StatelessWidget {
   Widget build(BuildContext context) {
     final reward = summary.moduleReward;
 
-    return FloatTopbarScrollScope(
+    return ScrollFlagScope(
       builder: (context, {required isScrolled}) => Stack(
         children: [
           CelebrationGlow.reward,

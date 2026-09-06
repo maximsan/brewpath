@@ -78,4 +78,25 @@ void main() {
 
     expect((await repo.getSettings()).tourSeen, isTrue);
   });
+
+  test('user_settings has the micro-tips column', () async {
+    final columns = await db
+        .customSelect('PRAGMA table_info(user_settings)')
+        .get();
+    final names = columns.map((row) => row.read<String>('name')).toSet();
+    expect(names, contains('tips_seen'));
+  });
+
+  test('default settings row has been shown no tip', () async {
+    expect((await SettingsRepository().getSettings()).tipsSeen, isEmpty);
+  });
+
+  test('saveSettings round-trips the seen list', () async {
+    final repo = SettingsRepository();
+    final settings = await repo.getSettings()
+      ..tipsSeen = 'dictionary,path';
+    await repo.saveSettings(settings);
+
+    expect((await repo.getSettings()).tipsSeen, 'dictionary,path');
+  });
 }
