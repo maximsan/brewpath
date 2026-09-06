@@ -347,7 +347,7 @@ GoRouter appRouter(Ref ref) {
                     builder: (context, state) => const SettingsScreen(),
                     routes: [
                       // The design files the App Guide inside Help and
-                      // support (`prototype/settings.jsx:589`), not on the
+                      // support, not on the
                       // Settings root. It sat on the root only because this
                       // screen did not exist, which #414's own comment said.
                       GoRoute(

@@ -7,11 +7,10 @@ import 'package:flutter_test/flutter_test.dart';
 /// The one row the whole settings surface renders through.
 ///
 /// The design draws it label-left, value-or-affordance-right, over a hairline —
-/// and gives it **no icon slot at all** (`prototype/settings.jsx:149`). The
-/// app's rows had grown leading glyphs the design never drew, which is what
-/// makes this a component rather than a `ListTile` call with different
-/// arguments.
-/// A node a screen reader announces as a button.
+/// and gives it **no icon slot at all**. The app's rows had grown leading
+/// glyphs the design never drew, which is what makes this a component rather
+/// than a `ListTile` call with different arguments. A node a screen reader
+/// announces as a button.
 final Matcher _isButton = isSemantics(isButton: true);
 
 void main() {
@@ -98,8 +97,8 @@ void main() {
   testWidgets('a dimmed row still acts — it only reads as inactive', (
     tester,
   ) async {
-    // The design's `dim` sets opacity and nothing else
-    // (`prototype/settings.jsx:151`). It has to stay live: tapping the dimmed
+    // The design's `dim` sets opacity and nothing else.
+    // It has to stay live: tapping the dimmed
     // reminder row is how the reminder gets turned on in the first place.
     var taps = 0;
     await pump(

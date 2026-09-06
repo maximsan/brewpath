@@ -6,7 +6,8 @@ import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// The corner's own metrics (`screens.jsx:2420`).
+/// The corner's own metrics, transcribed from the design — none of the four
+/// sits on the spacing scale.
 const double _cornerSize = 26;
 const double _markSize = 13;
 const double _openMarkSize = 12;
@@ -88,7 +89,7 @@ class CardChallengeCorner extends StatelessWidget {
   }
 }
 
-/// The ringed dot inside an open challenge's corner (`screens.jsx:2437`).
+/// The ringed dot inside an open challenge's corner.
 class _OfferPainter extends CustomPainter {
   const _OfferPainter(this.color);
 

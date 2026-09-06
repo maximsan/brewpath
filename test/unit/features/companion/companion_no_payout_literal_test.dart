@@ -6,8 +6,8 @@ import '../../../support/dart_sources.dart';
 ///
 /// A lesson's payout is per-lesson authored data (§5.1, #16), so no constant in
 /// the companion layer can be right about it. The design agrees and passes the
-/// amount in — `roasty.jsx:575` renders `+{pointsAmount} PTS` — where the app
-/// baked a literal.
+/// amount in — it renders `+{pointsAmount} PTS` — where the app baked a
+/// literal.
 ///
 /// **This guard exists because the rule was already broken once and the fix
 /// missed it.** #16 ruled a hardcoded `'+15 XP'` particle dropped; #160's

@@ -45,10 +45,9 @@ class WakeSequenceController extends ChangeNotifier {
 
   /// Whether the brand mark should give way to the tap cue.
   ///
-  /// The design shows `BREWPATH` on the first cycle and
-  /// `TAP ANYWHERE TO CONTINUE` on every cycle after (`roasty.jsx:708`): the
-  /// cue earns its place once a learner has watched a whole wake-up and is
-  /// still waiting.
+  /// The design shows `BREWPATH` on the first cycle and `TAP ANYWHERE TO
+  /// CONTINUE` on every cycle after: the cue earns its place once a learner has
+  /// watched a whole wake-up and is still waiting.
   ///
   /// Reduced motion shows it from the first frame. There is no cycle to wait
   /// through there — the static frame *is* the steady state — so withholding

@@ -34,8 +34,7 @@ class PickCard extends StatelessWidget {
   /// empty callback leaves the row announced as a button that does nothing.
   final VoidCallback? onTap;
 
-  /// The design's wash over a card the learner cannot choose
-  /// (`dictionary-extras.jsx:367`'s `dim()`).
+  /// The design's wash over a card the learner cannot choose — its `dim()`.
   static const double _unavailableOpacity = 0.45;
 
   /// Whether to draw this card as unavailable.

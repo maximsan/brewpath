@@ -8,11 +8,10 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../../support/dart_sources.dart';
 
 /// The mascot's palette, transcribed from the `/* Roasty palette */` block of
-/// the mascot's design page (`prototype/Mascot - Roasty.html`). A bean is the
-/// same brown under any theme, so these are identical in both moods. Any drift
-/// between this table and [RoastyColors] is a bug in the app, never in the
-/// table — and `design page` below proves the table itself has not drifted
-/// from the source it was transcribed from.
+/// the mascot's design page. A bean is the same brown under any theme, so these
+/// are identical in both moods. Any drift between this table and [RoastyColors]
+/// is a bug in the app, never in the table — and `design page` below proves the
+/// table itself has not drifted from the source it was transcribed from.
 const _spec = <String, Color>{
   '--bean-deep': Color(0xFF4A2B19),
   '--bean-body': Color(0xFF6B3E22),
@@ -27,8 +26,8 @@ const _spec = <String, Color>{
 };
 
 /// The colours the drawings use that the palette block does not name. The
-/// mascot component (`prototype/roasty.jsx`) writes each as a hex literal in
-/// both moods, which is what makes them palette rather than theme.
+/// mascot component writes each as a hex literal in both moods, which is what
+/// makes them palette rather than theme.
 const _unnamed = <String, Color>{
   'beanHighlight': Color(0xFFA26945),
   'cardGlow': Color(0xFFE6C68A),

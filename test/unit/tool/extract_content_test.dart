@@ -42,7 +42,7 @@ const _expectedBanks = [
   'grove_lights.json',
 ];
 
-/// The entry whose rounds live in `bean-anatomy.jsx` behind a `window` getter —
+/// The entry whose rounds live in a second source behind a `window` getter —
 /// the one game that comes back silently empty unless the extractor assembles
 /// the cross-file dependency before evaluating.
 const _bagpickFormatId = 'g-bagpick';
@@ -665,7 +665,7 @@ void main() {
 
     test('a second card for one subject is refused', () {
       final source = seededSource();
-      // The registry entry, not the lesson card — `data.jsx` carries both, and
+      // The registry entry, not the lesson card — the bank carries both, and
       // the shorter string finds the lesson's visual first.
       seedGuide(
         source,

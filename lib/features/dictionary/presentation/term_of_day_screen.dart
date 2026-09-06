@@ -90,7 +90,7 @@ class _TermOfDay extends StatelessWidget {
   /// **The label promises the full entry**, so a learner without the course
   /// gets the gate rather than the entry: delivering the short explanation
   /// they are already reading would make the button a lie, and the design says
-  /// so in its own comment (`dictionary-extras.jsx:56`).
+  /// so in its own comment.
   Future<void> _readFullEntry(BuildContext context) => view.hasCourse
       ? context.pushDictionaryTerm(view.term.id)
       : showPlusGate(context, LockedFullEntry(term: view.term.term));

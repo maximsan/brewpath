@@ -175,7 +175,7 @@ void main() {
     ) async {
       // A saved lesson puts rows on the shelf without putting a term under the
       // heading this row belongs to — and the design draws it inside that
-      // group (`library.jsx:188`).
+      // group.
       await _seed(['l:m1l1']);
       await _openSaved(tester);
 

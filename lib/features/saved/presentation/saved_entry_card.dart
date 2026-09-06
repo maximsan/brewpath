@@ -11,16 +11,16 @@ import 'package:go_router/go_router.dart';
 
 /// The way onto the Saved shelf from Profile.
 ///
-/// The design closes Profile with this card beside the Studio's
-/// (`prototype/screens.jsx:2744-2767`). Until now the shelf was reachable only
-/// from the shared header's bookmark, which is chrome — a learner looking for
-/// the things they kept had nowhere on the page to look.
+/// The design closes Profile with this card beside the Studio's. Until now the
+/// shelf was reachable only from the shared header's bookmark, which is chrome
+/// — a learner looking for the things they kept had nowhere on the page to
+/// look.
 ///
 /// **Never gated.** The design's own gate says so: `featureUnlocked('saved')`
-/// returns true unconditionally (`prototype/app.jsx:519-522`), because what
-/// Plus lifts is the cap on saving past five, and the bookmark raises that gate
-/// where it is actually hit. The `lock('saved')` branch beside this card in the
-/// design can therefore never fire, so there is no Plus pill here to port.
+/// returns true unconditionally, because what Plus lifts is the cap on saving
+/// past five, and the bookmark raises that gate where it is actually hit. The
+/// `lock('saved')` branch beside this card in the design can therefore never
+/// fire, so there is no Plus pill here to port.
 class SavedEntryCard extends ConsumerWidget {
   /// Creates a [SavedEntryCard].
   const SavedEntryCard({super.key});

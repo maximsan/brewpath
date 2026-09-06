@@ -2,10 +2,9 @@
 ///
 /// Separated from the widget so every value below is unit-testable without
 /// pumping a frame — the same split `coffee_tree_animation.dart` makes for the
-/// sway. Transcribed from the design's `AnimatedTree`
-/// (`prototype/flavor-wheel.jsx:211-322`), with the multi-stage walk cut per
-/// ADR-0011: thresholds sit at least three lessons apart, so normal play never
-/// advances more than one stage.
+/// sway. Transcribed from the design's `AnimatedTree`, with the multi-stage
+/// walk cut per ADR-0011: thresholds sit at least three lessons apart, so
+/// normal play never advances more than one stage.
 library;
 
 import 'dart:math' as math;

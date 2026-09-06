@@ -4,10 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/contrast.dart';
 
-/// Hexes transcribed from the design bundle CSS
-/// (`prototype/index.html` — `:root` for Cupping, `[data-mood="dark-roast"]`
-/// for Dark Roast). Any drift between these and [MoodColors] is a bug in the
-/// app, never in the table.
+/// Hexes transcribed from the design bundle CSS — `:root` for Cupping,
+/// `[data-mood="dark-roast"]` for Dark Roast. Any drift between these and
+/// [MoodColors] is a bug in the app, never in the table.
 const _cuppingSpec = <String, Color>{
   'bg': Color(0xFFF4EFE6),
   'surface': Color(0xFFFBF7EE),

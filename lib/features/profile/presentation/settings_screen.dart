@@ -18,12 +18,11 @@ import 'package:go_router/go_router.dart';
 
 /// Settings, in the design's four sections.
 ///
-/// The order and the grouping are the design's, not the app's
-/// (`prototype/screens.jsx:526-562`): `APPEARANCE` leads, the preference
-/// toggles are filed under `PRACTICE` beside the reminder they belong with,
-/// `ACCOUNT` and `SUPPORT` are pure navigation, and the destructive block at
-/// the foot carries **no label** — a heading over it would announce it before
-/// the learner has any reason to look there.
+/// The order and the grouping are the design's, not the app's: `APPEARANCE`
+/// leads, the preference toggles are filed under `PRACTICE` beside the reminder
+/// they belong with, `ACCOUNT` and `SUPPORT` are pure navigation, and the
+/// destructive block at the foot carries **no label** — a heading over it would
+/// announce it before the learner has any reason to look there.
 ///
 /// The destructive block carries three rows, which is one more than the design
 /// and one more than works. Both are the owner's rulings on #395, not this

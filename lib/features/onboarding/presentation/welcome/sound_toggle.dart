@@ -2,10 +2,10 @@ import 'package:brew_path/shared/theme/overlay_colors.dart';
 import 'package:flutter/material.dart';
 
 /// The control's tap target — the design's 44px, which is also the platform
-/// minimum, so it needs no rounding up (`screens.jsx:58`).
+/// minimum, so it needs no rounding up.
 const double _targetSize = 44;
 
-/// The speaker glyph inside it (`screens.jsx:70`).
+/// The speaker glyph inside it.
 const double _glyphSize = 19;
 
 /// Mute and unmute for the Welcome film.
@@ -21,7 +21,7 @@ const double _glyphSize = 19;
 /// `OverlayBarrier` cannot render, because it is the only one of the four that
 /// is not full-screen: its blur has to be shaped like the control it sits
 /// behind, so the control clips it (#379). The design puts the film behind it
-/// at 8px (`screens.jsx:54`).
+/// at 8px.
 class SoundToggle extends StatelessWidget {
   /// Creates a [SoundToggle].
   const SoundToggle({required this.muted, required this.onPressed, super.key});

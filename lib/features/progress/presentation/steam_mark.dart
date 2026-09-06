@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 /// The steam mark — three curls rising off a cup, the design's glyph for a
 /// live streak.
 ///
-/// Not part of the ported icon family (#378): the design draws it inline in
-/// `screens.jsx:141-149` rather than in `ds-content.js`, so it has no
-/// `AppIcon` to read. Transcribed from those three paths on a 26×16 canvas.
+/// Not part of the ported icon family (#378): the design draws it inline rather
+/// than in the icon set that port read, so it has no `AppIcon` of its own.
+/// Transcribed from its three paths onto a 26×16 canvas.
 ///
 /// The colour is passed in rather than read from the theme, so the painter
 /// needs no `BuildContext` — the same rule `FreezeMark` follows.

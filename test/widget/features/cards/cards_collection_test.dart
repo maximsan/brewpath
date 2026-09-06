@@ -116,8 +116,8 @@ void main() {
     ]);
 
     // The two cards carry different module tags; neither becomes a heading.
-    // Stronger than it was: the design's tile prints no tag at all
-    // (`screens.jsx:2447`), so a module name anywhere on this screen could
+    // Stronger than it was: the design's tile prints no tag at all,
+    // so a module name anywhere on this screen could
     // only be a section header — which is the thing being ruled out.
     expect(find.byType(CardGridItemWidget), findsNWidgets(2));
     expect(find.text('Card a'), findsOneWidget);

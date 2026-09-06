@@ -178,8 +178,8 @@ void main() {
       await tester.tap(find.text('Beans and Botany'));
       await tester.pumpAndSettle();
 
-      // The respelling belongs on the row, not only in the entry
-      // (`dictionary.jsx:235`): scanning a list is where you meet a word you
+      // The respelling belongs on the row, not only in the entry:
+      // scanning a list is where you meet a word you
       // cannot pronounce.
       expect(find.text('uh-RAB-ih-kuh'), findsOneWidget);
     });

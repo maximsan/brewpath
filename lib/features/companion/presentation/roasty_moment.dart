@@ -13,8 +13,8 @@ import 'package:flutter/material.dart';
 ///
 /// **A beat, not a screen.** It owns no content and no navigation — it holds
 /// the frame for [hold], then hands over through [onDone]. Every reward route
-/// in the design opens on one (`prototype/rewards.jsx:31-35`, `:224-225`), so
-/// it is built shared rather than by whichever route landed first.
+/// in the design opens on one, so it is built shared rather than by whichever
+/// route landed first.
 ///
 /// ⚠️ **[onDone] fires exactly once, and fires under reduced motion too.**
 /// A tap and the timer race by construction, and a host that sequences its

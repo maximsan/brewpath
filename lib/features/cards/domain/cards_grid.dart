@@ -17,11 +17,11 @@ import 'package:brew_path/features/cards/domain/cards_providers.dart';
 ///
 /// The place is the catalogue's, not the grid's: cards unlock out of order, so
 /// the grid shows gaps — 01, 04, 21 — and the number is what tells a learner
-/// *which* card this is rather than how many tiles precede it
-/// (`screens.jsx:2394`). It is 1-based, as the design prints it.
+/// *which* card this is rather than how many tiles precede it.
+/// It is 1-based, as the design prints it.
 typedef PlacedCard = ({CardWithCollection item, int place, int total});
 
-/// `04 / 37` — the design's own padding and separator (`screens.jsx:2397`).
+/// `04 / 37` — the design's own padding and separator.
 ///
 /// Here rather than in the widget because it is arithmetic over the set, like
 /// everything else in this file, and it can be checked without pumping one.

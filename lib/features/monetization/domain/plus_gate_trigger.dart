@@ -87,8 +87,8 @@ class LockedGuides extends PlusGateTrigger {
 ///
 /// Term of the Day's one action promises the *full* entry, so for a learner
 /// without the course it has to raise this rather than deliver the short
-/// explanation they are already looking at — the design's own note at
-/// `dictionary-extras.jsx:56`.
+/// explanation they are already looking at, which the design says in as many
+/// words.
 class LockedFullEntry extends PlusGateTrigger {
   /// Creates a [LockedFullEntry] for the term called [term].
   const LockedFullEntry({required this.term});

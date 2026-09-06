@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 /// run, and a way through to the Path to do it.
 ///
 /// The moment of earning shows mastery once and then it is gone; the design
-/// gives it a card here (`prototype/screens.jsx:2645-2683`).
+/// gives it a card here.
 ///
 /// **Two states, not three.** The fold is [rollUpMastery]'s — Perfect and Solid
 /// are both *solid*, because the design's bar has two colours.

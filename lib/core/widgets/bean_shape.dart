@@ -4,8 +4,8 @@ import 'package:flutter/painting.dart';
 
 /// The coffee-bean silhouette every bean drawing in the app is cut from.
 ///
-/// Geometry transcribed from `prototype/flavor-wheel.jsx`: a 24×24 authoring
-/// box holding an ellipse of rx 7.5 / ry 9.5 tilted −18°, with a wavy centre
+/// Geometry transcribed from the design's flavour wheel: a 24×24 authoring box
+/// holding an ellipse of rx 7.5 / ry 9.5 tilted −18°, with a wavy centre
 /// crease. It lives here rather than inside one painter because the design
 /// draws the *same* bean twice over with two different meanings — the mastery
 /// gauge fills it, the roast meter roasts it — and a second transcription is a

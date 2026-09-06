@@ -134,7 +134,7 @@ void main() {
         'play', (tester) async {
       await _pump(tester);
 
-      // Every unbrewed challenge is an offer (`screens.jsx:1621`). Reading the
+      // Every unbrewed challenge is an offer. Reading the
       // *active* challenge instead would ring at most one tile and would blink
       // off when its window lapsed.
       final corner = tester.widget<CardChallengeCorner>(

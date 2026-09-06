@@ -5,10 +5,10 @@ import 'package:brew_path/shared/theme/overlay_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The overlays that stay fixed, transcribed from the design bundle CSS
-/// (`prototype/index.html`). `--veil` / `--veil-strong` are *not* here: they
-/// are the page background pulled over the page, so they follow the mood and
-/// live on `MoodColors` instead.
+/// The overlays that stay fixed, transcribed from the design bundle CSS.
+/// `--veil` / `--veil-strong` are *not* here: they are the page background
+/// pulled over the page, so they follow the mood and live on `MoodColors`
+/// instead.
 const _spec = <String, Color>{
   '--scrim': Color.fromRGBO(0x1B, 0x16, 0x14, 0.58),
   '--scrim-ink': Color(0xFFFBF7EE),

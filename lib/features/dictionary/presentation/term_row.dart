@@ -56,8 +56,8 @@ class TermRow extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // The respelling sits beside the word, not under it —
-                      // it is how the word sounds, not a second fact about it
-                      // (`dictionary.jsx:235`). It wraps rather than
+                      // it is how the word sounds, not a second fact about it.
+                      // It wraps rather than
                       // truncating, because half a respelling is worse than
                       // none.
                       Wrap(

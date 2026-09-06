@@ -33,6 +33,28 @@ Iterable<String> stringLiteralsIn(String source) sync* {
   }
 }
 
+/// The comment text in [source], line and block alike, one entry per comment.
+///
+/// The inverse of [withoutComments], and crude in the same way and for the same
+/// reason: a rule about what the code *says about itself* wants prose, and
+/// over-collecting is the safe direction.
+///
+/// ⚠️ **A `//` inside a string literal reads as a comment start here**, so
+/// everything after a URL on the same line is collected as prose. Nothing in
+/// the repo trips it today; a caller adding a rule about paths should check
+/// that first, because a URL sitting above one is exactly the shape that would
+/// make this cry wolf.
+Iterable<String> commentsIn(String source) sync* {
+  // `dotAll` is for the block form only, which spans lines. The line form has
+  // to stay `[^\n]*`: with `dotAll` its `.` matches newlines too, so the first
+  // `//` in a file swallows everything after it — string literals included,
+  // which is how a rule about prose starts reading code.
+  final pattern = RegExp(r'/\*.*?\*/|//[^\n]*', dotAll: true);
+  for (final match in pattern.allMatches(source)) {
+    yield match.group(0)!;
+  }
+}
+
 /// [source] with its comments removed.
 ///
 /// A sweep that reads prose finds the thing it forbids in the sentence
