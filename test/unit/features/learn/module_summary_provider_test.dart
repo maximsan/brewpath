@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/content_fixtures.dart';
+import '../../../support/progress_seed.dart';
 import '../../../support/widget_harness.dart';
 
 final ModuleModel _module = testModule();
@@ -70,7 +71,10 @@ void main() {
 
   test('carries the Module Reward card once it has been collected', () async {
     final container = harness();
-    await container.read(cardRepositoryProvider).collectCard(_moduleReward.id);
+    await seedCollectible(
+      container.read(snapshotRepositoryProvider),
+      _moduleReward.id,
+    );
 
     final summary = await container.read(moduleSummaryProvider('m1').future);
 

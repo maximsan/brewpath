@@ -102,6 +102,23 @@ void main() {
       expect(published.deviceId, _thisDevice);
     });
 
+    test('clears the finished lessons, their results and the cards', () async {
+      // Named one by one rather than left to the equality above: these three
+      // are what the screens read since progress moved onto the snapshot
+      // (#115), so a wipe that missed one would leave a learner who asked to
+      // start over still holding a course.
+      expect(_stored.clearedByReset.completedLessons, isNotEmpty);
+      expect(_stored.clearedByReset.bestResults, isNotEmpty);
+      expect(_stored.clearedByReset.ownedCollectibles, isNotEmpty);
+
+      await wipe.resetProgress();
+
+      final after = (await snapshots.read()).clearedByReset;
+      expect(after.completedLessons, isEmpty);
+      expect(after.bestResults, isEmpty);
+      expect(after.ownedCollectibles, isEmpty);
+    });
+
     test('keeps the grove the learner chose', () async {
       await wipe.resetProgress();
 

@@ -97,9 +97,15 @@ class ClearedByReset {
 
   /// Lesson id → the day it was **first** completed.
   ///
-  /// The date is not decoration: the daily free allowance counts first
-  /// completions dated today, which closes the two-device leak where a phone
-  /// and a tablet would each grant a full day's quota.
+  /// The day is not decoration: it is what backfills the streak for a learner
+  /// whose history predates the day set — `streakDaySet` unions these in, and
+  /// it is the only thing that reads them. Merging keeps the **earliest** of
+  /// two devices' answers, so a lesson stays dated when it was actually
+  /// finished.
+  ///
+  /// It does **not** feed the free daily allowance, which this doc claimed
+  /// until #115: `canStartActivity` counts today's [dailyActivity] entries and
+  /// never looks here.
   final Map<String, int> completedLessons;
 
   /// Lesson id → best graded result, never downgraded.
@@ -219,6 +225,58 @@ class ClearedByReset {
     activeDays: marksDay ? {...activeDays, day} : activeDays,
   );
 
+  /// A copy recording [lessonId] as first completed on [day], scoring
+  /// [mastery].
+  ///
+  /// Both halves move together because they are one event: the day is when the
+  /// lesson was finished, the result is how it went.
+  ///
+  /// **The earliest day wins, and the result only rises.** The merge resolves
+  /// two devices with `min` and `MasteryResult.best`; a local write that
+  /// disagreed would move a first completion later than it happened — which
+  /// the streak backfills from — or take back a run the learner has had.
+  ClearedByReset withLessonCompleted(
+    String lessonId, {
+    required int day,
+    required MasteryResult mastery,
+  }) {
+    final first = completedLessons[lessonId];
+    return _copy(
+      completedLessons: {
+        ...completedLessons,
+        lessonId: first == null || day < first ? day : first,
+      },
+      bestResults: _bestResultsWith(lessonId, mastery),
+    );
+  }
+
+  /// A copy with [mastery] folded into [lessonId]'s stored best.
+  ///
+  /// What a replay writes, and all it writes: it pays nothing and collects
+  /// nothing, but it can lift a result. Raise-only, so a bad run never takes
+  /// back a good one.
+  ClearedByReset withBestResult(String lessonId, MasteryResult mastery) =>
+      _copy(bestResults: _bestResultsWith(lessonId, mastery));
+
+  /// [bestResults] with [mastery] folded in at [lessonId], never downgraded.
+  Map<String, MasteryResult> _bestResultsWith(
+    String lessonId,
+    MasteryResult mastery,
+  ) {
+    final stored = bestResults[lessonId];
+    return {
+      ...bestResults,
+      lessonId: stored == null ? mastery : MasteryResult.best(stored, mastery),
+    };
+  }
+
+  /// A copy with the collectible [cardId] earned.
+  ///
+  /// A union, so collecting one already held changes nothing — which is what
+  /// lets the module reward go without a ledger guarding it.
+  ClearedByReset withCollectible(String cardId) =>
+      _copy(ownedCollectibles: {...ownedCollectibles, cardId});
+
   /// Whether the one-off moment named [key] has been acknowledged.
   bool hasAck(String key) => acks.containsKey(key);
 
@@ -306,8 +364,17 @@ class ClearedByReset {
   /// landed beside a field rename in #150/#104 and left `main` uncompilable —
   /// so a new writer takes a parameter here rather than spelling the scope out
   /// again.
+  ///
+  /// ⚠️ **A parameter here makes its field replaceable, so monotonicity stops
+  /// being structural for it.** A field with no parameter cannot be lowered by
+  /// any writer; one with a parameter can. Every writer that passes a
+  /// parameter must therefore add, union or fold — never overwrite — which is
+  /// what the writers above do and what their tests pin.
   ClearedByReset _copy({
     Map<String, int>? acks,
+    Map<String, int>? completedLessons,
+    Map<String, MasteryResult>? bestResults,
+    Set<String>? ownedCollectibles,
     int? treeStage,
     Map<int, Set<String>>? dailyActivity,
     Set<int>? activeDays,
@@ -317,11 +384,11 @@ class ClearedByReset {
     Timestamped<Set<String>>? challengesSaved,
     Timestamped<Set<String>>? favourites,
   }) => ClearedByReset(
-    completedLessons: completedLessons,
-    bestResults: bestResults,
+    completedLessons: completedLessons ?? this.completedLessons,
+    bestResults: bestResults ?? this.bestResults,
     activeDays: activeDays ?? this.activeDays,
     acks: acks ?? this.acks,
-    ownedCollectibles: ownedCollectibles,
+    ownedCollectibles: ownedCollectibles ?? this.ownedCollectibles,
     completedModules: completedModules,
     treeStage: treeStage ?? this.treeStage,
     challengesCompleted: challengesCompleted ?? this.challengesCompleted,

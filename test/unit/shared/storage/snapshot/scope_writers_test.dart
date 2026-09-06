@@ -1,3 +1,4 @@
+import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/tree_frames.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -251,5 +252,149 @@ void main() {
 
     expect(second.challengeReactions['bc-m4']?.reaction, 'Hard to tell');
     expect(second.challengesCompleted.where((id) => id == 'bc-m4').length, 1);
+  });
+
+  group('withLessonCompleted', () {
+    const mastery = MasteryResult(correct: 4, total: 5);
+
+    test('records the day and the result together', () {
+      final after = populated.withLessonCompleted(
+        'm9l1',
+        day: 20300,
+        mastery: mastery,
+      );
+
+      expect(after.completedLessons['m9l1'], 20300);
+      expect(after.bestResults['m9l1'], mastery);
+    });
+
+    test('changes the two maps and nothing else', () {
+      final after = populated.withLessonCompleted(
+        'm9l1',
+        day: 20300,
+        mastery: mastery,
+      );
+
+      expect(
+        after.toJson()
+          ..remove('completedLessons')
+          ..remove('bestResults'),
+        populated.toJson()
+          ..remove('completedLessons')
+          ..remove('bestResults'),
+      );
+    });
+
+    test('keeps the earliest day a lesson was ever finished on', () {
+      // The merge resolves two devices with `min`; a local re-write must not
+      // disagree with it and move a first completion later than it happened.
+      final first = populated.withLessonCompleted(
+        'm9l1',
+        day: 20300,
+        mastery: mastery,
+      );
+      final again = first.withLessonCompleted(
+        'm9l1',
+        day: 20390,
+        mastery: mastery,
+      );
+
+      expect(again.completedLessons['m9l1'], 20300);
+    });
+
+    test('never lowers a result it already holds', () {
+      final strong = populated.withLessonCompleted(
+        'm9l1',
+        day: 20300,
+        mastery: const MasteryResult(correct: 5, total: 5),
+      );
+      final weak = strong.withLessonCompleted(
+        'm9l1',
+        day: 20300,
+        mastery: const MasteryResult(correct: 1, total: 5),
+      );
+
+      expect(weak.bestResults['m9l1']?.correct, 5);
+    });
+  });
+
+  group('withBestResult', () {
+    test('lifts a stored result and leaves the completion day alone', () {
+      final completed = populated.withLessonCompleted(
+        'm9l1',
+        day: 20300,
+        mastery: const MasteryResult(correct: 2, total: 5),
+      );
+
+      final after = completed.withBestResult(
+        'm9l1',
+        const MasteryResult(correct: 4, total: 5),
+      );
+
+      expect(after.bestResults['m9l1']?.correct, 4);
+      expect(after.completedLessons['m9l1'], 20300);
+    });
+
+    test('never lowers one', () {
+      final completed = populated.withLessonCompleted(
+        'm9l1',
+        day: 20300,
+        mastery: const MasteryResult(correct: 5, total: 5),
+      );
+
+      final after = completed.withBestResult(
+        'm9l1',
+        const MasteryResult(correct: 3, total: 5),
+      );
+
+      expect(after.bestResults['m9l1']?.correct, 5);
+    });
+
+    test('changes the results and nothing else', () {
+      final after = populated.withBestResult(
+        'm9l1',
+        const MasteryResult(correct: 4, total: 5),
+      );
+
+      expect(
+        after.toJson()..remove('bestResults'),
+        populated.toJson()..remove('bestResults'),
+      );
+    });
+  });
+
+  group('withCollectible', () {
+    test('adds the card and changes nothing else', () {
+      final after = populated.withCollectible('c9');
+
+      expect(after.ownedCollectibles, contains('c9'));
+      expect(
+        after.toJson()..remove('ownedCollectibles'),
+        populated.toJson()..remove('ownedCollectibles'),
+      );
+    });
+
+    test('collecting one already held is a no-op', () {
+      final after = populated.withCollectible('c9');
+      expect(after.withCollectible('c9'), after);
+    });
+  });
+
+  // `completedModules` has no writer on purpose: whether a module is finished
+  // is derived from its lessons and its lock, and a stored second answer
+  // disagrees with the derived one the moment a finished module grows. The
+  // field stays in the scope — the merge and both wipes still carry it — and
+  // `wipe_snapshot_test` covers that.
+  test('no writer here can lower a field it does not take', () {
+    // The guard behind the writers above: a field with no `_copy` parameter
+    // cannot be replaced by any of them, only read through.
+    expect(
+      populated.withCollectible('c9').completedModules,
+      populated.completedModules,
+    );
+    expect(
+      populated.withAck('x', 1).ownedCollectibles,
+      populated.ownedCollectibles,
+    );
   });
 }

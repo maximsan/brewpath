@@ -6,9 +6,7 @@ import 'package:brew_path/features/progress/domain/streak_status.dart';
 import 'package:brew_path/features/progress/domain/tree_frames.dart';
 import 'package:brew_path/services/analytics/noop_analytics_service.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
-import 'package:brew_path/shared/repositories/card_repository.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
-import 'package:brew_path/shared/repositories/progress_repository.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
@@ -40,8 +38,6 @@ void main() {
   late AppDatabase db;
   late LessonCompletionService service;
   late ContentRepository content;
-  late ProgressRepository progress;
-  late CardRepository cards;
   late SnapshotRepository snapshots;
 
   setUp(() async {
@@ -49,12 +45,8 @@ void main() {
     AppDatabaseService.instance = db;
 
     content = ContentRepository();
-    progress = ProgressRepository();
-    cards = CardRepository();
     snapshots = SnapshotRepository();
     service = LessonCompletionService(
-      progressRepository: progress,
-      cardRepository: cards,
       contentRepository: content,
       snapshotRepository: snapshots,
       analyticsService: const NoOpAnalyticsService(),
@@ -65,11 +57,27 @@ void main() {
     await db.close();
   });
 
-  /// What the learner has banked, summed off the completion records the way
-  /// the derived total does. Nothing stores a running counter any more, so
-  /// this is the whole ledger a lesson leaves behind.
-  Future<int> bankedPoints() async => (await progress.getAllCompleted())
-      .fold<int>(0, (sum, record) => sum + record.xpEarned);
+  /// The progress scope of the snapshot — **the record** a completion leaves.
+  Future<ClearedByReset> recorded() async =>
+      (await snapshots.read()).clearedByReset;
+
+  /// What the learner has banked, summed off the course the way the derived
+  /// total does: nothing stores the points, so what a finished lesson is worth
+  /// is read from the lesson itself.
+  Future<int> bankedPoints() async {
+    final finished = (await recorded()).completedLessons.keys.toSet();
+    return (await content.getLessons())
+        .where((lesson) => finished.contains(lesson.id))
+        .fold<int>(0, (sum, lesson) => sum + lesson.points);
+  }
+
+  /// Whether [cardId] is held.
+  Future<bool> holdsCard(String cardId) async =>
+      (await recorded()).ownedCollectibles.contains(cardId);
+
+  /// The best result stored for [lessonId], or null when it is unfinished.
+  Future<MasteryResult?> storedMastery(String lessonId) async =>
+      (await recorded()).bestResults[lessonId];
 
   /// The snapshot's day set — what the streak is derived from. Nothing stores
   /// a streak count any more, so this is the whole record a completion leaves.
@@ -234,16 +242,20 @@ void main() {
         expect(result.moduleCompleted, isFalse);
         expect(result.moduleCard, isNull);
         expect(await bankedPoints(), 10);
-        expect(await cards.isCardCollected('c1'), isTrue);
+        expect(await holdsCard('c1'), isTrue);
         expect(await activeDays(), {epochDay(at)});
         expect(
           (await entriesOn(at)).map((e) => parseActivityEntry(e).type),
           [ActivityType.lesson],
         );
 
-        final record = (await progress.getByLessonId('m1l1'))!;
-        expect(record.isCompleted, isTrue);
-        expect(record.mastery, const MasteryResult(correct: 4, total: 5));
+        // The snapshot is the record: the lesson against the day it was
+        // finished, and the pair it was scored on.
+        expect((await recorded()).completedLessons['m1l1'], epochDay(at));
+        expect(
+          await storedMastery('m1l1'),
+          const MasteryResult(correct: 4, total: 5),
+        );
       },
     );
 
@@ -253,6 +265,8 @@ void main() {
         lesson,
         mastery: const MasteryResult(correct: 4, total: 5),
       );
+      final heldBefore = (await recorded()).ownedCollectibles;
+
       final replay = await service.finishLesson(
         lesson,
         mastery: const MasteryResult(correct: 4, total: 5),
@@ -260,11 +274,14 @@ void main() {
 
       expect(replay.isReplay, isTrue);
       expect(replay.pointsEarned, 0, reason: 'the lesson pays once, ever');
-      expect((await progress.getAllCompleted()).length, 1);
+      expect((await recorded()).completedLessons, hasLength(1));
       // Nothing at all. Replays used to pay a once-a-day practice reward,
       // which §5.1's "replays pay 0" never allowed and which was farmable
       // past the whole course's worth in five days (#16).
       expect(await bankedPoints(), 10);
+      // And no second collectible: the card is handed over once, by the
+      // completion that earned it.
+      expect((await recorded()).ownedCollectibles, heldBefore);
     });
 
     test(
@@ -300,7 +317,10 @@ void main() {
       final moduleReward = await content.getCardForModule('m1');
       expect(moduleReward, isNotNull);
       expect(last.moduleCard?.id, moduleReward!.id);
-      expect(await cards.isCardCollected(moduleReward.id), isTrue);
+      expect(await holdsCard(moduleReward.id), isTrue);
+      // The card is all that is recorded. Whether the module is finished is
+      // derived from its lessons, so nothing writes `completedModules`.
+      expect((await recorded()).completedModules, isEmpty);
     });
 
     test('a module part-finished hands over no Module Reward card', () async {
@@ -312,7 +332,7 @@ void main() {
 
       final moduleReward = (await content.getCardForModule('m1'))!;
       expect(result.moduleCard, isNull);
-      expect(await cards.isCardCollected(moduleReward.id), isFalse);
+      expect(await holdsCard(moduleReward.id), isFalse);
     });
 
     test(
@@ -323,8 +343,6 @@ void main() {
         // module unfinished — that would silently cost the recap its routing.
         final bare = _NoModuleRewardContent();
         final service = LessonCompletionService(
-          progressRepository: progress,
-          cardRepository: cards,
           contentRepository: bare,
           snapshotRepository: snapshots,
           analyticsService: const NoOpAnalyticsService(),
@@ -385,7 +403,8 @@ void main() {
           lesson,
           mastery: const MasteryResult(correct: 3, total: 5),
         );
-        final before = (await progress.getByLessonId(lesson.id))!;
+        final bankedBefore = await bankedPoints();
+        final firstFinishedOn = (await recorded()).completedLessons[lesson.id];
 
         await service.finishLesson(
           lesson,
@@ -393,11 +412,13 @@ void main() {
           now: DateTime(2026, 5, 22),
         );
 
-        final after = (await progress.getByLessonId(lesson.id))!;
-        expect(after.isCompleted, isTrue);
-        expect(after.xpEarned, before.xpEarned);
-        expect(after.completedAt, before.completedAt);
-        expect(await cards.isCardCollected('c1'), isTrue);
+        final after = await recorded();
+        expect(after.completedLessons, contains(lesson.id));
+        expect(await bankedPoints(), bankedBefore);
+        // The day a lesson was **first** finished on, which the streak
+        // backfills from — a replay must not move it to today.
+        expect(after.completedLessons[lesson.id], firstFinishedOn);
+        expect(await holdsCard('c1'), isTrue);
       },
     );
 
@@ -493,7 +514,7 @@ void main() {
 
       expect(result.mastery, const MasteryResult(correct: 9, total: 10));
       expect(
-        (await progress.getByLessonId(lesson.id))!.mastery,
+        await storedMastery(lesson.id),
         const MasteryResult(correct: 9, total: 10),
       );
     });
@@ -513,7 +534,7 @@ void main() {
 
       expect(result.mastery, const MasteryResult(correct: 9, total: 10));
       expect(
-        (await progress.getByLessonId(lesson.id))!.mastery,
+        await storedMastery(lesson.id),
         const MasteryResult(correct: 9, total: 10),
       );
     });

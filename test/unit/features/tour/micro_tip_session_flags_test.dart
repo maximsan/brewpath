@@ -1,14 +1,14 @@
-import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/domain/streak_status.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/tour/domain/micro_tip_providers.dart';
-import 'package:brew_path/shared/repositories/progress_repository.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../../../support/progress_seed.dart';
 
 /// The two flags that remember an event rather than a state.
 ///
@@ -147,11 +147,7 @@ void main() {
       await container.read(completedLessonIdsProvider.future);
       expect(container.read(lessonFinishedThisSessionProvider), isFalse);
 
-      await ProgressRepository().saveCompletion(
-        lessonId: 'm1l1',
-        xpEarned: 10,
-        mastery: const MasteryResult(correct: 5, total: 5),
-      );
+      await seedCompletedLesson(SnapshotRepository(), 'm1l1');
       container.invalidate(completedLessonsProvider);
       await container.read(completedLessonIdsProvider.future);
 
@@ -159,11 +155,7 @@ void main() {
     });
 
     test('is not armed by lessons the learner arrived with', () async {
-      await ProgressRepository().saveCompletion(
-        lessonId: 'm1l1',
-        xpEarned: 10,
-        mastery: const MasteryResult(correct: 5, total: 5),
-      );
+      await seedCompletedLesson(SnapshotRepository(), 'm1l1');
 
       expect(await container.read(completedLessonIdsProvider.future), {'m1l1'});
       expect(container.read(lessonFinishedThisSessionProvider), isFalse);

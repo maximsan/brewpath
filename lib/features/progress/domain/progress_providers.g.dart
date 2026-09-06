@@ -10,45 +10,54 @@ part of 'progress_providers.dart';
 // ignore_for_file: type=lint, type=warning
 /// The learner's points total — **derived, never stored**.
 ///
-/// Two payouts exist and both already leave a record: a lesson's flat ten is
-/// written onto its completion row, and a challenge's five is implied by its id
-/// sitting in the completed set. Summing them here means the total cannot drift
-/// from what was actually earned, and Reset Progress needs no rule of its own —
-/// clearing the completions clears the total by construction.
+/// Two payouts exist and both leave a record: a finished lesson is worth the
+/// flat ten it authors, and a challenge's five is implied by its id sitting in
+/// the completed set. Summing them here means the total cannot drift from what
+/// was actually earned, and Reset Progress needs no rule of its own — clearing
+/// the completions clears the total by construction.
 ///
-/// It used to be a counter on the settings row that every payout incremented.
-/// A counter is a second copy of a derivable fact, and the fact it copied was
-/// computed under rules the app no longer plays (#16).
+/// **The payout is read off the course, not off a copy of it.** The old
+/// completions table banked the points on the row; the snapshot stores which
+/// lessons are finished and nothing about what they paid, because what a
+/// lesson is worth is a fact about the lesson. A finished lesson the content
+/// no longer carries therefore pays nothing, which is the same answer a
+/// dropped row would have given.
 
 @ProviderFor(totalPoints)
 final totalPointsProvider = TotalPointsProvider._();
 
 /// The learner's points total — **derived, never stored**.
 ///
-/// Two payouts exist and both already leave a record: a lesson's flat ten is
-/// written onto its completion row, and a challenge's five is implied by its id
-/// sitting in the completed set. Summing them here means the total cannot drift
-/// from what was actually earned, and Reset Progress needs no rule of its own —
-/// clearing the completions clears the total by construction.
+/// Two payouts exist and both leave a record: a finished lesson is worth the
+/// flat ten it authors, and a challenge's five is implied by its id sitting in
+/// the completed set. Summing them here means the total cannot drift from what
+/// was actually earned, and Reset Progress needs no rule of its own — clearing
+/// the completions clears the total by construction.
 ///
-/// It used to be a counter on the settings row that every payout incremented.
-/// A counter is a second copy of a derivable fact, and the fact it copied was
-/// computed under rules the app no longer plays (#16).
+/// **The payout is read off the course, not off a copy of it.** The old
+/// completions table banked the points on the row; the snapshot stores which
+/// lessons are finished and nothing about what they paid, because what a
+/// lesson is worth is a fact about the lesson. A finished lesson the content
+/// no longer carries therefore pays nothing, which is the same answer a
+/// dropped row would have given.
 
 final class TotalPointsProvider
     extends $FunctionalProvider<AsyncValue<int>, int, FutureOr<int>>
     with $FutureModifier<int>, $FutureProvider<int> {
   /// The learner's points total — **derived, never stored**.
   ///
-  /// Two payouts exist and both already leave a record: a lesson's flat ten is
-  /// written onto its completion row, and a challenge's five is implied by its id
-  /// sitting in the completed set. Summing them here means the total cannot drift
-  /// from what was actually earned, and Reset Progress needs no rule of its own —
-  /// clearing the completions clears the total by construction.
+  /// Two payouts exist and both leave a record: a finished lesson is worth the
+  /// flat ten it authors, and a challenge's five is implied by its id sitting in
+  /// the completed set. Summing them here means the total cannot drift from what
+  /// was actually earned, and Reset Progress needs no rule of its own — clearing
+  /// the completions clears the total by construction.
   ///
-  /// It used to be a counter on the settings row that every payout incremented.
-  /// A counter is a second copy of a derivable fact, and the fact it copied was
-  /// computed under rules the app no longer plays (#16).
+  /// **The payout is read off the course, not off a copy of it.** The old
+  /// completions table banked the points on the row; the snapshot stores which
+  /// lessons are finished and nothing about what they paid, because what a
+  /// lesson is worth is a fact about the lesson. A finished lesson the content
+  /// no longer carries therefore pays nothing, which is the same answer a
+  /// dropped row would have given.
   TotalPointsProvider._()
     : super(
         from: null,
@@ -74,7 +83,7 @@ final class TotalPointsProvider
   }
 }
 
-String _$totalPointsHash() => r'23c4d5de9b6d4b471eeec26efd78d5fc7adf278a';
+String _$totalPointsHash() => r'cf138c6951ffe7e42a3e3bcb0631324804feae2d';
 
 /// The streak, the freeze and the covered days, derived from the snapshot.
 ///
@@ -146,7 +155,7 @@ final class ActiveDaySetProvider
   }
 }
 
-String _$activeDaySetHash() => r'8dc582484d95ced70210f85fe37c80552e124dd8';
+String _$activeDaySetHash() => r'4b105af611fae87cdac82b149190852aaae5df4a';
 
 /// The current week's seven cells, ready for any strip host — one
 /// derivation, so the streak screen, the Profile tile and the share card can
@@ -280,24 +289,37 @@ final class StreakProvider
 
 String _$streakHash() => r'261493eb16a2e61df9df93a16935627a6b845256';
 
-/// All of the user's completed-lesson records.
+/// The lessons the learner has finished, off the progress snapshot.
+///
+/// **The snapshot is the record** (#115). It used to be the completions
+/// table, which is now written by nothing and dropped by #116; the two fields
+/// read here — the day each lesson was first finished, and the best result
+/// stored for it — are what those rows carried that anything still asks for.
 
 @ProviderFor(completedLessons)
 final completedLessonsProvider = CompletedLessonsProvider._();
 
-/// All of the user's completed-lesson records.
+/// The lessons the learner has finished, off the progress snapshot.
+///
+/// **The snapshot is the record** (#115). It used to be the completions
+/// table, which is now written by nothing and dropped by #116; the two fields
+/// read here — the day each lesson was first finished, and the best result
+/// stored for it — are what those rows carried that anything still asks for.
 
 final class CompletedLessonsProvider
     extends
         $FunctionalProvider<
-          AsyncValue<List<ProgressRecord>>,
-          List<ProgressRecord>,
-          FutureOr<List<ProgressRecord>>
+          AsyncValue<CompletedLessons>,
+          CompletedLessons,
+          FutureOr<CompletedLessons>
         >
-    with
-        $FutureModifier<List<ProgressRecord>>,
-        $FutureProvider<List<ProgressRecord>> {
-  /// All of the user's completed-lesson records.
+    with $FutureModifier<CompletedLessons>, $FutureProvider<CompletedLessons> {
+  /// The lessons the learner has finished, off the progress snapshot.
+  ///
+  /// **The snapshot is the record** (#115). It used to be the completions
+  /// table, which is now written by nothing and dropped by #116; the two fields
+  /// read here — the day each lesson was first finished, and the best result
+  /// stored for it — are what those rows carried that anything still asks for.
   CompletedLessonsProvider._()
     : super(
         from: null,
@@ -314,17 +336,17 @@ final class CompletedLessonsProvider
 
   @$internal
   @override
-  $FutureProviderElement<List<ProgressRecord>> $createElement(
+  $FutureProviderElement<CompletedLessons> $createElement(
     $ProviderPointer pointer,
   ) => $FutureProviderElement(pointer);
 
   @override
-  FutureOr<List<ProgressRecord>> create(Ref ref) {
+  FutureOr<CompletedLessons> create(Ref ref) {
     return completedLessons(ref);
   }
 }
 
-String _$completedLessonsHash() => r'c29c67109f5f475a6482b2f49c6e10eb5a32e746';
+String _$completedLessonsHash() => r'0e4e21bf097fdda5d742ff4cfaea3c38940f68a7';
 
 /// The ids of the lessons the learner has finished.
 ///
@@ -384,14 +406,22 @@ final class CompletedLessonIdsProvider
 }
 
 String _$completedLessonIdsHash() =>
-    r'ded43c971e0605791b0e17a296c4ba3386588e12';
+    r'fb927706b8da83b2b28525d2ed2d345baa2acc64';
 
-/// The ids of all cards the user has collected.
+/// The ids of all cards the user has collected, off the progress snapshot.
+///
+/// Stored in full rather than derived from the finished lessons: the lesson id
+/// space has been rewritten once already on this project, and a derived set
+/// would have silently revoked every card the rename touched.
 
 @ProviderFor(collectedCards)
 final collectedCardsProvider = CollectedCardsProvider._();
 
-/// The ids of all cards the user has collected.
+/// The ids of all cards the user has collected, off the progress snapshot.
+///
+/// Stored in full rather than derived from the finished lessons: the lesson id
+/// space has been rewritten once already on this project, and a derived set
+/// would have silently revoked every card the rename touched.
 
 final class CollectedCardsProvider
     extends
@@ -401,7 +431,11 @@ final class CollectedCardsProvider
           FutureOr<List<String>>
         >
     with $FutureModifier<List<String>>, $FutureProvider<List<String>> {
-  /// The ids of all cards the user has collected.
+  /// The ids of all cards the user has collected, off the progress snapshot.
+  ///
+  /// Stored in full rather than derived from the finished lessons: the lesson id
+  /// space has been rewritten once already on this project, and a derived set
+  /// would have silently revoked every card the rename touched.
   CollectedCardsProvider._()
     : super(
         from: null,
@@ -428,7 +462,7 @@ final class CollectedCardsProvider
   }
 }
 
-String _$collectedCardsHash() => r'3af5e2e1b76e38bda84b804b5a114b3cd9874c13';
+String _$collectedCardsHash() => r'442ce2ea146aaad92a581ece9811b9ca444481d6';
 
 /// Highest tree stage ever reached: `max(stored, derived)`, as the field has
 /// always described itself.
@@ -487,7 +521,7 @@ final class TreeStageProvider
   }
 }
 
-String _$treeStageHash() => r'00c8c29c4c6041beba826ae5152ea17cc9cad882';
+String _$treeStageHash() => r'7cbadb3b2897f16b1ae4deb444d49e6b8335090b';
 
 /// The learner's progress through the core course.
 
@@ -534,7 +568,7 @@ final class CoreLessonProgressProvider
 }
 
 String _$coreLessonProgressHash() =>
-    r'ad6fbf7e4293b231c2def4776ae73be186e6a5cf';
+    r'f871cef902b7eb561382140b452faf6eaf4fa846';
 
 /// The month the Profile's closing line names, or null before there is one.
 ///

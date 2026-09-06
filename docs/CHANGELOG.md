@@ -66,6 +66,21 @@ You can always edit this file by hand instead — the helpers just save effort.
   caller's to supply and cannot be left out, so the mascot still names no
   payout of its own.
 
+### Changed
+
+- **Your progress now lives in one place.** Finishing a lesson used to write
+  into one store while the sync record kept another; the two could disagree,
+  and only one of them could ever reach a second device. Everything a lesson
+  leaves behind — that you finished it, the day you did, what you scored, and
+  the card it handed over — is now recorded in the progress snapshot, and
+  every screen reads it back from there. Nothing you see changes, which is
+  the point: the same lessons are finished, the same cards are held, the same
+  points are counted.
+
+  Your points are now added up from the course itself rather than from a copy
+  of what each lesson paid when you finished it, so a lesson can never be
+  worth one thing on the Profile and another on the lesson that paid it.
+
 ### Fixed
 
 - **The explanation under a verdict is grey again on the decision and recall

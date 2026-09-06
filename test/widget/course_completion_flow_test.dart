@@ -4,9 +4,9 @@ import 'package:brew_path/features/companion/domain/companion_lines.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/learn/presentation/learn_list_view.dart';
 import 'package:brew_path/features/onboarding/presentation/loading/loading_screen.dart';
+import 'package:brew_path/features/progress/domain/completed_lessons.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
-import 'package:brew_path/shared/storage/progress_record.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -36,15 +36,10 @@ Future<void> _settleUntil(WidgetTester tester, Finder until) async {
 void main() {
   setUp(useInMemoryDatabase);
 
-  final completed = [
-    ProgressRecord(
-      lessonId: 'm1l1',
-      isCompleted: true,
-      xpEarned: 10,
-      completedAt: DateTime(2026, 8, 15),
-      mastery: const MasteryResult(correct: 1, total: 1),
-    ),
-  ];
+  const completed = CompletedLessons(
+    completedOn: {'m1l1': 20680},
+    mastery: {'m1l1': MasteryResult(correct: 1, total: 1)},
+  );
 
   const lines = CompanionLines({
     'courseComplete': ['You finished the whole course!'],

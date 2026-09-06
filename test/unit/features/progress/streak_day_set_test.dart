@@ -15,7 +15,9 @@ Set<int> assemble({
 }) => streakDaySet(
   activeDays: activeDays,
   dailyActivity: dailyActivity,
-  firstCompletionDays: completions,
+  // The snapshot stores the day a lesson was finished, not the moment — the
+  // helper still takes dates so the cases below read as calendar days.
+  firstCompletionDays: completions.map(epochDay),
 );
 
 void main() {

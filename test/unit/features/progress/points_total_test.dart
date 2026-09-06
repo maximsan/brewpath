@@ -1,10 +1,10 @@
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
-import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/progress_seed.dart';
 import '../../../support/widget_harness.dart';
 
 /// The learner's points total, asserted through the provider the screens read
@@ -15,6 +15,8 @@ import '../../../support/widget_harness.dart';
 /// completion, five for a challenge's. There is no counter behind any of this;
 /// the total is summed off the records each payout already leaves.
 void main() {
+  // The total is summed off the course now, so these read the shipped banks.
+  TestWidgetsFlutterBinding.ensureInitialized();
   setUp(useInMemoryDatabase);
 
   // Pinned, so a run started before midnight and asserted after it cannot fail.
@@ -26,15 +28,18 @@ void main() {
     return container;
   }
 
-  /// Records a first completion paying the flat ten a lesson authors.
+  /// Records a first completion, which pays the flat ten the lesson authors.
+  ///
+  /// The ten is **not passed in** any more: the snapshot stores which lessons
+  /// are finished and nothing about what they paid, so the total is summed off
+  /// the course. That is what makes these assertions mean something — a lesson
+  /// re-authored at a different value moves the total here.
   Future<void> completeLesson(ProviderContainer container, String lessonId) =>
-      container
-          .read(progressRepositoryProvider)
-          .saveCompletion(
-            lessonId: lessonId,
-            xpEarned: 10,
-            mastery: const MasteryResult(correct: 5, total: 5),
-          );
+      seedCompletedLesson(
+        container.read(snapshotRepositoryProvider),
+        lessonId,
+        at: at,
+      );
 
   Future<int> total(ProviderContainer container) =>
       container.read(totalPointsProvider.future);

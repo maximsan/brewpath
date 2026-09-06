@@ -61,7 +61,7 @@ Future<KeepSharpRecommendation?> keepSharpRecommendation(Ref ref) async {
       formatsPlayedToday: distinctMiniGameIds(
         snapshot.clearedByReset.dailyActivity[day] ?? const {},
       ),
-      completedLessonIds: [for (final record in completed) record.lessonId],
+      completedLessonIds: completed.ids.toList(),
       drillableTermCount: pools.accessible.length,
       // The same pools value: the deck a flashcard review deals is the saved
       // half of it, so the two drills cannot disagree about the learner's own

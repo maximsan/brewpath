@@ -77,9 +77,7 @@ Future<DictionaryView> dictionaryView(Ref ref) async {
   return DictionaryView(
     terms: visibleTerms(terms: await termsFuture, hasCourse: hasCourse),
     categories: await categoriesFuture,
-    completedLessonIds: {
-      for (final record in await completedFuture) record.lessonId,
-    },
+    completedLessonIds: (await completedFuture).ids,
     hasCourse: hasCourse,
   );
 }

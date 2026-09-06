@@ -78,7 +78,7 @@ class _CourseCompletionScreenState
       return const Scaffold(body: LoadingIndicator());
     }
     final stats = (
-      lessons: lessons.value?.length ?? 0,
+      lessons: lessons.value?.count ?? 0,
       cards: cards.value?.length ?? 0,
       streak: streak.value ?? 0,
     );

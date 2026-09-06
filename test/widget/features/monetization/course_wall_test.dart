@@ -9,15 +9,15 @@ import 'package:brew_path/features/monetization/domain/free_tier.dart';
 import 'package:brew_path/features/monetization/domain/locked_row_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
-import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/services/payments/granted_payments_service.dart';
 import 'package:brew_path/services/payments/payments_provider.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
-import 'package:brew_path/shared/repositories/progress_repository.dart';
+import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/progress_seed.dart';
 import '../../../support/widget_harness.dart';
 
 /// The course wall, asserted against the real app: the real router, the real
@@ -40,16 +40,8 @@ void main() {
   }
 
   /// Walks the learner to the end of what free carries.
-  Future<void> finishTheFreeLessons() async {
-    final progress = ProgressRepository();
-    for (final lessonId in freeLessonIds) {
-      await progress.saveCompletion(
-        lessonId: lessonId,
-        xpEarned: 10,
-        mastery: const MasteryResult(correct: 5, total: 5),
-      );
-    }
-  }
+  Future<void> finishTheFreeLessons() =>
+      seedCompletedLessons(SnapshotRepository(), freeLessonIds);
 
   /// What the locked card counts once the free set is finished: every lesson
   /// still ahead, course-wide.

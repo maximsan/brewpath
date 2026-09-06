@@ -7,6 +7,7 @@ import 'package:brew_path/features/profile/presentation/widgets/lesson_progress_
 import 'package:brew_path/features/profile/presentation/widgets/profile_progress_line.dart';
 import 'package:brew_path/features/profile/presentation/widgets/streak_card.dart';
 import 'package:brew_path/features/profile/presentation/widgets/tree_hero_card.dart';
+import 'package:brew_path/features/progress/domain/completed_lessons.dart';
 import 'package:brew_path/features/progress/domain/grove_treatment.dart';
 import 'package:brew_path/features/progress/domain/mastery_rollup.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
@@ -50,10 +51,10 @@ class ProfileScreen extends ConsumerWidget {
     final course = ref.watch(coreLessonProgressProvider).asData?.value;
     final joined = ref.watch(joinedDateProvider).asData?.value;
 
-    final records = lessons.asData?.value ?? const [];
+    final records = lessons.asData?.value ?? const CompletedLessons();
     final rollup = rollUpMastery(
-      records.map((record) => record.mastery),
-      total: course?.total ?? records.length,
+      records.mastery.values,
+      total: course?.total ?? records.count,
     );
 
     return Scaffold(
@@ -97,7 +98,7 @@ class ProfileScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: AppSpacing.base),
                 ProfileProgressLine(
-                  lessons: records.length,
+                  lessons: records.count,
                   points: points.asData?.value ?? 0,
                 ),
                 // Absent until a lesson holds a score: an empty bar under a

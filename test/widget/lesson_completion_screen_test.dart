@@ -230,7 +230,7 @@ void main() {
       );
       expect(pointsBefore, 0);
       expect(streakBefore, 0);
-      expect(lessonsBefore, isEmpty);
+      expect(lessonsBefore?.isEmpty, isTrue);
       expect(cardsBefore, isEmpty);
 
       await pumpCompletion(tester, container);
@@ -254,7 +254,7 @@ void main() {
       );
       expect(pointsAfter, 10); // m1l1 pays the flat ten it authors
       expect(streakAfter, 1);
-      expect(lessonsAfter, hasLength(1));
+      expect(lessonsAfter?.ids, {'m1l1'});
       expect(cardsAfter, contains('c1'));
     },
   );

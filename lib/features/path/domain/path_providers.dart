@@ -25,10 +25,8 @@ Future<List<PathModule>> pathModules(Ref ref) async {
   return buildPathModules(
     modules: modules,
     lessonsById: {for (final lesson in lessons) lesson.id: lesson},
-    completedIds: {for (final record in completed) record.lessonId},
-    masteryById: {
-      for (final record in completed) record.lessonId: record.mastery,
-    },
+    completedIds: completed.ids,
+    masteryById: completed.mastery,
     // Awaited, not `.value ?? false`. The screen is already behind a
     // `FutureProvider`, so no half-built Path is ever drawn.
     hasCourse: hasCourse,
