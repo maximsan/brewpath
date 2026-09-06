@@ -23,15 +23,15 @@ void main() {
   /// - `app_theme.dart` — `BottomSheetThemeData` has a barrier colour field and
   ///   no filter field. It is the safety net under `showAppSheet`, which is the
   ///   door that carries both halves.
-  /// - `tour_stop.dart` — `showcaseview` takes a colour and paints a hole in
-  ///   it. A backdrop blur there would blur the cut-out, which is the one thing
-  ///   on a coach mark that has to stay sharp.
+  /// - `tour_frame.dart` — the Tour paints the dim with a hole in it. A
+  ///   backdrop blur there would blur the cut-out, which is the one thing on a
+  ///   coach mark that has to stay sharp; the design draws none there either.
   ///
   /// A third entry is not a formality: it means an overlay is rendering at half
   /// strength somewhere, and the reason belongs here before the code lands.
   const mayTakeColourAlone = <String>{
     'lib/app/app_theme.dart',
-    'lib/features/tour/presentation/tour_stop.dart',
+    'lib/features/tour/presentation/tour_frame.dart',
   };
 
   test('no source outside the primitive opens a dialog directly', () {

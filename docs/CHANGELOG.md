@@ -54,6 +54,11 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **The Today tour is the one the design draws.** A bordered frame travels
+  between the four things it introduces instead of a spotlight snapping
+  between them, the card carries its own counter, dots, Skip and Next, and
+  nothing behind it can be tapped while it runs. Leaving the tab ends it.
+
 - Pages pushed from a tab leave the route themselves when their bar's back
   is tapped; a screen says otherwise only when it has somewhere nearer to go
   first (the dictionary leaves a category before the shelf).

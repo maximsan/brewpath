@@ -38,7 +38,7 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
       // No intro overlay and no write: someone asking to see the Tour again
       // has already answered the question the overlay asks, and the flag
       // records that answer, not how many times the Tour has run.
-      startTourStops(ref);
+      startTour(ref);
     });
   }
 
@@ -72,7 +72,7 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
       // has already happened by then.
       await markTourSeen(ref);
       if (!mounted || !accepted) return;
-      startTourStops(ref);
+      startTour(ref);
     });
   }
 

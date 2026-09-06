@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 
 /// The design's `fade-up`: 260ms ease-out, from four pixels down.
 ///
+/// One rule with more than one host — the design gives every card that arrives
+/// over the page the same entrance, and the guide layer alone has two of them.
+///
 /// Reduced motion gets no animator at all rather than a zero-duration one —
 /// the honest reading of "no animation", and the app's rule elsewhere.
-class MicroTipFadeUp extends StatelessWidget {
+class FadeUp extends StatelessWidget {
   /// Fades [child] up as it arrives.
-  const MicroTipFadeUp({required this.child, super.key});
+  const FadeUp({required this.child, super.key});
 
   static const Duration _duration = Duration(milliseconds: 260);
   static const double _rise = 4;
 
-  /// What arrives.
+  /// What arrives — the whole of it moves and fades together.
   final Widget child;
 
   @override

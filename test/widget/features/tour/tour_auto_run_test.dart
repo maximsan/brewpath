@@ -1,10 +1,9 @@
 import 'package:brew_path/app/app.dart';
 import 'package:brew_path/features/tour/domain/tour_copy.dart';
-import 'package:brew_path/features/tour/presentation/tour_stops.dart';
+import 'package:brew_path/features/tour/presentation/tour_frame.dart';
 import 'package:brew_path/shared/repositories/settings_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:showcaseview/showcaseview.dart';
 
 import '../../../support/widget_harness.dart';
 
@@ -39,11 +38,10 @@ void main() {
 
   /// Drives the running Tour without `pumpAndSettle`.
   ///
-  /// The spotlight's moving animation repeats for as long as a stop is on
-  /// screen, so `pumpAndSettle` never returns — the same reason the shared
-  /// harness hand-rolls its settle around Roasty's idle loop. `runAsync` is
-  /// what lets the real Drift write behind `markTourSeen` actually complete
-  /// between frames.
+  /// Roasty idles on an infinite animation behind the layer, so `pumpAndSettle`
+  /// never returns — the same reason the shared harness hand-rolls its settle.
+  /// `runAsync` is what lets the real Drift write behind `markTourSeen`
+  /// actually complete between frames.
   Future<void> letTheTourRun(WidgetTester tester) async {
     for (var frame = 0; frame < 20; frame++) {
       await tester.runAsync(
@@ -135,39 +133,47 @@ void main() {
     expect(find.text(TourCopy.introTitle), findsNothing);
   });
 
-  testWidgets('reduced motion strips the Tour of its animations', (
+  /// How long the frame takes to travel, as the running layer reports it.
+  Duration frameMoveDuration(WidgetTester tester) => tester
+      .widget<TweenAnimationBuilder<Rect?>>(
+        find.descendant(
+          of: find.byType(TourFrame),
+          matching: find.byType(TweenAnimationBuilder<Rect?>),
+        ),
+      )
+      .duration;
+
+  testWidgets('reduced motion makes the frame arrive in a cut', (
     tester,
   ) async {
     tester.platformDispatcher.accessibilityFeaturesTestValue =
         const FakeAccessibilityFeatures(disableAnimations: true);
     addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
     useTallViewport(tester);
+    await armTheTour();
 
     await pumpWithProviders(tester, const BrewPathApp());
     await tester.pumpAndSettle();
+    await tester.tap(find.text(TourCopy.introAccept));
+    await letTheTourRun(tester);
 
-    // Asserted on the engine rather than on pixels: these three fields are the
-    // whole of what reduced motion changes, and a screenshot could not tell a
-    // disabled animation from one caught between frames. The scroll becomes a
-    // cut rather than a slide — it cannot be dropped, because an off-screen
-    // stop still has to be reached.
-    final engine = ShowcaseView.getNamed(TourStops.scope);
-    expect(engine.disableMovingAnimation, isTrue);
-    expect(engine.disableScaleAnimation, isTrue);
-    expect(engine.scrollDuration, Duration.zero);
+    // The move is shortened to nothing rather than dropped: the frame still
+    // has to *arrive* at each stop, so what reduced motion removes is the
+    // travel, not the arrival.
+    expect(frameMoveDuration(tester), Duration.zero);
   });
 
-  testWidgets('the Tour animates normally without reduced motion', (
+  testWidgets('the frame travels at the design speed without it', (
     tester,
   ) async {
     useTallViewport(tester);
+    await armTheTour();
 
     await pumpWithProviders(tester, const BrewPathApp());
     await tester.pumpAndSettle();
+    await tester.tap(find.text(TourCopy.introAccept));
+    await letTheTourRun(tester);
 
-    final engine = ShowcaseView.getNamed(TourStops.scope);
-    expect(engine.disableMovingAnimation, isFalse);
-    expect(engine.disableScaleAnimation, isFalse);
-    expect(engine.scrollDuration, greaterThan(Duration.zero));
+    expect(frameMoveDuration(tester), TourFrame.moveDuration);
   });
 }

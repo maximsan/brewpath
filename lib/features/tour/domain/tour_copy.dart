@@ -71,11 +71,20 @@ abstract final class TourCopy {
   /// be re-worded without dragging the other with it.
   static const stopSkip = 'Skip';
 
+  /// What Skip is announced as — the design's own `aria-label`, which says
+  /// what is being skipped rather than leaving one word to stand alone in a
+  /// screen reader's list of controls.
+  static const stopSkipSemanticLabel = 'Skip the introduction';
+
   /// The card's right-hand button on stops 1–3.
   static const stopNext = 'Next';
 
   /// The same button on the last stop, where advancing *is* finishing.
   static const stopDone = 'Done';
+
+  /// What assistive technology calls the running Tour — the design's own
+  /// `aria-label` on the layer.
+  static const layerSemanticLabel = 'Introduction to Today';
 
   /// The App Guide row that replays the Tour.
   static const replayTitle = 'Replay Today introduction';

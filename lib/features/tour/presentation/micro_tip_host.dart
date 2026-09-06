@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:brew_path/app/app_router.dart';
+import 'package:brew_path/core/widgets/fade_up.dart';
 import 'package:brew_path/core/widgets/overlay_barrier.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
@@ -13,7 +14,6 @@ import 'package:brew_path/features/tour/domain/micro_tip_place.dart';
 import 'package:brew_path/features/tour/domain/micro_tip_providers.dart';
 import 'package:brew_path/features/tour/domain/tour_providers.dart';
 import 'package:brew_path/features/tour/presentation/micro_tip_card.dart';
-import 'package:brew_path/features/tour/presentation/micro_tip_fade_up.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -211,7 +211,7 @@ class _MicroTipHostState extends ConsumerState<MicroTipHost> {
       left: AppSpacing.md,
       right: AppSpacing.md,
       bottom: _bottomInset(context, raised: place.showsTabBar),
-      child: MicroTipFadeUp(
+      child: FadeUp(
         key: ValueKey(tip),
         child: MicroTipCard(tip: tip, onDismiss: _dismiss),
       ),

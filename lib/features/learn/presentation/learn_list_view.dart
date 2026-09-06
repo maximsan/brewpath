@@ -16,10 +16,9 @@ import 'package:brew_path/features/mini_games/presentation/mini_games_catalog_wi
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
 import 'package:brew_path/features/monetization/domain/lesson_access.dart';
 import 'package:brew_path/features/progress/presentation/freeze_save_notice_card.dart';
-import 'package:brew_path/features/tour/domain/tour_copy.dart';
 import 'package:brew_path/features/tour/domain/tour_providers.dart';
-import 'package:brew_path/features/tour/presentation/tour_stop.dart';
-import 'package:brew_path/features/tour/presentation/tour_stops.dart';
+import 'package:brew_path/features/tour/domain/tour_step.dart';
+import 'package:brew_path/features/tour/presentation/tour_anchor.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
@@ -44,13 +43,13 @@ class LearnListView extends ConsumerWidget {
 
   /// How much off-screen list to keep mounted while the Tour is running.
   ///
-  /// The vendor-documented caveat: auto-scroll is
-  /// `Scrollable.ensureVisible`, which needs the target's *element* mounted,
-  /// and a `ListView(children:)` still mounts its children lazily even though
-  /// it builds the widgets eagerly. Of the two mitigations the research doc
-  /// lists, this is the one that fits a fixed, small child list — a
-  /// `ScrollController` pre-scroll would have to guess a pixel offset that
-  /// changes with the challenge card, the freeze notice and the module count.
+  /// The Tour measures its targets, and an unmounted one has no render object
+  /// to measure: a `ListView(children:)` mounts its children lazily even though
+  /// it builds the widgets eagerly, so a stop below the fold would be framed
+  /// nowhere. Keeping them mounted is what makes the measurement possible at
+  /// all — the alternative, a pre-scroll to a guessed offset, would have to
+  /// guess a figure that changes with the challenge card, the freeze notice and
+  /// the module count.
   ///
   /// Applied only while the Tour runs, because mounting the whole list on every
   /// open is a cost paid by every learner for a thing that happens once.
@@ -104,10 +103,8 @@ class LearnListView extends ConsumerWidget {
         // the most fragile learner in the app, and reassurance comes
         // before the day's ask. Renders nothing when no save is due.
         const FreezeSaveNoticeCard(),
-        TourStop(
-          stopKey: TourStops.today,
-          title: TourCopy.todayTitle,
-          description: TourCopy.todayBody,
+        TourAnchor(
+          step: TourStep.today,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -149,10 +146,8 @@ class LearnListView extends ConsumerWidget {
         // Stop 2 spans both practice sections. They are one idea to a learner —
         // "practice, your way" — and spotlighting the replay list alone would
         // teach that mini-games are something else.
-        TourStop(
-          stopKey: TourStops.practice,
-          title: TourCopy.practiceTitle,
-          description: TourCopy.practiceBody,
+        TourAnchor(
+          step: TourStep.practice,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
