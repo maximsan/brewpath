@@ -1,3 +1,4 @@
+import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
 
@@ -306,6 +307,47 @@ abstract final class OffTokens {
         "the looser leading is this card's rather than a rung of the ladder.",
   );
 
+  /// The Tour card's margin — from the screen edges, and from the frame.
+  static const OffToken<double> tourCardInset = OffToken(
+    20,
+    reason:
+        'The design sets the Tour card to `left: 20, right: 20` and puts the '
+        'same 20 between it and the frame it explains. It sits between '
+        'AppSpacing.md (16) and lg (24): the card is a floating panel over a '
+        'dimmed page rather than content in the page, so it keeps its own '
+        'margin instead of lining up with the gutter underneath it.',
+  );
+
+  /// The room inside the Tour card.
+  static const OffToken<EdgeInsets> tourCardPadding = OffToken(
+    EdgeInsets.fromLTRB(18, 18, 18, AppSpacing.base),
+    reason:
+        "The design sets the card to `padding: '18px 18px 14px'`. 18 is not a "
+        'spacing stop — it sits between AppSpacing.md (16) and lg (24) — and '
+        'the foot is deliberately shorter than the sides, because the button '
+        "row's own tap targets already stand off the edge.",
+  );
+
+  /// The gap between the Tour card's three lines.
+  static const OffToken<double> tourCardLineGap = OffToken(
+    7,
+    reason:
+        "The design sets `marginTop: 7` under the card's counter and again "
+        'under its title. AppSpacing.xs (8) is the nearest and would loosen '
+        'both: the three lines are one block of copy, and the design sets '
+        'them tighter than the stops it uses between blocks.',
+  );
+
+  /// The leading of the Tour card's body copy.
+  static const OffToken<double> tourCardBodyLeading = OffToken(
+    1.55,
+    reason:
+        "The design sets the card's body to `lineHeight: 1.55` at the support "
+        'step, whose own leading (1.4) is set for the one- and two-line rows '
+        'that step usually carries. This is a paragraph on a floating card, '
+        'and the looser leading is what keeps it readable there.',
+  );
+
   /// Every sanctioned exception, so the register can be read — and tested — as
   /// a whole rather than one constant at a time.
   static const register = <OffToken<Object>>[
@@ -333,5 +375,9 @@ abstract final class OffTokens {
     microTipBodyTracking,
     microTipTitleGap,
     microTipBodyLeading,
+    tourCardInset,
+    tourCardPadding,
+    tourCardLineGap,
+    tourCardBodyLeading,
   ];
 }

@@ -77,6 +77,10 @@ abstract final class TourCopy {
   /// The same button on the last stop, where advancing *is* finishing.
   static const stopDone = 'Done';
 
+  /// What assistive technology calls the running Tour — the design's own
+  /// `aria-label` on the layer.
+  static const layerSemanticLabel = 'Introduction to Today';
+
   /// The App Guide row that replays the Tour.
   static const replayTitle = 'Replay Today introduction';
 

@@ -1,12 +1,12 @@
 import 'package:brew_path/app/app_header.dart';
 import 'package:brew_path/app/header_tier.dart';
 import 'package:brew_path/core/constants/app_labels.dart';
+import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
-import 'package:brew_path/features/tour/domain/tour_copy.dart';
+import 'package:brew_path/features/tour/domain/tour_step.dart';
+import 'package:brew_path/features/tour/presentation/tour_anchor.dart';
 import 'package:brew_path/features/tour/presentation/tour_runner.dart';
-import 'package:brew_path/features/tour/presentation/tour_stop.dart';
-import 'package:brew_path/features/tour/presentation/tour_stops.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -89,46 +89,52 @@ class _AppShellState extends State<AppShell> {
     final location = GoRouterState.of(context).uri.path;
     final showsHeader = headerTierFor(location).showsSharedHeader;
 
-    // The Tour's engine is owned here, not on Learn: the last stop is the tab
-    // bar below, which lives outside every branch.
-    return TourHost(
-      // Told which branch is showing, so it can end a Tour the learner has
-      // navigated away from — the host itself never disposes on a tab switch.
-      activeBranchIndex: widget.navigationShell.currentIndex,
-      child: Scaffold(
-        // A stack, not a column: the design's header floats **over** the tab
-        // and is invisible until the tab scrolls under it, so it takes no room
-        // of its own. The tab root leaves the room instead, in the one place
-        // that always opens one — `TabLargeTitle`.
-        body: Stack(
-          fit: StackFit.expand,
-          children: [
-            // Only a tab root's scrolling moves this header. A pushed page
-            // scrolls under its own bar, and letting it collapse a header it
-            // cannot see would leave the tab wrong when the learner pops back.
-            if (showsHeader)
-              NotificationListener<ScrollNotification>(
-                onNotification: _onScroll,
-                child: widget.navigationShell,
-              )
-            else
-              widget.navigationShell,
-            if (showsHeader)
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                child: AppHeader(
-                  location: location,
-                  isCollapsed:
-                      _collapsedByBranch[widget.navigationShell.currentIndex] ??
-                      false,
+    // The Tour is drawn *around* the scaffold rather than inside its body: its
+    // last stop is the tab bar, which the body does not contain.
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Scaffold(
+          // A stack, not a column: the design's header floats **over** the
+          // tab and is invisible until the tab scrolls under it, so it takes
+          // no room of its own. The tab root leaves the room instead, in the
+          // one place that always opens one — `TabLargeTitle`.
+          body: Stack(
+            fit: StackFit.expand,
+            children: [
+              // Only a tab root's scrolling moves this header. A pushed page
+              // scrolls under its own bar, and letting it collapse a header
+              // it cannot see would leave the tab wrong when the learner pops
+              // back.
+              if (showsHeader)
+                NotificationListener<ScrollNotification>(
+                  onNotification: _onScroll,
+                  child: widget.navigationShell,
+                )
+              else
+                widget.navigationShell,
+              if (showsHeader)
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: AppHeader(
+                    location: location,
+                    isCollapsed:
+                        _collapsedByBranch[widget
+                            .navigationShell
+                            .currentIndex] ??
+                        false,
+                  ),
                 ),
-              ),
-          ],
+            ],
+          ),
+          bottomNavigationBar: _tabBar(context.mood),
         ),
-        bottomNavigationBar: _tabBar(context.mood),
-      ),
+        // On the Learn tab's own root and nowhere else, which is both the
+        // design's rule and what keeps a card from surviving onto another tab.
+        TourLayerHost(isOnLearn: location == AppRoutes.learn.path),
+      ],
     );
   }
 
@@ -152,10 +158,8 @@ class _AppShellState extends State<AppShell> {
   /// is this bar's type rule, not part of what the tabs are called. Changing
   /// it back is then a change to the bar, not a rewrite of four constants and
   /// everything else that reads them.
-  Widget _tabBar(MoodColors mood) => TourStop(
-    stopKey: TourStops.tabs,
-    title: TourCopy.tabsTitle,
-    description: TourCopy.tabsBody,
+  Widget _tabBar(MoodColors mood) => TourAnchor(
+    step: TourStep.tabs,
     child: DecoratedBox(
       position: DecorationPosition.foreground,
       decoration: BoxDecoration(
