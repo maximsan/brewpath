@@ -55,11 +55,12 @@ Future<int> totalPoints(Ref ref) async {
 /// was built — which is why `DayRolloverWatcher` invalidates this on a resume
 /// that crossed midnight, rather than letting a value computed before it stand.
 ///
-/// The day set it folds is assembled by [streakDaySet], which also backfills a
-/// learner whose completions predate the day set — see it for why the three
-/// sources are unioned rather than ranked. The qualifying-day set every streak
-/// surface folds over — one derivation, so the engine, the save notice and the
-/// week strip can never disagree on which days count.
+/// The day set it folds is assembled by [streakDaySet], which also backfills
+/// a learner whose completions predate the day set — see it for why the three
+/// sources are unioned rather than ranked.
+/// The qualifying-day set every streak surface folds over — one derivation,
+/// so the engine, the save notice and the week strip can never disagree on
+/// which days count.
 @riverpod
 Future<Set<int>> activeDaySet(Ref ref) async {
   final completedFuture = ref.watch(completedLessonsProvider.future);

@@ -239,9 +239,10 @@ class _Block extends StatelessWidget {
   final String label;
   final Widget child;
 
-  /// Whether the label takes the accent. `IN PRACTICE` does — it heads the one
-  /// block that is an example rather than more explanation — and so does the
-  /// gated expansion, because a purchase lock is drawn in accent (ADR-0016).
+  /// Whether the label takes the accent. `IN PRACTICE` does — it heads the
+  /// one block that is an example rather than more explanation — and so does
+  /// the gated expansion, because a purchase lock is drawn in accent
+  /// (ADR-0016).
   final bool accent;
 
   @override

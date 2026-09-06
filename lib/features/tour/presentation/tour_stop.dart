@@ -21,9 +21,8 @@ import 'package:showcaseview/showcaseview.dart';
 /// **Why the blocking dim and not the scrim.** The design draws this very
 /// overlay as `boxShadow: '0 0 0 1400px var(--dim-modal)'` — a spotlight
 /// punched out of the blocking dim. The scrim is *"the only one of the four
-/// that is not full-screen"* (`ds-content.js:1087`) and belongs behind a
-/// control sitting on media, so the full-screen coach mark was wearing the
-/// wrong token (#379).
+/// that is not full-screen"* and belongs behind a control sitting on media, so
+/// the full-screen coach mark was wearing the wrong token (#379).
 ///
 /// **And why it is the one dim without its 5px blur.** The package takes a
 /// colour and paints a hole in it. A backdrop blur behind that overlay would

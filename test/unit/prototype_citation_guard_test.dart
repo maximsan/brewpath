@@ -17,6 +17,10 @@ import '../support/dart_sources.dart';
 /// of the silence this forbids. So the rule reads comments and leaves string
 /// literals alone.
 ///
+/// **It catches the shapes the sweep met, not the whole rule.** A citation
+/// spelled some other way — a bare file name, a different extension — still
+/// gets past it, and the rule still forbids it.
+///
 /// **What to write instead**, in the order worth trying:
 /// - a value that looks arbitrary keeps the design's own — `padding: 26px
 ///   24px`, `cubic-bezier(0.34, 1.1, 0.4, 1)`. It survives a re-drop, it is
@@ -29,10 +33,20 @@ import '../support/dart_sources.dart';
 ///   `APP_GUIDE_SECTIONS` — which is greppable and does not carry a line.
 /// - anything else goes. Most of them restated the code underneath.
 void main() {
+  /// Three shapes, because the sweep met all three.
+  ///
   /// Named by extension rather than by the `prototype/` prefix: most of what
   /// this found cited the file bare — ``(`settings.jsx:163`)`` — and a rule
   /// that only caught the prefixed form would have missed two thirds of them.
-  final citation = RegExp(r'[\w-]+\.(?:jsx|html)');
+  ///
+  /// `ds-content.js` is named outright rather than by its extension. It is the
+  /// design's only `.js`, and `.js` as a class would flag `tool/release.js`
+  /// and the extractors, which are this repo's own files and break loudly when
+  /// they move.
+  ///
+  /// A bare ``(`:502`)`` is the residue of half-clearing a citation: the file
+  /// went and the line stayed, pointing at nothing at all.
+  final citation = RegExp(r'[\w-]+\.(?:jsx|html)|ds-content\.js|`:\d+`');
 
   /// This test has to name what it forbids in order to forbid it.
   const guardItself = 'test/unit/prototype_citation_guard_test.dart';

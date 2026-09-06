@@ -131,11 +131,11 @@ const _rootDocs = <String>['CLAUDE.md', 'AGENTS.md', 'README.md'];
 /// **Favourites is deliberately absent too, and was tried.** The glossary rules
 /// it out as a name for the Saved shelf, but `docs/design/` exists to describe
 /// the prototype — it quotes that screen's own copy (*Title "Favorites"*), it
-/// names its seed data, and `learning/` names the real Dart identifiers of a
-/// `FavoritesScreen` the course had the learner build. Every one is legitimate,
-/// and no pattern separates them from misuse. A guard firing on all of those
-/// would be bypassed within a week, so the term stays a review matter rather
-/// than a checked one.
+/// names its seed data, and `learning/` names the real Dart
+/// identifiers of a `FavoritesScreen` the course had the learner build. Every
+/// one is legitimate, and no pattern separates them from misuse. A guard firing
+/// on all of those would be bypassed within a week, so the term stays a review
+/// matter rather than a checked one.
 final _ruledOutInProse =
     <({RegExp pattern, String term, String instead, String why})>[
       (

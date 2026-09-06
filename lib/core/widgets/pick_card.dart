@@ -4,8 +4,9 @@ import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// Bordered selectable tile — the design's `.pick-card`: title and description
-/// on the left, a circular indicator on the right that fills when selected.
+/// Bordered selectable tile — the design's `.pick-card`: title and
+/// description on the left, a circular indicator on the right that fills when
+/// selected.
 ///
 /// Built for the onboarding goal and brewer screens, which ADR-0010 moved to
 /// v2 and #407 parked; the vocab game's deck picker is the live caller.

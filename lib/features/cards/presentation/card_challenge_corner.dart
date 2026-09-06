@@ -6,7 +6,8 @@ import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// The corner's own metrics.
+/// The corner's own metrics, transcribed from the design — none of the four
+/// sits on the spacing scale.
 const double _cornerSize = 26;
 const double _markSize = 13;
 const double _openMarkSize = 12;
