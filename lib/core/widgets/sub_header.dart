@@ -6,25 +6,14 @@ import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// The bar a page opened from a tab wears.
+/// The bar a page opened from a tab wears: [HeaderChrome] at the design's
+/// sub-screen height, carrying a way back, the page's title in miniature once
+/// its large title has scrolled under, and the page's controls on the right.
 ///
-/// The same chrome the tab header wears — [HeaderChrome], invisible at rest
-/// and then tinted, blurred and hairlined — at the shorter height the design
-/// gives a sub-screen, carrying a way back, the page's title in miniature, and
-/// whatever controls the page puts on the right.
-///
-/// **The page titles itself at the top; this titles it after that.** A pushed
-/// page opens on its own large title, the way a tab root does, and this bar
-/// raises a small copy of the same words only once that large one has gone
-/// under it. Which is why [title] is the page's title rather than a bar
-/// caption: the two are one title seen at two sizes, not two labels.
-///
-/// **The design's `solid` variant is not ported.** It pins the bar filled and
-/// titled for a page with no large title to collapse, and its one host is the
-/// Roasty dress-up screen, which this app has not built. The two pages here
-/// that open on a hero instead of a title — the streak and the grove — are
-/// **not** that case: the design passes them the ordinary scrolled flag, so
-/// their bar arrives on scroll like every other. See #513.
+/// The design's `solid` variant — pinned filled and titled for a page with no
+/// large title — is not ported: its one host is the Roasty dress-up screen,
+/// which this app has not built. The streak and the grove open on a hero and
+/// still take the ordinary scrolled flag, as the design passes it (#513).
 class SubHeader extends StatelessWidget {
   /// Creates a [SubHeader].
   const SubHeader({
@@ -38,43 +27,39 @@ class SubHeader extends StatelessWidget {
     super.key,
   });
 
-  /// The design's sub-screen bar and the room it leaves under itself, both
-  /// measured from the top of the screen. Stated as a pair because they are
-  /// one: content that cleared a bar of one height under a pad written for
-  /// another is the drift the design exports both numbers to prevent.
+  /// The design's bar, measured from the top of the screen.
   static const double _heightWithStatusBar = 96;
-  static const double _scrollPadWithStatusBar = 108;
+
+  /// Where a page's content starts, measured from the top of the screen the
+  /// way the design measures it, when the page opens on a large title. Stated
+  /// beside the bar's height because the two are a pair: content that cleared
+  /// a bar of one height under a pad written for another is the drift the
+  /// design exports both numbers to prevent.
+  static const double designScrollPad = 108;
+
+  /// The design's shorter pad, given to the coffee tree and the streak.
+  static const double shortDesignScrollPad = 84;
 
   /// How tall the bar stands below the status bar.
-  static const double height =
-      _heightWithStatusBar - HeaderChrome.designStatusBarHeight;
+  static final double height = HeaderChrome.belowDesignStatusBar(
+    _heightWithStatusBar,
+  );
 
-  /// How far below the status bar a page's own content starts, so it clears
-  /// the bar rather than opening under it — the design's 108, the companion of
-  /// the 96 above. Unlike a tab root, whose large title deliberately sits
-  /// behind an invisible bar, a pushed page has a control up there at every
-  /// scroll position and its title must not run into it.
-  ///
-  /// A page that opens on a hero rather than a title takes less; the design
-  /// gives the tree and the streak 84 and the grove 100, and each says so.
-  static const double scrollPad =
-      _scrollPadWithStatusBar - HeaderChrome.designStatusBarHeight;
-
-  /// The design's 44×44 header control, and the smaller ringed variant, which
-  /// it draws as a 32px circle instead.
-  static const double _controlSize = 44;
-  static const double _ringedControlSize = 32;
-
-  /// How large the mark inside is drawn: the design's `size={ringBack ? 15 :
-  /// 18}`. The bare control's box is a hit target rather than a drawing — the
-  /// design gives it `padding: 4px` and widens the *touch* area to 44 with a
-  /// pseudo-element — so the mark stays small inside a box the thumb can find.
+  /// The bare control is the design's `.close-btn`: an 18px mark with 4px of
+  /// padding, whose touch area widens to 44 without moving anything around it.
   static const double _markSize = 18;
+  static const double _markPadding = 4;
+  static const double _bareControlSize = _markSize + 2 * _markPadding;
+  static const double _hitSize = 44;
+  static const double _hitOverhang = (_hitSize - _bareControlSize) / 2;
+
+  /// The ringed control is a drawn shape: a 32px hairline circle around a
+  /// 15px mark, the design's `size={ringBack ? 15 : 18}`.
+  static const double _ringedControlSize = 32;
   static const double _ringedMarkSize = 15;
 
-  /// The design pulls the bare control 4 left, so its mark sits optically on
-  /// the bar's own inset rather than 4 inside it. The ringed one is a drawn
-  /// shape and stays where it is put.
+  /// The design pulls the bare control 4 left, so its mark — not its box —
+  /// sits on the bar's inset.
   static const double _bareControlNudge = -4;
 
   /// The gap between the control, the title and the trailing controls.
@@ -92,7 +77,7 @@ class SubHeader extends StatelessWidget {
   final bool isScrolled;
 
   /// The smallcaps line above the title — a term's category, and nothing else
-  /// so far. Absent on most pages, which title themselves in one line.
+  /// so far.
   final String? eyebrow;
 
   /// What leaving the page does. A bar with no way back draws no control.
@@ -109,63 +94,91 @@ class SubHeader extends StatelessWidget {
   /// carries a trailing control, so both ends of the bar read at one weight.
   final bool isRinged;
 
+  /// Where the title starts: on the inset, or after the control and the gap.
+  double get _titleInset {
+    if (onBack == null) return _sideInset;
+    if (isRinged) return _sideInset + _ringedControlSize + _gap;
+    return _sideInset + _bareControlNudge + _bareControlSize + _gap;
+  }
+
   @override
   Widget build(BuildContext context) {
     return HeaderChrome(
       height: height,
       isScrolled: isScrolled,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          _sideInset,
-          0,
-          _sideInset,
-          _bottomInset,
-        ),
-        child: Row(
+      child: SizedBox.expand(
+        child: Stack(
+          alignment: Alignment.bottomLeft,
           children: [
-            if (onBack != null) ...[
-              _BackControl(
-                mark: mark,
-                label: _defaultLabel,
-                isRinged: isRinged,
-                onPressed: onBack!,
-              ),
-              const SizedBox(width: _gap),
-            ],
-            Expanded(
-              // The stack is allowed to stand proud of the bar's inset, which
-              // is what the design does: an eyebrow over a title measures
-              // 33.35 against the 32 the bar's `padding: 0 20px 10px` leaves
-              // it, and CSS lets the 1.35 spill upward rather than clipping
-              // or asserting. Without this Flutter throws an overflow on the
-              // one page that carries an eyebrow.
-              //
-              // The 2px of that which is ours: the design sets the compact
-              // eyebrow at `line-height: 1` and the ladder's micro rung is
-              // 1.2. Rounded onto the rung rather than given a height axis of
-              // its own, because one call site is not a vocabulary.
-              child: OverflowBox(
-                alignment: Alignment.bottomLeft,
-                maxHeight: double.infinity,
-                child: HeaderCompactTitle(
-                  eyebrow: eyebrow,
-                  title: title,
-                  isVisible: isScrolled,
+            if (onBack != null)
+              if (isRinged)
+                Positioned(
+                  left: _sideInset,
+                  bottom: _bottomInset,
+                  width: _ringedControlSize,
+                  height: _ringedControlSize,
+                  child: _BackControl(
+                    mark: mark,
+                    label: _backLabel,
+                    isRinged: true,
+                    onPressed: onBack!,
+                  ),
+                )
+              else
+                // The touch box is centred on the drawn box, so it overhangs
+                // the inset below and the title beside it — which is what the
+                // design's pseudo-element does, and why the control sits in
+                // the stack rather than in the row it would otherwise stretch.
+                Positioned(
+                  left: _sideInset + _bareControlNudge - _hitOverhang,
+                  bottom: _bottomInset - _hitOverhang,
+                  width: _hitSize,
+                  height: _hitSize,
+                  child: _BackControl(
+                    mark: mark,
+                    label: _backLabel,
+                    isRinged: false,
+                    onPressed: onBack!,
+                  ),
                 ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                _titleInset,
+                0,
+                _sideInset,
+                _bottomInset,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    // The stack may stand proud of the bar's inset, as it does
+                    // in the design: an eyebrow over a title measures 33.35
+                    // against the 32 the inset leaves it.
+                    child: OverflowBox(
+                      alignment: Alignment.bottomLeft,
+                      maxHeight: double.infinity,
+                      child: HeaderCompactTitle(
+                        eyebrow: eyebrow,
+                        title: title,
+                        isVisible: isScrolled,
+                      ),
+                    ),
+                  ),
+                  if (trailing != null) ...[
+                    const SizedBox(width: _gap),
+                    trailing!,
+                  ],
+                ],
               ),
             ),
-            if (trailing != null) ...[
-              const SizedBox(width: _gap),
-              trailing!,
-            ],
           ],
         ),
       ),
     );
   }
 
-  /// What the mark is called when the page does not say.
-  String get _defaultLabel => mark == AppIcon.close ? 'Close' : 'Back';
+  String get _backLabel => mark == AppIcon.close ? 'Close' : 'Back';
 }
 
 /// The way back, ringed or bare.
@@ -185,17 +198,13 @@ class _BackControl extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
-    final size = isRinged
-        ? SubHeader._ringedControlSize
-        : SubHeader._controlSize;
+    final size = isRinged ? SubHeader._ringedControlSize : SubHeader._hitSize;
 
-    final button = IconButton(
+    return IconButton(
       onPressed: onPressed,
       tooltip: label,
-      // The ring is a border on the control, not a different control: the
-      // design draws the same mark inside a hairline circle so the bar's two
-      // ends carry one weight, and mutes its ink to sit beside rather than
-      // compete with whatever the circle balances.
+      // The ring is a border on the same control, with its ink muted to sit
+      // beside the trailing control rather than compete with it.
       style: isRinged
           ? IconButton.styleFrom(
               shape: RoundedRectangleBorder(
@@ -203,8 +212,12 @@ class _BackControl extends StatelessWidget {
                 side: BorderSide(color: mood.rule),
               ),
               padding: EdgeInsets.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             )
-          : null,
+          : IconButton.styleFrom(
+              padding: EdgeInsets.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
       constraints: BoxConstraints.tightFor(width: size, height: size),
       icon: IconMark(
         mark,
@@ -212,12 +225,6 @@ class _BackControl extends StatelessWidget {
         color: isRinged ? mood.inkMute : mood.ink,
         semanticLabel: label,
       ),
-    );
-
-    if (isRinged) return button;
-    return Transform.translate(
-      offset: const Offset(SubHeader._bareControlNudge, 0),
-      child: button,
     );
   }
 }

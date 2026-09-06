@@ -73,7 +73,6 @@ class SavedScreen extends ConsumerWidget {
       // The one screen the design gives its own threshold: the shelf waits
       // until 72 where every other page's bar arrives at 40.
       threshold: _shelfScrollThreshold,
-      onBack: () => Navigator.of(context).maybePop(),
       body: (context, scrollPadding) => shelf.when(
         loading: () => Semantics(
           label: 'Loading your saved items',

@@ -48,7 +48,6 @@ class SettingsScreen extends ConsumerWidget {
 
     return SubScreenScaffold(
       title: SettingsCopy.title,
-      onBack: () => context.pop(),
       body: (context, scrollPadding) => ListView(
         padding: scrollPadding.copyWith(bottom: AppSpacing.xl),
         children: [

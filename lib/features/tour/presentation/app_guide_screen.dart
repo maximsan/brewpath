@@ -7,7 +7,6 @@ import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 /// The written guide, reached from Settings → Help & Support → App Guide.
 ///
@@ -16,11 +15,9 @@ import 'package:go_router/go_router.dart';
 /// always here. [ReplayIntroRow] at the foot is what makes the Tour repeatable
 /// now that it can be skipped.
 ///
-/// **Chrome diverges from the design on purpose.** `guide.jsx` gives the screen
-/// a sub-screen header *and* a large display heading under it; this wears the
-/// app's current sub-screen `AppBar`, the same as Settings and Streak, so the
-/// title is said once. The design's frame arrives with the rest of the guide
-/// layer's rebuild — [#341](https://github.com/maximsan/brewpath/issues/341).
+/// Wears the design's sub-screen bar over its own large heading, like every
+/// page pushed from a tab. The rest of the guide layer's rebuild is
+/// [#341](https://github.com/maximsan/brewpath/issues/341).
 class AppGuideScreen extends StatelessWidget {
   /// Creates an [AppGuideScreen].
   const AppGuideScreen({super.key});
@@ -37,7 +34,6 @@ class AppGuideScreen extends StatelessWidget {
 
     return SubScreenScaffold(
       title: AppGuideCopy.title,
-      onBack: () => context.pop(),
       body: (context, scrollPadding) => ListView(
         padding: _pagePadding + scrollPadding,
         children: [

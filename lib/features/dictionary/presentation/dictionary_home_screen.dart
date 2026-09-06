@@ -9,18 +9,14 @@ import 'package:brew_path/features/dictionary/presentation/category_index.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_filter_control.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_masthead.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_quick_chips.dart';
+import 'package:brew_path/features/dictionary/presentation/dictionary_search_field.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_term_list.dart';
-import 'package:brew_path/features/dictionary/presentation/search_mark.dart';
 import 'package:brew_path/features/dictionary/presentation/term_of_day_banner.dart';
 import 'package:brew_path/shared/models/content/dictionary_category.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
-import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-/// The design's search mark, at its drawn size.
-const double _searchMarkSize = 17;
 
 /// The inset the practice chips take when they are fixed under the filters.
 const EdgeInsets _chipPadding = EdgeInsets.fromLTRB(
@@ -52,13 +48,13 @@ class DictionaryHomeScreen extends ConsumerWidget {
     // Loading and failing are pages too, and a page you cannot leave is a
     // trap: the bar comes first, and the state goes under it.
     return view.when(
-      loading: () => _Chrome(
+      loading: () => _StatusUnderBar(
         child: Semantics(
           label: 'Loading the dictionary',
           child: const LoadingIndicator(),
         ),
       ),
-      error: (error, _) => _Chrome(
+      error: (error, _) => _StatusUnderBar(
         child: Semantics(
           label: 'The dictionary could not be loaded',
           child: ErrorView(message: '$error'),
@@ -69,10 +65,10 @@ class DictionaryHomeScreen extends ConsumerWidget {
   }
 }
 
-/// The shelf's bar over a state that has nothing to scroll — loading, or a
-/// failure. Titled and leaveable, which is the part that matters here.
-class _Chrome extends StatelessWidget {
-  const _Chrome({required this.child});
+/// A status with nothing to scroll — loading, or a failure — under the
+/// shelf's bar, so the page is titled and leaveable while it has no content.
+class _StatusUnderBar extends StatelessWidget {
+  const _StatusUnderBar({required this.child});
 
   final Widget child;
 
@@ -80,7 +76,6 @@ class _Chrome extends StatelessWidget {
   Widget build(BuildContext context) {
     return SubScreenScaffold(
       title: DictionaryHomeScreen.title,
-      onBack: () => Navigator.of(context).maybePop(),
       body: (context, scrollPadding) =>
           Padding(padding: scrollPadding, child: child),
     );
@@ -132,16 +127,10 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
   @override
   Widget build(BuildContext context) {
     final visible = _visible;
-    final mood = context.mood;
 
-    // The shelf's own name titles the page at the top; the bar takes it over
-    // once that has scrolled away, and follows the learner into a category —
-    // which is the design's own rule for the compact title.
-    //
-    // ⚠️ The **page** heading follows it too, which the design does not do:
-    // it keeps `Coffee Dictionary` at the top and names the category as a
-    // section below. That is the masthead's own divergence from #398, not
-    // this bar's, and it is left as it was found.
+    // The bar's title follows the learner into a category, as the design's
+    // compact title does. The page heading following it too is the masthead's
+    // own divergence (#398): the design keeps `Coffee Dictionary` at the top.
     final name = _category?.label ?? DictionaryHomeScreen.title;
 
     return SubScreenScaffold(
@@ -149,9 +138,7 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
       // Back leaves the category first and the screen second, which is the
       // design's own rule: a drill-down is a place, so it has to be a step you
       // can take back.
-      onBack: _category != null
-          ? () => setState(() => _category = null)
-          : () => Navigator.of(context).maybePop(),
+      onBack: _category != null ? () => setState(() => _category = null) : null,
       // The category is what identifies the content, so the bar clears with
       // it. This is the page the reset exists for: without it, drilling in
       // leaves a compact title standing over a page that has jumped back to
@@ -173,31 +160,8 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
                   category: _category,
                   onClear: () => setState(() => _category = null),
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.gutter,
-                    AppSpacing.sm,
-                    AppSpacing.gutter,
-                    AppSpacing.sm,
-                  ),
-                  child: TextField(
-                    onChanged: (value) => setState(() => _query = value),
-                    decoration: InputDecoration(
-                      hintText: 'Search terms, e.g. crema, bloom…',
-                      prefixIcon: Padding(
-                        padding: const EdgeInsets.all(AppSpacing.sm),
-                        child: SearchMark(
-                          size: _searchMarkSize,
-                          color: mood.inkMute,
-                        ),
-                      ),
-                      prefixIconConstraints: const BoxConstraints.tightFor(
-                        width: _searchMarkSize + AppSpacing.md,
-                        height: _searchMarkSize + AppSpacing.md,
-                      ),
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
+                DictionarySearchField(
+                  onChanged: (value) => setState(() => _query = value),
                 ),
                 DictionaryFilterControl(
                   selected: _filter,

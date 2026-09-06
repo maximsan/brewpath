@@ -6,7 +6,6 @@ import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 /// The chrome the four screens behind Settings share.
 ///
@@ -32,7 +31,6 @@ class SettingsSubScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return SubScreenScaffold(
       title: title,
-      onBack: () => context.pop(),
       body: (context, scrollPadding) => ListView(
         padding: scrollPadding.copyWith(bottom: AppSpacing.xl),
         children: [

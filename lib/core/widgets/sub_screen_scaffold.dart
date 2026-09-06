@@ -1,31 +1,24 @@
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/widgets/header_chrome.dart';
 import 'package:brew_path/core/widgets/scroll_flag_scope.dart';
 import 'package:brew_path/core/widgets/sub_header.dart';
 import 'package:flutter/material.dart';
 
 /// Builds a page's body, given the room its scroll must leave at the top.
 ///
-/// The padding is handed over rather than applied here because a page owns the
-/// shape of its own scroll — a list, a sliver view, one that swaps for another
-/// — and only the thing that builds the scrollable can put padding inside it.
-/// Applying it outside would clip the content at the bar instead of letting it
-/// pass under.
+/// Handed over rather than applied here because only the thing that builds
+/// the scrollable can put padding inside it; applied outside, it would clip
+/// the content at the bar instead of letting it pass under.
 typedef SubScreenBodyBuilder =
     Widget Function(BuildContext context, EdgeInsets scrollPadding);
 
 /// A page opened from a tab: the design's bar floating over the page's own
-/// scroll, with the flag that tells the bar when to appear.
+/// scroll, the flag that tells the bar when to appear, the room the scroll
+/// leaves for the bar, and the reset that keeps the two honest when the
+/// content underneath is swapped.
 ///
-/// It exists so no screen has to wire the same four things together — the bar,
-/// the scroll flag, the room the scroll leaves for the bar, and the reset that
-/// keeps the two honest when the content underneath is swapped. Fifteen
-/// screens each answering that separately is how the app ended up with fifteen
-/// stock `AppBar`s in the first place.
-///
-/// **The page still carries its own `PageLargeTitle`.** That is deliberate:
-/// the title is inside the scroll, which is the page's, and a scaffold that
-/// inserted it would have to own the scroll to do it — which is exactly the
-/// freedom the bodies here need.
+/// The page still carries its own `PageLargeTitle`, inside its own scroll: a
+/// scaffold that inserted it would have to own the scroll to do it.
 class SubScreenScaffold extends StatelessWidget {
   /// Creates a [SubScreenScaffold].
   const SubScreenScaffold({
@@ -37,7 +30,7 @@ class SubScreenScaffold extends StatelessWidget {
     this.trailing,
     this.isRinged = false,
     this.resetKey,
-    this.scrollPad = SubHeader.scrollPad,
+    this.designScrollPad = SubHeader.designScrollPad,
     this.threshold = scrollFlagThreshold,
     super.key,
   });
@@ -51,7 +44,8 @@ class SubScreenScaffold extends StatelessWidget {
   /// The smallcaps line above the bar's title, where the page has one.
   final String? eyebrow;
 
-  /// What leaving the page does.
+  /// What leaving the page does. Leaves the route by default; a page with
+  /// somewhere nearer to go first — a dictionary category — says so.
   final VoidCallback? onBack;
 
   /// Back on a page you came into, close on one you dismiss.
@@ -67,12 +61,11 @@ class SubScreenScaffold extends StatelessWidget {
   /// without leaving. See [ScrollFlagScope.resetKey].
   final Object? resetKey;
 
-  /// How far below the status bar the page's own content starts.
-  ///
-  /// The design's 108 where the page opens on a large title, and less where it
-  /// opens on a hero instead — the tree and the streak at 84, the grove at
-  /// 100. A page that has no title to clear does not need the room for one.
-  final double scrollPad;
+  /// Where the page's content starts, measured from the top of the screen the
+  /// way the design measures it: 108 under a large title, and less where the
+  /// design says so — [SubHeader.shortDesignScrollPad] on the tree and the
+  /// streak, 100 on the grove.
+  final double designScrollPad;
 
   /// How far this page scrolls before its bar takes chrome.
   final double threshold;
@@ -82,7 +75,9 @@ class SubScreenScaffold extends StatelessWidget {
     // The bar reaches up under the status bar, so the page's own content has
     // to start below both.
     final scrollPadding = EdgeInsets.only(
-      top: MediaQuery.paddingOf(context).top + scrollPad,
+      top:
+          MediaQuery.paddingOf(context).top +
+          HeaderChrome.belowDesignStatusBar(designScrollPad),
     );
 
     return ScrollFlagScope(
@@ -93,10 +88,7 @@ class SubScreenScaffold extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             // Keyed on the same value the flag resets to, so a content swap
-            // builds a fresh scrollable at the top *and* clears the bar. The
-            // design's hook does both halves together for the same reason:
-            // either one alone leaves a compact title stacked on an
-            // un-scrolled large one.
+            // builds a fresh scrollable at the top *and* clears the bar.
             KeyedSubtree(
               key: resetKey == null ? null : ValueKey<Object>(resetKey!),
               child: body(context, scrollPadding),
@@ -109,7 +101,7 @@ class SubScreenScaffold extends StatelessWidget {
                 title: title,
                 isScrolled: isScrolled,
                 eyebrow: eyebrow,
-                onBack: onBack,
+                onBack: onBack ?? () => Navigator.of(context).maybePop(),
                 mark: mark,
                 trailing: trailing,
                 isRinged: isRinged,
