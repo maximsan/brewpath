@@ -6,13 +6,14 @@ import 'package:flutter/foundation.dart';
 /// Drives the Roasty wake-up sequence independently of the widget tree so the
 /// timing logic is unit-testable (via `fakeAsync`) without pumping the screen.
 ///
-/// Two modes, selected at construction:  - **Animated:** loops the [WakePhase]
-/// state machine on a per-phase timer,    notifying listeners on each step.
-/// Once the first full cycle has played    *and* the bootstrap gate has
-/// resolved, it fires `onAdvance` once and    stops — guaranteeing the user
-/// sees a full wake-up even on a fast boot.  - **Reduced motion:** runs no
-/// timer; [phase] is a static    [WakePhase.brewing] frame and advancement is
-/// driven solely by    [notifyGateResolved].
+/// Two modes, selected at construction:
+///  - **Animated:** loops the [WakePhase] state machine on a per-phase timer,
+///    notifying listeners on each step. Once the first full cycle has played
+///    *and* the bootstrap gate has resolved, it fires `onAdvance` once and
+///    stops — guaranteeing the user sees a full wake-up even on a fast boot.
+///  - **Reduced motion:** runs no timer; [phase] is a static
+///    [WakePhase.brewing] frame and advancement is driven solely by
+///    [notifyGateResolved].
 ///
 /// In both modes [loopForever] (a debug toggle) suppresses advancement so the
 /// animation can be inspected indefinitely.

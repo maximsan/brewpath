@@ -38,8 +38,8 @@ void main() {
   /// What counts as naming a spacing.
   ///
   /// `letterSpacingDelta` is here because `TextStyle.apply` is the other door
-  /// to the same property, and the whitespace is loose because `letterSpacing:
-  /// ` is the same instruction to the formatter's eye and to Dart's.
+  /// to the same property, and the whitespace is loose because `letterSpacing
+  /// :` is the same instruction to the formatter's eye and to Dart's.
   const spellings = <String, String>{
     r'letterSpacing\s*:': 'TextStyle.letterSpacing',
     r'letterSpacingDelta\s*:': 'TextStyle.apply(letterSpacingDelta:)',

@@ -75,8 +75,8 @@ class MoodColors extends ThemeExtension<MoodColors> {
     waterHi: Color(0xFFC2E0EF),
   );
 
-  /// Opacity of [veil] — the design's `color-mix(in oklab, var(--bg) 38%,
-  /// transparent)`.
+  /// Opacity of [veil] — the design's
+  /// `color-mix(in oklab, var(--bg) 38%, transparent)`.
   static const veilOpacity = 0.38;
 
   /// Opacity of [veilStrong] — the same mix at 82%.
@@ -89,8 +89,8 @@ class MoodColors extends ThemeExtension<MoodColors> {
   /// Blur behind [veilStrong] — the design's *"3px for a covering wash"*.
   static const veilStrongBlurRadius = 3.0;
 
-  /// Opacity of [headerFill] — the design's `color-mix(in oklab, var(--bg) 94%,
-  /// transparent)`.
+  /// Opacity of [headerFill] — the design's
+  /// `color-mix(in oklab, var(--bg) 94%, transparent)`.
   static const headerFillOpacity = 0.94;
 
   /// Blur behind [headerFill] — the design's `blur(16px)`, the first half of
@@ -189,9 +189,10 @@ class MoodColors extends ThemeExtension<MoodColors> {
   /// [accent] washed over [surface] — the fill under an icon well or a chip.
   ///
   /// Derived rather than stored, so it follows the mood and keeps following it
-  /// mid-[lerp]. The design writes it as `color-mix(in oklab, var(--accent)
-  /// 12%, var(--surface))` and uses the one strength everywhere it appears: the
-  /// reward rail's wells, the mastery chip, and the challenge offer's badge.
+  /// mid-[lerp]. The design writes it as
+  /// `color-mix(in oklab, var(--accent) 12%, var(--surface))` and uses the one
+  /// strength everywhere it appears: the reward rail's wells, the mastery chip,
+  /// and the challenge offer's badge.
   Color get accentWash =>
       Color.alphaBlend(accent.withValues(alpha: _accentWashAlpha), surface);
 

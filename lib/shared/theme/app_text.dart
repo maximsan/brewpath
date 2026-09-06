@@ -73,10 +73,10 @@ enum AppFace {
 ///
 /// Omitting this axis leaves a rung at its own tracking, which for [AppText]'s
 /// label and micro steps is the design's 0.14em smallcaps rule — `.smallcaps`
-/// and `.challenge-kicker` (`:502`). **A component the design does not letter
+/// and `.challenge-kicker`. **A component the design does not letter
 /// specially takes that rule**, which is why most kickers pass no tracking at
 /// all: the app's own eyebrows (`KEEP SHARP`, a lesson card's label) have no
-/// counterpart in `prototype/` to letter them differently, so they letter like
+/// counterpart in the design to letter them differently, so they letter like
 /// every other kicker rather than at a hand-rounded value that only ever came
 /// from the eye.
 enum AppTracking {
@@ -94,7 +94,7 @@ enum AppTracking {
   /// than as a kicker. At the rung's 0.14em a count's numerals drift apart and
   /// the line stops reading as a single quantity, which is the whole reason the
   /// design tracks these tighter than the smallcaps beside them:
-  /// `.lesson-row.meta`, `.challenge-pill` (`:506`), `.bag-opt-s` (`:628`).
+  /// `.lesson-row.meta`, `.challenge-pill`, `.bag-opt-s`.
   meta(0.08),
 
   /// 0.12em — the sequence card's out-of-place hint, `.seq-hint`.
@@ -147,9 +147,8 @@ enum _Rung {
   /// pixels, so it is multiplied by [size] on the way out.
   ///
   /// The 0.14em the two smallcaps steps carry is the design's own smallcaps
-  /// rule — `.smallcaps`, `.smallcaps-mono` (`:241`) and `.challenge-kicker`
-  /// (`:502`) all set it. A call site letters differently only by naming an
-  /// [AppTracking].
+  /// rule — `.smallcaps`, `.smallcaps-mono` and `.challenge-kicker` all set
+  /// it. A call site letters differently only by naming an [AppTracking].
   final double tracking;
 
   /// This rung's letter spacing in logical pixels, lettered at [named] if the

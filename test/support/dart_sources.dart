@@ -37,9 +37,13 @@ Iterable<String> stringLiteralsIn(String source) sync* {
 ///
 /// The inverse of [withoutComments], and crude in the same way and for the same
 /// reason: a rule about what the code *says about itself* wants prose, and
-/// over-collecting is the safe direction. A `//` inside a string literal reads
-/// as a comment start here — harmless, because nothing this is used on asks a
-/// question a URL could answer falsely.
+/// over-collecting is the safe direction.
+///
+/// ⚠️ **A `//` inside a string literal reads as a comment start here**, so
+/// everything after a URL on the same line is collected as prose. Nothing in
+/// the repo trips it today; a caller adding a rule about paths should check
+/// that first, because a URL sitting above one is exactly the shape that would
+/// make this cry wolf.
 Iterable<String> commentsIn(String source) sync* {
   // `dotAll` is for the block form only, which spans lines. The line form has
   // to stay `[^\n]*`: with `dotAll` its `.` matches newlines too, so the first

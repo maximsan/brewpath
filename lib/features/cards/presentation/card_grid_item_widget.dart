@@ -15,7 +15,6 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// The tile's own metrics.
 const double _tilePadding = AppSpacing.base;
 
 /// The stamp the design drops in where a card has no art. A fixed size, not

@@ -55,8 +55,8 @@ const double treeCrossfadeRise = 8;
 /// The scale the arriving frame grows from.
 const double treeCrossfadeScaleFrom = 0.94;
 
-/// The bounce, as the design's four keyframes: `0.85 → 1.06 (55%) → 0.98 (80%)
-/// → 1`.
+/// The bounce, as the design's four keyframes:
+/// `0.85 → 1.06 (55%) → 0.98 (80%) → 1`.
 ///
 /// Written as a table rather than a spring so it is the design's curve rather
 /// than an approximation of it.

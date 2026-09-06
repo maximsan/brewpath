@@ -143,8 +143,8 @@ abstract final class OffTokens {
   static const OffToken<EdgeInsets> triedSealPadding = OffToken(
     EdgeInsets.fromLTRB(7, 5, 10, 5),
     reason:
-        'The design sets the seal to `padding: 5px 10px 5px 7px` '
-        ' and none of the three is a spacing stop. '
+        'The design sets the seal to `padding: 5px 10px 5px 7px`, and none '
+        'of the three is a spacing stop. '
         'The asymmetry is the point: the check needs less room on its side '
         'than the word does on its, so a symmetric pad would sit the mark '
         'off-centre in a shape only 13px tall.',

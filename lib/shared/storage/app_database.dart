@@ -109,11 +109,11 @@ class UserSettings extends Table {
   /// "this learner has been shown the introductions" bits, and a wipe that
   /// clears one while keeping the other produces a state no learner can reach
   /// on their own: onboarding replayed with the Tour suppressed, or the
-  /// reverse. The three places that decide are `AccountWipe.resetProgress`
-  /// (keeps both, by leaving this row alone), `SettingsRepository.deleteAll`
-  /// (clears both, with the row) and `OnboardingRepository.resetOnboarding`
-  /// (clears both, by name). Device-local: never written to the progress
-  /// snapshot.
+  /// reverse.
+  /// The three places that decide are `AccountWipe.resetProgress` (keeps both,
+  /// by leaving this row alone), `SettingsRepository.deleteAll` (clears both,
+  /// with the row) and `OnboardingRepository.resetOnboarding` (clears both, by
+  /// name). Device-local: never written to the progress snapshot.
   BoolColumn get tourSeen => boolean().withDefault(const Constant(false))();
 
   /// Which micro-tips the learner has already been shown, as a comma-separated
