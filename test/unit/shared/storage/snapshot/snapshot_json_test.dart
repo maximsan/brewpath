@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
 import 'package:brew_path/shared/storage/snapshot/progress_snapshot.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_scopes.dart';
+import 'package:brew_path/shared/storage/snapshot/term_miss.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../support/snapshot_generators.dart';
@@ -62,6 +63,58 @@ void main() {
     expect(tombstone.clearedByDeleteOnly, ClearedByDeleteOnly.empty);
     expect(tombstone.resetGeneration, 4);
   });
+  group("termAnswers — the Vocab game's review deck", () {
+    test('both stamps survive the round trip', () {
+      const snapshot = ProgressSnapshot(
+        clearedByReset: ClearedByReset(
+          termAnswers: {
+            'crema': TermMiss(lastMissedAt: 2000, lastCorrectAt: 1000),
+          },
+        ),
+      );
+
+      final decoded = ProgressSnapshot.fromJson(
+        jsonDecode(jsonEncode(snapshot.toJson())) as Map<String, dynamic>,
+      );
+
+      expect(decoded.clearedByReset.termAnswers, {
+        'crema': const TermMiss(lastMissedAt: 2000, lastCorrectAt: 1000),
+      });
+    });
+
+    test('a snapshot written before the field decodes as empty', () {
+      final older = {
+        'version': ProgressSnapshot.currentVersion,
+        'clearedByReset': {
+          'learnedTerms': ['crema'],
+        },
+      };
+
+      final decoded = ProgressSnapshot.fromJson(older);
+
+      expect(decoded.clearedByReset.termAnswers, isEmpty);
+      expect(decoded.clearedByReset.learnedTerms, {'crema'});
+    });
+
+    test('a malformed entry is dropped rather than thrown on', () {
+      final mangled = {
+        'version': ProgressSnapshot.currentVersion,
+        'clearedByReset': {
+          'termAnswers': {
+            'crema': 'not an object',
+            'tamp': {'lastMissedAt': 2000},
+          },
+        },
+      };
+
+      final decoded = ProgressSnapshot.fromJson(mangled);
+
+      expect(decoded.clearedByReset.termAnswers, {
+        'tamp': const TermMiss(lastMissedAt: 2000),
+      });
+    });
+  });
+
   group('dailyActivity — the record the allowance counts', () {
     test('survives the JSON round trip, day keys and all', () {
       final entry = activityEntry(

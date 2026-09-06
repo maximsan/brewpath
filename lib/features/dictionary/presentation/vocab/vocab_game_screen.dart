@@ -11,6 +11,7 @@ import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/roast_meter.dart';
 import 'package:brew_path/features/dictionary/domain/vocab_completion.dart';
+import 'package:brew_path/features/dictionary/domain/vocab_miss_log.dart';
 import 'package:brew_path/features/dictionary/domain/vocab_providers.dart';
 import 'package:brew_path/features/dictionary/domain/vocab_round.dart';
 import 'package:brew_path/features/dictionary/domain/vocab_setup.dart';
@@ -52,22 +53,37 @@ class _VocabGameScreenState extends ConsumerState<VocabGameScreen> {
   int _index = 0;
   int? _picked;
   int _score = 0;
+
+  /// How many terms **this** drill put into the review deck, for the line
+  /// under the score.
+  int _missed = 0;
   bool _recorded = false;
+
+  late final VocabMissLog _log = VocabMissLog(
+    ref.read(snapshotRepositoryProvider),
+  );
 
   /// Whether the rounds have been dealt. A drill with no rounds is at setup.
   bool get _playing => _rounds.isNotEmpty;
 
-  VocabChoice _choiceFor(VocabPools pools) => (
-    deck: resolveVocabDeck(
-      chosen:
-          _deck ??
-          (vocabDeckAvailable(pools.saved.length)
-              ? VocabDeck.saved
-              : VocabDeck.all),
-      savedPoolSize: pools.saved.length,
-    ),
-    length: _length,
-  );
+  /// The learner's choice, resolved against the pools as they stand now.
+  ///
+  /// Misses is never the opening default however full it is: a drill should
+  /// open on what the learner chose to study, not on what they got wrong.
+  VocabChoice _choiceFor(VocabPools pools) {
+    final chosen =
+        _deck ??
+        (vocabDeckAvailable(pools.saved.length)
+            ? VocabDeck.saved
+            : VocabDeck.all);
+    return (
+      deck: resolveVocabDeck(
+        chosen: chosen,
+        chosenPoolSize: pools.forDeck(chosen).length,
+      ),
+      length: _length,
+    );
+  }
 
   /// Deals a round, if the day still holds one.
   ///
@@ -99,14 +115,32 @@ class _VocabGameScreenState extends ConsumerState<VocabGameScreen> {
       _index = 0;
       _picked = null;
       _score = 0;
+      _missed = 0;
       _recorded = false;
     });
   }
 
-  void _pick(int index) => setState(() {
-    _picked = index;
-    if (_rounds[_index].isCorrect(index)) _score++;
-  });
+  /// Answers the question, and logs what that did to the review deck.
+  ///
+  /// Every answer is logged, in every deck — the Misses deck's whole rule —
+  /// and each write lands before the next one reads, which is the log's job.
+  void _pick(int index) {
+    final round = _rounds[_index];
+    final correct = round.isCorrect(index);
+
+    setState(() {
+      _picked = index;
+      if (correct) _score++;
+      if (!correct) _missed++;
+    });
+    unawaited(
+      _log.record(
+        termId: round.answer.id,
+        correct: correct,
+        now: DateTime.now(),
+      ),
+    );
+  }
 
   void _next() {
     setState(() {
@@ -116,8 +150,23 @@ class _VocabGameScreenState extends ConsumerState<VocabGameScreen> {
     // Recorded here rather than where the score is drawn: a repository write
     // fired from `build` runs during the build phase, which is a hazard even
     // when a guard flag keeps it to one write.
-    if (_index >= _rounds.length) _recordRoundOnce();
+    if (_index >= _rounds.length) {
+      _recordRoundOnce();
+      _refreshPools();
+    }
   }
+
+  /// Re-reads the answers once every one this drill logged has been written,
+  /// which rebuilds the pools that derive from them.
+  ///
+  /// Waiting matters: the Misses deck the results screen offers *Play again*
+  /// from, and the counts setup shows after *Change round*, both have to be
+  /// what this drill just left behind rather than what it started with.
+  void _refreshPools() => unawaited(
+    _log.settled.then((_) {
+      if (mounted) ref.invalidate(vocabAnswersProvider);
+    }),
+  );
 
   /// Back to setup, with the rounds dropped so the drill is startable again.
   void _changeRound() => setState(() {
@@ -125,6 +174,7 @@ class _VocabGameScreenState extends ConsumerState<VocabGameScreen> {
     _index = 0;
     _picked = null;
     _score = 0;
+    _missed = 0;
   });
 
   /// Leaves the drill, back to wherever it was opened from.
@@ -149,16 +199,23 @@ class _VocabGameScreenState extends ConsumerState<VocabGameScreen> {
     if (_recorded) return;
     _recorded = true;
     unawaited(
-      recordVocabRound(
-        ref.read(snapshotRepositoryProvider),
-        DateTime.now(),
-      ).then((_) {
-        if (!mounted) return;
-        // One finished round marks the day, and everything that reads the day
-        // is derived — so the surfaces that were covered by this drill have to
-        // be told to look again.
-        invalidateDaySurfaces(ref);
-      }),
+      // Behind the drill's own answers, never beside them: both are a
+      // read-modify-write over the whole snapshot, so an overlap would read
+      // before the last answer landed and write the miss back out again.
+      _log.settled
+          .then(
+            (_) => recordVocabRound(
+              ref.read(snapshotRepositoryProvider),
+              DateTime.now(),
+            ),
+          )
+          .then((_) {
+            if (!mounted) return;
+            // One finished round marks the day, and everything reading the
+            // day is derived — so the surfaces this drill covered have to be
+            // told to look again.
+            invalidateDaySurfaces(ref);
+          }),
     );
   }
 
@@ -241,7 +298,12 @@ class _VocabGameScreenState extends ConsumerState<VocabGameScreen> {
       outcome: (
         score: _score,
         total: total,
-        encouragement: VocabCopy.encouragement(score: _score, total: total),
+        encouragement:
+            VocabCopy.encouragement(score: _score, total: total) +
+            VocabCopy.reviewDeckLine(
+              _missed,
+              fromReviewDeck: _deck == VocabDeck.misses,
+            ),
         celebratory: isCelebratoryScore(score: _score, total: total),
       ),
       primary: (

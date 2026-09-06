@@ -9,6 +9,7 @@ library;
 
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
+import 'package:brew_path/shared/storage/snapshot/term_miss.dart';
 import 'package:brew_path/shared/storage/snapshot/timestamped.dart';
 
 /// The Unix epoch, and the stamp an absent last-writer-wins field reads as.
@@ -72,6 +73,21 @@ Map<String, dynamic> reactionMapToJson(
   Map<String, ChallengeReaction> reactions,
 ) => {
   for (final entry in reactions.entries) entry.key: entry.value.toJson(),
+};
+
+/// Reads a `term id → answer stamps` map.
+Map<String, TermMiss> termMissMapFromJson(Object? raw) {
+  if (raw is! Map) return const {};
+  return {
+    for (final entry in raw.entries)
+      if (entry.value is Map)
+        '${entry.key}': TermMiss.fromJson(objectOrEmpty(entry.value)),
+  };
+}
+
+/// Writes a `term id → answer stamps` map.
+Map<String, dynamic> termMissMapToJson(Map<String, TermMiss> misses) => {
+  for (final entry in misses.entries) entry.key: entry.value.toJson(),
 };
 
 /// Reads a `day → entries` map. JSON object keys are always strings,

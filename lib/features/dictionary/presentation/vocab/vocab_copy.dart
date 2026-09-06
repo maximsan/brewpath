@@ -43,6 +43,17 @@ abstract final class VocabCopy {
   static const savedDeckShort =
       'Save $vocabMinimumPool or more terms to unlock';
 
+  /// The Misses deck's row.
+  static const missesDeck = 'Review misses';
+
+  /// What the Misses deck offers, once enough terms are owed a review.
+  static const missesDeckReady = 'Terms you have missed before';
+
+  /// What it says before then. Not phrased as an instruction the way the
+  /// Saved deck's is: nobody sets out to miss four questions, so the row
+  /// states the condition rather than asking for it.
+  static const missesDeckShort = 'Miss a few first';
+
   /// The All deck's row, for a learner who owns the course.
   static const allDeck = 'Whole glossary';
 
@@ -61,9 +72,40 @@ abstract final class VocabCopy {
   /// The whole-deck length card, shown when no offered length fits.
   static const wholeDeck = 'Every term in this deck';
 
+  /// What a deck row says: its name, and what it holds.
+  ///
+  /// One lookup rather than a switch per line, so a fourth deck is a case
+  /// here and nowhere else — the row was drifting towards a cascade for the
+  /// title and a second, differently-shaped one for the note.
+  static ({String title, String note}) deckRow(
+    VocabDeck deck, {
+    required bool hasCourse,
+    required bool available,
+  }) => switch (deck) {
+    VocabDeck.saved => (
+      title: savedDeck,
+      note: available ? savedDeckReady : savedDeckShort,
+    ),
+    // Calling a free learner's pool "the whole glossary" would be a claim
+    // their own dictionary screen contradicts — it shows every entry to
+    // everyone, and the drill reaches only part of it.
+    VocabDeck.all =>
+      hasCourse
+          ? (title: allDeck, note: allDeckNote)
+          : (title: yourTermsDeck, note: yourTermsNote),
+    VocabDeck.misses => (
+      title: missesDeck,
+      note: available ? missesDeckReady : missesDeckShort,
+    ),
+  };
+
   /// The nudge under a short Saved deck.
   static const longerRoundsHint =
       'Longer rounds unlock as you bookmark more terms.';
+
+  /// The same nudge under a short Misses deck, which grows a different way.
+  static const longerMissRoundsHint =
+      'Longer rounds unlock as you log more misses.';
 
   /// Starts the drill.
   static const start = 'Start round';
@@ -122,6 +164,22 @@ abstract final class VocabCopy {
 
   /// The right-answer line.
   static const correctVerdict = 'Correct';
+
+  /// What the score adds about the review deck, for a drill drawn from
+  /// [fromReviewDeck] that missed [count] terms.
+  ///
+  /// The design writes only the *added* half, which is false on the one deck
+  /// the line is read on most: a term missed while drilling the review deck
+  /// was already in it and stayed. The divergence is registered in
+  /// `docs/design/11-open-items.md`.
+  static String reviewDeckLine(int count, {required bool fromReviewDeck}) {
+    if (count == 0) return '';
+    final terms = count == 1 ? 'term' : 'terms';
+    final verb = count == 1 ? 'was' : 'were';
+    return fromReviewDeck
+        ? ' The $count $terms you missed $verb kept in your review deck.'
+        : ' The $count $terms you missed $verb added to your review deck.';
+  }
 
   /// The line under the score.
   ///

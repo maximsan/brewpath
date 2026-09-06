@@ -1,4 +1,5 @@
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
+import 'package:brew_path/features/dictionary/domain/vocab_providers.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/profile/domain/daily_reminder.dart';
 import 'package:brew_path/features/profile/domain/learner_name.dart';
@@ -118,4 +119,8 @@ Future<void> resetProgress(WidgetRef ref) async {
   // badge keeps the wiped keys alive: it watches the key set continuously, so
   // nothing else ever asks the store again.
   ref.invalidate(savedKeysProvider);
+  // And the Vocab game's review deck, which the wipe emptied for the same
+  // reason: both are snapshot reads cached behind a provider, so clearing the
+  // store is only half of clearing what a screen shows.
+  ref.invalidate(vocabAnswersProvider);
 }

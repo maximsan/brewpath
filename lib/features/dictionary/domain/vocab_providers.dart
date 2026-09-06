@@ -7,9 +7,24 @@ import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/dictionary_repository.dart';
+import 'package:brew_path/shared/repositories/repository_providers.dart';
+import 'package:brew_path/shared/storage/snapshot/term_miss.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'vocab_providers.g.dart';
+
+/// Every term the learner has answered, with the stamps that decide whether
+/// it is still owed a review.
+///
+/// A provider of its own rather than a read inside [vocabPools], for the
+/// reason [savedKeysProvider] is one: it is the seam a drill invalidates after
+/// logging an answer, and reading the snapshot inline would leave a second
+/// future in flight that nothing awaits when an earlier one fails.
+@riverpod
+Future<Map<String, TermMiss>> vocabAnswers(Ref ref) async =>
+    (await ref.watch(snapshotRepositoryProvider).read())
+        .clearedByReset
+        .termAnswers;
 
 /// Both pools a drill picks from, resolved together.
 ///
@@ -24,6 +39,7 @@ class VocabPools {
     required this.accessible,
     required this.saved,
     required this.savedEligible,
+    required this.missed,
     this.categoryLabels = const {},
     this.hasCourse = false,
   });
@@ -33,6 +49,13 @@ class VocabPools {
 
   /// The accessible terms they bookmarked — always a subset of [accessible].
   final List<DictionaryTerm> saved;
+
+  /// The accessible terms they owe a review — also a subset of [accessible].
+  ///
+  /// Required, like [saved]: an empty deck and a deck nobody remembered to
+  /// pass read identically at every call site, and the first is a state the
+  /// setup screen must draw honestly.
+  final List<DictionaryTerm> missed;
 
   /// How many of their bookmarks are words a drill could ask about at all,
   /// before the tier narrows it — so **not** the raw count of saved keys.
@@ -70,8 +93,11 @@ class VocabPools {
   final bool hasCourse;
 
   /// The terms [deck] can ask about.
-  List<DictionaryTerm> forDeck(VocabDeck deck) =>
-      deck == VocabDeck.saved ? saved : accessible;
+  List<DictionaryTerm> forDeck(VocabDeck deck) => switch (deck) {
+    VocabDeck.saved => saved,
+    VocabDeck.misses => missed,
+    VocabDeck.all => accessible,
+  };
 }
 
 /// The learner's drill pools, tier-scoped.
@@ -89,6 +115,7 @@ Future<VocabPools> vocabPools(Ref ref) async {
   final categoriesFuture = dictionary.getCategories();
   final lessonsFuture = ref.watch(contentRepositoryProvider).getLessons();
   final savedFuture = ref.watch(savedKeysProvider.future);
+  final answersFuture = ref.watch(vocabAnswersProvider.future);
   final entitlement = ref.watch(courseEntitlementProvider);
 
   final hasCourse = entitlement.asData?.value ?? false;
@@ -107,6 +134,10 @@ Future<VocabPools> vocabPools(Ref ref) async {
   return VocabPools(
     accessible: accessible,
     hasCourse: hasCourse,
+    missed: missedAccessibleTerms(
+      accessible: accessible,
+      answers: await answersFuture,
+    ),
     // Intersected with every drillable word rather than counted off the keys:
     // a bookmark no drill could ever ask about is not one the course unlocks.
     savedEligible: savedAccessibleTerms(

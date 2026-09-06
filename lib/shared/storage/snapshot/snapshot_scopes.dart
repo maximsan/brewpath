@@ -4,6 +4,7 @@ import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_codec.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
+import 'package:brew_path/shared/storage/snapshot/term_miss.dart';
 import 'package:brew_path/shared/storage/snapshot/timestamped.dart';
 import 'package:flutter/foundation.dart';
 
@@ -38,6 +39,7 @@ class ClearedByReset {
     this.treeStage = 0,
     this.challengesCompleted = const {},
     this.learnedTerms = const {},
+    this.termAnswers = const {},
     this.challengeReactions = const {},
     this.dailyActivity = const {},
     this.challengesSaved = _emptyIds,
@@ -58,6 +60,7 @@ class ClearedByReset {
     treeStage: json['treeStage'] as int? ?? 0,
     challengesCompleted: stringSetFromJson(json['challengesCompleted']),
     learnedTerms: stringSetFromJson(json['learnedTerms']),
+    termAnswers: termMissMapFromJson(json['termAnswers']),
     challengeReactions: reactionMapFromJson(json['challengeReactions']),
     dailyActivity: dayEntriesFromJson(json['dailyActivity']),
     challengesSaved: stampedSetFromJson(json['challengesSaved']),
@@ -88,6 +91,7 @@ class ClearedByReset {
     'treeStage',
     'challengesCompleted',
     'learnedTerms',
+    'termAnswers',
     'challengeReactions',
     'dailyActivity',
     'challengesSaved',
@@ -154,6 +158,21 @@ class ClearedByReset {
 
   /// Dictionary terms whose source lesson has been completed.
   final Set<String> learnedTerms;
+
+  /// Term id → when it was last answered wrong and last answered right.
+  ///
+  /// **Every answered term, not only the missed ones** — which is why it is
+  /// not called the misses. A correct answer has to write a key even for a
+  /// term this device never saw missed: the other device may hold a miss this
+  /// one has not seen yet, and a clear it cannot out-stamp is a clear that
+  /// never happens.
+  ///
+  /// The Vocab game's Misses deck is the subset whose miss is the later of the
+  /// two stamps. Stamps rather than a set of ids because removal has to
+  /// survive a merge — see [TermMiss]. Bounded by the glossary rather than by
+  /// the misses, so it is a couple of hundred entries of two integers and
+  /// needs no pruning.
+  final Map<String, TermMiss> termAnswers;
 
   /// Challenge id → the reaction logged for it, most recent winning.
   final Map<String, ChallengeReaction> challengeReactions;
@@ -321,6 +340,25 @@ class ClearedByReset {
     ),
   );
 
+  /// A copy recording that [termId] was answered, right or wrong, at [at].
+  ///
+  /// The whole rule the Misses deck runs on: a wrong answer in any deck adds
+  /// the term, a correct answer in any deck clears it, and nothing else
+  /// touches the record — no decay and no cap.
+  ClearedByReset withTermAnswered(
+    String termId, {
+    required bool correct,
+    required int at,
+  }) => _copy(
+    termAnswers: {
+      ...termAnswers,
+      termId: (termAnswers[termId] ?? TermMiss.none).answered(
+        correct: correct,
+        at: at,
+      ),
+    },
+  );
+
   /// A copy recording that [id] was logged with [reaction] on [day].
   ///
   /// Both halves move together because they are one event: the completion is
@@ -381,6 +419,7 @@ class ClearedByReset {
     Timestamped<ActiveChallenge?>? activeChallenge,
     Set<String>? challengesCompleted,
     Map<String, ChallengeReaction>? challengeReactions,
+    Map<String, TermMiss>? termAnswers,
     Timestamped<Set<String>>? challengesSaved,
     Timestamped<Set<String>>? favourites,
   }) => ClearedByReset(
@@ -393,6 +432,7 @@ class ClearedByReset {
     treeStage: treeStage ?? this.treeStage,
     challengesCompleted: challengesCompleted ?? this.challengesCompleted,
     learnedTerms: learnedTerms,
+    termAnswers: termAnswers ?? this.termAnswers,
     challengeReactions: challengeReactions ?? this.challengeReactions,
     dailyActivity: dailyActivity ?? this.dailyActivity,
     challengesSaved: challengesSaved ?? this.challengesSaved,
@@ -413,6 +453,7 @@ class ClearedByReset {
     'treeStage': treeStage,
     'challengesCompleted': sortedList(challengesCompleted),
     'learnedTerms': sortedList(learnedTerms),
+    'termAnswers': termMissMapToJson(termAnswers),
     'challengeReactions': reactionMapToJson(challengeReactions),
     'dailyActivity': dayEntriesToJson(dailyActivity),
     'challengesSaved': challengesSaved.toJson(sortedList),
@@ -433,6 +474,7 @@ class ClearedByReset {
           other.treeStage == treeStage &&
           setEquals(other.challengesCompleted, challengesCompleted) &&
           setEquals(other.learnedTerms, learnedTerms) &&
+          mapEquals(other.termAnswers, termAnswers) &&
           mapEquals(other.challengeReactions, challengeReactions) &&
           _dayEntriesEqual(other.dailyActivity, dailyActivity) &&
           other.challengesSaved == challengesSaved &&
@@ -451,6 +493,7 @@ class ClearedByReset {
     treeStage,
     Object.hashAllUnordered(challengesCompleted),
     Object.hashAllUnordered(learnedTerms),
+    Object.hashAllUnordered(termAnswers.keys),
     Object.hashAllUnordered(challengeReactions.keys),
     Object.hashAllUnordered(dailyActivity.keys),
     challengesSaved,

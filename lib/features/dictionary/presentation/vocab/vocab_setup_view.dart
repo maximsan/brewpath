@@ -73,6 +73,13 @@ class VocabSetupView extends StatelessWidget {
               onChoice: onChoice,
               hasCourse: pools.hasCourse,
             ),
+            const SizedBox(height: AppSpacing.xs),
+            _DeckCard(
+              deck: VocabDeck.misses,
+              choice: choice,
+              size: pools.missed.length,
+              onChoice: onChoice,
+            ),
             const SizedBox(height: AppSpacing.lg),
             const SectionHeader(VocabCopy.lengthHeading),
             const SizedBox(height: AppSpacing.xs),
@@ -82,11 +89,13 @@ class VocabSetupView extends StatelessWidget {
               choice: choice,
               onChoice: onChoice,
             ),
-            if (choice.deck == VocabDeck.saved &&
+            if (choice.deck != VocabDeck.all &&
                 poolSize < vocabLengths.last) ...[
               const SizedBox(height: AppSpacing.xs),
               Text(
-                VocabCopy.longerRoundsHint,
+                choice.deck == VocabDeck.misses
+                    ? VocabCopy.longerMissRoundsHint
+                    : VocabCopy.longerRoundsHint,
                 style: AppText.support(mood: mood),
               ),
             ],
@@ -121,23 +130,15 @@ class _DeckCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final available = deck == VocabDeck.all || vocabDeckAvailable(size);
-    // Calling a free learner's pool "the whole glossary" would be a claim
-    // their own dictionary screen contradicts — it shows every entry to
-    // everyone, and the drill reaches only part of it.
-    final title = switch (deck) {
-      VocabDeck.saved => VocabCopy.savedDeck,
-      VocabDeck.all => hasCourse ? VocabCopy.allDeck : VocabCopy.yourTermsDeck,
-    };
-    final note = switch (deck) {
-      VocabDeck.saved =>
-        available ? VocabCopy.savedDeckReady : VocabCopy.savedDeckShort,
-      VocabDeck.all =>
-        hasCourse ? VocabCopy.allDeckNote : VocabCopy.yourTermsNote,
-    };
+    final row = VocabCopy.deckRow(
+      deck,
+      hasCourse: hasCourse,
+      available: available,
+    );
 
     return PickCard(
-      title: '$title · $size',
-      description: note,
+      title: '${row.title} · $size',
+      description: row.note,
       selected: choice.deck == deck,
       onTap: available
           ? () => onChoice((deck: deck, length: choice.length))

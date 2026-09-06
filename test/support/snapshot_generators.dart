@@ -4,6 +4,7 @@ import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
 import 'package:brew_path/shared/storage/snapshot/progress_snapshot.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_scopes.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
+import 'package:brew_path/shared/storage/snapshot/term_miss.dart';
 import 'package:brew_path/shared/storage/snapshot/timestamped.dart';
 
 /// Seeded generator for random-but-plausible snapshots.
@@ -69,6 +70,7 @@ class SnapshotGen {
     treeStage: _rng.nextInt(_maxTreeStage + 1),
     challengesCompleted: _subset(_challenges),
     learnedTerms: _subset(_terms),
+    termAnswers: _misses(),
     challengeReactions: _reactions(),
     dailyActivity: _dailyActivity(),
     challengesSaved: _stampedSet(_challenges),
@@ -128,6 +130,19 @@ class SnapshotGen {
           final total = 1 + _rng.nextInt(_maxGraded);
           return MasteryResult(correct: _rng.nextInt(total + 1), total: total);
         }(),
+  };
+
+  /// Answer stamps over the same tiny term pool, drawn from the same three
+  /// stamps as everything else — so two generated snapshots collide on a term
+  /// with a miss on one side and a clear on the other, which is the only case
+  /// the per-stamp join has to get right.
+  Map<String, TermMiss> _misses() => {
+    for (final id in _terms)
+      if (_rng.nextBool())
+        id: TermMiss(
+          lastMissedAt: _rng.nextBool() ? _pick(_stamps) : 0,
+          lastCorrectAt: _rng.nextBool() ? _pick(_stamps) : 0,
+        ),
   };
 
   Map<String, ChallengeReaction> _reactions() => {

@@ -4,6 +4,7 @@ import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/storage/snapshot/progress_snapshot.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_scopes.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
+import 'package:brew_path/shared/storage/snapshot/term_miss.dart';
 import 'package:brew_path/shared/storage/snapshot/timestamped.dart';
 
 /// Joins two snapshots into one.
@@ -78,6 +79,10 @@ ClearedByReset _joinProgress(ProgressSnapshot local, ProgressSnapshot remote) {
     treeStage: max(a.treeStage, b.treeStage),
     challengesCompleted: {...a.challengesCompleted, ...b.challengesCompleted},
     learnedTerms: {...a.learnedTerms, ...b.learnedTerms},
+    // Per-stamp max, so the two devices land on whichever of the four answers
+    // was genuinely latest — the shape a set of missed ids could not have,
+    // because a clear on one device would come back from the other.
+    termAnswers: _mergeMap(a.termAnswers, b.termAnswers, TermMiss.later),
     challengeReactions: _mergeMap(
       a.challengeReactions,
       b.challengeReactions,

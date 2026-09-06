@@ -18,6 +18,7 @@ VocabPools _pools({
 }) => VocabPools(
   accessible: const [_term],
   saved: saved,
+  missed: const [],
   savedEligible: savedEligible,
   hasCourse: hasCourse,
 );
