@@ -1,4 +1,3 @@
-import 'package:brew_path/features/lessons/presentation/cards/content_card_view.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_run.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_tier.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
@@ -18,11 +17,11 @@ import 'package:flutter_test/flutter_test.dart';
 /// the day they were authored and entered the catalog three days after the
 /// list was last written (#311).
 ///
-/// So the rule is stated the other way round: a game whose rounds can all be
-/// drawn is playable **unless someone named a reason it is not**. An addition
-/// to the catalog then fails this suite until it is ruled on — the "someone
-/// said so" property expressed as something a build can check rather than
-/// something a reviewer must remember.
+/// So the rule is stated the other way round: a game with rounds to play is
+/// playable **unless someone named a reason it is not**. An addition to the
+/// catalog then fails this suite until it is ruled on — the "someone said so"
+/// property expressed as something a build can check rather than something a
+/// reviewer must remember.
 ///
 /// Asserted against the **real shipped banks**, in the style of the tier test:
 /// a fixture would only prove the rule holds over invented data, where the
@@ -42,20 +41,19 @@ void main() {
     };
   });
 
-  /// Whether every round of [gameId] can be drawn by this build.
+  /// Whether [gameId] has rounds to play, read from the shipped bank rather
+  /// than from a list of kind names.
   ///
-  /// Asked of the rounds themselves rather than of a list of kind names, so the
-  /// answer comes from the same exhaustive switch the player uses. A kind that
-  /// gains a renderer flips this with no second list to keep in step.
-  bool rendersFully(String gameId) {
-    final rounds = banks[gameId] ?? const <ContentCard>[];
-    return rounds.isNotEmpty && rounds.every(hasRenderer);
-  }
+  /// It used to also ask whether every round could be *drawn*. A round this
+  /// build cannot draw is no longer a state that compiles (#418), so this is
+  /// the whole of what is left to ask.
+  bool hasRounds(String gameId) =>
+      (banks[gameId] ?? const <ContentCard>[]).isNotEmpty;
 
-  test('every game that can be drawn is playable, or says why not', () {
+  test('every game with rounds is playable, or says why not', () {
     final unruled = [
       for (final game in catalog)
-        if (rendersFully(game.id) &&
+        if (hasRounds(game.id) &&
             !playableMiniGameIds.contains(game.id) &&
             !deliberatelyNotPlayable.containsKey(game.id))
           game.id,
@@ -65,25 +63,30 @@ void main() {
       unruled,
       isEmpty,
       reason:
-          'These games render but are not playable, and no reason is recorded. '
+          'These games have rounds but are not playable, and no reason is '
+          'recorded. '
           'Either add them to playableMiniGameIds, or name them in '
           'deliberatelyNotPlayable with the reason they are held back.',
     );
   });
 
-  test('nothing playable strands the learner on a round it cannot draw', () {
+  test('nothing playable opens a run with no rounds in it', () {
     // The converse, and the worse of the two failures: a game listed as
-    // playable whose rounds cannot be drawn opens its intro, offers Play, and
-    // then meets the learner mid-run with "This round cannot be shown yet".
-    final broken = [
+    // playable with an empty bank opens its intro, offers Play, and hands the
+    // learner a run that has nothing to show them.
+    //
+    // It used to also catch a bank this build could not draw. That failure was
+    // retired with the renderer check (#418) — not by being ruled out, but by
+    // becoming impossible to compile.
+    final empty = [
       for (final id in playableMiniGameIds)
-        if (!rendersFully(id)) id,
+        if (!hasRounds(id)) id,
     ];
 
     expect(
-      broken,
+      empty,
       isEmpty,
-      reason: 'a playable game must be able to draw every round of its bank',
+      reason: 'a playable game must have rounds to play',
     );
   });
 

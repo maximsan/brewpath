@@ -2,15 +2,18 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-/// The milestone progress ring around the hero count.
+/// The progress ring around the hero count.
+///
+/// What the fill measures is the caller's — the streak screen fills it over
+/// the current week (#498).
 ///
 /// Static by design: no fill animation exists, so reduced motion needs no
 /// branch — the ring renders at its final value for everyone. Colours are
 /// passed in rather than read from the theme, so the painter needs no
 /// BuildContext (repo convention).
-class MilestoneRing extends StatelessWidget {
-  /// Creates a [MilestoneRing].
-  const MilestoneRing({
+class StreakRing extends StatelessWidget {
+  /// Creates a [StreakRing].
+  const StreakRing({
     required this.fraction,
     required this.trackColor,
     required this.fillColor,
@@ -28,7 +31,15 @@ class MilestoneRing extends StatelessWidget {
   /// The painted floor, so a young streak still reads as begun.
   static const double minVisibleFraction = 0.04;
 
-  /// Fill toward the next milestone, 0..1.
+  /// How much of the circle [fraction] actually paints.
+  ///
+  /// The floor is applied here and not in the fraction the caller passes: a
+  /// week that has not started is genuinely 0/7, and only the drawing rounds
+  /// it up to a notch.
+  static double paintedFraction(double fraction) =>
+      fraction.clamp(minVisibleFraction, 1);
+
+  /// How much of the circle the fill covers, 0..1.
   final double fraction;
 
   /// The full-circle track behind the fill.
@@ -74,17 +85,17 @@ class _RingPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final radius = (size.shortestSide - MilestoneRing.strokeWidth) / 2;
+    final radius = (size.shortestSide - StreakRing.strokeWidth) / 2;
     final track = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = MilestoneRing.strokeWidth
+      ..strokeWidth = StreakRing.strokeWidth
       ..color = trackColor;
     canvas.drawCircle(center, radius, track);
 
-    final clamped = fraction.clamp(MilestoneRing.minVisibleFraction, 1);
+    final clamped = StreakRing.paintedFraction(fraction);
     final fill = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = MilestoneRing.strokeWidth
+      ..strokeWidth = StreakRing.strokeWidth
       ..strokeCap = StrokeCap.round
       ..color = fillColor;
     const startAngle = -pi / 2;

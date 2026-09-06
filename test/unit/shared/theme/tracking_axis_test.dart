@@ -29,6 +29,10 @@ void main() {
     'lib/features/lessons/presentation/cards/grinder_dial_view.dart':
         'draws on a canvas grid rather than a rung, so it has no rung to '
         'letter against — see grinder_dial.dart',
+    'lib/features/companion/presentation/roasty_particles.dart':
+        "the points burst is set in the mascot's own canvas units and scaled "
+        'with it, so it reaches the screen at a different size on every host '
+        'and has no rung to letter against',
   };
 
   /// What counts as naming a spacing.

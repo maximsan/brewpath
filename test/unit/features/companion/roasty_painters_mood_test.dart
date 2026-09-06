@@ -98,12 +98,48 @@ void main() {
         expect(_uses(canvas.colours, RoastyColors.confettiEmber), isTrue);
       });
 
+      test("the points burst is a plate of the mood's accent", () {
+        final canvas = _RecordingCanvas();
+        paintRoastyParticlesFront(
+          canvas,
+          RoastyState.points,
+          0.2,
+          mood,
+          pointsAmount: 7,
+        );
+        expect(_uses(canvas.colours, mood.accent), isTrue);
+        expect(_uses(canvas.colours, other.accent), isFalse);
+      });
+
+      test("the burst's line is the ink that reads on that accent", () {
+        expect(roastyPointsBurstStyle(mood: mood).color, mood.accentInk);
+      });
+
       test("the sleeping z is the mood's muted ink", () {
         final style = roastySleepZStyle(mood: mood, size: 18, opacity: 0.5);
         expect(style.color, mood.inkMute.withValues(alpha: 0.5));
       });
     });
   }
+
+  test('the burst says the amount it was handed, and nothing else', () {
+    // The mascot names no payout of its own (§5.1, #16) — it only knows how
+    // to spell one it is given.
+    expect(roastyPointsBurstLabel(7), '+7 PTS');
+    expect(roastyPointsBurstLabel(120), '+120 PTS');
+  });
+
+  test('with no amount to state, the burst draws nothing', () {
+    final canvas = _RecordingCanvas();
+    paintRoastyParticlesFront(
+      canvas,
+      RoastyState.points,
+      0.2,
+      MoodColors.cupping,
+    );
+
+    expect(canvas.colours, isEmpty);
+  });
 
   test('the confetti is fixed in both moods', () {
     for (final (_, mood) in _moods) {

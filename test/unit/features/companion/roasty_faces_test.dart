@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
+import 'package:brew_path/features/companion/presentation/roasty_animation.dart';
 import 'package:brew_path/features/companion/presentation/roasty_faces.dart';
 import 'package:brew_path/features/companion/presentation/roasty_particles.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -25,6 +26,7 @@ const _designGroup = <RoastyState, String>{
   RoastyState.wrong: 'face-wrong',
   RoastyState.lesson: 'face-lesson',
   RoastyState.module: 'face-module',
+  RoastyState.points: 'face-points',
   RoastyState.card: 'face-card',
   RoastyState.sleep: 'face-sleep',
   RoastyState.awake: 'face-awake',
@@ -312,6 +314,79 @@ void main() {
         reason: 'the correct face strokes its smile rather than filling one',
       );
     });
+  });
+
+  group('the wink the design gives a payout', () {
+    test('the wink closes one eye and lifts the mouth on that side', () {
+      // The ninth state. Both of its strokes are asymmetric on purpose: the
+      // arch is shallower than a delighted eye's, and the mouth ends higher
+      // on the winking side than it starts, which is what stops the pose
+      // reading as the idle face with an eye missing.
+      final markup = _group('face-points');
+      final strokes = RegExp(
+        '<path d="([^"]+)"',
+      ).allMatches(markup).map((match) => _extentOf(match.group(1)!)).toList();
+      expect(strokes, hasLength(2), reason: 'the design redrew the wink');
+
+      final painted = _paint(RoastyState.points);
+
+      // The eye white and its catchlight. An open pair would be four.
+      expect(
+        painted.filledIn(RoastyColors.eyeWhite, opacity: 1),
+        hasLength(2),
+        reason: 'a winking face keeps one eye open, not two',
+      );
+      expect(
+        painted.hasEllipse(
+          RoastyColors.eyeWhite,
+          _ellipsesIn(markup, RoastyColors.eyeWhite).single,
+        ),
+        isTrue,
+        reason: 'the open eye is not where the design puts it',
+      );
+
+      for (final wanted in strokes) {
+        expect(
+          painted.marks.any(
+            (mark) =>
+                mark.style == PaintingStyle.stroke &&
+                _near(mark.bounds.left, wanted.left, _unit) &&
+                _near(mark.bounds.top, wanted.top, _unit) &&
+                _near(mark.bounds.width, wanted.width, _unit) &&
+                _near(mark.bounds.height, wanted.height, _unit),
+          ),
+          isTrue,
+          reason:
+              'no stroke ${wanted.width} by ${wanted.height} from '
+              '(${wanted.left}, ${wanted.top}) — the wink and its lifted '
+              'mouth are the two marks that make this face',
+        );
+      }
+    });
+  });
+
+  test('the points burst fades as one group, not mark by mark', () {
+    // The line is drawn on the plate, so fading each mark would let the accent
+    // show through its own lettering — the defect the wrong badge names below.
+    const halfway = 0.6;
+    final faded = roastyPointsBurstRise(halfway).opacity;
+
+    final canvas = _RecordingCanvas();
+    paintRoastyParticlesFront(
+      canvas,
+      RoastyState.points,
+      halfway,
+      MoodColors.darkRoast,
+      pointsAmount: 12,
+    );
+
+    expect(canvas.layerOpacities, hasLength(1));
+    expect(canvas.layerOpacities.single, closeTo(faded, _channel));
+    expect(
+      canvas.marks.map((mark) => mark.colour.a),
+      everyElement(closeTo(1, _channel)),
+      reason: "a mark carries its own fade as well as the group's",
+    );
   });
 
   group('the stars the design draws by hand', () {
