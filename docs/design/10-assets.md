@@ -5,7 +5,8 @@
 
 | Location | Count | Contents |
 |---|---|---|
-| `assets/trees/1–10.png` | 10 | The coffee-tree growth-stage illustrations (~1.7 MB). **These are the only production raster assets.** |
+| `assets/trees/1–10.png` | 10 | The coffee-tree growth-stage illustrations (~1.7 MB). |
+| `assets/modules/m1–m5.png` | 5 | The module pictures Today's card carries under the lesson title (1254×1254 each, ~11.7 MB together). The modules bank names each file, and the app bundles them under the same path. **With the trees, the only production raster assets.** |
 | `uploads/` | 84 | Reference images: onboarding screen refs, tree concepts, Duolingo iOS reference screenshots, streak refs, `Flowerpot_seed_to.mp4` |
 | `explorations/` | 12 | **New.** Design-exploration captures whose filenames record the decision: `compact-1-bordered` / `-2-noborder` / `-3-noglyph` / `-4-tight-chosen`, `ds-icons-1..3-chosen`, `ds-lessonrow-1..2-chosen`, `hover-unified-1` / `-2-chosen` / `hover-whole-row`. The `-chosen` suffix marks the variant that shipped — treat these as the visual record for the coming-soon node, the icon weight, the lesson row and the hover treatment. |
 | `scraps/` | 21 | Working/review captures — not production assets |

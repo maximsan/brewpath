@@ -102,7 +102,8 @@ enum AppTracking {
   meta(0.08),
 
   /// 0.12em — the sequence card's out-of-place hint, `.seq-hint`
-  /// (`index.html:1061`, set on `lesson.jsx:980`).
+  /// (`index.html:1061`, set on `lesson.jsx:980`), and the meta line and
+  /// count on the practice shelf, which the design letters at 0.12em too.
   hint(0.12),
 
   /// 0.16em — a mono micro line marking what a thing *is*, or where it sits in

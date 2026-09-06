@@ -1,5 +1,6 @@
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/replay_mark.dart';
 import 'package:brew_path/core/widgets/ghost_button.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_intro_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_player_screen.dart';
@@ -409,7 +410,7 @@ void main() {
         findsNWidgets(_formats.length - freeTitles.length),
       );
       expect(
-        findMark(AppIcon.chevron),
+        find.byType(ReplayMark),
         findsNWidgets(freeTitles.length),
       );
     });
@@ -418,8 +419,9 @@ void main() {
       final handle = tester.ensureSemantics();
       await _pump(tester, hasCourse: false);
 
+      // The design's own words for the state: the row belongs to the course.
       expect(
-        find.bySemanticsLabel(RegExp('Fix the cup.*Locked')),
+        find.bySemanticsLabel(RegExp('Fix the cup.*Part of Foundations')),
         findsOneWidget,
       );
       expect(
@@ -547,7 +549,7 @@ void main() {
 
       expect(findMark(AppIcon.lock), findsNothing);
       expect(
-        findMark(AppIcon.chevron),
+        find.byType(ReplayMark),
         findsNWidgets(_formats.length),
       );
     });

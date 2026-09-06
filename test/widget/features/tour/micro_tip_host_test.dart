@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:brew_path/app/app.dart';
+import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/widgets/app_sheet.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
@@ -267,7 +268,7 @@ void main() {
     );
 
     await pumpWithProviders(tester, const BrewPathApp(), container: container);
-    await tester.tap(find.widgetWithText(FilledButton, 'Start'));
+    await tester.tap(find.widgetWithText(FilledButton, AppLabels.beginLesson));
     await settleLoaders(tester);
     await letTipsSettle(tester);
 

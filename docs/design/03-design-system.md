@@ -231,13 +231,13 @@ state, its demo, when it applies, and its token spec):
 > ⚠️ **`Lesson row`'s "never boxed" rule is about the Path**, in its own words:
 > *"Rows are separated by a hairline, never boxed: **the Path** reads as one
 > column"* (`ds-content.js:515`). Path follows it (`PathLessonRow`, #435).
-> Audit F's entry 5 also cites Learn's `practice_any_lesson_widget.dart`, which
-> is boxed — but that is a replay list the running prototype does not have at
-> all, so the Path rule does not transfer to it unexamined. Its other half is
-> stale twice over: `module_lesson_card_widget.dart` was deleted by #394, and
-> the `Review` text button it names is gone. Left as a note rather than a
-> ticket, because what the rule *would* say about a screen the design never
-> drew is a question for the owner, not a defect to fix.
+> Audit F's entry 5 also cites Learn's `practice_any_lesson_widget.dart` as
+> boxed. It no longer is: the practice shelf draws the running prototype's own
+> `ReplayRow` — flat rows with a press highlight, under collapsible `Lessons`
+> and `Games` groups — so the entry is settled by the design rather than by
+> the Path rule. Its other half is stale twice over:
+> `module_lesson_card_widget.dart` was deleted by #394, and the `Review` text
+> button it names is gone.
 
 **38 patterns with documented rules** (`compRules` — purpose, example markup, and the rules that govern it):
 

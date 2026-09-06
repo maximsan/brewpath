@@ -31,6 +31,12 @@ abstract final class AppRadii {
   /// stops of its own — hence no constants for the bounds.
   static const double chrome = 14;
 
+  /// 10 px — **inside another shape**. The design's radius for a thing drawn
+  /// within a card or a list: the Today card's art banner (`borderRadius: 10`)
+  /// and the practice row's press highlight (`borderRadius: 10`). Below the
+  /// slack around [chrome], and named because two components set it.
+  static const double inner = 10;
+
   /// 999 px — **pill / dot**. Status dots, toggles, badges, the home indicator.
   /// Larger than any element it rounds, so the ends stay semicircular.
   static const double pill = 999;

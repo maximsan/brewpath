@@ -44,9 +44,37 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Today's card carries the module's picture.** The five module illustrations
+  the design ships are bundled, and the day's card draws its module's under the
+  title, in both its open and its locked state.
+
 ### Changed
 
+- **Today's card is the design's.** A surface card with a rule around it: the
+  module as its eyebrow, the title, the picture, one line saying where the
+  lesson sits and how long it takes (`LESSON 1/7 · ~3 MIN`), and a full-width
+  *Begin lesson*. The orange hero, the points pill and *Start* are gone; Keep
+  Sharp alone keeps the accent, because it is a state of the day rather than a
+  lesson.
+- **The practice shelf is the design's.** *Lessons* and *Games* are collapsible
+  groups with their counts, closed on arrival; rows are flat with a replay
+  arrow, not boxed; games sit indented under their kind's heading; and the
+  Lessons group appears only once something is finished, so a new learner no
+  longer sees an empty section with a placeholder in it. The tab runs at the
+  design's gutter and spacing.
+- **The name step focuses its field on arrival**, as the design has it.
+
 ### Fixed
+
+- The loading screen no longer flashes a sleeping Roasty and the tap cue for a
+  frame before the app opens: the advance is decided at the end of the wake-up,
+  not after the loop has been drawn back at its start.
+- Welcome's *tap anywhere to continue* is on screen again on a phone. It sat
+  below the fold because the page was sized as if it held two films.
+- Welcome's frame shows the film's first frame while the player starts, and
+  keeps it when the player cannot start at all — a simulator with no audio
+  device refuses the film — instead of an empty box. The failure's reason is
+  printed in debug builds.
 
 ---
 

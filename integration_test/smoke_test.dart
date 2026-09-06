@@ -1,3 +1,4 @@
+import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/widgets/roast_meter.dart';
 import 'package:brew_path/features/onboarding/presentation/loading/loading_screen.dart';
@@ -220,7 +221,7 @@ void main() {
     );
     await pumpUntil(
       tester,
-      find.text("Today's lesson"),
+      find.text(AppLabels.continueLearning.toUpperCase()),
       describe: 'the Learn tab after onboarding',
     );
   });
@@ -243,7 +244,7 @@ void main() {
     // exercises that — every widget test seeds the flag in memory instead.
     await pumpUntil(
       tester,
-      find.text("Today's lesson"),
+      find.text(AppLabels.continueLearning.toUpperCase()),
       describe: 'the Learn tab on a returning launch',
     );
 
@@ -300,7 +301,7 @@ void main() {
     // now opens on "What coffee actually is".
     await tapWhenReady(
       tester,
-      find.widgetWithText(FilledButton, 'Start'),
+      find.widgetWithText(FilledButton, AppLabels.beginLesson),
       describe: "today's lesson card",
     );
 
