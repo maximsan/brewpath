@@ -42,6 +42,16 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ## [Unreleased]
 
+### Added
+
+### Changed
+
+### Fixed
+
+---
+
+## [1.1.0+4] — 2026-09-06
+
 ### Changed
 
 - Pages pushed from a tab leave the route themselves when their bar's back
