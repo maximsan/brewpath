@@ -45,9 +45,8 @@ class StudioGrove {
   /// light when the light is not the default.
   ///
   /// The design writes `variety.name + (light is daylight ? '' : ' · ' +
-  /// light.name)` (`customize.jsx:314`) — Daylight is the grove's resting
-  /// state, so naming it would be telling the learner they have chosen
-  /// something when they have not.
+  /// light.name)` — Daylight is the grove's resting state, so naming it would
+  /// be telling the learner they have chosen something when they have not.
   String get doorSubtitle {
     final variety = varietyOf(planted.variety);
     if (planted.light == Grove.defaultLight) return variety.name;

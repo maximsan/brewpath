@@ -2,10 +2,9 @@
 ///
 /// Separated from the widget so every value below is unit-testable without
 /// pumping a frame — the same split `coffee_tree_animation.dart` makes for the
-/// sway. Transcribed from the design's `AnimatedTree`
-/// (`prototype/flavor-wheel.jsx:211-322`), with the multi-stage walk cut per
-/// ADR-0011: thresholds sit at least three lessons apart, so normal play never
-/// advances more than one stage.
+/// sway. Transcribed from the design's `AnimatedTree`, with the multi-stage
+/// walk cut per ADR-0011: thresholds sit at least three lessons apart, so
+/// normal play never advances more than one stage.
 library;
 
 import 'dart:math' as math;
@@ -56,8 +55,8 @@ const double treeCrossfadeRise = 8;
 /// The scale the arriving frame grows from.
 const double treeCrossfadeScaleFrom = 0.94;
 
-/// The bounce, as the design's four keyframes:
-/// `0.85 → 1.06 (55%) → 0.98 (80%) → 1`.
+/// The bounce, as the design's four keyframes: `0.85 → 1.06 (55%) → 0.98 (80%)
+/// → 1`.
 ///
 /// Written as a table rather than a spring so it is the design's curve rather
 /// than an approximation of it.

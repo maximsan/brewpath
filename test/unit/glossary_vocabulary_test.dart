@@ -42,10 +42,10 @@ final _ruledOut =
       (
         // **Case-insensitive, with the innocent phrases named.**
         // Capitalisation looked like the discriminator and is not. The
-        // design shouts the term for the collectible itself —
-        // `onboarding.jsx` carries `eyebrow: 'FIELD GUIDE READY'` on a
-        // `state: 'module'` moment — while `settings.jsx`'s "A FIELD GUIDE
-        // TO COFFEE" is the ordinary English phrase in the same case. A
+        // design shouts the term for the collectible itself — onboarding
+        // carries `eyebrow: 'FIELD GUIDE READY'` on a `state: 'module'`
+        // moment — while Settings' "A FIELD GUIDE TO COFFEE" is the ordinary
+        // English phrase in the same case. A
         // case-sensitive rule lets the first through; an unqualified one
         // rewrites the second. So the split is by string, not by shape.
         pattern: RegExp(r'\bField Guides?\b', caseSensitive: false),
@@ -57,8 +57,7 @@ final _ruledOut =
         allow: const <String>{
           'A quiet field guide. No pressure.',
           // Settings and About close on the design's own ordinary-English
-          // phrase — the app describing itself, never the collectible
-          // (`prototype/settings.jsx:308`, `prototype/screens.jsx:559`).
+          // phrase — the app describing itself, never the collectible.
           'A field guide to coffee',
           'A field guide',
         },
@@ -132,11 +131,11 @@ const _rootDocs = <String>['CLAUDE.md', 'AGENTS.md', 'README.md'];
 /// **Favourites is deliberately absent too, and was tried.** The glossary rules
 /// it out as a name for the Saved shelf, but `docs/design/` exists to describe
 /// the prototype — it quotes that screen's own copy (*Title "Favorites"*), it
-/// names its seed data, and `learning/` names the real Dart
-/// identifiers of a `FavoritesScreen` the course had the learner build. Every
-/// one is legitimate, and no pattern separates them from misuse. A guard firing
-/// on all of those would be bypassed within a week, so the term stays a review
-/// matter rather than a checked one.
+/// names its seed data, and `learning/` names the real Dart identifiers of a
+/// `FavoritesScreen` the course had the learner build. Every one is legitimate,
+/// and no pattern separates them from misuse. A guard firing on all of those
+/// would be bypassed within a week, so the term stays a review matter rather
+/// than a checked one.
 final _ruledOutInProse =
     <({RegExp pattern, String term, String instead, String why})>[
       (

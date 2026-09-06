@@ -168,8 +168,8 @@ class _MultiOptionRow extends StatelessWidget {
           if (mark == MultiMark.missed)
             Text(
               _missedTag,
-              // `.ms-tag` (`index.html:671`, set on `lesson.jsx:479`) is the
-              // micro step in the row's own sage — not the label step in
+              // `.ms-tag` is the micro step in the row's own sage — not the
+              // label step in
               // muted ink. The row is already sage to its border, box and
               // check; a grey tag on it read as a separate remark rather than
               // as the mark's own word.

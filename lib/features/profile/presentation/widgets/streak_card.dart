@@ -14,8 +14,8 @@ import 'package:flutter/material.dart';
 /// The streak, full width, as a preview of its own screen.
 ///
 /// It was one tile of a 2×2 stat grid; the design gives it a card of its own
-/// (`prototype/screens.jsx:2604-2637`) carrying the mark, the count and the
-/// week strip — the streak is the thing a learner opens Profile to check.
+/// carrying the mark, the count and the week strip — the streak is the thing a
+/// learner opens Profile to check.
 class StreakCard extends StatelessWidget {
   /// Creates a [StreakCard].
   const StreakCard({

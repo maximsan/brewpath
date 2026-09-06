@@ -13,11 +13,11 @@ import 'package:brew_path/shared/models/module_model.dart';
 /// [moduleSizes] in path order.
 ///
 /// **Pinned to the modules, never a lesson ratio.** The design states the rule
-/// beside its table (`prototype/data.jsx:2942-2959`): *"The 10 stages are
-/// pinned to the 5 modules so a module boundary is always a visible jump. Each
-/// module owns two growth steps — one at its halfway point, one on completion
-/// — except the last, whose single step IS the harvest"*, giving
-/// `start 1 · M1 2→3 · M2 4→5 · M3 6→7 · M4 8→9 · M5 →10`.
+/// beside its table: *"The 10 stages are pinned to the 5 modules so a module
+/// boundary is always a visible jump. Each module owns two growth steps — one
+/// at its halfway point, one on completion — except the last, whose single step
+/// IS the harvest"*, giving `start 1 · M1 2→3 · M2 4→5 · M3 6→7 · M4 8→9 · M5
+/// →10`.
 ///
 /// A ratio rounded up agreed with that for four growth events and then parted:
 /// on the shipped course it reached the last stage at lesson 29, so the tree
@@ -110,9 +110,9 @@ List<int> moduleSizesInOrder(List<ModuleModel> modules) {
 
 /// The smallest bar the tree screen will draw, as a fraction of full width.
 ///
-/// The design's floor (`screens.jsx:439`). A learner with nothing finished
-/// still sees a bar rather than an empty track they might read as a broken
-/// one — it says "here is the thing that fills", not "you have progress".
+/// The design's floor. A learner with nothing finished still sees a bar rather
+/// than an empty track they might read as a broken one — it says "here is the
+/// thing that fills", not "you have progress".
 const double minTreeProgressFraction = 0.03;
 
 /// How full the tree screen's bar is with [completed] of [total] lessons done.

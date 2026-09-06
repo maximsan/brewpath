@@ -15,8 +15,8 @@ import 'package:flutter/material.dart';
 ///
 /// Badge, title and stamp; the summary; then the keepsake line under its own
 /// rule. **Deliberately no points total**: points are paid per lesson and
-/// reported by the completion rail, and a card that also carried a number
-/// would read as a second payout (`prototype/rewards.jsx:407-486`).
+/// reported by the completion rail, and a card that also carried a number would
+/// read as a second payout.
 ///
 /// Shared rather than built for one screen: the lesson ending previews one,
 /// and the module ending turns one over.

@@ -3,10 +3,10 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The design sets `font-optical-sizing: auto` on every display element
-/// (`prototype/index.html:222`), which is a browser setting the `opsz` axis to
-/// the rendered size. Fraunces is drawn for that: at 9 the strokes thicken and
-/// the spacing opens so small text holds up, at 144 they refine for a headline.
+/// The design sets `font-optical-sizing: auto` on every display element, which
+/// is a browser setting the `opsz` axis to the rendered size. Fraunces is drawn
+/// for that: at 9 the strokes thicken and the spacing opens so small text holds
+/// up, at 144 they refine for a headline.
 ///
 /// A static cut has one drawing of the face for every size, so a ladder
 /// spanning 9.5–56px gets a compromise at both ends — headings too delicate,

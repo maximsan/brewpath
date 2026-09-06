@@ -11,8 +11,8 @@ import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// The frame's proportion (`screens.jsx:39`). Not square: a 1:1 frame crops
-/// the film's growth and reads as a photo rather than a stage.
+/// The frame's proportion. Not square: a 1:1 frame crops the film's growth and
+/// reads as a photo rather than a stage.
 const double _heroRatio = 4 / 3;
 
 /// The gap under the film. Off the spacing scale on purpose — see the

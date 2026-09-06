@@ -15,7 +15,7 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// The tile's own metrics (`index.html:687`).
+/// The tile's own metrics.
 const double _tilePadding = AppSpacing.base;
 
 /// The stamp the design drops in where a card has no art. A fixed size, not
@@ -23,7 +23,7 @@ const double _tilePadding = AppSpacing.base;
 const double _fallbackMarkSize = 64;
 
 /// How far a locked tile recedes, and how faint its two lines and its mark sit
-/// within that (`index.html:700`, `screens.jsx:2400`).
+/// within that.
 const double _lockedOpacity = 0.32;
 const double _lockedLineOpacity = 0.55;
 const double _lockedMarkOpacity = 0.45;
@@ -181,10 +181,9 @@ class _SubLine extends StatelessWidget {
 /// What a locked tile draws where an earned one draws its card.
 ///
 /// A mono question mark, which is what the design actually renders:
-/// `LockedSilhouette` branches on `'silhouette'` and `'dot'`, and a card's
-/// kind is never either — every real collectible falls through to the `?`
-/// (`screens.jsx:1743`, called at `:2400`). The two shapes above it are
-/// unreachable, so porting them would be porting dead code.
+/// `LockedSilhouette` branches on `'silhouette'` and `'dot'`, and a card's kind
+/// is never either — every real collectible falls through to the `?`. The two
+/// shapes above it are unreachable, so porting them would be porting dead code.
 class _UnknownMark extends StatelessWidget {
   const _UnknownMark();
 

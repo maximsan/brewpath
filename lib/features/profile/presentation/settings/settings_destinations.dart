@@ -8,9 +8,8 @@
 /// off — and neither is opened here.
 ///
 /// Help is the exception that is already real: the App Guide row lives here,
-/// which is where the design files it (`prototype/settings.jsx:589-592`). It
-/// sat on the Settings root only because this screen did not exist yet, which
-/// its own comment said at the time.
+/// which is where the design files it. It sat on the Settings root only because
+/// this screen did not exist yet, which its own comment said at the time.
 library;
 
 import 'package:brew_path/core/constants/app_routes.dart';
@@ -104,7 +103,7 @@ class AboutScreen extends ConsumerWidget {
       title: SettingsCopy.aboutTitle,
       children: [
         // The design's brand block: the kicker under the app's name, then what
-        // the app is (`prototype/settings.jsx:308-315`).
+        // the app is.
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
           child: SmallcapsLabel(SettingsCopy.aboutTagline),

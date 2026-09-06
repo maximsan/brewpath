@@ -183,8 +183,8 @@ String _$lessonsAheadHash() => r'3ccfffe4fc7bc055fc502980830830d9044e7aef';
 /// its module so the Learn screen can group them without re-querying.
 ///
 /// Finished only, which the design has always said: the prototype titles this
-/// section *"Completed work to revisit"* and builds it from the completed set
-/// (`screens.jsx:864`), and ADR-0004 calls the group `Lessons` inside the
+/// section *"Completed work to revisit"* and builds it from the completed set,
+/// and ADR-0004 calls the group `Lessons` inside the
 /// practice section. Listing every lesson — the app's previous behaviour — put
 /// modules the learner has not unlocked one tap from being played.
 
@@ -196,8 +196,8 @@ final completedLessonsWithModuleProvider =
 /// its module so the Learn screen can group them without re-querying.
 ///
 /// Finished only, which the design has always said: the prototype titles this
-/// section *"Completed work to revisit"* and builds it from the completed set
-/// (`screens.jsx:864`), and ADR-0004 calls the group `Lessons` inside the
+/// section *"Completed work to revisit"* and builds it from the completed set,
+/// and ADR-0004 calls the group `Lessons` inside the
 /// practice section. Listing every lesson — the app's previous behaviour — put
 /// modules the learner has not unlocked one tap from being played.
 
@@ -215,8 +215,8 @@ final class CompletedLessonsWithModuleProvider
   /// its module so the Learn screen can group them without re-querying.
   ///
   /// Finished only, which the design has always said: the prototype titles this
-  /// section *"Completed work to revisit"* and builds it from the completed set
-  /// (`screens.jsx:864`), and ADR-0004 calls the group `Lessons` inside the
+  /// section *"Completed work to revisit"* and builds it from the completed set,
+  /// and ADR-0004 calls the group `Lessons` inside the
   /// practice section. Listing every lesson — the app's previous behaviour — put
   /// modules the learner has not unlocked one tap from being played.
   CompletedLessonsWithModuleProvider._()

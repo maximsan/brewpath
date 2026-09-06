@@ -9,8 +9,8 @@ import 'package:flutter_test/flutter_test.dart';
 /// resolved to the pill; the rule lived only inside `PrimaryButton`, which six
 /// screens bypassed (#377).
 ///
-/// **Chrome, not editorial.** `Design System.html` sets `.btn-primary` to 2px
-/// and the running `index.html` sets it to `var(--r)`; ADR-0009 ranks the
+/// **Chrome, not editorial.** The design-system catalogue sets `.btn-primary`
+/// to 2px and the running prototype sets it to `var(--r)`; ADR-0009 ranks the
 /// running prototype above the catalogue. Pinned here so the app cannot drift
 /// back to the value the catalogue states.
 ///
@@ -115,7 +115,7 @@ void main() {
 
     test('${theme.key} declares the segmented toggle as a pill', () {
       // The one exception, and it is the design's: the filter toggle is drawn
-      // at `borderRadius: 999` (`dictionary.jsx:202`), which `AppRadii.pill`
+      // at `borderRadius: 999`, which `AppRadii.pill`
       // names for toggles in as many words.
       //
       // Asserted on the *declaration* rather than the painted shape, unlike

@@ -10,10 +10,10 @@ const double _pickedWash = 0.10;
 
 /// How the grove draws "picked", shared by the plant rows and the light pills.
 ///
-/// One recipe, because the prototype makes it one:
-/// *"GROVE_SELECTED is the one selected-state recipe on this screen, shared by
-/// the plant rows and the light chips so 'picked' looks identical in both"*
-/// (`customize.jsx:335`). Two copies is how they stop looking identical.
+/// One recipe, because the prototype makes it one: *"GROVE_SELECTED is the one
+/// selected-state recipe on this screen, shared by the plant rows and the light
+/// chips so 'picked' looks identical in both"*. Two copies is how they stop
+/// looking identical.
 ///
 /// It is a **fill plus an accent border**, which reads against the design
 /// system's general *"Selection = double stroke … never a fill"*. The running

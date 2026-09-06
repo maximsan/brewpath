@@ -71,7 +71,7 @@ class TermEntryBody extends ConsumerWidget {
         if (term.pronunciation != null)
           SpeakButton(word: term.term, respelling: term.pronunciation!),
         const SizedBox(height: AppSpacing.xs),
-        // The **display** face at the heading rung (`dictionary.jsx:665`), not
+        // The **display** face at the heading rung, not
         // body copy: the short explanation is the entry's answer, and setting
         // it in the reading face made it a first paragraph of the deep one.
         Text(
@@ -239,10 +239,9 @@ class _Block extends StatelessWidget {
   final String label;
   final Widget child;
 
-  /// Whether the label takes the accent. `IN PRACTICE` does — it heads the
-  /// one block that is an example rather than more explanation — and so does
-  /// the gated expansion, because a purchase lock is drawn in accent
-  /// (ADR-0016).
+  /// Whether the label takes the accent. `IN PRACTICE` does — it heads the one
+  /// block that is an example rather than more explanation — and so does the
+  /// gated expansion, because a purchase lock is drawn in accent (ADR-0016).
   final bool accent;
 
   @override

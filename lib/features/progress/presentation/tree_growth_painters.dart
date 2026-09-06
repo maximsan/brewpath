@@ -4,8 +4,7 @@ import 'package:brew_path/features/progress/presentation/tree_growth_animation.d
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// The disc the tree stands on — the design's `.at-ground`
-/// (`prototype/flavor-wheel.jsx:270-278`).
+/// The disc the tree stands on — the design's `.at-ground`.
 ///
 /// **Always drawn, growth or not.** It is the ground rather than part of the
 /// beat: a tree floating on the page reads as a cut-out, and the design paints

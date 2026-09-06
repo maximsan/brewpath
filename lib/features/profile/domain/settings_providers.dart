@@ -91,7 +91,7 @@ Future<String> appVersion(Ref ref) async {
 }
 
 /// The marketing version alone, as the design's closing line prints it —
-/// `v0.1` (`prototype/screens.jsx:559`).
+/// `v0.1`.
 @riverpod
 Future<String> appVersionShort(Ref ref) async =>
     'v${(await PackageInfo.fromPlatform()).version}';

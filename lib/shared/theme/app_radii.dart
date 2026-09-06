@@ -16,8 +16,8 @@
 abstract final class AppRadii {
   /// 2 px — **editorial**. Cards and inputs: the sharp, print-like default.
   ///
-  /// **Not MCQ tiles, match tiles or buttons**, though `Design System.html`
-  /// lists all three here — at 2px for buttons. The running prototype sets
+  /// **Not MCQ tiles, match tiles or buttons**, though the design-system
+  /// catalogue lists all three here — at 2px for buttons. The prototype sets
   /// each to `var(--r)` and wins, per ADR-0009. The dropped value is named so
   /// the next reader does not "correct" it back.
   static const double editorial = 2;
