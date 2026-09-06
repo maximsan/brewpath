@@ -57,11 +57,15 @@ void main() {
     testWidgets('a challenge already in play is no longer an offer', (
       tester,
     ) async {
+      // Started *now*, not on a fixed date: what makes a challenge active is
+      // its 48-hour window measured against the clock, so a hardcoded start
+      // stops being active two days after it was written and the test begins
+      // passing for the wrong reason — then failing outright.
       await tester.runAsync(
         () => startChallenge(
           SnapshotRepository(),
           id: challenge.id,
-          now: DateTime(2026, 9, 4),
+          now: DateTime.now(),
         ),
       );
 

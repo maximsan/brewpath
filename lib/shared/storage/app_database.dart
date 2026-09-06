@@ -116,6 +116,22 @@ class UserSettings extends Table {
   /// name). Device-local: never written to the progress snapshot.
   BoolColumn get tourSeen => boolean().withDefault(const Constant(false))();
 
+  /// Which micro-tips the learner has already been shown, as a comma-separated
+  /// list of ids — empty for a learner who has seen none.
+  ///
+  /// **Beside [tourSeen] on purpose, and under its rule** (#342): a tip having
+  /// been shown is not progress, so it survives Reset and goes with Delete
+  /// Account. Both facts answer the one question "has this learner already been
+  /// introduced to it", and splitting them across two wipes would let a reset
+  /// replay the tips while suppressing the Tour.
+  ///
+  /// A list in one column rather than a column per tip: the set is content the
+  /// guide layer names, so a new tip is a new id rather than a schema change.
+  /// Ids the app does not recognise are kept as they are read — a device that
+  /// has been on a newer build must not have its record trimmed by an older
+  /// one. Device-local: never written to the progress snapshot.
+  TextColumn get tipsSeen => text().withDefault(const Constant(''))();
+
   /// What the learner asked to be called, or null when they did not say.
   ///
   /// Nullable rather than defaulted to a placeholder: "no name given" and "the
@@ -263,8 +279,11 @@ class AppDatabase extends _$AppDatabase {
   /// Schema version that added the install stamp.
   static const int _installStampVersion = 11;
 
+  /// Schema version that added the micro-tips' seen list.
+  static const int _tipsSeenVersion = 12;
+
   /// The current version is whichever migration landed last.
-  static const int _schemaVersion = _installStampVersion;
+  static const int _schemaVersion = _tipsSeenVersion;
 
   @override
   int get schemaVersion => _schemaVersion;
@@ -415,6 +434,13 @@ class AppDatabase extends _$AppDatabase {
       // here is now — the one answer that is certainly wrong (ADR-0013).
       if (from < _installStampVersion) {
         await m.createTable(appInstalls);
+      }
+
+      // v11 → v12: the micro-tips' seen list. Additive, and defaulted to the
+      // empty list rather than backfilled: a device upgrading into this version
+      // has been shown no tip, so "none" is the true value for it.
+      if (from < _tipsSeenVersion) {
+        await m.addColumn(userSettings, userSettings.tipsSeen);
       }
     },
   );

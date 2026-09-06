@@ -264,6 +264,48 @@ abstract final class OffTokens {
         'AppTracking.',
   );
 
+  /// The gap between a micro-tip's eyebrow and its title.
+  static const OffToken<double> microTipEyebrowGap = OffToken(
+    5,
+    reason:
+        "The design sets `marginTop: 5` under the tip card's eyebrow. The "
+        'hairline stop (4) is the nearest and the card is only three lines '
+        'tall, so a stop shorter here and a stop longer at the line below '
+        'would flatten the two gaps the design deliberately sets apart.',
+  );
+
+  /// The gap between a micro-tip's title and its body.
+  static const OffToken<double> microTipTitleGap = OffToken(
+    3,
+    reason:
+        "The design sets `marginTop: 3` under the tip card's title — tighter "
+        'than the gap above it, which is what binds the title to the rule it '
+        'introduces rather than to the eyebrow. AppSpacing.xxs (4) would make '
+        'the three lines evenly spaced, which is the distinction being drawn.',
+  );
+
+  /// The letter spacing of a micro-tip's body copy.
+  static const OffToken<double> microTipBodyTracking = OffToken(
+    0,
+    reason:
+        "The design sets the tip's body at the label step and letters it not "
+        'at all. That step letters at 0.14em because everything else the app '
+        'sets there is an uppercase label, and lettering running prose apart '
+        'is what makes it hard to read at 11px. It is an exception rather '
+        'than a rung of AppTracking because the tip card is the one component '
+        'that sets prose at this step.',
+  );
+
+  /// The leading of a micro-tip's body copy.
+  static const OffToken<double> microTipBodyLeading = OffToken(
+    1.5,
+    reason:
+        "The design sets the tip's body to `lineHeight: 1.5` at the label "
+        'step, whose own leading (1.2) is set for one-line uppercase labels. '
+        'This is the one place the app sets running prose at that step, so '
+        "the looser leading is this card's rather than a rung of the ladder.",
+  );
+
   /// Every sanctioned exception, so the register can be read — and tested — as
   /// a whole rather than one constant at a time.
   static const register = <OffToken<Object>>[
@@ -287,5 +329,9 @@ abstract final class OffTokens {
     ghostUnderPrimaryGap,
     textFieldVerticalPadding,
     tapCueTracking,
+    microTipEyebrowGap,
+    microTipBodyTracking,
+    microTipTitleGap,
+    microTipBodyLeading,
   ];
 }

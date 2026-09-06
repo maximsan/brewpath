@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../generated/schema.dart';
 import '../generated/schema_v1.dart' show DatabaseAtV1;
 import '../generated/schema_v10.dart' show DatabaseAtV10;
+import '../generated/schema_v11.dart' show DatabaseAtV11;
 import '../generated/schema_v2.dart' show DatabaseAtV2;
 import '../generated/schema_v3.dart' show DatabaseAtV3;
 import '../generated/schema_v4.dart' show DatabaseAtV4;
@@ -592,6 +593,68 @@ void main() {
             .get();
         expect(settings.single.read<String>('learner_name'), 'Sam');
         expect(settings.single.read<bool>('tour_seen'), true);
+      },
+    );
+  });
+
+  test('schema v11 database has no micro-tips column yet', () async {
+    final connection = await verifier.startAt(11);
+    final db = DatabaseAtV11(connection);
+
+    final columns = await db
+        .customSelect('PRAGMA table_info(user_settings)')
+        .get();
+    expect(
+      columns.map((r) => r.read<String>('name')),
+      isNot(contains('tips_seen')),
+    );
+
+    await db.close();
+  });
+
+  test('a v11 database upgrades having been shown no tip', () async {
+    // The added column defaults rather than backfills, and this is what says
+    // so: a device that has been through onboarding and the Tour but predates
+    // the tips must arrive at v12 owed all seven, not skipped past them.
+    // Everything else on the row is asserted alongside, because an additive
+    // step that silently rewrote a preference would look identical from the
+    // column's side.
+    await verifier.testWithDataIntegrity(
+      oldVersion: 11,
+      newVersion: _currentVersion,
+      createOld: DatabaseAtV11.new,
+      createNew: (executor) =>
+          GeneratedHelper().databaseForVersion(executor, _currentVersion),
+      openTestedDatabase: AppDatabase.new,
+      createItems: (batch, oldDb) => batch.insert(
+        oldDb.userSettings,
+        const RawValuesInsertable<dynamic>({
+          'id': Variable<int>(1),
+          'haptics_enabled': Variable<bool>(true),
+          'sound_enabled': Variable<bool>(true),
+          'total_xp': Variable<int>(0),
+          'onboarding_completed': Variable<bool>(true),
+          'theme_mode': Variable<String>('light'),
+          'tour_seen': Variable<bool>(true),
+          'learner_name': Variable<String>('Sam'),
+        }),
+      ),
+      validateItems: (newDb) async {
+        final settings = await newDb
+            .customSelect(
+              'SELECT tips_seen, tour_seen, learner_name, theme_mode '
+              'FROM user_settings',
+            )
+            .get();
+
+        expect(settings, hasLength(1));
+        final row = settings.single;
+        expect(row.read<String>('tips_seen'), '');
+        // The bits it sits beside are untouched by the migration: they only
+        // move together when a *wipe* moves them.
+        expect(row.read<bool>('tour_seen'), true);
+        expect(row.read<String>('learner_name'), 'Sam');
+        expect(row.read<String>('theme_mode'), 'light');
       },
     );
   });

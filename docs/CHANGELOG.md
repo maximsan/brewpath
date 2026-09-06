@@ -44,6 +44,14 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The app now explains a feature the first time it matters.** Seven small
+  cards — the Path, a Coffee Challenge, the tree, Saved, the Dictionary, the
+  streak freeze and the Studio — each appear once, at the bottom of the screen
+  they are about, and close with an X. One shows at a time, never inside a
+  lesson and never over the Tour or a sheet. What you have already been shown
+  survives Reset progress and goes with Delete account, the way the Tour's own
+  flag does.
+
 - **Roasty holds your guess on the opening card of a lesson.** Pick one of the
   two answers and he appears beside it holding a card, labelled with the guess
   you took, and the line that keeps the question open beside him. He does not

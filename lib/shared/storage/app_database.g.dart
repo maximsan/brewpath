@@ -984,6 +984,18 @@ class $UserSettingsTable extends UserSettings
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _tipsSeenMeta = const VerificationMeta(
+    'tipsSeen',
+  );
+  @override
+  late final GeneratedColumn<String> tipsSeen = GeneratedColumn<String>(
+    'tips_seen',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   static const VerificationMeta _learnerNameMeta = const VerificationMeta(
     'learnerName',
   );
@@ -1032,6 +1044,7 @@ class $UserSettingsTable extends UserSettings
     onboardingBrewer,
     themeMode,
     tourSeen,
+    tipsSeen,
     learnerName,
     notificationsEnabled,
     dailyReminderTime,
@@ -1120,6 +1133,12 @@ class $UserSettingsTable extends UserSettings
         tourSeen.isAcceptableOrUnknown(data['tour_seen']!, _tourSeenMeta),
       );
     }
+    if (data.containsKey('tips_seen')) {
+      context.handle(
+        _tipsSeenMeta,
+        tipsSeen.isAcceptableOrUnknown(data['tips_seen']!, _tipsSeenMeta),
+      );
+    }
     if (data.containsKey('learner_name')) {
       context.handle(
         _learnerNameMeta,
@@ -1192,6 +1211,10 @@ class $UserSettingsTable extends UserSettings
         DriftSqlType.bool,
         data['${effectivePrefix}tour_seen'],
       )!,
+      tipsSeen: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tips_seen'],
+      )!,
       learnerName: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}learner_name'],
@@ -1259,6 +1282,22 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
   /// name). Device-local: never written to the progress snapshot.
   final bool tourSeen;
 
+  /// Which micro-tips the learner has already been shown, as a comma-separated
+  /// list of ids — empty for a learner who has seen none.
+  ///
+  /// **Beside [tourSeen] on purpose, and under its rule** (#342): a tip having
+  /// been shown is not progress, so it survives Reset and goes with Delete
+  /// Account. Both facts answer the one question "has this learner already been
+  /// introduced to it", and splitting them across two wipes would let a reset
+  /// replay the tips while suppressing the Tour.
+  ///
+  /// A list in one column rather than a column per tip: the set is content the
+  /// guide layer names, so a new tip is a new id rather than a schema change.
+  /// Ids the app does not recognise are kept as they are read — a device that
+  /// has been on a newer build must not have its record trimmed by an older
+  /// one. Device-local: never written to the progress snapshot.
+  final String tipsSeen;
+
   /// What the learner asked to be called, or null when they did not say.
   ///
   /// Nullable rather than defaulted to a placeholder: "no name given" and "the
@@ -1294,6 +1333,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     this.onboardingBrewer,
     required this.themeMode,
     required this.tourSeen,
+    required this.tipsSeen,
     this.learnerName,
     required this.notificationsEnabled,
     this.dailyReminderTime,
@@ -1314,6 +1354,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     }
     map['theme_mode'] = Variable<String>(themeMode);
     map['tour_seen'] = Variable<bool>(tourSeen);
+    map['tips_seen'] = Variable<String>(tipsSeen);
     if (!nullToAbsent || learnerName != null) {
       map['learner_name'] = Variable<String>(learnerName);
     }
@@ -1339,6 +1380,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
           : Value(onboardingBrewer),
       themeMode: Value(themeMode),
       tourSeen: Value(tourSeen),
+      tipsSeen: Value(tipsSeen),
       learnerName: learnerName == null && nullToAbsent
           ? const Value.absent()
           : Value(learnerName),
@@ -1366,6 +1408,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
       onboardingBrewer: serializer.fromJson<String?>(json['onboardingBrewer']),
       themeMode: serializer.fromJson<String>(json['themeMode']),
       tourSeen: serializer.fromJson<bool>(json['tourSeen']),
+      tipsSeen: serializer.fromJson<String>(json['tipsSeen']),
       learnerName: serializer.fromJson<String?>(json['learnerName']),
       notificationsEnabled: serializer.fromJson<bool>(
         json['notificationsEnabled'],
@@ -1388,6 +1431,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
       'onboardingBrewer': serializer.toJson<String?>(onboardingBrewer),
       'themeMode': serializer.toJson<String>(themeMode),
       'tourSeen': serializer.toJson<bool>(tourSeen),
+      'tipsSeen': serializer.toJson<String>(tipsSeen),
       'learnerName': serializer.toJson<String?>(learnerName),
       'notificationsEnabled': serializer.toJson<bool>(notificationsEnabled),
       'dailyReminderTime': serializer.toJson<String?>(dailyReminderTime),
@@ -1404,6 +1448,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     Value<String?> onboardingBrewer = const Value.absent(),
     String? themeMode,
     bool? tourSeen,
+    String? tipsSeen,
     Value<String?> learnerName = const Value.absent(),
     bool? notificationsEnabled,
     Value<String?> dailyReminderTime = const Value.absent(),
@@ -1421,6 +1466,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
         : this.onboardingBrewer,
     themeMode: themeMode ?? this.themeMode,
     tourSeen: tourSeen ?? this.tourSeen,
+    tipsSeen: tipsSeen ?? this.tipsSeen,
     learnerName: learnerName.present ? learnerName.value : this.learnerName,
     notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
     dailyReminderTime: dailyReminderTime.present
@@ -1448,6 +1494,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
           : this.onboardingBrewer,
       themeMode: data.themeMode.present ? data.themeMode.value : this.themeMode,
       tourSeen: data.tourSeen.present ? data.tourSeen.value : this.tourSeen,
+      tipsSeen: data.tipsSeen.present ? data.tipsSeen.value : this.tipsSeen,
       learnerName: data.learnerName.present
           ? data.learnerName.value
           : this.learnerName,
@@ -1472,6 +1519,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
           ..write('onboardingBrewer: $onboardingBrewer, ')
           ..write('themeMode: $themeMode, ')
           ..write('tourSeen: $tourSeen, ')
+          ..write('tipsSeen: $tipsSeen, ')
           ..write('learnerName: $learnerName, ')
           ..write('notificationsEnabled: $notificationsEnabled, ')
           ..write('dailyReminderTime: $dailyReminderTime')
@@ -1490,6 +1538,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     onboardingBrewer,
     themeMode,
     tourSeen,
+    tipsSeen,
     learnerName,
     notificationsEnabled,
     dailyReminderTime,
@@ -1507,6 +1556,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
           other.onboardingBrewer == this.onboardingBrewer &&
           other.themeMode == this.themeMode &&
           other.tourSeen == this.tourSeen &&
+          other.tipsSeen == this.tipsSeen &&
           other.learnerName == this.learnerName &&
           other.notificationsEnabled == this.notificationsEnabled &&
           other.dailyReminderTime == this.dailyReminderTime);
@@ -1522,6 +1572,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
   final Value<String?> onboardingBrewer;
   final Value<String> themeMode;
   final Value<bool> tourSeen;
+  final Value<String> tipsSeen;
   final Value<String?> learnerName;
   final Value<bool> notificationsEnabled;
   final Value<String?> dailyReminderTime;
@@ -1535,6 +1586,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     this.onboardingBrewer = const Value.absent(),
     this.themeMode = const Value.absent(),
     this.tourSeen = const Value.absent(),
+    this.tipsSeen = const Value.absent(),
     this.learnerName = const Value.absent(),
     this.notificationsEnabled = const Value.absent(),
     this.dailyReminderTime = const Value.absent(),
@@ -1549,6 +1601,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     this.onboardingBrewer = const Value.absent(),
     this.themeMode = const Value.absent(),
     this.tourSeen = const Value.absent(),
+    this.tipsSeen = const Value.absent(),
     this.learnerName = const Value.absent(),
     this.notificationsEnabled = const Value.absent(),
     this.dailyReminderTime = const Value.absent(),
@@ -1565,6 +1618,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     Expression<String>? onboardingBrewer,
     Expression<String>? themeMode,
     Expression<bool>? tourSeen,
+    Expression<String>? tipsSeen,
     Expression<String>? learnerName,
     Expression<bool>? notificationsEnabled,
     Expression<String>? dailyReminderTime,
@@ -1580,6 +1634,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
       if (onboardingBrewer != null) 'onboarding_brewer': onboardingBrewer,
       if (themeMode != null) 'theme_mode': themeMode,
       if (tourSeen != null) 'tour_seen': tourSeen,
+      if (tipsSeen != null) 'tips_seen': tipsSeen,
       if (learnerName != null) 'learner_name': learnerName,
       if (notificationsEnabled != null)
         'notifications_enabled': notificationsEnabled,
@@ -1597,6 +1652,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     Value<String?>? onboardingBrewer,
     Value<String>? themeMode,
     Value<bool>? tourSeen,
+    Value<String>? tipsSeen,
     Value<String?>? learnerName,
     Value<bool>? notificationsEnabled,
     Value<String?>? dailyReminderTime,
@@ -1611,6 +1667,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
       onboardingBrewer: onboardingBrewer ?? this.onboardingBrewer,
       themeMode: themeMode ?? this.themeMode,
       tourSeen: tourSeen ?? this.tourSeen,
+      tipsSeen: tipsSeen ?? this.tipsSeen,
       learnerName: learnerName ?? this.learnerName,
       notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
       dailyReminderTime: dailyReminderTime ?? this.dailyReminderTime,
@@ -1647,6 +1704,9 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     if (tourSeen.present) {
       map['tour_seen'] = Variable<bool>(tourSeen.value);
     }
+    if (tipsSeen.present) {
+      map['tips_seen'] = Variable<String>(tipsSeen.value);
+    }
     if (learnerName.present) {
       map['learner_name'] = Variable<String>(learnerName.value);
     }
@@ -1671,6 +1731,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
           ..write('onboardingBrewer: $onboardingBrewer, ')
           ..write('themeMode: $themeMode, ')
           ..write('tourSeen: $tourSeen, ')
+          ..write('tipsSeen: $tipsSeen, ')
           ..write('learnerName: $learnerName, ')
           ..write('notificationsEnabled: $notificationsEnabled, ')
           ..write('dailyReminderTime: $dailyReminderTime')
@@ -2816,6 +2877,7 @@ typedef $$UserSettingsTableCreateCompanionBuilder =
       Value<String?> onboardingBrewer,
       Value<String> themeMode,
       Value<bool> tourSeen,
+      Value<String> tipsSeen,
       Value<String?> learnerName,
       Value<bool> notificationsEnabled,
       Value<String?> dailyReminderTime,
@@ -2831,6 +2893,7 @@ typedef $$UserSettingsTableUpdateCompanionBuilder =
       Value<String?> onboardingBrewer,
       Value<String> themeMode,
       Value<bool> tourSeen,
+      Value<String> tipsSeen,
       Value<String?> learnerName,
       Value<bool> notificationsEnabled,
       Value<String?> dailyReminderTime,
@@ -2887,6 +2950,11 @@ class $$UserSettingsTableFilterComposer
 
   ColumnFilters<bool> get tourSeen => $composableBuilder(
     column: $table.tourSeen,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get tipsSeen => $composableBuilder(
+    column: $table.tipsSeen,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2960,6 +3028,11 @@ class $$UserSettingsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get tipsSeen => $composableBuilder(
+    column: $table.tipsSeen,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get learnerName => $composableBuilder(
     column: $table.learnerName,
     builder: (column) => ColumnOrderings(column),
@@ -3022,6 +3095,9 @@ class $$UserSettingsTableAnnotationComposer
   GeneratedColumn<bool> get tourSeen =>
       $composableBuilder(column: $table.tourSeen, builder: (column) => column);
 
+  GeneratedColumn<String> get tipsSeen =>
+      $composableBuilder(column: $table.tipsSeen, builder: (column) => column);
+
   GeneratedColumn<String> get learnerName => $composableBuilder(
     column: $table.learnerName,
     builder: (column) => column,
@@ -3078,6 +3154,7 @@ class $$UserSettingsTableTableManager
                 Value<String?> onboardingBrewer = const Value.absent(),
                 Value<String> themeMode = const Value.absent(),
                 Value<bool> tourSeen = const Value.absent(),
+                Value<String> tipsSeen = const Value.absent(),
                 Value<String?> learnerName = const Value.absent(),
                 Value<bool> notificationsEnabled = const Value.absent(),
                 Value<String?> dailyReminderTime = const Value.absent(),
@@ -3091,6 +3168,7 @@ class $$UserSettingsTableTableManager
                 onboardingBrewer: onboardingBrewer,
                 themeMode: themeMode,
                 tourSeen: tourSeen,
+                tipsSeen: tipsSeen,
                 learnerName: learnerName,
                 notificationsEnabled: notificationsEnabled,
                 dailyReminderTime: dailyReminderTime,
@@ -3106,6 +3184,7 @@ class $$UserSettingsTableTableManager
                 Value<String?> onboardingBrewer = const Value.absent(),
                 Value<String> themeMode = const Value.absent(),
                 Value<bool> tourSeen = const Value.absent(),
+                Value<String> tipsSeen = const Value.absent(),
                 Value<String?> learnerName = const Value.absent(),
                 Value<bool> notificationsEnabled = const Value.absent(),
                 Value<String?> dailyReminderTime = const Value.absent(),
@@ -3119,6 +3198,7 @@ class $$UserSettingsTableTableManager
                 onboardingBrewer: onboardingBrewer,
                 themeMode: themeMode,
                 tourSeen: tourSeen,
+                tipsSeen: tipsSeen,
                 learnerName: learnerName,
                 notificationsEnabled: notificationsEnabled,
                 dailyReminderTime: dailyReminderTime,

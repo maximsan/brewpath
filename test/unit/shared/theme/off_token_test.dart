@@ -34,11 +34,14 @@ void main() {
       }
     });
 
-    test('holds one tracking, and it is the one component that owns it', () {
+    test('holds only trackings a single component owns', () {
       // Tracking is the ladder's job since #410 — `AppTracking` carries the
       // design's values, and a spacing is an exception only while exactly one
       // component is set at it. The tab label left when the sticky header's
       // compact eyebrow turned out to be lettered at the same 0.18em (#441).
+      // Two survive: the tap cue's 0.24em, and the micro-tip body's nothing at
+      // a rung whose own spacing is the smallcaps rule. A third entry means
+      // asking again whether the value has become vocabulary.
       // Read off the source rather than the list, because the register types
       // every entry as `double` and cannot tell a tracking from a padding.
       final declared = RegExp(r'OffToken<double> (\w*Tracking) =')
@@ -48,7 +51,7 @@ void main() {
           .map((match) => match.group(1))
           .toList();
 
-      expect(declared, <String>['tapCueTracking']);
+      expect(declared, <String>['tapCueTracking', 'microTipBodyTracking']);
     });
 
     test('holds the rewarded-ad ring and the canvas it sits on', () {
