@@ -1,8 +1,7 @@
-import 'package:brew_path/core/widgets/smallcaps_label.dart';
+import 'package:brew_path/core/widgets/page_large_title.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
 import 'package:brew_path/shared/models/content/dictionary_category.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
-import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -36,34 +35,27 @@ class DictionaryMasthead extends StatelessWidget {
         AppSpacing.gutter,
         AppSpacing.sm,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      // Browsing a category, the category is the heading and the shelf's name
+      // steps up into the kicker — one heading, always naming where the
+      // learner actually is. It is the page's half of the design's title pair,
+      // so it is the same `PageLargeTitle` every pushed page opens on.
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          SmallcapsLabel(
-            category == null
-                ? DictionaryHomeScreen.kickerFor(terms)
-                : DictionaryHomeScreen.title,
-            color: mood.accentText,
+          Expanded(
+            child: PageLargeTitle(
+              category?.label ?? DictionaryHomeScreen.title,
+              kicker: category == null
+                  ? DictionaryHomeScreen.kickerFor(terms)
+                  : DictionaryHomeScreen.title,
+              kickerColor: mood.accentText,
+            ),
           ),
-          const SizedBox(height: AppSpacing.xxs),
-          // Browsing a category, the category is the heading and the shelf's
-          // name steps up into the kicker — one heading, always naming where
-          // the learner actually is.
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  category?.label ?? DictionaryHomeScreen.title,
-                  style: AppText.display(mood: mood),
-                ),
-              ),
-              if (category != null)
-                TextButton(
-                  onPressed: onClear,
-                  child: const Text('All categories'),
-                ),
-            ],
-          ),
+          if (category != null)
+            TextButton(
+              onPressed: onClear,
+              child: const Text('All categories'),
+            ),
         ],
       ),
     );

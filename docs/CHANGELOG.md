@@ -42,7 +42,45 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ## [Unreleased]
 
+### Added
+
+- **Roasty holds your guess on the opening card of a lesson.** Pick one of the
+  two answers and he appears beside it holding a card, labelled with the guess
+  you took, and the line that keeps the question open beside him. He does not
+  say whether you were right — the card at the end of the lesson still does
+  that.
+
 ### Fixed
+
+- **The explanation under a verdict is grey again on the decision and recall
+  cards.** Those two are set a size larger than the rest, and the app was
+  reading full black ink off that larger step. Only the size was meant to
+  change.
+
+### Fixed
+
+- **Roasty's face is the design's on every state.** Five of his eight
+  expressions had no blush at all — caught out, holding a card, asleep and
+  waking — and the design blushes every one of them, harder or softer
+  depending on the mood of the moment. Finishing a lesson now opens his mouth
+  into a proper grin instead of borrowing the same small smile he gives a
+  correct answer, and finishing a module shows a tongue in it. The badge on a
+  wrong answer sits at the weight the design gives it rather than full
+  strength. The sparkles that burst on a right answer are the design's
+  four-pointed twinkles at three sizes, where they had all been one
+  five-pointed star.
+
+- **The module's reward card is no longer introduced twice.** Turning the
+  module ending over showed *Reward unlocked* and *New collectible card*
+  stacked directly above the card, which carries its own title — so the card
+  announced itself twice under a generic heading. The heading is gone and the
+  card speaks for itself, which is what the lesson ending's card side already
+  did.
+
+- **A replay no longer leaves a gap where its points would have been.** A
+  lesson you replay pays nothing, so the points line under the tree correctly
+  drew nothing — but the space above it stayed, pushing everything below down
+  by a line that was not there.
 
 - **Roasty's sleeping z's and wrong-answer badge follow the mood.** In Dark
   Roast the sleeping `z`s were drawn in the light mood's grey and all but
@@ -67,6 +105,20 @@ You can always edit this file by hand instead — the helpers just save effort.
   streak, the freeze countdown still runs on it, and the celebration on days
   3, 7, 14 and 30 still plays. The line under the ring that counted down to a
   badge is gone — the ring and the strip already say where the week stands.
+
+- **The pages you open from a tab get the same treatment.** Settings, the
+  Coffee Dictionary, a term, your saved shelf, the coffee tree, your streak,
+  your grove and the app guide used to sit under a solid grey strip with a
+  small title in it. Each one now opens on its own name, set large at the top
+  of the page, with only a back arrow floating over it — and the strip fades
+  in as you scroll, blurred, carrying the name you have just scrolled past.
+  Your saved shelf is named even when it is empty, and a term's page shows its
+  category above its name once the bar takes over.
+
+  Drilling into a dictionary category no longer leaves the old title stranded
+  at the top: the page and the bar go back to the beginning together. Backing
+  out of a category returns you to the index rather than leaving the
+  dictionary altogether.
 
 - **The bar at the top of a tab gets out of the way.** It used to sit there
   the whole time, printing the tab's name over the page whether you needed it

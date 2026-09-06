@@ -1,6 +1,6 @@
-import 'package:brew_path/core/icons/app_icon.dart';
-import 'package:brew_path/core/icons/icon_mark.dart';
+import 'package:brew_path/core/widgets/page_large_title.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
+import 'package:brew_path/core/widgets/sub_screen_scaffold.dart';
 import 'package:brew_path/features/tour/domain/app_guide_copy.dart';
 import 'package:brew_path/features/tour/presentation/replay_intro_row.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -35,17 +35,17 @@ class AppGuideScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final mood = context.mood;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(AppGuideCopy.title),
-        leading: IconButton(
-          icon: const IconMark(AppIcon.back),
-          onPressed: () => context.pop(),
-        ),
-      ),
-      body: ListView(
-        padding: _pagePadding,
+    return SubScreenScaffold(
+      title: AppGuideCopy.title,
+      onBack: () => context.pop(),
+      body: (context, scrollPadding) => ListView(
+        padding: _pagePadding + scrollPadding,
         children: [
+          const Padding(
+            padding: _gutter,
+            child: PageLargeTitle(AppGuideCopy.title),
+          ),
+          const SizedBox(height: AppSpacing.sm),
           Padding(
             padding: _gutter,
             child: Text(AppGuideCopy.lead, style: AppText.support(mood: mood)),

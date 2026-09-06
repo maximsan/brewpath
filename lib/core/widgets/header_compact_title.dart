@@ -12,22 +12,30 @@ import 'package:flutter/material.dart';
 /// at rest is what makes "once" true rather than nearly true, for a screen
 /// reader and for a test as much as for the eye.
 ///
-/// Its eyebrow is what the tab is, its title what the tab says: `TODAY` over
-/// the day, `YOUR DECK` over `Collection`. The pair is the same tab heading
-/// the tab's own large title reads, so the two cannot drift apart.
+/// The title is the screen's own, seen small: `Collection` over the Cards
+/// tab, `Settings` over Settings, a term over its page. The eyebrow says what
+/// kind of thing it is — `TODAY` over the day, `YOUR DECK` over the deck, a
+/// term's category over the term — and most pushed pages have none. Both come
+/// from the same place the screen's large title does, so the two sizes of one
+/// title cannot drift apart.
 class HeaderCompactTitle extends StatelessWidget {
   /// Creates a [HeaderCompactTitle].
   const HeaderCompactTitle({
-    required this.eyebrow,
     required this.title,
     required this.isVisible,
+    this.eyebrow,
     super.key,
   });
 
-  /// The smallcaps line above — `TODAY`, `YOUR PATH`.
-  final String eyebrow;
+  /// The smallcaps line above — `TODAY`, `YOUR PATH`, a term's category.
+  ///
+  /// Null on most pushed pages, which title themselves in one line. The design
+  /// draws the line only where there is one to draw (`marginTop: eyebrow ? 2 :
+  /// 0`), so an absent eyebrow costs no height and leaves no empty node for a
+  /// screen reader to stop on.
+  final String? eyebrow;
 
-  /// The line the tab is titled by.
+  /// The line the screen is titled by.
   final String title;
 
   /// Whether the page beneath has scrolled far enough to need it.
@@ -63,16 +71,18 @@ class HeaderCompactTitle extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                eyebrow.toUpperCase(),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppText.micro(
-                  mood: mood,
-                  tracking: AppTracking.chrome,
+              if (eyebrow != null && eyebrow!.isNotEmpty) ...[
+                Text(
+                  eyebrow!.toUpperCase(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppText.micro(
+                    mood: mood,
+                    tracking: AppTracking.chrome,
+                  ),
                 ),
-              ),
-              const SizedBox(height: _stackGap),
+                const SizedBox(height: _stackGap),
+              ],
               Text(
                 title,
                 maxLines: 1,

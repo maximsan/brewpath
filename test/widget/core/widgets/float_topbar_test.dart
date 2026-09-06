@@ -24,17 +24,6 @@ Color? _fill(WidgetTester tester) =>
         .color;
 
 void main() {
-  group('the threshold', () {
-    test('is not crossed by a few pixels of settle', () {
-      expect(floatTopbarIsScrolled(0), isFalse);
-      expect(floatTopbarIsScrolled(floatTopbarThreshold), isFalse);
-    });
-
-    test('and is crossed once the content has really moved', () {
-      expect(floatTopbarIsScrolled(floatTopbarThreshold + 1), isTrue);
-    });
-  });
-
   group('the bar', () {
     testWidgets('is transparent at rest, over the celebration', (tester) async {
       await tester.pumpWidget(
@@ -117,37 +106,6 @@ void main() {
       );
 
       expect(find.byTooltip('Flip back'), findsOneWidget);
-    });
-  });
-
-  group('the scroll scope', () {
-    testWidgets('reports the crossing to whatever it wraps', (tester) async {
-      await tester.pumpWidget(
-        _host(
-          FloatTopbarScrollScope(
-            builder: (context, {required isScrolled}) => Column(
-              children: [
-                Text(isScrolled ? 'scrolled' : 'at rest'),
-                Expanded(
-                  child: ListView(
-                    children: List<Widget>.generate(
-                      40,
-                      (index) => SizedBox(height: 40, child: Text('$index')),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-
-      expect(find.text('at rest'), findsOneWidget);
-
-      await tester.drag(find.byType(ListView), const Offset(0, -200));
-      await tester.pump();
-
-      expect(find.text('scrolled'), findsOneWidget);
     });
   });
 }

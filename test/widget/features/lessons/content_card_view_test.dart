@@ -1,4 +1,7 @@
+import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/core/widgets/dashed_rounded_border.dart';
+import 'package:brew_path/features/companion/domain/roasty_state.dart';
+import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/lessons/presentation/cards/content_card_view.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
@@ -178,6 +181,16 @@ Widget _host(ContentCard card, _Signals signals, {int nonce = 1}) =>
 Future<void> _tapText(WidgetTester tester, String text) async {
   await tester.tap(find.text(text));
   await tester.pumpAndSettle();
+}
+
+/// Taps [text] on a card whose mascot keeps animating afterwards.
+///
+/// The predict hold draws Roasty at his card face, whose shimmer loops, so
+/// settling would wait for an animation that never ends.
+Future<void> _tapTextWhileAnimating(WidgetTester tester, String text) async {
+  await tester.tap(find.text(text));
+  await tester.pump();
+  await tester.pump(const Duration(milliseconds: 400));
 }
 
 Finder get _continueButton => find.widgetWithText(FilledButton, 'Continue');
@@ -704,13 +717,80 @@ void main() {
       final signals = _Signals();
       await tester.pumpWidget(_host(_predict, signals));
 
-      await _tapText(tester, 'Skin');
+      await _tapTextWhileAnimating(tester, 'Skin');
 
       // Wrong by the card's own answer, but nothing says so — the recall card
       // at the end of the lesson is what resolves it.
       expect(signals.solved, 0);
       expect(find.text('Hold that thought.'), findsOneWidget);
       expect(_continueEnabled(tester), isTrue);
+    });
+
+    testWidgets('predict shows nothing beside the tiles until a guess', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_host(_predict, _Signals()));
+
+      expect(find.byType(Roasty), findsNothing);
+      expect(find.text('Hold that thought.'), findsNothing);
+    });
+
+    testWidgets('predict hands the guess to Roasty, unmarked', (tester) async {
+      await tester.pumpWidget(_host(_predict, _Signals()));
+
+      await _tapTextWhileAnimating(tester, 'Skin');
+
+      // The card face: he is holding the guess, not judging it.
+      expect(
+        tester.widget<Roasty>(find.byType(Roasty)).state,
+        RoastyState.card,
+      );
+      expect(find.text('YOUR GUESS · SKIN'), findsOneWidget);
+      expect(find.text('Hold that thought.'), findsOneWidget);
+      // Neither verdict word the graded cards use.
+      expect(find.textContaining('CORRECT'), findsNothing);
+      expect(find.text(notQuiteVerdict.toUpperCase()), findsNothing);
+    });
+
+    testWidgets('predict re-labels the hold when the guess changes', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_host(_predict, _Signals()));
+
+      await _tapTextWhileAnimating(tester, 'Skin');
+      await _tapTextWhileAnimating(tester, 'Seed');
+
+      expect(find.text('YOUR GUESS · SEED'), findsOneWidget);
+      expect(find.text('YOUR GUESS · SKIN'), findsNothing);
+    });
+
+    testWidgets('predict announces the guess it is holding', (tester) async {
+      await tester.pumpWidget(_host(_predict, _Signals()));
+
+      await _tapTextWhileAnimating(tester, 'Seed');
+
+      // It arrives on a tap with no focus change, so a reader is only told
+      // the guess was taken if the line says so itself.
+      expect(_announces(tester, 'Your guess \u00B7 Seed'), isTrue);
+    });
+
+    testWidgets('predict holds a still mascot under reduced motion', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MediaQuery(
+          data: const MediaQueryData(disableAnimations: true),
+          child: _host(_predict, _Signals()),
+        ),
+      );
+
+      await tester.tap(find.text('Seed'));
+      // Settling is the assertion: the card face's shimmer loops, so this
+      // would time out if reduced motion had not stopped it.
+      await tester.pumpAndSettle();
+
+      expect(find.byType(Roasty), findsOneWidget);
+      expect(find.text('YOUR GUESS · SEED'), findsOneWidget);
     });
 
     testWidgets('predict lets the learner change their guess', (tester) async {
@@ -727,12 +807,12 @@ void main() {
         return button.style?.backgroundColor?.resolve(const {}) != null;
       }
 
-      await _tapText(tester, 'Skin');
+      await _tapTextWhileAnimating(tester, 'Skin');
       expect(chosen('Skin'), isTrue);
 
       // Nothing here is scored, so nothing is protected by latching — and a
       // first instinct immediately reconsidered is still the instinct.
-      await _tapText(tester, 'Seed');
+      await _tapTextWhileAnimating(tester, 'Seed');
       expect(chosen('Seed'), isTrue);
       expect(chosen('Skin'), isFalse);
     });
@@ -741,7 +821,7 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(_host(_predict, _Signals()));
-      await _tapText(tester, 'Seed');
+      await _tapTextWhileAnimating(tester, 'Seed');
 
       final faded = tester.widget<Opacity>(
         find.ancestor(of: find.text('Skin'), matching: find.byType(Opacity)),

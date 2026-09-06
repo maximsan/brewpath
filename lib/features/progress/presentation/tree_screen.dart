@@ -1,7 +1,9 @@
 import 'package:brew_path/core/icons/app_icon.dart';
-import 'package:brew_path/core/icons/icon_mark.dart';
+import 'package:brew_path/core/widgets/header_chrome.dart';
+import 'package:brew_path/core/widgets/page_large_title.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
+import 'package:brew_path/core/widgets/sub_screen_scaffold.dart';
 import 'package:brew_path/features/progress/domain/grove_treatment.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/domain/tree_frames.dart';
@@ -15,6 +17,12 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+/// How far below the status bar the design opens this page.
+///
+/// 84 rather than the 108 a page with a large title takes: what is at the
+/// top here is the eyebrow and the stage, set tighter under the bar.
+const double _designScrollPad = 84;
 
 /// The Coffee Tree's own screen, reached by tapping the tree on Profile.
 ///
@@ -45,20 +53,21 @@ class TreeScreen extends ConsumerWidget {
     final grove = ref.watch(groveTreatmentProvider);
     final progress = ref.watch(coreLessonProgressProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(title),
-        // Close, not back: the design gives this screen an X, because it is a
-        // place you leave rather than a step you came through.
-        leading: IconButton(
-          icon: const IconMark(AppIcon.close),
-          onPressed: () => context.pop(),
-        ),
-      ),
-      body: stage.when(
+    // Close, not back: the design gives this screen an X, because it is a
+    // place you leave rather than a step you came through. Its bar carries the
+    // screen's name while the page's own heading is the stage the tree has
+    // reached — the one page where the two titles are deliberately different
+    // words, because the bar names the place and the heading names the state.
+    return SubScreenScaffold(
+      title: title,
+      mark: AppIcon.close,
+      scrollPad: HeaderChrome.belowDesignStatusBar(_designScrollPad),
+      onBack: () => context.pop(),
+      body: (context, scrollPadding) => stage.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, _) => const _TreeUnavailable(),
         data: (currentStage) => _TreeBody(
+          scrollPadding: scrollPadding,
           stage: currentStage,
           treatment: grove.asData?.value ?? GroveTreatment.identity,
           progress: progress.asData?.value,
@@ -73,6 +82,7 @@ class TreeScreen extends ConsumerWidget {
 /// Everything under the bar once the stage is known.
 class _TreeBody extends StatelessWidget {
   const _TreeBody({
+    required this.scrollPadding,
     required this.stage,
     required this.treatment,
     required this.progress,
@@ -89,6 +99,9 @@ class _TreeBody extends StatelessWidget {
       'first time you finish one.';
 
   static const _backLabel = 'Back to profile';
+
+  /// The room the bar floating over this list leaves at the top.
+  final EdgeInsets scrollPadding;
 
   final int stage;
   final GroveTreatment treatment;
@@ -107,20 +120,18 @@ class _TreeBody extends StatelessWidget {
     final next = nextTreeStageName(stage);
 
     return ListView(
-      padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+      padding: scrollPadding.copyWith(bottom: AppSpacing.lg),
       children: [
         Padding(
           padding: gutter,
-          child: Column(
-            children: [
-              SmallcapsLabel(_eyebrow, color: mood.accent),
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                treeStageName(stage),
-                style: AppText.display(mood: mood),
-                textAlign: TextAlign.center,
-              ),
-            ],
+          // The page's own title, as every pushed page carries one — the stage
+          // the tree has reached, under the screen's name as its kicker. The
+          // design centres this one, over the drawing below it.
+          child: PageLargeTitle(
+            treeStageName(stage),
+            kicker: _eyebrow,
+            kickerColor: mood.accent,
+            isCentred: true,
           ),
         ),
         const SizedBox(height: AppSpacing.xs),

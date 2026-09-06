@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
+import 'package:brew_path/core/widgets/sub_screen_scaffold.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
 import 'package:brew_path/features/dictionary/presentation/category_index.dart';
@@ -48,21 +49,40 @@ class DictionaryHomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final view = ref.watch(dictionaryViewProvider);
 
-    return Scaffold(
-      // No bar title: the name is a page heading below, where the design puts
-      // it, so it can set at display size under its kicker.
-      appBar: AppBar(),
-      body: view.when(
-        loading: () => Semantics(
+    // Loading and failing are pages too, and a page you cannot leave is a
+    // trap: the bar comes first, and the state goes under it.
+    return view.when(
+      loading: () => _Chrome(
+        child: Semantics(
           label: 'Loading the dictionary',
           child: const LoadingIndicator(),
         ),
-        error: (error, _) => Semantics(
+      ),
+      error: (error, _) => _Chrome(
+        child: Semantics(
           label: 'The dictionary could not be loaded',
           child: ErrorView(message: '$error'),
         ),
-        data: (data) => _DictionaryBody(view: data),
       ),
+      data: (data) => _DictionaryBody(view: data),
+    );
+  }
+}
+
+/// The shelf's bar over a state that has nothing to scroll — loading, or a
+/// failure. Titled and leaveable, which is the part that matters here.
+class _Chrome extends StatelessWidget {
+  const _Chrome({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return SubScreenScaffold(
+      title: DictionaryHomeScreen.title,
+      onBack: () => Navigator.of(context).maybePop(),
+      body: (context, scrollPadding) =>
+          Padding(padding: scrollPadding, child: child),
     );
   }
 }
@@ -114,93 +134,130 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
     final visible = _visible;
     final mood = context.mood;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        DictionaryMasthead(
-          terms: widget.view.terms.length,
-          category: _category,
-          onClear: () => setState(() => _category = null),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.gutter,
-            AppSpacing.sm,
-            AppSpacing.gutter,
-            AppSpacing.sm,
-          ),
-          child: TextField(
-            onChanged: (value) => setState(() => _query = value),
-            decoration: InputDecoration(
-              hintText: 'Search terms, e.g. crema, bloom…',
-              prefixIcon: Padding(
-                padding: const EdgeInsets.all(AppSpacing.sm),
-                child: SearchMark(size: _searchMarkSize, color: mood.inkMute),
-              ),
-              prefixIconConstraints: const BoxConstraints.tightFor(
-                width: _searchMarkSize + AppSpacing.md,
-                height: _searchMarkSize + AppSpacing.md,
-              ),
-              border: const OutlineInputBorder(),
+    // The shelf's own name titles the page at the top; the bar takes it over
+    // once that has scrolled away, and follows the learner into a category —
+    // which is the design's own rule for the compact title.
+    //
+    // ⚠️ The **page** heading follows it too, which the design does not do:
+    // it keeps `Coffee Dictionary` at the top and names the category as a
+    // section below. That is the masthead's own divergence from #398, not
+    // this bar's, and it is left as it was found.
+    final name = _category?.label ?? DictionaryHomeScreen.title;
+
+    return SubScreenScaffold(
+      title: name,
+      // Back leaves the category first and the screen second, which is the
+      // design's own rule: a drill-down is a place, so it has to be a step you
+      // can take back.
+      onBack: _category != null
+          ? () => setState(() => _category = null)
+          : () => Navigator.of(context).maybePop(),
+      // The category is what identifies the content, so the bar clears with
+      // it. This is the page the reset exists for: without it, drilling in
+      // leaves a compact title standing over a page that has jumped back to
+      // the top.
+      resetKey: _category?.id,
+      body: (context, scrollPadding) => CustomScrollView(
+        // One scroll, so the shelf's title can leave the top the way every
+        // other pushed page's does. It used to be fixed above a scroller,
+        // which is why the bar had nothing to take over from. Slivers rather
+        // than a column, so seventy-odd term rows still build as they are
+        // reached.
+        slivers: [
+          SliverPadding(
+            padding: EdgeInsets.only(top: scrollPadding.top),
+            sliver: SliverList.list(
+              children: [
+                DictionaryMasthead(
+                  terms: widget.view.terms.length,
+                  category: _category,
+                  onClear: () => setState(() => _category = null),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.gutter,
+                    AppSpacing.sm,
+                    AppSpacing.gutter,
+                    AppSpacing.sm,
+                  ),
+                  child: TextField(
+                    onChanged: (value) => setState(() => _query = value),
+                    decoration: InputDecoration(
+                      hintText: 'Search terms, e.g. crema, bloom…',
+                      prefixIcon: Padding(
+                        padding: const EdgeInsets.all(AppSpacing.sm),
+                        child: SearchMark(
+                          size: _searchMarkSize,
+                          color: mood.inkMute,
+                        ),
+                      ),
+                      prefixIconConstraints: const BoxConstraints.tightFor(
+                        width: _searchMarkSize + AppSpacing.md,
+                        height: _searchMarkSize + AppSpacing.md,
+                      ),
+                      border: const OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                DictionaryFilterControl(
+                  selected: _filter,
+                  counts: widget.view.counts,
+                  onSelected: (filter) => setState(() => _filter = filter),
+                ),
+                // The practice chips: under the filters, over the list. The
+                // design puts practice between *narrowing the shelf* and
+                // *reading it*, because drilling is a third thing to do here
+                // rather than a way of browsing.
+                //
+                // Here only once the learner has started narrowing. On the
+                // index they sit under Term of the Day instead — which is
+                // where the design has both of them.
+                if (!_onIndex) ...[
+                  const Padding(
+                    padding: _chipPadding,
+                    child: DictionaryQuickChips(),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                ],
+                if (_onIndex) _index(),
+              ],
             ),
           ),
-        ),
-        DictionaryFilterControl(
-          selected: _filter,
-          counts: widget.view.counts,
-          onSelected: (filter) => setState(() => _filter = filter),
-        ),
-        // The practice chips: under the filters, over the list. The design
-        // puts practice between *narrowing the shelf* and *reading it*,
-        // because drilling is a third thing to do here rather than a way of
-        // browsing.
-        //
-        // Fixed only once the learner has started narrowing. On the index they
-        // travel inside the scroll below, under Term of the Day — which is
-        // where the design has both of them, and what keeps the offer from
-        // eating a phone's worth of height it never gives back.
-        if (!_onIndex) ...[
-          const Padding(padding: _chipPadding, child: DictionaryQuickChips()),
-          const SizedBox(height: AppSpacing.sm),
+          if (!_onIndex)
+            if (visible.isEmpty)
+              const SliverToBoxAdapter(child: DictionaryNoMatches())
+            else
+              DictionaryTermList(
+                view: widget.view,
+                visible: visible,
+                onOpen: _openTerm,
+              ),
+          const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.xl)),
         ],
-        Expanded(
-          child: _onIndex
-              ? SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.gutter,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const SizedBox(height: AppSpacing.sm),
-                      // Today's term leads the index, exactly as the design
-                      // draws it. Only here: a learner who has started
-                      // searching has already said what they came for, and the
-                      // offer would be in the way of it.
-                      TermOfDayBanner(
-                        onOpen: () => unawaited(context.pushTermOfDay()),
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      const DictionaryQuickChips(),
-                      const SizedBox(height: AppSpacing.md),
-                      CategoryIndex(
-                        categories: widget.view.categories,
-                        terms: widget.view.terms,
-                        onOpen: (category) =>
-                            setState(() => _category = category),
-                      ),
-                    ],
-                  ),
-                )
-              : visible.isEmpty
-              ? const DictionaryNoMatches()
-              : DictionaryTermList(
-                  view: widget.view,
-                  visible: visible,
-                  onOpen: _openTerm,
-                ),
-        ),
-      ],
+      ),
     );
   }
+
+  /// What the shelf opens on: today's term, the drills, then every category.
+  Widget _index() => Padding(
+    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: AppSpacing.sm),
+        // Today's term leads the index, exactly as the design draws it. Only
+        // here: a learner who has started searching has already said what they
+        // came for, and the offer would be in the way of it.
+        TermOfDayBanner(onOpen: () => unawaited(context.pushTermOfDay())),
+        const SizedBox(height: AppSpacing.md),
+        const DictionaryQuickChips(),
+        const SizedBox(height: AppSpacing.md),
+        CategoryIndex(
+          categories: widget.view.categories,
+          terms: widget.view.terms,
+          onOpen: (category) => setState(() => _category = category),
+        ),
+      ],
+    ),
+  );
 }

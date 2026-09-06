@@ -1,10 +1,10 @@
 import 'package:brew_path/app/current_day.dart';
-import 'package:brew_path/app/header_chrome.dart';
-import 'package:brew_path/app/header_compact_title.dart';
 import 'package:brew_path/app/header_tier.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
+import 'package:brew_path/core/widgets/header_chrome.dart';
+import 'package:brew_path/core/widgets/header_compact_title.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';

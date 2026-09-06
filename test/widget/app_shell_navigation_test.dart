@@ -3,6 +3,7 @@ import 'package:brew_path/app/app_header.dart';
 import 'package:brew_path/app/app_router.dart';
 import 'package:brew_path/app/tab_large_title.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/widgets/sub_header.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
 import 'package:flutter/material.dart';
@@ -93,7 +94,7 @@ void main() {
       // arrival is asserted on the screen and the bar is checked for being
       // the pushed kind — which is what this test is actually about.
       expect(find.byType(DictionaryHomeScreen), findsOneWidget);
-      expect(find.byType(AppBar), findsOneWidget);
+      expect(find.byType(SubHeader), findsOneWidget);
       expect(
         _sharedHeader(),
         findsNothing,
@@ -107,7 +108,10 @@ void main() {
       await tester.tap(_savedButton());
       await settleLoaders(tester);
 
-      expect(find.widgetWithText(AppBar, SavedScreen.title), findsOneWidget);
+      // Titled by the page, under the design's own bar — the shelf's name is
+      // its large title now, and the bar stays wordless until it scrolls.
+      expect(find.text(SavedScreen.title), findsOneWidget);
+      expect(find.byType(SubHeader), findsOneWidget);
       expect(
         _sharedHeader(),
         findsNothing,
@@ -124,9 +128,9 @@ void main() {
       await settleLoaders(tester);
       await tester.tap(_savedButton());
       await settleLoaders(tester);
-      expect(find.widgetWithText(AppBar, SavedScreen.title), findsOneWidget);
+      expect(find.text(SavedScreen.title), findsOneWidget);
 
-      await tester.tap(find.byType(BackButton));
+      await tester.tap(find.byTooltip('Back'));
       await settleLoaders(tester);
 
       expect(

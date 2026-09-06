@@ -1,6 +1,7 @@
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/widgets/float_topbar.dart';
+import 'package:brew_path/core/widgets/scroll_flag_scope.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/core/widgets/sticky_action_bar.dart';
 import 'package:brew_path/features/cards/presentation/reward_card.dart';
@@ -69,7 +70,7 @@ class ModuleCompleteFront extends StatelessWidget {
   Widget build(BuildContext context) {
     final mood = context.mood;
 
-    return FloatTopbarScrollScope(
+    return ScrollFlagScope(
       builder: (context, {required isScrolled}) => Stack(
         children: [
           CelebrationGlow.celebration,
@@ -119,9 +120,8 @@ class ModuleCompleteFront extends StatelessWidget {
                   ),
                 ),
                 // What the closing lesson paid, under the tree it fed. Absent
-                // entirely when the ending was opened outside the flow, where
-                // there is no run to report.
-                const SizedBox(height: AppSpacing.base),
+                // entirely — its gap with it — when the ending was opened
+                // outside the flow, where there is no run to report.
                 RewardPointsLine(points: run.pointsEarned),
                 // **A line, not a row.** The lesson ending lists its
                 // occasional beats; this one has only ever a single beat to
@@ -173,10 +173,9 @@ class ModuleCompleteBack extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mood = context.mood;
     final reward = summary.moduleReward;
 
-    return FloatTopbarScrollScope(
+    return ScrollFlagScope(
       builder: (context, {required isScrolled}) => Stack(
         children: [
           CelebrationGlow.reward,
@@ -197,17 +196,14 @@ class ModuleCompleteBack extends StatelessWidget {
             // shared footer (#412) for one caller would cost more than it
             // buys.
             preface: ModuleChallengeOffer(moduleId: summary.module.id),
+            // **The card, and nothing over it** — the same back face the
+            // lesson ending turns to. It carried a kicker and a generic
+            // `New collectible card` heading, which sat directly above the
+            // card's own title: the duplication ADR-0017 refused a separate
+            // reward screen for, arriving on the flip instead.
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                SmallcapsLabel(AppLabels.rewardUnlocked, color: mood.accent),
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  AppLabels.newCollectibleCard,
-                  textAlign: TextAlign.center,
-                  style: AppText.title(mood: mood),
-                ),
-                const SizedBox(height: AppSpacing.lg),
                 // A module with no collected reward keeps the face rather than
                 // the card: the flip is the screen's shape, and an empty back
                 // would strand the learner mid-turn.

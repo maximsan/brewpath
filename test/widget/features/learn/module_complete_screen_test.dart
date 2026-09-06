@@ -208,8 +208,20 @@ void main() {
       await turn(tester, find.text(AppLabels.turnItOver));
 
       expect(find.byType(RewardCard), findsOneWidget);
-      expect(find.text(AppLabels.rewardUnlocked.toUpperCase()), findsOneWidget);
-      expect(find.text(AppLabels.newCollectibleCard), findsOneWidget);
+    });
+
+    testWidgets('and the card is all the back face carries', (tester) async {
+      await tester.pumpWidget(harness(_summary()));
+      await pastTheBeat(tester);
+
+      await turn(tester, find.text(AppLabels.turnItOver));
+
+      // The face drew `REWARD UNLOCKED` over a generic `New collectible card`,
+      // directly above the card's own title. The design draws the card alone,
+      // and so does the lesson ending's back — one anatomy, both endings.
+      expect(find.text('REWARD UNLOCKED'), findsNothing);
+      expect(find.text('New collectible card'), findsNothing);
+      expect(find.text(_moduleReward.title), findsOneWidget);
     });
 
     testWidgets('exactly one face is built at a time', (tester) async {

@@ -46,6 +46,11 @@ class DictionaryView {
   /// The term [id] names, or null when the bank has none.
   DictionaryTerm? termById(String id) =>
       terms.where((term) => term.id == id).firstOrNull;
+
+  /// The category [id] names, or null when the bank has none. The term page's
+  /// bar reads it for the eyebrow the design puts over the term.
+  DictionaryCategory? categoryById(String id) =>
+      categories.where((category) => category.id == id).firstOrNull;
 }
 
 /// Loads the dictionary, the learner's completed lessons and their tier
