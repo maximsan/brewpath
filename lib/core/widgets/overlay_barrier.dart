@@ -1,6 +1,7 @@
 import 'dart:ui' show ImageFilter;
 
 import 'package:brew_path/shared/theme/app_overlay.dart';
+import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/material.dart';
 
 /// Renders an [AppOverlay] behind a modal route: its tint on the barrier, and
@@ -28,6 +29,23 @@ import 'package:flutter/material.dart';
 mixin OverlayBarrier<T> on ModalRoute<T> {
   /// The overlay this route's barrier wears.
   AppOverlay get barrierOverlay;
+
+  /// Whether this route has been counted into [anyOverlayBarrierOpen], so a
+  /// route disposed without ever having been installed cannot count itself out.
+  bool _counted = false;
+
+  @override
+  void install() {
+    super.install();
+    _counted = true;
+    _openBarriers._opened();
+  }
+
+  @override
+  void dispose() {
+    if (_counted) _openBarriers._closed();
+    super.dispose();
+  }
 
   /// Narrower than [ModalRoute.barrierColor], which is nullable: a route that
   /// mixes this in always has an overlay, and a barrier is what it is for.
@@ -82,4 +100,38 @@ Future<T?> showOverlayDialog<T>({
       barrierDismissible: barrierDismissible,
     ),
   );
+}
+
+/// Whether one of the app's blocking overlays is on screen.
+///
+/// The guide layer's micro-tips are drawn above the navigator, so this is what
+/// keeps a tip from appearing over a sheet or a dialog — and, because a tip
+/// counts as seen the moment it shows, from being spent behind one.
+///
+/// **Counted by the barrier itself, not by the two functions that open one.**
+/// `showAppSheet` and `showOverlayDialog` are the app's only doors to a modal,
+/// each with a guard test, and every route they push mixes this in — so a count
+/// kept here cannot be bypassed by a third door and needs no bookkeeping at the
+/// call sites. It is a plain listenable rather than a provider because a route
+/// is pushed from a widget that may sit outside any `ProviderScope`, which the
+/// sheet primitive's own tests do.
+ValueListenable<bool> get anyOverlayBarrierOpen => _openBarriers;
+
+final _OpenBarrierCount _openBarriers = _OpenBarrierCount();
+
+/// How many barriers are up, published as the only question anyone asks of it.
+class _OpenBarrierCount extends ValueNotifier<bool> {
+  _OpenBarrierCount() : super(false);
+
+  int _open = 0;
+
+  void _opened() {
+    _open++;
+    value = true;
+  }
+
+  void _closed() {
+    _open--;
+    value = _open > 0;
+  }
 }

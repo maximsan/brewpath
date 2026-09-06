@@ -186,6 +186,16 @@ explaining a mechanic. Auto-runs once per device when Learn first shows with
 activity.
 _Avoid_: walking tour, walkthrough, coach marks
 
+**Micro-tip**:
+A small card at the foot of the screen explaining one feature the first time it
+matters — seven of them, each shown once ever and dismissable
+([#342](https://github.com/maximsan/brewpath/issues/342)). One at a time, never
+inside a lesson and never under the Tour or a sheet. The seen list follows
+`tourSeen` rather than the design's progress scope: it sits on the device-local
+settings row, survives Reset progress and goes with Delete account. Stored at
+schema v12.
+_Avoid_: coach card, tooltip, hint
+
 ## Content pipeline
 
 **Carried** (authored field):

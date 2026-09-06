@@ -2,6 +2,7 @@ import 'package:brew_path/app/app_router.dart';
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/app/day_rollover_watcher.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_expiry_watcher.dart';
+import 'package:brew_path/features/tour/presentation/micro_tip_host.dart';
 import 'package:brew_path/shared/theme/theme_mode_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,6 +28,10 @@ class BrewPathApp extends ConsumerWidget {
           themeMode: themeMode.materialThemeMode,
           routerConfig: router,
           debugShowCheckedModeBanner: false,
+          // The guide layer's micro-tips draw over the whole app: two of the
+          // screens they appear on are pushed over the tab bar, so no shell or
+          // screen can host them all. See `MicroTipHost`.
+          builder: (context, child) => MicroTipHost(child: child!),
         ),
       ),
     );

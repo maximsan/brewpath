@@ -1,4 +1,5 @@
 import 'package:brew_path/features/onboarding/presentation/loading/loading_screen.dart';
+import 'package:brew_path/features/tour/domain/micro_tip.dart';
 import 'package:brew_path/shared/repositories/settings_repository.dart';
 import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:drift/drift.dart' show Value;
@@ -9,13 +10,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-/// Marks onboarding and the Tour as already seen on [db].
+/// Marks onboarding, the Tour and every micro-tip as already seen on [db].
 ///
 /// Pre-marked so widget tests that boot the full shell land on `/learn`.
 /// `tourSeen` is not optional: the Tour auto-runs the moment Learn shows real
 /// data with the flag unset, so without it every shell test would open onto
-/// the intro overlay's modal barrier and every tap would miss. Tour tests set
-/// the flag themselves — see test/widget/features/tour/.
+/// the intro overlay's modal barrier and every tap would miss. The tips are
+/// pre-marked for the same reason one step down: a tip is a card over the foot
+/// of the screen, and a test tapping something down there would find the tip
+/// instead. Tour and tip tests clear what they are about — see
+/// test/widget/features/tour/.
 ///
 /// Extracted from [useInMemoryDatabase] so a test that needs a **file-backed**
 /// database — one it can close and reopen to assert a real restart — can seed
@@ -31,9 +35,16 @@ Future<void> seedOnboarded(AppDatabase db) async {
           totalXp: 0,
           onboardingCompleted: const Value(true),
           tourSeen: const Value(true),
+          tipsSeen: Value(everyMicroTipSeen),
         ),
       );
 }
+
+/// The seen list with all seven micro-tips on it, as the settings row stores
+/// them.
+final String everyMicroTipSeen = MicroTipsSeen.encode({
+  for (final tip in MicroTip.values) tip.id,
+});
 
 /// Shared widget-test setup: a fresh in-memory Drift DB wired into
 /// [AppDatabaseService] and stubbed package_info, so screens render against

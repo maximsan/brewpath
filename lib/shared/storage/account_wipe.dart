@@ -54,10 +54,11 @@ class AccountWipe {
     // What is left on that row is what the learner *chose*, which a progress
     // reset keeps.
     //
-    // That includes `onboardingCompleted` and `tourSeen` together — the two
-    // "already introduced" bits fate-share, and here they share by being left
-    // alone. Neither is progress: replaying the welcome flow or the Tour is not
-    // what someone asks for when they ask to start the course over.
+    // That includes `onboardingCompleted`, `tourSeen` and the micro-tips'
+    // `tipsSeen` list together — the "already introduced" bits fate-share, and
+    // here they share by being left alone. None of them is progress: replaying
+    // the welcome flow, the Tour or the tips is not what someone asks for when
+    // they ask to start the course over.
     //
     // The install stamp is left alone too: starting the course over does not
     // change the day you joined.
@@ -68,10 +69,10 @@ class AccountWipe {
   ///
   /// Device-local state is *not synced* and *not wiped by reset* — two separate
   /// properties, and it has both. Delete is where it goes, because after it
-  /// there is no account for the appearance preference, the onboarding answers
-  /// or the Tour's `tourSeen` bit to belong to. Dropping the whole row is also
-  /// what keeps `onboardingCompleted` and `tourSeen` fate-sharing here: they go
-  /// together because nothing gets the chance to clear one of them alone.
+  /// there is no account for the appearance preference, the onboarding answers,
+  /// the Tour's `tourSeen` bit or the micro-tips' `tipsSeen` list to belong to.
+  /// Dropping the whole row is also what keeps those three fate-sharing here:
+  /// they go together because nothing gets the chance to clear one alone.
   ///
   /// The install stamp is **restamped, not kept and not cleared** (ADR-0013):
   /// what is left behind is a fresh install in every other respect, so the

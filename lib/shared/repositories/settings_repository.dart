@@ -26,6 +26,7 @@ class SettingsRepository {
         onboardingCompleted: row.onboardingCompleted,
         themeMode: AppThemeMode.fromStorage(row.themeMode),
         tourSeen: row.tourSeen,
+        tipsSeen: row.tipsSeen,
         learnerName: row.learnerName,
         notificationsEnabled: row.notificationsEnabled,
         dailyReminderTime: row.dailyReminderTime,
@@ -55,6 +56,7 @@ class SettingsRepository {
             // writing null over an old install's answer.
             themeMode: Value(settings.themeMode.storageValue),
             tourSeen: Value(settings.tourSeen),
+            tipsSeen: Value(settings.tipsSeen),
             learnerName: Value(settings.learnerName),
             notificationsEnabled: Value(settings.notificationsEnabled),
             dailyReminderTime: Value(settings.dailyReminderTime),
@@ -65,10 +67,11 @@ class SettingsRepository {
   /// Deletes the singleton row, so reads fall back to first-launch defaults.
   ///
   /// **Delete Account only.** This row is the device-local store — appearance,
-  /// haptics, sound, the onboarding gate and the Tour's `tourSeen` bit —
-  /// which a progress reset keeps deliberately. Delete is the one wipe it does
-  /// not survive, and it takes `onboardingCompleted` and `tourSeen` together,
-  /// which is the fate-sharing rule those two are owed.
+  /// haptics, sound, the onboarding gate, the Tour's `tourSeen` bit and the
+  /// micro-tips' seen list — which a progress reset keeps deliberately. Delete
+  /// is the one wipe it does not survive, and it takes `onboardingCompleted`,
+  /// `tourSeen` and `tipsSeen` together, which is the fate-sharing rule those
+  /// three are owed.
   Future<void> deleteAll() async {
     await _db.delete(_db.userSettings).go();
   }

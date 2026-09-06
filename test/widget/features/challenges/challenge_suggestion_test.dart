@@ -57,9 +57,10 @@ void main() {
     testWidgets('a challenge already in play is no longer an offer', (
       tester,
     ) async {
-      // Started now, not on a fixed date: the offer returns once the 48-hour
-      // window lapses, so a hardcoded day makes this test pass until the
-      // calendar reaches it and fail every day after.
+      // Started *now*, not on a fixed date: what makes a challenge active is
+      // its 48-hour window measured against the clock, so a hardcoded start
+      // stops being active two days after it was written and the test begins
+      // passing for the wrong reason — then failing outright.
       await tester.runAsync(
         () => startChallenge(
           SnapshotRepository(),
