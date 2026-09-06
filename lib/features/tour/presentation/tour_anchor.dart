@@ -32,7 +32,7 @@ class TourAnchor extends StatelessWidget {
   /// has been asked to keep it mounted.
   static BuildContext? contextFor(TourStep step) => _keys[step]?.currentContext;
 
-  /// The stop this anchor is the target of.
+  /// The stop whose frame lands on [child].
   final TourStep step;
 
   /// The widget the stop frames.

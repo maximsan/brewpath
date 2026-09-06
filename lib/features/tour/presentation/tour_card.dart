@@ -1,5 +1,5 @@
-import 'package:brew_path/features/tour/domain/tour_copy.dart';
 import 'package:brew_path/features/tour/domain/tour_step.dart';
+import 'package:brew_path/features/tour/presentation/tour_card_controls.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -31,7 +31,7 @@ class TourCard extends StatelessWidget {
     BoxShadow(color: Color(0x3D000000), blurRadius: 44, offset: Offset(0, 18)),
   ];
 
-  /// The stop on show.
+  /// The stop the card is explaining.
   final TourStep step;
 
   /// Ends the Tour without finishing it.
@@ -70,11 +70,10 @@ class TourCard extends StatelessWidget {
                 ).copyWith(height: OffTokens.tourCardBodyLeading.value),
               ),
               const SizedBox(height: AppSpacing.sm),
-              _Controls(
+              TourCardControls(
                 step: step,
                 onSkip: onSkip,
                 onAdvance: onAdvance,
-                mood: mood,
               ),
             ],
           ),
@@ -107,101 +106,4 @@ class _Counter extends StatelessWidget {
       ),
     );
   }
-}
-
-/// Skip, the dots, and the button that moves the Tour on.
-class _Controls extends StatelessWidget {
-  const _Controls({
-    required this.step,
-    required this.onSkip,
-    required this.onAdvance,
-    required this.mood,
-  });
-
-  /// Skip is text on the card rather than a filled button; the vertical stop
-  /// keeps it a comfortable tap target.
-  static const _skipPadding = EdgeInsets.symmetric(
-    horizontal: AppSpacing.xxs,
-    vertical: AppSpacing.sm,
-  );
-
-  /// The room inside the advance pill.
-  static const _advancePadding = EdgeInsets.symmetric(
-    horizontal: AppSpacing.md,
-    vertical: AppSpacing.sm,
-  );
-
-  final TourStep step;
-  final VoidCallback onSkip;
-  final VoidCallback onAdvance;
-  final MoodColors mood;
-
-  @override
-  Widget build(BuildContext context) => Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      // Spelled apart from the intro overlay's decline even though the word is
-      // the same: one answers the offer, the other abandons a run.
-      TextButton(
-        onPressed: onSkip,
-        style: TextButton.styleFrom(
-          padding: _skipPadding,
-          minimumSize: Size.zero,
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        ),
-        child: Text(
-          TourCopy.stopSkip,
-          style: AppText.support(color: mood.inkMute, face: AppFace.control),
-        ),
-      ),
-      _Dots(current: step, mood: mood),
-      FilledButton(
-        onPressed: onAdvance,
-        style: FilledButton.styleFrom(
-          backgroundColor: mood.accent,
-          padding: _advancePadding,
-          minimumSize: Size.zero,
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        ),
-        child: Text(
-          step.isLast ? TourCopy.stopDone : TourCopy.stopNext,
-          style: AppText.support(color: mood.accentInk, face: AppFace.control),
-        ),
-      ),
-    ],
-  );
-}
-
-/// One dot per stop, the current one in the accent.
-///
-/// Hidden from assistive technology: the counter above says the same thing in
-/// words, and four unlabelled dots say nothing when read aloud.
-class _Dots extends StatelessWidget {
-  const _Dots({required this.current, required this.mood});
-
-  /// The design's `width: 5, height: 5` dots, set `gap: 5` apart.
-  static const double _size = 5;
-
-  final TourStep current;
-  final MoodColors mood;
-
-  @override
-  Widget build(BuildContext context) => ExcludeSemantics(
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (final step in TourStep.values) ...[
-          if (step.index > 0) const SizedBox(width: _size),
-          Container(
-            width: _size,
-            height: _size,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: step == current ? mood.accent : mood.rule,
-            ),
-          ),
-        ],
-      ],
-    ),
-  );
 }

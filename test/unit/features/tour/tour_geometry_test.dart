@@ -1,4 +1,5 @@
 import 'package:brew_path/features/tour/domain/tour_geometry.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -8,14 +9,15 @@ void main() {
   group('the frame', () {
     test('stands off the target evenly on all four sides', () {
       const target = Rect.fromLTWH(20, 100, 200, 80);
+      final inset = OffTokens.tourFrameInset.value;
 
       expect(
         tourFrameRect(target),
-        const Rect.fromLTWH(
-          20 - tourFrameInset,
-          100 - tourFrameInset,
-          200 + 2 * tourFrameInset,
-          80 + 2 * tourFrameInset,
+        Rect.fromLTWH(
+          20 - inset,
+          100 - inset,
+          200 + 2 * inset,
+          80 + 2 * inset,
         ),
       );
     });
@@ -77,7 +79,10 @@ void main() {
   group('how far the feed scrolls', () {
     test('not at all for a target already framable', () {
       expect(
-        tourScrollDelta(topGap: tourScrollTopGap + 60, bottomOverflow: -20),
+        tourScrollDelta(
+          topGap: OffTokens.tourScrollTopGap.value + 60,
+          bottomOverflow: -20,
+        ),
         0,
       );
     });
@@ -113,7 +118,7 @@ void main() {
           target: const Rect.fromLTWH(0, 0, 300, 100),
           viewportHeight: 800,
         ),
-        100 - 800 + tourScrollCardClearance,
+        100 - 800 + OffTokens.tourScrollCardClearance.value,
       );
     });
 

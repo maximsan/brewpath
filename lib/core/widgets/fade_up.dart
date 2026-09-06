@@ -14,7 +14,7 @@ class FadeUp extends StatelessWidget {
   static const Duration _duration = Duration(milliseconds: 260);
   static const double _rise = 4;
 
-  /// What arrives.
+  /// What arrives — the whole of it moves and fades together.
   final Widget child;
 
   @override

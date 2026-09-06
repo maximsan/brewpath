@@ -50,16 +50,36 @@ class _TodayTourState extends State<TodayTour> {
   /// rather than framing where the target used to be.
   double? _area;
 
+  @override
+  void initState() {
+    super.initState();
+    _arriveAt(_step);
+  }
+
   /// Brings [step]'s target into view and measures it.
   ///
-  /// Both halves wait for a frame: nothing is measurable until the tree has
-  /// been laid out, and the scroll changes the layout the measurement is of.
+  /// Two frames, not one. Nothing is measurable until the tree has been laid
+  /// out, and the scroll changes the layout the measurement is *of* — reading
+  /// the target in the same breath as moving it lands the frame a scroll
+  /// behind, where the target used to be.
   void _arriveAt(TourStep step) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    _afterFrame(() {
       if (!mounted || step != _step) return;
       _scrollTo(step);
-      _measure(step, attemptsLeft: _measureAttempts);
+      _afterFrame(() => _measure(step, attemptsLeft: _measureAttempts));
     });
+  }
+
+  /// Runs [action] once the frame in flight has been painted, asking for a
+  /// frame if none is coming.
+  ///
+  /// The request is not a formality: a stop that needs no scroll leaves nothing
+  /// to schedule the next frame, and the measurement would wait for whatever
+  /// happened to redraw the app next.
+  void _afterFrame(VoidCallback action) {
+    WidgetsBinding.instance
+      ..addPostFrameCallback((_) => action())
+      ..scheduleFrame();
   }
 
   /// Puts the feed where [step] needs it.
@@ -101,9 +121,7 @@ class _TodayTourState extends State<TodayTour> {
     if (!mounted || step != _step) return;
     final measured = _rectOf(TourAnchor.contextFor(step), within: context);
     if (measured == null && attemptsLeft > 0) {
-      WidgetsBinding.instance.addPostFrameCallback(
-        (_) => _measure(step, attemptsLeft: attemptsLeft - 1),
-      );
+      _afterFrame(() => _measure(step, attemptsLeft: attemptsLeft - 1));
       return;
     }
     if (measured == _target) return;
@@ -173,10 +191,14 @@ class _TodayTourState extends State<TodayTour> {
 
   /// Re-reads the target when the layer changes size — a rotation, or a
   /// keyboard the learner opened before the Tour did.
+  ///
+  /// The first build only records the height: `initState` has already asked
+  /// for that measurement, and asking twice would scroll the feed twice.
   void _remeasureIfResized(double areaHeight) {
-    if (_area == areaHeight) return;
+    final previous = _area;
+    if (previous == areaHeight) return;
     _area = areaHeight;
-    _arriveAt(_step);
+    if (previous != null) _arriveAt(_step);
   }
 
   /// Where the card sits: under the target where there is room for it, over it
@@ -193,7 +215,7 @@ class _TodayTourState extends State<TodayTour> {
       right: gap,
       top: target != null && below ? target.bottom + gap : null,
       bottom: switch (target) {
-        null => tourCardRestingBottom,
+        null => OffTokens.tourCardRestingBottom.value,
         final Rect measured when !below => areaHeight - measured.top + gap,
         _ => null,
       },

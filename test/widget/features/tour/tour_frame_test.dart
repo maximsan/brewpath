@@ -1,11 +1,11 @@
 import 'package:brew_path/app/app.dart';
 import 'package:brew_path/features/tour/domain/tour_copy.dart';
-import 'package:brew_path/features/tour/domain/tour_geometry.dart';
 import 'package:brew_path/features/tour/domain/tour_step.dart';
 import 'package:brew_path/features/tour/presentation/today_tour.dart';
 import 'package:brew_path/features/tour/presentation/tour_anchor.dart';
 import 'package:brew_path/features/tour/presentation/tour_frame.dart';
 import 'package:brew_path/shared/repositories/settings_repository.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -80,7 +80,10 @@ void main() {
 
     expect(
       paintedFrame(tester),
-      anchorRect(tester, TourStep.today).inflate(tourFrameInset),
+      anchorRect(
+        tester,
+        TourStep.today,
+      ).inflate(OffTokens.tourFrameInset.value),
       reason: 'the frame stands off the target it names, on all four sides',
     );
   });
@@ -95,7 +98,10 @@ void main() {
     expect(paintedFrame(tester), isNot(first));
     expect(
       paintedFrame(tester),
-      anchorRect(tester, TourStep.practice).inflate(tourFrameInset),
+      anchorRect(
+        tester,
+        TourStep.practice,
+      ).inflate(OffTokens.tourFrameInset.value),
     );
   });
 
@@ -113,7 +119,7 @@ void main() {
     expect(find.text(TourCopy.tabsTitle), findsOneWidget);
     expect(
       paintedFrame(tester),
-      anchorRect(tester, TourStep.tabs).inflate(tourFrameInset),
+      anchorRect(tester, TourStep.tabs).inflate(OffTokens.tourFrameInset.value),
     );
   });
 
@@ -135,7 +141,7 @@ void main() {
     final lastFrame = paintedFrame(tester)!;
     expect(
       lastFrame.bottom,
-      greaterThan(layerHeight - tourCardHeadroom),
+      greaterThan(layerHeight - OffTokens.tourCardHeadroom.value),
       reason: 'the tab bar is exactly the case the headroom rule is for',
     );
     expect(

@@ -56,5 +56,5 @@ class _TourLayerHostState extends ConsumerState<TourLayerHost> {
 ///
 /// Writes nothing to disk. `tourSeen` is the intro overlay's business, which is
 /// what lets Replay reuse this untouched.
-void startTourStops(WidgetRef ref) =>
+void startTour(WidgetRef ref) =>
     ref.read(tourRunningProvider.notifier).set(running: true);

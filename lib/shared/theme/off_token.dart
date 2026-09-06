@@ -348,6 +348,89 @@ abstract final class OffTokens {
         'and the looser leading is what keeps it readable there.',
   );
 
+  /// How far the Tour's frame stands off the widget it surrounds.
+  static const OffToken<double> tourFrameInset = OffToken(
+    6,
+    reason:
+        'The design insets the frame by 6 on every side (`left: rect.x - 6`, '
+        '`width: rect.w + 12`). Half AppSpacing.sm (12) and on no stop of its '
+        'own: it is the distance that makes the ring read as a frame *around* '
+        'the target rather than a border *on* it, and a spacing stop here '
+        'would look like a gap the page had left.',
+  );
+
+  /// Where the Tour's card rests until a target has been measured.
+  static const OffToken<double> tourCardRestingBottom = OffToken(
+    140,
+    reason:
+        "The design's `bottom: 140` fallback, used for the frame or two before "
+        'the first measurement lands. Nowhere near a spacing stop because it '
+        'is not a margin: it is roughly where the card ends up once a target '
+        'is known, so the card does not visibly jump into place.',
+  );
+
+  /// How much room the Tour's card needs under a target before it sits below.
+  static const OffToken<double> tourCardHeadroom = OffToken(
+    330,
+    reason:
+        'The design switches the card above its target at '
+        '`(rect.y + rect.h) < (rect.areaH - 330)`. It is a measurement of the '
+        'card itself — roughly its tallest height plus its gap — not a margin, '
+        'so no spacing stop could stand in for it: round it down and a card '
+        'below a low target hangs off the screen.',
+  );
+
+  /// How far below the feed's top edge the Tour brings a target.
+  static const OffToken<double> tourScrollTopGap = OffToken(
+    140,
+    reason:
+        "The design's `if (topGap < 140)` floor. The same figure as "
+        'tourCardRestingBottom and unrelated to it: this one is the height of '
+        'the header floating over the feed plus a little, which is what keeps '
+        'a framed target from ending up underneath it.',
+  );
+
+  /// How much room below a target the Tour keeps clear for its card.
+  static const OffToken<double> tourScrollCardClearance = OffToken(
+    250,
+    reason:
+        "The design's `+ 250` when it decides a target has run past the room "
+        'the card needs. Shorter than tourCardHeadroom (330) on purpose: this '
+        'one governs *scrolling* a target into a workable position, where the '
+        'card may still end up above it, and pulling the feed by the full '
+        'card height would drag short targets out of the top of the screen.',
+  );
+
+  /// The size of one dot in the Tour card's step row.
+  static const OffToken<double> tourStepDotSize = OffToken(
+    5,
+    reason:
+        'The design draws `width: 5, height: 5` dots set `gap: 5` apart. '
+        'AppSpacing.xxs (4) is the nearest stop and would both shrink them and '
+        'tighten the row: four dots at this size read as a progress track, and '
+        'a stop smaller reads as specks.',
+  );
+
+  /// The room inside the Tour card's advance pill.
+  static const OffToken<EdgeInsets> tourAdvancePadding = OffToken(
+    EdgeInsets.symmetric(horizontal: 20, vertical: 11),
+    reason:
+        "The design sets Next/Done to `padding: '11px 20px'`, and neither half "
+        'is a spacing stop. It is the one stadium button in the app that is '
+        'not full-width, so it is sized to its own words rather than to the '
+        'rhythm of a page it does not sit in.',
+  );
+
+  /// The room around the Tour card's Skip.
+  static const OffToken<EdgeInsets> tourSkipPadding = OffToken(
+    EdgeInsets.symmetric(horizontal: 6, vertical: AppSpacing.sm),
+    reason:
+        "The design sets Skip to `padding: '12px 6px'`. The vertical half is "
+        'AppSpacing.sm and the horizontal half is not: Skip is text rather '
+        'than a filled button, so it is pulled close to the card edge while '
+        'keeping the height that makes it a comfortable tap target.',
+  );
+
   /// Every sanctioned exception, so the register can be read — and tested — as
   /// a whole rather than one constant at a time.
   static const register = <OffToken<Object>>[
@@ -379,5 +462,13 @@ abstract final class OffTokens {
     tourCardPadding,
     tourCardLineGap,
     tourCardBodyLeading,
+    tourFrameInset,
+    tourCardRestingBottom,
+    tourCardHeadroom,
+    tourScrollTopGap,
+    tourScrollCardClearance,
+    tourStepDotSize,
+    tourAdvancePadding,
+    tourSkipPadding,
   ];
 }
