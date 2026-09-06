@@ -62,10 +62,10 @@ enum AppFace {
 /// **Only values something in `lib/` actually renders are here.** The design's
 /// app vocabulary at these two rungs runs one wider: 0.1em (`.cheer-points`,
 /// `index.html:1092`) is an app component too, not page chrome. It is absent
-/// because the app has no points burst and is not getting one — #212 deleted
-/// the pose rather than renumber it, and ruled that a points-earned moment,
-/// if ever wanted, is authored against a screen with room for it. A value
-/// with no call site would be vocabulary nobody speaks.
+/// because no screen in the app cheers a payout that way — the mascot's own
+/// burst is drawn (#518) but it is set inside the drawing rather than on a
+/// rung, so it letters off this axis entirely. A value with no call site would
+/// be vocabulary nobody speaks.
 ///
 /// The line between a value here and one in `OffTokens` is how many components
 /// speak it. A width the design gives to **one** component is that component's

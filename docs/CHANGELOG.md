@@ -70,14 +70,20 @@ You can always edit this file by hand instead — the helpers just save effort.
   say whether you were right — the card at the end of the lesson still does
   that.
 
+- **Roasty has a ninth face: the wink he gives a payout.** The design's mascot
+  has always had it — one eye still open, the other arched shut, and a mouth
+  that lifts on the winking side — over a `+N PTS` plate that rises and fades
+  above his head. Nothing in the app plays it yet: the design gives the pose to
+  Coffee Duel's round-complete beat, and Duel is held to v2. The amount is the
+  caller's to supply and cannot be left out, so the mascot still names no
+  payout of its own.
+
 ### Fixed
 
 - **The explanation under a verdict is grey again on the decision and recall
   cards.** Those two are set a size larger than the rest, and the app was
   reading full black ink off that larger step. Only the size was meant to
   change.
-
-### Fixed
 
 - **Roasty's face is the design's on every state.** Five of his eight
   expressions had no blush at all — caught out, holding a card, asleep and
@@ -117,6 +123,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **The streak ring now fills over your week.** It used to creep toward the
+  next badge — on a 12-day streak it sat almost full at 12 of 14, and after
+  that badge it dropped back to a sliver with 30 days to cross. It now fills
+  over the seven days you are in and closes every seventh day, matching the
+  week strip right below it. The count in the middle still reads your whole
+  streak, the freeze countdown still runs on it, and the celebration on days
+  3, 7, 14 and 30 still plays. The line under the ring that counted down to a
+  badge is gone — the ring and the strip already say where the week stands.
+
 - **The pages you open from a tab get the same treatment.** Settings, the
   Coffee Dictionary, a term, your saved shelf, the coffee tree, your streak,
   your grove and the app guide used to sit under a solid grey strip with a
@@ -130,6 +145,14 @@ You can always edit this file by hand instead — the helpers just save effort.
   at the top: the page and the bar go back to the beginning together. Backing
   out of a category returns you to the index rather than leaving the
   dictionary altogether.
+
+- **A new kind of lesson card now has to have its screen before it can ship.**
+  The app used to be able to carry a kind of card it could not draw yet,
+  leaving those cards out of the lesson until someone built the screen for
+  them. All fifteen kinds draw now, so that escape hatch is gone and adding a
+  kind without its screen stops the app building instead. The one message left
+  behind is for a lesson with no cards at all, and it now says that plainly
+  rather than hinting the app cannot show it.
 
 - **The bar at the top of a tab gets out of the way.** It used to sit there
   the whole time, printing the tab's name over the page whether you needed it

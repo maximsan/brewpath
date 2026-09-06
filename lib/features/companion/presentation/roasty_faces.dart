@@ -19,6 +19,8 @@ void paintRoastyFace(Canvas canvas, RoastyState state, MoodColors mood) {
       _paintWrongFace(canvas);
     case RoastyState.module:
       _paintModuleFace(canvas, mood);
+    case RoastyState.points:
+      _paintPointsFace(canvas);
     case RoastyState.card:
       _paintCardFace(canvas);
     case RoastyState.sleep:
@@ -76,10 +78,20 @@ void _paintEyeOpen(Canvas canvas, double cx, double cy) {
   canvas.drawCircle(Offset(cx + 2, cy), 1.7, _eyeWhite);
 }
 
-void _paintEyeArchUp(Canvas canvas, double cx, double cy) {
+/// How high a delighted eye arches. The wink arches shallower, which is what
+/// keeps it reading as one eye closing rather than as half a grin.
+const _delightedLift = 10.0;
+const _winkLift = 6.0;
+
+void _paintEyeArchUp(
+  Canvas canvas,
+  double cx,
+  double cy, {
+  double lift = _delightedLift,
+}) {
   final arch = Path()
     ..moveTo(cx - 10, cy)
-    ..quadraticBezierTo(cx, cy - 10, cx + 10, cy);
+    ..quadraticBezierTo(cx, cy - lift, cx + 10, cy);
   canvas.drawPath(arch, _mouthStroke..strokeWidth = 3);
 }
 
@@ -200,6 +212,19 @@ void _paintModuleFace(Canvas canvas, MoodColors mood) {
     Rect.fromCenter(center: const Offset(100, 188), width: 10, height: 8),
     _tongue,
   );
+}
+
+/// The wink Roasty gives a payout: one eye still open with its catchlight, the
+/// other arched shut, and a mouth that lifts on the winking side rather than
+/// curving level the way every other smile here does.
+void _paintPointsFace(Canvas canvas) {
+  _paintEyeOpen(canvas, 80, 148);
+  _paintEyeArchUp(canvas, 120, 148, lift: _winkLift);
+  _paintCheeks(canvas, cy: 170, rx: 6, ry: 3, opacity: 0.5);
+  final mouth = Path()
+    ..moveTo(90, 180)
+    ..quadraticBezierTo(100, 188, 113, 178);
+  canvas.drawPath(mouth, _mouthStroke);
 }
 
 void _paintCardFace(Canvas canvas) {

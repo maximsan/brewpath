@@ -16,6 +16,11 @@
 - Async head-to-head: hub (with incoming/sent sections), picker (grid/list variants), play, result (tally/instant reveal variants), invite + share, sent, received, comparison (win/loss), rematch, expired, error
 - Persists an in-flight run so a duel can be resumed
 - **Needs:** share sheet, deep-link resolution, server for invites and result sync
+- **Holds the mascot's ninth pose.** The round-complete beat is the design's only
+  caller of the `points` wink. The app draws the pose and its rising `+N PTS`
+  burst ([#518](https://github.com/maximsan/brewpath/issues/518)) but nothing
+  plays it, because every v1 moment that pays already opens on a larger
+  celebration. Wiring it belongs to whoever builds this screen.
 
 ## Rewarded ads + timed trials
 `RewardedAdScreen` (simulated video → 15-min unlock), `RoastyGiftScreen` (perfect-module → 24-h Studio unlock), `TrialBadge` countdown. Needs an ad SDK.

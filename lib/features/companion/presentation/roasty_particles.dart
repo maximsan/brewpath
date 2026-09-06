@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
+import 'package:brew_path/features/companion/presentation/roasty_animation.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/roasty_colors.dart';
@@ -29,16 +30,22 @@ void paintRoastyParticlesBack(
 }
 
 /// Particle layer painted in front of the bean body (sparkles, confetti,
-/// wrong badge, sleep zzz).
+/// wrong badge, points burst, sleep zzz).
 ///
-/// Two sparkles, the wrong badge and the sleeping `z`s follow the mood in the
-/// design (warn, berry and muted ink); the confetti is palette-fixed.
+/// Two sparkles, the wrong badge, the points burst and the sleeping `z`s
+/// follow the mood in the design (warn, berry, accent and muted ink); the
+/// confetti is palette-fixed.
+///
+/// [pointsAmount] is what the burst says, and only [RoastyState.points] reads
+/// it. With nothing passed the burst has nothing to state and draws nothing;
+/// `Roasty.pointsAmount` carries why, and asserts the pairing.
 void paintRoastyParticlesFront(
   Canvas canvas,
   RoastyState state,
   double progress,
-  MoodColors mood,
-) {
+  MoodColors mood, {
+  int? pointsAmount,
+}) {
   switch (state) {
     case RoastyState.correct:
       _paintSparkles(canvas, progress, mood);
@@ -47,6 +54,10 @@ void paintRoastyParticlesFront(
       _paintConfetti(canvas, progress);
     case RoastyState.wrong:
       _paintWrongBadge(canvas, mood);
+    case RoastyState.points:
+      if (pointsAmount != null) {
+        _paintPointsBurst(canvas, progress, mood, pointsAmount);
+      }
     case RoastyState.sleep:
       _paintSleepZzz(canvas, progress, mood);
     default:
@@ -241,6 +252,92 @@ void _paintWrongBadge(Canvas canvas, MoodColors mood) {
   canvas.drawCircle(const Offset(148, 82), 1.6, bar);
 
   canvas.restore();
+}
+
+/// The plate the burst's line sits on, above the bean, and the baseline the
+/// design sets that line on.
+///
+/// A baseline rather than a centred box: where the glyphs sit is a fact about
+/// the drawing, and centring would hand it to whatever metrics the bundled
+/// mono happens to carry.
+const _pointsBurstRect = Rect.fromLTWH(68, 42, 64, 24);
+const _pointsBurstRadius = Radius.circular(2);
+const double _pointsBurstBaseline = 59;
+
+/// The burst's type size and letter-spacing, in the mascot's own canvas units.
+///
+/// Off the type ladder, for the reason `grinder_dial_view.dart` is: this is
+/// drawn on a canvas grid rather than set on a rung, so the same label reaches
+/// the screen at a different size on every host. 13 here is never 13 logical
+/// pixels, and 1 beside it is a ratio to it rather than a width `AppTracking`
+/// could resolve.
+const double _pointsBurstFontSize = 13;
+const double _pointsBurstTracking = 1;
+
+/// How the burst spells an amount it is handed. It never picks one.
+String roastyPointsBurstLabel(int amount) => '+$amount PTS';
+
+/// The style of the burst's line: the design's mono on the mood's accent fill,
+/// so it takes [MoodColors.accentInk] — the ink that reads on that fill.
+///
+/// Face from the ladder, size and tracking from the drawing, the same split
+/// [roastySleepZStyle] makes. No opacity: the burst fades as one group.
+TextStyle roastyPointsBurstStyle({required MoodColors mood}) => TextStyle(
+  color: mood.accentInk,
+  fontSize: _pointsBurstFontSize,
+  letterSpacing: _pointsBurstTracking,
+  fontFamily: AppFace.mono.family,
+  fontWeight: AppFace.mono.weight,
+);
+
+void _paintPointsBurst(
+  Canvas canvas,
+  double progress,
+  MoodColors mood,
+  int amount,
+) {
+  final rise = roastyPointsBurstRise(progress);
+  if (rise.opacity <= 0) return;
+
+  final line = TextPainter(
+    text: TextSpan(
+      text: roastyPointsBurstLabel(amount),
+      style: roastyPointsBurstStyle(mood: mood),
+    ),
+    textDirection: TextDirection.ltr,
+  )..layout();
+  final lineOrigin = Offset(
+    _pointsBurstRect.center.dx - line.width / 2,
+    _pointsBurstBaseline -
+        line.computeDistanceToActualBaseline(TextBaseline.alphabetic),
+  );
+
+  canvas.save();
+  canvas.translate(0, rise.dy);
+
+  // The design's fade sits on the burst's *group*, and that is not the same as
+  // fading each mark: the line is drawn on the plate, so per-mark alpha would
+  // let the accent show through its own lettering. `saveLayer` composites the
+  // burst first and fades it once — the same trick `_paintWrongBadge` uses.
+  //
+  // Only the layer paint's alpha is read, so this dims `Paint`'s own default
+  // colour rather than naming one the mascot does not have.
+  final fade = Paint();
+  fade.color = fade.color.withValues(alpha: rise.opacity);
+  canvas.saveLayer(
+    _pointsBurstRect.expandToInclude(lineOrigin & line.size),
+    fade,
+  );
+
+  canvas.drawRRect(
+    RRect.fromRectAndRadius(_pointsBurstRect, _pointsBurstRadius),
+    Paint()..color = mood.accent,
+  );
+  line.paint(canvas, lineOrigin);
+
+  canvas
+    ..restore()
+    ..restore();
 }
 
 void _paintSleepZzz(Canvas canvas, double progress, MoodColors mood) {

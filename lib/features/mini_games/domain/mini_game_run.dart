@@ -60,11 +60,12 @@ const Set<String> playableMiniGameIds = {
   'g-sequence-v60',
 };
 
-/// Games whose kind renders, kept out of [playableMiniGameIds] on purpose.
+/// Games that have rounds to play, kept out of [playableMiniGameIds] on
+/// purpose.
 ///
 /// Empty, and that is the point: an exclusion here is a *decision with a
 /// reason attached*, where an absence from the set above is indistinguishable
-/// from an oversight. Anything that renders and is in neither place fails the
+/// from an oversight. Anything with rounds that is in neither place fails the
 /// guard test.
 const Map<String, String> deliberatelyNotPlayable = <String, String>{};
 
