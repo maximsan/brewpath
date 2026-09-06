@@ -76,8 +76,9 @@ The separation from theme tokens is deliberate: keeping cherry/bean colours out 
 ## Frame & layout
 - Phone: 393 × 852 (iPhone 15), 56px corner radius, dynamic island, status bar, home indicator.
 - Horizontal gutter: `.px-24` (24px); tight layouts drop narrower.
-- iOS large-title pattern: large in-flow title scrolls away, compact blurred sticky header appears at `scrollTop > 72`.
+- iOS large-title pattern: large in-flow title scrolls away, compact blurred sticky header appears at `scrollTop > 40` — the scroll hook's default; only the Saved shelf waits until 72.
 - Header edge controls are 44×44 (fixed during QA).
+- Sub-screen bar (a page pushed from a tab): 96 tall from the top of the screen, content opening at 108 under a large title — 84 on the coffee tree and the streak, 100 on the grove. Its back control is an 18px mark with 4px padding and a 44px touch area; a 32px ring where the bar also carries a trailing control.
 
 ## Radius — two languages, deliberately
 

@@ -50,7 +50,6 @@ class TermDetailScreen extends ConsumerWidget {
         if (term == null) {
           return SubScreenScaffold(
             title: _notFoundTitle,
-            onBack: () => Navigator.of(context).maybePop(),
             body: (context, scrollPadding) => ListView(
               padding: const EdgeInsets.all(AppSpacing.gutter) + scrollPadding,
               children: const [
@@ -83,7 +82,6 @@ class _TermDetail extends StatelessWidget {
       title: term.term,
       eyebrow: view.categoryById(term.categoryId)?.label,
       isRinged: true,
-      onBack: () => Navigator.of(context).maybePop(),
       trailing: SavedBookmarkButton(
         savedKey: formatSavedKey(SavedKind.term, term.id),
         label: term.term,

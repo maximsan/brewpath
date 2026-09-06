@@ -42,6 +42,18 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ## [Unreleased]
 
+### Changed
+
+- Pages pushed from a tab leave the route themselves when their bar's back
+  is tapped; a screen says otherwise only when it has somewhere nearer to go
+  first (the dictionary leaves a category before the shelf).
+
+### Fixed
+
+- The sub-screen bar's back control draws at the design's size — an 18px
+  mark on the bar's inset — with its 44px touch area no longer pushing the
+  mark and the small title up the bar.
+
 ### Added
 
 - **The app now explains a feature the first time it matters.** Seven small

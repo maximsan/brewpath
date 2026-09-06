@@ -37,22 +37,22 @@ class HeaderChrome extends StatelessWidget {
   });
 
   /// The status bar the design measures every bar height over. On a device it
-  /// is the top inset instead, which is why a height here is written as the
-  /// design's own number minus this, rather than as one figure nobody can
-  /// trace back. Stated once, so two bars cannot answer it differently.
-  static const double designStatusBarHeight = 54;
+  /// is the top inset instead, so every height here is the design's own number
+  /// with this taken off — through [belowDesignStatusBar], the one place the
+  /// subtraction lives.
+  static const double _designStatusBarHeight = 54;
 
   /// [designHeight] — a number the design measures from the top of the screen
   /// — as the height below the status bar that a device actually has room for.
   static double belowDesignStatusBar(double designHeight) =>
-      designHeight - designStatusBarHeight;
+      designHeight - _designStatusBarHeight;
 
   /// The design's tab header, measured from the top of the screen.
   static const double _tabHeightWithStatusBar = 116;
 
   /// How tall the tab header stands below the status bar.
   static const double tabHeight =
-      _tabHeightWithStatusBar - designStatusBarHeight;
+      _tabHeightWithStatusBar - _designStatusBarHeight;
 
   /// The gradient that fades below the bar.
   static const double fadeHeight = 22;
