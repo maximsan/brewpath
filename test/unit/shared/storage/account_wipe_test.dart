@@ -82,6 +82,7 @@ void main() {
         onboardingCompleted: true,
         themeMode: AppThemeMode.light,
         tourSeen: true,
+        tipsSeen: 'path,saved',
       ),
     );
   });
@@ -146,15 +147,17 @@ void main() {
       expect(after.tourSeen, true);
     });
 
-    test('keeps the two already-introduced bits together', () async {
-      // `tourSeen` fate-shares with `onboardingCompleted`, and a reset is the
-      // wipe that keeps both. Asserted as a pair, not as two independent
-      // facts, because the failure worth catching is one of them moving alone.
+    test('keeps the already-introduced bits together', () async {
+      // `tourSeen` and the micro-tips' seen list fate-share with
+      // `onboardingCompleted`, and a reset is the wipe that keeps all three.
+      // Asserted as a group, not as independent facts, because the failure
+      // worth catching is one of them moving alone.
       await wipe.resetProgress();
 
       final after = await settings.getSettings();
       expect(after.onboardingCompleted, true);
       expect(after.tourSeen, true);
+      expect(after.tipsSeen, 'path,saved');
     });
 
     test('leaves the day the learner joined where it was', () async {
@@ -231,14 +234,15 @@ void main() {
       expect(after.totalXp, 0);
     });
 
-    test('clears the two already-introduced bits together', () async {
+    test('clears the already-introduced bits together', () async {
       // The other half of the fate-sharing rule: delete is the wipe that takes
-      // both, and it takes them by dropping the row they share.
+      // them all, and it takes them by dropping the row they share.
       await wipe.deleteAccount();
 
       final after = await settings.getSettings();
       expect(after.onboardingCompleted, false);
       expect(after.tourSeen, false);
+      expect(after.tipsSeen, isEmpty);
     });
 
     test('restamps the day the learner joined to this wipe', () async {

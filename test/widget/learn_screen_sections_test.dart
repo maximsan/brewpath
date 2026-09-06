@@ -1,9 +1,9 @@
 import 'package:brew_path/app/app.dart';
-import 'package:brew_path/features/progress/domain/mastery.dart';
-import 'package:brew_path/shared/repositories/progress_repository.dart';
+import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../support/progress_seed.dart';
 import '../support/widget_harness.dart';
 
 void main() {
@@ -55,11 +55,7 @@ void main() {
     // "Completed work to revisit" and builds it from the completed set. The
     // app used to list all 32, putting a locked module one tap from playable.
     useTallViewport(tester);
-    await ProgressRepository().saveCompletion(
-      lessonId: 'm1l1',
-      xpEarned: 10,
-      mastery: const MasteryResult(correct: 5, total: 5),
-    );
+    await seedCompletedLesson(SnapshotRepository(), 'm1l1');
 
     await pumpWithProviders(tester, const BrewPathApp());
 
