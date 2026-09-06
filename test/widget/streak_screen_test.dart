@@ -9,7 +9,7 @@ import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/domain/streak_milestone_providers.dart';
 import 'package:brew_path/features/progress/domain/streak_status.dart';
 import 'package:brew_path/features/progress/domain/streak_week.dart';
-import 'package:brew_path/features/progress/presentation/milestone_ring.dart';
+import 'package:brew_path/features/progress/presentation/streak_ring.dart';
 import 'package:brew_path/features/progress/presentation/streak_screen.dart';
 import 'package:brew_path/features/progress/presentation/week_strip.dart';
 import 'package:brew_path/services/share/share_presenter.dart';
@@ -31,6 +31,25 @@ const _counting = StreakStatus(
 
 const _holding = StreakStatus(
   streak: 9,
+  freezeHeld: true,
+  daysToNextFreeze: null,
+  freezesSpent: 0,
+  frozenDays: {},
+);
+
+/// Three days into the second week, with the freeze cadence still running —
+/// the fixture the wrap is read off (#498).
+const _secondWeek = StreakStatus(
+  streak: 10,
+  freezeHeld: false,
+  daysToNextFreeze: 4,
+  freezesSpent: 0,
+  frozenDays: {},
+);
+
+/// The day after a closing day: the fill starts over at one seventh.
+const _weekReopened = StreakStatus(
+  streak: 8,
   freezeHeld: true,
   daysToNextFreeze: null,
   freezesSpent: 0,
@@ -186,13 +205,46 @@ void main() {
     expect(tester.hasRunningAnimations, isFalse);
   });
 
-  testWidgets('the streak view carries the ring and the badge line', (
+  testWidgets('the ring fills over the week, and says so nowhere else', (
     tester,
   ) async {
+    // The fill measures the week; the caption that described a badge is gone
+    // (#498). The freeze line stays — it is the screen's one number.
     await _pump(tester);
 
-    expect(find.byType(MilestoneRing), findsOneWidget);
-    expect(find.text('12 of 14 to your 14-day badge'), findsOneWidget);
+    expect(
+      tester.widget<StreakRing>(find.byType(StreakRing)).fraction,
+      5 / 7,
+      reason: "the design's own example: 5 days on a 12-day streak",
+    );
+    expect(find.textContaining('badge'), findsNothing);
+    expect(find.text('Next freeze in 3 days'), findsOneWidget);
+  });
+
+  testWidgets('only the fill wraps — the count and the cadence do not', (
+    tester,
+  ) async {
+    // Day 10: the ring starts the second week over at 3/7 while the centre
+    // still reads the whole streak and the freeze countdown keeps running.
+    await _pump(tester, status: _secondWeek);
+
+    expect(tester.widget<StreakRing>(find.byType(StreakRing)).fraction, 3 / 7);
+    expect(find.text('10'), findsOneWidget);
+    expect(find.text('DAY STREAK'), findsOneWidget);
+    expect(find.text('Next freeze in 4 days'), findsOneWidget);
+  });
+
+  testWidgets('the seventh day closes the ring', (tester) async {
+    await _pump(tester, status: _milestoneDay);
+
+    expect(tester.widget<StreakRing>(find.byType(StreakRing)).fraction, 1);
+  });
+
+  testWidgets('the eighth day starts the ring over', (tester) async {
+    await _pump(tester, status: _weekReopened);
+
+    expect(tester.widget<StreakRing>(find.byType(StreakRing)).fraction, 1 / 7);
+    expect(find.text('8'), findsOneWidget);
   });
 
   testWidgets('a milestone day opens on the beat', (tester) async {

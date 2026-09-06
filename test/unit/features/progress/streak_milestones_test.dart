@@ -2,30 +2,6 @@ import 'package:brew_path/features/progress/domain/streak_milestones.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('nextMilestone', () {
-    test('walks the early schedule', () {
-      expect(nextMilestone(0), 3);
-      expect(nextMilestone(3), 7);
-      expect(nextMilestone(7), 14);
-      expect(nextMilestone(14), 30);
-      expect(nextMilestone(30), 60);
-      expect(nextMilestone(100), 180);
-      expect(nextMilestone(180), 365);
-    });
-
-    test('runs every thirty past the schedule', () {
-      expect(nextMilestone(365), 390);
-      expect(nextMilestone(390), 420);
-      expect(nextMilestone(391), 420);
-    });
-
-    test('is always strictly above the count', () {
-      for (var streak = 0; streak <= 400; streak++) {
-        expect(nextMilestone(streak), greaterThan(streak));
-      }
-    });
-  });
-
   group('isMilestone', () {
     test('the early schedule lands, its neighbours do not', () {
       expect(isMilestone(3), isTrue);
@@ -39,20 +15,6 @@ void main() {
       // 360 is a multiple of thirty but still inside the early schedule's
       // range, where only listed values count.
       expect(isMilestone(360), isFalse);
-    });
-  });
-
-  group('milestoneRingFraction', () {
-    test('spans zero to short-of-full', () {
-      expect(milestoneRingFraction(0), 0);
-      expect(milestoneRingFraction(3), 3 / 7);
-      expect(milestoneRingFraction(13), 13 / 14);
-    });
-
-    test('never reaches one — there is always a next badge to want', () {
-      for (var streak = 0; streak <= 400; streak++) {
-        expect(milestoneRingFraction(streak), lessThan(1));
-      }
     });
   });
 

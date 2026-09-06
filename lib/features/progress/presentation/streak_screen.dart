@@ -10,11 +10,10 @@ import 'package:brew_path/features/companion/presentation/companion_celebration.
 import 'package:brew_path/features/progress/domain/freeze_status_line.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/domain/streak_milestone_providers.dart';
-import 'package:brew_path/features/progress/domain/streak_milestones.dart';
 import 'package:brew_path/features/progress/domain/streak_status.dart';
 import 'package:brew_path/features/progress/domain/streak_week.dart';
-import 'package:brew_path/features/progress/presentation/milestone_ring.dart';
 import 'package:brew_path/features/progress/presentation/share_card_renderer.dart';
+import 'package:brew_path/features/progress/presentation/streak_ring.dart';
 import 'package:brew_path/features/progress/presentation/streak_share_card.dart';
 import 'package:brew_path/features/progress/presentation/week_strip.dart';
 import 'package:brew_path/services/share/share_provider.dart';
@@ -33,8 +32,8 @@ import 'package:go_router/go_router.dart';
 const double _designScrollPad = 84;
 
 /// The streak screen — a milestone beat when one is due, then the day count
-/// at hero size inside its milestone ring, the week strip, and the one-line
-/// freeze status.
+/// at hero size inside the ring that fills over its week, the week strip, and
+/// the one-line freeze status.
 ///
 /// Everything shown is read from the derived streak state; the screen invents
 /// no rules (#232, #236). The share button arrives with #237.
@@ -224,20 +223,18 @@ class _StreakBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final mood = context.mood;
     final statusLine = freezeStatusLine(status: status, today: DateTime.now());
-    final milestone = nextMilestone(status.streak);
     return SingleChildScrollView(
       padding: const EdgeInsets.all(AppSpacing.lg) + scrollPadding,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // One spoken phrase for the pair — the caption is part of the
-          // number's meaning, not a second announcement. The ring is
-          // decorative; the badge line below speaks its numbers.
+          // One spoken phrase for the whole hero: the ring is decorative, and
+          // the week it fills over is already spoken by the strip below.
           Semantics(
             label: '${status.streak} day streak',
             excludeSemantics: true,
-            child: MilestoneRing(
-              fraction: milestoneRingFraction(status.streak),
+            child: StreakRing(
+              fraction: weekRingFraction(status.streak),
               trackColor: mood.rule,
               fillColor: mood.accent,
               child: Column(
@@ -250,14 +247,12 @@ class _StreakBody extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            '${status.streak} of $milestone to your $milestone-day badge',
-            textAlign: TextAlign.center,
-            style: AppText.micro(mood: mood),
-          ),
+          // Nothing under the ring: the fill and the strip already say where
+          // the week stands, and a sentence restating them is noise. The strip
+          // takes the gap the caption used to sit in — the design's
+          // `padding-top: 30`, at the nearest stop on the scale.
           if (weekDays.isNotEmpty) ...[
-            const SizedBox(height: AppSpacing.lg),
+            const SizedBox(height: AppSpacing.xl),
             WeekStrip(days: weekDays),
           ],
           const SizedBox(height: AppSpacing.lg),

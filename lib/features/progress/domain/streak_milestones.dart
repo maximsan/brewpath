@@ -1,5 +1,7 @@
-/// The streak's milestone schedule, ring fraction, and celebration rule
-/// (#26, #236).
+/// The streak's milestone schedule and celebration rule (#26, #236).
+///
+/// The schedule decides when a beat fires and nothing else. Sizing the hero
+/// ring is `streakWeekDay`'s (#498).
 library;
 
 /// The early schedule; past its last entry a milestone lands every
@@ -13,24 +15,6 @@ const int lateMilestoneInterval = 30;
 bool isMilestone(int streak) {
   if (earlyMilestones.contains(streak)) return true;
   return streak > earlyMilestones.last && streak % lateMilestoneInterval == 0;
-}
-
-/// The next milestone strictly above [streak].
-int nextMilestone(int streak) {
-  for (final milestone in earlyMilestones) {
-    if (milestone > streak) return milestone;
-  }
-  return (streak ~/ lateMilestoneInterval + 1) * lateMilestoneInterval;
-}
-
-/// The ring's fill toward the next milestone, 0..1.
-///
-/// Always short of full by construction — [nextMilestone] is strictly above
-/// the count, so a freshly-hit milestone shows the ring reaching toward the
-/// next one rather than a closed circle with nothing left to want.
-double milestoneRingFraction(int streak) {
-  if (streak <= 0) return 0;
-  return streak / nextMilestone(streak);
 }
 
 /// Whether the celebration beat is due: today's streak sits exactly on a
