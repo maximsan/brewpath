@@ -281,12 +281,18 @@ class LessonCompletionService {
     required DateTime now,
   }) async {
     final card = await contentRepository.getCardForModule(module.id);
-    // The module and its card together: a module recorded complete without
-    // the card it pays would leave the moment's whole reward behind.
-    await _updateProgress((progress) {
-      final completed = progress.withModuleCompleted(module.id);
-      return card == null ? completed : completed.withCollectible(card.id);
-    }, now: now);
+    // The card is the only thing a closed module records. **That the module
+    // is closed is derived**, from its lessons and its lock — the rule
+    // `ModuleWithProgress.isComplete` states and the design guards the same
+    // way. The snapshot's `completedModules` would be a second answer to a
+    // question already answered, and the two disagree the moment a finished
+    // module grows a lesson.
+    if (card != null) {
+      await _updateProgress(
+        (progress) => progress.withCollectible(card.id),
+        now: now,
+      );
+    }
     await _reportCollected(card, source: {'module_id': module.id});
 
     // Completing this module unlocks the one after it. Modules open in course

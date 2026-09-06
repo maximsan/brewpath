@@ -277,11 +277,6 @@ class ClearedByReset {
   ClearedByReset withCollectible(String cardId) =>
       _copy(ownedCollectibles: {...ownedCollectibles, cardId});
 
-  /// A copy with [moduleId] marked complete. A module that later grows stays
-  /// complete, so this only ever adds.
-  ClearedByReset withModuleCompleted(String moduleId) =>
-      _copy(completedModules: {...completedModules, moduleId});
-
   /// Whether the one-off moment named [key] has been acknowledged.
   bool hasAck(String key) => acks.containsKey(key);
 
@@ -380,7 +375,6 @@ class ClearedByReset {
     Map<String, int>? completedLessons,
     Map<String, MasteryResult>? bestResults,
     Set<String>? ownedCollectibles,
-    Set<String>? completedModules,
     int? treeStage,
     Map<int, Set<String>>? dailyActivity,
     Set<int>? activeDays,
@@ -395,7 +389,7 @@ class ClearedByReset {
     activeDays: activeDays ?? this.activeDays,
     acks: acks ?? this.acks,
     ownedCollectibles: ownedCollectibles ?? this.ownedCollectibles,
-    completedModules: completedModules ?? this.completedModules,
+    completedModules: completedModules,
     treeStage: treeStage ?? this.treeStage,
     challengesCompleted: challengesCompleted ?? this.challengesCompleted,
     learnedTerms: learnedTerms,

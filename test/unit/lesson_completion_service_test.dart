@@ -318,9 +318,9 @@ void main() {
       expect(moduleReward, isNotNull);
       expect(last.moduleCard?.id, moduleReward!.id);
       expect(await holdsCard(moduleReward.id), isTrue);
-      // The module itself is recorded too, so a module that later grows still
-      // reads as finished.
-      expect((await recorded()).completedModules, contains('m1'));
+      // The card is all that is recorded. Whether the module is finished is
+      // derived from its lessons, so nothing writes `completedModules`.
+      expect((await recorded()).completedModules, isEmpty);
     });
 
     test('a module part-finished hands over no Module Reward card', () async {

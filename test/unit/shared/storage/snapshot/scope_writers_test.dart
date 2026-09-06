@@ -380,20 +380,21 @@ void main() {
     });
   });
 
-  group('withModuleCompleted', () {
-    test('adds the module and changes nothing else', () {
-      final after = populated.withModuleCompleted('m9');
-
-      expect(after.completedModules, contains('m9'));
-      expect(
-        after.toJson()..remove('completedModules'),
-        populated.toJson()..remove('completedModules'),
-      );
-    });
-
-    test('completing one already complete is a no-op', () {
-      final after = populated.withModuleCompleted('m9');
-      expect(after.withModuleCompleted('m9'), after);
-    });
+  // `completedModules` has no writer on purpose: whether a module is finished
+  // is derived from its lessons and its lock, and a stored second answer
+  // disagrees with the derived one the moment a finished module grows. The
+  // field stays in the scope — the merge and both wipes still carry it — and
+  // `wipe_snapshot_test` covers that.
+  test('no writer here can lower a field it does not take', () {
+    // The guard behind the writers above: a field with no `_copy` parameter
+    // cannot be replaced by any of them, only read through.
+    expect(
+      populated.withCollectible('c9').completedModules,
+      populated.completedModules,
+    );
+    expect(
+      populated.withAck('x', 1).ownedCollectibles,
+      populated.ownedCollectibles,
+    );
   });
 }
