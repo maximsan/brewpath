@@ -28,12 +28,16 @@ ModuleModel testModule({
   String title = 'Beans',
   String iconName = 'beans',
   List<String> lessonIds = const ['m1l1', 'm1l2'],
+  String? art,
+  String? artPos,
 }) => ModuleModel(
   id: id,
   n: n,
   label: 'MODULE $n · ${title.toUpperCase()}',
   iconName: iconName,
   title: title,
+  art: art,
+  artPos: artPos,
   lessons: [
     for (final lessonId in lessonIds)
       ModuleLesson(id: lessonId, title: lessonId, points: 10, time: 3),

@@ -205,6 +205,15 @@ class MoodColors extends ThemeExtension<MoodColors> {
   /// How much accent the wash carries. The design's `12%`.
   static const double _accentWashAlpha = 0.12;
 
+  /// [inkMute] pulled part of the way toward [ink] — the design's
+  /// `color-mix(in oklab, var(--ink-mute) N%, var(--ink))`, with [muteShare]
+  /// as `N`: a meta line or a row's eyebrow that has to read as words rather
+  /// than fade as a label. Derived, so it follows the mood mid-[lerp].
+  ///
+  /// A straight lerp rather than an oklab mix. The two agree to within a shade
+  /// at the strengths the design uses (62% and 76%), and the app has no oklab.
+  Color inkMix(double muteShare) => Color.lerp(ink, inkMute, muteShare)!;
+
   /// The page background pulled over the page, and the blur that goes with it.
   /// Derived from [bg] rather than stored, so it follows the mood — and keeps
   /// following it mid-[lerp].

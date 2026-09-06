@@ -12,6 +12,10 @@ const double _topInset = 64;
 /// alone.
 const double _bottomInset = 40 + 16;
 
+/// The room the page keeps clear above a [IntroPage.foot]: the cue's own line
+/// and the design's `paddingTop: 32` over it.
+const double _footReserve = AppSpacing.xl + AppSpacing.md;
+
 /// One intro beat: a column that fills the viewport, and scrolls once it
 /// cannot.
 ///
@@ -22,42 +26,69 @@ const double _bottomInset = 40 + 16;
 /// exactly what a [Spacer] cannot expand into.
 ///
 /// So the viewport's height becomes a **minimum**, not a maximum. Short
-/// content is stretched to it and the [Spacer] pins the foot; tall content —
-/// a 2x text scale, a landscape phone — grows past it and scrolls, which is
-/// the case that used to clip the CTA off the bottom of the first screen a
-/// learner ever sees.
+/// content is stretched to it and a trailing flexible pins the foot; tall
+/// content — a 2x text scale, a landscape phone — grows past it and scrolls,
+/// which is the case that used to clip the CTA off the bottom of the first
+/// screen a learner ever sees.
+///
+/// **One flexible child per column.** [IntrinsicHeight] sizes the column by
+/// its tallest flexible child times the number of flexible children, so a
+/// shrinking film *and* a [Spacer] made the column twice the film tall and
+/// pushed Welcome's tap cue below the fold. A screen whose last element must
+/// stay on screen hands it to [foot] instead, which is pinned over the page
+/// and not part of the column at all.
 class IntroPage extends StatelessWidget {
   /// Creates an [IntroPage].
-  const IntroPage({required this.children, super.key});
+  const IntroPage({required this.children, this.foot, super.key});
 
   /// The page's content, laid out from the top and reaching the foot.
   final List<Widget> children;
 
+  /// What sits at the foot of the screen regardless of the content's height —
+  /// Welcome's tap cue. The column keeps [_footReserve] clear above it.
+  final Widget? foot;
+
   @override
   Widget build(BuildContext context) {
+    final foot = this.foot;
+    final bottomInset = foot == null
+        ? _bottomInset
+        : _bottomInset + _footReserve;
+
     return Scaffold(
       backgroundColor: context.mood.bg,
       body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, viewport) => SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: viewport.maxHeight),
-              child: IntrinsicHeight(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.lg,
-                    _topInset,
-                    AppSpacing.lg,
-                    _bottomInset,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: children,
+        child: Stack(
+          children: [
+            LayoutBuilder(
+              builder: (context, viewport) => SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: viewport.maxHeight),
+                  child: IntrinsicHeight(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(
+                        AppSpacing.lg,
+                        _topInset,
+                        AppSpacing.lg,
+                        bottomInset,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: children,
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
+            if (foot != null)
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: _bottomInset,
+                child: Center(child: foot),
+              ),
+          ],
         ),
       ),
     );

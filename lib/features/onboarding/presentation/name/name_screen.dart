@@ -123,10 +123,11 @@ class _NameScreenState extends ConsumerState<NameScreen> {
         ),
         const SizedBox(height: AppSpacing.lg),
         AppTextField(
-          // The design's field carries `autoFocus`, and this one does not: on
-          // a phone that opens the keyboard over the screen before the learner
-          // has read the question it asks. A web `<input>` raises nothing, so
-          // the design has no view on the cost. One tap buys the whole screen.
+          // The design's field carries `autoFocus`: the screen asks one
+          // question, and the cursor is already where the answer goes. The
+          // keyboard it raises is what hides the mascot above, so the field
+          // and both actions still share the screen.
+          autofocus: true,
           enabled: !_controller.submitting,
           maxLength: LearnerName.maxLength,
           placeholder: LearnerName.placeholder,

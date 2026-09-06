@@ -52,7 +52,9 @@ void main() {
   testWidgets('the day is here and the course is not', (tester) async {
     await _pumpLearn(tester, today: _todayLesson);
 
-    expect(find.text("Today's lesson"), findsOneWidget);
+    // The card's eyebrow names the module the day's lesson is in.
+    expect(find.text(_todayLesson.moduleLabel), findsOneWidget);
+    expect(find.text(AppLabels.beginLesson), findsOneWidget);
     // The module list moved to Path (#394). A module glyph is what a module
     // row is drawn with, so its absence is the list's absence — and none of
     // the module titles is reachable from this tab either.
@@ -78,20 +80,18 @@ void main() {
     expect(find.text(AppLabels.continueLearning.toUpperCase()), findsNothing);
   });
 
-  testWidgets('practice is one section with two groups under it', (
+  testWidgets('practice is one section with its groups under it', (
     tester,
   ) async {
     await _pumpLearn(tester, today: _todayLesson);
 
     expect(find.text(AppLabels.practiceSection.toUpperCase()), findsOneWidget);
-    expect(
-      find.text(AppLabels.practiceLessonsGroup.toUpperCase()),
-      findsOneWidget,
-    );
-    expect(
-      find.text(AppLabels.practiceGamesGroup.toUpperCase()),
-      findsOneWidget,
-    );
+    // A group is named in sentence case, not as a smallcaps header: it is a
+    // collapsible row, and its count sits beside the name.
+    expect(find.text(AppLabels.practiceGamesGroup), findsOneWidget);
+    expect(find.text(AppLabels.practiceGamesGroup.toUpperCase()), findsNothing);
+    // Nothing finished, so the design lists no Lessons group at all.
+    expect(find.text(AppLabels.practiceLessonsGroup), findsNothing);
     // The two headers the design does not have.
     expect(find.text('PRACTICE A FINISHED LESSON'), findsNothing);
     expect(find.text('MINI-GAMES'), findsNothing);

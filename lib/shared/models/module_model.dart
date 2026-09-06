@@ -53,6 +53,16 @@ abstract class ModuleModel with _$ModuleModel {
     required String title,
     required List<ModuleLesson> lessons,
     required ContentReward reward,
+
+    /// The module's picture, by the path the bank names — the same path the
+    /// design loads, so the file is bundled under that name verbatim. Null for
+    /// a module the design has not illustrated.
+    String? art,
+
+    /// Where the picture is anchored when a frame crops it: CSS
+    /// `object-position`, as in `50% 42%`. Read by
+    /// `alignmentFromObjectPosition`.
+    String? artPos,
   }) = _ModuleModel;
 
   const ModuleModel._();

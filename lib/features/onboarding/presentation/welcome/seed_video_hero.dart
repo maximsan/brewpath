@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:brew_path/features/onboarding/presentation/welcome/sound_toggle.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -27,14 +28,27 @@ const double _controlInset = 12;
 /// [#379](https://github.com/maximsan/brewpath/issues/379)'s to port for all
 /// of them at once.
 ///
-/// **No mascot.** The design's own comment on Welcome reads *"No Roasty
-/// here."* — his first appearance is the whole point of the screen after. So
-/// the fallback, when the platform channel is unavailable (every `flutter
-/// test` run, and any device that cannot decode the asset), is the bare frame
-/// rather than a stand-in drawing.
+/// **The film's own first frame stands in for it** while the player is
+/// starting, and for good when it cannot start. The frame is the film's, not
+/// a stand-in drawing: the design's own comment on Welcome reads *"No Roasty
+/// here."* — his first appearance is the whole point of the screen after. The
+/// still is `Flowerpot_seed_to_poster.jpg`, frame 0 of the film
+/// (`ffmpeg -ss 0 -frames:v 1`), and it is what reduced motion would have
+/// held anyway.
+///
+/// The player *does* fail: a simulator whose CoreAudio cannot open an output
+/// device refuses the item (`AVFoundationErrorDomain -11800`, status
+/// `-12746`) although the film is plain H.264 with an AAC track, and the frame
+/// sat empty with nothing to say why. The reason now goes to the debug console.
 class SeedVideoHero extends StatefulWidget {
   /// Creates a [SeedVideoHero].
   const SeedVideoHero({super.key});
+
+  /// The film, as the bundle names it.
+  static const String film = 'assets/video/Flowerpot_seed_to.mp4';
+
+  /// Its first frame, for the moments the film itself cannot be shown.
+  static const String poster = 'assets/video/Flowerpot_seed_to_poster.jpg';
 
   @override
   State<SeedVideoHero> createState() => _SeedVideoHeroState();
@@ -53,9 +67,7 @@ class _SeedVideoHeroState extends State<SeedVideoHero> {
     if (_started) return;
     _started = true;
     _reduceMotion = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
-    _controller = VideoPlayerController.asset(
-      'assets/video/Flowerpot_seed_to.mp4',
-    );
+    _controller = VideoPlayerController.asset(SeedVideoHero.film);
     unawaited(_controller.setVolume(0));
     // A film that loops forever is exactly what reduced motion switches off.
     // The frame still carries the picture — the controller is initialised and
@@ -69,7 +81,8 @@ class _SeedVideoHeroState extends State<SeedVideoHero> {
           setState(() {});
           if (!_reduceMotion) unawaited(_controller.play());
         },
-        onError: (_) {
+        onError: (Object error) {
+          if (kDebugMode) debugPrint('Welcome film did not start: $error');
           if (mounted) setState(() => _initFailed = true);
         },
       ),
@@ -95,7 +108,12 @@ class _SeedVideoHeroState extends State<SeedVideoHero> {
   @override
   Widget build(BuildContext context) {
     if (_initFailed || !_controller.value.isInitialized) {
-      return const SizedBox.expand();
+      return Image.asset(
+        SeedVideoHero.poster,
+        fit: BoxFit.cover,
+        // A bundle without the still leaves the bare frame, as before.
+        errorBuilder: (context, error, stackTrace) => const SizedBox.expand(),
+      );
     }
     return Stack(
       fit: StackFit.expand,

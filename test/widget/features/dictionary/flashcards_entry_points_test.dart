@@ -1,5 +1,6 @@
 import 'package:brew_path/app/app.dart';
 import 'package:brew_path/app/app_router.dart';
+import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_quick_chips.dart';
@@ -16,6 +17,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/find_mark.dart';
+import '../../../support/practice_shelf.dart';
 import '../../../support/widget_harness.dart';
 
 /// A term the free lessons mention, so a free learner reaches it from the
@@ -55,10 +57,12 @@ void _useTallViewport(WidgetTester tester) {
   addTearDown(tester.view.resetDevicePixelRatio);
 }
 
-/// Boots the app on the Learn tab.
+/// Boots the app on the Learn tab, with the Games group open so its rows are
+/// on screen.
 Future<void> _openApp(WidgetTester tester) async {
   _useTallViewport(tester);
   await pumpWithProviders(tester, const BrewPathApp());
+  await openPracticeGroup(tester, AppLabels.practiceGamesGroup);
 }
 
 /// Opens the dictionary.

@@ -3,20 +3,25 @@ import 'package:brew_path/features/learn/presentation/keep_sharp_card_body.dart'
 import 'package:brew_path/features/learn/presentation/today_lesson_body.dart';
 import 'package:brew_path/features/learn/presentation/today_locked_body.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
+import 'package:brew_path/shared/models/module_model.dart';
+import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// Hero card for the day's primary action, in one of its three states: the
+/// The card for the day's primary action, in one of its three states: the
 /// next lesson, that same lesson behind the purchase, or — when every
 /// available lesson is done — the Keep Sharp recommendation for the day.
 ///
-/// The card itself is the same accent hero in all three. Only what is written
-/// on it changes, so the wall reads as a state of the day rather than as a
-/// different surface the learner has been moved to.
+/// **Two skins, not three.** The design draws the lesson card on the surface
+/// with a rule around it (`.card`), in both its open and its locked state, so
+/// the wall reads as the same card saying something else. Keep Sharp alone
+/// takes the accent (`background: var(--accent)`): it is a state of the day,
+/// not a lesson, and the colour is what says so at a glance.
 class TodayCardWidget extends StatelessWidget {
   /// Creates a [TodayCardWidget].
   const TodayCardWidget({
     required this.today,
+    this.module,
     this.isLocked = false,
     this.lessonsAhead,
     this.keepSharp,
@@ -26,6 +31,11 @@ class TodayCardWidget extends StatelessWidget {
 
   /// The lesson due today, or `null` when the user is caught up.
   final LessonModel? today;
+
+  /// The module [today] belongs to — its picture, and the lesson's place in
+  /// it. Null while the modules are still being read, which draws the card
+  /// with neither rather than holding it back.
+  final ModuleModel? module;
 
   /// Whether the free tier does not carry [today].
   ///
@@ -45,30 +55,47 @@ class TodayCardWidget extends StatelessWidget {
   /// Whether today's recommendation already met its own completion rule.
   final bool keepSharpDone;
 
-  /// The hero card's corner. Public because each body clips its own ink
-  /// splash to it, and a second copy of the figure is a second thing to keep
-  /// in step.
-  static const double heroRadius = 12;
-
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
     final lesson = today;
 
-    return Card(
-      margin: EdgeInsets.zero,
-      color: mood.accent,
-      child: switch (lesson) {
-        null => KeepSharpCardBody(
+    if (lesson == null) {
+      return _shell(
+        fill: mood.accent,
+        edge: mood.accent,
+        child: KeepSharpCardBody(
           recommendation: keepSharp,
           acknowledged: keepSharpDone,
         ),
-        _ when isLocked => TodayLockedBody(
-          lesson: lesson,
-          lessonsAhead: lessonsAhead,
-        ),
-        _ => TodayLessonBody(lesson: lesson),
-      },
+      );
+    }
+    return _shell(
+      fill: mood.surface,
+      edge: mood.rule,
+      child: isLocked
+          ? TodayLockedBody(
+              lesson: lesson,
+              module: module,
+              lessonsAhead: lessonsAhead,
+            )
+          : TodayLessonBody(lesson: lesson, module: module),
     );
   }
+
+  /// The design's `.card`: a fill, a one-pixel edge, and the chrome radius.
+  Widget _shell({
+    required Color fill,
+    required Color edge,
+    required Widget child,
+  }) => Card(
+    margin: EdgeInsets.zero,
+    color: fill,
+    clipBehavior: Clip.antiAlias,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(AppRadii.chrome),
+      side: BorderSide(color: edge),
+    ),
+    child: child,
+  );
 }

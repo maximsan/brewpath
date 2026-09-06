@@ -1,6 +1,7 @@
 import 'package:brew_path/app/app.dart';
 import 'package:brew_path/app/app_router.dart';
 import 'package:brew_path/core/constants/app_labels.dart';
+import 'package:brew_path/features/learn/presentation/practice/replay_row.dart';
 import 'package:brew_path/features/learn/presentation/practice_any_lesson_widget.dart';
 import 'package:brew_path/features/learn/presentation/today_lesson_body.dart';
 import 'package:brew_path/features/learn/presentation/today_locked_body.dart';
@@ -17,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/practice_shelf.dart';
 import '../../../support/progress_seed.dart';
 import '../../../support/widget_harness.dart';
 
@@ -90,7 +92,10 @@ void main() {
       expect(find.text(AppLabels.continueLearning.toUpperCase()), findsWidgets);
       expect(find.byType(TodayLockedBody), findsOneWidget);
       expect(find.text(firstPaidTitle), findsWidgets);
-      expect(find.text(LockedRowCopy.continuesInFoundations), findsOneWidget);
+      expect(
+        find.text(LockedRowCopy.continuesInFoundations.toUpperCase()),
+        findsOneWidget,
+      );
       expect(
         find.text(LockedRowCopy.lessonsAhead(ahead).toUpperCase()),
         findsOneWidget,
@@ -124,8 +129,11 @@ void main() {
 
       expect(find.byType(TodayLessonBody), findsOneWidget);
       expect(find.byType(TodayLockedBody), findsNothing);
-      expect(find.text(LockedRowCopy.continuesInFoundations), findsNothing);
-      expect(find.text('Start'), findsOneWidget);
+      expect(
+        find.text(LockedRowCopy.continuesInFoundations.toUpperCase()),
+        findsNothing,
+      );
+      expect(find.text(AppLabels.beginLesson), findsOneWidget);
     });
   });
 
@@ -138,10 +146,11 @@ void main() {
       await finishTheFreeLessons();
 
       await pumpWithProviders(tester, const BrewPathApp());
+      await openPracticeGroup(tester, AppLabels.practiceLessonsGroup);
 
       final rows = find.descendant(
         of: find.byType(PracticeAnyLessonWidget),
-        matching: find.byType(ListTile),
+        matching: find.byType(ReplayRow),
       );
       expect(rows, findsNWidgets(freeLessonIds.length));
 
