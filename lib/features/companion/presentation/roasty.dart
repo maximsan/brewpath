@@ -12,7 +12,8 @@ import 'package:flutter/material.dart';
 
 /// Animated Roasty mascot. Reproduces the design's geometry + per-state
 /// animations using Flutter's Canvas + a single [AnimationController]. Public
-/// API: `Roasty(state: …, size: …, replayKey: …, plate: …)`. The `replayKey`
+/// API: `Roasty(state: …, size: …, replayKey: …, plate: …, pointsAmount: …)`.
+/// The `replayKey`
 /// mimics the design's `key={state + ':' + replayKey}` so one-shot animations
 /// restart on demand.
 class Roasty extends StatefulWidget {
@@ -24,8 +25,14 @@ class Roasty extends StatefulWidget {
     this.sproutScale,
     this.animate = true,
     this.plate = false,
+    this.pointsAmount,
     super.key,
-  });
+  }) : assert(
+         (state == RoastyState.points) == (pointsAmount != null),
+         'the points pose is the wink and the amount together: the mascot '
+         'names no payout of its own (#16), and a burst with nothing in it is '
+         'half the pose',
+       );
 
   /// The mascot's current visual state.
   final RoastyState state;
@@ -51,6 +58,18 @@ class Roasty extends StatefulWidget {
   /// ([RoastyColors.plate]) so it never follows the mood into the bean's own
   /// browns.
   final bool plate;
+
+  /// What the points burst says, for [RoastyState.points] and no other state.
+  ///
+  /// Passed in rather than known here: a lesson pays what it authors and a
+  /// challenge pays its own rule (§5.1, #16), so a number the mascot held
+  /// would be right about neither. Required with the pose and rejected without
+  /// it — see the assert on the constructor.
+  ///
+  /// **A caller reaching the pose through `roastyStateFor` has no channel for
+  /// this**, so wiring the pose to a reaction means giving the amount a way
+  /// through as well, not just adding a mapping row.
+  final int? pointsAmount;
 
   @override
   State<Roasty> createState() => _RoastyState();
@@ -141,6 +160,7 @@ class _RoastyState extends State<Roasty> with SingleTickerProviderStateMixin {
               progress: _controller.value,
               sproutScale: widget.sproutScale,
               plate: widget.plate,
+              pointsAmount: widget.pointsAmount,
               mood: context.mood,
             ),
           ),
@@ -162,11 +182,15 @@ class _RoastyPainter extends CustomPainter {
     required this.plate,
     required this.mood,
     this.sproutScale,
+    this.pointsAmount,
   });
 
   final RoastyState state;
   final double progress;
   final bool plate;
+
+  /// What the points burst says; null for every other state.
+  final int? pointsAmount;
 
   /// The ambient mood, for the marks the design gives to the theme rather
   /// than to the mascot's palette: the celebration warn, the wrong badge's
@@ -197,7 +221,13 @@ class _RoastyPainter extends CustomPainter {
     paintRoastySprout(canvas, state, progress, sproutScale);
     paintRoastyBody(canvas, state, progress);
     _paintFace(canvas);
-    paintRoastyParticlesFront(canvas, state, progress, mood);
+    paintRoastyParticlesFront(
+      canvas,
+      state,
+      progress,
+      mood,
+      pointsAmount: pointsAmount,
+    );
 
     canvas.restore();
   }
@@ -220,5 +250,6 @@ class _RoastyPainter extends CustomPainter {
       old.progress != progress ||
       old.sproutScale != sproutScale ||
       old.plate != plate ||
+      old.pointsAmount != pointsAmount ||
       old.mood != mood;
 }

@@ -31,6 +31,10 @@ void main() {
         const Duration(milliseconds: 900),
       );
       expect(
+        roastyDuration(RoastyState.points),
+        const Duration(milliseconds: 1300),
+      );
+      expect(
         roastyDuration(RoastyState.card),
         const Duration(milliseconds: 1600),
       );
@@ -55,6 +59,7 @@ void main() {
         RoastyState.wrong,
         RoastyState.lesson,
         RoastyState.module,
+        RoastyState.points,
         RoastyState.awake,
       ]) {
         expect(roastyLoops(state), isFalse, reason: '$state should not loop');
@@ -67,6 +72,7 @@ void main() {
       for (final state in const [
         RoastyState.card,
         RoastyState.module,
+        RoastyState.points,
         RoastyState.sleep,
         RoastyState.awake,
       ]) {
@@ -147,6 +153,38 @@ void main() {
 
     test('default states have no rotation', () {
       expect(roastyBodyRotation(RoastyState.card, 0.5), closeTo(0, 1e-9));
+    });
+  });
+
+  group('roastyPointsBurstRise', () {
+    test('rises the whole 50 units across the beat, and never overshoots', () {
+      expect(roastyPointsBurstRise(0).dy, closeTo(0, 1e-9));
+      expect(roastyPointsBurstRise(1).dy, closeTo(-50, 1e-9));
+      // Eased out, so more than half the lift is spent in the first half.
+      expect(roastyPointsBurstRise(0.5).dy, lessThan(-25));
+    });
+
+    test("fades in by the design's fifth, then out to nothing", () {
+      expect(roastyPointsBurstRise(0).opacity, closeTo(0, 1e-9));
+      expect(
+        roastyPointsBurstRise(pointsBurstFadeIn).opacity,
+        closeTo(1, 1e-9),
+      );
+      expect(roastyPointsBurstRise(1).opacity, closeTo(0, 1e-9));
+    });
+
+    test('holds the burst readable when motion is off', () {
+      // At t=0 the burst has not faded in, so a held frame there would be a
+      // wink with nothing to wink about.
+      final held = roastyPointsBurstRise(roastyStaticFrame(RoastyState.points));
+
+      expect(held.opacity, closeTo(1, 1e-9));
+      expect(roastyStaticFrame(RoastyState.idle), 0);
+    });
+
+    test('clamps outside the beat rather than running past it', () {
+      expect(roastyPointsBurstRise(1.4).dy, closeTo(-50, 1e-9));
+      expect(roastyPointsBurstRise(-0.2).opacity, closeTo(0, 1e-9));
     });
   });
 }
