@@ -24,7 +24,7 @@ part 'vocab_providers.g.dart';
 Future<Map<String, TermMiss>> vocabAnswers(Ref ref) async =>
     (await ref.watch(snapshotRepositoryProvider).read())
         .clearedByReset
-        .missedTerms;
+        .termAnswers;
 
 /// Both pools a drill picks from, resolved together.
 ///
@@ -39,7 +39,7 @@ class VocabPools {
     required this.accessible,
     required this.saved,
     required this.savedEligible,
-    this.missed = const [],
+    required this.missed,
     this.categoryLabels = const {},
     this.hasCourse = false,
   });
@@ -52,10 +52,9 @@ class VocabPools {
 
   /// The accessible terms they owe a review — also a subset of [accessible].
   ///
-  /// Defaulted where [savedEligible] is required, because the two answer
-  /// different questions: no copy anywhere promises that buying the course
-  /// puts a missed term back in reach, so an empty list here is an ordinary
-  /// state rather than one that cannot happen.
+  /// Required, like [saved]: an empty deck and a deck nobody remembered to
+  /// pass read identically at every call site, and the first is a state the
+  /// setup screen must draw honestly.
   final List<DictionaryTerm> missed;
 
   /// How many of their bookmarks are words a drill could ask about at all,

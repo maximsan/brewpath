@@ -502,7 +502,7 @@ void main() {
 
       final misses = (await container.read(snapshotRepositoryProvider).read())
           .clearedByReset
-          .missedTerms;
+          .termAnswers;
 
       expect(misses[asked.id]!.isMissed, isTrue);
     });
@@ -522,7 +522,7 @@ void main() {
 
       final misses = (await container.read(snapshotRepositoryProvider).read())
           .clearedByReset
-          .missedTerms;
+          .termAnswers;
 
       expect(misses[asked.id]!.isMissed, isFalse);
     });
@@ -536,17 +536,41 @@ void main() {
       await playThrough(tester, rounds: vocabLengths.first, correctly: false);
 
       expect(
-        find.textContaining(VocabCopy.missesAdded(vocabLengths.first).trim()),
+        find.textContaining(
+          VocabCopy.reviewDeckLine(
+            vocabLengths.first,
+            fromReviewDeck: false,
+          ).trim(),
+        ),
         findsOneWidget,
       );
 
-      // A second, clean drill must not report the first one's misses — the
-      // prototype's count accumulates across replays.
+      // A second, clean drill must not report the first one's misses: the
+      // count is per drill, not per visit to the screen.
       await tester.tap(find.text(VocabCopy.playAgain));
       await tester.pumpAndSettle();
       await playThrough(tester, rounds: vocabLengths.first);
 
       expect(find.textContaining('review deck'), findsNothing);
+    });
+
+    testWidgets('a term missed on the review deck is kept, not added', (
+      tester,
+    ) async {
+      // The line the design writes is false on the one deck it is read on
+      // most: those terms were already in the deck.
+      await _pump(
+        tester,
+        pools: _pools(missed: _accessible.length),
+      );
+      await tester.tap(find.textContaining(VocabCopy.missesDeck));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(VocabCopy.start));
+      await tester.pumpAndSettle();
+      await playThrough(tester, rounds: vocabLengths.first, correctly: false);
+
+      expect(find.textContaining('kept in your review deck'), findsOneWidget);
+      expect(find.textContaining('added to your review deck'), findsNothing);
     });
 
     testWidgets('an abandoned drill still keeps the answers given', (
@@ -564,7 +588,7 @@ void main() {
       final progress = (await container.read(snapshotRepositoryProvider).read())
           .clearedByReset;
 
-      expect(progress.missedTerms, hasLength(1));
+      expect(progress.termAnswers, hasLength(1));
       expect(progress.dailyActivity, isEmpty);
     });
   });

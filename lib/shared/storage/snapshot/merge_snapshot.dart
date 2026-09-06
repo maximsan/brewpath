@@ -82,7 +82,7 @@ ClearedByReset _joinProgress(ProgressSnapshot local, ProgressSnapshot remote) {
     // Per-stamp max, so the two devices land on whichever of the four answers
     // was genuinely latest — the shape a set of missed ids could not have,
     // because a clear on one device would come back from the other.
-    missedTerms: _mergeMap(a.missedTerms, b.missedTerms, TermMiss.later),
+    termAnswers: _mergeMap(a.termAnswers, b.termAnswers, TermMiss.later),
     challengeReactions: _mergeMap(
       a.challengeReactions,
       b.challengeReactions,

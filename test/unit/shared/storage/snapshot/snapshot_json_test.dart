@@ -63,11 +63,11 @@ void main() {
     expect(tombstone.clearedByDeleteOnly, ClearedByDeleteOnly.empty);
     expect(tombstone.resetGeneration, 4);
   });
-  group("missedTerms — the Vocab game's review deck", () {
+  group("termAnswers — the Vocab game's review deck", () {
     test('both stamps survive the round trip', () {
       const snapshot = ProgressSnapshot(
         clearedByReset: ClearedByReset(
-          missedTerms: {
+          termAnswers: {
             'crema': TermMiss(lastMissedAt: 2000, lastCorrectAt: 1000),
           },
         ),
@@ -77,7 +77,7 @@ void main() {
         jsonDecode(jsonEncode(snapshot.toJson())) as Map<String, dynamic>,
       );
 
-      expect(decoded.clearedByReset.missedTerms, {
+      expect(decoded.clearedByReset.termAnswers, {
         'crema': const TermMiss(lastMissedAt: 2000, lastCorrectAt: 1000),
       });
     });
@@ -92,7 +92,7 @@ void main() {
 
       final decoded = ProgressSnapshot.fromJson(older);
 
-      expect(decoded.clearedByReset.missedTerms, isEmpty);
+      expect(decoded.clearedByReset.termAnswers, isEmpty);
       expect(decoded.clearedByReset.learnedTerms, {'crema'});
     });
 
@@ -100,7 +100,7 @@ void main() {
       final mangled = {
         'version': ProgressSnapshot.currentVersion,
         'clearedByReset': {
-          'missedTerms': {
+          'termAnswers': {
             'crema': 'not an object',
             'tamp': {'lastMissedAt': 2000},
           },
@@ -109,7 +109,7 @@ void main() {
 
       final decoded = ProgressSnapshot.fromJson(mangled);
 
-      expect(decoded.clearedByReset.missedTerms, {
+      expect(decoded.clearedByReset.termAnswers, {
         'tamp': const TermMiss(lastMissedAt: 2000),
       });
     });

@@ -36,7 +36,7 @@ const _loaded = ProgressSnapshot(
     treeStage: 4,
     challengesCompleted: {'bc-m1'},
     learnedTerms: {'crema'},
-    missedTerms: {'crema': TermMiss(lastMissedAt: 6000)},
+    termAnswers: {'crema': TermMiss(lastMissedAt: 6000)},
     challengeReactions: {
       'bc-m1': ChallengeReaction(reaction: 'Sharper', at: 3),
     },
@@ -117,7 +117,7 @@ void main() {
       // Named rather than left to the whole-scope assertion above: the deck
       // is in the reset scope precisely so a wipe empties it by construction,
       // and that promise deserves a test that fails by name.
-      expect(_loaded.clearedByReset.missedTerms, isNotEmpty);
+      expect(_loaded.clearedByReset.termAnswers, isNotEmpty);
 
       final after = resetTombstone(
         _loaded,
@@ -125,7 +125,7 @@ void main() {
         deviceId: _thisDevice,
       );
 
-      expect(after.clearedByReset.missedTerms, isEmpty);
+      expect(after.clearedByReset.termAnswers, isEmpty);
     });
 
     test('increments the reset generation', () {

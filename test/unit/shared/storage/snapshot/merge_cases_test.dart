@@ -395,19 +395,19 @@ void main() {
     });
   });
 
-  group('missedTerms — the Misses deck, in either order', () {
+  group('termAnswers — the Misses deck, in either order', () {
     // The acceptance case: two devices that miss and clear the same term, in
     // either order, land on whichever event was actually later.
     ProgressSnapshot missedOn(String device, int at) => _snap(
       deviceId: device,
       progress: ClearedByReset(
-        missedTerms: {'crema': TermMiss(lastMissedAt: at)},
+        termAnswers: {'crema': TermMiss(lastMissedAt: at)},
       ),
     );
     ProgressSnapshot clearedOn(String device, int at) => _snap(
       deviceId: device,
       progress: ClearedByReset(
-        missedTerms: {'crema': TermMiss(lastCorrectAt: at)},
+        termAnswers: {'crema': TermMiss(lastCorrectAt: at)},
       ),
     );
 
@@ -421,7 +421,7 @@ void main() {
           mergeSnapshot(phone, tablet),
           mergeSnapshot(tablet, phone),
         ]) {
-          expect(merged.clearedByReset.missedTerms['crema']!.isMissed, isFalse);
+          expect(merged.clearedByReset.termAnswers['crema']!.isMissed, isFalse);
         }
       },
     );
@@ -434,7 +434,7 @@ void main() {
         mergeSnapshot(phone, tablet),
         mergeSnapshot(tablet, phone),
       ]) {
-        expect(merged.clearedByReset.missedTerms['crema']!.isMissed, isTrue);
+        expect(merged.clearedByReset.termAnswers['crema']!.isMissed, isTrue);
       }
     });
 
@@ -447,7 +447,7 @@ void main() {
         final phoneCleared = _snap(
           deviceId: 'phone',
           progress: const ClearedByReset(
-            missedTerms: {
+            termAnswers: {
               'crema': TermMiss(lastMissedAt: 1000, lastCorrectAt: 2000),
             },
           ),
@@ -455,7 +455,7 @@ void main() {
 
         final merged = mergeSnapshot(tabletStillHoldsTheMiss, phoneCleared);
 
-        expect(merged.clearedByReset.missedTerms['crema']!.isMissed, isFalse);
+        expect(merged.clearedByReset.termAnswers['crema']!.isMissed, isFalse);
       },
     );
 
@@ -463,11 +463,11 @@ void main() {
       final phone = missedOn('phone', 1000);
       final tablet = clearedOn('tablet', 1000).copyWith(
         clearedByReset: const ClearedByReset(
-          missedTerms: {'tamp': TermMiss(lastMissedAt: 1000)},
+          termAnswers: {'tamp': TermMiss(lastMissedAt: 1000)},
         ),
       );
 
-      final merged = mergeSnapshot(phone, tablet).clearedByReset.missedTerms;
+      final merged = mergeSnapshot(phone, tablet).clearedByReset.termAnswers;
 
       expect(merged.keys, containsAll(['crema', 'tamp']));
     });

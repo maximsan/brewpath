@@ -300,7 +300,10 @@ class _VocabGameScreenState extends ConsumerState<VocabGameScreen> {
         total: total,
         encouragement:
             VocabCopy.encouragement(score: _score, total: total) +
-            VocabCopy.missesAdded(_missed),
+            VocabCopy.reviewDeckLine(
+              _missed,
+              fromReviewDeck: _deck == VocabDeck.misses,
+            ),
         celebratory: isCelebratoryScore(score: _score, total: total),
       ),
       primary: (

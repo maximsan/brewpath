@@ -70,7 +70,7 @@ final class VocabAnswersProvider
   }
 }
 
-String _$vocabAnswersHash() => r'1ca6ef910f448fdd89dc8fa9bd65367f1c0844ab';
+String _$vocabAnswersHash() => r'66c326d3dc5928c2dbe0530c7b03000618ef3f47';
 
 /// The learner's drill pools, tier-scoped.
 ///

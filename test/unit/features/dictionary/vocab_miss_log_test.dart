@@ -26,7 +26,7 @@ void main() {
   tearDown(() async => db.close());
 
   Future<Map<String, TermMiss>> misses() async =>
-      (await repo.read()).clearedByReset.missedTerms;
+      (await repo.read()).clearedByReset.termAnswers;
 
   test('a wrong answer puts the term in the deck', () async {
     await log.record(termId: 'crema', correct: false, now: answeredAt);

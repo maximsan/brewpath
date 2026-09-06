@@ -70,7 +70,7 @@ class SnapshotGen {
     treeStage: _rng.nextInt(_maxTreeStage + 1),
     challengesCompleted: _subset(_challenges),
     learnedTerms: _subset(_terms),
-    missedTerms: _misses(),
+    termAnswers: _misses(),
     challengeReactions: _reactions(),
     dailyActivity: _dailyActivity(),
     challengesSaved: _stampedSet(_challenges),

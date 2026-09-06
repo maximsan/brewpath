@@ -304,7 +304,7 @@ before it starts.
 
 | Setup control | Options |
 |---|---|
-| **Deck picker** | `setDeck(d.id)` — **three decks**: Saved terms · all ("Whole glossary", or "Your terms" when the pool is limited) · Review misses. Defaults to `canSaved ? 'saved' : 'all'`, so Misses is never the opening choice; Saved and Misses carry a `disabled` state below `VOCAB_MIN_SAVED` (4) and the live selection falls back to all when either shrinks past it |
+| **Deck picker** | `setDeck(d.id)` — **three decks**: `saved` · `all` (titled "Whole glossary", or "Your terms" when `limitPool` narrows it) · `misses`. Defaults to `canSaved ? 'saved' : 'all'`, so `misses` is never the opening choice. `saved` and `misses` are `disabled` below `VOCAB_MIN_SAVED` (4), and `activeDeck` falls back to `all` when either drops past it mid-session |
 | **Round length** | `setLen(n)`, default **5**, guarded by `capped` so you cannot ask for more rounds than the deck holds |
 | **Start** | `start` → "Start round" |
 
