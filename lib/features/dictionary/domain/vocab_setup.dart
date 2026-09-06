@@ -8,15 +8,15 @@ library;
 import 'package:brew_path/features/dictionary/domain/vocab_round.dart';
 
 /// The decks a drill can be drawn from.
-///
-/// The prototype's third — the terms you have missed before — is deferred to
-/// #298 with the persistence decision it carries.
 enum VocabDeck {
   /// The terms the learner bookmarked, where there are enough of them.
   saved,
 
   /// Everything the learner's tier can reach.
   all,
+
+  /// The terms they got wrong more recently than right.
+  misses,
 }
 
 /// The round lengths the design offers, shortest first.
@@ -35,18 +35,23 @@ List<int> vocabLengthsFor(int poolSize) => [
     if (length <= poolSize) length,
 ];
 
-/// Whether a deck of [size] may be offered.
+/// Whether a deck of [size] may be offered. All is exempt: it is the deck the
+/// others fall back *to*, and the too-small case is the teaching state's.
 bool vocabDeckAvailable(int size) => size >= vocabMinimumPool;
 
-/// The deck actually in play, given what the learner chose.
+/// The deck actually in play, given what the learner chose and how big that
+/// deck currently is.
 ///
-/// Saved falls back to All the moment it drops below the minimum, so un-saving
-/// a term mid-session cannot leave Start running a deck the rules say cannot
-/// exist.
+/// Saved and Misses both fall back to All the moment they drop below the
+/// minimum, so un-saving a term — or answering the last missed one correctly —
+/// cannot leave Start running a deck the rules say cannot exist.
+///
+/// Takes the *chosen* deck's size rather than each deck's, so a third deck
+/// could not be added and silently left out of the rule.
 VocabDeck resolveVocabDeck({
   required VocabDeck chosen,
-  required int savedPoolSize,
-}) => chosen == VocabDeck.saved && !vocabDeckAvailable(savedPoolSize)
+  required int chosenPoolSize,
+}) => chosen != VocabDeck.all && !vocabDeckAvailable(chosenPoolSize)
     ? VocabDeck.all
     : chosen;
 

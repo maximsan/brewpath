@@ -3,6 +3,7 @@ import 'package:brew_path/shared/storage/snapshot/merge_snapshot.dart';
 import 'package:brew_path/shared/storage/snapshot/progress_snapshot.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_scopes.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
+import 'package:brew_path/shared/storage/snapshot/term_miss.dart';
 import 'package:brew_path/shared/storage/snapshot/timestamped.dart';
 import 'package:brew_path/shared/storage/snapshot/wipe_snapshot.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -35,6 +36,7 @@ const _loaded = ProgressSnapshot(
     treeStage: 4,
     challengesCompleted: {'bc-m1'},
     learnedTerms: {'crema'},
+    missedTerms: {'crema': TermMiss(lastMissedAt: 6000)},
     challengeReactions: {
       'bc-m1': ChallengeReaction(reaction: 'Sharper', at: 3),
     },
@@ -109,6 +111,21 @@ void main() {
           reason: 'seed $seed',
         );
       }
+    });
+
+    test("empties the Vocab game's review deck", () {
+      // Named rather than left to the whole-scope assertion above: the deck
+      // is in the reset scope precisely so a wipe empties it by construction,
+      // and that promise deserves a test that fails by name.
+      expect(_loaded.clearedByReset.missedTerms, isNotEmpty);
+
+      final after = resetTombstone(
+        _loaded,
+        at: _wipedAt,
+        deviceId: _thisDevice,
+      );
+
+      expect(after.clearedByReset.missedTerms, isEmpty);
     });
 
     test('increments the reset generation', () {

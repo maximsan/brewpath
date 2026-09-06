@@ -4,6 +4,7 @@ import 'package:brew_path/shared/storage/snapshot/merge_snapshot.dart';
 import 'package:brew_path/shared/storage/snapshot/progress_snapshot.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_scopes.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
+import 'package:brew_path/shared/storage/snapshot/term_miss.dart';
 import 'package:brew_path/shared/storage/snapshot/timestamped.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -391,6 +392,84 @@ void main() {
         mergeSnapshot(older, newer).clearedByReset.challengeReactions['bc-m1'],
         const ChallengeReaction(reaction: 'Sharper', at: 6),
       );
+    });
+  });
+
+  group('missedTerms — the Misses deck, in either order', () {
+    // The acceptance case: two devices that miss and clear the same term, in
+    // either order, land on whichever event was actually later.
+    ProgressSnapshot missedOn(String device, int at) => _snap(
+      deviceId: device,
+      progress: ClearedByReset(
+        missedTerms: {'crema': TermMiss(lastMissedAt: at)},
+      ),
+    );
+    ProgressSnapshot clearedOn(String device, int at) => _snap(
+      deviceId: device,
+      progress: ClearedByReset(
+        missedTerms: {'crema': TermMiss(lastCorrectAt: at)},
+      ),
+    );
+
+    test(
+      'a clear after a miss empties the deck, whichever side it came from',
+      () {
+        final phone = missedOn('phone', 1000);
+        final tablet = clearedOn('tablet', 2000);
+
+        for (final merged in [
+          mergeSnapshot(phone, tablet),
+          mergeSnapshot(tablet, phone),
+        ]) {
+          expect(merged.clearedByReset.missedTerms['crema']!.isMissed, isFalse);
+        }
+      },
+    );
+
+    test('a miss after a clear fills it, whichever side it came from', () {
+      final phone = missedOn('phone', 2000);
+      final tablet = clearedOn('tablet', 1000);
+
+      for (final merged in [
+        mergeSnapshot(phone, tablet),
+        mergeSnapshot(tablet, phone),
+      ]) {
+        expect(merged.clearedByReset.missedTerms['crema']!.isMissed, isTrue);
+      }
+    });
+
+    test(
+      'a clear cannot be resurrected by the device that still holds the miss',
+      () {
+        // The failure a stored *set* of missed ids would ship: the tablet still
+        // remembers the miss, so a union merge puts the term back forever.
+        final tabletStillHoldsTheMiss = missedOn('tablet', 1000);
+        final phoneCleared = _snap(
+          deviceId: 'phone',
+          progress: const ClearedByReset(
+            missedTerms: {
+              'crema': TermMiss(lastMissedAt: 1000, lastCorrectAt: 2000),
+            },
+          ),
+        );
+
+        final merged = mergeSnapshot(tabletStillHoldsTheMiss, phoneCleared);
+
+        expect(merged.clearedByReset.missedTerms['crema']!.isMissed, isFalse);
+      },
+    );
+
+    test('terms only one device knows about are kept', () {
+      final phone = missedOn('phone', 1000);
+      final tablet = clearedOn('tablet', 1000).copyWith(
+        clearedByReset: const ClearedByReset(
+          missedTerms: {'tamp': TermMiss(lastMissedAt: 1000)},
+        ),
+      );
+
+      final merged = mergeSnapshot(phone, tablet).clearedByReset.missedTerms;
+
+      expect(merged.keys, containsAll(['crema', 'tamp']));
     });
   });
 

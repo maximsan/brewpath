@@ -100,12 +100,16 @@ const List<DictionaryTerm> _accessible = [
 VocabPools _pools({
   List<DictionaryTerm>? accessible,
   int saved = 0,
+  int missed = 0,
   bool hasCourse = false,
 }) {
   final pool = accessible ?? _accessible;
   return VocabPools(
     accessible: pool,
     saved: pool.take(saved).toList(),
+    // Taken from the far end, so a fixture with both decks full does not make
+    // them the same terms and hide a deck that reads the wrong list.
+    missed: pool.reversed.take(missed).toList(),
     // Every saved term here is one the pool reaches, which is what these
     // tests are about; the out-of-reach split is #468's, on Flashcards.
     savedEligible: saved,
@@ -310,6 +314,74 @@ void main() {
       expect(find.textContaining(VocabCopy.yourTermsNote), findsNothing);
     });
 
+    testWidgets('the misses deck is unavailable until four are owed', (
+      tester,
+    ) async {
+      await _pump(tester, pools: _pools(missed: vocabMinimumPool - 1));
+
+      expect(find.textContaining(VocabCopy.missesDeck), findsOneWidget);
+      expect(find.textContaining(VocabCopy.missesDeckShort), findsOneWidget);
+
+      final deck = tester.widget<PickCard>(
+        find.ancestor(
+          of: find.textContaining(VocabCopy.missesDeck),
+          matching: find.byType(PickCard),
+        ),
+      );
+      expect(deck.onTap, isNull);
+    });
+
+    testWidgets('four owed reviews open the deck, with its count', (
+      tester,
+    ) async {
+      await _pump(tester, pools: _pools(missed: vocabMinimumPool));
+
+      expect(find.textContaining(VocabCopy.missesDeckReady), findsOneWidget);
+      expect(
+        find.text('${VocabCopy.missesDeck} · $vocabMinimumPool'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('the misses deck is never the opening default', (
+      tester,
+    ) async {
+      // Saved is, when it is full. A drill should open on what the learner
+      // chose to study rather than on what they got wrong.
+      await _pump(
+        tester,
+        pools: _pools(saved: vocabMinimumPool, missed: vocabMinimumPool),
+      );
+
+      final misses = tester.widget<PickCard>(
+        find.ancestor(
+          of: find.textContaining(VocabCopy.missesDeck),
+          matching: find.byType(PickCard),
+        ),
+      );
+      final saved = tester.widget<PickCard>(
+        find.ancestor(
+          of: find.textContaining(VocabCopy.savedDeck),
+          matching: find.byType(PickCard),
+        ),
+      );
+
+      expect(misses.selected, isFalse);
+      expect(saved.selected, isTrue);
+    });
+
+    testWidgets('a short misses deck says how it grows, not how saving does', (
+      tester,
+    ) async {
+      await _pump(tester, pools: _pools(missed: vocabMinimumPool));
+
+      await tester.tap(find.textContaining(VocabCopy.missesDeck));
+      await tester.pumpAndSettle();
+
+      expect(find.text(VocabCopy.longerMissRoundsHint), findsOneWidget);
+      expect(find.text(VocabCopy.longerRoundsHint), findsNothing);
+    });
+
     testWidgets('a choice the rules cannot offer is disabled, not just faint', (
       tester,
     ) async {
@@ -413,6 +485,87 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text(VocabCopy.start), findsOneWidget);
+    });
+  });
+
+  group('what answering writes to the review deck', () {
+    testWidgets('a wrong answer adds the term, in any deck', (tester) async {
+      final container = await _pump(tester);
+      await tester.tap(find.text(VocabCopy.start));
+      await tester.pumpAndSettle();
+
+      final asked = _accessible.firstWhere(
+        (term) => find.text(term.shortExplanation).evaluate().isNotEmpty,
+      );
+      await answer(tester, correctly: false);
+      await tester.pumpAndSettle();
+
+      final misses = (await container.read(snapshotRepositoryProvider).read())
+          .clearedByReset
+          .missedTerms;
+
+      expect(misses[asked.id]!.isMissed, isTrue);
+    });
+
+    testWidgets('a correct answer clears the term, in any deck', (
+      tester,
+    ) async {
+      final container = await _pump(tester);
+      await tester.tap(find.text(VocabCopy.start));
+      await tester.pumpAndSettle();
+
+      final asked = _accessible.firstWhere(
+        (term) => find.text(term.shortExplanation).evaluate().isNotEmpty,
+      );
+      await answer(tester, correctly: true);
+      await tester.pumpAndSettle();
+
+      final misses = (await container.read(snapshotRepositoryProvider).read())
+          .clearedByReset
+          .missedTerms;
+
+      expect(misses[asked.id]!.isMissed, isFalse);
+    });
+
+    testWidgets('the score says what this drill added, and only this one', (
+      tester,
+    ) async {
+      await _pump(tester);
+      await tester.tap(find.text(VocabCopy.start));
+      await tester.pumpAndSettle();
+      await playThrough(tester, rounds: vocabLengths.first, correctly: false);
+
+      expect(
+        find.textContaining(VocabCopy.missesAdded(vocabLengths.first).trim()),
+        findsOneWidget,
+      );
+
+      // A second, clean drill must not report the first one's misses — the
+      // prototype's count accumulates across replays.
+      await tester.tap(find.text(VocabCopy.playAgain));
+      await tester.pumpAndSettle();
+      await playThrough(tester, rounds: vocabLengths.first);
+
+      expect(find.textContaining('review deck'), findsNothing);
+    });
+
+    testWidgets('an abandoned drill still keeps the answers given', (
+      tester,
+    ) async {
+      // The deck is not the drill's score: a question answered wrong was
+      // answered wrong, whether or not the learner stayed for the total.
+      final container = await _pump(tester);
+      await tester.tap(find.text(VocabCopy.start));
+      await tester.pumpAndSettle();
+
+      await answer(tester, correctly: false);
+      await tester.pumpAndSettle();
+
+      final progress = (await container.read(snapshotRepositoryProvider).read())
+          .clearedByReset;
+
+      expect(progress.missedTerms, hasLength(1));
+      expect(progress.dailyActivity, isEmpty);
     });
   });
 

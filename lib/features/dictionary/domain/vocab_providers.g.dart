@@ -8,6 +8,70 @@ part of 'vocab_providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// Every term the learner has answered, with the stamps that decide whether
+/// it is still owed a review.
+///
+/// A provider of its own rather than a read inside [vocabPools], for the
+/// reason [savedKeysProvider] is one: it is the seam a drill invalidates after
+/// logging an answer, and reading the snapshot inline would leave a second
+/// future in flight that nothing awaits when an earlier one fails.
+
+@ProviderFor(vocabAnswers)
+final vocabAnswersProvider = VocabAnswersProvider._();
+
+/// Every term the learner has answered, with the stamps that decide whether
+/// it is still owed a review.
+///
+/// A provider of its own rather than a read inside [vocabPools], for the
+/// reason [savedKeysProvider] is one: it is the seam a drill invalidates after
+/// logging an answer, and reading the snapshot inline would leave a second
+/// future in flight that nothing awaits when an earlier one fails.
+
+final class VocabAnswersProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<Map<String, TermMiss>>,
+          Map<String, TermMiss>,
+          FutureOr<Map<String, TermMiss>>
+        >
+    with
+        $FutureModifier<Map<String, TermMiss>>,
+        $FutureProvider<Map<String, TermMiss>> {
+  /// Every term the learner has answered, with the stamps that decide whether
+  /// it is still owed a review.
+  ///
+  /// A provider of its own rather than a read inside [vocabPools], for the
+  /// reason [savedKeysProvider] is one: it is the seam a drill invalidates after
+  /// logging an answer, and reading the snapshot inline would leave a second
+  /// future in flight that nothing awaits when an earlier one fails.
+  VocabAnswersProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'vocabAnswersProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$vocabAnswersHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<Map<String, TermMiss>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<Map<String, TermMiss>> create(Ref ref) {
+    return vocabAnswers(ref);
+  }
+}
+
+String _$vocabAnswersHash() => r'1ca6ef910f448fdd89dc8fa9bd65367f1c0844ab';
+
 /// The learner's drill pools, tier-scoped.
 ///
 /// **Unresolved entitlement reads as free**, the direction every other gate in
@@ -64,4 +128,4 @@ final class VocabPoolsProvider
   }
 }
 
-String _$vocabPoolsHash() => r'd0186efd79a84c22c04a95f61b279c3c08b971e8';
+String _$vocabPoolsHash() => r'89835a6d4847463a5c3fe614f96b60e3d5b33799';

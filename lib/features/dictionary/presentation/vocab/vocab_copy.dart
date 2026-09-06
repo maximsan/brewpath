@@ -43,6 +43,17 @@ abstract final class VocabCopy {
   static const savedDeckShort =
       'Save $vocabMinimumPool or more terms to unlock';
 
+  /// The Misses deck's row.
+  static const missesDeck = 'Review misses';
+
+  /// What the Misses deck offers, once enough terms are owed a review.
+  static const missesDeckReady = 'Terms you have missed before';
+
+  /// What it says before then. Not phrased as an instruction the way the
+  /// Saved deck's is: nobody sets out to miss four questions, so the row
+  /// states the condition rather than asking for it.
+  static const missesDeckShort = 'Miss a few first';
+
   /// The All deck's row, for a learner who owns the course.
   static const allDeck = 'Whole glossary';
 
@@ -64,6 +75,10 @@ abstract final class VocabCopy {
   /// The nudge under a short Saved deck.
   static const longerRoundsHint =
       'Longer rounds unlock as you bookmark more terms.';
+
+  /// The same nudge under a short Misses deck, which grows a different way.
+  static const longerMissRoundsHint =
+      'Longer rounds unlock as you log more misses.';
 
   /// Starts the drill.
   static const start = 'Start round';
@@ -122,6 +137,17 @@ abstract final class VocabCopy {
 
   /// The right-answer line.
   static const correctVerdict = 'Correct';
+
+  /// What the score adds when the drill put terms into the review deck.
+  ///
+  /// Counted for **this** drill only. The prototype accumulates across
+  /// replays, so a second clean round still reports the first round's misses.
+  static String missesAdded(int count) {
+    if (count == 0) return '';
+    final terms = count == 1 ? 'term' : 'terms';
+    final were = count == 1 ? 'was' : 'were';
+    return ' The $count $terms you missed $were added to your review deck.';
+  }
 
   /// The line under the score.
   ///

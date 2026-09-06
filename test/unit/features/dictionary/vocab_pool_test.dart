@@ -13,6 +13,7 @@ import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/dictionary_repository.dart';
+import 'package:brew_path/shared/storage/snapshot/term_miss.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -143,6 +144,53 @@ void main() {
         savedAccessibleTerms(
           accessible: poolFor(hasCourse: true),
           savedTermIds: const {},
+        ),
+        isEmpty,
+      );
+    });
+  });
+
+  group('the misses deck', () {
+    test('holds the terms missed more recently than they were cleared', () {
+      final pool = poolFor(hasCourse: true);
+      final missed = pool.first;
+      final cleared = pool[1];
+
+      final deck = missedAccessibleTerms(
+        accessible: pool,
+        answers: {
+          missed.id: const TermMiss(lastMissedAt: 2000, lastCorrectAt: 1000),
+          cleared.id: const TermMiss(lastMissedAt: 1000, lastCorrectAt: 2000),
+        },
+      );
+
+      expect(deck.map((term) => term.id), [missed.id]);
+    });
+
+    test('is the intersection, never the whole record', () {
+      // A term missed while the course still reached it must not walk back
+      // into a free learner's drill, exactly as a saved one must not.
+      final free = poolFor(hasCourse: false);
+      final premiumOnly = idsFor(
+        hasCourse: true,
+      ).difference(idsFor(hasCourse: false));
+
+      final deck = missedAccessibleTerms(
+        accessible: free,
+        answers: {
+          free.first.id: const TermMiss(lastMissedAt: 2000),
+          premiumOnly.first: const TermMiss(lastMissedAt: 2000),
+        },
+      );
+
+      expect(deck.map((term) => term.id), [free.first.id]);
+    });
+
+    test('an empty record yields an empty deck rather than everything', () {
+      expect(
+        missedAccessibleTerms(
+          accessible: poolFor(hasCourse: true),
+          answers: const {},
         ),
         isEmpty,
       );

@@ -44,6 +44,14 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The Vocab game has a third deck: the terms you got wrong.** *Review
+  misses* joins Saved terms and the glossary on the setup screen, with its own
+  count. It opens once four terms are owed a review and reads *Miss a few
+  first* until then. A wrong answer in any deck adds the term, a correct
+  answer in any deck takes it out again, and the score line says what the
+  round left in the deck. It travels between your devices with the rest of
+  your progress, and Reset progress empties it.
+
 ### Changed
 
 ### Fixed

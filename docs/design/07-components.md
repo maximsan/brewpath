@@ -304,7 +304,7 @@ before it starts.
 
 | Setup control | Options |
 |---|---|
-| **Deck picker** | `setDeck(d.id)` — Saved terms vs all ("Every term in this deck"). Defaults to `canSaved ? 'saved' : 'all'`; decks carry a `disabled` state when too small |
+| **Deck picker** | `setDeck(d.id)` — **three decks**: Saved terms · all ("Whole glossary", or "Your terms" when the pool is limited) · Review misses. Defaults to `canSaved ? 'saved' : 'all'`, so Misses is never the opening choice; Saved and Misses carry a `disabled` state below `VOCAB_MIN_SAVED` (4) and the live selection falls back to all when either shrinks past it |
 | **Round length** | `setLen(n)`, default **5**, guarded by `capped` so you cannot ask for more rounds than the deck holds |
 | **Start** | `start` → "Start round" |
 
@@ -312,8 +312,8 @@ before it starts.
 |---|---|
 | `pick(idx)` | Answer the round |
 | `next` | Advance |
-| `readMisses` | Missed terms are collected and shown at the end |
-| `onOpenTerm(round.answer.id)` | Open any missed term from the results |
+| `readMisses` / `writeMisses` | The Misses deck's store. `pick` adds the term on a wrong answer and removes it on a right one, in **any** deck |
+| `onOpenTerm(round.answer.id)` | Open the answered term's full entry, from the question |
 
 Both practice screens reuse the lesson top bar + roasting-bean counter and end on
 a Roasty results screen.

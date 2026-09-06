@@ -73,6 +73,13 @@ class VocabSetupView extends StatelessWidget {
               onChoice: onChoice,
               hasCourse: pools.hasCourse,
             ),
+            const SizedBox(height: AppSpacing.xs),
+            _DeckCard(
+              deck: VocabDeck.misses,
+              choice: choice,
+              size: pools.missed.length,
+              onChoice: onChoice,
+            ),
             const SizedBox(height: AppSpacing.lg),
             const SectionHeader(VocabCopy.lengthHeading),
             const SizedBox(height: AppSpacing.xs),
@@ -82,11 +89,13 @@ class VocabSetupView extends StatelessWidget {
               choice: choice,
               onChoice: onChoice,
             ),
-            if (choice.deck == VocabDeck.saved &&
+            if (choice.deck != VocabDeck.all &&
                 poolSize < vocabLengths.last) ...[
               const SizedBox(height: AppSpacing.xs),
               Text(
-                VocabCopy.longerRoundsHint,
+                choice.deck == VocabDeck.misses
+                    ? VocabCopy.longerMissRoundsHint
+                    : VocabCopy.longerRoundsHint,
                 style: AppText.support(mood: mood),
               ),
             ],
@@ -127,12 +136,15 @@ class _DeckCard extends StatelessWidget {
     final title = switch (deck) {
       VocabDeck.saved => VocabCopy.savedDeck,
       VocabDeck.all => hasCourse ? VocabCopy.allDeck : VocabCopy.yourTermsDeck,
+      VocabDeck.misses => VocabCopy.missesDeck,
     };
     final note = switch (deck) {
       VocabDeck.saved =>
         available ? VocabCopy.savedDeckReady : VocabCopy.savedDeckShort,
       VocabDeck.all =>
         hasCourse ? VocabCopy.allDeckNote : VocabCopy.yourTermsNote,
+      VocabDeck.misses =>
+        available ? VocabCopy.missesDeckReady : VocabCopy.missesDeckShort,
     };
 
     return PickCard(
