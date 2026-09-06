@@ -10,8 +10,8 @@ import 'package:flutter/material.dart';
 ///
 /// Accent fill, accent-ink text, and the radius the running prototype sets:
 /// `var(--r)`, which is [AppRadii.chrome]. It read [AppRadii.editorial] until
-/// #377, transcribed from `Design System.html`'s 2px, which ADR-0009 ranks
-/// below the running `index.html`.
+/// #377, transcribed from the design-system catalogue's 2px, which ADR-0009
+/// ranks below the running prototype.
 ///
 /// The shape is set here as well as on `AppTheme`'s button themes. That is not
 /// belt-and-braces: `context.mood` falls back to Dark Roast when no theme

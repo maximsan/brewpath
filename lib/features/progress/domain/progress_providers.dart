@@ -55,12 +55,11 @@ Future<int> totalPoints(Ref ref) async {
 /// was built — which is why `DayRolloverWatcher` invalidates this on a resume
 /// that crossed midnight, rather than letting a value computed before it stand.
 ///
-/// The day set it folds is assembled by [streakDaySet], which also backfills
-/// a learner whose completions predate the day set — see it for why the three
-/// sources are unioned rather than ranked.
-/// The qualifying-day set every streak surface folds over — one derivation,
-/// so the engine, the save notice and the week strip can never disagree on
-/// which days count.
+/// The day set it folds is assembled by [streakDaySet], which also backfills a
+/// learner whose completions predate the day set — see it for why the three
+/// sources are unioned rather than ranked. The qualifying-day set every streak
+/// surface folds over — one derivation, so the engine, the save notice and the
+/// week strip can never disagree on which days count.
 @riverpod
 Future<Set<int>> activeDaySet(Ref ref) async {
   final completedFuture = ref.watch(completedLessonsProvider.future);
@@ -171,11 +170,11 @@ Future<int> treeStage(Ref ref) async {
 /// Core lessons finished, and how many the course holds.
 ///
 /// *Core* means every lesson in every module — the design's `CORE_LESSON_IDS`
-/// is `MODULES.flatMap(m => m.lessons)` (`data.jsx:2935`), and the app has no
-/// lesson outside a module, so this is not a new content concept and needs no
-/// flag on `LessonModel`. It is the very pair [treeStage] already folds over,
-/// named once here so the tree screen's counter and the stage it sits under
-/// can never disagree about what they are counting.
+/// is `MODULES.flatMap(m => m.lessons)`, and the app has no lesson outside a
+/// module, so this is not a new content concept and needs no flag on
+/// `LessonModel`. It is the very pair [treeStage] already folds over, named
+/// once here so the tree screen's counter and the stage it sits under can never
+/// disagree about what they are counting.
 typedef CoreLessonProgress = ({int completed, int total});
 
 /// The learner's progress through the core course.

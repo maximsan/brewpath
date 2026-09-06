@@ -12,15 +12,13 @@ import 'package:flutter/material.dart';
 /// this palette: `--bg`, `--water` and `--water-hi` have no scheme slot at all,
 /// and the ones that do fit would lose their meaning in the translation
 /// (`--sage` means "learned", not "secondary"; `--warn` means celebration and
-/// nothing else). `ColorScheme` is still populated in
-/// `AppTheme` so stock Material widgets are not unstyled, but app code reads
-/// its colours from here.
+/// nothing else). `ColorScheme` is still populated in `AppTheme` so stock
+/// Material widgets are not unstyled, but app code reads its colours from here.
 ///
 /// Reach an instance through `context.mood` rather than
 /// `Theme.of(context).extension<MoodColors>()`.
 ///
-/// Values are transcribed 1:1 from the design bundle CSS
-/// (`prototype/index.html`).
+/// Values are transcribed 1:1 from the design bundle CSS.
 @immutable
 class MoodColors extends ThemeExtension<MoodColors> {
   /// Creates a mood's colour tokens.
@@ -77,8 +75,8 @@ class MoodColors extends ThemeExtension<MoodColors> {
     waterHi: Color(0xFFC2E0EF),
   );
 
-  /// Opacity of [veil] — the design's
-  /// `color-mix(in oklab, var(--bg) 38%, transparent)`.
+  /// Opacity of [veil] — the design's `color-mix(in oklab, var(--bg) 38%,
+  /// transparent)`.
   static const veilOpacity = 0.38;
 
   /// Opacity of [veilStrong] — the same mix at 82%.
@@ -91,8 +89,8 @@ class MoodColors extends ThemeExtension<MoodColors> {
   /// Blur behind [veilStrong] — the design's *"3px for a covering wash"*.
   static const veilStrongBlurRadius = 3.0;
 
-  /// Opacity of [headerFill] — the design's
-  /// `color-mix(in oklab, var(--bg) 94%, transparent)`.
+  /// Opacity of [headerFill] — the design's `color-mix(in oklab, var(--bg) 94%,
+  /// transparent)`.
   static const headerFillOpacity = 0.94;
 
   /// Blur behind [headerFill] — the design's `blur(16px)`, the first half of
@@ -142,37 +140,33 @@ class MoodColors extends ThemeExtension<MoodColors> {
   /// brand colour costs more than it buys". This token is the fix it chose
   /// instead: the accent pulled toward [ink] until it reads.
   ///
-  /// **Where it applies is the design's sentence, not ours.**
-  /// `prototype/index.html:34` states the whole rule beside the token —
-  /// *"Accent used as TEXT: raw `--accent` lands at ~4.3:1 on paper, so small
-  /// accent labels use this darkened mix instead (AA at 11px)"*. So: accent
-  /// smallcaps, eyebrows and kickers at the `label` step. Accent set larger
-  /// than that is not what the sentence covers and keeps [accent], and so does
-  /// everything the accent is not *read* as — fills, borders, progress bars,
-  /// marks and icons.
+  /// **Where it applies is the design's sentence, not ours.** It states the
+  /// whole rule beside the token — *"Accent used as TEXT: raw `--accent` lands
+  /// at ~4.3:1 on paper, so small accent labels use this darkened mix instead
+  /// (AA at 11px)"*. So: accent smallcaps, eyebrows and kickers at the `label`
+  /// step. Accent set larger than that is not what the sentence covers and
+  /// keeps [accent], and so does everything the accent is not *read* as —
+  /// fills, borders, progress bars, marks and icons.
   ///
   /// **The tab bar is not an exception to any of this — it is outside the
-  /// sentence.** `.tab.active` (`index.html:356`) puts [accent] on a 9.5px
-  /// label, which looks like a contradiction and is not: it colours a
-  /// *control*, setting one `color` for the mark and its word so the pair
-  /// reads as one unit, the way an active-state colour must. This token
-  /// governs accent picked as a **text** colour, which is what every
-  /// `--accent-text` site in the design is. A state colour is not a text
-  /// colour, so the tab bar keeps [accent], joined — and no divergence is
-  /// being recorded here, because there is none.
+  /// sentence.** `.tab.active` puts [accent] on a 9.5px label, which looks like
+  /// a contradiction and is not: it colours a *control*, setting one `color`
+  /// for the mark and its word so the pair reads as one unit, the way an
+  /// active-state colour must. This token governs accent picked as a **text**
+  /// colour, which is what every `--accent-text` site in the design is. A state
+  /// colour is not a text colour, so the tab bar keeps [accent], joined — and
+  /// no divergence is being recorded here, because there is none.
   ///
   /// `.btn-link` keeps [accent] for the plainer reason that it is set at the
-  /// support step (`index.html:283`), above the labels the sentence covers.
+  /// support step, above the labels the sentence covers.
   ///
-  /// Where a glyph sits beside such a label, only the label changes: the
-  /// design draws exactly that pair, an accent mark next to an `--accent-text`
-  /// word (`prototype/brew-challenge.jsx:303`, `:706`), and an accent-bordered
-  /// pill with an `--accent-text` label (`:338`).
+  /// Where a glyph sits beside such a label, only the label changes: the design
+  /// draws exactly that pair, an accent mark next to an `--accent-text` word,
+  /// and an accent-bordered pill with an `--accent-text` label.
   ///
-  /// The design writes it as
-  /// `color-mix(in oklab, var(--accent) 62%, var(--ink))` and the values here
-  /// are that mix resolved per mood, so a mood keeps one literal per token and
-  /// lerps between moods like every other.
+  /// The design writes it as `color-mix(in oklab, var(--accent) 62%,
+  /// var(--ink))` and the values here are that mix resolved per mood, so a mood
+  /// keeps one literal per token and lerps between moods like every other.
   final Color accentText;
 
   /// Success = "learned": correct answers, learned terms, pass mark.
@@ -195,10 +189,9 @@ class MoodColors extends ThemeExtension<MoodColors> {
   /// [accent] washed over [surface] — the fill under an icon well or a chip.
   ///
   /// Derived rather than stored, so it follows the mood and keeps following it
-  /// mid-[lerp]. The design writes it as
-  /// `color-mix(in oklab, var(--accent) 12%, var(--surface))` and uses the one
-  /// strength everywhere it appears: the reward rail's wells, the mastery chip,
-  /// and the challenge offer's badge.
+  /// mid-[lerp]. The design writes it as `color-mix(in oklab, var(--accent)
+  /// 12%, var(--surface))` and uses the one strength everywhere it appears: the
+  /// reward rail's wells, the mastery chip, and the challenge offer's badge.
   Color get accentWash =>
       Color.alphaBlend(accent.withValues(alpha: _accentWashAlpha), surface);
 
@@ -211,8 +204,8 @@ class MoodColors extends ThemeExtension<MoodColors> {
   ///
   /// **No call site.** The veil's job is the Foundations feature lock — a wash
   /// over content the learner is meant to keep reading, because that legibility
-  /// is the pitch (`prototype/gating.jsx:416`). The app has no feature lock to
-  /// wear it: the content gate is #215.
+  /// is the pitch. The app has no feature lock to wear it: the content gate is
+  /// #215.
   AppOverlay get veil => AppOverlay(
     color: bg.withValues(alpha: veilOpacity),
     blurRadius: veilBlurRadius,

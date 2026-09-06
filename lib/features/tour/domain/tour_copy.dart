@@ -46,10 +46,10 @@ abstract final class TourCopy {
 
   /// Stop 3 — the header's Saved and Dictionary entries.
   ///
-  /// The design's own third stop (`guide.jsx:10-13`). It used to be the module
-  /// list, which was never the design's — and the course's own "five modules,
-  /// in order" line is already stop 4's job, where the Path tab it names is
-  /// what the learner is being pointed at.
+  /// The design's own third stop. It used to be the module list, which was
+  /// never the design's — and the course's own "five modules, in order" line is
+  /// already stop 4's job, where the Path tab it names is what the learner is
+  /// being pointed at.
   static const headerTitle = 'Saved and Dictionary.';
 
   /// Stop 3's body.

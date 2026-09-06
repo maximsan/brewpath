@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 /// entry holds why.
 final double _cueTracking = OffTokens.tapCueTracking.value;
 
-/// The design's `.tap-cue` line (`index.html:1111`).
+/// The design's `.tap-cue` line.
 ///
 /// The one mono label the design sets at weight 400 rather than 500, with
 /// tracking half again as wide as any other, centred and muted — so it reads

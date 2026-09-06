@@ -69,7 +69,7 @@ class _Node extends StatelessWidget {
     final mood = context.mood;
     // Two tints, not one: the glyph is a mark and takes the brand colour,
     // while the state word is small text and takes the reading one. The
-    // design pairs them exactly this way (`brew-challenge.jsx:303`).
+    // design pairs them exactly this way.
     final (label, glyphTint, textTint) = switch (state) {
       // `sage` is "learned", never an action — which is exactly what a
       // finished brew is.

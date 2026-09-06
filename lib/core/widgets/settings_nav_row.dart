@@ -9,9 +9,8 @@ import 'package:flutter/material.dart';
 ///
 /// The design is explicit that this is a single component, not a shape each
 /// screen redraws: *"Settings, About, Account and sync, Help and support and
-/// Purchases all render through this"* (`prototype/settings.jsx:149`). Six
-/// trailing variants, one implementation, so the row cannot drift into two
-/// versions again.
+/// Purchases all render through this"*. Six trailing variants, one
+/// implementation, so the row cannot drift into two versions again.
 ///
 /// **It has no icon slot, deliberately.** Settings' rows had grown leading
 /// Material glyphs — `info_outline` on the version row, `help_outline` on the
@@ -42,7 +41,7 @@ class SettingsNavRow extends StatelessWidget {
   /// The platform's minimum tap target, which is also the design's `minHeight`.
   static const double minHeight = 44;
 
-  /// Vertical padding either side of the label (`settings.jsx:163`).
+  /// Vertical padding either side of the label.
   static const double _verticalPadding = AppSpacing.md;
 
   /// How far the value sits from the affordance beside it.
@@ -76,11 +75,10 @@ class SettingsNavRow extends StatelessWidget {
   /// Whether this row reads as inactive — a reminder time with notifications
   /// switched off.
   ///
-  /// **Visual only. It still acts**, which is the design's own behaviour:
-  /// `dim` sets opacity and nothing else, and only `pending` withholds the
-  /// press (`prototype/settings.jsx:151`). That matters here — tapping the
-  /// dimmed reminder row is the way a learner turns the reminder *on*, because
-  /// choosing a time is asking for it.
+  /// **Visual only. It still acts**, which is the design's own behaviour: `dim`
+  /// sets opacity and nothing else, and only `pending` withholds the press.
+  /// That matters here — tapping the dimmed reminder row is the way a learner
+  /// turns the reminder *on*, because choosing a time is asking for it.
   final bool isDimmed;
 
   bool get _isToggle => toggleValue != null;

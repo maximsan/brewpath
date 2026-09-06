@@ -4,8 +4,7 @@ import 'package:brew_path/features/onboarding/presentation/welcome/sound_toggle.
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
-/// How far the sound control sits from the frame's corner
-/// (`screens.jsx:59`).
+/// How far the sound control sits from the frame's corner.
 const double _controlInset = 12;
 
 /// The seed-to-tree film behind Welcome's frame.
@@ -13,10 +12,10 @@ const double _controlInset = 12;
 /// Looping unless the platform asks for reduced motion, in which case it holds
 /// its first frame.
 ///
-/// Muted on arrival, with the design's control to unmute (`screens.jsx:46-68`)
-/// — Audit E item 6, which the app had never carried and which no ticket owned.
-/// It is fixed here because this is the screen being built; the alternative was
-/// reopening a screen the week after writing it.
+/// Muted on arrival, with the design's control to unmute — Audit E item 6,
+/// which the app had never carried and which no ticket owned. It is fixed here
+/// because this is the screen being built; the alternative was reopening a
+/// screen the week after writing it.
 ///
 /// The audio never bleeds into the screen after: the track is silenced on the
 /// way out, not merely left behind, so unmuting and tapping straight on cannot

@@ -12,14 +12,13 @@ import 'package:flutter/material.dart';
 /// One of the doors Profile closes on — art well, accent kicker, title, support
 /// line, chevron.
 ///
-/// **One widget for every entry, because the design draws one row pattern**
-/// (`prototype/screens.jsx:2691-2767`): the Studio's card and Saved's differ
-/// only in what sits in the well and where the tap goes. A second copy of the
-/// row is how the two quietly stop matching.
+/// **One widget for every entry, because the design draws one row pattern**:
+/// the Studio's card and Saved's differ only in what sits in the well and where
+/// the tap goes. A second copy of the row is how the two quietly stop matching.
 ///
 /// The well is **64** here, against the tree hero's 96. The Studio door was
-/// built at 76 from the Studio hub's own door (`customize.jsx:280-295`), which
-/// is a different screen's pattern; on Profile the design draws this one.
+/// built at 76 from the Studio hub's own door, which is a different screen's
+/// pattern; on Profile the design draws this one.
 ///
 /// **Locked marks the card, never the chevron.** A gated entry wears a Plus
 /// pill beside its kicker and still goes somewhere — it just asks first, which

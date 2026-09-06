@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 
 /// One labelled fact about the selected species.
 ///
-/// The design's `.form-row`: the label in **sans** small-caps (`index.html:302`
-/// — not mono, though every other small-caps label in the app is), the value in
-/// mono against the right edge, and a hairline under every row but the last
+/// The design's `.form-row`: the label in **sans** small-caps (not mono, though
+/// every other small-caps label in the app is), the value in mono against the
+/// right edge, and a hairline under every row but the last
 /// (`.form-row:last-child { border-bottom: none }`). The same shape a
 /// dictionary term carries, so the grove reads as course material rather than
 /// as decoration.

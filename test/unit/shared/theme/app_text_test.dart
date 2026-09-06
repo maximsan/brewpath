@@ -5,9 +5,9 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The design's ten-step ladder, transcribed from the `--t-*` block in
-/// `prototype/index.html`. Nothing sits off it: a size that is not here cannot
-/// be asked for, because no step carries it and the API takes no `fontSize`.
+/// The design's ten-step ladder, transcribed from its `--t-*` block. Nothing
+/// sits off it: a size that is not here cannot be asked for, because no step
+/// carries it and the API takes no `fontSize`.
 const _ladder = <String, double>{
   'hero': 56,
   'display': 30,

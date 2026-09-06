@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// The design's speaker, at its own 20-unit box (`dictionary.jsx:39`).
+/// The design's speaker, at its own 20-unit box.
 const double _viewBox = 20;
 
 /// The cone: a rectangle at the left, opening into the triangle.

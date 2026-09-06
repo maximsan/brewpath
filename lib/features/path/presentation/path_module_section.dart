@@ -16,8 +16,7 @@ import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// One module on Path, drawn at the density its state earns
-/// (`prototype/screens.jsx:1408-1440`).
+/// One module on Path, drawn at the density its state earns.
 ///
 /// The heading is the same three parts at every density — glyph, title,
 /// trailing mark — and only what hangs below it changes: the active module's

@@ -83,10 +83,10 @@ abstract class AppTheme {
 
   /// The shape a button with a body takes — `.btn-primary`, `.btn-ghost`.
   ///
-  /// [AppRadii.chrome], not [AppRadii.editorial]. `Design System.html` sets
-  /// `.btn-primary` to 2px and the running `index.html` sets it to `var(--r)`;
-  /// ADR-0009 rules the running prototype wins, and this is the same
-  /// disagreement it already resolved for `.mcq-choice` and `.match-item`.
+  /// [AppRadii.chrome], not [AppRadii.editorial]. The design-system catalogue
+  /// sets `.btn-primary` to 2px and the running prototype sets it to
+  /// `var(--r)`; ADR-0009 rules the running prototype wins, and this is the
+  /// same disagreement it already resolved for `.mcq-choice` and `.match-item`.
   /// Buttons were missed in that sweep.
   static const ButtonStyle _solidButton = ButtonStyle(
     shape: WidgetStatePropertyAll(
@@ -99,9 +99,9 @@ abstract class AppTheme {
   /// The shape a text button takes — `.btn-link`, which draws no body.
   ///
   /// Editorial rather than chrome: the design gives `.btn-link` **no** radius
-  /// at all (`index.html:283`), so rounding it to `--r` would invent a
-  /// softness the design does not have. It still needs a shape, because the
-  /// alternative is Material's pill showing through on press.
+  /// at all, so rounding it to `--r` would invent a softness the design does
+  /// not have. It still needs a shape, because the alternative is Material's
+  /// pill showing through on press.
   static const ButtonStyle _linkButton = ButtonStyle(
     shape: WidgetStatePropertyAll(
       RoundedRectangleBorder(
@@ -113,11 +113,10 @@ abstract class AppTheme {
   /// The shape a segmented toggle takes.
   ///
   /// [AppRadii.pill], which the token names for toggles in as many words and
-  /// which the design draws at `borderRadius: 999` (`dictionary.jsx:202`). It
-  /// rendered as a pill already — but only because Material's default happens
-  /// to match, which is not the same as the app saying so. Declared so the
-  /// exception is deliberate and cannot be "corrected" to chrome by someone
-  /// reading the rule above.
+  /// which the design draws at `borderRadius: 999`. It rendered as a pill
+  /// already — but only because Material's default happens to match, which is
+  /// not the same as the app saying so. Declared so the exception is deliberate
+  /// and cannot be "corrected" to chrome by someone reading the rule above.
   static const ButtonStyle _segmentedButton = ButtonStyle(
     shape: WidgetStatePropertyAll(StadiumBorder()),
   );

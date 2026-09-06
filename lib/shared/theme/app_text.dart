@@ -60,12 +60,11 @@ enum AppFace {
 /// through an `OffToken` (#410).
 ///
 /// **Only values something in `lib/` actually renders are here.** The design's
-/// app vocabulary at these two rungs runs one wider: 0.1em (`.cheer-points`,
-/// `index.html:1092`) is an app component too, not page chrome. It is absent
-/// because no screen in the app cheers a payout that way — the mascot's own
-/// burst is drawn (#518) but it is set inside the drawing rather than on a
-/// rung, so it letters off this axis entirely. A value with no call site would
-/// be vocabulary nobody speaks.
+/// app vocabulary at these two rungs runs one wider: 0.1em (`.cheer-points`) is
+/// an app component too, not page chrome. It is absent because no screen in the
+/// app cheers a payout that way — the mascot's own burst is drawn (#518) but it
+/// is set inside the drawing rather than on a rung, so it letters off this axis
+/// entirely. A value with no call site would be vocabulary nobody speaks.
 ///
 /// The line between a value here and one in `OffTokens` is how many components
 /// speak it. A width the design gives to **one** component is that component's
@@ -74,42 +73,38 @@ enum AppFace {
 ///
 /// Omitting this axis leaves a rung at its own tracking, which for [AppText]'s
 /// label and micro steps is the design's 0.14em smallcaps rule — `.smallcaps`
-/// (`index.html:229`) and `.challenge-kicker` (`:502`). **A component the
-/// design does not letter specially takes that rule**, which is why most
-/// kickers pass no tracking at all: the app's own eyebrows (`KEEP SHARP`, a
-/// lesson card's label) have no counterpart in `prototype/` to letter them
-/// differently, so they letter like every other kicker rather than at a
-/// hand-rounded value that only ever came from the eye.
+/// and `.challenge-kicker` (`:502`). **A component the design does not letter
+/// specially takes that rule**, which is why most kickers pass no tracking at
+/// all: the app's own eyebrows (`KEEP SHARP`, a lesson card's label) have no
+/// counterpart in `prototype/` to letter them differently, so they letter like
+/// every other kicker rather than at a hand-rounded value that only ever came
+/// from the eye.
 enum AppTracking {
   /// 0.02em — barely loosened, for a line meant to be **read as words** rather
-  /// than scanned as a label: `.btn` (`index.html:255`), and the mono
-  /// respelling that sits inline beside a dictionary term
-  /// (`dictionary.jsx:235`).
+  /// than scanned as a label: `.btn`, and the mono respelling that sits inline
+  /// beside a dictionary term.
   reading(0.02),
 
   /// 0.04em — mono given just enough air that a spelled-out run stays legible
-  /// without becoming a kicker: a score read as digits (`rewards.jsx:60`), a
-  /// terse spec chip (`.spec-chip`, `Design System.html:215`), and the
-  /// pronunciation chip's respelling (`dictionary.jsx:46`).
+  /// without becoming a kicker: a score read as digits, a terse spec chip
+  /// (`.spec-chip`), and the pronunciation chip's respelling.
   figure(0.04),
 
   /// 0.08em — a meta line or a figure, which wants to read as one run rather
   /// than as a kicker. At the rung's 0.14em a count's numerals drift apart and
-  /// the line stops reading as a single quantity, which is the whole reason
-  /// the design tracks these tighter than the smallcaps beside them:
-  /// `.lesson-row .meta` (`index.html:427`), `.challenge-pill` (`:506`),
-  /// `.bag-opt-s` (`:628`).
+  /// the line stops reading as a single quantity, which is the whole reason the
+  /// design tracks these tighter than the smallcaps beside them:
+  /// `.lesson-row.meta`, `.challenge-pill` (`:506`), `.bag-opt-s` (`:628`).
   meta(0.08),
 
-  /// 0.12em — the sequence card's out-of-place hint, `.seq-hint`
-  /// (`index.html:1061`, set on `lesson.jsx:980`).
+  /// 0.12em — the sequence card's out-of-place hint, `.seq-hint`.
   hint(0.12),
 
   /// 0.16em — a mono micro line marking what a thing *is*, or where it sits in
   /// a set, rather than heading the content under it. Wider than the smallcaps
   /// rule so a two-word label reads as discrete: the dictionary's status chip
-  /// (`dictionary.jsx:124`) and the collectible tile's sub-line
-  /// (`.collect-card .cc-sub`, `index.html:712`, still unbuilt — #434).
+  /// and the collectible tile's sub-line (`.collect-card .cc-sub`, still
+  /// unbuilt — #434).
   marker(0.16),
 
   /// 0.18em — the app's own chrome, lettered a step wider than the pages it
@@ -152,9 +147,9 @@ enum _Rung {
   /// pixels, so it is multiplied by [size] on the way out.
   ///
   /// The 0.14em the two smallcaps steps carry is the design's own smallcaps
-  /// rule — `.smallcaps` (`index.html:229`), `.smallcaps-mono` (`:241`) and
-  /// `.challenge-kicker` (`:502`) all set it. A call site letters differently
-  /// only by naming an [AppTracking].
+  /// rule — `.smallcaps`, `.smallcaps-mono` (`:241`) and `.challenge-kicker`
+  /// (`:502`) all set it. A call site letters differently only by naming an
+  /// [AppTracking].
   final double tracking;
 
   /// This rung's letter spacing in logical pixels, lettered at [named] if the
@@ -183,7 +178,7 @@ enum _Rung {
 /// asked for: the sizes live in one private table, so going off-ladder means
 /// editing the ladder — visible in a diff and in review — rather than passing a
 /// number at a call site where nobody will see it. Sizes are transcribed from
-/// the `--t-*` block of the design bundle (`prototype/index.html`).
+/// the `--t-*` block of the design bundle.
 ///
 /// Size, face and tracking are separate axes; see [AppFace] and [AppTracking].
 /// Each step defaults to the face the design most often sets it in, and any

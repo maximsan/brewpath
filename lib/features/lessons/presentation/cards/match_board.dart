@@ -37,10 +37,9 @@ bool matchBoardPaysSignal({required bool cleared, required bool faulted}) =>
 
 /// What a finished board is called: clean, or the drops it cost.
 ///
-/// The design names the cost rather than only the miss — `2 WRONG DROPS`
-/// (`lesson.jsx:756`) — so the count has to reach the wording, and the
-/// singular has to be right at one. Here rather than in the widget so it can
-/// be checked without pumping a board.
+/// The design names the cost rather than only the miss — `2 WRONG DROPS` — so
+/// the count has to reach the wording, and the singular has to be right at one.
+/// Here rather than in the widget so it can be checked without pumping a board.
 String matchBoardVerdict(int wrongDrops) => switch (wrongDrops) {
   0 => 'Clean board',
   1 => '1 wrong drop',

@@ -13,8 +13,8 @@ import 'package:flutter/material.dart';
 /// Profile's opening card: the tree, the stage it has reached, and how far
 /// through the course that is.
 ///
-/// The tree art itself is #136's; this is the card the design puts around it
-/// (`prototype/screens.jsx:2573-2601`), replacing a bare centred illustration.
+/// The tree art itself is #136's; this is the card the design puts around it,
+/// replacing a bare centred illustration.
 class TreeHeroCard extends StatelessWidget {
   /// Creates a [TreeHeroCard].
   const TreeHeroCard({

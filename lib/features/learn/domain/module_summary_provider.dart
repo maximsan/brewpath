@@ -40,8 +40,7 @@ class ModuleSummary {
   final String? nextLessonId;
 
   /// Whether a module follows this one — the ending's action reads *Begin next
-  /// module* where one does and *Back to Path* where none does
-  /// (`rewards.jsx:340`).
+  /// module* where one does and *Back to Path* where none does.
   bool get hasNextModule => nextLessonId != null;
 }
 
@@ -86,13 +85,12 @@ Future<ModuleSummary> moduleSummary(Ref ref, String moduleId) async {
 /// the points and the freeze, and its one card is the module's, on the other
 /// face.
 ///
-/// That leaves the lesson's own card earned and never shown — five times
-/// across the course, once per module. It is still collected, and still on the
-/// Cards tab; what is missing is the beat. Deliberate rather than overlooked:
-/// the design has no slot for it, and the app is not inventing a second
-/// answer. Written down at
-/// [#504](https://github.com/maximsan/brewpath/issues/504), which is blocked
-/// on the design source.
+/// That leaves the lesson's own card earned and never shown — five times across
+/// the course, once per module. It is still collected, and still on the Cards
+/// tab; what is missing is the beat. Deliberate rather than overlooked: the
+/// design has no slot for it, and the app is not inventing a second answer.
+/// Written down at [#504](https://github.com/maximsan/brewpath/issues/504),
+/// which is blocked on the design source.
 typedef ModuleEndingRun = ({int pointsEarned});
 
 /// A run that paid nothing, for a module ending opened outside the flow — a

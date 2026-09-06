@@ -5,12 +5,12 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The illustration palette, transcribed from the design bundle CSS
-/// (`prototype/index.html`, the `--art-*` block). Literal coffee:
-/// identical in both moods, because a ripe cherry is the same colour under any
-/// theme. Any drift between this table and [ArtColors] is a bug in the app,
-/// never in the table — and `design bundle` below proves the table itself has
-/// not drifted from the source it was transcribed from.
+/// The illustration palette, transcribed from the design bundle CSS — its
+/// `--art-*` block. Literal coffee: identical in both moods, because a ripe
+/// cherry is the same colour under any theme. Any drift between this table and
+/// [ArtColors] is a bug in the app, never in the table — and `design bundle`
+/// below proves the table itself has not drifted from the source it was
+/// transcribed from.
 const _spec = <String, Color>{
   '--art-raw': Color(0xFF9FB088),
   '--art-roast-light': Color(0xFFC79A63),

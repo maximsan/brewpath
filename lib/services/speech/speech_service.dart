@@ -13,8 +13,8 @@ abstract class SpeechService {
   /// Speaks [text] in [languageTag], cutting off anything already speaking.
   ///
   /// Pressing twice restarts the word rather than queueing a second reading,
-  /// which is what the design does (`speechSynthesis.cancel()` before every
-  /// `speak()`, `dictionary.jsx:14`).
+  /// which is what the design does: `speechSynthesis.cancel()` before every
+  /// `speak()`.
   Future<void> speak(String text, {required String languageTag});
 
   /// Stops and releases the platform's synthesizer.

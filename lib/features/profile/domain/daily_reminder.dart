@@ -1,9 +1,8 @@
 /// Everything the daily reminder is, short of actually firing.
 ///
-/// The times are the design's eight, transcribed from
-/// `prototype/settings.jsx:103` — a fixed set rather than a free time picker,
-/// because the design's sheet offers slots to tap and the copy promises *"one
-/// quiet reminder a day"*, not an alarm to configure.
+/// The times are the design's eight, transcribed whole — a fixed set rather
+/// than a free time picker, because the design's sheet offers slots to tap and
+/// the copy promises *"one quiet reminder a day"*, not an alarm to configure.
 ///
 /// **Nothing here schedules anything.** The rows and the sheet are this
 /// layer's; whether a reminder ever arrives is unruled and unbuilt, and lives
@@ -22,8 +21,7 @@ abstract final class DailyReminder {
     '8:30 PM',
   ];
 
-  /// The slot the sheet lands on when the learner has not chosen one
-  /// (`prototype/screens.jsx:504`).
+  /// The slot the sheet lands on when the learner has not chosen one.
   static const defaultTime = '8:00 AM';
 
   /// What the reminder row reads when no reminder is set.

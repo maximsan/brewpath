@@ -6,8 +6,7 @@ library;
 
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 
-/// The three densities Path draws a module at
-/// (`prototype/screens.jsx:1408-1440`).
+/// The three densities Path draws a module at.
 ///
 /// The course is one screen now, so five modules and thirty-two lessons have
 /// to share it. The design's answer is not a scroll but a density: only the

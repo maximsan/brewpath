@@ -10,9 +10,8 @@ const double _markSize = 10;
 /// so the dot sits at the same weight as every glyph beside it.
 const double _markStroke = 1.6;
 
-/// Reference is a **dash**, not a ring: it is not a lesser "not yet", it is
-/// off the path entirely, and a ring would say the course is coming to it
-/// (`dictionary.jsx:126`).
+/// Reference is a **dash**, not a ring: it is not a lesser "not yet", it is off
+/// the path entirely, and a ring would say the course is coming to it.
 const double _dashWidth = 7;
 const double _dashHeight = 1.5;
 const double _dashAlpha = 0.55;

@@ -22,9 +22,9 @@ import 'package:flutter/painting.dart';
 /// the colour (#379). Only `scrimInk` is a bare colour — it is ink drawn on top
 /// of an overlay, not an overlay itself.
 ///
-/// Values are transcribed from the design bundle CSS
-/// (`prototype/index.html`). `color-mix(in oklab, X n%, transparent)` scales
-/// only the alpha channel, so each is its literal at that opacity.
+/// Values are transcribed from the design bundle CSS. `color-mix(in oklab, X
+/// n%, transparent)` scales only the alpha channel, so each is its literal at
+/// that opacity.
 abstract final class OverlayColors {
   /// Opacity of [scrim] — the design's `color-mix(… #1B1614 58%, transparent)`.
   static const scrimOpacity = 0.58;
@@ -36,14 +36,14 @@ abstract final class OverlayColors {
   static const scrimBlurRadius = 8.0;
 
   /// Blur behind [dimModal] — the design's *"5px for the modal dim"*, which the
-  /// bundle also writes out as `.sheet-backdrop { backdrop-filter: blur(5px) }`
-  /// (`prototype/index.html:725`).
+  /// bundle also writes out as `.sheet-backdrop { backdrop-filter: blur(5px)
+  /// }`.
   static const dimModalBlurRadius = 5.0;
 
   /// The tint behind a control that sits on video or photography.
   ///
   /// Its one call site is the design's own: the sound toggle on the
-  /// seed-to-tree film (`prototype/screens.jsx:54`), built by #383.
+  /// seed-to-tree film, built by #383.
   ///
   /// It is the one overlay of the four that is **not full-screen**, so it is
   /// also the one the `OverlayBarrier` seam cannot render: the blur has to be
@@ -53,7 +53,7 @@ abstract final class OverlayColors {
   /// to read `.color`.
   ///
   /// It was previously the coach-mark scrim, which the design draws in
-  /// [dimModal] instead (`prototype/guide.jsx:61`).
+  /// [dimModal] instead.
   static const scrim = AppOverlay(
     color: Color.fromRGBO(0x1B, 0x16, 0x14, scrimOpacity),
     blurRadius: scrimBlurRadius,

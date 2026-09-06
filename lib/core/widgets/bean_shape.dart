@@ -4,8 +4,8 @@ import 'package:flutter/painting.dart';
 
 /// The coffee-bean silhouette every bean drawing in the app is cut from.
 ///
-/// Geometry transcribed from `prototype/flavor-wheel.jsx`: a 24×24 authoring
-/// box holding an ellipse of rx 7.5 / ry 9.5 tilted −18°, with a wavy centre
+/// Geometry transcribed from the design's flavour wheel: a 24×24 authoring box
+/// holding an ellipse of rx 7.5 / ry 9.5 tilted −18°, with a wavy centre
 /// crease. It lives here rather than inside one painter because the design
 /// draws the *same* bean twice over with two different meanings — the mastery
 /// gauge fills it, the roast meter roasts it — and a second transcription is a
@@ -36,9 +36,9 @@ abstract final class BeanShape {
   /// The bean's outline.
   static Path ovalPath() => Path()..addOval(oval);
 
-  /// The bean's centre groove — the design's
-  /// `M12 3.5 C 13.5 7, 10.5 9, 12 12 S 13.5 17, 12 20.5`, re-expressed around
-  /// the origin because the canvas is already centred and tilted.
+  /// The bean's centre groove — the design's `M12 3.5 C 13.5 7, 10.5 9, 12 12 S
+  /// 13.5 17, 12 20.5`, re-expressed around the origin because the canvas is
+  /// already centred and tilted.
   static Path creasePath() {
     const halfBox = viewBox / 2;
     Offset at(double x, double y) => Offset(x - halfBox, y - halfBox);

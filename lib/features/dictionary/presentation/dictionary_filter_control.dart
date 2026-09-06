@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 
 /// The dictionary's filter: **one segmented control**, not three loose chips.
 ///
-/// `DictFilter` (`dictionary.jsx:199`) draws a single pill divided in three —
-/// which says the three are one choice. Three separate chips say they are
-/// three independent toggles, and a learner has to try one to find out.
+/// `DictFilter` draws a single pill divided in three — which says the three are
+/// one choice. Three separate chips say they are three independent toggles, and
+/// a learner has to try one to find out.
 ///
 /// The counts come from [DictionaryCounts], where to-learn already excludes
 /// reference terms — the number a learner reads has to be a promise the course

@@ -10,9 +10,9 @@ import 'package:flutter/material.dart';
 /// The chrome the four screens behind Settings share.
 ///
 /// The design gives each of them the same frame — a back bar carrying the
-/// title, then the title again as a display heading over the sections
-/// (`prototype/settings.jsx:292`). One scaffold rather than four, for the same
-/// reason the rows are one component: four copies are four chances to drift.
+/// title, then the title again as a display heading over the sections. One
+/// scaffold rather than four, for the same reason the rows are one component:
+/// four copies are four chances to drift.
 class SettingsSubScreen extends StatelessWidget {
   /// Creates a sub-screen titled [title] over [children].
   const SettingsSubScreen({
@@ -127,9 +127,9 @@ class SettingsPlaceholder extends StatelessWidget {
 ///
 /// The design ends both screens this way rather than with a labelled row: the
 /// app's name, its version and [SettingsCopy.versionTagline], separated by
-/// middots (`prototype/screens.jsx:559`) — mono smallcaps, centred, in muted
-/// ink. The app had it as an `About` section with a stock info glyph on a
-/// `ListTile`, which is a row where the design has a signature.
+/// middots — mono smallcaps, centred, in muted ink. The app had it as an
+/// `About` section with a stock info glyph on a `ListTile`, which is a row
+/// where the design has a signature.
 ///
 /// The line is not spelled out here: the glossary guard reads comments too,
 /// and the tagline is the one phrase it allows by name.

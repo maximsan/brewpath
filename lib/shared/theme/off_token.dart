@@ -144,7 +144,7 @@ abstract final class OffTokens {
     EdgeInsets.fromLTRB(7, 5, 10, 5),
     reason:
         'The design sets the seal to `padding: 5px 10px 5px 7px` '
-        '(`brew-challenge.jsx:171`) and none of the three is a spacing stop. '
+        ' and none of the three is a spacing stop. '
         'The asymmetry is the point: the check needs less room on its side '
         'than the word does on its, so a symmetric pad would sit the mark '
         'off-centre in a shape only 13px tall.',
@@ -255,7 +255,7 @@ abstract final class OffTokens {
   static const OffToken<double> tapCueTracking = OffToken(
     2.64,
     reason:
-        '`.tap-cue` letters at 0.24em (`index.html:1111`), half again as wide '
+        '`.tap-cue` letters at 0.24em, half again as wide '
         'as any other mono label in the design and the thing that makes it '
         'read as an instruction rather than a heading. 2.64 is that em value '
         'at the 11px label step. It stays an exception because the cue is the '
