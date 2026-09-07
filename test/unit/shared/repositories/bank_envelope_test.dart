@@ -2,11 +2,9 @@ import 'package:brew_path/shared/repositories/bank_envelope.dart';
 import 'package:brew_path/shared/repositories/content_assembly.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// Proves what makes a generated bank's envelope usable, and that every way it
-/// can be unusable is refused by name rather than read past.
-///
-/// These are build defects — the banks ship inside the app — so the assertions
-/// are all about refusing loudly, not about recovering.
+// The banks ship inside the app, so an unusable envelope is a build defect:
+// every case below is about refusing loudly and by name, never about
+// recovering.
 void main() {
   const asset = 'assets/content/generated/lessons.json';
 

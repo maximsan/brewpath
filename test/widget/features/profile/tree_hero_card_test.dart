@@ -4,8 +4,8 @@ import 'package:brew_path/features/progress/domain/grove_treatment.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The hero's two derivations: which stage it names, and how it counts the
-/// course. Both are the kind of thing that reads fine until the edges.
+// The hero's two derivations — which stage it names, and how it counts the
+// course — both read fine until the edges.
 void main() {
   Future<void> pumpHero(
     WidgetTester tester, {

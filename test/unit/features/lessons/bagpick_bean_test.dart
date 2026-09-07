@@ -5,13 +5,10 @@ import 'package:brew_path/shared/theme/art_colors.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The two things about a green bean that no widget test can see.
-///
-/// A colour is not something a widget test asserts well, and patch placement
-/// seeded per bean is invisible to any assertion about rendered text. Both are
-/// pure functions precisely so they can be asked here — and in a game whose
-/// mechanic is *judging the process from the look of the seed*, being wrong
-/// about either produces a bean that draws perfectly and lies.
+// Two things about a green bean no widget test can see: its colour, and patch
+// placement seeded per bean. Both are pure functions so they can be asked here
+// — in a game about judging the process from the look of the seed, being wrong
+// about either produces a bean that draws perfectly and lies.
 void main() {
   group('a bean colour', () {
     test('resolves a design-source token to the palette', () {

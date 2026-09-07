@@ -4,20 +4,12 @@ import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The contract the smoke walk depends on: **an enabled button can be found
-/// by what it says.**
-///
-/// `integration_test/smoke_test.dart` drives onboarding by waiting for an
-/// enabled button carrying a label. It used to find one by reading the
-/// button's direct child as a `Text`; when the button grew an optional
-/// trailing mark and wrapped its label in a `Row`, every wait timed out
-/// against a button that was on screen, and main's smoke gate stayed red
-/// across five merges.
-///
-/// **The smoke job only runs on main**, so no pull request could catch that.
-/// This runs on every one. It asserts the relationship, not the layout: how
-/// the button arranges its label is the button's business, and this is free to
-/// keep passing while that changes.
+// The contract the smoke walk depends on: an enabled button can be found by
+// what it says. Reading the label as the button's direct child broke the moment
+// the button wrapped it in a `Row`, and since the smoke job runs on main only,
+// no pull request could catch it — this one runs on every one. It asserts the
+// relationship, never the layout, so it keeps passing while the button changes
+// how it arranges its label.
 void main() {
   /// The button that says [label], enabled — the shape the smoke walk uses.
   Finder liveButton(String label) => find.ancestor(

@@ -388,13 +388,10 @@ void main() {
     testWidgets('content behind the fade is not tappable through it', (
       tester,
     ) async {
-      // A gradient paints nothing solid, so it is fair to ask whether the fade
-      // is a hole a learner can tap through into the content scrolling under
-      // it. It is not — the bar wins the hit test for its whole rectangle,
-      // including the padding above and below the button. Nothing was added to
-      // make that true, which is exactly why it is pinned here: it is a
-      // property of the composition, and a refactor could take it away without
-      // any other test noticing.
+      // A gradient paints nothing solid, so the fade looks like a hole a
+      // learner could tap through. It is not: the bar wins the hit test for its
+      // whole rectangle. Nothing was added to make that true, which is why it
+      // is pinned — a refactor could take it away with no other test noticing.
       var behind = 0;
       await tester.pumpWidget(
         _host(

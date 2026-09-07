@@ -3,7 +3,6 @@ import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The install stamp: written once, when the database is created.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 

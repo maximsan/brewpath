@@ -23,9 +23,8 @@ ModuleWithProgress _item({
   isLocked: locked,
 );
 
-/// The derived state the progression indicators read. `isComplete` is the
-/// interesting one: the design defines it as *finished and reachable*, so a
-/// locked module never counts however its lesson tally reads.
+// The design defines `isComplete` as finished *and reachable*, so a locked
+// module never counts however its lesson tally reads.
 void main() {
   group('isComplete', () {
     test('is true once every lesson of an unlocked module is done', () {

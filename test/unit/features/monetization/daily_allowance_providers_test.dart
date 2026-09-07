@@ -11,10 +11,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/widget_harness.dart';
 
-/// The allowance read end to end: entries written by the **real recorder**,
-/// read the way a tap reads it. A test that wrote its own entries could pass
-/// while the recorder wrote a shape the cap cannot see, and one that reached
-/// past `activityAllowanceNow` would assert against a cache no tap consults.
+// End to end: entries written by the real recorder, read the way a tap reads
+// them. A test writing its own entries could pass while the recorder wrote a
+// shape the cap cannot see, and one reaching past `activityAllowanceNow` would
+// assert against a cache no tap consults.
 void main() {
   setUp(useInMemoryDatabase);
 

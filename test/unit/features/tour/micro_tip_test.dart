@@ -1,13 +1,9 @@
 import 'package:brew_path/features/tour/domain/micro_tip.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The seven tips' copy, pinned word for word, and the list that remembers
-/// which have been shown.
-///
-/// The copy is asserted here rather than at each trigger because it is the one
-/// thing about a tip that no behaviour test would notice going wrong: a card
-/// that shows on the right beat with the wrong sentence passes every other
-/// check in this suite.
+// The copy is pinned here rather than at each trigger because it is the one
+// thing about a tip no behaviour test would notice going wrong: a card that
+// shows on the right beat with the wrong sentence passes every other check.
 void main() {
   test('there are exactly seven tips, each with its own id', () {
     expect(MicroTip.values, hasLength(7));

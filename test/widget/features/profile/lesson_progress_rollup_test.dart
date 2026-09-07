@@ -6,8 +6,8 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The rollup card against results it can actually be handed. The fold itself
-/// is `mastery_rollup_test.dart`'s; what this pins is what the card says.
+// The fold itself belongs to `mastery_rollup_test.dart`; what this pins is what
+// the card says about results it can actually be handed.
 void main() {
   const mood = MoodColors.darkRoast;
 

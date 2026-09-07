@@ -4,14 +4,10 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The sheet primitive's contract, pinned once here rather than against
-/// whichever caller happened to be written first.
-///
-/// Everything asserted below is something a learner or a screen reader can
-/// observe: the title that appears, the name the sheet is announced by, the
-/// handle, whether long content scrolls instead of overflowing, and whether the
-/// sheet slides or is simply there. Nothing here asserts the widget tree's
-/// shape, which can change while the sheet behaves identically.
+// The primitive's contract, pinned once here rather than against whichever
+// caller was written first. Everything below is something a learner or a screen
+// reader can observe; nothing asserts the widget tree's shape, which can change
+// while the sheet behaves identically.
 void main() {
   /// Pumps a screen with one button that opens a sheet, and taps it.
   Future<void> openSheet(

@@ -1,10 +1,8 @@
-// Progress is read from the snapshot, not from the old tables (#115).
-//
-// The claim these pin is the one the ticket makes: *emptying the old tables
-// changes nothing on screen*. Each case writes the snapshot, empties the
-// tables, and asks the providers the screens actually read — so a reader left
-// behind on `ProgressRepository` or `CardRepository` fails here rather than in
-// a screen nobody thought to open.
+// Progress is read from the snapshot, not from the old tables (#115), and the
+// claim pinned here is the ticket's: emptying the old tables changes nothing on
+// screen. Each case writes the snapshot, empties the tables, and asks the
+// providers the screens read — so a reader left behind on `ProgressRepository`
+// or `CardRepository` fails here rather than in a screen nobody opened.
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/path/domain/path_providers.dart';

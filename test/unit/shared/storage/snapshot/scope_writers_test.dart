@@ -5,13 +5,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../support/snapshot_generators.dart';
 
-/// Every writer on the progress scope, against a fully-populated scope.
-///
-/// These writers copy the scope field by field, so the failure mode is a
-/// field silently left behind — progress a learner earned, dropped by the
-/// write that recorded something else. The compiler catches a *renamed*
-/// field (it did, loudly, when two branches renamed and added one in the same
-/// release), but it cannot catch a forgotten one, which is what this covers.
+// The writers copy the scope field by field, so the failure mode is a field
+// silently left behind — progress a learner earned, dropped by the write that
+// recorded something else. The compiler catches a renamed field but not a
+// forgotten one, which is what this covers.
 void main() {
   final populated = SnapshotGen(11).progress();
 

@@ -137,6 +137,28 @@ AppDatabaseService (shared/storage/app_database.dart)
   └── repositories read it lazily — no constructor wiring
 ```
 
+### Schema migrations
+
+Each schema version is dumped to `drift_schemas/` and the generated harness
+replays the whole chain in `test/database/` ([12](12-testing.md)).
+
+**A table rebuild must declare every column added after it.**
+`alterTable(TableMigration(...))` builds the new table from the **current** Dart
+definition and copies across, by name, every column it does not list in
+`newColumns`. A column added to the table later is therefore selected out of an
+old source table that has none, and every chained upgrade fails — with a raw
+SQLite error, in a step that predates the change, which reads like a bug in the
+new column rather than a rule that was missed
+([#273](https://github.com/maximsan/brewpath/issues/273)).
+
+One rebuild is left, the v4 → v5 step on `progress_records`, and
+`test/database/migration_declaration_test.dart` is that rule stated where it
+fires. `user_settings` no longer has this shape: its v6 → v7 step drops the two
+dead columns **by name**, so nothing there depends on the current definition.
+`progress_records` cannot take the same treatment — `best_score` is absent on v1
+databases and present from v2, and a name-based drop fails on the ones that
+never had it, which is exactly what the rebuild tolerates.
+
 ---
 
 ## Offline-First Strategy

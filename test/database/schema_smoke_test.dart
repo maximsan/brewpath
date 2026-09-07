@@ -17,18 +17,12 @@ import '../generated/schema_v7.dart' show DatabaseAtV7;
 import '../generated/schema_v8.dart' show DatabaseAtV8;
 import '../generated/schema_v9.dart' show DatabaseAtV9;
 
-/// Drift schema-migration harness coverage.
-///
-/// Verifies the generated [GeneratedHelper] / [SchemaVerifier] pipeline: each
-/// historical schema opens cleanly, and the real `AppDatabase` migration
-/// upgrades a v1 database to the v2 schema.
-/// The newest schema that has been dumped to `drift_schemas/`.
-///
-/// Read from the generated helper rather than written as a literal: every
-/// data-integrity case below upgrades *to the current version*, and a literal
-/// there means a schema bump silently keeps testing the old target — a bump
-/// editing a file that never mentions it. The first test keeps this honest
-/// against the app's own `schemaVersion`.
+/// The newest schema dumped to `drift_schemas/`. Read from the generated
+/// helper rather than written as a literal: every data-integrity case below
+/// upgrades *to the current version*, and a literal there means a schema bump
+/// silently keeps testing the old target — a bump editing a file that never
+/// mentions it. The first test keeps this honest against the app's own
+/// `schemaVersion`.
 final int _currentVersion = GeneratedHelper.versions.last;
 
 void main() {
@@ -90,13 +84,11 @@ void main() {
     final connection = await verifier.startAt(1);
     final db = AppDatabase(connection);
 
-    // AppDatabase.schemaVersion has advanced; the chained onUpgrade brings a
-    // v1 file all the way up to the current version in one open.
-    //
+    // The chained onUpgrade brings a v1 file all the way up in one open.
     // Targeting `db.schemaVersion` rather than a literal keeps this honest
-    // across future bumps: it asserts the migrated database matches the
-    // committed snapshot for whatever the current version is, and stops the
-    // test going stale the way a hardcoded 3 just did.
+    // across bumps: it asserts the migrated database matches the committed
+    // snapshot for whatever the current version is, instead of going stale
+    // the way a hardcoded 3 just did.
     await verifier.migrateAndValidate(db, db.schemaVersion);
 
     await db.close();
@@ -235,15 +227,9 @@ void main() {
     // The old percentage is deliberately not converted: it measured first-try
     // accuracy over all steps with unlimited retries, where grading is one-shot
     // over graded cards. A legacy row therefore lands on {0, 0} and reads as
-    // unscored — exactly the neutral empty node the design draws for a lesson
-    // finished without a stored score, rather than a fabricated fill.
-    //
-    // Targeted at the *current* version rather than at 5. `openTestedDatabase`
-    // is the real `AppDatabase`, which always migrates as far as it goes, so a
-    // run validated against the v5 snapshot starts failing the moment a v6
-    // exists. The conversion under test is unchanged by the later steps, so
-    // asserting it after the full chain proves the same thing and keeps
-    // proving it. **A schema bump means retargeting this and the test below.**
+    // unscored — the neutral empty node the design draws for a lesson finished
+    // without a stored score, not a fabricated fill. Targeted at the current
+    // version because the real `AppDatabase` always migrates as far as it goes.
     await verifier.testWithDataIntegrity(
       oldVersion: 4,
       newVersion: _currentVersion,

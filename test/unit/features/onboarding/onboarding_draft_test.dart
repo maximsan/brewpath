@@ -4,8 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/fake_onboarding_repository.dart';
 
-/// The draft after the v1 cut (ADR-0010): the name is the only answer the
-/// flow still collects, and it is optional.
+// After the v1 cut (ADR-0010) the name is the only answer the flow still
+// collects, and it is optional.
 void main() {
   late FakeOnboardingRepository fake;
 

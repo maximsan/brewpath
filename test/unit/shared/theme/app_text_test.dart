@@ -35,12 +35,10 @@ Map<String, TextStyle> _steps(MoodColors mood) => {
 };
 
 /// The step each of Material's slots lands on, and whether it takes the
-/// full-strength ink or the muted role its step defaults to.
-///
-/// This is the expectation, written out independently; the reasoning that
-/// produced it — role first, then the nearest Roboto size, ties downwards —
-/// lives once, on `AppText.textTheme`. Restating it here would give it a
-/// second home to drift from.
+/// full-strength ink or the muted role its step defaults to. The expectation
+/// only: the reasoning that produced it — role first, then the nearest Roboto
+/// size, ties downwards — lives once on `AppText.textTheme`, and restating it
+/// here would give it a second home to drift from.
 const _slotMap = <String, ({String step, bool ink})>{
   'displayLarge': (step: 'display', ink: true),
   'displayMedium': (step: 'display', ink: true),
@@ -88,12 +86,10 @@ Map<String, TextStyle?> _slots(TextTheme theme) => {
 };
 
 /// The slot names `TextTheme` declares, read off its own diagnostics rather
-/// than transcribed here, so the tables above are checked against Flutter
-/// rather than against a second copy of themselves.
-///
-/// `TextTheme.debugFillProperties` is hand-maintained upstream, so this catches
-/// a slot Flutter adds only once Flutter's own authors list it there — a good
-/// guard, not a guarantee.
+/// than transcribed, so the tables above are checked against Flutter and not
+/// against a second copy of themselves. `debugFillProperties` is hand-
+/// maintained upstream, so a slot Flutter adds shows up here only once its own
+/// authors list it — a good guard, not a guarantee.
 Iterable<String> _declaredSlotNames() => const TextTheme()
     .toDiagnosticsNode()
     .getProperties()

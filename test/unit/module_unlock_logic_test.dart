@@ -8,12 +8,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../support/progress_seed.dart';
 
-/// Module unlock lives in `modulesWithProgressProvider`: the first module is
-/// always open, and every later one waits on the module before it.
-///
-/// The rule reads the module's **position**, not a flag in the bank — the
-/// bank's `locked` is one imaginary learner's demo state, and honouring it
-/// would lock four modules for everyone.
+// Unlock reads the module's *position* in `modulesWithProgressProvider`, never
+// the bank's `locked` flag — that flag is one imaginary learner's demo state,
+// and honouring it would lock four modules for everyone.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 

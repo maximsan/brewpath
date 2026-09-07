@@ -18,16 +18,12 @@ import 'package:go_router/go_router.dart';
 
 import '../../../support/widget_harness.dart';
 
-/// The Studio door and the grove chooser, driven end to end.
-///
-/// One test per claim the ticket makes, all against the real content banks and
-/// a real in-memory snapshot — the grove is content plus a stored value, and a
-/// faked bank would prove neither.
-///
-/// Entitlement is overridden rather than faked at the payments layer:
-/// `courseEntitlement` is the app's single answer to "has Plus", and the no-op
-/// service reports free, so the Plus path exists only by override. That is the
-/// seam #89 records.
+// Driven against the real content banks and a real in-memory snapshot: the
+// grove is content plus a stored value, and a faked bank would prove neither.
+// Entitlement is overridden rather than faked at the payments layer —
+// `courseEntitlement` is the app's single answer to "has Plus" and the no-op
+// service reports free, so the Plus path exists only by override. That is the
+// seam #89 records.
 void main() {
   setUp(useInMemoryDatabase);
 

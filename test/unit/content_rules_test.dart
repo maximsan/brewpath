@@ -4,31 +4,22 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 
-/// The structural content rules, checked against the **committed** banks.
-///
-/// The extractor already refuses to write when any of these break, so on the
-/// face of it this is the same check twice. It is not: the extractor only ever
-/// sees output it just produced, and generated content is committed to never
-/// being hand-edited — a rule that needs something enforcing it. These run over
-/// the files as they actually sit in the repo, so a hand-edit, a bad merge or a
-/// half-applied regeneration fails here even though no source changed.
-///
-/// Only structural rules live here. The word search that decides whether a
-/// lesson says a term stays in the extractor alone: re-implementing a heuristic
-/// in a second language guarantees the two drift, and then CI fails on
-/// something the extractor passed with no way to tell which is right.
+/// The structural content rules, checked against the *committed* banks. The
+/// extractor refuses to write when these break, but it only ever sees output it
+/// just produced — these run over the files as they sit in the repo, so a
+/// hand-edit, a bad merge or a half-applied regeneration fails here. Only
+/// structural rules: re-implementing the extractor's word-search heuristic in a
+/// second language guarantees the two drift.
 const _generated = 'assets/content/generated';
 
 /// The allowance list the extractor reads; the Dart mirror reads the same file.
 const _exceptions = 'tool/extract_content/exceptions.json';
 
 /// A card in canonical form — keys sorted at every depth, so two cards that
-/// differ only in key order compare equal.
-///
-/// This has to agree with the extractor's own fingerprint. A bare `jsonEncode`
-/// preserves insertion order, which would let a reordered duplicate pass here
-/// while the extractor refuses it — the two sides disagreeing about the same
-/// rule, which is the failure this second seam exists to prevent.
+/// differ only in key order compare equal. It has to agree with the extractor's
+/// own fingerprint: a bare `jsonEncode` preserves insertion order, which would
+/// let a reordered duplicate pass here while the extractor refuses it, the two
+/// sides disagreeing about the same rule.
 Object? _canonicalValue(Object? value) {
   if (value is List) return value.map(_canonicalValue).toList();
   if (value is Map) {

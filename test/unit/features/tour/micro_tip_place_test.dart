@@ -1,12 +1,10 @@
 import 'package:brew_path/features/tour/domain/micro_tip_place.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// Which screens the tip layer will speak on, read straight off the address.
-///
-/// The rule that matters most here is the silent one: anything the layer does
-/// not recognise is [TipPlace.elsewhere], so a lesson, a mini-game, a drill and
-/// every settings page get no tip without anyone having to remember to exclude
-/// them.
+// Which screens the tip layer speaks on, read straight off the address. The
+// rule that matters most is the silent one: anything the layer does not
+// recognise is `TipPlace.elsewhere`, so a lesson, a mini-game, a drill and
+// every settings page get no tip without anyone remembering to exclude them.
 void main() {
   group('the places a tip fires on', () {
     test('the Learn tab', () {

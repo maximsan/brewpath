@@ -66,6 +66,36 @@ several times slower on a cold CI runner than locally).
 > idles forever and waiting on it is what disguised the breakage as a
 > ten-minute job. CI runs it on **main only** ([13](13-ci-cd.md)).
 
+### The smoke walk's helpers
+
+Three rules are written into `pumpUntil`, `tapWhenReady` and `liveButton`, and
+each of them was learned from a step that failed silently.
+
+**Wait for hit-testable, never for merely present.** A page sliding in exists
+in the tree well before it is on screen, so waiting on existence hands back a
+widget whose centre is off the right-hand edge; every tap then misses it and
+Flutter reports that as a warning, not a failure. A push transition also mounts
+both pages at once, so the raw finder can match the outgoing copy as well and
+`ensureVisible` fails on "too many elements" — a wait and an action disagreeing
+about which widget they meant.
+
+**Find a button by its label anywhere beneath it.** `liveButton` matches an
+*enabled* `FilledButton` that has the label somewhere under it. It read
+`child is Text` until the button grew an optional trailing mark and wrapped its
+label in a `Row`, after which every wait timed out against a button that was on
+screen the whole time and the gate stayed red across five merges. What the walk
+needs is an enabled button that says this; how the button lays its label out is
+the button's business. A failure dumps every string on screen, because a walk
+that says only what it wanted makes the reader guess what it got.
+
+**Never `pumpAndSettle`, and budget each step generously.** Roasty idles on an
+infinite animation, which `pumpAndSettle` waits on forever; real-time pumps
+also let Drift's FFI and the asset bundle make progress, which a fake-async
+pump does not. A cold CI runner is several times slower than a warm laptop — an
+eight-second budget passed locally and failed on the first real run — and
+nothing is lost by waiting, since a genuine hang still fails in seconds rather
+than at the job's cap.
+
 ---
 
 ## Conventions

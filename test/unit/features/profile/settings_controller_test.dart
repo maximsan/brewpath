@@ -5,7 +5,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The name seam Settings writes through, against the real settings row.
+// Against the real settings row, not a fake repository.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 

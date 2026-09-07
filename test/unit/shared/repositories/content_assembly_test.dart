@@ -4,13 +4,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/content_fixtures.dart';
 
-/// The two joins the banks do not store, and what they do when the content
-/// cannot support them.
-///
-/// Both throw rather than degrade. The banks are bundled with the app, so a
-/// broken one is a build defect — and every quiet fallback here produces
-/// something indistinguishable on screen from content that simply loaded:
-/// a course with fewer lessons, or a card with no words.
+// The two joins the banks do not store both throw rather than degrade: the
+// banks ship inside the app, so a broken one is a build defect, and every quiet
+// fallback here looks on screen exactly like content that simply loaded — a
+// course with fewer lessons, or a card with no words.
 void main() {
   final module = testModule();
 

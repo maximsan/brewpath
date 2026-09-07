@@ -1,8 +1,8 @@
 import 'package:brew_path/features/challenges/domain/challenge_surface_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// One derivation, four surfaces. The failure it prevents is two of them
-/// disagreeing about the same challenge on the same screen.
+// One derivation, four surfaces: the failure it prevents is two of them
+// disagreeing about the same challenge on the same screen.
 void main() {
   ChallengeSurfaceState state({
     String? activeId,

@@ -7,9 +7,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../support/snapshot_generators.dart';
 
-/// The snapshot is stored as one JSON blob and published as one key, so
-/// encoding is not a detail — a field that fails to round-trip is data the
-/// learner silently loses on the next launch.
+// The snapshot is stored as one JSON blob and published as one key, so encoding
+// is not a detail: a field that fails to round-trip is data the learner
+// silently loses on the next launch.
 void main() {
   test('round-trips through JSON unchanged, over generated snapshots', () {
     for (var seed = 0; seed < 200; seed++) {

@@ -24,13 +24,11 @@ import '../../../support/widget_harness.dart';
 /// than whatever the machine's clock makes today.
 final _pinnedDay = DateTime(2026, 9, 2);
 
-/// The term that day lands on for [hasCourse], read from the same bank the app
-/// ships — the expected value is derived, never transcribed, so authoring a new
-/// word cannot silently make this test assert the wrong one.
-///
-/// Read through `runAsync`, because loading the bank is real file I/O: awaited
-/// inside the test's fake-async zone it never completes, and the test hangs
-/// rather than fails.
+/// The term that day lands on for [hasCourse], derived from the bank the app
+/// ships rather than transcribed, so authoring a new word cannot silently make
+/// this assert the wrong one. Read through `runAsync`: loading the bank is real
+/// file I/O, and awaited inside the test's fake-async zone it never completes,
+/// so the test hangs rather than fails.
 Future<DictionaryTerm> _expectedTerm(
   WidgetTester tester, {
   required bool hasCourse,

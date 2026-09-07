@@ -3,11 +3,9 @@ import 'package:brew_path/shared/models/content/content_card_grading.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The course the app actually ships, asserted against the bundled banks.
-///
-/// These run as a plain `test` rather than `testWidgets` on purpose: reading a
-/// real asset through `rootBundle` inside a `testWidgets` fake-async zone
-/// hangs, and the point of this file is to read the real assets.
+// Plain `test`, never `testWidgets`: reading a real asset through `rootBundle`
+// inside a `testWidgets` fake-async zone hangs, and reading the real assets is
+// the whole point here.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 

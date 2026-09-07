@@ -2,7 +2,7 @@ import 'package:brew_path/features/tour/domain/micro_tip_layout.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// Where the card sits, on a phone with a home indicator and on one without.
+// Where the card sits, on a phone with a home indicator and on one without.
 void main() {
   test('clears the tab bar by a section gap where the bar shows', () {
     expect(

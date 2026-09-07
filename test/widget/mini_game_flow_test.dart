@@ -52,12 +52,9 @@ final List<MiniGameFormat> _formats = [
   _format('g-calibrate', 'slider', 'Dial it in', moduleId: 'm4'),
   _format('g-sequence', 'sequence', 'Put it in order', moduleId: 'm5'),
   // A game the playable registry has not ruled on — the shape the intro has to
-  // disclose. It used to be a game whose *kind* had no renderer, and it named
-  // whichever that was: 'Read the green bean', then 'Dial it in'. Every kind
-  // draws as of #124, so there is no third kind to name, and the state that
-  // remains is a catalog entry no one has ruled playable. That is the failure
-  // `mini_game_playable_test` exists to catch, and this is what a learner meets
-  // if it ever slips through.
+  // disclose. Every kind draws as of #124, so the state that remains is a
+  // catalog entry no one has ruled playable: `mini_game_playable_test` catches
+  // that, and this is what a learner meets if it ever slips through.
   _format('g-not-yet-ruled', 'sequence', 'Not ruled on yet', moduleId: 'm5'),
 ];
 

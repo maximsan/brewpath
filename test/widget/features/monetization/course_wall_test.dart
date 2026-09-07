@@ -22,14 +22,11 @@ import '../../../support/practice_shelf.dart';
 import '../../../support/progress_seed.dart';
 import '../../../support/widget_harness.dart';
 
-/// The course wall, asserted against the real app: the real router, the real
-/// content banks and the payments stub that ships, which reports no
-/// entitlement. So an unmodified boot here *is* a free learner.
-///
-/// The first lesson past the free set, and the count the locked card pitches,
-/// are both read off the shipped bank rather than written down — authoring a
-/// lesson must change what these tests assert, not quietly stop them
-/// asserting it.
+// Against the real app: the real router, the real banks and the shipped
+// payments stub, which reports no entitlement — so an unmodified boot here is a
+// free learner. The first lesson past the free set and the count the locked
+// card pitches are read off the shipped bank rather than written down, so
+// authoring a lesson changes what these assert instead of stopping them.
 void main() {
   setUp(useInMemoryDatabase);
 
