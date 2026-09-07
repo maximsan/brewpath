@@ -432,6 +432,49 @@ void main() {
     );
   });
 
+  test('a v8 database upgrades with no name given', () async {
+    // The one start point the chain had no case for. The name arrives at v9
+    // nullable rather than backfilled, so a device upgrading from here reads
+    // as "no name given" — which is the truth for it, and what the greeting
+    // already falls back to.
+    await verifier.testWithDataIntegrity(
+      oldVersion: 8,
+      newVersion: _currentVersion,
+      createOld: DatabaseAtV8.new,
+      createNew: (executor) =>
+          GeneratedHelper().databaseForVersion(executor, _currentVersion),
+      openTestedDatabase: AppDatabase.new,
+      createItems: (batch, oldDb) => batch.insert(
+        oldDb.userSettings,
+        const RawValuesInsertable<dynamic>({
+          'id': Variable<int>(1),
+          'haptics_enabled': Variable<bool>(false),
+          'sound_enabled': Variable<bool>(true),
+          'total_xp': Variable<int>(90),
+          'onboarding_completed': Variable<bool>(true),
+          'theme_mode': Variable<String>('system'),
+          'tour_seen': Variable<bool>(true),
+        }),
+      ),
+      validateItems: (newDb) async {
+        final rows = await newDb
+            .customSelect(
+              'SELECT learner_name, tour_seen, theme_mode, sound_enabled '
+              'FROM user_settings',
+            )
+            .get();
+
+        expect(rows, hasLength(1));
+        final row = rows.single;
+        expect(row.readNullable<String>('learner_name'), null);
+        // What the learner chose crosses five versions untouched.
+        expect(row.read<bool>('tour_seen'), true);
+        expect(row.read<String>('theme_mode'), 'system');
+        expect(row.read<bool>('sound_enabled'), true);
+      },
+    );
+  });
+
   test('schema v9 database has neither reminder column yet', () async {
     final connection = await verifier.startAt(9);
     final db = DatabaseAtV9(connection);
@@ -618,8 +661,11 @@ void main() {
     await db.customSelect('SELECT 1').get();
 
     expect(db.schemaVersion, 12);
+    // Off SQLite, not off the generated `allTables`: what the next test needs
+    // is that the tables are really on disk at v12, which a static list of
+    // what v12 declared cannot say.
     expect(
-      db.allTables.map((t) => t.actualTableName).toSet(),
+      await _tableNames(db),
       containsAll(<String>[
         'progress_records',
         'module_progress_records',

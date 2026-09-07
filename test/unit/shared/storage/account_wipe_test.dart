@@ -167,18 +167,6 @@ void main() {
       expect(after.onboardingCompleted, before.onboardingCompleted);
       expect(after.soundEnabled, before.soundEnabled);
     });
-
-    test('has one store left to publish to', () async {
-      // The snapshot is now the whole of what a wipe touches on the progress
-      // side: the three normalised tables it replaced are gone (#116), so
-      // there is nothing beside it that could be missed.
-      await wipe.resetProgress();
-
-      expect(
-        db.allTables.map((table) => table.actualTableName).toSet(),
-        {'user_settings', 'progress_snapshots', 'app_installs'},
-      );
-    });
   });
 
   group('Delete Account', () {

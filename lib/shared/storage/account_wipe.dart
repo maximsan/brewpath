@@ -1,6 +1,7 @@
 import 'package:brew_path/shared/repositories/install_repository.dart';
 import 'package:brew_path/shared/repositories/settings_repository.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
+import 'package:brew_path/shared/storage/snapshot/progress_snapshot.dart';
 import 'package:brew_path/shared/storage/snapshot/wipe_snapshot.dart';
 
 /// Reset Progress and Delete Account, as the app performs them.
@@ -34,23 +35,11 @@ class AccountWipe {
 
   /// Clears everything the learner earned, and keeps everything they chose.
   ///
-  /// The published snapshot is the whole mechanism: an empty progress scope at
-  /// generation + 1, which a second device adopts in place of its own progress
-  /// rather than merging with it.
-  Future<void> resetProgress() async {
-    final stored = await _snapshots.read();
-    await _snapshots.write(
-      resetTombstone(stored, at: _clock(), deviceId: deviceId),
-    );
-
-    // The settings row is deliberately untouched. Everything a reset used to
-    // zero there derives from what this wipe has just emptied, so what is left
-    // is what the learner *chose*, which a reset keeps.
-
-    // `onboardingCompleted`, `tourSeen` and `tipsSeen` fate-share by being
-    // left alone — none of them is progress. Nor is the install stamp:
-    // starting the course over does not change the day you joined.
-  }
+  /// One published tombstone is the whole mechanism: an empty progress scope
+  /// at generation + 1, which a second device adopts in place of its own
+  /// rather than merging with. Nothing else is touched — neither the settings
+  /// row nor the install stamp holds progress.
+  Future<void> resetProgress() => _publish(resetTombstone);
 
   /// The same mechanism at full scope, plus the device-local table.
   ///
@@ -59,13 +48,26 @@ class AccountWipe {
   /// onboarding answers, `tourSeen` and `tipsSeen` fate-sharing. The install
   /// stamp is restamped, not kept and not cleared (ADR-0013).
   Future<void> deleteAccount() async {
-    final stored = await _snapshots.read();
-    await _snapshots.write(
-      deleteTombstone(stored, at: _clock(), deviceId: deviceId),
-    );
-
+    await _publish(deleteTombstone);
     await _settings.deleteAll();
     await _install.recordInstall(DateTime.fromMillisecondsSinceEpoch(_clock()));
+  }
+
+  /// Reads the stored snapshot and writes [tombstone]'s version of it back.
+  ///
+  /// The one write both wipes share, so neither can stamp it differently.
+  Future<void> _publish(
+    ProgressSnapshot Function(
+      ProgressSnapshot current, {
+      required int at,
+      required String deviceId,
+    })
+    tombstone,
+  ) async {
+    final stored = await _snapshots.read();
+    await _snapshots.write(
+      tombstone(stored, at: _clock(), deviceId: deviceId),
+    );
   }
 
   static int _systemClock() => DateTime.now().millisecondsSinceEpoch;

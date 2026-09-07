@@ -39,11 +39,15 @@ String _visibleText(WidgetTester tester) {
 /// The name the walk types at onboarding and expects to survive a relaunch.
 const _name = 'Maya';
 
-/// The lesson the walk plays to completion, what finishing it pays, and the
-/// card it hands over. Written out rather than read back off the bundle: a
-/// walk that asks the app what it owes cannot notice the app owing nothing.
+/// The lesson the walk plays to completion. It and the two values below are
+/// written out rather than read back off the bundle: a walk that asks the app
+/// what it is owed cannot notice the app owing nothing.
 const _lessonId = 'm1l1';
+
+/// What finishing [_lessonId] once pays.
 const _lessonPoints = 10;
+
+/// The collectible [_lessonId] hands over.
 const _lessonCardId = 'c1';
 
 /// How many answers one card can take before the walk gives up on it. A
@@ -170,17 +174,28 @@ void main() {
     );
   }
 
+  /// The player's own position meter, scoped for [liveOption]'s reason: the
+  /// shell the lesson opens over is still in the tree, and other screens draw
+  /// a meter of their own.
+  Finder playerMeter() => find.descendant(
+    of: find.byType(LessonScreen),
+    matching: find.byType(RoastMeter),
+  );
+
   /// Plays the open lesson from the card showing to its last, leaving the
   /// caller on the completion screen. The card count comes off the meter, so
   /// a lesson that grows a card is played whole rather than abandoned.
   Future<void> playToCompletion(WidgetTester tester) async {
-    final total = tester.widget<RoastMeter>(find.byType(RoastMeter)).total;
+    final total = tester.widget<RoastMeter>(playerMeter()).total;
     for (var position = 1; position <= total; position++) {
       await pumpUntil(
         tester,
-        find.byWidgetPredicate(
-          (widget) => widget is RoastMeter && widget.position == position,
-          description: 'RoastMeter on card $position',
+        find.descendant(
+          of: find.byType(LessonScreen),
+          matching: find.byWidgetPredicate(
+            (widget) => widget is RoastMeter && widget.position == position,
+            description: 'RoastMeter on card $position',
+          ),
         ),
         describe: 'card $position of the lesson',
       );
@@ -352,14 +367,17 @@ void main() {
     // with no PR to catch it (#437). Numbers cannot rot the way a format can.
     await pumpUntil(
       tester,
-      find.byWidgetPredicate(
-        (widget) => widget is RoastMeter && widget.position == 1,
-        description: 'RoastMeter on card one',
+      find.descendant(
+        of: find.byType(LessonScreen),
+        matching: find.byWidgetPredicate(
+          (widget) => widget is RoastMeter && widget.position == 1,
+          description: 'RoastMeter on card one',
+        ),
       ),
       describe: "today's lesson opening on its first card",
     );
     expect(
-      tester.widget<RoastMeter>(find.byType(RoastMeter)).total,
+      tester.widget<RoastMeter>(playerMeter()).total,
       greaterThan(1),
       reason: 'the card count must come from the authored lesson, not a stub',
     );
