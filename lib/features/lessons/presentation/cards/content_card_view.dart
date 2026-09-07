@@ -1,5 +1,6 @@
 import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/features/lessons/domain/card_seed.dart';
+import 'package:brew_path/features/lessons/domain/held_guess.dart';
 import 'package:brew_path/features/lessons/presentation/cards/bagpick_card_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
 import 'package:brew_path/features/lessons/presentation/cards/choice_list.dart';
@@ -10,6 +11,7 @@ import 'package:brew_path/features/lessons/presentation/cards/match_board_view.d
 import 'package:brew_path/features/lessons/presentation/cards/multi_card_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/practical_card_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/predict_card_view.dart';
+import 'package:brew_path/features/lessons/presentation/cards/recall_payoff.dart';
 import 'package:brew_path/features/lessons/presentation/cards/sequence_card_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/sequence_order.dart';
 import 'package:brew_path/features/lessons/presentation/cards/slider_card_view.dart';
@@ -18,37 +20,27 @@ import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:flutter/widgets.dart';
 
-/// Builds the widget for [card].
-///
-/// A single exhaustive switch over the sealed union — no registry, no builder
-/// map, no factory indirection. Adding a kind to [ContentCard] breaks this
-/// function until the kind is handled, which is the guarantee the union was
-/// chosen for.
-///
-/// **It always returns a widget** — a card this app cannot draw is not a state
-/// it can be in, and the switch below is what holds that (#418).
-///
-/// `visual` is the one that reports no success: it is a reference a lesson
-/// shows, never a question, so it latches on arrival and mastery cannot move
-/// when a lesson gains one.
-///
-/// [nonce] identifies the lesson attempt and [cardIndex] the card's place in
-/// it; together they seed the choice order. See `card_seed.dart` for why
-/// neither is stored.
+/// Builds the widget for [card]. A single exhaustive switch over the sealed
+/// union, so adding a kind breaks this function until it is handled, and it
+/// **always returns a widget** — a card this app cannot draw is not a state it
+/// can be in (#418). [seed] fixes the choice order for this card in this
+/// attempt (`card_seed.dart`), and [guess] is the loop the opening card opens
+/// and the closing one resolves.
 Widget contentCardView(
   ContentCard card, {
-  required int nonce,
-  required int cardIndex,
+  required int seed,
   required CardSolved onSolved,
   required CardAdvance onContinue,
+  GuessLoop guess = GuessLoop.none,
 }) {
-  final seed = cardSeed(nonce: nonce, cardIndex: cardIndex);
+  final held = guess.held;
 
   return switch (card) {
     final PredictCard predict => PredictCardView(
       card: predict,
       options: shuffledBySeed(predict.options, seed),
       onContinue: onContinue,
+      onGuess: guess.onGuess,
     ),
     final ConceptCard concept => ConceptCardView(
       card: concept,
@@ -76,6 +68,9 @@ Widget contentCardView(
       copy: _recallCopy(recall),
       onSolved: onSolved,
       onContinue: onContinue,
+      // Only when the lesson actually opened on a guess: a deep link into a
+      // single card reaches recall with nothing to pay off.
+      payoff: held == null ? null : RecallPayoff(guess: held),
     ),
     final DecisionCard decision => GradedPicker(
       options: shuffledBySeed(_decisionOptions(decision), seed),
@@ -150,34 +145,20 @@ List<ChoiceOption> _quizOptions(QuizCard card) => [
   ChoiceOption(text: 'False', isCorrect: !card.answer),
 ];
 
-/// What is wrong with the cup, as the eyebrow above the question.
-///
-/// The tags are symptoms — `SOUR`, `THIN` — and they are framing rather than
-/// part of the question: they say how the cup tastes before the learner is
-/// asked what to do about it. So they take the picker's existing eyebrow slot
-/// instead of adding a parameter only one kind of the five would ever pass.
+/// What is wrong with the cup, as the eyebrow above the question — the tags are
+/// framing rather than part of it, so they take the picker's existing slot.
 ///
 /// ⚠️ **A visual deferral, recorded rather than hidden.** The design draws
-/// these as berry-tinted pill chips that dim when a wrong fix makes the cup
-/// worse. This renders them as one smallcaps line, which carries the same words
-/// and none of the reaction. Reinstating the chips means composing around the
-/// shared picker rather than filling its slots, which is a bigger change than
-/// making the kind render and belongs to whoever takes the cup's reaction on.
+/// these as berry-tinted chips that dim when a wrong fix makes the cup worse;
+/// this renders one smallcaps line, with the words and none of the reaction.
 String _tastefixSymptoms(TastefixCard card) => card.tags.join(' · ');
 
-/// What each picking kind says around its choices.
-///
-/// One builder per kind, beside the option builders below, because the two are
-/// halves of the same mapping: what a kind *offers* and what it *says* are the
-/// two things a card has to get right about its content, and reading one
-/// without the other is how they drift.
-///
-/// Named rather than written inline in the switch for a reason with history.
-/// The last real bug in this file was a mapping — `flavor` marks correctness
-/// with an index where `tastefix` marks it on the choice, and routing one
-/// through the other's helper produced a round nobody could win, silently. It
-/// was caught because the *options* half already had a name to test against.
-/// These are the other half.
+/// What each picking kind says around its choices — one builder per kind,
+/// beside the option builders below, because what a kind *offers* and what it
+/// *says* are halves of one mapping. Named rather than written inline with
+/// history: the last real bug here routed `flavor` through `tastefix`'s helper
+/// and produced a round nobody could win, caught only because the options half
+/// already had a name to test against. These are the other half.
 PickerCopy _mcqCopy(McqCard card) => PickerCopy(
   prompt: card.prompt,
   explain: ({required wasCorrect}) => card.explanation,
@@ -231,23 +212,12 @@ PickerCopy _flavorCopy(FlavorCard card) => PickerCopy(
   explain: ({required wasCorrect}) => card.explanation,
 );
 
-/// A flavor round's notes, marked from the card's answer **index**.
-///
-/// Deliberately not [_fromChoices], which the tastefix kind uses, even though
-/// both kinds hold `List<Choice>` and the two lines would look interchangeable
-/// in review.
-///
-/// A tastefix round marks its correct choice *on the choice*. A flavor round
-/// does not — its notes are authored bare and correctness lives in a separate
-/// index into the authored order. Passing them through [_fromChoices] compiles,
-/// renders, and yields a round where every note reads as wrong: success can
-/// never fire and the learner scores zero on a game that looks perfect. Nothing
-/// throws.
-///
-/// So the index is resolved here, and the result is shuffled *after*. Once an
-/// option carries its own correctness the seeded order is free to move it;
-/// shuffling first would leave the index pointing at whatever landed in that
-/// position.
+/// A flavor round's notes, marked from the card's answer **index** — never
+/// [_fromChoices], though both kinds hold `List<Choice>` and the two lines look
+/// interchangeable in review. A tastefix round marks correctness on the choice;
+/// a flavor round keeps it in a separate index, so passing it through the other
+/// helper compiles, renders, and yields a round where every note reads as
+/// wrong. The index resolves here and the result shuffles *after* it.
 List<ChoiceOption> _flavorOptions(FlavorCard card) => [
   for (final (index, choice) in card.choices.indexed)
     ChoiceOption(text: choice.text, isCorrect: index == card.answer),

@@ -22,7 +22,7 @@ the row it was missing.
 | `--sage` | Success = "learned". Correct answers, learned terms, pass mark. **Never an action.** | `#5F6E55` | `#97A285` |
 | `--warn` | **Celebration only.** Streak flame, win crown, completion glow, fastest answer | `#9A5F1C` | `#E6A35C` |
 | `--berry` | Alert. Wrong answers, cross mark, destructive | `#A8362A` | `#C75450` |
-| `--cream` | (dark only) | — | `#F0DCB8` |
+| `--art-cream` | Illustration highlight (dark only). Renamed from `--cream` in the 3 Sep drop, so it sits with the rest of the `--art-*` palette | — | `#F0DCB8` |
 
 `--accent-text` exists because QA measured `--accent` at **4.23:1 on `--bg`** in
 Cupping — under AA for small text — and ruled that moving the one brand colour

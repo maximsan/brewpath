@@ -5,6 +5,7 @@ import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/roast_meter.dart';
 import 'package:brew_path/features/lessons/domain/card_seed.dart';
+import 'package:brew_path/features/lessons/domain/held_guess.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/features/lessons/presentation/cards/content_card_view.dart';
 import 'package:brew_path/features/saved/domain/saved_key.dart';
@@ -47,6 +48,10 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
   int _index = 0;
   int _correctCount = 0; // graded cards answered right — there is no second try
   bool _started = false; // ensures lesson_started fires exactly once
+
+  /// The opening card's guess, held here because it outlives the card that
+  /// took it and dies with the attempt: a replay opens the loop again.
+  HeldGuess? _prediction;
 
   void _logStartedOnce(LessonModel lesson) {
     if (_started) return;
@@ -122,14 +127,10 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
   }
 
   /// The bar's centre: where the learner is, once there is a lesson to be in.
-  ///
-  /// The design puts the position *in the bar* and nothing else with it — no
-  /// lesson title, no module eyebrow, because the card is the screen. It is
-  /// the same [RoastMeter] the mini-game
-  /// player mounts, so the app has one idea of how-far-through.
-  ///
-  /// Null while the lesson is still loading — the bar keeps its close mark and
-  /// shows nothing else, rather than a position out of thin air.
+  /// The design puts the position in the bar and nothing else with it, and it
+  /// is the same [RoastMeter] the mini-game player mounts. Null while the
+  /// lesson loads — the bar keeps its close mark rather than showing a
+  /// position out of thin air.
   Widget? _position(LessonModel? lesson) {
     if (lesson == null) return null;
 
@@ -172,10 +173,15 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
   Widget _lessonContent(LessonModel lesson) {
     final card = contentCardView(
       lesson.cards[_index],
-      nonce: _nonce,
-      cardIndex: _index,
+      seed: cardSeed(nonce: _nonce, cardIndex: _index),
       onSolved: _onSolved,
       onContinue: () => _onContinue(lesson),
+      guess: GuessLoop(
+        held: _prediction,
+        // No `setState`: the card that took the guess is already showing it,
+        // and nothing else on screen reads it until the recall card mounts.
+        onGuess: (guess) => _prediction = guess,
+      ),
     );
 
     return SafeArea(

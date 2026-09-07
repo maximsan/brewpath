@@ -1,4 +1,5 @@
 import 'package:brew_path/core/widgets/answer_feedback.dart';
+import 'package:brew_path/features/lessons/domain/held_guess.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
 import 'package:brew_path/features/lessons/presentation/cards/pick_tile_row.dart';
@@ -6,27 +7,19 @@ import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 
-/// The opening card: a framing paragraph and one binary guess.
-///
-/// Ungraded, and deliberately so — the guess is *held*, not marked. The card
-/// knows the answer and does not say it; the lesson's closing `recall` card is
-/// what resolves it, some minutes later. Marking the guess here would spend
-/// the tension the whole lesson is built on, which is why this card exposes no
-/// success callback at all: there is nothing to be right about yet.
-///
-/// The guess is offered as **two tiles side by side**, not as a row list — the
-/// one picking moment in the course that is not graded should not look like
-/// the ones that are. It also stays changeable right up to Continue, because
-/// nothing is scored and so nothing is protected by latching.
-///
-/// Once a guess is taken, Roasty holds it on a card: the same block every
-/// graded card closes on, in the one standing that marks nothing.
+/// The opening card: a framing paragraph and one binary guess, ungraded on
+/// purpose — the guess is *held*, and the closing `recall` card resolves it
+/// minutes later. Marking it here would spend the tension the lesson is built
+/// on, which is why the card reports no success at all. Two tiles side by side
+/// rather than a row list, and changeable up to Continue, because nothing is
+/// scored and so nothing is protected by latching.
 class PredictCardView extends StatefulWidget {
   /// Creates a [PredictCardView].
   const PredictCardView({
     required this.card,
     required this.options,
     required this.onContinue,
+    this.onGuess,
     super.key,
   });
 
@@ -39,12 +32,23 @@ class PredictCardView extends StatefulWidget {
   /// Fired when the learner moves on.
   final CardAdvance onContinue;
 
+  /// Fired with each guess, including a changed one — the guess stays editable
+  /// until Continue, so the last one taken is what the recall card resolves.
+  final ValueChanged<HeldGuess>? onGuess;
+
   @override
   State<PredictCardView> createState() => _PredictCardViewState();
 }
 
 class _PredictCardViewState extends State<PredictCardView> {
   int? _selectedIndex;
+
+  void _guess(int index) {
+    setState(() => _selectedIndex = index);
+    widget.onGuess?.call(
+      HeldGuess(pick: widget.options[index], answer: widget.card.answer),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +72,7 @@ class _PredictCardViewState extends State<PredictCardView> {
         PickTileRow(
           options: widget.options,
           chosenIndex: _selectedIndex,
-          onChoose: (index) => setState(() => _selectedIndex = index),
+          onChoose: _guess,
         ),
         if (_selectedIndex case final chosen?) ...[
           const SizedBox(height: AppSpacing.md),

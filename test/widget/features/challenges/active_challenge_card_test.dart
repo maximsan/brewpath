@@ -1,5 +1,6 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/challenges/presentation/active_challenge_card.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -33,6 +34,17 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('Next brews · 5 min'), findsOneWidget);
+  });
+
+  testWidgets('sets its title one step below a lesson title', (tester) async {
+    await pump(tester);
+
+    // 22, not the lesson title's 26: the challenge is optional, and the design
+    // added a ladder step rather than let it shout at the same size.
+    expect(
+      tester.widget<Text>(find.text('Two cups, two ratios')).style?.fontSize,
+      AppText.subtitle().fontSize,
+    );
   });
 
   testWidgets('reads as one sentence to a screen reader', (tester) async {
