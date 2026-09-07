@@ -17,13 +17,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/widget_harness.dart';
 
-/// The shelf end to end: what was saved is still on it after a **real**
-/// restart, and Reset — the one the Settings button runs — takes it away.
-///
-/// The database is a file that is closed and reopened between the write and
-/// the app, so this asserts survival rather than only that no provider cached
-/// the answer. #288 covers the same claim below the widget layer; this is the
-/// half it could not reach, because the shelf did not exist yet.
+// A real restart: the database is a file closed and reopened between the write
+// and the app, so this asserts survival rather than only that no provider
+// cached the answer. #288 covers the same claim below the widget layer; this is
+// the half it could not reach, because the shelf did not exist yet.
 void main() {
   late Directory dir;
   late File file;
@@ -124,17 +121,12 @@ void main() {
     await pumpWithProviders(tester, const BrewPathApp());
     expect(find.byTooltip('${SavedScreen.title}, 1 item'), findsOneWidget);
 
-    // The app's own reset path — the function the Settings button calls —
-    // rather than a hand-rolled invalidation. Invalidating here would assert
-    // the test's work rather than the app's, which is exactly how the missing
-    // `savedKeysProvider` invalidation stayed hidden the first time.
-    //
-    // Driven from a tab root rather than by walking into Settings: leaving
-    // Settings resumes the header's paused subscription and flushes the
-    // invalidated chain during the transition's build, which the framework
-    // asserts on. That is a real defect, filed separately — it is not what
-    // this test is for, and reproducing it here would only hide this
-    // assertion behind that one.
+    // The app's own reset path, the function the Settings button calls, rather
+    // than a hand-rolled invalidation — which would assert the test's work and
+    // is how the missing `savedKeysProvider` invalidation stayed hidden. Driven
+    // from a tab root rather than by walking out of Settings, because that
+    // flushes the invalidated chain during the transition's build and trips a
+    // framework assertion — a real defect, filed separately.
     await resetProgress(refFrom(tester));
     await settleLoaders(tester);
 

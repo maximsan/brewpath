@@ -15,9 +15,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../support/fake_onboarding_repository.dart';
 
-/// The last onboarding step, and the only one that asks for anything. Since
-/// ADR-0010 cut the goal and brewer questions, it is also the only question in
-/// v1 — and it is optional.
+// The last onboarding step, and since ADR-0010 cut the goal and brewer
+// questions, the only one v1 asks at all — and it is optional.
 void main() {
   late FakeOnboardingRepository fake;
 

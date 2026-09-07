@@ -15,13 +15,11 @@ import 'package:go_router/go_router.dart';
 
 import '../../../support/content_fixtures.dart';
 
-/// What a shared link does once it has been forwarded: the two behaviours that
-/// only real navigation can answer — leaving the route the link arrived on,
-/// and a second link landing on the page the first one is still using.
-///
-/// Deliberately a small router rather than the app's own: `appRouter` starts
-/// on Loading, which navigates for itself, and a test that steers it is racing
-/// the app's startup rather than testing anything.
+/// The two behaviours only real navigation can answer: leaving the route a
+/// shared link arrived on, and a second link landing on the page the first is
+/// still using. Driven through a small router rather than the app's own —
+/// `appRouter` starts on Loading, which navigates for itself, so a test that
+/// steers it races the app's startup instead of testing anything.
 final List<CardWithCollection> _collection = [
   testCardWithCollection('a', collected: true),
   testCardWithCollection('b', collected: false),

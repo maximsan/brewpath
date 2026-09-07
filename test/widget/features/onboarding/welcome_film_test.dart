@@ -8,13 +8,11 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../../support/fake_video_player_platform.dart';
 import '../../../support/intro_router.dart';
 
-/// Welcome *with a film*.
-///
-/// The other Welcome tests run against the fallback, because the real decoders
-/// are native and never register under `flutter test`. That leaves the film and
-/// everything sitting on it — the sound control — unreachable. A stand-in
-/// platform makes the initialised path testable, which is the only path a
-/// learner ever sees.
+/// Pumps Welcome with a film playing. The other Welcome tests run against the
+/// fallback, because the real decoders are native and never register under
+/// `flutter test`, which leaves the film and the sound control sitting on it
+/// unreachable. A stand-in platform makes the initialised path testable — the
+/// only path a learner ever sees.
 Future<FakeVideoPlayerPlatform> _pumpWelcome(
   WidgetTester tester, {
   bool reduceMotion = false,

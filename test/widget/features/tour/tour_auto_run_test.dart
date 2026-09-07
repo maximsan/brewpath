@@ -8,13 +8,10 @@ import 'package:showcaseview/showcaseview.dart';
 
 import '../../../support/widget_harness.dart';
 
-/// The Tour's auto-run gate, its two answers, and the write both of them make.
-///
-/// Driven through the whole app rather than through `LearnScreen` alone,
-/// because the gate is a *fact about the shell*: the flag lives in the
-/// database, the offer is made when the Learn tab shows real data, and the
-/// fourth stop is anchored on the tab bar. A test that pumped Learn on its own
-/// would prove none of that.
+// Driven through the whole app rather than `LearnScreen` alone, because the
+// gate is a fact about the shell: the flag lives in the database, the offer is
+// made when the Learn tab shows real data, and the fourth stop is anchored on
+// the tab bar. Pumping Learn on its own would prove none of that.
 void main() {
   setUp(useInMemoryDatabase);
 
@@ -37,13 +34,11 @@ void main() {
   Future<bool> tourSeenOnDisk() async =>
       (await SettingsRepository().getSettings()).tourSeen;
 
-  /// Drives the running Tour without `pumpAndSettle`.
-  ///
-  /// The spotlight's moving animation repeats for as long as a stop is on
-  /// screen, so `pumpAndSettle` never returns — the same reason the shared
-  /// harness hand-rolls its settle around Roasty's idle loop. `runAsync` is
-  /// what lets the real Drift write behind `markTourSeen` actually complete
-  /// between frames.
+  /// Drives the running Tour without `pumpAndSettle`, which never returns here:
+  /// the spotlight's animation repeats for as long as a stop is on screen, the
+  /// same reason the shared harness hand-rolls its settle around Roasty's idle
+  /// loop. `runAsync` is what lets the real Drift write behind `markTourSeen`
+  /// complete between frames.
   Future<void> letTheTourRun(WidgetTester tester) async {
     for (var frame = 0; frame < 20; frame++) {
       await tester.runAsync(

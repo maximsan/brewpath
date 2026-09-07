@@ -2,14 +2,12 @@ import 'package:brew_path/features/cards/domain/card_art.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// Every art, actually compiled.
-///
-/// **Deliberately not a widget test.** `SvgPicture` catches a load failure and
-/// renders an empty box — `errorBuilder` is null by default — and the parser
-/// discards an element it cannot read with a `print` rather than a throw. So
-/// pumping the art and checking `takeException()` passes whatever happens, and
-/// a corrupt asset would reach a learner as a blank tile with the suite green.
-/// Loading the bytes runs the same compile without the widget swallowing it.
+// Deliberately not a widget test: `SvgPicture` catches a load failure and
+// renders an empty box, and the parser discards an element it cannot read with
+// a `print` rather than a throw. Pumping the art and checking `takeException()`
+// passes whatever happens, so a corrupt asset would reach a learner as a blank
+// tile with the suite green. Loading the bytes runs the same compile with
+// nothing swallowing it.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 

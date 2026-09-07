@@ -12,13 +12,10 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../../support/find_mark.dart';
 import '../../../support/widget_harness.dart';
 
-/// Replay from the App Guide: the stops, without the offer.
-///
-/// The whole point of this entry point is what replay *does not* do — no intro
-/// overlay, and no write — so most of these assertions are negative ones. It
-/// reaches the row the way a learner does, through Settings → Support → Help
-/// and support → App Guide, because the path is half of what the ticket asks
-/// for.
+// The point of this entry point is what replay does *not* do — no intro
+// overlay, and no write — so most of these assertions are negative ones. It
+// reaches the row the way a learner does, through Settings → Support → Help and
+// support → App Guide, because the path is half of what the ticket asks for.
 void main() {
   setUp(useInMemoryDatabase);
 

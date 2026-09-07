@@ -11,8 +11,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/widget_harness.dart';
 
-/// The sheet a lock raises: what it says, the one way to buy, the way to
-/// decline, and what it refuses to offer.
+// The sheet a lock raises: what it says, the one way to buy, the way to
+// decline, and what it refuses to offer.
 void main() {
   setUp(useInMemoryDatabase);
 
@@ -95,13 +95,11 @@ void main() {
 
     expect(find.text(PlusCopy.buy), findsOneWidget);
 
-    // The three things the design's sheet carries that v1 must not: an ad
-    // path, a trial, and a plan chooser.
-    //
-    // Matched on **whole words**. This began as `textContaining('ad')`, which
-    // passed by luck — it would have fired on *Loading*, *already* or *ahead*
-    // and failed with a message about advertising. A substring is the wrong
-    // shape for a rule about vocabulary.
+    // The three things the design's sheet carries that v1 must not: an ad path,
+    // a trial, and a plan chooser. Matched on whole words — this began as
+    // `textContaining('ad')`, which passed by luck and would have fired on
+    // *Loading*, *already* or *ahead*. A substring is the wrong shape for a rule
+    // about vocabulary.
     final forbidden = RegExp(
       r'\b(ads?|advert\w*|trial|month(ly)?|year(ly)?|subscri\w+)\b',
       caseSensitive: false,

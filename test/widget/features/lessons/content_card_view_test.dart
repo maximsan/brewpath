@@ -143,13 +143,11 @@ const _tastefix = ContentCard.tastefix(
   explanation: 'Puckering with no weight behind it is under-extraction.',
 );
 
-/// A flavor round whose correct note sits **third**, not first.
-///
-/// The position is the point. `flavor` holds correctness as an index into the
-/// authored order rather than on the choice, so a mapping that reads the wrong
-/// field, or shuffles before it marks, produces a round nobody can win — and a
-/// fixture answering at index 0 would pass under several of those mistakes by
-/// luck.
+/// A flavor round whose correct note sits third, not first — the position is
+/// the point. `flavor` holds correctness as an index into the authored order
+/// rather than on the choice, so a mapping that reads the wrong field, or
+/// shuffles before it marks, makes a round nobody can win; a fixture answering
+/// at index 0 would pass under several of those mistakes by luck.
 const _flavor = ContentCard.flavor(
   clue: 'A sharp, tangy brightness that makes your mouth water',
   prompt: 'Name the note',
@@ -210,13 +208,11 @@ bool _announces(WidgetTester tester, String verdict) => tester
 
 void main() {
   group('every renderer', () {
-    // Three kinds are absent on purpose, all because this table asserts a
-    // *disabled Continue* before the card is answered. `visual` and
-    // `practical` are read, not asked, so Continue is live from the first
-    // frame; `multi` shows *Check answers* in its place until it commits, as
-    // the design's single swapping button has it. Each is covered where its
-    // own rule lives, and the build sweep at the foot of this file is what
-    // keeps every kind covered.
+    // Three kinds are absent on purpose: this table asserts a disabled Continue
+    // before the card is answered, and `visual` and `practical` are read rather
+    // than asked, while `multi` shows Check answers in its place until it
+    // commits. Each is covered where its own rule lives, and the build sweep at
+    // the foot of this file keeps every kind covered.
     final cards = <String, ContentCard>{
       'predict': _predict,
       'concept': _concept,
@@ -1152,14 +1148,11 @@ void main() {
   });
 
   group('every kind of card builds without throwing', () {
-    // One of each kind, which is what makes this the file's only sweep across
-    // the whole union — five of them are built nowhere else here.
-    //
-    // It used to compare `hasRenderer` against what this function returned:
-    // two exhaustive switches that could drift about a kind they both already
-    // handled. There is one switch now (#418), so the drift it guarded against
-    // cannot happen, and what is left worth asking is whether every arm
-    // actually builds rather than throwing on the way.
+    // One of each kind, which makes this the file's only sweep across the whole
+    // union — five are built nowhere else here. It used to compare `hasRenderer`
+    // against this function, two exhaustive switches that could drift; there is
+    // one switch now (#418), so what is left worth asking is whether every arm
+    // builds rather than throwing on the way.
     const cases = <String, ContentCard>{
       'predict': ContentCard.predict(
         label: 'LESSON 1',

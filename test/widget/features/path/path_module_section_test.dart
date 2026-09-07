@@ -75,8 +75,8 @@ Finder get _lock => find.byWidgetPredicate(
   (widget) => widget is IconMark && widget.icon == AppIcon.lock,
 );
 
-/// A locked module row says which lock it is — and the two locks are not the
-/// same sentence. Progression opens by learning; the purchase does not.
+// A locked module row says which lock it is, and the two are not the same
+// sentence: progression opens by learning, where the purchase does not.
 void main() {
   group('locked by progress', () {
     testWidgets('names the module that opens it', (tester) async {

@@ -13,9 +13,8 @@ import '../../../support/content_fixtures.dart';
 import '../../../support/progress_seed.dart';
 import '../../../support/widget_harness.dart';
 
-/// The capstone offer, over the real course: a module is finished by finishing
-/// its lessons, and only then does it offer anything — and only while the
-/// challenge is still live.
+// Over the real course: a module is finished by finishing its lessons, and only
+// then does it offer anything, and only while the challenge is still live.
 void main() {
   setUp(useInMemoryDatabase);
 
@@ -92,15 +91,11 @@ void main() {
     expect(find.text(ChallengeOfferRow.kicker), findsNothing);
   });
 
-  // A bank whose only entry is lesson-scoped: the module is finished, and
-  // there is still nothing to offer.
-  //
-  // The override goes on the **root** container rather than in a nested
-  // `ProviderScope`. A generated `@riverpod` provider declares no
-  // `dependencies`, so `moduleChallengeOffer` resolves at the root however
-  // deeply the widget reading it is nested — a scoped override would reach
-  // widgets that read the bank directly and nothing else, and the offer built
-  // on top of it would quietly keep the real bank.
+  // A bank whose only entry is lesson-scoped. The override goes on the root
+  // container, not a nested `ProviderScope`: a generated `@riverpod` provider
+  // declares no `dependencies`, so `moduleChallengeOffer` resolves at the root
+  // however deeply the reading widget is nested, and a scoped override would
+  // leave the offer built on top of it quietly reading the real bank.
   testWidgets('a module with no capstone offers nothing', (tester) async {
     await completeModuleOne(tester);
 
