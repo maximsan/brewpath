@@ -44,6 +44,13 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Checks run before code leaves the machine.** `tool/git-hooks/` fails a
+  commit on an unformatted Dart file, and a push on anything `flutter analyze`,
+  the metrics, a guard test or the changelog check would fail in CI; install
+  with `git config core.hooksPath tool/git-hooks`. A new guard caps a comment
+  block at six lines and holds today's overruns in a baseline that only
+  shrinks, and every `OffTokens` reason is now the design's own declaration,
+  checked against the prototype.
 - **Today's card carries the module's picture.** The five module illustrations
   the design ships are bundled, and the day's card draws its module's under the
   title, in both its open and its locked state.

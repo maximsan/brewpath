@@ -34,6 +34,7 @@ Run all Flutter/Dart commands from the repo root.
 | `flutter test test/widget/<file>`           | Run a single widget test.                                                                                                                                                           |
 | `flutter run -d "iPhone 17"`                | Launch on the iOS simulator.                                                                                                                                                        |
 | `flutter build ios --release --no-codesign` | Release iOS build without signing (mirrors CI).                                                                                                                                     |
+| `git config core.hooksPath tool/git-hooks`  | Install the git hooks, once per clone: format check on commit; analyze, metrics, the guard tests and the changelog check on push. See [`docs/13-ci-cd.md`](docs/13-ci-cd.md).      |
 
 ### Tests
 

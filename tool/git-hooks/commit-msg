@@ -1,0 +1,4 @@
+#!/bin/sh
+# No repo rule of its own; keeps a machine-wide commit-msg hook running.
+set -eu
+. "$(dirname "$0")/run_global_hook.sh"

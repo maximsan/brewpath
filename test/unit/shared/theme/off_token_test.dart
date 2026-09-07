@@ -21,29 +21,58 @@ void main() {
   });
 
   group('the register', () {
-    test('every entry states a reason', () {
-      expect(OffTokens.register, isNotEmpty);
+    test('every reason is one line', () {
       for (final entry in OffTokens.register) {
         expect(
           entry.reason.trim(),
           isNotEmpty,
+          reason: 'an off-token value with no reason is a magic literal',
+        );
+        expect(
+          entry.reason.length,
+          lessThanOrEqualTo(OffToken.maxReasonLength),
           reason:
-              'an off-token value with no stated reason is just a magic '
-              'literal that passed review once',
+              'a reason names the design declaration, nothing more; the '
+              'argument for it belongs in an ADR or issue: ${entry.reason}',
         );
       }
     });
 
+    test('every reason quotes a design declaration the design still makes', () {
+      final design = Directory('prototype')
+          .listSync()
+          .whereType<File>()
+          .where((file) => RegExp(r'\.(jsx|html|js)$').hasMatch(file.path))
+          .map((file) => file.readAsStringSync())
+          .join('\n');
+      final quoted = RegExp('`([^`]+)`');
+
+      for (final entry in OffTokens.register) {
+        final declarations = quoted
+            .allMatches(entry.reason)
+            .map((match) => match.group(1)!)
+            .toList();
+        expect(
+          declarations,
+          isNotEmpty,
+          reason: 'a reason quotes the design in backticks: ${entry.reason}',
+        );
+        for (final declaration in declarations) {
+          expect(
+            design.contains(declaration),
+            isTrue,
+            reason:
+                'the design no longer says `$declaration`; re-check the value '
+                'and quote what it says now: ${entry.reason}',
+          );
+        }
+      }
+    });
+
     test('holds only trackings a single component owns', () {
-      // Tracking is the ladder's job since #410 — `AppTracking` carries the
-      // design's values, and a spacing is an exception only while exactly one
-      // component is set at it. The tab label left when the sticky header's
-      // compact eyebrow turned out to be lettered at the same 0.18em (#441).
-      // Two survive: the tap cue's 0.24em, and the micro-tip body's nothing at
-      // a rung whose own spacing is the smallcaps rule. A third entry means
-      // asking again whether the value has become vocabulary.
-      // Read off the source rather than the list, because the register types
-      // every entry as `double` and cannot tell a tracking from a padding.
+      // A tracking two components share is vocabulary and belongs on
+      // AppTracking (#410, #441). Read off the source: the register types
+      // every entry as double and cannot tell a tracking from a padding.
       final declared = RegExp(r'OffToken<double> (\w*Tracking) =')
           .allMatches(
             File('lib/shared/theme/off_token.dart').readAsStringSync(),

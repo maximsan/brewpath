@@ -34,7 +34,38 @@ Iterable<String> commentsIn(String source) =>
 String withoutComments(String source) =>
     _runs(source).where((run) => !run.isComment).map((run) => run.text).join();
 
-typedef _Run = ({bool isComment, String text});
+/// A block comment, or line comments on consecutive lines: where it starts
+/// (1-based) and how many lines it spans.
+typedef CommentBlock = ({int line, int lines, String text});
+
+/// The comment blocks in [source], in order.
+Iterable<CommentBlock> commentBlocksIn(String source) sync* {
+  int? blockStart;
+  var blockEnd = 0;
+  CommentBlock blockAt(int start, int end) => (
+    line: '\n'.allMatches(source.substring(0, start)).length + 1,
+    lines: '\n'.allMatches(source.substring(start, end)).length + 1,
+    text: source.substring(start, end),
+  );
+
+  for (final run in _runs(source)) {
+    if (!run.isComment) continue;
+    final gap = source.substring(blockEnd, run.start);
+    final continues = blockStart != null && _isLineBreak(gap);
+    if (!continues) {
+      if (blockStart != null) yield blockAt(blockStart, blockEnd);
+      blockStart = run.start;
+    }
+    blockEnd = run.start + run.text.length;
+  }
+  if (blockStart != null) yield blockAt(blockStart, blockEnd);
+}
+
+final _lineBreak = RegExp(r'^[ \t]*\n[ \t]*$');
+
+bool _isLineBreak(String gap) => _lineBreak.hasMatch(gap);
+
+typedef _Run = ({bool isComment, int start, String text});
 
 /// [source] cut into comments and the code between them, in order and whole.
 Iterable<_Run> _runs(String source) sync* {
@@ -42,14 +73,14 @@ Iterable<_Run> _runs(String source) sync* {
   var index = 0;
   while (index < source.length) {
     if (source.startsWith('//', index)) {
-      yield (isComment: false, text: source.substring(codeStart, index));
+      yield _code(source, codeStart, index);
       final end = _lineEnd(source, index);
-      yield (isComment: true, text: source.substring(index, end));
+      yield (isComment: true, start: index, text: source.substring(index, end));
       index = codeStart = end;
     } else if (source.startsWith('/*', index)) {
-      yield (isComment: false, text: source.substring(codeStart, index));
+      yield _code(source, codeStart, index);
       final end = _blockCommentEnd(source, index);
-      yield (isComment: true, text: source.substring(index, end));
+      yield (isComment: true, start: index, text: source.substring(index, end));
       index = codeStart = end;
     } else if (_opensString(source, index)) {
       index = _stringEnd(source, index);
@@ -57,8 +88,11 @@ Iterable<_Run> _runs(String source) sync* {
       index++;
     }
   }
-  yield (isComment: false, text: source.substring(codeStart));
+  yield _code(source, codeStart, source.length);
 }
+
+_Run _code(String source, int from, int to) =>
+    (isComment: false, start: from, text: source.substring(from, to));
 
 int _lineEnd(String source, int from) {
   final newline = source.indexOf('\n', from);

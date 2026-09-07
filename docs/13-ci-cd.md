@@ -46,28 +46,32 @@ future CI job needs Firebase active at runtime (e.g. an integration-test job).
 
 ---
 
-## Local pre-commit checks
+## Local checks (git hooks)
 
-Developers should run these before pushing:
-
-```bash
-# Format
-dart format .
-
-# Analyze
-flutter analyze
-
-# Test
-flutter test
-```
-
-Optionally add a git pre-push hook:
+[`tool/git-hooks/`](../tool/git-hooks/) carries the checks that run before
+code leaves the machine. Install once per clone:
 
 ```bash
-# .git/hooks/pre-push
-#!/bin/sh
-flutter analyze && flutter test
+git config core.hooksPath tool/git-hooks
 ```
+
+- **pre-commit** fails the commit when a staged Dart file is unformatted.
+  Sub-second.
+- **pre-push** runs the CI gates that need no device: the format check,
+  `flutter analyze`, the `dart_code_linter` metrics, every
+  `*_guard_test.dart`, and `tool/check_changelog.sh`. About a minute.
+  `git push --no-verify` skips all of it; `NO_CHANGELOG=1 git push` skips only
+  the changelog check, for a PR that will carry the `no-changelog` label.
+- **commit-msg** has no rule of its own. Every hook here first forwards to the
+  machine-wide hook of the same name, so setting `core.hooksPath` does not
+  switch one off.
+
+The full test suite and the iOS build stay in CI: they take minutes, and a
+push is not a merge. A repo-wide rule test is named `*_guard_test.dart` so the
+pre-push hook picks it up.
+
+Claude Code formats every Dart file it writes through the `PostToolUse` hook in
+[`.claude/settings.json`](../.claude/settings.json).
 
 ---
 
