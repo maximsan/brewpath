@@ -210,7 +210,7 @@ flutter pub get                                    # required BEFORE format — 
 
 tool/check_changelog.sh                            # pull-request job; needs origin/main fetched
 dart tool/check_comments.dart --changed            # pull-request job; same base
-dart format --output=none --set-exit-if-changed lib test integration_test
+dart format --output=none --set-exit-if-changed lib test integration_test tool
 flutter analyze
 dart run dart_code_linter:metrics analyze lib --set-exit-on-violation-level=warning
 flutter test

@@ -27,7 +27,7 @@ Run all Flutter/Dart commands from the repo root.
 | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `flutter pub get`                           | Fetch/refresh dependencies (after editing `pubspec.yaml`).                                                                                                                          |
 | `dart run build_runner build`               | Regenerate code after changing a Freezed model, Riverpod provider, or Drift table. build_runner 2.15 auto-resolves conflicts — the old `--delete-conflicting-outputs` flag is gone. |
-| `dart format lib test integration_test`     | Format code. CI fails on unformatted files (`--set-exit-if-changed`).                                                                                                               |
+| `dart format lib test integration_test tool` | Format code. CI fails on unformatted files (`--set-exit-if-changed`).                                                                                                          |
 | `flutter analyze`                           | Static analysis / lints — keep clean before pushing.                                                                                                                                |
 | `flutter test`                              | Run the full test suite.                                                                                                                                                            |
 | `flutter test test/unit/<file>`             | Run a single unit test.                                                                                                                                                             |
@@ -75,6 +75,12 @@ you touch is a file you clean, so older overruns drain with ordinary work.
 Anything that needs more than six lines is documentation: put it in `docs/` or
 an ADR and leave one line pointing there. The rule itself is in
 [`CLAUDE.md`](CLAUDE.md) under _Code Conventions_.
+The changed-files form diffs against your local `origin/main`, so `git fetch`
+first. To see what is left across the whole tree:
+
+```bash
+find lib test integration_test -name '*.dart' | xargs dart tool/check_comments.dart
+```
 
 **Hooks** live in `tool/git-hooks/`; `tool/install_hooks.sh` links them into
 the repository's shared hooks directory, so every worktree runs them and a
