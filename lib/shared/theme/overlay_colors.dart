@@ -22,9 +22,9 @@ import 'package:flutter/painting.dart';
 /// the colour (#379). Only `scrimInk` is a bare colour — it is ink drawn on top
 /// of an overlay, not an overlay itself.
 ///
-/// Values are transcribed from the design bundle CSS. `color-mix(in oklab, X
-/// n%, transparent)` scales only the alpha channel, so each is its literal at
-/// that opacity.
+/// Values are transcribed from the design bundle CSS.
+/// `color-mix(in oklab, X n%, transparent)` scales only the alpha channel, so
+/// each is its literal at that opacity.
 abstract final class OverlayColors {
   /// Opacity of [scrim] — the design's `color-mix(… #1B1614 58%, transparent)`.
   static const scrimOpacity = 0.58;
@@ -36,8 +36,8 @@ abstract final class OverlayColors {
   static const scrimBlurRadius = 8.0;
 
   /// Blur behind [dimModal] — the design's *"5px for the modal dim"*, which the
-  /// bundle also writes out as `.sheet-backdrop { backdrop-filter: blur(5px)
-  /// }`.
+  /// bundle also writes out as
+  /// `.sheet-backdrop { backdrop-filter: blur(5px) }`.
   static const dimModalBlurRadius = 5.0;
 
   /// The tint behind a control that sits on video or photography.

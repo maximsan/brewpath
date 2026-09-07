@@ -94,7 +94,7 @@ enum AppTracking {
   /// than as a kicker. At the rung's 0.14em a count's numerals drift apart and
   /// the line stops reading as a single quantity, which is the whole reason the
   /// design tracks these tighter than the smallcaps beside them:
-  /// `.lesson-row.meta`, `.challenge-pill`, `.bag-opt-s`.
+  /// `.lesson-row .meta`, `.challenge-pill`, `.bag-opt-s`.
   meta(0.08),
 
   /// 0.12em — the sequence card's out-of-place hint, `.seq-hint`, and the meta

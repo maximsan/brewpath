@@ -10,11 +10,12 @@ import 'package:flutter/painting.dart';
 /// tokens: keeping cherry and bean colours out of `--warn` is what lets that
 /// token mean exactly one thing (celebration).
 ///
-/// So there is nothing here to reach a mood with. Every token is a `static
-/// const` on a class that cannot be extended, implemented or instantiated, and
-/// there is no `of(context)` accessor — mood-dependence is unrepresentable
-/// rather than merely discouraged. That also makes them free to use from inside
-/// `CustomPainter.paint()`, which has no `BuildContext` to thread one through.
+/// So there is nothing here to reach a mood with. Every token is a
+/// `static const` on a class that cannot be extended, implemented or
+/// instantiated, and there is no `of(context)` accessor — mood-dependence is
+/// unrepresentable rather than merely discouraged. That also makes them free to
+/// use from inside `CustomPainter.paint()`, which has no `BuildContext` to
+/// thread one through.
 ///
 /// Values are transcribed 1:1 from the design bundle CSS — its `--art-*` block;
 /// the drift guard in `test/unit/shared/theme/art_colors_test.dart` keeps them

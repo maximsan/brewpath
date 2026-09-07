@@ -16,8 +16,8 @@ import 'package:brew_path/shared/models/module_model.dart';
 /// beside its table: *"The 10 stages are pinned to the 5 modules so a module
 /// boundary is always a visible jump. Each module owns two growth steps — one
 /// at its halfway point, one on completion — except the last, whose single step
-/// IS the harvest"*, giving `start 1 · M1 2→3 · M2 4→5 · M3 6→7 · M4 8→9 · M5
-/// →10`.
+/// IS the harvest"*, giving
+/// `start 1 · M1 2→3 · M2 4→5 · M3 6→7 · M4 8→9 · M5 →10`.
 ///
 /// A ratio rounded up agreed with that for four growth events and then parted:
 /// on the shipped course it reached the last stage at lesson 29, so the tree

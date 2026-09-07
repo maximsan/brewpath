@@ -83,8 +83,8 @@ const double grinderUnitSize = 10;
 /// Its tracking, as the design writes it — `0.22em` resolved at
 /// [grinderUnitSize], because Flutter wants logical units.
 ///
-/// The design's own `GrinderDial` sets the readout `fontSize="10"
-/// letterSpacing="0.22em"`, which is this pair exactly.
+/// The design's own `GrinderDial` sets the readout
+/// `fontSize="10" letterSpacing="0.22em"`, which is this pair exactly.
 ///
 /// **Not a step of `AppTracking`**, even so: the design writes it as an SVG
 /// attribute on a drawing, not as a rule on a rung, and this widget is scaled

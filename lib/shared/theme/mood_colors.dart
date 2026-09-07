@@ -164,9 +164,10 @@ class MoodColors extends ThemeExtension<MoodColors> {
   /// draws exactly that pair, an accent mark next to an `--accent-text` word,
   /// and an accent-bordered pill with an `--accent-text` label.
   ///
-  /// The design writes it as `color-mix(in oklab, var(--accent) 62%,
-  /// var(--ink))` and the values here are that mix resolved per mood, so a mood
-  /// keeps one literal per token and lerps between moods like every other.
+  /// The design writes it as
+  /// `color-mix(in oklab, var(--accent) 62%, var(--ink))` and the values here
+  /// are that mix resolved per mood, so a mood keeps one literal per token and
+  /// lerps between moods like every other.
   final Color accentText;
 
   /// Success = "learned": correct answers, learned terms, pass mark.

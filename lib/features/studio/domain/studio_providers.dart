@@ -44,9 +44,10 @@ class StudioGrove {
   /// What the Studio door says under its title: the planted species, and its
   /// light when the light is not the default.
   ///
-  /// The design writes `variety.name + (light is daylight ? '' : ' · ' +
-  /// light.name)` — Daylight is the grove's resting state, so naming it would
-  /// be telling the learner they have chosen something when they have not.
+  /// The design writes
+  /// `variety.name + (light is daylight ? '' : ' · ' + light.name)` — Daylight
+  /// is the grove's resting state, so naming it would be telling the learner
+  /// they have chosen something when they have not.
   String get doorSubtitle {
     final variety = varietyOf(planted.variety);
     if (planted.light == Grove.defaultLight) return variety.name;
