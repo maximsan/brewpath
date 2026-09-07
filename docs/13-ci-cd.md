@@ -28,6 +28,7 @@ embedded copy drifted from the real file twice). What the jobs are, and why:
 | Job | Runner | What it gates |
 |---|---|---|
 | `changelog` | ubuntu | PRs only: requires a `docs/CHANGELOG.md` entry for product changes (`tool/check_changelog.sh`); skipped when the PR carries the `no-changelog` label |
+| `comments` | ubuntu | PRs only: every Dart file the PR touches must have no comment block over six lines (`tool/check_comments.dart --changed <base>`); the same check runs locally on write, commit and push — README _Quality checks_ |
 | `format` | ubuntu | `dart format` over `lib test integration_test` (after `pub get`, so the language version resolves) |
 | `analyze & test` | ubuntu | `flutter analyze`, the `dart_code_linter` metrics gate, then `flutter test` (Node pinned for the extractor test) |
 | `iOS build` | macos | `flutter build ios --release --no-codesign` — no CocoaPods (SPM) and no Firebase plist while `kUseFirebase == false`. Then asserts `PrivacyInfo.xcprivacy` reached `Runner.app`: it is wired into the target by hand, and nothing else notices if a merge drops it (#166) |
@@ -46,28 +47,13 @@ future CI job needs Firebase active at runtime (e.g. an integration-test job).
 
 ---
 
-## Local pre-commit checks
+## Local checks
 
-Developers should run these before pushing:
-
-```bash
-# Format
-dart format .
-
-# Analyze
-flutter analyze
-
-# Test
-flutter test
-```
-
-Optionally add a git pre-push hook:
-
-```bash
-# .git/hooks/pre-push
-#!/bin/sh
-flutter analyze && flutter test
-```
+What runs before code leaves the machine — on the agent's write, on commit and
+on push — is documented once, in the README's _Quality checks_ section
+([`README.md`](../README.md#quality-checks)). The hooks live in
+[`tool/git-hooks/`](../tool/git-hooks/) and run the same commands as the jobs
+above.
 
 ---
 

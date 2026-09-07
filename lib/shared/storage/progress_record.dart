@@ -1,5 +1,4 @@
 // Mutable DTO — fields are self-describing.
-// ignore_for_file: public_member_api_docs
 
 import 'package:brew_path/features/progress/domain/mastery.dart';
 

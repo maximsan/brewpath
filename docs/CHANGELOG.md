@@ -44,6 +44,17 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Checks run before code leaves the machine.** `tool/git-hooks/` fails a
+  commit on an unformatted Dart file or an over-long comment, and a push on
+  anything the metrics, a guard test, the comment check or the changelog
+  check would fail in CI; `tool/install_hooks.sh` installs them,
+  and Claude Code runs it at session start. A comment block is capped at six
+  lines in every Dart file a branch touches, checked on the agent's write, on
+  commit, on push and by a new `comments` CI job, so older overruns drain as
+  files are touched. `public_member_api_docs` is off, so a doc
+  comment is written where a name does not say enough rather than on every
+  public member. Every `OffTokens` reason is now the design's own declaration,
+  checked against the prototype.
 - **Today's card carries the module's picture.** The five module illustrations
   the design ships are bundled, and the day's card draws its module's under the
   title, in both its open and its locked state.
