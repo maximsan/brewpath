@@ -1,4 +1,5 @@
 import 'package:brew_path/app/app.dart';
+import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/features/tour/domain/tour_copy.dart';
 import 'package:brew_path/features/tour/domain/tour_step.dart';
 import 'package:brew_path/features/tour/presentation/today_tour.dart';
@@ -158,7 +159,7 @@ void main() {
     // The day's own call to action, under the frame that is explaining it.
     // The design freezes the page: the target is being introduced, not offered.
     await tester.tap(
-      find.widgetWithText(FilledButton, 'Start'),
+      find.text(AppLabels.beginLesson),
       warnIfMissed: false,
     );
     await letTheTourRun(tester);

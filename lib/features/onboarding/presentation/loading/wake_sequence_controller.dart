@@ -79,10 +79,17 @@ class WakeSequenceController extends ChangeNotifier {
   void _scheduleNextStep() {
     _stepTimer?.cancel();
     _stepTimer = Timer(_phase.duration, () {
+      // A cycle closes on the way out of its last phase, and whether it
+      // advances is decided *before* the loop is drawn back at its first
+      // frame. Stepping to `sleeping` first put a sleeping mascot and the tap
+      // cue on screen for the one frame the page transition then carried
+      // away — a flash of a state the learner was never meant to see.
+      if (_phase == WakePhase.values.last) {
+        _cycle++;
+        if (_advanceIfGateResolved()) return;
+      }
       _phase = _phase.next;
-      if (_phase == WakePhase.sleeping) _cycle++;
       notifyListeners();
-      if (_cycle >= 1 && _advanceIfGateResolved()) return;
       _scheduleNextStep();
     });
   }

@@ -1,7 +1,7 @@
 name: brew_path
 description: BrewPath — Duolingo-style coffee education app.
 publish_to: "none"
-version: 1.0.0+3
+version: 1.1.0+4
 
 environment:
   # Floor raised 3.3.0 → 3.8.0: required by json_serializable 6.13.x.
@@ -114,6 +114,9 @@ flutter:
     # one set shared by every grove variety (#136).
     - assets/images/trees/
     - assets/icons/
+    # The five module pictures Today's card carries — the prototype's shipped
+    # raster art, bundled under the path the modules bank names for each.
+    - assets/modules/
     # Written by tool/extract_card_art.js from the prototype source — the
     # thirty-seven collectible illustrations, extracted rather than redrawn.
     - assets/card_art/

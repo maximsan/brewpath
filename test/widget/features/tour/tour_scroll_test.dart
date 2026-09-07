@@ -20,9 +20,13 @@ import '../../../support/widget_harness.dart';
 void main() {
   setUp(useInMemoryDatabase);
 
-  /// A real phone, so the feed is taller than the screen.
+  /// A small phone, which is what it now takes for the Learn tab to overflow.
+  ///
+  /// The figure is load-bearing and `theFeedCanScroll` asserts it stays so: at
+  /// 800 the tab fits outright since the practice shelf lost its empty Lessons
+  /// group, and a test that cannot scroll would pass while proving nothing.
   void usePhoneViewport(WidgetTester tester) {
-    tester.view.physicalSize = const Size(400, 800);
+    tester.view.physicalSize = const Size(400, 600);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
@@ -71,9 +75,21 @@ void main() {
     return target.localToGlobal(Offset.zero, ancestor: layer) & target.size;
   }
 
+  ScrollPosition feedPosition(WidgetTester tester) =>
+      Scrollable.of(TourAnchor.contextFor(TourStep.today)!).position;
+
   /// How far the Learn feed has been scrolled.
-  double feedOffset(WidgetTester tester) =>
-      Scrollable.of(TourAnchor.contextFor(TourStep.today)!).position.pixels;
+  double feedOffset(WidgetTester tester) => feedPosition(tester).pixels;
+
+  /// Fails when the tab fits the screen, which would make every assertion
+  /// below true for the wrong reason.
+  void theFeedCanScroll(WidgetTester tester) => expect(
+    feedPosition(tester).maxScrollExtent,
+    greaterThan(0),
+    reason:
+        'this suite exists to drive the scroll; a Learn tab that fits the '
+        'viewport proves nothing about it',
+  );
 
   Future<void> advance(WidgetTester tester) async {
     await tester.tap(find.text(TourCopy.stopNext));
@@ -84,14 +100,18 @@ void main() {
     tester,
   ) async {
     await startTheTour(tester);
-    expect(feedOffset(tester), 0, reason: 'the first stop is already in view');
+    theFeedCanScroll(tester);
+    // Not necessarily zero: the day's own card is tall enough on a small
+    // phone that the rule already nudges the feed to leave the Tour card its
+    // room. What matters is that reaching the *next* stop moves it further.
+    final atFirstStop = feedOffset(tester);
 
     await advance(tester);
 
     expect(
       feedOffset(tester),
-      greaterThan(0),
-      reason: 'the practice section does not fit on a phone with the day',
+      greaterThan(atFirstStop),
+      reason: 'the practice shelf does not fit on a phone with the day',
     );
     // And the frame landed on it rather than where it used to be. The target
     // is measured *after* the scroll, which is the whole reason the two are
@@ -109,6 +129,7 @@ void main() {
     tester,
   ) async {
     await startTheTour(tester);
+    theFeedCanScroll(tester);
     await advance(tester);
     expect(feedOffset(tester), greaterThan(0));
 
@@ -125,6 +146,7 @@ void main() {
     tester,
   ) async {
     await startTheTour(tester);
+    theFeedCanScroll(tester);
     await advance(tester);
 
     // The design brings a target no closer than this to the feed's top edge,

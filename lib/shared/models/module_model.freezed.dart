@@ -291,7 +291,12 @@ mixin _$ModuleModel {
 /// this: module *n* opens when module *n − 1* is complete.
  int get n;/// The eyebrow the design prints above a lesson — `MODULE 1 · BEANS`.
  String get label;/// The module's glyph name, resolved to an icon by `moduleIcon`.
-@JsonKey(name: 'glyph') String get iconName; String get title; List<ModuleLesson> get lessons; ContentReward get reward;
+@JsonKey(name: 'glyph') String get iconName; String get title; List<ModuleLesson> get lessons; ContentReward get reward;/// The module's picture, by the path the bank names — the same path the
+/// design loads, so the file is bundled under that name verbatim. Null for
+/// a module the design has not illustrated.
+ String? get art;/// Where the picture is anchored when a frame crops it: CSS
+/// `object-position`, as in `50% 42%`. Read by `alignmentFromObjectPosition`.
+ String? get artPos;
 /// Create a copy of ModuleModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -304,16 +309,16 @@ $ModuleModelCopyWith<ModuleModel> get copyWith => _$ModuleModelCopyWithImpl<Modu
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ModuleModel&&(identical(other.id, id) || other.id == id)&&(identical(other.n, n) || other.n == n)&&(identical(other.label, label) || other.label == label)&&(identical(other.iconName, iconName) || other.iconName == iconName)&&(identical(other.title, title) || other.title == title)&&const DeepCollectionEquality().equals(other.lessons, lessons)&&(identical(other.reward, reward) || other.reward == reward));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ModuleModel&&(identical(other.id, id) || other.id == id)&&(identical(other.n, n) || other.n == n)&&(identical(other.label, label) || other.label == label)&&(identical(other.iconName, iconName) || other.iconName == iconName)&&(identical(other.title, title) || other.title == title)&&const DeepCollectionEquality().equals(other.lessons, lessons)&&(identical(other.reward, reward) || other.reward == reward)&&(identical(other.art, art) || other.art == art)&&(identical(other.artPos, artPos) || other.artPos == artPos));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,n,label,iconName,title,const DeepCollectionEquality().hash(lessons),reward);
+int get hashCode => Object.hash(runtimeType,id,n,label,iconName,title,const DeepCollectionEquality().hash(lessons),reward,art,artPos);
 
 @override
 String toString() {
-  return 'ModuleModel(id: $id, n: $n, label: $label, iconName: $iconName, title: $title, lessons: $lessons, reward: $reward)';
+  return 'ModuleModel(id: $id, n: $n, label: $label, iconName: $iconName, title: $title, lessons: $lessons, reward: $reward, art: $art, artPos: $artPos)';
 }
 
 
@@ -324,7 +329,7 @@ abstract mixin class $ModuleModelCopyWith<$Res>  {
   factory $ModuleModelCopyWith(ModuleModel value, $Res Function(ModuleModel) _then) = _$ModuleModelCopyWithImpl;
 @useResult
 $Res call({
- String id, int n, String label,@JsonKey(name: 'glyph') String iconName, String title, List<ModuleLesson> lessons, ContentReward reward
+ String id, int n, String label,@JsonKey(name: 'glyph') String iconName, String title, List<ModuleLesson> lessons, ContentReward reward, String? art, String? artPos
 });
 
 
@@ -341,7 +346,7 @@ class _$ModuleModelCopyWithImpl<$Res>
 
 /// Create a copy of ModuleModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? n = null,Object? label = null,Object? iconName = null,Object? title = null,Object? lessons = null,Object? reward = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? n = null,Object? label = null,Object? iconName = null,Object? title = null,Object? lessons = null,Object? reward = null,Object? art = freezed,Object? artPos = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,n: null == n ? _self.n : n // ignore: cast_nullable_to_non_nullable
@@ -350,7 +355,9 @@ as String,iconName: null == iconName ? _self.iconName : iconName // ignore: cast
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,lessons: null == lessons ? _self.lessons : lessons // ignore: cast_nullable_to_non_nullable
 as List<ModuleLesson>,reward: null == reward ? _self.reward : reward // ignore: cast_nullable_to_non_nullable
-as ContentReward,
+as ContentReward,art: freezed == art ? _self.art : art // ignore: cast_nullable_to_non_nullable
+as String?,artPos: freezed == artPos ? _self.artPos : artPos // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 /// Create a copy of ModuleModel
@@ -444,10 +451,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  int n,  String label, @JsonKey(name: 'glyph')  String iconName,  String title,  List<ModuleLesson> lessons,  ContentReward reward)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  int n,  String label, @JsonKey(name: 'glyph')  String iconName,  String title,  List<ModuleLesson> lessons,  ContentReward reward,  String? art,  String? artPos)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ModuleModel() when $default != null:
-return $default(_that.id,_that.n,_that.label,_that.iconName,_that.title,_that.lessons,_that.reward);case _:
+return $default(_that.id,_that.n,_that.label,_that.iconName,_that.title,_that.lessons,_that.reward,_that.art,_that.artPos);case _:
   return orElse();
 
 }
@@ -465,10 +472,10 @@ return $default(_that.id,_that.n,_that.label,_that.iconName,_that.title,_that.le
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  int n,  String label, @JsonKey(name: 'glyph')  String iconName,  String title,  List<ModuleLesson> lessons,  ContentReward reward)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  int n,  String label, @JsonKey(name: 'glyph')  String iconName,  String title,  List<ModuleLesson> lessons,  ContentReward reward,  String? art,  String? artPos)  $default,) {final _that = this;
 switch (_that) {
 case _ModuleModel():
-return $default(_that.id,_that.n,_that.label,_that.iconName,_that.title,_that.lessons,_that.reward);case _:
+return $default(_that.id,_that.n,_that.label,_that.iconName,_that.title,_that.lessons,_that.reward,_that.art,_that.artPos);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -485,10 +492,10 @@ return $default(_that.id,_that.n,_that.label,_that.iconName,_that.title,_that.le
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  int n,  String label, @JsonKey(name: 'glyph')  String iconName,  String title,  List<ModuleLesson> lessons,  ContentReward reward)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  int n,  String label, @JsonKey(name: 'glyph')  String iconName,  String title,  List<ModuleLesson> lessons,  ContentReward reward,  String? art,  String? artPos)?  $default,) {final _that = this;
 switch (_that) {
 case _ModuleModel() when $default != null:
-return $default(_that.id,_that.n,_that.label,_that.iconName,_that.title,_that.lessons,_that.reward);case _:
+return $default(_that.id,_that.n,_that.label,_that.iconName,_that.title,_that.lessons,_that.reward,_that.art,_that.artPos);case _:
   return null;
 
 }
@@ -500,7 +507,7 @@ return $default(_that.id,_that.n,_that.label,_that.iconName,_that.title,_that.le
 @JsonSerializable()
 
 class _ModuleModel extends ModuleModel {
-  const _ModuleModel({required this.id, required this.n, required this.label, @JsonKey(name: 'glyph') required this.iconName, required this.title, required final  List<ModuleLesson> lessons, required this.reward}): _lessons = lessons,super._();
+  const _ModuleModel({required this.id, required this.n, required this.label, @JsonKey(name: 'glyph') required this.iconName, required this.title, required final  List<ModuleLesson> lessons, required this.reward, this.art, this.artPos}): _lessons = lessons,super._();
   factory _ModuleModel.fromJson(Map<String, dynamic> json) => _$ModuleModelFromJson(json);
 
 @override final  String id;
@@ -520,6 +527,13 @@ class _ModuleModel extends ModuleModel {
 }
 
 @override final  ContentReward reward;
+/// The module's picture, by the path the bank names — the same path the
+/// design loads, so the file is bundled under that name verbatim. Null for
+/// a module the design has not illustrated.
+@override final  String? art;
+/// Where the picture is anchored when a frame crops it: CSS
+/// `object-position`, as in `50% 42%`. Read by `alignmentFromObjectPosition`.
+@override final  String? artPos;
 
 /// Create a copy of ModuleModel
 /// with the given fields replaced by the non-null parameter values.
@@ -534,16 +548,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ModuleModel&&(identical(other.id, id) || other.id == id)&&(identical(other.n, n) || other.n == n)&&(identical(other.label, label) || other.label == label)&&(identical(other.iconName, iconName) || other.iconName == iconName)&&(identical(other.title, title) || other.title == title)&&const DeepCollectionEquality().equals(other._lessons, _lessons)&&(identical(other.reward, reward) || other.reward == reward));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ModuleModel&&(identical(other.id, id) || other.id == id)&&(identical(other.n, n) || other.n == n)&&(identical(other.label, label) || other.label == label)&&(identical(other.iconName, iconName) || other.iconName == iconName)&&(identical(other.title, title) || other.title == title)&&const DeepCollectionEquality().equals(other._lessons, _lessons)&&(identical(other.reward, reward) || other.reward == reward)&&(identical(other.art, art) || other.art == art)&&(identical(other.artPos, artPos) || other.artPos == artPos));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,n,label,iconName,title,const DeepCollectionEquality().hash(_lessons),reward);
+int get hashCode => Object.hash(runtimeType,id,n,label,iconName,title,const DeepCollectionEquality().hash(_lessons),reward,art,artPos);
 
 @override
 String toString() {
-  return 'ModuleModel(id: $id, n: $n, label: $label, iconName: $iconName, title: $title, lessons: $lessons, reward: $reward)';
+  return 'ModuleModel(id: $id, n: $n, label: $label, iconName: $iconName, title: $title, lessons: $lessons, reward: $reward, art: $art, artPos: $artPos)';
 }
 
 
@@ -554,7 +568,7 @@ abstract mixin class _$ModuleModelCopyWith<$Res> implements $ModuleModelCopyWith
   factory _$ModuleModelCopyWith(_ModuleModel value, $Res Function(_ModuleModel) _then) = __$ModuleModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, int n, String label,@JsonKey(name: 'glyph') String iconName, String title, List<ModuleLesson> lessons, ContentReward reward
+ String id, int n, String label,@JsonKey(name: 'glyph') String iconName, String title, List<ModuleLesson> lessons, ContentReward reward, String? art, String? artPos
 });
 
 
@@ -571,7 +585,7 @@ class __$ModuleModelCopyWithImpl<$Res>
 
 /// Create a copy of ModuleModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? n = null,Object? label = null,Object? iconName = null,Object? title = null,Object? lessons = null,Object? reward = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? n = null,Object? label = null,Object? iconName = null,Object? title = null,Object? lessons = null,Object? reward = null,Object? art = freezed,Object? artPos = freezed,}) {
   return _then(_ModuleModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,n: null == n ? _self.n : n // ignore: cast_nullable_to_non_nullable
@@ -580,7 +594,9 @@ as String,iconName: null == iconName ? _self.iconName : iconName // ignore: cast
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,lessons: null == lessons ? _self._lessons : lessons // ignore: cast_nullable_to_non_nullable
 as List<ModuleLesson>,reward: null == reward ? _self.reward : reward // ignore: cast_nullable_to_non_nullable
-as ContentReward,
+as ContentReward,art: freezed == art ? _self.art : art // ignore: cast_nullable_to_non_nullable
+as String?,artPos: freezed == artPos ? _self.artPos : artPos // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

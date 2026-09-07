@@ -43,6 +43,10 @@ abstract class AppLabels {
   static const continueLearning = 'Continue learning';
   static const allCaughtUp = 'All caught up';
 
+  // The lead card's one action while the day's lesson is the learner's to
+  // open. The locked state's label lives with the other wall copy.
+  static const beginLesson = 'Begin lesson';
+
   // Practice is one section with two groups under it, which is how the design
   // names them: `PRACTICE`, then `Lessons` and `Games`.
   static const practiceSection = 'Practice';

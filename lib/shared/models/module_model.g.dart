@@ -32,6 +32,8 @@ _ModuleModel _$ModuleModelFromJson(Map<String, dynamic> json) => _ModuleModel(
       .map((e) => ModuleLesson.fromJson(e as Map<String, dynamic>))
       .toList(),
   reward: ContentReward.fromJson(json['reward'] as Map<String, dynamic>),
+  art: json['art'] as String?,
+  artPos: json['artPos'] as String?,
 );
 
 Map<String, dynamic> _$ModuleModelToJson(_ModuleModel instance) =>
@@ -43,4 +45,6 @@ Map<String, dynamic> _$ModuleModelToJson(_ModuleModel instance) =>
       'title': instance.title,
       'lessons': instance.lessons,
       'reward': instance.reward,
+      'art': instance.art,
+      'artPos': instance.artPos,
     };
