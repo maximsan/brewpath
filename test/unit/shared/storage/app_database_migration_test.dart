@@ -3,10 +3,9 @@ import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// Smoke-tests the on-create + on-upgrade story for the v3 onboarding
-/// columns on `user_settings`. The full historical migration chain has its
-/// own coverage in `test/database/schema_smoke_test.dart`; this file
-/// focuses on the new columns' defaults and round-trip behavior.
+// Only the v3 onboarding columns on `user_settings` — their defaults on create
+// and their round-trip. The full historical chain is covered in
+// `test/database/schema_smoke_test.dart`.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 

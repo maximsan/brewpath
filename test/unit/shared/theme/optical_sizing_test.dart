@@ -4,17 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// The design sets `font-optical-sizing: auto` on every display element, which
-/// is a browser setting the `opsz` axis to the rendered size. Fraunces is drawn
-/// for that: at 9 the strokes thicken and the spacing opens so small text holds
-/// up, at 144 they refine for a headline.
-///
-/// A static cut has one drawing of the face for every size, so a ladder
-/// spanning 9.5–56px gets a compromise at both ends — headings too delicate,
-/// labels too tight. These tests pin the axis to the rung, so the app's type
-/// carries the same compensation the design's does.
-///
-/// Only Fraunces has the axis. The Plex faces are static and must not be handed
-/// variations they cannot answer.
+/// is a browser setting the `opsz` axis to the rendered size, and Fraunces is
+/// drawn for that. A static cut gets a compromise at both ends of a 9.5–56px
+/// ladder, so these pin the axis to the rung. Only Fraunces has it — the Plex
+/// faces are static and must not be handed variations they cannot answer.
 double? _opszOf(TextStyle style) {
   final variations = style.fontVariations;
   if (variations == null) return null;

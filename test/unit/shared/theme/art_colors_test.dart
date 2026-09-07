@@ -30,12 +30,10 @@ const _spec = <String, Color>{
 };
 
 /// The palette as the app states it, by the design source's own token names.
-///
-/// Read from `lib` rather than restated here, so there is one such map and the
-/// bagpick bean's colour resolution cannot drift from what this guard checks.
-/// **The comparison keeps all of its force**: [_spec]'s hex values are still
-/// transcribed independently, so a constant filed under the wrong token name
-/// fails the first test below exactly as it did when both maps lived here.
+/// Read from `lib` rather than restated, so the bagpick bean's colour
+/// resolution cannot drift from what this guard checks. The comparison keeps
+/// its force: [_spec]'s hex values are still transcribed independently, so a
+/// constant filed under the wrong token name still fails the first test below.
 Map<String, Color> get _tokens => ArtColors.byTokenName;
 
 void main() {
