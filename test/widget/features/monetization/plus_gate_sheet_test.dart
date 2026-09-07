@@ -98,8 +98,8 @@ void main() {
     // The three things the design's sheet carries that v1 must not: an ad path,
     // a trial, and a plan chooser. Matched on whole words — this began as
     // `textContaining('ad')`, which passed by luck and would have fired on
-    // *Loading*, *already* or *ahead*. A substring is the wrong shape for a rule
-    // about vocabulary.
+    // *Loading*, *already* or *ahead*. A substring is the wrong shape for a
+    // rule about vocabulary.
     final forbidden = RegExp(
       r'\b(ads?|advert\w*|trial|month(ly)?|year(ly)?|subscri\w+)\b',
       caseSensitive: false,

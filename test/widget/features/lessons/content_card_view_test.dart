@@ -1149,10 +1149,10 @@ void main() {
 
   group('every kind of card builds without throwing', () {
     // One of each kind, which makes this the file's only sweep across the whole
-    // union — five are built nowhere else here. It used to compare `hasRenderer`
-    // against this function, two exhaustive switches that could drift; there is
-    // one switch now (#418), so what is left worth asking is whether every arm
-    // builds rather than throwing on the way.
+    // union — five are built nowhere else here. It used to compare
+    // `hasRenderer` against this function, two exhaustive switches that could
+    // drift; there is one switch now (#418), so what is left worth asking is
+    // whether every arm builds rather than throwing on the way.
     const cases = <String, ContentCard>{
       'predict': ContentCard.predict(
         label: 'LESSON 1',
