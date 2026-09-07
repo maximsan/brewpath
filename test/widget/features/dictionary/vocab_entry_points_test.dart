@@ -98,7 +98,7 @@ void main() {
   group("the Learn tab's practice row", () {
     testWidgets('opens the drill', (tester) async {
       expect(
-        await _pumpEntry(tester, const PracticeDrillsWidget()),
+        await _pumpEntry(tester, const PracticeDrillsWidget(hasCourse: false)),
         AppRoutes.vocabGame.name,
       );
     });
@@ -108,7 +108,9 @@ void main() {
       // mark here would say the opposite of what is true.
       await tester.pumpWidget(
         const ProviderScope(
-          child: MaterialApp(home: Scaffold(body: PracticeDrillsWidget())),
+          child: MaterialApp(
+            home: Scaffold(body: PracticeDrillsWidget(hasCourse: false)),
+          ),
         ),
       );
 

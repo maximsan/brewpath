@@ -150,26 +150,48 @@ abstract final class OffTokens {
         'off-centre in a shape only 13px tall.',
   );
 
-  /// The inner padding of Today's hero card.
-  static const OffToken<double> todayHeroPadding = OffToken(
-    20,
+  /// The room Today's lead block keeps above its eyebrow, and under it.
+  static const OffToken<double> todayLeadGap = OffToken(
+    28,
     reason:
-        'The design sets the hero card to `padding: 20px`, and 20 is not a '
-        'spacing stop: it sits between AppSpacing.md (16) and lg (24). Three '
-        'bodies draw this one card — the lesson, the locked pitch and Keep '
-        'Sharp — so the figure was written three times, each with its own '
-        'comment saying no token fits. It is one card and one value.',
+        "The design opens Today's lead block at `paddingTop: 28` and sets "
+        '`marginBottom: 28` under its eyebrow. 28 sits midway between '
+        'AppSpacing.lg (24) and xl (32). It is the figure the intro sets '
+        'under a block too (introBlockGap), and it has its own entry because '
+        'the two screens are not one decision: retuning one must not move '
+        'the other.',
   );
 
-  /// The gap above the Keep Sharp card's Start button.
-  static const OffToken<double> keepSharpStartGap = OffToken(
+  /// The gap above the CTA on Today's card, in every state it has.
+  static const OffToken<double> todayCtaGap = OffToken(
     18,
     reason:
-        "The design sets the hero card's Start to `margin-top: 18px`, and 18 "
-        'is not a spacing stop: it sits between AppSpacing.md (16) and lg '
-        '(24). The step below is 16, which the lesson body already rounds '
-        'its own row to; Keep Sharp keeps the figure so the button sits '
-        'where the design puts it under the wrapped rule.',
+        "The design sets the card's CTA to `margin-top: 18px` in every state "
+        "— Begin lesson, Unlock Foundations and Keep Sharp's Start. 18 sits "
+        'between AppSpacing.md (16) and lg (24) and is the one gap on the '
+        'card that is not a stop; the button sits where the design puts it '
+        'under the meta line.',
+  );
+
+  /// The gap inside a practice row's inline pairs.
+  static const OffToken<double> practiceInlineGap = OffToken(
+    10,
+    reason:
+        "The practice shelf sets `gap: 10` three times — between a group's "
+        "name and its count, between a kind's glyph and its name, and between "
+        "a row's meta and its mark. It sits between AppSpacing.xs (8) and sm "
+        '(12); every pair it separates is one label read as a unit, and the '
+        'nearer stops read as two things or as one word.',
+  );
+
+  /// The room under an open practice group's last row.
+  static const OffToken<double> practiceGroupFoot = OffToken(
+    6,
+    reason:
+        'The design closes an open practice group with `paddingBottom: 6` '
+        'before its rule. Between AppSpacing.xxs (4) and xs (8): the last row '
+        'already carries 12 of padding, so the foot only has to keep the rule '
+        'off its highlight.',
   );
 
   /// The padding inside the Cards tab's "more to collect" block.
@@ -218,9 +240,10 @@ abstract final class OffTokens {
     reason:
         'The design sets `marginBottom: 28` twice on the intro — under the '
         'Welcome hero and above the Meet Roasty CTA. It sits midway between '
-        'AppSpacing.lg (24) and xl (32), belonging to neither, and '
-        'these are the only two screens in the app that use it. Snapping it '
-        'onto a rung would retune two screens to spare one entry.',
+        'AppSpacing.lg (24) and xl (32), belonging to neither, and the intro '
+        "is the only place that sets it — Today's lead block sets the same "
+        'figure under its own entry, todayLeadGap. Snapping it onto a rung '
+        'would retune two screens to spare one entry.',
   );
 
   /// The gap the intro screens set between a question and the line under it.
@@ -319,8 +342,10 @@ abstract final class OffTokens {
     termOfDayBannerPadding,
     termOfDayBannerFootPadding,
     triedSealPadding,
-    todayHeroPadding,
-    keepSharpStartGap,
+    todayLeadGap,
+    todayCtaGap,
+    practiceInlineGap,
+    practiceGroupFoot,
     cardsFooterPadding,
     cardsFooterLineGap,
     tabTitleClearOfEntries,
