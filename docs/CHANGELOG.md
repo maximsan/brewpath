@@ -74,6 +74,11 @@ You can always edit this file by hand instead — the helpers just save effort.
   longer sees an empty section with a placeholder in it. The tab runs at the
   design's gutter and spacing.
 - **The name step focuses its field on arrival**, as the design has it.
+- **The smoke walk proves a restart.** It plays `m1l1` to completion,
+  relaunches, and reads the completion, its points and its card back off
+  Profile and Cards — so a restart that loses what a learner earned fails CI.
+  A relaunch now tears the previous app down and closes its database first,
+  which is what makes a third launch safe.
 
 ### Fixed
 
@@ -86,6 +91,17 @@ You can always edit this file by hand instead — the helpers just save effort.
   keeps it when the player cannot start at all — a simulator with no audio
   device refuses the film — instead of an empty box. The failure's reason is
   printed in debug builds.
+
+### Removed
+
+- **The old progress store is gone.** The three normalised tables the app
+  opened with — per-lesson completions, the module-XP ledger and collected
+  cards — and the points total on the settings row are dropped at schema v13,
+  along with their repositories and DTOs. The progress snapshot has been the
+  record since v6; what is left on the settings row is device-local state
+  only. Destructive by ruling: nothing has shipped, and no user migration is
+  owed. Device-local state crosses the step untouched, which a migration test
+  over a populated v12 database asserts.
 
 ---
 
