@@ -79,7 +79,11 @@ widget whose centre is off the right-hand edge; every tap then misses it and
 Flutter reports that as a warning, not a failure. A push transition also mounts
 both pages at once, so the raw finder can match the outgoing copy as well and
 `ensureVisible` fails on "too many elements" — a wait and an action disagreeing
-about which widget they meant.
+about which widget they meant. The one exception is `tappable: false`, for a
+widget the walk **reads** rather than taps: a line of text centred over a row
+of numbers is on screen without its centre landing on anything hit-testable,
+and waiting for a tap target it will never be would time out on a widget that
+is right there.
 
 **Find a button by its label anywhere beneath it.** `liveButton` matches an
 *enabled* `FilledButton` that has the label somewhere under it. It read

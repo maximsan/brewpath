@@ -147,10 +147,10 @@ replays the whole chain in `test/database/` ([12](12-testing.md)).
 **A step may only name things the current Dart definition still has.**
 `addColumn`, `createTable` and `alterTable` all take a live `TableInfo`, so a
 step written against a table that is later removed stops compiling — which is
-why v13 left the v1 → v2 and v4 → v5 steps empty rather than editing them.
-Dropping is the exception: `deleteTable` and `dropColumn` take names, and
-`deleteTable` is `DROP TABLE IF EXISTS`, so a step can drop a table a given
-database never created.
+why v13 deleted the v1 → v2 and v4 → v5 steps outright rather than rewriting
+them. Dropping is the exception: `deleteTable` takes a table *name* and issues
+`DROP TABLE IF EXISTS`, so a step can drop a table a given database never
+created, and `dropColumn` names its column rather than reading it off a class.
 
 That rules out the rebuild hazard the old chain carried
 ([#273](https://github.com/maximsan/brewpath/issues/273)):
