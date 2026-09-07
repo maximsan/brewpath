@@ -107,7 +107,8 @@ explanations — plus test and iOS/SPM build notes — lives in
   in `docs/` or an ADR and leave one line pointing there. The argument for a
   decision lives in the ADR or issue the code cites, never above the constant;
   a design value is quoted, not explained. Test files carry no doc comment on
-  `main` and none on a test body: the test name is the documentation.
+  `main` and none on a test body, which the same check enforces: the test
+  name is the documentation.
 - **Never cite `prototype/` from `lib/`** — no file names, no line numbers. The
   prototype is replaced wholesale, so both go stale silently and nothing checks
   them. Quote the design's own value instead (`color-mix(… accent 11%,

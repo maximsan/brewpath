@@ -83,4 +83,23 @@ final nested = '${"//" + '/*'}';
       expect(commentBlocksIn(source), [(line: 2, lines: 3)]);
     });
   });
+
+  group('testDocCommentsIn', () {
+    test('finds a doc comment on main and on a test body', () {
+      const source =
+          "import 'x.dart';\n\n/// Why this file exists.\n"
+          "void main() {\n  /// Says what the name says.\n  test('a', () {});\n"
+          "  group('b', () {});\n}\n";
+
+      expect(testDocCommentsIn(source), [3, 5]);
+    });
+
+    test('a doc comment on a helper, or a plain comment, is not one', () {
+      const source =
+          '/// A fixture.\nfinal fixture = 1;\n// setup\n'
+          "void main() {\n  // arrange\n  test('a', () {});\n}\n";
+
+      expect(testDocCommentsIn(source), isEmpty);
+    });
+  });
 }

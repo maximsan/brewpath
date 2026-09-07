@@ -70,7 +70,8 @@ the full suite and the iOS build stay in CI, which runs them on every push.
 | CI, on a pull request | the same as push, split into jobs, plus `flutter analyze`, `flutter test` and the iOS build ([`docs/13-ci-cd.md`](docs/13-ci-cd.md)) |
 
 **The comment cap** is `tool/check_comments.dart`: no comment block over six
-lines, in any Dart file the branch touches. There is no allow-list — a file
+lines in any Dart file the branch touches, and in a test file no doc comment
+on `main` or on a test body. There is no allow-list — a file
 you touch is a file you clean, so older overruns drain with ordinary work.
 Anything that needs more than six lines is documentation: put it in `docs/` or
 an ADR and leave one line pointing there. The rule itself is in

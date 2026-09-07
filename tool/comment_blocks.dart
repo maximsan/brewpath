@@ -41,6 +41,19 @@ Iterable<CommentBlock> commentBlocksIn(String source) sync* {
   if (blockStart != null) yield blockAt(blockStart, blockEnd);
 }
 
+/// Lines (1-based) where a test file puts a doc comment on `main` or on a
+/// test body. The test name is the documentation, so none is allowed.
+Iterable<int> testDocCommentsIn(String source) sync* {
+  final docOnTest = RegExp(
+    r'(?:^|\n)((?:[ \t]*///[^\n]*\n)+)[ \t]*'
+    r'(?:(?:Future<void> |void )main|test|testWidgets|group)\(',
+  );
+  for (final match in docOnTest.allMatches(source)) {
+    final docStart = match.start + (match.group(0)!.startsWith('\n') ? 1 : 0);
+    yield '\n'.allMatches(source.substring(0, docStart)).length + 1;
+  }
+}
+
 final _lineBreak = RegExp(r'^[ \t]*\n[ \t]*$');
 
 bool _isLineBreak(String gap) => _lineBreak.hasMatch(gap);
