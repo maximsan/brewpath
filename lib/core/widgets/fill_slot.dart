@@ -1,6 +1,7 @@
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 
 /// How a slot stands. The design's blank has five states; these are the two
@@ -37,16 +38,8 @@ class FillSlot extends StatelessWidget {
     super.key,
   });
 
-  /// The design's `min-width: 74px` — a slot holds its width so a sentence
-  /// does not reflow as words land in it.
-  static const double minWidth = 74;
-
   /// The design's `border-bottom: 2px`.
   static const double _ruleWeight = 2;
-
-  /// The design's `padding: 0 6px 1px`, which sits between the app's `xxs` and
-  /// `xs` steps and belongs to this component rather than to the scale.
-  static const _padding = EdgeInsets.only(left: 6, right: 6, bottom: 1);
 
   /// The word in the slot.
   final String word;
@@ -63,8 +56,8 @@ class FillSlot extends StatelessWidget {
     final tone = state.tone(mood);
 
     return Container(
-      constraints: const BoxConstraints(minWidth: minWidth),
-      padding: _padding,
+      constraints: BoxConstraints(minWidth: OffTokens.fillSlotMinWidth.value),
+      padding: OffTokens.fillSlotPadding.value,
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(color: tone, width: _ruleWeight),

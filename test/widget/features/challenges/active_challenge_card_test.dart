@@ -1,6 +1,5 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/challenges/presentation/active_challenge_card.dart';
-import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -39,11 +38,13 @@ void main() {
   testWidgets('sets its title one step below a lesson title', (tester) async {
     await pump(tester);
 
-    // 22, not the lesson title's 26: the challenge is optional, and the design
-    // added a ladder step rather than let it shout at the same size.
+    // The design's own number, not the rung's: read off `AppText.subtitle`
+    // this could only ever agree with itself, and a rung edit would pass.
     expect(
       tester.widget<Text>(find.text('Two cups, two ratios')).style?.fontSize,
-      AppText.subtitle().fontSize,
+      22.0,
+      reason:
+          'one step below a lesson title, because the challenge is optional',
     );
   });
 

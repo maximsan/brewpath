@@ -41,7 +41,7 @@ class RecallPayoff extends StatelessWidget {
   }
 
   List<InlineSpan> _sentence() => [
-    const TextSpan(text: 'Before the lesson you guessed'),
+    const TextSpan(text: PayoffCopy.opener),
     fillSlotSpan(
       FillSlot(
         word: guess.pick,
@@ -49,23 +49,38 @@ class RecallPayoff extends StatelessWidget {
       ),
     ),
     if (guess.wasRight)
-      const TextSpan(text: '— and you were right.')
+      const TextSpan(text: PayoffCopy.andRight)
     else ...[
-      const TextSpan(text: ". It's"),
+      const TextSpan(text: PayoffCopy.butActually),
       fillSlotSpan(
         FillSlot(word: guess.answer, state: FillSlotState.right),
       ),
-      const TextSpan(text: '— now you know why.'),
+      const TextSpan(text: PayoffCopy.nowYouKnow),
     ],
   ];
 }
 
-/// The payoff as one sentence, for a reader that cannot see the chips.
-///
-/// Spelled out rather than assembled from the spans: a `WidgetSpan` announces
-/// nothing, so a screen reader would otherwise hear the sentence with its two
-/// most important words missing.
+/// The payoff's words, in one place because they are said twice — once as
+/// spans with chips set into them, and once flat for a reader that cannot see
+/// a chip. Split here so a wording edit cannot land on only one of the two.
+abstract final class PayoffCopy {
+  /// What the sentence opens with, before the guess.
+  static const String opener = 'Before the lesson you guessed';
+
+  /// How it closes when the guess landed.
+  static const String andRight = '— and you were right.';
+
+  /// How it turns when the guess missed, before the authored answer.
+  static const String butActually = ". It's";
+
+  /// How it closes when the guess missed.
+  static const String nowYouKnow = '— now you know why.';
+}
+
+/// The payoff as one sentence, for a reader that cannot see the chips: a
+/// `WidgetSpan` announces nothing, so a screen reader would otherwise hear it
+/// with its two most important words missing.
 String spokenPayoff(HeldGuess guess) => guess.wasRight
-    ? 'Before the lesson you guessed ${guess.pick} — and you were right.'
-    : 'Before the lesson you guessed ${guess.pick}. '
-          "It's ${guess.answer} — now you know why.";
+    ? '${PayoffCopy.opener} ${guess.pick} ${PayoffCopy.andRight}'
+    : '${PayoffCopy.opener} ${guess.pick}${PayoffCopy.butActually} '
+          '${guess.answer} ${PayoffCopy.nowYouKnow}';

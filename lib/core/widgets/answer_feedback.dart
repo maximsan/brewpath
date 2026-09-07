@@ -102,6 +102,14 @@ enum VerdictPlacement {
   /// Whether a rule sits above the block, separating it from what it follows.
   final bool rulesOff;
 
+  /// Whether the verdict announces itself on arrival.
+  ///
+  /// True everywhere but the payoff, which mounts on the same commit as the
+  /// graded verdict above it: two live regions firing together interrupt each
+  /// other, and the one that says how the card went is the one worth hearing.
+  /// The payoff is read in its place, like the rest of the card.
+  bool get announces => this != VerdictPlacement.openingGuess;
+
   /// Whether the explanation takes the body step rather than support.
   final bool speaksInBody;
 
@@ -173,7 +181,7 @@ class AnswerFeedback extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Semantics(
-                liveRegion: true,
+                liveRegion: placement.announces,
                 label: verdict,
                 excludeSemantics: true,
                 child: Text(

@@ -77,7 +77,7 @@ void main() {
 
     expect(
       tester.getSize(find.byType(Container)).width,
-      greaterThanOrEqualTo(FillSlot.minWidth),
+      greaterThanOrEqualTo(74.0),
       reason: 'the design pins a minimum so slots do not jitter between words',
     );
   });

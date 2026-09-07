@@ -57,6 +57,26 @@ void main() {
     expect(find.byType(Roasty), findsNothing);
   });
 
+  testWidgets('does not interrupt the verdict it arrives beside', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pump(tester, _missed);
+
+    final announcing = tester
+        .widgetList<Semantics>(find.byType(Semantics))
+        .where((node) => node.properties.liveRegion ?? false);
+
+    expect(
+      announcing,
+      isEmpty,
+      reason:
+          'the payoff mounts on the same commit as the graded verdict above '
+          'it, and two live regions firing together interrupt each other',
+    );
+    handle.dispose();
+  });
+
   testWidgets('speaks the whole sentence, chips included', (tester) async {
     final handle = tester.ensureSemantics();
     await pump(tester, _missed);
