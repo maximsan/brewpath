@@ -3,14 +3,11 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 
-/// Guards `docs/adr/`'s numbering, because two sessions cutting branches from
-/// the same `main` will both pick the same "next" number and neither PR can see
-/// the other. That happened once — two ADR-0005s landed — and the ambiguity is
-/// invisible until someone follows a reference by number and gets two answers.
-///
-/// `docs/adr/README.md` is the rule this enforces: one file per decision, a
-/// zero-padded sequential number, numbers never reused, and a superseded record
-/// kept in place rather than deleted — which is why gaps are a defect too.
+/// Guards `docs/adr/`'s numbering: two sessions cutting branches from the same
+/// `main` both pick the same "next" number and neither PR sees the other, which
+/// is how two ADR-0005s landed. `docs/adr/README.md` is the rule — one file per
+/// decision, zero-padded and sequential, numbers never reused, a superseded
+/// record kept in place rather than deleted, so a gap is a defect too.
 const _adrDir = 'docs/adr';
 
 /// `0007-some-decision.md` → 7. Null for anything that is not an ADR.

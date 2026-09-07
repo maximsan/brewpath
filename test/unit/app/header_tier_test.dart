@@ -2,14 +2,11 @@ import 'package:brew_path/app/header_tier.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// Every location in the app gets exactly one kind of chrome, and the rule
-/// lives in one place so a route added later cannot silently inherit the
-/// wrong one.
-///
-/// ⚠️ **Tier is the chrome, not the navigator.** Settings runs on the root
-/// navigator and is still `pushed`, because what the learner sees is a page
-/// with a back arrow. Filing routes by their plumbing is the mistake this
-/// table exists to prevent.
+/// Every location gets exactly one kind of chrome, kept in one place so a route
+/// added later cannot silently inherit the wrong one. Tier is the chrome, not
+/// the navigator: Settings runs on the root navigator and is still `pushed`,
+/// because what the learner sees is a page with a back arrow. Filing routes by
+/// their plumbing is the mistake this table exists to prevent.
 const _expectedTiers = <String, HeaderTier>{
   '/learn': HeaderTier.tabRoot,
   '/path': HeaderTier.tabRoot,

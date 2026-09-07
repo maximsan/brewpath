@@ -30,9 +30,9 @@ Future<void> _settleUntil(WidgetTester tester, Finder until) async {
   }
 }
 
-/// The completion moment through the *real* router: the redirect intercepts
-/// arrival at Today, and the hand-off resolves the ack before navigating, so
-/// it cannot bounce back.
+// Driven through the real router, not a stub: the redirect intercepts arrival
+// at Today, and the hand-off resolves the ack before navigating, so it cannot
+// bounce back.
 void main() {
   setUp(useInMemoryDatabase);
 

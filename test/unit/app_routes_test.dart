@@ -7,9 +7,9 @@ import 'package:go_router/go_router.dart';
 
 import '../support/widget_harness.dart';
 
-/// Guards name↔path sync: each [AppRoute] declares its name and path together,
-/// and the router builds every `GoRoute` from them. These assertions resolve
-/// each name back to its location so the two can never silently drift.
+// Each [AppRoute] declares its name and path together and the router builds
+// every `GoRoute` from them; these resolve each name back to its location, so
+// the two cannot silently drift.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 

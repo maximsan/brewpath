@@ -2,16 +2,12 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../support/dart_sources.dart';
 
-/// `AnimatedSize` cannot be told to finish instantly.
-///
-/// Given `Duration.zero` it re-dirties itself inside its own `performLayout`,
-/// which the framework asserts on — so a reduced-motion learner hits a crash
-/// rather than a snappier animation. The honest reading of "no animation" is
-/// **no animator**: branch on the setting and render the child directly.
-///
-/// A sweep is a one-off; this is the guard that keeps it swept. The pattern
-/// was written twice — the dictionary's self-check shipped with it, and the
-/// app header nearly did — which is one time more than a convention survives.
+// `AnimatedSize` cannot be told to finish instantly: given `Duration.zero` it
+// re-dirties itself inside its own `performLayout`, which the framework asserts
+// on, so a reduced-motion learner gets a crash rather than a snappier
+// animation. The honest reading of "no animation" is no animator — branch on
+// the setting and render the child directly. The pattern was written twice,
+// which is one time more than a convention survives.
 void main() {
   test('no file pairs AnimatedSize with a zero duration', () {
     final offenders = <String>[];

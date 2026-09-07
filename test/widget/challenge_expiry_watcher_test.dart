@@ -7,16 +7,10 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// Proves the *wiring* of the expiry check: that it runs on a cold start and
-/// again on resume, and that it stays silent when nothing has lapsed.
-///
-/// What counts as lapsed, and what parking writes, is settled in
-/// `challenge_parking_test.dart` and `challenge_park_write_test.dart`. This
-/// covers only what those cannot — that the widget actually asks, at the two
-/// moments the app can act.
-///
-/// The watcher reads the real clock, so an expired challenge is staged by
-/// starting it far in the past rather than by moving time.
+// The wiring only: what counts as lapsed, and what parking writes, is settled
+// in `challenge_parking_test.dart` and `challenge_park_write_test.dart`. The
+// watcher reads the real clock, so an expired challenge is staged by starting
+// it far in the past rather than by moving time.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 

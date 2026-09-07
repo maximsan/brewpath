@@ -4,13 +4,10 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The one row the whole settings surface renders through.
-///
-/// The design draws it label-left, value-or-affordance-right, over a hairline —
-/// and gives it **no icon slot at all**. The app's rows had grown leading
-/// glyphs the design never drew, which is what makes this a component rather
-/// than a `ListTile` call with different arguments. A node a screen reader
-/// announces as a button.
+/// A node a screen reader announces as a button. The design draws the settings
+/// row label-left, value-right, over a hairline, and gives it no icon slot at
+/// all — the app's rows had grown leading glyphs the design never drew, which
+/// is what makes this a component rather than a `ListTile` call.
 final Matcher _isButton = isSemantics(isButton: true);
 
 void main() {
