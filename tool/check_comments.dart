@@ -4,7 +4,7 @@ import 'comment_blocks.dart';
 
 /// Reports every comment block over the cap in the Dart files given, or with
 /// `--changed [base]` in the files changed against a base ref (default
-/// `origin/main`). No baseline: a file this sees must be clean. Exit 1 on any.
+/// `origin/main`). Every file it sees must be clean; exit 1 on any offender.
 /// Runs with plain `dart`, so it needs no package resolution.
 void main(List<String> arguments) {
   final files = arguments.isNotEmpty && arguments.first == '--changed'

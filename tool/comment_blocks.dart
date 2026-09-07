@@ -1,6 +1,6 @@
 /// Splits Dart source into comments and code so a rule about prose never reads
-/// a string literal. Shared by the comment guard test, the pre-push hook and
-/// the agent's write hook; it imports nothing outside `dart:core`.
+/// a string literal. Shared by `check_comments.dart` and the guard tests; it
+/// imports nothing outside `dart:core`, so plain `dart` can run it.
 library;
 
 /// A comment block may run this many lines (CLAUDE.md, Comments).

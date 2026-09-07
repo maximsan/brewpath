@@ -34,8 +34,8 @@ jobs:
         run: tool/check_changelog.sh "${{ github.event.pull_request.base.sha }}"
 
   # Pull requests only: every Dart file the branch touches must be clean of
-  # over-long comment blocks, whether or not the comment guard's baseline still
-  # lists it. This is how the baseline drains without a sweep.
+  # over-long comment blocks. Older overruns drain as their files are touched,
+  # so there is no sweep and no allow-list to maintain.
   comments:
     name: comments
     runs-on: ubuntu-latest

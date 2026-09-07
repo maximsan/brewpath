@@ -49,9 +49,9 @@ You can always edit this file by hand instead — the helpers just save effort.
   anything `flutter analyze`, the metrics, a guard test, the comment check or
   the changelog check would fail in CI; `tool/install_hooks.sh` installs them,
   and Claude Code runs it at session start. A comment block is capped at six
-  lines: a guard holds today's overruns in a baseline that only shrinks, and a
-  new `comments` CI job, the pre-push hook and the agent's write hook allow
-  none in a file a branch touches. `public_member_api_docs` is off, so a doc
+  lines in every Dart file a branch touches, checked on the agent's write, on
+  commit, on push and by a new `comments` CI job, so older overruns drain as
+  files are touched. `public_member_api_docs` is off, so a doc
   comment is written where a name does not say enough rather than on every
   public member. Every `OffTokens` reason is now the design's own declaration,
   checked against the prototype.

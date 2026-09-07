@@ -34,7 +34,7 @@ Run all Flutter/Dart commands from the repo root.
 | `flutter test test/widget/<file>`           | Run a single widget test.                                                                                                                                                           |
 | `flutter run -d "iPhone 17"`                | Launch on the iOS simulator.                                                                                                                                                        |
 | `flutter build ios --release --no-codesign` | Release iOS build without signing (mirrors CI).                                                                                                                                     |
-| `tool/install_hooks.sh`                     | Install the git hooks, once per clone (Claude Code does it at session start): format and comment checks on commit; analyze, metrics, guards, comments, changelog on push. |
+| `tool/install_hooks.sh`                     | Install the git hooks, once per clone (Claude Code does it at session start). What they run: _Quality checks_ below.                                                                 |
 
 ### Tests
 
@@ -56,6 +56,33 @@ Troubleshooting:
   `tool/reset_ios_spm.sh` (see below).
 - `flutter test` crashing with `PathExistsException` on
   `ios/Flutter/ephemeral/.../Packages` → `rm -rf ios/Flutter/ephemeral`, then retry.
+
+## Quality checks
+
+The same checks run at four moments, earliest first. Nothing here needs a
+device; the full suite and the iOS build stay in CI.
+
+| When | What runs |
+| --- | --- |
+| Claude Code writes a Dart file | `dart format` on that file, then the comment cap on it (`.claude/settings.json`, `PostToolUse`); a failure goes straight back to the agent |
+| `git commit` | `dart format --set-exit-if-changed` and the comment cap on the staged Dart files (sub-second) |
+| `git push` | the format check, `flutter analyze`, the `dart_code_linter` metrics, every `*_guard_test.dart`, the comment cap on every Dart file changed against the base, and `tool/check_changelog.sh` (about a minute) |
+| CI, on a pull request | the same as push, split into jobs, plus `flutter test` and the iOS build ([`docs/13-ci-cd.md`](docs/13-ci-cd.md)) |
+
+**The comment cap** is `tool/check_comments.dart`: no comment block over six
+lines, in any Dart file the branch touches. There is no allow-list — a file
+you touch is a file you clean, so older overruns drain with ordinary work.
+Anything that needs more than six lines is documentation: put it in `docs/` or
+an ADR and leave one line pointing there. The rule itself is in
+[`CLAUDE.md`](CLAUDE.md) under _Code Conventions_.
+
+**Hooks** live in `tool/git-hooks/`; `tool/install_hooks.sh` links them into
+the repository's shared hooks directory, so every worktree runs them and a
+machine-wide `commit-msg` hook is left alone. Claude Code runs the installer at
+session start. Escapes: `git push --no-verify` skips the whole pre-push;
+`NO_CHANGELOG=1 git push` skips only the changelog check, for a PR that will
+carry the `no-changelog` label; a branch stacked on another names its base
+with `BASE_REF=origin/<branch>`, which is what CI compares against too.
 
 ## Run-time flags (`--dart-define`)
 

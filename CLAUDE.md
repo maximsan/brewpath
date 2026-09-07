@@ -100,11 +100,11 @@ explanations — plus test and iOS/SPM build notes — lives in
   in one sentence, plus at most one line of what is not obvious; nothing on
   self-evident code, and no comment because a lint asked for one
   (`public_member_api_docs` is off). A comment block runs **six lines at
-  most** — enforced three times over: `test/unit/comment_length_guard_test.dart`
-  holds the existing overruns in a baseline that only shrinks; the `comments`
-  CI job, the pre-push hook and the agent's write hook run
-  `tool/check_comments.dart` on every Dart file a branch touches with no
-  baseline at all, so a file you touch is a file you clean. The argument for a
+  most**: `tool/check_comments.dart` checks every Dart file a branch touches —
+  on the agent's write, on commit, on push and in the `comments` CI job — so a
+  file you touch is a file you clean, and older overruns drain as files are
+  touched (README _Quality checks_). Anything longer is documentation: put it
+  in `docs/` or an ADR and leave one line pointing there. The argument for a
   decision lives in the ADR or issue the code cites, never above the constant;
   a design value is quoted, not explained. Test files carry no doc comment on
   `main` and none on a test body: the test name is the documentation.

@@ -201,7 +201,7 @@ Two consequences worth knowing, because both look alarming and are not:
 
 CI is six jobs ([`13-ci-cd.md`](13-ci-cd.md)). Run them in this order before
 pushing; they are the same commands the workflow uses. The pre-push hook
-([`13-ci-cd.md`](13-ci-cd.md#local-checks-git-hooks)) runs the changelog
+([README _Quality checks_](../README.md#quality-checks)) runs the changelog
 check, the comment check, the format check, analyze and metrics from this
 list, plus the guard tests.
 

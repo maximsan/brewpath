@@ -28,6 +28,7 @@ embedded copy drifted from the real file twice). What the jobs are, and why:
 | Job | Runner | What it gates |
 |---|---|---|
 | `changelog` | ubuntu | PRs only: requires a `docs/CHANGELOG.md` entry for product changes (`tool/check_changelog.sh`); skipped when the PR carries the `no-changelog` label |
+| `comments` | ubuntu | PRs only: every Dart file the PR touches must have no comment block over six lines (`tool/check_comments.dart --changed <base>`); the same check runs locally on write, commit and push — README _Quality checks_ |
 | `format` | ubuntu | `dart format` over `lib test integration_test` (after `pub get`, so the language version resolves) |
 | `analyze & test` | ubuntu | `flutter analyze`, the `dart_code_linter` metrics gate, then `flutter test` (Node pinned for the extractor test) |
 | `iOS build` | macos | `flutter build ios --release --no-codesign` — no CocoaPods (SPM) and no Firebase plist while `kUseFirebase == false`. Then asserts `PrivacyInfo.xcprivacy` reached `Runner.app`: it is wired into the target by hand, and nothing else notices if a merge drops it (#166) |
@@ -46,38 +47,13 @@ future CI job needs Firebase active at runtime (e.g. an integration-test job).
 
 ---
 
-## Local checks (git hooks)
+## Local checks
 
-[`tool/git-hooks/`](../tool/git-hooks/) carries the checks that run before
-code leaves the machine. [`tool/install_hooks.sh`](../tool/install_hooks.sh)
-links them into the repository's shared hooks directory, so every worktree
-runs them and a machine-wide `commit-msg` hook is left as it is. Claude Code
-runs the installer at session start ([`.claude/settings.json`](../.claude/settings.json));
-run it by hand once per clone otherwise.
-
-- **pre-commit** fails the commit when a staged Dart file is unformatted or
-  carries a comment block over the cap. Sub-second.
-- **pre-push** runs the CI gates that need no device: the format check,
-  `flutter analyze`, the `dart_code_linter` metrics, every
-  `*_guard_test.dart`, the comment cap on every Dart file changed against
-  the base, and `tool/check_changelog.sh`. About a minute. `git push
-  --no-verify` skips all of it; `NO_CHANGELOG=1 git push` skips only the
-  changelog check, for a PR that will carry the `no-changelog` label; a
-  branch stacked on another names its base with `BASE_REF=origin/<branch>`,
-  which is what CI compares against too.
-
-The full test suite and the iOS build stay in CI: they take minutes, and a
-push is not a merge. A repo-wide rule test is named `*_guard_test.dart` so the
-pre-push hook picks it up.
-
-The comment cap is [`tool/check_comments.dart`](../tool/check_comments.dart),
-which runs with plain `dart`. The guard test holds a baseline of existing
-overruns; the hook, the `comments` CI job and the agent's write hook allow
-none, so a file a branch touches is a file that leaves the baseline.
-
-Claude Code formats and comment-checks every Dart file it writes through the
-`PostToolUse` hook in the same settings file; a failure goes straight back to
-the agent.
+What runs before code leaves the machine — on the agent's write, on commit and
+on push — is documented once, in the README's _Quality checks_ section
+([`README.md`](../README.md#quality-checks)). The hooks live in
+[`tool/git-hooks/`](../tool/git-hooks/) and run the same commands as the jobs
+above.
 
 ---
 
