@@ -96,14 +96,18 @@ explanations — plus test and iOS/SPM build notes — lives in
 
 - **Imports:** always `package:brew_path/…` within `lib/`; never relative `../` imports
 - **Colours:** read the mood tokens via `context.mood` (`MoodColors`, a `ThemeExtension` with a Cupping and a Dark Roast instance); never `Theme.of(context).colorScheme` — it is populated for stock Material widgets only. Everything that must **not** flip with the mood is `static const` on an `abstract final class` with no `of(context)` accessor — `ArtColors` (illustration palette), `RoastyColors` (the mascot's palette), `OverlayColors` (scrim, scrim ink, modal dim), `AppSpacing`, `AppRadii` — so mood-dependence is unrepresentable, and painters can read them with no `BuildContext`. An **overlay** is an `AppOverlay`, not a colour: it carries the design's blur radius and saturation beside its tint, and the two things that render one — a modal barrier through `OverlayBarrier`, and a top bar through `ScrolledProgress` + `AppOverlay.at` — take the whole token, so the parts cannot be split at a call site. A value that is deliberately off-token goes in the `OffTokens` register with its reason, never as a bare literal.
-- **Comments:** a doc comment says what the member is in one sentence, plus
-  at most one line of what is not obvious; nothing on self-evident code. A
-  comment block runs **six lines at most** — guard-enforced by
-  `test/unit/comment_length_guard_test.dart`, whose baseline of existing
-  overruns only shrinks. The argument for a decision lives in the ADR or issue
-  the code cites, never above the constant; a design value is quoted, not
-  explained. Test files carry no doc comment on `main` and none on a test
-  body: the test name is the documentation.
+- **Comments:** a doc comment, in TSDoc form (`///`), says what the member is
+  in one sentence, plus at most one line of what is not obvious; nothing on
+  self-evident code, and no comment because a lint asked for one
+  (`public_member_api_docs` is off). A comment block runs **six lines at
+  most** — enforced three times over: `test/unit/comment_length_guard_test.dart`
+  holds the existing overruns in a baseline that only shrinks; the `comments`
+  CI job, the pre-push hook and the agent's write hook run
+  `tool/check_comments.dart` on every Dart file a branch touches with no
+  baseline at all, so a file you touch is a file you clean. The argument for a
+  decision lives in the ADR or issue the code cites, never above the constant;
+  a design value is quoted, not explained. Test files carry no doc comment on
+  `main` and none on a test body: the test name is the documentation.
 - **Never cite `prototype/` from `lib/`** — no file names, no line numbers. The
   prototype is replaced wholesale, so both go stale silently and nothing checks
   them. Quote the design's own value instead (`color-mix(… accent 11%,

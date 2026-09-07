@@ -199,16 +199,17 @@ Two consequences worth knowing, because both look alarming and are not:
 
 ## Reproducing CI locally
 
-CI is five jobs ([`13-ci-cd.md`](13-ci-cd.md)). Run them in this order before
+CI is six jobs ([`13-ci-cd.md`](13-ci-cd.md)). Run them in this order before
 pushing; they are the same commands the workflow uses. The pre-push hook
 ([`13-ci-cd.md`](13-ci-cd.md#local-checks-git-hooks)) runs the changelog
-check, the format check, analyze and metrics from this list, plus the guard
-tests.
+check, the comment check, the format check, analyze and metrics from this
+list, plus the guard tests.
 
 ```bash
 flutter pub get                                    # required BEFORE format — see below
 
 tool/check_changelog.sh                            # pull-request job; needs origin/main fetched
+dart tool/check_comments.dart --changed            # pull-request job; same base
 dart format --output=none --set-exit-if-changed lib test integration_test
 flutter analyze
 dart run dart_code_linter:metrics analyze lib --set-exit-on-violation-level=warning

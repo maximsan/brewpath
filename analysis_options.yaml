@@ -23,6 +23,10 @@ analyzer:
 
 linter:
   rules:
+    # A doc comment is written where a name does not say enough, not on every
+    # public member because a lint demands one. The comment cap in
+    # test/unit/comment_length_guard_test.dart bounds the ones that are written.
+    public_member_api_docs: false
     # very_good_analysis re-enables cascade_invocations; keep it off — it fights
     # the CustomPainter draw sequences (roasty.dart) and isn't auto-fixable.
     cascade_invocations: false

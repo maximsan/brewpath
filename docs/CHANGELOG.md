@@ -45,11 +45,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 ### Added
 
 - **Checks run before code leaves the machine.** `tool/git-hooks/` fails a
-  commit on an unformatted Dart file, and a push on anything `flutter analyze`,
-  the metrics, a guard test or the changelog check would fail in CI; install
-  with `git config core.hooksPath tool/git-hooks`. A new guard caps a comment
-  block at six lines and holds today's overruns in a baseline that only
-  shrinks, and every `OffTokens` reason is now the design's own declaration,
+  commit on an unformatted Dart file or an over-long comment, and a push on
+  anything `flutter analyze`, the metrics, a guard test, the comment check or
+  the changelog check would fail in CI; `tool/install_hooks.sh` installs them,
+  and Claude Code runs it at session start. A comment block is capped at six
+  lines: a guard holds today's overruns in a baseline that only shrinks, and a
+  new `comments` CI job, the pre-push hook and the agent's write hook allow
+  none in a file a branch touches. `public_member_api_docs` is off, so a doc
+  comment is written where a name does not say enough rather than on every
+  public member. Every `OffTokens` reason is now the design's own declaration,
   checked against the prototype.
 - **Today's card carries the module's picture.** The five module illustrations
   the design ships are bundled, and the day's card draws its module's under the

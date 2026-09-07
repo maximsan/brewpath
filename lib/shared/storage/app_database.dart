@@ -1,6 +1,3 @@
-// Self-describing tokens / DTOs / storage infra; no per-member docs.
-// ignore_for_file: public_member_api_docs
-
 import 'package:brew_path/shared/repositories/settings_repository.dart'
     show SettingsRepository;
 import 'package:drift/drift.dart';
@@ -28,11 +25,9 @@ class ProgressRecords extends Table {
 
   /// Graded cards answered right in the lesson's best run.
   ///
-  /// Stored as the pair `correctCount` / `gradedTotal` rather than a
-  /// percentage: the mastery band derives from the wrong-answer count
-  /// (`gradedTotal - correctCount`) and the node gauge fills to the ratio, and
-  /// neither survives being flattened into one number. A row with
-  /// `gradedTotal == 0` holds no score and reads as deliberately neutral.
+  /// Kept as the pair `correctCount` / `gradedTotal`, not a percentage: the
+  /// mastery band needs the wrong-answer count and the gauge the ratio. A row
+  /// with `gradedTotal == 0` holds no score.
   IntColumn get correctCount => integer().withDefault(const Constant(0))();
 
   /// Graded cards in the lesson's best run; `0` means unscored.
@@ -99,37 +94,19 @@ class UserSettings extends Table {
   /// because two devices the same person owns may legitimately differ.
   TextColumn get themeMode => text().withDefault(const Constant('dark'))();
 
-  /// Whether the learner has answered the Tour's intro overlay.
+  /// Whether the learner has answered the Tour's intro overlay. Written when
+  /// either button is pressed, so abandoning mid-tour never re-arms it.
   ///
-  /// Written the moment either button is pressed, so mid-tour abandonment never
-  /// re-arms the auto-run. Defaults to `false` so every device migrated from an
-  /// earlier schema is offered the Tour once.
-  ///
-  /// **Fate-shares with [onboardingCompleted].** The two are the app's pair of
-  /// "this learner has been shown the introductions" bits, and a wipe that
-  /// clears one while keeping the other produces a state no learner can reach
-  /// on their own: onboarding replayed with the Tour suppressed, or the
-  /// reverse.
-  /// The three places that decide are `AccountWipe.resetProgress` (keeps both,
-  /// by leaving this row alone), `SettingsRepository.deleteAll` (clears both,
-  /// with the row) and `OnboardingRepository.resetOnboarding` (clears both, by
-  /// name). Device-local: never written to the progress snapshot.
+  /// Fate-shares with [onboardingCompleted]: `AccountWipe.resetProgress`
+  /// keeps both, `SettingsRepository.deleteAll` and
+  /// `OnboardingRepository.resetOnboarding` clear both. Device-local.
   BoolColumn get tourSeen => boolean().withDefault(const Constant(false))();
 
-  /// Which micro-tips the learner has already been shown, as a comma-separated
-  /// list of ids — empty for a learner who has seen none.
-  ///
-  /// **Beside [tourSeen] on purpose, and under its rule** (#342): a tip having
-  /// been shown is not progress, so it survives Reset and goes with Delete
-  /// Account. Both facts answer the one question "has this learner already been
-  /// introduced to it", and splitting them across two wipes would let a reset
-  /// replay the tips while suppressing the Tour.
-  ///
-  /// A list in one column rather than a column per tip: the set is content the
-  /// guide layer names, so a new tip is a new id rather than a schema change.
-  /// Ids the app does not recognise are kept as they are read — a device that
-  /// has been on a newer build must not have its record trimmed by an older
-  /// one. Device-local: never written to the progress snapshot.
+  /// Micro-tip ids the learner has been shown, comma-separated; empty for
+  /// none. Under [tourSeen]'s wipe rule (#342): not progress, so it survives
+  /// Reset and goes with Delete Account. One column rather than one per tip,
+  /// because the guide layer names the set; unknown ids are kept as read, so
+  /// an older build never trims a newer device's record. Device-local.
   TextColumn get tipsSeen => text().withDefault(const Constant(''))();
 
   /// What the learner asked to be called, or null when they did not say.
@@ -139,16 +116,10 @@ class UserSettings extends Table {
   /// needs representing.
   TextColumn get learnerName => text().nullable()();
 
-  /// Whether the learner asked for a daily reminder.
+  /// Whether the learner asked for a daily reminder. Off by default.
   ///
-  /// Off by default: a notification nobody asked for is the fastest way to be
-  /// switched off for good, and the design's own row starts as a choice rather
-  /// than as something to undo.
-  ///
-  /// **Stored, not yet acted on.** Nothing schedules anything from this bit —
-  /// whether reminders ship at all has never been ruled, and the platform work
-  /// behind it is #443. Device-local either way: a reminder is a property of
-  /// the phone in your pocket, not of the account.
+  /// Stored, not yet acted on: nothing schedules from this bit, and whether
+  /// reminders ship at all is unruled; the platform work is #443. Device-local.
   BoolColumn get notificationsEnabled =>
       boolean().withDefault(const Constant(false))();
 
@@ -165,16 +136,10 @@ class UserSettings extends Table {
 
 /// The learner's whole progress state, as one JSON value in one row.
 ///
-/// One row, one blob, deliberately. A merged snapshot arrives from the outside
-/// as a *whole object*, so decomposing it back into normalised rows would put
-/// merge semantics in a second place no test of the merge can reach — and the
-/// obvious SQL is wrong there in the direction that looks right: an
-/// insert-or-ignore resurrects every removed favourite forever, and an upsert
-/// on the best result turns never-downgrade into plain last-writer-wins.
-///
-/// The relational benefits are not there to collect either: a dozen fields, no
-/// joins, no ordering, no range queries, one writer, and every read is a set
-/// membership test against something already in memory.
+/// One blob on purpose: a merged snapshot arrives as a whole object, and
+/// decomposing it into rows would put merge semantics where no merge test
+/// reaches (an insert-or-ignore resurrects removed favourites; an upsert on
+/// the best result becomes last-writer-wins). No query here needs a join.
 @DataClassName('SnapshotRow')
 class ProgressSnapshots extends Table {
   IntColumn get id => integer()();
@@ -189,11 +154,9 @@ class ProgressSnapshots extends Table {
 
 /// The one row saying when this account began — Profile's `Joined` line, ruled
 /// by [ADR-0013](../../../docs/adr/0013-the-joined-line-dates-the-install-and-old-devices-are-not-back-dated.md).
-///
-/// Its own table rather than a column on [UserSettings], because that row
-/// deliberately does not exist until the learner chooses something. Here the
-/// row's mere existence carries the fact: a database created before the stamp
-/// shipped has none, and that absence is what sends the line to its fallback.
+/// Its own table, not a column on [UserSettings], whose row does not exist
+/// until the learner chooses something: here the row's existence is the fact,
+/// and its absence sends the line to its fallback.
 @DataClassName('InstallRow')
 class AppInstalls extends Table {
   /// Primary-key id of the singleton install row.
@@ -220,19 +183,10 @@ class AppInstalls extends Table {
 )
 class AppDatabase extends _$AppDatabase {
   /// Production opens a platform DB via drift_flutter; tests pass
-  /// `NativeDatabase.memory()`.
-  ///
-  /// The `coffee_quest` name is the on-disk SQLite filename and is
-  /// deliberately **not** renamed with the package: changing it orphans the
-  /// existing database rather than migrating it. It is invisible to users, and
-  /// the persistence layer is scheduled for a destructive rebuild, so the
-  /// rename would cost local data for no gain.
-  ///
-  /// [clock] is injected so the install stamp written at creation is a test
-  /// input rather than the wall clock, the way `AccountWipe` takes its own.
-  /// Positional rather than named, unlike that one, because Dart forbids a
-  /// signature carrying both optional positional and named parameters and
-  /// `executor` is positional at every call site in the suite.
+  /// `NativeDatabase.memory()`. The on-disk name `coffee_quest` is not renamed
+  /// with the package: renaming orphans the existing database. [clock] makes
+  /// the install stamp a test input; positional because Dart forbids optional
+  /// positional and named parameters together and `executor` is positional.
   AppDatabase([QueryExecutor? executor, DateTime Function()? clock])
     : _clock = clock ?? DateTime.now,
       super(executor ?? driftDatabase(name: 'coffee_quest'));
@@ -249,22 +203,14 @@ class AppDatabase extends _$AppDatabase {
   /// `{correctCount, gradedTotal}` pair.
   static const int _masteryPairVersion = 5;
 
-  /// Schema version that added the progress-snapshot row.
-  ///
-  /// ⚠️ **v6, not v4 or v5.** Every source decision says "schema v4,
-  /// destructive"; that was true when written and has been overtaken twice —
-  /// the appearance preference took 4 and the mastery pair took 5. A version
-  /// regression breaks Drift's own migration check outright, so the number is
-  /// read from what has actually shipped rather than from the decision text.
+  /// Schema version that added the progress-snapshot row: v6, not the "v4"
+  /// the decisions say, because the appearance preference took 4 and the
+  /// mastery pair 5, and a version regression breaks Drift's migration check.
   static const int _snapshotRowVersion = 6;
 
-  /// Schema version that dropped `streakDays` and `lastActivityDate`.
-  ///
-  /// The v5 → v6 step below said the drop "lands with the rewrite that replaces
-  /// those readers, not with the table that will eventually make them
-  /// redundant". That rewrite has landed: the streak is a fold over the
-  /// snapshot's active-day set, `StreakService` is deleted, and nothing has
-  /// advanced these two columns since.
+  /// Schema version that dropped `streakDays` and `lastActivityDate`, once
+  /// the streak became a fold over the snapshot's active-day set and
+  /// `StreakService` was deleted.
   static const int _dropStreakColumnsVersion = 7;
 
   /// Schema version that added the Tour's `tourSeen` bit.
@@ -314,15 +260,10 @@ class AppDatabase extends _$AppDatabase {
         // definition, which drops `best_score` on databases old enough to have
         // it and never wants it on databases that skipped straight past.
       }
-      // v2 → v3: onboarding gate + selection columns on user_settings.
-      // v2 → v3: onboarding columns on user_settings.
-      //
-      // Guarded by the version these columns landed in, not `_schemaVersion`.
-      // It used to read `from < _schemaVersion`, which was correct only while
-      // 3 was the newest version — bumping the constant would have re-run
-      // these adds for a device already at v3 and failed on the duplicate
-      // column. Each step now names its own version, so the next bump is inert
-      // here.
+      // v2 → v3: onboarding columns on user_settings. Guarded by the version
+      // these landed in, not `_schemaVersion`: the old `from < _schemaVersion`
+      // re-ran the adds for a device already at v3 and failed on the
+      // duplicate column.
       if (from < _onboardingColumnsVersion) {
         await m.addColumn(userSettings, userSettings.onboardingCompleted);
         await m.addColumn(userSettings, userSettings.onboardingGoal);
@@ -335,13 +276,9 @@ class AppDatabase extends _$AppDatabase {
       }
 
       // v4 → v5: `bestScore` gives way to the `{correctCount, gradedTotal}`
-      // pair. Recreating the table both adds the new columns and drops the old
-      // one; no `columnTransformer` converts anything, because the old value
-      // *cannot* be converted — it measured first-try accuracy across all
-      // steps with unlimited retries, where grading is one-shot over graded
-      // cards. Existing rows land on the pair's zero default and so read as
-      // unscored, which is exactly the neutral state the design draws for a
-      // lesson finished without a stored score.
+      // pair. Recreating the table adds the pair and drops the old column; no
+      // `columnTransformer`, because a first-try accuracy over unlimited
+      // retries cannot become a one-shot grade. Old rows read as unscored.
       if (from < _masteryPairVersion) {
         await m.alterTable(
           TableMigration(
@@ -358,55 +295,27 @@ class AppDatabase extends _$AppDatabase {
         );
       }
 
-      // v5 → v6: the progress-snapshot row.
-      //
-      // Purely additive here, on purpose. The normalised progress tables this
-      // row replaces are still read by the XP, streak and card layers, and a
-      // column cannot be dropped while something reads it — so the drop lands
-      // with the rewrite that replaces those readers, not with the table that
-      // will eventually make them redundant.
+      // v5 → v6: the progress-snapshot row. Additive only: the tables it
+      // replaces were still read, so their dead columns dropped later, at v7.
       if (from < _snapshotRowVersion) {
         await m.createTable(progressSnapshots);
       }
 
-      // v6 → v7: `streakDays` and `lastActivityDate` are dropped, which is the
-      // drop the step above deferred. Both are dead: the streak derives from
-      // the snapshot's active-day set, and nothing has written a non-zero value
-      // to either column since that landed.
-      //
-      // Nothing is converted, because there is nothing to convert — the values
-      // on disk are `0` and `NULL`, and the real history they once approximated
-      // lives in the day set. Recreating the table drops them by omission from
-      // the current definition, the same way `best_score` went at v5.
-      // Dropped **by name**, not by recreating the table. A
-      // `TableMigration` rebuild would take the table's *current* Dart
-      // definition and copy every column on it across by name, which silently
-      // makes this step depend on every column `user_settings` will ever
-      // have: adding `tourSeen` at v8 made the v7 rebuild select `tour_seen`
-      // out of a v7 source table that has none, and every upgrade from v1–v6
-      // failed on a column the step never mentions (#273).
-      //
-      // `dropColumn` names the two dead columns and nothing else, so no future
-      // column can reach this step. Both have existed since v1, and neither is
-      // indexed or part of a constraint, which is what SQLite requires to drop
-      // one in place.
+      // v6 → v7: `streakDays` and `lastActivityDate` go, the drop v6 deferred.
+      // Nothing converts: the values on disk are `0` and `NULL`. Dropped by
+      // name, not by a `TableMigration` rebuild, which copies the table's
+      // *current* definition and so made this step fail on `tour_seen` once
+      // v8 added it (#273). Neither column is indexed or constrained, which is
+      // what SQLite needs to drop one in place.
       if (from < _dropStreakColumnsVersion) {
         await m.dropColumn(userSettings, 'streak_days');
         await m.dropColumn(userSettings, 'last_activity_date');
       }
 
-      // v7 -> v8: the Tour's `tourSeen` bit.
-      //
-      // Additive, and deliberately defaulted rather than backfilled: a device
-      // upgrading into this version has never been offered the Tour, so `false`
-      // is the true value for it, not a placeholder.
-      //
-      // One-sided, like every step above. It needed a lower bound as well
-      // while v6 → v7 rebuilt the table from the current definition — that
-      // rebuild handed anything older than v7 this column already, and adding
-      // it twice fails on the duplicate. Dropping by name leaves the step
-      // above producing exactly the v7 shape, so every database arriving here
-      // lacks the column and every one of them needs the add (#273).
+      // v7 → v8: the Tour's `tourSeen` bit, defaulted rather than backfilled:
+      // a device upgrading here was never offered the Tour, so `false` is
+      // true for it. One-sided like every step: it needed a lower bound only
+      // while v6 → v7 rebuilt the table from the current definition (#273).
       if (from < _tourSeenVersion) {
         await m.addColumn(userSettings, userSettings.tourSeen);
       }

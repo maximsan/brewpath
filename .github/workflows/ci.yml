@@ -33,6 +33,24 @@ jobs:
       - name: Require a changelog entry for product changes
         run: tool/check_changelog.sh "${{ github.event.pull_request.base.sha }}"
 
+  # Pull requests only: every Dart file the branch touches must be clean of
+  # over-long comment blocks, whether or not the comment guard's baseline still
+  # lists it. This is how the baseline drains without a sweep.
+  comments:
+    name: comments
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Plain Dart is enough: the checker imports nothing outside dart:core.
+      - uses: dart-lang/setup-dart@v1
+
+      - name: Comment blocks in changed files stay under the cap
+        run: dart tool/check_comments.dart --changed "${{ github.event.pull_request.base.sha }}"
+
   format:
     name: format
     runs-on: ubuntu-latest

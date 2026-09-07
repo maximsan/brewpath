@@ -1,5 +1,4 @@
 // Self-describing tokens / DTOs / storage infra; no per-member docs.
-// ignore_for_file: public_member_api_docs
 
 import 'package:brew_path/shared/storage/progress_record.dart'
     show ProgressRecord;

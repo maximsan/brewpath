@@ -1,8 +1,7 @@
-/// A comment block may run this many lines.
-const int maxCommentLines = 6;
-
-/// Files with comment blocks over the cap, and how many each holds. It only
-/// shrinks: the guard fails on growth, and on an entry a cleanup left stale.
+/// Files with comment blocks over the cap (`maxCommentLines`), and how many
+/// each holds. It only shrinks: the guard fails on growth and on a stale entry,
+/// and a file a branch touches must leave it, because the changed-files check
+/// allows nothing.
 const commentLengthBaseline = <String, int>{
   'integration_test/smoke_test.dart': 7,
   'lib/app/app_bootstrap.dart': 1,
@@ -88,7 +87,6 @@ const commentLengthBaseline = <String, int>{
   'lib/features/challenges/presentation/module_challenge_offer.dart': 1,
   'lib/features/companion/domain/companion_reaction.dart': 1,
   'lib/features/companion/domain/companion_state_mapping.dart': 1,
-  'lib/features/companion/domain/roasty_state.dart': 1,
   'lib/features/companion/presentation/companion_celebration.dart': 1,
   'lib/features/companion/presentation/roasty.dart': 1,
   'lib/features/companion/presentation/roasty_animation.dart': 1,
@@ -311,7 +309,6 @@ const commentLengthBaseline = <String, int>{
   'lib/shared/repositories/snapshot_repository.dart': 1,
   'lib/shared/repositories/visual_guide_repository.dart': 2,
   'lib/shared/storage/account_wipe.dart': 3,
-  'lib/shared/storage/app_database.dart': 14,
   'lib/shared/storage/snapshot/daily_activity.dart': 2,
   'lib/shared/storage/snapshot/merge_snapshot.dart': 3,
   'lib/shared/storage/snapshot/progress_snapshot.dart': 2,

@@ -49,29 +49,35 @@ future CI job needs Firebase active at runtime (e.g. an integration-test job).
 ## Local checks (git hooks)
 
 [`tool/git-hooks/`](../tool/git-hooks/) carries the checks that run before
-code leaves the machine. Install once per clone:
+code leaves the machine. [`tool/install_hooks.sh`](../tool/install_hooks.sh)
+links them into the repository's shared hooks directory, so every worktree
+runs them and a machine-wide `commit-msg` hook is left as it is. Claude Code
+runs the installer at session start ([`.claude/settings.json`](../.claude/settings.json));
+run it by hand once per clone otherwise.
 
-```bash
-git config core.hooksPath tool/git-hooks
-```
-
-- **pre-commit** fails the commit when a staged Dart file is unformatted.
-  Sub-second.
+- **pre-commit** fails the commit when a staged Dart file is unformatted or
+  carries a comment block over the cap. Sub-second.
 - **pre-push** runs the CI gates that need no device: the format check,
   `flutter analyze`, the `dart_code_linter` metrics, every
-  `*_guard_test.dart`, and `tool/check_changelog.sh`. About a minute.
-  `git push --no-verify` skips all of it; `NO_CHANGELOG=1 git push` skips only
-  the changelog check, for a PR that will carry the `no-changelog` label.
-- **commit-msg** has no rule of its own. Every hook here first forwards to the
-  machine-wide hook of the same name, so setting `core.hooksPath` does not
-  switch one off.
+  `*_guard_test.dart`, the comment cap on every Dart file changed against
+  the base, and `tool/check_changelog.sh`. About a minute. `git push
+  --no-verify` skips all of it; `NO_CHANGELOG=1 git push` skips only the
+  changelog check, for a PR that will carry the `no-changelog` label; a
+  branch stacked on another names its base with `BASE_REF=origin/<branch>`,
+  which is what CI compares against too.
 
 The full test suite and the iOS build stay in CI: they take minutes, and a
 push is not a merge. A repo-wide rule test is named `*_guard_test.dart` so the
 pre-push hook picks it up.
 
-Claude Code formats every Dart file it writes through the `PostToolUse` hook in
-[`.claude/settings.json`](../.claude/settings.json).
+The comment cap is [`tool/check_comments.dart`](../tool/check_comments.dart),
+which runs with plain `dart`. The guard test holds a baseline of existing
+overruns; the hook, the `comments` CI job and the agent's write hook allow
+none, so a file a branch touches is a file that leaves the baseline.
+
+Claude Code formats and comment-checks every Dart file it writes through the
+`PostToolUse` hook in the same settings file; a failure goes straight back to
+the agent.
 
 ---
 
