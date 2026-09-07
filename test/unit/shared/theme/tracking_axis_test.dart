@@ -63,8 +63,8 @@ void main() {
       isEmpty,
       reason:
           'tracking belongs to the ladder. If the design letters the '
-          'component differently, add the value to AppTracking with its '
-          '`index.html` citation; if it is a genuine exception, register it '
+          'component differently, add the value to AppTracking with the '
+          "design's own em value; if it is a genuine exception, register it "
           'in OffTokens with its reason:\n${offenders.join('\n')}',
     );
   });

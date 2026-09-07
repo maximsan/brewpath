@@ -17,9 +17,9 @@ import 'package:flutter/painting.dart';
 /// use from inside `CustomPainter.paint()`, which has no `BuildContext` to
 /// thread one through.
 ///
-/// Values are transcribed 1:1 from the design bundle CSS
-/// (`prototype/index.html`, the `--art-*` block); the drift guard in
-/// `test/unit/shared/theme/art_colors_test.dart` keeps them there.
+/// Values are transcribed 1:1 from the design bundle CSS — its `--art-*` block;
+/// the drift guard in `test/unit/shared/theme/art_colors_test.dart` keeps them
+/// there.
 ///
 /// Colours that *do* flip with the mood live on `MoodColors`; overlays that
 /// must stay fixed live on `OverlayColors`.

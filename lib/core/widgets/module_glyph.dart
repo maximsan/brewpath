@@ -7,8 +7,7 @@ import 'package:flutter/material.dart';
 /// icon well.
 ///
 /// The design draws a module row as a glyph on nothing and carries its state in
-/// two places only (`prototype/screens.jsx`, `CompactModuleRow` and the Path
-/// tab's expandable rows):
+/// two places only — `CompactModuleRow` and the Path tab's expandable rows:
 ///
 /// * **lock** is colour — [MoodColors.inkMute] when locked, [MoodColors.accent]
 ///   otherwise. The glyph itself stays the module's own either way; the lock

@@ -37,7 +37,7 @@ void main() {
   testWidgets("carries the design's four sections, in its order", (
     tester,
   ) async {
-    // The order is the design's (`prototype/screens.jsx:526-562`): Appearance
+    // The order is the design's: Appearance
     // leads, the preference toggles are filed under Practice beside the
     // reminder they belong with, and Account and Support are pure navigation.
     await openSettings(tester);
@@ -61,15 +61,15 @@ void main() {
     await openSettings(tester);
 
     expect(find.byType(SettingsVersionLine), findsOneWidget);
-    // The design's line is a version, not a build: `BrewPath · v0.1 · …`
-    // (`prototype/screens.jsx:559`). The build number belongs on About, with
+    // The design's line is a version, not a build: `BrewPath · v0.1 · …`.
+    // The build number belongs on About, with
     // the rest of the fine print.
     expect(find.textContaining('V1.0.0'), findsOneWidget);
     expect(find.textContaining('+1'), findsNothing);
   });
 
   testWidgets('draws no leading icon on any settings row', (tester) async {
-    // `NavRow` has no icon slot at all (`prototype/settings.jsx:149`); the
+    // `NavRow` has no icon slot at all; the
     // rows had grown six stock Material glyphs the design never drew.
     await openSettings(tester);
 

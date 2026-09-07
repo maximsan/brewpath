@@ -2,8 +2,8 @@
 /// section headings, the row labels, the titles, and About's own copy.
 ///
 /// Held together the way `AppGuideCopy` and `TourCopy` are: the design owns
-/// these strings (`prototype/screens.jsx`, `prototype/settings.jsx`), and a
-/// screen that spelled its own would be a second place to change them.
+/// these strings, and a screen that spelled its own would be a second place to
+/// change them.
 ///
 /// Not *every* string on the surface: the two confirmation dialogs keep their
 /// copy beside the action they confirm, where the wording and the consequence
@@ -76,17 +76,15 @@ abstract final class SettingsCopy {
   /// About's title.
   static const aboutTitle = 'About';
 
-  /// The kicker under the app's name on About
-  /// (`prototype/settings.jsx:308`).
+  /// The kicker under the app's name on About.
   ///
   /// Ordinary English, not the collectible: *Field Guide* was the retired name
   /// for a Module Reward, and the glossary guard rules it out everywhere
   /// except phrases like this one, which it carries by name.
   static const aboutTagline = 'A field guide to coffee';
 
-  /// What closes the version line (`prototype/screens.jsx:559`) — the same
-  /// ordinary-English sense, shorter because the line already carries two
-  /// other parts.
+  /// What closes the version line — the same ordinary-English sense, shorter
+  /// because the line already carries two other parts.
   static const versionTagline = 'A field guide';
 
   /// About's own description of the app.

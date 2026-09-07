@@ -40,8 +40,7 @@ class ModuleSummary {
   final String? nextLessonId;
 
   /// Whether a module follows this one — the ending's action reads *Begin next
-  /// module* where one does and *Back to Path* where none does
-  /// (`rewards.jsx:340`).
+  /// module* where one does and *Back to Path* where none does.
   bool get hasNextModule => nextLessonId != null;
 }
 

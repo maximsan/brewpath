@@ -79,7 +79,7 @@ void main() {
       expect(
         AppIcon.values.where((icon) => icon.hasActive).toSet(),
         {
-          // The four v1 tabs, which flavor-wheel.jsx draws twice.
+          // The four v1 tabs, which the design draws twice.
           AppIcon.cup, AppIcon.route, AppIcon.cards, AppIcon.leaf,
           // The bookmark, whose rule is prose: "Filled accent when saved".
           AppIcon.bookmark,

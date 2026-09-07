@@ -71,7 +71,7 @@ class TermEntryBody extends ConsumerWidget {
         if (term.pronunciation != null)
           SpeakButton(word: term.term, respelling: term.pronunciation!),
         const SizedBox(height: AppSpacing.xs),
-        // The **display** face at the heading rung (`dictionary.jsx:665`), not
+        // The **display** face at the heading rung, not
         // body copy: the short explanation is the entry's answer, and setting
         // it in the reading face made it a first paragraph of the deep one.
         Text(

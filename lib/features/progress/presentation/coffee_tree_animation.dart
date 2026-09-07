@@ -2,8 +2,7 @@
 ///
 /// Pure, so the curve is unit-testable without pumping a widget, the way
 /// `roasty_animation.dart` holds Roasty's timings. Transcribed from the
-/// design's `personaSway` keyframes (`prototype/flavor-wheel.jsx:162-164`) and
-/// ruled in scope by ADR-0011.
+/// design's `personaSway` keyframes and ruled in scope by ADR-0011.
 library;
 
 import 'dart:math' as math;

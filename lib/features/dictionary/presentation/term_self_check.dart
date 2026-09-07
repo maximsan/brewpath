@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 /// How long the explanation takes to appear once an answer is chosen.
 const _revealDuration = Duration(milliseconds: 200);
 
-/// The verdict on a self-check, in the design's own words (`dictionary.jsx`).
+/// The verdict on a self-check, in the design's own words.
 const String _correct = 'Correct';
 
 /// A term's self-check: one question, a few choices, and an explanation that

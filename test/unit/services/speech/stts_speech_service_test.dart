@@ -24,7 +24,7 @@ void main() {
       await service.speak('Arabica', languageTag: 'en-US');
 
       // `add` would stack a second reading behind the first — the design
-      // cancels before every utterance (`dictionary.jsx:14`).
+      // cancels before every utterance.
       expect(platform.modes, [TtsQueueMode.flush, TtsQueueMode.flush]);
     });
 

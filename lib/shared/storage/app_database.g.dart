@@ -1318,7 +1318,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
   final bool notificationsEnabled;
 
   /// The time of day the reminder is set for, as one of the design's eight
-  /// slots (`prototype/settings.jsx:103`).
+  /// slots.
   ///
   /// Nullable rather than defaulted: "never chose a time" is a different fact
   /// from "chose 8:00 AM", and the row reads *Off* for the first.

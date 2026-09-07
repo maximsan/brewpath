@@ -9,8 +9,8 @@ import 'package:flutter/painting.dart';
 /// The design registers five overlays and gives each its filter in the same
 /// breath as its colour — *"Blur is part of the token's job, not a decoration:
 /// 5px for the modal dim, 3px for a covering wash, 8px behind a media control,
-/// none on the plain veil"* (`prototype/ds-content.js:1090`, restated for
-/// `--dim-modal` in the colour table at `:38`).
+/// none on the plain veil"* — a rule the colour table restates for
+/// `--dim-modal`.
 ///
 /// The first port transcribed all four colours and dropped all four radii
 /// (#379). That was possible only because they were two separate values, so a
@@ -79,7 +79,7 @@ class AppOverlay {
   ///
   /// False for exactly one of the four: the plain veil, which the design leaves
   /// unblurred because the screen under it is meant to stay readable — *"that
-  /// legibility **is** the pitch"* (`ds-content.js:1085`).
+  /// legibility **is** the pitch"*.
   bool get isBlurred => blurRadius > 0;
 
   /// The filter to hand a `BackdropFilter`, or null when there is no blur.

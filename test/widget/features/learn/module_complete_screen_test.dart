@@ -22,9 +22,9 @@ import '../../../support/content_fixtures.dart';
 
 final ModuleModel _module = testModule(lessonIds: const ['m1l1']);
 
-/// The beat's hold, as the screen sets it (`rewards.jsx:225`). Restated here
-/// rather than imported: it is private to the screen, and a test that reached
-/// for it would be asserting the screen against itself.
+/// The beat's hold, as the screen sets it. Restated here rather than imported:
+/// it is private to the screen, and a test that reached for it would be
+/// asserting the screen against itself.
 const Duration _moduleHold = Duration(milliseconds: 2200);
 // The title is the one the bundled bank actually ships. A card's name is
 // authored content and stays as authored; Module Reward is the category,

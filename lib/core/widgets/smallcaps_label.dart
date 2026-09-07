@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 /// step, 0.14em, uppercase.
 ///
 /// Set in Plex Sans, not mono: the design has both `.smallcaps` (Plex Sans 500)
-/// and `.smallcaps-mono`, and the kickers use the former
-/// (`onboarding.jsx:195,202`). Mono is for figures and answer-feedback labels.
+/// and `.smallcaps-mono`, and the kickers use the former. Mono is for figures
+/// and answer-feedback labels.
 ///
 /// The case is applied here rather than in the strings, because uppercase is
 /// the type rule and not part of what the thing is called — the same choice the

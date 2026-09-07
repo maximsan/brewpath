@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 
 /// One quiet line under the streak: the bean, the lessons, the points.
 ///
-/// This is what the design has where the app had three more stat tiles
-/// (`prototype/screens.jsx:2640-2643`). The numbers are a footnote to the tree
-/// and the streak above them, so they get a line rather than cards.
+/// This is what the design has where the app had three more stat tiles. The
+/// numbers are a footnote to the tree and the streak above them, so they get a
+/// line rather than cards.
 class ProfileProgressLine extends StatelessWidget {
   /// Creates a [ProfileProgressLine].
   const ProfileProgressLine({

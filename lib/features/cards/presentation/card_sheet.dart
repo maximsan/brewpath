@@ -15,12 +15,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Opens [item] over the collection.
 ///
-/// A sheet, not a push: the design never takes the learner off the grid to
-/// read a card (`CardSheet`, `screens.jsx:2458`), so closing puts them back
-/// exactly where they were, on the tile they tapped.
-/// Returns what the learner asked for on the way out, when they asked for
-/// anything — the sheet cannot navigate for itself, because the route it sits
-/// on belongs to whoever opened it.
+/// A sheet, not a push: the design never takes the learner off the grid to read
+/// a card — its own `CardSheet` — so closing puts them back exactly where they
+/// were, on the tile they tapped. Returns what the learner asked for on the way
+/// out, when they asked for anything — the sheet cannot navigate for itself,
+/// because the route it sits on belongs to whoever opened it.
 Future<CardSheetIntent?> showCardSheet(
   BuildContext context,
   CardWithCollection item,
@@ -89,9 +88,9 @@ class CardSheetBody extends ConsumerWidget {
 
 /// The line the card is kept for.
 ///
-/// Set in the display face at the heading step (`screens.jsx:2524`) — the
-/// summary above it says what the card is about, and this is the thing worth
-/// carrying away, so it is not more body copy.
+/// Set in the display face at the heading step — the summary above it says what
+/// the card is about, and this is the thing worth carrying away, so it is not
+/// more body copy.
 class _Keepsake extends StatelessWidget {
   const _Keepsake({required this.fact});
 

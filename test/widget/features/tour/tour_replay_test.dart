@@ -51,7 +51,7 @@ void main() {
   /// Profile → gear → Help and support → App Guide, which is the only way in.
   ///
   /// One push deeper than it used to be: the design files the guide inside the
-  /// Help screen (`prototype/settings.jsx:589`), which now exists (#395).
+  /// Help screen, which now exists (#395).
   Future<void> openAppGuide(WidgetTester tester) async {
     await openProfile(tester);
     await tester.tap(findMark(AppIcon.gear));

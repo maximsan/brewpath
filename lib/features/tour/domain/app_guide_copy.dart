@@ -12,10 +12,10 @@ class AppGuideSection {
 
 /// Every word the App Guide says.
 ///
-/// Transcribed from the design (`prototype/guide.jsx`, `APP_GUIDE_SECTIONS`),
-/// which is the source for this screen the way `TourCopy` is for the Tour. The
-/// order is the design's, and it is not alphabetical or arbitrary — it walks
-/// the app the way a learner meets it, from the daily start outwards.
+/// Transcribed from the design's `APP_GUIDE_SECTIONS`, which is the source for
+/// this screen the way `TourCopy` is for the Tour. The order is the design's,
+/// and it is not alphabetical or arbitrary — it walks the app the way a learner
+/// meets it, from the daily start outwards.
 abstract final class AppGuideCopy {
   /// The screen's title, and the label of the Settings row that opens it.
   static const title = 'App Guide';
