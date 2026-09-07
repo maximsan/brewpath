@@ -65,6 +65,10 @@ You can always edit this file by hand instead — the helpers just save effort.
   answer in any deck takes it out again, and the score line says what the
   round left in the deck. It travels between your devices with the rest of
   your progress, and Reset progress empties it.
+- **A lesson pays off the guess it opened on.** The prediction taken on the
+  first card is held for the run and answered on the last one: *Your opening
+  guess*, with the guess and the truth set as chips. A guess that missed is not
+  marked wrong — being wrong there is what the lesson was for.
 
 ### Changed
 
@@ -72,6 +76,10 @@ You can always edit this file by hand instead — the helpers just save effort.
   between the four things it introduces instead of a spotlight snapping
   between them, the card carries its own counter, dots, Skip and Next, and
   nothing behind it can be tapped while it runs. Leaving the tab ends it.
+- **A visual guide inside a lesson is the drawing alone.** The framed block no
+  longer repeats the kind and title the card already states above it.
+- **A Coffee Challenge titles itself one step below a lesson.** It is optional,
+  and the design added a ladder step rather than let the two read as equals.
 - **Today's card is the design's.** A surface card with a rule around it: the
   module as its eyebrow, the title, the picture, one line saying where the
   lesson sits and how long it takes (`LESSON 1/7 · ~3 MIN`), and a full-width
