@@ -5,8 +5,8 @@ import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The save-notice ack round trip against the real snapshot store: the value
-/// is the covered day, raise-only, so no replay path can resurrect a notice.
+// Against the real snapshot store: the ack's value is the covered day and it
+// only ever rises, so no replay path can resurrect a notice.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 

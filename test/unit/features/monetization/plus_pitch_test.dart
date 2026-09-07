@@ -7,13 +7,11 @@ import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/dictionary_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The pitch, counted against the **real shipped banks**.
-///
-/// A fixture would prove only that the fixture and the string agree. The trap
-/// this feature invites is a paywall that passes its own test while lying
-/// about the app, so every assertion here is a *relationship* over the real
-/// content — free plus remaining equals the whole course — never a number
-/// typed twice.
+// Counted against the real shipped banks: a fixture would prove only that the
+// fixture and the string agree, and the trap here is a paywall that passes its
+// own test while lying about the app. So every assertion is a relationship over
+// the real content — free plus remaining equals the whole course — never a
+// number typed twice.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 

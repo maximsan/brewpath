@@ -5,8 +5,8 @@ import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The milestone ack round trip against the real snapshot store: dated with
-/// the presentation day, raise-only.
+// Against the real snapshot store: the ack is dated with the presentation day
+// and only ever rises.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 

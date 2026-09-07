@@ -7,13 +7,10 @@ import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The shelf survives a restart, and a removal survives it too.
-///
-/// **A real restart**, not a second reader over a live database: the file is
-/// closed and reopened between the write and the read, so what is being
-/// trusted is the bytes on disk rather than anything still held in memory.
-/// The in-memory idiom used elsewhere cannot tell those two apart — it proves
-/// the repository caches nothing, which is a weaker claim than this one.
+// A real restart, not a second reader over a live database: the file is closed
+// and reopened between the write and the read, so what is trusted is the bytes
+// on disk. The in-memory idiom used elsewhere proves only that the repository
+// caches nothing, which is the weaker claim.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 

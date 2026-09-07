@@ -2,8 +2,8 @@ import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/progress/domain/joined_date.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The rule behind Profile's closing line: the recorded start of the account,
-/// and what stands in for it on a device that predates the record.
+// The rule behind Profile's closing line: the recorded start of the account,
+// and what stands in for it on a device that predates the record.
 void main() {
   final march = DateTime(2026, 3, 14);
   final july = DateTime(2026, 7, 2);

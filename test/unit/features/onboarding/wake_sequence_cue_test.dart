@@ -2,12 +2,9 @@ import 'package:brew_path/features/onboarding/presentation/loading/wake_sequence
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The brand mark reads `BREWPATH` on the first cycle and
-/// `TAP ANYWHERE TO CONTINUE` on every cycle after.
-///
-/// Driven through the controller rather than the screen: the rule is about
-/// how many cycles have played, which is the controller's own state, and a
-/// widget test would have to pump real durations to reach the second one.
+// Driven through the controller rather than the screen: the rule is about how
+// many cycles have played, which is the controller's own state, and a widget
+// test would have to pump real durations to reach the second one.
 void main() {
   test('the cue holds off until a full cycle has played', () {
     fakeAsync((async) {
