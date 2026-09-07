@@ -202,8 +202,8 @@ Two consequences worth knowing, because both look alarming and are not:
 CI is six jobs ([`13-ci-cd.md`](13-ci-cd.md)). Run them in this order before
 pushing; they are the same commands the workflow uses. The pre-push hook
 ([README _Quality checks_](../README.md#quality-checks)) runs the changelog
-check, the comment check, the format check, analyze and metrics from this
-list, plus the guard tests.
+check, the comment check, the format check and metrics from this list, plus
+the guard tests; analyze and the suite stay in CI.
 
 ```bash
 flutter pub get                                    # required BEFORE format — see below

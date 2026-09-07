@@ -46,8 +46,8 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 - **Checks run before code leaves the machine.** `tool/git-hooks/` fails a
   commit on an unformatted Dart file or an over-long comment, and a push on
-  anything `flutter analyze`, the metrics, a guard test, the comment check or
-  the changelog check would fail in CI; `tool/install_hooks.sh` installs them,
+  anything the metrics, a guard test, the comment check or the changelog
+  check would fail in CI; `tool/install_hooks.sh` installs them,
   and Claude Code runs it at session start. A comment block is capped at six
   lines in every Dart file a branch touches, checked on the agent's write, on
   commit, on push and by a new `comments` CI job, so older overruns drain as

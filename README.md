@@ -59,15 +59,15 @@ Troubleshooting:
 
 ## Quality checks
 
-The same checks run at four moments, earliest first. Nothing here needs a
-device; the full suite and the iOS build stay in CI.
+The repo's own rules run at four moments, earliest first. `flutter analyze`,
+the full suite and the iOS build stay in CI, which runs them on every push.
 
 | When | What runs |
 | --- | --- |
 | Claude Code writes a Dart file | `dart format` on that file, then the comment cap on it (`.claude/settings.json`, `PostToolUse`); a failure goes straight back to the agent |
 | `git commit` | `dart format --set-exit-if-changed` and the comment cap on the staged Dart files (sub-second) |
-| `git push` | the format check, `flutter analyze`, the `dart_code_linter` metrics, every `*_guard_test.dart`, the comment cap on every Dart file changed against the base, and `tool/check_changelog.sh` (about a minute) |
-| CI, on a pull request | the same as push, split into jobs, plus `flutter test` and the iOS build ([`docs/13-ci-cd.md`](docs/13-ci-cd.md)) |
+| `git push` | the format check, the `dart_code_linter` metrics, every `*_guard_test.dart`, the comment cap on every Dart file changed against the base, and `tool/check_changelog.sh` (about half a minute) |
+| CI, on a pull request | the same as push, split into jobs, plus `flutter analyze`, `flutter test` and the iOS build ([`docs/13-ci-cd.md`](docs/13-ci-cd.md)) |
 
 **The comment cap** is `tool/check_comments.dart`: no comment block over six
 lines, in any Dart file the branch touches. There is no allow-list — a file

@@ -1,7 +1,8 @@
 #!/bin/sh
-# The CI gates that need no device, before the push: format, analyze, metrics,
-# the guard tests, the comment cap on changed files and the changelog check.
-# About a minute. Skip all with `git push --no-verify`; skip only the
+# The repo's own rules, before the push: format, metrics, the guard tests, the
+# comment cap on changed files and the changelog check. Around half a minute.
+# `flutter analyze` and the full suite stay in CI, which runs them on every
+# push anyway. Skip all with `git push --no-verify`; skip only the
 # changelog check with NO_CHANGELOG=1. The two checks that compare against a
 # base use origin/main; a branch stacked on another sets BASE_REF to that one.
 # Installed by tool/install_hooks.sh.
@@ -18,7 +19,6 @@ cd "$(git rev-parse --show-toplevel)"
 unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE
 
 dart format --output=none --set-exit-if-changed lib test integration_test
-flutter analyze
 dart run dart_code_linter:metrics analyze lib --set-exit-on-violation-level=warning
 find test -name '*_guard_test.dart' -print0 | xargs -0 flutter test
 
