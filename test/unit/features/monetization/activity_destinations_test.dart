@@ -4,13 +4,10 @@ import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_destination.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The register of what spends a free day's allowance.
-///
-/// §8 caps *full learning/practice activities* and exempts challenges and
-/// passive browsing. That line is drawn by one flag on each destination, so
-/// this is where it is stated in full — a new destination that quietly sets
-/// the flag, or a practice one that quietly drops it, fails here rather than
-/// on a learner's screen.
+// §8 caps full learning and practice activities and exempts challenges and
+// passive browsing. That line is drawn by one flag on each destination, so this
+// is where the register is stated in full: a new destination that quietly sets
+// the flag, or a practice one that drops it, fails here rather than on screen.
 void main() {
   test('the four practice formats each spend one', () {
     expect(lessonRun('m1l1').startsActivity, isTrue);

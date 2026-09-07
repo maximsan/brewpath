@@ -6,7 +6,7 @@ import 'package:brew_path/shared/storage/snapshot/snapshot_scopes.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// Logging a brew, against a real database.
+// Against a real database, not a fake writer.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 

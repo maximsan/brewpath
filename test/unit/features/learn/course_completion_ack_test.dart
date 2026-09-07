@@ -10,8 +10,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/snapshot_generators.dart';
 
-/// The ack round trip against the real snapshot store: written once, dated,
-/// idempotent, and cleared only by whatever clears the reset scope.
+// Against the real snapshot store, not a fake: what clears the ack is whatever
+// clears the reset scope, which only a real store gets right.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 

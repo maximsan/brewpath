@@ -100,14 +100,11 @@ void main() {
     });
 
     test('the last two kinds play, so nothing is left waiting', () {
-      // This test named a game that could not be drawn while any kind was
-      // still unbuilt — `g-bagpick` first, then `g-calibrate` and `g-sequence`
-      // after it. There is no third name to retarget to: with `slider` and
-      // `sequence` built (#124), every kind renders and every game plays.
-      //
-      // So it asserts the state that replaced the wait, and it does so by name
-      // rather than by count: these four are the games those two renderers
-      // opened, and losing one of them should say which.
+      // This named whichever game could not yet be drawn, and with `slider` and
+      // `sequence` built (#124) there is no third name to retarget to. So it
+      // asserts the state that replaced the wait, by name rather than by count:
+      // these four are the games those two renderers opened, and losing one of
+      // them should say which.
       expect(
         playableMiniGameIds,
         containsAll([

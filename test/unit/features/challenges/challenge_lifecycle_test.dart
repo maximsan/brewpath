@@ -5,8 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/content_fixtures.dart';
 
-/// The rules a Coffee Challenge lives by, with a literal clock and literal
-/// sets — no database, no widgets, no mocks.
+// A literal clock and literal sets — no database, no widgets, no mocks.
 void main() {
   const now = 1000000000000;
   final window = challengeWindow.inMilliseconds;
