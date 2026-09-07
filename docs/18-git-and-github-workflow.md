@@ -201,8 +201,9 @@ Two consequences worth knowing, because both look alarming and are not:
 
 CI is five jobs ([`13-ci-cd.md`](13-ci-cd.md)). Run them in this order before
 pushing; they are the same commands the workflow uses. The pre-push hook
-([`13-ci-cd.md`](13-ci-cd.md#local-checks-git-hooks)) runs everything here
-above `flutter test`, plus the guard tests.
+([`13-ci-cd.md`](13-ci-cd.md#local-checks-git-hooks)) runs the changelog
+check, the format check, analyze and metrics from this list, plus the guard
+tests.
 
 ```bash
 flutter pub get                                    # required BEFORE format — see below

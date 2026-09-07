@@ -2,9 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../support/dart_sources.dart';
 
-/// A comment quotes the design's value or cites a ruling; it never names a
-/// prototype file, because the prototype is replaced wholesale (CLAUDE.md,
-/// Code Conventions).
 void main() {
   // The shapes the #479 sweep met: a `.jsx` or `.html` name, the design's one
   // `.js` by name (a `.js` class would flag this repo's own tools), and a line

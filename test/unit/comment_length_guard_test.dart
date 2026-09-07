@@ -3,8 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import '../support/dart_sources.dart';
 import 'comment_length_baseline.dart';
 
-/// A comment block runs to [maxCommentLines] at most (CLAUDE.md, Comments).
-/// Files that already overrun are held in the baseline, which only shrinks.
 void main() {
   const roots = ['lib', 'test', 'integration_test'];
 

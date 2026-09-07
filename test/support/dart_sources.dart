@@ -36,7 +36,7 @@ String withoutComments(String source) =>
 
 /// A block comment, or line comments on consecutive lines: where it starts
 /// (1-based) and how many lines it spans.
-typedef CommentBlock = ({int line, int lines, String text});
+typedef CommentBlock = ({int line, int lines});
 
 /// The comment blocks in [source], in order.
 Iterable<CommentBlock> commentBlocksIn(String source) sync* {
@@ -45,7 +45,6 @@ Iterable<CommentBlock> commentBlocksIn(String source) sync* {
   CommentBlock blockAt(int start, int end) => (
     line: '\n'.allMatches(source.substring(0, start)).length + 1,
     lines: '\n'.allMatches(source.substring(start, end)).length + 1,
-    text: source.substring(start, end),
   );
 
   for (final run in _runs(source)) {
@@ -72,14 +71,11 @@ Iterable<_Run> _runs(String source) sync* {
   var codeStart = 0;
   var index = 0;
   while (index < source.length) {
-    if (source.startsWith('//', index)) {
+    if (source.startsWith('//', index) || source.startsWith('/*', index)) {
       yield _code(source, codeStart, index);
-      final end = _lineEnd(source, index);
-      yield (isComment: true, start: index, text: source.substring(index, end));
-      index = codeStart = end;
-    } else if (source.startsWith('/*', index)) {
-      yield _code(source, codeStart, index);
-      final end = _blockCommentEnd(source, index);
+      final end = source[index + 1] == '/'
+          ? _lineEnd(source, index)
+          : _blockCommentEnd(source, index);
       yield (isComment: true, start: index, text: source.substring(index, end));
       index = codeStart = end;
     } else if (_opensString(source, index)) {

@@ -138,10 +138,8 @@ abstract final class OffTokens {
     reason: 'the line under the count sets `marginTop: 2`',
   );
 
-  /// How far below the status bar a tab opens its title when the title has to
-  /// clear the header's entries. The design gives it to Path; Learn and
-  /// Profile take it too, because their titles are not fixed strings and the
-  /// long ones run under the entries at the design's 24.
+  /// How far below the status bar the Path, Learn and Profile titles open,
+  /// clear of the header's entries; Cards keeps the design's 24.
   static const OffToken<double> tabTitleClearOfEntries = OffToken(
     64,
     reason: 'the Path tab opens its scroll at `paddingTop: 64`',

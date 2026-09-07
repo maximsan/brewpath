@@ -22,6 +22,7 @@ void main() {
 
   group('the register', () {
     test('every reason is one line', () {
+      expect(OffTokens.register, isNotEmpty);
       for (final entry in OffTokens.register) {
         expect(
           entry.reason.trim(),
@@ -46,6 +47,10 @@ void main() {
           .map((file) => file.readAsStringSync())
           .join('\n');
       final quoted = RegExp('`([^`]+)`');
+      // Whole declarations only, so `marginTop: 2` does not pass on
+      // `marginTop: 20`.
+      RegExp wholeDeclaration(String declaration) =>
+          RegExp('(?<![\\w.-])${RegExp.escape(declaration)}(?![\\w.-])');
 
       for (final entry in OffTokens.register) {
         final declarations = quoted
@@ -59,7 +64,7 @@ void main() {
         );
         for (final declaration in declarations) {
           expect(
-            design.contains(declaration),
+            wholeDeclaration(declaration).hasMatch(design),
             isTrue,
             reason:
                 'the design no longer says `$declaration`; re-check the value '
