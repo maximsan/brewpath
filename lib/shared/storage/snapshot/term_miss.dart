@@ -3,19 +3,11 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 
 /// How a learner has answered one dictionary term, as the two moments that
-/// decide whether it is still owed a review.
+/// decide whether it is still owed a review (ADR-0022).
 ///
-/// In its own file rather than beside the snapshot's other value types: it is
-/// the only one carrying a merge rule of its own, and the rule is the reason
-/// the type exists at all.
-///
-/// **Not a set of missed ids.** A set with removals cannot merge — a term
-/// cleared on the phone comes straight back from the tablet that still holds
-/// it, forever. Two stamps merged by [TermMiss.later] converge on whichever
-/// event actually happened last, from either device, in any arrival order.
-///
-/// Milliseconds rather than days, because miss-then-correct inside one sitting
-/// is the normal way a term leaves the deck and a day number cannot order it.
+/// **Not a set of missed ids**: a set with removals cannot merge, so a term
+/// cleared on the phone comes back from the tablet forever. Milliseconds, not
+/// days — miss-then-correct inside one sitting is how a term leaves the deck.
 @immutable
 class TermMiss {
   /// Creates a [TermMiss].

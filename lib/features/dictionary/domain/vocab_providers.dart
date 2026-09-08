@@ -16,10 +16,9 @@ part 'vocab_providers.g.dart';
 /// Every term the learner has answered, with the stamps that decide whether
 /// it is still owed a review.
 ///
-/// A provider of its own rather than a read inside [vocabPools], for the
-/// reason [savedKeysProvider] is one: it is the seam a drill invalidates after
-/// logging an answer, and reading the snapshot inline would leave a second
-/// future in flight that nothing awaits when an earlier one fails.
+/// Its own provider, like [savedKeysProvider]: it is the seam a drill
+/// invalidates after logging an answer, and an inline snapshot read would
+/// leave a second future in flight that nothing awaits.
 @riverpod
 Future<Map<String, TermMiss>> vocabAnswers(Ref ref) async =>
     (await ref.watch(snapshotRepositoryProvider).read())
@@ -28,11 +27,10 @@ Future<Map<String, TermMiss>> vocabAnswers(Ref ref) async =>
 
 /// Both pools a drill picks from, resolved together.
 ///
-/// One value rather than two providers because the two are read as a pair on
-/// every screen the game has — the setup offers a deck by comparing their
-/// sizes, and the round generator asks from one while drawing wrong answers
-/// from the other. Splitting them would let a screen hold a saved pool from
-/// one rebuild beside an accessible pool from the next.
+/// One value, not two providers: every screen reads them as a pair — setup
+/// compares their sizes, the round generator asks from one and draws wrong
+/// answers from the other. Split, a screen could hold a saved pool from one
+/// rebuild beside an accessible pool from the next.
 class VocabPools {
   /// Creates a [VocabPools].
   const VocabPools({
@@ -57,26 +55,20 @@ class VocabPools {
   /// setup screen must draw honestly.
   final List<DictionaryTerm> missed;
 
-  /// How many of their bookmarks are words a drill could ask about at all,
-  /// before the tier narrows it — so **not** the raw count of saved keys.
+  /// How many bookmarks are words a drill could ask about at all, before the
+  /// tier narrows it — **not** the raw count of saved keys.
   ///
-  /// A bookmark on a term the bank no longer carries, or one authored without
-  /// the short explanation a question needs, is not a word any tier can be
-  /// drilled on. Counting those would make the copy below promise that buying
-  /// the course puts them in reach, and it would not.
-  ///
-  /// Required, not defaulted: a zero sitting beside a non-empty [saved] is a
-  /// state that cannot happen, and a default is how it would.
+  /// A term the bank dropped, or one authored without the short explanation a
+  /// question needs, is drillable on no tier; counting those would make the
+  /// copy promise the course puts them in reach. Required, not defaulted.
   final int savedEligible;
 
   /// Whether they saved words a drill could ask about, and their tier reaches
   /// none of them.
   ///
-  /// Every clause is load-bearing, because this turns on copy that tells the
-  /// learner their *free lessons* do not cover what they saved and that the
-  /// full course would. [savedEligible] makes the second half true; the tier
-  /// check makes the first half true, since a paid learner reaches every
-  /// eligible word and cannot honestly be told this.
+  /// Every clause is load-bearing: this turns on copy saying the *free
+  /// lessons* do not cover what they saved and the full course would, which a
+  /// paid learner — reaching every eligible word — cannot honestly be told.
   bool get savedIsOutOfReach =>
       !hasCourse && saved.isEmpty && savedEligible > 0;
 

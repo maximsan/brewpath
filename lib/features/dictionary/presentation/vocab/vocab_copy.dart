@@ -168,10 +168,9 @@ abstract final class VocabCopy {
   /// What the score adds about the review deck, for a drill drawn from
   /// [fromReviewDeck] that missed [count] terms.
   ///
-  /// The design writes only the *added* half, which is false on the one deck
-  /// the line is read on most: a term missed while drilling the review deck
-  /// was already in it and stayed. The divergence is registered in
-  /// `docs/design/11-open-items.md`.
+  /// The design writes only the *added* half, false on the deck this is read
+  /// on most: a term missed while drilling the review deck was already in it.
+  /// The divergence is registered in `docs/design/11-open-items.md`.
   static String reviewDeckLine(int count, {required bool fromReviewDeck}) {
     if (count == 0) return '';
     final terms = count == 1 ? 'term' : 'terms';

@@ -27,14 +27,10 @@ import 'package:go_router/go_router.dart';
 
 /// *Guess the term* — setup, the rounds, then the score.
 ///
-/// The whole drill is three states of one screen rather than three routes: the
-/// score never outlives the run, so routing to it would mean handing a number
-/// to the router only to hand it straight back — the same shape the mini-game
-/// player takes.
-///
-/// The drill holds a single seed, minted when the rounds are dealt and
-/// re-minted by Play again, which decides the terms asked, the wrong answers
-/// offered, and the order of the four options. Nothing about it is persisted.
+/// Three states of one screen, not three routes: the score never outlives the
+/// run, the shape the mini-game player takes. One seed, minted when the rounds
+/// are dealt and re-minted by Play again, decides the terms asked, the wrong
+/// answers offered and the option order; nothing about it is persisted.
 class VocabGameScreen extends ConsumerStatefulWidget {
   /// Creates a [VocabGameScreen].
   const VocabGameScreen({super.key});
@@ -179,11 +175,10 @@ class _VocabGameScreenState extends ConsumerState<VocabGameScreen> {
 
   /// Leaves the drill, back to wherever it was opened from.
   ///
-  /// Both entry points push, so the usual answer is a pop — which returns the
-  /// learner to the dictionary they were browsing rather than stranding them
-  /// on Today having lost their place. Keep Sharp's CTA *goes* rather than
-  /// pushes, like every other recommendation destination, and that is the case
-  /// the fallback is for.
+  /// Both entry points push, so the usual answer is a pop, returning the
+  /// learner to the dictionary they were browsing. Keep Sharp's CTA *goes*
+  /// rather than pushes, like every recommendation destination, and that is
+  /// the case the fallback is for.
   void _done() {
     final router = GoRouter.of(context);
     if (router.canPop()) {

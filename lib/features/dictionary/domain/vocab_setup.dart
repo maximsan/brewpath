@@ -42,12 +42,9 @@ bool vocabDeckAvailable(int size) => size >= vocabMinimumPool;
 /// The deck actually in play, given what the learner chose and how big that
 /// deck currently is.
 ///
-/// Saved and Misses both fall back to All the moment they drop below the
-/// minimum, so un-saving a term — or answering the last missed one correctly —
-/// cannot leave Start running a deck the rules say cannot exist.
-///
-/// Takes the *chosen* deck's size rather than each deck's, so a third deck
-/// could not be added and silently left out of the rule.
+/// Saved and Misses fall back to All the moment they drop below the minimum,
+/// so un-saving a term cannot leave Start on a deck the rules forbid. Takes
+/// the *chosen* deck's size, so a new deck cannot be left out of the rule.
 VocabDeck resolveVocabDeck({
   required VocabDeck chosen,
   required int chosenPoolSize,

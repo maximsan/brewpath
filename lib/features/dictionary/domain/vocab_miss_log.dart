@@ -2,14 +2,10 @@ import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 
 /// The Misses deck's write path: one answered question at a time, in order.
 ///
-/// A class rather than a bare function because the ordering is the whole
-/// point. Each answer is a read-modify-write over the entire snapshot, and a
-/// learner answers faster than a write lands — two in flight means the second
-/// read happens before the first write, and one of the two answers is lost.
-/// Chaining them makes that unrepresentable.
-///
-/// The rule itself lives on the snapshot scope, not here: a wrong answer in
-/// any deck adds the term, a correct answer in any deck clears it.
+/// Each answer is a read-modify-write over the whole snapshot, so two in
+/// flight lose one — chaining makes that unrepresentable. What an answer does
+/// lives on the snapshot scope, not here: wrong adds the term in any deck,
+/// right clears it.
 class VocabMissLog {
   /// Creates a log writing through [_repository].
   VocabMissLog(this._repository);

@@ -1,10 +1,9 @@
 /// Decoding helpers shared by the snapshot's scopes.
 ///
-/// Split out of the scope definitions so each file has one job: the scopes
-/// declare *what the snapshot holds*, this declares *how it survives a round
+/// The scopes declare *what the snapshot holds*, this *how it survives a round
 /// trip*. Every decoder is total — a missing or malformed value reads as the
-/// zero value rather than throwing, because the store is an unvalidated blob
-/// and a payload that fails to parse must degrade instead of bricking launch.
+/// zero value rather than throwing — because the store is an unvalidated blob
+/// and a payload that fails to parse must degrade, not brick launch.
 library;
 
 import 'package:brew_path/features/progress/domain/mastery.dart';
