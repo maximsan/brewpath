@@ -78,6 +78,7 @@ class GradedPicker extends StatefulWidget {
     required this.copy,
     required this.onSolved,
     required this.onContinue,
+    this.payoff,
     super.key,
   });
 
@@ -86,6 +87,10 @@ class GradedPicker extends StatefulWidget {
 
   /// What this kind says around the choices.
   final PickerCopy copy;
+
+  /// A block shown under the verdict once the card is answered — the `recall`
+  /// card's reply to the guess its lesson opened on, and nothing else so far.
+  final Widget? payoff;
 
   /// Fired once, only if the committed choice was correct.
   final CardSolved onSolved;
@@ -146,6 +151,10 @@ class _GradedPickerState extends State<GradedPicker> {
             explanation: copy.explain(wasCorrect: _wasCorrect),
             placement: copy.placement,
           ),
+          if (widget.payoff case final payoff?) ...[
+            const SizedBox(height: AppSpacing.md),
+            payoff,
+          ],
           if (copy.footnote != null) ...[
             const SizedBox(height: AppSpacing.sm),
             Text(

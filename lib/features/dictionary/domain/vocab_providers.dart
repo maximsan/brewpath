@@ -7,23 +7,37 @@ import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/dictionary_repository.dart';
+import 'package:brew_path/shared/repositories/repository_providers.dart';
+import 'package:brew_path/shared/storage/snapshot/term_miss.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'vocab_providers.g.dart';
 
+/// Every term the learner has answered, with the stamps that decide whether
+/// it is still owed a review.
+///
+/// Its own provider, like [savedKeysProvider]: it is the seam a drill
+/// invalidates after logging an answer, and an inline snapshot read would
+/// leave a second future in flight that nothing awaits.
+@riverpod
+Future<Map<String, TermMiss>> vocabAnswers(Ref ref) async =>
+    (await ref.watch(snapshotRepositoryProvider).read())
+        .clearedByReset
+        .termAnswers;
+
 /// Both pools a drill picks from, resolved together.
 ///
-/// One value rather than two providers because the two are read as a pair on
-/// every screen the game has — the setup offers a deck by comparing their
-/// sizes, and the round generator asks from one while drawing wrong answers
-/// from the other. Splitting them would let a screen hold a saved pool from
-/// one rebuild beside an accessible pool from the next.
+/// One value, not two providers: every screen reads them as a pair — setup
+/// compares their sizes, the round generator asks from one and draws wrong
+/// answers from the other. Split, a screen could hold a saved pool from one
+/// rebuild beside an accessible pool from the next.
 class VocabPools {
   /// Creates a [VocabPools].
   const VocabPools({
     required this.accessible,
     required this.saved,
     required this.savedEligible,
+    required this.missed,
     this.categoryLabels = const {},
     this.hasCourse = false,
   });
@@ -34,26 +48,27 @@ class VocabPools {
   /// The accessible terms they bookmarked — always a subset of [accessible].
   final List<DictionaryTerm> saved;
 
-  /// How many of their bookmarks are words a drill could ask about at all,
-  /// before the tier narrows it — so **not** the raw count of saved keys.
+  /// The accessible terms they owe a review — also a subset of [accessible].
   ///
-  /// A bookmark on a term the bank no longer carries, or one authored without
-  /// the short explanation a question needs, is not a word any tier can be
-  /// drilled on. Counting those would make the copy below promise that buying
-  /// the course puts them in reach, and it would not.
+  /// Required, like [saved]: an empty deck and a deck nobody remembered to
+  /// pass read identically at every call site, and the first is a state the
+  /// setup screen must draw honestly.
+  final List<DictionaryTerm> missed;
+
+  /// How many bookmarks are words a drill could ask about at all, before the
+  /// tier narrows it — **not** the raw count of saved keys.
   ///
-  /// Required, not defaulted: a zero sitting beside a non-empty [saved] is a
-  /// state that cannot happen, and a default is how it would.
+  /// A term the bank dropped, or one authored without the short explanation a
+  /// question needs, is drillable on no tier; counting those would make the
+  /// copy promise the course puts them in reach. Required, not defaulted.
   final int savedEligible;
 
   /// Whether they saved words a drill could ask about, and their tier reaches
   /// none of them.
   ///
-  /// Every clause is load-bearing, because this turns on copy that tells the
-  /// learner their *free lessons* do not cover what they saved and that the
-  /// full course would. [savedEligible] makes the second half true; the tier
-  /// check makes the first half true, since a paid learner reaches every
-  /// eligible word and cannot honestly be told this.
+  /// Every clause is load-bearing: this turns on copy saying the *free
+  /// lessons* do not cover what they saved and the full course would, which a
+  /// paid learner — reaching every eligible word — cannot honestly be told.
   bool get savedIsOutOfReach =>
       !hasCourse && saved.isEmpty && savedEligible > 0;
 
@@ -70,8 +85,11 @@ class VocabPools {
   final bool hasCourse;
 
   /// The terms [deck] can ask about.
-  List<DictionaryTerm> forDeck(VocabDeck deck) =>
-      deck == VocabDeck.saved ? saved : accessible;
+  List<DictionaryTerm> forDeck(VocabDeck deck) => switch (deck) {
+    VocabDeck.saved => saved,
+    VocabDeck.misses => missed,
+    VocabDeck.all => accessible,
+  };
 }
 
 /// The learner's drill pools, tier-scoped.
@@ -89,6 +107,7 @@ Future<VocabPools> vocabPools(Ref ref) async {
   final categoriesFuture = dictionary.getCategories();
   final lessonsFuture = ref.watch(contentRepositoryProvider).getLessons();
   final savedFuture = ref.watch(savedKeysProvider.future);
+  final answersFuture = ref.watch(vocabAnswersProvider.future);
   final entitlement = ref.watch(courseEntitlementProvider);
 
   final hasCourse = entitlement.asData?.value ?? false;
@@ -107,6 +126,10 @@ Future<VocabPools> vocabPools(Ref ref) async {
   return VocabPools(
     accessible: accessible,
     hasCourse: hasCourse,
+    missed: missedAccessibleTerms(
+      accessible: accessible,
+      answers: await answersFuture,
+    ),
     // Intersected with every drillable word rather than counted off the keys:
     // a bookmark no drill could ever ask about is not one the course unlocks.
     savedEligible: savedAccessibleTerms(

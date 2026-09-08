@@ -11,9 +11,8 @@ import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/domain/saved_shelf.dart';
 import 'package:brew_path/features/saved/presentation/saved_badge_dot.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
-import 'package:brew_path/features/tour/domain/tour_copy.dart';
-import 'package:brew_path/features/tour/presentation/tour_stop.dart';
-import 'package:brew_path/features/tour/presentation/tour_stops.dart';
+import 'package:brew_path/features/tour/domain/tour_step.dart';
+import 'package:brew_path/features/tour/presentation/tour_anchor.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -22,25 +21,10 @@ import 'package:go_router/go_router.dart';
 
 /// The one header the four tabs share, owned by the shell.
 ///
-/// Rendered **once**, above the branch navigators, exactly as the design
-/// renders it once at app level beside the tab bar. The shell decides whether
-/// it draws at all; this decides what it says.
-///
-/// **It floats over the tab rather than standing above it**, and at rest it
-/// draws nothing but its entries: the tab's own `TabLargeTitle` is what titles
-/// the screen there. Scrolled, the bar materialises and the compact title
-/// slides in to replace the large one that has just gone under it — so the
-/// screen is titled exactly once at every point of the scroll, which is the
-/// pairing the design is built on and the reason the Cards tab had no title of
-/// its own until now (#441).
-///
-/// The entries stay put the whole way through. They are the only part of the
-/// bar that was ever meant to be visible at the top of a tab.
-///
-/// It consumes the status-bar inset itself, because the bar has to reach up
-/// under the status bar to blur what passes beneath it. A tab root's content
-/// starts under that inset and scrolls up through it; a page pushed inside a
-/// branch brings its own `AppBar`, which handles its own.
+/// Rendered once above the branch navigators: the shell decides whether it
+/// draws at all, this decides what it says. At rest it floats over the tab
+/// showing only its entries; scrolled, its compact title replaces the large
+/// one that has gone under it, so a tab is titled exactly once (#441).
 class AppHeader extends ConsumerWidget {
   /// Creates an [AppHeader].
   const AppHeader({
@@ -94,10 +78,8 @@ class AppHeader extends ConsumerWidget {
             // Tour stop 3 frames the pair rather than either entry: the design
             // introduces Saved and the Dictionary as one place things you keep
             // end up, and a frame around one button would name half of it.
-            TourStop(
-              stopKey: TourStops.header,
-              title: TourCopy.headerTitle,
-              description: TourCopy.headerBody,
+            TourAnchor(
+              step: TourStep.header,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [

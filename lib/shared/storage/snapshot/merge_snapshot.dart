@@ -4,26 +4,15 @@ import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/storage/snapshot/progress_snapshot.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_scopes.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
+import 'package:brew_path/shared/storage/snapshot/term_miss.dart';
 import 'package:brew_path/shared/storage/snapshot/timestamped.dart';
 
-/// Joins two snapshots into one.
+/// Joins two snapshots into one — a **lattice join**: idempotent, commutative
+/// and associative, asserted over generated snapshots rather than assumed.
 ///
-/// **Pure by design** — two snapshots in, one out, with no database, no I/O and
-/// no clock. That is not tidiness: a key-value write is *not durable*, so the
-/// platform may discard a local write in favour of server values and hand back
-/// a change notification instead. The only correct response is to merge on
-/// arrival and re-publish, which means this function runs on every sync and
-/// every conflict case must be testable without a device.
-///
-/// It is a **lattice join**: idempotent, commutative and associative. Those
-/// three laws *are* convergence — they are why two devices reach the same
-/// state regardless of which synced first or how often a payload arrived — and
-/// they are asserted directly over generated snapshots rather than assumed.
-///
-/// A consequence worth knowing at the call site: because the join is
-/// idempotent, a **dropped** change notification is a deferred read, not a lost
-/// write. Re-reading later reaches the same state, which is why the platform
-/// layer needs no queue.
+/// Pure by design (no database, no I/O, no clock): a key-value write is *not
+/// durable*, so this runs on every sync and every case must be testable
+/// without a device. Idempotent makes a dropped notification a deferred read.
 ProgressSnapshot mergeSnapshot(
   ProgressSnapshot local,
   ProgressSnapshot remote,
@@ -78,6 +67,10 @@ ClearedByReset _joinProgress(ProgressSnapshot local, ProgressSnapshot remote) {
     treeStage: max(a.treeStage, b.treeStage),
     challengesCompleted: {...a.challengesCompleted, ...b.challengesCompleted},
     learnedTerms: {...a.learnedTerms, ...b.learnedTerms},
+    // Per-stamp max, so the two devices land on whichever of the four answers
+    // was genuinely latest — the shape a set of missed ids could not have,
+    // because a clear on one device would come back from the other.
+    termAnswers: _mergeMap(a.termAnswers, b.termAnswers, TermMiss.later),
     challengeReactions: _mergeMap(
       a.challengeReactions,
       b.challengeReactions,
@@ -136,13 +129,12 @@ ChallengeReaction _laterReaction(ChallengeReaction a, ChallengeReaction b) {
   return a.reaction.compareTo(b.reaction) >= 0 ? a : b;
 }
 
-/// The only merge class that **discards**, so it is used only where a value can
-/// legitimately go backwards — removal is a first-class action for saved
-/// challenges and favourites, and only one challenge can be active.
+/// The only merge that **discards**, so it is used only where a value can
+/// legitimately go backwards — removal is first-class for saved challenges
+/// and favourites, and only one challenge can be active.
 ///
-/// Ties break on device id. Without that, two writes in the same millisecond
-/// leave each device keeping its own answer and the field never converges —
-/// which is a silent, permanent divergence rather than a visible error.
+/// Ties break on device id: without it two writes in the same millisecond
+/// leave each device on its own answer, a silent, permanent divergence.
 Timestamped<T> _lastWriterWins<T>(Timestamped<T> a, Timestamped<T> b) {
   if (a.updatedAt != b.updatedAt) return a.updatedAt > b.updatedAt ? a : b;
   if (a.writerId != b.writerId) {
@@ -192,11 +184,10 @@ String _laterDevice(ProgressSnapshot local, ProgressSnapshot remote) {
 
 /// Keys this build does not recognise, carried through untouched.
 ///
-/// A collision is resolved by comparing the values themselves rather than by
-/// asking which snapshot is newer. Envelope-level resolution is not associative
-/// here — a merged snapshot's timestamp says nothing about which of its
-/// unknown keys came from where — and these are by definition values this build
-/// cannot interpret, so any *deterministic* rule converges equally well.
+/// A collision compares the values themselves rather than asking which
+/// snapshot is newer: envelope-level resolution is not associative here, and
+/// these are by definition values this build cannot interpret, so any
+/// *deterministic* rule converges equally well.
 Map<String, dynamic> _mergeUnknown(
   Map<String, dynamic> a,
   Map<String, dynamic> b,

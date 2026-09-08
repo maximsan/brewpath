@@ -11,7 +11,7 @@
 | ----------- | ------------------------ | ---------------------------------------------------------------------------------------- |
 | Unit        | `flutter_test`           | Business logic, points rules, streak logic, card unlock, module unlock, repository read/write |
 | Widget      | `flutter_test`           | Mini-game widgets, lesson step runner, tab navigation, screen rendering                  |
-| Integration | `integration_test` (SDK) | Smoke flow: launch → onboarding → relaunch → open authored content                       |
+| Integration | `integration_test` (SDK) | Smoke flow: launch → onboarding → relaunch → play a lesson → relaunch → read back what it paid |
 
 **Mocking strategy:** Use Riverpod `ProviderScope` overrides to inject test doubles. Avoid `mockito` for domain logic — prefer real implementations with `AppDatabase(NativeDatabase.memory())` (an in-memory Drift database).
 
@@ -25,7 +25,7 @@ did, and every listed snippet had drifted from the real APIs).
 
 | Directory | What lives there |
 |---|---|
-| `test/unit/` (top level) | Domain + repository logic: points, streak, lesson completion, module unlock, routes, monetization stubs, no-op services, content + progress + module-progress repositories. Also the content rules checked over the **committed** banks, which catch a hand-edit or a half-applied regeneration that a fresh extraction cannot see |
+| `test/unit/` (top level) | Domain logic: points, streak, lesson completion, module unlock, routes, monetization stubs, no-op services, the content repository. Also the content rules checked over the **committed** banks, which catch a hand-edit or a half-applied regeneration that a fresh extraction cannot see |
 | `test/unit/features/` | Per-feature domain tests (onboarding, companion, learn, lessons, progress) |
 | `test/unit/shared/theme/` | The token suite — mood colours, art colours, overlays, radii, text — including drift guards against the prototype's palette |
 | `test/unit/shared/storage/` + `storage/snapshot/` | Drift records, the progress-snapshot merge laws, JSON round-trips, account wipe + tombstones |
@@ -33,7 +33,7 @@ did, and every listed snippet had drifted from the real APIs).
 | `test/unit/core/icons/` | The icon family — the catalogue against the written marks, and both against a fresh `node tool/extract_icons.js` |
 | `test/database/` | Schema smoke + migration tests over the real Drift schema history (`drift_schemas/`) |
 | `test/widget/` | Screens, games, shell navigation, shared widgets |
-| `integration_test/` | The smoke flow — boots through onboarding (loading → welcome → goal → brewer → name) into Learn, proves it persisted across a relaunch by reading the name back off the Profile header, dismisses the Tour, and opens authored content |
+| `integration_test/` | The smoke flow — boots through onboarding into Learn, proves it persisted across a relaunch by reading the name back off the Profile header, dismisses the Tour, plays `m1l1` to completion, and after a second relaunch reads the completion, its points and its card back off Profile and Cards |
 
 Run: `flutter test` (everything), `flutter test test/unit/` etc. per directory,
 `flutter test integration_test/smoke_test.dart -d <simulator>` for the smoke
@@ -49,14 +49,16 @@ several times slower on a cold CI runner than locally).
 > other coverage at all.
 >
 > **Never landmark on authored copy.** Lesson titles, card text and questions
-> move with the content; open the Today card by its own `Start` control and
-> prove content loaded with `Step 1 of N`, whose `N` is the lesson's real step
-> count. Hardcoding a lesson title is what broke this walk twice.
+> move with the content; open the Today card by its own control, and prove
+> content loaded off the `RoastMeter`'s own numbers rather than the string it
+> draws. Hardcoding a lesson title is what broke this walk twice.
 >
-> **Two launches, never three.** Each `app.main()` opens another `AppDatabase`
-> over the same file, and drift is explicit that concurrent instances race. A
-> third launch passes only when the simulator still holds an onboarded install
-> from a previous run — green locally, red on every clean one.
+> **A relaunch tears the previous app down first.** Each `app.main()` opens
+> another `AppDatabase` over the same file, and drift is explicit that
+> concurrent instances race — which is why the walk once had a hard "two
+> launches, never three" rule. `launch` now unmounts the tree and closes the
+> open database before it starts the next one, so a relaunch is a restart
+> rather than a second handle, and the count is no longer the limit.
 >
 > **Every step of the walk must assert.** It rotted for months because three
 > did not: a skip guarded by an `if` that no-opped when its copy changed, a
@@ -77,7 +79,10 @@ widget whose centre is off the right-hand edge; every tap then misses it and
 Flutter reports that as a warning, not a failure. A push transition also mounts
 both pages at once, so the raw finder can match the outgoing copy as well and
 `ensureVisible` fails on "too many elements" — a wait and an action disagreeing
-about which widget they meant.
+about which widget they meant. The one exception is `tappable: false`, for a
+widget the walk **reads** rather than taps — Profile's lessons-and-points line,
+a Cards tile it only inspects. Hit-testability is not what makes those
+assertions true, so requiring it can only add a way for them to fail.
 
 **Find a button by its label anywhere beneath it.** `liveButton` matches an
 *enabled* `FilledButton` that has the label somewhere under it. It read
@@ -101,7 +106,7 @@ than at the job's cap.
 ## Conventions
 
 **In-memory Drift, no mocks for persistence** (the real setup, from
-`test/unit/progress_repository_test.dart`):
+`test/unit/shared/storage/account_wipe_test.dart`):
 
 ```dart
 setUp(() {

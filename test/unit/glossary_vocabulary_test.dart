@@ -6,10 +6,10 @@ import '../support/dart_sources.dart';
 
 /// Terms `CONTEXT.md` lists under _Avoid_, held out of what a learner reads —
 /// a sweep is a one-off, and #160 and #212 each left something behind. Scoped
-/// to strings a learner reads, never identifiers: storage keeps its `totalXp`
-/// columns until #79's migration, and the banks keep the read-only prototype's
-/// wire vocabulary. A term joins once the glossary rules it *and* it has
-/// appeared on screen; "score" is wrong for points and right in "Best score".
+/// to strings a learner reads, never identifiers: the banks keep the read-only
+/// prototype's wire vocabulary. A term joins once the glossary rules it *and*
+/// it has appeared on screen; "score" is wrong for points and right in
+/// "Best score".
 final _ruledOut =
     <
       ({

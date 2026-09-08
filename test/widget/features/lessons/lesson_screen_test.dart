@@ -2,8 +2,12 @@ import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/float_topbar.dart';
+import 'package:brew_path/features/lessons/domain/held_guess.dart';
+import 'package:brew_path/features/lessons/presentation/cards/recall_payoff.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_screen.dart';
 import 'package:brew_path/features/saved/presentation/saved_bookmark_button.dart';
+import 'package:brew_path/shared/models/content/card_parts.dart';
+import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -146,6 +150,48 @@ void main() {
     // a mark on the run in progress.
     expect(find.byType(LinearProgressIndicator), findsNothing);
     expect(find.textContaining('%'), findsNothing);
+  });
+
+  testWidgets('carries the opening guess through to the card that pays it '
+      'off', (tester) async {
+    // The whole point of the predict card: the guess it takes outlives it, and
+    // the closing card answers it minutes later.
+    await pumpLesson(
+      tester,
+      testLesson(
+        cards: const [
+          ContentCard.predict(
+            label: 'LESSON 1',
+            title: 'What coffee actually is',
+            body: 'Coffee starts on a tree.',
+            question: 'A coffee bean is really the ___',
+            options: ['Seed', 'Skin'],
+            answer: 'Seed',
+            hold: 'Hold that thought.',
+          ),
+          ContentCard.recall(
+            label: 'BEFORE YOU GO',
+            question: 'What is it really?',
+            choices: [
+              Choice(text: 'The seed of a cherry', isCorrect: true),
+              Choice(text: 'A dried leaf'),
+            ],
+            explanation: 'Botanically a seed.',
+            takeaway: 'Coffee is fruit.',
+          ),
+        ],
+      ),
+    );
+
+    await advance(tester, 'Skin');
+    await advance(tester, 'Continue');
+    await advance(tester, 'The seed of a cherry');
+
+    expect(find.byType(RecallPayoff), findsOneWidget);
+    expect(
+      tester.widget<RecallPayoff>(find.byType(RecallPayoff)).guess,
+      const HeldGuess(pick: 'Skin', answer: 'Seed'),
+    );
   });
 
   testWidgets('plays every card and ends at the completion screen', (

@@ -11,6 +11,7 @@ import 'package:brew_path/features/dictionary/domain/vocab_round.dart';
 import 'package:brew_path/features/monetization/domain/free_tier.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
+import 'package:brew_path/shared/storage/snapshot/term_miss.dart';
 
 /// The terms [hasCourse] can be drilled on, in bank order.
 ///
@@ -51,4 +52,17 @@ List<DictionaryTerm> savedAccessibleTerms({
 }) => [
   for (final term in accessible)
     if (savedTermIds.contains(term.id)) term,
+];
+
+/// The accessible terms the learner owes a review, in bank order.
+///
+/// An intersection for the same reason [savedAccessibleTerms] is one: a term
+/// missed while the course still reached it must not come back through the
+/// Misses deck once the tier no longer does.
+List<DictionaryTerm> missedAccessibleTerms({
+  required List<DictionaryTerm> accessible,
+  required Map<String, TermMiss> answers,
+}) => [
+  for (final term in accessible)
+    if (answers[term.id]?.isMissed ?? false) term,
 ];

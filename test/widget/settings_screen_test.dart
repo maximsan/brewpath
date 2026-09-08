@@ -9,13 +9,13 @@ import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_sub_screen.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
-import 'package:brew_path/shared/repositories/card_repository.dart';
-import 'package:brew_path/shared/repositories/progress_repository.dart';
 import 'package:brew_path/shared/repositories/settings_repository.dart';
+import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../support/find_mark.dart';
+import '../support/progress_seed.dart';
 import '../support/widget_harness.dart';
 
 void main() {
@@ -298,12 +298,13 @@ void main() {
     tester,
   ) async {
     // Seed progress so we can prove the dialog Cancel path is a true no-op.
-    await ProgressRepository().saveCompletion(
-      lessonId: 'lesson_a',
-      xpEarned: 30,
+    final snapshots = SnapshotRepository();
+    await seedCompletedLesson(
+      snapshots,
+      'lesson_a',
       mastery: const MasteryResult(correct: 4, total: 5),
     );
-    await CardRepository().collectCard('card_a');
+    await seedCollectible(snapshots, 'card_a');
 
     await openSettings(tester);
 
@@ -314,19 +315,24 @@ void main() {
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
     expect(find.text('Reset all progress?'), findsNothing);
-    expect((await ProgressRepository().getAllCompleted()).length, 1);
-    expect((await CardRepository().getAllCollectedCardIds()).length, 1);
-    // The payout survives on the record the total is summed off.
-    expect((await ProgressRepository().getAllCompleted()).single.xpEarned, 30);
+    final kept = (await snapshots.read()).clearedByReset;
+    expect(kept.completedLessons.keys, ['lesson_a']);
+    expect(kept.ownedCollectibles, {'card_a'});
+    // The result it was scored on survives with it.
+    expect(
+      kept.bestResults['lesson_a'],
+      const MasteryResult(correct: 4, total: 5),
+    );
   });
 
   testWidgets('confirming Reset wipes all progress', (tester) async {
-    await ProgressRepository().saveCompletion(
-      lessonId: 'lesson_a',
-      xpEarned: 30,
+    final snapshots = SnapshotRepository();
+    await seedCompletedLesson(
+      snapshots,
+      'lesson_a',
       mastery: const MasteryResult(correct: 4, total: 5),
     );
-    await CardRepository().collectCard('card_a');
+    await seedCollectible(snapshots, 'card_a');
     final settings = await SettingsRepository().getSettings();
     settings
       ..hapticsEnabled = false
@@ -340,8 +346,9 @@ void main() {
     await tester.tap(find.widgetWithText(TextButton, 'Reset'));
     await settleLoaders(tester);
 
-    expect(await ProgressRepository().getAllCompleted(), isEmpty);
-    expect(await CardRepository().getAllCollectedCardIds(), isEmpty);
+    final wiped = (await snapshots.read()).clearedByReset;
+    expect(wiped.completedLessons, isEmpty);
+    expect(wiped.ownedCollectibles, isEmpty);
     final after = await SettingsRepository().getSettings();
     // Preferences are preserved, and so is the name: it is account data, not
     // progress.

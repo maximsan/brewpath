@@ -8,13 +8,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Learn tab: today's lesson and the practice sections.
 ///
-/// The course itself is Path's
-/// ([#394](https://github.com/maximsan/brewpath/issues/394)) — this tab is
-/// today's work, which is what the design calls it.
-///
-/// Also where the Tour auto-runs. Stateful for that alone: the offer is made
-/// once per app launch at most, and only a `State` can remember that it has
-/// already been made across the rebuilds the tab's providers cause.
+/// The course itself is Path's (#394) — this tab is today's work, which is
+/// what the design calls it. Also where the Tour auto-runs, and stateful for
+/// that alone: the offer is made once per launch at most, and only a `State`
+/// remembers that across the rebuilds the tab's providers cause.
 class LearnScreen extends ConsumerStatefulWidget {
   /// Creates a [LearnScreen].
   const LearnScreen({super.key});
@@ -38,7 +35,7 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
       // No intro overlay and no write: someone asking to see the Tour again
       // has already answered the question the overlay asks, and the flag
       // records that answer, not how many times the Tour has run.
-      startTourStops(ref);
+      startTour(ref);
     });
   }
 
@@ -53,11 +50,9 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
   /// Offers the Tour once the tab is showing real data and the flag is unset.
   ///
   /// Gated on the day's lesson having resolved rather than on the screen
-  /// mounting, because the Tour's first stop is the Today card — spotlighting
-  /// a card that has not decided what it says explains nothing. [seen] is null
-  /// while the flag is still loading, which is treated as "already seen": the
-  /// offer is deferred to the rebuild the resolved flag causes, never made
-  /// against an unknown.
+  /// mounting: the first stop is the Today card, and spotlighting a card that
+  /// has not decided what it says explains nothing. A null [seen] is the flag
+  /// still loading, treated as "already seen" so nothing is offered blind.
   void _offerTourIfDue(bool? seen) {
     if (_offered || (seen ?? true)) return;
 
@@ -72,7 +67,7 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
       // has already happened by then.
       await markTourSeen(ref);
       if (!mounted || !accepted) return;
-      startTourStops(ref);
+      startTour(ref);
     });
   }
 
@@ -81,11 +76,9 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
     // The day's lesson — the Tour's first stop, so its arrival is the signal
     // that there is something to point at.
     //
-    // **The tab is not gated on it.** Every section here degrades on its own
-    // while its provider is pending, which is what lets the day's card settle
-    // last without holding a spinner over a tab that is otherwise ready. A
-    // screen-level gate would also hand one slow provider the power to blank
-    // the whole tab.
+    // The tab is not gated on it: every section degrades on its own while its
+    // provider is pending, so the day's card can settle last without holding a
+    // spinner over a tab that is otherwise ready.
     final today = ref.watch(todayLessonProvider);
     // Watched, not read: the flag resolves on its own schedule, and the offer
     // has to survive it landing after the lesson.

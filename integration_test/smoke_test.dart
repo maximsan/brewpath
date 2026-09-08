@@ -1,17 +1,23 @@
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/widgets/roast_meter.dart';
+import 'package:brew_path/features/cards/presentation/card_grid_item_widget.dart';
+import 'package:brew_path/features/lessons/domain/lesson_completion_actions.dart';
+import 'package:brew_path/features/lessons/presentation/lesson_screen.dart';
+import 'package:brew_path/features/lessons/presentation/reward_points_line.dart';
 import 'package:brew_path/features/onboarding/presentation/loading/loading_screen.dart';
+import 'package:brew_path/features/profile/presentation/widgets/profile_progress_line.dart';
 import 'package:brew_path/features/tour/domain/tour_copy.dart';
 import 'package:brew_path/main.dart' as app;
+import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import '../test/support/find_mark.dart';
 
 // The only suite that boots the real app: why it exists, why every step must
-// assert, and why it launches exactly twice — docs/12-testing.md, "The suite,
-// by directory".
+// assert, and what a relaunch has to tear down first — docs/12-testing.md,
+// "The suite, by directory".
 
 /// How long each real-time pump waits before looking again.
 const Duration _pumpInterval = Duration(milliseconds: 40);
@@ -32,6 +38,25 @@ String _visibleText(WidgetTester tester) {
 
 /// The name the walk types at onboarding and expects to survive a relaunch.
 const _name = 'Maya';
+
+/// The lesson the walk plays to completion. It and the two values below are
+/// written out rather than read back off the bundle: a walk that asks the app
+/// what it is owed cannot notice the app owing nothing.
+const _lessonId = 'm1l1';
+
+/// What finishing [_lessonId] once pays.
+const _lessonPoints = 10;
+
+/// The collectible [_lessonId] hands over.
+const _lessonCardId = 'c1';
+
+/// How many answers one card can take before the walk gives up on it. A
+/// concept card spends one per blank; nothing in the course spends this many.
+const _answersPerCard = 8;
+
+/// Longer than the usual wait: the completion screen holds a two-second beat
+/// before its report, and persists the run behind it.
+const _completionBudget = Duration(seconds: 45);
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -54,17 +79,18 @@ void main() {
   /// Pumps in real time until [target] is hit-testable — or gone, when
   /// [present] is false — and fails naming what never happened. A page sliding
   /// in is in the tree before it is on screen, so waiting on mere existence
-  /// hands back a widget every tap misses. Never `pumpAndSettle`, and the
-  /// [budget] is deliberately generous; both reasons are in
-  /// docs/12-testing.md, "The smoke walk's helpers".
+  /// hands back a widget every tap misses; pass [tappable] false for one the
+  /// walk only reads. Never `pumpAndSettle`, and the [budget] is deliberately
+  /// generous; both reasons are in docs/12-testing.md.
   Future<void> pumpUntil(
     WidgetTester tester,
     Finder target, {
     required String describe,
     bool present = true,
+    bool tappable = true,
     Duration budget = const Duration(seconds: 30),
   }) async {
-    final ready = present ? target.hitTestable() : target;
+    final ready = present && tappable ? target.hitTestable() : target;
     final attempts = budget.inMilliseconds ~/ _pumpInterval.inMilliseconds;
     for (var attempt = 0; attempt < attempts; attempt++) {
       if (ready.evaluate().isNotEmpty == present) return;
@@ -108,9 +134,91 @@ void main() {
     ),
   );
 
+  /// An option the card on screen will still take — every answer control a
+  /// lesson card draws is an `OutlinedButton`, and a latched one stops
+  /// accepting taps, so this empties as the card commits. Scoped to the
+  /// player, because the shell it opens over is still in the tree behind it.
+  Finder liveOption() => find.descendant(
+    of: find.byType(LessonScreen),
+    matching: find.byWidgetPredicate(
+      (widget) => widget is OutlinedButton && widget.onPressed != null,
+      description: 'an answerable option',
+    ),
+  );
+
+  /// Answers the card at [position] and moves on.
+  ///
+  /// How many answers that takes is the card's business — a concept card
+  /// wants one per blank — so the walk answers until Continue comes alive
+  /// rather than counting. *Which* option it picks is not the point: this
+  /// walk is about the run being recorded, not about scoring well.
+  Future<void> answerAndContinue(WidgetTester tester, int position) async {
+    final onward = liveButton(AppLabels.continueLabel);
+    for (var answer = 0; answer < _answersPerCard; answer++) {
+      if (onward.evaluate().isNotEmpty) break;
+      if (liveOption().evaluate().isEmpty) {
+        fail(
+          'card $position offers nothing to answer and no way on\n'
+          'on screen: ${_visibleText(tester)}',
+        );
+      }
+      final option = liveOption().first;
+      await tester.ensureVisible(option);
+      await tester.tap(option);
+      await tester.pump();
+    }
+    await tapWhenReady(
+      tester,
+      onward,
+      describe: 'Continue on card $position of the lesson',
+    );
+  }
+
+  /// The player's own position meter, scoped for [liveOption]'s reason: the
+  /// shell the lesson opens over is still in the tree, and other screens draw
+  /// a meter of their own.
+  Finder playerMeter() => find.descendant(
+    of: find.byType(LessonScreen),
+    matching: find.byType(RoastMeter),
+  );
+
+  /// Plays the open lesson from the card showing to its last, leaving the
+  /// caller on the completion screen. The card count comes off the meter, so
+  /// a lesson that grows a card is played whole rather than abandoned.
+  Future<void> playToCompletion(WidgetTester tester) async {
+    final total = tester.widget<RoastMeter>(playerMeter()).total;
+    for (var position = 1; position <= total; position++) {
+      await pumpUntil(
+        tester,
+        find.descendant(
+          of: find.byType(LessonScreen),
+          matching: find.byWidgetPredicate(
+            (widget) => widget is RoastMeter && widget.position == position,
+            description: 'RoastMeter on card $position',
+          ),
+        ),
+        describe: 'card $position of the lesson',
+      );
+      await answerAndContinue(tester, position);
+    }
+  }
+
+  /// Whether a previous test in this file has already launched the app.
+  var launched = false;
+
   /// Launches the app and skips the wake-up, leaving the caller on whatever
   /// the onboarding gate chose.
+  ///
+  /// A relaunch tears the previous app down first: the tree is unmounted and
+  /// its database closed, so the next `app.main()` opens the file rather than
+  /// racing a live handle over the same bytes, which drift warns can corrupt.
   Future<void> launch(WidgetTester tester) async {
+    if (launched) {
+      runApp(const SizedBox.shrink());
+      await tester.pump();
+      await AppDatabaseService.instance.close();
+    }
+    launched = true;
     app.main();
     await tester.pump();
     await pumpUntil(
@@ -187,11 +295,10 @@ void main() {
   testWidgets('a returning launch skips onboarding and opens real content', (
     tester,
   ) async {
-    // One relaunch, carrying everything a second launch has to prove. Each
-    // `app.main()` builds another `AppDatabase` over the same file, and drift
-    // warns that "race conditions will occur and might corrupt the database".
-    // Split across three tests this passed only where the simulator still held
-    // an onboarded install; merging the two is the fix, not a shortcut.
+    // Everything a returning launch has to prove, in one test rather than
+    // spread over several: each of these needs the launch above to have gone
+    // to disk, and splitting them made every one of them depend on the order
+    // the file happened to run in.
     await launch(tester);
 
     // Storage: the answers the previous test gave were written to an on-disk
@@ -245,9 +352,8 @@ void main() {
     // Content: authored material loads from the bundle as it ships, and the
     // immersive flow opens over the shell. Opened by the card's own control,
     // never by a lesson title — hardcoding authored copy is what broke this
-    // walk twice. It stops at the first step on purpose: the widget suite
-    // already drives every interaction kind, and re-driving them here bought
-    // brittleness and nothing else.
+    // walk twice. The lesson is then played whole, because the run has to be
+    // real for the launch after it to have anything to find.
     await tapWhenReady(
       tester,
       find.widgetWithText(FilledButton, AppLabels.beginLesson),
@@ -261,16 +367,91 @@ void main() {
     // with no PR to catch it (#437). Numbers cannot rot the way a format can.
     await pumpUntil(
       tester,
-      find.byWidgetPredicate(
-        (widget) => widget is RoastMeter && widget.position == 1,
-        description: 'RoastMeter on card one',
+      find.descendant(
+        of: find.byType(LessonScreen),
+        matching: find.byWidgetPredicate(
+          (widget) => widget is RoastMeter && widget.position == 1,
+          description: 'RoastMeter on card one',
+        ),
       ),
       describe: "today's lesson opening on its first card",
     );
     expect(
-      tester.widget<RoastMeter>(find.byType(RoastMeter)).total,
+      tester.widget<RoastMeter>(playerMeter()).total,
       greaterThan(1),
       reason: 'the card count must come from the authored lesson, not a stub',
+    );
+
+    // Which lesson a fresh install queues, named rather than assumed: the
+    // launch below asserts what finishing *this* one is worth, and a walk that
+    // played whatever came up could not.
+    expect(
+      tester.widget<LessonScreen>(find.byType(LessonScreen)).lessonId,
+      _lessonId,
+    );
+
+    await playToCompletion(tester);
+
+    // The completion screen is built off the write that recorded the run, so
+    // reaching its footer means the run is in the database. The next lesson is
+    // the action here because m1l1 does not close its module.
+    await pumpUntil(
+      tester,
+      liveButton(nextLessonLabel),
+      describe: 'the completion screen offering the next lesson',
+      budget: _completionBudget,
+    );
+    expect(
+      tester.widget<RewardPointsLine>(find.byType(RewardPointsLine)).points,
+      _lessonPoints,
+    );
+  });
+
+  testWidgets('a relaunch still holds the lesson, its points and its card', (
+    tester,
+  ) async {
+    // The restart #116 is about. The run above went to an on-disk database,
+    // the app was torn down, and this is a fresh process reading the same
+    // file. Nothing here replays anything: every fact is read back.
+    await launch(tester);
+
+    await tapWhenReady(
+      tester,
+      findMark(AppIcon.leaf, active: false),
+      describe: 'the Profile tab',
+    );
+    // The line is built before its providers resolve, so the wait is on the
+    // numbers rather than on the widget — which would be satisfied by the
+    // zeroes it draws while it loads.
+    await pumpUntil(
+      tester,
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is ProfileProgressLine &&
+            widget.lessons == 1 &&
+            widget.points == _lessonPoints,
+        description: 'one lesson and $_lessonPoints points on Profile',
+      ),
+      describe: 'the completion and its points surviving the relaunch',
+      tappable: false,
+    );
+
+    await tapWhenReady(
+      tester,
+      findMark(AppIcon.cards, active: false),
+      describe: 'the Cards tab',
+    );
+    await pumpUntil(
+      tester,
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CardGridItemWidget &&
+            widget.placed.item.card.id == _lessonCardId &&
+            widget.placed.item.isCollected,
+        description: 'the collectible $_lessonCardId, held',
+      ),
+      describe: 'the card the lesson handed over surviving the relaunch',
+      tappable: false,
     );
   });
 }

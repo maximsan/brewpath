@@ -8,6 +8,7 @@ import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -106,10 +107,10 @@ class ActiveChallengeCard extends ConsumerWidget {
             children: [
               _eyebrow(theme, mood),
               const SizedBox(height: AppSpacing.xs),
-              Text(
-                challenge.title,
-                style: theme.textTheme.titleMedium,
-              ),
+              // One step below a lesson title, because the challenge is
+              // optional — the design added this rung rather than let the two
+              // read as equals.
+              Text(challenge.title, style: AppText.subtitle(mood: mood)),
               const SizedBox(height: AppSpacing.xxs),
               Text(
                 challenge.instruction,

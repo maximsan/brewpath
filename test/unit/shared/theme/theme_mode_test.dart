@@ -1,6 +1,6 @@
 import 'package:brew_path/features/progress/domain/mastery.dart';
-import 'package:brew_path/shared/repositories/progress_repository.dart';
 import 'package:brew_path/shared/repositories/settings_repository.dart';
+import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:brew_path/shared/storage/account_wipe.dart';
 import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:brew_path/shared/theme/app_theme_mode.dart';
@@ -9,6 +9,8 @@ import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../../../support/progress_seed.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -72,15 +74,19 @@ void main() {
       await repository.saveSettings(settings);
       // A completion, so the reset has something to clear and this test cannot
       // pass on a wipe that did nothing.
-      await ProgressRepository().saveCompletion(
-        lessonId: 'm1l1',
-        xpEarned: 10,
+      final snapshots = SnapshotRepository();
+      await seedCompletedLesson(
+        snapshots,
+        'm1l1',
         mastery: const MasteryResult(correct: 4, total: 5),
       );
 
       await AccountWipe(deviceId: 'test-device').resetProgress();
 
-      expect(await ProgressRepository().getAllCompleted(), isEmpty);
+      expect(
+        (await snapshots.read()).clearedByReset.completedLessons,
+        isEmpty,
+      );
       expect(
         (await repository.getSettings()).themeMode,
         AppThemeMode.system,

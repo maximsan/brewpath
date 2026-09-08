@@ -237,7 +237,7 @@ another — worth a check when porting.
 | `MiniGamePlayer` | `lesson.jsx` | Own intro → play → results; never touches progression ||
 | `FillSlot` | `lesson.jsx` | The concept card's tap-to-choose blank | **Fill-in-the-blank** |
 | `TasteFixCard` | `practical.jsx` | | **Taste Fix card** |
-| `VisualGuideCard` / `VisualGuideThumb` / `VisualLessonCard` | `practical.jsx` | 8 `VISUAL_GUIDE_CONTENT` variants; `inSheet` and `hideHeader` / `mergeHeader` layout options ||
+| `VisualGuideCard` / `VisualGuideThumb` / `VisualLessonCard` | `practical.jsx` | 8 `VISUAL_GUIDE_CONTENT` variants. The card is the **diagram only** — headerless since the 3 Sep drop, because both hosts state the kind and title above it, so the `inSheet` / `hideHeader` / `mergeHeader` options are gone ||
 | `PracticalCard` | `practical.jsx` | ||
 | `CherrySection` / `GreenBean` / `BagPickCard` | `bean-anatomy.jsx` | `GreenBean` renders from process cues: `body` colour, `crease` colour, `mottle`, `chaff`. `BagPickCard` draws a sample, exposes cues, takes the call | **Card cue** |
 
@@ -304,7 +304,7 @@ before it starts.
 
 | Setup control | Options |
 |---|---|
-| **Deck picker** | `setDeck(d.id)` — Saved terms vs all ("Every term in this deck"). Defaults to `canSaved ? 'saved' : 'all'`; decks carry a `disabled` state when too small |
+| **Deck picker** | `setDeck(d.id)` — **three decks**: `saved` · `all` (titled "Whole glossary", or "Your terms" when `limitPool` narrows it) · `misses`. Defaults to `canSaved ? 'saved' : 'all'`, so `misses` is never the opening choice. `saved` and `misses` are `disabled` below `VOCAB_MIN_SAVED` (4), and `activeDeck` falls back to `all` when either drops past it mid-session |
 | **Round length** | `setLen(n)`, default **5**, guarded by `capped` so you cannot ask for more rounds than the deck holds |
 | **Start** | `start` → "Start round" |
 
@@ -312,8 +312,8 @@ before it starts.
 |---|---|
 | `pick(idx)` | Answer the round |
 | `next` | Advance |
-| `readMisses` | Missed terms are collected and shown at the end |
-| `onOpenTerm(round.answer.id)` | Open any missed term from the results |
+| `readMisses` / `writeMisses` | The Misses deck's store. `pick` adds the term on a wrong answer and removes it on a right one, in **any** deck |
+| `onOpenTerm(round.answer.id)` | Open the answered term's full entry, from the question |
 
 Both practice screens reuse the lesson top bar + roasting-bean counter and end on
 a Roasty results screen.

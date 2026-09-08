@@ -18,10 +18,9 @@ import 'package:brew_path/features/mini_games/presentation/mini_games_catalog_wi
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
 import 'package:brew_path/features/monetization/domain/lesson_access.dart';
 import 'package:brew_path/features/progress/presentation/freeze_save_notice_card.dart';
-import 'package:brew_path/features/tour/domain/tour_copy.dart';
 import 'package:brew_path/features/tour/domain/tour_providers.dart';
-import 'package:brew_path/features/tour/presentation/tour_stop.dart';
-import 'package:brew_path/features/tour/presentation/tour_stops.dart';
+import 'package:brew_path/features/tour/domain/tour_step.dart';
+import 'package:brew_path/features/tour/presentation/tour_anchor.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
@@ -60,22 +59,10 @@ class LearnListView extends ConsumerWidget {
 
   /// How much off-screen list to keep mounted while the Tour is running.
   ///
-  /// The vendor-documented caveat: auto-scroll is
-  /// `Scrollable.ensureVisible`, which needs the target's *element* mounted,
-  /// and a `ListView(children:)` still mounts its children lazily even though
-  /// it builds the widgets eagerly. Of the two mitigations the research doc
-  /// lists, this is the one that fits a fixed, small child list — a
-  /// `ScrollController` pre-scroll would have to guess a pixel offset that
-  /// changes with the challenge card, the freeze notice and the module count.
-  ///
-  /// Applied only while the Tour runs, because mounting the whole list on every
-  /// open is a cost paid by every learner for a thing that happens once.
-  ///
-  /// Expressed in viewports rather than pixels on purpose: the list's height
-  /// varies with the challenge card, the freeze notice and the module count,
-  /// and a pixel figure that covered a tall phone would be a guess that a
-  /// small one outgrows. Five viewports clears the whole tab on any device the
-  /// app supports.
+  /// The Tour measures its targets and an unmounted one has no render object,
+  /// so a stop below the fold would be framed nowhere. Expressed in viewports
+  /// rather than pixels because the list's height varies with the challenge
+  /// card, the freeze notice and the module count; five clears the whole tab.
   static const _tourCacheViewports = 5.0;
 
   @override
@@ -152,23 +139,19 @@ class _TodayLead extends ConsumerWidget {
           isCompleted: false,
         );
 
-    return TourStop(
-      stopKey: TourStops.today,
-      title: TourCopy.todayTitle,
-      description: TourCopy.todayBody,
+    return TourAnchor(
+      step: TourStep.today,
       child: Padding(
         padding: _inGutter,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // The eyebrow is what tells a caught-up learner that the accent
-            // card below is a *state* of the day rather than a new kind of
-            // work. Without it the Keep Sharp card reads as another lesson.
+            // The eyebrow tells a caught-up learner that the accent card below
+            // is a *state* of the day, not another lesson.
             //
             // Held back until the lesson resolves: "all caught up" is the
-            // pending state's shape too, and congratulating someone for a day
-            // they have not been read yet would be the wrong half of a flash
-            // to show.
+            // pending state's shape too, so congratulating a learner for a day
+            // they have not been read yet is the wrong half of a flash.
             if (today.hasValue) ...[
               SmallcapsLabel(
                 today.requireValue == null
@@ -215,10 +198,8 @@ class _PracticeShelf extends ConsumerWidget {
     final miniGames =
         ref.watch(miniGameFormatsProvider).asData?.value ?? const [];
 
-    return TourStop(
-      stopKey: TourStops.practice,
-      title: TourCopy.practiceTitle,
-      description: TourCopy.practiceBody,
+    return TourAnchor(
+      step: TourStep.practice,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

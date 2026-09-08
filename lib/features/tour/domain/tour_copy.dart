@@ -1,14 +1,9 @@
 /// Every word the Tour says, in one place.
 ///
-/// The copy is **locked** by the Tour spec (the resolution of
-/// [#195](https://github.com/maximsan/brewpath/issues/195)) — it was reviewed
-/// as a set, and each stop was written to explain a *mechanic* rather than to
-/// name the widget it points at. Editing a string here edits the spec, not the
-/// implementation; a change belongs in a ticket that reopens the ruling.
-///
-/// They live apart from the widgets that render them so the whole script can be
-/// read in scroll order without reading a widget tree, and so the widget tests
-/// can assert the words without restating them.
+/// The copy is locked by the Tour spec (#195): it was reviewed as a set, and
+/// each stop explains a *mechanic* rather than naming the widget it points at,
+/// so editing a string here edits the spec. It lives apart from the widgets
+/// that render it so the whole script reads in order, in one place.
 abstract final class TourCopy {
   /// The intro overlay's heading.
   static const introTitle = 'Quick tour?';
@@ -71,11 +66,20 @@ abstract final class TourCopy {
   /// be re-worded without dragging the other with it.
   static const stopSkip = 'Skip';
 
+  /// What Skip is announced as — the design's own `aria-label`, which says
+  /// what is being skipped rather than leaving one word to stand alone in a
+  /// screen reader's list of controls.
+  static const stopSkipSemanticLabel = 'Skip the introduction';
+
   /// The card's right-hand button on stops 1–3.
   static const stopNext = 'Next';
 
   /// The same button on the last stop, where advancing *is* finishing.
   static const stopDone = 'Done';
+
+  /// What assistive technology calls the running Tour — the design's own
+  /// `aria-label` on the layer.
+  static const layerSemanticLabel = 'Introduction to Today';
 
   /// The App Guide row that replays the Tour.
   static const replayTitle = 'Replay Today introduction';

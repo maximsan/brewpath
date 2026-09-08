@@ -5,62 +5,6 @@ import 'package:drift_flutter/drift_flutter.dart';
 
 part 'app_database.g.dart';
 
-/// One row per completed lesson. `lessonId` is unique so completion is
-/// idempotent via an insert-or-ignore on conflict.
-@DataClassName('ProgressRow')
-class ProgressRecords extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  TextColumn get lessonId => text().unique()();
-  BoolColumn get isCompleted => boolean()();
-  IntColumn get xpEarned => integer()();
-  DateTimeColumn get completedAt => dateTime()();
-
-  /// Whether the lesson's full payout has already been awarded.
-  ///
-  /// ⚠️ **Dead: always `true`.** A completion row only ever exists once the
-  /// lesson has paid, so the flag never distinguished anything. Dropped by the
-  /// destructive rebuild (#79); a column cannot go while the mapper round-trips
-  /// it.
-  BoolColumn get fullXpAwarded => boolean().withDefault(const Constant(true))();
-
-  /// Graded cards answered right in the lesson's best run.
-  ///
-  /// Kept as the pair `correctCount` / `gradedTotal`, not a percentage: the
-  /// mastery band needs the wrong-answer count and the gauge the ratio. A row
-  /// with `gradedTotal == 0` holds no score.
-  IntColumn get correctCount => integer().withDefault(const Constant(0))();
-
-  /// Graded cards in the lesson's best run; `0` means unscored.
-  IntColumn get gradedTotal => integer().withDefault(const Constant(0))();
-
-  /// Calendar day the per-day practice reward was last paid for this lesson.
-  ///
-  /// ⚠️ **Dead: nothing writes it.** The reward was retired with #160 —
-  /// replays pay zero (§5.1). Keep Sharp's "was a lesson replayed today?"
-  /// derivation used to read this stamp and now reads the day's activity
-  /// entries instead, so no rule depends on it. Dropped by #79.
-  DateTimeColumn get lastPracticeXpDate => dateTime().nullable()();
-}
-
-/// One row per module whose module-completion bonus was awarded. `moduleId` is
-/// unique so the bonus was granted at most once per module.
-///
-/// ⚠️ **Dead table** — see `ModuleProgressRepository`. Dropped by #79.
-@DataClassName('ModuleProgressRow')
-class ModuleProgressRecords extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  TextColumn get moduleId => text().unique()();
-  BoolColumn get moduleXpAwarded => boolean()();
-}
-
-/// One row per collected card. `cardId` is unique (idempotent collect).
-@DataClassName('CardRow')
-class CardRecords extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  TextColumn get cardId => text().unique()();
-  DateTimeColumn get unlockedAt => dateTime()();
-}
-
 /// Singleton settings row — the app always uses the fixed id
 /// [SettingsRepository.settingsId].
 @DataClassName('SettingsRow')
@@ -68,13 +12,6 @@ class UserSettings extends Table {
   IntColumn get id => integer()();
   BoolColumn get hapticsEnabled => boolean()();
   BoolColumn get soundEnabled => boolean()();
-
-  /// The learner's running points total.
-  ///
-  /// ⚠️ **Dead: nothing reads or writes it.** The total is derived from the
-  /// completion rows and the snapshot's logged challenges (#160) — a counter is
-  /// a second copy of a derivable fact. Dropped by #79.
-  IntColumn get totalXp => integer()();
 
   /// Whether the user has completed the post-install onboarding flow.
   /// Defaults to `false` so rows migrated from schema v2 force the gate.
@@ -173,10 +110,7 @@ class AppInstalls extends Table {
 
 @DriftDatabase(
   tables: [
-    ProgressRecords,
-    CardRecords,
     UserSettings,
-    ModuleProgressRecords,
     ProgressSnapshots,
     AppInstalls,
   ],
@@ -198,10 +132,6 @@ class AppDatabase extends _$AppDatabase {
 
   /// Schema version that added the appearance preference.
   static const int _themeModeVersion = 4;
-
-  /// Schema version that replaced the `bestScore` percentage with the
-  /// `{correctCount, gradedTotal}` pair.
-  static const int _masteryPairVersion = 5;
 
   /// Schema version that added the progress-snapshot row: v6, not the "v4"
   /// the decisions say, because the appearance preference took 4 and the
@@ -228,8 +158,12 @@ class AppDatabase extends _$AppDatabase {
   /// Schema version that added the micro-tips' seen list.
   static const int _tipsSeenVersion = 12;
 
+  /// Schema version that dropped the three normalised tables the progress
+  /// snapshot replaced, and the points total on `user_settings` with them.
+  static const int _dropLegacyStoreVersion = 13;
+
   /// The current version is whichever migration landed last.
-  static const int _schemaVersion = _tipsSeenVersion;
+  static const int _schemaVersion = _dropLegacyStoreVersion;
 
   @override
   int get schemaVersion => _schemaVersion;
@@ -248,22 +182,12 @@ class AppDatabase extends _$AppDatabase {
       );
     },
     onUpgrade: (m, from, to) async {
-      // v1 → v2: review/mastery columns + the module-XP ledger table.
-      if (from < 2) {
-        await m.addColumn(progressRecords, progressRecords.fullXpAwarded);
-        await m.addColumn(progressRecords, progressRecords.lastPracticeXpDate);
-        await m.createTable(moduleProgressRecords);
-        // This step also added `bestScore`, which no longer exists on the
-        // table. Adding it here is not merely unnecessary but unexpressible —
-        // the column is gone from the Dart definition. Skipping it is safe
-        // because the v4 → v5 step below recreates this table from the current
-        // definition, which drops `best_score` on databases old enough to have
-        // it and never wants it on databases that skipped straight past.
-      }
+      // v1 → v2 and v4 → v5 have no steps left: both only built up the three
+      // tables v13 drops, and that drop is if-exists.
+
       // v2 → v3: onboarding columns on user_settings. Guarded by the version
-      // these landed in, not `_schemaVersion`: the old `from < _schemaVersion`
-      // re-ran the adds for a device already at v3 and failed on the
-      // duplicate column.
+      // these landed in, not `_schemaVersion`, which re-ran the adds on a
+      // device already at v3 and failed on the duplicate column.
       if (from < _onboardingColumnsVersion) {
         await m.addColumn(userSettings, userSettings.onboardingCompleted);
         await m.addColumn(userSettings, userSettings.onboardingGoal);
@@ -275,28 +199,8 @@ class AppDatabase extends _$AppDatabase {
         await m.addColumn(userSettings, userSettings.themeMode);
       }
 
-      // v4 → v5: `bestScore` gives way to the `{correctCount, gradedTotal}`
-      // pair. Recreating the table adds the pair and drops the old column; no
-      // `columnTransformer`, because a first-try accuracy over unlimited
-      // retries cannot become a one-shot grade. Old rows read as unscored.
-      if (from < _masteryPairVersion) {
-        await m.alterTable(
-          TableMigration(
-            progressRecords,
-            // Declared as new so the copy step takes their defaults rather
-            // than selecting them out of the old table, where they do not
-            // exist yet. Everything else copies across by name, and
-            // `best_score` is dropped by omission from the new definition.
-            newColumns: [
-              progressRecords.correctCount,
-              progressRecords.gradedTotal,
-            ],
-          ),
-        );
-      }
-
       // v5 → v6: the progress-snapshot row. Additive only: the tables it
-      // replaces were still read, so their dead columns dropped later, at v7.
+      // replaces were still read, so they went later, at v13.
       if (from < _snapshotRowVersion) {
         await m.createTable(progressSnapshots);
       }
@@ -350,6 +254,19 @@ class AppDatabase extends _$AppDatabase {
       // has been shown no tip, so "none" is the true value for it.
       if (from < _tipsSeenVersion) {
         await m.addColumn(userSettings, userSettings.tipsSeen);
+      }
+
+      // v12 → v13: the three normalised tables go, and `total_xp` with them.
+      // Destructive, and no migration is owed (#116) — nothing was released,
+      // and the snapshot has held all of it since v6.
+      //
+      // By name, because the Dart definitions are gone. `deleteTable` drops
+      // if-exists, so the ledger a v1 database never created is not an error.
+      if (from < _dropLegacyStoreVersion) {
+        await m.deleteTable('progress_records');
+        await m.deleteTable('module_progress_records');
+        await m.deleteTable('card_records');
+        await m.dropColumn(userSettings, 'total_xp');
       }
     },
   );

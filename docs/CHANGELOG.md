@@ -58,6 +58,17 @@ You can always edit this file by hand instead — the helpers just save effort.
 - **Today's card carries the module's picture.** The five module illustrations
   the design ships are bundled, and the day's card draws its module's under the
   title, in both its open and its locked state.
+- **The Vocab game has a third deck: the terms you got wrong.** *Review
+  misses* joins Saved terms and the glossary on the setup screen, with its own
+  count. It opens once four terms are owed a review and reads *Miss a few
+  first* until then. A wrong answer in any deck adds the term, a correct
+  answer in any deck takes it out again, and the score line says what the
+  round left in the deck. It travels between your devices with the rest of
+  your progress, and Reset progress empties it.
+- **A lesson pays off the guess it opened on.** The prediction taken on the
+  first card is held for the run and answered on the last one: *Your opening
+  guess*, with the guess and the truth set as chips. A guess that missed is not
+  marked wrong — being wrong there is what the lesson was for.
 
 ### Changed
 
@@ -82,6 +93,14 @@ You can always edit this file by hand instead — the helpers just save effort.
   the three centred together. *About* stays in the bar once you scroll, as on
   every other page behind Settings.
 
+- **The Today tour is the one the design draws.** A bordered frame travels
+  between the four things it introduces instead of a spotlight snapping
+  between them, the card carries its own counter, dots, Skip and Next, and
+  nothing behind it can be tapped while it runs. Leaving the tab ends it.
+- **A visual guide inside a lesson is the drawing alone.** The framed block no
+  longer repeats the kind and title the card already states above it.
+- **A Coffee Challenge titles itself one step below a lesson.** It is optional,
+  and the design added a ladder step rather than let the two read as equals.
 - **Today's card is the design's.** A surface card with a rule around it: the
   module as its eyebrow, the title, the picture, one line saying where the
   lesson sits and how long it takes (`LESSON 1/7 · ~3 MIN`), and a full-width
@@ -95,6 +114,11 @@ You can always edit this file by hand instead — the helpers just save effort.
   longer sees an empty section with a placeholder in it. The tab runs at the
   design's gutter and spacing.
 - **The name step focuses its field on arrival**, as the design has it.
+- **The smoke walk proves a restart.** It plays `m1l1` to completion,
+  relaunches, and reads the completion, its points and its card back off
+  Profile and Cards — so a restart that loses what a learner earned fails CI.
+  A relaunch now tears the previous app down and closes its database first,
+  which is what makes a third launch safe.
 
 ### Fixed
 
@@ -107,6 +131,17 @@ You can always edit this file by hand instead — the helpers just save effort.
   keeps it when the player cannot start at all — a simulator with no audio
   device refuses the film — instead of an empty box. The failure's reason is
   printed in debug builds.
+
+### Removed
+
+- **The old progress store is gone.** The three normalised tables the app
+  opened with — per-lesson completions, the module-XP ledger and collected
+  cards — and the points total on the settings row are dropped at schema v13,
+  along with their repositories and DTOs. The progress snapshot has been the
+  record since v6; what is left on the settings row is device-local state
+  only. Destructive by ruling: nothing has shipped, and no user migration is
+  owed. Device-local state crosses the step untouched, which a migration test
+  over a populated v12 database asserts.
 
 ---
 

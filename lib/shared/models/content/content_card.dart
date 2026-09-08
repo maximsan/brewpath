@@ -4,32 +4,20 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'content_card.freezed.dart';
 part 'content_card.g.dart';
 
-/// Marks a card as one that contributes to mastery.
-///
-/// Empty by design — the graded kinds share no field. It exists so that a
-/// scoring seam can take `List<Gradable>` instead of `List<ContentCard>`, which
-/// makes the wrong-denominator bug unrepresentable rather than merely
-/// avoidable: counting an ungraded card into the total silently deflates every
-/// score, and leaving a graded card out of it lets mastery exceed 100%. The
-/// prototype shipped the second one — `flavor` scored while missing from the
-/// graded list, so a perfect result was reachable with a wrong answer.
-///
-/// Do not delete this as ceremony. Without it the two lists are kept in step by
-/// hand, which is exactly how that bug happened.
+/// Marks a card as one that contributes to mastery. Empty by design — the
+/// graded kinds share no field — so that a scoring seam can take
+/// `List<Gradable>` and make the wrong-denominator bug unrepresentable. The
+/// prototype shipped that bug: `flavor` scored while missing from the graded
+/// list, so full marks were reachable with a wrong answer. Not ceremony —
+/// without it the two lists are kept in step by hand.
 abstract class Gradable {}
 
-/// A single card in a lesson, discriminated on its `kind` key.
-///
-/// The 15 variants are the kinds the prototype actually authors —
-/// 14 lesson kinds plus `quiz`, which only mini-games use. `intro` and
-/// `takeaway` are absent on purpose: renderers for them survive in the
-/// prototype but no card uses either, having been superseded by `predict` and
-/// `recall`.
-///
-/// Field names carry the prototype's vocabulary on the wire and are remapped to
-/// idiomatic Dart here — the extractor renames nothing. A prototype-side rename
-/// therefore surfaces as a runtime null rather than a compile error, which is
-/// why `content_card_test.dart` deserializes every card the extractor emits.
+/// A single card in a lesson, discriminated on its `kind` key. The 15 variants
+/// are the kinds the design actually authors; `intro` and `takeaway` are absent
+/// because no card uses either, having been superseded by `predict` and
+/// `recall`. Field names carry the design's vocabulary on the wire and are
+/// remapped here, so a rename surfaces as a runtime null rather than a compile
+/// error — which is why `content_card_test.dart` deserializes every card.
 @Freezed(unionKey: 'kind')
 sealed class ContentCard with _$ContentCard {
   /// Opening card: a framing body plus one binary guess held at lesson scope.
@@ -65,7 +53,6 @@ sealed class ContentCard with _$ContentCard {
     /// the way `glyph` → `iconName` is, so neither name has to bend.
     @JsonKey(name: 'visualGuide') required String subject,
     required String caption,
-    bool? mergeHeader,
     bool? captionTop,
   }) = VisualCard;
 
