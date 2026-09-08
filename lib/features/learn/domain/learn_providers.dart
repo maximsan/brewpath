@@ -40,10 +40,10 @@ class ModuleWithProgress {
   /// A locked module never counts as complete, however its lesson tallies read.
   /// The two are independent: a content update that adds a lesson to a
   /// prerequisite re-locks this module without touching its own progress, and
-  /// the design guards the same way (`!locked && lessons.every(...)` in
-  /// `prototype/screens.jsx`). Without the guard the progression indicators
-  /// signal completion by going quiet, so such a module would render with no
-  /// lock, no status line and no chevron at all.
+  /// the design guards the same way, with `!locked && lessons.every(...)`.
+  /// Without the guard the progression indicators signal completion by going
+  /// quiet, so such a module would render with no lock, no status line and no
+  /// chevron at all.
   bool get isComplete =>
       !isLocked && totalCount > 0 && completedCount >= totalCount;
 
@@ -148,10 +148,10 @@ class LessonWithModule {
 /// its module so the Learn screen can group them without re-querying.
 ///
 /// Finished only, which the design has always said: the prototype titles this
-/// section *"Completed work to revisit"* and builds it from the completed set
-/// (`screens.jsx:864`), and ADR-0004 calls the group `Lessons` inside the
-/// practice section. Listing every lesson — the app's previous behaviour — put
-/// modules the learner has not unlocked one tap from being played.
+/// section *"Completed work to revisit"* and builds it from the completed set,
+/// and ADR-0004 calls the group `Lessons` inside the practice section. Listing
+/// every lesson — the app's previous behaviour — put modules the learner has
+/// not unlocked one tap from being played.
 @riverpod
 Future<List<LessonWithModule>> completedLessonsWithModule(Ref ref) async {
   final content = ref.watch(contentRepositoryProvider);

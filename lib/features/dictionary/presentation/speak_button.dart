@@ -10,12 +10,12 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// The chip's own metrics, from the design (`dictionary.jsx:33`).
+/// The chip's own metrics, from the design.
 const EdgeInsets _chipPadding = EdgeInsets.fromLTRB(9, 5, 12, 5);
 const double _markBox = 16;
 const double _markSize = 15;
 
-/// How long the second wave shows after a press (`dictionary.jsx:29`).
+/// How long the second wave shows after a press.
 const Duration _pulse = Duration(milliseconds: 620);
 
 /// A term's pronunciation: the respelling, and a speaker that says the word.

@@ -2,12 +2,10 @@ import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/dictionary_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The dictionary the app actually ships, asserted against the bundled banks.
-///
-/// Counts are derived, never quoted: the catalog has grown several times, and
-/// a test that hardcodes a total fails on authoring rather than on a defect.
-/// What is pinned is what would change *meaning* if it moved — chiefly which
-/// terms no lesson teaches.
+// Counts are derived, never quoted: the catalog has grown several times, and a
+// test that hardcodes a total fails on authoring rather than on a defect. What
+// is pinned is what would change meaning — chiefly which terms no lesson
+// teaches.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 

@@ -4,17 +4,10 @@ import 'package:flutter/material.dart';
 
 /// The dim, with a hole in it, and the ring around the hole.
 ///
-/// **One painter, not two layers.** The design writes the pair as a single box
-/// — `boxShadow: '0 0 0 1400px var(--dim-modal)'` with a `border` on the same
-/// element — so the cut-out and its ring can never disagree about where the
-/// target is or how round its corners are. Painting them together is what keeps
-/// that true here.
-///
-/// The dim is [OverlayColors.dimModal]'s colour **without its blur**, which is
-/// the one place in the app that splits the pair: a backdrop blur behind this
-/// overlay would blur the cut-out too — the widget the stop exists to point at,
-/// and the one thing on screen that has to stay sharp. The design draws no blur
-/// here either, for the same reason.
+/// One painter, not two layers: the design writes the pair as a single box
+/// (`boxShadow: '0 0 0 1400px var(--dim-modal)'` with a `border` on it), so
+/// cut-out and ring cannot disagree. The dim takes [OverlayColors.dimModal]'s
+/// colour without its blur, which would soften the very thing it points at.
 class TourFramePainter extends CustomPainter {
   /// Paints the dim around [frame], ringed in [accent].
   const TourFramePainter({required this.frame, required this.accent});

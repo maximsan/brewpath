@@ -22,7 +22,6 @@ class SettingsRepository {
         id: row.id,
         hapticsEnabled: row.hapticsEnabled,
         soundEnabled: row.soundEnabled,
-        totalXp: row.totalXp,
         onboardingCompleted: row.onboardingCompleted,
         themeMode: AppThemeMode.fromStorage(row.themeMode),
         tourSeen: row.tourSeen,
@@ -32,11 +31,7 @@ class SettingsRepository {
         dailyReminderTime: row.dailyReminderTime,
       );
     }
-    return UserSettingsRecord(
-      hapticsEnabled: true,
-      soundEnabled: true,
-      totalXp: 0,
-    );
+    return UserSettingsRecord(hapticsEnabled: true, soundEnabled: true);
   }
 
   /// Upserts the singleton settings row.
@@ -48,7 +43,6 @@ class SettingsRepository {
             id: const Value(settingsId),
             hapticsEnabled: settings.hapticsEnabled,
             soundEnabled: settings.soundEnabled,
-            totalXp: settings.totalXp,
             onboardingCompleted: Value(settings.onboardingCompleted),
             // `onboardingGoal` and `onboardingBrewer` are deliberately
             // absent: ADR-0010 retired both questions, and a `Value` left off
@@ -66,12 +60,10 @@ class SettingsRepository {
 
   /// Deletes the singleton row, so reads fall back to first-launch defaults.
   ///
-  /// **Delete Account only.** This row is the device-local store — appearance,
-  /// haptics, sound, the onboarding gate, the Tour's `tourSeen` bit and the
-  /// micro-tips' seen list — which a progress reset keeps deliberately. Delete
-  /// is the one wipe it does not survive, and it takes `onboardingCompleted`,
-  /// `tourSeen` and `tipsSeen` together, which is the fate-sharing rule those
-  /// three are owed.
+  /// **Delete Account only.** This row is the whole device-local store, which
+  /// a progress reset keeps deliberately. Dropping it whole is also what keeps
+  /// `onboardingCompleted`, `tourSeen` and `tipsSeen` fate-sharing: nothing
+  /// gets the chance to clear one alone.
   Future<void> deleteAll() async {
     await _db.delete(_db.userSettings).go();
   }

@@ -6,12 +6,9 @@ import 'package:flutter/painting.dart';
 /// Where the Tour's frame and card go, as arithmetic.
 ///
 /// Pure and separate from the layer that draws it, so every number the design
-/// gives this overlay can be checked without measuring a widget — which is the
-/// only way to check them at all, since a frame caught mid-animation looks the
-/// same as one in the wrong place.
-///
-/// The figures themselves live in [OffTokens], with the rest of the design's
-/// off-scale values; this file is the rules they parameterise.
+/// gives this overlay can be checked without measuring a widget — the only way
+/// to check them at all, since a frame caught mid-animation looks the same as
+/// one in the wrong place. The figures themselves live in [OffTokens].
 
 /// The frame around [target] — the target, stood off by
 /// [OffTokens.tourFrameInset].
@@ -29,15 +26,10 @@ bool tourCardSitsBelow({required Rect target, required double areaHeight}) =>
 
 /// How far the feed scrolls to bring a target into a framable position.
 ///
-/// The design's own rule, in its own terms: [topGap] is how far the target's
-/// top sits below the feed's top edge, and [bottomOverflow] is how far its
-/// bottom runs past the room the card needs. A target too high is pushed down
-/// to the [OffTokens.tourScrollTopGap] line; one too low is pulled up, but
-/// never so far that it rises above that same line. Anything already framable
-/// moves not at all.
-///
-/// Positive scrolls the feed down (the content moves up), which is the sign
-/// `ScrollPosition.pixels` uses.
+/// [topGap] is how far the target's top sits below the feed's top edge, and
+/// [bottomOverflow] how far its bottom runs past the room the card needs. Too
+/// high is pushed down to the [OffTokens.tourScrollTopGap] line, too low is
+/// pulled up but never above it. Positive scrolls the feed down.
 double tourScrollDelta({
   required double topGap,
   required double bottomOverflow,

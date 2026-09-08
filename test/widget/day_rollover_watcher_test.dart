@@ -7,12 +7,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// Proves the watcher recomputes the day-dependent surfaces on a resume that
-/// crossed midnight, and leaves them alone on a resume that did not.
-///
-/// The providers are overridden with counting stubs and kept alive by a
-/// listener, so a rebuild is observable: an invalidated provider re-runs its
-/// body on the next read, a cached one does not.
+// The providers are overridden with counting stubs and kept alive by a
+// listener, so a rebuild is observable: an invalidated provider re-runs its
+// body on the next read, a cached one does not.
 void main() {
   late int streakBuilds;
   late int recommendationBuilds;

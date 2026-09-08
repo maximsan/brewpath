@@ -12,13 +12,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/widget_harness.dart';
 
-/// What the rebuild is for: a frame that finds each target and travels between
-/// them, a card that takes the side with room on it, and a page nothing can
-/// reach while either is up.
-///
-/// The old engine could draw none of this — its cut-out could not carry a ring,
-/// and it never interpolated the highlight at all
-/// ([#339](https://github.com/maximsan/brewpath/issues/339)).
+// What the rebuild is for: a frame that finds each target and travels between
+// them, a card that takes the side with room on it, and a page nothing can
+// reach while either is up. The old engine could draw none of it — its cut-out
+// could not carry a ring, and it never interpolated the highlight (#339).
 void main() {
   setUp(useInMemoryDatabase);
 

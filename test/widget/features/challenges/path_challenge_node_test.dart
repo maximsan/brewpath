@@ -9,8 +9,8 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../../support/content_fixtures.dart';
 import '../../../support/widget_harness.dart';
 
-/// Module capstones only — the Path here lists modules, and a lesson
-/// challenge has no row of its own to hang from.
+// Module capstones only: the Path lists modules, so a lesson challenge has no
+// row of its own to hang from.
 void main() {
   setUp(useInMemoryDatabase);
 

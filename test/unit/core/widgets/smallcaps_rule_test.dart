@@ -4,11 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 /// The three sites the divergence register named in §7.1 — the shared section
 /// header, the dictionary entry's block labels, and Settings' group labels.
-///
-/// Not "every smallcaps in the app": more sites letter their own kickers, and
+/// Not every smallcaps in the app: more sites letter their own kickers, and
 /// whether each is a mistake or a deliberate off-token choice is the owner's
-/// call, recorded in `OffTokens` the way the tab bar's is. This pins the three
-/// that were ruled on.
+/// call, recorded in `OffTokens`. This pins the three that were ruled on.
 const _theThreeNamedSites = <String>[
   'lib/core/widgets/section_header.dart',
   'lib/features/dictionary/presentation/term_entry_body.dart',

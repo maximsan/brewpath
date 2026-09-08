@@ -3,16 +3,10 @@ import 'package:flutter/widgets.dart';
 
 /// Marks the widget a Tour stop frames.
 ///
-/// The four targets are drawn by three different owners — the Learn feed, the
-/// shell's header and its tab bar — and the overlay that frames them belongs to
-/// none of the three. An anchor is how they name themselves to it: a key the
-/// layer measures, and nothing else. The wrapped widget is unchanged, and a
-/// screen with no Tour over it pays nothing for carrying one.
-///
-/// **One anchor per stop, app-wide.** The keys are global because the thing
-/// they identify is global — the Tour's third stop is *the* header, not a
-/// header — and because two live anchors for one stop would leave the layer
-/// measuring whichever it found first.
+/// The four targets are drawn by three owners — the Learn feed, the shell's
+/// header and its tab bar — and the overlay that frames them belongs to none
+/// of the three; an anchor is a key it measures, and nothing else. The keys
+/// are global because a stop identifies *the* header, not a header.
 class TourAnchor extends StatelessWidget {
   /// Anchors [step] on [child].
   const TourAnchor({required this.step, required this.child, super.key});

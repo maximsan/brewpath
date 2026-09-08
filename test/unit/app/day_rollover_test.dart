@@ -2,9 +2,9 @@ import 'package:brew_path/app/day_rollover.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// Proves the rollover decision is a change of *local calendar day*, not
-/// elapsed time — and that it fires in both directions, because the streak is
-/// folded against "today" and a clock moved backwards changes that answer too.
+// The decision is a change of local calendar day, not elapsed time, and it
+// fires in both directions: the streak is folded against "today", and a clock
+// moved backwards changes that answer too.
 void main() {
   group('a rollover is a change of local calendar day', () {
     test('two moments in the same evening are not a rollover', () {

@@ -54,9 +54,8 @@ class LessonNodeGauge {
 
 /// Maps a lesson's progression state onto its node gauge.
 ///
-/// Ported from the design's lesson row (`prototype/screens.jsx`): the bean
-/// *is* the gauge, so mastery reads as "how full" instead of a word in the
-/// margin.
+/// Ported from the design's lesson row: the bean *is* the gauge, so mastery
+/// reads as "how full" instead of a word in the margin.
 ///
 /// The one arm worth stating out loud: **complete but unscored stays
 /// deliberately neutral** — a muted, empty bean, never a full sage one. Only a

@@ -64,13 +64,11 @@ void main() {
   testWidgets('reduced motion offers the tap cue instead of the brand mark', (
     tester,
   ) async {
-    // The cue is the one thing this screen has to say — it has always been
-    // tappable and never mentioned it. Reduced motion runs no cycle, so the
-    // cue shows from the first frame; asserted here rather than only on the
-    // controller, because the controller knowing is not the learner seeing.
-    //
-    // The gate is left unresolved (a repository whose read never completes) so
-    // the screen holds still instead of advancing out from under the check.
+    // The cue is the one thing this screen has to say, and reduced motion runs
+    // no cycle, so it shows from the first frame. Asserted here rather than on
+    // the controller, because the controller knowing is not the learner seeing.
+    // The gate is left unresolved — a repository whose read never completes —
+    // so the screen holds still instead of advancing out from under the check.
     final router = GoRouter(
       initialLocation: '/loading',
       routes: [

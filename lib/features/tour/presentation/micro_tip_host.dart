@@ -20,18 +20,12 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// Owns the micro-tip layer for the whole app: which tip is up, and when the
-/// next one may be.
+/// Owns the micro-tip layer for the whole app: which tip is up, and when.
 ///
-/// **Above the router, not inside a screen.** A tip can land on the Learn tab,
-/// on the Path tab, in the dictionary, on Today's term and in the Studio — and
-/// the last two are pushed over the tab bar, so no single screen or shell can
-/// host them all. One host above everything also makes "one tip at a time" true
-/// by construction rather than by agreement between surfaces.
-///
-/// Because it draws over the navigator, it has to be told when to keep out of
-/// the way: [anyOverlayBarrierOpen] covers every sheet and dialog, and
-/// `tourRunningProvider` covers the Tour.
+/// Above the router, not inside a screen: a tip can land on either tab, in the
+/// dictionary, on Today's term or in the Studio, and the last two are pushed
+/// over the tab bar, so no one screen can host them all. It keeps out of the
+/// way for [anyOverlayBarrierOpen] and `tourRunningProvider`.
 class MicroTipHost extends ConsumerStatefulWidget {
   /// Creates a [MicroTipHost] over [child].
   const MicroTipHost({required this.child, super.key});

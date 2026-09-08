@@ -3,8 +3,8 @@ import 'package:brew_path/features/tour/domain/micro_tip_candidate.dart';
 import 'package:brew_path/features/tour/domain/micro_tip_place.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// Which single tip is worth saying, given where the learner is and what they
-/// have just done.
+// Which single tip is worth saying, given where the learner is and what they
+// have just done.
 void main() {
   MicroTip? candidateAt(
     TipPlace place, {

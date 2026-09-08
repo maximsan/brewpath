@@ -166,19 +166,19 @@ final class AppVersionProvider
 String _$appVersionHash() => r'9634514c60acb1f79941bdacd697f695d6621e0c';
 
 /// The marketing version alone, as the design's closing line prints it —
-/// `v0.1` (`prototype/screens.jsx:559`).
+/// `v0.1`.
 
 @ProviderFor(appVersionShort)
 final appVersionShortProvider = AppVersionShortProvider._();
 
 /// The marketing version alone, as the design's closing line prints it —
-/// `v0.1` (`prototype/screens.jsx:559`).
+/// `v0.1`.
 
 final class AppVersionShortProvider
     extends $FunctionalProvider<AsyncValue<String>, String, FutureOr<String>>
     with $FutureModifier<String>, $FutureProvider<String> {
   /// The marketing version alone, as the design's closing line prints it —
-  /// `v0.1` (`prototype/screens.jsx:559`).
+  /// `v0.1`.
   AppVersionShortProvider._()
     : super(
         from: null,

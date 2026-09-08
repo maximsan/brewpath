@@ -138,13 +138,11 @@ Future<void> pumpCompletion(
 }
 
 /// Marks [count] consecutive qualifying days ending yesterday, so the screen
-/// under test lands on today as the next one.
-///
-/// Written through the app's own activity path rather than by finishing
-/// lessons, because a completion row stamps itself with the wall clock: six
-/// lessons "finished" on six past days would still backfill six *completions
-/// today*, and the learner would already hold the freeze before the run under
-/// test began.
+/// under test lands on today as the next one. Written through the app's own
+/// activity path rather than by finishing lessons, because a completion row
+/// stamps itself with the wall clock: six lessons "finished" on six past days
+/// would backfill six completions *today*, and the learner would hold the
+/// freeze before the run under test began.
 Future<void> qualifyDaysBefore(WidgetTester tester, int count) async {
   final snapshots = SnapshotRepository();
   for (var back = count; back >= 1; back--) {

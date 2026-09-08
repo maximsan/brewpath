@@ -11,11 +11,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// The `APPEARANCE` section's one row: a **Theme** label over three choices.
 ///
 /// The design draws this as a row of its own rather than as a control dropped
-/// on the screen (`prototype/screens.jsx:2810`): the label sits where every
-/// other row's label sits, the three options fill the width beneath it, and the
-/// whole thing closes on the same hairline. It was a bare Material
-/// `SegmentedButton` — no label, no rule, and the options in the enum's order
-/// rather than the design's.
+/// on the screen: the label sits where every other row's label sits, the three
+/// options fill the width beneath it, and the whole thing closes on the same
+/// hairline. It was a bare Material `SegmentedButton` — no label, no rule, and
+/// the options in the enum's order rather than the design's.
 ///
 /// Reads [ThemeModeController] rather than the settings row, because that
 /// controller is the single source of truth for the appearance — the row backs

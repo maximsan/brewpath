@@ -11,12 +11,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/widget_harness.dart';
 
-/// The Tour on a phone-sized screen, where its targets do not all fit.
-///
-/// The other Tour tests use a viewport tall enough to hold the whole Learn
-/// feed, which is what makes them readable — and which means none of them ever
-/// exercises the scroll. This one does: it is the only place the feed actually
-/// has to move for a stop to be framed at all.
+// The Tour on a phone-sized screen, where its targets do not all fit. The
+// other Tour tests use a viewport tall enough to hold the whole Learn feed, so
+// none of them exercises the scroll; this is the only place the feed actually
+// has to move for a stop to be framed at all.
 void main() {
   setUp(useInMemoryDatabase);
 

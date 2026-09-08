@@ -8,14 +8,10 @@ import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 
 /// Records [lessonId] as first finished on [at], scoring [mastery].
 ///
-/// The snapshot is the record, so a test that needs a learner partway through
-/// the course writes here rather than into the old completions table — which
-/// nothing reads any more, and which #116 drops.
-///
-/// It goes through the same writer and the same scope method the completion
-/// service uses, so a seeded learner and a real one are the same shape: the
-/// day is what the streak backfills from, and the result is what the Path
-/// draws a band from.
+/// The snapshot is the record; the completions table it replaced was dropped
+/// at schema v13 (#116). Written through the same writer and scope method the
+/// completion service uses, so a seeded learner and a real one are the same
+/// shape.
 Future<void> seedCompletedLesson(
   SnapshotRepository snapshots,
   String lessonId, {

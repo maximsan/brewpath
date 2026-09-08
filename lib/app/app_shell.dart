@@ -79,10 +79,8 @@ class _AppShellState extends State<AppShell> {
   @override
   Widget build(BuildContext context) {
     // The header is the shell's, not a tab's: one instance above the four
-    // branch navigators, which is why it survives a tab switch and does not
-    // survive a push inside a branch — the push replaces the content beneath
-    // it, and the tier rule keeps it from drawing over a page that brought its
-    // own bar.
+    // branch navigators, so it survives a tab switch but not a push inside a
+    // branch, where the tier rule keeps it off a page with its own bar.
     //
     // `uri`, not `matchedLocation`: the latter reports the *shell's* own
     // match, so it still says `/learn` while a term detail is pushed on top.
@@ -138,26 +136,12 @@ class _AppShellState extends State<AppShell> {
     );
   }
 
-  /// Colours and type come from the theme (`tabBarTheme`); the hairline the
-  /// design separates the bar from the page with is what a theme cannot
-  /// express.
+  /// The shared tab bar, plus the hairline `tabBarTheme` cannot express.
   ///
-  /// **Painted in the foreground on purpose.** `NavigationBar` fills its whole
-  /// box with an opaque `Material`, and `DecoratedBox` paints a background
-  /// decoration *behind* its child without insetting it — so the default
-  /// position would draw the rule and then bury it.
-  ///
-  /// **The marks are the design's own**, and each tab carries two drawings:
-  /// selected fills the shape with the accent and knocks its interior lines
-  /// out, which is not the same drawing recoloured. The theme's `iconTheme`
-  /// gives them their ink, so the selected/unselected colours are declared
-  /// once in `tabBarTheme` rather than at each destination.
-  ///
-  /// The labels are uppercased here rather than in [AppLabels], the way
-  /// `SmallcapsLabel` does it: `TextStyle` has no text-transform, and the case
-  /// is this bar's type rule, not part of what the tabs are called. Changing
-  /// it back is then a change to the bar, not a rewrite of four constants and
-  /// everything else that reads them.
+  /// The rule is painted in the *foreground* because `NavigationBar` fills its
+  /// box with an opaque `Material` that would bury a background decoration.
+  /// The labels are uppercased here rather than in [AppLabels] because the
+  /// case is this bar's type rule, not part of what the tabs are called.
   Widget _tabBar(MoodColors mood) => TourAnchor(
     step: TourStep.tabs,
     child: DecoratedBox(
@@ -168,6 +152,9 @@ class _AppShellState extends State<AppShell> {
       child: NavigationBar(
         selectedIndex: widget.navigationShell.currentIndex,
         onDestinationSelected: _onDestinationSelected,
+        // Two drawings per tab, not one recoloured: selected fills the shape
+        // with the accent and knocks its interior lines out. Their ink comes
+        // from the theme's `iconTheme`, not from here.
         destinations: [
           NavigationDestination(
             icon: const IconMark(AppIcon.cup),

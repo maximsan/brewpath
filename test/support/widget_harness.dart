@@ -10,20 +10,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-/// Marks onboarding, the Tour and every micro-tip as already seen on [db].
-///
-/// Pre-marked so widget tests that boot the full shell land on `/learn`.
-/// `tourSeen` is not optional: the Tour auto-runs the moment Learn shows real
-/// data with the flag unset, so without it every shell test would open onto
-/// the intro overlay's modal barrier and every tap would miss. The tips are
-/// pre-marked for the same reason one step down: a tip is a card over the foot
-/// of the screen, and a test tapping something down there would find the tip
-/// instead. Tour and tip tests clear what they are about — see
-/// test/widget/features/tour/.
-///
-/// Extracted from [useInMemoryDatabase] so a test that needs a **file-backed**
-/// database — one it can close and reopen to assert a real restart — can seed
-/// it the same way.
+/// Marks onboarding, the Tour and every micro-tip as already seen on [db], so
+/// a shell test lands on `/learn` with nothing over it — the Tour opens a
+/// modal barrier and a tip covers the foot of the screen, and a tap aimed
+/// under either one misses. Tour and tip tests clear what they are about.
+/// Separate from [useInMemoryDatabase] so a test needing a file-backed
+/// database — closed and reopened, to assert a real restart — can seed it too.
 Future<void> seedOnboarded(AppDatabase db) async {
   await db
       .into(db.userSettings)
@@ -32,7 +24,6 @@ Future<void> seedOnboarded(AppDatabase db) async {
           id: const Value(SettingsRepository.settingsId),
           hapticsEnabled: true,
           soundEnabled: true,
-          totalXp: 0,
           onboardingCompleted: const Value(true),
           tourSeen: const Value(true),
           tipsSeen: Value(everyMicroTipSeen),
@@ -116,10 +107,9 @@ Future<void> settleLoaders(WidgetTester tester) async {
 /// Pumps [child] under a real container.
 ///
 /// Pass a [container] built with overrides to stand somewhere the app cannot
-/// put itself — owning the course, say, which no shipped build can do until
-/// the store is real. The container arrives whole rather than as a list of
-/// overrides because Riverpod 3 does not export the `Override` type, so the
-/// list cannot be named in a signature.
+/// put itself — owning the course, say. It arrives whole rather than as a list
+/// of overrides because Riverpod 3 does not export the `Override` type, so
+/// the list cannot be named in a signature.
 Future<ProviderContainer> pumpWithProviders(
   WidgetTester tester,
   Widget child, {

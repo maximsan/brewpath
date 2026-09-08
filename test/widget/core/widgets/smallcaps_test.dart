@@ -6,12 +6,9 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The design has **one** smallcaps rule — `.smallcaps`: IBM Plex Sans 500 at
-/// the ladder's label step, 0.14em, uppercase. `SmallcapsLabel` carries it.
-///
-/// A hand-rolled smallcaps is not wrong in a way a screenshot shows loudly; it
-/// lands a letter or two off and stays that way, which is the kind of drift a
-/// test catches and review does not.
+// The design has one smallcaps rule — IBM Plex Sans 500 at the ladder's label
+// step, 0.14em, uppercase — and `SmallcapsLabel` carries it. A hand-rolled one
+// lands a letter or two off and stays that way, which review does not catch.
 void main() {
   const mood = MoodColors.darkRoast;
 

@@ -4,9 +4,8 @@ import 'package:brew_path/features/tour/domain/tour_copy.dart';
 ///
 /// The order of the enum *is* the Tour, so the sequence lives here rather than
 /// in the four places that anchor it. Each stop names the copy it carries and
-/// says whether reaching it means returning the feed to the top — the two stops
-/// that frame chrome do, because the header and the tab bar have to read in
-/// their natural context rather than over a half-scrolled page.
+/// says whether reaching it returns the feed to the top — the two that frame
+/// chrome do, so the header and tab bar read in their natural context.
 enum TourStep {
   /// The Today card: the daily loop and the streak.
   today(title: TourCopy.todayTitle, body: TourCopy.todayBody),

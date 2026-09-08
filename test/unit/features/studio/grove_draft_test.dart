@@ -2,9 +2,8 @@ import 'package:brew_path/features/studio/domain/grove_draft.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The chooser holds a draft until the learner confirms it. Everything the
-/// screen decides — what is previewed, whether confirm is live — is this
-/// value, so it is settled here rather than by pumping a widget.
+// Everything the chooser decides — what is previewed, whether confirm is live —
+// is this one value, so it is settled here rather than by pumping a widget.
 void main() {
   const planted = Grove.initial;
 

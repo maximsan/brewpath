@@ -2,12 +2,9 @@ import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/visual_guide_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The guides the app actually ships, asserted against the bundled bank.
-///
-/// The unlock *table* — which lesson earns which guide — is deliberately not
-/// duplicated here. It is a property of the authored course, proved in the
-/// extractor's validators against the real lessons; these tests prove the app
-/// applies whatever the bank says.
+// The unlock table — which lesson earns which guide — is deliberately not
+// duplicated here. It is a property of the authored course, proved in the
+// extractor's validators; these prove the app applies whatever the bank says.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -38,13 +35,9 @@ void main() {
     }
   });
 
-  /// The prose the guides shipped without.
-  ///
-  /// The words were authored all along; the extractor cut each entry before
-  /// them because they sat inside JSX it could not parse. The prototype moved
-  /// them into data fields (#271), and these assert the app actually carries
-  /// them — a bank that silently loses the prose again looks exactly like a
-  /// bank that never had it.
+  // The words were authored all along; the extractor cut each entry before
+  // them because they sat inside JSX it could not parse (#271). A bank that
+  // silently loses the prose again looks exactly like one that never had it.
   test('the guides that gloss their table carry a note per term', () async {
     final bySubject = {
       for (final guide in await guides.getGuides()) guide.subject: guide,
@@ -79,13 +72,10 @@ void main() {
     expect(bySubject['anatomy']!.notes, isEmpty);
   });
 
-  /// The cross-section's content, which the app had no source for at all.
-  ///
-  /// Six layers of names, latin names, fates and notes were authored beside
-  /// the drawing that reads them, in a file the guide join never opened — so
-  /// the anatomy guide shipped as a title, a summary and three meta rows.
-  /// Asserted against the shipped bank rather than a fixture: a fixture would
-  /// have passed the whole time the content was missing.
+  // Six layers were authored beside the drawing that reads them, in a file the
+  // guide join never opened, so the anatomy guide shipped as a title and three
+  // meta rows. Asserted against the shipped bank, never a fixture: a fixture
+  // would have passed the whole time the content was missing.
   test('the cherry arrives with its six layers, outside in', () async {
     final bySubject = {
       for (final guide in await guides.getGuides()) guide.subject: guide,

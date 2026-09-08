@@ -8,17 +8,12 @@ import 'package:brew_path/features/tour/presentation/tour_frame.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 
-/// The Tour: a frame that travels between four targets, and a card that says
+/// The Tour: a frame travelling between four targets, and a card that says
 /// what each one is for.
 ///
-/// **An ordinary child of the shell, not an overlay entry.** The defect the
-/// rebuild exists to make unrepresentable is a callout surviving onto another
-/// tab, and the fix is structural rather than a listener: whoever builds this
-/// gates it on the Learn branch, so a different tab simply does not build it.
-/// There is no entry to leak and no `dismiss()` to remember.
-///
-/// It measures its targets itself, through [TourAnchor], because the four are
-/// drawn by three different owners and none of them can see the others.
+/// An ordinary child of the shell, not an overlay entry: whoever builds it
+/// gates it on the Learn branch, so another tab cannot inherit a callout —
+/// nothing to leak, no `dismiss()`. It measures targets through [TourAnchor].
 class TodayTour extends StatefulWidget {
   /// Runs the Tour, calling [onFinish] when Skip or Done ends it.
   const TodayTour({required this.onFinish, super.key});

@@ -1,11 +1,9 @@
-// Term of the Day against the bank the app actually ships (#96).
-//
-// Counts are derived, never quoted: the dictionary keeps being authored, and a
-// test pinning "65 free terms" would fail on a new word rather than on a
-// defect. What is asserted is what would change meaning — that the pick is a
-// function of the date and the tier, that a free learner is never offered a
-// term their dictionary does not carry, and that the rotation walks the pool
-// instead of sitting on one term.
+// Term of the Day against the bank the app ships (#96). Counts are derived,
+// never quoted: a test pinning "65 free terms" would fail on a new word rather
+// than on a defect. What is asserted is what would change meaning — the pick is
+// a function of the date and the tier, a free learner is never offered a term
+// their dictionary does not carry, and the rotation walks the pool instead of
+// sitting on one term.
 import 'package:brew_path/features/dictionary/domain/term_of_day.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/repositories/dictionary_repository.dart';

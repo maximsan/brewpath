@@ -1,12 +1,9 @@
-// The dictionary each tier can see, against the bank the app actually ships
-// (`docs/decisions.md` §12).
-//
-// Counts are derived, never quoted: the bank has grown three times, and a
-// test pinning "65 free terms" would fail on authoring rather than on a
-// defect. What is asserted is what would change *meaning*: that free is
-// exactly the lesson terms, that Plus is everything, and that no reference
-// term can be reached from the free shelf by search, by category, by id, or
-// as today's term.
+// The dictionary each tier can see, against the bank the app ships
+// (`docs/decisions.md` §12). Counts are derived, never quoted: a test pinning
+// "65 free terms" would fail on authoring rather than on a defect. What is
+// asserted is what would change meaning — free is exactly the lesson terms,
+// Plus is everything, and no reference term is reachable from the free shelf by
+// search, category, id or as today's term.
 import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart';
 import 'package:brew_path/features/dictionary/domain/term_of_day.dart';
 import 'package:brew_path/shared/models/content/dictionary_category.dart';

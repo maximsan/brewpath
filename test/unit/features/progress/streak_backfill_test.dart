@@ -35,14 +35,11 @@ void main() {
     mastery: const MasteryResult(correct: 1, total: 1),
   );
 
-  /// Midday, [back] whole calendar days ago.
-  ///
-  /// Built by field arithmetic from a fixed hour, never by subtracting a
-  /// `Duration` from `DateTime.now()`. Both alternatives are time-dependent:
-  /// subtracting hours crosses midnight when the suite runs just after it, and
-  /// subtracting whole days lands on the wrong day across a DST boundary. The
-  /// provider reads the real clock for *today*, so the anchor has to be real —
-  /// only the time of day is pinned.
+  /// Midday, [back] whole calendar days ago. Built by field arithmetic from a
+  /// fixed hour, never by subtracting a `Duration`: subtracting hours crosses
+  /// midnight when the suite runs just after it, and subtracting days lands on
+  /// the wrong day across a DST boundary. The provider reads the real clock for
+  /// *today*, so the anchor is real and only the time of day is pinned.
   DateTime daysAgo(int back) {
     final today = DateTime.now();
     return DateTime(today.year, today.month, today.day - back, 12);

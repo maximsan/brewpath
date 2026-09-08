@@ -10,8 +10,7 @@ import 'package:flutter/material.dart';
 /// [PickerCopy]'s outcome-aware slots have this shape.
 typedef PickerLine = String Function({required bool wasCorrect});
 
-/// The verdict five of the six picking kinds close on (`lesson.jsx:410`,
-/// `:1496`, `:1546`, `active-cards.jsx:227`).
+/// The verdict five of the six picking kinds close on.
 ///
 /// `decision` and `tastefix` answer in their own words instead — see
 /// [PickerCopy.verdict].

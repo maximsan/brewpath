@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:brew_path/features/profile/domain/daily_reminder.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The reminder's slots and copy, read back out of the design.
+// The slots and copy are read back out of the design rather than restated.
 void main() {
   test("offers the design's eight slots, in its order", () {
     // The design writes them as one array; a set of times that drifted from it

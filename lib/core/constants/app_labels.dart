@@ -1,5 +1,4 @@
 // Self-descriptive UI string constants — no per-member docs needed.
-// ignore_for_file: public_member_api_docs
 
 /// User-facing string constants.
 abstract class AppLabels {

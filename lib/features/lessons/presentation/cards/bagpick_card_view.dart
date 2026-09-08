@@ -79,7 +79,7 @@ class _BagpickCardViewState extends State<BagpickCardView> {
   bool get _wasCorrect => _called == widget.card.answer;
 
   /// What the call came to, in the design's own words — `CALLED IT`, or the
-  /// process it actually was (`bean-anatomy.jsx:261`).
+  /// process it actually was.
   ///
   /// No full stop: it is a smallcaps kicker rather than a sentence, and the
   /// app had been closing both readings with one the design does not write.
@@ -259,7 +259,7 @@ class _ProcessPill extends StatelessWidget {
     final mood = context.mood;
     final hidden = revealed == null;
     // An accent-bordered pill labelled in the reading accent — the design's
-    // own pairing for this shape (`brew-challenge.jsx:338`).
+    // own pairing for this shape.
     final borderColour = hidden ? mood.accent : mood.sage;
     final labelColour = hidden ? mood.accentText : mood.sage;
 

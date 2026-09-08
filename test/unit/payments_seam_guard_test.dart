@@ -2,16 +2,12 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../support/dart_sources.dart';
 
-/// Entitlement is a seam, and this is what makes that structural.
-///
-/// #89 required that feature code be *"unable to reach the payments service"*,
-/// **structural rather than a convention**. It shipped as a convention: the
-/// purchase controller sits under `lib/features/` like everything else and
-/// imports the service, and nothing stopped the next feature doing the same.
-/// A seam nothing enforces stops being a seam the first time somebody is in a
-/// hurry.
-///
-/// The same crude shape as the overlay and sheet guards: read the sources.
+// #89 asked that feature code be structurally unable to reach the payments
+// service; it shipped as a convention, with the purchase controller sitting
+// under `lib/features/` and importing the service like anything else. A seam
+// nothing enforces stops being a seam the first time somebody is in a hurry,
+// so this reads the sources — the same crude shape as the overlay and sheet
+// guards.
 void main() {
   /// The layer that owns acquisition. Named explicitly rather than matched by
   /// prefix — a new folder under `features/` must not inherit the exemption by

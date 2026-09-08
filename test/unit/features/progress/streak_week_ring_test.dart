@@ -2,7 +2,7 @@ import 'package:brew_path/features/progress/domain/streak_week.dart';
 import 'package:brew_path/features/progress/presentation/streak_ring.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The ring fills over the current seven-day week, not toward a badge (#498).
+// The ring fills over the current seven-day week, not toward a badge (#498).
 void main() {
   group('streakWeekDay', () {
     test('counts the days into the current week', () {

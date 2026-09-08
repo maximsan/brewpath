@@ -6,14 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Puts [TodayTour] on the Learn tab while the Tour is running, and takes it
 /// off everywhere else.
 ///
-/// **The gate is the lifetime.** The defect the rebuild retires was a callout
-/// floating over the next tab, and the old engine could only be talked out of
-/// it by a listener that had to stay correct. Here a tab that is not Learn
-/// simply does not build the layer, so there is nothing to leave behind.
-///
-/// Leaving Learn also *ends* the run rather than parking it: someone who
-/// navigates away mid-Tour has left it, and coming back to a card on stop three
-/// would be a surprise rather than a courtesy.
+/// The gate is the lifetime: a tab that is not Learn simply does not build the
+/// layer, so there is nothing to leave behind. Leaving Learn *ends* the run
+/// rather than parking it — returning to stop three would surprise, not serve.
 class TourLayerHost extends ConsumerStatefulWidget {
   /// Creates a [TourLayerHost] for a shell currently showing (or not showing)
   /// the Learn tab's root.

@@ -6,7 +6,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/content_fixtures.dart';
 
-/// The app's first modal bottom sheet.
 void main() {
   /// Opens the sheet on a host that ignores the result.
   Future<void> openSheet(

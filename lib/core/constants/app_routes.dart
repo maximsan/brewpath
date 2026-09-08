@@ -2,7 +2,6 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 // Self-descriptive route catalog — no per-member docs needed.
-// ignore_for_file: public_member_api_docs
 
 /// A single app route: its go_router [name] (the stable navigation handle) and
 /// its [path] (the value the router registers — absolute for top-level routes,

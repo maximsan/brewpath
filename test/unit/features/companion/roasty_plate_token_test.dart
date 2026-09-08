@@ -5,10 +5,9 @@ import 'package:brew_path/shared/theme/roasty_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The plate is the one mascot colour the design names as a token
-/// (`--roasty-plate`), because it is a decision rather than a drawing: paper
-/// pinned to one value so the bean stays readable on a Dark Roast ground.
-/// This guard keeps the app's value at the design's.
+// The plate is the one mascot colour the design names as a token
+// (`--roasty-plate`), because it is a decision rather than a drawing: paper
+// pinned to one value so the bean stays readable on a Dark Roast ground.
 void main() {
   test('the plate is the paper the design pins', () {
     final source = File('prototype/roasty.jsx').readAsStringSync();

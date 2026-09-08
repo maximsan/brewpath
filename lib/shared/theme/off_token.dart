@@ -2,32 +2,23 @@ import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
 
-/// A value the design deliberately places **outside** the token system, holding
-/// the reason it is allowed to be there.
-///
-/// The token system is meant to be total: every colour comes from `MoodColors`,
-/// `ArtColors` or `OverlayColors`, and anything else is a magic literal. But
-/// the design does sanction exceptions, and an exception with nowhere to live
-/// gets written as a bare literal with a lint suppression — or, worse, gets
-/// "fixed" into a token later and quietly breaks. Wrapping it forces the
-/// [reason] to be written down next to the value, and makes every read say so
-/// at the call site: `OffTokens.rewardedAdProgressRing.value`.
-///
-/// New entries belong in [OffTokens], not scattered through feature code.
-///
-/// `final` for the same reason the token holders are: a subclass could override
-/// [value] with a getter that reads the mood, which is the one thing this whole
-/// layer exists to make impossible.
+/// A value the design deliberately sets outside the token system, carrying
+/// the design's own declaration as its [reason]. Reading one names it at the
+/// call site (`OffTokens.pickTilePadding.value`), so it is never mistaken for
+/// a magic literal and never "fixed" onto a token.
 @immutable
 final class OffToken<T extends Object> {
   /// Records [value] as off-token, for the stated [reason].
   const OffToken(this.value, {required this.reason});
 
+  /// The longest a [reason] may run: one line naming the design declaration.
+  static const int maxReasonLength = 120;
+
   /// The off-token value itself.
   final T value;
 
-  /// Why this value does not come from a token. Written for the reader who
-  /// finds it in a year and assumes it is an oversight.
+  /// The design declaration that sets this value, quoted in backticks so a
+  /// test can find it in the prototype.
   final String reason;
 
   @override
@@ -42,420 +33,262 @@ final class OffToken<T extends Object> {
   String toString() => 'OffToken($value, reason: $reason)';
 }
 
-/// The register of sanctioned off-token values — the whole list, in one place,
-/// so an exception can be reviewed rather than discovered.
+/// The sanctioned off-token values, in one place so an exception is reviewed
+/// rather than discovered. New entries go here, never in feature code.
 abstract final class OffTokens {
-  /// The rewarded-ad canvas. Fixed near-black in both moods: an ad is a foreign
-  /// surface handed to the app, not a page of it, so it does not take `--bg`.
+  /// The rewarded-ad canvas, near-black in both moods: an ad is a foreign
+  /// surface, not a page of the app.
   static const OffToken<Color> rewardedAdCanvas = OffToken(
     Color(0xFF0B0908),
-    reason:
-        'The rewarded-ad screen is a sponsor surface, not an app page. It is '
-        'fixed near-black in both moods so the ad reads the same either way.',
+    reason: "the ad screen is `background: '#0b0908'` in both moods",
   );
 
-  /// The rewarded-ad countdown ring, which keeps the Dark Roast accent in both
-  /// moods.
+  /// The countdown ring keeps the Dark Roast accent in both moods, because
+  /// the canvas under it is fixed near-black.
   static const OffToken<Color> rewardedAdProgressRing = OffToken(
     Color(0xFFE07A4F),
-    reason:
-        'It sits on the rewarded-ad canvas, which is near-black in both moods, '
-        'so the themed accent would go too dark to read in Cupping. The ring '
-        'keeps the Dark Roast accent instead of following the mood.',
+    reason: "the ring is fixed at `AD_RING = '#E07A4F'`, not the mood accent",
   );
 
-  /// The ink the green-bean drawing is shaded with — its outline, its cast
-  /// shadow and the shadow under its centre cut, at three different alphas.
+  /// The ink a drawn seed is shaded with: outline, cast shadow and centre cut.
+  /// It equals Cupping ink by coincidence and does not flip with the mood.
   static const OffToken<Color> seedInk = OffToken(
     Color(0xFF1B1614),
-    reason:
-        'A bean is an object the learner is looking at, not a page of the app, '
-        'so its shading does not invert with the mood — a seam lit from above '
-        'stays dark in Dark Roast. It happens to equal Cupping ink, which is a '
-        'coincidence of the palette rather than a reference to it; the drawing '
-        'would keep this value if Cupping ink moved.',
+    reason: 'the seed is shaded with `rgba(27,22,20,0.18)`, not `var(--ink)`',
   );
 
-  /// The fruit staining left on a naturally processed seed.
+  /// The fruit staining on a naturally processed seed. The design draws it and
+  /// never names it, so no `--art-*` token holds it.
   static const OffToken<Color> seedStain = OffToken(
     Color(0xFF6B4A22),
-    reason:
-        'The mottling of a bean dried in its own fruit. The design draws it '
-        'and never names it, so there is no --art-* token to read; it belongs '
-        'to one illustration rather than to the palette.',
+    reason: 'the seed is mottled with `fill="#6B4A22"`',
   );
 
-  /// The cream highlight carved down the middle of a drawn bean.
+  /// The cream highlight down a drawn bean's crease, the same in both moods:
+  /// a highlight on an object, not a surface of the app.
   static const OffToken<Color> beanCrease = OffToken(
     Color(0xFFFBF7EE),
-    reason:
-        'The design writes this literal into the bean itself, so the crease '
-        'stays the same cream in both moods — it is a highlight on an object, '
-        'not a surface of the app. It happens to equal the Cupping surface, '
-        'which is a coincidence of the palette rather than a reference to it. '
-        'Nor is it --art-cream, whose warmer value is for illustration fills.',
+    reason: 'the crease is stroked `stroke="#FBF7EE"`',
   );
 
   /// The vertical room inside a `predict` card's guess tile.
   static const OffToken<double> pickTilePadding = OffToken(
     26,
-    reason:
-        'The design sets `.pick-tile` to `padding: 26px 14px`. 26 sits between '
-        'AppSpacing.lg (24) and xl (32) and is deliberate: the two-up guess is '
-        'meant to read far taller than a row, so it does not look like the '
-        'graded lists it sits among. Rounding it onto the scale is a design '
-        'change, not a tidy-up.',
+    reason: '`.pick-tile` sets `padding: 26px 14px`',
   );
 
   /// The vertical room inside a flashcard's face.
   static const OffToken<double> flashcardFacePadding = OffToken(
     26,
-    reason:
-        'The design sets the card to `padding: 26px 24px`. The same 26 as '
-        'pickTilePadding, and for the same reason at a different scale: the '
-        'card is the whole screen, and the room around the word is what makes '
-        'it read as one thing to hold rather than a panel. Rounding to '
-        'AppSpacing.lg (24) would square it with the horizontal gutter, which '
-        'is exactly the difference the design is drawing.',
+    reason: "the card face sets `padding: '26px 24px'`",
   );
 
   /// The inset on Term of the Day's banner.
   static const OffToken<double> termOfDayBannerPadding = OffToken(
     20,
-    reason:
-        'The design sets the banner to `padding: 20px 20px 18px`. 20 sits '
-        'between AppSpacing.md (16) and lg (24): the banner is the one card on '
-        'the index that is meant to read as an offer rather than a row, and '
-        'the room around the word is what does it. AppSpacing.md would make it '
-        'a panel.',
+    reason: "the banner sets `padding: '20px 20px 18px'`",
   );
 
   /// The banner's shorter bottom inset.
   static const OffToken<double> termOfDayBannerFootPadding = OffToken(
     18,
-    reason:
-        'The same `padding: 20px 20px 18px`. The foot is two short of the '
-        'sides because the *Open entry* line under it is uppercase mono, whose '
-        'own leading already reads as space — the optical inset matches, the '
-        'measured one does not.',
+    reason: "the banner sets `padding: '20px 20px 18px'`",
   );
 
   /// The padding inside the tried seal, tighter on the mark's side.
   static const OffToken<EdgeInsets> triedSealPadding = OffToken(
     EdgeInsets.fromLTRB(7, 5, 10, 5),
-    reason:
-        'The design sets the seal to `padding: 5px 10px 5px 7px` '
-        '(`brew-challenge.jsx:171`) and none of the three is a spacing stop. '
-        'The asymmetry is the point: the check needs less room on its side '
-        'than the word does on its, so a symmetric pad would sit the mark '
-        'off-centre in a shape only 13px tall.',
+    reason: "the seal sets `padding: '5px 10px 5px 7px'`",
   );
 
   /// The room Today's lead block keeps above its eyebrow, and under it.
   static const OffToken<double> todayLeadGap = OffToken(
     28,
     reason:
-        "The design opens Today's lead block at `paddingTop: 28` and sets "
-        '`marginBottom: 28` under its eyebrow. 28 sits midway between '
-        'AppSpacing.lg (24) and xl (32). It is the figure the intro sets '
-        'under a block too (introBlockGap), and it has its own entry because '
-        'the two screens are not one decision: retuning one must not move '
-        'the other.',
+        'the lead block opens at `paddingTop: 28` and its eyebrow sets '
+        '`marginBottom: 28`',
   );
 
   /// The gap above the CTA on Today's card, in every state it has.
   static const OffToken<double> todayCtaGap = OffToken(
     18,
-    reason:
-        "The design sets the card's CTA to `margin-top: 18px` in every state "
-        "— Begin lesson, Unlock Foundations and Keep Sharp's Start. 18 sits "
-        'between AppSpacing.md (16) and lg (24) and is the one gap on the '
-        'card that is not a stop; the button sits where the design puts it '
-        'under the meta line.',
+    reason: "the card's button sets `marginTop: 18`",
   );
 
   /// The gap inside a practice row's inline pairs.
   static const OffToken<double> practiceInlineGap = OffToken(
     10,
-    reason:
-        "The practice shelf sets `gap: 10` three times — between a group's "
-        "name and its count, between a kind's glyph and its name, and between "
-        "a row's meta and its mark. It sits between AppSpacing.xs (8) and sm "
-        '(12); every pair it separates is one label read as a unit, and the '
-        'nearer stops read as two things or as one word.',
+    reason: 'the practice shelf pairs a label with its count at `gap: 10`',
   );
 
   /// The room under an open practice group's last row.
   static const OffToken<double> practiceGroupFoot = OffToken(
     6,
-    reason:
-        'The design closes an open practice group with `paddingBottom: 6` '
-        'before its rule. Between AppSpacing.xxs (4) and xs (8): the last row '
-        'already carries 12 of padding, so the foot only has to keep the rule '
-        'off its highlight.',
+    reason: 'an open practice group closes with `paddingBottom: 6`',
   );
 
   /// The padding inside the Cards tab's "more to collect" block.
   static const OffToken<EdgeInsets> cardsFooterPadding = OffToken(
     EdgeInsets.symmetric(vertical: 20, horizontal: 18),
-    reason:
-        'The design sets this block to `padding: 20px 18px`, and neither is a '
-        'spacing stop: 20 sits between AppSpacing.md (16) and lg (24), 18 '
-        'between md and lg as well. Rounding them onto the scale is a design '
-        'change rather than a tidy-up, and this block is the one place on the '
-        'tab that stands for an absence — it is meant to sit a little looser '
-        'than the tiles beside it.',
+    reason: "the block sets `padding: '20px 18px'`",
   );
 
   /// The gap between the block's count and the line under it.
   static const OffToken<double> cardsFooterLineGap = OffToken(
     2,
-    reason:
-        'The design sets `marginTop: 2` between "N more to collect" and the '
-        'line under it. The hairline stop (4) is the nearest and is already '
-        'double it: the two lines are one stacked label, not two blocks, and '
-        'the smallest stop reads as a gap between them.',
+    reason: 'the line under the count sets `marginTop: 2`',
   );
 
-  /// How far below the status bar a tab opens its title when the title has to
-  /// clear the header's entries.
+  /// How far below the status bar the Path, Learn and Profile titles open,
+  /// clear of the header's entries; Cards keeps the design's 24.
   static const OffToken<double> tabTitleClearOfEntries = OffToken(
     64,
-    reason:
-        'The design opens the Path tab at `paddingTop: 64` where Learn, Cards '
-        'and Profile open at 24. It is not a spacing stop, it is well past '
-        "AppSpacing.xxl (48), and it is the design's own answer to a title "
-        'that would otherwise run under the entries floating over it. Learn '
-        'and Profile take it too, which the design does not: their titles are '
-        'not fixed strings. The widest date `longDate` can make sets 350.5pt '
-        'in Fraunces at the display rung, and on a 393pt phone the entries '
-        'begin 269pt into the title — so at 24 the tail of an ordinary '
-        'Wednesday paints behind the two buttons, which the frozen `Friday, '
-        "May 8` in the design never does. Cards keeps the design's 24: "
-        '`Collection` is a fixed string and nowhere near that wide.',
+    reason: 'the Path tab opens its scroll at `paddingTop: 64`',
   );
 
   /// The gap the intro screens set between a block and the next one.
   static const OffToken<double> introBlockGap = OffToken(
     28,
-    reason:
-        'The design sets `marginBottom: 28` twice on the intro — under the '
-        'Welcome hero and above the Meet Roasty CTA. It sits midway between '
-        'AppSpacing.lg (24) and xl (32), belonging to neither, and the intro '
-        "is the only place that sets it — Today's lead block sets the same "
-        'figure under its own entry, todayLeadGap. Snapping it onto a rung '
-        'would retune two screens to spare one entry.',
+    reason: 'the intro sets `marginBottom: 28` under the hero and the lead',
   );
 
   /// The gap the intro screens set between a question and the line under it.
   static const OffToken<double> introSupportGap = OffToken(
     18,
-    reason:
-        "The design sets `marginTop: 18` on the intro's support line, between "
-        'AppSpacing.md (16) and lg (24) and on neither. It is the measure the '
-        'intro sets under a display heading, and nothing else in the app sets '
-        'a gap there at all.',
+    reason: "the intro's support line sets `marginTop: 18`",
   );
 
   /// The gap between a primary CTA and the ghost beneath it.
   static const OffToken<double> ghostUnderPrimaryGap = OffToken(
     10,
-    reason:
-        'The design sets `marginTop: 10` on every ghost that sits under a '
-        'primary. It is tighter than AppSpacing.sm (12) on purpose — the two '
-        'buttons are one stack, and a rung-width gap reads as two.',
+    reason: 'a ghost button under a primary sets `marginTop: 10`',
   );
 
   /// The text field's vertical padding, which is what sets its height.
   static const OffToken<double> textFieldVerticalPadding = OffToken(
     13,
-    reason:
-        "The design's field is `padding: 13px 16px`. The horizontal half is a "
-        'spacing stop and the vertical half is not; it is a height chosen '
-        'against the body rung, not a rhythm the rest of the page shares.',
+    reason: "the field sets `padding: '13px 16px'`",
   );
 
-  /// The tap cue's letter-spacing, in logical pixels at the label step.
+  /// The tap cue's letter-spacing in logical pixels at the 11px label step:
+  /// the one component set this wide, so it is not a rung of `AppTracking`.
   static const OffToken<double> tapCueTracking = OffToken(
     2.64,
-    reason:
-        '`.tap-cue` letters at 0.24em (`index.html:1111`), half again as wide '
-        'as any other mono label in the design and the thing that makes it '
-        'read as an instruction rather than a heading. 2.64 is that em value '
-        'at the 11px label step. It stays an exception because the cue is the '
-        'one component set at it: a width only one thing speaks is that '
-        "thing's, where a width two things share is vocabulary and belongs on "
-        'AppTracking.',
+    reason: '`.tap-cue` sets `letter-spacing: 0.24em`',
   );
 
   /// The gap between a micro-tip's eyebrow and its title.
   static const OffToken<double> microTipEyebrowGap = OffToken(
     5,
-    reason:
-        "The design sets `marginTop: 5` under the tip card's eyebrow. The "
-        'hairline stop (4) is the nearest and the card is only three lines '
-        'tall, so a stop shorter here and a stop longer at the line below '
-        'would flatten the two gaps the design deliberately sets apart.',
+    reason: 'the tip title sets `marginTop: 5`',
   );
 
   /// The gap between a micro-tip's title and its body.
   static const OffToken<double> microTipTitleGap = OffToken(
     3,
-    reason:
-        "The design sets `marginTop: 3` under the tip card's title — tighter "
-        'than the gap above it, which is what binds the title to the rule it '
-        'introduces rather than to the eyebrow. AppSpacing.xxs (4) would make '
-        'the three lines evenly spaced, which is the distinction being drawn.',
+    reason: 'the tip body sets `marginTop: 3`',
   );
 
-  /// The letter spacing of a micro-tip's body copy.
+  /// The letter spacing of a micro-tip's body: prose at the label step, which
+  /// otherwise letters at the smallcaps rule.
   static const OffToken<double> microTipBodyTracking = OffToken(
     0,
     reason:
-        "The design sets the tip's body at the label step and letters it not "
-        'at all. That step letters at 0.14em because everything else the app '
-        'sets there is an uppercase label, and lettering running prose apart '
-        'is what makes it hard to read at 11px. It is an exception rather '
-        'than a rung of AppTracking because the tip card is the one component '
-        'that sets prose at this step.',
+        "the tip body is set at `fontSize: 'var(--t-label)'` with no "
+        'letter-spacing',
   );
 
   /// The leading of a micro-tip's body copy.
   static const OffToken<double> microTipBodyLeading = OffToken(
     1.5,
-    reason:
-        "The design sets the tip's body to `lineHeight: 1.5` at the label "
-        'step, whose own leading (1.2) is set for one-line uppercase labels. '
-        'This is the one place the app sets running prose at that step, so '
-        "the looser leading is this card's rather than a rung of the ladder.",
+    reason: 'the tip body sets `lineHeight: 1.5`',
   );
 
   /// The Tour card's margin — from the screen edges, and from the frame.
   static const OffToken<double> tourCardInset = OffToken(
     20,
     reason:
-        'The design sets the Tour card to `left: 20, right: 20` and puts the '
-        'same 20 between it and the frame it explains. It sits between '
-        'AppSpacing.md (16) and lg (24): the card is a floating panel over a '
-        'dimmed page rather than content in the page, so it keeps its own '
-        'margin instead of lining up with the gutter underneath it.',
+        'the design sets the Tour card to `left: 20, right: 20`, and the same '
+        '20 between it and the frame it explains',
   );
 
   /// The room inside the Tour card.
   static const OffToken<EdgeInsets> tourCardPadding = OffToken(
     EdgeInsets.fromLTRB(18, 18, 18, AppSpacing.base),
-    reason:
-        "The design sets the card to `padding: '18px 18px 14px'`. 18 is not a "
-        'spacing stop — it sits between AppSpacing.md (16) and lg (24) — and '
-        'the foot is deliberately shorter than the sides, because the button '
-        "row's own tap targets already stand off the edge.",
+    reason: "the design sets the card to `padding: '18px 18px 14px'`",
   );
 
   /// The gap between the Tour card's three lines.
   static const OffToken<double> tourCardLineGap = OffToken(
     7,
     reason:
-        "The design sets `marginTop: 7` under the card's counter and again "
-        'under its title. AppSpacing.xs (8) is the nearest and would loosen '
-        'both: the three lines are one block of copy, and the design sets '
-        'them tighter than the stops it uses between blocks.',
+        "the design sets `marginTop: 7` under the card's counter and again "
+        'under its title',
   );
 
   /// The leading of the Tour card's body copy.
   static const OffToken<double> tourCardBodyLeading = OffToken(
     1.55,
-    reason:
-        "The design sets the card's body to `lineHeight: 1.55` at the support "
-        'step, whose own leading (1.4) is set for the one- and two-line rows '
-        'that step usually carries. This is a paragraph on a floating card, '
-        'and the looser leading is what keeps it readable there.',
+    reason: "the design sets the card's body to `lineHeight: 1.55`",
   );
 
   /// How far the Tour's frame stands off the widget it surrounds.
   static const OffToken<double> tourFrameInset = OffToken(
     6,
     reason:
-        'The design insets the frame by 6 on every side (`left: rect.x - 6`, '
-        '`width: rect.w + 12`). Half AppSpacing.sm (12) and on no stop of its '
-        'own: it is the distance that makes the ring read as a frame *around* '
-        'the target rather than a border *on* it, and a spacing stop here '
-        'would look like a gap the page had left.',
+        'the design insets the frame by 6 a side (`left: rect.x - 6`, '
+        '`width: rect.w + 12`)',
   );
 
   /// Where the Tour's card rests until a target has been measured.
   static const OffToken<double> tourCardRestingBottom = OffToken(
     140,
     reason:
-        "The design's `bottom: 140` fallback, used for the frame or two before "
-        'the first measurement lands. Nowhere near a spacing stop because it '
-        'is not a margin: it is roughly where the card ends up once a target '
-        'is known, so the card does not visibly jump into place.',
+        "the design's `bottom: 140` fallback, held until the first target is "
+        'measured',
   );
 
   /// How much room the Tour's card needs under a target before it sits below.
   static const OffToken<double> tourCardHeadroom = OffToken(
     330,
     reason:
-        'The design switches the card above its target at '
-        '`(rect.y + rect.h) < (rect.areaH - 330)`. It is a measurement of the '
-        'card itself — roughly its tallest height plus its gap — not a margin, '
-        'so no spacing stop could stand in for it: round it down and a card '
-        'below a low target hangs off the screen.',
+        'the design lifts the card above its target at '
+        '`(rect.y + rect.h) < (rect.areaH - 330)`',
   );
 
   /// How far below the feed's top edge the Tour brings a target.
   static const OffToken<double> tourScrollTopGap = OffToken(
     140,
-    reason:
-        "The design's `if (topGap < 140)` floor. The same figure as "
-        'tourCardRestingBottom and unrelated to it: this one is the height of '
-        'the header floating over the feed plus a little, which is what keeps '
-        'a framed target from ending up underneath it.',
+    reason: "the design's `if (topGap < 140)` floor under a framed target",
   );
 
   /// How much room below a target the Tour keeps clear for its card.
   static const OffToken<double> tourScrollCardClearance = OffToken(
     250,
     reason:
-        "The design's `+ 250` when it decides a target has run past the room "
-        'the card needs. Shorter than tourCardHeadroom (330) on purpose: this '
-        'one governs *scrolling* a target into a workable position, where the '
-        'card may still end up above it, and pulling the feed by the full '
-        'card height would drag short targets out of the top of the screen.',
+        "the design's `+ 250` when it decides a target has run past the room "
+        'the card needs',
   );
 
   /// The size of one dot in the Tour card's step row.
   static const OffToken<double> tourStepDotSize = OffToken(
     5,
-    reason:
-        'The design draws `width: 5, height: 5` dots set `gap: 5` apart. '
-        'AppSpacing.xxs (4) is the nearest stop and would both shrink them and '
-        'tighten the row: four dots at this size read as a progress track, and '
-        'a stop smaller reads as specks.',
+    reason: 'the design draws `width: 5, height: 5` dots set `gap: 5` apart',
   );
 
   /// The room inside the Tour card's advance pill.
   static const OffToken<EdgeInsets> tourAdvancePadding = OffToken(
     EdgeInsets.symmetric(horizontal: 20, vertical: 11),
-    reason:
-        "The design sets Next/Done to `padding: '11px 20px'`, and neither half "
-        'is a spacing stop. It is the one stadium button in the app that is '
-        'not full-width, so it is sized to its own words rather than to the '
-        'rhythm of a page it does not sit in.',
+    reason: "the design sets Next/Done to `padding: '11px 20px'`",
   );
 
   /// The room around the Tour card's Skip.
   static const OffToken<EdgeInsets> tourSkipPadding = OffToken(
     EdgeInsets.symmetric(horizontal: 6, vertical: AppSpacing.sm),
-    reason:
-        "The design sets Skip to `padding: '12px 6px'`. The vertical half is "
-        'AppSpacing.sm and the horizontal half is not: Skip is text rather '
-        'than a filled button, so it is pulled close to the card edge while '
-        'keeping the height that makes it a comfortable tap target.',
+    reason: "the design sets Skip to `padding: '12px 6px'`",
   );
 
-  /// Every sanctioned exception, so the register can be read — and tested — as
-  /// a whole rather than one constant at a time.
+  /// Every sanctioned exception, so the register can be tested as a whole.
   static const register = <OffToken<Object>>[
     rewardedAdCanvas,
     rewardedAdProgressRing,

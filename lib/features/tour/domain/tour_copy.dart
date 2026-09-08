@@ -1,14 +1,9 @@
 /// Every word the Tour says, in one place.
 ///
-/// The copy is **locked** by the Tour spec (the resolution of
-/// [#195](https://github.com/maximsan/brewpath/issues/195)) — it was reviewed
-/// as a set, and each stop was written to explain a *mechanic* rather than to
-/// name the widget it points at. Editing a string here edits the spec, not the
-/// implementation; a change belongs in a ticket that reopens the ruling.
-///
-/// They live apart from the widgets that render them so the whole script can be
-/// read in scroll order without reading a widget tree, and so the widget tests
-/// can assert the words without restating them.
+/// The copy is locked by the Tour spec (#195): it was reviewed as a set, and
+/// each stop explains a *mechanic* rather than naming the widget it points at,
+/// so editing a string here edits the spec. It lives apart from the widgets
+/// that render it so the whole script reads in order, in one place.
 abstract final class TourCopy {
   /// The intro overlay's heading.
   static const introTitle = 'Quick tour?';
@@ -46,10 +41,10 @@ abstract final class TourCopy {
 
   /// Stop 3 — the header's Saved and Dictionary entries.
   ///
-  /// The design's own third stop (`guide.jsx:10-13`). It used to be the module
-  /// list, which was never the design's — and the course's own "five modules,
-  /// in order" line is already stop 4's job, where the Path tab it names is
-  /// what the learner is being pointed at.
+  /// The design's own third stop. It used to be the module list, which was
+  /// never the design's — and the course's own "five modules, in order" line is
+  /// already stop 4's job, where the Path tab it names is what the learner is
+  /// being pointed at.
   static const headerTitle = 'Saved and Dictionary.';
 
   /// Stop 3's body.

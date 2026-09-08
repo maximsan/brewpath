@@ -12,13 +12,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/widget_harness.dart';
 
-/// The Tour's controls: the two buttons on every card, and the tab switch that
-/// ends the run.
-///
-/// Driven through the whole app rather than through one screen, because both
-/// behaviours are facts about the shell — the layer is drawn beside the
-/// scaffold rather than inside a tab, and the tab bar its last stop frames
-/// lives outside every branch.
+// Driven through the whole app rather than one screen, because both behaviours
+// are facts about the shell: the layer is drawn beside the scaffold rather than
+// inside a tab, and the tab bar that ends the Tour lives outside every branch.
 void main() {
   setUp(useInMemoryDatabase);
 

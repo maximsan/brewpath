@@ -19,9 +19,9 @@ import 'package:go_router/go_router.dart';
 import '../../../support/content_fixtures.dart';
 import '../../../support/widget_harness.dart';
 
-/// The cap-hit path, through two real rows rather than the extension alone:
-/// Today's lesson card, which *goes*, and the shelf's study row, which
-/// *pushes*. Both had to keep their own stack behaviour, so both are asserted.
+// Through two real rows rather than the extension alone: Today's lesson card,
+// which goes, and the shelf's study row, which pushes. Both had to keep their
+// own stack behaviour, so both are asserted.
 void main() {
   setUp(useInMemoryDatabase);
 

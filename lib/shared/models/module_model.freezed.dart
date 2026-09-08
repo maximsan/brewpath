@@ -295,7 +295,8 @@ mixin _$ModuleModel {
 /// design loads, so the file is bundled under that name verbatim. Null for
 /// a module the design has not illustrated.
  String? get art;/// Where the picture is anchored when a frame crops it: CSS
-/// `object-position`, as in `50% 42%`. Read by `alignmentFromObjectPosition`.
+/// `object-position`, as in `50% 42%`. Read by
+/// `alignmentFromObjectPosition`.
  String? get artPos;
 /// Create a copy of ModuleModel
 /// with the given fields replaced by the non-null parameter values.
@@ -532,7 +533,8 @@ class _ModuleModel extends ModuleModel {
 /// a module the design has not illustrated.
 @override final  String? art;
 /// Where the picture is anchored when a frame crops it: CSS
-/// `object-position`, as in `50% 42%`. Read by `alignmentFromObjectPosition`.
+/// `object-position`, as in `50% 42%`. Read by
+/// `alignmentFromObjectPosition`.
 @override final  String? artPos;
 
 /// Create a copy of ModuleModel

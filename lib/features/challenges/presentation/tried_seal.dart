@@ -15,8 +15,7 @@ const double _markSize = 13;
 /// Half-strength accent: a stamp pressed onto the card, not a control on it.
 const double _borderAlpha = 0.5;
 
-/// The design tilts it, so it reads as stamped rather than laid out
-/// (`brew-challenge.jsx:173`).
+/// The design tilts it, so it reads as stamped rather than laid out.
 const double _tilt = -3 * math.pi / 180;
 
 /// The mark a brewed challenge leaves on its card.

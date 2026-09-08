@@ -19,12 +19,10 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../../support/find_mark.dart';
 import '../../../support/widget_harness.dart';
 
-/// The micro-tip layer, driven through the whole app.
-///
-/// Driven that way for the same reason the Tour's own tests are: the layer
-/// draws above the router, reads where the learner is from it, and writes what
-/// it showed to the database. A test that pumped the card on its own would
-/// prove only that it renders.
+// Driven through the whole app, for the same reason the Tour's own tests are:
+// the layer draws above the router, reads where the learner is from it, and
+// writes what it showed to the database. Pumping the card on its own would
+// prove only that it renders.
 void main() {
   setUp(useInMemoryDatabase);
 

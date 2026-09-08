@@ -3,17 +3,12 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../support/snapshot_generators.dart';
 
-/// The three laws that *are* convergence.
-///
-/// The design's whole safety claim is that merging is a lattice join, and that
-/// claim is exactly these: idempotent, commutative, associative. Together they
-/// mean two devices reach the same state regardless of which synced first, how
-/// often a payload was redelivered, or how the merges were grouped — which is
-/// what makes a key-value store whose writes are *not durable* survivable.
-///
-/// Hand-picked examples cannot establish this; they can only fail to disprove
-/// it. So these run over generated snapshots with deliberately colliding ids,
-/// days and timestamps.
+// Merging is a lattice join, and the claim is exactly these three laws:
+// idempotent, commutative, associative. Together they mean two devices reach
+// the same state whichever synced first, however often a payload was
+// redelivered, however the merges were grouped. Hand-picked examples can only
+// fail to disprove that, so these run over generated snapshots with
+// deliberately colliding ids, days and timestamps.
 void main() {
   const runs = 400;
 

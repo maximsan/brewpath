@@ -3,8 +3,8 @@ import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The Tour overlay's arithmetic: where the frame goes, which side the card
-/// takes, and how far the feed moves to make a target framable.
+// The Tour overlay's arithmetic: where the frame goes, which side the card
+// takes, and how far the feed moves to make a target framable.
 void main() {
   group('the frame', () {
     test('stands off the target evenly on all four sides', () {
