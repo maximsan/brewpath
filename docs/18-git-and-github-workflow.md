@@ -138,6 +138,23 @@ gh pr create --repo maximsan/brewpath --base main --head my-branch \
 **Always `--body-file`, never `--body`** for anything longer than a sentence.
 Same reason as the heredoc: a file needs no shell escaping at all.
 
+**The body follows [`.github/PULL_REQUEST_TEMPLATE.md`](../.github/PULL_REQUEST_TEMPLATE.md).**
+GitHub fills it into the web form on its own; `gh pr create --body-file` does
+not, so start the body file from a copy of it. Its first lines say which
+sections may go.
+
+**Screenshots for a UI change.** `gh` cannot upload an image, so capture the
+pair on the simulator and drag the files into the body on github.com, which
+uploads them and writes the links:
+
+```bash
+xcrun simctl io booted screenshot ~/Desktop/before.png   # on main
+xcrun simctl io booted screenshot ~/Desktop/after.png    # on the branch
+```
+
+An agent without a browser names the two paths under the _Before / after_
+heading and leaves the drag to the person.
+
 ```bash
 gh pr view 42 --repo maximsan/brewpath \
   --json number,state,mergeable,mergeStateStatus,changedFiles \
