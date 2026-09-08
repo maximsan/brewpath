@@ -72,6 +72,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **The cup you are fixing now reacts to your fix.** A tastefix round drew its
+  symptoms as one line of smallcaps — `SOUR · THIN` — and did nothing when you
+  answered. They are berry chips again, in a panel that says where the cup
+  stands: a fix that misses dims the symptoms it failed to relieve and the
+  panel shakes, and a fix that works replaces them outright with **Balanced**,
+  settles the panel to sage and pulses it once. The reaction runs once, on the
+  answer that latches the card, and reduced motion lands it in a single frame
+  with the colours and the words still changing.
+
 - **The Today tour is the one the design draws.** A bordered frame travels
   between the four things it introduces instead of a spotlight snapping
   between them, the card carries its own counter, dots, Skip and Next, and

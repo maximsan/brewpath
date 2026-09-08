@@ -301,6 +301,30 @@ abstract final class OffTokens {
     reason: 'the blank sets `padding: 0 6px 1px`',
   );
 
+  /// The room inside a tastefix symptom chip.
+  static const OffToken<EdgeInsets> tastefixChipPadding = OffToken(
+    EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+    reason: "a symptom chip sets `padding: '3px 9px'`",
+  );
+
+  /// The gap between one symptom chip and the next.
+  static const OffToken<double> tastefixChipGap = OffToken(
+    6,
+    reason: 'the chip row sets `gap: 6`',
+  );
+
+  /// The corner on the cup panel a tastefix round reacts inside.
+  static const OffToken<double> tastefixPanelRadius = OffToken(
+    18,
+    reason: 'the cup panel sets `borderRadius: 18`',
+  );
+
+  /// The room inside the cup panel, shorter along its foot.
+  static const OffToken<EdgeInsets> tastefixPanelPadding = OffToken(
+    EdgeInsets.fromLTRB(18, 16, 18, 15),
+    reason: "the cup panel sets `'16px 18px 15px'`",
+  );
+
   /// Every sanctioned exception, so the register can be tested as a whole.
   static const register = <OffToken<Object>>[
     rewardedAdCanvas,
@@ -343,5 +367,9 @@ abstract final class OffTokens {
     tourSkipPadding,
     fillSlotMinWidth,
     fillSlotPadding,
+    tastefixChipPadding,
+    tastefixChipGap,
+    tastefixPanelRadius,
+    tastefixPanelPadding,
   ];
 }
