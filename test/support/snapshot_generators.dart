@@ -4,20 +4,15 @@ import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
 import 'package:brew_path/shared/storage/snapshot/progress_snapshot.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_scopes.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
+import 'package:brew_path/shared/storage/snapshot/term_miss.dart';
 import 'package:brew_path/shared/storage/snapshot/timestamped.dart';
 
 /// Seeded generator for random-but-plausible snapshots.
 ///
-/// Hand-rolled rather than pulled from a package. The merge is **field-wise**,
-/// so the algebraic laws compose: prove each operator is a semilattice
-/// operation and the snapshot-level law follows. That makes every generator one
-/// field wide, so a failure already names the broken field — which is most of
-/// what a property-testing library's shrinking would have bought.
-///
-/// **The pools are deliberately tiny.** Ids collide, days collide and — most
-/// importantly — timestamps collide, because the interesting cases are exactly
-/// the ones where two devices touched the same key. Widening the pools makes
-/// the generator look thorough while testing almost nothing.
+/// Hand-rolled: the merge is field-wise, so every generator is one field wide
+/// and a failure already names the broken field. **The pools are deliberately
+/// tiny** — ids, days and timestamps collide, because the interesting cases
+/// are the ones where two devices touched the same key.
 class SnapshotGen {
   /// Creates a generator. The same [seed] always produces the same sequence,
   /// so a failure is reproducible from the message alone.
@@ -69,6 +64,7 @@ class SnapshotGen {
     treeStage: _rng.nextInt(_maxTreeStage + 1),
     challengesCompleted: _subset(_challenges),
     learnedTerms: _subset(_terms),
+    termAnswers: _misses(),
     challengeReactions: _reactions(),
     dailyActivity: _dailyActivity(),
     challengesSaved: _stampedSet(_challenges),
@@ -130,6 +126,19 @@ class SnapshotGen {
         }(),
   };
 
+  /// Answer stamps over the same tiny term pool, drawn from the same three
+  /// stamps as everything else — so two generated snapshots collide on a term
+  /// with a miss on one side and a clear on the other, which is the only case
+  /// the per-stamp join has to get right.
+  Map<String, TermMiss> _misses() => {
+    for (final id in _terms)
+      if (_rng.nextBool())
+        id: TermMiss(
+          lastMissedAt: _rng.nextBool() ? _pick(_stamps) : 0,
+          lastCorrectAt: _rng.nextBool() ? _pick(_stamps) : 0,
+        ),
+  };
+
   Map<String, ChallengeReaction> _reactions() => {
     for (final id in _challenges)
       if (_rng.nextBool())
@@ -141,11 +150,10 @@ class SnapshotGen {
 
   /// Days of completion events, in the real encoding.
   ///
-  /// Tokens come from the seeded generator over a deliberately tiny pool, for
-  /// the same reason the ids and days do: two generated snapshots must share
-  /// entries, or the union merge is never tested against anything to union.
-  /// Minting real tokens here would make every entry globally unique and the
-  /// merge laws vacuous over this field.
+  /// Tokens come from the seeded generator over a tiny pool, like the ids and
+  /// days: two generated snapshots must share entries, or the union merge is
+  /// never tested against anything. Minting real tokens would make every entry
+  /// unique and the merge laws vacuous here.
   Map<int, Set<String>> _dailyActivity() => {
     for (var day = 0; day < _dayRange; day++)
       if (_rng.nextBool())

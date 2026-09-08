@@ -4,27 +4,16 @@ import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_codec.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
+import 'package:brew_path/shared/storage/snapshot/term_miss.dart';
 import 'package:brew_path/shared/storage/snapshot/timestamped.dart';
 import 'package:flutter/foundation.dart';
 
 /// Everything **Reset Progress** clears — and Delete Account clears too.
 ///
-/// The two scopes are types rather than a convention because that makes two
-/// closed decisions true by construction instead of by review:
-///
-/// - Reset is `clearedByReset: ClearedByReset.empty`, so it **cannot** forget a
-///   field. The prototype's reset shipped a defect by omitting exactly one key.
-/// - "Every snapshot field sits in exactly one scope" is enforced by the
-///   compiler, not by a test that has to be updated whenever a field is added.
-///
-/// Every field here is **monotonic**. The only non-monotonic operation on the
-/// whole snapshot is Reset, which is why the reset generation exists.
-///
-/// `dailyActivity` will eventually shrink too — pruning drops days nothing
-/// reads — but that trim belongs to whichever code first *appends* an event,
-/// not here and not to the repository: a store that silently returns
-/// something other than what it was handed is a worse bargain than a record
-/// that grows a little. See `daily_activity.dart`.
+/// A type rather than a convention, so two decisions hold by construction:
+/// reset is `clearedByReset: ClearedByReset.empty` and **cannot** forget a
+/// field, and every snapshot field sits in exactly one scope. Every field here
+/// is monotonic; Reset is the whole snapshot's only non-monotonic operation.
 @immutable
 class ClearedByReset {
   /// Creates a [ClearedByReset].
@@ -38,6 +27,7 @@ class ClearedByReset {
     this.treeStage = 0,
     this.challengesCompleted = const {},
     this.learnedTerms = const {},
+    this.termAnswers = const {},
     this.challengeReactions = const {},
     this.dailyActivity = const {},
     this.challengesSaved = _emptyIds,
@@ -58,6 +48,7 @@ class ClearedByReset {
     treeStage: json['treeStage'] as int? ?? 0,
     challengesCompleted: stringSetFromJson(json['challengesCompleted']),
     learnedTerms: stringSetFromJson(json['learnedTerms']),
+    termAnswers: termMissMapFromJson(json['termAnswers']),
     challengeReactions: reactionMapFromJson(json['challengeReactions']),
     dailyActivity: dayEntriesFromJson(json['dailyActivity']),
     challengesSaved: stampedSetFromJson(json['challengesSaved']),
@@ -88,6 +79,7 @@ class ClearedByReset {
     'treeStage',
     'challengesCompleted',
     'learnedTerms',
+    'termAnswers',
     'challengeReactions',
     'dailyActivity',
     'challengesSaved',
@@ -97,15 +89,10 @@ class ClearedByReset {
 
   /// Lesson id → the day it was **first** completed.
   ///
-  /// The day is not decoration: it is what backfills the streak for a learner
-  /// whose history predates the day set — `streakDaySet` unions these in, and
-  /// it is the only thing that reads them. Merging keeps the **earliest** of
-  /// two devices' answers, so a lesson stays dated when it was actually
-  /// finished.
-  ///
-  /// It does **not** feed the free daily allowance, which this doc claimed
-  /// until #115: `canStartActivity` counts today's [dailyActivity] entries and
-  /// never looks here.
+  /// The day backfills the streak for a learner whose history predates the day
+  /// set: `streakDaySet` unions these in and is their only reader. Merging
+  /// keeps the **earliest** of two devices' answers. It does not feed the free
+  /// daily allowance (#115) — `canStartActivity` counts [dailyActivity].
   final Map<String, int> completedLessons;
 
   /// Lesson id → best graded result, never downgraded.
@@ -121,11 +108,10 @@ class ClearedByReset {
 
   /// One-off moments the learner has already been shown, keyed by moment.
   ///
-  /// Collapsed into one map rather than a field per moment: under a derived
-  /// snapshot "has this happened?" stays permanently true, so every one-off
-  /// beat needs a marker, and three had already accumulated. As a map a new
-  /// moment costs a key; as fields it costs a schema change, a reset-registry
-  /// entry and a guard update — which is how one eventually escapes Reset.
+  /// One map rather than a field per moment: every one-off beat needs a
+  /// marker, and as a map a new moment costs a key, where as a field it costs
+  /// a schema change, a reset-registry entry and a guard update — which is how
+  /// one eventually escapes Reset.
   final Map<String, int> acks;
 
   /// Every collectible earned. Stored in full rather than deriving from lesson
@@ -138,15 +124,10 @@ class ClearedByReset {
 
   /// Highest tree stage ever reached, read as `max(stored, derived)`.
   ///
-  /// **The outcome, never the ingredients.** Storing the completed-lesson count
-  /// and re-deriving the stage looks correct and ships the bug: at `31/36` the
-  /// derivation still returns stage 9, so growing the course shrinks a finished
-  /// learner's tree.
-  ///
-  /// Both halves exist now (#150). First completion writes the stage here,
-  /// raise-only; the read takes the max with the stage the *current* course
-  /// implies, which heals a learner whose stored value predates the writer
-  /// without ever letting a grown course lower one.
+  /// **The outcome, never the ingredients**: re-deriving the stage from the
+  /// completed-lesson count ships the bug that growing the course shrinks a
+  /// finished learner's tree. First completion writes here, raise-only; the
+  /// read maxes it with what the *current* course implies (#150).
   final int treeStage;
 
   /// Brew challenges completed at least once.
@@ -155,21 +136,23 @@ class ClearedByReset {
   /// Dictionary terms whose source lesson has been completed.
   final Set<String> learnedTerms;
 
+  /// Term id → when it was last answered wrong and last answered right.
+  ///
+  /// **Every answered term, not only the missed ones** (ADR-0022): a correct
+  /// answer must write a key even for a term this device never saw missed,
+  /// because a clear that cannot out-stamp the peer's miss never happens. The
+  /// Misses deck is the subset whose miss is the later stamp.
+  final Map<String, TermMiss> termAnswers;
+
   /// Challenge id → the reaction logged for it, most recent winning.
   final Map<String, ChallengeReaction> challengeReactions;
 
   /// Day → the completion events on it, as the free daily allowance counts
   /// them.
   ///
-  /// Each entry is **one completion**, not one kind of completion: a set keyed
-  /// on type collapses two vocab rounds into one mark, and the cap must see
-  /// two (#65). It supersedes `miniGamePlays`, whose day-keyed set of game ids
-  /// this generalises — the two-different-games streak rule now derives from
-  /// the distinct game ids among a day's entries, unchanged in meaning.
-  ///
-  /// Meant to be pruned to the last couple of days once something writes it —
-  /// best-effort, since a union merge with a peer still holding older days
-  /// re-adds them, which is harmless because nothing reads beyond today.
+  /// Each entry is **one completion**, not one kind: a set keyed on type
+  /// collapses two vocab rounds into one mark, and the cap must see two (#65).
+  /// Pruned best-effort in [withActivity], since nothing reads beyond today.
   final Map<int, Set<String>> dailyActivity;
 
   /// Challenges parked for later. Removal is a first-class action, so this is
@@ -204,15 +187,9 @@ class ClearedByReset {
   /// A copy recording [entry] as a completion on [day], and marking the day
   /// active when [marksDay].
   ///
-  /// Both halves move together because they are one event: the entry is what
-  /// happened, the active day is what it earned. Both are unions, so a device
-  /// that already knew either loses nothing.
-  ///
-  /// The activity record is **pruned here**, against [day] — the only place it
-  /// is rebuilt, which is where `pruneDailyActivity` says the trim belongs.
-  /// Best-effort by design: a peer still holding an older day re-adds it under
-  /// the union merge, which is harmless because nothing reads back that far.
-  /// `activeDays` is never pruned — the streak folds over the whole history.
+  /// Both halves are one event and both are unions, so a device that already
+  /// knew either loses nothing. [dailyActivity] is **pruned here**, the only
+  /// place it is rebuilt; [activeDays] never is — the streak folds them all.
   ClearedByReset withActivity(
     int day,
     String entry, {
@@ -228,13 +205,9 @@ class ClearedByReset {
   /// A copy recording [lessonId] as first completed on [day], scoring
   /// [mastery].
   ///
-  /// Both halves move together because they are one event: the day is when the
-  /// lesson was finished, the result is how it went.
-  ///
-  /// **The earliest day wins, and the result only rises.** The merge resolves
-  /// two devices with `min` and `MasteryResult.best`; a local write that
-  /// disagreed would move a first completion later than it happened — which
-  /// the streak backfills from — or take back a run the learner has had.
+  /// **Earliest day wins, result only rises** — as the merge's `min` and
+  /// `MasteryResult.best` do. A local write that disagreed would date a
+  /// completion later than it happened, or take back a run the learner had.
   ClearedByReset withLessonCompleted(
     String lessonId, {
     required int day,
@@ -321,6 +294,25 @@ class ClearedByReset {
     ),
   );
 
+  /// A copy recording that [termId] was answered, right or wrong, at [at].
+  ///
+  /// The whole rule the Misses deck runs on: a wrong answer in any deck adds
+  /// the term, a correct answer in any deck clears it, and nothing else
+  /// touches the record — no decay and no cap.
+  ClearedByReset withTermAnswered(
+    String termId, {
+    required bool correct,
+    required int at,
+  }) => _copy(
+    termAnswers: {
+      ...termAnswers,
+      termId: (termAnswers[termId] ?? TermMiss.none).answered(
+        correct: correct,
+        at: at,
+      ),
+    },
+  );
+
   /// A copy recording that [id] was logged with [reaction] on [day].
   ///
   /// Both halves move together because they are one event: the completion is
@@ -357,19 +349,12 @@ class ClearedByReset {
     ),
   );
 
-  /// The one hand-listed copy this scope needs.
+  /// The one hand-listed copy this scope needs: the *only* place fields are
+  /// listed, and every writer above goes through it (#150/#104).
   ///
-  /// Private, and the *only* place fields are listed: every writer above goes
-  /// through it. A second hand-listed copy is how this class breaks — one
-  /// landed beside a field rename in #150/#104 and left `main` uncompilable —
-  /// so a new writer takes a parameter here rather than spelling the scope out
-  /// again.
-  ///
-  /// ⚠️ **A parameter here makes its field replaceable, so monotonicity stops
-  /// being structural for it.** A field with no parameter cannot be lowered by
-  /// any writer; one with a parameter can. Every writer that passes a
-  /// parameter must therefore add, union or fold — never overwrite — which is
-  /// what the writers above do and what their tests pin.
+  /// ⚠️ **A parameter here makes its field replaceable**, so monotonicity
+  /// stops being structural for it. Every writer that passes one must add,
+  /// union or fold — never overwrite.
   ClearedByReset _copy({
     Map<String, int>? acks,
     Map<String, int>? completedLessons,
@@ -381,6 +366,7 @@ class ClearedByReset {
     Timestamped<ActiveChallenge?>? activeChallenge,
     Set<String>? challengesCompleted,
     Map<String, ChallengeReaction>? challengeReactions,
+    Map<String, TermMiss>? termAnswers,
     Timestamped<Set<String>>? challengesSaved,
     Timestamped<Set<String>>? favourites,
   }) => ClearedByReset(
@@ -393,6 +379,7 @@ class ClearedByReset {
     treeStage: treeStage ?? this.treeStage,
     challengesCompleted: challengesCompleted ?? this.challengesCompleted,
     learnedTerms: learnedTerms,
+    termAnswers: termAnswers ?? this.termAnswers,
     challengeReactions: challengeReactions ?? this.challengeReactions,
     dailyActivity: dailyActivity ?? this.dailyActivity,
     challengesSaved: challengesSaved ?? this.challengesSaved,
@@ -413,6 +400,7 @@ class ClearedByReset {
     'treeStage': treeStage,
     'challengesCompleted': sortedList(challengesCompleted),
     'learnedTerms': sortedList(learnedTerms),
+    'termAnswers': termMissMapToJson(termAnswers),
     'challengeReactions': reactionMapToJson(challengeReactions),
     'dailyActivity': dayEntriesToJson(dailyActivity),
     'challengesSaved': challengesSaved.toJson(sortedList),
@@ -433,6 +421,7 @@ class ClearedByReset {
           other.treeStage == treeStage &&
           setEquals(other.challengesCompleted, challengesCompleted) &&
           setEquals(other.learnedTerms, learnedTerms) &&
+          mapEquals(other.termAnswers, termAnswers) &&
           mapEquals(other.challengeReactions, challengeReactions) &&
           _dayEntriesEqual(other.dailyActivity, dailyActivity) &&
           other.challengesSaved == challengesSaved &&
@@ -451,6 +440,7 @@ class ClearedByReset {
     treeStage,
     Object.hashAllUnordered(challengesCompleted),
     Object.hashAllUnordered(learnedTerms),
+    Object.hashAllUnordered(termAnswers.keys),
     Object.hashAllUnordered(challengeReactions.keys),
     Object.hashAllUnordered(dailyActivity.keys),
     challengesSaved,
@@ -493,23 +483,9 @@ class ClearedByDeleteOnly {
   /// The uncustomised state, stamped to **win** the merge that carries a
   /// deletion to the other device. This is what Delete writes.
   ///
-  /// Not [empty]: these fields merge last-writer-wins rather than by reset
-  /// generation, and [empty] stamps them at the epoch — so an unstamped
-  /// account tombstone loses to any grove the other device still holds, and the
-  /// deletion is walked back by the very peer it was published to.
-  ///
-  /// The stamp is one past the newest write [current] already holds rather than
-  /// [at] itself, because the wall clock is not reliably the maximum: the
-  /// stored snapshot can carry a grove stamped *later* than this device reads,
-  /// from a peer that synced ahead or from plain skew, and the raw clock then
-  /// loses to the exact value the wipe exists to erase. It cannot dominate a
-  /// write this device has never seen — no last-writer-wins field can — but it
-  /// dominates every one it has.
-  ///
-  /// A named constructor rather than a stamp applied at the call site, so the
-  /// wipe is written where the fields are: a field added to this scope is
-  /// declared here, next to the two it joins, rather than in a caller nobody
-  /// editing this class would think to open.
+  /// Not [empty]: these fields merge last-writer-wins, and [empty]'s epoch
+  /// stamp loses to any grove the peer still holds. The stamp is one past the
+  /// newest write [current] holds, because the wall clock is not the maximum.
   factory ClearedByDeleteOnly.clearedAfter(
     ClearedByDeleteOnly current, {
     required int at,

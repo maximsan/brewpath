@@ -83,7 +83,7 @@ staging list that feeds it, not a living board. Nothing ticks these boxes.
 - [ ] Dictionary third state (**Reference**): glyph, chip, To-learn filter exclusion, `REFERENCE ONLY` block, 8 terms
 - [ ] Dictionary home: alias-matching search (deep-linkable + auto-focus), status filter with live counts, category grid, Term-of-Day banner, quick chips
 - [ ] Flashcards: flip, prev/next, shuffle, jump-to-term, empty state
-- [ ] Vocab game: setup phase (deck picker + round length with a `capped` guard), play, results with missed terms openable
+- [ ] Vocab game: setup phase (three-deck picker + round length with a `capped` guard), play, results, and the Misses deck a wrong answer feeds
 - [ ] Saved screen: three groups (terms · lessons · guides), each hidden when empty, plus the "study as flashcards" row
 - [ ] 37 collectible cards + 8 visual guides, all with bespoke art (**art complete — port, don't draw**)
 - [ ] 13 mini-games over 7 kinds with content banks (69 rounds; [ADR-0005](../adr/0005-mini-games-are-many-games-per-kind-gated-by-topic.md))

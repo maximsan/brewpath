@@ -1,14 +1,14 @@
 /// Decoding helpers shared by the snapshot's scopes.
 ///
-/// Split out of the scope definitions so each file has one job: the scopes
-/// declare *what the snapshot holds*, this declares *how it survives a round
+/// The scopes declare *what the snapshot holds*, this *how it survives a round
 /// trip*. Every decoder is total — a missing or malformed value reads as the
-/// zero value rather than throwing, because the store is an unvalidated blob
-/// and a payload that fails to parse must degrade instead of bricking launch.
+/// zero value rather than throwing — because the store is an unvalidated blob
+/// and a payload that fails to parse must degrade, not brick launch.
 library;
 
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
+import 'package:brew_path/shared/storage/snapshot/term_miss.dart';
 import 'package:brew_path/shared/storage/snapshot/timestamped.dart';
 
 /// The Unix epoch, and the stamp an absent last-writer-wins field reads as.
@@ -72,6 +72,21 @@ Map<String, dynamic> reactionMapToJson(
   Map<String, ChallengeReaction> reactions,
 ) => {
   for (final entry in reactions.entries) entry.key: entry.value.toJson(),
+};
+
+/// Reads a `term id → answer stamps` map.
+Map<String, TermMiss> termMissMapFromJson(Object? raw) {
+  if (raw is! Map) return const {};
+  return {
+    for (final entry in raw.entries)
+      if (entry.value is Map)
+        '${entry.key}': TermMiss.fromJson(objectOrEmpty(entry.value)),
+  };
+}
+
+/// Writes a `term id → answer stamps` map.
+Map<String, dynamic> termMissMapToJson(Map<String, TermMiss> misses) => {
+  for (final entry in misses.entries) entry.key: entry.value.toJson(),
 };
 
 /// Reads a `day → entries` map. JSON object keys are always strings,

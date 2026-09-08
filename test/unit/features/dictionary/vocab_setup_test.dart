@@ -21,31 +21,31 @@ void main() {
   });
 
   group('the deck actually in play', () {
-    test('a saved deck with enough on it is kept', () {
-      expect(
-        resolveVocabDeck(
-          chosen: VocabDeck.saved,
-          savedPoolSize: vocabMinimumPool,
-        ),
-        VocabDeck.saved,
-      );
+    test('a deck with enough on it is kept', () {
+      for (final deck in [VocabDeck.saved, VocabDeck.misses]) {
+        expect(
+          resolveVocabDeck(chosen: deck, chosenPoolSize: vocabMinimumPool),
+          deck,
+        );
+      }
     });
 
-    test('saved falls back to all when it drops below the minimum', () {
-      // Un-saving a term mid-session must not leave a drill the rules say
-      // cannot exist as the live selection.
-      expect(
-        resolveVocabDeck(
-          chosen: VocabDeck.saved,
-          savedPoolSize: vocabMinimumPool - 1,
-        ),
-        VocabDeck.all,
-      );
+    test('a deck below the minimum falls back to all', () {
+      // Un-saving a term mid-session — or answering the last missed one
+      // correctly — must not leave a drill the rules say cannot exist as the
+      // live selection.
+      for (final deck in [VocabDeck.saved, VocabDeck.misses]) {
+        expect(
+          resolveVocabDeck(chosen: deck, chosenPoolSize: vocabMinimumPool - 1),
+          VocabDeck.all,
+          reason: '$deck must not survive below the minimum',
+        );
+      }
     });
 
     test('all is never redirected, however empty the shelf is', () {
       expect(
-        resolveVocabDeck(chosen: VocabDeck.all, savedPoolSize: 0),
+        resolveVocabDeck(chosen: VocabDeck.all, chosenPoolSize: 0),
         VocabDeck.all,
       );
     });

@@ -1,4 +1,5 @@
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
+import 'package:brew_path/features/dictionary/domain/vocab_providers.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/profile/domain/daily_reminder.dart';
 import 'package:brew_path/features/profile/domain/learner_name.dart';
@@ -41,8 +42,7 @@ class SettingsController extends _$SettingsController {
   /// Toggles whether the learner wants a daily reminder.
   ///
   /// Switching it on with no time chosen takes the design's default slot, so
-  /// the row never reads on-with-no-time — the state its own value has no way
-  /// to show.
+  /// the row never reads on-with-no-time — a state its value cannot show.
   ///
   /// **Nothing is scheduled** by this, here or anywhere: see #443.
   Future<void> toggleNotifications() => _update((s) {
@@ -98,11 +98,10 @@ Future<String> appVersionShort(Ref ref) async =>
 
 /// Wipes the learner's progress and rebuilds the screens that showed it.
 ///
-/// *What* a reset clears belongs to [AccountWipe] — it publishes the tombstone
-/// the second device reads, and clears the stores this app still keeps
-/// alongside it. Only the invalidations are here, because only the widget layer
-/// knows what was on screen. Takes a [WidgetRef] (not a provider [Ref]) so the
-/// caller's lifetime owns the reads and invalidations across this async work.
+/// *What* a reset clears belongs to [AccountWipe]; only the invalidations are
+/// here, because only the widget layer knows what was on screen. Takes a
+/// [WidgetRef] (not a provider [Ref]) so the caller's lifetime owns the reads
+/// and invalidations across this async work.
 Future<void> resetProgress(WidgetRef ref) async {
   await ref.read(accountWipeProvider).resetProgress();
 
@@ -118,4 +117,8 @@ Future<void> resetProgress(WidgetRef ref) async {
   // badge keeps the wiped keys alive: it watches the key set continuously, so
   // nothing else ever asks the store again.
   ref.invalidate(savedKeysProvider);
+  // And the Vocab game's review deck, which the wipe emptied for the same
+  // reason: both are snapshot reads cached behind a provider, so clearing the
+  // store is only half of clearing what a screen shows.
+  ref.invalidate(vocabAnswersProvider);
 }
