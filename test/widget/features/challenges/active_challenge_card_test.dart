@@ -35,6 +35,19 @@ void main() {
     expect(find.text('Next brews · 5 min'), findsOneWidget);
   });
 
+  testWidgets('sets its title one step below a lesson title', (tester) async {
+    await pump(tester);
+
+    // The design's own number, not the rung's: read off `AppText.subtitle`
+    // this could only ever agree with itself, and a rung edit would pass.
+    expect(
+      tester.widget<Text>(find.text('Two cups, two ratios')).style?.fontSize,
+      22.0,
+      reason:
+          'one step below a lesson title, because the challenge is optional',
+    );
+  });
+
   testWidgets('reads as one sentence to a screen reader', (tester) async {
     final semantics = tester.ensureSemantics();
     await pump(tester);

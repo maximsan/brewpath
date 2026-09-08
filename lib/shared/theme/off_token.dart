@@ -288,6 +288,19 @@ abstract final class OffTokens {
     reason: "the design sets Skip to `padding: '12px 6px'`",
   );
 
+  /// How wide a fill slot stays whatever word lands in it, so a sentence does
+  /// not reflow around the answer.
+  static const OffToken<double> fillSlotMinWidth = OffToken(
+    74,
+    reason: 'the blank sets `min-width: 74px`',
+  );
+
+  /// The room inside a fill slot, between its word and its rule.
+  static const OffToken<EdgeInsets> fillSlotPadding = OffToken(
+    EdgeInsets.only(left: 6, right: 6, bottom: 1),
+    reason: 'the blank sets `padding: 0 6px 1px`',
+  );
+
   /// Every sanctioned exception, so the register can be tested as a whole.
   static const register = <OffToken<Object>>[
     rewardedAdCanvas,
@@ -328,5 +341,7 @@ abstract final class OffTokens {
     tourStepDotSize,
     tourAdvancePadding,
     tourSkipPadding,
+    fillSlotMinWidth,
+    fillSlotPadding,
   ];
 }

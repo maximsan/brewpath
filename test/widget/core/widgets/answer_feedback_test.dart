@@ -138,7 +138,7 @@ void main() {
       final roasty = tester.widget<Roasty>(find.byType(Roasty));
       expect(roasty.state, RoastyState.card);
       // The design draws him smaller here than on a graded card.
-      expect(roasty.size, lessThan(VerdictPlacement.card.mascot));
+      expect(roasty.size, lessThan(VerdictPlacement.card.mascot!));
     });
 
     testWidgets('sets the hold at the body step, as the design does', (

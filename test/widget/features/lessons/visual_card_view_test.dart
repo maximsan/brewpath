@@ -9,20 +9,18 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../../support/find_mark.dart';
 import '../../../support/widget_harness.dart';
 
-/// The anatomy card, the only authored card that sets either flag — and it
-/// sets both.
+/// The anatomy card, the one authored card that lifts its caption.
 const _anatomy =
     ContentCard.visual(
           label: 'VISUAL GUIDE',
           title: 'Six layers, outside in',
           subject: 'anatomy',
           caption: 'The seed you brew is the last of six.',
-          mergeHeader: true,
           captionTop: true,
         )
         as VisualCard;
 
-/// A card with neither flag, as nine of the ten authored ones are.
+/// A card that leaves its caption under the drawing, as most authored ones do.
 const _roast =
     ContentCard.visual(
           label: 'VISUAL GUIDE',
@@ -68,27 +66,22 @@ void main() {
     );
   });
 
-  testWidgets('a card with no flags names the guide above the drawing', (
+  testWidgets('the framed block is the drawing and nothing else', (
     tester,
   ) async {
     await pumpWithProviders(tester, wrap(_roast));
     await settleLoaders(tester);
 
-    // The block's own header, read from the bank — not the card's title.
-    expect(find.text('Roast Levels'), findsOneWidget);
-  });
-
-  testWidgets('mergeHeader drops the block header the card already says', (
-    tester,
-  ) async {
-    await pumpWithProviders(tester, wrap(_anatomy));
-    await settleLoaders(tester);
-
-    expect(find.text('Six layers, outside in'), findsOneWidget);
+    expect(find.text('Light to dark'), findsOneWidget);
     expect(
-      find.text('Cherry Anatomy'),
+      find.text('Roast Levels'),
       findsNothing,
-      reason: 'the flag exists so the card does not say it twice',
+      reason: 'the card states the kind and title above the frame already',
+    );
+    expect(
+      find.text('VISUAL GUIDE'),
+      findsOneWidget,
+      reason: 'the kind is said once, by the card, not again inside the frame',
     );
   });
 

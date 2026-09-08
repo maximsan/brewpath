@@ -13,16 +13,12 @@ import 'package:flutter/material.dart';
 /// drifts, which is the same failure one verdict block exists to prevent.
 const String notQuiteVerdict = 'Not quite';
 
-/// How the surface stands, and everything that follows from it.
-///
-/// One enum rather than a `bool` and a colour and a mascot state passed
-/// separately: those three always move together, and it was passing them
-/// separately that let five copies drift — one reached for `mood.warn` where
-/// the rest used `mood.berry`, and nothing could tell that was a mistake.
-///
-/// Three standings, not two, because the design has three: its block reads
-/// `graded = true | false | null`, and the null branch is the predict card's
-/// held guess.
+/// How the surface stands, and everything that follows from it. One enum
+/// rather than a bool, a colour and a mascot state passed separately: those
+/// move together, and passing them loose is what let five copies drift — one
+/// reached for `mood.warn` where the rest used `mood.berry`. Three standings,
+/// because the design's block reads `graded = true | false | null`, and the
+/// null branch is a guess it holds rather than marks.
 enum Verdict {
   /// The learner got it. Sage, and Roasty pleased.
   right(RoastyState.correct),
@@ -78,9 +74,21 @@ enum VerdictPlacement {
   /// Smaller than a graded card's mascot and set at the body step: the block
   /// is repeating the learner's own guess back to them, which reads as prose
   /// rather than as a mark.
-  heldGuess(mascot: _mascotOnHold, speaksInBody: true);
+  heldGuess(mascot: _mascotOnHold, speaksInBody: true),
 
-  const VerdictPlacement({required this.mascot, required this.speaksInBody});
+  /// The recall card's payoff — the design's `art={false} borderTop`.
+  ///
+  /// The one standing with no mascot. It is a reply to a guess made minutes
+  /// ago rather than a verdict on the answer just given, and Roasty has
+  /// already spoken above it; a second face would read as a second marking.
+  /// The rule off the top is what separates the two.
+  openingGuess(mascot: null, speaksInBody: true, rulesOff: true);
+
+  const VerdictPlacement({
+    required this.mascot,
+    required this.speaksInBody,
+    this.rulesOff = false,
+  });
 
   /// The design's mascot size on a graded card, holding a guess, and inside a
   /// term entry.
@@ -88,8 +96,19 @@ enum VerdictPlacement {
   static const double _mascotOnHold = 64;
   static const double _mascotInReference = 48;
 
-  /// How large Roasty is drawn here.
-  final double mascot;
+  /// How large Roasty is drawn here, or null where the block draws no mascot.
+  final double? mascot;
+
+  /// Whether a rule sits above the block, separating it from what it follows.
+  final bool rulesOff;
+
+  /// Whether the verdict announces itself on arrival.
+  ///
+  /// True everywhere but the payoff, which mounts on the same commit as the
+  /// graded verdict above it: two live regions firing together interrupt each
+  /// other, and the one that says how the card went is the one worth hearing.
+  /// The payoff is read in its place, like the rest of the card.
+  bool get announces => this != VerdictPlacement.openingGuess;
 
   /// Whether the explanation takes the body step rather than support.
   final bool speaksInBody;
@@ -109,29 +128,11 @@ enum VerdictPlacement {
       : AppText.support(mood: mood);
 }
 
-/// The block that closes every graded surface in the product — and holds the
-/// one guess that is never graded.
-///
-/// The design's `AnswerFeedback`: the mascot, then a mono verdict line and the
-/// explanation under it. **One component, and the
-/// design source says why** — nine hand-rolled copies of it once drifted apart
-/// in the prototype, and the five this replaced in `lib/` had already started
-/// to, on type step (`labelSmall` against `titleSmall`) and on wrong-state
-/// colour (`berry` against `warn`).
-///
-/// **The verdict is a live region.** It arrives on commit with no focus change
-/// to bring a reader to it, so the per-option marks say what each choice was
-/// and only this says how the card went. Without it a learner using a screen
-/// reader hears every mark and never the outcome — which bites hardest where
-/// right and wrong are separated by colour and a word.
-///
-/// Reduced motion needs nothing here: [Roasty] holds a single frame when
-/// `MediaQuery.disableAnimations` is set.
-///
-/// It sits in `core/` while reaching into `features/companion`, which nothing
-/// else here does. The mascot is half of what the design's block *is*, so the
-/// alternative is a shared widget that cannot draw it — or moving the whole
-/// companion out of `features/` to spare one import.
+/// The block that closes every graded surface — and holds the one guess that is
+/// never graded: a mascot, a mono verdict line, the explanation under it. One
+/// component, because nine hand-rolled copies drifted apart in the design. The
+/// verdict is a **live region**: it arrives on commit with no focus change, so
+/// without it a screen reader hears every mark and never the outcome.
 class AnswerFeedback extends StatelessWidget {
   /// Creates an [AnswerFeedback].
   const AnswerFeedback({
@@ -143,13 +144,11 @@ class AnswerFeedback extends StatelessWidget {
     super.key,
   });
 
-  /// The line itself — *All correct*, *Clean board*, *Not quite*.
-  ///
-  /// **Written in sentence case and rendered uppercase**, because the case
-  /// is the design's treatment of the line rather than part of what it says.
-  /// Assistive technology is given the string as written, for the same
-  /// reason `SmallcapsLabel` does it — a caller that pre-shouts its verdict
-  /// makes the screen reader shout it too.
+  /// The line itself — *All correct*, *Clean board*, *Not quite*. Written in
+  /// sentence case and rendered uppercase, because the case is the design's
+  /// treatment of the line rather than part of what it says; assistive
+  /// technology is given the string as written, so a caller that pre-shouts its
+  /// verdict does not make the screen reader shout it too.
   final String verdict;
 
   /// How it stands — graded either way, or held.
@@ -168,18 +167,21 @@ class AnswerFeedback extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
+    final mascot = placement.mascot;
 
-    return Row(
+    final block = Row(
       children: [
-        Roasty(state: outcome.mascotState, size: placement.mascot),
-        const SizedBox(width: AppSpacing.base),
+        if (mascot != null) ...[
+          Roasty(state: outcome.mascotState, size: mascot),
+          const SizedBox(width: AppSpacing.base),
+        ],
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
               Semantics(
-                liveRegion: true,
+                liveRegion: placement.announces,
                 label: verdict,
                 excludeSemantics: true,
                 child: Text(
@@ -202,6 +204,16 @@ class AnswerFeedback extends StatelessWidget {
           ),
         ),
       ],
+    );
+
+    if (!placement.rulesOff) return block;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.only(top: AppSpacing.md),
+      decoration: BoxDecoration(
+        border: Border(top: BorderSide(color: mood.rule)),
+      ),
+      child: block,
     );
   }
 }

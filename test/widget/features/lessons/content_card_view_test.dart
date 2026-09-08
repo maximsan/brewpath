@@ -2,7 +2,10 @@ import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/core/widgets/dashed_rounded_border.dart';
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
+import 'package:brew_path/features/lessons/domain/card_seed.dart';
+import 'package:brew_path/features/lessons/domain/held_guess.dart';
 import 'package:brew_path/features/lessons/presentation/cards/content_card_view.dart';
+import 'package:brew_path/features/lessons/presentation/cards/recall_payoff.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:flutter/material.dart';
@@ -161,20 +164,25 @@ const _flavor = ContentCard.flavor(
   explanation: 'That mouth-watering snap is acidity — most often citrus.',
 );
 
-Widget _host(ContentCard card, _Signals signals, {int nonce = 1}) =>
-    MaterialApp(
-      home: Scaffold(
-        body: SingleChildScrollView(
-          child: contentCardView(
-            card,
-            nonce: nonce,
-            cardIndex: 0,
-            onSolved: () => signals.solved++,
-            onContinue: () => signals.advanced++,
-          ),
-        ),
+Widget _host(
+  ContentCard card,
+  _Signals signals, {
+  int nonce = 1,
+  HeldGuess? prediction,
+  ValueChanged<HeldGuess>? onGuess,
+}) => MaterialApp(
+  home: Scaffold(
+    body: SingleChildScrollView(
+      child: contentCardView(
+        card,
+        seed: cardSeed(nonce: nonce, cardIndex: 0),
+        onSolved: () => signals.solved++,
+        onContinue: () => signals.advanced++,
+        guess: GuessLoop(held: prediction, onGuess: onGuess),
       ),
-    );
+    ),
+  ),
+);
 
 Future<void> _tapText(WidgetTester tester, String text) async {
   await tester.tap(find.text(text));
@@ -647,6 +655,66 @@ void main() {
 
       expect(signals.solved, 1);
       expect(find.text('Coffee is fruit.'), findsOneWidget);
+    });
+
+    testWidgets('recall pays off the guess its lesson opened on', (
+      tester,
+    ) async {
+      final signals = _Signals();
+      await tester.pumpWidget(
+        _host(
+          _recall,
+          signals,
+          prediction: const HeldGuess(pick: 'A dried leaf', answer: 'A seed'),
+        ),
+      );
+
+      expect(
+        find.byType(RecallPayoff),
+        findsNothing,
+        reason: 'the payoff answers the answer, so it waits for one',
+      );
+
+      await _tapText(tester, 'The seed of a cherry');
+
+      expect(find.byType(RecallPayoff), findsOneWidget);
+      expect(find.text(openingGuessLabel.toUpperCase()), findsOneWidget);
+    });
+
+    testWidgets('recall says nothing about a guess that was never made', (
+      tester,
+    ) async {
+      final signals = _Signals();
+      await tester.pumpWidget(_host(_recall, signals));
+
+      await _tapText(tester, 'The seed of a cherry');
+
+      expect(
+        find.byType(RecallPayoff),
+        findsNothing,
+        reason: 'a deep link or a replay can reach recall with an empty hand',
+      );
+    });
+
+    testWidgets('predict hands its guess out, and hands out a changed one', (
+      tester,
+    ) async {
+      final taken = <HeldGuess>[];
+      await tester.pumpWidget(
+        _host(_predict, _Signals(), onGuess: taken.add),
+      );
+
+      await _tapTextWhileAnimating(tester, 'Skin');
+      await _tapTextWhileAnimating(tester, 'Seed');
+
+      expect(
+        taken,
+        const [
+          HeldGuess(pick: 'Skin', answer: 'Seed'),
+          HeldGuess(pick: 'Seed', answer: 'Seed'),
+        ],
+        reason: 'the guess stays changeable, so the last one is what counts',
+      );
     });
 
     testWidgets('decision reads its wrong answer its own way', (tester) async {
@@ -1258,8 +1326,7 @@ void main() {
         expect(
           () => contentCardView(
             entry.value,
-            nonce: 1,
-            cardIndex: 0,
+            seed: cardSeed(nonce: 1, cardIndex: 0),
             onSolved: () {},
             onContinue: () {},
           ),

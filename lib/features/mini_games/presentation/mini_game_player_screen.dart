@@ -9,6 +9,7 @@ import 'package:brew_path/core/widgets/drill_results_view.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/roast_meter.dart';
+import 'package:brew_path/features/lessons/domain/card_seed.dart';
 import 'package:brew_path/features/lessons/presentation/cards/content_card_view.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_completion.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_providers.dart';
@@ -21,15 +22,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// Runs one mini-game: its rounds in this run's order, then the results.
-///
-/// The run holds a single nonce, minted when it begins and re-minted by Play
-/// again, which decides both the round order and each round's choice order.
-/// Nothing about the run is persisted.
-///
-/// Results are a state of this screen rather than a route of their own: the
-/// score never outlives the run, so routing to it would mean handing a number
-/// to the router only to hand it straight back.
+/// Runs one mini-game: its rounds in this run's order, then the results. The
+/// run holds a single nonce, minted when it begins and re-minted by Play again,
+/// which decides both the round order and each round's choice order; nothing
+/// about the run is persisted. Results are a state of this screen rather than a
+/// route, because the score never outlives the run.
 class MiniGamePlayerScreen extends ConsumerStatefulWidget {
   /// Creates a [MiniGamePlayerScreen].
   const MiniGamePlayerScreen({required this.formatId, super.key});
@@ -167,8 +164,7 @@ class _MiniGamePlayerScreenState extends ConsumerState<MiniGamePlayerScreen> {
 
     final card = contentCardView(
       played[_index],
-      nonce: _nonce,
-      cardIndex: _index,
+      seed: cardSeed(nonce: _nonce, cardIndex: _index),
       onSolved: _onSolved,
       onContinue: _onContinue,
     );
