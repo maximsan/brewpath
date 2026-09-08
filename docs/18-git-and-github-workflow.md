@@ -143,17 +143,11 @@ GitHub fills it into the web form on its own; `gh pr create --body-file` does
 not, so start the body file from a copy of it. Its first lines say which
 sections may go.
 
-**Screenshots for a UI change.** `gh` cannot upload an image, so capture the
-pair on the simulator and drag the files into the body on github.com, which
-uploads them and writes the links:
-
-```bash
-xcrun simctl io booted screenshot ~/Desktop/before.png   # on main
-xcrun simctl io booted screenshot ~/Desktop/after.png    # on the branch
-```
-
-An agent without a browser names the two paths under the _Before / after_
-heading and leaves the drag to the person.
+**Screenshots for a UI change.** `/screenshot <screen>` drives the app to the
+screen on the simulator and captures it; run it on `main` and on the branch
+for the pair. `gh` cannot upload an image, so drag the two files into the body
+on github.com, which uploads them and writes the links. An agent names the two
+file paths under the _Before / after_ heading and leaves the drag to the person.
 
 ```bash
 gh pr view 42 --repo maximsan/brewpath \
