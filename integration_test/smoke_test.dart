@@ -1,35 +1,24 @@
+import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/widgets/roast_meter.dart';
+import 'package:brew_path/features/cards/presentation/card_grid_item_widget.dart';
+import 'package:brew_path/features/lessons/domain/lesson_completion_actions.dart';
+import 'package:brew_path/features/lessons/presentation/lesson_screen.dart';
+import 'package:brew_path/features/lessons/presentation/reward_points_line.dart';
 import 'package:brew_path/features/onboarding/presentation/loading/loading_screen.dart';
+import 'package:brew_path/features/profile/presentation/widgets/profile_progress_line.dart';
 import 'package:brew_path/features/tour/domain/tour_copy.dart';
 import 'package:brew_path/main.dart' as app;
+import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import '../test/support/find_mark.dart';
 
-/// The one thing that boots the real app.
-///
-/// Every other test in this repo runs against in-memory Drift, a cleared asset
-/// bundle, and an onboarding flag seeded to `true`. Three failures are
-/// invisible to all of them and visible only here: a migration that fails
-/// against a real on-disk database, an asset the pubspec does not actually
-/// bundle, and a plugin that is not registered on the platform. The `iOS build`
-/// job proves the app compiles, never that it runs. Onboarding, in particular,
-/// has no other coverage at all — the widget harness seeds past it.
-///
-/// **Every step asserts.** This suite rotted for months because three of its
-/// steps failed silently: a skip guarded by an `if` that no-opped when its copy
-/// changed, a landmark (`BREWPATH`) that two different screens render so it
-/// passed on the wrong one, and taps dispatched at a page still sliding in from
-/// off-screen. Nothing here may continue when a step did not happen, and a
-/// failure names the screen it could not reach.
-///
-/// Two tests, sharing one app install and run in order: the first completes
-/// onboarding, the second relaunches to prove it persisted to real storage and
-/// then opens authored content. **Two launches, not three** — each `app.main()`
-/// opens another database over the same file, and drift is explicit that
-/// concurrent instances race.
+// The only suite that boots the real app: why it exists, why every step must
+// assert, and what a relaunch has to tear down first — docs/12-testing.md,
+// "The suite, by directory".
+
 /// How long each real-time pump waits before looking again.
 const Duration _pumpInterval = Duration(milliseconds: 40);
 
@@ -50,17 +39,34 @@ String _visibleText(WidgetTester tester) {
 /// The name the walk types at onboarding and expects to survive a relaunch.
 const _name = 'Maya';
 
+/// The lesson the walk plays to completion. It and the two values below are
+/// written out rather than read back off the bundle: a walk that asks the app
+/// what it is owed cannot notice the app owing nothing.
+const _lessonId = 'm1l1';
+
+/// What finishing [_lessonId] once pays.
+const _lessonPoints = 10;
+
+/// The collectible [_lessonId] hands over.
+const _lessonCardId = 'c1';
+
+/// How many answers one card can take before the walk gives up on it. A
+/// concept card spends one per blank; nothing in the course spends this many.
+const _answersPerCard = 8;
+
+/// Longer than the usual wait: the completion screen holds a two-second beat
+/// before its report, and persists the run behind it.
+const _completionBudget = Duration(seconds: 45);
+
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  // When Xcode hosts this run (`xcodebuild test`, the way CI runs it), its
-  // accessibility client attaches to the app at the first frame it shows,
-  // and the framework then holds a SemanticsHandle of its own. A test in
-  // which that happened fails with "A SemanticsHandle was active at the end
-  // of the test", because the tester records the handle count when the test
-  // starts. So show a frame before any test starts, and give the client a
-  // moment to attach. Under `flutter test` nothing attaches and the wait
-  // simply runs out.
+  // Under `xcodebuild test`, the way CI runs it, Xcode's accessibility client
+  // attaches at the app's first frame and the framework then holds a
+  // SemanticsHandle the tester never counted — "A SemanticsHandle was active
+  // at the end of the test". So show a frame and let the client attach before
+  // any test starts; under `flutter test` nothing attaches and the wait simply
+  // runs out.
   setUpAll(() async {
     runApp(const SizedBox.shrink());
     final platform = WidgetsBinding.instance.platformDispatcher;
@@ -70,34 +76,21 @@ void main() {
     }
   });
 
-  /// Pumps in real time until [target] can be tapped — or is gone, when
-  /// [present] is false — and fails naming what never happened.
-  ///
-  /// Never `pumpAndSettle`: Roasty idles on an infinite animation, which that
-  /// waits on forever. It is what made this suite look like a ten-minute job
-  /// when the build takes thirty-five seconds. Real-time pumps also let
-  /// Drift's FFI and the asset bundle make progress, which a fake-async pump
-  /// on its own does not.
-  ///
-  /// **Hit-testable, not merely present.** A page sliding in exists in the
-  /// tree well before it is on screen, so waiting for existence hands back a
-  /// widget whose centre is off the right-hand edge and every tap misses it —
-  /// silently, as a warning rather than a failure.
-  ///
-  /// The [budget] is deliberately generous. A cold CI runner is several times
-  /// slower than a warm laptop, and the third launch in a process is the
-  /// slowest of all — an eight-second budget passed locally and failed on the
-  /// first real run. Nothing is lost by waiting: a genuine hang still fails
-  /// here in seconds rather than at the job's cap, which is the whole point of
-  /// bounding it per step.
+  /// Pumps in real time until [target] is hit-testable — or gone, when
+  /// [present] is false — and fails naming what never happened. A page sliding
+  /// in is in the tree before it is on screen, so waiting on mere existence
+  /// hands back a widget every tap misses; pass [tappable] false for one the
+  /// walk only reads. Never `pumpAndSettle`, and the [budget] is deliberately
+  /// generous; both reasons are in docs/12-testing.md.
   Future<void> pumpUntil(
     WidgetTester tester,
     Finder target, {
     required String describe,
     bool present = true,
+    bool tappable = true,
     Duration budget = const Duration(seconds: 30),
   }) async {
-    final ready = present ? target.hitTestable() : target;
+    final ready = present && tappable ? target.hitTestable() : target;
     final attempts = budget.inMilliseconds ~/ _pumpInterval.inMilliseconds;
     for (var attempt = 0; attempt < attempts; attempt++) {
       if (ready.evaluate().isNotEmpty == present) return;
@@ -128,19 +121,11 @@ void main() {
     await tester.pump();
   }
 
-  /// A [PrimaryButton]'s underlying button, **only while it is enabled**.
-  ///
-  /// Onboarding's Continue is dead until its controller accepts the answer, so
-  /// a walk that taps on the frame after choosing taps nothing at all — and
-  /// `tap` on a disabled button succeeds, which is the silent failure again.
-  ///
-  /// ⚠️ **The label is looked for anywhere under the button, never as its
-  /// direct child.** This read `child is Text` until the button grew an
-  /// optional trailing mark and wrapped its label in a `Row` — after which
-  /// every wait here timed out against a button that was on screen the whole
-  /// time, and the gate stayed red across five merges. What the walk needs is
-  /// *an enabled button that says this*; how the button lays its label out is
-  /// the button's business.
+  /// A button that says [label], only while it is enabled — onboarding's
+  /// Continue is dead until its controller accepts the answer, and `tap` on a
+  /// disabled button succeeds silently. The label is looked for anywhere under
+  /// the button, never as its direct child; docs/12-testing.md, "The smoke
+  /// walk's helpers", says what reading it as a direct child cost.
   Finder liveButton(String label) => find.ancestor(
     of: find.text(label),
     matching: find.byWidgetPredicate(
@@ -149,9 +134,91 @@ void main() {
     ),
   );
 
+  /// An option the card on screen will still take — every answer control a
+  /// lesson card draws is an `OutlinedButton`, and a latched one stops
+  /// accepting taps, so this empties as the card commits. Scoped to the
+  /// player, because the shell it opens over is still in the tree behind it.
+  Finder liveOption() => find.descendant(
+    of: find.byType(LessonScreen),
+    matching: find.byWidgetPredicate(
+      (widget) => widget is OutlinedButton && widget.onPressed != null,
+      description: 'an answerable option',
+    ),
+  );
+
+  /// Answers the card at [position] and moves on.
+  ///
+  /// How many answers that takes is the card's business — a concept card
+  /// wants one per blank — so the walk answers until Continue comes alive
+  /// rather than counting. *Which* option it picks is not the point: this
+  /// walk is about the run being recorded, not about scoring well.
+  Future<void> answerAndContinue(WidgetTester tester, int position) async {
+    final onward = liveButton(AppLabels.continueLabel);
+    for (var answer = 0; answer < _answersPerCard; answer++) {
+      if (onward.evaluate().isNotEmpty) break;
+      if (liveOption().evaluate().isEmpty) {
+        fail(
+          'card $position offers nothing to answer and no way on\n'
+          'on screen: ${_visibleText(tester)}',
+        );
+      }
+      final option = liveOption().first;
+      await tester.ensureVisible(option);
+      await tester.tap(option);
+      await tester.pump();
+    }
+    await tapWhenReady(
+      tester,
+      onward,
+      describe: 'Continue on card $position of the lesson',
+    );
+  }
+
+  /// The player's own position meter, scoped for [liveOption]'s reason: the
+  /// shell the lesson opens over is still in the tree, and other screens draw
+  /// a meter of their own.
+  Finder playerMeter() => find.descendant(
+    of: find.byType(LessonScreen),
+    matching: find.byType(RoastMeter),
+  );
+
+  /// Plays the open lesson from the card showing to its last, leaving the
+  /// caller on the completion screen. The card count comes off the meter, so
+  /// a lesson that grows a card is played whole rather than abandoned.
+  Future<void> playToCompletion(WidgetTester tester) async {
+    final total = tester.widget<RoastMeter>(playerMeter()).total;
+    for (var position = 1; position <= total; position++) {
+      await pumpUntil(
+        tester,
+        find.descendant(
+          of: find.byType(LessonScreen),
+          matching: find.byWidgetPredicate(
+            (widget) => widget is RoastMeter && widget.position == position,
+            description: 'RoastMeter on card $position',
+          ),
+        ),
+        describe: 'card $position of the lesson',
+      );
+      await answerAndContinue(tester, position);
+    }
+  }
+
+  /// Whether a previous test in this file has already launched the app.
+  var launched = false;
+
   /// Launches the app and skips the wake-up, leaving the caller on whatever
   /// the onboarding gate chose.
+  ///
+  /// A relaunch tears the previous app down first: the tree is unmounted and
+  /// its database closed, so the next `app.main()` opens the file rather than
+  /// racing a live handle over the same bytes, which drift warns can corrupt.
   Future<void> launch(WidgetTester tester) async {
+    if (launched) {
+      runApp(const SizedBox.shrink());
+      await tester.pump();
+      await AppDatabaseService.instance.close();
+    }
+    launched = true;
     app.main();
     await tester.pump();
     await pumpUntil(
@@ -220,7 +287,7 @@ void main() {
     );
     await pumpUntil(
       tester,
-      find.text("Today's lesson"),
+      find.text(AppLabels.continueLearning.toUpperCase()),
       describe: 'the Learn tab after onboarding',
     );
   });
@@ -228,14 +295,10 @@ void main() {
   testWidgets('a returning launch skips onboarding and opens real content', (
     tester,
   ) async {
-    // **One relaunch, and everything a second launch has to prove.**
-    //
-    // Each `app.main()` builds another `AppDatabase` over the same file, and
-    // drift says plainly what that costs: "race conditions will occur and might
-    // corrupt the database". Two launches are fine; a third is not — split
-    // across three tests this passed only when the simulator still held an
-    // onboarded install from an earlier run, and failed on every clean one.
-    // Merging the two is not a shortcut, it is the fix.
+    // Everything a returning launch has to prove, in one test rather than
+    // spread over several: each of these needs the launch above to have gone
+    // to disk, and splitting them made every one of them depend on the order
+    // the file happened to run in.
     await launch(tester);
 
     // Storage: the answers the previous test gave were written to an on-disk
@@ -243,7 +306,7 @@ void main() {
     // exercises that — every widget test seeds the flag in memory instead.
     await pumpUntil(
       tester,
-      find.text("Today's lesson"),
+      find.text(AppLabels.continueLearning.toUpperCase()),
       describe: 'the Learn tab on a returning launch',
     );
 
@@ -287,45 +350,108 @@ void main() {
     );
 
     // Content: authored material loads from the bundle as it ships, and the
-    // immersive flow opens over the shell.
-    //
-    // Deliberately stops at the first step. Playing a lesson through is five
-    // steps across three interaction kinds, and the widget suite already
-    // drives each of them properly — re-driving them here bought brittleness
-    // and nothing else. This used to answer one question and expect a
-    // five-step lesson to be finished.
-    // Opened by the card's own control, never by a lesson title. Hardcoding
-    // authored copy is what broke the walk in the first place, and it broke
-    // again here: this asked for "Where Coffee Comes From" while the course
-    // now opens on "What coffee actually is".
+    // immersive flow opens over the shell. Opened by the card's own control,
+    // never by a lesson title — hardcoding authored copy is what broke this
+    // walk twice. The lesson is then played whole, because the run has to be
+    // real for the launch after it to have anything to find.
     await tapWhenReady(
       tester,
-      find.widgetWithText(FilledButton, 'Start'),
+      find.widgetWithText(FilledButton, AppLabels.beginLesson),
       describe: "today's lesson card",
     );
 
-    // The meter on card one is the proof the bundle loaded: its `total` is the
-    // lesson's own card count, so it cannot be mounted without real authored
-    // content behind it.
-    //
-    // Asserted on the **widget and its numbers**, not on the string it draws.
-    // This step used to wait for `Step 1 of`, which the player stopped drawing
-    // when the counter became `RoastMeter`'s `01 / 08` — the assertion went
-    // stale, and because this job runs on push only, `main` went red with no
-    // PR to catch it ([#437](https://github.com/maximsan/brewpath/issues/437)).
-    // Numbers cannot rot the way a format can.
+    // The meter on card one proves the bundle loaded: its `total` is the
+    // lesson's own card count. Asserted on the widget and its numbers, never
+    // on the string it draws — this waited for `Step 1 of` until the counter
+    // became `01 / 08`, and since the job runs on push only, `main` went red
+    // with no PR to catch it (#437). Numbers cannot rot the way a format can.
     await pumpUntil(
       tester,
-      find.byWidgetPredicate(
-        (widget) => widget is RoastMeter && widget.position == 1,
-        description: 'RoastMeter on card one',
+      find.descendant(
+        of: find.byType(LessonScreen),
+        matching: find.byWidgetPredicate(
+          (widget) => widget is RoastMeter && widget.position == 1,
+          description: 'RoastMeter on card one',
+        ),
       ),
       describe: "today's lesson opening on its first card",
     );
     expect(
-      tester.widget<RoastMeter>(find.byType(RoastMeter)).total,
+      tester.widget<RoastMeter>(playerMeter()).total,
       greaterThan(1),
       reason: 'the card count must come from the authored lesson, not a stub',
+    );
+
+    // Which lesson a fresh install queues, named rather than assumed: the
+    // launch below asserts what finishing *this* one is worth, and a walk that
+    // played whatever came up could not.
+    expect(
+      tester.widget<LessonScreen>(find.byType(LessonScreen)).lessonId,
+      _lessonId,
+    );
+
+    await playToCompletion(tester);
+
+    // The completion screen is built off the write that recorded the run, so
+    // reaching its footer means the run is in the database. The next lesson is
+    // the action here because m1l1 does not close its module.
+    await pumpUntil(
+      tester,
+      liveButton(nextLessonLabel),
+      describe: 'the completion screen offering the next lesson',
+      budget: _completionBudget,
+    );
+    expect(
+      tester.widget<RewardPointsLine>(find.byType(RewardPointsLine)).points,
+      _lessonPoints,
+    );
+  });
+
+  testWidgets('a relaunch still holds the lesson, its points and its card', (
+    tester,
+  ) async {
+    // The restart #116 is about. The run above went to an on-disk database,
+    // the app was torn down, and this is a fresh process reading the same
+    // file. Nothing here replays anything: every fact is read back.
+    await launch(tester);
+
+    await tapWhenReady(
+      tester,
+      findMark(AppIcon.leaf, active: false),
+      describe: 'the Profile tab',
+    );
+    // The line is built before its providers resolve, so the wait is on the
+    // numbers rather than on the widget — which would be satisfied by the
+    // zeroes it draws while it loads.
+    await pumpUntil(
+      tester,
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is ProfileProgressLine &&
+            widget.lessons == 1 &&
+            widget.points == _lessonPoints,
+        description: 'one lesson and $_lessonPoints points on Profile',
+      ),
+      describe: 'the completion and its points surviving the relaunch',
+      tappable: false,
+    );
+
+    await tapWhenReady(
+      tester,
+      findMark(AppIcon.cards, active: false),
+      describe: 'the Cards tab',
+    );
+    await pumpUntil(
+      tester,
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CardGridItemWidget &&
+            widget.placed.item.card.id == _lessonCardId &&
+            widget.placed.item.isCollected,
+        description: 'the collectible $_lessonCardId, held',
+      ),
+      describe: 'the card the lesson handed over surviving the relaunch',
+      tappable: false,
     );
   });
 }

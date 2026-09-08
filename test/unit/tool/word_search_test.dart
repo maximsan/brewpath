@@ -3,15 +3,12 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
-/// The word-boundary contract behind the term check, exercised directly.
-///
-/// The seeded-fixture tests prove the check *fires*; these prove it draws the
-/// boundary where the spec says, on the exact pairs it names. Both matter: a
-/// matcher that is too permissive lets a false pointer through, and a false
-/// pointer is what #20's stored Learned state cements permanently.
-///
-/// Driven through `node` like the extractor tests, because the matcher is the
-/// extractor's and re-implementing it here is the drift decision 4 forbids.
+/// The word-boundary contract behind the term check. The seeded-fixture tests
+/// prove the check fires; these prove it draws the boundary where the spec
+/// says, because a permissive matcher lets through a false pointer, which is
+/// what #20's stored Learned state cements permanently. Driven through `node`:
+/// the matcher is the extractor's, and re-implementing it here is the drift
+/// decision 4 forbids.
 const _module = 'tool/extract_content/validate/mentions.js';
 
 bool _mentions(String haystack, String needle) {

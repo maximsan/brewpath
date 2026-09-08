@@ -3,9 +3,9 @@ import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The shipped bank against the renderers that must play it. A format in
-/// `playableMiniGameIds` whose rounds this build cannot render would pass
-/// every other test and fail in a learner's hands.
+// The shipped bank against the renderers that must play it: a format in
+// `playableMiniGameIds` whose rounds this build cannot render would pass every
+// other test and fail in a learner's hands.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 

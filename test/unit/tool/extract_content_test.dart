@@ -42,19 +42,16 @@ const _expectedBanks = [
   'grove_lights.json',
 ];
 
-/// The entry whose rounds live in `bean-anatomy.jsx` behind a `window` getter —
+/// The entry whose rounds live in a second source behind a `window` getter —
 /// the one game that comes back silently empty unless the extractor assembles
 /// the cross-file dependency before evaluating.
 const _bagpickFormatId = 'g-bagpick';
 
-/// The seven mini-games that shipped before the catalog grew.
-///
-/// **Frozen ids, not a count.** ADR-0005 grows the catalog to roughly a dozen
-/// games and keeps these seven, because they are persisted in stored day-sets
-/// and cannot be renumbered. Asserting a size instead would fail the next time
-/// a game is authored (#162) while proving nothing about the ids that matter —
-/// the mistake this repo has already made with the points ceiling and the
-/// collectible count.
+/// The seven mini-games that shipped before the catalog grew — frozen ids, not
+/// a count. ADR-0005 grows the catalog and keeps these seven, which are
+/// persisted in stored day-sets and cannot be renumbered. Asserting a size
+/// would fail the next time a game is authored (#162) while proving nothing
+/// about the ids that matter.
 const _frozenGameIds = <String>[
   'g-match',
   'g-flavor',
@@ -177,12 +174,9 @@ void main() {
 
   // The version is written in JavaScript and read in Dart, which cannot share a
   // constant, so bumping one side alone has to fail here rather than on a
-  // learner's device.
-  //
-  // Strictly this is implied by the two tests above — byte-identical committed
-  // output, and a fresh run stamped with the Dart constant. It is kept for what
-  // it buys on failure: it needs no `node`, and it names the disagreement
-  // instead of reporting a diff in a 233KB file.
+  // learner's device. Implied by the two tests above, and kept for what it buys
+  // on failure: it needs no `node`, and it names the disagreement instead of
+  // reporting a diff in a 233KB file.
   test('the committed banks carry the version this build reads', () {
     for (final bank in _expectedBanks) {
       expect(
@@ -665,7 +659,7 @@ void main() {
 
     test('a second card for one subject is refused', () {
       final source = seededSource();
-      // The registry entry, not the lesson card — `data.jsx` carries both, and
+      // The registry entry, not the lesson card — the bank carries both, and
       // the shorter string finds the lesson's visual first.
       seedGuide(
         source,
@@ -692,13 +686,10 @@ void main() {
       expectRefusal(source, naming: ['g-roast', 'blank']);
     });
 
-    /// The two data sets that reached no bank for a release.
-    ///
-    /// Both were words all along — the cherry's layers in a file the guide
-    /// join never opened, the servings in a field it never named. Neither
-    /// broke anything: a field nothing reads resolves to nothing and fails no
-    /// check, which is why these assert the content is *present*, not merely
-    /// that the run succeeds.
+    // Two data sets reached no bank for a release: the cherry's layers in a
+    // file the guide join never opened, the servings in a field it never named.
+    // A field nothing reads resolves to nothing and fails no check, so these
+    // assert the content is present, not merely that the run succeeds.
     group('the cross-section and the servings table', () {
       void seedLayers(String source, String from, String to) =>
           seedCorruption(source, 'bean-anatomy.jsx', from, to);
@@ -810,8 +801,8 @@ void main() {
     });
   });
 
-  /// The checks #100 adds, one seeded violation each — so a failure names
-  /// the rule that broke rather than "the content is wrong somewhere".
+  // The checks #100 adds, one seeded violation each, so a failure names the
+  // rule that broke rather than "the content is wrong somewhere".
   group('the content rules', () {
     void seedCourse(String source, String from, String to) =>
         seedCorruption(source, 'data.jsx', from, to);

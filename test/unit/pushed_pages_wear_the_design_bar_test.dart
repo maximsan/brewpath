@@ -2,21 +2,16 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../support/dart_sources.dart';
 
-/// A page opened from a tab wears the design's bar, not Material's.
-///
-/// Fifteen screens each answered the question their own way, which is how the
-/// app came to have fifteen stock `AppBar`s where the design has one bar
-/// composed twice (#513). The sweep is a one-off; this is what keeps it swept
-/// — a new screen that reaches for `AppBar` fails here rather than being
-/// noticed a year later.
+// A page opened from a tab wears the design's bar, not Material's. Fifteen
+// screens each answered that their own way, which is how the app came to have
+// fifteen stock `AppBar`s where the design has one bar composed twice (#513).
+// The sweep is a one-off; this keeps it swept.
 void main() {
-  /// The screens still allowed to draw one, and why.
-  ///
-  /// All six are full-screen flows rather than pages opened from a tab, so
-  /// they want the design's *floating* bar rather than its back bar — a
-  /// different component and a different ticket (#525). They are listed rather
-  /// than pattern-matched so converting one fails this test, which is what
-  /// stops the list going stale after the ticket lands.
+  /// The screens still allowed to draw one, and why. All six are full-screen
+  /// flows rather than pages opened from a tab, so they want the design's
+  /// *floating* bar rather than its back bar — a different component and a
+  /// different ticket (#525). Listed rather than pattern-matched, so converting
+  /// one fails here and the list cannot go stale after that ticket lands.
   const sanctioned = <String, String>{
     'lib/features/lessons/presentation/lesson_screen.dart':
         'the lesson player: close, the bean and its count, save — #395 '

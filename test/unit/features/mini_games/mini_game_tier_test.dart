@@ -23,9 +23,9 @@ MiniGameFormat _game(String id, String moduleId) => MiniGameFormat(
   steps: const ['One'],
 );
 
-/// The tier line, asserted against the **real shipped catalog** rather than a
-/// fixture. A fixture would prove the function works; only the real bank
-/// proves the free tier is the one the ADRs say it is.
+// Asserted against the real shipped catalog rather than a fixture: a fixture
+// would prove the function works, where only the real bank proves the free tier
+// is the one the ADRs say it is.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -85,11 +85,10 @@ void main() {
       );
     });
 
-    /// ADR-0001, restated by ADR-0005 and recounted by ADR-0007. The record
-    /// says the invariant "is invisible from every surface that could break
-    /// it" — cutting a free game, swapping one, or re-picking the free lesson
-    /// list each removes the free learner's streak path silently. This is the
-    /// surface that notices.
+    // ADR-0001, restated by ADR-0005 and recounted by ADR-0007. The record says
+    // the invariant "is invisible from every surface that could break it" —
+    // cutting a free game, swapping one, or re-picking the free lesson list
+    // each removes the free learner's streak path silently.
     test(
       'ADR-0001: at least two free games, with distinct ids, so a free '
       'learner can reach a qualifying streak day on free content alone',

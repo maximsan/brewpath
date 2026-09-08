@@ -8,10 +8,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../../support/fake_onboarding_repository.dart';
 
-/// Covers the shared PickCard + Continue contract used by both onboarding pick
-/// screens. The view is exercised against a fake [onboardingRepositoryProvider]
-/// — no Drift, no platform channels — since these screens only need the draft
-/// state, not a real database.
+// The shared PickCard + Continue contract, against a fake onboarding
+// repository — no Drift, no platform channels — because these screens need the
+// draft state and not a real database.
 void main() {
   late FakeOnboardingRepository fake;
 

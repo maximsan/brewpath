@@ -44,6 +44,20 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Checks run before code leaves the machine.** `tool/git-hooks/` fails a
+  commit on an unformatted Dart file or an over-long comment, and a push on
+  anything the metrics, a guard test, the comment check or the changelog
+  check would fail in CI; `tool/install_hooks.sh` installs them,
+  and Claude Code runs it at session start. A comment block is capped at six
+  lines in every Dart file a branch touches, checked on the agent's write, on
+  commit, on push and by a new `comments` CI job, so older overruns drain as
+  files are touched. `public_member_api_docs` is off, so a doc
+  comment is written where a name does not say enough rather than on every
+  public member. Every `OffTokens` reason is now the design's own declaration,
+  checked against the prototype.
+- **Today's card carries the module's picture.** The five module illustrations
+  the design ships are bundled, and the day's card draws its module's under the
+  title, in both its open and its locked state.
 - **The Vocab game has a third deck: the terms you got wrong.** *Review
   misses* joins Saved terms and the glossary on the setup screen, with its own
   count. It opens once four terms are owed a review and reads *Miss a few
@@ -54,7 +68,47 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **Today's card is the design's.** A surface card with a rule around it: the
+  module as its eyebrow, the title, the picture, one line saying where the
+  lesson sits and how long it takes (`LESSON 1/7 · ~3 MIN`), and a full-width
+  *Begin lesson*. The orange hero, the points pill and *Start* are gone; Keep
+  Sharp alone keeps the accent, because it is a state of the day rather than a
+  lesson.
+- **The practice shelf is the design's.** *Lessons* and *Games* are collapsible
+  groups with their counts, closed on arrival; rows are flat with a replay
+  arrow, not boxed; games sit indented under their kind's heading; and the
+  Lessons group appears only once something is finished, so a new learner no
+  longer sees an empty section with a placeholder in it. The tab runs at the
+  design's gutter and spacing.
+- **The name step focuses its field on arrival**, as the design has it.
+- **The smoke walk proves a restart.** It plays `m1l1` to completion,
+  relaunches, and reads the completion, its points and its card back off
+  Profile and Cards — so a restart that loses what a learner earned fails CI.
+  A relaunch now tears the previous app down and closes its database first,
+  which is what makes a third launch safe.
+
 ### Fixed
+
+- The loading screen no longer flashes a sleeping Roasty and the tap cue for a
+  frame before the app opens: the advance is decided at the end of the wake-up,
+  not after the loop has been drawn back at its start.
+- Welcome's *tap anywhere to continue* is on screen again on a phone. It sat
+  below the fold because the page was sized as if it held two films.
+- Welcome's frame shows the film's first frame while the player starts, and
+  keeps it when the player cannot start at all — a simulator with no audio
+  device refuses the film — instead of an empty box. The failure's reason is
+  printed in debug builds.
+
+### Removed
+
+- **The old progress store is gone.** The three normalised tables the app
+  opened with — per-lesson completions, the module-XP ledger and collected
+  cards — and the points total on the settings row are dropped at schema v13,
+  along with their repositories and DTOs. The progress snapshot has been the
+  record since v6; what is left on the settings row is device-local state
+  only. Destructive by ruling: nothing has shipped, and no user migration is
+  owed. Device-local state crosses the step untouched, which a migration test
+  over a populated v12 database asserts.
 
 ---
 

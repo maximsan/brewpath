@@ -11,8 +11,8 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../../support/content_fixtures.dart';
 import '../../../support/widget_harness.dart';
 
-/// The lesson-complete offer as a reward-list row — and, more importantly,
-/// whether there is an offer at all.
+// The lesson-complete offer as a reward-list row, and — the part worth
+// guarding — whether there is an offer at all.
 void main() {
   setUp(useInMemoryDatabase);
 

@@ -7,17 +7,12 @@ import 'package:brew_path/shared/theme/overlay_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The blur half of the four overlays, read back out of the design.
-///
-/// The colours were transcribed once and the radii were not (#379), which was
-/// possible because the design states them in a sentence rather than in a
-/// declaration. So this reads the sentence: the Scrims-and-dims rule in
-/// `prototype/ds-content.js` names a radius per overlay *role*, and each role
-/// is mapped below to the token that plays it. A design change to any of the
-/// four numbers fails here rather than going unnoticed for another port.
-///
-/// The bundle's own CSS is checked too, where it has an overlay to check — the
-/// sheet backdrop is the only one of the four the prototype actually renders.
+// The colours were transcribed once and the radii were not (#379), which was
+// possible because the design states them in a sentence rather than a
+// declaration. So this reads the sentence: the Scrims-and-dims rule names a
+// radius per overlay role, and each role is mapped below to the token that
+// plays it. The bundle's own CSS is checked too, where it has an overlay to
+// check — the sheet backdrop is the only one the prototype renders.
 
 /// The blur radius each of the four overlays carries, by the role the design's
 /// ruling names it under.
@@ -27,7 +22,7 @@ Map<String, double> get _radiusByRole => {
   'media control': OverlayColors.scrim.blurRadius,
 };
 
-/// The design's ruling, as one line of `ds-content.js`.
+/// The design's ruling, as the one line that states it.
 ///
 /// Reading prose is the only way to read this rule: the design states the four
 /// radii in a sentence and nowhere else. If the sentence is reworded away, that

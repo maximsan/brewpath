@@ -8,7 +8,7 @@ import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// The glyph's drawn size in the index (`dictionary.jsx:423`).
+/// The glyph's drawn size in the index.
 const double _glyphSize = 22;
 
 /// Vertical room in a row, which the design sets outside the spacing scale's

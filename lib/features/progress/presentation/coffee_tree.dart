@@ -38,10 +38,9 @@ class CoffeeTree extends StatefulWidget {
   /// Square edge the frame renders at.
   final double size;
 
-  /// Whether the tree sways. When false — or when the platform asks for
-  /// reduced motion ([MediaQueryData.disableAnimations]) — it holds upright
-  /// and the controller stays idle. The design freezes the Profile hero this
-  /// way (`screens.jsx:2586`).
+  /// Whether the tree sways. When false — or when the platform asks for reduced
+  /// motion ([MediaQueryData.disableAnimations]) — it holds upright and the
+  /// controller stays idle. The design freezes the Profile hero this way.
   final bool animate;
 
   /// Hero-sized default, matching the design's preview block.

@@ -5,12 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// The design's single-line field: a `--surface` well inside a 1px hairline
-/// that takes `--accent` while focused, `border-radius: 12`, and nothing else
-/// — no floating label, no helper row, no counter, no underline.
-///
-/// Each of those is something Material's `InputDecoration` draws by default,
-/// so they are asserted absent rather than assumed: the whole reason this is
-/// not a decorated `TextField` is that they have to be switched off.
+/// that takes `--accent` while focused, `border-radius: 12`, and nothing else.
+/// The floating label, helper row, counter and underline are asserted absent
+/// rather than assumed — Material's `InputDecoration` draws each by default,
+/// and having to switch them off is why this is not a decorated `TextField`.
 BoxDecoration _well(WidgetTester tester) {
   final boxes = tester.widgetList<DecoratedBox>(
     find.descendant(

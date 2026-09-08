@@ -50,9 +50,10 @@ invalidation.
   migration step.
 - ☐ **A2 — Codegen + schema snapshot.** `dart run build_runner build`, then the
   drift schema `dump`/`generate` workflow documented in `README.md`.
-- ☐ **A3 — Repository.** `FavoriteCardRepository` mirroring `card_repository.dart`
-  (list IDs, insert-or-ignore toggle, delete-all); register it in
-  `repository_providers.dart`.
+- ☐ **A3 — Repository.** `FavoriteCardRepository` mirroring
+  `settings_repository.dart` (list IDs, insert-or-ignore toggle, delete-all);
+  register it in `repository_providers.dart`. The collected-card repository
+  this step used to point at went with the old store (#116).
 - ☐ **A4 — Back the controller with Drift.** Make `FavoriteCards.build()` load
   from the repo (now async → `Set<String>` becomes `Future`/`AsyncValue`), and
   `toggle` persist + refresh; add it to the Profile "Reset Progress" invalidation

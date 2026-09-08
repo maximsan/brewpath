@@ -33,9 +33,8 @@ const double _joinedGap = AppSpacing.lg - 2;
 /// Profile tab: the tree, the streak, what has been learned, and the doors on
 /// out of it.
 ///
-/// No preferences. Across the whole of the design's tab
-/// (`prototype/screens.jsx:2546-2808`) there is not one — they live in
-/// Settings, which the header gear opens.
+/// No preferences. Across the whole of the design's tab there is not one — they
+/// live in Settings, which the header gear opens.
 class ProfileScreen extends ConsumerWidget {
   /// Creates a [ProfileScreen].
   const ProfileScreen({super.key});
@@ -138,8 +137,8 @@ class ProfileScreen extends ConsumerWidget {
 /// The month the learner joined, closing the screen.
 ///
 /// Mono at the micro step, not [SmallcapsLabel]: the design sets this line in
-/// `ff-mono` at `--t-micro` (`screens.jsx:2798-2802`), where smallcaps is Plex
-/// Sans at the label step. The tracking is the same, the face and size are not.
+/// `ff-mono` at `--t-micro`, where smallcaps is Plex Sans at the label step.
+/// The tracking is the same, the face and size are not.
 class _JoinedLine extends StatelessWidget {
   const _JoinedLine({required this.joined});
 

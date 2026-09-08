@@ -7,19 +7,18 @@ import 'package:stts/stts.dart';
 /// separate from the app's, so speaking a term does not interrupt the Welcome
 /// film. Nothing leaves the device.
 ///
-/// Every call is guarded, as the design's own `speakTerm` is
-/// (`dictionary.jsx:10`): a host with no synthesizer registered — a simulator,
-/// a test, a platform we have not shipped to — answers with a thrown channel
-/// error, and a pronunciation that cannot play must never take a screen down
-/// with it.
+/// Every call is guarded, as the design's own `speakTerm` is: a host with no
+/// synthesizer registered — a simulator, a test, a platform we have not shipped
+/// to — answers with a thrown channel error, and a pronunciation that cannot
+/// play must never take a screen down with it.
 class SttsSpeechService implements SpeechService {
   /// Creates a [SttsSpeechService].
   SttsSpeechService([Tts? tts]) : _tts = tts ?? Tts();
 
   final Tts _tts;
 
-  /// The reading pace the design sets on its utterance (`dictionary.jsx:13`) —
-  /// a shade under natural, because these are unfamiliar words being taught.
+  /// The reading pace the design sets on its utterance — a shade under natural,
+  /// because these are unfamiliar words being taught.
   static const double _rate = 0.9;
 
   @override

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-/// The glass's radius and the handle's reach, from the design's own drawing
-/// (`dictionary.jsx:179`) at its 20-unit box.
+/// The glass's radius and the handle's reach, from the design's own drawing at
+/// its 20-unit box.
 const double _viewBox = 20;
 const double _circleRadius = 6;
 const double _circleCentre = 9;

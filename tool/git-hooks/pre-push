@@ -1,0 +1,29 @@
+#!/bin/sh
+# The repo's own rules, before the push: format, metrics, the guard tests, the
+# comment cap on changed files and the changelog check. Around half a minute.
+# `flutter analyze` and the full suite stay in CI, which runs them on every
+# push anyway. Skip all with `git push --no-verify`; skip only the
+# changelog check with NO_CHANGELOG=1. The two checks that compare against a
+# base use origin/main; a branch stacked on another sets BASE_REF to that one.
+# Installed by tool/install_hooks.sh.
+set -eu
+
+# Git feeds one line per ref on stdin: local ref, local sha, remote ref, remote
+# sha. An all-zero local sha is a branch deletion; nothing to check for those.
+pushing=$(grep -c -v -e '^$' -e ' 0000000000000000000000000000000000000000 ' || true)
+[ "$pushing" -gt 0 ] || exit 0
+
+cd "$(git rev-parse --show-toplevel)"
+# Git hands hooks GIT_DIR; the Flutter wrappers shell out to git for the SDK's
+# own version and would read this repository instead.
+unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE
+
+dart format --output=none --set-exit-if-changed lib test integration_test tool
+dart run dart_code_linter:metrics analyze lib --set-exit-on-violation-level=warning
+find test -name '*_guard_test.dart' -print0 | xargs -0 flutter test
+
+# Both compare against the base; main itself has already been through them.
+if [ "$(git rev-parse --abbrev-ref HEAD)" != main ]; then
+  dart tool/check_comments.dart --changed "${BASE_REF:-origin/main}"
+  [ "${NO_CHANGELOG:-0}" = 1 ] || tool/check_changelog.sh "${BASE_REF:-origin/main}"
+fi

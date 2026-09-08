@@ -7,13 +7,11 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../../support/progress_seed.dart';
 import '../../../support/widget_harness.dart';
 
-/// The learner's points total, asserted through the provider the screens read
-/// rather than through a helper — a total that agrees with a helper but
-/// disagrees with the Profile screen is the failure worth catching.
-///
-/// **Two rules and nothing else pays** (§5.1, #16): ten for a lesson's first
-/// completion, five for a challenge's. There is no counter behind any of this;
-/// the total is summed off the records each payout already leaves.
+// Asserted through the provider the screens read, never a helper: a total that
+// agrees with a helper and disagrees with Profile is the failure worth
+// catching. Two rules and nothing else pays (§5.1, #16) — ten for a lesson's
+// first completion, five for a challenge's — and no counter stands behind them:
+// the total is summed off the records each payout already leaves.
 void main() {
   // The total is summed off the course now, so these read the shipped banks.
   TestWidgetsFlutterBinding.ensureInitialized();

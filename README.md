@@ -27,13 +27,14 @@ Run all Flutter/Dart commands from the repo root.
 | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `flutter pub get`                           | Fetch/refresh dependencies (after editing `pubspec.yaml`).                                                                                                                          |
 | `dart run build_runner build`               | Regenerate code after changing a Freezed model, Riverpod provider, or Drift table. build_runner 2.15 auto-resolves conflicts — the old `--delete-conflicting-outputs` flag is gone. |
-| `dart format lib test integration_test`     | Format code. CI fails on unformatted files (`--set-exit-if-changed`).                                                                                                               |
+| `dart format lib test integration_test tool` | Format code. CI fails on unformatted files (`--set-exit-if-changed`).                                                                                                          |
 | `flutter analyze`                           | Static analysis / lints — keep clean before pushing.                                                                                                                                |
 | `flutter test`                              | Run the full test suite.                                                                                                                                                            |
 | `flutter test test/unit/<file>`             | Run a single unit test.                                                                                                                                                             |
 | `flutter test test/widget/<file>`           | Run a single widget test.                                                                                                                                                           |
 | `flutter run -d "iPhone 17"`                | Launch on the iOS simulator.                                                                                                                                                        |
 | `flutter build ios --release --no-codesign` | Release iOS build without signing (mirrors CI).                                                                                                                                     |
+| `tool/install_hooks.sh`                     | Install the git hooks, once per clone (Claude Code does it at session start). What they run: _Quality checks_ below.                                                                 |
 
 ### Tests
 
@@ -55,6 +56,40 @@ Troubleshooting:
   `tool/reset_ios_spm.sh` (see below).
 - `flutter test` crashing with `PathExistsException` on
   `ios/Flutter/ephemeral/.../Packages` → `rm -rf ios/Flutter/ephemeral`, then retry.
+
+## Quality checks
+
+The repo's own rules run at four moments, earliest first. `flutter analyze`,
+the full suite and the iOS build stay in CI, which runs them on every push.
+
+| When | What runs |
+| --- | --- |
+| Claude Code writes a Dart file | `dart format` on that file, then the comment cap on it (`.claude/settings.json`, `PostToolUse`); a failure goes straight back to the agent |
+| `git commit` | `dart format --set-exit-if-changed` and the comment cap on the staged Dart files (sub-second) |
+| `git push` | the format check, the `dart_code_linter` metrics, every `*_guard_test.dart`, the comment cap on every Dart file changed against the base, and `tool/check_changelog.sh` (about half a minute) |
+| CI, on a pull request | the same as push, split into jobs, plus `flutter analyze`, `flutter test` and the iOS build ([`docs/13-ci-cd.md`](docs/13-ci-cd.md)) |
+
+**The comment cap** is `tool/check_comments.dart`: no comment block over six
+lines in any Dart file the branch touches, and in a test file no doc comment
+on `main` or on a test body. There is no allow-list — a file
+you touch is a file you clean, so older overruns drain with ordinary work.
+Anything that needs more than six lines is documentation: put it in `docs/` or
+an ADR and leave one line pointing there. The rule itself is in
+[`CLAUDE.md`](CLAUDE.md) under _Code Conventions_.
+The changed-files form diffs against your local `origin/main`, so `git fetch`
+first. To see what is left across the whole tree:
+
+```bash
+find lib test integration_test -name '*.dart' | xargs dart tool/check_comments.dart
+```
+
+**Hooks** live in `tool/git-hooks/`; `tool/install_hooks.sh` links them into
+the repository's shared hooks directory, so every worktree runs them and a
+machine-wide `commit-msg` hook is left alone. Claude Code runs the installer at
+session start. Escapes: `git push --no-verify` skips the whole pre-push;
+`NO_CHANGELOG=1 git push` skips only the changelog check, for a PR that will
+carry the `no-changelog` label; a branch stacked on another names its base
+with `BASE_REF=origin/<branch>`, which is what CI compares against too.
 
 ## Run-time flags (`--dart-define`)
 
@@ -267,9 +302,11 @@ Drift schema snapshots (`drift_schemas/`) and generated test helpers
    is broken when it is the assertion that is stale. The existing ones are
    deliberately aimed at the current version for this reason.
 
-   Prefer removing a column by recreating the table (`TableMigration` with the
-   column omitted from the current definition), and cover it with a
-   data-integrity test that seeds the **other** columns and asserts they
-   survive — a recreate that copies the wrong set silently resets whatever it
-   missed.
+   Remove a column with `dropColumn`, by name, and a table with `deleteTable`,
+   which drops if-exists. Not `TableMigration`: a rebuild copies the table's
+   *current* definition and so breaks on the next column anyone adds
+   ([#273](https://github.com/maximsan/brewpath/issues/273)). Cover either with
+   a data-integrity test that seeds the state the step must **keep** and
+   asserts it survives — a drop that took the wrong thing with it resets
+   whatever it hit in silence.
 5. Commit the new snapshot + regenerated helpers with the schema change.

@@ -1,0 +1,19 @@
+#!/bin/sh
+# Fails the commit when a staged Dart file is unformatted or carries a comment
+# block over the cap. Sub-second. Installed by tool/install_hooks.sh.
+set -eu
+
+staged=$(git diff --cached --name-only --diff-filter=ACMR -- '*.dart')
+[ -n "$staged" ] || exit 0
+
+# Git hands hooks GIT_DIR; the Flutter wrappers shell out to git for the SDK's
+# own version and would read this repository instead.
+unset GIT_DIR GIT_WORK_TREE
+
+if ! printf '%s\n' "$staged" | xargs dart format --output=none --set-exit-if-changed; then
+  echo "pre-commit: run 'dart format' on the files above, stage them, commit again." >&2
+  exit 1
+fi
+if [ -f tool/check_comments.dart ]; then
+  printf '%s\n' "$staged" | xargs dart tool/check_comments.dart
+fi

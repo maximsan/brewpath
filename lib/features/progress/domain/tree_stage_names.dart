@@ -1,9 +1,8 @@
 /// What each of the tree's ten stages is called, and how far along it is.
 ///
 /// Pure, so both derivations are testable without a widget. The names are the
-/// design's `STAGE_NAMES` (`prototype/flavor-wheel.jsx:143`), transcribed in
-/// its order — they are the stage's identity, not decoration, and the screen
-/// titles itself with one.
+/// design's `STAGE_NAMES`, transcribed in its order — they are the stage's
+/// identity, not decoration, and the screen titles itself with one.
 library;
 
 import 'package:brew_path/features/progress/domain/tree_frames.dart';

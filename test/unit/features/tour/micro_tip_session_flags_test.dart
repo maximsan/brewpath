@@ -10,12 +10,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/progress_seed.dart';
 
-/// The two flags that remember an event rather than a state.
-///
-/// Both watch a set the app already keeps and arm on a *rise* in it, which is
-/// the whole difference between "you have just saved something" and "you have
-/// things saved". A learner who opens the app with a full shelf is owed no
-/// explanation of what saving does.
+// Two flags that remember an event rather than a state: both watch a set the
+// app already keeps and arm on a rise in it, which is the difference between
+// "you have just saved something" and "you have things saved". A learner who
+// opens the app with a full shelf is owed no explanation of what saving does.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 

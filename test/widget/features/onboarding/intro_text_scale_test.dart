@@ -6,15 +6,12 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/intro_router.dart';
 
-/// The intro screens must survive a large text scale on a small phone.
-///
-/// They are the first thing a learner sees, and a learner who needs 2x text is
-/// the one most likely to be met by a clipped screen with no way forward — the
-/// CTA and the tap cue both sit at the foot, which is what a `RenderFlex`
-/// overflow eats first.
-///
-/// An overflow is reported through `FlutterError.onError`, not by failing a
-/// finder, so it is captured explicitly here rather than hoped for.
+/// The overflows the intro screens report at [textScale]. A learner who needs
+/// 2x text is the one most likely to meet a clipped first screen with no way
+/// forward — the CTA and the tap cue both sit at the foot, which a `RenderFlex`
+/// overflow eats first. An overflow arrives through `FlutterError.onError`
+/// rather than by failing a finder, so it is captured here rather than hoped
+/// for.
 Future<List<String>> _overflowsAt(
   WidgetTester tester,
   double textScale,

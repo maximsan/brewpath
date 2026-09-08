@@ -10,8 +10,8 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../../support/find_mark.dart';
 import '../../../support/widget_harness.dart';
 
-/// The Coffee Tree's own screen: what it says, how it is reached, and the one
-/// motion it carries.
+// The Coffee Tree's own screen: what it says, how it is reached, and the one
+// motion it carries.
 void main() {
   setUp(useInMemoryDatabase);
 

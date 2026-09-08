@@ -10,8 +10,7 @@ import 'package:flutter/material.dart';
 ///
 /// A grid of times rather than a platform time picker, because the design
 /// offers a shortlist and its copy promises *"one quiet reminder a day"* —
-/// choosing 06:47 is not a thing the feature does
-/// (`prototype/settings.jsx:104`).
+/// choosing 06:47 is not a thing the feature does.
 ///
 /// It opens through `showAppSheet`, so it wears the app's one sheet dressing
 /// and the design's own title is the sheet's name.

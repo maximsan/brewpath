@@ -8,12 +8,9 @@ import 'package:brew_path/shared/theme/overlay_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// What a modal barrier actually renders — the half of an overlay that was
-/// missing (#379).
-///
-/// The tokens' own tests pin the radii against the design; these pin that the
-/// radius reaches the screen. A blur that exists only in the token is the same
-/// bug in a new place.
+// The tokens' own tests pin the radii against the design; these pin that the
+// radius reaches the screen. A blur that exists only in the token is #379 in a
+// new place.
 void main() {
   /// The filter of the barrier's backdrop, or null if nothing blurs.
   ///

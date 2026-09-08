@@ -1,5 +1,4 @@
 // Self-descriptive UI string constants — no per-member docs needed.
-// ignore_for_file: public_member_api_docs
 
 /// User-facing string constants.
 abstract class AppLabels {
@@ -42,6 +41,10 @@ abstract class AppLabels {
   // pick from a lesson at a glance.
   static const continueLearning = 'Continue learning';
   static const allCaughtUp = 'All caught up';
+
+  // The lead card's one action while the day's lesson is the learner's to
+  // open. The locked state's label lives with the other wall copy.
+  static const beginLesson = 'Begin lesson';
 
   // Practice is one section with two groups under it, which is how the design
   // names them: `PRACTICE`, then `Lessons` and `Games`.

@@ -37,9 +37,8 @@ const List<(Offset, Offset, Offset)> _hookCurves = [
 /// a definition goes in, a term comes out.
 ///
 /// Drawn rather than taken from the icon family, for the reason `SearchMark`
-/// is: the family is the design system's asset set, and this is not one of
-/// them — it is written inline in the prototype (`screens.jsx:1147`), where
-/// every practice row's mark is.
+/// is: the family is the design system's asset set, and this is not one of them
+/// — it is written inline in the prototype, where every practice row's mark is.
 ///
 /// The question mark is drawn in the accent while the bubble is not, which is
 /// the two-ink treatment every mark in that row shares.

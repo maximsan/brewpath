@@ -5,12 +5,11 @@ import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// Applying is the feature's only write. It rides the existing
-/// last-writer-wins field, so what matters is that it stamps the value the
-/// learner picked — and that it does nothing at all when nothing changed.
-///
-/// Driven through the real repository against an in-memory database, as every
-/// other snapshot test is: a fake here would only prove the fake works.
+// Applying is the feature's only write, and it rides the existing
+// last-writer-wins field: what matters is that it stamps the value the learner
+// picked and does nothing at all when nothing changed. Driven through the real
+// repository, as every other snapshot test is — a fake would prove the fake
+// works.
 void main() {
   late AppDatabase db;
   late SnapshotRepository snapshots;

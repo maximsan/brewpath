@@ -2,18 +2,12 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../support/dart_sources.dart';
 
-/// The app has two footers, and only two.
-///
-/// The design system states it outright for the sticky action bar: *"this and
-/// the tab bar are the app's only footers."* A rule like that is worth a guard
-/// rather than a reviewer's memory — the sheet primitive's own rule lasted
-/// exactly until the second sheet before it was broken, and this one has six
-/// screens queued up to test it (#382, #384, #230, #398 and the course ending).
-///
-/// **Deliberately crude**, like the sheet guard it copies: it matches the
-/// property name anywhere in the file, comments included. No source outside the
-/// shell has a reason to name a footer slot, and if one ever does, rewording it
-/// is the right fix.
+// The design system states it outright for the sticky action bar: "this and
+// the tab bar are the app's only footers." Worth a guard rather than a
+// reviewer's memory — the sheet primitive's rule lasted until the second sheet.
+// Deliberately crude, like the sheet guard it copies: it matches the property
+// name anywhere in the file, comments included, because no source outside the
+// shell has a reason to name a footer slot.
 void main() {
   /// The one file allowed to mount the tab bar: the shell itself.
   const shell = 'lib/app/app_shell.dart';

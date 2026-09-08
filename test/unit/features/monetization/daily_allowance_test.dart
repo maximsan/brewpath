@@ -2,9 +2,9 @@ import 'package:brew_path/features/monetization/domain/daily_allowance.dart';
 import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The cap is the **cardinality of today's entry set** (#65), so these assert
-/// against real entries rather than a count: what the record holds and what
-/// the rule reads must not be able to drift apart.
+// The cap is the cardinality of today's entry set (#65), so these assert
+// against real entries rather than a count: what the record holds and what the
+// rule reads must not be able to drift apart.
 void main() {
   var minted = 0;
   String entry(ActivityType type, [String subject = '']) => activityEntry(

@@ -2,9 +2,9 @@ import 'package:brew_path/features/monetization/domain/free_tier.dart';
 import 'package:brew_path/features/monetization/domain/lesson_access.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The one rule every surface asks. Path draws it, Today sells it and the
-/// router enforces it, so a disagreement between them would be three answers
-/// to one question — the failure ADR-0016 was written after.
+// One rule every surface asks: Path draws it, Today sells it and the router
+// enforces it, so a disagreement between them would be three answers to one
+// question — the failure ADR-0016 was written after.
 void main() {
   /// Read off the free set rather than written down: growing that list must
   /// change what these tests assert, not silently stop them asserting it.

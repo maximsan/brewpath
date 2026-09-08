@@ -2,30 +2,21 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/dart_sources.dart';
 
-/// Weight is not a number a call site passes.
-///
-/// `AppFace` pairs each family with the one weight the bundle carries for it —
-/// Fraunces 400, Plex Sans 400/500, Plex Mono 500. A `copyWith(fontWeight: …)`
-/// keeps the family and changes the number, which is the one combination that
-/// fails silently: Flutter synthesises the missing cut by smearing the
-/// letterforms instead of throwing. 53 sites once asked for w600/w700/w800
-/// across three families that ship none of them, and one asked Plex Mono for a
-/// 400 it has never had.
-///
-/// Whether each face's own weight is actually bundled is the sibling question,
-/// and `font_families_test.dart` asks it against `pubspec.yaml`. This one only
-/// asks who is allowed to name a weight at all.
+// `AppFace` pairs each family with the one weight the bundle carries for it. A
+// `copyWith(fontWeight: …)` keeps the family and changes the number, which is
+// the combination that fails silently: Flutter synthesises the missing cut by
+// smearing the letterforms rather than throwing. Whether a face's own weight is
+// bundled is the sibling question, asked against `pubspec.yaml` in
+// `font_families_test.dart`; this one asks who may name a weight at all.
 void main() {
   /// The one file allowed to name a weight: the face table itself.
   const faceTable = 'app_text.dart';
 
-  /// What counts as naming a weight.
-  ///
-  /// The constructor and the variable axis are here because the enum is not
-  /// the only door: `FontWeight(600)` and
-  /// `fontVariations: [FontVariation('wght', 600)]` reach the same synthesis
-  /// by another spelling. `FontWeight.lerp` is exempt — it interpolates two
-  /// weights it was handed rather than choosing one.
+  /// What counts as naming a weight. The constructor and the variable axis are
+  /// here because the enum is not the only door — `FontWeight(600)` and
+  /// `FontVariation('wght', 600)` reach the same synthesis by another spelling.
+  /// `FontWeight.lerp` is exempt: it interpolates two weights it was handed
+  /// rather than choosing one.
   const spellings = <String, String>{
     r'FontWeight\.(?!lerp\b)\w+': 'the FontWeight enum',
     r'FontWeight\(': 'the FontWeight constructor',

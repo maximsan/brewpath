@@ -17,9 +17,9 @@ MiniGameFormat _game(String id, String kind) => MiniGameFormat(
   steps: const ['One', 'Two'],
 );
 
-/// The shelf's arrangement, decided without a widget. What a learner notices
-/// is that the groups are always in the same places and that no game is ever
-/// missing from them — both are assertions about this function alone.
+// The shelf's arrangement, decided without a widget: what a learner notices is
+// that the groups sit in the same places and that no game is missing from them,
+// and both are assertions about this function alone.
 void main() {
   group('every kind can be drawn', () {
     test('each one names a mark from the kinds set', () {

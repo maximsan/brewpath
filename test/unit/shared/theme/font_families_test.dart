@@ -7,13 +7,11 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/dart_sources.dart';
 
-/// Flutter resolves a font by the family **string**. A name that does not match
-/// a `fonts:` entry in `pubspec.yaml` does not throw — it silently falls
-/// back to the platform font, so the app renders in the wrong typeface with
-/// no signal at all.
-///
-/// These tests close that gap by comparing what `AppText` asks for
-/// against what the pubspec actually declares, in both directions.
+// Flutter resolves a font by the family string, and a name that matches no
+// `fonts:` entry in `pubspec.yaml` does not throw — it falls back to the
+// platform font, so the app renders in the wrong typeface with no signal at
+// all. These compare what `AppText` asks for against what the pubspec declares,
+// in both directions.
 void main() {
   final declaredFamilies = _familiesDeclaredInPubspec();
 

@@ -11,8 +11,8 @@ import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// The frame's proportion (`screens.jsx:39`). Not square: a 1:1 frame crops
-/// the film's growth and reads as a photo rather than a stage.
+/// The frame's proportion. Not square: a 1:1 frame crops the film's growth and
+/// reads as a photo rather than a stage.
 const double _heroRatio = 4 / 3;
 
 /// The gap under the film. Off the spacing scale on purpose — see the
@@ -43,20 +43,31 @@ class WelcomeScreen extends StatelessWidget {
         behavior: HitTestBehavior.opaque,
         onTap: () => context.goNamed(AppRoutes.meetRoasty.name),
         child: IntroPage(
+          // Excluded, not unlabelled: the screen's own Semantics already says
+          // "tap anywhere to continue", and a reader should hear that once
+          // rather than once per widget that draws it.
+          foot: const ExcludeSemantics(
+            child: TapCue('TAP ANYWHERE TO CONTINUE'),
+          ),
           children: [
             // Flexible so a short viewport takes height off the film rather
-            // than off the words.
+            // than off the words; aligned to its foot so the slack a tall
+            // viewport leaves sits above the film, which is the design's
+            // `marginTop: 'auto'` on the hero block.
             Flexible(
-              child: AspectRatio(
-                aspectRatio: _heroRatio,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: mood.surface,
-                    border: Border.all(color: mood.rule),
-                    borderRadius: BorderRadius.circular(AppRadii.chrome),
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: AspectRatio(
+                  aspectRatio: _heroRatio,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: mood.surface,
+                      border: Border.all(color: mood.rule),
+                      borderRadius: BorderRadius.circular(AppRadii.chrome),
+                    ),
+                    clipBehavior: Clip.hardEdge,
+                    child: const SeedVideoHero(),
                   ),
-                  clipBehavior: Clip.hardEdge,
-                  child: const SeedVideoHero(),
                 ),
               ),
             ),
@@ -75,15 +86,6 @@ class WelcomeScreen extends StatelessWidget {
                 'you finish feeds a living tree, growing from seed to '
                 'harvest.',
                 style: AppText.body(mood: mood, color: mood.inkMute),
-              ),
-            ),
-            const Spacer(),
-            // Excluded, not unlabelled: the screen's own Semantics already
-            // says "tap anywhere to continue", and a reader should hear that
-            // once rather than once per widget that draws it.
-            const Center(
-              child: ExcludeSemantics(
-                child: TapCue('TAP ANYWHERE TO CONTINUE'),
               ),
             ),
           ],

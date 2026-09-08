@@ -115,6 +115,9 @@ flutter:
     # one set shared by every grove variety (#136).
     - assets/images/trees/
     - assets/icons/
+    # The five module pictures Today's card carries — the prototype's shipped
+    # raster art, bundled under the path the modules bank names for each.
+    - assets/modules/
     # Written by tool/extract_card_art.js from the prototype source — the
     # thirty-seven collectible illustrations, extracted rather than redrawn.
     - assets/card_art/

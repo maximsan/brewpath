@@ -57,7 +57,8 @@ class KeepSharpCardBody extends StatelessWidget {
     final recommended = recommendation;
 
     return Padding(
-      padding: EdgeInsets.all(OffTokens.todayHeroPadding.value),
+      // The design's `.card` inset, which the accent state keeps.
+      padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -160,7 +161,7 @@ class KeepSharpCardBody extends StatelessWidget {
             ),
           ],
         ),
-        SizedBox(height: OffTokens.keepSharpStartGap.value),
+        SizedBox(height: OffTokens.todayCtaGap.value),
         // Sized by Material, not `PrimaryButton`: this is an action
         // inside a card, not the screen's CTA.
         FilledButton(

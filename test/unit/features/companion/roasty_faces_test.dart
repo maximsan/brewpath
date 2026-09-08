@@ -86,11 +86,9 @@ class _RecordingCanvas implements Canvas {
       );
 
   /// Whether a filled [colour] curve starts at [left], tops out at [top] and
-  /// runs [width] across.
-  ///
-  /// A curve's *height* is deliberately not asked for: `Path.getBounds` bounds
-  /// a quadratic by its control points rather than by the curve, so the bottom
-  /// edge it reports is not a fact about the drawing. Every value checked here
+  /// runs [width] across. Height is deliberately not asked for: `getBounds`
+  /// bounds a quadratic by its control points rather than by the curve, so the
+  /// bottom edge it reports is not a fact about the drawing. Every value here
   /// is an on-curve extreme, which is exact.
   bool hasCurve(
     Color colour, {

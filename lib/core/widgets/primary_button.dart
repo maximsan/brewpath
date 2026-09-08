@@ -10,8 +10,8 @@ import 'package:flutter/material.dart';
 ///
 /// Accent fill, accent-ink text, and the radius the running prototype sets:
 /// `var(--r)`, which is [AppRadii.chrome]. It read [AppRadii.editorial] until
-/// #377, transcribed from `Design System.html`'s 2px, which ADR-0009 ranks
-/// below the running `index.html`.
+/// #377, transcribed from the design-system catalogue's 2px, which ADR-0009
+/// ranks below the running prototype.
 ///
 /// The shape is set here as well as on `AppTheme`'s button themes. That is not
 /// belt-and-braces: `context.mood` falls back to Dark Roast when no theme
@@ -28,7 +28,10 @@ class PrimaryButton extends StatelessWidget {
   const PrimaryButton({
     required this.label,
     required this.onPressed,
+    this.leadingMark,
+    this.leadingMarkSize,
     this.trailingMark,
+    this.semanticsLabel,
     super.key,
   });
 
@@ -50,6 +53,19 @@ class PrimaryButton extends StatelessWidget {
   /// Decoration, not a second affordance: it is inside the button and
   /// excluded from semantics, so the label remains the whole announcement.
   final AppIcon? trailingMark;
+
+  /// A mark before the label, for an action that has to say what it costs
+  /// before it says what it does — the lock on *Unlock Foundations*. Excluded
+  /// from semantics like [trailingMark].
+  final AppIcon? leadingMark;
+
+  /// The leading mark's size, when the design draws it smaller than a
+  /// control-step mark — the CTA's `<LockMark size={12}/>`.
+  final double? leadingMarkSize;
+
+  /// What a screen reader is told instead of [label] — the lesson the button
+  /// opens, where the visible words alone would not say which.
+  final String? semanticsLabel;
 
   /// The mark's size beside a control-step label.
   static const double _markSize = 18;
@@ -78,9 +94,20 @@ class PrimaryButton extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (leadingMark != null) ...[
+              ExcludeSemantics(
+                child: IconMark(
+                  leadingMark!,
+                  size: leadingMarkSize ?? _markSize,
+                  color: foreground,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.xs),
+            ],
             Flexible(
               child: Text(
                 label,
+                semanticsLabel: semanticsLabel,
                 style: AppText.body(
                   mood: mood,
                   color: foreground,

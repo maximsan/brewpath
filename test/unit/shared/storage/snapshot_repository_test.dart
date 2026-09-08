@@ -11,7 +11,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/snapshot_generators.dart';
 
-/// The snapshot survives a restart, and nothing device-local moves with it.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 

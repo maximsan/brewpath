@@ -48,6 +48,31 @@ void main() {
       });
     });
 
+    test('advances from the last phase, never through a second sleep', () {
+      // Stepping back to `sleeping` before deciding to advance drew a
+      // sleeping mascot and the tap cue for the one frame the page
+      // transition then carried away.
+      fakeAsync((async) {
+        final seen = <WakePhase>[];
+        var advances = 0;
+        final controller = WakeSequenceController(
+          reduceMotion: false,
+          loopForever: false,
+          isGateResolved: () => true,
+          onAdvance: () => advances++,
+        );
+        controller.addListener(() => seen.add(controller.phase));
+        controller.start();
+
+        async.elapse(_fullCycle);
+
+        expect(advances, 1);
+        expect(seen.last, WakePhase.hold);
+        expect(seen, isNot(contains(WakePhase.sleeping)));
+        controller.dispose();
+      });
+    });
+
     test('does not advance until the gate resolves', () {
       fakeAsync((async) {
         var gateReady = false;

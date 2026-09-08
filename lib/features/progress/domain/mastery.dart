@@ -9,9 +9,8 @@ import 'package:flutter/foundation.dart';
 
 /// The three mastery states a scored lesson can hold.
 ///
-/// The keys, labels and ordering come from the design's `LESSON_STATES`
-/// (`prototype/data.jsx`); only the *derivation* differs — see
-/// [MasteryResult.band].
+/// The keys, labels and ordering come from the design's `LESSON_STATES`; only
+/// the *derivation* differs — see [MasteryResult.band].
 enum MasteryBand {
   /// Two or more wrong answers.
   needsPractice(rank: 0, label: 'Needs practice', short: 'Practice'),
@@ -34,8 +33,8 @@ enum MasteryBand {
   /// User-facing name.
   final String label;
 
-  /// The one-word form, for a slot with room for a word rather than a phrase
-  /// — the design's `LESSON_STATES[…].short` (`data.jsx:2987`).
+  /// The one-word form, for a slot with room for a word rather than a phrase —
+  /// the design's `LESSON_STATES[…].short`.
   final String short;
 
   /// Whether this band is the one the design invites back to practise.

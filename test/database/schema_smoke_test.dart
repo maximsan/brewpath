@@ -8,6 +8,7 @@ import '../generated/schema.dart';
 import '../generated/schema_v1.dart' show DatabaseAtV1;
 import '../generated/schema_v10.dart' show DatabaseAtV10;
 import '../generated/schema_v11.dart' show DatabaseAtV11;
+import '../generated/schema_v12.dart' show DatabaseAtV12;
 import '../generated/schema_v2.dart' show DatabaseAtV2;
 import '../generated/schema_v3.dart' show DatabaseAtV3;
 import '../generated/schema_v4.dart' show DatabaseAtV4;
@@ -17,18 +18,12 @@ import '../generated/schema_v7.dart' show DatabaseAtV7;
 import '../generated/schema_v8.dart' show DatabaseAtV8;
 import '../generated/schema_v9.dart' show DatabaseAtV9;
 
-/// Drift schema-migration harness coverage.
-///
-/// Verifies the generated [GeneratedHelper] / [SchemaVerifier] pipeline: each
-/// historical schema opens cleanly, and the real `AppDatabase` migration
-/// upgrades a v1 database to the v2 schema.
-/// The newest schema that has been dumped to `drift_schemas/`.
-///
-/// Read from the generated helper rather than written as a literal: every
-/// data-integrity case below upgrades *to the current version*, and a literal
-/// there means a schema bump silently keeps testing the old target — a bump
-/// editing a file that never mentions it. The first test keeps this honest
-/// against the app's own `schemaVersion`.
+/// The newest schema dumped to `drift_schemas/`. Read from the generated
+/// helper rather than written as a literal: every data-integrity case below
+/// upgrades *to the current version*, and a literal there means a schema bump
+/// silently keeps testing the old target — a bump editing a file that never
+/// mentions it. The first test keeps this honest against the app's own
+/// `schemaVersion`.
 final int _currentVersion = GeneratedHelper.versions.last;
 
 void main() {
@@ -90,13 +85,11 @@ void main() {
     final connection = await verifier.startAt(1);
     final db = AppDatabase(connection);
 
-    // AppDatabase.schemaVersion has advanced; the chained onUpgrade brings a
-    // v1 file all the way up to the current version in one open.
-    //
+    // The chained onUpgrade brings a v1 file all the way up in one open.
     // Targeting `db.schemaVersion` rather than a literal keeps this honest
-    // across future bumps: it asserts the migrated database matches the
-    // committed snapshot for whatever the current version is, and stops the
-    // test going stale the way a hardcoded 3 just did.
+    // across bumps: it asserts the migrated database matches the committed
+    // snapshot for whatever the current version is, instead of going stale
+    // the way a hardcoded 3 just did.
     await verifier.migrateAndValidate(db, db.schemaVersion);
 
     await db.close();
@@ -178,42 +171,6 @@ void main() {
     },
   );
 
-  // Locks in the idempotency invariant that the schema enforces:
-  // `progress_records.lessonId` is UNIQUE, which is what makes
-  // `saveCompletion`'s insert-or-ignore safe (replaying a completed lesson
-  // must not double-count XP/streak). Tested on the real (v2) schema.
-  test('progress_records.lessonId UNIQUE rejects duplicate insert', () async {
-    final db = AppDatabase(NativeDatabase.memory());
-    addTearDown(db.close);
-
-    Future<void> insertLesson(String lessonId) => db
-        .into(db.progressRecords)
-        .insert(
-          ProgressRecordsCompanion.insert(
-            lessonId: lessonId,
-            isCompleted: true,
-            xpEarned: 10,
-            completedAt: DateTime.now(),
-          ),
-        );
-
-    await insertLesson('lesson_a');
-
-    // A second plain insert with the same lessonId must violate UNIQUE.
-    await expectLater(
-      insertLesson('lesson_a'),
-      throwsA(
-        predicate(
-          (e) => e.toString().toUpperCase().contains('UNIQUE'),
-          'a UNIQUE constraint violation',
-        ),
-      ),
-    );
-
-    final rows = await db.select(db.progressRecords).get();
-    expect(rows.length, 1, reason: 'duplicate must not have been written');
-  });
-
   test(
     'schema v5 database replaces best_score with the mastery pair',
     () async {
@@ -231,19 +188,11 @@ void main() {
     },
   );
 
-  test('a v4 row carrying a best_score migrates to an unscored pair', () async {
-    // The old percentage is deliberately not converted: it measured first-try
-    // accuracy over all steps with unlimited retries, where grading is one-shot
-    // over graded cards. A legacy row therefore lands on {0, 0} and reads as
-    // unscored — exactly the neutral empty node the design draws for a lesson
-    // finished without a stored score, rather than a fabricated fill.
-    //
-    // Targeted at the *current* version rather than at 5. `openTestedDatabase`
-    // is the real `AppDatabase`, which always migrates as far as it goes, so a
-    // run validated against the v5 snapshot starts failing the moment a v6
-    // exists. The conversion under test is unchanged by the later steps, so
-    // asserting it after the full chain proves the same thing and keeps
-    // proving it. **A schema bump means retargeting this and the test below.**
+  test('a v4 row carrying a best_score goes with its table', () async {
+    // The oldest shape of the completions table, seeded so the chain is
+    // exercised on a populated database rather than an empty one. Nothing
+    // converts the old percentage: the table it is on is dropped at v13, and
+    // what a learner scored has been on the snapshot since #115.
     await verifier.testWithDataIntegrity(
       oldVersion: 4,
       newVersion: _currentVersion,
@@ -263,20 +212,10 @@ void main() {
         }),
       ),
       validateItems: (newDb) async {
-        // The generated snapshot classes cannot map rows onto data classes
-        // ("TableInfo.map in schema verification code"), so read raw columns.
-        final rows = await newDb
-            .customSelect(
-              'SELECT correct_count, graded_total, xp_earned '
-              'FROM progress_records',
-            )
-            .get();
-
-        expect(rows, hasLength(1));
-        expect(rows.single.read<int>('correct_count'), 0);
-        expect(rows.single.read<int>('graded_total'), 0);
-        // The rest of the row survives the table rebuild untouched.
-        expect(rows.single.read<int>('xp_earned'), 50);
+        // The row is gone with its table, and the point of the case is that a
+        // v4 database carrying one still arrives at v13 rather than failing on
+        // a step that no longer has a table to work on.
+        expect(await _tableNames(newDb), isNot(contains('progress_records')));
       },
     );
   });
@@ -296,12 +235,11 @@ void main() {
   });
 
   test(
-    'a v5 database upgrades to the current schema keeping its rows',
+    'a v5 database upgrades keeping the row it is allowed to keep',
     () async {
-      // Upgrading from a populated older database, not a fresh one: a migration
-      // only ever exercised on an empty database proves nothing about the one
-      // case that can lose data. Targeted at the current version for the reason
-      // given on the test above.
+      // A populated older database carrying both kinds of row: one on a table
+      // v13 drops, one on the table it keeps. A migration only ever exercised
+      // on an empty database proves nothing about either.
       await verifier.testWithDataIntegrity(
         oldVersion: 5,
         newVersion: _currentVersion,
@@ -309,33 +247,50 @@ void main() {
         createNew: (executor) =>
             GeneratedHelper().databaseForVersion(executor, _currentVersion),
         openTestedDatabase: AppDatabase.new,
-        createItems: (batch, oldDb) => batch.insert(
-          oldDb.progressRecords,
-          RawValuesInsertable<dynamic>({
-            'lesson_id': const Variable<String>('lesson_before_v6'),
-            'is_completed': const Variable<bool>(true),
-            'xp_earned': const Variable<int>(10),
-            'completed_at': Variable<DateTime>(DateTime(2026)),
-            'correct_count': const Variable<int>(4),
-            'graded_total': const Variable<int>(5),
-          }),
-        ),
+        createItems: (batch, oldDb) {
+          batch.insert(
+            oldDb.progressRecords,
+            RawValuesInsertable<dynamic>({
+              'lesson_id': const Variable<String>('lesson_before_v6'),
+              'is_completed': const Variable<bool>(true),
+              'xp_earned': const Variable<int>(10),
+              'completed_at': Variable<DateTime>(DateTime(2026)),
+              'correct_count': const Variable<int>(4),
+              'graded_total': const Variable<int>(5),
+            }),
+          );
+          batch.insert(
+            oldDb.userSettings,
+            const RawValuesInsertable<dynamic>({
+              'id': Variable<int>(1),
+              'haptics_enabled': Variable<bool>(false),
+              'sound_enabled': Variable<bool>(true),
+              'total_xp': Variable<int>(70),
+              'streak_days': Variable<int>(0),
+              'onboarding_completed': Variable<bool>(true),
+              'theme_mode': Variable<String>('light'),
+            }),
+          );
+        },
         validateItems: (newDb) async {
-          // The v6 step is additive, so the existing row is untouched…
-          final rows = await newDb
-              .customSelect(
-                'SELECT correct_count, graded_total FROM progress_records',
-              )
-              .get();
-          expect(rows, hasLength(1));
-          expect(rows.single.read<int>('correct_count'), 4);
-          expect(rows.single.read<int>('graded_total'), 5);
-
-          // …and the new table exists and is empty.
+          // The table the completion was on is gone by v13; the table it was
+          // replaced by exists and is empty.
+          expect(await _tableNames(newDb), isNot(contains('progress_records')));
           final snapshots = await newDb
               .customSelect('SELECT COUNT(*) AS n FROM progress_snapshots')
               .get();
           expect(snapshots.single.read<int>('n'), 0);
+
+          // What the learner chose crosses eight versions untouched.
+          final settings = await newDb
+              .customSelect(
+                'SELECT theme_mode, haptics_enabled, onboarding_completed '
+                'FROM user_settings',
+              )
+              .get();
+          expect(settings.single.read<String>('theme_mode'), 'light');
+          expect(settings.single.read<bool>('haptics_enabled'), false);
+          expect(settings.single.read<bool>('onboarding_completed'), true);
         },
       );
     },
@@ -396,9 +351,9 @@ void main() {
       validateItems: (newDb) async {
         final rows = await newDb
             .customSelect(
-              'SELECT total_xp, haptics_enabled, sound_enabled, '
-              'onboarding_completed, onboarding_goal, onboarding_brewer, '
-              'theme_mode FROM user_settings',
+              'SELECT haptics_enabled, sound_enabled, onboarding_completed, '
+              'onboarding_goal, onboarding_brewer, theme_mode '
+              'FROM user_settings',
             )
             .get();
 
@@ -410,7 +365,6 @@ void main() {
         expect(row.read<bool>('onboarding_completed'), true);
         expect(row.read<bool>('haptics_enabled'), false);
         expect(row.read<bool>('sound_enabled'), false);
-        expect(row.read<int>('total_xp'), 120);
       },
     );
   });
@@ -462,7 +416,7 @@ void main() {
         final rows = await newDb
             .customSelect(
               'SELECT tour_seen, onboarding_completed, onboarding_goal, '
-              'theme_mode, total_xp FROM user_settings',
+              'theme_mode FROM user_settings',
             )
             .get();
 
@@ -474,7 +428,49 @@ void main() {
         expect(row.read<bool>('onboarding_completed'), true);
         expect(row.read<String>('onboarding_goal'), 'understand_tasting');
         expect(row.read<String>('theme_mode'), 'light');
-        expect(row.read<int>('total_xp'), 240);
+      },
+    );
+  });
+
+  test('a v8 database upgrades with no name given', () async {
+    // The one start point the chain had no case for. The name arrives at v9
+    // nullable rather than backfilled, so a device upgrading from here reads
+    // as "no name given" — which is the truth for it, and what the greeting
+    // already falls back to.
+    await verifier.testWithDataIntegrity(
+      oldVersion: 8,
+      newVersion: _currentVersion,
+      createOld: DatabaseAtV8.new,
+      createNew: (executor) =>
+          GeneratedHelper().databaseForVersion(executor, _currentVersion),
+      openTestedDatabase: AppDatabase.new,
+      createItems: (batch, oldDb) => batch.insert(
+        oldDb.userSettings,
+        const RawValuesInsertable<dynamic>({
+          'id': Variable<int>(1),
+          'haptics_enabled': Variable<bool>(false),
+          'sound_enabled': Variable<bool>(true),
+          'total_xp': Variable<int>(90),
+          'onboarding_completed': Variable<bool>(true),
+          'theme_mode': Variable<String>('system'),
+          'tour_seen': Variable<bool>(true),
+        }),
+      ),
+      validateItems: (newDb) async {
+        final rows = await newDb
+            .customSelect(
+              'SELECT learner_name, tour_seen, theme_mode, sound_enabled '
+              'FROM user_settings',
+            )
+            .get();
+
+        expect(rows, hasLength(1));
+        final row = rows.single;
+        expect(row.readNullable<String>('learner_name'), null);
+        // What the learner chose crosses five versions untouched.
+        expect(row.read<bool>('tour_seen'), true);
+        expect(row.read<String>('theme_mode'), 'system');
+        expect(row.read<bool>('sound_enabled'), true);
       },
     );
   });
@@ -658,4 +654,148 @@ void main() {
       },
     );
   });
+
+  test('schema v12 database still holds the store v13 drops', () async {
+    final connection = await verifier.startAt(12);
+    final db = DatabaseAtV12(connection);
+    await db.customSelect('SELECT 1').get();
+
+    expect(db.schemaVersion, 12);
+    // Off SQLite, not off the generated `allTables`: what the next test needs
+    // is that the tables are really on disk at v12, which a static list of
+    // what v12 declared cannot say.
+    expect(
+      await _tableNames(db),
+      containsAll(<String>[
+        'progress_records',
+        'module_progress_records',
+        'card_records',
+      ]),
+    );
+
+    final columns = await db
+        .customSelect('PRAGMA table_info(user_settings)')
+        .get();
+    expect(columns.map((r) => r.read<String>('name')), contains('total_xp'));
+
+    await db.close();
+  });
+
+  test('a v12 database upgrades with the old store gone', () async {
+    // The shipped version, carrying a row in every table the step drops and a
+    // full settings row beside them. Destructive by ruling (#116): the rows go
+    // and nothing is owed for them, but device-local state is not progress and
+    // must cross the step untouched.
+    await verifier.testWithDataIntegrity(
+      oldVersion: 12,
+      newVersion: _currentVersion,
+      createOld: DatabaseAtV12.new,
+      createNew: (executor) =>
+          GeneratedHelper().databaseForVersion(executor, _currentVersion),
+      openTestedDatabase: AppDatabase.new,
+      createItems: (batch, oldDb) {
+        batch
+          ..insert(
+            oldDb.progressRecords,
+            RawValuesInsertable<dynamic>({
+              'lesson_id': const Variable<String>('m1l1'),
+              'is_completed': const Variable<bool>(true),
+              'xp_earned': const Variable<int>(10),
+              'completed_at': Variable<DateTime>(DateTime(2026, 8, 23)),
+              'full_xp_awarded': const Variable<bool>(true),
+              'correct_count': const Variable<int>(4),
+              'graded_total': const Variable<int>(5),
+            }),
+          )
+          ..insert(
+            oldDb.moduleProgressRecords,
+            const RawValuesInsertable<dynamic>({
+              'module_id': Variable<String>('m1'),
+              'module_xp_awarded': Variable<bool>(true),
+            }),
+          )
+          ..insert(
+            oldDb.cardRecords,
+            RawValuesInsertable<dynamic>({
+              'card_id': const Variable<String>('c1'),
+              'unlocked_at': Variable<DateTime>(DateTime(2026, 8, 23)),
+            }),
+          )
+          ..insert(
+            oldDb.userSettings,
+            const RawValuesInsertable<dynamic>({
+              'id': Variable<int>(1),
+              'haptics_enabled': Variable<bool>(false),
+              'sound_enabled': Variable<bool>(true),
+              'total_xp': Variable<int>(120),
+              'onboarding_completed': Variable<bool>(true),
+              'onboarding_goal': Variable<String>('brew_better'),
+              'onboarding_brewer': Variable<String>('v60'),
+              'theme_mode': Variable<String>('light'),
+              'tour_seen': Variable<bool>(true),
+              'tips_seen': Variable<String>('path,saved'),
+              'learner_name': Variable<String>('Maya'),
+              'notifications_enabled': Variable<bool>(true),
+              'daily_reminder_time': Variable<String>('08:00'),
+            }),
+          );
+      },
+      validateItems: (newDb) async {
+        expect(
+          await _tableNames(newDb),
+          isNot(
+            anyElement(
+              isIn(<String>[
+                'progress_records',
+                'module_progress_records',
+                'card_records',
+              ]),
+            ),
+          ),
+        );
+
+        final columns = await newDb
+            .customSelect('PRAGMA table_info(user_settings)')
+            .get();
+        expect(
+          columns.map((r) => r.read<String>('name')),
+          isNot(contains('total_xp')),
+        );
+
+        // Everything left on the row is device-local, and a reset keeps it —
+        // so a drop that quietly rewrote any of it would go unnoticed until a
+        // learner opened the app on the wrong appearance.
+        final settings = await newDb
+            .customSelect(
+              'SELECT haptics_enabled, sound_enabled, onboarding_completed, '
+              'onboarding_goal, onboarding_brewer, theme_mode, tour_seen, '
+              'tips_seen, learner_name, notifications_enabled, '
+              'daily_reminder_time FROM user_settings',
+            )
+            .get();
+        expect(settings, hasLength(1));
+        final row = settings.single;
+        expect(row.read<bool>('haptics_enabled'), false);
+        expect(row.read<bool>('sound_enabled'), true);
+        expect(row.read<bool>('onboarding_completed'), true);
+        expect(row.read<String>('onboarding_goal'), 'brew_better');
+        expect(row.read<String>('onboarding_brewer'), 'v60');
+        expect(row.read<String>('theme_mode'), 'light');
+        expect(row.read<bool>('tour_seen'), true);
+        expect(row.read<String>('tips_seen'), 'path,saved');
+        expect(row.read<String>('learner_name'), 'Maya');
+        expect(row.read<bool>('notifications_enabled'), true);
+        expect(row.read<String>('daily_reminder_time'), '08:00');
+      },
+    );
+  });
+}
+
+/// The tables a migrated database actually has, read off SQLite rather than
+/// off a generated definition, which would only say what was declared.
+Future<Set<String>> _tableNames(GeneratedDatabase db) async {
+  final rows = await db
+      .customSelect("SELECT name FROM sqlite_master WHERE type = 'table'")
+      .get();
+  return rows.map((row) => row.read<String>('name')).toSet();
 }

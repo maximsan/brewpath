@@ -199,14 +199,18 @@ Two consequences worth knowing, because both look alarming and are not:
 
 ## Reproducing CI locally
 
-CI is four jobs ([`13-ci-cd.md`](13-ci-cd.md)). Run them in this order before
-pushing; they are the same commands the workflow uses.
+CI is six jobs ([`13-ci-cd.md`](13-ci-cd.md)). Run them in this order before
+pushing; they are the same commands the workflow uses. The pre-push hook
+([README _Quality checks_](../README.md#quality-checks)) runs the changelog
+check, the comment check, the format check and metrics from this list, plus
+the guard tests; analyze and the suite stay in CI.
 
 ```bash
 flutter pub get                                    # required BEFORE format — see below
 
 tool/check_changelog.sh                            # pull-request job; needs origin/main fetched
-dart format --output=none --set-exit-if-changed lib test integration_test
+dart tool/check_comments.dart --changed            # pull-request job; same base
+dart format --output=none --set-exit-if-changed lib test integration_test tool
 flutter analyze
 dart run dart_code_linter:metrics analyze lib --set-exit-on-violation-level=warning
 flutter test

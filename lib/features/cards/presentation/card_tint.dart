@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 
 /// The hue a tile's surface is washed with.
 ///
-/// The design gives every collectible kind a tinted card so the grid reads as
-/// a collection rather than a spreadsheet — *"tint the card surface for
-/// variety — never too far from the base"* (`screens.jsx:2414`). The wash is
-/// always 8–12% of one hue over `surface`, which is why the strength travels
-/// beside the hue rather than being fixed: the design varies it by a point or
-/// two per kind, and rounding that to one value is a design change.
+/// The design gives every collectible kind a tinted card so the grid reads as a
+/// collection rather than a spreadsheet — *"tint the card surface for variety —
+/// never too far from the base"*. The wash is always 8–12% of one hue over
+/// `surface`, which is why the strength travels beside the hue rather than
+/// being fixed: the design varies it by a point or two per kind, and rounding
+/// that to one value is a design change.
 enum CardTintBase {
   /// Green — the plant, and anything growing.
   sage,
@@ -48,9 +48,9 @@ enum CardTintBase {
   };
 }
 
-/// Each kind's wash, transcribed from `CARD_TINT` (`screens.jsx:2352`) rather
-/// than invented — the table is generated from the design source, so a kind
-/// the design tints green cannot drift to red here.
+/// Each kind's wash, transcribed from `CARD_TINT` rather than invented — the
+/// table is generated from the design source, so a kind the design tints green
+/// cannot drift to red here.
 ///
 /// `surfaceTwo` carries a strength of 1: the design hands that one kind
 /// `var(--surface-2)` whole instead of mixing anything into `surface`.

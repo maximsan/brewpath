@@ -3,17 +3,11 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 /// The un-themed half of the token layer: values that must never flip with the
-/// mood. Documentation says they don't; this says they *can't*.
-///
-/// Each file is checked for the two properties that make mood-dependence
-/// unrepresentable rather than merely discouraged:
-///
-///  1. the holder is an `abstract final class` — it cannot be extended,
-///     implemented, mixed in or instantiated, so there is no instance to vary
-///     and no subclass to override a value;
-///  2. the code names nothing it could vary *on* — no `BuildContext`, no
-///     `Theme`, no `MoodColors` — so an `of(context)` accessor cannot be
-///     written without first importing the very thing this layer excludes.
+/// mood. Documentation says they don't; this says they can't. Each file has to
+/// hold them on an `abstract final class`, which has no instance to vary and no
+/// subclass to override a value, and to name nothing it could vary *on* — no
+/// `BuildContext`, `Theme` or `MoodColors` — so an `of(context)` accessor
+/// cannot be written without importing what this layer excludes.
 const _unthemedFiles = <String>[
   'lib/shared/theme/art_colors.dart',
   'lib/shared/theme/overlay_colors.dart',

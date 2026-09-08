@@ -1,10 +1,8 @@
-// The accessible set against the banks the app actually ships (ADR-0014).
-//
-// Counts are derived, never quoted — the dictionary and the lessons have both
-// grown, and a test that pinned "17 free terms" would fail on authoring rather
-// than on a defect. What is asserted is what would change *meaning*: that the
-// free pool can fill an honest round, that it is strictly wider than the terms
-// the free lessons teach, and that it is strictly narrower than the glossary.
+// The accessible set against the banks the app ships (ADR-0014). Counts are
+// derived, never quoted: a test pinning "17 free terms" would fail on authoring
+// rather than on a defect. What is asserted is what would change meaning — the
+// free pool can fill an honest round, it is strictly wider than the terms the
+// free lessons teach, and strictly narrower than the glossary.
 import 'package:brew_path/features/dictionary/domain/vocab_pool.dart';
 import 'package:brew_path/features/dictionary/domain/vocab_round.dart';
 import 'package:brew_path/features/dictionary/domain/vocab_setup.dart';

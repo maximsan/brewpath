@@ -6,8 +6,8 @@ import 'package:brew_path/features/progress/domain/tree_stage_names.dart';
 import 'package:brew_path/features/progress/presentation/coffee_tree_animation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The tree screen's three derivations, none of which needs a widget: what a
-/// stage is called, how full the bar is, and where the sway is pointing.
+// The tree screen's three derivations, none of which needs a widget: what a
+// stage is called, how full the bar is, and where the sway is pointing.
 void main() {
   group('stage names', () {
     test('names every shipped stage, title-cased', () {

@@ -4,21 +4,12 @@ import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The design's buttons take `--r` — [AppRadii.chrome] — and Material's default
-/// is a stadium pill. The app declared no button theme, so every bare button
-/// resolved to the pill; the rule lived only inside `PrimaryButton`, which six
-/// screens bypassed (#377).
-///
-/// **Chrome, not editorial.** `Design System.html` sets `.btn-primary` to 2px
-/// and the running `index.html` sets it to `var(--r)`; ADR-0009 ranks the
-/// running prototype above the catalogue. Pinned here so the app cannot drift
-/// back to the value the catalogue states.
-///
-/// Asserted on **bare** buttons on purpose. A test that styles the button it
-/// checks proves only that a test can set a shape. The claim here is that a
-/// developer writing `FilledButton(...)` with no style gets the design without
-/// knowing the rule — so what is inspected is the `Material` the button
-/// actually paints, not the style it was handed.
+/// The design's buttons take `--r` — [AppRadii.chrome] — where Material's
+/// default is a stadium pill, and ADR-0009 ranks the running prototype's
+/// `var(--r)` above the catalogue's 2px. Asserted on *bare* buttons and on the
+/// `Material` they actually paint: the claim is that writing `FilledButton(…)`
+/// with no style gets the design without knowing the rule, which a test that
+/// styles its own button could never prove (#377).
 ShapeBorder _paintedShape(WidgetTester tester, Finder button) {
   // The first `Material` under a button is not always the one that paints it —
   // `SegmentedButton` wraps its segments in a shapeless container first — so
@@ -115,14 +106,11 @@ void main() {
 
     test('${theme.key} declares the segmented toggle as a pill', () {
       // The one exception, and it is the design's: the filter toggle is drawn
-      // at `borderRadius: 999` (`dictionary.jsx:202`), which `AppRadii.pill`
-      // names for toggles in as many words.
-      //
-      // Asserted on the *declaration* rather than the painted shape, unlike
-      // every case above. Material already drew this one as a pill by default,
-      // so painting proves nothing about the app's intent — what changed is
-      // that the app now says so, and that is what stops the rule above being
-      // applied here by someone tidying.
+      // at `borderRadius: 999`, which `AppRadii.pill` names for toggles.
+      // Asserted on the declaration rather than the painted shape, unlike every
+      // case above — Material already drew this as a pill, so painting proves
+      // nothing about intent, and the declaration is what stops someone tidying
+      // the rule above onto it.
       expect(
         theme.value.segmentedButtonTheme.style?.shape?.resolve({}),
         isA<StadiumBorder>(),
