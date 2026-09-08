@@ -14,13 +14,13 @@ void main() {
 
   /// The two files that render an overlay's colour and *cannot* render its
   /// blur: `app_theme.dart`, whose `BottomSheetThemeData` has a barrier colour
-  /// field and no filter field, and `tour_stop.dart`, where a backdrop blur
+  /// field and no filter field, and `tour_frame.dart`, where a backdrop blur
   /// would blur the coach mark's cut-out. A third entry means an overlay is
   /// rendering at half strength somewhere, and the reason belongs here before
   /// the code lands.
   const mayTakeColourAlone = <String>{
     'lib/app/app_theme.dart',
-    'lib/features/tour/presentation/tour_stop.dart',
+    'lib/features/tour/presentation/tour_frame.dart',
   };
 
   test('no source outside the primitive opens a dialog directly', () {

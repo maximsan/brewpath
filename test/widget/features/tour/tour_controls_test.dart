@@ -2,18 +2,19 @@ import 'package:brew_path/app/app.dart';
 import 'package:brew_path/app/app_router.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/tour/domain/tour_copy.dart';
-import 'package:brew_path/features/tour/presentation/tour_stops.dart';
+import 'package:brew_path/features/tour/domain/tour_providers.dart';
+import 'package:brew_path/features/tour/domain/tour_step.dart';
+import 'package:brew_path/features/tour/presentation/today_tour.dart';
 import 'package:brew_path/shared/repositories/settings_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:showcaseview/showcaseview.dart';
 
 import '../../../support/widget_harness.dart';
 
 // Driven through the whole app rather than one screen, because both behaviours
-// are facts about the shell: the cards are drawn by an overlay the shell's host
-// owns, and the tab bar that ends the Tour lives outside every branch.
+// are facts about the shell: the layer is drawn beside the scaffold rather than
+// inside a tab, and the tab bar that ends the Tour lives outside every branch.
 void main() {
   setUp(useInMemoryDatabase);
 
@@ -34,7 +35,7 @@ void main() {
   }
 
   /// Drives the running Tour without `pumpAndSettle`, which never returns
-  /// while a spotlight's moving animation is repeating on screen.
+  /// while Roasty's idle animation is looping behind the layer.
   Future<void> letTheTourRun(WidgetTester tester) async {
     for (var frame = 0; frame < 20; frame++) {
       await tester.runAsync(
@@ -57,8 +58,12 @@ void main() {
     return container;
   }
 
-  bool tourIsRunning() =>
-      ShowcaseView.getNamed(TourStops.scope).isShowcaseRunning;
+  /// Whether the layer is on screen, which is the whole of what "running"
+  /// means now: the Tour is an ordinary child of the shell, so a Tour that has
+  /// ended is a Tour that is not built.
+  bool tourIsRunning(WidgetTester tester, ProviderContainer container) =>
+      container.read(tourRunningProvider) &&
+      find.byType(TodayTour).evaluate().isNotEmpty;
 
   testWidgets('every card carries Skip and Next', (tester) async {
     await startTheTour(tester);
@@ -70,12 +75,12 @@ void main() {
   });
 
   testWidgets('Skip closes the Tour on the first card', (tester) async {
-    await startTheTour(tester);
+    final container = await startTheTour(tester);
 
     await tester.tap(find.text(TourCopy.stopSkip));
     await letTheTourRun(tester);
 
-    expect(tourIsRunning(), isFalse);
+    expect(tourIsRunning(tester, container), isFalse);
     expect(find.text(TourCopy.todayTitle), findsNothing);
   });
 
@@ -101,9 +106,9 @@ void main() {
   });
 
   testWidgets('Done closes the Tour on the last card', (tester) async {
-    await startTheTour(tester);
+    final container = await startTheTour(tester);
 
-    for (var stop = 0; stop < TourStops.inScrollOrder.length - 1; stop++) {
+    for (var stop = 0; stop < TourStep.count - 1; stop++) {
       await tester.tap(find.text(TourCopy.stopNext));
       await letTheTourRun(tester);
     }
@@ -111,7 +116,7 @@ void main() {
     await tester.tap(find.text(TourCopy.stopDone));
     await letTheTourRun(tester);
 
-    expect(tourIsRunning(), isFalse);
+    expect(tourIsRunning(tester, container), isFalse);
     expect(find.text(TourCopy.tabsTitle), findsNothing);
   });
 
@@ -127,7 +132,7 @@ void main() {
     container.read(appRouterProvider).goNamed(AppRoutes.path.name);
     await letTheTourRun(tester);
 
-    expect(tourIsRunning(), isFalse);
+    expect(tourIsRunning(tester, container), isFalse);
     expect(find.text(TourCopy.todayTitle), findsNothing);
     expect(find.text(TourCopy.stopNext), findsNothing);
   });

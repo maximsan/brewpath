@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:brew_path/app/app_router.dart';
+import 'package:brew_path/core/widgets/fade_up.dart';
 import 'package:brew_path/core/widgets/overlay_barrier.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
@@ -13,25 +14,18 @@ import 'package:brew_path/features/tour/domain/micro_tip_place.dart';
 import 'package:brew_path/features/tour/domain/micro_tip_providers.dart';
 import 'package:brew_path/features/tour/domain/tour_providers.dart';
 import 'package:brew_path/features/tour/presentation/micro_tip_card.dart';
-import 'package:brew_path/features/tour/presentation/micro_tip_fade_up.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// Owns the micro-tip layer for the whole app: which tip is up, and when the
-/// next one may be.
+/// Owns the micro-tip layer for the whole app: which tip is up, and when.
 ///
-/// **Above the router, not inside a screen.** A tip can land on the Learn tab,
-/// on the Path tab, in the dictionary, on Today's term and in the Studio — and
-/// the last two are pushed over the tab bar, so no single screen or shell can
-/// host them all. One host above everything also makes "one tip at a time" true
-/// by construction rather than by agreement between surfaces.
-///
-/// Because it draws over the navigator, it has to be told when to keep out of
-/// the way: [anyOverlayBarrierOpen] covers every sheet and dialog, and
-/// `tourRunningProvider` covers the Tour.
+/// Above the router, not inside a screen: a tip can land on either tab, in the
+/// dictionary, on Today's term or in the Studio, and the last two are pushed
+/// over the tab bar, so no one screen can host them all. It keeps out of the
+/// way for [anyOverlayBarrierOpen] and `tourRunningProvider`.
 class MicroTipHost extends ConsumerStatefulWidget {
   /// Creates a [MicroTipHost] over [child].
   const MicroTipHost({required this.child, super.key});
@@ -211,7 +205,7 @@ class _MicroTipHostState extends ConsumerState<MicroTipHost> {
       left: AppSpacing.md,
       right: AppSpacing.md,
       bottom: _bottomInset(context, raised: place.showsTabBar),
-      child: MicroTipFadeUp(
+      child: FadeUp(
         key: ValueKey(tip),
         child: MicroTipCard(tip: tip, onDismiss: _dismiss),
       ),

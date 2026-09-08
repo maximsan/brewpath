@@ -55,7 +55,6 @@ dependencies:
   # this variant is not chosen.
   video_player: ^2.9.1
   share_plus: ^13.3.0
-  showcaseview: ^5.1.0
 
   # The design system's own 24x24 icon family, written to assets/icons/ by
   # tool/extract_icons.js as real SVG. The marks carry arcs, transforms,

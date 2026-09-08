@@ -61,6 +61,10 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **The Today tour is the one the design draws.** A bordered frame travels
+  between the four things it introduces instead of a spotlight snapping
+  between them, the card carries its own counter, dots, Skip and Next, and
+  nothing behind it can be tapped while it runs. Leaving the tab ends it.
 - **Today's card is the design's.** A surface card with a rule around it: the
   module as its eyebrow, the title, the picture, one line saying where the
   lesson sits and how long it takes (`LESSON 1/7 · ~3 MIN`), and a full-width

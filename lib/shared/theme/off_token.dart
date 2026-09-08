@@ -1,3 +1,4 @@
+import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
 
@@ -203,6 +204,90 @@ abstract final class OffTokens {
     reason: 'the tip body sets `lineHeight: 1.5`',
   );
 
+  /// The Tour card's margin — from the screen edges, and from the frame.
+  static const OffToken<double> tourCardInset = OffToken(
+    20,
+    reason:
+        'the design sets the Tour card to `left: 20, right: 20`, and the same '
+        '20 between it and the frame it explains',
+  );
+
+  /// The room inside the Tour card.
+  static const OffToken<EdgeInsets> tourCardPadding = OffToken(
+    EdgeInsets.fromLTRB(18, 18, 18, AppSpacing.base),
+    reason: "the design sets the card to `padding: '18px 18px 14px'`",
+  );
+
+  /// The gap between the Tour card's three lines.
+  static const OffToken<double> tourCardLineGap = OffToken(
+    7,
+    reason:
+        "the design sets `marginTop: 7` under the card's counter and again "
+        'under its title',
+  );
+
+  /// The leading of the Tour card's body copy.
+  static const OffToken<double> tourCardBodyLeading = OffToken(
+    1.55,
+    reason: "the design sets the card's body to `lineHeight: 1.55`",
+  );
+
+  /// How far the Tour's frame stands off the widget it surrounds.
+  static const OffToken<double> tourFrameInset = OffToken(
+    6,
+    reason:
+        'the design insets the frame by 6 a side (`left: rect.x - 6`, '
+        '`width: rect.w + 12`)',
+  );
+
+  /// Where the Tour's card rests until a target has been measured.
+  static const OffToken<double> tourCardRestingBottom = OffToken(
+    140,
+    reason:
+        "the design's `bottom: 140` fallback, held until the first target is "
+        'measured',
+  );
+
+  /// How much room the Tour's card needs under a target before it sits below.
+  static const OffToken<double> tourCardHeadroom = OffToken(
+    330,
+    reason:
+        'the design lifts the card above its target at '
+        '`(rect.y + rect.h) < (rect.areaH - 330)`',
+  );
+
+  /// How far below the feed's top edge the Tour brings a target.
+  static const OffToken<double> tourScrollTopGap = OffToken(
+    140,
+    reason: "the design's `if (topGap < 140)` floor under a framed target",
+  );
+
+  /// How much room below a target the Tour keeps clear for its card.
+  static const OffToken<double> tourScrollCardClearance = OffToken(
+    250,
+    reason:
+        "the design's `+ 250` when it decides a target has run past the room "
+        'the card needs',
+  );
+
+  /// The size of one dot in the Tour card's step row.
+  static const OffToken<double> tourStepDotSize = OffToken(
+    5,
+    reason: 'the design draws `width: 5, height: 5` dots set `gap: 5` apart',
+  );
+
+  /// The room inside the Tour card's advance pill.
+  static const OffToken<EdgeInsets> tourAdvancePadding = OffToken(
+    EdgeInsets.symmetric(horizontal: 20, vertical: 11),
+    reason: "the design sets Next/Done to `padding: '11px 20px'`",
+  );
+
+  /// The room around the Tour card's Skip.
+  static const OffToken<EdgeInsets> tourSkipPadding = OffToken(
+    EdgeInsets.symmetric(horizontal: 6, vertical: AppSpacing.sm),
+    reason: "the design sets Skip to `padding: '12px 6px'`",
+  );
+
   /// Every sanctioned exception, so the register can be tested as a whole.
   static const register = <OffToken<Object>>[
     rewardedAdCanvas,
@@ -231,5 +316,17 @@ abstract final class OffTokens {
     microTipBodyTracking,
     microTipTitleGap,
     microTipBodyLeading,
+    tourCardInset,
+    tourCardPadding,
+    tourCardLineGap,
+    tourCardBodyLeading,
+    tourFrameInset,
+    tourCardRestingBottom,
+    tourCardHeadroom,
+    tourScrollTopGap,
+    tourScrollCardClearance,
+    tourStepDotSize,
+    tourAdvancePadding,
+    tourSkipPadding,
   ];
 }

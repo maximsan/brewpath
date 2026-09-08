@@ -9,7 +9,9 @@ wayfinder map [#191](https://github.com/maximsan/brewpath/issues/191).
 > a callout-and-frame layer, and
 > [issue #339](https://github.com/maximsan/brewpath/issues/339) found `showcaseview` cannot
 > draw it. The current decision — build the guide layer by hand, in tree — is
-> [#339's resolution](https://github.com/maximsan/brewpath/issues/339#issuecomment-5399403183).
+> [#339's resolution](https://github.com/maximsan/brewpath/issues/339#issuecomment-5399403183),
+> and [#341](https://github.com/maximsan/brewpath/issues/341) built it: the package is no
+> longer a dependency.
 
 **Scope.** The Tour is a one-time, skippable, replayable guided walkthrough of the Learn
 tab. This document vets the coach-mark/showcase packages against the five criteria in
