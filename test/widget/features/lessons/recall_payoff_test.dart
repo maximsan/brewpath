@@ -57,6 +57,22 @@ void main() {
     expect(find.byType(Roasty), findsNothing);
   });
 
+  testWidgets('closes the sentence tight against the chip', (tester) async {
+    await pump(tester, _missed);
+
+    // A chip flattens to one placeholder, so the sentence around it is what
+    // this reads. The full stop belongs to the guess before it: outer padding
+    // pushed it a space clear, which only showed up on a screenshot.
+    const chip = '￼';
+    final sentence = tester
+        .widgetList<Text>(find.byType(Text))
+        .map((text) => text.textSpan?.toPlainText() ?? '')
+        .firstWhere((text) => text.contains(chip));
+
+    expect(sentence, contains('guessed $chip. '));
+    expect(sentence, isNot(contains('$chip .')));
+  });
+
   testWidgets('does not interrupt the verdict it arrives beside', (
     tester,
   ) async {

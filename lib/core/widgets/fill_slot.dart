@@ -1,4 +1,3 @@
-import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
@@ -74,15 +73,10 @@ class FillSlot extends StatelessWidget {
   }
 }
 
-/// [slot] as an inline span, vertically centred on the line it sits in.
-///
-/// The design's slot is an `inline-block` inside a sentence; a `WidgetSpan` is
-/// the Flutter shape of that, and the baseline alignment keeps the rule sitting
-/// under the words around it rather than under the whole line box.
-InlineSpan fillSlotSpan(FillSlot slot) => WidgetSpan(
-  alignment: PlaceholderAlignment.middle,
-  child: Padding(
-    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xxs),
-    child: slot,
-  ),
-);
+/// [slot] as an inline span, vertically centred on the line it sits in — the
+/// Flutter shape of the design's `inline-block`. **No outer margin**: its
+/// `padding: 0 6px 1px` is inside the chip, so a following full stop sits
+/// tight against it. Spacing around a slot is written into the surrounding
+/// text, where it can be seen.
+InlineSpan fillSlotSpan(FillSlot slot) =>
+    WidgetSpan(alignment: PlaceholderAlignment.middle, child: slot);

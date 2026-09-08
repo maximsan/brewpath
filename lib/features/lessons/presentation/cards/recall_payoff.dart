@@ -41,7 +41,7 @@ class RecallPayoff extends StatelessWidget {
   }
 
   List<InlineSpan> _sentence() => [
-    const TextSpan(text: PayoffCopy.opener),
+    const TextSpan(text: '${PayoffCopy.opener} '),
     fillSlotSpan(
       FillSlot(
         word: guess.pick,
@@ -49,13 +49,14 @@ class RecallPayoff extends StatelessWidget {
       ),
     ),
     if (guess.wasRight)
-      const TextSpan(text: PayoffCopy.andRight)
+      const TextSpan(text: ' ${PayoffCopy.andRight}')
     else ...[
-      const TextSpan(text: PayoffCopy.butActually),
+      // No leading space: the full stop belongs to the chip before it.
+      const TextSpan(text: '${PayoffCopy.butActually} '),
       fillSlotSpan(
         FillSlot(word: guess.answer, state: FillSlotState.right),
       ),
-      const TextSpan(text: PayoffCopy.nowYouKnow),
+      const TextSpan(text: ' ${PayoffCopy.nowYouKnow}'),
     ],
   ];
 }
