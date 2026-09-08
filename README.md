@@ -302,9 +302,11 @@ Drift schema snapshots (`drift_schemas/`) and generated test helpers
    is broken when it is the assertion that is stale. The existing ones are
    deliberately aimed at the current version for this reason.
 
-   Prefer removing a column by recreating the table (`TableMigration` with the
-   column omitted from the current definition), and cover it with a
-   data-integrity test that seeds the **other** columns and asserts they
-   survive — a recreate that copies the wrong set silently resets whatever it
-   missed.
+   Remove a column with `dropColumn`, by name, and a table with `deleteTable`,
+   which drops if-exists. Not `TableMigration`: a rebuild copies the table's
+   *current* definition and so breaks on the next column anyone adds
+   ([#273](https://github.com/maximsan/brewpath/issues/273)). Cover either with
+   a data-integrity test that seeds the state the step must **keep** and
+   asserts it survives — a drop that took the wrong thing with it resets
+   whatever it hit in silence.
 5. Commit the new snapshot + regenerated helpers with the schema change.

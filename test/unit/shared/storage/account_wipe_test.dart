@@ -1,8 +1,5 @@
 import 'package:brew_path/features/progress/domain/mastery.dart';
-import 'package:brew_path/shared/repositories/card_repository.dart';
 import 'package:brew_path/shared/repositories/install_repository.dart';
-import 'package:brew_path/shared/repositories/module_progress_repository.dart';
-import 'package:brew_path/shared/repositories/progress_repository.dart';
 import 'package:brew_path/shared/repositories/settings_repository.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:brew_path/shared/storage/account_wipe.dart';
@@ -50,9 +47,6 @@ void main() {
   late AccountWipe wipe;
   late SnapshotRepository snapshots;
   late SettingsRepository settings;
-  late ProgressRepository lessons;
-  late ModuleProgressRepository modules;
-  late CardRepository cards;
   late InstallRepository install;
 
   setUp(() async {
@@ -60,25 +54,14 @@ void main() {
     AppDatabaseService.instance = db;
     snapshots = SnapshotRepository();
     settings = SettingsRepository();
-    lessons = ProgressRepository();
-    modules = ModuleProgressRepository();
-    cards = CardRepository();
     install = InstallRepository();
     wipe = AccountWipe(deviceId: _thisDevice, clock: () => _wipedAt);
 
     await snapshots.write(_stored);
-    await lessons.saveCompletion(
-      lessonId: 'm1l1',
-      xpEarned: 10,
-      mastery: const MasteryResult(correct: 5, total: 8),
-    );
-    await modules.markModuleXpAwarded('m1');
-    await cards.collectCard('c1');
     await settings.saveSettings(
       UserSettingsRecord(
         hapticsEnabled: false,
         soundEnabled: false,
-        totalXp: 50,
         onboardingCompleted: true,
         themeMode: AppThemeMode.light,
         tourSeen: true,
@@ -180,17 +163,9 @@ void main() {
       await wipe.resetProgress();
 
       final after = await settings.getSettings();
-      expect(after.totalXp, before.totalXp);
       expect(after.themeMode, before.themeMode);
       expect(after.onboardingCompleted, before.onboardingCompleted);
-    });
-
-    test('clears the tables the snapshot has not replaced yet', () async {
-      await wipe.resetProgress();
-
-      expect(await lessons.getAllCompleted(), isEmpty);
-      expect(await modules.isModuleXpAwarded('m1'), false);
-      expect(await cards.getAllCollectedCardIds(), isEmpty);
+      expect(after.soundEnabled, before.soundEnabled);
     });
   });
 
@@ -231,7 +206,6 @@ void main() {
       expect(after.themeMode, AppThemeMode.fallback);
       expect(after.onboardingCompleted, false);
       expect(after.learnerName, isNull);
-      expect(after.totalXp, 0);
     });
 
     test('clears the already-introduced bits together', () async {
@@ -270,14 +244,6 @@ void main() {
         await install.installedAt(),
         DateTime.fromMillisecondsSinceEpoch(_wipedAt),
       );
-    });
-
-    test('clears the tables the snapshot has not replaced yet', () async {
-      await wipe.deleteAccount();
-
-      expect(await lessons.getAllCompleted(), isEmpty);
-      expect(await modules.isModuleXpAwarded('m1'), false);
-      expect(await cards.getAllCollectedCardIds(), isEmpty);
     });
   });
 }
