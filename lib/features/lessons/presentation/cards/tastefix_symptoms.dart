@@ -41,6 +41,9 @@ class TastefixSymptoms extends StatelessWidget {
     if (reaction.isBalanced) {
       return Semantics(
         label: 'Result: $tastefixBalancedLabel',
+        // Announced, not merely relabelled: the cup changing is the feedback,
+        // and a reader whose focus sits on the choices would otherwise miss it.
+        liveRegion: true,
         excludeSemantics: true,
         child: FadeUp(
           child: _Chip(
@@ -54,6 +57,7 @@ class TastefixSymptoms extends StatelessWidget {
 
     return Semantics(
       label: 'Tastes: ${tags.join(', ')}',
+      liveRegion: reaction.isWorsened,
       excludeSemantics: true,
       child: Wrap(
         spacing: OffTokens.tastefixChipGap.value,

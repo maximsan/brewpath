@@ -196,8 +196,17 @@ PickerFraming _tastefixFraming(TastefixCard card) =>
     (outcome) => TastefixPanel(
       tags: card.tags,
       scenario: card.scenario,
-      reaction: tastefixReactionFor(outcome),
+      reaction: _cupAfter(outcome),
     );
+
+/// How the cup reads the pick: the picker grades the answer, the cup says what
+/// that did to it. Here rather than beside [TastefixReaction], which is kept
+/// clear of the picker so its helpers stay testable without a widget.
+TastefixReaction _cupAfter(PickOutcome outcome) => switch (outcome) {
+  PickOutcome.waiting => TastefixReaction.unfixed,
+  PickOutcome.right => TastefixReaction.relieved,
+  PickOutcome.wrong => TastefixReaction.worsened,
+};
 
 /// Only the question and what closes it: the symptoms and the setup are the
 /// cup's, drawn in the panel above rather than in a copy slot.

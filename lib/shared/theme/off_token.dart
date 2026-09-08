@@ -325,6 +325,18 @@ abstract final class OffTokens {
     reason: "the cup panel sets `'16px 18px 15px'`",
   );
 
+  /// The gap the cup panel keeps between its own lines, and beside its chips.
+  static const OffToken<double> tastefixPanelGap = OffToken(
+    10,
+    reason: 'the cup panel stacks its lines and its chip row at `gap: 10`',
+  );
+
+  /// The room the cup panel leaves before the question under it.
+  static const OffToken<double> tastefixPanelToPrompt = OffToken(
+    20,
+    reason: "the question under the cup sets `margin: '20px 0 0'`",
+  );
+
   /// Every sanctioned exception, so the register can be tested as a whole.
   static const register = <OffToken<Object>>[
     rewardedAdCanvas,
@@ -371,5 +383,7 @@ abstract final class OffTokens {
     tastefixChipGap,
     tastefixPanelRadius,
     tastefixPanelPadding,
+    tastefixPanelGap,
+    tastefixPanelToPrompt,
   ];
 }

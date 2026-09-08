@@ -4,6 +4,7 @@ import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
 import 'package:brew_path/features/lessons/presentation/cards/choice_list.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 
 /// A line the card writes once it knows how the answer went. Both of
@@ -159,7 +160,7 @@ class _GradedPickerState extends State<GradedPicker> {
       children: [
         if (widget.framing case final framing?) ...[
           framing(_outcome),
-          const SizedBox(height: AppSpacing.md),
+          SizedBox(height: OffTokens.tastefixPanelToPrompt.value),
         ],
         if (copy.scenario != null) ...[
           Text(copy.scenario!, style: theme.textTheme.bodyLarge),

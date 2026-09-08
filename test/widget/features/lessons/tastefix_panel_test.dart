@@ -151,11 +151,28 @@ void main() {
       expect(scaleOf(tester), 1);
     });
 
+    testWidgets('rebuilding does not pile listeners on the controller', (
+      tester,
+    ) async {
+      await pump(tester, TastefixReaction.unfixed);
+      await pump(tester, TastefixReaction.worsened);
+
+      // A curve minted per build would leave one behind on every frame of the
+      // shake, and the ticker would outlive the card.
+      for (var frame = 0; frame < 8; frame++) {
+        await tester.pump(const Duration(milliseconds: 40));
+      }
+      await tester.pumpAndSettle();
+      await tester.pumpWidget(const SizedBox.shrink());
+
+      expect(tester.takeException(), isNull);
+    });
+
     testWidgets('reduced motion lands it in one frame', (tester) async {
       await pump(tester, TastefixReaction.unfixed, reduceMotion: true);
       await pump(tester, TastefixReaction.worsened, reduceMotion: true);
 
-      // Deep enough into the run that an unguarded shake would be at its widest.
+      // Deep enough in that an unguarded shake would be at its widest.
       await tester.pump(const Duration(milliseconds: 120));
       expect(shakeOf(tester), 0);
       for (final chip in tester.widgetList<AnimatedOpacity>(

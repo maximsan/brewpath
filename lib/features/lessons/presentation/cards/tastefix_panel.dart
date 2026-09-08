@@ -1,9 +1,7 @@
-import 'dart:async';
-
 import 'package:brew_path/features/lessons/presentation/cards/graded_picker.dart';
 import 'package:brew_path/features/lessons/presentation/cards/tastefix_reaction.dart';
+import 'package:brew_path/features/lessons/presentation/cards/tastefix_reaction_box.dart';
 import 'package:brew_path/features/lessons/presentation/cards/tastefix_symptoms.dart';
-import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
@@ -31,16 +29,23 @@ const double _balancedRule = 0.30;
 /// design's `color-mix(in oklab, var(--berry) 70%, var(--ink-mute))`.
 const double _stateLabelBerry = 0.70;
 
-/// Where the design's `160deg` gradient runs, and the stop it lands on.
+/// Where the design's `160deg` gradient runs, and the stop it lands on —
+/// `var(--surface) 68%` unfixed, and 70% once balanced.
 const Alignment _washBegin = Alignment(-0.342, -0.940);
 const Alignment _washEnd = Alignment(0.342, 0.940);
-const double _washStop = 0.7;
+const double _unfixedStop = 0.68;
+const double _balancedStop = 0.70;
+
+/// The panel's lift — the design's `0 1px 2px` at `var(--ink) 6%`.
+const double _liftBlur = 2;
+const double _liftDrop = 1;
+const double _liftInk = 0.06;
 
 /// The cup the round is asking about, which reacts to the fix chosen.
 ///
-/// Composed *around* [GradedPicker] rather than passed into it: the picker owns
-/// the latch and the one-signal contract, and this owns what the cup does about
-/// it. See #332.
+/// Handed to [GradedPicker] as framing rather than built into it: the picker
+/// still owns the latch and the one-signal contract, and reports the outcome
+/// this reads. See #332.
 class TastefixPanel extends StatelessWidget {
   /// Creates a [TastefixPanel].
   const TastefixPanel({
@@ -61,17 +66,18 @@ class TastefixPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final mood = context.mood;
     final balanced = reaction.isBalanced;
     final tint = balanced ? mood.sage : mood.berry;
+    final settle = MediaQuery.disableAnimationsOf(context)
+        ? Duration.zero
+        : tastefixSettleDuration;
 
     return TastefixReactionBox(
       reaction: reaction,
       child: AnimatedContainer(
-        duration: MediaQuery.disableAnimationsOf(context)
-            ? Duration.zero
-            : tastefixSettleDuration,
+        duration: settle,
+        curve: Curves.ease,
         padding: OffTokens.tastefixPanelPadding.value,
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -84,7 +90,7 @@ class TastefixPanel extends StatelessWidget {
               ),
               mood.surface,
             ],
-            stops: const [0, _washStop],
+            stops: [0, if (balanced) _balancedStop else _unfixedStop],
           ),
           border: Border.all(
             color: Color.alphaBlend(
@@ -95,12 +101,19 @@ class TastefixPanel extends StatelessWidget {
           borderRadius: BorderRadius.circular(
             OffTokens.tastefixPanelRadius.value,
           ),
+          boxShadow: [
+            BoxShadow(
+              color: mood.ink.withValues(alpha: _liftInk),
+              blurRadius: _liftBlur,
+              offset: const Offset(0, _liftDrop),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              balanced ? _fixed : _startingPoint,
+            AnimatedDefaultTextStyle(
+              duration: settle,
               style: AppText.label(
                 face: AppFace.mono,
                 color: balanced
@@ -108,10 +121,11 @@ class TastefixPanel extends StatelessWidget {
                     : Color.lerp(mood.inkMute, mood.berry, _stateLabelBerry),
                 tracking: AppTracking.hint,
               ),
+              child: Text(balanced ? _fixed : _startingPoint),
             ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(scenario, style: theme.textTheme.bodyMedium),
-            const SizedBox(height: AppSpacing.xs),
+            SizedBox(height: OffTokens.tastefixPanelGap.value),
+            Text(scenario, style: AppText.support(color: mood.ink)),
+            SizedBox(height: OffTokens.tastefixPanelGap.value),
             Row(
               children: [
                 Text(
@@ -122,7 +136,7 @@ class TastefixPanel extends StatelessWidget {
                     tracking: AppTracking.hint,
                   ),
                 ),
-                const SizedBox(width: AppSpacing.sm),
+                SizedBox(width: OffTokens.tastefixPanelGap.value),
                 Flexible(
                   child: TastefixSymptoms(tags: tags, reaction: reaction),
                 ),
@@ -131,81 +145,6 @@ class TastefixPanel extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-/// Plays the panel's own reaction once: a pulse when the fix worked, a shake
-/// when it did not, and nothing at all under reduced motion.
-class TastefixReactionBox extends StatefulWidget {
-  /// Wraps [child] in the reaction [reaction] calls for.
-  const TastefixReactionBox({
-    required this.reaction,
-    required this.child,
-    super.key,
-  });
-
-  /// How the cup answered the fix.
-  final TastefixReaction reaction;
-
-  /// The panel that moves.
-  final Widget child;
-
-  @override
-  State<TastefixReactionBox> createState() => _TastefixReactionBoxState();
-}
-
-class _TastefixReactionBoxState extends State<TastefixReactionBox>
-    with SingleTickerProviderStateMixin {
-  /// Rests at 0, where both readings are the identity, so a card that is never
-  /// answered draws exactly what it would have drawn without a controller.
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: tastefixShakeDuration,
-  );
-
-  @override
-  void didUpdateWidget(TastefixReactionBox oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    final reaction = widget.reaction;
-    if (reaction == oldWidget.reaction ||
-        reaction == TastefixReaction.unfixed) {
-      return;
-    }
-    // Reduced motion lands the reaction in one frame: the chips and the panel
-    // are already in their answered state, and only the movement is dropped.
-    if (MediaQuery.disableAnimationsOf(context)) return;
-    _controller.duration = reaction.isBalanced
-        ? tastefixPulseDuration
-        : tastefixShakeDuration;
-    unawaited(_controller.forward(from: 0));
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final eased = CurvedAnimation(
-      parent: _controller,
-      curve: widget.reaction.isBalanced ? Curves.easeOut : Curves.easeInOut,
-    );
-
-    return AnimatedBuilder(
-      animation: eased,
-      builder: (context, child) => widget.reaction.isBalanced
-          ? Transform.scale(
-              scale: tastefixPulseScale(eased.value),
-              child: child,
-            )
-          : Transform.translate(
-              offset: Offset(tastefixShakeOffset(eased.value), 0),
-              child: child,
-            ),
-      child: widget.child,
     );
   }
 }

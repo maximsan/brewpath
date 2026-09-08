@@ -56,7 +56,7 @@ The cherry-anatomy work ([§6.1](06-content.md), `m1l7`) added eight tokens to w
 
 The separation from theme tokens is deliberate: keeping cherry/bean colours out of `--warn` is what lets `--warn` mean exactly one thing.
 
-## Typography — 3 families, one 9-step ladder, nothing off-ladder
+## Typography — 3 families, one 10-step ladder, nothing off-ladder
 - **Fraunces** (serif, variable) — display, weight 400
 - **IBM Plex Sans** — body 400, controls 500
 - **IBM Plex Mono** — numerals, labels, smallcaps, weight 500, tabular-nums
@@ -66,6 +66,7 @@ The separation from theme tokens is deliberate: keeping cherry/bean colours out 
 | `--t-hero` | 56px | mono hero numeral, celebration only |
 | `--t-display` | 30px | screen title |
 | `--t-title` | 26px | card / section title |
+| `--t-subtitle` | 22px | sub-title between title and heading |
 | `--t-heading` | 19px | card & row heading |
 | `--t-lead` | 17px | lead paragraph |
 | `--t-body` | 15px | body, controls |

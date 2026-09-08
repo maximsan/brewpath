@@ -1,7 +1,5 @@
 import 'dart:ui';
 
-import 'package:brew_path/features/lessons/presentation/cards/graded_picker.dart';
-
 /// How the cup answered the fix the learner committed to.
 ///
 /// Its own type rather than a nullable bool: *not yet asked* and *asked and
@@ -22,14 +20,6 @@ enum TastefixReaction {
   /// Whether the symptoms are drawn dimmed.
   bool get isWorsened => this == TastefixReaction.worsened;
 }
-
-/// How the cup reads a [PickOutcome] — the picker grades the answer, the cup
-/// says what that did to it.
-TastefixReaction tastefixReactionFor(PickOutcome outcome) => switch (outcome) {
-  PickOutcome.waiting => TastefixReaction.unfixed,
-  PickOutcome.right => TastefixReaction.relieved,
-  PickOutcome.wrong => TastefixReaction.worsened,
-};
 
 /// The design's `duration: 380` on the panel's shake.
 const Duration tastefixShakeDuration = Duration(milliseconds: 380);
