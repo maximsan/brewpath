@@ -11,6 +11,7 @@ import 'package:brew_path/features/lessons/presentation/lesson_completion_beat.d
 import 'package:brew_path/features/lessons/presentation/lesson_completion_body.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_screen.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_tree.dart';
+import 'package:brew_path/features/lessons/presentation/reward_points_line.dart';
 import 'package:brew_path/features/progress/domain/activity_recorder.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
@@ -402,10 +403,43 @@ void main() {
       expect(tree.grows, isFalse);
       expect(
         find.text(
-          LessonCompletionTree.stillTreeLine(_lessonCount - 1).toUpperCase(),
+          TreeStageCountdown.stillTreeLine(_lessonCount - 1).toUpperCase(),
         ),
         findsOneWidget,
       );
+    });
+
+    testWidgets('puts what the run paid above that countdown', (tester) async {
+      // The design orders the beat under the tree payout-then-countdown, so
+      // the points sit directly under the thing they fed. Asserted on the
+      // painted positions, because a Column reordered by mistake still draws
+      // both and every other assertion here would still pass.
+      final container = _buildContainer();
+      addTearDown(container.dispose);
+
+      await pumpCompletion(tester, container);
+
+      // The painted lines, not their boxes: each brings its gap as internal
+      // padding, so a box top sits exactly on what precedes it.
+      final points = tester
+          .getTopLeft(
+            find.descendant(
+              of: find.byType(RewardPointsLine),
+              matching: find.byType(Text),
+            ),
+          )
+          .dy;
+      final countdown = tester
+          .getTopLeft(
+            find.text(
+              TreeStageCountdown.stillTreeLine(_lessonCount - 1).toUpperCase(),
+            ),
+          )
+          .dy;
+      final tree = tester.getBottomLeft(find.byType(GrowingTree)).dy;
+
+      expect(points, greaterThanOrEqualTo(tree));
+      expect(countdown, greaterThan(points));
     });
 
     // A growing tree on *this* screen needs a run that crosses a threshold

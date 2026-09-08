@@ -101,6 +101,9 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **The lesson ending puts what you earned under the tree it fed.** The points
+  and the *lessons to the next stage* countdown were the wrong way round, so
+  the payout sat a line further from the tree than the design places it.
 - The loading screen no longer flashes a sleeping Roasty and the tap cue for a
   frame before the app opens: the advance is decided at the end of the wake-up,
   not after the loop has been drawn back at its start.

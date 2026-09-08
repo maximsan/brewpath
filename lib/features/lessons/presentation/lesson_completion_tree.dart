@@ -16,6 +16,48 @@ class LessonCompletionTree extends StatelessWidget {
   const LessonCompletionTree({
     required this.fromStage,
     required this.toStage,
+    super.key,
+  });
+
+  /// Where the tree stood before this run.
+  final int fromStage;
+
+  /// Where it stands now.
+  final int toStage;
+
+  /// The size the design draws the tree at on this screen.
+  static const double treeSize = 240;
+
+  /// Whether the run moved the tree — the *picture*, not the stored number.
+  bool get _grew => treeStageRises(from: fromStage, to: toStage);
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      label: _grew
+          ? 'Your coffee tree grew to stage $toStage'
+          : 'Your coffee tree, stage $toStage',
+      excludeSemantics: true,
+      child: GrowingTree(
+        fromStage: fromStage,
+        toStage: toStage,
+        size: treeSize,
+      ),
+    );
+  }
+}
+
+/// How far the next stage is, for a tree that did not move.
+///
+/// **Under the points, not over them.** The design orders the beat beneath the
+/// tree as payout then countdown, so what the run earned is what sits directly
+/// under the thing it fed; putting the countdown first pushed the points a
+/// line further from the tree they grew.
+class TreeStageCountdown extends StatelessWidget {
+  /// Creates a [TreeStageCountdown].
+  const TreeStageCountdown({
+    required this.fromStage,
+    required this.toStage,
     required this.lessonsToNextStage,
     super.key,
   });
@@ -30,8 +72,8 @@ class LessonCompletionTree extends StatelessWidget {
   /// climb.
   final int? lessonsToNextStage;
 
-  /// The size the design draws the tree at on this screen.
-  static const double treeSize = 240;
+  /// The room the design leaves above the line (`marginTop: 8`).
+  static const double gapAbove = AppSpacing.xs;
 
   /// What a still tree says. The design states the reason: *"Most completions
   /// do not cross a stage threshold. Say how far the next one is, so a still
@@ -39,36 +81,20 @@ class LessonCompletionTree extends StatelessWidget {
   static String stillTreeLine(int lessons) =>
       '$lessons ${lessons == 1 ? 'lesson' : 'lessons'} to the next stage';
 
-  /// Whether the run moved the tree — the *picture*, not the stored number.
-  bool get _grew => treeStageRises(from: fromStage, to: toStage);
-
   @override
   Widget build(BuildContext context) {
     final toNext = lessonsToNextStage;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Semantics(
-          label: _grew
-              ? 'Your coffee tree grew to stage $toStage'
-              : 'Your coffee tree, stage $toStage',
-          excludeSemantics: true,
-          child: GrowingTree(
-            fromStage: fromStage,
-            toStage: toStage,
-            size: treeSize,
-          ),
-        ),
-        // Only when the tree held still, and only while there is a next stage
-        // to reach: a finished climb has nothing to count down to.
-        if (!_grew && toNext != null) ...[
-          const SizedBox(height: AppSpacing.xs),
-          SmallcapsLabel(
-            stillTreeLine(toNext),
-            color: context.mood.inkMute,
-          ),
-        ],
-      ],
+    // Only when the tree held still, and only while there is a next stage to
+    // reach: a finished climb has nothing to count down to.
+    if (treeStageRises(from: fromStage, to: toStage) || toNext == null) {
+      return const SizedBox.shrink();
+    }
+    return Padding(
+      padding: const EdgeInsets.only(top: gapAbove),
+      child: SmallcapsLabel(
+        stillTreeLine(toNext),
+        color: context.mood.inkMute,
+      ),
     );
   }
 }
