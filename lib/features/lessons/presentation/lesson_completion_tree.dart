@@ -89,11 +89,15 @@ class TreeStageCountdown extends StatelessWidget {
     if (treeStageRises(from: fromStage, to: toStage) || toNext == null) {
       return const SizedBox.shrink();
     }
+    // Centred by this widget rather than by whatever hosts it: the body lays
+    // its column out stretched, so a label left to itself goes flush left.
     return Padding(
       padding: const EdgeInsets.only(top: gapAbove),
-      child: SmallcapsLabel(
-        stillTreeLine(toNext),
-        color: context.mood.inkMute,
+      child: Center(
+        child: SmallcapsLabel(
+          stillTreeLine(toNext),
+          color: context.mood.inkMute,
+        ),
       ),
     );
   }

@@ -442,6 +442,32 @@ void main() {
       expect(countdown, greaterThan(points));
     });
 
+    testWidgets('centres that countdown under the tree', (tester) async {
+      // The body lays its column out stretched, so the line has to centre
+      // itself. It went flush left the first time it moved out of the tree's
+      // own column, which every other assertion here still passed through.
+      final container = _buildContainer();
+      addTearDown(container.dispose);
+
+      await pumpCompletion(tester, container);
+
+      final line = find.text(
+        TreeStageCountdown.stillTreeLine(_lessonCount - 1).toUpperCase(),
+      );
+      // The line's own box, not its position: stretched, it fills the column
+      // and its centre still lands mid-screen while the glyphs sit hard left.
+      // Hugging the text is what says it is centred.
+      // The glyphs, not the box: stretched, the label fills the column and its
+      // centre still lands mid-screen while the text sits hard against the
+      // gutter. Its left edge moving inward is what says it is centred.
+      final slot = tester.getTopLeft(find.byType(TreeStageCountdown)).dx;
+      expect(tester.getTopLeft(line).dx, greaterThan(slot));
+      expect(
+        tester.getCenter(line).dx,
+        moreOrLessEquals(tester.getCenter(find.byType(GrowingTree)).dx),
+      );
+    });
+
     // A growing tree on *this* screen needs a run that crosses a threshold
     // without closing its module, which a one-module fixture cannot produce:
     // its only threshold is the module's own completion, and that run plays
