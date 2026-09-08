@@ -11,10 +11,9 @@ part of 'vocab_providers.dart';
 /// Every term the learner has answered, with the stamps that decide whether
 /// it is still owed a review.
 ///
-/// A provider of its own rather than a read inside [vocabPools], for the
-/// reason [savedKeysProvider] is one: it is the seam a drill invalidates after
-/// logging an answer, and reading the snapshot inline would leave a second
-/// future in flight that nothing awaits when an earlier one fails.
+/// Its own provider, like [savedKeysProvider]: it is the seam a drill
+/// invalidates after logging an answer, and an inline snapshot read would
+/// leave a second future in flight that nothing awaits.
 
 @ProviderFor(vocabAnswers)
 final vocabAnswersProvider = VocabAnswersProvider._();
@@ -22,10 +21,9 @@ final vocabAnswersProvider = VocabAnswersProvider._();
 /// Every term the learner has answered, with the stamps that decide whether
 /// it is still owed a review.
 ///
-/// A provider of its own rather than a read inside [vocabPools], for the
-/// reason [savedKeysProvider] is one: it is the seam a drill invalidates after
-/// logging an answer, and reading the snapshot inline would leave a second
-/// future in flight that nothing awaits when an earlier one fails.
+/// Its own provider, like [savedKeysProvider]: it is the seam a drill
+/// invalidates after logging an answer, and an inline snapshot read would
+/// leave a second future in flight that nothing awaits.
 
 final class VocabAnswersProvider
     extends
@@ -40,10 +38,9 @@ final class VocabAnswersProvider
   /// Every term the learner has answered, with the stamps that decide whether
   /// it is still owed a review.
   ///
-  /// A provider of its own rather than a read inside [vocabPools], for the
-  /// reason [savedKeysProvider] is one: it is the seam a drill invalidates after
-  /// logging an answer, and reading the snapshot inline would leave a second
-  /// future in flight that nothing awaits when an earlier one fails.
+  /// Its own provider, like [savedKeysProvider]: it is the seam a drill
+  /// invalidates after logging an answer, and an inline snapshot read would
+  /// leave a second future in flight that nothing awaits.
   VocabAnswersProvider._()
     : super(
         from: null,
