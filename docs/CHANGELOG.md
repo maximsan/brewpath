@@ -61,6 +61,27 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **A lesson, a mini-game or a drill fills the screen.** All six used to open
+  under Flutter's own bar, a strip that took its own space at the top of the
+  page and left a hairline of nothing above it on a notched phone. The bar now
+  floats over the page: on a lesson, a mini-game or either drill it stays
+  filled and reaches up behind the status bar, so the card slides under it
+  cleanly; on the mini-game introduction and Term of the Day it shows nothing
+  until you scroll, then fades in blurred, the same way Settings and the Atlas
+  do. What each bar carries is unchanged — the way out, the roasting bean and
+  its count, and the save or shuffle beside them.
+
+  The mini-game introduction no longer prints *Mini-game* in its bar. The
+  design keeps a screen's name in the page below, never in the bar, and this
+  one already names the game underneath.
+
+- **About opens on the app rather than on the word About.** The page you reach
+  from Settings put *About* at the top, left-aligned, which named the row you
+  tapped rather than the thing the page is about. It now opens the way the
+  design draws it: Roasty, then **BrewPath**, then *A field guide to coffee*,
+  the three centred together. *About* stays in the bar once you scroll, as on
+  every other page behind Settings.
+
 - **Today's card is the design's.** A surface card with a rule around it: the
   module as its eyebrow, the title, the picture, one line saying where the
   lesson sits and how long it takes (`LESSON 1/7 · ~3 MIN`), and a full-width

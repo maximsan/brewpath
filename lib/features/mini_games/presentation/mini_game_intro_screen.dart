@@ -1,9 +1,11 @@
+import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
-import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
+import 'package:brew_path/core/widgets/float_topbar.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
+import 'package:brew_path/core/widgets/scroll_flag_scope.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_providers.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_run.dart';
 import 'package:brew_path/shared/models/content/mini_game_format.dart';
@@ -12,6 +14,10 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+/// Where the design opens this page, measured from the top of the screen —
+/// `padding-top: 108`.
+const double _designScrollPad = 108;
 
 /// What the game is and how it is played, before any round runs.
 ///
@@ -28,37 +34,53 @@ class MiniGameIntroScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final format = ref.watch(miniGameFormatProvider(formatId));
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mini-game'),
-        leading: IconButton(
-          icon: const IconMark(AppIcon.close),
-          tooltip: 'Close',
-          onPressed: () => context.canPop()
-              ? context.pop()
-              : context.goNamed(AppRoutes.learn.name),
+    return ScrollFlagScope(
+      builder: (context, {required isScrolled}) => Scaffold(
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            _intro(format),
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              // No title: the screen's own name is the heading in the body
+              // below, which is where the design keeps it.
+              child: FloatTopbar(
+                icon: AppIcon.close,
+                label: AppLabels.close,
+                isScrolled: isScrolled,
+                onPressed: () => context.canPop()
+                    ? context.pop()
+                    : context.goNamed(AppRoutes.learn.name),
+              ),
+            ),
+          ],
         ),
       ),
-      body: format.when(
-        loading: () => Semantics(
-          label: 'Loading the mini-game',
-          child: const LoadingIndicator(),
-        ),
-        error: (error, _) => Semantics(
-          label: 'That mini-game could not be loaded.',
-          excludeSemantics: true,
-          child: ErrorView(message: '$error'),
-        ),
-        data: (data) => data == null
-            ? Semantics(
-                label: 'That mini-game is not in the catalog.',
-                excludeSemantics: true,
-                child: const ErrorView(
-                  message: 'That mini-game is not in the catalog.',
-                ),
-              )
-            : _Intro(format: data),
+    );
+  }
+
+  Widget _intro(AsyncValue<MiniGameFormat?> format) {
+    return format.when(
+      loading: () => Semantics(
+        label: 'Loading the mini-game',
+        child: const LoadingIndicator(),
       ),
+      error: (error, _) => Semantics(
+        label: 'That mini-game could not be loaded.',
+        excludeSemantics: true,
+        child: ErrorView(message: '$error'),
+      ),
+      data: (data) => data == null
+          ? Semantics(
+              label: 'That mini-game is not in the catalog.',
+              excludeSemantics: true,
+              child: const ErrorView(
+                message: 'That mini-game is not in the catalog.',
+              ),
+            )
+          : _Intro(format: data),
     );
   }
 }
@@ -76,11 +98,17 @@ class _Intro extends StatelessWidget {
     final mood = context.mood;
 
     return SafeArea(
+      top: false,
       child: Column(
         children: [
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(AppSpacing.lg),
+              padding:
+                  const EdgeInsets.all(AppSpacing.lg) +
+                  FloatTopbar.scrollPadding(
+                    context,
+                    designScrollPad: _designScrollPad,
+                  ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

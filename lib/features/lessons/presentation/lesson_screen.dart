@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:brew_path/core/icons/app_icon.dart';
-import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
+import 'package:brew_path/core/widgets/float_topbar.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/roast_meter.dart';
 import 'package:brew_path/features/lessons/domain/card_seed.dart';
@@ -17,6 +17,10 @@ import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+/// Where the design opens a run's content, measured from the top of the
+/// screen — `padding-top: 134`, clear of the bar sealed over it.
+const double _designScrollPad = 134;
 
 /// Immersive single-lesson flow: plays each card, then routes to completion.
 class LessonScreen extends ConsumerStatefulWidget {
@@ -96,40 +100,44 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
     return FutureBuilder<LessonModel?>(
       future: _lesson,
       builder: (context, snapshot) => Scaffold(
-        appBar: AppBar(
-          // The player is a surface you leave, not a page you came from: the
-          // design gives it a close mark where a pushed screen would have a
-          // back arrow.
-          leading: IconButton(
-            icon: const IconMark(AppIcon.close),
-            tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-            onPressed: () => context.pop(),
-          ),
-          title: _position(snapshot.data),
-          actions: [
-            // The design bookmarks a lesson **while it is being read**, not
-            // off a list afterwards.
-            if (snapshot.data case final lesson?)
-              SavedBookmarkButton(
-                savedKey: formatSavedKey(SavedKind.lesson, lesson.id),
-                label: lesson.title,
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            _buildBody(context, snapshot),
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              // The player is a surface you leave, not a page you came from:
+              // the design gives it a close mark where a pushed screen would
+              // have a back arrow.
+              child: FloatTopbar.sealed(
+                icon: AppIcon.close,
+                label: MaterialLocalizations.of(context).closeButtonTooltip,
+                onPressed: () => context.pop(),
+                centre: _position(snapshot.data),
+                // The design bookmarks a lesson **while it is being read**,
+                // not off a list afterwards.
+                trailing: switch (snapshot.data) {
+                  final lesson? => SavedBookmarkButton(
+                    savedKey: formatSavedKey(SavedKind.lesson, lesson.id),
+                    label: lesson.title,
+                  ),
+                  null => null,
+                },
               ),
+            ),
           ],
         ),
-        body: _buildBody(context, snapshot),
       ),
     );
   }
 
   /// The bar's centre: where the learner is, once there is a lesson to be in.
   ///
-  /// The design puts the position *in the bar* and nothing else with it — no
-  /// lesson title, no module eyebrow, because the card is the screen. It is
-  /// the same [RoastMeter] the mini-game
-  /// player mounts, so the app has one idea of how-far-through.
-  ///
-  /// Null while the lesson is still loading — the bar keeps its close mark and
-  /// shows nothing else, rather than a position out of thin air.
+  /// The position and nothing else — no title, no eyebrow, because the card is
+  /// the screen. Null while the lesson loads, rather than a position out of
+  /// thin air.
   Widget? _position(LessonModel? lesson) {
     if (lesson == null) return null;
 
@@ -178,9 +186,17 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
       onContinue: () => _onContinue(lesson),
     );
 
+    // Bottom only: the bar covers the top inset itself, and the scroll's own
+    // padding starts the card below it while letting it pass underneath.
     return SafeArea(
+      top: false,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
+        padding:
+            const EdgeInsets.all(AppSpacing.lg) +
+            FloatTopbar.scrollPadding(
+              context,
+              designScrollPad: _designScrollPad,
+            ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

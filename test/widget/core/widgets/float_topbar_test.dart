@@ -108,4 +108,92 @@ void main() {
       expect(find.byTooltip('Flip back'), findsOneWidget);
     });
   });
+
+  group('a sealed bar', () {
+    testWidgets('is filled from the first frame, never scroll-dependent', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _host(
+          FloatTopbar.sealed(
+            icon: AppIcon.close,
+            label: 'Close',
+            onPressed: () {},
+          ),
+        ),
+      );
+
+      expect(_fill(tester), MoodColors.darkRoast.bg);
+    });
+
+    testWidgets('pays for no filter — an opaque page hides what passes under', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _host(
+          FloatTopbar.sealed(
+            icon: AppIcon.close,
+            label: 'Close',
+            onPressed: () {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        find.descendant(
+          of: find.byType(FloatTopbar),
+          matching: find.byType(BackdropFilter),
+        ),
+        findsNothing,
+      );
+    });
+  });
+
+  group('the grid', () {
+    testWidgets('carries a centre and a trailing control', (tester) async {
+      await tester.pumpWidget(
+        _host(
+          FloatTopbar.sealed(
+            icon: AppIcon.close,
+            label: 'Close',
+            onPressed: () {},
+            centre: const Text('01 / 08'),
+            trailing: IconButton(
+              onPressed: () {},
+              tooltip: 'Save',
+              icon: const Icon(Icons.bookmark_border),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('01 / 08'), findsOneWidget);
+      expect(find.byTooltip('Save'), findsOneWidget);
+    });
+
+    testWidgets('centres the middle even with no trailing control', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _host(
+          FloatTopbar.sealed(
+            icon: AppIcon.close,
+            label: 'Close',
+            onPressed: () {},
+            centre: const Text('01 / 08'),
+          ),
+        ),
+      );
+
+      // The design reserves the third column whether or not it holds
+      // anything, so a bar with one side control does not push its centre off
+      // centre.
+      final bar = tester.getRect(find.byType(FloatTopbar));
+      expect(
+        tester.getCenter(find.text('01 / 08')).dx,
+        moreOrLessEquals(bar.center.dx, epsilon: 0.5),
+      );
+    });
+  });
 }

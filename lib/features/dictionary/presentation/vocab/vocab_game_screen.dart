@@ -4,10 +4,10 @@ import 'package:brew_path/app/day_surfaces.dart';
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
-import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/utils/drill_bands.dart';
 import 'package:brew_path/core/widgets/drill_results_view.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
+import 'package:brew_path/core/widgets/float_topbar.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/roast_meter.dart';
 import 'package:brew_path/features/dictionary/domain/vocab_completion.dart';
@@ -24,16 +24,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+/// Where the design opens a drill's content, measured from the top of the
+/// screen — `padding-top: 134`, clear of the bar sealed over it.
+const double _designScrollPad = 134;
+
 /// *Guess the term* — setup, the rounds, then the score.
 ///
-/// The whole drill is three states of one screen rather than three routes: the
-/// score never outlives the run, so routing to it would mean handing a number
-/// to the router only to hand it straight back — the same shape the mini-game
-/// player takes.
-///
-/// The drill holds a single seed, minted when the rounds are dealt and
-/// re-minted by Play again, which decides the terms asked, the wrong answers
-/// offered, and the order of the four options. Nothing about it is persisted.
+/// Three states of one screen rather than three routes, the shape the
+/// mini-game player takes: the score never outlives the run. One seed, minted
+/// at the deal and re-minted by Play again, decides the terms asked, the wrong
+/// answers offered and the order of the options; none of it is persisted.
 class VocabGameScreen extends ConsumerStatefulWidget {
   /// Creates a [VocabGameScreen].
   const VocabGameScreen({super.key});
@@ -129,11 +129,9 @@ class _VocabGameScreenState extends ConsumerState<VocabGameScreen> {
 
   /// Leaves the drill, back to wherever it was opened from.
   ///
-  /// Both entry points push, so the usual answer is a pop — which returns the
-  /// learner to the dictionary they were browsing rather than stranding them
-  /// on Today having lost their place. Keep Sharp's CTA *goes* rather than
-  /// pushes, like every other recommendation destination, and that is the case
-  /// the fallback is for.
+  /// Both entry points push, so a pop returns the learner to the dictionary
+  /// they were browsing rather than stranding them on Today. Keep Sharp's CTA
+  /// *goes* rather than pushes, which is what the fallback is for.
   void _done() {
     final router = GoRouter.of(context);
     if (router.canPop()) {
@@ -168,31 +166,47 @@ class _VocabGameScreenState extends ConsumerState<VocabGameScreen> {
     final total = _rounds.length;
 
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const IconMark(AppIcon.close),
-          tooltip: AppLabels.close,
-          onPressed: _done,
-        ),
-        title: _playing && _index < total
-            ? RoastMeter(
-                position: _index + 1,
-                total: total,
-                semanticsLabel: VocabCopy.progress(_index + 1, total),
-              )
-            : null,
-      ),
-      body: pools.when(
-        loading: () => Semantics(
-          label: VocabCopy.loading,
-          child: const LoadingIndicator(),
-        ),
-        error: (error, _) => Semantics(
-          label: VocabCopy.loadFailed,
-          excludeSemantics: true,
-          child: ErrorView(message: '$error'),
-        ),
-        data: _buildDrill,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          // The room the bar takes. Added here rather than inside the drill,
+          // whose results view is shared with the other two runs.
+          Padding(
+            padding: FloatTopbar.scrollPadding(
+              context,
+              designScrollPad: _designScrollPad,
+            ),
+            child: pools.when(
+              loading: () => Semantics(
+                label: VocabCopy.loading,
+                child: const LoadingIndicator(),
+              ),
+              error: (error, _) => Semantics(
+                label: VocabCopy.loadFailed,
+                excludeSemantics: true,
+                child: ErrorView(message: '$error'),
+              ),
+              data: _buildDrill,
+            ),
+          ),
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: FloatTopbar.sealed(
+              icon: AppIcon.close,
+              label: AppLabels.close,
+              onPressed: _done,
+              centre: _playing && _index < total
+                  ? RoastMeter(
+                      position: _index + 1,
+                      total: total,
+                      semanticsLabel: VocabCopy.progress(_index + 1, total),
+                    )
+                  : null,
+            ),
+          ),
+        ],
       ),
     );
   }

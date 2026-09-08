@@ -1,10 +1,12 @@
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
+import 'package:brew_path/core/widgets/float_topbar.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_screen.dart';
 import 'package:brew_path/features/saved/presentation/saved_bookmark_button.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -88,7 +90,7 @@ void main() {
     await pumpLesson(tester, testLesson());
 
     Finder markInBar(AppIcon icon) => find.descendant(
-      of: find.byType(AppBar),
+      of: find.byType(FloatTopbar),
       matching: find.byWidgetPredicate(
         (widget) => widget is IconMark && widget.icon == icon,
       ),
@@ -107,10 +109,30 @@ void main() {
 
     expect(
       find.descendant(
-        of: find.byType(AppBar),
+        of: find.byType(FloatTopbar),
         matching: find.byType(SavedBookmarkButton),
       ),
       findsOneWidget,
+    );
+  });
+
+  testWidgets('seals the band over the card, from the first frame', (
+    tester,
+  ) async {
+    // The card scrolls under the bar rather than starting below it, so the
+    // fill is what keeps it from showing through at the top of the screen.
+    await pumpLesson(tester, testLesson());
+
+    expect(find.byType(AppBar), findsNothing);
+    final band = tester.widget<DecoratedBox>(
+      find.descendant(
+        of: find.byType(FloatTopbar),
+        matching: find.byType(DecoratedBox),
+      ),
+    );
+    expect(
+      (band.decoration as BoxDecoration).color,
+      MoodColors.darkRoast.bg,
     );
   });
 

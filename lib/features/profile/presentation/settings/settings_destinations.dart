@@ -1,20 +1,17 @@
 /// The four screens the design's `ACCOUNT` and `SUPPORT` rows lead to.
 ///
-/// **They are frames, not features.** Each is reached from a row the design
-/// draws, so no row on Settings is dead; behind the row is the screen's real
-/// title and its real sections, with the parts the app has not built named
-/// rather than left blank. Two of them are waiting on seams that are
-/// deliberately closed — the payments service is a no-op and Firebase is gated
-/// off — and neither is opened here.
-///
-/// Help is the exception that is already real: the App Guide row lives here,
-/// which is where the design files it. It sat on the Settings root only because
-/// this screen did not exist yet, which its own comment said at the time.
+/// **They are frames, not features.** Behind each row is the screen's real
+/// sections, with what the app has not built named rather than left blank; the
+/// payments service is a no-op and Firebase is gated off, and neither seam is
+/// opened here. Help is already real, and files the App Guide row.
 library;
 
+import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/settings_nav_row.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
+import 'package:brew_path/features/companion/domain/roasty_state.dart';
+import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_sub_screen.dart';
@@ -101,18 +98,19 @@ class AboutScreen extends ConsumerWidget {
 
     return SettingsSubScreen(
       title: SettingsCopy.aboutTitle,
+      // The page is about the app, so it opens on the app — not on the menu
+      // row that reached it. `About` stays in the bar, as on every other page
+      // behind Settings.
+      opening: const _BrandBlock(),
       children: [
-        // The design's brand block: the kicker under the app's name, then what
-        // the app is.
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
-          child: SmallcapsLabel(SettingsCopy.aboutTagline),
-        ),
-        const SizedBox(height: AppSpacing.sm),
+        const SizedBox(height: AppSpacing.lg),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+          // Centred with the block above it, which is how the design sets the
+          // whole opening — the fine print below returns to the left.
           child: Text(
             SettingsCopy.aboutBlurb,
+            textAlign: TextAlign.center,
             style: AppText.body(mood: mood, color: mood.inkMute),
           ),
         ),
@@ -123,6 +121,46 @@ class AboutScreen extends ConsumerWidget {
         const SizedBox(height: AppSpacing.lg),
         SettingsVersionLine(version: version.asData?.value),
       ],
+    );
+  }
+}
+
+/// What About opens on: the mascot, the app's name, and what it is.
+///
+/// Centred as one block — the one place in Settings that departs from the
+/// left-aligned heading its four screens share.
+class _BrandBlock extends StatelessWidget {
+  const _BrandBlock();
+
+  /// The design's `Roasty size={132}`.
+  static const double _companionSize = 132;
+
+  @override
+  Widget build(BuildContext context) {
+    final mood = context.mood;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+      child: Column(
+        children: [
+          // Named by the app's name below it; the drawing says nothing a
+          // reader can act on.
+          const ExcludeSemantics(
+            child: Roasty(state: RoastyState.idle, size: _companionSize),
+          ),
+          const SizedBox(height: AppSpacing.base),
+          Semantics(
+            header: true,
+            child: Text(
+              AppLabels.appName,
+              textAlign: TextAlign.center,
+              style: AppText.display(mood: mood),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          const SmallcapsLabel(SettingsCopy.aboutTagline),
+        ],
+      ),
     );
   }
 }

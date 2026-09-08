@@ -1,13 +1,15 @@
 import 'dart:async';
 
+import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
-import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
+import 'package:brew_path/core/widgets/float_topbar.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
+import 'package:brew_path/core/widgets/scroll_flag_scope.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
@@ -29,6 +31,10 @@ import 'package:go_router/go_router.dart';
 /// The design's `Roasty size={120}` over the word.
 const double _companionSize = 120;
 
+/// Where the design opens this page, measured from the top of the screen —
+/// `padding-top: 84`, shorter because it opens on a kicker rather than a run.
+const double _designScrollPad = 84;
+
 /// The design's `CatGlyph size={15}` in the category kicker.
 const double _kickerGlyphSize = 15;
 
@@ -45,36 +51,48 @@ class TermOfDayScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final view = ref.watch(termOfDayViewProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const IconMark(AppIcon.close),
-          tooltip: 'Close',
-          onPressed: context.pop,
-        ),
-        actions: [
-          if (view.asData?.value case final resolved?)
-            SavedBookmarkButton(
-              savedKey: formatSavedKey(SavedKind.term, resolved.term.id),
-              label: resolved.term.term,
+    return ScrollFlagScope(
+      builder: (context, {required isScrolled}) => Scaffold(
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            view.when(
+              loading: () => Semantics(
+                label: "Loading today's term",
+                child: const LoadingIndicator(),
+              ),
+              error: (error, _) => Semantics(
+                label: "Today's term could not be loaded",
+                child: ErrorView(message: '$error'),
+              ),
+              // Nothing to offer: the pool is empty, which the banner that
+              // leads here would already have hidden itself for. Reachable
+              // only by a deep link, so it says so rather than showing an
+              // empty page.
+              data: (resolved) => resolved == null
+                  ? const ErrorView(message: 'There is no term for today.')
+                  : _TermOfDay(view: resolved),
             ),
-        ],
-      ),
-      body: view.when(
-        loading: () => Semantics(
-          label: "Loading today's term",
-          child: const LoadingIndicator(),
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: FloatTopbar(
+                icon: AppIcon.close,
+                label: AppLabels.close,
+                onPressed: context.pop,
+                isScrolled: isScrolled,
+                trailing: switch (view.asData?.value) {
+                  final resolved? => SavedBookmarkButton(
+                    savedKey: formatSavedKey(SavedKind.term, resolved.term.id),
+                    label: resolved.term.term,
+                  ),
+                  null => null,
+                },
+              ),
+            ),
+          ],
         ),
-        error: (error, _) => Semantics(
-          label: "Today's term could not be loaded",
-          child: ErrorView(message: '$error'),
-        ),
-        // Nothing to offer: the pool is empty, which the banner that leads
-        // here would already have hidden itself for. Reachable only by a deep
-        // link, so it says so rather than showing an empty page.
-        data: (resolved) => resolved == null
-            ? const ErrorView(message: 'There is no term for today.')
-            : _TermOfDay(view: resolved),
       ),
     );
   }
@@ -104,9 +122,12 @@ class _TermOfDay extends StatelessWidget {
       children: [
         Expanded(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.gutter,
-            ),
+            padding:
+                const EdgeInsets.symmetric(horizontal: AppSpacing.gutter) +
+                FloatTopbar.scrollPadding(
+                  context,
+                  designScrollPad: _designScrollPad,
+                ),
             child: Column(
               children: [
                 SmallcapsLabel(TermOfDayCopy.title, color: mood.accent),
