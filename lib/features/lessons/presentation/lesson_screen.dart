@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/float_topbar.dart';
@@ -17,10 +18,6 @@ import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-/// Where the design opens a run's content, measured from the top of the
-/// screen — `padding-top: 134`, clear of the bar sealed over it.
-const double _designScrollPad = 134;
 
 /// Immersive single-lesson flow: plays each card, then routes to completion.
 class LessonScreen extends ConsumerStatefulWidget {
@@ -113,7 +110,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
               // have a back arrow.
               child: FloatTopbar.sealed(
                 icon: AppIcon.close,
-                label: MaterialLocalizations.of(context).closeButtonTooltip,
+                label: AppLabels.close,
                 onPressed: () => context.pop(),
                 centre: _position(snapshot.data),
                 // The design bookmarks a lesson **while it is being read**,
@@ -191,12 +188,11 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
     return SafeArea(
       top: false,
       child: SingleChildScrollView(
-        padding:
-            const EdgeInsets.all(AppSpacing.lg) +
-            FloatTopbar.scrollPadding(
-              context,
-              designScrollPad: _designScrollPad,
-            ),
+        padding: FloatTopbar.scrollPadding(
+          context,
+          designScrollPad: FloatTopbar.runDesignScrollPad,
+          inset: AppSpacing.lg,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

@@ -61,19 +61,36 @@ class FloatTopbar extends StatelessWidget {
   /// The bar's own height, which is the header's.
   static const double height = 56;
 
-  /// The room a scroll under this bar leaves at its top, so the content opens
-  /// clear of the bar and still passes beneath it.
+  /// Where the design opens a run's content, measured from the top of the
+  /// screen: `padding-top: 134` on a lesson, a mini-game and both drills.
+  static const double runDesignScrollPad = 134;
+
+  /// The whole padding for a scroll this bar floats over: [inset] on the
+  /// sides and the foot, and a top that opens the content where the design
+  /// opens it — [designScrollPad], measured from the top of the screen.
   ///
-  /// [designScrollPad] is where the design starts that content, measured from
-  /// the top of the screen the way the design measures it.
+  /// Given whole rather than added to the caller's own insets, because adding
+  /// them lands the content a gutter below the design's own mark.
   static EdgeInsets scrollPadding(
     BuildContext context, {
     required double designScrollPad,
-  }) => EdgeInsets.only(
-    top:
-        MediaQuery.paddingOf(context).top +
+    double inset = 0,
+  }) => EdgeInsets.fromLTRB(
+    inset,
+    MediaQuery.paddingOf(context).top +
         HeaderChrome.belowDesignStatusBar(designScrollPad),
+    inset,
+    inset,
   );
+
+  /// The band the bar itself covers, for a body that brings its own gutter.
+  ///
+  /// Left outside that body rather than inside its scroll, which is the only
+  /// place it can go when the body is shared with screens wearing no bar. It
+  /// stops at the hairline, so content still leaves at the bar's own edge
+  /// rather than at a line below it.
+  static EdgeInsets barRoom(BuildContext context) =>
+      EdgeInsets.only(top: MediaQuery.paddingOf(context).top + height);
 
   @override
   Widget build(BuildContext context) {
@@ -111,8 +128,15 @@ class FloatTopbar extends StatelessWidget {
       ),
     );
 
+    // Filled with the page's own colour, so nothing shows through and no
+    // filter is paid for.
     if (_isSealed) {
-      return _Sealed(mood: mood, child: controls);
+      return _Band(
+        height: height + MediaQuery.paddingOf(context).top,
+        color: mood.bg,
+        ruleColor: mood.rule,
+        child: controls,
+      );
     }
 
     return ScrolledProgress(
@@ -138,23 +162,6 @@ class FloatTopbar extends StatelessWidget {
       },
     );
   }
-}
-
-/// The always-filled band: the page's own colour, so nothing shows through and
-/// no filter is paid for.
-class _Sealed extends StatelessWidget {
-  const _Sealed({required this.mood, required this.child});
-
-  final MoodColors mood;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) => _Band(
-    height: FloatTopbar.height + MediaQuery.paddingOf(context).top,
-    color: mood.bg,
-    ruleColor: mood.rule,
-    child: child,
-  );
 }
 
 /// The bar's painted band, reaching up under the status bar so what passes

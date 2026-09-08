@@ -24,10 +24,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// Where the design opens a drill's content, measured from the top of the
-/// screen — `padding-top: 134`, clear of the bar sealed over it.
-const double _designScrollPad = 134;
-
 /// *Guess the term* — setup, the rounds, then the score.
 ///
 /// Three states of one screen rather than three routes, the shape the
@@ -169,13 +165,10 @@ class _VocabGameScreenState extends ConsumerState<VocabGameScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // The room the bar takes. Added here rather than inside the drill,
-          // whose results view is shared with the other two runs.
+          // Added here rather than inside the drill, whose results view is
+          // shared with the other two runs.
           Padding(
-            padding: FloatTopbar.scrollPadding(
-              context,
-              designScrollPad: _designScrollPad,
-            ),
+            padding: FloatTopbar.barRoom(context),
             child: pools.when(
               loading: () => Semantics(
                 label: VocabCopy.loading,

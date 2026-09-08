@@ -27,10 +27,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// Where the design opens a drill's content, measured from the top of the
-/// screen — `padding-top: 134`, clear of the bar sealed over it.
-const double _designScrollPad = 134;
-
 /// The flashcards drill: the learner's saved terms, one card at a time.
 ///
 /// The deck is watched rather than snapshotted at open, so un-saving a term
@@ -127,14 +123,11 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // The room the bar takes, added here rather than inside the views
-          // below: the results and the empty state are shared with the other
-          // drills, and neither should know what is sealed over it.
+          // Added here rather than inside the views below: the results and the
+          // empty state are shared with the other drills, and neither should
+          // know what is sealed over it.
           Padding(
-            padding: FloatTopbar.scrollPadding(
-              context,
-              designScrollPad: _designScrollPad,
-            ),
+            padding: FloatTopbar.barRoom(context),
             child: deck.when(
               loading: () => Semantics(
                 label: 'Loading your deck',

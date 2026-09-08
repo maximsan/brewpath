@@ -22,10 +22,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// Where the design opens a run's content, measured from the top of the
-/// screen — `padding-top: 134`, clear of the bar sealed over it.
-const double _designScrollPad = 134;
-
 /// Runs one mini-game: its rounds in this run's order, then the results.
 ///
 /// One nonce per run — re-minted by Play again — decides the round order and
@@ -108,7 +104,12 @@ class _MiniGamePlayerScreenState extends ConsumerState<MiniGamePlayerScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          _rounds(rounds),
+          // Left once for every state under it — the run, the results and the
+          // loader each bring their own gutter below it.
+          Padding(
+            padding: FloatTopbar.barRoom(context),
+            child: _rounds(rounds),
+          ),
           Positioned(
             top: 0,
             left: 0,
@@ -186,17 +187,10 @@ class _MiniGamePlayerScreenState extends ConsumerState<MiniGamePlayerScreen> {
       onSolved: _onSolved,
       onContinue: _onContinue,
     );
-    // Bottom only: the bar covers the top inset, and the scroll's own padding
-    // opens the round below it while letting it pass underneath.
     return SafeArea(
       top: false,
       child: SingleChildScrollView(
-        padding:
-            const EdgeInsets.all(AppSpacing.lg) +
-            FloatTopbar.scrollPadding(
-              context,
-              designScrollPad: _designScrollPad,
-            ),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         // Keyed by round so each round mounts a fresh card: a latched card
         // must never be reused for the next statement.
         child: KeyedSubtree(key: ValueKey('${_nonce}_$_index'), child: card),

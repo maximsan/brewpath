@@ -1,6 +1,7 @@
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/replay_mark.dart';
+import 'package:brew_path/core/widgets/float_topbar.dart';
 import 'package:brew_path/core/widgets/ghost_button.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_intro_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_player_screen.dart';
@@ -563,6 +564,28 @@ void main() {
         reason: 'paying must not rearrange the shelf the learner has learned',
       );
     });
+  });
+
+  testWidgets('the intro opens on its own name, with nothing in the bar', (
+    tester,
+  ) async {
+    // The design keeps a screen's name in the body below, never in the bar,
+    // and this one already names the game underneath (#525).
+    await _pump(tester);
+
+    await tester.tap(find.text('Name the flavor notes'));
+    await _settle(tester);
+
+    expect(find.byType(AppBar), findsNothing);
+    expect(find.text('Mini-game'), findsNothing);
+    expect(
+      find.descendant(
+        of: find.byType(FloatTopbar),
+        matching: find.byType(Text),
+      ),
+      findsNothing,
+      reason: 'the bar carries a way out and nothing else',
+    );
   });
 
   testWidgets('a game whose renderer has landed offers Play', (tester) async {

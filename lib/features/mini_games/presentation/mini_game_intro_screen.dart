@@ -103,12 +103,11 @@ class _Intro extends StatelessWidget {
         children: [
           Expanded(
             child: SingleChildScrollView(
-              padding:
-                  const EdgeInsets.all(AppSpacing.lg) +
-                  FloatTopbar.scrollPadding(
-                    context,
-                    designScrollPad: _designScrollPad,
-                  ),
+              padding: FloatTopbar.scrollPadding(
+                context,
+                designScrollPad: _designScrollPad,
+                inset: AppSpacing.lg,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

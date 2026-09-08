@@ -122,12 +122,11 @@ class _TermOfDay extends StatelessWidget {
       children: [
         Expanded(
           child: SingleChildScrollView(
-            padding:
-                const EdgeInsets.symmetric(horizontal: AppSpacing.gutter) +
-                FloatTopbar.scrollPadding(
-                  context,
-                  designScrollPad: _designScrollPad,
-                ),
+            padding: FloatTopbar.scrollPadding(
+              context,
+              designScrollPad: _designScrollPad,
+              inset: AppSpacing.gutter,
+            ),
             child: Column(
               children: [
                 SmallcapsLabel(TermOfDayCopy.title, color: mood.accent),
