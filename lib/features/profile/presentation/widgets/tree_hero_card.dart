@@ -101,7 +101,11 @@ class TreeHeroCard extends StatelessWidget {
                 const SizedBox(height: AppSpacing.xs + 1),
                 Text(
                   _countLine.toUpperCase(),
-                  style: AppText.label(mood: mood, face: AppFace.mono),
+                  style: AppText.label(
+                    mood: mood,
+                    face: AppFace.mono,
+                    tracking: AppTracking.tag,
+                  ),
                 ),
               ],
             ),

@@ -46,7 +46,11 @@ class RoastMeter extends StatelessWidget {
           const SizedBox(width: AppSpacing.xs),
           Text(
             '${zeroPadded(position)} / ${zeroPadded(total)}',
-            style: AppText.label(mood: mood, face: AppFace.mono),
+            style: AppText.label(
+              mood: mood,
+              face: AppFace.mono,
+              tracking: AppTracking.hint,
+            ),
           ),
         ],
       ),

@@ -59,7 +59,11 @@ class TreeProgressBar extends StatelessWidget {
             const SmallcapsLabel(_label),
             Text(
               '$completed / $total',
-              style: AppText.label(mood: mood, face: AppFace.mono),
+              style: AppText.label(
+                mood: mood,
+                face: AppFace.mono,
+                tracking: AppTracking.meta,
+              ),
             ),
           ],
         ),
@@ -78,9 +82,36 @@ class TreeProgressBar extends StatelessWidget {
         ),
         if (nextStageName case final next?) ...[
           const SizedBox(height: AppSpacing.xs),
-          SmallcapsLabel('Next · $next'),
+          _NextStageLine(next),
         ],
       ],
+    );
+  }
+}
+
+/// What the tree grows into next — mono at `0.1em`, not the smallcaps rule the
+/// kicker above it follows, so the two lines do not read as a pair.
+class _NextStageLine extends StatelessWidget {
+  const _NextStageLine(this.stageName);
+
+  final String stageName;
+
+  @override
+  Widget build(BuildContext context) {
+    final line = 'Next · $stageName';
+
+    // Announced as written: uppercase is the type rule, not what it is called.
+    return Semantics(
+      label: line,
+      excludeSemantics: true,
+      child: Text(
+        line.toUpperCase(),
+        style: AppText.label(
+          mood: context.mood,
+          face: AppFace.mono,
+          tracking: AppTracking.tag,
+        ),
+      ),
     );
   }
 }
