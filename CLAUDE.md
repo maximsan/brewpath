@@ -178,6 +178,6 @@ Single-context: `CONTEXT.md` + `docs/adr/` at the repo root. See
 
 The body follows
 [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md); how a
-body file and screenshots get there is in
+body file gets there is in
 [`docs/18-git-and-github-workflow.md`](docs/18-git-and-github-workflow.md)
 under _Pull requests_.
