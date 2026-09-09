@@ -17,10 +17,10 @@ const String _allCorrect = 'All correct';
 
 /// The teaching card: a fill-in-the-blank sentence, prose, and a meta table.
 ///
-/// The words are picked from a bank **below** the sentence, all of them, and
-/// then committed with *Check answers* — at which point each slot marks the
-/// learner's own word. Still ungraded: nothing here reports success, because
-/// mastery counts the cards a learner can get wrong and this teaches (#546).
+/// The words are picked from a bank **below** the sentence and committed with
+/// *Check answers*, at which point each slot marks the learner's own word,
+/// right or wrong (ADR-0023). Still ungraded: nothing here reports success,
+/// because mastery counts the cards a learner can get wrong and this teaches.
 class ConceptCardView extends StatefulWidget {
   /// Creates a [ConceptCardView].
   const ConceptCardView({

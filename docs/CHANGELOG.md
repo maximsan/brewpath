@@ -114,7 +114,10 @@ You can always edit this file by hand instead — the helpers just save effort.
   between them, the card carries its own counter, dots, Skip and Next, and
   nothing behind it can be tapped while it runs. Leaving the tab ends it.
 - **A visual guide inside a lesson is the drawing alone.** The framed block no
-  longer repeats the kind and title the card already states above it.
+  longer repeats the kind and title the card already states above it, and the
+  bookmark under it now says *Save this guide* — then *Saved — review anytime
+  in Saved*, so the save names where it went. Every other bookmark in the app
+  is still the mark on its own.
 - **A Coffee Challenge titles itself one step below a lesson.** It is optional,
   and the design added a ladder step rather than let the two read as equals.
 - **The Notifications and Daily reminder rows are out of Settings for now.** They
