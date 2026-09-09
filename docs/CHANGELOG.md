@@ -110,20 +110,29 @@ You can always edit this file by hand instead — the helpers just save effort.
   settles the panel to sage and pulses it once. The reaction runs once, on the
   answer that latches the card, and reduced motion lands it in a single frame
   with the colours and the words still changing.
-
+- **A lesson's fill-in-the-blank sentence keeps your word.** Pick from the
+  words offered under the sentence, fill every blank, then *Check answers* —
+  and each blank marks what you actually chose. It used to swap in the right
+  word whichever you tapped, so a wrong answer looked like a correct one.
+  Nothing here is scored; the card teaches.
+- **A predict question's blank is a blank.** Where the question is written with
+  one, your guess drops into the sentence and reads back as your own claim,
+  which the lesson's closing card then confirms or overturns.
 - **The course ending counts what the spec asked for.** The completion moment
   now shows the learner's *longest* streak and the number of Module Rewards
   they earned, in place of the current streak and the total card count it
   stood in with. Both are derived — the longest run comes off the same fold as
   the current one, and a Module Reward is a card the content bank points at a
   module — so nothing new is stored and a reset still leaves nothing behind.
-
 - **The Today tour is the one the design draws.** A bordered frame travels
   between the four things it introduces instead of a spotlight snapping
   between them, the card carries its own counter, dots, Skip and Next, and
   nothing behind it can be tapped while it runs. Leaving the tab ends it.
 - **A visual guide inside a lesson is the drawing alone.** The framed block no
-  longer repeats the kind and title the card already states above it.
+  longer repeats the kind and title the card already states above it, and the
+  bookmark under it now says *Save this guide* — then *Saved — review anytime
+  in Saved*, so the save names where it went. Every other bookmark in the app
+  is still the mark on its own.
 - **A Coffee Challenge titles itself one step below a lesson.** It is optional,
   and the design added a ladder step rather than let the two read as equals.
 - **The Notifications and Daily reminder rows are out of Settings for now.** They

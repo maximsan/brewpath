@@ -6,6 +6,7 @@ import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/domain/saved_shelf.dart';
 import 'package:brew_path/features/saved/presentation/saved_gate.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,18 +14,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// The bookmark that puts one thing on the Saved shelf, and takes it off.
 ///
 /// One control for all three saveable kinds — a lesson, a term, a guide —
-/// because they differ only by their key. A second bookmark widget would be a
-/// second place for "what does filled mean" to drift.
-///
-/// Its state is **announced, not just drawn**: `Semantics.toggled` is what a
-/// screen reader reads, so saved-ness never rests on the icon alone.
+/// because they differ only by their key. Its state is **announced, not just
+/// drawn**: `Semantics.toggled` is what a screen reader reads, so saved-ness
+/// never rests on the icon alone.
 class SavedBookmarkButton extends ConsumerWidget {
   /// Creates a [SavedBookmarkButton] for [savedKey].
   const SavedBookmarkButton({
     required this.savedKey,
     required this.label,
+    this.caption,
     super.key,
   });
+
+  /// The design's mark beside a caption, smaller than the bare bookmark.
+  static const double _captionedMark = 16;
 
   /// The prefixed key this bookmark writes — see `saved_key.dart`.
   final String savedKey;
@@ -32,6 +35,11 @@ class SavedBookmarkButton extends ConsumerWidget {
   /// What the bookmark is *for*, said in full to a screen reader: the term or
   /// lesson title, so a page with more than one is not a row of "Save".
   final String label;
+
+  /// Words beside the mark, in the one place the design writes them: the
+  /// guide inside a lesson, where there is room to invite the save and to say
+  /// where it went. Every other host draws the mark alone.
+  final ({String saved, String unsaved})? caption;
 
   Future<void> _toggle(BuildContext context, WidgetRef ref) async {
     // **Awaited, not read for its current value.** Nothing watches the
@@ -68,6 +76,15 @@ class SavedBookmarkButton extends ConsumerWidget {
     // itself, which surfaces its error.
     final isSaved = ref.watch(isKeySavedProvider(savedKey)).value ?? false;
 
+    if (caption case final caption?) {
+      return _Captioned(
+        isSaved: isSaved,
+        caption: caption,
+        label: label,
+        onPressed: () => _toggle(context, ref),
+      );
+    }
+
     // `isSelected` rather than a wrapping `Semantics(toggled:)`: the button
     // builds its own semantics node, so an outer one does not merge into it
     // and the toggled state never reaches a screen reader. Letting the button
@@ -88,6 +105,55 @@ class SavedBookmarkButton extends ConsumerWidget {
       ),
       tooltip: isSaved ? 'Remove $label from Saved' : 'Save $label',
       onPressed: () => _toggle(context, ref),
+    );
+  }
+}
+
+/// The bookmark with words beside it — the design's save control on a guide
+/// inside a lesson. A text button rather than an icon one, because the words
+/// are half the target.
+class _Captioned extends StatelessWidget {
+  const _Captioned({
+    required this.isSaved,
+    required this.caption,
+    required this.label,
+    required this.onPressed,
+  });
+
+  final bool isSaved;
+  final ({String saved, String unsaved}) caption;
+  final String label;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final mood = context.mood;
+    final tone = isSaved ? mood.accent : mood.inkMute;
+    final words = isSaved ? caption.saved : caption.unsaved;
+
+    return Semantics(
+      button: true,
+      toggled: isSaved,
+      label: isSaved ? 'Remove $label from Saved' : 'Save $label',
+      excludeSemantics: true,
+      child: TextButton.icon(
+        onPressed: onPressed,
+        style: TextButton.styleFrom(
+          padding: EdgeInsets.zero,
+          foregroundColor: tone,
+          visualDensity: VisualDensity.compact,
+        ),
+        icon: IconMark(
+          AppIcon.bookmark,
+          active: isSaved,
+          size: SavedBookmarkButton._captionedMark,
+          color: tone,
+        ),
+        label: Text(
+          words.toUpperCase(),
+          style: AppText.label(face: AppFace.mono, color: tone),
+        ),
+      ),
     );
   }
 }

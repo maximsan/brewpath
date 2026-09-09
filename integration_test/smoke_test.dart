@@ -146,26 +146,42 @@ void main() {
     ),
   );
 
-  /// Answers the card at [position] and moves on.
-  ///
-  /// How many answers that takes is the card's business — a concept card
-  /// wants one per blank — so the walk answers until Continue comes alive
-  /// rather than counting. *Which* option it picks is not the point: this
-  /// walk is about the run being recorded, not about scoring well.
+  /// Answers the card at [position] and moves on. How many answers that takes
+  /// is the card's business — a concept card wants one per blank — so the walk
+  /// answers until a way on comes alive rather than counting. That way on is
+  /// Continue, or Check answers first on the two kinds that grade a whole
+  /// answer. Which option it picks is not the point: this walk is about the
+  /// run being recorded, not about scoring well.
   Future<void> answerAndContinue(WidgetTester tester, int position) async {
     final onward = liveButton(AppLabels.continueLabel);
+    final commit = liveButton(AppLabels.checkAnswers);
     for (var answer = 0; answer < _answersPerCard; answer++) {
-      if (onward.evaluate().isNotEmpty) break;
+      if (onward.evaluate().isNotEmpty || commit.evaluate().isNotEmpty) break;
       if (liveOption().evaluate().isEmpty) {
         fail(
           'card $position offers nothing to answer and no way on\n'
           'on screen: ${_visibleText(tester)}',
         );
       }
-      final option = liveOption().first;
+      // A different option each time, not always the first. A concept card
+      // offers one pair per blank and every option stays live until it is
+      // checked, so re-tapping the first only ever re-answers one blank and
+      // the card never fills.
+      final options = liveOption();
+      final option = options.at(answer % options.evaluate().length);
       await tester.ensureVisible(option);
       await tester.tap(option);
       await tester.pump();
+    }
+    // `multi` and `concept` gather a whole answer before they will grade it,
+    // so their one button says Check answers until it is pressed and only
+    // then becomes Continue.
+    if (commit.evaluate().isNotEmpty) {
+      await tapWhenReady(
+        tester,
+        commit,
+        describe: 'Check answers on card $position of the lesson',
+      );
     }
     await tapWhenReady(
       tester,

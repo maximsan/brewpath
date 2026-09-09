@@ -129,12 +129,7 @@ void main() {
     final container = await pumpWithProviders(tester, wrap(_roast));
     await settleLoaders(tester);
 
-    await tester.tap(
-      find.ancestor(
-        of: findMark(AppIcon.bookmark),
-        matching: find.byType(IconButton),
-      ),
-    );
+    await tester.tap(find.text('SAVE THIS GUIDE'));
     await settleLoaders(tester);
 
     expect(
@@ -143,6 +138,25 @@ void main() {
       reason:
           'the card and the sheet write one key, so saving in either place '
           'is the same act — and it is the subject, never the id',
+    );
+  });
+
+  testWidgets('the save control is worded here, and says where it went', (
+    tester,
+  ) async {
+    await pumpWithProviders(tester, wrap(_roast));
+    await settleLoaders(tester);
+
+    expect(find.text('SAVE THIS GUIDE'), findsOneWidget);
+    expect(findMark(AppIcon.bookmark), findsOneWidget);
+
+    await tester.tap(find.text('SAVE THIS GUIDE'));
+    await settleLoaders(tester);
+
+    expect(
+      find.text('SAVED — REVIEW ANYTIME IN SAVED'),
+      findsOneWidget,
+      reason: 'the words are the confirmation — they name the shelf it is on',
     );
   });
 

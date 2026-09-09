@@ -349,6 +349,25 @@ abstract final class OffTokens {
     reason: 'the step stack opens at `marginTop: 20`',
   );
 
+  /// The leading a fill slot sets for itself, tighter than the paragraph it
+  /// sits in so the rule stays under the word rather than under the line.
+  static const OffToken<double> fillSlotLeading = OffToken(
+    1.15,
+    reason: 'the blank sets `line-height: 1.15`',
+  );
+
+  /// The gap between one blank's group of words and the next.
+  static const OffToken<double> fillGroupGap = OffToken(
+    18,
+    reason: 'the groups stack at `gap: 18px`',
+  );
+
+  /// The gap between the two words offered for one blank.
+  static const OffToken<double> fillOptionGap = OffToken(
+    10,
+    reason: 'the words sit side by side at `gap: 10px`',
+  );
+
   /// Every sanctioned exception, so the register can be tested as a whole.
   static const register = <OffToken<Object>>[
     rewardedAdCanvas,
@@ -399,5 +418,8 @@ abstract final class OffTokens {
     tastefixPanelToPrompt,
     helpStepGap,
     helpStepsTop,
+    fillSlotLeading,
+    fillGroupGap,
+    fillOptionGap,
   ];
 }

@@ -1,28 +1,18 @@
+import 'package:brew_path/core/widgets/dash_runs.dart';
 import 'package:flutter/material.dart';
 
-/// Length of one drawn dash.
-const double _dashLength = 5;
-
-/// Gap between dashes.
-const double _dashGap = 4;
-
-/// A rounded border drawn as dashes rather than a solid line.
-///
-/// Flutter has no dashed [BorderSide], so the design's dashed states need a
-/// shape that walks its own outline and paints segments of it. It is an
-/// [OutlinedBorder] so it drops into anything that takes a shape — an
-/// `OutlinedButton`, or a `ShapeDecoration` on a plain box.
-///
-/// Give the button `side: BorderSide.none` when using this as its shape:
-/// the button would otherwise paint a solid border underneath the dashes.
+/// A rounded border drawn as dashes rather than a solid line. Flutter has no
+/// dashed [BorderSide], so this walks its own outline and paints the segments
+/// [dashRuns] hands back. Give the button `side: BorderSide.none` when using
+/// this as its shape, or it paints a solid border under the dashes.
 @immutable
 class DashedRoundedBorder extends OutlinedBorder {
   /// Creates a [DashedRoundedBorder].
   const DashedRoundedBorder({
     required this.radius,
     required super.side,
-    this.dashLength = _dashLength,
-    this.dashGap = _dashGap,
+    this.dashLength = dashPatternLength,
+    this.dashGap = dashPatternGap,
   });
 
   /// Corner radius of the outline.
@@ -53,11 +43,12 @@ class DashedRoundedBorder extends OutlinedBorder {
     final paint = side.toPaint()..style = PaintingStyle.stroke;
 
     for (final metric in outline.computeMetrics()) {
-      var distance = 0.0;
-      while (distance < metric.length) {
-        final end = (distance + dashLength).clamp(0.0, metric.length);
-        canvas.drawPath(metric.extractPath(distance, end), paint);
-        distance = end + dashGap;
+      for (final run in dashRuns(
+        metric.length,
+        dash: dashLength,
+        gap: dashGap,
+      )) {
+        canvas.drawPath(metric.extractPath(run.from, run.to), paint);
       }
     }
   }

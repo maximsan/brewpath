@@ -1,19 +1,27 @@
+import 'package:brew_path/core/constants/app_labels.dart';
+import 'package:brew_path/core/widgets/answer_feedback.dart';
+import 'package:brew_path/core/widgets/fill_slot.dart';
+import 'package:brew_path/features/lessons/domain/concept_card_parts.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_cue.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
+import 'package:brew_path/features/lessons/presentation/cards/concept_fill_bank.dart';
+import 'package:brew_path/features/lessons/presentation/cards/concept_fill_state.dart';
+import 'package:brew_path/features/lessons/presentation/cards/concept_meta_table.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
-import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
-import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
+
+/// The verdict when every blank was filled with its answer.
+const String _allCorrect = 'All correct';
 
 /// The teaching card: a fill-in-the-blank sentence, prose, and a meta table.
 ///
-/// Ungraded, and the sentence is rigged to stay that way — **a blank resolves
-/// to its authored answer whichever word is tapped**, so the learner always
-/// leaves holding the correct sentence. The choice is a moment of commitment,
-/// not a test, which is why nothing here reports success.
+/// The words are picked from a bank **below** the sentence and committed with
+/// *Check answers*, at which point each slot marks the learner's own word,
+/// right or wrong (ADR-0023). Still ungraded: nothing here reports success,
+/// because mastery counts the cards a learner can get wrong and this teaches.
 class ConceptCardView extends StatefulWidget {
   /// Creates a [ConceptCardView].
   const ConceptCardView({
@@ -33,187 +41,125 @@ class ConceptCardView extends StatefulWidget {
 }
 
 class _ConceptCardViewState extends State<ConceptCardView> {
-  /// Blank position → the option index tapped. A filled blank never reopens.
-  final Map<int, int> _filled = {};
+  /// Blank position → the word picked for it. Changeable until committed.
+  final Map<int, String> _picks = {};
+  bool _checked = false;
 
-  List<int> get _blankPositions => [
-    for (var index = 0; index < widget.card.fill.length; index++)
-      if (widget.card.fill[index] is FillBlank) index,
-  ];
+  Map<int, FillBlank> get _blanks => blanksIn(widget.card);
 
-  bool get _allFilled => _filled.length == _blankPositions.length;
+  bool get _allPicked => _picks.length == _blanks.length;
+
+  bool get _allRight => _blanks.entries.every(
+    (blank) => _picks[blank.key] == blank.value.answer,
+  );
+
+  void _pick(int position, String option) {
+    if (_checked) return;
+    setState(() => _picks[position] = option);
+  }
+
+  void _check() {
+    if (_checked || !_allPicked) return;
+    setState(() => _checked = true);
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final card = widget.card;
 
-    final hasBlanks = _blankPositions.isNotEmpty;
+    // A sentence authored with no blank has nothing to commit, so it reads
+    // like the prose it is: latched on arrival, no Check answers. Every
+    // authored concept card has one, but the shape is representable.
+    final nothingToFill = _blanks.isEmpty;
 
     return CardShell(
-      latched: _allFilled,
+      latched: nothingToFill || _checked,
       onContinue: widget.onContinue,
-      cue: hasBlanks ? CardCue.fill : null,
-      label: hasBlanks ? null : card.label,
+      // The design branches the same way: a card with blanks opens on the fill
+      // cue, one without keeps the eyebrow its author wrote.
+      cue: nothingToFill ? null : CardCue.fill,
+      label: nothingToFill ? card.label : null,
       title: card.title,
+      commit: nothingToFill
+          ? null
+          : CardCommit(
+              label: AppLabels.checkAnswers,
+              onCommit: _allPicked ? _check : null,
+            ),
       children: [
-        _FillSentence(
-          parts: card.fill,
-          filled: _filled,
-          onFill: (position, choice) =>
-              setState(() => _filled[position] = choice),
-        ),
+        _FillSentence(parts: card.fill, picks: _picks, checked: _checked),
         const SizedBox(height: AppSpacing.lg),
-        for (final paragraph in card.paragraphs) ...[
+        ConceptFillBank(
+          blanks: _blanks,
+          picks: _picks,
+          checked: _checked,
+          onPick: _pick,
+        ),
+        if (_checked) ...[
+          const SizedBox(height: AppSpacing.lg),
+          AnswerFeedback(
+            verdict: _allRight ? _allCorrect : notQuiteVerdict,
+            outcome: _allRight ? Verdict.right : Verdict.wrong,
+            // The design hands the block the card's *second* paragraph: a
+            // reply to a checked answer rather than prose.
+            explanation: supportIn(card),
+          ),
+        ],
+        const SizedBox(height: AppSpacing.lg),
+        for (final paragraph in proseIn(card)) ...[
           Text(paragraph, style: theme.textTheme.bodyLarge),
           const SizedBox(height: AppSpacing.sm),
         ],
         if (card.meta.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.xs),
-          _MetaTable(rows: card.meta),
+          ConceptMetaTable(rows: card.meta),
         ],
       ],
     );
   }
 }
 
-/// The sentence, laid out as wrapping inline runs so a blank sits in the text
-/// rather than beside it.
+/// The sentence, with a slot standing in for each blank.
+///
+/// One flowing paragraph rather than a `Wrap` of separate `Text` runs: a wrap
+/// breaks between runs, so a literal could only ever break at its own edges
+/// and the prose read as loose columns.
 class _FillSentence extends StatelessWidget {
   const _FillSentence({
     required this.parts,
-    required this.filled,
-    required this.onFill,
+    required this.picks,
+    required this.checked,
   });
 
   final List<ConceptFillPart> parts;
-  final Map<int, int> filled;
-  final void Function(int position, int choice) onFill;
+  final Map<int, String> picks;
+  final bool checked;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Wrap(
-      crossAxisAlignment: WrapCrossAlignment.center,
-      children: [
-        for (var position = 0; position < parts.length; position++)
-          switch (parts[position]) {
-            FillLiteral(:final text) => Text(
-              text,
-              style: theme.textTheme.titleMedium,
-            ),
-            FillBlank(:final answer, :final options) => _Blank(
-              answer: answer,
-              options: options,
-              chosen: filled[position],
-              onChoose: (choice) => onFill(position, choice),
-            ),
-          },
-      ],
-    );
-  }
-}
 
-/// One blank: two words to tap, then the authored answer, locked.
-class _Blank extends StatelessWidget {
-  const _Blank({
-    required this.answer,
-    required this.options,
-    required this.chosen,
-    required this.onChoose,
-  });
-
-  final String answer;
-  final List<String> options;
-  final int? chosen;
-  final void Function(int choice) onChoose;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final mood = context.mood;
-
-    if (chosen != null) {
-      return Container(
-        margin: const EdgeInsets.symmetric(horizontal: AppSpacing.xxs),
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.xs,
-          vertical: AppSpacing.xxs,
-        ),
-        decoration: BoxDecoration(
-          color: mood.sage.withValues(alpha: _filledTint),
-          borderRadius: BorderRadius.circular(AppRadii.chrome),
-        ),
-        child: Text(
-          answer,
-          style: theme.textTheme.titleMedium,
-        ),
-      );
-    }
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (var index = 0; index < options.length; index++)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xxs),
-            child: OutlinedButton(
-              onPressed: () => onChoose(index),
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.sm,
-                  vertical: AppSpacing.xxs,
-                ),
-                side: BorderSide(color: mood.accent),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppRadii.chrome),
-                ),
-              ),
-              child: Text(options[index]),
-            ),
-          ),
-      ],
-    );
-  }
-}
-
-/// Tint strength behind a resolved blank.
-const double _filledTint = 0.22;
-
-/// The key/value pair table under a concept card's prose.
-class _MetaTable extends StatelessWidget {
-  const _MetaTable({required this.rows});
-
-  final List<List<String>> rows;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final mood = context.mood;
-
-    return Column(
-      children: [
-        for (final row in rows)
-          Padding(
-            padding: const EdgeInsets.only(bottom: AppSpacing.xs),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Text(
-                    row.first,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: mood.inkMute,
-                    ),
+    return Text.rich(
+      TextSpan(
+        style: theme.textTheme.titleMedium,
+        children: [
+          for (var position = 0; position < parts.length; position++)
+            switch (parts[position]) {
+              FillLiteral(:final text) => TextSpan(text: text),
+              FillBlank(:final answer) => fillSlotSpan(
+                FillSlot(
+                  word: picks[position],
+                  state: conceptFillState(
+                    pick: picks[position],
+                    answer: answer,
+                    checked: checked,
                   ),
                 ),
-                Expanded(
-                  child: Text(row.last, style: theme.textTheme.bodyMedium),
-                ),
-              ],
-            ),
-          ),
-      ],
+              ),
+            },
+        ],
+      ),
     );
   }
 }

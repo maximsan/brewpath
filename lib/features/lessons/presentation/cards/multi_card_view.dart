@@ -1,3 +1,4 @@
+import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_cue.dart';
@@ -10,18 +11,15 @@ import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// The commit affordance, before anything has been checked.
-const String _checkLabel = 'Check answers';
-
 /// Verdicts, which name the all-or-nothing rule rather than a score.
 const String _allCorrect = 'All correct';
 
 /// The select-all-that-apply card: pick freely, then commit the whole set.
-///
-/// Choices **toggle** until a separate commit, and it is scored
-/// all-or-nothing because mastery counts whole cards (`card_boundary.dart`).
-/// It takes its fields rather than the `MultiCard` for the seeding rule: a
-/// shuffled card is handed its options already shuffled.
+/// Choices **toggle** until that commit, and it scores all-or-nothing — the
+/// boundary's rule rather than this card's invention (`card_boundary.dart`).
+/// It takes its fields rather than the `MultiCard` because every card whose
+/// options are shuffled is handed them already shuffled, so one place owns
+/// the seed.
 class MultiCardView extends StatefulWidget {
   /// Creates a [MultiCardView].
   const MultiCardView({
@@ -99,7 +97,7 @@ class _MultiCardViewState extends State<MultiCardView> {
       onContinue: widget.onContinue,
       cue: CardCue.multi,
       commit: CardCommit(
-        label: _checkLabel,
+        label: AppLabels.checkAnswers,
         onCommit: _selected.isEmpty ? null : _check,
       ),
       children: [
