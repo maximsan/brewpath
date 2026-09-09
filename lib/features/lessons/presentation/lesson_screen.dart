@@ -1,7 +1,8 @@
 import 'dart:async';
+import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
-import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
+import 'package:brew_path/core/widgets/float_topbar.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/roast_meter.dart';
 import 'package:brew_path/features/lessons/domain/card_seed.dart';
@@ -100,33 +101,32 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
     // is.
     return FutureBuilder<LessonModel?>(
       future: _lesson,
-      builder: (context, snapshot) => Scaffold(
-        appBar: AppBar(
-          // The player is a surface you leave, not a page you came from: the
-          // design gives it a close mark where a pushed screen would have a
-          // back arrow.
-          leading: IconButton(
-            icon: const IconMark(AppIcon.close),
-            tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-            onPressed: () => context.pop(),
-          ),
-          title: _position(snapshot.data),
-          actions: [
-            // The design bookmarks a lesson **while it is being read**, not
-            // off a list afterwards.
-            if (snapshot.data case final lesson?)
-              SavedBookmarkButton(
-                savedKey: formatSavedKey(SavedKind.lesson, lesson.id),
-                label: lesson.title,
-              ),
-          ],
+      builder: (context, snapshot) => FloatBarScaffold(
+        // The player is a surface you leave, not a page you came from: the
+        // design gives it a close mark where a pushed screen would have a back
+        // arrow.
+        bar: FloatTopbar.sealed(
+          icon: AppIcon.close,
+          label: AppLabels.close,
+          onPressed: () => context.pop(),
+          centre: _position(snapshot.data),
+          // The design bookmarks a lesson **while it is being read**, not off
+          // a list afterwards.
+          trailing: switch (snapshot.data) {
+            final lesson? => SavedBookmarkButton(
+              savedKey: formatSavedKey(SavedKind.lesson, lesson.id),
+              label: lesson.title,
+            ),
+            null => null,
+          },
         ),
-        body: _buildBody(context, snapshot),
+        child: _buildBody(context, snapshot),
       ),
     );
   }
 
   /// The bar's centre: where the learner is, once there is a lesson to be in.
+  ///
   /// The design puts the position in the bar and nothing else with it, and it
   /// is the same [RoastMeter] the mini-game player mounts. Null while the
   /// lesson loads — the bar keeps its close mark rather than showing a
@@ -184,9 +184,16 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
       ),
     );
 
+    // Bottom only: the bar covers the top inset itself, and the scroll's own
+    // padding starts the card below it while letting it pass underneath.
     return SafeArea(
+      top: false,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
+        padding: FloatTopbar.scrollPadding(
+          context,
+          designScrollPad: FloatTopbar.runDesignScrollPad,
+          inset: AppSpacing.lg,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

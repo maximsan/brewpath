@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:brew_path/app/day_surfaces.dart';
+import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/drill_results_view.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
+import 'package:brew_path/core/widgets/float_topbar.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/roast_meter.dart';
 import 'package:brew_path/features/dictionary/domain/flashcard_completion.dart';
@@ -27,14 +29,10 @@ import 'package:go_router/go_router.dart';
 
 /// The flashcards drill: the learner's saved terms, one card at a time.
 ///
-/// The deck is watched rather than snapshotted at open, so un-saving a term —
-/// here or on another device — takes it out of the round while the round is
-/// running. Every move reconciles against the deck first, which is why the
-/// round is a value: the screen holds where the learner is, and the deck says
-/// what is still there to be.
-///
-/// Results are a state of this screen rather than a route of their own, for
-/// the same reason a mini-game's are: the count never outlives the review.
+/// The deck is watched rather than snapshotted at open, so un-saving a term
+/// takes it out of a running round; every move reconciles against the deck
+/// first. Results are a state of this screen rather than a route, for the same
+/// reason a mini-game's are: the count never outlives the review.
 class FlashcardsScreen extends ConsumerStatefulWidget {
   /// Creates a [FlashcardsScreen].
   const FlashcardsScreen({super.key});
@@ -121,39 +119,39 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
     final cards = deck.asData?.value ?? const <DictionaryTerm>[];
     final round = _roundFor(cards.length);
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const IconMark(AppIcon.close),
-          tooltip: 'Close',
-          onPressed: _close,
-        ),
-        title: _meter(round),
-        actions: [
-          // Only worth offering when there is more than one order to deal.
-          if (cards.length > 1 && !round.isFinished)
-            IconButton(
-              // `rematch` — "run it back" — rather than the design's own
-              // shuffle glyph, which the icon set does not carry. The mark
-              // means the same act here, and the extractor owns the catalog:
-              // hand-drawing a seventy-fourth icon is how a set stops being
-              // the design's.
-              icon: const IconMark(AppIcon.rematch),
-              tooltip: FlashcardsCopy.shuffle,
-              onPressed: () => _shuffle(cards.length),
-            ),
-        ],
+    return FloatBarScaffold(
+      bar: FloatTopbar.sealed(
+        icon: AppIcon.close,
+        label: AppLabels.close,
+        onPressed: _close,
+        centre: _meter(round),
+        // Only worth offering when there is more than one order to deal.
+        trailing: cards.length > 1 && !round.isFinished
+            ? IconButton(
+                // `rematch` — "run it back" — rather than the design's own
+                // shuffle glyph, which the icon set does not carry.
+                icon: const IconMark(AppIcon.rematch),
+                tooltip: FlashcardsCopy.shuffle,
+                onPressed: () => _shuffle(cards.length),
+              )
+            : null,
       ),
-      body: deck.when(
-        loading: () => Semantics(
-          label: 'Loading your deck',
-          child: const LoadingIndicator(),
+      // Left here rather than inside the views below: the results and the
+      // empty state are shared with the other drills, and neither should know
+      // what is sealed over it.
+      child: Padding(
+        padding: FloatTopbar.barRoom(context),
+        child: deck.when(
+          loading: () => Semantics(
+            label: 'Loading your deck',
+            child: const LoadingIndicator(),
+          ),
+          error: (error, _) => Semantics(
+            label: 'Your deck could not be loaded',
+            child: ErrorView(message: '$error'),
+          ),
+          data: (cards) => _body(cards, round, pools.asData?.value),
         ),
-        error: (error, _) => Semantics(
-          label: 'Your deck could not be loaded',
-          child: ErrorView(message: '$error'),
-        ),
-        data: (cards) => _body(cards, round, pools.asData?.value),
       ),
     );
   }

@@ -4,10 +4,10 @@ import 'package:brew_path/app/day_surfaces.dart';
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
-import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/utils/drill_bands.dart';
 import 'package:brew_path/core/widgets/drill_results_view.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
+import 'package:brew_path/core/widgets/float_topbar.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/roast_meter.dart';
 import 'package:brew_path/features/dictionary/domain/vocab_completion.dart';
@@ -219,14 +219,12 @@ class _VocabGameScreenState extends ConsumerState<VocabGameScreen> {
     final pools = ref.watch(vocabPoolsProvider);
     final total = _rounds.length;
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const IconMark(AppIcon.close),
-          tooltip: AppLabels.close,
-          onPressed: _done,
-        ),
-        title: _playing && _index < total
+    return FloatBarScaffold(
+      bar: FloatTopbar.sealed(
+        icon: AppIcon.close,
+        label: AppLabels.close,
+        onPressed: _done,
+        centre: _playing && _index < total
             ? RoastMeter(
                 position: _index + 1,
                 total: total,
@@ -234,17 +232,22 @@ class _VocabGameScreenState extends ConsumerState<VocabGameScreen> {
               )
             : null,
       ),
-      body: pools.when(
-        loading: () => Semantics(
-          label: VocabCopy.loading,
-          child: const LoadingIndicator(),
+      // Left here rather than inside the drill, whose results view is shared
+      // with the other two runs.
+      child: Padding(
+        padding: FloatTopbar.barRoom(context),
+        child: pools.when(
+          loading: () => Semantics(
+            label: VocabCopy.loading,
+            child: const LoadingIndicator(),
+          ),
+          error: (error, _) => Semantics(
+            label: VocabCopy.loadFailed,
+            excludeSemantics: true,
+            child: ErrorView(message: '$error'),
+          ),
+          data: _buildDrill,
         ),
-        error: (error, _) => Semantics(
-          label: VocabCopy.loadFailed,
-          excludeSemantics: true,
-          child: ErrorView(message: '$error'),
-        ),
-        data: _buildDrill,
       ),
     );
   }

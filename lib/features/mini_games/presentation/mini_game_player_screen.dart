@@ -1,12 +1,13 @@
 import 'dart:async';
 
 import 'package:brew_path/app/day_surfaces.dart';
+import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
-import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/utils/drill_bands.dart';
 import 'package:brew_path/core/widgets/drill_results_view.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
+import 'package:brew_path/core/widgets/float_topbar.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/roast_meter.dart';
 import 'package:brew_path/features/lessons/domain/card_seed.dart';
@@ -99,14 +100,12 @@ class _MiniGamePlayerScreenState extends ConsumerState<MiniGamePlayerScreen> {
   Widget build(BuildContext context) {
     final rounds = ref.watch(miniGameRoundsProvider(widget.formatId));
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const IconMark(AppIcon.close),
-          tooltip: 'Close',
-          onPressed: _done,
-        ),
-        title: rounds.maybeWhen(
+    return FloatBarScaffold(
+      bar: FloatTopbar.sealed(
+        icon: AppIcon.close,
+        label: AppLabels.close,
+        onPressed: _done,
+        centre: rounds.maybeWhen(
           data: (data) => data.isEmpty || _index >= data.length
               ? null
               : RoastMeter(
@@ -117,18 +116,27 @@ class _MiniGamePlayerScreenState extends ConsumerState<MiniGamePlayerScreen> {
           orElse: () => null,
         ),
       ),
-      body: rounds.when(
-        loading: () => Semantics(
-          label: 'Loading the rounds',
-          child: const LoadingIndicator(),
-        ),
-        error: (error, _) => Semantics(
-          label: 'These rounds could not be loaded.',
-          excludeSemantics: true,
-          child: ErrorView(message: '$error'),
-        ),
-        data: _buildRun,
+      // Left once for every state under it — the run, the results and the
+      // loader each bring their own gutter below it.
+      child: Padding(
+        padding: FloatTopbar.barRoom(context),
+        child: _rounds(rounds),
       ),
+    );
+  }
+
+  Widget _rounds(AsyncValue<List<ContentCard>> rounds) {
+    return rounds.when(
+      loading: () => Semantics(
+        label: 'Loading the rounds',
+        child: const LoadingIndicator(),
+      ),
+      error: (error, _) => Semantics(
+        label: 'These rounds could not be loaded.',
+        excludeSemantics: true,
+        child: ErrorView(message: '$error'),
+      ),
+      data: _buildRun,
     );
   }
 
@@ -169,6 +177,7 @@ class _MiniGamePlayerScreenState extends ConsumerState<MiniGamePlayerScreen> {
       onContinue: _onContinue,
     );
     return SafeArea(
+      top: false,
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.lg),
         // Keyed by round so each round mounts a fresh card: a latched card

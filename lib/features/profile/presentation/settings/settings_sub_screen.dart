@@ -18,11 +18,17 @@ class SettingsSubScreen extends StatelessWidget {
   const SettingsSubScreen({
     required this.title,
     required this.children,
+    this.opening,
     super.key,
   });
 
-  /// The screen's name, in the bar and as its heading.
+  /// The screen's name, in the bar and — unless [opening] says otherwise — as
+  /// its heading.
   final String title;
+
+  /// What the page opens on, where its own name is not the right heading.
+  /// About opens on the app rather than on the menu row that reached it.
+  final Widget? opening;
 
   /// The sections, in the design's order.
   final List<Widget> children;
@@ -34,7 +40,7 @@ class SettingsSubScreen extends StatelessWidget {
       body: (context, scrollPadding) => ListView(
         padding: scrollPadding.copyWith(bottom: AppSpacing.xl),
         children: [
-          SettingsScreenHeading(title: title),
+          opening ?? SettingsScreenHeading(title: title),
           ...children,
         ],
       ),
@@ -125,14 +131,10 @@ class SettingsPlaceholder extends StatelessWidget {
 
 /// The centred mono line that closes Settings and About.
 ///
-/// The design ends both screens this way rather than with a labelled row: the
-/// app's name, its version and [SettingsCopy.versionTagline], separated by
-/// middots — mono smallcaps, centred, in muted ink. The app had it as an
-/// `About` section with a stock info glyph on a `ListTile`, which is a row
-/// where the design has a signature.
-///
-/// The line is not spelled out here: the glossary guard reads comments too,
-/// and the tagline is the one phrase it allows by name.
+/// The design ends both screens with a signature rather than a labelled row:
+/// the app's name, its version and [SettingsCopy.versionTagline] between
+/// middots, mono smallcaps in muted ink. Not spelled out here, because the
+/// glossary guard reads comments too.
 class SettingsVersionLine extends StatelessWidget {
   /// Creates the version line for [version].
   const SettingsVersionLine({required this.version, super.key});
