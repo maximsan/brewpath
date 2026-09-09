@@ -1,4 +1,5 @@
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_cue.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
@@ -47,10 +48,13 @@ class _ConceptCardViewState extends State<ConceptCardView> {
     final theme = Theme.of(context);
     final card = widget.card;
 
+    final hasBlanks = _blankPositions.isNotEmpty;
+
     return CardShell(
       latched: _allFilled,
       onContinue: widget.onContinue,
-      label: card.label,
+      cue: hasBlanks ? CardCue.fill : null,
+      label: hasBlanks ? null : card.label,
       title: card.title,
       children: [
         _FillSentence(

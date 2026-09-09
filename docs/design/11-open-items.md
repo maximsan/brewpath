@@ -141,6 +141,7 @@ disagreement rule by rule, and built at
 
 | Item | Detail |
 |---|---|
+| **The help drawer ships without its icon well** | The design opens the drawer on a 44px well holding the kind's `ReplayIcon`. The app draws marks for seven of the ten kinds with help — `mcq`, `multi` and `fill` have none — and a well filled on seven rows beside three empty ones reads as a rendering fault, which is the rule [#436](https://github.com/maximsan/brewpath/issues/436) already set for the mini-game shelf. The drawer therefore opens on its eyebrow and title alone until the three marks exist ([#550](https://github.com/maximsan/brewpath/issues/550)) |
 | **`tools/extract-facts.js` reads a dead field** | Line 86 pulls `L[i].xp`, which is `null` for every lesson — per-lesson points live on the module entries. Harmless, but this reference's own tooling still carries the legacy name |
 | ~~**`CLAUDE.md` points at the wrong app path**~~ **RESOLVED** | It documented the Flutter app as living in `coffee_quest/` while `lib/` and `test/` are at the repo root. Both halves are now fixed: the app was renamed to package `brew_path` ([#41](https://github.com/maximsan/brewpath/issues/41)) and the project instructions were corrected to the real root-relative layout ([#35](https://github.com/maximsan/brewpath/issues/35)). The note that project instructions sit outside this reference's remit still holds — recorded here only because this table raised it |
 

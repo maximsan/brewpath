@@ -1,6 +1,7 @@
 import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/core/widgets/link_button.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_cue.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_option_tile.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_tints.dart';
@@ -13,8 +14,6 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
 /// The cue above a sequence card's prompt.
-const String _cue = 'PUT IN ORDER · TAP IN SEQUENCE';
-
 /// The commit affordance, before the run has been submitted.
 const String _submitLabel = 'Submit';
 
@@ -35,18 +34,10 @@ const String _arrow = '  →  ';
 
 /// Put the steps in order: tap them into place, then commit the whole run.
 ///
-/// Two things separate it from the picking kinds. Tapping **assigns a
-/// position** rather than answering — tapping an assigned step takes it back
-/// out and the rest renumber — and the card is not answered until the learner
-/// says so, which is the shell's swapping button rather than a second action
-/// drawn here. It is graded all-or-nothing: the run is the authored order or it
-/// is not. See `card_boundary.dart`.
-///
-/// It takes its steps **already in display order**, like every other card whose
-/// order is seeded, so one place owns the seed and a replay moves every card
-/// the same way. That matters more here than anywhere else — see
-/// [sequenceDisplayOrder] for why a sequence card's shuffle is the one that can
-/// hand the learner the answer.
+/// Tapping **assigns a position** rather than answering, and the run is graded
+/// all-or-nothing against the authored order (`card_boundary.dart`). It takes
+/// its steps already in display order — [sequenceDisplayOrder] says why this
+/// card's shuffle is the one that can hand the learner the answer.
 class SequenceCardView extends StatefulWidget {
   /// Creates a [SequenceCardView].
   const SequenceCardView({
@@ -116,7 +107,7 @@ class _SequenceCardViewState extends State<SequenceCardView> {
     return CardShell(
       latched: _submitted,
       onContinue: widget.onContinue,
-      label: _cue,
+      cue: CardCue.sequence,
       commit: CardCommit(
         label: _submitLabel,
         onCommit: _allPlaced ? _submit : null,
@@ -141,11 +132,9 @@ class _SequenceCardViewState extends State<SequenceCardView> {
 
   /// One step, in the shared option frame.
   ///
-  /// Its mark says three different things across the card's life: which
-  /// position the learner gave it, whether that position was right, and — when
-  /// it was not — where the step actually belonged. The last is the only place
-  /// a wrong run says anything per-step, which is the card's reaction to a
-  /// wrong answer happening inside it.
+  /// Its mark says three things across the card's life: the position the
+  /// learner gave it, whether that was right, and where the step belonged —
+  /// the only place a wrong run says anything per-step.
   Widget _step(MoodColors mood, int index) {
     final item = widget.items[index];
     final position = _run.indexOf(index);

@@ -4,6 +4,7 @@ import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/lessons/domain/card_seed.dart';
 import 'package:brew_path/features/lessons/domain/held_guess.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_cue.dart';
 import 'package:brew_path/features/lessons/presentation/cards/content_card_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/recall_payoff.dart';
 import 'package:brew_path/features/lessons/presentation/cards/tastefix_reaction.dart';
@@ -11,6 +12,7 @@ import 'package:brew_path/features/lessons/presentation/cards/tastefix_symptoms.
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Counts what crossed the card boundary. The whole contract is here: success
@@ -172,15 +174,17 @@ Widget _host(
   int nonce = 1,
   HeldGuess? prediction,
   ValueChanged<HeldGuess>? onGuess,
-}) => MaterialApp(
-  home: Scaffold(
-    body: SingleChildScrollView(
-      child: contentCardView(
-        card,
-        seed: cardSeed(nonce: nonce, cardIndex: 0),
-        onSolved: () => signals.solved++,
-        onContinue: () => signals.advanced++,
-        guess: GuessLoop(held: prediction, onGuess: onGuess),
+}) => ProviderScope(
+  child: MaterialApp(
+    home: Scaffold(
+      body: SingleChildScrollView(
+        child: contentCardView(
+          card,
+          seed: cardSeed(nonce: nonce, cardIndex: 0),
+          onSolved: () => signals.solved++,
+          onContinue: () => signals.advanced++,
+          guess: GuessLoop(held: prediction, onGuess: onGuess),
+        ),
       ),
     ),
   ),
@@ -1021,7 +1025,7 @@ void main() {
     testWidgets('asks for every answer, and offers them all', (tester) async {
       await tester.pumpWidget(_host(_multi, _Signals()));
 
-      expect(find.text('Select all that apply'), findsOneWidget);
+      expect(find.text(CardCue.multi.phrase.toUpperCase()), findsOneWidget);
       expect(find.text(_multi.prompt), findsOneWidget);
       for (final choice in _multi.choices) {
         expect(find.text(choice.text), findsOneWidget);

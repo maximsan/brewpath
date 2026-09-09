@@ -337,6 +337,18 @@ abstract final class OffTokens {
     reason: "the question under the cup sets `margin: '20px 0 0'`",
   );
 
+  /// The gap between two how-to-play steps.
+  static const OffToken<double> helpStepGap = OffToken(
+    11,
+    reason: 'the drawer stacks its steps at `gap: 11`',
+  );
+
+  /// The room under a card's kind cue, before the card's own content.
+  static const OffToken<double> cardCueFoot = OffToken(
+    12,
+    reason: 'the cue clears the card at `marginBottom: 12`',
+  );
+
   /// Every sanctioned exception, so the register can be tested as a whole.
   static const register = <OffToken<Object>>[
     rewardedAdCanvas,
@@ -385,5 +397,7 @@ abstract final class OffTokens {
     tastefixPanelPadding,
     tastefixPanelGap,
     tastefixPanelToPrompt,
+    helpStepGap,
+    cardCueFoot,
   ];
 }

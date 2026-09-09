@@ -1,5 +1,6 @@
 import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_cue.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
 import 'package:brew_path/features/lessons/presentation/cards/choice_list.dart';
 import 'package:brew_path/features/lessons/presentation/cards/multi_choice_list.dart';
@@ -10,8 +11,6 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
 /// The cue above a multi card's prompt.
-const String _cue = 'Select all that apply';
-
 /// The commit affordance, before anything has been checked.
 const String _checkLabel = 'Check answers';
 
@@ -20,21 +19,10 @@ const String _allCorrect = 'All correct';
 
 /// The select-all-that-apply card: pick freely, then commit the whole set.
 ///
-/// Two things separate it from every other graded card. Choices **toggle**
-/// until a separate commit, because a set is not answered until it is
-/// finished; and it is scored **all-or-nothing**, which is the boundary's rule
-/// rather than this card's invention — a fraction would have to mean something
-/// to mastery, and mastery counts whole cards. See `card_boundary.dart`.
-///
-/// The single button swaps between *Check answers* and *Continue*, as the
-/// design has it — the shell owns that swap, so this card still does not draw
-/// its own way forward.
-///
-/// It takes its fields rather than the `MultiCard`, unlike the display-only
-/// kinds next to it in the switch. That is the seeding rule, not an
-/// oversight: every card whose options are shuffled is handed them already
-/// shuffled, so one place owns the seed and a replay moves every card the
-/// same way. `GradedPicker` is handed its options for the same reason.
+/// Choices **toggle** until a separate commit, and it is scored
+/// all-or-nothing because mastery counts whole cards (`card_boundary.dart`).
+/// It takes its fields rather than the `MultiCard` for the seeding rule: a
+/// shuffled card is handed its options already shuffled.
 class MultiCardView extends StatefulWidget {
   /// Creates a [MultiCardView].
   const MultiCardView({
@@ -110,7 +98,7 @@ class _MultiCardViewState extends State<MultiCardView> {
     return CardShell(
       latched: _submitted,
       onContinue: widget.onContinue,
-      label: _cue,
+      cue: CardCue.multi,
       commit: CardCommit(
         label: _checkLabel,
         onCommit: _selected.isEmpty ? null : _check,

@@ -2,6 +2,7 @@ import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_cue.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
 import 'package:brew_path/features/lessons/presentation/cards/grinder_dial_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/slider_dial.dart';
@@ -13,8 +14,6 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
 /// The cue above a calibrate card's prompt.
-const String _cue = 'CALIBRATE · DIAL TO THE TARGET';
-
 /// The commit affordance, before the setting has been checked.
 const String _checkLabel = 'Check answer';
 
@@ -25,25 +24,20 @@ const String _dialedIn = 'Dialed in';
 const String _yourSetting = 'Your setting';
 const String _target = 'Target';
 
-/// Floor under the readout, so committing an answer never shifts the track out
-/// from under the learner's finger.
+/// Floor under the readout, so committing never shifts the track out from
+/// under the learner's finger.
 ///
-/// A floor rather than a fixed height, as the design source has it: the two
-/// readings are one and two lines at the shipped text size, and at a large one
-/// they are longer. A fixed height would hold the track still by clipping the
-/// answer.
+/// A floor rather than a fixed height, as the design has it: the readings run
+/// one and two lines at the shipped text size and longer at a large one, and a
+/// fixed height would hold the track still by clipping the answer.
 const double _readoutMinHeight = 58;
 
 /// Calibrate: drag to a value, then check it against a target band.
 ///
 /// Graded all-or-nothing — inside the band or not — because the boundary has
-/// no way to say "close", and a distance score would have to mean something to
-/// mastery. The rules it is judged by are in `slider_dial.dart`, with no widget
-/// attached. See `card_boundary.dart`.
-///
-/// Nothing here knows what is hosting it: the mini-game player and the lesson
-/// player both get this renderer unchanged, which is why it sits in the shared
-/// card layer.
+/// no way to say "close" (`card_boundary.dart`). The rules it is judged by are
+/// in `slider_dial.dart`, with no widget attached. Hosted unchanged by the
+/// lesson player and the mini-games.
 class SliderCardView extends StatefulWidget {
   /// Creates a [SliderCardView].
   const SliderCardView({
@@ -116,7 +110,7 @@ class _SliderCardViewState extends State<SliderCardView> {
     return CardShell(
       latched: _checked,
       onContinue: widget.onContinue,
-      label: _cue,
+      cue: CardCue.slider,
       commit: CardCommit(
         label: _checkLabel,
         onCommit: _touched ? _check : null,
