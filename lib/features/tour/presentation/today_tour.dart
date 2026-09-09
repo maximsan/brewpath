@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:brew_path/core/widgets/fade_up.dart';
 import 'package:brew_path/features/tour/domain/tour_copy.dart';
 import 'package:brew_path/features/tour/domain/tour_geometry.dart';
@@ -177,7 +179,7 @@ class _TodayTourState extends State<TodayTour> {
                 ),
               ),
             ),
-            _cardSlot(constraints.maxHeight),
+            _cardSlot(),
           ],
         ),
       );
@@ -196,24 +198,18 @@ class _TodayTourState extends State<TodayTour> {
     if (previous != null) _arriveAt(_step);
   }
 
-  /// Where the card sits: under the target where there is room for it, over it
-  /// where there is not, and at rest near the foot until anything is measured.
-  Widget _cardSlot(double areaHeight) {
-    final target = _target;
-    final gap = OffTokens.tourCardInset.value;
-    final below =
-        target == null ||
-        tourCardSitsBelow(target: target, areaHeight: areaHeight);
-
-    return Positioned(
-      left: gap,
-      right: gap,
-      top: target != null && below ? target.bottom + gap : null,
-      bottom: switch (target) {
-        null => OffTokens.tourCardRestingBottom.value,
-        final Rect measured when !below => areaHeight - measured.top + gap,
-        _ => null,
-      },
+  /// Where the card sits: the design's side of the target where it fits there,
+  /// the other side where it does not, and at rest near the foot until
+  /// anything is measured.
+  ///
+  /// Laid out rather than `Positioned`, because which sides fit is only
+  /// answerable once the card's own height is known — see [tourCardTop].
+  Widget _cardSlot() => Positioned.fill(
+    child: CustomSingleChildLayout(
+      delegate: _TourCardSlot(
+        target: _target,
+        safeArea: MediaQuery.viewPaddingOf(context),
+      ),
       child: FadeUp(
         // Keyed by the stop, so each card fades up as it arrives rather than
         // the words changing inside one that is already there.
@@ -224,6 +220,43 @@ class _TodayTourState extends State<TodayTour> {
           onAdvance: _advance,
         ),
       ),
+    ),
+  );
+}
+
+/// Puts the card at the design's side of the target, kept inside the safe area.
+class _TourCardSlot extends SingleChildLayoutDelegate {
+  const _TourCardSlot({required this.target, required this.safeArea});
+
+  /// The frame's target, or null before the first measurement.
+  final Rect? target;
+
+  /// What the card stays clear of — the status bar, and the home indicator.
+  final EdgeInsets safeArea;
+
+  @override
+  BoxConstraints getConstraintsForChild(BoxConstraints constraints) {
+    final inset = OffTokens.tourCardInset.value;
+    final width = math.max(0, constraints.maxWidth - inset * 2).toDouble();
+    return BoxConstraints(
+      minWidth: width,
+      maxWidth: width,
+      maxHeight: constraints.maxHeight,
     );
   }
+
+  @override
+  Offset getPositionForChild(Size size, Size childSize) => Offset(
+    OffTokens.tourCardInset.value,
+    tourCardTop(
+      target: target,
+      areaHeight: size.height,
+      cardHeight: childSize.height,
+      safeArea: safeArea,
+    ),
+  );
+
+  @override
+  bool shouldRelayout(_TourCardSlot oldDelegate) =>
+      oldDelegate.target != target || oldDelegate.safeArea != safeArea;
 }
