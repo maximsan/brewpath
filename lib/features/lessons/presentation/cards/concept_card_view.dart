@@ -72,15 +72,22 @@ class _ConceptCardViewState extends State<ConceptCardView> {
     final theme = Theme.of(context);
     final card = widget.card;
 
+    // A sentence authored with no blank has nothing to commit, so it reads
+    // like the prose it is: latched on arrival, no Check answers. Every
+    // authored concept card has one, but the shape is representable.
+    final nothingToFill = _blanks.isEmpty;
+
     return CardShell(
-      latched: _checked,
+      latched: nothingToFill || _checked,
       onContinue: widget.onContinue,
       label: card.label,
       title: card.title,
-      commit: CardCommit(
-        label: _checkLabel,
-        onCommit: _allPicked ? _check : null,
-      ),
+      commit: nothingToFill
+          ? null
+          : CardCommit(
+              label: _checkLabel,
+              onCommit: _allPicked ? _check : null,
+            ),
       children: [
         _FillSentence(parts: card.fill, picks: _picks, checked: _checked),
         const SizedBox(height: AppSpacing.lg),

@@ -849,7 +849,7 @@ void main() {
       expect(find.text('Hold that thought.'), findsNothing);
     });
 
-    testWidgets("predict opens its cloze empty, then drops the guess in", (
+    testWidgets('predict opens its cloze empty, then drops the guess in', (
       tester,
     ) async {
       await tester.pumpWidget(_host(_predict, _Signals()));
@@ -865,7 +865,7 @@ void main() {
       expect(
         slotInQuestion().state,
         FillSlotState.guess,
-        reason: 'the accent state: the learner\'s claim, not a verdict on it',
+        reason: 'the accent state: the learner’s claim, not a verdict on it',
       );
       expect(slotInQuestion().word, 'Skin');
     });
@@ -1045,6 +1045,30 @@ void main() {
         reason: 'the one button swaps, as the design has it',
       );
       expect(_continueEnabled(tester), isTrue);
+    });
+
+    testWidgets('a concept sentence with no blank asks for nothing', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _host(
+          const ContentCard.concept(
+            label: 'CONCEPT',
+            title: 'The cherry, the seed',
+            fill: [ConceptFillPart.literal('A coffee bean is really a seed.')],
+            paragraphs: ['Coffee plants grow cherries.'],
+            meta: [],
+          ),
+          _Signals(),
+        ),
+      );
+
+      expect(find.widgetWithText(FilledButton, 'Check answers'), findsNothing);
+      expect(
+        _continueEnabled(tester),
+        isTrue,
+        reason: 'nothing to fill, so nothing to commit — it reads as prose',
+      );
     });
 
     testWidgets('concept offers its words under the blank’s own label', (
