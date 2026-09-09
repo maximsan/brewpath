@@ -2,12 +2,15 @@ import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_stat_row.dart';
 import 'package:brew_path/shared/models/content/brew_challenge.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/content_fixtures.dart';
 import '../../../support/widget_harness.dart';
+
+const _labelSize = 11.0;
 
 void main() {
   setUp(useInMemoryDatabase);
@@ -74,6 +77,20 @@ void main() {
     );
 
     expect(find.text('1 / 1'), findsOneWidget);
+  });
+
+  testWidgets('sets the count in mono, lettered as a count', (tester) async {
+    await pump(tester, bank: [testChallenge()], done: const {'bc-m1'});
+
+    final count = tester.widget<Text>(find.text('1 / 1'));
+    expect(
+      count.style!.letterSpacing,
+      closeTo(AppTracking.count.em * _labelSize, 0.0001),
+    );
+    expect(
+      count.style!.fontFamily,
+      AppText.label(face: AppFace.mono).fontFamily,
+    );
   });
 
   testWidgets('summarises the whole block into one label', (tester) async {

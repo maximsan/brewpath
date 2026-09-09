@@ -17,10 +17,7 @@ const double _glyphSize = 22;
 const double _rowPadding = AppSpacing.md;
 
 /// The way into a category: its mark, its name, what it covers, and how many
-/// terms sit behind it.
-///
-/// The index is how the design opens the dictionary — a learner arrives
-/// wanting a subject, not a scroll of every term. Tapping a row filters to it.
+/// terms sit behind it. Tapping a row filters to it.
 ///
 /// The count is the row's point as much as the name: it says whether a subject
 /// is worth opening before the learner opens it.
@@ -124,6 +121,7 @@ class _CategoryRow extends StatelessWidget {
                   mood: mood,
                   face: AppFace.mono,
                   color: mood.inkMute,
+                  tracking: AppTracking.count,
                 ),
               ),
             ],

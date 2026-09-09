@@ -135,6 +135,13 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **Six more number lines are set at the width the design gives them.** The
+  lesson and mini-game position counter, the Coffee Challenges count, a
+  dictionary category's term count, the core-lessons count, the tree hero's
+  count and the stage-still-to-come line each took their rung's letter spacing
+  instead of their own — the widths run 0.06em to 0.12em, not one shared step.
+  The challenge row also drew its kicker in mono and its count in the wrong
+  face and rung; both now follow the design.
 - **The Tour's first card no longer opens under the clock.** Its card takes the
   side of the target the design names whenever it fits there, and the other
   side when it does not — so the tall Today card, which the design's rule sends
