@@ -173,3 +173,11 @@ The five canonical triage roles use their default label strings. See
 
 Single-context: `CONTEXT.md` + `docs/adr/` at the repo root. See
 [`docs/agents/domain.md`](docs/agents/domain.md).
+
+### Pull requests
+
+The body follows
+[`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md); how a
+body file gets there is in
+[`docs/18-git-and-github-workflow.md`](docs/18-git-and-github-workflow.md)
+under _Pull requests_.
