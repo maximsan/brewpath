@@ -3,7 +3,6 @@ import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/core/widgets/settings_nav_row.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
-import 'package:brew_path/features/profile/domain/daily_reminder.dart';
 import 'package:brew_path/features/profile/domain/learner_name.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
@@ -121,49 +120,15 @@ void main() {
     expect(stored.hapticsEnabled, isFalse);
   });
 
-  testWidgets('the reminder row reads Off until it is asked for', (
+  testWidgets('the reminder rows are not on Settings until reminders exist', (
     tester,
   ) async {
-    // A time is only a setting while the switch above it is on: a row showing
-    // 8:00 AM with notifications off promises something that never arrives.
+    // #443: a switch that stores a preference nothing reads is the inert row
+    // the repo forbids, so both rows are hidden until a reminder can arrive.
     await openSettings(tester);
 
-    Finder reminderRow() => find.ancestor(
-      of: find.text(SettingsCopy.reminderRow),
-      matching: find.byType(SettingsNavRow),
-    );
-
-    expect(tester.widget<SettingsNavRow>(reminderRow()).value, 'Off');
-    expect(tester.widget<SettingsNavRow>(reminderRow()).isDimmed, isTrue);
-
-    await tester.tap(find.text(SettingsCopy.notificationsRow));
-    await settleLoaders(tester);
-
-    expect(
-      tester.widget<SettingsNavRow>(reminderRow()).value,
-      DailyReminder.defaultTime,
-    );
-    expect(tester.widget<SettingsNavRow>(reminderRow()).isDimmed, isFalse);
-  });
-
-  testWidgets('picking a time stores it and turns the reminder on', (
-    tester,
-  ) async {
-    await openSettings(tester);
-
-    await tester.tap(find.text(SettingsCopy.reminderRow));
-    await tester.pumpAndSettle();
-
-    expect(find.text(DailyReminder.sheetTitle), findsOneWidget);
-
-    await tester.tap(find.text('6:30 AM'));
-    await tester.pump();
-    await tester.tap(find.text(DailyReminder.sheetAction));
-    await settleLoaders(tester);
-
-    final stored = await SettingsRepository().getSettings();
-    expect(stored.dailyReminderTime, '6:30 AM');
-    expect(stored.notificationsEnabled, isTrue);
+    expect(find.text(SettingsCopy.notificationsRow), findsNothing);
+    expect(find.text(SettingsCopy.reminderRow), findsNothing);
   });
 
   testWidgets('the Name row sets, changes and clears what Profile greets by', (
