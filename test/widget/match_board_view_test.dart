@@ -2,6 +2,7 @@ import 'package:brew_path/features/lessons/presentation/cards/match_board.dart';
 import 'package:brew_path/features/lessons/presentation/cards/match_board_view.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 const _pairs = [
@@ -17,14 +18,16 @@ Future<int> _pumpBoard(
 }) async {
   var solved = 0;
   await tester.pumpWidget(
-    MaterialApp(
-      home: Scaffold(
-        body: MatchBoardView(
-          prompt: 'Match each trait to its species',
-          pairs: _pairs,
-          targets: matchTargets(_pairs),
-          onSolved: () => solved++,
-          onContinue: () {},
+    ProviderScope(
+      child: MaterialApp(
+        home: Scaffold(
+          body: MatchBoardView(
+            prompt: 'Match each trait to its species',
+            pairs: _pairs,
+            targets: matchTargets(_pairs),
+            onSolved: () => solved++,
+            onContinue: () {},
+          ),
         ),
       ),
     ),
@@ -58,15 +61,17 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
 
     await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: SingleChildScrollView(
-            child: MatchBoardView(
-              prompt: 'Match each origin to its profile',
-              pairs: _wideBoard,
-              targets: matchTargets(_wideBoard),
-              onSolved: () {},
-              onContinue: () {},
+      ProviderScope(
+        child: MaterialApp(
+          home: Scaffold(
+            body: SingleChildScrollView(
+              child: MatchBoardView(
+                prompt: 'Match each origin to its profile',
+                pairs: _wideBoard,
+                targets: matchTargets(_wideBoard),
+                onSolved: () {},
+                onContinue: () {},
+              ),
             ),
           ),
         ),
