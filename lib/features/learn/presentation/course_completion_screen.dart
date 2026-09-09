@@ -141,6 +141,11 @@ class _CourseCompletionScreenState
     );
   }
 
+  /// The course ledger: what the learner did, in the spec's three stats.
+  ///
+  /// The design's own ledger reads *Cards collected* and *Day streak*; #149
+  /// rules those two off it in favour of what the spec asks for, so the
+  /// divergence is deliberate and the labels say what they show.
   Widget _statsSummary(_Stats stats) {
     return Semantics(
       label:
