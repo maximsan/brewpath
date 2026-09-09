@@ -29,7 +29,7 @@ staging list that feeds it, not a living board. Nothing ticks these boxes.
 ## Foundation
 - [ ] Two-mood colour token system + theme preference (light/dark/system, follows OS live, no flash on launch) ([§3](03-design-system.md))
 - [ ] Illustration palette as a **separate** set from theme tokens — 8 bean/roast + 6 cherry tokens
-- [ ] 9-step type ladder, 3 font families bundled
+- [ ] 10-step type ladder, 3 font families bundled
 - [ ] Icon set (all inline SVG, ~20 marks) with one shared stroke-weight token
 - [ ] Roasty component: parametric (roast/hat/gear/sprout) + 9 animation states (`points`, not `xp`)
 - [ ] 10 tree-stage assets + `CoffeePersona` + `AnimatedTree` cross-fade

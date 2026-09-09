@@ -98,6 +98,75 @@ Each feature owns its own data, domain, and presentation layers. Shared code goe
 
 ---
 
+## The type ladder — `AppText`
+
+`lib/shared/theme/app_text.dart` is the only place a font size exists. Ten
+steps — `hero · display · title · subtitle · heading · lead · body · support ·
+label · micro` at 56 / 30 / 26 / 22 / 19 / 17 / 15 / 13 / 11 / 9.5 —
+transcribed from the `--t-*` block of the design bundle.
+
+**There is no `fontSize` parameter.** A size that is not a step cannot be asked
+for: going off-ladder means editing the private rung table, which is visible in
+a diff, rather than passing a number at a call site where nobody will see it.
+
+Size, face (`AppFace`) and tracking are separate axes, because the design
+uses one step with more than one of each. Each step defaults to the face the
+design most often sets it in and accepts any other. Tracking is documented in
+[the design system's Typography section](design/03-design-system.md#tracking--a-separate-axis-from-size).
+
+Colour resolves in one order: an explicit `color`, then the step's role colour
+from `mood`, then nothing — in which case the surrounding `DefaultTextStyle`
+supplies it. Pass `mood` from `context.mood`; a painter with no context passes
+`color` instead.
+
+### Material's slots, resolved onto the ladder
+
+`AppText.textTheme` maps **all fifteen** of Material's text slots, so stock
+widgets and the ~70 call sites still reading `Theme.of(context).textTheme` are
+set in the app's type rather than Roboto. None may be left out: `ThemeData`
+merges a supplied `TextTheme` onto the default typography, so a null slot keeps
+Roboto at Material's own size — off the ladder and outside the design's three
+faces. Seven slots did exactly that, which is how a class whose whole point is
+that going off-ladder must be a visible act let a large share of the app's text
+off it invisibly.
+
+**Role first, then the nearest size.** The role picks which rungs are eligible:
+a `label*` slot may only land on a tracked rung (`label`, `micro`), because
+0.14em is smallcaps spacing and would set body copy adrift; a `body*` slot may
+only land on an untracked one. Within those, the slot takes the rung nearest
+the Roboto size it used to resolve to — 57/45/36 · 32/28/24 · 22/16/14 ·
+16/14/12 · 14/12/11 — so mapping a slot does not restyle screens nobody
+touched. A tie goes downwards: `bodyLarge` 16 → `body`, `bodyMedium` and
+`labelLarge` 14 → `support`, `headlineMedium` 28 → `title`, `labelMedium` 12 →
+`label`.
+
+Role is why the two 12px slots part company — `bodySmall` takes `support` (13,
+untracked) and `labelMedium` takes `label` (11, tracked), where size alone
+would have tied them. It is also why the three `display*` slots ignore the
+nearest rung: 57 and 45 are nearest `hero`, but a screen title is a role and
+`hero` is reserved for celebration numerals.
+
+Two things the nearest size cannot decide:
+
+- **Face.** A slot Material sets at weight 500 is a control, so it takes
+  `AppFace.control` where its rung defaults to the 400 body face —
+  `titleMedium`, `titleSmall`, `labelLarge`. `labelSmall` keeps mono: it is the
+  numeral smallcaps.
+- **Colour.** `support` and `label` are muted by role, which is right under a
+  heading and wrong for a title, so `titleSmall` lands on the `support` rung in
+  full-strength ink.
+
+Fifteen slots over ten rungs means slots Material distinguishes share one —
+`bodySmall` and `bodyMedium` both land on `support`. That is the ladder being
+shorter than Material's scale, which is the point of it.
+
+What this cannot fix is a call site reading the wrong slot: three read
+`labelMedium` for sentence-case text ("3 of 5 saved") and so inherit the
+smallcaps tracking the label rung owes its uppercase siblings. Those belong to
+the per-screen work.
+
+---
+
 ## Service Abstraction Pattern
 
 Every external service (analytics, crash reporting, remote config, ads, payments) is accessed **only through an abstract interface**. Concrete implementations are injected via Riverpod providers.

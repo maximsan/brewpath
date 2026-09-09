@@ -15,6 +15,8 @@ import 'package:brew_path/features/lessons/presentation/cards/recall_payoff.dart
 import 'package:brew_path/features/lessons/presentation/cards/sequence_card_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/sequence_order.dart';
 import 'package:brew_path/features/lessons/presentation/cards/slider_card_view.dart';
+import 'package:brew_path/features/lessons/presentation/cards/tastefix_panel.dart';
+import 'package:brew_path/features/lessons/presentation/cards/tastefix_reaction.dart';
 import 'package:brew_path/features/lessons/presentation/cards/visual_card_view.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
@@ -97,6 +99,7 @@ Widget contentCardView(
       // hold the same type and mean different things — see `_flavorOptions`.
       options: shuffledBySeed(_fromChoices(tastefix.choices), seed),
       copy: _tastefixCopy(tastefix),
+      framing: _tastefixFraming(tastefix),
       onSolved: onSolved,
       onContinue: onContinue,
     ),
@@ -145,14 +148,6 @@ List<ChoiceOption> _quizOptions(QuizCard card) => [
   ChoiceOption(text: 'False', isCorrect: !card.answer),
 ];
 
-/// What is wrong with the cup, as the eyebrow above the question — the tags are
-/// framing rather than part of it, so they take the picker's existing slot.
-///
-/// ⚠️ **A visual deferral, recorded rather than hidden.** The design draws
-/// these as berry-tinted chips that dim when a wrong fix makes the cup worse;
-/// this renders one smallcaps line, with the words and none of the reaction.
-String _tastefixSymptoms(TastefixCard card) => card.tags.join(' · ');
-
 /// What each picking kind says around its choices — one builder per kind,
 /// beside the option builders below, because what a kind *offers* and what it
 /// *says* are halves of one mapping. Named rather than written inline with
@@ -194,10 +189,28 @@ PickerCopy _quizCopy(QuizCard card) => PickerCopy(
   explain: ({required wasCorrect}) => card.explanation,
 );
 
-/// The cup's symptoms lead, then the setup, then the question.
+/// The cup the round is fixing, which reacts to the pick — a builder beside
+/// `_tastefixCopy` because what a kind draws around its choices is a mapping
+/// like what it says, not a literal in the switch.
+PickerFraming _tastefixFraming(TastefixCard card) =>
+    (outcome) => TastefixPanel(
+      tags: card.tags,
+      scenario: card.scenario,
+      reaction: _cupAfter(outcome),
+    );
+
+/// How the cup reads the pick: the picker grades the answer, the cup says what
+/// that did to it. Here rather than beside [TastefixReaction], which is kept
+/// clear of the picker so its helpers stay testable without a widget.
+TastefixReaction _cupAfter(PickOutcome outcome) => switch (outcome) {
+  PickOutcome.waiting => TastefixReaction.unfixed,
+  PickOutcome.right => TastefixReaction.relieved,
+  PickOutcome.wrong => TastefixReaction.worsened,
+};
+
+/// Only the question and what closes it: the symptoms and the setup are the
+/// cup's, drawn in the panel above rather than in a copy slot.
 PickerCopy _tastefixCopy(TastefixCard card) => PickerCopy(
-  label: _tastefixSymptoms(card),
-  scenario: card.scenario,
   prompt: card.prompt,
   explain: ({required wasCorrect}) => card.explanation,
   // A fix that worked, not an answer that was right.

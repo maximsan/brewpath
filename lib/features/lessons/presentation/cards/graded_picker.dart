@@ -4,6 +4,7 @@ import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
 import 'package:brew_path/features/lessons/presentation/cards/choice_list.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 
 /// A line the card writes once it knows how the answer went. Both of
@@ -66,6 +67,24 @@ class PickerCopy {
   final PickerLine verdict;
 }
 
+/// How the committed pick went, for framing that answers it.
+///
+/// Its own type rather than a nullable bool, so *unanswered* and *answered
+/// wrong* cannot be confused at a call site that draws them differently.
+enum PickOutcome {
+  /// Nothing committed yet.
+  waiting,
+
+  /// The committed choice was the right one.
+  right,
+
+  /// The committed choice was wrong.
+  wrong,
+}
+
+/// A block set above the question that may react to the commit.
+typedef PickerFraming = Widget Function(PickOutcome outcome);
+
 /// A graded card: pick one option, and the card latches on that choice.
 ///
 /// Success is reported once, at the moment of a correct commit. A wrong answer
@@ -78,6 +97,7 @@ class GradedPicker extends StatefulWidget {
     required this.copy,
     required this.onSolved,
     required this.onContinue,
+    this.framing,
     this.payoff,
     super.key,
   });
@@ -87,6 +107,10 @@ class GradedPicker extends StatefulWidget {
 
   /// What this kind says around the choices.
   final PickerCopy copy;
+
+  /// A block above the question, rebuilt with the outcome so it can answer the
+  /// pick — the cup a `tastefix` round reacts inside, and nothing else so far.
+  final PickerFraming? framing;
 
   /// A block shown under the verdict once the card is answered — the `recall`
   /// card's reply to the guess its lesson opened on, and nothing else so far.
@@ -108,6 +132,12 @@ class _GradedPickerState extends State<GradedPicker> {
   bool get _latched => _selectedIndex != null;
   bool get _wasCorrect => _latched && widget.options[_selectedIndex!].isCorrect;
 
+  PickOutcome get _outcome => switch ((_latched, _wasCorrect)) {
+    (false, _) => PickOutcome.waiting,
+    (true, true) => PickOutcome.right,
+    (true, false) => PickOutcome.wrong,
+  };
+
   void _commit(int index) {
     // Latching before the callback matters: the host may rebuild synchronously
     // on the success signal, and a card that had not yet latched would accept a
@@ -128,6 +158,10 @@ class _GradedPickerState extends State<GradedPicker> {
       label: copy.label,
       title: copy.title,
       children: [
+        if (widget.framing case final framing?) ...[
+          framing(_outcome),
+          SizedBox(height: OffTokens.tastefixPanelToPrompt.value),
+        ],
         if (copy.scenario != null) ...[
           Text(copy.scenario!, style: theme.textTheme.bodyLarge),
           const SizedBox(height: AppSpacing.md),
