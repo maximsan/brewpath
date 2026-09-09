@@ -75,7 +75,12 @@ class _ScoreLine extends StatelessWidget {
       excludeSemantics: true,
       child: Text(
         read(mastery),
-        style: AppText.body(mood: mood, color: mood.ink, face: AppFace.mono),
+        style: AppText.body(
+          mood: mood,
+          color: mood.ink,
+          face: AppFace.mono,
+          tracking: AppTracking.figure,
+        ),
       ),
     );
   }

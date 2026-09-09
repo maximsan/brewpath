@@ -113,6 +113,10 @@ You can always edit this file by hand instead — the helpers just save effort.
 - **The lesson ending puts what you earned under the tree it fed.** The points
   and the *lessons to the next stage* countdown were the wrong way round, so
   the payout sat a line further from the tree than the design places it.
+- **Four number lines are set at the width the design gives them.** `+10 PTS`,
+  the ending's score, and Profile's *1 lesson · 10 points* and *1 / 32 done*
+  read as one quantity again rather than as kickers with their digits drifting
+  apart. Each had been left at whatever its type step happened to set.
 - The loading screen no longer flashes a sleeping Roasty and the tap cue for a
   frame before the app opens: the advance is decided at the end of the wake-up,
   not after the loop has been drawn back at its start.
