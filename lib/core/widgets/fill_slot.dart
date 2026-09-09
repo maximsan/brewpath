@@ -41,13 +41,18 @@ enum FillSlotState {
   /// `color-mix(in oklab, accent 55%, rule)` waiting, and 70% once filled.
   Color rule(MoodColors mood) => switch (this) {
     FillSlotState.empty => Color.lerp(mood.rule, mood.accent, _waiting)!,
-    FillSlotState.filled => Color.lerp(mood.rule, mood.accent, _locked)!,
-    _ => ink(mood),
+    FillSlotState.filled => Color.lerp(mood.rule, mood.accent, _answered)!,
+    FillSlotState.guess => ink(mood),
+    FillSlotState.right => ink(mood),
+    FillSlotState.wrong => ink(mood),
   };
 
-  /// How much accent the rule carries in each of the two ungraded states.
+  /// How much accent the rule carries before anything has judged the word —
+  /// the design's `color-mix(in oklab, accent 55%, rule)` empty, 70% once a
+  /// word is in. Mixed in sRGB, where the design mixes in oklab, so the
+  /// hairline lands a shade off what it computes.
   static const double _waiting = 0.55;
-  static const double _locked = 0.70;
+  static const double _answered = 0.70;
 }
 
 /// The blank: one inline slot for every fill-in-the-blank mechanic in the app
@@ -63,15 +68,13 @@ class FillSlot extends StatelessWidget {
     this.word,
     this.inherit = false,
     super.key,
-  });
+  }) : assert(
+         (word == null) == (state == FillSlotState.empty),
+         'an empty slot holds no word, and a filled one holds one',
+       );
 
   /// The design's `border-bottom: 2px`.
   static const double _ruleWeight = 2;
-
-  /// The slot sets its own `line-height: 1.15`, tighter than the paragraph it
-  /// sits in. The design says why: the rule follows the slot's own box, so the
-  /// paragraph's leading would drop it off the baseline.
-  static const double _ruleHugsWord = 1.15;
 
   /// Holds the slot's height open when there is no word in it yet.
   static const String _blank = '\u00a0';
@@ -112,7 +115,7 @@ class FillSlot extends StatelessWidget {
             (inherit
                     ? DefaultTextStyle.of(context).style
                     : AppText.body(face: AppFace.mono))
-                .copyWith(color: ink, height: _ruleHugsWord),
+                .copyWith(color: ink, height: OffTokens.fillSlotLeading.value),
       ),
     );
 

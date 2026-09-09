@@ -12,6 +12,7 @@ import 'package:brew_path/features/lessons/presentation/cards/tastefix_reaction.
 import 'package:brew_path/features/lessons/presentation/cards/tastefix_symptoms.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -1068,6 +1069,39 @@ void main() {
         _continueEnabled(tester),
         isTrue,
         reason: 'nothing to fill, so nothing to commit — it reads as prose',
+      );
+    });
+
+    testWidgets('a checked bank keeps its words in ink, and fades the rest', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_host(_concept, _Signals()));
+
+      await tester.tap(
+        find.descendant(
+          of: find.byType(ConceptFillBank),
+          matching: find.text('seed'),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await _tapText(tester, 'Check answers');
+
+      // The design colours the border and the wash, never the word.
+      final word = tester.widget<Text>(
+        find.descendant(
+          of: find.byType(ConceptFillBank),
+          matching: find.text('seed'),
+        ),
+      );
+      expect(word.style?.color, MoodColors.darkRoast.ink);
+
+      // 'skin' is neither the answer nor the pick, so it steps back.
+      expect(
+        find.ancestor(
+          of: find.text('skin'),
+          matching: find.byType(Opacity),
+        ),
+        findsOneWidget,
       );
     });
 

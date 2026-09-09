@@ -1,13 +1,14 @@
 import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/core/widgets/fill_slot.dart';
+import 'package:brew_path/features/lessons/domain/concept_card_parts.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
 import 'package:brew_path/features/lessons/presentation/cards/concept_fill_bank.dart';
 import 'package:brew_path/features/lessons/presentation/cards/concept_fill_state.dart';
+import 'package:brew_path/features/lessons/presentation/cards/concept_meta_table.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
-import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
 /// The commit affordance, before anything has been checked.
@@ -45,11 +46,7 @@ class _ConceptCardViewState extends State<ConceptCardView> {
   final Map<int, String> _picks = {};
   bool _checked = false;
 
-  /// The blanks in the sentence, keyed by their position in it.
-  Map<int, FillBlank> get _blanks => {
-    for (var index = 0; index < widget.card.fill.length; index++)
-      if (widget.card.fill[index] case final FillBlank blank) index: blank,
-  };
+  Map<int, FillBlank> get _blanks => blanksIn(widget.card);
 
   bool get _allPicked => _picks.length == _blanks.length;
 
@@ -66,17 +63,6 @@ class _ConceptCardViewState extends State<ConceptCardView> {
     if (_checked || !_allPicked) return;
     setState(() => _checked = true);
   }
-
-  /// The paragraph the verdict block speaks, or null where the card has only
-  /// one. The design reserves the second for exactly this.
-  static String? _support(ConceptCard card) =>
-      card.paragraphs.length > 1 ? card.paragraphs[1] : null;
-
-  /// The paragraphs that stay as prose — every one the block does not take.
-  static List<String> _prose(ConceptCard card) => [
-    for (final (index, paragraph) in card.paragraphs.indexed)
-      if (index != 1) paragraph,
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -113,19 +99,19 @@ class _ConceptCardViewState extends State<ConceptCardView> {
           AnswerFeedback(
             verdict: _allRight ? _allCorrect : notQuiteVerdict,
             outcome: _allRight ? Verdict.right : Verdict.wrong,
-            // The design hands the block the card's *second* paragraph, which
-            // reads as the reply to a checked answer rather than as prose.
-            explanation: _support(card),
+            // The design hands the block the card's *second* paragraph: a
+            // reply to a checked answer rather than prose.
+            explanation: supportIn(card),
           ),
         ],
         const SizedBox(height: AppSpacing.lg),
-        for (final paragraph in _prose(card)) ...[
+        for (final paragraph in proseIn(card)) ...[
           Text(paragraph, style: theme.textTheme.bodyLarge),
           const SizedBox(height: AppSpacing.sm),
         ],
         if (card.meta.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.xs),
-          _MetaTable(rows: card.meta),
+          ConceptMetaTable(rows: card.meta),
         ],
       ],
     );
@@ -172,44 +158,6 @@ class _FillSentence extends StatelessWidget {
             },
         ],
       ),
-    );
-  }
-}
-
-/// The key/value pair table under a concept card's prose.
-class _MetaTable extends StatelessWidget {
-  const _MetaTable({required this.rows});
-
-  final List<List<String>> rows;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final mood = context.mood;
-
-    return Column(
-      children: [
-        for (final row in rows)
-          Padding(
-            padding: const EdgeInsets.only(bottom: AppSpacing.xs),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Text(
-                    row.first,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: mood.inkMute,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Text(row.last, style: theme.textTheme.bodyMedium),
-                ),
-              ],
-            ),
-          ),
-      ],
     );
   }
 }

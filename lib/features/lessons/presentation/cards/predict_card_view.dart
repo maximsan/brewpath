@@ -97,7 +97,7 @@ class _PredictCardViewState extends State<PredictCardView> {
 /// The design's cloze: once a tile is picked the word lands in the sentence so
 /// the learner reads their own claim back — which is what the recall card later
 /// confirms or overturns. A question authored without a blank renders as
-/// ordinary prose, which thirteen of the thirty-two are.
+/// ordinary prose; `cloze.dart` says how many.
 class _Question extends StatelessWidget {
   const _Question({required this.question, required this.guess});
 

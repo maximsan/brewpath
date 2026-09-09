@@ -6,6 +6,7 @@ import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 
 /// The words on offer for a concept sentence, one group per blank.
@@ -23,12 +24,6 @@ class ConceptFillBank extends StatelessWidget {
     required this.onPick,
     super.key,
   });
-
-  /// The gap the design sets between one group and the next.
-  static const double _groupGap = 18;
-
-  /// The gap between the two words on offer.
-  static const double _optionGap = 10;
 
   /// Each blank, keyed by its position in the sentence.
   final Map<int, FillBlank> blanks;
@@ -50,7 +45,7 @@ class ConceptFillBank extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         for (final (index, entry) in entries.indexed) ...[
-          if (index > 0) const SizedBox(height: _groupGap),
+          if (index > 0) SizedBox(height: OffTokens.fillGroupGap.value),
           _Group(
             blank: entry.value,
             pick: picks[entry.key],
@@ -77,6 +72,22 @@ class _Group extends StatelessWidget {
   final bool checked;
   final ValueChanged<String> onPick;
 
+  /// One word on offer, marked from the pick and whether the card is solved.
+  Widget _option(String option, VoidCallback pick) {
+    final mark = ConceptOptionMark.of(
+      option: option,
+      answer: blank.answer,
+      pick: this.pick,
+      checked: checked,
+    );
+    return _Option(
+      option: option,
+      mark: mark,
+      faded: checked && mark == ConceptOptionMark.none,
+      onTap: checked ? null : pick,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -89,18 +100,9 @@ class _Group extends StatelessWidget {
         Row(
           children: [
             for (final (index, option) in blank.options.indexed) ...[
-              if (index > 0) const SizedBox(width: ConceptFillBank._optionGap),
+              if (index > 0) SizedBox(width: OffTokens.fillOptionGap.value),
               Expanded(
-                child: _Option(
-                  option: option,
-                  mark: ConceptOptionMark.of(
-                    option: option,
-                    answer: blank.answer,
-                    pick: pick,
-                    checked: checked,
-                  ),
-                  onTap: checked ? null : () => onPick(option),
-                ),
+                child: _option(option, () => onPick(option)),
               ),
             ],
           ],
@@ -115,11 +117,16 @@ class _Option extends StatelessWidget {
   const _Option({
     required this.option,
     required this.mark,
+    required this.faded,
     required this.onTap,
   });
 
   final String option;
   final ConceptOptionMark mark;
+
+  /// Whether the card is solved and this word means nothing either way.
+  final bool faded;
+
   final VoidCallback? onTap;
 
   @override
@@ -131,21 +138,31 @@ class _Option extends StatelessWidget {
       ConceptOptionMark.right => mood.sage,
       ConceptOptionMark.wrong => mood.berry,
     };
-    final wash = mark == ConceptOptionMark.wrong
-        ? CardTints.wrongWash
-        : CardTints.wash;
+    // Three washes, as the design writes them: 12% behind the answer, 8%
+    // behind a wrong pick, 10% behind a pick nothing has judged yet.
+    final wash = switch (mark) {
+      ConceptOptionMark.wrong => CardTints.wrongWash,
+      ConceptOptionMark.picked => CardTints.pickedWash,
+      _ => CardTints.wash,
+    };
 
-    return CardOptionTile(
+    final tile = CardOptionTile(
       semanticsLabel: _spoken,
       onTap: onTap,
       borderColor: tone,
       fillColor: tone?.withValues(alpha: wash),
+      // The word stays ink in every state: the design colours the border and
+      // the wash, never the option's own text.
       child: Text(
         option,
         textAlign: TextAlign.center,
-        style: AppText.body(color: tone ?? mood.ink),
+        style: AppText.body(color: mood.ink),
       ),
     );
+
+    // Once solved, a word that was neither picked nor the answer steps back.
+    if (!faded) return tile;
+    return Opacity(opacity: CardTints.solvedOpacity, child: tile);
   }
 
   /// What the row says aloud — the word, and what became of it. A colour is
