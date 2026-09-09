@@ -11,6 +11,7 @@ import 'package:brew_path/features/lessons/presentation/lesson_completion_beat.d
 import 'package:brew_path/features/lessons/presentation/lesson_completion_body.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_screen.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_tree.dart';
+import 'package:brew_path/features/lessons/presentation/reward_points_line.dart';
 import 'package:brew_path/features/progress/domain/activity_recorder.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
@@ -402,9 +403,68 @@ void main() {
       expect(tree.grows, isFalse);
       expect(
         find.text(
-          LessonCompletionTree.stillTreeLine(_lessonCount - 1).toUpperCase(),
+          TreeStageCountdown.stillTreeLine(_lessonCount - 1).toUpperCase(),
         ),
         findsOneWidget,
+      );
+    });
+
+    testWidgets('puts what the run paid above that countdown', (tester) async {
+      // The design orders the beat under the tree payout-then-countdown, so
+      // the points sit directly under the thing they fed. Asserted on the
+      // painted positions, because a Column reordered by mistake still draws
+      // both and every other assertion here would still pass.
+      final container = _buildContainer();
+      addTearDown(container.dispose);
+
+      await pumpCompletion(tester, container);
+
+      // The painted lines, not their boxes: each brings its gap as internal
+      // padding, so a box top sits exactly on what precedes it.
+      final points = tester
+          .getTopLeft(
+            find.descendant(
+              of: find.byType(RewardPointsLine),
+              matching: find.byType(Text),
+            ),
+          )
+          .dy;
+      final countdown = tester
+          .getTopLeft(
+            find.text(
+              TreeStageCountdown.stillTreeLine(_lessonCount - 1).toUpperCase(),
+            ),
+          )
+          .dy;
+      final tree = tester.getBottomLeft(find.byType(GrowingTree)).dy;
+
+      expect(points, greaterThanOrEqualTo(tree));
+      expect(countdown, greaterThan(points));
+    });
+
+    testWidgets('centres that countdown under the tree', (tester) async {
+      // The body lays its column out stretched, so the line has to centre
+      // itself. It went flush left the first time it moved out of the tree's
+      // own column, which every other assertion here still passed through.
+      final container = _buildContainer();
+      addTearDown(container.dispose);
+
+      await pumpCompletion(tester, container);
+
+      final line = find.text(
+        TreeStageCountdown.stillTreeLine(_lessonCount - 1).toUpperCase(),
+      );
+      // The line's own box, not its position: stretched, it fills the column
+      // and its centre still lands mid-screen while the glyphs sit hard left.
+      // Hugging the text is what says it is centred.
+      // The glyphs, not the box: stretched, the label fills the column and its
+      // centre still lands mid-screen while the text sits hard against the
+      // gutter. Its left edge moving inward is what says it is centred.
+      final slot = tester.getTopLeft(find.byType(TreeStageCountdown)).dx;
+      expect(tester.getTopLeft(line).dx, greaterThan(slot));
+      expect(
+        tester.getCenter(line).dx,
+        moreOrLessEquals(tester.getCenter(find.byType(GrowingTree)).dx),
       );
     });
 
