@@ -215,4 +215,59 @@ void main() {
       expect(derive({day0 + 5}, today: 0), StreakStatus.idle);
     });
   });
+
+  group('the longest run the history ever reached', () {
+    test('an unbroken history reads the same as the current streak', () {
+      final status = derive(run(0, 5), today: 4);
+
+      expect(status.longestStreak, 5);
+      expect(status.streak, 5);
+    });
+
+    test('five, a gap, then three keeps the five', () {
+      final status = derive({...run(0, 5), ...run(6, 3)}, today: 8);
+
+      expect(status.streak, 3);
+      expect(status.longestStreak, 5);
+    });
+
+    test('three, a gap, then five reads the later run', () {
+      final status = derive({...run(0, 3), ...run(4, 5)}, today: 8);
+
+      expect(status.longestStreak, 5);
+    });
+
+    test('a broken history the learner has since abandoned keeps its best', () {
+      final status = derive(run(0, 5), today: 40);
+
+      expect(status.streak, 0);
+      expect(status.longestStreak, 5);
+    });
+
+    test('a covered miss leaves one run, not two', () {
+      // Seven days, a miss the freeze covers, then one more day: §10 rules
+      // this a single run of 8, so the longest must not read the 7 either.
+      final status = derive({...run(0, 7), day0 + 8}, today: 8);
+
+      expect(status.longestStreak, 8);
+    });
+
+    test('a run of two misses is a break, so the runs stay separate', () {
+      final status = derive({...run(0, 7), ...run(9, 2)}, today: 10);
+
+      expect(status.streak, 2);
+      expect(status.longestStreak, 7);
+    });
+
+    test('days ahead of today are ignored here too', () {
+      final status = derive({...run(0, 3), ...run(20, 9)}, today: 2);
+
+      expect(status.longestStreak, 3);
+    });
+
+    test('an empty history has no run at all', () {
+      expect(derive(const {}, today: 0).longestStreak, 0);
+      expect(StreakStatus.idle.longestStreak, 0);
+    });
+  });
 }

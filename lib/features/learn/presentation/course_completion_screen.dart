@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/sticky_action_bar.dart';
+import 'package:brew_path/features/cards/domain/cards_providers.dart';
 import 'package:brew_path/features/companion/domain/companion_reaction.dart';
 import 'package:brew_path/features/companion/presentation/companion_celebration.dart';
 import 'package:brew_path/features/learn/domain/course_completion_providers.dart';
@@ -70,17 +71,17 @@ class _CourseCompletionScreenState
     final mood = context.mood;
 
     final lessons = ref.watch(completedLessonsProvider);
-    final cards = ref.watch(collectedCardsProvider);
-    final streak = ref.watch(streakProvider);
+    final rewards = ref.watch(collectedModuleRewardsProvider);
+    final streak = ref.watch(streakStatusProvider);
     // The ending must never paint "0 lessons" for a loading frame; the
     // moment waits for its own numbers.
-    if (!lessons.hasValue || !cards.hasValue || !streak.hasValue) {
+    if (!lessons.hasValue || !rewards.hasValue || !streak.hasValue) {
       return const Scaffold(body: LoadingIndicator());
     }
     final stats = (
       lessons: lessons.value?.count ?? 0,
-      cards: cards.value?.length ?? 0,
-      streak: streak.value ?? 0,
+      moduleRewards: rewards.value ?? 0,
+      longestStreak: streak.value?.longestStreak ?? 0,
     );
     return Scaffold(
       // The bar takes the bottom inset itself, so this must not consume it
@@ -144,13 +145,16 @@ class _CourseCompletionScreenState
     return Semantics(
       label:
           'What you did: ${stats.lessons} lessons completed, '
-          '${stats.cards} cards collected, '
-          'a ${stats.streak} day streak.',
+          '${stats.moduleRewards} Module Rewards earned, '
+          'a longest streak of ${stats.longestStreak} days.',
       child: Column(
         children: [
           _StatRow(label: 'Lessons completed', value: '${stats.lessons}'),
-          _StatRow(label: 'Cards collected', value: '${stats.cards}'),
-          _StatRow(label: 'Day streak', value: '${stats.streak}'),
+          _StatRow(
+            label: 'Module Rewards',
+            value: '${stats.moduleRewards}',
+          ),
+          _StatRow(label: 'Longest streak', value: '${stats.longestStreak}'),
         ],
       ),
     );
@@ -158,7 +162,7 @@ class _CourseCompletionScreenState
 }
 
 /// The three derived completion stats, travelling together.
-typedef _Stats = ({int lessons, int cards, int streak});
+typedef _Stats = ({int lessons, int moduleRewards, int longestStreak});
 
 class _StatRow extends StatelessWidget {
   const _StatRow({required this.label, required this.value});

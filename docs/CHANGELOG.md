@@ -81,6 +81,13 @@ You can always edit this file by hand instead — the helpers just save effort.
   answer that latches the card, and reduced motion lands it in a single frame
   with the colours and the words still changing.
 
+- **The course ending counts what the spec asked for.** The completion moment
+  now shows the learner's *longest* streak and the number of Module Rewards
+  they earned, in place of the current streak and the total card count it
+  stood in with. Both are derived — the longest run comes off the same fold as
+  the current one, and a Module Reward is a card the content bank points at a
+  module — so nothing new is stored and a reset still leaves nothing behind.
+
 - **The Today tour is the one the design draws.** A bordered frame travels
   between the four things it introduces instead of a spotlight snapping
   between them, the card carries its own counter, dots, Skip and Next, and

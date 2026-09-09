@@ -28,6 +28,7 @@ StreakStatus oracle(Set<int> activeDays, int today) {
   if (past.isEmpty) return StreakStatus.idle;
 
   var streak = 0;
+  var longest = 0;
   var freezeHeld = false;
   var towardFreeze = 0;
   final frozen = <int>{};
@@ -35,6 +36,7 @@ StreakStatus oracle(Set<int> activeDays, int today) {
   for (var day = past.first; day < today; day++) {
     if (activeDays.contains(day)) {
       streak++;
+      longest = max(longest, streak);
       if (!freezeHeld) {
         towardFreeze++;
         if (towardFreeze == freezeEarnDays) {
@@ -54,6 +56,7 @@ StreakStatus oracle(Set<int> activeDays, int today) {
   // Today counts when it qualifies and is otherwise left alone.
   if (activeDays.contains(today)) {
     streak++;
+    longest = max(longest, streak);
     if (!freezeHeld) {
       towardFreeze++;
       if (towardFreeze == freezeEarnDays) {
@@ -65,6 +68,7 @@ StreakStatus oracle(Set<int> activeDays, int today) {
 
   return StreakStatus(
     streak: streak,
+    longestStreak: longest,
     freezeHeld: freezeHeld,
     daysToNextFreeze: freezeHeld ? null : freezeEarnDays - towardFreeze,
     freezesSpent: frozen.length,
@@ -143,6 +147,14 @@ void main() {
         final status = deriveStreak(activeDays: days, today: today);
         expect(status.streak, lessThanOrEqualTo(days.length));
         expect(status.streak, greaterThanOrEqualTo(0));
+      });
+    });
+
+    test('the longest run sits between the current streak and the days', () {
+      forEachCase((days, today) {
+        final status = deriveStreak(activeDays: days, today: today);
+        expect(status.longestStreak, greaterThanOrEqualTo(status.streak));
+        expect(status.longestStreak, lessThanOrEqualTo(days.length));
       });
     });
 

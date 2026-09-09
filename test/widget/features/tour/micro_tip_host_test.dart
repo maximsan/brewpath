@@ -184,6 +184,7 @@ void main() {
           streakStatusProvider.overrideWith(
             (ref) async => const StreakStatus(
               streak: 7,
+              longestStreak: 7,
               freezeHeld: true,
               daysToNextFreeze: null,
               freezesSpent: 0,
@@ -256,6 +257,7 @@ void main() {
         streakStatusProvider.overrideWith(
           (ref) async => const StreakStatus(
             streak: 7,
+            longestStreak: 7,
             freezeHeld: true,
             daysToNextFreeze: null,
             freezesSpent: 0,

@@ -10,25 +10,23 @@ const int freezeEarnDays = 7;
 ///
 /// The value is **1**, which is why [StreakStatus.freezeHeld] is a boolean
 /// rather than a count: the cap is expressed in the type, so no arithmetic can
-/// exceed it. The prototype's `FREEZE_CAP = 2` is superseded (#58) and its
-/// pip row is dropped with it (#26) — one dash on the covered day and one
-/// status line carry what two pips used to.
+/// exceed it. The prototype's `FREEZE_CAP = 2` is superseded (#58) and its pip
+/// row is dropped with it (#26).
 const int maxFreezesHeld = 1;
 
-/// The streak, the freeze, and the days a freeze covered — all **derived**,
-/// none of them stored.
+/// The streak, the freeze, and the days a freeze covered — all **derived**.
 ///
-/// A stored copy of any of these would need a merge rule, and a max-merged
-/// counter launders an inflation bug permanently: two devices offline at five
-/// days each do not make five, and no later correction can lower the number
-/// once it has been written. The active-day set unions instead, which is
-/// exactly right, and everything here is recovered by replaying it.
+/// A stored copy would need a merge rule, and a max-merged counter launders
+/// an inflation bug permanently: two devices offline at five days each do not
+/// make five. The active-day set unions instead, and everything here is
+/// recovered by replaying it.
 @immutable
 class StreakStatus {
   /// Creates a [StreakStatus]. Prefer `deriveStreak` — this exists for the
   /// two constants below and for tests that want a fixture.
   const StreakStatus({
     required this.streak,
+    required this.longestStreak,
     required this.freezeHeld,
     required this.daysToNextFreeze,
     required this.freezesSpent,
@@ -40,6 +38,7 @@ class StreakStatus {
   /// clears the day set this derives from.
   static const idle = StreakStatus(
     streak: 0,
+    longestStreak: 0,
     freezeHeld: false,
     daysToNextFreeze: freezeEarnDays,
     freezesSpent: 0,
@@ -52,6 +51,13 @@ class StreakStatus {
   /// a run of `streak` days can span more than `streak` calendar days — the
   /// defect that makes deriving the week strip from this number wrong (#26).
   final int streak;
+
+  /// The high-water mark of [streak] over the whole history.
+  ///
+  /// Read off the same fold, so the two can never disagree about what a run
+  /// is: a day a freeze covered joins the run either side of it here too, and
+  /// a break ends the run for both.
+  final int longestStreak;
 
   /// Whether an unspent freeze is held. See [maxFreezesHeld] for why this is
   /// not a count.
@@ -79,6 +85,7 @@ class StreakStatus {
       identical(this, other) ||
       other is StreakStatus &&
           other.streak == streak &&
+          other.longestStreak == longestStreak &&
           other.freezeHeld == freezeHeld &&
           other.daysToNextFreeze == daysToNextFreeze &&
           other.freezesSpent == freezesSpent &&
@@ -87,6 +94,7 @@ class StreakStatus {
   @override
   int get hashCode => Object.hash(
     streak,
+    longestStreak,
     freezeHeld,
     daysToNextFreeze,
     freezesSpent,
@@ -95,6 +103,7 @@ class StreakStatus {
 
   @override
   String toString() =>
-      'StreakStatus(streak: $streak, freezeHeld: $freezeHeld, '
-      'daysToNextFreeze: $daysToNextFreeze, freezesSpent: $freezesSpent)';
+      'StreakStatus(streak: $streak, longestStreak: $longestStreak, '
+      'freezeHeld: $freezeHeld, daysToNextFreeze: $daysToNextFreeze, '
+      'freezesSpent: $freezesSpent)';
 }

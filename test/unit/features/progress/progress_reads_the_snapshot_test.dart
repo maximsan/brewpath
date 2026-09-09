@@ -75,12 +75,12 @@ void main() {
     await seedCollectible(snapshots, 'c1');
     final container = harness();
 
-    expect(await container.read(collectedCardsProvider.future), ['c1']);
     final cards = await container.read(cardsWithCollectionProvider.future);
     expect(
       cards.firstWhere((entry) => entry.card.id == 'c1').isCollected,
       isTrue,
     );
+    expect(cards.where((entry) => entry.isCollected), hasLength(1));
   });
 
   test('Today moves past what the snapshot says is finished', () async {
