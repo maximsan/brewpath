@@ -15,6 +15,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../support/content_fixtures.dart';
+
 const _lessonCount = 32;
 const _moduleRewardCount = 5;
 const _longestStreakDays = 12;
@@ -29,6 +31,21 @@ const _streak = StreakStatus(
   freezesSpent: 0,
   frozenDays: {},
 );
+
+/// The five Module Rewards plus a lesson card, all owned — so a count that
+/// took every collected card would read six.
+final List<CardWithCollection> _collection = [
+  for (var i = 0; i < _moduleRewardCount; i++)
+    CardWithCollection(
+      card: testCoffeeCard(id: 'cM$i', lessonId: null, moduleId: 'm$i'),
+      isCollected: true,
+    ),
+  CardWithCollection(card: testCoffeeCard(), isCollected: true),
+  CardWithCollection(
+    card: testCoffeeCard(id: 'cM9', lessonId: null, moduleId: 'm9'),
+    isCollected: false,
+  ),
+];
 
 final CompletedLessons _completed = CompletedLessons(
   completedOn: {
@@ -70,9 +87,7 @@ Future<void> _pump(
     ProviderScope(
       overrides: [
         completedLessonsProvider.overrideWith((ref) async => _completed),
-        collectedModuleRewardsProvider.overrideWith(
-          (ref) async => _moduleRewardCount,
-        ),
+        cardsWithCollectionProvider.overrideWith((ref) async => _collection),
         streakStatusProvider.overrideWith((ref) async => _streak),
         companionLinesProvider.overrideWith((ref) async => _lines),
       ],

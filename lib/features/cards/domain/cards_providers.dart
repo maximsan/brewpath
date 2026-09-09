@@ -1,4 +1,3 @@
-import 'package:brew_path/features/cards/domain/module_rewards.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
@@ -21,10 +20,10 @@ class CardWithCollection {
 
 /// Every card the bank holds, paired with whether the learner owns it.
 ///
-/// Reads the collected ids **off the snapshot directly** rather than chaining
-/// through another provider: the chained form hit a Riverpod 3.2.1
-/// internal-pause-state assertion (issue #4709) when the `StatefulShellRoute`
-/// toggled `TickerMode` after a lesson completion invalidated the inner one.
+/// Reads the collected ids **off the snapshot directly**: chaining through a
+/// provider hit a Riverpod 3.2.1 pause-state assertion (issue #4709) under the
+/// `StatefulShellRoute`. So a caller that collects a card invalidates this,
+/// and everything showing a collection hangs off it.
 @riverpod
 Future<List<CardWithCollection>> cardsWithCollection(Ref ref) async {
   final content = ref.watch(contentRepositoryProvider);
@@ -38,15 +37,3 @@ Future<List<CardWithCollection>> cardsWithCollection(Ref ref) async {
       )
       .toList();
 }
-
-/// How many of the five Module Rewards the learner owns.
-///
-/// Chained through [cardsWithCollection] rather than reading the snapshot
-/// again, so the callers that already refresh the grid refresh this too and
-/// there is no third provider for a mutation site to forget.
-@riverpod
-Future<int> collectedModuleRewards(Ref ref) async => moduleRewardCount(
-  (await ref.watch(
-    cardsWithCollectionProvider.future,
-  )).where((entry) => entry.isCollected).map((entry) => entry.card),
-);

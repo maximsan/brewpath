@@ -1,20 +1,13 @@
-/// Telling the five Module Rewards apart from the thirty-two lesson cards.
+/// The completion moment's Module Reward count.
 library;
 
-import 'package:brew_path/shared/models/coffee_card_model.dart';
+import 'package:brew_path/features/cards/domain/cards_providers.dart';
 
-/// Whether [card] is a Module Reward.
+/// How many Module Rewards the learner owns, out of [collection].
 ///
-/// The source is the collectibles bank's own `unlock.module` pointer, carried
-/// onto the card as [CoffeeCardModel.moduleId] and set by nothing else — a
-/// lesson card's owning module lives in `moduleTag`. The extractor rules
-/// exactly one pointer per collectible, so this needs no second condition.
-bool isModuleReward(CoffeeCardModel card) => card.moduleId != null;
-
-/// How many of the [owned] cards are Module Rewards.
-///
-/// Derived on every read rather than marked when a card is earned: what kind
-/// of card an id names is a fact about the content, and a stored marker would
-/// need a merge rule and a reset path of its own.
-int moduleRewardCount(Iterable<CoffeeCardModel> owned) =>
-    owned.where(isModuleReward).length;
+/// Derived on every read, never marked when a card is earned: a stored marker
+/// would need a merge rule and a reset path of its own (#149).
+int collectedModuleRewards(Iterable<CardWithCollection> collection) =>
+    collection
+        .where((entry) => entry.isCollected && entry.card.isModuleReward)
+        .length;

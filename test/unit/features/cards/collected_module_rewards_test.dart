@@ -24,35 +24,37 @@ void main() {
   });
   tearDown(() async => db.close());
 
-  ProviderContainer harness() {
+  Future<int> ownedRewards() async {
     final container = ProviderContainer();
     addTearDown(container.dispose);
-    return container;
+    return collectedModuleRewards(
+      await container.read(cardsWithCollectionProvider.future),
+    );
   }
 
   test('the bank holds five Module Rewards among its thirty-seven', () async {
     final cards = await ContentRepository().getCards();
 
     expect(cards, hasLength(37));
-    expect(moduleRewardCount(cards), 5);
+    expect(cards.where((card) => card.isModuleReward), hasLength(5));
   });
 
   test('a learner who owns nothing owns no Module Reward', () async {
-    expect(await harness().read(collectedModuleRewardsProvider.future), 0);
+    expect(await ownedRewards(), 0);
   });
 
   test('lesson cards raise the count for none of the five', () async {
     await seedCollectible(snapshots, 'c1');
     await seedCollectible(snapshots, 'c2');
 
-    expect(await harness().read(collectedModuleRewardsProvider.future), 0);
+    expect(await ownedRewards(), 0);
   });
 
   test('a module card counts, and only for itself', () async {
     await seedCollectible(snapshots, 'c1');
     await seedCollectible(snapshots, 'cM1');
 
-    expect(await harness().read(collectedModuleRewardsProvider.future), 1);
+    expect(await ownedRewards(), 1);
   });
 
   test('a finished learner holding every card counts all five', () async {
@@ -60,6 +62,6 @@ void main() {
       await seedCollectible(snapshots, card.id);
     }
 
-    expect(await harness().read(collectedModuleRewardsProvider.future), 5);
+    expect(await ownedRewards(), 5);
   });
 }

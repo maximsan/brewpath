@@ -75,10 +75,8 @@ class ContentRepository {
 
   /// The Module Reward card [moduleId] awards, or null when none names it.
   ///
-  /// Matched on the collectible's **own** module pointer, which only a
-  /// module-awarded card carries — a lesson card's owning module lives in
-  /// `moduleTag` instead, and matching that would hand every module back a
-  /// lesson card.
+  /// Matched on the pointer only a Module Reward carries — see
+  /// [CoffeeCardModel.isModuleReward] for why a lesson card cannot match here.
   Future<CoffeeCardModel?> getCardForModule(String moduleId) async {
     final cards = await getCards();
     return cards.where((card) => card.moduleId == moduleId).firstOrNull;

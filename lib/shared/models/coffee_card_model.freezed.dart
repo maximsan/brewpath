@@ -223,8 +223,8 @@ return $default(_that.id,_that.title,_that.description,_that.fact,_that.moduleTa
 /// @nodoc
 
 
-class _CoffeeCardModel implements CoffeeCardModel {
-  const _CoffeeCardModel({required this.id, required this.title, required this.description, required this.fact, required this.moduleTag, required this.iconName, required this.kind, this.lessonId, this.moduleId});
+class _CoffeeCardModel extends CoffeeCardModel {
+  const _CoffeeCardModel({required this.id, required this.title, required this.description, required this.fact, required this.moduleTag, required this.iconName, required this.kind, this.lessonId, this.moduleId}): super._();
   
 
 @override final  String id;

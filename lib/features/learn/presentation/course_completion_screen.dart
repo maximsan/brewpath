@@ -4,6 +4,7 @@ import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/sticky_action_bar.dart';
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
+import 'package:brew_path/features/cards/domain/module_rewards.dart';
 import 'package:brew_path/features/companion/domain/companion_reaction.dart';
 import 'package:brew_path/features/companion/presentation/companion_celebration.dart';
 import 'package:brew_path/features/learn/domain/course_completion_providers.dart';
@@ -71,16 +72,16 @@ class _CourseCompletionScreenState
     final mood = context.mood;
 
     final lessons = ref.watch(completedLessonsProvider);
-    final rewards = ref.watch(collectedModuleRewardsProvider);
+    final cards = ref.watch(cardsWithCollectionProvider);
     final streak = ref.watch(streakStatusProvider);
     // The ending must never paint "0 lessons" for a loading frame; the
     // moment waits for its own numbers.
-    if (!lessons.hasValue || !rewards.hasValue || !streak.hasValue) {
+    if (!lessons.hasValue || !cards.hasValue || !streak.hasValue) {
       return const Scaffold(body: LoadingIndicator());
     }
     final stats = (
       lessons: lessons.value?.count ?? 0,
-      moduleRewards: rewards.value ?? 0,
+      moduleRewards: collectedModuleRewards(cards.value ?? const []),
       longestStreak: streak.value?.longestStreak ?? 0,
     );
     return Scaffold(
@@ -141,11 +142,8 @@ class _CourseCompletionScreenState
     );
   }
 
-  /// The course ledger: what the learner did, in the spec's three stats.
-  ///
-  /// The design's own ledger reads *Cards collected* and *Day streak*; #149
-  /// rules those two off it in favour of what the spec asks for, so the
-  /// divergence is deliberate and the labels say what they show.
+  /// The course ledger. #149 rules its last two rows off the design's own
+  /// *Cards collected* and *Day streak*, so the labels say what they show.
   Widget _statsSummary(_Stats stats) {
     return Semantics(
       label:
