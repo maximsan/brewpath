@@ -1,14 +1,12 @@
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/settings_nav_row.dart';
 import 'package:brew_path/core/widgets/sub_screen_scaffold.dart';
-import 'package:brew_path/features/profile/domain/daily_reminder.dart';
 import 'package:brew_path/features/profile/domain/learner_name.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_confirmations.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_sub_screen.dart';
 import 'package:brew_path/features/profile/presentation/widgets/appearance_selector.dart';
-import 'package:brew_path/features/profile/presentation/widgets/daily_reminder_sheet.dart';
 import 'package:brew_path/features/profile/presentation/widgets/name_sheet.dart';
 import 'package:brew_path/shared/storage/settings_record.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -16,26 +14,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// Settings, in the design's four sections.
+/// Settings, in the design's four sections and their order.
 ///
-/// The order and the grouping are the design's, not the app's: `APPEARANCE`
-/// leads, the preference toggles are filed under `PRACTICE` beside the reminder
-/// they belong with, `ACCOUNT` and `SUPPORT` are pure navigation, and the
-/// destructive block at the foot carries **no label** — a heading over it would
-/// announce it before the learner has any reason to look there.
-///
-/// The destructive block carries three rows, which is one more than the design
-/// and one more than works. Both are the owner's rulings on #395, not this
-/// file's:
-///
-/// - **`Delete account` is drawn and inert.** The design lists it, and there
-///   is nothing to delete — Firebase is gated off and the app keeps everything
-///   on the device. Shown rather than omitted so the block is the design's
-///   shape from the start; dimmed and unpressable so it cannot promise
-///   anything, which is the trade the ruling accepted.
-/// - **`Restart onboarding` is kept**, and the design has no such row. It is
-///   the app's own, it works, and it is the only way back through the intro
-///   #383 built.
+/// The foot carries no label, `Delete account` drawn and inert while Firebase
+/// is off, and `Restart onboarding`, which the design lacks and #383 needs:
+/// the owner's rulings on #395. The design's reminder rows under `PRACTICE`
+/// wait for #443.
 class SettingsScreen extends ConsumerWidget {
   /// Creates a [SettingsScreen].
   const SettingsScreen({super.key});
@@ -80,25 +64,12 @@ class SettingsScreen extends ConsumerWidget {
   }
 }
 
-/// The four preference rows the design files under `PRACTICE`.
+/// The `PRACTICE` rows: sound and haptics. The design's two reminder rows are
+/// hidden until reminders exist (#443).
 class _PracticeRows extends ConsumerWidget {
   const _PracticeRows({required this.settings});
 
   final AsyncValue<UserSettingsRecord> settings;
-
-  Future<void> _pickReminder(
-    BuildContext context,
-    WidgetRef ref,
-    UserSettingsRecord current,
-  ) async {
-    final picked = await DailyReminderSheet.show(
-      context,
-      current: current.dailyReminderTime,
-    );
-    if (picked == null) return;
-
-    await ref.read(settingsControllerProvider.notifier).setReminderTime(picked);
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -110,20 +81,6 @@ class _PracticeRows extends ConsumerWidget {
       data: (state) => Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SettingsNavRow(
-            label: SettingsCopy.notificationsRow,
-            toggleValue: state.notificationsEnabled,
-            onToggle: (_) => controller.toggleNotifications(),
-          ),
-          SettingsNavRow(
-            label: SettingsCopy.reminderRow,
-            value: DailyReminder.rowValue(
-              enabled: state.notificationsEnabled,
-              time: state.dailyReminderTime,
-            ),
-            isDimmed: !state.notificationsEnabled,
-            onTap: () => _pickReminder(context, ref, state),
-          ),
           SettingsNavRow(
             label: SettingsCopy.soundRow,
             toggleValue: state.soundEnabled,

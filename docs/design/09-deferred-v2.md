@@ -25,6 +25,11 @@
 ## Rewarded ads + timed trials
 `RewardedAdScreen` (simulated video → 15-min unlock), `RoastyGiftScreen` (perfect-module → 24-h Studio unlock), `TrialBadge` countdown. Needs an ad SDK.
 
+## Daily reminder (`settings.jsx` TimeSheet, `screens.jsx` PRACTICE rows)
+- Two Settings rows — a *Notifications* switch and a *Daily reminder* time row with eight slots — and the sheet's promise, *One quiet reminder a day to keep your streak alive*. Nothing in the design says what the notification says or when it fires.
+- **Ruled 8 September 2026: not in the v1 launch, and the next thing built after it** ([#443](https://github.com/maximsan/brewpath/issues/443)). Until it ships the two rows are hidden, so no control is drawn that nothing reads.
+- **Needs:** a local-notification package with Swift Package Manager support, the OS permission and its refusal path, notification copy, and the fire-or-skip rule for a day already active.
+
 ## Onboarding question flow
 6 question screens + expectation + closing. Fully built; nothing consumes the answers yet.
 

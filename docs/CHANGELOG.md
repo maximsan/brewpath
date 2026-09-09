@@ -110,6 +110,10 @@ You can always edit this file by hand instead — the helpers just save effort.
   longer repeats the kind and title the card already states above it.
 - **A Coffee Challenge titles itself one step below a lesson.** It is optional,
   and the design added a ladder step rather than let the two read as equals.
+- **The Notifications and Daily reminder rows are out of Settings for now.** They
+  stored a preference nothing read: no reminder has ever been scheduled. They
+  come back when reminders are built, which is next on the list.
+
 - **Today's card is the design's.** A surface card with a rule around it: the
   module as its eyebrow, the title, the picture, one line saying where the
   lesson sits and how long it takes (`LESSON 1/7 · ~3 MIN`), and a full-width
