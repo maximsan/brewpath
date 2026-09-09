@@ -101,7 +101,14 @@ You can always edit this file by hand instead — the helpers just save effort.
   settles the panel to sage and pulses it once. The reaction runs once, on the
   answer that latches the card, and reduced motion lands it in a single frame
   with the colours and the words still changing.
-
+- **A lesson's fill-in-the-blank sentence keeps your word.** Pick from the
+  words offered under the sentence, fill every blank, then *Check answers* —
+  and each blank marks what you actually chose. It used to swap in the right
+  word whichever you tapped, so a wrong answer looked like a correct one.
+  Nothing here is scored; the card teaches.
+- **A predict question's blank is a blank.** Where the question is written with
+  one, your guess drops into the sentence and reads back as your own claim,
+  which the lesson's closing card then confirms or overturns.
 - **The Today tour is the one the design draws.** A bordered frame travels
   between the four things it introduces instead of a spotlight snapping
   between them, the card carries its own counter, dots, Skip and Next, and
