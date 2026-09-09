@@ -80,9 +80,7 @@ class _LessonCompletionScreenState
     ref.invalidate(modulesWithProgressProvider);
     ref.invalidate(totalPointsProvider);
     ref.invalidate(completedLessonsProvider);
-    ref.invalidate(collectedCardsProvider);
-    // `cardsWithCollectionProvider` no longer chains through
-    // `collectedCardsProvider`, so invalidate it explicitly.
+    // The cards grid and the Module Reward count both hang off this one.
     ref.invalidate(cardsWithCollectionProvider);
     // A finished lesson can unlock a Coffee Challenge, and Today and Profile
     // stay mounted behind this screen — so neither would notice on its own.

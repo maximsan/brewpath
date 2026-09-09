@@ -1,5 +1,6 @@
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/widgets/reward_row.dart';
+import 'package:brew_path/features/cards/domain/cards_providers.dart';
 import 'package:brew_path/features/cards/presentation/reward_card.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_suggestion.dart';
 import 'package:brew_path/features/companion/presentation/companion.dart';
@@ -207,7 +208,7 @@ void main() {
         container.listen(totalPointsProvider, (_, _) {}),
         container.listen(streakProvider, (_, _) {}),
         container.listen(completedLessonsProvider, (_, _) {}),
-        container.listen(collectedCardsProvider, (_, _) {}),
+        container.listen(cardsWithCollectionProvider, (_, _) {}),
       ];
       addTearDown(() {
         for (final s in subs) {
@@ -225,12 +226,12 @@ void main() {
         () => container.read(completedLessonsProvider.future),
       );
       final cardsBefore = await tester.runAsync(
-        () => container.read(collectedCardsProvider.future),
+        () => container.read(cardsWithCollectionProvider.future),
       );
       expect(pointsBefore, 0);
       expect(streakBefore, 0);
       expect(lessonsBefore?.isEmpty, isTrue);
-      expect(cardsBefore, isEmpty);
+      expect(cardsBefore?.where((entry) => entry.isCollected), isEmpty);
 
       await pumpCompletion(tester, container);
       // First lesson of m1 — the flat ten it authors. The module moment does
@@ -249,12 +250,17 @@ void main() {
         () => container.read(completedLessonsProvider.future),
       );
       final cardsAfter = await tester.runAsync(
-        () => container.read(collectedCardsProvider.future),
+        () => container.read(cardsWithCollectionProvider.future),
       );
       expect(pointsAfter, 10); // m1l1 pays the flat ten it authors
       expect(streakAfter, 1);
       expect(lessonsAfter?.ids, {'m1l1'});
-      expect(cardsAfter, contains('c1'));
+      expect(
+        cardsAfter
+            ?.where((entry) => entry.isCollected)
+            .map((entry) => entry.card.id),
+        contains('c1'),
+      );
     },
   );
 

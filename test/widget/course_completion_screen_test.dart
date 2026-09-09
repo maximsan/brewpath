@@ -1,10 +1,12 @@
 import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/features/cards/domain/cards_providers.dart';
 import 'package:brew_path/features/companion/application/companion_providers.dart';
 import 'package:brew_path/features/companion/domain/companion_lines.dart';
 import 'package:brew_path/features/learn/presentation/course_completion_screen.dart';
 import 'package:brew_path/features/progress/domain/completed_lessons.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
+import 'package:brew_path/features/progress/domain/streak_status.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:drift/native.dart';
@@ -13,9 +15,37 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../support/content_fixtures.dart';
+
 const _lessonCount = 32;
-const _cardCount = 37;
-const _streakDays = 12;
+const _moduleRewardCount = 5;
+const _longestStreakDays = 12;
+
+/// A learner whose best run is behind them, so the screen cannot pass by
+/// showing the current streak under the new label.
+const _streak = StreakStatus(
+  streak: 3,
+  longestStreak: _longestStreakDays,
+  freezeHeld: false,
+  daysToNextFreeze: freezeEarnDays,
+  freezesSpent: 0,
+  frozenDays: {},
+);
+
+/// The five Module Rewards plus a lesson card, all owned — so a count that
+/// took every collected card would read six.
+final List<CardWithCollection> _collection = [
+  for (var i = 0; i < _moduleRewardCount; i++)
+    CardWithCollection(
+      card: testCoffeeCard(id: 'cM$i', lessonId: null, moduleId: 'm$i'),
+      isCollected: true,
+    ),
+  CardWithCollection(card: testCoffeeCard(), isCollected: true),
+  CardWithCollection(
+    card: testCoffeeCard(id: 'cM9', lessonId: null, moduleId: 'm9'),
+    isCollected: false,
+  ),
+];
 
 final CompletedLessons _completed = CompletedLessons(
   completedOn: {
@@ -26,8 +56,6 @@ final CompletedLessons _completed = CompletedLessons(
       'l$i': const MasteryResult(correct: 1, total: 1),
   },
 );
-
-final List<String> _cards = [for (var i = 0; i < _cardCount; i++) 'c$i'];
 
 /// One deterministic line so the bubble's copy is assertable.
 const _lines = CompanionLines({
@@ -59,8 +87,8 @@ Future<void> _pump(
     ProviderScope(
       overrides: [
         completedLessonsProvider.overrideWith((ref) async => _completed),
-        collectedCardsProvider.overrideWith((ref) async => _cards),
-        streakProvider.overrideWith((ref) async => _streakDays),
+        cardsWithCollectionProvider.overrideWith((ref) async => _collection),
+        streakStatusProvider.overrideWith((ref) async => _streak),
         companionLinesProvider.overrideWith((ref) async => _lines),
       ],
       child: MediaQuery(
@@ -93,10 +121,22 @@ void main() {
 
     expect(find.text('You finished Beginner Foundations'), findsOneWidget);
     expect(find.text('Lessons completed'), findsOneWidget);
+    expect(find.text('Module Rewards'), findsOneWidget);
+    expect(find.text('Longest streak'), findsOneWidget);
     expect(find.text('$_lessonCount'), findsOneWidget);
-    expect(find.text('$_cardCount'), findsOneWidget);
-    expect(find.text('$_streakDays'), findsOneWidget);
+    expect(find.text('$_moduleRewardCount'), findsOneWidget);
+    expect(find.text('$_longestStreakDays'), findsOneWidget);
     expect(find.text('You finished the whole course!'), findsOneWidget);
+  });
+
+  testWidgets('the streak stat reads the longest run, not the current one', (
+    tester,
+  ) async {
+    await _pump(tester);
+
+    expect(find.text('${_streak.streak}'), findsNothing);
+    expect(find.text('Day streak'), findsNothing);
+    expect(find.text('Cards collected'), findsNothing);
   });
 
   testWidgets('presenting the moment writes the acknowledgement', (
@@ -136,7 +176,9 @@ void main() {
     await _pump(tester);
 
     expect(
-      find.bySemanticsLabel(RegExp('What you did.*32 lessons')),
+      find.bySemanticsLabel(
+        RegExp('What you did.*32 lessons.*5 Module Rewards.*12 days'),
+      ),
       findsOneWidget,
     );
   });

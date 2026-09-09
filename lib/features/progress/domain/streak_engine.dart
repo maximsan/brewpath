@@ -3,29 +3,20 @@ library;
 
 import 'package:brew_path/features/progress/domain/streak_status.dart';
 
-/// Derives the whole streak state from [activeDays], read as of [today].
+/// Derives the whole streak state from [activeDays], read as of [today], both
+/// day indices (`epochDay`). They are the **only** inputs: no clock in here,
+/// no storage, and no entitlement — §10 makes freezes free for everyone.
 ///
-/// Both are day indices — `epochDay` from `core/utils/date_utils.dart` — and
-/// they are the **only** inputs. There is no clock in here, no storage, and
-/// deliberately no entitlement: §10 makes freezes free for everyone, so there
-/// is no parameter a paid tier could arrive through.
-///
-/// **Today is never judged a miss.** A day the learner has not finished yet is
-/// not a day they skipped, so an inactive [today] neither spends the freeze nor
-/// breaks the streak; both decide when the day is over. Days *after* [today]
-/// are ignored rather than folded — a peer whose clock runs ahead can write
-/// one, and counting it would open a gap of missed days behind it.
-///
-/// The fold walks the gaps between active days rather than every calendar day,
-/// so its cost is the size of the set and not the age of the account.
+/// **Today is never judged a miss**, and days after it are ignored rather than
+/// folded: a peer whose clock runs ahead would otherwise open a gap behind it.
 StreakStatus deriveStreak({
   required Set<int> activeDays,
   required int today,
 }) {
-  final days = activeDays.where((day) => day <= today).toList()..sort();
-  if (days.isEmpty) return StreakStatus.idle;
-
   final fold = _StreakFold();
+  final days = activeDays.where((day) => day <= today).toList()..sort();
+  if (days.isEmpty) return fold.status;
+
   // One before the first day, so the opening gap is empty and the first
   // qualifying day is reached without a miss in front of it.
   var previous = days.first - 1;
@@ -41,12 +32,12 @@ StreakStatus deriveStreak({
 /// The fold's cursor.
 ///
 /// Mutable and private, which is what keeps [deriveStreak] pure: the state is
-/// created, walked and read inside one call and can never be observed
-/// mid-fold. Written as a cursor rather than a chain of copies because the
-/// rules are read as a sequence of events — one qualifying day, one run of
-/// missed days — and each one reads here as the sentence §10 states it in.
+/// created, walked and read inside one call. A cursor rather than a chain of
+/// copies because the rules read as a sequence of events, and each one reads
+/// here as the sentence §10 states it in.
 class _StreakFold {
   int _streak = 0;
+  int _longestStreak = 0;
   bool _freezeHeld = false;
   int _towardFreeze = 0;
   final Set<int> _frozenDays = {};
@@ -54,6 +45,9 @@ class _StreakFold {
   /// One qualifying day.
   void qualified() {
     _streak++;
+    // The only place the streak rises, so the high-water mark is complete
+    // here — a break below can then zero the streak without losing it.
+    if (_streak > _longestStreak) _longestStreak = _streak;
     // "While a freeze is already held, additional qualifying days do not
     // accumulate progress toward another one."
     if (_freezeHeld) return;
@@ -90,6 +84,7 @@ class _StreakFold {
 
   StreakStatus get status => StreakStatus(
     streak: _streak,
+    longestStreak: _longestStreak,
     freezeHeld: _freezeHeld,
     daysToNextFreeze: _freezeHeld ? null : freezeEarnDays - _towardFreeze,
     freezesSpent: _frozenDays.length,
@@ -97,17 +92,12 @@ class _StreakFold {
   );
 }
 
-/// Whether growing the day set from [before] to [after] is what earned the
-/// freeze, read as of [today].
+/// Whether growing the day set from [before] to [after] earned the freeze.
 ///
-/// **A rise, not a state.** `freezeHeld` answers "is one in hand"; every run
-/// after the seventh would answer yes, and the design's `FREEZE EARNED` row
-/// belongs to the run that actually paid it out — *"the first time most users
-/// meet the word 'freeze' — before they ever need one"*. Only the transition
-/// says that, so only the transition is asked for.
-///
-/// Both folds run against the same [today], so nothing here can mistake a day
-/// rolling over for a freeze being earned.
+/// **A rise, not a state.** `freezeHeld` would answer yes for every run after
+/// the seventh; the design's `FREEZE EARNED` row belongs to the run that
+/// actually paid it out. Both folds run against the same [today], so a day
+/// rolling over cannot look like an earn.
 bool freezeEarnedBetween({
   required Set<int> before,
   required Set<int> after,

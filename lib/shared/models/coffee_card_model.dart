@@ -5,13 +5,9 @@ part 'coffee_card_model.freezed.dart';
 /// A collectible card as the screens show it: the bank's record joined to the
 /// words of whatever unlocks it.
 ///
-/// **Assembled, never parsed.** There is no `fromJson` here on purpose — no
-/// single bank record holds a card's text. The collectible supplies the id and
-/// the illustration key, its source lesson or module supplies the title,
-/// summary and fact, and the content layer joins the two once. A card built
-/// straight from JSON would either be wordless or would need those words
-/// duplicated into the collectibles bank, which is the duplication the
-/// pipeline exists to prevent.
+/// **Assembled, never parsed.** No bank record holds a card's text, so there
+/// is no `fromJson` — the collectible supplies the id and the illustration
+/// key, its source supplies the words, and the content layer joins them once.
 @freezed
 abstract class CoffeeCardModel with _$CoffeeCardModel {
   /// Creates a [CoffeeCardModel].
@@ -44,4 +40,13 @@ abstract class CoffeeCardModel with _$CoffeeCardModel {
     /// The module that awards this card, or null when a lesson does.
     String? moduleId,
   }) = _CoffeeCardModel;
+
+  const CoffeeCardModel._();
+
+  /// Whether this is one of the five Module Rewards.
+  ///
+  /// [moduleId] carries the collectibles bank's own `unlock.module` pointer
+  /// and nothing else writes it, so only a module-awarded card has one — a
+  /// lesson card's owning module lives in [moduleTag].
+  bool get isModuleReward => moduleId != null;
 }

@@ -13,6 +13,7 @@ StreakStatus status({
   int? daysToNextFreeze = freezeEarnDays,
 }) => StreakStatus(
   streak: 7,
+  longestStreak: 7,
   freezeHeld: freezeHeld,
   daysToNextFreeze: daysToNextFreeze,
   freezesSpent: frozenDays.length,

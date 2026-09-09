@@ -89,6 +89,7 @@ void main() {
   group('a freeze earned this session', () {
     StreakStatus statusWith({required bool freezeHeld}) => StreakStatus(
       streak: 7,
+      longestStreak: 7,
       freezeHeld: freezeHeld,
       daysToNextFreeze: freezeHeld ? null : 3,
       freezesSpent: freezeHeld ? 0 : 1,
