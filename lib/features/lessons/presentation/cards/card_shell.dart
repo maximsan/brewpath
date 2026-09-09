@@ -5,7 +5,6 @@ import 'package:brew_path/features/lessons/presentation/cards/card_cue.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_cue_row.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
-import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 
 /// The commit a card offers before it has latched, in place of Continue.
@@ -79,7 +78,7 @@ class CardShell extends StatelessWidget {
       children: [
         if (cue case final cue?) ...[
           CardCueRow(cue: cue),
-          SizedBox(height: OffTokens.cardCueFoot.value),
+          const SizedBox(height: AppSpacing.sm),
         ],
         if (label != null) ...[
           Text(

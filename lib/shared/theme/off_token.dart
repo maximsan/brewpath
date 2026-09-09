@@ -343,10 +343,10 @@ abstract final class OffTokens {
     reason: 'the drawer stacks its steps at `gap: 11`',
   );
 
-  /// The room under a card's kind cue, before the card's own content.
-  static const OffToken<double> cardCueFoot = OffToken(
-    12,
-    reason: 'the cue clears the card at `marginBottom: 12`',
+  /// The room over the how-to-play steps, under the blurb.
+  static const OffToken<double> helpStepsTop = OffToken(
+    20,
+    reason: 'the step stack opens at `marginTop: 20`',
   );
 
   /// Every sanctioned exception, so the register can be tested as a whole.
@@ -398,6 +398,6 @@ abstract final class OffTokens {
     tastefixPanelGap,
     tastefixPanelToPrompt,
     helpStepGap,
-    cardCueFoot,
+    helpStepsTop,
   ];
 }

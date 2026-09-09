@@ -36,14 +36,22 @@ void main() {
       }
     });
 
-    test('carries the design phrase for each kind', () {
-      expect(CardCue.mcq.phrase, 'Multiple choice · pick one');
-      expect(CardCue.match.phrase, 'Match · drag to pair');
-      expect(CardCue.slider.phrase, 'Calibrate · dial to the target');
-      expect(CardCue.sequence.phrase, 'Put in order · tap in sequence');
-      expect(CardCue.bagpick.phrase, 'Blind bag · read the beans');
-      expect(CardCue.flavor.phrase, 'Tasting · name the note');
-      expect(CardCue.fill.phrase, 'Complete the sentence');
+    test('carries the design phrase for every kind', () {
+      const written = {
+        CardCue.mcq: 'Multiple choice · pick one',
+        CardCue.multi: 'Select all that apply',
+        CardCue.match: 'Match · drag to pair',
+        CardCue.slider: 'Calibrate · dial to the target',
+        CardCue.sequence: 'Put in order · tap in sequence',
+        CardCue.quiz: 'True or false',
+        CardCue.flavor: 'Tasting · name the note',
+        CardCue.tastefix: 'Taste Fix',
+        CardCue.bagpick: 'Blind bag · read the beans',
+        CardCue.fill: 'Complete the sentence',
+      };
+
+      expect(written.keys, containsAll(CardCue.values));
+      written.forEach((cue, phrase) => expect(cue.phrase, phrase));
     });
 
     test('no phrase is pre-shouted — the type rule sets the case', () {

@@ -27,7 +27,10 @@ class _FakeHelp extends CardKindHelpRepository {
   final CardKindHelp? entry;
 
   @override
-  Future<CardKindHelp?> getForKind(String kind) async => entry;
+  Future<Map<String, CardKindHelp>> getByKind() async {
+    final entry = this.entry;
+    return entry == null ? {} : {entry.kind: entry};
+  }
 }
 
 void main() {

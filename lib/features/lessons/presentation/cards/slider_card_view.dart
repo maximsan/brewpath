@@ -13,7 +13,6 @@ import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// The cue above a calibrate card's prompt.
 /// The commit affordance, before the setting has been checked.
 const String _checkLabel = 'Check answer';
 

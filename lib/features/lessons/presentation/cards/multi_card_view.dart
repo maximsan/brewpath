@@ -10,7 +10,6 @@ import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// The cue above a multi card's prompt.
 /// The commit affordance, before anything has been checked.
 const String _checkLabel = 'Check answers';
 

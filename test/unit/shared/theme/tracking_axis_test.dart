@@ -100,7 +100,6 @@ void main() {
     test('carries the design values, in em', () {
       expect(AppTracking.reading.em, 0.02);
       expect(AppTracking.figure.em, 0.04);
-      expect(AppTracking.token.em, 0.06);
       expect(AppTracking.count.em, 0.06);
       expect(AppTracking.meta.em, 0.08);
       expect(AppTracking.tag.em, 0.10);

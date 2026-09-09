@@ -44,7 +44,7 @@ class HelpDrawerBody extends StatelessWidget {
           help.blurb,
           style: AppText.body(mood: mood, color: mood.inkMute),
         ),
-        const SizedBox(height: AppSpacing.lg),
+        SizedBox(height: OffTokens.helpStepsTop.value),
         for (final (index, step) in help.steps.indexed) ...[
           if (index > 0) SizedBox(height: OffTokens.helpStepGap.value),
           _Step(ordinal: index + 1, text: step),
@@ -79,7 +79,7 @@ class _Step extends StatelessWidget {
           style: AppText.support(
             face: AppFace.mono,
             color: mood.accent,
-            tracking: AppTracking.token,
+            tracking: AppTracking.count,
           ),
         ),
         const SizedBox(width: AppSpacing.sm),

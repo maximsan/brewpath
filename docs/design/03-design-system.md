@@ -89,7 +89,6 @@ app this axis is `AppTracking` (`lib/shared/theme/app_text.dart`).
 | 0.02 | `reading` | A line read as words, not scanned as a label: `.btn`, and the mono respelling beside a dictionary term. |
 | 0.04 | `figure` | Mono with just enough air that a spelled-out run stays legible: a score read as digits, `.spec-chip`, the pronunciation chip. |
 | 0.06 | `count` | A count standing on its own as the subject of its line: the points a run paid, Profile's lessons-and-points line, `N / N DONE`, the dictionary's category counts. |
-| 0.06 | `token` | A run read as one token rather than spelled out: a how-to-play step's `01`, a spec's value, a count beside its own label. |
 | 0.08 | `meta` | A meta line or figure that must read as one run — at 0.14em a count's numerals drift apart: `.lesson-row .meta`, `.challenge-pill`, `.bag-opt-s`. |
 | 0.10 | `tag` | A word set as a pill naming a state: the tastefix card's symptom chips and its Balanced state, `.cheer-points`. |
 | 0.12 | `hint` | The sequence card's out-of-place hint `.seq-hint`, and the practice shelf's meta line and count. |

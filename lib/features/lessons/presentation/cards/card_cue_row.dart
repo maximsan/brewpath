@@ -33,17 +33,19 @@ class CardCueRow extends StatelessWidget {
 
     return Row(
       children: [
-        Expanded(
+        Flexible(
           child: Semantics(
             label: cue.phrase,
             excludeSemantics: true,
             child: Text(
               cue.phrase.toUpperCase(),
+              // `lineHeight: 1` — the cue is one line of chrome over the
+              // card, not a paragraph, and the rung's 1.4 would pad it.
               style: AppText.support(
                 face: AppFace.control,
                 color: mood.accent,
                 tracking: AppTracking.smallcaps,
-              ),
+              ).copyWith(height: 1),
             ),
           ),
         ),
@@ -88,10 +90,7 @@ class _HelpButton extends ConsumerWidget {
               ),
               child: Text(
                 _helpMark,
-                style: AppText.label(
-                  face: AppFace.mono,
-                  color: mood.inkMute,
-                ),
+                style: AppText.label(face: AppFace.mono, color: mood.inkMute),
               ),
             ),
           ),

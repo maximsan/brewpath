@@ -13,7 +13,6 @@ import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// The cue above a sequence card's prompt.
 /// The commit affordance, before the run has been submitted.
 const String _submitLabel = 'Submit';
 

@@ -68,10 +68,6 @@ enum AppTracking {
   /// points a run paid, Profile's lessons-and-points line, `N / N DONE`.
   count(0.06),
 
-  /// 0.06em — a run of characters read as one token rather than spelled out:
-  /// a step's `01`, a spec's value, a count that sits beside its own label.
-  token(0.06),
-
   /// 0.08em — a meta line or a figure, which wants to read as one run rather
   /// than as a kicker. At the rung's 0.14em a count's numerals drift apart and
   /// the line stops reading as a single quantity, which is the whole reason the
