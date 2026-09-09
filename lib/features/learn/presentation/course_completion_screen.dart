@@ -142,8 +142,10 @@ class _CourseCompletionScreenState
     );
   }
 
-  /// The course ledger. #149 rules its last two rows off the design's own
-  /// *Cards collected* and *Day streak*, so the labels say what they show.
+  /// The three stats the ending reports.
+  ///
+  /// #149 rules the last two off the design's own *Cards collected* and
+  /// *Day streak*, so each label says what its number actually is.
   Widget _statsSummary(_Stats stats) {
     return Semantics(
       label:
