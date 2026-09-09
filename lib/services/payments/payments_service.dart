@@ -1,3 +1,4 @@
+import 'package:brew_path/services/payments/plus_offering.dart';
 import 'package:brew_path/services/payments/store_product.dart';
 
 /// Outcome of a purchase or restore flow.
@@ -22,7 +23,15 @@ enum PurchaseStatus {
 /// directly — only this interface. NoOp is active in the MVP.
 abstract class PaymentsService {
   /// True if the user currently has an active entitlement.
+  ///
+  /// One answer for every arm, whatever bought it (#176).
   Future<bool> hasActiveEntitlement();
+
+  /// Which arm this learner is on, and what it sells them.
+  ///
+  /// The store assigns it, and must return the same arm to a returning
+  /// learner (#176).
+  Future<PlusOffering> currentOffering();
 
   /// Available products from the store.
   Future<List<StoreProduct>> getProducts(List<String> productIds);
