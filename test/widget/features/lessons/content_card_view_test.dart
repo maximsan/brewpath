@@ -1,5 +1,6 @@
 import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/core/widgets/dashed_rounded_border.dart';
+import 'package:brew_path/core/widgets/fill_slot.dart';
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/lessons/domain/card_seed.dart';
@@ -846,6 +847,49 @@ void main() {
 
       expect(find.byType(Roasty), findsNothing);
       expect(find.text('Hold that thought.'), findsNothing);
+    });
+
+    testWidgets("predict opens its cloze empty, then drops the guess in", (
+      tester,
+    ) async {
+      await tester.pumpWidget(_host(_predict, _Signals()));
+
+      FillSlot slotInQuestion() =>
+          tester.widget<FillSlot>(find.byType(FillSlot).first);
+
+      expect(slotInQuestion().state, FillSlotState.empty);
+      expect(slotInQuestion().word, isNull);
+
+      await _tapTextWhileAnimating(tester, 'Skin');
+
+      expect(
+        slotInQuestion().state,
+        FillSlotState.guess,
+        reason: 'the accent state: the learner\'s claim, not a verdict on it',
+      );
+      expect(slotInQuestion().word, 'Skin');
+    });
+
+    testWidgets('a question authored without a blank grows no slot', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _host(
+          const ContentCard.predict(
+            label: 'LESSON 3',
+            title: 'What origin means',
+            body: 'Two bags can taste worlds apart.',
+            question: 'Same variety, two mountains. Same cup?',
+            options: ['Roughly the same', 'Two different cups'],
+            answer: 'Two different cups',
+            hold: 'Hold that thought.',
+          ),
+          _Signals(),
+        ),
+      );
+
+      expect(find.byType(FillSlot), findsNothing);
+      expect(find.text('Same variety, two mountains. Same cup?'), findsOne);
     });
 
     testWidgets('predict hands the guess to Roasty, unmarked', (tester) async {

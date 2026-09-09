@@ -1,4 +1,6 @@
 import 'package:brew_path/core/widgets/answer_feedback.dart';
+import 'package:brew_path/core/widgets/fill_slot.dart';
+import 'package:brew_path/features/lessons/domain/cloze.dart';
 import 'package:brew_path/features/lessons/domain/held_guess.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
@@ -64,9 +66,11 @@ class _PredictCardViewState extends State<PredictCardView> {
       children: [
         Text(card.body, style: theme.textTheme.bodyLarge),
         const SizedBox(height: AppSpacing.md),
-        Text(
-          card.question,
-          style: theme.textTheme.titleMedium,
+        _Question(
+          question: card.question,
+          guess: _selectedIndex == null
+              ? null
+              : widget.options[_selectedIndex!],
         ),
         const SizedBox(height: AppSpacing.md),
         PickTileRow(
@@ -84,6 +88,48 @@ class _PredictCardViewState extends State<PredictCardView> {
           ),
         ],
       ],
+    );
+  }
+}
+
+/// The question, with the learner's guess dropping into its blank.
+///
+/// The design's cloze: once a tile is picked the word lands in the sentence so
+/// the learner reads their own claim back — which is what the recall card later
+/// confirms or overturns. A question authored without a blank renders as
+/// ordinary prose, which thirteen of the thirty-two are.
+class _Question extends StatelessWidget {
+  const _Question({required this.question, required this.guess});
+
+  final String question;
+
+  /// The word picked, or null while the slot waits.
+  final String? guess;
+
+  @override
+  Widget build(BuildContext context) {
+    final style = Theme.of(context).textTheme.titleMedium;
+    if (!hasCloze(question)) return Text(question, style: style);
+
+    final segments = clozeSegments(question);
+    return Text.rich(
+      TextSpan(
+        style: style,
+        children: [
+          for (final (index, segment) in segments.indexed) ...[
+            TextSpan(text: segment),
+            if (index < segments.length - 1)
+              fillSlotSpan(
+                FillSlot(
+                  word: guess,
+                  state: guess == null
+                      ? FillSlotState.empty
+                      : FillSlotState.guess,
+                ),
+              ),
+          ],
+        ],
+      ),
     );
   }
 }
