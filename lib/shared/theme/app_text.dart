@@ -3,11 +3,10 @@ import 'package:flutter/material.dart';
 
 /// A typeface, with the weight the design pairs it with.
 ///
-/// Face is a **separate axis from size**, because the design uses one step with
-/// more than one face: `--t-label` drives both `.smallcaps` (IBM Plex Sans 500)
-/// and `.smallcaps-mono` (IBM Plex Mono 500), and `--t-lead` appears in
-/// Fraunces on a collectible card and in Plex Sans elsewhere. A ladder that
-/// baked one face into each step could not express either.
+/// A **separate axis from size**: the design sets one step in more than one
+/// face — `--t-label` drives both `.smallcaps` (Plex Sans 500) and
+/// `.smallcaps-mono`, and `--t-lead` is Fraunces on a collectible card and
+/// Plex Sans elsewhere. A face baked into each step could express neither.
 enum AppFace {
   /// Fraunces at 400 — the display face, every headline step. The one face
   /// that carries an optical size; see [isOpticallySized].
@@ -48,37 +47,12 @@ enum AppFace {
   final bool isOpticallySized;
 }
 
-/// How wide the letters are set, in `em` — the design's tracking vocabulary
-/// for the two smallcaps rungs.
+/// How wide the letters are set, in `em` — a **separate axis from size**, for
+/// the reason [AppFace] is: the design letters one rung at more than one width.
 ///
-/// Tracking is a **separate axis from size**, for the same reason [AppFace] is:
-/// the design letters one rung at more than one width. `.lesson-row .meta` and
-/// `.challenge-kicker` are both uppercase label-family lines, and the design
-/// sets them 0.06em apart. A ladder that baked one tracking into each step
-/// could only ever letter them the same, which is how sixteen call sites came
-/// to name their own spacing — fifteen in logical pixels, and the Cards count
-/// through an `OffToken` (#410).
-///
-/// **Only values something in `lib/` actually renders are here.** The design's
-/// app vocabulary at these two rungs runs one wider: 0.1em (`.cheer-points`) is
-/// an app component too, not page chrome. It is absent because no screen in the
-/// app cheers a payout that way — the mascot's own burst is drawn (#518) but it
-/// is set inside the drawing rather than on a rung, so it letters off this axis
-/// entirely. A value with no call site would be vocabulary nobody speaks.
-///
-/// The line between a value here and one in `OffTokens` is how many components
-/// speak it. A width the design gives to **one** component is that component's
-/// exception and carries its reason there — the tap cue's 0.24em. A width more
-/// than one component is set at is vocabulary, and belongs on this axis.
-///
-/// Omitting this axis leaves a rung at its own tracking, which for [AppText]'s
-/// label and micro steps is the design's 0.14em smallcaps rule — `.smallcaps`
-/// and `.challenge-kicker`. **A component the design does not letter
-/// specially takes that rule**, which is why most kickers pass no tracking at
-/// all: the app's own eyebrows (`KEEP SHARP`, a lesson card's label) have no
-/// counterpart in the design to letter them differently, so they letter like
-/// every other kicker rather than at a hand-rounded value that only ever came
-/// from the eye.
+/// Naming none is itself the rule, and leaves a rung at its own tracking. Which
+/// width goes here, which belongs in `OffTokens`, and where the design sets
+/// each: `docs/design/03-design-system.md`, Typography → Tracking.
 enum AppTracking {
   /// 0.02em — barely loosened, for a line meant to be **read as words** rather
   /// than scanned as a label: `.btn`, and the mono respelling that sits inline
@@ -96,6 +70,10 @@ enum AppTracking {
   /// design tracks these tighter than the smallcaps beside them:
   /// `.lesson-row .meta`, `.challenge-pill`, `.bag-opt-s`.
   meta(0.08),
+
+  /// 0.10em — a word set as a pill naming a state: the tastefix card's symptom
+  /// chips and the Balanced state that replaces them, and `.cheer-points`.
+  tag(0.10),
 
   /// 0.12em — the sequence card's out-of-place hint, `.seq-hint`, and the meta
   /// line and count on the practice shelf, which the design letters at 0.12em
@@ -163,34 +141,19 @@ enum _Rung {
 
   /// The optical size this rung asks Fraunces to be drawn at.
   ///
-  /// Its own size, which is what `font-optical-sizing: auto` means — the
-  /// browser hands the axis the size the text is rendered at. Derived rather
-  /// than tabled, so a rung cannot be given a size and an optical size that
-  /// disagree. Clamped because a rung outside the axis would otherwise ask for
-  /// a coordinate the font cannot answer.
+  /// Its own size, which is what `font-optical-sizing: auto` means. Derived
+  /// rather than tabled, so a rung cannot carry a size and an optical size that
+  /// disagree; clamped because a rung outside the axis would ask the font for a
+  /// coordinate it cannot answer.
   double get opticalSize => size.clamp(_minOpticalSize, _maxOpticalSize);
 }
 
 /// The ten-step type ladder — `hero · display · title · subtitle · heading ·
-/// lead · body · support · label · micro` at 56 / 30 / 26 / 22 / 19 / 17 / 15
-/// / 13 / 11 / 9.5.
+/// lead · body · support · label · micro`.
 ///
-/// **There is no `fontSize` parameter.** A size that is not a step cannot be
-/// asked for: the sizes live in one private table, so going off-ladder means
-/// editing the ladder — visible in a diff and in review — rather than passing a
-/// number at a call site where nobody will see it. Sizes are transcribed from
-/// the `--t-*` block of the design bundle.
-///
-/// Size, face and tracking are separate axes; see [AppFace] and [AppTracking].
-/// Each step defaults to the face the design most often sets it in, and any
-/// step accepts any face. Tracking defaults to the step's own, which the two
-/// smallcaps steps set at the design's 0.14em; the label and micro steps take
-/// a tracking for the handful of components the design letters differently.
-///
-/// Colour resolves in this order: an explicit `color`, then the step's role
-/// colour from `mood`, then nothing — in which case the surrounding
-/// `DefaultTextStyle` supplies it. Pass `mood` from `context.mood` at the call
-/// site; a painter with no context can pass `color` instead.
+/// **There is no `fontSize` parameter**: going off-ladder means editing the
+/// private rung table, which is visible in a diff. The steps, the three axes
+/// and how colour resolves: `docs/02-architecture.md`, The type ladder.
 abstract final class AppText {
   /// Celebration numerals — a streak count, a score. Mono by default, because
   /// the design sets every figure in tabular mono.
@@ -265,51 +228,12 @@ abstract final class AppText {
     italic: true,
   );
 
-  /// Material's own text slots, resolved onto the ladder so stock widgets — and
-  /// the ~70 screen call sites still reading `Theme.of(context).textTheme` —
-  /// are set in the app's type rather than Roboto.
+  /// Material's own text slots, resolved onto the ladder so stock widgets and
+  /// the call sites still reading `Theme.of(context).textTheme` are set in the
+  /// app's type rather than Roboto.
   ///
-  /// **All fifteen, with none left out.** `ThemeData` merges a supplied
-  /// `TextTheme` onto the default typography, so a slot left null does not fall
-  /// back to a neighbouring step — it keeps Roboto at Material's own size, off
-  /// the ladder and outside the design's three faces. Seven slots did, which is
-  /// how a class whose whole point is that going off-ladder must be a visible
-  /// act let a large share of the app's text off it invisibly.
-  ///
-  /// **Role first, then the nearest size.** The role picks which rungs are
-  /// eligible — a `label*` slot may only land on a tracked rung ([label],
-  /// [micro]), because 0.14em is smallcaps spacing and would set body copy
-  /// adrift; a `body*` slot may only land on an untracked one. Within those,
-  /// the slot takes the rung nearest the Roboto size it used to resolve to —
-  /// 57/45/36 · 32/28/24 · 22/16/14 · 16/14/12 · 14/12/11 — so mapping a slot
-  /// does not restyle screens that were never touched. A tie goes downwards:
-  /// `bodyLarge` 16 → [body], `bodyMedium` and `labelLarge` 14 → [support],
-  /// `headlineMedium` 28 → [title], `labelMedium` 12 → [label].
-  ///
-  /// Role is why the two 12px slots part company: `bodySmall` takes [support]
-  /// (13, untracked) and `labelMedium` takes [label] (11, tracked). Size alone
-  /// would have tied them. It is also why the three `display*` slots ignore
-  /// the nearest rung altogether — 57 and 45 are nearest [hero], but a screen
-  /// title is a role and `hero` is reserved for celebration numerals.
-  ///
-  /// Two more things the nearest size cannot decide:
-  ///
-  /// - **Face.** A slot Material sets at weight 500 is a control, so it takes
-  ///   [AppFace.control] where its rung defaults to the 400 body face —
-  ///   `titleMedium`, `titleSmall`, `labelLarge`. `labelSmall` keeps mono: it
-  ///   is the numeral smallcaps.
-  /// - **Colour.** [support] and [label] are muted by role, which is right for
-  ///   the support line under a heading and wrong for a title. `titleSmall`
-  ///   therefore lands on the [support] rung in full-strength ink.
-  ///
-  /// Fifteen slots over nine rungs means slots Material distinguishes share
-  /// one — `bodySmall` and `bodyMedium` both land on [support]. That is the
-  /// ladder being shorter than Material's scale, which is the point of it.
-  ///
-  /// What this cannot fix is a call site reading the wrong slot: three read
-  /// `labelMedium` for sentence-case text ("3 of 5 saved") and so inherit the
-  /// smallcaps tracking the label rung owes its uppercase siblings. Those
-  /// belong to the per-screen work, not here.
+  /// **All fifteen, none left out** — a null slot keeps Roboto. Which rung each
+  /// takes: `docs/02-architecture.md`, Material's slots.
   static TextTheme textTheme(MoodColors mood) => TextTheme(
     displayLarge: display(mood: mood),
     displayMedium: display(mood: mood),

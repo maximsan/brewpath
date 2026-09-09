@@ -6,6 +6,8 @@ import 'package:brew_path/features/lessons/domain/card_seed.dart';
 import 'package:brew_path/features/lessons/domain/held_guess.dart';
 import 'package:brew_path/features/lessons/presentation/cards/content_card_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/recall_payoff.dart';
+import 'package:brew_path/features/lessons/presentation/cards/tastefix_reaction.dart';
+import 'package:brew_path/features/lessons/presentation/cards/tastefix_symptoms.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:flutter/material.dart';
@@ -488,9 +490,11 @@ void main() {
     testWidgets('shows the symptoms, the setup and the fixes', (tester) async {
       await tester.pumpWidget(_host(_tastefix, _Signals()));
 
-      // The symptoms frame the question rather than answering it.
-      expect(find.textContaining('SOUR'), findsOneWidget);
-      expect(find.textContaining('THIN'), findsOneWidget);
+      // The symptoms frame the question rather than answering it, and the
+      // design draws them as chips — one each, never a joined line (#332).
+      expect(find.text('SOUR'), findsOneWidget);
+      expect(find.text('THIN'), findsOneWidget);
+      expect(find.text('SOUR · THIN'), findsNothing);
       expect(
         find.text('Grind is dialled in and the beans are fresh.'),
         findsOneWidget,
@@ -549,6 +553,51 @@ void main() {
       await _tapText(tester, 'Grind finer');
 
       expect(signals.solved, 0);
+    });
+
+    testWidgets('a wrong fix dims the symptoms it did not relieve', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_host(_tastefix, _Signals()));
+
+      await _tapText(tester, 'Grind coarser');
+      await tester.pumpAndSettle();
+
+      final chips = tester.widgetList<AnimatedOpacity>(
+        find.descendant(
+          of: find.byType(TastefixSymptoms),
+          matching: find.byType(AnimatedOpacity),
+        ),
+      );
+      expect(chips, hasLength(2));
+      for (final chip in chips) {
+        expect(chip.opacity, tastefixDimmedOpacity);
+      }
+    });
+
+    testWidgets('a right fix replaces them with Balanced', (tester) async {
+      await tester.pumpWidget(_host(_tastefix, _Signals()));
+
+      await _tapText(tester, 'Grind finer');
+      await tester.pumpAndSettle();
+
+      expect(find.text(tastefixBalancedLabel.toUpperCase()), findsOneWidget);
+      expect(find.text('SOUR'), findsNothing);
+      expect(find.text('FIXED'), findsOneWidget);
+    });
+
+    testWidgets('the cup does not react again after the latch', (tester) async {
+      await tester.pumpWidget(_host(_tastefix, _Signals()));
+
+      await _tapText(tester, 'Grind coarser');
+      await tester.pumpAndSettle();
+      await _tapText(tester, 'Grind finer');
+      await tester.pumpAndSettle();
+
+      // The second tap is refused, so the cup stays worsened rather than
+      // settling to Balanced behind a latch that never moved.
+      expect(find.text(tastefixBalancedLabel.toUpperCase()), findsNothing);
+      expect(find.text('SOUR'), findsOneWidget);
     });
   });
 

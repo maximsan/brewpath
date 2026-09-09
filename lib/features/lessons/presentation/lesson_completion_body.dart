@@ -26,19 +26,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// The completion screen, and the card on its back.
 ///
-/// **The card lives on the back of the screen**, reached from the New-card row
-/// — the same flip grammar the module ending uses, where the turn is the
-/// ceremony's own beat. It used to open in a covering sheet, which made the
-/// collectible something that happened *over* the celebration rather than part
-/// of it.
-///
-/// Pure view. Everything it renders is decided before it is built: the reward
-/// by the service, the footer's action by [completionActions]. It performs no
-/// I/O and makes no policy decision of its own.
-///
-/// **One slot of the design's footer is empty here.** It puts *Duel a friend*
-/// under the action as a quiet link; the duel is v2, so the slot exists on
-/// `StickyActionBar` and nothing passes it.
+/// **The card lives on the back of the screen**, reached from the New-card
+/// row — the flip grammar the module ending uses, not a sheet over the
+/// celebration. Pure view: the service decides the reward, [completionActions]
+/// the footer. The design's *Duel a friend* slot stays empty; the duel is v2.
 class LessonCompletionBody extends StatefulWidget {
   /// Creates a [LessonCompletionBody].
   const LessonCompletionBody({
@@ -129,12 +120,17 @@ class _LessonCompletionBodyState extends State<LessonCompletionBody>
                   LessonCompletionTree(
                     fromStage: reward.result.treeStageBefore,
                     toStage: reward.result.treeStageAfter,
-                    lessonsToNextStage: reward.result.lessonsToNextStage,
                   ),
                   // Points land under the tree — what you earned feeds what
-                  // grows. The line brings its own gap, so a replay that paid
-                  // nothing leaves none.
+                  // grows — and the countdown goes under them, which is the
+                  // design's order. Each brings its own gap, so a replay that
+                  // paid nothing leaves the countdown 8 under the tree.
                   RewardPointsLine(points: reward.result.pointsEarned),
+                  TreeStageCountdown(
+                    fromStage: reward.result.treeStageBefore,
+                    toStage: reward.result.treeStageAfter,
+                    lessonsToNextStage: reward.result.lessonsToNextStage,
+                  ),
                   RewardBeats(
                     lessonId: widget.lessonId,
                     freezeEarned: reward.result.freezeEarned,
@@ -225,11 +221,10 @@ class RewardBeats extends ConsumerStatefulWidget {
 class _RewardBeatsState extends ConsumerState<RewardBeats> {
   /// The offer this screen arrived with.
   ///
-  /// **Latched, not watched.** Taking the offer up puts the challenge in play,
-  /// which is exactly what stops it being an offer — so a list that kept
-  /// asking would drop the row at the moment it is meant to confirm, and the
-  /// learner would tap and watch it vanish. The list reports what this run
-  /// earned; it does not re-decide that mid-celebration.
+  /// **Latched, not watched.** Taking it up puts the challenge in play, which
+  /// is what stops it being an offer — so a list that kept asking would drop
+  /// the row at the moment it is meant to confirm it, and the learner would
+  /// tap and watch it vanish.
   BrewChallenge? _offer;
 
   @override

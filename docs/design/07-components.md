@@ -236,7 +236,7 @@ another — worth a check when porting.
 | `HelpDrawer` | `lesson.jsx:62` | Renders only when `CARD_KIND_HELP[kind]` exists — 10 of 15 kinds ([§6](06-content.md)) ||
 | `MiniGamePlayer` | `lesson.jsx` | Own intro → play → results; never touches progression ||
 | `FillSlot` | `lesson.jsx` | The concept card's tap-to-choose blank | **Fill-in-the-blank** |
-| `TasteFixCard` | `practical.jsx` | | **Taste Fix card** |
+| `TasteFixCard` | `practical.jsx` | The cup panel reacts to the fix: symptoms are berry chips that dim to `0.6` when the fix fails, and a working fix replaces the whole row with the sage **Balanced** chip. The panel settles `berry 8%` → `sage 14%`, its eyebrow `STARTING POINT` → `FIXED` and the chip row's `TASTES` → `RESULT`, and it pulses on a right fix and shakes on a wrong one | **Taste Fix card** |
 | `VisualGuideCard` / `VisualGuideThumb` / `VisualLessonCard` | `practical.jsx` | 8 `VISUAL_GUIDE_CONTENT` variants. The card is the **diagram only** — headerless since the 3 Sep drop, because both hosts state the kind and title above it, so the `inSheet` / `hideHeader` / `mergeHeader` options are gone ||
 | `PracticalCard` | `practical.jsx` | ||
 | `CherrySection` / `GreenBean` / `BagPickCard` | `bean-anatomy.jsx` | `GreenBean` renders from process cues: `body` colour, `crease` colour, `mottle`, `chaff`. `BagPickCard` draws a sample, exposes cues, takes the call | **Card cue** |
