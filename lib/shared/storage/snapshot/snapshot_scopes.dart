@@ -547,6 +547,21 @@ class ClearedByDeleteOnly {
     unknown: unknown,
   );
 
+  /// A copy with [dressed] as the outfit, stamped so a peer holding an older
+  /// pick loses to it.
+  ///
+  /// Last-writer-wins, like the grove beside it: two devices cannot both be
+  /// right about what Roasty is wearing.
+  ClearedByDeleteOnly withCompanion(
+    CompanionConfig dressed, {
+    required int at,
+    required String writerId,
+  }) => ClearedByDeleteOnly(
+    grove: grove,
+    companion: Timestamped(value: dressed, updatedAt: at, writerId: writerId),
+    unknown: unknown,
+  );
+
   /// This scope's JSON form, with unrecognised keys written back verbatim.
   Map<String, dynamic> toJson() => {
     ...unknown,

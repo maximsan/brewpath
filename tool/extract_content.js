@@ -210,6 +210,18 @@ function main(argv) {
         "customize.jsx",
       ),
       groveLights: evaluateDeclaration(customize, "GROVE_LIGHT", "customize.jsx"),
+      companionRoasts: evaluateDeclaration(
+        customize,
+        "ROAST_OPTS",
+        "customize.jsx",
+      ),
+      companionHats: evaluateDeclaration(customize, "HAT_OPTS", "customize.jsx"),
+      companionGear: evaluateDeclaration(customize, "GEAR_OPTS", "customize.jsx"),
+      companionSprouts: evaluateDeclaration(
+        customize,
+        "SPROUT_OPTS",
+        "customize.jsx",
+      ),
       visualGuideCards: evaluateDeclaration(
         data,
         "VISUAL_GUIDE_CARDS",
@@ -270,6 +282,14 @@ function main(argv) {
     // is the other's auxiliary data, and each validates on its own terms.
     bank("grove_varieties", "customize.jsx", derived.groveVarieties),
     bank("grove_lights", "customize.jsx", derived.groveLights),
+    // One bank per axis, for the reason the grove's two are split: roast, hat,
+    // gear and sprout are co-equal and independently chosen, so none is
+    // another's auxiliary data. Labels only — the art is vector geometry the
+    // app draws, keyed by these ids and guarded against them.
+    bank("companion_roasts", "customize.jsx", derived.companionRoasts),
+    bank("companion_hats", "customize.jsx", derived.companionHats),
+    bank("companion_gear", "customize.jsx", derived.companionGear),
+    bank("companion_sprouts", "customize.jsx", derived.companionSprouts),
     // Two sources, honestly: identity, unlock and the meta table are authored
     // in `data.jsx`, the words in `practical.jsx`, and a guide is only whole
     // once they are joined.

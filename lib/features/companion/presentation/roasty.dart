@@ -2,10 +2,15 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
+import 'package:brew_path/features/companion/presentation/companion_outfit_scope.dart';
 import 'package:brew_path/features/companion/presentation/roasty_animation.dart';
 import 'package:brew_path/features/companion/presentation/roasty_body.dart';
 import 'package:brew_path/features/companion/presentation/roasty_faces.dart';
+import 'package:brew_path/features/companion/presentation/roasty_gear.dart';
+import 'package:brew_path/features/companion/presentation/roasty_hats.dart';
 import 'package:brew_path/features/companion/presentation/roasty_particles.dart';
+import 'package:brew_path/features/companion/presentation/roasty_sprouts.dart';
+import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/roasty_colors.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +31,7 @@ class Roasty extends StatefulWidget {
     this.animate = true,
     this.plate = false,
     this.pointsAmount,
+    this.outfit,
     super.key,
   }) : assert(
          (state == RoastyState.points) == (pointsAmount != null),
@@ -62,14 +68,18 @@ class Roasty extends StatefulWidget {
   /// What the points burst says, for [RoastyState.points] and no other state.
   ///
   /// Passed in rather than known here: a lesson pays what it authors and a
-  /// challenge pays its own rule (§5.1, #16), so a number the mascot held
-  /// would be right about neither. Required with the pose and rejected without
-  /// it — see the assert on the constructor.
-  ///
-  /// **A caller reaching the pose through `roastyStateFor` has no channel for
-  /// this**, so wiring the pose to a reaction means giving the amount a way
-  /// through as well, not just adding a mapping row.
+  /// challenge pays its own rule (§5.1, #16). Required with the pose and
+  /// rejected without it — see the assert on the constructor. A caller
+  /// reaching the pose through `roastyStateFor` has no channel for this.
   final int? pointsAmount;
+
+  /// The outfit to draw, overriding what the learner has on.
+  ///
+  /// Only the Studio passes one, so it can preview a pick before it is
+  /// confirmed. Everywhere else this is null and the mascot dresses itself
+  /// from the ambient [CompanionOutfitScope] — which is what stops a screen
+  /// showing the wrong Roasty by forgetting to thread it through.
+  final CompanionConfig? outfit;
 
   @override
   State<Roasty> createState() => _RoastyState();
@@ -148,6 +158,7 @@ class _RoastyState extends State<Roasty> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final outfit = widget.outfit ?? CompanionOutfitScope.of(context);
     return RepaintBoundary(
       child: SizedBox(
         width: widget.size,
@@ -161,6 +172,7 @@ class _RoastyState extends State<Roasty> with SingleTickerProviderStateMixin {
               sproutScale: widget.sproutScale,
               plate: widget.plate,
               pointsAmount: widget.pointsAmount,
+              outfit: outfit,
               mood: context.mood,
             ),
           ),
@@ -180,6 +192,7 @@ class _RoastyPainter extends CustomPainter {
     required this.state,
     required this.progress,
     required this.plate,
+    required this.outfit,
     required this.mood,
     this.sproutScale,
     this.pointsAmount,
@@ -188,6 +201,9 @@ class _RoastyPainter extends CustomPainter {
   final RoastyState state;
   final double progress;
   final bool plate;
+
+  /// What the mascot is wearing, already resolved past the gate.
+  final CompanionConfig outfit;
 
   /// What the points burst says; null for every other state.
   final int? pointsAmount;
@@ -218,9 +234,19 @@ class _RoastyPainter extends CustomPainter {
 
     if (plate) paintRoastyPlate(canvas);
     paintRoastyParticlesBack(canvas, state, progress, mood);
-    paintRoastySprout(canvas, state, progress, sproutScale);
-    paintRoastyBody(canvas, state, progress);
-    _paintFace(canvas);
+    // Bare-headed, the sprout nestles on the bean and sways on its own. Under
+    // a hat it moves inside the body group instead, drawn over the crown.
+    if (hatIsBare(outfit.hat)) {
+      paintRoastySprout(
+        canvas,
+        state,
+        progress,
+        sproutScale,
+        sprout: outfit.sprout,
+      );
+    }
+    paintRoastyBody(canvas, state, progress, roast: outfit.roast);
+    _paintFaceAndOutfit(canvas);
     paintRoastyParticlesFront(
       canvas,
       state,
@@ -232,8 +258,9 @@ class _RoastyPainter extends CustomPainter {
     canvas.restore();
   }
 
-  /// Faces ride along with the body transform, so apply it before drawing.
-  void _paintFace(Canvas canvas) {
+  /// The face and everything worn ride the body transform, so apply it once
+  /// and draw them all inside it — the order the design draws them in.
+  void _paintFaceAndOutfit(Canvas canvas) {
     canvas.save();
     final offset = roastyBodyOffset(state, progress);
     canvas.translate(100 + offset.dx, 158 + offset.dy);
@@ -241,8 +268,18 @@ class _RoastyPainter extends CustomPainter {
     canvas.scale(roastyBodyScale(state, progress));
     canvas.translate(-100, -158);
     paintRoastyFace(canvas, state, mood);
+    paintRoastyGear(canvas, outfit.gear);
+    paintRoastyHat(canvas, outfit.hat);
+    if (!hatIsBare(outfit.hat)) {
+      // The design lifts it 13 up so it clears the crown it grows through.
+      canvas.translate(0, -_sproutOverHat);
+      paintRoastySproutArt(canvas, outfit.sprout);
+    }
     canvas.restore();
   }
+
+  /// How far the sprout rises to grow through a hat, in canvas units.
+  static const double _sproutOverHat = 13;
 
   @override
   bool shouldRepaint(covariant _RoastyPainter old) =>
@@ -251,5 +288,6 @@ class _RoastyPainter extends CustomPainter {
       old.sproutScale != sproutScale ||
       old.plate != plate ||
       old.pointsAmount != pointsAmount ||
+      old.outfit != outfit ||
       old.mood != mood;
 }

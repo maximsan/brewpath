@@ -2,7 +2,9 @@ import 'dart:math' as math;
 
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty_animation.dart';
+import 'package:brew_path/features/companion/presentation/roasty_sprouts.dart';
 import 'package:brew_path/shared/theme/roasty_colors.dart';
+import 'package:brew_path/shared/theme/roasty_outfit_colors.dart';
 import 'package:flutter/material.dart';
 
 /// Scale origin while the host drives the grow: the stem base sits at the
@@ -27,14 +29,16 @@ void paintRoastyPlate(Canvas canvas) {
   );
 }
 
-/// Paints the sprout (stem + leaves) above the bean. [sproutScale] overrides
-/// the state-derived scale when non-null (used by the loading wake-up grow).
+/// Paints the [sprout] above the bean. [sproutScale] overrides the
+/// state-derived scale when non-null (used by the loading wake-up grow).
 void paintRoastySprout(
   Canvas canvas,
   RoastyState state,
   double t,
-  double? sproutScale,
-) {
+  double? sproutScale, {
+  String sprout = 'leaf',
+}) {
+  if (sproutIsBare(sprout)) return;
   final sleeping = state == RoastyState.sleep || state == RoastyState.awake;
   final usingGrow = sproutScale != null;
   final scale = sproutScale ?? (sleeping ? 0.15 : 1.0);
@@ -51,58 +55,22 @@ void paintRoastySprout(
 
   canvas.scale(scale);
   canvas.translate(-anchor.dx, -anchor.dy);
-
-  final stem = Paint()
-    ..color = RoastyColors.leafDeep
-    ..strokeWidth = 3
-    ..strokeCap = StrokeCap.round
-    ..style = PaintingStyle.stroke;
-  final stemPath = Path()
-    ..moveTo(100, 88)
-    ..quadraticBezierTo(100, 80, 100, 70);
-  canvas.drawPath(stemPath, stem);
-
-  const leafGradient = RadialGradient(
-    center: Alignment(-0.3, -0.4),
-    radius: 0.75,
-    colors: RoastyColors.leafGradient,
-  );
-  const leafRect = Rect.fromLTWH(60, 55, 80, 30);
-  final leafPaint = Paint()..shader = leafGradient.createShader(leafRect);
-
-  final leafL = Path()
-    ..moveTo(100, 72)
-    ..cubicTo(86, 58, 70, 60, 66, 70)
-    ..cubicTo(70, 82, 88, 80, 100, 74)
-    ..close();
-  final leafR = Path()
-    ..moveTo(100, 72)
-    ..cubicTo(114, 58, 130, 60, 134, 70)
-    ..cubicTo(130, 82, 112, 80, 100, 74)
-    ..close();
-  canvas.drawPath(leafL, leafPaint);
-  canvas.drawPath(leafR, leafPaint);
-
-  final vein = Paint()
-    ..color = RoastyColors.leafDeep.withValues(alpha: 0.6)
-    ..strokeWidth = 1
-    ..style = PaintingStyle.stroke
-    ..strokeCap = StrokeCap.round;
-  final veinL = Path()
-    ..moveTo(100, 73)
-    ..quadraticBezierTo(86, 70, 72, 72);
-  final veinR = Path()
-    ..moveTo(100, 73)
-    ..quadraticBezierTo(114, 70, 128, 72);
-  canvas.drawPath(veinL, vein);
-  canvas.drawPath(veinR, vein);
-
+  paintRoastySproutArt(canvas, sprout);
   canvas.restore();
 }
 
 /// Paints the bean body (shadow, gradient body, highlight, crease) with the
 /// per-state body transform for [state] at progress [t].
-void paintRoastyBody(Canvas canvas, RoastyState state, double t) {
+///
+/// [roast] picks the body gradient. It is threaded through the paint rather
+/// than overlaid, because a darker bean is a different bean and not a tinted
+/// one — a wash over the highlight and crease would grey both.
+void paintRoastyBody(
+  Canvas canvas,
+  RoastyState state,
+  double t, {
+  String roast = 'medium',
+}) {
   canvas.save();
   final offset = roastyBodyOffset(state, t);
   canvas.translate(100 + offset.dx, 158 + offset.dy);
@@ -121,11 +89,11 @@ void paintRoastyBody(Canvas canvas, RoastyState state, double t) {
 
   // bean body — the design's radial gradient, lit side to edge
   const bodyRect = Rect.fromLTWH(38, 90, 124, 136);
-  const bodyGradient = RadialGradient(
-    center: Alignment(-0.36, -0.36),
+  final bodyGradient = RadialGradient(
+    center: const Alignment(-0.36, -0.36),
     radius: 0.75,
-    colors: RoastyColors.beanGradient,
-    stops: [0.0, 0.55, 1.0],
+    colors: RoastyOutfitColors.roastGradient(roast),
+    stops: const [0.0, 0.55, 1.0],
   );
   final bodyPaint = Paint()..shader = bodyGradient.createShader(bodyRect);
   final bodyPath = Path()
