@@ -13,6 +13,7 @@ StreakStatus status({
   Set<int> frozenDays = const {},
 }) => StreakStatus(
   streak: 5,
+  longestStreak: 5,
   freezeHeld: freezeHeld,
   daysToNextFreeze: daysToNextFreeze,
   freezesSpent: frozenDays.length,

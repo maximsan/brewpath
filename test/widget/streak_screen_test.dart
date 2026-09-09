@@ -23,6 +23,7 @@ import '../support/widget_harness.dart';
 
 const _counting = StreakStatus(
   streak: 12,
+  longestStreak: 12,
   freezeHeld: false,
   daysToNextFreeze: 3,
   freezesSpent: 0,
@@ -31,6 +32,7 @@ const _counting = StreakStatus(
 
 const _holding = StreakStatus(
   streak: 9,
+  longestStreak: 9,
   freezeHeld: true,
   daysToNextFreeze: null,
   freezesSpent: 0,
@@ -41,6 +43,7 @@ const _holding = StreakStatus(
 /// the fixture the wrap is read off (#498).
 const _secondWeek = StreakStatus(
   streak: 10,
+  longestStreak: 10,
   freezeHeld: false,
   daysToNextFreeze: 4,
   freezesSpent: 0,
@@ -50,6 +53,7 @@ const _secondWeek = StreakStatus(
 /// The day after a closing day: the fill starts over at one seventh.
 const _weekReopened = StreakStatus(
   streak: 8,
+  longestStreak: 8,
   freezeHeld: true,
   daysToNextFreeze: null,
   freezesSpent: 0,
@@ -97,6 +101,7 @@ Future<void> _pump(
 /// A milestone-day fixture: seven in a row, the freeze just earned.
 const _milestoneDay = StreakStatus(
   streak: 7,
+  longestStreak: 7,
   freezeHeld: true,
   daysToNextFreeze: null,
   freezesSpent: 0,
@@ -158,6 +163,7 @@ void main() {
     final now = DateTime.now();
     final covered = StreakStatus(
       streak: 5,
+      longestStreak: 5,
       freezeHeld: false,
       daysToNextFreeze: 7,
       freezesSpent: 1,

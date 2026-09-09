@@ -108,7 +108,6 @@ Future<void> resetProgress(WidgetRef ref) async {
   ref.invalidate(totalPointsProvider);
   ref.invalidate(streakStatusProvider);
   ref.invalidate(completedLessonsProvider);
-  ref.invalidate(collectedCardsProvider);
   ref.invalidate(cardsWithCollectionProvider);
   ref.invalidate(modulesWithProgressProvider);
   ref.invalidate(todayLessonProvider);

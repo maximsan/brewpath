@@ -10,54 +10,30 @@ part of 'progress_providers.dart';
 // ignore_for_file: type=lint, type=warning
 /// The learner's points total — **derived, never stored**.
 ///
-/// Two payouts exist and both leave a record: a finished lesson is worth the
-/// flat ten it authors, and a challenge's five is implied by its id sitting in
-/// the completed set. Summing them here means the total cannot drift from what
-/// was actually earned, and Reset Progress needs no rule of its own — clearing
-/// the completions clears the total by construction.
-///
-/// **The payout is read off the course, not off a copy of it.** The old
-/// completions table banked the points on the row; the snapshot stores which
-/// lessons are finished and nothing about what they paid, because what a
-/// lesson is worth is a fact about the lesson. A finished lesson the content
-/// no longer carries therefore pays nothing, which is the same answer a
-/// dropped row would have given.
+/// Summed from the two records that exist: a finished lesson is worth the flat
+/// ten it authors, and a challenge's five is implied by its id in the completed
+/// set. The payout is read off the course rather than a banked copy, so a
+/// finished lesson the content no longer carries pays nothing.
 
 @ProviderFor(totalPoints)
 final totalPointsProvider = TotalPointsProvider._();
 
 /// The learner's points total — **derived, never stored**.
 ///
-/// Two payouts exist and both leave a record: a finished lesson is worth the
-/// flat ten it authors, and a challenge's five is implied by its id sitting in
-/// the completed set. Summing them here means the total cannot drift from what
-/// was actually earned, and Reset Progress needs no rule of its own — clearing
-/// the completions clears the total by construction.
-///
-/// **The payout is read off the course, not off a copy of it.** The old
-/// completions table banked the points on the row; the snapshot stores which
-/// lessons are finished and nothing about what they paid, because what a
-/// lesson is worth is a fact about the lesson. A finished lesson the content
-/// no longer carries therefore pays nothing, which is the same answer a
-/// dropped row would have given.
+/// Summed from the two records that exist: a finished lesson is worth the flat
+/// ten it authors, and a challenge's five is implied by its id in the completed
+/// set. The payout is read off the course rather than a banked copy, so a
+/// finished lesson the content no longer carries pays nothing.
 
 final class TotalPointsProvider
     extends $FunctionalProvider<AsyncValue<int>, int, FutureOr<int>>
     with $FutureModifier<int>, $FutureProvider<int> {
   /// The learner's points total — **derived, never stored**.
   ///
-  /// Two payouts exist and both leave a record: a finished lesson is worth the
-  /// flat ten it authors, and a challenge's five is implied by its id sitting in
-  /// the completed set. Summing them here means the total cannot drift from what
-  /// was actually earned, and Reset Progress needs no rule of its own — clearing
-  /// the completions clears the total by construction.
-  ///
-  /// **The payout is read off the course, not off a copy of it.** The old
-  /// completions table banked the points on the row; the snapshot stores which
-  /// lessons are finished and nothing about what they paid, because what a
-  /// lesson is worth is a fact about the lesson. A finished lesson the content
-  /// no longer carries therefore pays nothing, which is the same answer a
-  /// dropped row would have given.
+  /// Summed from the two records that exist: a finished lesson is worth the flat
+  /// ten it authors, and a challenge's five is implied by its id in the completed
+  /// set. The payout is read off the course rather than a banked copy, so a
+  /// finished lesson the content no longer carries pays nothing.
   TotalPointsProvider._()
     : super(
         from: null,
@@ -85,51 +61,33 @@ final class TotalPointsProvider
 
 String _$totalPointsHash() => r'cf138c6951ffe7e42a3e3bcb0631324804feae2d';
 
-/// The streak, the freeze and the covered days, derived from the snapshot.
+/// The qualifying-day set every streak surface folds over — one derivation, so
+/// the engine, the save notice and the week strip can never disagree on which
+/// days count.
 ///
-/// Read against `DateTime.now()`, so it is only as fresh as the last time it
-/// was built — which is why `DayRolloverWatcher` invalidates this on a resume
-/// that crossed midnight, rather than letting a value computed before it stand.
-///
-/// The day set it folds is assembled by [streakDaySet], which also backfills
-/// a learner whose completions predate the day set — see it for why the three
-/// sources are unioned rather than ranked.
-/// The qualifying-day set every streak surface folds over — one derivation,
-/// so the engine, the save notice and the week strip can never disagree on
-/// which days count.
+/// Assembled by [streakDaySet], which also backfills a learner whose
+/// completions predate the day set.
 
 @ProviderFor(activeDaySet)
 final activeDaySetProvider = ActiveDaySetProvider._();
 
-/// The streak, the freeze and the covered days, derived from the snapshot.
+/// The qualifying-day set every streak surface folds over — one derivation, so
+/// the engine, the save notice and the week strip can never disagree on which
+/// days count.
 ///
-/// Read against `DateTime.now()`, so it is only as fresh as the last time it
-/// was built — which is why `DayRolloverWatcher` invalidates this on a resume
-/// that crossed midnight, rather than letting a value computed before it stand.
-///
-/// The day set it folds is assembled by [streakDaySet], which also backfills
-/// a learner whose completions predate the day set — see it for why the three
-/// sources are unioned rather than ranked.
-/// The qualifying-day set every streak surface folds over — one derivation,
-/// so the engine, the save notice and the week strip can never disagree on
-/// which days count.
+/// Assembled by [streakDaySet], which also backfills a learner whose
+/// completions predate the day set.
 
 final class ActiveDaySetProvider
     extends
         $FunctionalProvider<AsyncValue<Set<int>>, Set<int>, FutureOr<Set<int>>>
     with $FutureModifier<Set<int>>, $FutureProvider<Set<int>> {
-  /// The streak, the freeze and the covered days, derived from the snapshot.
+  /// The qualifying-day set every streak surface folds over — one derivation, so
+  /// the engine, the save notice and the week strip can never disagree on which
+  /// days count.
   ///
-  /// Read against `DateTime.now()`, so it is only as fresh as the last time it
-  /// was built — which is why `DayRolloverWatcher` invalidates this on a resume
-  /// that crossed midnight, rather than letting a value computed before it stand.
-  ///
-  /// The day set it folds is assembled by [streakDaySet], which also backfills
-  /// a learner whose completions predate the day set — see it for why the three
-  /// sources are unioned rather than ranked.
-  /// The qualifying-day set every streak surface folds over — one derivation,
-  /// so the engine, the save notice and the week strip can never disagree on
-  /// which days count.
+  /// Assembled by [streakDaySet], which also backfills a learner whose
+  /// completions predate the day set.
   ActiveDaySetProvider._()
     : super(
         from: null,
@@ -408,70 +366,12 @@ final class CompletedLessonIdsProvider
 String _$completedLessonIdsHash() =>
     r'fb927706b8da83b2b28525d2ed2d345baa2acc64';
 
-/// The ids of all cards the user has collected, off the progress snapshot.
-///
-/// Stored in full rather than derived from the finished lessons: the lesson id
-/// space has been rewritten once already on this project, and a derived set
-/// would have silently revoked every card the rename touched.
-
-@ProviderFor(collectedCards)
-final collectedCardsProvider = CollectedCardsProvider._();
-
-/// The ids of all cards the user has collected, off the progress snapshot.
-///
-/// Stored in full rather than derived from the finished lessons: the lesson id
-/// space has been rewritten once already on this project, and a derived set
-/// would have silently revoked every card the rename touched.
-
-final class CollectedCardsProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<List<String>>,
-          List<String>,
-          FutureOr<List<String>>
-        >
-    with $FutureModifier<List<String>>, $FutureProvider<List<String>> {
-  /// The ids of all cards the user has collected, off the progress snapshot.
-  ///
-  /// Stored in full rather than derived from the finished lessons: the lesson id
-  /// space has been rewritten once already on this project, and a derived set
-  /// would have silently revoked every card the rename touched.
-  CollectedCardsProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'collectedCardsProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$collectedCardsHash();
-
-  @$internal
-  @override
-  $FutureProviderElement<List<String>> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<List<String>> create(Ref ref) {
-    return collectedCards(ref);
-  }
-}
-
-String _$collectedCardsHash() => r'442ce2ea146aaad92a581ece9811b9ca444481d6';
-
 /// Highest tree stage ever reached: `max(stored, derived)`, as the field has
 /// always described itself.
 ///
-/// The stored half is written by first-time lesson completion and never goes
-/// down. The derived half is what the *current* course size implies, and it
-/// is here to heal a learner whose stored stage predates the writer — taking
-/// the max is what stops it doing harm, because a grown course derives lower
-/// for the same learner and the stored floor wins.
+/// The derived half heals a learner whose stored stage predates the writer;
+/// taking the max is what stops it doing harm, because a grown course derives
+/// lower for the same learner and the stored floor wins.
 
 @ProviderFor(treeStage)
 final treeStageProvider = TreeStageProvider._();
@@ -479,11 +379,9 @@ final treeStageProvider = TreeStageProvider._();
 /// Highest tree stage ever reached: `max(stored, derived)`, as the field has
 /// always described itself.
 ///
-/// The stored half is written by first-time lesson completion and never goes
-/// down. The derived half is what the *current* course size implies, and it
-/// is here to heal a learner whose stored stage predates the writer — taking
-/// the max is what stops it doing harm, because a grown course derives lower
-/// for the same learner and the stored floor wins.
+/// The derived half heals a learner whose stored stage predates the writer;
+/// taking the max is what stops it doing harm, because a grown course derives
+/// lower for the same learner and the stored floor wins.
 
 final class TreeStageProvider
     extends $FunctionalProvider<AsyncValue<int>, int, FutureOr<int>>
@@ -491,11 +389,9 @@ final class TreeStageProvider
   /// Highest tree stage ever reached: `max(stored, derived)`, as the field has
   /// always described itself.
   ///
-  /// The stored half is written by first-time lesson completion and never goes
-  /// down. The derived half is what the *current* course size implies, and it
-  /// is here to heal a learner whose stored stage predates the writer — taking
-  /// the max is what stops it doing harm, because a grown course derives lower
-  /// for the same learner and the stored floor wins.
+  /// The derived half heals a learner whose stored stage predates the writer;
+  /// taking the max is what stops it doing harm, because a grown course derives
+  /// lower for the same learner and the stored floor wins.
   TreeStageProvider._()
     : super(
         from: null,
@@ -572,22 +468,18 @@ String _$coreLessonProgressHash() =>
 
 /// The month the Profile's closing line names, or null before there is one.
 ///
-/// The rule is [deriveJoinedDate]'s: the install stamp when the database
-/// recorded one, and the earliest active day for every device created before
-/// it did. The active-day set is read either way rather than only on the
-/// fallback, so a stamp arriving later cannot change which providers this one
-/// depends on mid-session.
+/// The rule is [deriveJoinedDate]'s. The active-day set is read either way
+/// rather than only on the fallback, so a stamp arriving later cannot change
+/// which providers this one depends on mid-session.
 
 @ProviderFor(joinedDate)
 final joinedDateProvider = JoinedDateProvider._();
 
 /// The month the Profile's closing line names, or null before there is one.
 ///
-/// The rule is [deriveJoinedDate]'s: the install stamp when the database
-/// recorded one, and the earliest active day for every device created before
-/// it did. The active-day set is read either way rather than only on the
-/// fallback, so a stamp arriving later cannot change which providers this one
-/// depends on mid-session.
+/// The rule is [deriveJoinedDate]'s. The active-day set is read either way
+/// rather than only on the fallback, so a stamp arriving later cannot change
+/// which providers this one depends on mid-session.
 
 final class JoinedDateProvider
     extends
@@ -599,11 +491,9 @@ final class JoinedDateProvider
     with $FutureModifier<DateTime?>, $FutureProvider<DateTime?> {
   /// The month the Profile's closing line names, or null before there is one.
   ///
-  /// The rule is [deriveJoinedDate]'s: the install stamp when the database
-  /// recorded one, and the earliest active day for every device created before
-  /// it did. The active-day set is read either way rather than only on the
-  /// fallback, so a stamp arriving later cannot change which providers this one
-  /// depends on mid-session.
+  /// The rule is [deriveJoinedDate]'s. The active-day set is read either way
+  /// rather than only on the fallback, so a stamp arriving later cannot change
+  /// which providers this one depends on mid-session.
   JoinedDateProvider._()
     : super(
         from: null,

@@ -100,6 +100,7 @@ void main() {
     test('carries the design values, in em', () {
       expect(AppTracking.reading.em, 0.02);
       expect(AppTracking.figure.em, 0.04);
+      expect(AppTracking.count.em, 0.06);
       expect(AppTracking.meta.em, 0.08);
       expect(AppTracking.tag.em, 0.10);
       expect(AppTracking.hint.em, 0.12);
@@ -128,6 +129,25 @@ void main() {
         AppText.micro(tracking: AppTracking.hint).letterSpacing,
         closeTo(AppTracking.hint.em * microSize, 0.0001),
       );
+    });
+
+    test('reaches the rungs the design letters below smallcaps', () {
+      // `body` and `support` carry no tracking of their own, so a rung that
+      // could not be told one had no way to say what the design sets: the
+      // ending's score at 0.04em and its points at 0.06em both live here.
+      const bodySize = 15.0;
+      const supportSize = 13.0;
+
+      expect(
+        AppText.body(tracking: AppTracking.figure).letterSpacing,
+        closeTo(AppTracking.figure.em * bodySize, 0.0001),
+      );
+      expect(
+        AppText.support(tracking: AppTracking.count).letterSpacing,
+        closeTo(AppTracking.count.em * supportSize, 0.0001),
+      );
+      expect(AppText.body().letterSpacing, 0);
+      expect(AppText.support().letterSpacing, 0);
     });
 
     test('left off, a rung keeps the design’s 0.14em smallcaps rule', () {

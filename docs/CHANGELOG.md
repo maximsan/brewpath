@@ -109,6 +109,12 @@ You can always edit this file by hand instead — the helpers just save effort.
 - **A predict question's blank is a blank.** Where the question is written with
   one, your guess drops into the sentence and reads back as your own claim,
   which the lesson's closing card then confirms or overturns.
+- **The course ending counts what the spec asked for.** The completion moment
+  now shows the learner's *longest* streak and the number of Module Rewards
+  they earned, in place of the current streak and the total card count it
+  stood in with. Both are derived — the longest run comes off the same fold as
+  the current one, and a Module Reward is a card the content bank points at a
+  module — so nothing new is stored and a reset still leaves nothing behind.
 - **The Today tour is the one the design draws.** A bordered frame travels
   between the four things it introduces instead of a spotlight snapping
   between them, the card carries its own counter, dots, Skip and Next, and
@@ -145,9 +151,27 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **Six more number lines are set at the width the design gives them.** The
+  lesson and mini-game position counter, the Coffee Challenges count, a
+  dictionary category's term count, the core-lessons count, the tree hero's
+  count and the stage-still-to-come line each took their rung's letter spacing
+  instead of their own — the widths run 0.06em to 0.12em, not one shared step.
+  The challenge row also drew its kicker in mono and its count in the wrong
+  face and rung; both now follow the design.
+- **The Tour's first card no longer opens under the clock.** Its card takes the
+  side of the target the design names whenever it fits there, and the other
+  side when it does not — so the tall Today card, which the design's rule sends
+  it above and which leaves only the status bar's strip there, now gets a card
+  below it instead. On a phone the first stop had been drawn behind the status
+  bar with the time struck through its title; the design is drawn against a
+  mock that has no status bar, so nothing in the rule could see it.
 - **The lesson ending puts what you earned under the tree it fed.** The points
   and the *lessons to the next stage* countdown were the wrong way round, so
   the payout sat a line further from the tree than the design places it.
+- **Four number lines are set at the width the design gives them.** `+10 PTS`,
+  the ending's score, and Profile's *1 lesson · 10 points* and *1 / 32 done*
+  read as one quantity again rather than as kickers with their digits drifting
+  apart. Each had been left at whatever its type step happened to set.
 - The loading screen no longer flashes a sleeping Roasty and the tap cue for a
   frame before the app opens: the advance is decided at the end of the wake-up,
   not after the loop has been drawn back at its start.

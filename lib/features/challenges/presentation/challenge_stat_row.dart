@@ -1,6 +1,8 @@
+import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -41,7 +43,6 @@ class _StatRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final mood = context.mood;
     // A floor, so an untouched bar still reads as a bar rather than as a rule.
     final fraction = total == 0
@@ -65,15 +66,14 @@ class _StatRow extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'COFFEE CHALLENGES',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: mood.inkMute,
-                  ),
-                ),
+                const SmallcapsLabel('Coffee challenges'),
                 Text(
                   '$brewed / $total',
-                  style: theme.textTheme.labelLarge,
+                  style: AppText.label(
+                    mood: mood,
+                    face: AppFace.mono,
+                    tracking: AppTracking.count,
+                  ),
                 ),
               ],
             ),

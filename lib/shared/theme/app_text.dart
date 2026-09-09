@@ -64,6 +64,10 @@ enum AppTracking {
   /// (`.spec-chip`), and the pronunciation chip's respelling.
   figure(0.04),
 
+  /// 0.06em — a count standing on its own as the subject of its line: the
+  /// points a run paid, Profile's lessons-and-points line, `N / N DONE`.
+  count(0.06),
+
   /// 0.08em — a meta line or a figure, which wants to read as one run rather
   /// than as a kicker. At the rung's 0.14em a count's numerals drift apart and
   /// the line stops reading as a single quantity, which is the whole reason the
@@ -182,13 +186,34 @@ abstract final class AppText {
   static TextStyle lead({MoodColors? mood, Color? color, AppFace? face}) =>
       _style(_Rung.lead, face ?? AppFace.ui, color ?? mood?.ink);
 
-  /// Body copy.
-  static TextStyle body({MoodColors? mood, Color? color, AppFace? face}) =>
-      _style(_Rung.body, face ?? AppFace.ui, color ?? mood?.ink);
+  /// Body copy. Takes a [tracking] because the design letters this rung on
+  /// its mono cut — the lesson ending's score is read as digits, not words.
+  static TextStyle body({
+    MoodColors? mood,
+    Color? color,
+    AppFace? face,
+    AppTracking? tracking,
+  }) => _style(
+    _Rung.body,
+    face ?? AppFace.ui,
+    color ?? mood?.ink,
+    tracking: tracking,
+  );
 
-  /// Support text under a heading or row — muted by default.
-  static TextStyle support({MoodColors? mood, Color? color, AppFace? face}) =>
-      _style(_Rung.support, face ?? AppFace.ui, color ?? mood?.inkMute);
+  /// Support text under a heading or row — muted by default. Takes a
+  /// [tracking] for the same reason [body] does: the points a run paid are
+  /// set on this rung, and the design letters them.
+  static TextStyle support({
+    MoodColors? mood,
+    Color? color,
+    AppFace? face,
+    AppTracking? tracking,
+  }) => _style(
+    _Rung.support,
+    face ?? AppFace.ui,
+    color ?? mood?.inkMute,
+    tracking: tracking,
+  );
 
   /// Labels and smallcaps — muted by default, lettered at the design's 0.14em
   /// smallcaps rule unless the component is one the design tracks differently

@@ -116,6 +116,7 @@ void main() {
     test('a covered day reads frozen, never done', () {
       final status = StreakStatus(
         streak: 3,
+        longestStreak: 3,
         freezeHeld: false,
         daysToNextFreeze: freezeEarnDays,
         freezesSpent: 1,
