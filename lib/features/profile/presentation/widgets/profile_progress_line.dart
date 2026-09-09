@@ -43,7 +43,11 @@ class ProfileProgressLine extends StatelessWidget {
           const SizedBox(width: AppSpacing.xs - 1),
           Text(
             line.toUpperCase(),
-            style: AppText.label(mood: mood, face: AppFace.mono),
+            style: AppText.label(
+              mood: mood,
+              face: AppFace.mono,
+              tracking: AppTracking.count,
+            ),
           ),
         ],
       ),

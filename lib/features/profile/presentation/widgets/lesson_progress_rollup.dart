@@ -10,10 +10,8 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
 /// Mastery's permanent home: how many lessons are solid, how many want another
-/// run, and a way through to the Path to do it.
-///
-/// The moment of earning shows mastery once and then it is gone; the design
-/// gives it a card here.
+/// run, and a way through to the Path to do it. The moment of earning shows
+/// mastery once and then it is gone.
 ///
 /// **Two states, not three.** The fold is [rollUpMastery]'s — Perfect and Solid
 /// are both *solid*, because the design's bar has two colours.
@@ -73,7 +71,11 @@ class LessonProgressRollup extends StatelessWidget {
                     // hero above shows.
                     Text(
                       '${rollup.completed} / ${rollup.total} DONE',
-                      style: AppText.label(mood: mood, face: AppFace.mono),
+                      style: AppText.label(
+                        mood: mood,
+                        face: AppFace.mono,
+                        tracking: AppTracking.count,
+                      ),
                     ),
                   ],
                 ),

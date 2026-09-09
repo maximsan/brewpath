@@ -8,15 +8,9 @@ import 'package:flutter/material.dart';
 /// What a run paid, under the tree it fed.
 ///
 /// **Its own beat, directly beneath the tree** — *"what you earned feeds what
-/// grows"*. It used to be the first row of a bordered receipt, which read as
-/// bookkeeping beside the thing it was supposed to explain.
-///
-/// Borderless on both endings: no pill, no well, no panel.
-///
-/// **Zero draws nothing on the lesson ending, and is not reached on the
-/// module's.** A replay pays nothing, and a line reading `+0 PTS` under a tree
-/// that did not move announces the absence; the module ending is only opened
-/// by a run that closed a module, which always paid.
+/// grows"* — and borderless on both endings: no pill, no well, no panel.
+/// **Zero draws nothing**: `+0 PTS` under a tree that did not move announces
+/// the absence, and only a run that paid ever reaches the module ending.
 class RewardPointsLine extends StatelessWidget {
   /// Creates a [RewardPointsLine].
   const RewardPointsLine({required this.points, super.key});
@@ -28,12 +22,9 @@ class RewardPointsLine extends StatelessWidget {
   static const double beanSize = 18;
 
   /// The room the design leaves between the tree and this line
-  /// (`marginTop: 14`).
-  ///
-  /// **Carried here, not by the caller.** A gap left outside survives the
-  /// line it belongs to: at zero the line collapsed and its space did not,
-  /// pushing everything below a replay's still tree down by a line that was
-  /// not there.
+  /// (`marginTop: 14`), carried here rather than by the caller: a gap left
+  /// outside survives the line it belongs to, and a replay's collapsed line
+  /// would leave its space behind.
   static const double gapAbove = AppSpacing.base;
 
   @override
@@ -57,6 +48,7 @@ class RewardPointsLine extends StatelessWidget {
                 mood: mood,
                 color: mood.ink,
                 face: AppFace.mono,
+                tracking: AppTracking.count,
               ),
             ),
           ],

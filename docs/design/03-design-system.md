@@ -77,7 +77,9 @@ The separation from theme tokens is deliberate: keeping cherry/bean colours out 
 ### Tracking — a separate axis from size
 
 The design letters one rung at more than one width, so tracking is its own
-axis rather than a number baked into each step. `.lesson-row .meta` and
+axis rather than a number baked into each step. It is not only a smallcaps
+concern: the design letters its mono figures on the body and support rungs
+too, so those name a width like any other. `.lesson-row .meta` and
 `.challenge-kicker` are both uppercase label-family lines set 0.06em apart; a
 ladder with one tracking per step could only ever letter them the same. In the
 app this axis is `AppTracking` (`lib/shared/theme/app_text.dart`).
@@ -86,6 +88,7 @@ app this axis is `AppTracking` (`lib/shared/theme/app_text.dart`).
 |---|---|---|
 | 0.02 | `reading` | A line read as words, not scanned as a label: `.btn`, and the mono respelling beside a dictionary term. |
 | 0.04 | `figure` | Mono with just enough air that a spelled-out run stays legible: a score read as digits, `.spec-chip`, the pronunciation chip. |
+| 0.06 | `count` | A count standing on its own as the subject of its line: the points a run paid, Profile's lessons-and-points line, `N / N DONE`, the dictionary's category counts. |
 | 0.08 | `meta` | A meta line or figure that must read as one run — at 0.14em a count's numerals drift apart: `.lesson-row .meta`, `.challenge-pill`, `.bag-opt-s`. |
 | 0.10 | `tag` | A word set as a pill naming a state: the tastefix card's symptom chips and its Balanced state, `.cheer-points`. |
 | 0.12 | `hint` | The sequence card's out-of-place hint `.seq-hint`, and the practice shelf's meta line and count. |
@@ -96,11 +99,15 @@ Three rules govern the axis:
 
 - **Naming no tracking is itself the rule.** A rung left alone keeps its own,
   which for the label and micro steps is the design's 0.14em smallcaps rule
-  (`.smallcaps`, `.smallcaps-mono`, `.challenge-kicker`). A component the
-  design does not letter specially takes it — which is why most kickers pass
-  nothing. The app's own eyebrows (`KEEP SHARP`, a lesson card's label) have no
-  counterpart in the design, so they letter like every other kicker rather than
-  at a value that only ever came from the eye.
+  (`.smallcaps`, `.smallcaps-mono`, `.challenge-kicker`) and for every rung
+  below them is nothing at all. A component the design does not letter
+  specially takes that — which is why most kickers pass nothing. The app's own
+  eyebrows (`KEEP SHARP`, a lesson card's label) have no counterpart in the
+  design, so they letter like every other kicker rather than at a value that
+  only ever came from the eye. **The corollary bites**: a component the design
+  *does* letter and which says nothing gets its rung's answer, which is a
+  kicker's width on the label rung and none below it. Four number lines sat
+  that way until #551.
 - **Only widths something in `lib/` renders live on the axis.** A value with no
   call site is vocabulary nobody speaks, so a step arrives with the component
   that draws it — `tag` came with the tastefix chips (#332).
