@@ -67,6 +67,17 @@ class _ConceptCardViewState extends State<ConceptCardView> {
     setState(() => _checked = true);
   }
 
+  /// The paragraph the verdict block speaks, or null where the card has only
+  /// one. The design reserves the second for exactly this.
+  static String? _support(ConceptCard card) =>
+      card.paragraphs.length > 1 ? card.paragraphs[1] : null;
+
+  /// The paragraphs that stay as prose — every one the block does not take.
+  static List<String> _prose(ConceptCard card) => [
+    for (final (index, paragraph) in card.paragraphs.indexed)
+      if (index != 1) paragraph,
+  ];
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -102,10 +113,13 @@ class _ConceptCardViewState extends State<ConceptCardView> {
           AnswerFeedback(
             verdict: _allRight ? _allCorrect : notQuiteVerdict,
             outcome: _allRight ? Verdict.right : Verdict.wrong,
+            // The design hands the block the card's *second* paragraph, which
+            // reads as the reply to a checked answer rather than as prose.
+            explanation: _support(card),
           ),
         ],
         const SizedBox(height: AppSpacing.lg),
-        for (final paragraph in card.paragraphs) ...[
+        for (final paragraph in _prose(card)) ...[
           Text(paragraph, style: theme.textTheme.bodyLarge),
           const SizedBox(height: AppSpacing.sm),
         ],

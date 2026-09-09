@@ -68,6 +68,11 @@ class FillSlot extends StatelessWidget {
   /// The design's `border-bottom: 2px`.
   static const double _ruleWeight = 2;
 
+  /// The slot sets its own `line-height: 1.15`, tighter than the paragraph it
+  /// sits in. The design says why: the rule follows the slot's own box, so the
+  /// paragraph's leading would drop it off the baseline.
+  static const double _ruleHugsWord = 1.15;
+
   /// Holds the slot's height open when there is no word in it yet.
   static const String _blank = '\u00a0';
 
@@ -103,9 +108,11 @@ class FillSlot extends StatelessWidget {
       child: Text(
         (word == null || word!.isEmpty) ? _blank : word!,
         textAlign: TextAlign.center,
-        style: inherit
-            ? DefaultTextStyle.of(context).style.copyWith(color: ink)
-            : AppText.body(color: ink, face: AppFace.mono),
+        style:
+            (inherit
+                    ? DefaultTextStyle.of(context).style
+                    : AppText.body(face: AppFace.mono))
+                .copyWith(color: ink, height: _ruleHugsWord),
       ),
     );
 
@@ -152,10 +159,13 @@ class _DashedUnderline extends CustomPainter {
       old.colour != colour || old.weight != weight;
 }
 
-/// [slot] as an inline span, vertically centred on the line it sits in — the
-/// Flutter shape of the design's `inline-block`. **No outer margin**: its
-/// `padding: 0 6px 1px` is inside the chip, so a following full stop sits
-/// tight against it. Spacing around a slot is written into the surrounding
-/// text, where it can be seen.
-InlineSpan fillSlotSpan(FillSlot slot) =>
-    WidgetSpan(alignment: PlaceholderAlignment.middle, child: slot);
+/// [slot] as an inline span sharing the baseline of the line it sits in — the
+/// design's `inline-block`, whose padding and rule hang below that baseline
+/// rather than pushing the slot off it. **No outer margin**: the
+/// `padding: 0 6px 1px` is inside the chip, so a following full stop sits tight
+/// against it, and spacing around a slot is written into the surrounding text.
+InlineSpan fillSlotSpan(FillSlot slot) => WidgetSpan(
+  alignment: PlaceholderAlignment.baseline,
+  baseline: TextBaseline.alphabetic,
+  child: slot,
+);
