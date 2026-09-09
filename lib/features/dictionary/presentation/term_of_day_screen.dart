@@ -52,46 +52,35 @@ class TermOfDayScreen extends ConsumerWidget {
     final view = ref.watch(termOfDayViewProvider);
 
     return ScrollFlagScope(
-      builder: (context, {required isScrolled}) => Scaffold(
-        body: Stack(
-          fit: StackFit.expand,
-          children: [
-            view.when(
-              loading: () => Semantics(
-                label: "Loading today's term",
-                child: const LoadingIndicator(),
-              ),
-              error: (error, _) => Semantics(
-                label: "Today's term could not be loaded",
-                child: ErrorView(message: '$error'),
-              ),
-              // Nothing to offer: the pool is empty, which the banner that
-              // leads here would already have hidden itself for. Reachable
-              // only by a deep link, so it says so rather than showing an
-              // empty page.
-              data: (resolved) => resolved == null
-                  ? const ErrorView(message: 'There is no term for today.')
-                  : _TermOfDay(view: resolved),
+      builder: (context, {required isScrolled}) => FloatBarScaffold(
+        bar: FloatTopbar(
+          icon: AppIcon.close,
+          label: AppLabels.close,
+          onPressed: context.pop,
+          isScrolled: isScrolled,
+          trailing: switch (view.asData?.value) {
+            final resolved? => SavedBookmarkButton(
+              savedKey: formatSavedKey(SavedKind.term, resolved.term.id),
+              label: resolved.term.term,
             ),
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: FloatTopbar(
-                icon: AppIcon.close,
-                label: AppLabels.close,
-                onPressed: context.pop,
-                isScrolled: isScrolled,
-                trailing: switch (view.asData?.value) {
-                  final resolved? => SavedBookmarkButton(
-                    savedKey: formatSavedKey(SavedKind.term, resolved.term.id),
-                    label: resolved.term.term,
-                  ),
-                  null => null,
-                },
-              ),
-            ),
-          ],
+            null => null,
+          },
+        ),
+        child: view.when(
+          loading: () => Semantics(
+            label: "Loading today's term",
+            child: const LoadingIndicator(),
+          ),
+          error: (error, _) => Semantics(
+            label: "Today's term could not be loaded",
+            child: ErrorView(message: '$error'),
+          ),
+          // Nothing to offer: the pool is empty, which the banner that leads
+          // here would already have hidden itself for. Reachable only by a
+          // deep link, so it says so rather than showing an empty page.
+          data: (resolved) => resolved == null
+              ? const ErrorView(message: 'There is no term for today.')
+              : _TermOfDay(view: resolved),
         ),
       ),
     );

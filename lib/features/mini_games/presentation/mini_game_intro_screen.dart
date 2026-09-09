@@ -6,6 +6,7 @@ import 'package:brew_path/core/widgets/float_topbar.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/core/widgets/scroll_flag_scope.dart';
+import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_providers.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_run.dart';
 import 'package:brew_path/shared/models/content/mini_game_format.dart';
@@ -18,6 +19,9 @@ import 'package:go_router/go_router.dart';
 /// Where the design opens this page, measured from the top of the screen —
 /// `padding-top: 108`.
 const double _designScrollPad = 108;
+
+/// The line the design opens the body on, where the bar used to say it.
+const String _kicker = 'Mini-game';
 
 /// What the game is and how it is played, before any round runs.
 ///
@@ -35,28 +39,18 @@ class MiniGameIntroScreen extends ConsumerWidget {
     final format = ref.watch(miniGameFormatProvider(formatId));
 
     return ScrollFlagScope(
-      builder: (context, {required isScrolled}) => Scaffold(
-        body: Stack(
-          fit: StackFit.expand,
-          children: [
-            _intro(format),
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              // No title: the screen's own name is the heading in the body
-              // below, which is where the design keeps it.
-              child: FloatTopbar(
-                icon: AppIcon.close,
-                label: AppLabels.close,
-                isScrolled: isScrolled,
-                onPressed: () => context.canPop()
-                    ? context.pop()
-                    : context.goNamed(AppRoutes.learn.name),
-              ),
-            ),
-          ],
+      builder: (context, {required isScrolled}) => FloatBarScaffold(
+        // No title: the screen's own name is the heading in the body below,
+        // which is where the design keeps it.
+        bar: FloatTopbar(
+          icon: AppIcon.close,
+          label: AppLabels.close,
+          isScrolled: isScrolled,
+          onPressed: () => context.canPop()
+              ? context.pop()
+              : context.goNamed(AppRoutes.learn.name),
         ),
+        child: _intro(format),
       ),
     );
   }
@@ -111,12 +105,11 @@ class _Intro extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    format.topic,
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color: mood.inkMute,
-                    ),
-                  ),
+                  // The design opens the page on what kind of thing it is,
+                  // and files the module the game drills on the catalog row
+                  // that reached it. It stood in the bar until #525 took the
+                  // bar's title away.
+                  const SmallcapsLabel(_kicker),
                   const SizedBox(height: AppSpacing.xxs),
                   Semantics(
                     header: true,

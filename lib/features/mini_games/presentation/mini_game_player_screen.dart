@@ -100,37 +100,27 @@ class _MiniGamePlayerScreenState extends ConsumerState<MiniGamePlayerScreen> {
   Widget build(BuildContext context) {
     final rounds = ref.watch(miniGameRoundsProvider(widget.formatId));
 
-    return Scaffold(
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          // Left once for every state under it — the run, the results and the
-          // loader each bring their own gutter below it.
-          Padding(
-            padding: FloatTopbar.barRoom(context),
-            child: _rounds(rounds),
-          ),
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: FloatTopbar.sealed(
-              icon: AppIcon.close,
-              label: AppLabels.close,
-              onPressed: _done,
-              centre: rounds.maybeWhen(
-                data: (data) => data.isEmpty || _index >= data.length
-                    ? null
-                    : RoastMeter(
-                        position: _index + 1,
-                        total: data.length,
-                        semanticsLabel: 'Round ${_index + 1} of ${data.length}',
-                      ),
-                orElse: () => null,
-              ),
-            ),
-          ),
-        ],
+    return FloatBarScaffold(
+      bar: FloatTopbar.sealed(
+        icon: AppIcon.close,
+        label: AppLabels.close,
+        onPressed: _done,
+        centre: rounds.maybeWhen(
+          data: (data) => data.isEmpty || _index >= data.length
+              ? null
+              : RoastMeter(
+                  position: _index + 1,
+                  total: data.length,
+                  semanticsLabel: 'Round ${_index + 1} of ${data.length}',
+                ),
+          orElse: () => null,
+        ),
+      ),
+      // Left once for every state under it — the run, the results and the
+      // loader each bring their own gutter below it.
+      child: Padding(
+        padding: FloatTopbar.barRoom(context),
+        child: _rounds(rounds),
       ),
     );
   }

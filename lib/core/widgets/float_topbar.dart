@@ -164,6 +164,34 @@ class FloatTopbar extends StatelessWidget {
   }
 }
 
+/// A full-screen flow: the page, with its bar floating over it.
+///
+/// The bar is laid over the page rather than above it, so the content keeps
+/// the whole screen and passes underneath. How much room it leaves for the bar
+/// is the page's own business — see [FloatTopbar.scrollPadding] and
+/// [FloatTopbar.barRoom].
+class FloatBarScaffold extends StatelessWidget {
+  /// Creates a [FloatBarScaffold].
+  const FloatBarScaffold({required this.bar, required this.child, super.key});
+
+  /// The bar that floats over [child].
+  final Widget bar;
+
+  /// The page under it.
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    body: Stack(
+      fit: StackFit.expand,
+      children: [
+        child,
+        Positioned(top: 0, left: 0, right: 0, child: bar),
+      ],
+    ),
+  );
+}
+
 /// The bar's painted band, reaching up under the status bar so what passes
 /// beneath is covered all the way to the top of the screen.
 class _Band extends StatelessWidget {

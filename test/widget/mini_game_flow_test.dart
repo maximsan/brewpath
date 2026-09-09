@@ -3,6 +3,7 @@ import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/replay_mark.dart';
 import 'package:brew_path/core/widgets/float_topbar.dart';
 import 'package:brew_path/core/widgets/ghost_button.dart';
+import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_intro_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_player_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_games_catalog_widget.dart';
@@ -577,7 +578,6 @@ void main() {
     await _settle(tester);
 
     expect(find.byType(AppBar), findsNothing);
-    expect(find.text('Mini-game'), findsNothing);
     expect(
       find.descendant(
         of: find.byType(FloatTopbar),
@@ -585,6 +585,13 @@ void main() {
       ),
       findsNothing,
       reason: 'the bar carries a way out and nothing else',
+    );
+    // The word moved into the body, where the design opens the page on it.
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is SmallcapsLabel && widget.text == 'Mini-game',
+      ),
+      findsOneWidget,
     );
   });
 

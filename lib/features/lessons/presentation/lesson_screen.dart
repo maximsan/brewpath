@@ -101,36 +101,26 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
     // is.
     return FutureBuilder<LessonModel?>(
       future: _lesson,
-      builder: (context, snapshot) => Scaffold(
-        body: Stack(
-          fit: StackFit.expand,
-          children: [
-            _buildBody(context, snapshot),
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              // The player is a surface you leave, not a page you came from:
-              // the design gives it a close mark where a pushed screen would
-              // have a back arrow.
-              child: FloatTopbar.sealed(
-                icon: AppIcon.close,
-                label: AppLabels.close,
-                onPressed: () => context.pop(),
-                centre: _position(snapshot.data),
-                // The design bookmarks a lesson **while it is being read**,
-                // not off a list afterwards.
-                trailing: switch (snapshot.data) {
-                  final lesson? => SavedBookmarkButton(
-                    savedKey: formatSavedKey(SavedKind.lesson, lesson.id),
-                    label: lesson.title,
-                  ),
-                  null => null,
-                },
-              ),
+      builder: (context, snapshot) => FloatBarScaffold(
+        // The player is a surface you leave, not a page you came from: the
+        // design gives it a close mark where a pushed screen would have a back
+        // arrow.
+        bar: FloatTopbar.sealed(
+          icon: AppIcon.close,
+          label: AppLabels.close,
+          onPressed: () => context.pop(),
+          centre: _position(snapshot.data),
+          // The design bookmarks a lesson **while it is being read**, not off
+          // a list afterwards.
+          trailing: switch (snapshot.data) {
+            final lesson? => SavedBookmarkButton(
+              savedKey: formatSavedKey(SavedKind.lesson, lesson.id),
+              label: lesson.title,
             ),
-          ],
+            null => null,
+          },
         ),
+        child: _buildBody(context, snapshot),
       ),
     );
   }

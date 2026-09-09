@@ -119,49 +119,39 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
     final cards = deck.asData?.value ?? const <DictionaryTerm>[];
     final round = _roundFor(cards.length);
 
-    return Scaffold(
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          // Added here rather than inside the views below: the results and the
-          // empty state are shared with the other drills, and neither should
-          // know what is sealed over it.
-          Padding(
-            padding: FloatTopbar.barRoom(context),
-            child: deck.when(
-              loading: () => Semantics(
-                label: 'Loading your deck',
-                child: const LoadingIndicator(),
-              ),
-              error: (error, _) => Semantics(
-                label: 'Your deck could not be loaded',
-                child: ErrorView(message: '$error'),
-              ),
-              data: (cards) => _body(cards, round, pools.asData?.value),
-            ),
+    return FloatBarScaffold(
+      bar: FloatTopbar.sealed(
+        icon: AppIcon.close,
+        label: AppLabels.close,
+        onPressed: _close,
+        centre: _meter(round),
+        // Only worth offering when there is more than one order to deal.
+        trailing: cards.length > 1 && !round.isFinished
+            ? IconButton(
+                // `rematch` — "run it back" — rather than the design's own
+                // shuffle glyph, which the icon set does not carry.
+                icon: const IconMark(AppIcon.rematch),
+                tooltip: FlashcardsCopy.shuffle,
+                onPressed: () => _shuffle(cards.length),
+              )
+            : null,
+      ),
+      // Left here rather than inside the views below: the results and the
+      // empty state are shared with the other drills, and neither should know
+      // what is sealed over it.
+      child: Padding(
+        padding: FloatTopbar.barRoom(context),
+        child: deck.when(
+          loading: () => Semantics(
+            label: 'Loading your deck',
+            child: const LoadingIndicator(),
           ),
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: FloatTopbar.sealed(
-              icon: AppIcon.close,
-              label: AppLabels.close,
-              onPressed: _close,
-              centre: _meter(round),
-              // Only worth offering when there is more than one order to deal.
-              trailing: cards.length > 1 && !round.isFinished
-                  ? IconButton(
-                      // `rematch` — "run it back" — rather than the design's
-                      // own shuffle glyph, which the icon set does not carry.
-                      icon: const IconMark(AppIcon.rematch),
-                      tooltip: FlashcardsCopy.shuffle,
-                      onPressed: () => _shuffle(cards.length),
-                    )
-                  : null,
-            ),
+          error: (error, _) => Semantics(
+            label: 'Your deck could not be loaded',
+            child: ErrorView(message: '$error'),
           ),
-        ],
+          data: (cards) => _body(cards, round, pools.asData?.value),
+        ),
       ),
     );
   }

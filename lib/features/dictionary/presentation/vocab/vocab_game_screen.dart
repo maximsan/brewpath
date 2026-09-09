@@ -219,45 +219,35 @@ class _VocabGameScreenState extends ConsumerState<VocabGameScreen> {
     final pools = ref.watch(vocabPoolsProvider);
     final total = _rounds.length;
 
-    return Scaffold(
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          // Added here rather than inside the drill, whose results view is
-          // shared with the other two runs.
-          Padding(
-            padding: FloatTopbar.barRoom(context),
-            child: pools.when(
-              loading: () => Semantics(
-                label: VocabCopy.loading,
-                child: const LoadingIndicator(),
-              ),
-              error: (error, _) => Semantics(
-                label: VocabCopy.loadFailed,
-                excludeSemantics: true,
-                child: ErrorView(message: '$error'),
-              ),
-              data: _buildDrill,
-            ),
+    return FloatBarScaffold(
+      bar: FloatTopbar.sealed(
+        icon: AppIcon.close,
+        label: AppLabels.close,
+        onPressed: _done,
+        centre: _playing && _index < total
+            ? RoastMeter(
+                position: _index + 1,
+                total: total,
+                semanticsLabel: VocabCopy.progress(_index + 1, total),
+              )
+            : null,
+      ),
+      // Left here rather than inside the drill, whose results view is shared
+      // with the other two runs.
+      child: Padding(
+        padding: FloatTopbar.barRoom(context),
+        child: pools.when(
+          loading: () => Semantics(
+            label: VocabCopy.loading,
+            child: const LoadingIndicator(),
           ),
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: FloatTopbar.sealed(
-              icon: AppIcon.close,
-              label: AppLabels.close,
-              onPressed: _done,
-              centre: _playing && _index < total
-                  ? RoastMeter(
-                      position: _index + 1,
-                      total: total,
-                      semanticsLabel: VocabCopy.progress(_index + 1, total),
-                    )
-                  : null,
-            ),
+          error: (error, _) => Semantics(
+            label: VocabCopy.loadFailed,
+            excludeSemantics: true,
+            child: ErrorView(message: '$error'),
           ),
-        ],
+          data: _buildDrill,
+        ),
       ),
     );
   }
