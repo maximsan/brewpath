@@ -1,3 +1,4 @@
+import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
@@ -12,29 +13,15 @@ import 'package:flutter/material.dart';
 /// The cue above a multi card's prompt.
 const String _cue = 'Select all that apply';
 
-/// The commit affordance, before anything has been checked.
-const String _checkLabel = 'Check answers';
-
 /// Verdicts, which name the all-or-nothing rule rather than a score.
 const String _allCorrect = 'All correct';
 
 /// The select-all-that-apply card: pick freely, then commit the whole set.
-///
-/// Two things separate it from every other graded card. Choices **toggle**
-/// until a separate commit, because a set is not answered until it is
-/// finished; and it is scored **all-or-nothing**, which is the boundary's rule
-/// rather than this card's invention — a fraction would have to mean something
-/// to mastery, and mastery counts whole cards. See `card_boundary.dart`.
-///
-/// The single button swaps between *Check answers* and *Continue*, as the
-/// design has it — the shell owns that swap, so this card still does not draw
-/// its own way forward.
-///
-/// It takes its fields rather than the `MultiCard`, unlike the display-only
-/// kinds next to it in the switch. That is the seeding rule, not an
-/// oversight: every card whose options are shuffled is handed them already
-/// shuffled, so one place owns the seed and a replay moves every card the
-/// same way. `GradedPicker` is handed its options for the same reason.
+/// Choices **toggle** until that commit, and it scores all-or-nothing — the
+/// boundary's rule rather than this card's invention (`card_boundary.dart`).
+/// It takes its fields rather than the `MultiCard` because every card whose
+/// options are shuffled is handed them already shuffled, so one place owns
+/// the seed.
 class MultiCardView extends StatefulWidget {
   /// Creates a [MultiCardView].
   const MultiCardView({
@@ -112,7 +99,7 @@ class _MultiCardViewState extends State<MultiCardView> {
       onContinue: widget.onContinue,
       label: _cue,
       commit: CardCommit(
-        label: _checkLabel,
+        label: AppLabels.checkAnswers,
         onCommit: _selected.isEmpty ? null : _check,
       ),
       children: [

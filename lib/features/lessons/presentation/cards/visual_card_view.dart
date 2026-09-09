@@ -11,6 +11,13 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+/// What the save control says here, where the design gives it words rather
+/// than the bare mark every other host draws.
+const ({String saved, String unsaved}) _saveCaption = (
+  unsaved: 'Save this guide',
+  saved: 'Saved — review anytime in Saved',
+);
+
 /// The visual guide, inside the lesson that teaches it. Informational, so it
 /// latches on arrival: there is nothing to answer, and it is the one rendered
 /// kind that reports no success, which is why mastery cannot move when a lesson
@@ -70,6 +77,7 @@ class VisualCardView extends ConsumerWidget {
             // writes, so saving here and saving there are one act.
             savedKey: formatSavedKey(SavedKind.guide, card.subject),
             label: guide.asData?.value?.title ?? card.title,
+            caption: _saveCaption,
           ),
         ),
         if (!(card.captionTop ?? false)) ...[

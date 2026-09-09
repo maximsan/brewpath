@@ -13,6 +13,11 @@ abstract class AppLabels {
   static const tabProfile = 'Profile';
   static const continueLabel = 'Continue';
 
+  /// The commit a card asks for before it will let the learner on: the two
+  /// kinds that gather a whole answer, `multi` and `concept`, both swap
+  /// [continueLabel] for this until they are checked.
+  static const checkAnswers = 'Check answers';
+
   // The module ending. `MODULE COMPLETE` is the kicker and the module's own
   // name is the headline — the design's way up, which the app had inverted.
   static const moduleCompleteKicker = 'Module complete';

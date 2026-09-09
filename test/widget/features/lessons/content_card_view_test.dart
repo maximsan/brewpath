@@ -1,15 +1,18 @@
 import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/core/widgets/dashed_rounded_border.dart';
+import 'package:brew_path/core/widgets/fill_slot.dart';
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/lessons/domain/card_seed.dart';
 import 'package:brew_path/features/lessons/domain/held_guess.dart';
+import 'package:brew_path/features/lessons/presentation/cards/concept_fill_bank.dart';
 import 'package:brew_path/features/lessons/presentation/cards/content_card_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/recall_payoff.dart';
 import 'package:brew_path/features/lessons/presentation/cards/tastefix_reaction.dart';
 import 'package:brew_path/features/lessons/presentation/cards/tastefix_symptoms.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -218,14 +221,13 @@ bool _announces(WidgetTester tester, String verdict) => tester
 
 void main() {
   group('every renderer', () {
-    // Three kinds are absent on purpose: this table asserts a disabled Continue
+    // Four kinds are absent on purpose: this table asserts a disabled Continue
     // before the card is answered, and `visual` and `practical` are read rather
-    // than asked, while `multi` shows Check answers in its place until it
-    // commits. Each is covered where its own rule lives, and the build sweep at
-    // the foot of this file keeps every kind covered.
+    // than asked, while `multi` and `concept` show Check answers in its place
+    // until they commit. Each is covered where its own rule lives, and the
+    // build sweep at the foot of this file keeps every kind covered.
     final cards = <String, ContentCard>{
       'predict': _predict,
-      'concept': _concept,
       'mcq': _mcq,
       'decision': _decision,
       'recall': _recall,
@@ -848,6 +850,49 @@ void main() {
       expect(find.text('Hold that thought.'), findsNothing);
     });
 
+    testWidgets('predict opens its cloze empty, then drops the guess in', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_host(_predict, _Signals()));
+
+      FillSlot slotInQuestion() =>
+          tester.widget<FillSlot>(find.byType(FillSlot).first);
+
+      expect(slotInQuestion().state, FillSlotState.empty);
+      expect(slotInQuestion().word, isNull);
+
+      await _tapTextWhileAnimating(tester, 'Skin');
+
+      expect(
+        slotInQuestion().state,
+        FillSlotState.guess,
+        reason: 'the accent state: the learner’s claim, not a verdict on it',
+      );
+      expect(slotInQuestion().word, 'Skin');
+    });
+
+    testWidgets('a question authored without a blank grows no slot', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _host(
+          const ContentCard.predict(
+            label: 'LESSON 3',
+            title: 'What origin means',
+            body: 'Two bags can taste worlds apart.',
+            question: 'Same variety, two mountains. Same cup?',
+            options: ['Roughly the same', 'Two different cups'],
+            answer: 'Two different cups',
+            hold: 'Hold that thought.',
+          ),
+          _Signals(),
+        ),
+      );
+
+      expect(find.byType(FillSlot), findsNothing);
+      expect(find.text('Same variety, two mountains. Same cup?'), findsOne);
+    });
+
     testWidgets('predict hands the guess to Roasty, unmarked', (tester) async {
       await tester.pumpWidget(_host(_predict, _Signals()));
 
@@ -947,25 +992,135 @@ void main() {
       );
     });
 
-    testWidgets('concept resolves a blank to its authored answer', (
+    testWidgets('concept keeps the learner’s word, and marks it', (
       tester,
     ) async {
       final signals = _Signals();
       await tester.pumpWidget(_host(_concept, signals));
 
-      expect(_continueEnabled(tester), isFalse);
-      // Tap the *wrong* word: the sentence still resolves correctly, which is
-      // the whole point of the fill card.
-      await _tapText(tester, 'skin');
+      FillSlot slot() => tester.widget<FillSlot>(find.byType(FillSlot));
 
-      // 'seed' also appears in the meta table, so look inside the sentence.
+      expect(slot().state, FillSlotState.empty);
+
+      // The *wrong* word. It used to be swapped for the answer silently.
+      await _tapText(tester, 'skin');
+      expect(slot().word, 'skin');
+      expect(slot().state, FillSlotState.filled);
+
+      await _tapText(tester, 'Check answers');
+      expect(slot().word, 'skin', reason: 'their word stays on screen');
+      expect(slot().state, FillSlotState.wrong);
       expect(
-        find.descendant(of: find.byType(Wrap), matching: find.text('seed')),
+        signals.solved,
+        0,
+        reason: 'marked is not graded — this card teaches',
+      );
+    });
+
+    testWidgets('concept commits only once every blank is filled', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_host(_concept, _Signals()));
+
+      Finder check() => find.widgetWithText(FilledButton, 'Check answers');
+      bool canCheck() => tester.widget<FilledButton>(check()).onPressed != null;
+
+      expect(check(), findsOneWidget);
+      expect(_continueButton, findsNothing);
+      expect(canCheck(), isFalse);
+
+      // Scoped to the bank: 'seed' is in the meta table too.
+      await tester.tap(
+        find.descendant(
+          of: find.byType(ConceptFillBank),
+          matching: find.text('seed'),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(canCheck(), isTrue);
+
+      await _tapText(tester, 'Check answers');
+      expect(
+        _continueButton,
+        findsOneWidget,
+        reason: 'the one button swaps, as the design has it',
+      );
+      expect(_continueEnabled(tester), isTrue);
+    });
+
+    testWidgets('a concept sentence with no blank asks for nothing', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _host(
+          const ContentCard.concept(
+            label: 'CONCEPT',
+            title: 'The cherry, the seed',
+            fill: [ConceptFillPart.literal('A coffee bean is really a seed.')],
+            paragraphs: ['Coffee plants grow cherries.'],
+            meta: [],
+          ),
+          _Signals(),
+        ),
+      );
+
+      expect(find.widgetWithText(FilledButton, 'Check answers'), findsNothing);
+      expect(
+        _continueEnabled(tester),
+        isTrue,
+        reason: 'nothing to fill, so nothing to commit — it reads as prose',
+      );
+    });
+
+    testWidgets('a checked bank keeps its words in ink, and fades the rest', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_host(_concept, _Signals()));
+
+      await tester.tap(
+        find.descendant(
+          of: find.byType(ConceptFillBank),
+          matching: find.text('seed'),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await _tapText(tester, 'Check answers');
+
+      // The design colours the border and the wash, never the word.
+      final word = tester.widget<Text>(
+        find.descendant(
+          of: find.byType(ConceptFillBank),
+          matching: find.text('seed'),
+        ),
+      );
+      expect(word.style?.color, MoodColors.darkRoast.ink);
+
+      // 'skin' is neither the answer nor the pick, so it steps back.
+      expect(
+        find.ancestor(
+          of: find.text('skin'),
+          matching: find.byType(Opacity),
+        ),
         findsOneWidget,
       );
-      expect(find.text('skin'), findsNothing);
-      expect(signals.solved, 0);
-      expect(_continueEnabled(tester), isTrue);
+    });
+
+    testWidgets('concept offers its words under the blank’s own label', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_host(_concept, _Signals()));
+
+      expect(
+        find.text('WHAT IT IS'),
+        findsOneWidget,
+        reason: 'the authored label had no home while the options sat inline',
+      );
+      final label = tester.getTopLeft(find.text('WHAT IT IS')).dy;
+      expect(
+        label,
+        greaterThan(tester.getTopLeft(find.byType(FillSlot)).dy),
+        reason: 'the bank sits below the sentence it fills',
+      );
     });
   });
 

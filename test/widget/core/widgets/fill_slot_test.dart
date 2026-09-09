@@ -15,31 +15,99 @@ void main() {
     ),
   );
 
-  Text textOf(WidgetTester tester) => tester.widget<Text>(find.byType(Text));
+  Text textOf(WidgetTester tester) => tester.widget<Text>(
+    find.descendant(of: find.byType(FillSlot), matching: find.byType(Text)),
+  );
 
-  BoxDecoration decorationOf(WidgetTester tester) =>
-      tester.widget<Container>(find.byType(Container)).decoration!
-          as BoxDecoration;
+  Color? ruleOf(WidgetTester tester) {
+    final box = tester
+        .widgetList<Container>(find.byType(Container))
+        .firstWhere((container) => container.decoration != null);
+    return (box.decoration! as BoxDecoration).border?.bottom.color;
+  }
 
-  testWidgets('a right answer is named in the learned colour', (tester) async {
-    await pump(
+  bool paintsItsOwnRule(WidgetTester tester) => tester
+      .widgetList<CustomPaint>(
+        find.descendant(
+          of: find.byType(FillSlot),
+          matching: find.byType(CustomPaint),
+        ),
+      )
+      .any((paint) => paint.foregroundPainter != null);
+
+  group('the five states the design draws', () {
+    testWidgets('empty waits in muted ink, under a rule it draws itself', (
       tester,
-      const FillSlot(word: 'Seed', state: FillSlotState.right),
-    );
+    ) async {
+      await pump(tester, const FillSlot(state: FillSlotState.empty));
 
-    expect(find.text('Seed'), findsOneWidget);
-    expect(textOf(tester).style?.color, mood.sage);
-    expect(decorationOf(tester).border?.bottom.color, mood.sage);
+      expect(textOf(tester).style?.color, mood.inkMute);
+      expect(
+        paintsItsOwnRule(tester),
+        isTrue,
+        reason: 'the empty rule is dashed, and Border has no dash',
+      );
+    });
+
+    testWidgets('filled locks in full ink', (tester) async {
+      await pump(
+        tester,
+        const FillSlot(word: 'seed', state: FillSlotState.filled),
+      );
+
+      expect(textOf(tester).style?.color, mood.ink);
+      expect(paintsItsOwnRule(tester), isFalse, reason: 'solid from here on');
+    });
+
+    testWidgets('a guess takes the accent — a claim, not a verdict', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        const FillSlot(word: 'Skin', state: FillSlotState.guess),
+      );
+
+      expect(textOf(tester).style?.color, mood.accent);
+      expect(ruleOf(tester), mood.accent);
+    });
+
+    testWidgets('right is named in the learned colour', (tester) async {
+      await pump(
+        tester,
+        const FillSlot(word: 'seed', state: FillSlotState.right),
+      );
+
+      expect(textOf(tester).style?.color, mood.sage);
+      expect(ruleOf(tester), mood.sage);
+    });
+
+    testWidgets('wrong is named in the alert colour', (tester) async {
+      await pump(
+        tester,
+        const FillSlot(word: 'skin', state: FillSlotState.wrong),
+      );
+
+      expect(textOf(tester).style?.color, mood.berry);
+      expect(ruleOf(tester), mood.berry);
+    });
   });
 
-  testWidgets('a wrong answer is named in the alert colour', (tester) async {
+  testWidgets('an empty slot holds its height with no word in it', (
+    tester,
+  ) async {
+    await pump(tester, const FillSlot(state: FillSlotState.empty));
+    final empty = tester.getSize(find.byType(FillSlot)).height;
+
     await pump(
       tester,
-      const FillSlot(word: 'Skin', state: FillSlotState.wrong),
+      const FillSlot(word: 'seed', state: FillSlotState.filled),
     );
 
-    expect(textOf(tester).style?.color, mood.berry);
-    expect(decorationOf(tester).border?.bottom.color, mood.berry);
+    expect(
+      tester.getSize(find.byType(FillSlot)).height,
+      empty,
+      reason: 'a sentence must not reflow as a word lands in the slot',
+    );
   });
 
   testWidgets('the word is set in mono, so a slot reads as a slot', (
@@ -76,7 +144,7 @@ void main() {
     await pump(tester, const FillSlot(word: 'Oil', state: FillSlotState.right));
 
     expect(
-      tester.getSize(find.byType(Container)).width,
+      tester.getSize(find.byType(FillSlot)).width,
       greaterThanOrEqualTo(74.0),
       reason: 'the design pins a minimum so slots do not jitter between words',
     );
