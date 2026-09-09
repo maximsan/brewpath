@@ -56,7 +56,7 @@ The cherry-anatomy work ([§6.1](06-content.md), `m1l7`) added eight tokens to w
 
 The separation from theme tokens is deliberate: keeping cherry/bean colours out of `--warn` is what lets `--warn` mean exactly one thing.
 
-## Typography — 3 families, one 9-step ladder, nothing off-ladder
+## Typography — 3 families, one 10-step ladder, nothing off-ladder
 - **Fraunces** (serif, variable) — display, weight 400
 - **IBM Plex Sans** — body 400, controls 500
 - **IBM Plex Mono** — numerals, labels, smallcaps, weight 500, tabular-nums
@@ -66,12 +66,53 @@ The separation from theme tokens is deliberate: keeping cherry/bean colours out 
 | `--t-hero` | 56px | mono hero numeral, celebration only |
 | `--t-display` | 30px | screen title |
 | `--t-title` | 26px | card / section title |
+| `--t-subtitle` | 22px | sub-title between title and heading |
 | `--t-heading` | 19px | card & row heading |
 | `--t-lead` | 17px | lead paragraph |
 | `--t-body` | 15px | body, controls |
 | `--t-support` | 13px | support text |
 | `--t-label` | 11px | labels, smallcaps |
 | `--t-micro` | 9.5px | micro |
+
+### Tracking — a separate axis from size
+
+The design letters one rung at more than one width, so tracking is its own
+axis rather than a number baked into each step. `.lesson-row .meta` and
+`.challenge-kicker` are both uppercase label-family lines set 0.06em apart; a
+ladder with one tracking per step could only ever letter them the same. In the
+app this axis is `AppTracking` (`lib/shared/theme/app_text.dart`).
+
+| `em` | Name | Where the design sets it |
+|---|---|---|
+| 0.02 | `reading` | A line read as words, not scanned as a label: `.btn`, and the mono respelling beside a dictionary term. |
+| 0.04 | `figure` | Mono with just enough air that a spelled-out run stays legible: a score read as digits, `.spec-chip`, the pronunciation chip. |
+| 0.08 | `meta` | A meta line or figure that must read as one run — at 0.14em a count's numerals drift apart: `.lesson-row .meta`, `.challenge-pill`, `.bag-opt-s`. |
+| 0.10 | `tag` | A word set as a pill naming a state: the tastefix card's symptom chips and its Balanced state, `.cheer-points`. |
+| 0.12 | `hint` | The sequence card's out-of-place hint `.seq-hint`, and the practice shelf's meta line and count. |
+| 0.16 | `marker` | A mono micro line marking what a thing *is*, wider than the smallcaps rule so a two-word label reads as discrete: the dictionary's status chip, `.collect-card .cc-sub`. |
+| 0.18 | `chrome` | The app's own frame, a step wider than the pages it frames: the tab bar's label, and the sticky header's compact-title eyebrow. |
+
+Three rules govern the axis:
+
+- **Naming no tracking is itself the rule.** A rung left alone keeps its own,
+  which for the label and micro steps is the design's 0.14em smallcaps rule
+  (`.smallcaps`, `.smallcaps-mono`, `.challenge-kicker`). A component the
+  design does not letter specially takes it — which is why most kickers pass
+  nothing. The app's own eyebrows (`KEEP SHARP`, a lesson card's label) have no
+  counterpart in the design, so they letter like every other kicker rather than
+  at a value that only ever came from the eye.
+- **Only widths something in `lib/` renders live on the axis.** A value with no
+  call site is vocabulary nobody speaks, so a step arrives with the component
+  that draws it — `tag` came with the tastefix chips (#332).
+- **The line against `OffTokens` is how many components speak it.** A width the
+  design gives to *one* component is that component's exception and carries its
+  reason there — the tap cue's 0.24em. A width more than one component is set at
+  is vocabulary, and belongs on this axis.
+
+Before the axis existed, sixteen call sites named their own spacing — fifteen
+in logical pixels, and the Cards count through an `OffToken` (#410).
+`tracking_axis_test.dart` now holds the line: no file in `lib/` may name a
+letter spacing unless it is listed there with the reason it earns it.
 
 ## Frame & layout
 - Phone: 393 × 852 (iPhone 15), 56px corner radius, dynamic island, status bar, home indicator.

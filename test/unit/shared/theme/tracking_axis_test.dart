@@ -101,6 +101,7 @@ void main() {
       expect(AppTracking.reading.em, 0.02);
       expect(AppTracking.figure.em, 0.04);
       expect(AppTracking.meta.em, 0.08);
+      expect(AppTracking.tag.em, 0.10);
       expect(AppTracking.hint.em, 0.12);
       expect(AppTracking.marker.em, 0.16);
       expect(AppTracking.chrome.em, 0.18);
