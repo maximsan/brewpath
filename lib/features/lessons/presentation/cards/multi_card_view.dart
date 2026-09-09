@@ -1,3 +1,4 @@
+import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
@@ -11,9 +12,6 @@ import 'package:flutter/material.dart';
 
 /// The cue above a multi card's prompt.
 const String _cue = 'Select all that apply';
-
-/// The commit affordance, before anything has been checked.
-const String _checkLabel = 'Check answers';
 
 /// Verdicts, which name the all-or-nothing rule rather than a score.
 const String _allCorrect = 'All correct';
@@ -112,7 +110,7 @@ class _MultiCardViewState extends State<MultiCardView> {
       onContinue: widget.onContinue,
       label: _cue,
       commit: CardCommit(
-        label: _checkLabel,
+        label: AppLabels.checkAnswers,
         onCommit: _selected.isEmpty ? null : _check,
       ),
       children: [

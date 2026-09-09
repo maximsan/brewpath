@@ -1,3 +1,4 @@
+import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/core/widgets/fill_slot.dart';
 import 'package:brew_path/features/lessons/domain/concept_card_parts.dart';
@@ -10,9 +11,6 @@ import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
-
-/// The commit affordance, before anything has been checked.
-const String _checkLabel = 'Check answers';
 
 /// The verdict when every blank was filled with its answer.
 const String _allCorrect = 'All correct';
@@ -82,7 +80,7 @@ class _ConceptCardViewState extends State<ConceptCardView> {
       commit: nothingToFill
           ? null
           : CardCommit(
-              label: _checkLabel,
+              label: AppLabels.checkAnswers,
               onCommit: _allPicked ? _check : null,
             ),
       children: [
