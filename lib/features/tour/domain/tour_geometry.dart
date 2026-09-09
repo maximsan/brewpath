@@ -49,3 +49,50 @@ double tourBottomOverflow({
   required Rect target,
   required double viewportHeight,
 }) => target.bottom - viewportHeight + OffTokens.tourScrollCardClearance.value;
+
+/// The top edge of a card [cardHeight] tall, on a layer [areaHeight] tall.
+///
+/// The design picks a side; where that side cannot hold the card clear of
+/// [safeArea] and the other can, the other one takes it. The mock the rule is
+/// drawn against has no status bar, so above a tall target near the top of the
+/// feed the card ran under the clock on a real phone.
+double tourCardTop({
+  required Rect? target,
+  required double areaHeight,
+  required double cardHeight,
+  required EdgeInsets safeArea,
+}) {
+  final gap = OffTokens.tourCardInset.value;
+  final highest = safeArea.top + gap;
+  final lowest = areaHeight - safeArea.bottom - gap - cardHeight;
+  // A card with less room than it has height shows its top — the counter, the
+  // title and the start of the body — rather than its buttons alone.
+  if (lowest < highest) return highest;
+
+  final sides = _tourCardSides(
+    target: target,
+    areaHeight: areaHeight,
+    cardHeight: cardHeight,
+  );
+  for (final side in sides) {
+    if (side >= highest && side <= lowest) return side;
+  }
+  return sides.first.clamp(highest, lowest);
+}
+
+/// Where the card could go, the design's own side first.
+List<double> _tourCardSides({
+  required Rect? target,
+  required double areaHeight,
+  required double cardHeight,
+}) {
+  final gap = OffTokens.tourCardInset.value;
+  if (target == null) {
+    return [areaHeight - OffTokens.tourCardRestingBottom.value - cardHeight];
+  }
+  final below = target.bottom + gap;
+  final above = target.top - gap - cardHeight;
+  return tourCardSitsBelow(target: target, areaHeight: areaHeight)
+      ? [below, above]
+      : [above, below];
+}

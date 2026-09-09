@@ -132,4 +132,117 @@ void main() {
       );
     });
   });
+
+  group('where the card sits', () {
+    const areaHeight = 852.0;
+    const cardHeight = 150.0;
+    const statusBar = EdgeInsets.only(top: 59, bottom: 34);
+    final gap = OffTokens.tourCardInset.value;
+
+    test('under a target with room beneath it', () {
+      const target = Rect.fromLTWH(0, 100, 300, 120);
+
+      expect(
+        tourCardTop(
+          target: target,
+          areaHeight: areaHeight,
+          cardHeight: cardHeight,
+          safeArea: statusBar,
+        ),
+        target.bottom + gap,
+      );
+    });
+
+    test('over a target with none', () {
+      const target = Rect.fromLTWH(0, 300, 300, 400);
+
+      expect(
+        tourCardTop(
+          target: target,
+          areaHeight: areaHeight,
+          cardHeight: cardHeight,
+          safeArea: statusBar,
+        ),
+        target.top - gap - cardHeight,
+      );
+    });
+
+    test('takes the other side when its own has no room', () {
+      // The stop-1 case: a tall Today card near the top of the feed. The
+      // design's rule says above, where only the status bar's strip is left.
+      const target = Rect.fromLTWH(0, 172, 393, 392);
+
+      final top = tourCardTop(
+        target: target,
+        areaHeight: areaHeight,
+        cardHeight: cardHeight,
+        safeArea: statusBar,
+      );
+
+      expect(
+        tourCardSitsBelow(target: target, areaHeight: areaHeight),
+        isFalse,
+      );
+      expect(top, target.bottom + gap);
+      expect(top, greaterThan(statusBar.top));
+    });
+
+    test('clamps when neither side has room', () {
+      // A target filling the screen: above is off the top, below off the foot.
+      const target = Rect.fromLTWH(0, 80, 393, 700);
+
+      final top = tourCardTop(
+        target: target,
+        areaHeight: areaHeight,
+        cardHeight: cardHeight,
+        safeArea: statusBar,
+      );
+
+      expect(top, greaterThanOrEqualTo(statusBar.top + gap));
+      expect(
+        top + cardHeight,
+        lessThanOrEqualTo(areaHeight - statusBar.bottom - gap),
+      );
+    });
+
+    test('never under the home indicator', () {
+      const target = Rect.fromLTWH(0, 700, 393, 100);
+
+      final top = tourCardTop(
+        target: target,
+        areaHeight: areaHeight,
+        cardHeight: cardHeight,
+        safeArea: statusBar,
+      );
+
+      expect(
+        top + cardHeight,
+        lessThanOrEqualTo(areaHeight - statusBar.bottom - gap),
+      );
+    });
+
+    test('at rest near the foot until a target is measured', () {
+      expect(
+        tourCardTop(
+          target: null,
+          areaHeight: areaHeight,
+          cardHeight: cardHeight,
+          safeArea: statusBar,
+        ),
+        areaHeight - OffTokens.tourCardRestingBottom.value - cardHeight,
+      );
+    });
+
+    test('shows its top when the room is shorter than the card', () {
+      expect(
+        tourCardTop(
+          target: const Rect.fromLTWH(0, 100, 300, 120),
+          areaHeight: 200,
+          cardHeight: cardHeight,
+          safeArea: statusBar,
+        ),
+        statusBar.top + gap,
+      );
+    });
+  });
 }

@@ -135,6 +135,13 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **The Tour's first card no longer opens under the clock.** Its card takes the
+  side of the target the design names whenever it fits there, and the other
+  side when it does not — so the tall Today card, which the design's rule sends
+  it above and which leaves only the status bar's strip there, now gets a card
+  below it instead. On a phone the first stop had been drawn behind the status
+  bar with the time struck through its title; the design is drawn against a
+  mock that has no status bar, so nothing in the rule could see it.
 - **The lesson ending puts what you earned under the tree it fed.** The points
   and the *lessons to the next stage* countdown were the wrong way round, so
   the payout sat a line further from the tree than the design places it.
