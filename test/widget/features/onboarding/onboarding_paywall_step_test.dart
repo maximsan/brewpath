@@ -1,6 +1,6 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
-import 'package:brew_path/features/monetization/domain/plus_copy.dart';
+import 'package:brew_path/features/monetization/domain/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart';
 import 'package:brew_path/features/monetization/domain/plus_purchase_controller.dart';
@@ -79,9 +79,9 @@ void main() {
   testWidgets('declining finishes the intro and opens the app', (tester) async {
     await pump(tester);
 
-    await tester.ensureVisible(find.text(PlusCopy.maybeLater));
+    await tester.ensureVisible(find.text(PaywallCopy.maybeLater));
     await tester.pumpAndSettle();
-    await tester.tap(find.text(PlusCopy.maybeLater));
+    await tester.tap(find.text(PaywallCopy.maybeLater));
     await tester.pumpAndSettle();
 
     expect(fake.completeCalls, hasLength(1));
@@ -104,9 +104,9 @@ void main() {
   ) async {
     final container = await pump(tester);
 
-    await tester.ensureVisible(find.text(PlusCopy.restore));
+    await tester.ensureVisible(find.text(PaywallCopy.restore));
     await tester.pumpAndSettle();
-    await tester.tap(find.text(PlusCopy.restore));
+    await tester.tap(find.text(PaywallCopy.restore));
     container.read(plusPurchaseProvider.notifier).state =
         PlusPurchaseState.owned;
     await tester.pumpAndSettle();
@@ -121,9 +121,9 @@ void main() {
     final container = await pump(tester);
 
     // A real race: the store answers while a tap on Maybe later is on its way.
-    await tester.ensureVisible(find.text(PlusCopy.maybeLater));
+    await tester.ensureVisible(find.text(PaywallCopy.maybeLater));
     await tester.pumpAndSettle();
-    await tester.tap(find.text(PlusCopy.maybeLater));
+    await tester.tap(find.text(PaywallCopy.maybeLater));
     container.read(plusPurchaseProvider.notifier).state =
         PlusPurchaseState.owned;
     await tester.pumpAndSettle();

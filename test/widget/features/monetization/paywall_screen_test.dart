@@ -2,11 +2,18 @@ import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/widgets/ghost_button.dart';
 import 'package:brew_path/core/widgets/link_button.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
+import 'package:brew_path/features/monetization/config/paywall_config.dart';
+import 'package:brew_path/features/monetization/domain/paywall_copy.dart';
+import 'package:brew_path/features/monetization/domain/paywall_view.dart';
+import 'package:brew_path/features/monetization/domain/paywall_view_provider.dart';
 import 'package:brew_path/features/monetization/domain/plus_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart';
 import 'package:brew_path/features/monetization/domain/plus_purchase_controller.dart';
 import 'package:brew_path/features/monetization/presentation/paywall_screen.dart';
+import 'package:brew_path/features/monetization/presentation/plan_picker.dart';
+import 'package:brew_path/services/payments/store_product.dart';
+import 'package:brew_path/shared/models/monetization/plus_offering.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -25,11 +32,31 @@ void main() {
     savedFreeCap: 5,
   );
 
+  const oneTime = PlusOffering(
+    model: MonetizationModel.oneTime,
+    offers: [PlusOffer(productId: 'lifetime.sku', term: PlusTerm.lifetime)],
+  );
+
+  const lifetime = StoreProduct(
+    id: 'lifetime.sku',
+    title: 'Foundations',
+    description: 'The full course',
+    price: r'$49.99',
+    amount: 49.99,
+    currencyCode: 'USD',
+  );
+
+  final oneTimeCopy = paywallModels[MonetizationModel.oneTime]!;
+
   late List<String> exits;
 
   setUp(() => exits = []);
 
-  Future<ProviderContainer> pump(WidgetTester tester) async {
+  Future<ProviderContainer> pump(
+    WidgetTester tester, {
+    PlusOffering offering = oneTime,
+    List<StoreProduct> products = const [lifetime],
+  }) async {
     // Tall enough to hold the whole offer: the body is a lazy list, so a
     // default-sized surface never builds the note or the store links, and an
     // assertion about them would be about the viewport rather than the screen.
@@ -39,7 +66,13 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
 
     final container = ProviderContainer(
-      overrides: [plusPitchProvider.overrideWith((ref) async => pitch)],
+      overrides: [
+        plusPitchProvider.overrideWith((ref) async => pitch),
+        paywallViewProvider.overrideWith(
+          (ref) async =>
+              buildPaywallView(offering: offering, products: products),
+        ),
+      ],
     );
     addTearDown(container.dispose);
 
@@ -56,7 +89,7 @@ void main() {
         ),
       ),
     );
-    await tester.pump();
+    await tester.pumpAndSettle();
     return container;
   }
 
@@ -70,29 +103,40 @@ void main() {
   testWidgets("offers the course on the design's own terms", (tester) async {
     await pump(tester);
 
-    expect(find.text(PlusCopy.screenTitle), findsOneWidget);
-    expect(find.text(PlusCopy.screenNote), findsOneWidget);
+    expect(find.text(oneTimeCopy.heroTitle), findsOneWidget);
+    expect(find.text(oneTimeCopy.paywallNote), findsOneWidget);
     // Smallcaps is the eyebrow's type rule, so it renders the copy uppercased.
     expect(
-      find.textContaining(PlusCopy.screenEyebrow.toUpperCase()),
+      find.textContaining(oneTimeCopy.eyebrow.toUpperCase()),
       findsOneWidget,
     );
   });
 
-  testWidgets('ranks the same counted pitch every gate does', (tester) async {
+  testWidgets('lists what the purchase contains, counted from the banks', (
+    tester,
+  ) async {
     await pump(tester);
 
-    for (final bullet in PlusCopy.bulletsFor(pitch)) {
-      expect(find.text(bullet.title), findsOneWidget);
-      expect(find.text(bullet.body), findsOneWidget);
+    for (final benefit in paywallBenefitsFor(pitch)) {
+      expect(find.textContaining(benefit.title, findRichText: true), findsOne);
+      expect(find.textContaining(benefit.detail, findRichText: true), findsOne);
     }
+  });
+
+  testWidgets('names the price the store gave, never one of its own', (
+    tester,
+  ) async {
+    await pump(tester);
+
+    expect(find.textContaining(lifetime.price), findsWidgets);
+    expect(find.textContaining(pricePlaceholder), findsNothing);
   });
 
   testWidgets('sells one thing — no plan chooser, no trial', (tester) async {
     await pump(tester);
 
     expect(find.byType(PrimaryButton), findsOneWidget);
-    expect(find.byType(Radio<Object>), findsNothing);
+    expect(find.byType(PlanPicker), findsNothing);
     expect(find.textContaining('trial', findRichText: true), findsNothing);
     expect(find.textContaining('/month'), findsNothing);
   });
@@ -100,9 +144,9 @@ void main() {
   testWidgets('carries Restore, Terms and Privacy', (tester) async {
     await pump(tester);
 
-    expect(find.text(PlusCopy.restore), findsOneWidget);
-    expect(find.text(PlusCopy.terms), findsOneWidget);
-    expect(find.text(PlusCopy.privacy), findsOneWidget);
+    expect(find.text(PaywallCopy.restore), findsOneWidget);
+    expect(find.text(PaywallCopy.terms), findsOneWidget);
+    expect(find.text(PaywallCopy.privacy), findsOneWidget);
   });
 
   testWidgets('Terms and Privacy are drawn but inert until #448', (
@@ -110,7 +154,7 @@ void main() {
   ) async {
     await pump(tester);
 
-    for (final label in [PlusCopy.terms, PlusCopy.privacy]) {
+    for (final label in [PaywallCopy.terms, PaywallCopy.privacy]) {
       final link = tester.widget<LinkButton>(
         find.ancestor(of: find.text(label), matching: find.byType(LinkButton)),
       );
@@ -121,7 +165,7 @@ void main() {
   testWidgets('Maybe later leaves without buying', (tester) async {
     await pump(tester);
 
-    await tapAction(tester, PlusCopy.maybeLater);
+    await tapAction(tester, PaywallCopy.maybeLater);
 
     expect(exits, ['declined']);
   });
@@ -139,7 +183,7 @@ void main() {
   testWidgets('restoring leaves by its own door, not the sale', (tester) async {
     final container = await pump(tester);
 
-    await tapAction(tester, PlusCopy.restore);
+    await tapAction(tester, PaywallCopy.restore);
     container.read(plusPurchaseProvider.notifier).state =
         PlusPurchaseState.owned;
     await tester.pump();
@@ -203,9 +247,20 @@ void main() {
         PlusPurchaseState.working;
     await tester.pump();
 
-    await tester.tap(find.byTooltip(PlusCopy.close));
+    await tester.tap(find.byTooltip(PaywallCopy.close));
     await tester.pump();
 
     expect(exits, ['declined']);
+  });
+
+  testWidgets('a store that named no price sells nothing', (tester) async {
+    await pump(tester, products: const []);
+
+    expect(
+      tester.widget<PrimaryButton>(find.byType(PrimaryButton)).onPressed,
+      isNull,
+      reason: 'a paywall that cannot name a price must not take money',
+    );
+    expect(find.text(PaywallCopy.storeUnreachable), findsOneWidget);
   });
 }

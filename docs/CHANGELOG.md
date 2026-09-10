@@ -53,6 +53,13 @@ You can always edit this file by hand instead — the helpers just save effort.
   A wrong drop draws its line in berry, shakes both tiles and lets go. Several
   traits can fan into one answer. Reduced motion lands all of it in one frame.
 
+- **Switching pricing models is a config change, not a rewrite.** The store
+  now reports which experiment arm a learner is on and what it sells them, and
+  the arm-to-SKU map is one function. A guard test makes it structurally
+  impossible for any access check to see the arm, so a purchase is honoured by
+  the same entitlement check whichever paywall sold it. Nothing on screen
+  changes: the build still ships the one-time arm ADR-0003 rules.
+
 - **The intro ends on the offer, and a purchase is celebrated.** After the name
   step the app makes its case for the full course on a screen of its own — the
   same one non-consumable every lock already sells, with the same ranked pitch

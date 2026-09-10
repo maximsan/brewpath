@@ -1,10 +1,13 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/widgets/ghost_button.dart';
+import 'package:brew_path/features/monetization/config/paywall_config.dart';
+import 'package:brew_path/features/monetization/domain/paywall_view.dart';
 import 'package:brew_path/features/monetization/domain/plus_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart';
 import 'package:brew_path/features/monetization/presentation/plus_gate_sheet.dart';
+import 'package:brew_path/shared/models/monetization/plus_offering.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -93,7 +96,14 @@ void main() {
   testWidgets('there is exactly one way to buy', (tester) async {
     await openWith(tester, const SavedShelfFull(cap: 5));
 
-    expect(find.text(PlusCopy.buy), findsOneWidget);
+    // The store is not stubbed here, so the CTA drops its price clause —
+    // `Unlock Foundations — {price}` without a price is `Unlock Foundations`.
+    expect(
+      find.text(
+        withPrice(paywallModels[MonetizationModel.oneTime]!.gateCta, null),
+      ),
+      findsOneWidget,
+    );
 
     // The three things the design's sheet carries that v1 must not: an ad path,
     // a trial, and a plan chooser. Matched on whole words — this began as
