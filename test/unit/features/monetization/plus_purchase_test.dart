@@ -133,15 +133,24 @@ void main() {
     expect(container.read(plusPurchaseProvider), PlusPurchaseState.owned);
   });
 
-  test('a restore that recovers nothing is not a failure', () async {
-    final container = _containerWith(
-      _RecordingPayments(entitledAfter: false),
-    );
+  test(
+    'a restore that recovers nothing is not a failure, but is said',
+    () async {
+      final container = _containerWith(
+        _RecordingPayments(entitledAfter: false),
+      );
 
-    await container.read(plusPurchaseProvider.notifier).restore();
+      await container.read(plusPurchaseProvider.notifier).restore();
 
-    expect(container.read(plusPurchaseProvider), PlusPurchaseState.idle);
-  });
+      final state = container.read(plusPurchaseProvider);
+      expect(state, PlusPurchaseState.nothingToRestore);
+      expect(
+        state,
+        isNot(PlusPurchaseState.failed),
+        reason: 'nobody was charged and nothing broke',
+      );
+    },
+  );
 
   test('pending is not success', () async {
     final container = _containerWith(

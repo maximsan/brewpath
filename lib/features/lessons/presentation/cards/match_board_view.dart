@@ -1,5 +1,6 @@
 import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_cue.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
 import 'package:brew_path/features/lessons/presentation/cards/match_board.dart';
 import 'package:brew_path/features/lessons/presentation/cards/match_fact_tile.dart';
@@ -20,14 +21,10 @@ const String _clearedNotClean =
 
 /// A board of facts and the answers they sort into.
 ///
-/// Tap a fact, then tap where it belongs. A right placement locks the fact
-/// away; a wrong one says so and leaves the fact in play, because the board
-/// is finished by clearing it rather than by surviving it. The card pays its
-/// one success signal only on a board cleared without a wrong drop.
-///
-/// Nothing here knows what is hosting it: the mini-game player and the lesson
-/// player both get this renderer unchanged, which is why it sits in the shared
-/// card layer.
+/// Tap a fact, then tap where it belongs. A right placement locks it away, a
+/// wrong one leaves it in play — the board is finished by clearing it rather
+/// than surviving it — and success is paid only on a board cleared with no
+/// wrong drop. Hosted unchanged by the lesson player and the mini-games.
 class MatchBoardView extends StatefulWidget {
   /// Creates a [MatchBoardView].
   const MatchBoardView({
@@ -127,7 +124,7 @@ class _MatchBoardViewState extends State<MatchBoardView> {
     return CardShell(
       latched: _cleared,
       onContinue: widget.onContinue,
-      label: 'MATCH',
+      cue: CardCue.match,
       children: [
         Text(widget.prompt, style: theme.textTheme.titleMedium),
         const SizedBox(height: AppSpacing.md),

@@ -13,6 +13,7 @@ import 'package:brew_path/features/monetization/domain/paywall_view.dart';
 import 'package:brew_path/features/monetization/domain/paywall_view_provider.dart';
 import 'package:brew_path/features/monetization/domain/plus_purchase_controller.dart';
 import 'package:brew_path/features/monetization/presentation/plan_picker.dart';
+import 'package:brew_path/features/monetization/presentation/purchase_outcome_line.dart';
 import 'package:brew_path/shared/models/monetization/plus_offering.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -27,14 +28,28 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// same screen with different data (#176).
 class PaywallScreen extends ConsumerStatefulWidget {
   /// Creates a [PaywallScreen].
-  const PaywallScreen({required this.onClose, super.key});
+  const PaywallScreen({
+    required this.onPurchased,
+    required this.onRestored,
+    required this.onDeclined,
+    super.key,
+  });
 
   /// The mascot's size in the hero — sized so the pitch and the action still
   /// land together on a phone.
   static const double _heroSize = 112;
 
-  /// Called when the learner leaves without buying.
-  final VoidCallback onClose;
+  /// Run once the store says the learner has just bought Plus.
+  final VoidCallback onPurchased;
+
+  /// Run once Restore recovers a purchase made earlier.
+  ///
+  /// Apart from [onPurchased] because the two are different events: one is a
+  /// sale to celebrate, the other is a learner getting back what they own.
+  final VoidCallback onRestored;
+
+  /// Run when the learner leaves without buying — the close, or *Maybe later*.
+  final VoidCallback onDeclined;
 
   @override
   ConsumerState<PaywallScreen> createState() => _PaywallScreenState();
@@ -43,9 +58,20 @@ class PaywallScreen extends ConsumerStatefulWidget {
 class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   PlusTerm? _picked;
 
+  /// Whether the entitlement now on the way was asked for by Restore.
+  ///
+  /// The controller reports only that Plus is owned, so which door to leave by
+  /// is remembered here, at the press that started it.
+  bool _restoring = false;
+
   @override
   Widget build(BuildContext context) {
     final view = ref.watch(paywallViewProvider);
+
+    ref.listen(plusPurchaseProvider, (_, next) {
+      if (next != PlusPurchaseState.owned) return;
+      _restoring ? widget.onRestored() : widget.onPurchased();
+    });
 
     return Scaffold(
       backgroundColor: context.mood.bg,
@@ -54,12 +80,18 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
           view: value,
           picked: value.planFor(_picked).term,
           onPick: (term) => setState(() => _picked = term),
-          onClose: widget.onClose,
+          onDeclined: widget.onDeclined,
+          onRestore: _restore,
         ),
-        AsyncError() => _Unreachable(onClose: widget.onClose),
+        AsyncError() => _Unreachable(onDeclined: widget.onDeclined),
         _ => const Center(child: LoadingIndicator()),
       },
     );
+  }
+
+  Future<void> _restore() async {
+    _restoring = true;
+    await ref.read(plusPurchaseProvider.notifier).restore();
   }
 }
 
@@ -68,13 +100,15 @@ class _Offer extends ConsumerWidget {
     required this.view,
     required this.picked,
     required this.onPick,
-    required this.onClose,
+    required this.onDeclined,
+    required this.onRestore,
   });
 
   final PaywallView view;
   final PlusTerm picked;
   final ValueChanged<PlusTerm> onPick;
-  final VoidCallback onClose;
+  final VoidCallback onDeclined;
+  final VoidCallback onRestore;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -116,19 +150,21 @@ class _Offer extends ConsumerWidget {
                 PlanPicker(plans: view.plans, selected: picked, onPick: onPick),
               ],
               const SizedBox(height: AppSpacing.lg),
+              PurchaseOutcomeLine(state: purchase),
               _Action(
                 plan: plan,
                 note: view.note,
                 canBuy: view.canBuy,
                 isWorking: isWorking,
-                onClose: onClose,
+                onDeclined: onDeclined,
+                onRestore: onRestore,
               ),
             ],
           ),
           FloatTopbar(
             icon: AppIcon.close,
             label: PaywallCopy.close,
-            onPressed: onClose,
+            onPressed: onDeclined,
             isScrolled: isScrolled,
           ),
         ],
@@ -144,14 +180,16 @@ class _Action extends ConsumerWidget {
     required this.note,
     required this.canBuy,
     required this.isWorking,
-    required this.onClose,
+    required this.onDeclined,
+    required this.onRestore,
   });
 
   final PaywallPlanView plan;
   final String note;
   final bool canBuy;
   final bool isWorking;
-  final VoidCallback onClose;
+  final VoidCallback onDeclined;
+  final VoidCallback onRestore;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -174,7 +212,7 @@ class _Action extends ConsumerWidget {
         const SizedBox(height: AppSpacing.xs),
         GhostButton(
           label: PaywallCopy.maybeLater,
-          onPressed: isWorking ? null : onClose,
+          onPressed: isWorking ? null : onDeclined,
         ),
         const SizedBox(height: AppSpacing.sm),
         Text(
@@ -183,7 +221,7 @@ class _Action extends ConsumerWidget {
           style: AppText.micro(mood: mood, face: AppFace.mono),
         ),
         const SizedBox(height: AppSpacing.xs),
-        _RequiredLinks(isWorking: isWorking, onRestore: controller.restore),
+        _RequiredLinks(isWorking: isWorking, onRestore: onRestore),
       ],
     );
   }
@@ -253,9 +291,9 @@ class _Benefits extends ConsumerWidget {
 
 /// The store said nothing, so there is no honest price to draw.
 class _Unreachable extends StatelessWidget {
-  const _Unreachable({required this.onClose});
+  const _Unreachable({required this.onDeclined});
 
-  final VoidCallback onClose;
+  final VoidCallback onDeclined;
 
   @override
   Widget build(BuildContext context) => Padding(
@@ -269,7 +307,7 @@ class _Unreachable extends StatelessWidget {
           style: AppText.body(mood: context.mood),
         ),
         const SizedBox(height: AppSpacing.md),
-        GhostButton(label: PaywallCopy.maybeLater, onPressed: onClose),
+        GhostButton(label: PaywallCopy.maybeLater, onPressed: onDeclined),
       ],
     ),
   );

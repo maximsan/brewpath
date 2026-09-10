@@ -65,8 +65,9 @@ became active ones. `intro` and `takeaway` are the leftovers of that change and
 are candidates for deletion rather than authoring.
 
 **Help drawer.** `CARD_KIND_HELP` (`lesson.jsx:9`) holds title + blurb + 3
-numbered steps, surfaced from a "?" button in the lesson top bar. It has **10
-entries and does not cover every kind**: `mcq` · `multi` · `match` · `slider` ·
+numbered steps, surfaced from a "?" button **beside the card's kind cue** —
+not in the lesson top bar, which earlier versions of this doc claimed. It has
+**10 entries and does not cover every kind**: `mcq` · `multi` · `match` · `slider` ·
 `sequence` · `tastefix` · `bagpick` · `fill` (the concept fill-in-the-blank) ·
 plus `quiz` and `flavor` for the mini-games. The "?" button simply does not
 render for a kind with no entry — so `decision`, `recall`, `predict`, `visual`

@@ -104,11 +104,18 @@ class _LessonCompletionScreenState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: FutureBuilder<LessonCompletionReward>(
-          future: _future,
-          builder: _buildResult,
+    // The lesson this run came from is still beneath this route. A back
+    // gesture would land on its last card, whose Continue hands over again
+    // and records the same run a second time (#216). The ending's own actions
+    // are the ways out.
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        body: SafeArea(
+          child: FutureBuilder<LessonCompletionReward>(
+            future: _future,
+            builder: _buildResult,
+          ),
         ),
       ),
     );

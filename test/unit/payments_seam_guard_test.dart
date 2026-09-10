@@ -25,6 +25,7 @@ void main() {
   /// so this list grows when the paywall does, and never otherwise.
   const paywallLayer = <String>{
     'lib/features/monetization/config/paywall_config.dart',
+    'lib/features/monetization/domain/paywall_copy.dart',
     'lib/features/monetization/domain/paywall_view.dart',
     'lib/features/monetization/domain/paywall_view_provider.dart',
     'lib/features/monetization/domain/plus_offering_provider.dart',

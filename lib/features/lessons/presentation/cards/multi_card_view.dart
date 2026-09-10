@@ -1,6 +1,7 @@
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_cue.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
 import 'package:brew_path/features/lessons/presentation/cards/choice_list.dart';
 import 'package:brew_path/features/lessons/presentation/cards/multi_choice_list.dart';
@@ -9,9 +10,6 @@ import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
-
-/// The cue above a multi card's prompt.
-const String _cue = 'Select all that apply';
 
 /// Verdicts, which name the all-or-nothing rule rather than a score.
 const String _allCorrect = 'All correct';
@@ -97,7 +95,7 @@ class _MultiCardViewState extends State<MultiCardView> {
     return CardShell(
       latched: _submitted,
       onContinue: widget.onContinue,
-      label: _cue,
+      cue: CardCue.multi,
       commit: CardCommit(
         label: AppLabels.checkAnswers,
         onCommit: _selected.isEmpty ? null : _check,

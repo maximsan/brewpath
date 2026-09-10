@@ -32,9 +32,9 @@ void main() {
           builder: (_, _) => const NameScreen(),
         ),
         GoRoute(
-          path: AppRoutes.learn.path,
-          name: AppRoutes.learn.name,
-          builder: (_, _) => const Scaffold(body: Text('stub-learn')),
+          path: AppRoutes.onboardingPaywall.path,
+          name: AppRoutes.onboardingPaywall.name,
+          builder: (_, _) => const Scaffold(body: Text('stub-paywall')),
         ),
       ],
     );
@@ -55,6 +55,11 @@ void main() {
   /// underneath.
   PrimaryButton continueButton(WidgetTester tester) =>
       tester.widget<PrimaryButton>(find.byType(PrimaryButton));
+
+  /// What the step left on the draft for the offer step to finish with.
+  String? draftName(WidgetTester tester) => ProviderScope.containerOf(
+    tester.element(find.byType(MaterialApp)),
+  ).read(onboardingDraftProvider).name;
 
   /// The actions sit below a 148-px mascot, so on a test-sized surface they
   /// start off-screen and a tap would land on the scroll view.
@@ -95,24 +100,31 @@ void main() {
     expect(continueButton(tester).onPressed, isNull);
   });
 
-  testWidgets('a typed name finishes onboarding carrying it', (tester) async {
+  testWidgets('a typed name hands over to the offer, keeping it', (
+    tester,
+  ) async {
     await pump(tester);
 
     await tester.enterText(find.byType(AppTextField), '  Maya  ');
     await tester.pump();
     await tapAction(tester, NameCopy.continueLabel);
 
-    expect(fake.completeCalls, ['Maya']);
-    expect(find.text('stub-learn'), findsOneWidget);
+    expect(find.text('stub-paywall'), findsOneWidget);
+    expect(draftName(tester), 'Maya');
+    expect(
+      fake.completeCalls,
+      isEmpty,
+      reason: 'the offer step finishes the intro, not this one',
+    );
   });
 
-  testWidgets('skipping finishes onboarding with no name', (tester) async {
+  testWidgets('skipping hands over to the offer too', (tester) async {
     await pump(tester);
 
     await tapAction(tester, NameCopy.skip);
 
-    expect(fake.completeCalls, [null]);
-    expect(find.text('stub-learn'), findsOneWidget);
+    expect(find.text('stub-paywall'), findsOneWidget);
+    expect(fake.completeCalls, isEmpty);
   });
 
   testWidgets('the field and both actions span the intro gutter', (
@@ -195,8 +207,8 @@ void main() {
     await tapAction(tester, NameCopy.skip);
 
     expect(
-      fake.completeCalls,
-      [null],
+      draftName(tester),
+      isNull,
       reason: 'skip is a decision, not a shortcut past what is in the field',
     );
   });

@@ -50,6 +50,24 @@ You can always edit this file by hand instead — the helpers just save effort.
   impossible for any access check to see the arm, so a purchase is honoured by
   the same entitlement check whichever paywall sold it. Nothing on screen
   changes: the build still ships the one-time arm ADR-0003 rules.
+- **The intro ends on the offer, and a purchase is celebrated.** After the name
+  step the app makes its case for the full course on a screen of its own — the
+  same one non-consumable every lock already sells, with the same ranked pitch
+  counted from the banks, plus Restore, Terms and Privacy. Buying is never
+  required: *Maybe later* and the close both finish onboarding and open Today.
+  Buying instead lands on a short welcome that offers the Studio it just
+  unlocked. Restoring is not a sale: it recovers what you own and walks on,
+  without the celebration. The intro is finished by this step rather than by
+  the name before it, so a learner still looking at the offer is not treated
+  as done with it.
+- **A card says what it is, and shows you how to play it.** The ten formats
+  with instructions — multiple choice, select all, match, calibrate, put in
+  order, true or false, tasting, taste fix, blind bag and complete the sentence
+  — now open on their name in the accent, with a `?` beside it. Tapping it
+  opens the design's how-to-play drawer: what the format is, in a sentence, and
+  the three steps to play it. The words are the design's own. The five kinds
+  that carry an authored eyebrow instead are untouched, and a round in a
+  mini-game reads exactly as it does in a lesson.
 - **Checks run before code leaves the machine.** `tool/git-hooks/` fails a
   commit on an unformatted Dart file or an over-long comment, and a push on
   anything the metrics, a guard test, the comment check or the changelog
@@ -157,6 +175,16 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **Restore Purchases no longer looks broken when it finds nothing.** It said
+  nothing at all — on every gate the app draws — so a learner with no purchase
+  on the account tapped a link that appeared dead. It now says what happened
+  and what to try, and is still not treated as a failure: nobody was charged.
+
+- **Two ways past the free day's cap are shut.** A mini-game's intro asked
+  nothing on *Play* and stayed beneath the player, so a back gesture after a
+  finished run could start another; and a lesson's ending could be swiped
+  back to the last card, whose *Continue* recorded the same run twice. The
+  intro now asks the day's allowance, and the ending no longer goes back.
 - **Six more number lines are set at the width the design gives them.** The
   lesson and mini-game position counter, the Coffee Challenges count, a
   dictionary category's term count, the core-lessons count, the tree hero's

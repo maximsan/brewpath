@@ -1,11 +1,14 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/features/monetization/config/paywall_config.dart';
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
+import 'package:brew_path/features/monetization/domain/paywall_view.dart';
 import 'package:brew_path/features/monetization/domain/plus_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/features/saved/domain/saved_cap.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/presentation/saved_bookmark_button.dart';
+import 'package:brew_path/shared/models/monetization/plus_offering.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -85,7 +88,12 @@ void main() {
       find.text(const SavedShelfFull(cap: savedFreeMax).header),
       findsOneWidget,
     );
-    expect(find.text(PlusCopy.buy), findsOneWidget);
+    expect(
+      find.text(
+        withPrice(paywallModels[MonetizationModel.oneTime]!.gateCta, null),
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('with Plus the sixth save takes', (tester) async {

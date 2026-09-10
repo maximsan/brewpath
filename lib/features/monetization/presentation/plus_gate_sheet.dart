@@ -10,6 +10,7 @@ import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart';
 import 'package:brew_path/features/monetization/domain/plus_purchase_controller.dart';
 import 'package:brew_path/features/monetization/presentation/plus_pitch_list.dart';
+import 'package:brew_path/features/monetization/presentation/purchase_outcome_line.dart';
 import 'package:brew_path/shared/models/monetization/plus_offering.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -19,21 +20,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// The one sheet every lock raises.
 ///
-/// Opens with **what was just hit** — the trigger's own header — so the pitch
-/// answers the question the learner actually asked, then the ranked bullets,
-/// then a single action.
-///
-/// **Exactly one way to buy**, and no ad path (there are no ads in v1 and the
-/// design's watch-an-ad route is dead), no trial and no plan chooser (ADR-0003
-/// sells one non-consumable). Restore, Terms and Privacy are present because
-/// the App Store requires them of one.
-///
-/// **Declining is a button, not a guess.** The design draws a ghost *Not now*
-/// under the buy action on every gate it draws. The sheet was dismissible all
-/// along — by the handle or the scrim — so the button adds no exit that did
-/// not exist; it stops the exit being one the learner has to discover.
-///
-/// Dismissal writes nothing and changes nothing: looking is free.
+/// Opens with **what was just hit** — the trigger's own header — then the
+/// ranked bullets, then one action: ADR-0003 sells a single non-consumable, so
+/// no trial and no plan chooser, and **no ad path** (v1 ships no ads, so the
+/// design's watch-an-ad route is dead). *Not now* writes nothing.
 Future<void> showPlusGate(BuildContext context, PlusGateTrigger trigger) =>
     showAppSheet<void>(
       context: context,
@@ -63,7 +53,7 @@ class _PlusGateBody extends ConsumerWidget {
         // to fall back to.
         PlusPitchList(pitch: pitch.asData?.value),
         const SizedBox(height: AppSpacing.lg),
-        _PurchaseOutcome(state: purchase),
+        PurchaseOutcomeLine(state: purchase),
         _GateAction(isWorking: purchase == PlusPurchaseState.working),
         const SizedBox(height: AppSpacing.xs),
         GhostButton(
@@ -83,38 +73,6 @@ class _PlusGateBody extends ConsumerWidget {
         ),
         const _LegalLinks(),
       ],
-    );
-  }
-}
-
-/// What the store said, when it has said anything.
-///
-/// Silent while idle or cancelled: backing out is a normal thing to do and
-/// earns no message, which is what keeps the sheet from scolding.
-class _PurchaseOutcome extends StatelessWidget {
-  const _PurchaseOutcome({required this.state});
-
-  final PlusPurchaseState state;
-
-  @override
-  Widget build(BuildContext context) {
-    final mood = context.mood;
-    final (message, tone) = switch (state) {
-      PlusPurchaseState.owned => (PlusCopy.owned, mood.accent),
-      PlusPurchaseState.pending => (PlusCopy.pending, mood.inkMute),
-      PlusPurchaseState.failed => (PlusCopy.failed, mood.berry),
-      PlusPurchaseState.idle ||
-      PlusPurchaseState.working ||
-      PlusPurchaseState.cancelled => (null, mood.ink),
-    };
-    if (message == null) return const SizedBox.shrink();
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-      child: Semantics(
-        liveRegion: true,
-        child: Text(message, style: AppText.support(color: tone)),
-      ),
     );
   }
 }
@@ -156,11 +114,9 @@ class _GateAction extends ConsumerWidget {
 
 /// Terms and Privacy, which the App Store requires of a non-consumable.
 ///
-/// ⚠️ **Both are stubs, and disabled rather than dead.** The real URLs are owed
-/// at [#448](https://github.com/maximsan/brewpath/issues/448). They are drawn
-/// because their absence is a store-review failure, and disabled because a link
-/// that looks live and does nothing is the defect the design docs already
-/// record against the About screen.
+/// ⚠️ Both are stubs, disabled rather than dead: the real URLs are owed at
+/// [#448](https://github.com/maximsan/brewpath/issues/448). Their absence is a
+/// store-review failure, and a link that looks live and does nothing is worse.
 class _LegalLinks extends StatelessWidget {
   const _LegalLinks();
 

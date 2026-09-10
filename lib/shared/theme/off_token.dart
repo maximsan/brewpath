@@ -337,6 +337,18 @@ abstract final class OffTokens {
     reason: "the question under the cup sets `margin: '20px 0 0'`",
   );
 
+  /// The gap between two how-to-play steps.
+  static const OffToken<double> helpStepGap = OffToken(
+    11,
+    reason: 'the drawer stacks its steps at `gap: 11`',
+  );
+
+  /// The room over the how-to-play steps, under the blurb.
+  static const OffToken<double> helpStepsTop = OffToken(
+    20,
+    reason: 'the step stack opens at `marginTop: 20`',
+  );
+
   /// The leading a fill slot sets for itself, tighter than the paragraph it
   /// sits in so the rule stays under the word rather than under the line.
   static const OffToken<double> fillSlotLeading = OffToken(
@@ -404,6 +416,8 @@ abstract final class OffTokens {
     tastefixPanelPadding,
     tastefixPanelGap,
     tastefixPanelToPrompt,
+    helpStepGap,
+    helpStepsTop,
     fillSlotLeading,
     fillGroupGap,
     fillOptionGap,

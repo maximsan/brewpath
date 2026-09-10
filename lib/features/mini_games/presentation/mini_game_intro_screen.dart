@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
@@ -9,6 +11,7 @@ import 'package:brew_path/core/widgets/scroll_flag_scope.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_providers.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_run.dart';
+import 'package:brew_path/features/monetization/presentation/activity_start.dart';
 import 'package:brew_path/shared/models/content/mini_game_format.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -182,6 +185,17 @@ class _Intro extends StatelessWidget {
   /// is mistaken for a paywall.
   bool get _isPlayable => playableMiniGameIds.contains(format.id);
 
+  /// Asked here as well as on the catalog row: this screen stays beneath the
+  /// player, so a back gesture after a finished run lands on this button
+  /// again, and nothing else would ask (#216).
+  Future<void> _play(BuildContext context) async {
+    if (!await context.mayStartAnotherActivity() || !context.mounted) return;
+    context.goNamed(
+      AppRoutes.miniGamePlay.name,
+      pathParameters: {'gameId': format.id},
+    );
+  }
+
   Widget _playButton(BuildContext context) => Padding(
     padding: const EdgeInsets.fromLTRB(
       AppSpacing.lg,
@@ -191,12 +205,7 @@ class _Intro extends StatelessWidget {
     ),
     child: PrimaryButton(
       label: _isPlayable ? 'Play' : 'Not playable yet',
-      onPressed: _isPlayable
-          ? () => context.goNamed(
-              AppRoutes.miniGamePlay.name,
-              pathParameters: {'gameId': format.id},
-            )
-          : null,
+      onPressed: _isPlayable ? () => unawaited(_play(context)) : null,
     ),
   );
 }

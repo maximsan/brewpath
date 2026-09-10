@@ -84,6 +84,10 @@ enum AppTracking {
   /// too.
   hint(0.12),
 
+  /// 0.14em — the design's smallcaps rule, named so it can be asked for on a
+  /// rung that does not carry it: the card cue sets it at the support step.
+  smallcaps(0.14),
+
   /// 0.16em — a mono micro line marking what a thing *is*, or where it sits in
   /// a set, rather than heading the content under it. Wider than the smallcaps
   /// rule so a two-word label reads as discrete: the dictionary's status chip

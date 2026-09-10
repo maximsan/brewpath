@@ -2,6 +2,7 @@ import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/core/widgets/dashed_rounded_border.dart';
 import 'package:brew_path/features/lessons/presentation/cards/bagpick_bean_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_cue.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_tints.dart';
 import 'package:brew_path/features/lessons/presentation/cards/choice_list.dart';
@@ -24,20 +25,10 @@ const Map<String, String> _processLabels = {
 
 /// An unlabelled bag, a sample of three seeds, and three things to inspect.
 ///
-/// The only kind here that is not a picker with decoration. Its mechanic is
-/// **investigate, then call it**, and three details carry that:
-///
-/// * the bag's process is *withheld* until the learner commits, because a card
-///   showing the answer while asking the question is not asking anything;
-/// * each cue is hidden until tapped, and tapping is optional — someone who is
-///   sure may call it from the beans alone, and confidence is worth rewarding;
-/// * the feedback names **which cue was the real tell**, which is the round's
-///   whole teaching payload. A version that graded the pick and skipped the
-///   tell would satisfy every other rule here and teach nothing: the lesson is
-///   "this is what you should have looked at", not "you were wrong".
-///
-/// Option identity is the **process key**, never the position — the seeded
-/// order moves what is on screen and nothing keys off an index.
+/// **Investigate, then call it**: the process is withheld until the learner
+/// commits, each cue is hidden until tapped and tapping is optional, and the
+/// feedback names which cue was the real tell — the round's whole teaching
+/// payload. Option identity is the process key, never the position.
 class BagpickCardView extends StatefulWidget {
   /// Creates a [BagpickCardView].
   const BagpickCardView({
@@ -110,6 +101,7 @@ class _BagpickCardViewState extends State<BagpickCardView> {
     final card = widget.card;
 
     return CardShell(
+      cue: CardCue.bagpick,
       latched: _latched,
       onContinue: widget.onContinue,
       children: [
