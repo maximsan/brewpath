@@ -4,7 +4,6 @@ import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
 import 'package:brew_path/features/profile/presentation/widgets/profile_entry_card.dart';
-import 'package:brew_path/features/studio/domain/roasty_studio_providers.dart';
 import 'package:brew_path/features/studio/presentation/studio_gate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,6 +11,10 @@ import 'package:go_router/go_router.dart';
 
 /// The mascot in the well, small enough to read as a thumbnail.
 const double _mascotSize = 40;
+
+/// What the door says it opens. The design writes the axes here rather than
+/// the picks — the grove's door names what is planted, this one does not.
+const String _support = 'Hat, gear, roast and sprout';
 
 /// The way into Dress up Roasty, beside the grove's door.
 ///
@@ -25,7 +28,6 @@ class RoastyDoorTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bank = ref.watch(roastyStudioProvider).asData?.value;
     // Unresolved reads as locked, as the grove's door does: a door that opens
     // for a frame and then refuses is worse than one that asks twice.
     final isPlus = ref.watch(courseEntitlementProvider).asData?.value ?? false;
@@ -40,9 +42,9 @@ class RoastyDoorTile extends ConsumerWidget {
         animate: false,
         outfit: worn,
       ),
-      kicker: 'Studio',
+      kicker: 'Companion',
       title: 'Dress up Roasty',
-      support: bank == null || worn == null ? '' : bank.options.labelLine(worn),
+      support: _support,
       locked: !isPlus,
       onTap: () => isPlus
           ? context.goNamed(AppRoutes.roastyStudio.name)
