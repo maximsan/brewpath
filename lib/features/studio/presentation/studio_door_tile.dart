@@ -18,26 +18,10 @@ const int _doorStage = 10;
 
 /// The way into Your grove, wired to what it needs.
 ///
-/// Draws the grove it opens rather than an icon: the door's whole job is to say
-/// *this is yours and you can change it*, which a glyph cannot.
-///
-/// **Locked for a free learner**, and the lock is on the door rather than
-/// inside the chooser — a learner should not walk through a door to be told
-/// they cannot be there. The design marks that with a Plus pill beside the
-/// eyebrow and **keeps the chevron**: the door still goes somewhere, it just
-/// asks first.
-///
-/// The card around all of that is [ProfileEntryCard], shared with Saved — on
-/// Profile the design draws the two entries as one row pattern (#428). This
-/// widget used to hand its parts to a `StudioDoor` in between; with the row
-/// settled in one place that layer held nothing but three strings, so the
-/// wiring and the drawing sit together here, as Saved's do.
-///
-/// **It says `GROVE · Choose your plant`, not the design's `STUDIO · Dress up
-/// Roasty`.** The design's Studio is a hub of several doors, of which dressing
-/// the mascot is one; v1 ships only the grove chooser
-/// ([#140](https://github.com/maximsan/brewpath/issues/140)), so the card names
-/// what it actually opens. The mascot wardrobe returns with the hub in v2.
+/// Draws the grove it opens rather than an icon, and locks on the **door**
+/// rather than inside the chooser — Plus pill beside the eyebrow, chevron
+/// kept, so it still goes somewhere and just asks first. Its title names what
+/// it opens; the wardrobe is the Studio's second door (#367).
 class StudioDoorTile extends ConsumerWidget {
   /// Creates a [StudioDoorTile].
   const StudioDoorTile({super.key});

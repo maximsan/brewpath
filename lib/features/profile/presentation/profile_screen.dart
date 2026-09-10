@@ -13,6 +13,7 @@ import 'package:brew_path/features/progress/domain/mastery_rollup.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/presentation/coffee_tree.dart';
 import 'package:brew_path/features/saved/presentation/saved_entry_card.dart';
+import 'package:brew_path/features/studio/presentation/roasty_door_tile.dart';
 import 'package:brew_path/features/studio/presentation/studio_door_tile.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -119,6 +120,8 @@ class ProfileScreen extends ConsumerWidget {
                 // over them: `Customize` belonged to the preferences, and they
                 // are Settings' (#429).
                 const StudioDoorTile(),
+                const SizedBox(height: _cardGap),
+                const RoastyDoorTile(),
                 const SizedBox(height: _cardGap),
                 const SavedEntryCard(),
                 if (joined != null) ...[

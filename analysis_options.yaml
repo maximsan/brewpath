@@ -51,11 +51,17 @@ dart_code_linter:
   metrics-exclude:
     - test/**
     - integration_test/**
+    # A registry of bank loaders — one method per bank, by design, the same way
+    # the painters below are one method per drawing.
+    - lib/shared/repositories/content_repository.dart
     # CustomPainter with many small _paintX helpers — method count is by design.
     - lib/features/companion/presentation/roasty.dart
     - lib/features/companion/presentation/roasty_body.dart
     - lib/features/companion/presentation/roasty_faces.dart
     - lib/features/companion/presentation/roasty_particles.dart
+    - lib/features/companion/presentation/roasty_sprouts.dart
+    - lib/features/companion/presentation/roasty_hats.dart
+    - lib/features/companion/presentation/roasty_gear.dart
     # Declarative GoRouter route table — long by nature, low logic complexity.
     - lib/app/app_router.dart
     # A flat 14-token colour table. Its constructor, copyWith, lerp, == and
@@ -142,6 +148,9 @@ dart_code_linter:
           - lib/features/companion/presentation/roasty_body.dart
           - lib/features/companion/presentation/roasty_faces.dart
           - lib/features/companion/presentation/roasty_particles.dart
+          - lib/features/companion/presentation/roasty_sprouts.dart
+          - lib/features/companion/presentation/roasty_hats.dart
+          - lib/features/companion/presentation/roasty_gear.dart
           - lib/features/onboarding/presentation/loading/widgets/roasty_stage.dart
           - lib/features/onboarding/presentation/loading/loading_animation.dart
           - lib/shared/theme/app_spacing.dart

@@ -10,6 +10,7 @@ import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/domain/saved_shelf.dart';
 import 'package:brew_path/features/saved/presentation/saved_entry_card.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
+import 'package:brew_path/features/studio/presentation/roasty_door_tile.dart';
 import 'package:brew_path/features/studio/presentation/studio_door_tile.dart';
 import 'package:brew_path/features/studio/presentation/studio_screen.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
@@ -51,16 +52,21 @@ void main() {
     await settleLoaders(tester);
   }
 
-  testWidgets('the two entries close the screen, in the design order', (
+  testWidgets('the three entries close the screen, in the design order', (
     tester,
   ) async {
     await openProfile(tester);
 
-    expect(find.byType(ProfileEntryCard), findsNWidgets(2));
+    expect(find.byType(ProfileEntryCard), findsNWidgets(3));
     expect(
       tester.getTopLeft(find.byType(StudioDoorTile)).dy,
+      lessThan(tester.getTopLeft(find.byType(RoastyDoorTile)).dy),
+      reason: 'the grove door opens the Studio, and the wardrobe follows it',
+    );
+    expect(
+      tester.getTopLeft(find.byType(RoastyDoorTile)).dy,
       lessThan(tester.getTopLeft(find.byType(SavedEntryCard)).dy),
-      reason: 'the design stacks the Studio door above Saved',
+      reason: 'the design stacks the Studio doors above Saved',
     );
     // Neither is owed for v1: the design gates both off.
     expect(find.text('Challenge a friend'), findsNothing);
@@ -155,9 +161,17 @@ void main() {
   ) async {
     await openProfile(tester);
 
-    // A fresh learner owns nothing, so the Studio is the screen's one gated
-    // entry — and Saved, which is free for everyone, wears no pill beside it.
-    expect(find.byType(PlusPill), findsOneWidget);
+    // A fresh learner owns nothing, so both Studio doors are gated — and
+    // Saved, which is free for everyone, wears no pill beside it.
+    for (final door in [
+      find.byType(StudioDoorTile),
+      find.byType(RoastyDoorTile),
+    ]) {
+      expect(
+        find.descendant(of: door, matching: find.byType(PlusPill)),
+        findsOneWidget,
+      );
+    }
     expect(
       find.descendant(
         of: find.byType(SavedEntryCard),

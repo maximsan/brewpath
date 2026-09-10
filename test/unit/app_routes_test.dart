@@ -138,6 +138,8 @@ void main() {
     'profileStreak': HeaderTier.pushed,
     // Full-screen surface with its own back bar, like Settings.
     'studio': HeaderTier.pushed,
+    // The Studio's second door, and the same chrome as the first.
+    'roastyStudio': HeaderTier.pushed,
     // The four screens the design's ACCOUNT and SUPPORT rows lead to. Each
     // wears the same back-arrow bar Settings does, which is what pushed
     // means here.

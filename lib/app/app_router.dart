@@ -35,6 +35,7 @@ import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/presentation/streak_screen.dart';
 import 'package:brew_path/features/progress/presentation/tree_screen.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
+import 'package:brew_path/features/studio/presentation/roasty_studio_screen.dart';
 import 'package:brew_path/features/studio/presentation/studio_screen.dart';
 import 'package:brew_path/features/tour/presentation/app_guide_screen.dart';
 import 'package:brew_path/services/analytics/analytics_provider.dart';
@@ -341,6 +342,12 @@ GoRouter appRouter(Ref ref) {
                     builder: (context, state) => const StudioScreen(),
                   ),
                   GoRoute(
+                    path: AppRoutes.roastyStudio.path,
+                    name: AppRoutes.roastyStudio.name,
+                    parentNavigatorKey: _rootKey,
+                    builder: (context, state) => const RoastyStudioScreen(),
+                  ),
+                  GoRoute(
                     path: AppRoutes.profileSettings.path,
                     name: AppRoutes.profileSettings.name,
                     parentNavigatorKey: _rootKey,
@@ -412,11 +419,10 @@ GoRouter appRouter(Ref ref) {
 
 /// Reads every gate the redirect judges, in one place.
 ///
-/// **An unresolved read is the locked answer** — showing a lock briefly to a
-/// paying learner is recoverable and showing paid content briefly to a free one
-/// is not. `purchaseStateKnown` carries whether that answer was read or
-/// assumed, so the wall can close on an assumption while the offer waits for a
-/// fact.
+/// **An unresolved read is the locked answer** — a lock shown briefly to a
+/// paying learner is recoverable; paid content shown to a free one is not.
+/// `purchaseStateKnown` says whether that answer was read or assumed, so the
+/// wall can close on an assumption while the offer waits for a fact.
 GateState _gatesNow(Ref ref) {
   final entitlement = ref.read(courseEntitlementProvider);
   final completed = ref.read(completedLessonIdsProvider);

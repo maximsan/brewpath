@@ -44,6 +44,13 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Roasty can be dressed, and he stays dressed.** A second Studio door opens
+  a wardrobe with four axes — roast, hat, accessory and sprout — over a live
+  preview: pick one and the mascot changes under your thumb, confirm and he
+  wears it on every screen in the app, through a restart and across devices.
+  Free learners see the plain bean everywhere and the door asks for Plus, and
+  Reset Progress leaves the outfit alone: it is something the learner chose,
+  not something they did.
 - **Checks run before code leaves the machine.** `tool/git-hooks/` fails a
   commit on an unformatted Dart file or an over-long comment, and a push on
   anything the metrics, a guard test, the comment check or the changelog

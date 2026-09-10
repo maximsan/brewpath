@@ -19,11 +19,12 @@ void paintRoastyHat(Canvas canvas, String hat) {
   }
 }
 
+/// The hats this file can draw, guarded against the bank's ids.
+const roastyHatIds = {'beanie', 'field', 'cap'};
+
 /// Whether [hat] draws anything — which is also whether the sprout has to
 /// grow up through it.
-bool hatIsBare(String hat) => !_drawn.contains(hat);
-
-const _drawn = {'beanie', 'field', 'cap'};
+bool hatIsBare(String hat) => !roastyHatIds.contains(hat);
 
 void _paintBeanie(Canvas canvas) {
   canvas

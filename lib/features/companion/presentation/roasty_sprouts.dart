@@ -21,10 +21,11 @@ void paintRoastySproutArt(Canvas canvas, String sprout) {
   }
 }
 
-/// Whether [sprout] draws anything at all.
-bool sproutIsBare(String sprout) => !_drawn.contains(sprout);
+/// The sprouts this file can draw, guarded against the bank's ids.
+const roastySproutIds = {'leaf', 'flower', 'sprig'};
 
-const _drawn = {'leaf', 'flower', 'sprig'};
+/// Whether [sprout] draws anything at all.
+bool sproutIsBare(String sprout) => !roastySproutIds.contains(sprout);
 
 const _leafRect = Rect.fromLTWH(60, 55, 80, 30);
 const _leafGradient = RadialGradient(

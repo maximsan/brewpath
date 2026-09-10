@@ -15,6 +15,10 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/roasty_colors.dart';
 import 'package:flutter/material.dart';
 
+/// How much taller than wide a Roasty is — the design's 200x280 box, which a
+/// host sizing a box around one has to reserve.
+const double roastyAspect = 1.4;
+
 /// Animated Roasty mascot. Reproduces the design's geometry + per-state
 /// animations using Flutter's Canvas + a single [AnimationController]. Public
 /// API: `Roasty(state: …, size: …, replayKey: …, plate: …, pointsAmount: …)`.
@@ -162,7 +166,7 @@ class _RoastyState extends State<Roasty> with SingleTickerProviderStateMixin {
     return RepaintBoundary(
       child: SizedBox(
         width: widget.size,
-        height: widget.size * 1.4,
+        height: widget.size * roastyAspect,
         child: AnimatedBuilder(
           animation: _controller,
           builder: (context, _) => CustomPaint(

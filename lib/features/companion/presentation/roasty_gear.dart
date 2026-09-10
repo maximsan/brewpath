@@ -23,6 +23,9 @@ void paintRoastyGear(Canvas canvas, String gear) {
   }
 }
 
+/// The gear this file can draw, guarded against the bank's ids.
+const roastyGearIds = {'glasses', 'sunglasses', 'scarf', 'headphones'};
+
 Paint get _frame => Paint()
   ..color = RoastyOutfitColors.gearDark
   ..strokeWidth = 2.4

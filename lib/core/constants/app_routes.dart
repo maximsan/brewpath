@@ -68,6 +68,9 @@ abstract class AppRoutes {
   static const profileSettings = AppRoute('profileSettings', 'settings');
   static const profileStreak = AppRoute('profileStreak', 'streak');
   static const studio = AppRoute('studio', 'studio');
+
+  /// Dress up Roasty — the Studio's second door (#367), beside the grove's.
+  static const roastyStudio = AppRoute('roastyStudio', 'roasty');
   static const appGuide = AppRoute('appGuide', 'app-guide');
   static const profileTree = AppRoute('profileTree', 'tree');
 
