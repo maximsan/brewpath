@@ -135,7 +135,17 @@ const RUNNING_KINDS = {
   mcq: {
     name: "Mcq",
     label: "Multiple choice",
-    description: "Stacked options with a check on the first — pick one.",
+    description: "Two options with the first one filled in — pick one.",
+  },
+  multi: {
+    name: "Multi",
+    label: "Select all",
+    description: "Three options with two of them ticked — more than one fits.",
+  },
+  fill: {
+    name: "Fill",
+    label: "Complete the sentence",
+    description: "Lines of a sentence with one blank left open in the accent.",
   },
 };
 

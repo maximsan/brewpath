@@ -349,6 +349,24 @@ abstract final class OffTokens {
     reason: 'the step stack opens at `marginTop: 20`',
   );
 
+  /// The well the how-to-play drawer holds the kind's mark in.
+  static const OffToken<double> helpWellSize = OffToken(
+    44,
+    reason: 'the drawer heads with a `44` square',
+  );
+
+  /// The well's own corner, rounder than the chrome radius beside it.
+  static const OffToken<double> helpWellRadius = OffToken(
+    12,
+    reason: 'the well sets `borderRadius: 12`',
+  );
+
+  /// How big the mark is drawn inside that well.
+  static const OffToken<double> helpWellMark = OffToken(
+    22,
+    reason: 'the well draws its mark at `size={22}`',
+  );
+
   /// The leading a fill slot sets for itself, tighter than the paragraph it
   /// sits in so the rule stays under the word rather than under the line.
   static const OffToken<double> fillSlotLeading = OffToken(
@@ -467,6 +485,9 @@ abstract final class OffTokens {
     tastefixPanelToPrompt,
     helpStepGap,
     helpStepsTop,
+    helpWellSize,
+    helpWellRadius,
+    helpWellMark,
     matchColumnGap,
     matchTileGap,
     matchTilePadding,

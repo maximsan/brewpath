@@ -167,7 +167,13 @@ enum AppIcon {
   sequence(AppIconSet.kinds),
 
   /// A pick-one question.
-  mcq(AppIconSet.kinds);
+  mcq(AppIconSet.kinds),
+
+  /// A pick-several question.
+  multi(AppIconSet.kinds),
+
+  /// A complete-the-sentence question.
+  fill(AppIconSet.kinds);
 
   const AppIcon(this.set, {this.hasActive = false});
 

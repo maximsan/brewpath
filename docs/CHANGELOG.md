@@ -73,6 +73,15 @@ You can always edit this file by hand instead — the helpers just save effort.
   that carry an authored eyebrow instead are untouched, and a round in a
   mini-game reads exactly as it does in a lesson.
 
+- **The how-to-play drawer opens on the format's own mark.** It shipped
+  without one: three of the ten kinds with help — multiple choice, select all
+  and complete the sentence — had no glyph, and a well filled on seven rows
+  beside three empty ones is the fault the mini-game shelf already rules out.
+  The design draws all three, so they are read from it rather than invented
+  here, and the drawer now heads with the kind's mark in the design's outlined
+  well. A kind the design has not drawn opens on its steps with no well at all,
+  and a test keeps that off the shipped path.
+
 - **Checks run before code leaves the machine.** `tool/git-hooks/` fails a
   commit on an unformatted Dart file or an over-long comment, and a push on
   anything the metrics, a guard test, the comment check or the changelog

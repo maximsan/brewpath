@@ -27,6 +27,7 @@ Future<T?> showAppSheet<T>({
   required String title,
   required WidgetBuilder builder,
   String? eyebrow,
+  Widget? leading,
 }) {
   final mood = context.mood;
   final settleAtOnce = _restingControllerForReducedMotion(context);
@@ -63,6 +64,7 @@ Future<T?> showAppSheet<T>({
         child: _SheetFrame(
           title: title,
           eyebrow: eyebrow,
+          leading: leading,
           child: Builder(builder: builder),
         ),
       ),
@@ -99,10 +101,12 @@ class _SheetFrame extends StatelessWidget {
     required this.title,
     required this.child,
     this.eyebrow,
+    this.leading,
   });
 
   final String title;
   final String? eyebrow;
+  final Widget? leading;
   final Widget child;
 
   @override
@@ -135,17 +139,16 @@ class _SheetFrame extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: AppSpacing.md),
-              if (eyebrow != null) ...[
-                SmallcapsLabel(eyebrow!, color: mood.accent),
-                const SizedBox(height: AppSpacing.xxs),
-              ],
-              // "Every sheet opens on its title, in the same display face at
-              // the same size" — the design's own rule, enforceable only from
-              // in here.
-              Semantics(
-                header: true,
-                child: Text(title, style: AppText.title(mood: mood)),
-              ),
+              if (leading == null)
+                _heading(mood)
+              else
+                Row(
+                  children: [
+                    leading!,
+                    const SizedBox(width: AppSpacing.base),
+                    Expanded(child: _heading(mood)),
+                  ],
+                ),
               const SizedBox(height: AppSpacing.md),
               child,
             ],
@@ -154,6 +157,25 @@ class _SheetFrame extends StatelessWidget {
       ),
     );
   }
+
+  /// The kicker and the title, as one block so a leading mark can sit beside
+  /// the pair rather than beside the title alone.
+  Widget _heading(MoodColors mood) => Column(
+    mainAxisSize: MainAxisSize.min,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      if (eyebrow != null) ...[
+        SmallcapsLabel(eyebrow!, color: mood.accent),
+        const SizedBox(height: AppSpacing.xxs),
+      ],
+      // "Every sheet opens on its title, in the same display face at the same
+      // size" — the design's own rule, enforceable only from in here.
+      Semantics(
+        header: true,
+        child: Text(title, style: AppText.title(mood: mood)),
+      ),
+    ],
+  );
 }
 
 /// The sheet route that wears the app's blocking overlay.

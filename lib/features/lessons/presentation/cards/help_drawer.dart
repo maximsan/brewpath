@@ -1,5 +1,8 @@
+import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/widgets/app_sheet.dart';
+import 'package:brew_path/core/widgets/icon_badge.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_kind_mark.dart';
 import 'package:brew_path/shared/models/content/card_kind_help.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -14,13 +17,44 @@ const String howToPlayLabel = 'How to play';
 const String _dismissLabel = 'Got it';
 
 /// Opens the drawer explaining how [help]'s format is played.
-Future<void> showHelpDrawer(BuildContext context, CardKindHelp help) =>
-    showAppSheet<void>(
-      context: context,
-      eyebrow: howToPlayLabel,
-      title: help.title,
-      builder: (_) => HelpDrawerBody(help: help),
+Future<void> showHelpDrawer(BuildContext context, CardKindHelp help) {
+  final mark = cardKindMark(help.kind);
+
+  return showAppSheet<void>(
+    context: context,
+    eyebrow: howToPlayLabel,
+    title: help.title,
+    leading: mark == null ? null : HelpWell(mark: mark),
+    builder: (_) => HelpDrawerBody(help: help),
+  );
+}
+
+/// The well the drawer heads with, holding the kind's mark.
+///
+/// An outlined badge rather than a filled one: the design draws this as an
+/// empty slot the mark sits in, which is what [IconBadge]'s border is for.
+class HelpWell extends StatelessWidget {
+  /// Creates a [HelpWell].
+  const HelpWell({required this.mark, super.key});
+
+  /// The mark drawn inside the well.
+  final AppIcon mark;
+
+  @override
+  Widget build(BuildContext context) {
+    final mood = context.mood;
+
+    return IconBadge.roundedMark(
+      mark: mark,
+      size: OffTokens.helpWellSize.value,
+      radius: OffTokens.helpWellRadius.value,
+      iconSize: OffTokens.helpWellMark.value,
+      background: mood.surface2,
+      foreground: mood.ink,
+      borderColor: mood.rule,
     );
+  }
+}
 
 /// What the drawer says: the format in a sentence, then the three steps.
 ///
