@@ -129,8 +129,8 @@ Header copy: `A FIELD GUIDE TO COFFEE`.
 > Every one needs a real destination before ship: two legal URLs, an App Store
 > review deep link, two mail composers, a licenses screen and an
 > acknowledgements screen. That is **8 pieces of work behind rows the prototype
-> makes look finished**, and none of them appeared in [§12](12-checklist.md)
-> before this pass.
+> makes look finished**. They are owned now: the legal pair by #448, the
+> Help rows by #531, the About rows by #532.
 
 > **"Sync over cellular" and "This iPhone" are the UI for the offline promise.**
 > [§6](06-content.md)'s FAQ commits to keeping opened modules on device and syncing when
@@ -243,6 +243,15 @@ another — worth a check when porting.
 
 Card renderers for `predict` / `decision` / `recall` live in `active-cards.jsx`
 and export nothing to `window` — they are referenced directly by `lesson.jsx`.
+
+> **A recorded divergence — the card cue's height.** The design pulls the
+> cue's `?` back onto the cue line with `margin: '-13px -8px'`, so its 44px
+> touch area does not set the height of a one-line eyebrow; CSS hit-tests the
+> padding box whatever the layout size. Flutter rejects a tap outside the
+> parent's own box, so porting the bleed with an `OverflowBox` shrinks the
+> target to 28×18 (measured). The app keeps the 44 target and the line is
+> taller by that much. **No action:** this is the trade, not a gap. (Moved
+> here from the removed open-items log, 10 September 2026.)
 
 ---
 

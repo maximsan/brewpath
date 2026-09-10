@@ -524,8 +524,9 @@ module-completion bonus, and pays a small amount for practice runs. This design
 says a flat amount per lesson, no module bonus, and **nothing** for replays — on
 the grounds that points measure showing up while mastery measures knowing it,
 and paying for practice collapses that distinction. Neither model is obviously
-right, but they cannot both ship. See [§11](11-open-items.md) for the exact
-differences.
+right, but they cannot both ship. Ruled in this design's favour at
+[#16](https://github.com/maximsan/brewpath/issues/16), which records the exact
+differences, and built at #160.
 
 Worth noting separately: this was found by asking one question. Nobody has
 systematically diffed the app against the design, which is what this whole

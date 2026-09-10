@@ -11,8 +11,9 @@
 
 Issue [#8](https://github.com/maximsan/brewpath/issues/8) (child of map #6).
 Design reference: the since-removed `BREWPATH-V1-OVERVIEW.md`, its **§11 checklist**
-as the spine (the audit's section numbering below follows it; that checklist is
-`docs/design/12-checklist.md` in today's numbering);
+as the spine (the audit's section numbering below follows it; that checklist
+became `docs/design/12-checklist.md`, audited line by line and removed on
+10 September 2026 — its last revision in git carries the audit);
 prototype `prototype/*.jsx` as tiebreaker. Read-only audit — no source was changed.
 
 **Repo layout:** the Flutter app is at the repo root.
