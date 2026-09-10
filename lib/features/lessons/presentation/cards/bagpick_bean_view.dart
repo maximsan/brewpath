@@ -59,12 +59,9 @@ class _BeanPainter extends CustomPainter {
     required this.chaff,
   });
 
-  /// The ink the design draws a seed's own shading with — a near-black at low
-  /// opacity, so it reads on any body colour rather than tinting toward one.
-  ///
-  /// Registered rather than written as a literal: it happens to equal Cupping
-  /// `ink`, and left bare it reads as a mood token someone forgot to wire up.
-  static final Color _shading = OffTokens.seedInk.value;
+  /// The seed's own shading — outline, cast shadow and centre cut — drawn in
+  /// the design's `--art-hairline` at a low opacity, so it reads on any body.
+  static const Color _shading = ArtColors.hairline;
   static const _shadowOpacity = 0.18;
   static const _outlineOpacity = 0.35;
   static const _creaseShadowOpacity = 0.3;
@@ -73,12 +70,7 @@ class _BeanPainter extends CustomPainter {
   /// and never names it, so there is no `--art-*` token to read.
   static final Color _mottleInk = OffTokens.seedStain.value;
 
-  /// Silverskin clinging to the seed. The design fills these flecks `#F3EADA`
-  /// while declaring `--art-cherry-silverskin` as `#F1E8D6` — and that token's
-  /// own description is *"the tissue membrane that becomes chaff"*, which is
-  /// exactly this. The token wins: a palette with two answers for silverskin is
-  /// how the two drift apart. Under two points per channel, and the design
-  /// source owes itself the same correction (#334).
+  /// Silverskin clinging to the seed.
   static const Color _chaffInk = ArtColors.cherrySilverskin;
 
   static const _outlineWidth = 0.7;

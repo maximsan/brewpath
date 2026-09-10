@@ -50,13 +50,6 @@ abstract final class OffTokens {
     reason: "the ring is fixed at `AD_RING = '#E07A4F'`, not the mood accent",
   );
 
-  /// The ink a drawn seed is shaded with: outline, cast shadow and centre cut.
-  /// It equals Cupping ink by coincidence and does not flip with the mood.
-  static const OffToken<Color> seedInk = OffToken(
-    Color(0xFF1B1614),
-    reason: 'the seed is shaded with `rgba(27,22,20,0.18)`, not `var(--ink)`',
-  );
-
   /// The fruit staining on a naturally processed seed. The design draws it and
   /// never names it, so no `--art-*` token holds it.
   static const OffToken<Color> seedStain = OffToken(
@@ -390,7 +383,6 @@ abstract final class OffTokens {
   static const register = <OffToken<Object>>[
     rewardedAdCanvas,
     rewardedAdProgressRing,
-    seedInk,
     seedStain,
     beanCrease,
     pickTilePadding,
