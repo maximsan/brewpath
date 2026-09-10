@@ -2,6 +2,7 @@ import 'package:brew_path/features/lessons/presentation/cards/sequence_card_view
 import 'package:brew_path/features/lessons/presentation/cards/sequence_step_number.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// A shipped round, handed to the card in a display order that is not the
@@ -32,14 +33,16 @@ class _Signals {
 /// shared card layer is that it needs none.
 Future<void> _pumpCard(WidgetTester tester, _Signals signals) async {
   await tester.pumpWidget(
-    MaterialApp(
-      home: Scaffold(
-        body: SingleChildScrollView(
-          child: SequenceCardView(
-            prompt: 'Order the journey from farm to cup',
-            items: _shown,
-            onSolved: () => signals.solved++,
-            onContinue: () => signals.continued++,
+    ProviderScope(
+      child: MaterialApp(
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: SequenceCardView(
+              prompt: 'Order the journey from farm to cup',
+              items: _shown,
+              onSolved: () => signals.solved++,
+              onContinue: () => signals.continued++,
+            ),
           ),
         ),
       ),

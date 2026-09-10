@@ -1,5 +1,6 @@
 import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_cue.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
 import 'package:brew_path/features/lessons/presentation/cards/choice_list.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -29,6 +30,7 @@ class PickerCopy {
   const PickerCopy({
     required this.prompt,
     required this.explain,
+    this.cue,
     this.label,
     this.title,
     this.scenario,
@@ -43,6 +45,9 @@ class PickerCopy {
   /// The explanation shown once committed. Takes whether the learner was
   /// right, because `decision` authors a separate reading for each outcome.
   final PickerLine explain;
+
+  /// The format this kind is playing, named above the question.
+  final CardCue? cue;
 
   /// Small-caps eyebrow.
   final String? label;
@@ -155,6 +160,7 @@ class _GradedPickerState extends State<GradedPicker> {
     return CardShell(
       latched: _latched,
       onContinue: widget.onContinue,
+      cue: copy.cue,
       label: copy.label,
       title: copy.title,
       children: [

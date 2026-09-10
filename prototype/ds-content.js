@@ -409,7 +409,7 @@ function visualGuideDemo() {
     <div style="${SC}margin-bottom:12px;">VISUAL GUIDE</div>
     <div class="ff-display" style="font-size:26px;font-weight:400;line-height:1.12;letter-spacing:-0.01em;color:var(--ink);margin-bottom:18px;">Inside a coffee cherry</div>
     <svg viewBox="0 0 100 100" style="width:150px;height:150px;display:block;margin:0 auto;">${
-      rings.map(r => '<circle cx="50" cy="50" r="' + r[1] + '" fill="' + r[0] + '" stroke="rgba(27,22,20,0.22)" stroke-width="0.6"/>').join('')
+      rings.map(r => '<circle cx="50" cy="50" r="' + r[1] + '" fill="' + r[0] + '" stroke="var(--art-hairline)" stroke-opacity="0.22" stroke-width="0.6"/>').join('')
     }<line x1="50" y1="34" x2="50" y2="66" stroke="var(--art-seed-crease)" stroke-width="1.4"/></svg>
     <div class="mono" style="display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-mute);margin-top:16px;"><svg width="13" height="16" viewBox="0 0 14 18" fill="none"><path d="M2 1.5h10v15l-5-4-5 4z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg> Save this guide</div>
   </div>`;

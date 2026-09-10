@@ -33,18 +33,12 @@ final double _supportTop = OffTokens.introSupportGap.value;
 /// ghost that sits under a primary.
 final double _skipGap = OffTokens.ghostUnderPrimaryGap.value;
 
-/// Screen 01c of the intro: what the learner would like to be called.
+/// Screen 04 of the intro: what the learner would like to be called.
 ///
-/// The last step and the only question v1 asks, since ADR-0010 moved the goal
-/// and brewer questions to v2. It carries no step counter — the design numbers
-/// none of the intro screens, and the three-step flow its eyebrow used to
-/// count is gone.
-///
-/// The same [IntroPage] shell as the beat before it, because the design draws
-/// it as the same shell: mascot above, copy and actions pinned to the foot.
-///
-/// Skipping costs the learner nothing: Profile greets by name where there is
-/// one and greets plainly where there is not.
+/// The only question v1 asks, since ADR-0010 moved the goal and brewer to v2,
+/// and it hands over to the offer step rather than to the app. The same
+/// [IntroPage] shell as the beat before it. Skipping costs nothing: Profile
+/// greets by name where there is one and plainly where there is not.
 class NameScreen extends ConsumerStatefulWidget {
   /// Creates a [NameScreen].
   const NameScreen({super.key});
@@ -60,12 +54,13 @@ class _NameScreenState extends ConsumerState<NameScreen> {
   void initState() {
     super.initState();
     _controller = NameController(
-      onSubmit: (name) async {
-        final draft = ref.read(onboardingDraftProvider.notifier)..setName(name);
-        await draft.complete();
-      },
+      // Kept on the draft, not written: the offer step after this one is what
+      // finishes the intro, and a flag written here would have the router
+      // bounce the learner off that step before they had answered it.
+      onSubmit: (name) async =>
+          ref.read(onboardingDraftProvider.notifier).setName(name),
       onFinished: () {
-        if (mounted) context.goNamed(AppRoutes.learn.name);
+        if (mounted) context.goNamed(AppRoutes.onboardingPaywall.name);
       },
     )..addListener(_onControllerChanged);
   }

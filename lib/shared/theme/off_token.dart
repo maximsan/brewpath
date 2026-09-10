@@ -50,13 +50,6 @@ abstract final class OffTokens {
     reason: "the ring is fixed at `AD_RING = '#E07A4F'`, not the mood accent",
   );
 
-  /// The ink a drawn seed is shaded with: outline, cast shadow and centre cut.
-  /// It equals Cupping ink by coincidence and does not flip with the mood.
-  static const OffToken<Color> seedInk = OffToken(
-    Color(0xFF1B1614),
-    reason: 'the seed is shaded with `rgba(27,22,20,0.18)`, not `var(--ink)`',
-  );
-
   /// The fruit staining on a naturally processed seed. The design draws it and
   /// never names it, so no `--art-*` token holds it.
   static const OffToken<Color> seedStain = OffToken(
@@ -284,8 +277,8 @@ abstract final class OffTokens {
 
   /// The room around the Tour card's Skip.
   static const OffToken<EdgeInsets> tourSkipPadding = OffToken(
-    EdgeInsets.symmetric(horizontal: 6, vertical: AppSpacing.sm),
-    reason: "the design sets Skip to `padding: '12px 6px'`",
+    EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+    reason: "the design sets Skip to `padding: '10px 20px'`",
   );
 
   /// How wide a fill slot stays whatever word lands in it, so a sentence does
@@ -337,6 +330,36 @@ abstract final class OffTokens {
     reason: "the question under the cup sets `margin: '20px 0 0'`",
   );
 
+  /// The gap between two how-to-play steps.
+  static const OffToken<double> helpStepGap = OffToken(
+    11,
+    reason: 'the drawer stacks its steps at `gap: 11`',
+  );
+
+  /// The room over the how-to-play steps, under the blurb.
+  static const OffToken<double> helpStepsTop = OffToken(
+    20,
+    reason: 'the step stack opens at `marginTop: 20`',
+  );
+
+  /// The well the how-to-play drawer holds the kind's mark in.
+  static const OffToken<double> helpWellSize = OffToken(
+    44,
+    reason: 'the drawer heads with a `44` square',
+  );
+
+  /// The well's own corner, rounder than the chrome radius beside it.
+  static const OffToken<double> helpWellRadius = OffToken(
+    12,
+    reason: 'the well sets `borderRadius: 12`',
+  );
+
+  /// How big the mark is drawn inside that well.
+  static const OffToken<double> helpWellMark = OffToken(
+    22,
+    reason: 'the well draws its mark at `size={22}`',
+  );
+
   /// The leading a fill slot sets for itself, tighter than the paragraph it
   /// sits in so the rule stays under the word rather than under the line.
   static const OffToken<double> fillSlotLeading = OffToken(
@@ -356,11 +379,59 @@ abstract final class OffTokens {
     reason: 'the words sit side by side at `gap: 10px`',
   );
 
+  /// The gutter between a match board's two columns, wide enough for the
+  /// connectors drawn across it to read as lines rather than as joins.
+  static const OffToken<double> matchColumnGap = OffToken(
+    40,
+    reason: 'the two columns sit at `gap: 40`',
+  );
+
+  /// The gap between two tiles in one match column.
+  static const OffToken<double> matchTileGap = OffToken(
+    10,
+    reason: 'a column stacks its tiles at `gap: 10px`',
+  );
+
+  /// A match tile's own padding, taller than it is wide.
+  static const OffToken<EdgeInsets> matchTilePadding = OffToken(
+    EdgeInsets.symmetric(vertical: 15, horizontal: 18),
+    reason: 'a match tile sets `padding: 15px 18px`',
+  );
+
+  /// How far a held answer swells under the trait about to land on it.
+  static const OffToken<double> matchDropHotScale = OffToken(
+    1.03,
+    reason: 'the answer under a held trait takes `transform: scale(1.03)`',
+  );
+
+  /// What is left of a trait once its clone is the thing being dragged.
+  static const OffToken<double> matchDraggingOpacity = OffToken(
+    0.4,
+    reason: 'the tile left behind takes `opacity: 0.4`',
+  );
+
+  /// The room the course ending keeps between its headline and its stats.
+  static const OffToken<double> courseStatsTop = OffToken(
+    26,
+    reason: "the ending's stat block opens at `marginTop: 26`",
+  );
+
+  /// How wide the course ending's stat rows run, centred under the headline.
+  static const OffToken<double> courseStatsWidth = OffToken(
+    320,
+    reason: "the ending's stat rows sit in `maxWidth: 320`",
+  );
+
+  /// The room inside one of the course ending's stat rows.
+  static const OffToken<EdgeInsets> courseStatRowPadding = OffToken(
+    EdgeInsets.symmetric(vertical: 13, horizontal: 2),
+    reason: "a stat row sets `padding: '13px 2px'`",
+  );
+
   /// Every sanctioned exception, so the register can be tested as a whole.
   static const register = <OffToken<Object>>[
     rewardedAdCanvas,
     rewardedAdProgressRing,
-    seedInk,
     seedStain,
     beanCrease,
     pickTilePadding,
@@ -404,8 +475,21 @@ abstract final class OffTokens {
     tastefixPanelPadding,
     tastefixPanelGap,
     tastefixPanelToPrompt,
+    helpStepGap,
+    helpStepsTop,
+    helpWellSize,
+    helpWellRadius,
+    helpWellMark,
+    matchColumnGap,
+    matchTileGap,
+    matchTilePadding,
+    matchDropHotScale,
+    matchDraggingOpacity,
     fillSlotLeading,
     fillGroupGap,
     fillOptionGap,
+    courseStatsTop,
+    courseStatsWidth,
+    courseStatRowPadding,
   ];
 }

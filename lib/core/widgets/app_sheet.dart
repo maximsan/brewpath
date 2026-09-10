@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:brew_path/core/widgets/overlay_barrier.dart';
+import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/shared/theme/app_overlay.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -17,39 +18,16 @@ const double _maxHeightFraction = 0.78;
 
 /// Presents [builder] as a bottom sheet, wearing the app's one sheet dressing.
 ///
-/// **Every sheet opens through here.** The chrome below is identical across all
-/// nine sheet types the design specifies, which is why one function can serve
-/// them all — callers supply only what is inside. A guard test fails the build
-/// on a sheet opened anywhere else, because the first sheet carried a comment
-/// inviting the second to generalise it and the second was written raw
-/// anyway.
-///
-/// The barrier is [OverlayColors.dimModal], whose own doc names this as the
-/// app's one blocking overlay, and the corners are [AppRadii.chrome], which
-/// names bottom sheets among the surfaces it is for. The dim arrives as an
-/// [AppOverlay] — colour *and* the design's 5px blur — through
-/// [OverlayBarrier], which is why the route below is pushed by hand: the theme
-/// and `showModalBottomSheet` can both carry a barrier colour, and neither can
-/// carry the blur that goes with it.
-///
-/// [title] is required and is the sheet's *only* name: it is rendered as the
-/// heading every sheet opens on, and it is the accessible name of the sheet as
-/// a region. One string feeds both so they cannot drift — which is what a
-/// second, separate label parameter had already allowed.
-///
-/// Two rules the design states are **not** implemented here, because Flutter
-/// satisfies both for free and porting them would be re-solving a DOM problem:
-///
-/// - *Sheets stack.* The design lifts its gate sheet onto a higher z-index pair
-///   because the web has no navigator stack. Here the navigator stack **is**
-///   the z-order, so a sheet from inside a sheet already renders above it.
-/// - *Root-level sheets are dismissed on navigation.* Flutter does this in all
-///   three navigation shapes this app performs — a route change, a shell branch
-///   switch, and a push inside a branch.
+/// **Every sheet opens through here**, and a guard test fails the build on one
+/// opened anywhere else. [title] is the sheet's *only* name — the heading and
+/// the accessible name both — and [eyebrow] is the kicker the design sets over
+/// it. The chrome and what it deliberately omits: `docs/02-architecture.md`.
 Future<T?> showAppSheet<T>({
   required BuildContext context,
   required String title,
   required WidgetBuilder builder,
+  String? eyebrow,
+  Widget? leading,
 }) {
   final mood = context.mood;
   final settleAtOnce = _restingControllerForReducedMotion(context);
@@ -85,6 +63,8 @@ Future<T?> showAppSheet<T>({
         label: title,
         child: _SheetFrame(
           title: title,
+          eyebrow: eyebrow,
+          leading: leading,
           child: Builder(builder: builder),
         ),
       ),
@@ -103,12 +83,9 @@ Future<T?> showAppSheet<T>({
 /// An already-elapsed controller when the platform asks for reduced motion,
 /// or null to let the default transition run.
 ///
-/// `ModalBottomSheetRoute` does not consult
-/// [MediaQueryData.disableAnimations] — measured, not assumed: the slide is
-/// identical either way. Handing it a
-/// zero-duration controller is the only supported hook, and it lands the sheet
-/// at rest on the first frame. It needs a [TickerProvider], which a top-level
-/// function does not have and the navigator does.
+/// `ModalBottomSheetRoute` does not consult [MediaQueryData.disableAnimations]
+/// — measured, not assumed. A zero-duration controller is the only supported
+/// hook, and it needs the [TickerProvider] the navigator has.
 AnimationController? _restingControllerForReducedMotion(BuildContext context) {
   if (!MediaQuery.disableAnimationsOf(context)) return null;
 
@@ -120,9 +97,16 @@ AnimationController? _restingControllerForReducedMotion(BuildContext context) {
 
 /// The chrome every sheet wears: handle, title, insets and a scrolling cap.
 class _SheetFrame extends StatelessWidget {
-  const _SheetFrame({required this.title, required this.child});
+  const _SheetFrame({
+    required this.title,
+    required this.child,
+    this.eyebrow,
+    this.leading,
+  });
 
   final String title;
+  final String? eyebrow;
+  final Widget? leading;
   final Widget child;
 
   @override
@@ -155,13 +139,16 @@ class _SheetFrame extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: AppSpacing.md),
-              // "Every sheet opens on its title, in the same display face at
-              // the same size" — the design's own rule, enforceable only from
-              // in here.
-              Semantics(
-                header: true,
-                child: Text(title, style: AppText.title(mood: mood)),
-              ),
+              if (leading == null)
+                _heading(mood)
+              else
+                Row(
+                  children: [
+                    leading!,
+                    const SizedBox(width: AppSpacing.base),
+                    Expanded(child: _heading(mood)),
+                  ],
+                ),
               const SizedBox(height: AppSpacing.md),
               child,
             ],
@@ -170,6 +157,25 @@ class _SheetFrame extends StatelessWidget {
       ),
     );
   }
+
+  /// The kicker and the title, as one block so a leading mark can sit beside
+  /// the pair rather than beside the title alone.
+  Widget _heading(MoodColors mood) => Column(
+    mainAxisSize: MainAxisSize.min,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      if (eyebrow != null) ...[
+        SmallcapsLabel(eyebrow!, color: mood.accent),
+        const SizedBox(height: AppSpacing.xxs),
+      ],
+      // "Every sheet opens on its title, in the same display face at the same
+      // size" — the design's own rule, enforceable only from in here.
+      Semantics(
+        header: true,
+        child: Text(title, style: AppText.title(mood: mood)),
+      ),
+    ],
+  );
 }
 
 /// The sheet route that wears the app's blocking overlay.

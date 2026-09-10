@@ -1,16 +1,12 @@
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
+import 'package:brew_path/features/monetization/domain/plus_offering_provider.dart';
 import 'package:brew_path/services/payments/payments_provider.dart';
 import 'package:brew_path/services/payments/payments_service.dart';
 import 'package:brew_path/services/payments/store_product.dart';
+import 'package:brew_path/shared/models/monetization/plus_offering.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'plus_purchase_controller.g.dart';
-
-/// The store id for Plus — the one non-consumable v1 sells.
-///
-/// A single id rather than a plan list: ADR-0003 rules v1 a one-time purchase,
-/// with no subscription and no trial, so there is nothing to choose between.
-const String plusProductId = 'dev.maximsan.brewPath.plus';
 
 /// Where the sheet's one action currently stands.
 enum PlusPurchaseState {
@@ -31,6 +27,11 @@ enum PlusPurchaseState {
   /// The learner backed out. A normal thing to do, and not an error.
   cancelled,
 
+  /// Restore ran and found nothing on this account. Not a failure — nobody
+  /// was charged and nothing broke — but it must be said, or the link reads
+  /// as dead.
+  nothingToRestore,
+
   /// The store refused or failed.
   failed,
 }
@@ -46,24 +47,26 @@ class PlusPurchase extends _$PlusPurchase {
   @override
   PlusPurchaseState build() => PlusPurchaseState.idle;
 
-  /// Buys Plus, and reports what the store said.
-  Future<void> buy() async {
+  /// Buys [offer], or the arm's default when the paywall names none.
+  Future<void> buy({PlusOffer? offer}) async {
     if (state == PlusPurchaseState.working) return;
     state = PlusPurchaseState.working;
 
     final payments = ref.read(paymentsServiceProvider);
     try {
+      final wanted =
+          offer ?? (await ref.read(plusOfferingProvider.future)).defaultOffer;
       // The product is fetched rather than fabricated: a store that does not
       // offer it — the no-op, or a misconfigured build — must fail here rather
       // than send a made-up product into a purchase call.
-      final products = await payments.getProducts([plusProductId]);
-      final product = _plusAmong(products);
+      final products = await payments.getProducts([wanted.productId]);
+      final product = _productWithId(products, wanted.productId);
       if (product == null) {
         state = PlusPurchaseState.failed;
         return;
       }
       await _settle(await payments.purchase(product));
-    } on Exception {
+    } on Object {
       state = PlusPurchaseState.failed;
     }
   }
@@ -81,15 +84,18 @@ class PlusPurchase extends _$PlusPurchase {
       await ref.read(paymentsServiceProvider).restorePurchases();
       state = await _reReadEntitlement()
           ? PlusPurchaseState.owned
-          : PlusPurchaseState.idle;
-    } on Exception {
+          : PlusPurchaseState.nothingToRestore;
+    } on Object {
       state = PlusPurchaseState.failed;
     }
   }
 
-  StoreProduct? _plusAmong(List<StoreProduct> products) {
+  StoreProduct? _productWithId(
+    List<StoreProduct> products,
+    String productId,
+  ) {
     for (final product in products) {
-      if (product.id == plusProductId) return product;
+      if (product.id == productId) return product;
     }
     return null;
   }

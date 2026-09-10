@@ -52,4 +52,4 @@ destinations. Collapsing those leaves roughly **44 distinct v1 destinations**.
 
 ---
 
-← [Product in one paragraph](01-product.md) · [Contents](README.md) · [Design system](03-design-system.md) →
+← [How to read the prototype](00-reading-the-prototype.md) · [Contents](README.md) · [Design system](03-design-system.md) →

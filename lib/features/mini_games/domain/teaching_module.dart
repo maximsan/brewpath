@@ -7,16 +7,19 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'teaching_module.g.dart';
 
-/// The module owning [moduleId], or null when the catalog names one the
-/// modules bank does not carry.
+/// The module teaching [lessonId], or null when the catalog names a lesson
+/// the banks do not carry.
 ///
-/// A locked game's offer is a pitch for the module that teaches its topic, so
-/// the sheet needs the module's own words rather than the game's.
+/// A locked game's offer pitches the module that teaches its topic, so the
+/// sheet needs the module's own words rather than the game's.
 @riverpod
-Future<ModuleModel?> teachingModule(Ref ref, String moduleId) async {
-  final modules = await ref.watch(contentRepositoryProvider).getModules();
+Future<ModuleModel?> teachingModule(Ref ref, String lessonId) async {
+  final content = ref.watch(contentRepositoryProvider);
+  final lesson = await content.getLessonById(lessonId);
+  if (lesson == null) return null;
+  final modules = await content.getModules();
   for (final module in modules) {
-    if (module.id == moduleId) return module;
+    if (module.id == lesson.moduleId) return module;
   }
   return null;
 }

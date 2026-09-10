@@ -3,6 +3,7 @@ import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/core/widgets/fill_slot.dart';
 import 'package:brew_path/features/lessons/domain/concept_card_parts.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_cue.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
 import 'package:brew_path/features/lessons/presentation/cards/concept_fill_bank.dart';
 import 'package:brew_path/features/lessons/presentation/cards/concept_fill_state.dart';
@@ -75,7 +76,10 @@ class _ConceptCardViewState extends State<ConceptCardView> {
     return CardShell(
       latched: nothingToFill || _checked,
       onContinue: widget.onContinue,
-      label: card.label,
+      // The design branches the same way: a card with blanks opens on the fill
+      // cue, one without keeps the eyebrow its author wrote.
+      cue: nothingToFill ? null : CardCue.fill,
+      label: nothingToFill ? card.label : null,
       title: card.title,
       commit: nothingToFill
           ? null

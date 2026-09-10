@@ -3,8 +3,10 @@ import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/widgets/roast_meter.dart';
 import 'package:brew_path/features/cards/presentation/card_grid_item_widget.dart';
 import 'package:brew_path/features/lessons/domain/lesson_completion_actions.dart';
+import 'package:brew_path/features/lessons/presentation/cards/match_tile.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_screen.dart';
 import 'package:brew_path/features/lessons/presentation/reward_points_line.dart';
+import 'package:brew_path/features/monetization/domain/plus_copy.dart';
 import 'package:brew_path/features/onboarding/presentation/loading/loading_screen.dart';
 import 'package:brew_path/features/profile/presentation/widgets/profile_progress_line.dart';
 import 'package:brew_path/features/tour/domain/tour_copy.dart';
@@ -134,14 +136,20 @@ void main() {
     ),
   );
 
-  /// An option the card on screen will still take — every answer control a
-  /// lesson card draws is an `OutlinedButton`, and a latched one stops
-  /// accepting taps, so this empties as the card commits. Scoped to the
-  /// player, because the shell it opens over is still in the tree behind it.
+  /// An option the card on screen will still take.
+  ///
+  /// Two shapes, because the cards draw two: most answer controls are an
+  /// `OutlinedButton`, and a match board's tiles are `MatchTile`. Either stops
+  /// accepting taps once its card latches, so this empties as the card
+  /// commits. Scoped to the player, whose shell is still in the tree behind it.
   Finder liveOption() => find.descendant(
     of: find.byType(LessonScreen),
     matching: find.byWidgetPredicate(
-      (widget) => widget is OutlinedButton && widget.onPressed != null,
+      (widget) => switch (widget) {
+        OutlinedButton(:final onPressed) => onPressed != null,
+        MatchTile(:final onTap) => onTap != null,
+        _ => false,
+      },
       description: 'an answerable option',
     ),
   );
@@ -288,6 +296,15 @@ void main() {
       tester,
       liveButton('Continue'),
       describe: 'the name step accepting a name',
+    );
+
+    // The intro's last step (ADR-0010, #242). Declined rather than bought:
+    // the store is the no-op service in this build, so buying is not a path a
+    // walk can drive — and declining is the exit every learner has.
+    await tapWhenReady(
+      tester,
+      find.text(PlusCopy.maybeLater),
+      describe: 'the Plus offer that ends onboarding',
     );
 
     // The Tour is offered on the first launch that reaches Learn with it

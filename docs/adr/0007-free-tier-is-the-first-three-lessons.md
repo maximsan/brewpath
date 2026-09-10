@@ -43,10 +43,10 @@ under the two-different-games streak rule.
 [ADR-0001](0001-free-tier-carries-two-mini-game-formats.md) said "exactly
 two" free games; the count is now three, and ADR-0001's underlying rule
 still holds. The paywall needs no edit, because every number on it is
-computed. One bug is owed: the prototype's `FREE_GAME_IDS` filter checks the
-module instead of the lesson — it gives the right answer with today's data,
-but by luck, and [#225](https://github.com/maximsan/brewpath/issues/225)
-carries the fix.
+computed. The design now binds each game to its teaching lesson, and the app
+reads that pointer ([#225](https://github.com/maximsan/brewpath/issues/225));
+the prototype's own `FREE_GAME_IDS` filter still reads the module, which #225
+carries.
 
 **Revisit** only with data from real users after launch, by changing the
 free-lesson list.

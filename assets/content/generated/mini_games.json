@@ -7,7 +7,7 @@
     {
       "id": "g-match",
       "kind": "match",
-      "mod": "m1",
+      "lesson": "m1l2",
       "title": "Match the facts",
       "sub": "ARABICA VS ROBUSTA",
       "meta": "~2 MIN",
@@ -21,7 +21,7 @@
     {
       "id": "g-match-washed-natural",
       "kind": "match",
-      "mod": "m2",
+      "lesson": "m2l1",
       "title": "Washed vs Natural",
       "sub": "PROCESSING",
       "meta": "~2 MIN",
@@ -35,7 +35,7 @@
     {
       "id": "g-quiz",
       "kind": "quiz",
-      "mod": "m1",
+      "lesson": "m1l1",
       "title": "True or false",
       "sub": "COFFEE BASICS",
       "meta": "~1 MIN",
@@ -49,7 +49,7 @@
     {
       "id": "g-quiz-roast-basics",
       "kind": "quiz",
-      "mod": "m3",
+      "lesson": "m3l1",
       "title": "Roast basics",
       "sub": "ROASTING",
       "meta": "~1 MIN",
@@ -63,7 +63,7 @@
     {
       "id": "g-flavor",
       "kind": "flavor",
-      "mod": "m5",
+      "lesson": "m5l3",
       "title": "Name the flavor notes",
       "sub": "TASTING NOTES",
       "meta": "~2 MIN",
@@ -77,7 +77,7 @@
     {
       "id": "g-flavor-origin-signatures",
       "kind": "flavor",
-      "mod": "m1",
+      "lesson": "m1l3",
       "title": "Name the origin",
       "sub": "ORIGIN SIGNATURES",
       "meta": "~2 MIN",
@@ -91,7 +91,7 @@
     {
       "id": "g-bagpick",
       "kind": "bagpick",
-      "mod": "m2",
+      "lesson": "m2l1",
       "title": "Read the green bean",
       "sub": "WASHED, HONEY OR NATURAL",
       "meta": "~2 MIN",
@@ -105,7 +105,7 @@
     {
       "id": "g-tastefix",
       "kind": "tastefix",
-      "mod": "m4",
+      "lesson": "m4l3",
       "title": "Fix the cup",
       "sub": "DIAGNOSE AND DIAL IN",
       "meta": "~2 MIN",
@@ -119,7 +119,7 @@
     {
       "id": "g-tastefix-espresso",
       "kind": "tastefix",
-      "mod": "m5",
+      "lesson": "m5l7",
       "title": "Fix the shot",
       "sub": "ESPRESSO DIAL-IN",
       "meta": "~2 MIN",
@@ -133,7 +133,7 @@
     {
       "id": "g-calibrate",
       "kind": "slider",
-      "mod": "m4",
+      "lesson": "m4l3",
       "title": "Dial it in",
       "sub": "GRIND, RATIO, WATER, TIME",
       "meta": "~2 MIN",
@@ -147,7 +147,7 @@
     {
       "id": "g-calibrate-grind-brewer",
       "kind": "slider",
-      "mod": "m4",
+      "lesson": "m4l5",
       "title": "Set the grind",
       "sub": "WHICH GRIND, WHICH BREWER",
       "meta": "~2 MIN",
@@ -161,7 +161,7 @@
     {
       "id": "g-sequence",
       "kind": "sequence",
-      "mod": "m5",
+      "lesson": "m5l6",
       "title": "Put it in order",
       "sub": "BEAN TO CUP",
       "meta": "~2 MIN",
@@ -175,7 +175,7 @@
     {
       "id": "g-sequence-v60",
       "kind": "sequence",
-      "mod": "m5",
+      "lesson": "m5l6",
       "title": "Pour-over, in order",
       "sub": "YOUR FIRST V60",
       "meta": "~2 MIN",

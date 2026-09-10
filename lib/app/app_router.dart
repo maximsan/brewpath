@@ -21,10 +21,12 @@ import 'package:brew_path/features/lessons/presentation/lesson_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_intro_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_player_screen.dart';
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
+import 'package:brew_path/features/monetization/presentation/purchase_welcome_route.dart';
 import 'package:brew_path/features/onboarding/presentation/loading/loading_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/meet_roasty/meet_roasty_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/name/name_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/onboarding_providers.dart';
+import 'package:brew_path/features/onboarding/presentation/paywall/onboarding_paywall_step.dart';
 import 'package:brew_path/features/onboarding/presentation/welcome/welcome_screen.dart';
 import 'package:brew_path/features/path/presentation/path_screen.dart';
 import 'package:brew_path/features/profile/presentation/profile_screen.dart';
@@ -150,6 +152,17 @@ GoRouter appRouter(Ref ref) {
         path: AppRoutes.onboardingName.path,
         name: AppRoutes.onboardingName.name,
         builder: (context, state) => const NameScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.onboardingPaywall.path,
+        name: AppRoutes.onboardingPaywall.name,
+        builder: (context, state) => const OnboardingPaywallStep(),
+      ),
+      // Root-level, and outside the shell: the celebration owns the screen.
+      GoRoute(
+        path: AppRoutes.purchaseWelcome.path,
+        name: AppRoutes.purchaseWelcome.name,
+        builder: (context, state) => const PurchaseWelcomeRoute(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) => AppShell(navigationShell),
@@ -420,7 +433,7 @@ GoRouter appRouter(Ref ref) {
 /// Reads every gate the redirect judges, in one place.
 ///
 /// **An unresolved read is the locked answer** — a lock shown briefly to a
-/// paying learner is recoverable; paid content shown to a free one is not.
+/// paying learner is recoverable, paid content shown to a free one is not.
 /// `purchaseStateKnown` says whether that answer was read or assumed, so the
 /// wall can close on an assumption while the offer waits for a fact.
 GateState _gatesNow(Ref ref) {

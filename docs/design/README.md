@@ -6,7 +6,7 @@ component state, asset and open decision.
 
 ## Two layers — start with the right one
 
-| | [**PRODUCT.md**](PRODUCT.md) | The numbered files (§0–§13) |
+| | [**PRODUCT.md**](PRODUCT.md) | The numbered files (§0–§10) |
 |---|---|---|
 | **Reads like** | Plain language, product prose | Engineering reference |
 | **Contains** | What the app does and why, with the trade-off named for every feature | Exact rules, component states, counts, identifiers, defects |
@@ -41,15 +41,13 @@ decided something.
 | Implement a rule correctly (points, streak, tree, gating) | [§5 Mechanics](05-mechanics.md) |
 | Know what a component does in every state | [§7 Components](07-components.md) |
 | Know what a component should *look* like | **`prototype/Design System.html`** — indexed in [§3](03-design-system.md), not reproduced here |
-| Find what's undecided or broken | [§11 Open items](11-open-items.md) |
-| Start building | [§11](11-open-items.md) to see what is still undecided, then [§12 Checklist](12-checklist.md) and [§13 Epics](13-epics.md) |
+| Find what's undecided or broken | The tracker: open `needs-triage` issues, [#365](https://github.com/maximsan/brewpath/issues/365) (design parity) and [#368](https://github.com/maximsan/brewpath/issues/368) (the v1 cut); rulings are in [`docs/adr/`](../adr/README.md) |
 
 ## All sections
 
 | § | File | Contents |
 |---|---|---|
 | 0 | [How to read the prototype](00-reading-the-prototype.md) | File map, deep links, what was deleted and why |
-| 1 | [Product](01-product.md) | → [PRODUCT.md](PRODUCT.md) §1 (one owner, no copy) |
 | 2 | [Scope](02-scope.md) | v1 vs v2 counted by route; the tab bar |
 | 3 | [Design system](03-design-system.md) | Colour, type, radius, elevation, theming, Roasty, icons — **and the index of the 57 components specified in `Design System.html`** |
 | 4 | [Information architecture](04-information-architecture.md) | Tabs, header, **the four coming-soon modules shown to users**, the 104-route list |
@@ -59,9 +57,6 @@ decided something.
 | 8 | [Flows](08-flows.md) | First run · daily loop · reward routing · replay · challenges · dictionary · paywall |
 | 9 | [Deferred — v2](09-deferred-v2.md) | Atlas · Duel · ads & trials · onboarding questions · mood player · Liberica art |
 | 10 | [Assets](10-assets.md) | Raster vs inline SVG; what each folder holds |
-| 11 | [Open items](11-open-items.md) | QA re-verification · still open · closed · newly opened · **divergences between the app and this design** · the omission sweep |
-| 12 | [Checklist](12-checklist.md) | Flat list of build tasks — the input to issue generation, consumed once. **Build tasks only**: decisions live in §5, open questions in §11 |
-| 13 | [Epics](13-epics.md) | How to slice the build |
 
 ---
 
@@ -75,17 +70,17 @@ irrelevant to any one question.
 
 | Question shape | Attach |
 |---|---|
-| "Does our implementation of X match the design?" | The one mechanics or content section covering X, plus [§7 Components](07-components.md) if it has UI. **Check [§11](11-open-items.md) "Divergences" first** — some disagreements are already known |
-| "What should we build next?" | [§11](11-open-items.md) **first** (several tasks are blocked on decisions there), then [§2](02-scope.md) + [§12](12-checklist.md) |
+| "Does our implementation of X match the design?" | The one mechanics or content section covering X, plus [§7 Components](07-components.md) if it has UI. Where a ruling in [`docs/adr/`](../adr/README.md) disagrees with the prototype, the ruling wins. |
+| "What should we build next?" | The tracker ([#368](https://github.com/maximsan/brewpath/issues/368), [#365](https://github.com/maximsan/brewpath/issues/365)), then [§2](02-scope.md) for scope |
 | "Is this in scope for v1?" | [§2](02-scope.md) alone — it is self-contained |
 | "Why does the app do X?" | [PRODUCT.md](PRODUCT.md) for the product reasoning; [§5](05-mechanics.md) for the exact rule |
 | "Should the app do X at all?" | [PRODUCT.md](PRODUCT.md) alone — every feature section names its trade-off, and §14 lists the open arguments |
-| "What's left undecided?" | [§11](11-open-items.md) alone |
+| "What's left undecided?" | The open `needs-triage` issues; every ruling made is an ADR |
 
 **Two cautions when an agent works from this:**
 
 1. **Numbers go stale the moment the prototype changes.** Every count here was true at the commit named above. If a number matters to a decision, re-run the extraction script rather than trusting the file. The counts moved twice during the writing of this reference alone.
-2. **Absence of a section is not absence of a requirement.** [§7.9](07-components.md) lists what the component inventory deliberately does not cover (visual specs, empty states, error/loading states). An agent generating tickets from [§12](12-checklist.md) will not produce tickets for those.
+2. **Absence of a section is not absence of a requirement.** [§7.9](07-components.md) lists what the component inventory deliberately does not cover (visual specs, empty states, error/loading states).
 
 ---
 
@@ -111,7 +106,7 @@ route keys, asset folder counts, and per-file line counts.
 [§10](10-assets.md) folder counts.
 
 The argued sections — [§2](02-scope.md) rationale, [§5](05-mechanics.md),
-[§7](07-components.md), [§11](11-open-items.md) — are hand-written and need
+[§7](07-components.md) — are hand-written and need
 reading the diffs, not running a script.
 
 ---

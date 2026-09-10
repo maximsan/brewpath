@@ -100,10 +100,11 @@ const ALLOWED_PAINT = new Set(["currentColor", "none", ...Object.keys(SENTINELS)
  *
  * `ds-content.js` draws four kinds — module, match, quiz, flavour — but the
  * catalogue of playable games has seven, so the practice shelf could head only
- * three of its groups and headed none instead (#436). The other four are drawn
- * in `screens.jsx`'s `ReplayIcon`, which `index.html` boots, and ADR-0009
- * ranks the running prototype above the catalogue — so they are read from
- * there rather than redrawn here.
+ * three of its groups and headed none instead (#436). The rest are drawn in
+ * `screens.jsx`'s `ReplayIcon`, which `index.html` boots, and ADR-0009 ranks
+ * the running prototype above the catalogue — so they are read from there
+ * rather than redrawn here. The how-to-play drawer then asked for a mark per
+ * *card* kind, which is a wider set than the shelf's (#567).
  *
  * `name` is what the asset is slugged from, so it is the kind's own key: the
  * shelf looks a mark up by the `kind` its catalogue entry carries.
@@ -130,6 +131,21 @@ const RUNNING_KINDS = {
     name: "Sequence",
     label: "Sequence",
     description: "Three stops and their rules — put the steps in order.",
+  },
+  mcq: {
+    name: "Mcq",
+    label: "Multiple choice",
+    description: "Two options with the first one filled in — pick one.",
+  },
+  multi: {
+    name: "Multi",
+    label: "Select all",
+    description: "Three options with two of them ticked — more than one fits.",
+  },
+  fill: {
+    name: "Fill",
+    label: "Complete the sentence",
+    description: "Lines of a sentence with one blank left open in the accent.",
   },
 };
 
@@ -282,7 +298,7 @@ function readCatalogue(sourceDir, problems) {
 }
 
 /**
- * Reads the four game-kind marks out of `ReplayIcon` and rewrites each as the
+ * Reads the game-kind marks out of `ReplayIcon` and rewrites each as the
  * catalogue's `svg()` would have emitted it.
  *
  * A regex rather than a parser because the target is narrow and the failure

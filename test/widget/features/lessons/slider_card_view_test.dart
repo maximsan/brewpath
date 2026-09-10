@@ -4,6 +4,7 @@ import 'package:brew_path/features/lessons/presentation/cards/slider_dial.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// A shipped grind round — the axis that draws the collar, with the answer at
@@ -58,13 +59,15 @@ Future<void> _pumpCard(
   _Signals signals,
 ) async {
   await tester.pumpWidget(
-    MaterialApp(
-      home: Scaffold(
-        body: SingleChildScrollView(
-          child: SliderCardView(
-            card: card,
-            onSolved: () => signals.solved++,
-            onContinue: () => signals.continued++,
+    ProviderScope(
+      child: MaterialApp(
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: SliderCardView(
+              card: card,
+              onSolved: () => signals.solved++,
+              onContinue: () => signals.continued++,
+            ),
           ),
         ),
       ),
@@ -240,16 +243,18 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
 
     await tester.pumpWidget(
-      MediaQuery(
-        // The largest step iOS offers without the accessibility sizes.
-        data: const MediaQueryData(textScaler: TextScaler.linear(2)),
-        child: MaterialApp(
-          home: Scaffold(
-            body: SingleChildScrollView(
-              child: SliderCardView(
-                card: _espressoGrind,
-                onSolved: () {},
-                onContinue: () {},
+      ProviderScope(
+        child: MediaQuery(
+          // The largest step iOS offers without the accessibility sizes.
+          data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+          child: MaterialApp(
+            home: Scaffold(
+              body: SingleChildScrollView(
+                child: SliderCardView(
+                  card: _espressoGrind,
+                  onSolved: () {},
+                  onContinue: () {},
+                ),
               ),
             ),
           ),

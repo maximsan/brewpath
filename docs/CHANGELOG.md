@@ -51,6 +51,52 @@ You can always edit this file by hand instead — the helpers just save effort.
   Free learners see the plain bean everywhere and the door asks for Plus, and
   Reset Progress leaves the outfit alone: it is something the learner chose,
   not something they did.
+
+- **The match board is a drag board, and it draws what you paired.** Its cue
+  has said *drag to pair* since the formats got their names, but the board only
+  took taps and drew nothing between its two columns, so a cleared board was
+  two lists with no visible pairing. Traits now drag onto their answer — tap
+  one then the other still works, as the design offers both — and every landed
+  pair draws a sage line that runs itself in with an arrowhead into the answer.
+  A wrong drop draws its line in berry, shakes both tiles and lets go. Several
+  traits can fan into one answer. Reduced motion lands all of it in one frame.
+
+- **Switching pricing models is a config change, not a rewrite.** The store
+  now reports which experiment arm a learner is on and what it sells them, and
+  the arm-to-SKU map is one function. A guard test makes it structurally
+  impossible for any access check to see the arm, so a purchase is honoured by
+  the same entitlement check whichever paywall sold it. Nothing on screen
+  changes: the build still ships the one-time arm ADR-0003 rules.
+
+- **The intro ends on the offer, and a purchase is celebrated.** After the name
+  step the app makes its case for the full course on a screen of its own — the
+  same one non-consumable every lock already sells, with the same ranked pitch
+  counted from the banks, plus Restore, Terms and Privacy. Buying is never
+  required: *Maybe later* and the close both finish onboarding and open Today.
+  Buying instead lands on a short welcome that offers the Studio it just
+  unlocked. Restoring is not a sale: it recovers what you own and walks on,
+  without the celebration. The intro is finished by this step rather than by
+  the name before it, so a learner still looking at the offer is not treated
+  as done with it.
+
+- **A card says what it is, and shows you how to play it.** The ten formats
+  with instructions — multiple choice, select all, match, calibrate, put in
+  order, true or false, tasting, taste fix, blind bag and complete the sentence
+  — now open on their name in the accent, with a `?` beside it. Tapping it
+  opens the design's how-to-play drawer: what the format is, in a sentence, and
+  the three steps to play it. The words are the design's own. The five kinds
+  that carry an authored eyebrow instead are untouched, and a round in a
+  mini-game reads exactly as it does in a lesson.
+
+- **The how-to-play drawer opens on the format's own mark.** It shipped
+  without one: three of the ten kinds with help — multiple choice, select all
+  and complete the sentence — had no glyph, and a well filled on seven rows
+  beside three empty ones is the fault the mini-game shelf already rules out.
+  The design draws all three, so they are read from it rather than invented
+  here, and the drawer now heads with the kind's mark in the design's outlined
+  well. A kind the design has not drawn opens on its steps with no well at all,
+  and a test keeps that off the shipped path.
+
 - **Checks run before code leaves the machine.** `tool/git-hooks/` fails a
   commit on an unformatted Dart file or an over-long comment, and a push on
   anything the metrics, a guard test, the comment check or the changelog
@@ -79,6 +125,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **The drawn green bean shades itself with the design's hairline token.** The
+  10 Sep prototype drop named the ink-dark outline on illustration fills
+  `--art-hairline`, so the seed's outline, shadow and crease shadow read
+  `ArtColors.hairline` rather than a registered off-token, and the note about
+  the design's second silverskin value is gone — the drop fixed it (#334).
+- **A mini-game is free when the lesson that teaches it is free.** The catalog
+  now names each game's teaching lesson, as the design does, and the tier line
+  reads it instead of standing a module in for it. The three free games are
+  unchanged; a locked game's offer still names the module that teaches it.
 - **A lesson, a mini-game or a drill fills the screen.** All six used to open
   under Flutter's own bar, a strip that took its own space at the top of the
   page and left a hairline of nothing above it on a notched phone. The bar now
@@ -158,6 +213,21 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **Restore Purchases no longer looks broken when it finds nothing.** It said
+  nothing at all — on every gate the app draws — so a learner with no purchase
+  on the account tapped a link that appeared dead. It now says what happened
+  and what to try, and is still not treated as a failure: nobody was charged.
+
+- **The course ending matches its design.** The screen was built five days
+  before the design drew it, and never compared since. It now reads *You
+  finished Foundations* with no eyebrow above it, Roasty says the one line
+  the design wrote, and the three stats sit as small-caps labels against
+  mono figures on hairlines, centred under the headline.
+- **Two ways past the free day's cap are shut.** A mini-game's intro asked
+  nothing on *Play* and stayed beneath the player, so a back gesture after a
+  finished run could start another; and a lesson's ending could be swiped
+  back to the last card, whose *Continue* recorded the same run twice. The
+  intro now asks the day's allowance, and the ending no longer goes back.
 - **Six more number lines are set at the width the design gives them.** The
   lesson and mini-game position counter, the Coffee Challenges count, a
   dictionary category's term count, the core-lessons count, the tree hero's

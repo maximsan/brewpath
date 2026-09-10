@@ -9,17 +9,9 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// What a locked mini-game offers instead of refusing.
-///
-/// A learner who reached for this game by name, on a topic they wanted, is at
-/// the highest intent the app ever sees. The sheet answers the question they
-/// actually have — *why can't I play this, and what would open it* — by naming
-/// the module that teaches the game's topic and pitching **that module**, not
-/// the game. Nobody buys a two-minute quiz.
-///
-/// The pitch is the module's own reward summary, which is where the course
-/// already says what the module is for; writing a second sentence here is how
-/// two descriptions of one module start disagreeing.
+/// What a locked mini-game offers instead of refusing: the module that
+/// teaches the game's topic, pitched in its own reward summary. Nobody buys a
+/// two-minute quiz, and a second sentence here would drift from the module's.
 Future<void> showMiniGameGateSheet({
   required BuildContext context,
   required MiniGameFormat format,
@@ -30,17 +22,17 @@ Future<void> showMiniGameGateSheet({
   // primitive owns the heading slot and the rule that every sheet opens on its
   // title, so the attribution leads the body instead.
   title: format.title,
-  builder: (context) => _GateBody(moduleId: format.moduleId),
+  builder: (context) => _GateBody(lessonId: format.lessonId),
 );
 
 class _GateBody extends ConsumerWidget {
-  const _GateBody({required this.moduleId});
+  const _GateBody({required this.lessonId});
 
-  final String moduleId;
+  final String lessonId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final module = ref.watch(teachingModuleProvider(moduleId));
+    final module = ref.watch(teachingModuleProvider(lessonId));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

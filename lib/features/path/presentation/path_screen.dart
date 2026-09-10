@@ -16,15 +16,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Path: the whole course on one screen.
 ///
 /// The course lives here and nowhere else — Learn is today's work, and the
-/// module screen this tab used to push is gone
-/// ([#394](https://github.com/maximsan/brewpath/issues/394)). Five modules and
-/// thirty-two lessons fit because each module draws at the density its state
-/// earns; see [PathModuleDensity].
-///
-/// The tab carries its own large title, as every tab root does: the shared
-/// header is invisible until this list scrolls under it, and prints the same
-/// course name compactly only once the large one has gone. The tally sits
-/// under it, the way the design stacks the pair.
+/// module screen this tab used to push is gone (#394). Each module draws at
+/// the density its state earns ([PathModuleDensity]); the tab carries its own
+/// large title, as every tab root does, with the tally stacked under it.
 class PathScreen extends ConsumerStatefulWidget {
   /// Creates a [PathScreen].
   const PathScreen({super.key});
@@ -70,9 +64,8 @@ class _PathScreenState extends ConsumerState<PathScreen> {
               AppRoutes.path,
               topGap: OffTokens.tabTitleClearOfEntries.value,
             ),
-            // The design sets 10 here and 8 on the Cards tab. Both are one
-            // stacked label rather than two blocks, so both take the hairline
-            // pair's stop; the 2 is not a measure either screen is built on.
+            // The design sets 8 here and on the Cards tab: one stacked label
+            // rather than two blocks, so both take the hairline pair's stop.
             const SizedBox(height: AppSpacing.xs),
             _CourseTally(modules: list),
             const SizedBox(height: AppSpacing.lg),

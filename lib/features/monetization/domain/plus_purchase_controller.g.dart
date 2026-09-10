@@ -59,7 +59,7 @@ final class PlusPurchaseProvider
   }
 }
 
-String _$plusPurchaseHash() => r'd88c59afb0e00be299f36c7a2ef1e6810bb29474';
+String _$plusPurchaseHash() => r'e26a3cbec80188e184fb9b814729790515714a4c';
 
 /// Drives the sheet's one action, and nothing else.
 ///

@@ -4,6 +4,8 @@ import 'package:brew_path/core/icons/replay_mark.dart';
 import 'package:brew_path/core/widgets/float_topbar.dart';
 import 'package:brew_path/core/widgets/ghost_button.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_cue.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_cue_row.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_intro_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_player_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_games_catalog_widget.dart';
@@ -13,6 +15,7 @@ import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/models/content/content_reward.dart';
 import 'package:brew_path/shared/models/content/mini_game_format.dart';
+import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/models/module_model.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
@@ -22,6 +25,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../support/content_fixtures.dart';
 import '../support/find_mark.dart';
 import '../support/widget_harness.dart';
 
@@ -30,11 +34,11 @@ MiniGameFormat _format(
   String kind,
   String title, {
   String topic = 'TOPIC',
-  String moduleId = 'm1',
+  String lessonId = 'm1l1',
 }) => MiniGameFormat(
   id: id,
   kind: kind,
-  moduleId: moduleId,
+  lessonId: lessonId,
   title: title,
   topic: topic,
   duration: '~1 MIN',
@@ -48,16 +52,16 @@ MiniGameFormat _format(
 final List<MiniGameFormat> _formats = [
   _format('g-quiz', 'quiz', 'True or false', topic: 'COFFEE BASICS'),
   _format('g-match', 'match', 'Match the facts'),
-  _format('g-flavor', 'flavor', 'Name the flavor notes', moduleId: 'm5'),
-  _format('g-bagpick', 'bagpick', 'Read the green bean', moduleId: 'm2'),
-  _format('g-tastefix', 'tastefix', 'Fix the cup', moduleId: 'm4'),
-  _format('g-calibrate', 'slider', 'Dial it in', moduleId: 'm4'),
-  _format('g-sequence', 'sequence', 'Put it in order', moduleId: 'm5'),
+  _format('g-flavor', 'flavor', 'Name the flavor notes', lessonId: 'm5l3'),
+  _format('g-bagpick', 'bagpick', 'Read the green bean', lessonId: 'm2l1'),
+  _format('g-tastefix', 'tastefix', 'Fix the cup', lessonId: 'm4l3'),
+  _format('g-calibrate', 'slider', 'Dial it in', lessonId: 'm4l3'),
+  _format('g-sequence', 'sequence', 'Put it in order', lessonId: 'm5l6'),
   // A game the playable registry has not ruled on — the shape the intro has to
   // disclose. Every kind draws as of #124, so the state that remains is a
   // catalog entry no one has ruled playable: `mini_game_playable_test` catches
   // that, and this is what a learner meets if it ever slips through.
-  _format('g-not-yet-ruled', 'sequence', 'Not ruled on yet', moduleId: 'm5'),
+  _format('g-not-yet-ruled', 'sequence', 'Not ruled on yet', lessonId: 'm5l6'),
 ];
 
 /// Four of the six answer `true`, so always tapping True scores exactly 4 —
@@ -203,6 +207,10 @@ class _FakeContentRepository extends ContentRepository {
   Future<List<ModuleModel>> getModules() async => _modules;
 
   @override
+  Future<LessonModel?> getLessonById(String id) async =>
+      testLesson(id: id, moduleId: id.split('l').first);
+
+  @override
   Future<List<ContentCard>> getMiniGameRounds(String formatId) async =>
       switch (formatId) {
         'g-quiz' => _rounds,
@@ -309,13 +317,13 @@ Future<void> _clearBoard(
     final wrong = pairs.firstWhere((pair) => pair.$2 != target).$2;
     await tester.tap(find.text(fact));
     await _settle(tester);
-    await tester.tap(find.widgetWithText(OutlinedButton, wrong));
+    await tester.tap(find.text(wrong));
     await _settle(tester);
   }
   for (final (fact, target) in pairs) {
     await tester.tap(find.text(fact));
     await _settle(tester);
-    await tester.tap(find.widgetWithText(OutlinedButton, target));
+    await tester.tap(find.text(target));
     await _settle(tester);
   }
   await tester.tap(find.text('Continue'));
@@ -676,6 +684,20 @@ void main() {
     expect(find.text('Done'), findsOneWidget);
   });
 
+  testWidgets('a round names its kind here too, as the lesson player does', (
+    tester,
+  ) async {
+    await _pump(tester);
+    await tester.tap(find.text('True or false'));
+    await _settle(tester);
+    await tester.tap(find.text('Play'));
+    await _settle(tester);
+
+    // The cue is the shared card shell's, so a game and a lesson cannot drift.
+    expect(find.text(CardCue.quiz.phrase.toUpperCase()), findsOneWidget);
+    expect(find.byType(CardCueRow), findsOneWidget);
+  });
+
   testWidgets('continue is gated until the round latches', (tester) async {
     await _pump(tester);
     await tester.tap(find.text('True or false'));
@@ -754,6 +776,47 @@ void main() {
       findsOneWidget,
       reason: 'the refused run leaves the learner on the results it offered',
     );
+  });
+
+  testWidgets("Play from the intro stops at the free day's cap", (
+    tester,
+  ) async {
+    // One activity already done, so the run below is the day's second. The
+    // intro stays beneath the player, so a back gesture after the results
+    // lands on Play again; the catalog row's check is behind it by then.
+    final spender = ProviderContainer();
+    addTearDown(spender.dispose);
+    await recordActivity(
+      spender.read(snapshotRepositoryProvider),
+      type: ActivityType.vocab,
+      subject: '',
+      now: DateTime.now(),
+    );
+
+    await _pump(tester);
+    await tester.tap(find.text('True or false'));
+    await _settle(tester);
+    await tester.tap(find.text('Play'));
+    await _settle(tester);
+    for (var round = 0; round < _rounds.length; round++) {
+      await _answerTrueAndContinue(tester);
+    }
+
+    // The system back, which pops the player and shows the intro beneath.
+    await tester.binding.handlePopRoute();
+    await _settle(tester);
+    expect(find.text('Play'), findsOneWidget);
+
+    await tester.tap(find.text('Play'));
+    for (var attempt = 0; attempt < 10; attempt++) {
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 20)),
+      );
+      await tester.pump();
+    }
+
+    expect(find.text(PlusCopy.title), findsOneWidget);
+    expect(find.text('Continue'), findsNothing, reason: 'no round dealt');
   });
 
   testWidgets('results render statically under reduced motion', (tester) async {
