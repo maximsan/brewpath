@@ -284,8 +284,8 @@ abstract final class OffTokens {
 
   /// The room around the Tour card's Skip.
   static const OffToken<EdgeInsets> tourSkipPadding = OffToken(
-    EdgeInsets.symmetric(horizontal: 6, vertical: AppSpacing.sm),
-    reason: "the design sets Skip to `padding: '12px 6px'`",
+    EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+    reason: "the design sets Skip to `padding: '10px 20px'`",
   );
 
   /// How wide a fill slot stays whatever word lands in it, so a sentence does
