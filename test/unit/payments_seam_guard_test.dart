@@ -14,7 +14,25 @@ void main() {
   /// being created.
   const monetizationLayer = <String>{
     'lib/features/monetization/domain/course_entitlement.dart',
+    'lib/features/monetization/domain/paywall_view.dart',
+    'lib/features/monetization/domain/paywall_view_provider.dart',
+    'lib/features/monetization/domain/plus_offering_provider.dart',
     'lib/features/monetization/domain/plus_purchase_controller.dart',
+  };
+
+  /// The paywall's own layer: the only thing that may know which arm sold a
+  /// purchase. Everything else asks whether the learner has Plus, full stop —
+  /// so this list grows when the paywall does, and never otherwise.
+  const paywallLayer = <String>{
+    'lib/features/monetization/config/paywall_config.dart',
+    'lib/features/monetization/domain/paywall_copy.dart',
+    'lib/features/monetization/domain/paywall_view.dart',
+    'lib/features/monetization/domain/paywall_view_provider.dart',
+    'lib/features/monetization/domain/plus_offering_provider.dart',
+    'lib/features/monetization/domain/plus_purchase_controller.dart',
+    'lib/features/monetization/presentation/paywall_screen.dart',
+    'lib/features/monetization/presentation/plan_picker.dart',
+    'lib/features/monetization/presentation/plus_gate_sheet.dart',
   };
 
   test('only the monetization layer imports the payments service', () {
@@ -59,6 +77,31 @@ void main() {
       reason:
           'these are exempted from the payments rule and no longer need to '
           'be. Remove them:\n${unused.join('\n')}',
+    );
+  });
+
+  test('no access check can see which arm the learner is on', () {
+    // #176's load-bearing claim. An entitlement that branched on the model
+    // would make the same purchase mean different things on different arms,
+    // and the experiment could not end without a migration.
+    final offenders = dartSourcesUnder('lib')
+        .where((file) => !paywallLayer.contains(file.path))
+        .where((file) => !file.path.startsWith('lib/services/payments/'))
+        .where(
+          (file) => withoutComments(
+            file.readAsStringSync(),
+          ).contains('monetization/plus_offering'),
+        )
+        .map((file) => file.path)
+        .toList();
+
+    expect(
+      offenders,
+      isEmpty,
+      reason:
+          'the monetization model reaches the paywall and stops there. A file '
+          'that reads it is a file whose behaviour changes per arm, which is '
+          'what the seam exists to prevent. Found:\n${offenders.join('\n')}',
     );
   });
 }

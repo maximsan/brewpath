@@ -26,10 +26,10 @@ dependencies:
   # declaring it directly only claimed an ownership we do not have. Dropped with
   # the privacy manifest (#166), which had to name whatever really compiles
   # SQLite into the binary.
-  # Held under 2.34.1: drift 2.34.4 moved the drift3-preview base class that
-  # drift_dev 2.34.0's schema verifier compiles against, and drift_dev cannot
-  # follow (2.34.1+ wants analyzer 13; freezed 3 pins 12) until freezed 4 lands.
-  drift: '>=2.33.0 <2.34.1'
+  # Held under 2.34.1: drift 2.34.4 dropped `allSchemaEntities`, which
+  # drift_dev 2.34.0 still calls, and drift_dev >=2.34.6 wants analyzer 13
+  # while freezed 3.2.6 holds analyzer 12. Lift both together.
+  drift: ">=2.33.0 <2.34.1"
   drift_flutter: ^0.3.0
   path_provider: ^2.1.5
 
