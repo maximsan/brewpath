@@ -10,10 +10,13 @@ import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/domain/saved_shelf.dart';
 import 'package:brew_path/features/saved/presentation/saved_entry_card.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
+import 'package:brew_path/features/companion/presentation/roasty.dart';
+import 'package:brew_path/features/studio/domain/dress_companion.dart';
 import 'package:brew_path/features/studio/presentation/roasty_door_tile.dart';
 import 'package:brew_path/features/studio/presentation/studio_door_tile.dart';
 import 'package:brew_path/features/studio/presentation/studio_screen.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
+import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -51,6 +54,37 @@ void main() {
     await tester.tap(findMark(AppIcon.leaf, active: false));
     await settleLoaders(tester);
   }
+
+  testWidgets('a free learner meets the plain bean on the wardrobe door', (
+    tester,
+  ) async {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    await dressCompanion(
+      container.read(snapshotRepositoryProvider),
+      outfit: const CompanionConfig(
+        roast: 'espresso',
+        hat: 'beanie',
+        gear: 'headphones',
+        sprout: 'cherry',
+      ),
+      now: DateTime(2026, 9, 11),
+    );
+
+    await openProfile(tester);
+
+    final door = tester.widget<Roasty>(
+      find.descendant(
+        of: find.byType(RoastyDoorTile),
+        matching: find.byType(Roasty),
+      ),
+    );
+    expect(
+      door.outfit,
+      CompanionConfig.initial,
+      reason: 'the gate hides the wardrobe on the door as well as behind it',
+    );
+  });
 
   testWidgets('the three entries close the screen, in the design order', (
     tester,

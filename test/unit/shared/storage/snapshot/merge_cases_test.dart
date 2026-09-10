@@ -103,6 +103,55 @@ void main() {
     });
   });
 
+  group('the companion — last writer wins, both ways round', () {
+    ClearedByDeleteOnly dressed(
+      CompanionConfig outfit, {
+      required int at,
+      required String by,
+    }) => ClearedByDeleteOnly(
+      grove: ClearedByDeleteOnly.empty.grove,
+      companion: Timestamped(value: outfit, updatedAt: at, writerId: by),
+    );
+
+    const beanie = CompanionConfig(
+      roast: 'dark',
+      hat: 'beanie',
+      gear: 'none',
+      sprout: 'leaf',
+    );
+    const shades = CompanionConfig(
+      roast: 'light',
+      hat: 'none',
+      gear: 'shades',
+      sprout: 'cherry',
+    );
+
+    test('two devices dressing him converge on the later pick', () {
+      final phone = _snap(account: dressed(beanie, at: 10, by: 'phone'));
+      final tablet = _snap(account: dressed(shades, at: 20, by: 'tablet'));
+
+      expect(
+        mergeSnapshot(phone, tablet).clearedByDeleteOnly.companion.value,
+        shades,
+      );
+      expect(
+        mergeSnapshot(tablet, phone).clearedByDeleteOnly.companion.value,
+        shades,
+        reason: 'whichever device syncs first, both land on one outfit',
+      );
+    });
+
+    test('a tie is broken by the writer, not by the argument order', () {
+      final phone = _snap(account: dressed(beanie, at: 10, by: 'phone'));
+      final tablet = _snap(account: dressed(shades, at: 10, by: 'tablet'));
+
+      expect(
+        mergeSnapshot(phone, tablet).clearedByDeleteOnly.companion.value,
+        mergeSnapshot(tablet, phone).clearedByDeleteOnly.companion.value,
+      );
+    });
+  });
+
   group('dailyActivity — a set per day, never a counter', () {
     test('two devices each playing one game that day combine to two', () {
       // A counter cannot express this: max gives 1, and sum double-counts on

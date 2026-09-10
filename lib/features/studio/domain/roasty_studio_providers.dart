@@ -22,20 +22,21 @@ class RoastyStudio {
   /// What Roasty has on right now — what the confirm is compared against.
   final CompanionConfig worn;
 
-  /// What the Studio door says under its title: the roast, and whatever else
-  /// the learner has actually put on.
+  /// What the Studio door says under its title for [outfit]: the roast, and
+  /// whatever else has actually been put on.
   ///
-  /// The plain bean is a resting state, so naming its `none`s would tell the
-  /// learner they have chosen something when they have not.
-  String get doorSubtitle {
+  /// Takes the outfit rather than reading [worn], because the door draws the
+  /// *gated* one. Naming the plain bean's `none`s is skipped: a resting state
+  /// is not a choice, and reading it back as one would say it was.
+  String subtitleFor(CompanionConfig outfit) {
     final chosen = [
-      _labelOf(options.roasts, worn.roast),
-      if (worn.hat != CompanionConfig.initial.hat)
-        _labelOf(options.hats, worn.hat),
-      if (worn.gear != CompanionConfig.initial.gear)
-        _labelOf(options.gear, worn.gear),
-      if (worn.sprout != CompanionConfig.initial.sprout)
-        _labelOf(options.sprouts, worn.sprout),
+      _labelOf(options.roasts, outfit.roast),
+      if (outfit.hat != CompanionConfig.initial.hat)
+        _labelOf(options.hats, outfit.hat),
+      if (outfit.gear != CompanionConfig.initial.gear)
+        _labelOf(options.gear, outfit.gear),
+      if (outfit.sprout != CompanionConfig.initial.sprout)
+        _labelOf(options.sprouts, outfit.sprout),
     ].whereType<String>();
     return chosen.join(' · ');
   }
