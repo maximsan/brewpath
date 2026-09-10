@@ -96,6 +96,11 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **The drawn green bean shades itself with the design's hairline token.** The
+  10 Sep prototype drop named the ink-dark outline on illustration fills
+  `--art-hairline`, so the seed's outline, shadow and crease shadow read
+  `ArtColors.hairline` rather than a registered off-token, and the note about
+  the design's second silverskin value is gone — the drop fixed it (#334).
 - **A mini-game is free when the lesson that teaches it is free.** The catalog
   now names each game's teaching lesson, as the design does, and the tier line
   reads it instead of standing a module in for it. The three free games are
