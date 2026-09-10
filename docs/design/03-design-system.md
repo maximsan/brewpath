@@ -301,7 +301,7 @@ state, its demo, when it applies, and its token spec):
 | Games | Card cue · Round length |
 | Brand & boot | Roasty, the companion · Intro screen skeleton · Tap to continue · Brand mark · Loading sequence |
 
-**Empty states are specified there and nowhere in this doc** — worth knowing before anyone writes an empty-state ticket from [§11](12-checklist.md).
+**Empty states are specified there and nowhere in this doc** — the ticket for them is [#572](https://github.com/maximsan/brewpath/issues/572).
 
 **The `FLAGS` register.** The design-system site carries its own audit register
 (severity `high` → "NEEDS DECISION", `med` → "SHOULD FIX", `low` → "POLISH",
