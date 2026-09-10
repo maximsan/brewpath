@@ -231,7 +231,7 @@ void main() {
         final render =
             boundary.currentContext!.findRenderObject()!
                 as RenderRepaintBoundary;
-        final image = await tester.runAsync(() => render.toImage());
+        final image = await tester.runAsync(render.toImage);
         final bytes = await tester.runAsync(
           () => image!.toByteData(format: ui.ImageByteFormat.rawStraightRgba),
         );
@@ -248,7 +248,7 @@ void main() {
         // The outer ring: centre (50, 48), r 40 — its stroke sits at x = 90 and
         // its fill, cherry skin, just inside at x = 88.
         final fill = at(88 * scale, 48 * scale);
-        // A quarter unit inside the edge: still under the stroke, over the fill.
+        // A quarter unit inside the edge: under the stroke, over the fill.
         final ring = at(89.75 * scale, 48 * scale);
         expect(fill, ArtColors.cherrySkin, reason: 'the fill under the ring');
         expect(ring.a, 1.0, reason: 'the ring pixel is over the fill');
