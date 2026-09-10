@@ -1,14 +1,9 @@
 /// The per-day completion record the free daily allowance counts against.
 ///
-/// Each entry is **one completion**, not one kind of completion. A set keyed
-/// on type would collapse two vocab rounds — or two replays of one lesson —
-/// into a single mark, and the cap has to see two (#65, carried in #104).
-///
-/// Entries are strings because that is the wire form the whole record merges
-/// in: a day's entries union across devices, and a set of scalars unions with
-/// no decode step in the middle. Everything here is pure — the token that
-/// makes an entry unique is minted by the caller, so a test can supply its
-/// own and get the same record every run.
+/// Each entry is **one completion**, not one kind: two vocab rounds, or two
+/// replays of one lesson, have to count as two (#65). Entries are strings
+/// because a day's entries union across devices with no decode step. Pure:
+/// the token that makes an entry unique is minted by the caller.
 library;
 
 import 'dart:math';
@@ -120,17 +115,10 @@ bool miniGamesMarkTheDay(Iterable<String> entries) =>
 
 /// Drops days nothing will read again.
 ///
-/// **Not wired yet, deliberately.** Nothing writes an activity event in this
-/// build, so there is nothing to prune; the trim belongs to whichever code
-/// first appends one, which is where the record is already being rebuilt.
-/// The two places it must *not* go: `mergeSnapshot`, which is pure and proved
-/// against laws a clock would break, and `SnapshotRepository`, which would
-/// then return something other than what it was handed.
-///
-/// Best-effort only: a peer still holding an older day re-adds it on the next
-/// union merge, which is harmless because nothing reads beyond today. Days
-/// ahead of [today] are kept — another device's clock may be ahead, and
-/// dropping them would delete real completions.
+/// Called by the write that appends an entry, never by `mergeSnapshot` (pure,
+/// proved against laws a clock would break) or `SnapshotRepository` (must
+/// return what it was handed). Best-effort: a peer re-adds an older day on the
+/// next merge, harmlessly. Days ahead of [today] are another device's clock.
 Map<int, Set<String>> pruneDailyActivity(
   Map<int, Set<String>> record, {
   required int today,

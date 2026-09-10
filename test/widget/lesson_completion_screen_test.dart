@@ -159,8 +159,51 @@ Future<void> qualifyDaysBefore(WidgetTester tester, int count) async {
   }
 }
 
+/// A stand-in for the lesson the ending is pushed over.
+class _LessonStub extends StatelessWidget {
+  const _LessonStub();
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    body: TextButton(
+      onPressed: () => Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => const LessonCompletionScreen(
+            lessonId: 'm1l1',
+            mastery: MasteryResult(correct: 5, total: 5),
+          ),
+        ),
+      ),
+      child: const Text('finish'),
+    ),
+  );
+}
+
 void main() {
   setUp(useInMemoryDatabase);
+
+  testWidgets('the ending refuses a back, so the run is not finished twice', (
+    tester,
+  ) async {
+    final container = _buildContainer();
+    addTearDown(container.dispose);
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: _app(const _LessonStub()),
+      ),
+    );
+    await tester.tap(find.text('finish'));
+    await settleLoaders(tester);
+    await skipBeat(tester);
+    expect(find.byType(LessonCompletionScreen), findsOneWidget);
+
+    await tester.binding.handlePopRoute();
+    await settleLoaders(tester);
+
+    expect(find.byType(LessonCompletionScreen), findsOneWidget);
+    expect(find.text('finish'), findsNothing);
+  });
 
   testWidgets(
     'completing a lesson refreshes "Today\'s lesson" to the next lesson',

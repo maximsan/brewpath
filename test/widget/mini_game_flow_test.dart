@@ -772,6 +772,47 @@ void main() {
     );
   });
 
+  testWidgets("Play from the intro stops at the free day's cap", (
+    tester,
+  ) async {
+    // One activity already done, so the run below is the day's second. The
+    // intro stays beneath the player, so a back gesture after the results
+    // lands on Play again; the catalog row's check is behind it by then.
+    final spender = ProviderContainer();
+    addTearDown(spender.dispose);
+    await recordActivity(
+      spender.read(snapshotRepositoryProvider),
+      type: ActivityType.vocab,
+      subject: '',
+      now: DateTime.now(),
+    );
+
+    await _pump(tester);
+    await tester.tap(find.text('True or false'));
+    await _settle(tester);
+    await tester.tap(find.text('Play'));
+    await _settle(tester);
+    for (var round = 0; round < _rounds.length; round++) {
+      await _answerTrueAndContinue(tester);
+    }
+
+    // The system back, which pops the player and shows the intro beneath.
+    await tester.binding.handlePopRoute();
+    await _settle(tester);
+    expect(find.text('Play'), findsOneWidget);
+
+    await tester.tap(find.text('Play'));
+    for (var attempt = 0; attempt < 10; attempt++) {
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 20)),
+      );
+      await tester.pump();
+    }
+
+    expect(find.text(PlusCopy.title), findsOneWidget);
+    expect(find.text('Continue'), findsNothing, reason: 'no round dealt');
+  });
+
   testWidgets('results render statically under reduced motion', (tester) async {
     await _pump(tester, disableAnimations: true);
     await tester.tap(find.text('True or false'));
