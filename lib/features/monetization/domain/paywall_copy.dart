@@ -18,6 +18,9 @@ String paywallPlanCta(PlusTerm term) => paywallPlans[term]!.cta;
 
 /// The words that do not move when the model does.
 abstract final class PaywallCopy {
+  /// What is sold, leading the eyebrow before the model's own name.
+  static const course = 'Foundations';
+
   /// The top bar's only control.
   static const close = 'Close';
 

@@ -92,6 +92,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   Future<void> _restore() async {
     _restoring = true;
     await ref.read(plusPurchaseProvider.notifier).restore();
+    // Cleared once the restore has settled, whatever it found: a sale made
+    // after a restore that recovered nothing is still a sale.
+    _restoring = false;
   }
 }
 
@@ -136,7 +139,12 @@ class _Offer extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: AppSpacing.xs),
-              Center(child: SmallcapsLabel(view.eyebrow, color: mood.accent)),
+              Center(
+                child: SmallcapsLabel(
+                  '${PaywallCopy.course} · ${view.eyebrow}',
+                  color: mood.accent,
+                ),
+              ),
               const SizedBox(height: AppSpacing.xs),
               Text(
                 view.heroTitle,

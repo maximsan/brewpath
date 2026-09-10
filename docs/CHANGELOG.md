@@ -205,6 +205,11 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **A sale after a restore that found nothing is still a sale.** Tapping
+  *Restore purchases*, being told there was nothing to restore, and then
+  buying left the offer by the restore door: no celebration, and in the
+  intro the buyer landed on Today. The door is now chosen per press. The
+  offer's eyebrow also leads with *Foundations*, as the design's does.
 - **Restore Purchases no longer looks broken when it finds nothing.** It said
   nothing at all — on every gate the app draws — so a learner with no purchase
   on the account tapped a link that appeared dead. It now says what happened
