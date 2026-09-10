@@ -187,9 +187,6 @@ function LessonPlayer({ lessonId, onClose, onComplete, isFav, onToggleFav, onTer
     correctRef.current += 1; // one onCorrect call == one correctly-answered quiz card
   };
 
-  // wedge progress (6 wedges)
-  const filled = Math.round(((idx + 1) / total) * 6);
-
   return (
     <div className="screen" data-screen-label="Lesson Player" style={{ background: 'var(--bg)' }}>
       <div className="lesson-topbar">
@@ -1596,7 +1593,6 @@ function MiniGamePlayer({ game, onClose, onTermTap }) {
     setScore(0); setRoundIndex(0); setKey(k => k + 1); setDone(false);
   };
 
-  const filled = Math.round(((roundIndex + 1) / roundCount) * 6);
   const card = content[roundIndex];
 
   const topbar = (progressed) => (

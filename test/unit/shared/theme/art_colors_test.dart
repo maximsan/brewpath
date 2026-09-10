@@ -27,6 +27,7 @@ const _spec = <String, Color>{
   '--art-ripe': Color(0xFFC8843A),
   '--art-sour': Color(0xFFB79A3C),
   '--art-cream': Color(0xFFF0DCB8),
+  '--art-hairline': Color(0xFF1B1614),
 };
 
 /// The palette as the app states it, by the design source's own token names.
@@ -38,7 +39,7 @@ Map<String, Color> get _tokens => ArtColors.byTokenName;
 
 void main() {
   group('the illustration palette', () {
-    test('is the 15 tokens the design ships, valued 1:1', () {
+    test('is the 16 tokens the design ships, valued 1:1', () {
       expect(_tokens, _spec);
     });
 
@@ -62,6 +63,9 @@ void main() {
       };
 
       _tokens.forEach((name, colour) {
+        // The one exception the design declares: the hairline is Cupping ink
+        // by value and "fixed like the other art tokens" by rule.
+        if (name == '--art-hairline') return;
         expect(
           moodValues,
           isNot(contains(colour)),

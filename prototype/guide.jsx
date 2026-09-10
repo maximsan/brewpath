@@ -7,8 +7,8 @@
 // screens.jsx plus the tab bar. No tab navigation — everything highlighted is
 // on (or framing) the Today screen.
 const TOUR_STEPS = [
-  { target: '[data-guide="today-lesson"]', title: 'Today starts here', body: 'Your next lesson always waits in this card. One short lesson a day is the whole habit.' },
-  { target: '[data-guide="today-practice"]', title: 'Practice again, any time', body: 'Lessons you finish collect here, with quick practice formats beside them. Replays sharpen you but never change your points.' },
+  { target: '[data-guide="today-lesson"]', title: 'Today starts here', body: 'Your next lesson always waits in this card.' },
+  { target: '[data-guide="today-practice"]', title: 'Practice again, any time', body: 'Lessons you finish collect here, with quick practice formats beside them.' },
   { target: '[data-guide="today-header"]', title: 'Saved and Dictionary', scrollTop: true, body: 'Anything you bookmark lands behind the ribbon; every coffee term you meet joins the book beside it.' },
   { target: '.tabbar', title: 'Find your way', scrollTop: true, body: 'Path holds the whole course, Collection your earned cards, Profile your streak and coffee tree.' },
 ];
@@ -24,7 +24,21 @@ function TodayTour({ onFinish }) {
     const a = area.getBoundingClientRect();
     const scale = (a.width / area.offsetWidth) || 1;
     const r = el.getBoundingClientRect();
-    setRect({ x: (r.left - a.left) / scale, y: (r.top - a.top) / scale, w: r.width / scale, h: r.height / scale, areaH: area.offsetHeight });
+    // Frame the target's CONTENT box, not its border box. Several targets are
+    // full-bleed `.px-24` sections whose padding is layout gutter, not content:
+    // framing the border box bleeds the outline off both screen edges and lifts
+    // the top line into the sticky header. Insetting by the element's own
+    // padding lands the frame on what the step is actually pointing at.
+    const cs = getComputedStyle(el);
+    const pt = parseFloat(cs.paddingTop) || 0, pb = parseFloat(cs.paddingBottom) || 0;
+    const pl = parseFloat(cs.paddingLeft) || 0, pr = parseFloat(cs.paddingRight) || 0;
+    setRect({
+      x: (r.left - a.left) / scale + pl,
+      y: (r.top - a.top) / scale + pt,
+      w: Math.max(0, r.width / scale - pl - pr),
+      h: Math.max(0, r.height / scale - pt - pb),
+      areaH: area.offsetHeight,
+    });
   }, [i]);
   // Bring the step's target into view (plain scrollTop math — no scrollIntoView),
   // then measure. Steps that frame fixed chrome ask for the top of the feed.
@@ -71,14 +85,20 @@ function TodayTour({ onFinish }) {
         <div className="smallcaps-mono">{(i + 1) + ' of ' + TOUR_STEPS.length}</div>
         <div className="ff-display" style={{ fontSize: 'var(--t-heading)', letterSpacing: '-0.01em', color: 'var(--ink)', marginTop: 7, lineHeight: 1.15 }}>{step.title}</div>
         <p style={{ margin: '7px 0 0', fontSize: 'var(--t-support)', lineHeight: 1.55, color: 'var(--ink-mute)', textWrap: 'pretty' }}>{step.body}</p>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: 12 }}>
-          <button className="btn" onClick={onFinish} aria-label="Skip the introduction" style={{ background: 'transparent', color: 'var(--ink-mute)', padding: '12px 6px', fontSize: 'var(--t-support)' }}>Skip</button>
-          <div style={{ display: 'flex', gap: 5 }} aria-hidden="true">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 12 }}>
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start' }}>
+            {!last && (
+              <button className="btn" onClick={onFinish} aria-label="Skip the introduction" style={{ background: 'var(--surface-2)', color: 'var(--ink)', border: '1px solid var(--rule)', borderRadius: 999, padding: '10px 20px', fontSize: 'var(--t-support)' }}>Skip</button>
+            )}
+          </div>
+          <div style={{ display: 'flex', gap: 5, flexShrink: 0 }} aria-hidden="true">
             {TOUR_STEPS.map((_, d) => (
               <span key={d} style={{ width: 5, height: 5, borderRadius: 999, background: d === i ? 'var(--accent)' : 'var(--rule)' }}></span>
             ))}
           </div>
-          <button className="btn" onClick={() => last ? onFinish() : setI(i + 1)} style={{ background: 'var(--accent)', color: 'var(--accent-ink)', borderRadius: 999, padding: '11px 20px', fontSize: 'var(--t-support)' }}>{last ? 'Done' : 'Next'}</button>
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+            <button className="btn" onClick={() => last ? onFinish() : setI(i + 1)} style={{ background: 'var(--accent)', color: 'var(--accent-ink)', borderRadius: 999, padding: '11px 20px', fontSize: 'var(--t-support)' }}>{last ? 'Done' : 'Next'}</button>
+          </div>
         </div>
       </div>
     </div>

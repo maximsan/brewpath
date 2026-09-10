@@ -9,7 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 MiniGameFormat _game(String id, String kind) => MiniGameFormat(
   id: id,
   kind: kind,
-  moduleId: 'm1',
+  lessonId: 'm1l1',
   title: id,
   topic: 'TOPIC',
   duration: '~2 MIN',

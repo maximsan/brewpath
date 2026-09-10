@@ -39,6 +39,22 @@ abstract class AppRoutes {
     '/onboarding/brewer',
   );
   static const onboardingName = AppRoute('onboardingName', '/onboarding/name');
+
+  /// The intro's last step: the Plus offer (ADR-0010, #242). Under the
+  /// onboarding prefix so the gate lets an unfinished learner reach it and
+  /// bounces a finished one out, like every other step.
+  static const onboardingPaywall = AppRoute(
+    'onboardingPaywall',
+    '/onboarding/paywall',
+  );
+
+  /// The celebration a purchase lands on. Root-level, not an intro step: the
+  /// Profile entry reaches it too once #421 lands, and by the time it draws
+  /// the intro is already finished.
+  static const purchaseWelcome = AppRoute(
+    'purchaseWelcome',
+    '/purchase-welcome',
+  );
   static const learn = AppRoute('learn', '/learn');
   static const courseComplete = AppRoute('courseComplete', '/course-complete');
   static const lesson = AppRoute('lesson', 'lesson/:lessonId');

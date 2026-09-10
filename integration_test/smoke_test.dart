@@ -6,6 +6,7 @@ import 'package:brew_path/features/lessons/domain/lesson_completion_actions.dart
 import 'package:brew_path/features/lessons/presentation/cards/match_tile.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_screen.dart';
 import 'package:brew_path/features/lessons/presentation/reward_points_line.dart';
+import 'package:brew_path/features/monetization/domain/plus_copy.dart';
 import 'package:brew_path/features/onboarding/presentation/loading/loading_screen.dart';
 import 'package:brew_path/features/profile/presentation/widgets/profile_progress_line.dart';
 import 'package:brew_path/features/tour/domain/tour_copy.dart';
@@ -295,6 +296,15 @@ void main() {
       tester,
       liveButton('Continue'),
       describe: 'the name step accepting a name',
+    );
+
+    // The intro's last step (ADR-0010, #242). Declined rather than bought:
+    // the store is the no-op service in this build, so buying is not a path a
+    // walk can drive — and declining is the exit every learner has.
+    await tapWhenReady(
+      tester,
+      find.text(PlusCopy.maybeLater),
+      describe: 'the Plus offer that ends onboarding',
     );
 
     // The Tour is offered on the first launch that reaches Learn with it

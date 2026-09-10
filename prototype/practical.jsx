@@ -554,7 +554,7 @@ function VisualGuideThumb({ visualGuide }) {
     return (
       <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
         {rings.map(([c, r], i) => (
-          <circle key={i} cx="50" cy="50" r={r} fill={c} stroke="rgba(27,22,20,0.22)" strokeWidth="0.6"/>
+          <circle key={i} cx="50" cy="50" r={r} fill={c} stroke="var(--art-hairline)" strokeOpacity="0.22" strokeWidth="0.6"/>
         ))}
         <line x1="50" y1="34" x2="50" y2="66" stroke="var(--art-seed-crease)" strokeWidth="1.4"/>
       </svg>
