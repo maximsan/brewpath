@@ -260,7 +260,11 @@ function useScrollFlag(threshold = 40, resetKey) {
 }
 
 // Floating close/back over full-bleed screens (reward ceremonies, paywall,
-// atlas pages): transparent at rest, standard header chrome on scroll.
+// atlas pages): transparent at rest, standard header chrome on scroll —
+// including the fade below the hairline, so this bar behaves exactly like
+// StickyHeaderChrome and nothing scrolls through a bare edge.
+// FLOAT_PAD is the clearance a scroll container must leave for it.
+const FLOAT_PAD = 96;
 function FloatTopbar({ scrolled, onBack, back = false, label, right = null }) {
   return (
     <div className="lesson-topbar" style={{
@@ -269,6 +273,11 @@ function FloatTopbar({ scrolled, onBack, back = false, label, right = null }) {
       borderBottom: '1px solid ' + (scrolled ? 'var(--rule)' : 'transparent'),
       transition: 'background 260ms ease, backdrop-filter 260ms ease, border-color 260ms ease',
     }}>
+      <div aria-hidden="true" style={{
+        position: 'absolute', top: '100%', left: 0, right: 0, height: 22, pointerEvents: 'none',
+        background: 'linear-gradient(to bottom, color-mix(in oklab, var(--bg) 88%, transparent), transparent)',
+        opacity: scrolled ? 1 : 0, transition: 'opacity 260ms ease',
+      }}/>
       <button className="close-btn" onClick={onBack} aria-label={label || (back ? 'Back' : 'Close')}>
         {back ? <window.BackMark/> : <window.CloseMark/>}
       </button>
@@ -675,6 +684,7 @@ window.SettingsToggle = SettingsToggle;
 window.SubScreenHeader = SubScreenHeader;
 window.StickyHeaderChrome = StickyHeaderChrome;
 window.FloatTopbar = FloatTopbar;
+window.FLOAT_PAD = FLOAT_PAD;
 window.HeaderCompactTitle = HeaderCompactTitle;
 window.HEADER_H = HEADER_H;
 window.HEADER_PAD = HEADER_PAD;

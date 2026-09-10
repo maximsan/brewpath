@@ -214,6 +214,9 @@
     --art-cherry-skin:#A93227; --art-cherry-pulp:#C9563A; --art-cherry-gel:#D9A94C;
     --art-cherry-parchment:#E3D2AE; --art-cherry-silverskin:#F1E8D6; --art-cherry-seed:#8FA184;
     --art-seed-crease:#5C6B52;
+    /* ink-dark outline on illustration fills — fixed like the other art tokens
+       (the drawings don't swap with mood); use with stroke-opacity */
+    --art-hairline:#1B1614;
     /* highlight on illustration fills — was defined in the dark mood only, so every
        art highlight lost its colour in cupping. Literal, so it does not flip. */
     --art-cream:#F0DCB8;
@@ -781,6 +784,13 @@
     z-index: 10;
     background: var(--bg);
     border-bottom: 1px solid var(--rule);
+  }
+  /* Opaque cap over the status-bar inset: the scroll region runs full-bleed to
+     y=0, so without this, content scrolled past the bar renders behind the
+     clock. `inherit` keeps transparent/blurred topbar variants unchanged. */
+  .lesson-topbar::before {
+    content: ''; position: absolute; left: 0; right: 0; bottom: 100%; height: 54px;
+    background: inherit; backdrop-filter: inherit; -webkit-backdrop-filter: inherit;
   }
   .close-btn {
     appearance: none;

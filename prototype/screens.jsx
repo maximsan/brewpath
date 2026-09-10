@@ -384,7 +384,12 @@ function StreakScreen({ streak, frozenDays, freezesHeld = 0, freezeCap = 1, next
 
 // ShareStreakSheet — bottom drawer (same chrome as the card-detail sheet) that
 // previews the shareable streak card and offers a few destinations.
-function ShareTarget({ label, children, onClick }) {
+// One confirmation mark for every destination, so no target is a dead tap.
+function ShareAck() {
+  return <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4 4 10-10" stroke="var(--accent)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+}
+
+function ShareTarget({ label, ackLabel, acked, children, onClick }) {
   return (
     <button onClick={onClick} style={{
       appearance: 'none', cursor: 'pointer', background: 'transparent', border: 'none',
@@ -392,16 +397,176 @@ function ShareTarget({ label, children, onClick }) {
     }}>
       <span style={{
         width: 52, height: 52, borderRadius: 999, display: 'grid', placeItems: 'center',
-        border: '1px solid var(--rule)', background: 'var(--surface)', color: 'var(--ink)',
-      }}>{children}</span>
-      <span className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-mute)' }}>{label}</span>
+        border: '1px solid ' + (acked ? 'color-mix(in oklab, var(--accent) 46%, var(--rule))' : 'var(--rule)'),
+        background: 'var(--surface)', color: 'var(--ink)', transition: 'border-color 160ms ease',
+      }}>{acked ? <ShareAck/> : children}</span>
+      <span className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.1em', textTransform: 'uppercase', color: acked ? 'var(--accent)' : 'var(--ink-mute)' }}>{acked ? (ackLabel || label) : label}</span>
     </button>
   );
 }
 
+// Which destination was last tapped. Clears itself after a beat so the row
+// returns to its resting state — a demo tap should confirm, not latch.
+// Shared by every share sheet so no destination behaves differently.
+function useShareAck(open) {
+  const [ack, setAck] = React.useState(null);
+  const timer = React.useRef(null);
+  React.useEffect(() => { if (!open) { clearTimeout(timer.current); setAck(null); } }, [open]);
+  React.useEffect(() => () => clearTimeout(timer.current), []);
+  const hit = (key) => {
+    clearTimeout(timer.current);
+    setAck(key);
+    timer.current = setTimeout(() => setAck(null), 1800);
+  };
+  return [ack, hit];
+}
+
+// The destination row. ONE definition — the streak share and the card share
+// offer the same four places, in the same order, with the same confirmations.
+function ShareTargets({ ack, hit }) {
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginTop: 22 }}>
+      <ShareTarget label="Stories" ackLabel="Opened" acked={ack === 'stories'} onClick={() => hit('stories')}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="5" stroke="currentColor" strokeWidth="1.6"/><circle cx="12" cy="12" r="3.6" stroke="currentColor" strokeWidth="1.6"/><circle cx="16.6" cy="7.4" r="1" fill="currentColor"/></svg>
+      </ShareTarget>
+      <ShareTarget label="Message" ackLabel="Sent" acked={ack === 'message'} onClick={() => hit('message')}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 6.5C4 5.4 4.9 4.5 6 4.5h12c1.1 0 2 .9 2 2v7c0 1.1-.9 2-2 2H9l-4 3.5V6.5Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"/></svg>
+      </ShareTarget>
+      <ShareTarget label="Copy link" ackLabel="Copied" acked={ack === 'link'} onClick={() => hit('link')}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M9.5 14.5l5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/><path d="M11 8l1.7-1.7a3.3 3.3 0 0 1 4.7 4.7L15.7 12.7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/><path d="M13 16l-1.7 1.7a3.3 3.3 0 0 1-4.7-4.7L8.3 11.3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg>
+      </ShareTarget>
+      <ShareTarget label="Save" ackLabel="Saved" acked={ack === 'save'} onClick={() => hit('save')}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 4v10m0 0l-3.5-3.5M12 14l3.5-3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/><path d="M5 17v1.5C5 19.3 5.7 20 6.5 20h11c.8 0 1.5-.7 1.5-1.5V17" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg>
+      </ShareTarget>
+    </div>
+  );
+}
+
+// Scales a fixed-size composition (the share images are composed at a fixed
+// logical size and exported at 3×) down to whatever width it is given.
+function useFitScale(base, dep) {
+  const ref = React.useRef(null);
+  const [scale, setScale] = React.useState(1);
+  React.useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    // Never fall back to the base width: a zero measurement means the sheet has
+    // not been laid out yet, and treating it as 1 leaves the composition
+    // overflowing its slot (uneven margins, clipped right edge).
+    const measure = () => { const w = el.clientWidth; if (w > 0) setScale(w / base); };
+    measure();
+    const raf = requestAnimationFrame(measure);
+    let ro;
+    if (typeof ResizeObserver !== 'undefined') { ro = new ResizeObserver(measure); ro.observe(el); }
+    return () => { cancelAnimationFrame(raf); if (ro) ro.disconnect(); };
+  }, [base, dep]);
+  return [ref, scale];
+}
+
+// Which module a collectible belongs to — module rewards name it directly,
+// lesson cards resolve through the lesson that unlocks them.
+function cardModuleOf(card) {
+  const mods = window.MODULES || [];
+  const u = (card && card.unlock) || {};
+  if (u.module) return mods.find(m => m.id === u.module) || null;
+  if (u.lesson && window.findLessonContext) {
+    const ctx = window.findLessonContext(u.lesson);
+    return ctx ? ctx.module : null;
+  }
+  return null;
+}
+
+// The one line that travels with the link, since the link is sent as text
+// beside the image. Names the card and says what the app is — nothing else.
+function cardShareText(card) {
+  return '“' + ((card && card.title) || 'A card') + '” — my latest BrewPath card. Learning coffee, one card at a time.';
+}
+
+// CollectibleShareCard — the collectible's counterpart of the streak card, and
+// the collection's answer to “what does a recipient see in Messages”. Square,
+// composed at 360 logical points, exported at 1080.
+function CollectibleShareCard({ card }) {
+  const mod = cardModuleOf(card);
+  const Art = CARD_ART[card.kind];
+  return (
+    <div style={{
+      width: 360, height: 360, boxSizing: 'border-box',
+      display: 'flex', flexDirection: 'column',
+      padding: '20px 22px 18px',
+      border: '1px solid color-mix(in oklab, var(--accent) 24%, var(--rule))',
+      borderRadius: 16, overflow: 'hidden',
+      background: 'linear-gradient(160deg, color-mix(in oklab, var(--accent) 12%, var(--surface)) 0%, var(--surface) 60%)',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span className="smallcaps" style={{ color: 'var(--accent)' }}>BREWPATH</span>
+      </div>
+      <div style={{
+        flex: 1, minHeight: 0, margin: '16px 0',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: CARD_TINT[card.kind] || 'var(--surface-2)', borderRadius: 2, overflow: 'hidden',
+      }}>
+        <div style={{ width: 282, height: 182, transform: 'scale(1.1)' }}>{Art ? <Art/> : <FlavorStamp size={72} rotate={-8}/>}</div>
+      </div>
+      <div className="smallcaps" style={{ color: 'var(--ink-mute)', marginBottom: 12 }}>
+        {mod ? 'MODULE ' + mod.n + ' · ' + mod.label : 'FIELD GUIDE'}
+      </div>
+      <div className="ff-display" style={{
+        fontSize: 26, fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em',
+        color: 'var(--ink)', marginBottom: 8,
+      }}>{card.title}</div>
+    </div>
+  );
+}
+
+// ShareCardSheet — the same chrome, handle, destination row and dismiss as the
+// streak share; only the artifact in the preview slot differs (square here,
+// portrait there). Opens from the card sheet, so it rides the interrupt layer.
+function ShareCardSheet({ card, open, onClose }) {
+  const [ack, hit] = useShareAck(open);
+  const [fitRef, fitScale] = useFitScale(360, open);
+  if (!card) return null;
+  return (
+    <>
+      {/* Backdrop kept for hit-testing (tap outside returns to the card) but
+          transparent: the card sheet's scrim is already there, and two of them
+          multiply into a darkness no other sheet state produces. */}
+      <div className={'sheet-backdrop' + (open ? ' open' : '')} style={{ zIndex: 97, background: 'transparent' }} onClick={onClose}/>
+      <div className={'sheet' + (open ? ' open' : '')} style={{ zIndex: 98 }}>
+        <div className="sheet-handle"/>
+        <div className="sheet-content">
+          <div className="smallcaps" style={{ marginBottom: 8 }}></div>
+          <h2 className="ff-display" style={{
+            fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em',
+            margin: 0, color: 'var(--ink)',
+          }}>{card.title}</h2>
+
+          <div ref={fitRef} style={{
+            marginTop: 18, width: '100%', aspectRatio: '1 / 1', position: 'relative',
+            borderRadius: 16, overflow: 'hidden', boxShadow: '0 14px 34px rgba(0,0,0,0.22)',
+          }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, transformOrigin: '0 0', transform: 'scale(' + fitScale + ')' }}>
+              <CollectibleShareCard card={card}/>
+            </div>
+          </div>
+
+          <p className="ff-mono" style={{
+            fontSize: 'var(--t-micro)', lineHeight: 1.5, color: 'var(--ink-mute)',
+            margin: '24px 0 0', width: 340, maxWidth: '100%', textWrap: 'pretty',
+          }}>{cardShareText(card)}</p>
+
+          <ShareTargets ack={ack} hit={hit}/>
+
+          <div style={{ paddingTop: 22 }}>
+            <button className="btn btn-ghost" onClick={onClose}>Maybe later</button>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
 function ShareStreakSheet({ streak, frozen, open, onClose }) {
-  const [copied, setCopied] = React.useState(false);
-  React.useEffect(() => { if (!open) setCopied(false); }, [open]);
+  const [ack, hit] = useShareAck(open);
   return (
     <>
       <div className={'sheet-backdrop' + (open ? ' open' : '')} onClick={onClose}/>
@@ -441,22 +606,7 @@ function ShareStreakSheet({ streak, frozen, open, onClose }) {
           </div>
 
           {/* destinations */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginTop: 22 }}>
-            <ShareTarget label="Stories">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="5" stroke="currentColor" strokeWidth="1.6"/><circle cx="12" cy="12" r="3.6" stroke="currentColor" strokeWidth="1.6"/><circle cx="16.6" cy="7.4" r="1" fill="currentColor"/></svg>
-            </ShareTarget>
-            <ShareTarget label="Message">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 6.5C4 5.4 4.9 4.5 6 4.5h12c1.1 0 2 .9 2 2v7c0 1.1-.9 2-2 2H9l-4 3.5V6.5Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"/></svg>
-            </ShareTarget>
-            <ShareTarget label={copied ? 'Copied' : 'Copy link'} onClick={() => setCopied(true)}>
-              {copied
-                ? <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4 4 10-10" stroke="var(--accent)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                : <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M9.5 14.5l5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/><path d="M11 8l1.7-1.7a3.3 3.3 0 0 1 4.7 4.7L15.7 12.7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/><path d="M13 16l-1.7 1.7a3.3 3.3 0 0 1-4.7-4.7L8.3 11.3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg>}
-            </ShareTarget>
-            <ShareTarget label="Save">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 4v10m0 0l-3.5-3.5M12 14l3.5-3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/><path d="M5 17v1.5C5 19.3 5.7 20 6.5 20h11c.8 0 1.5-.7 1.5-1.5V17" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg>
-            </ShareTarget>
-          </div>
+          <ShareTargets ack={ack} hit={hit}/>
 
           <div style={{ paddingTop: 22 }}>
             <button className="btn btn-ghost" onClick={onClose}>Maybe later</button>
@@ -995,7 +1145,15 @@ function LearnTab({ freezeSaved = false, freezesHeld = 0, nextFreezeIn = 7, onDi
 
         {/* 3 · Completed work to revisit — grouped by idea, each group collapsible */}
         {(() => {
-          const lessonItems = completed.map(l => ({ id: l.id, title: l.title, sub: `MODULE ${l.mod.n} · ${l.mod.label}`, meta: `~${l.time} MIN` }));
+          // Lessons group by module — the module's glyph lives on the group
+          // header (never per row), matching the game catalog's kind groups.
+          const lessonMods = [];
+          completed.forEach(l => {
+            let g = lessonMods.find(x => x.id === l.mod.id);
+            if (!g) { g = { id: l.mod.id, mod: l.mod, items: [] }; lessonMods.push(g); }
+            g.items.push(l);
+          });
+          const lessonCount = completed.length;
           // Dictionary drills — always free; they lead, ahead of the game catalog.
           const drills = [
             { id: 'f-flash', kind: 'flash', title: 'Flashcards', sub: 'FLIP AND RECALL', go: onFlashcards },
@@ -1011,34 +1169,35 @@ function LearnTab({ freezeSaved = false, freezesHeld = 0, nextFreezeIn = 7, onDi
           return (
             <div className="px-24" data-guide="today-practice" style={{ paddingTop: 32 }}>
               <div className="smallcaps" style={{ marginBottom: 12 }}>PRACTICE</div>
-              {lessonItems.length > 0 && (
-              <PracticeGroup label="Lessons" count={lessonItems.length} defaultOpen={false} openSignal={ksSignal.lessons}>
-                {lessonItems.map(it => (
-                  <ReplayRow key={it.id} icon={<ReplayIcon kind="lesson"/>} title={it.title} sub={it.sub} meta={it.meta} onClick={() => onLesson(it.id)}/>
+              {lessonCount > 0 && (
+              <PracticeGroup label="Lessons" count={lessonCount} defaultOpen={false} openSignal={ksSignal.lessons}>
+                {lessonMods.map(g => (
+                  <SubGroup key={g.id} label={`MODULE ${g.mod.n} · ${g.mod.label}`} count={g.items.length} defaultOpen={lessonMods.length === 1}
+                            icon={window.CatGlyph ? <window.CatGlyph cat={g.mod.glyph} size={18} color="var(--ink-mute)"/> : <ReplayIcon kind="lesson" size={18}/>}>
+                    {g.items.map(l => (
+                      <ReplayRow key={l.id} title={l.title} meta={`~${l.time} MIN`} onClick={() => onLesson(l.id)}/>
+                    ))}
+                  </SubGroup>
                 ))}
               </PracticeGroup>
               )}
               <PracticeGroup label="Games" count={drills.length + MINI_GAMES.length} defaultOpen={false} openSignal={ksSignal.games} last={true}>
                 {drills.map(it => (
-                  <ReplayRow key={it.id} icon={<ReplayIcon kind={it.kind}/>} title={it.title} sub={it.sub} meta={gamesLocked ? 'FREE' : '~2 MIN'} onClick={() => it.go && it.go()}/>
+                  <ReplayRow key={it.id} icon={<ReplayIcon kind={it.kind}/>} title={it.title} sub={it.sub} go={true} meta={gamesLocked ? 'FREE' : '~2 MIN'} onClick={() => it.go && it.go()}/>
                 ))}
                 {kindGroups.map(k => (
-                  <div key={k.kind}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '16px 0 2px' }}>
-                      <span aria-hidden="true" style={{ display: 'grid', placeItems: 'center', width: 20, color: 'var(--ink-mute)' }}><ReplayIcon kind={k.kind} size={18}/></span>
-                      <span className="smallcaps">{k.label}</span>
-                    </div>
-                    <div style={{ paddingLeft: 30 }}>
-                      {k.games.map(m => {
-                        const locked = gamesLocked && m.mod !== 'm1';
-                        return (
-                          <ReplayRow key={m.id} title={m.title} sub={m.sub} locked={locked}
-                                     meta={m.placeholder ? 'PLACEHOLDER' : (gamesLocked && !locked ? 'FREE' : m.meta)}
-                                     onClick={() => onGame(m)}/>
-                        );
-                      })}
-                    </div>
-                  </div>
+                  <SubGroup key={k.kind} label={k.label} count={k.games.length}
+                            locked={gamesLocked && k.games.every(m => m.mod !== 'm1')}
+                            icon={<ReplayIcon kind={k.kind} size={18}/>}>
+                    {k.games.map(m => {
+                      const locked = gamesLocked && m.mod !== 'm1';
+                      return (
+                        <ReplayRow key={m.id} title={m.title} sub={m.sub} locked={locked} go={true}
+                                   meta={m.placeholder ? 'PLACEHOLDER' : (gamesLocked && !locked ? 'FREE' : m.meta)}
+                                   onClick={() => onGame(m)}/>
+                      );
+                    })}
+                  </SubGroup>
                 ))}
               </PracticeGroup>
             </div>
@@ -1092,6 +1251,28 @@ function PracticeGroup({ label, count, defaultOpen, openSignal, last = false, ch
   );
 }
 
+function SubGroup({ icon, label, count, defaultOpen = false, locked = false, children }) {
+  const [open, setOpen] = React.useState(!!defaultOpen);
+  return (
+    <div>
+      <button onClick={() => setOpen(o => !o)} aria-expanded={open} aria-label={`${label}. ${count} item${count === 1 ? '' : 's'}.${locked ? ' Locked — part of Foundations.' : ''}`}
+        style={{
+          width: '100%', appearance: 'none', border: 'none', background: 'transparent', cursor: 'pointer',
+          minHeight: 44, display: 'flex', alignItems: 'center', gap: 14, padding: '12px 0', textAlign: 'left',
+        }}>
+        <span aria-hidden="true" style={{ display: 'grid', placeItems: 'center', width: 20, color: 'var(--ink-mute)' }}>{icon}</span>
+        <span className="smallcaps" style={{ flex: 1, opacity: locked ? 0.55 : 1 }}>{label}</span>
+        <span className="ff-mono" aria-hidden="true" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.12em', color: 'var(--ink-mute)' }}>{count}</span>
+        {locked && <IconLock/>}
+        <svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true" style={{ color: 'var(--ink-mute)', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 240ms cubic-bezier(.4,0,.2,1)' }}>
+          <path d="M5 8 L10 13 L15 8" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </button>
+      {open && <div style={{ paddingLeft: 34, paddingBottom: 4 }}>{children}</div>}
+    </div>
+  );
+}
+
 function ReplayIcon({ kind, size = 20 }) {
   if (kind === 'lesson') return <FlavorWheel size={size} filled={1} stroke={1}/>;
   const s = { color: 'var(--ink-mute)' };
@@ -1136,12 +1317,38 @@ function ReplayIcon({ kind, size = 20 }) {
     );
   }
   if (kind === 'mcq') {
-    // stacked options with a check on the first
+    // stacked options with radios, the first selected — pick exactly ONE.
+    // Radios, not a checkmark: the tick is `multi`'s signal, and the two kinds
+    // sit side by side in the how-to-play sheet.
     return (
       <svg width={size} height={size} viewBox="0 0 20 20" style={s}>
         <rect x="3" y="4" width="14" height="4.5" rx="2.2" fill="none" stroke="currentColor" strokeWidth="1.4"/>
         <rect x="3" y="11.5" width="14" height="4.5" rx="2.2" fill="none" stroke="currentColor" strokeWidth="1.4"/>
-        <path d="M5.2 6.2 L6.2 7.2 L8 5.4" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+        <circle cx="6.1" cy="6.25" r="1.35" fill="var(--accent)"/>
+        <circle cx="6.1" cy="13.75" r="1.35" fill="none" stroke="currentColor" strokeWidth="1.2"/>
+      </svg>
+    );
+  }
+  if (kind === 'multi') {
+    // three options, two ticked — more than one answer belongs
+    return (
+      <svg width={size} height={size} viewBox="0 0 20 20" style={s}>
+        <rect x="3" y="3.2" width="14" height="3.8" rx="1.5" fill="none" stroke="currentColor" strokeWidth="1.3"/>
+        <rect x="3" y="8.1" width="14" height="3.8" rx="1.5" fill="none" stroke="currentColor" strokeWidth="1.3"/>
+        <rect x="3" y="13" width="14" height="3.8" rx="1.5" fill="none" stroke="currentColor" strokeWidth="1.3"/>
+        <path d="M4.9 5.1 L5.9 6.1 L7.6 4.3" fill="none" stroke="var(--accent)" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M4.9 14.9 L5.9 15.9 L7.6 14.1" fill="none" stroke="var(--accent)" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    );
+  }
+  if (kind === 'fill') {
+    // a sentence with a blank waiting to be filled
+    return (
+      <svg width={size} height={size} viewBox="0 0 20 20" style={s}>
+        <path d="M3 6.2 H8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
+        <rect x="9.7" y="3.9" width="7.3" height="4.6" rx="1.4" fill="none" stroke="var(--accent)" strokeWidth="1.3"/>
+        <path d="M3 12.8 H17" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
+        <path d="M3 16.4 H10.6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
       </svg>
     );
   }
@@ -1214,16 +1421,16 @@ function ReplayIcon({ kind, size = 20 }) {
   );
 }
 
-function ReplayRow({ icon, title, sub, meta, onClick, locked = false }) {
+function ReplayRow({ icon, title, sub, meta, onClick, locked = false, go = false }) {
   return (
     <button
       onClick={onClick}
       className="tap-row"
-      aria-label={[title, sub, meta].filter(Boolean).join('. ') + (locked ? '. Part of Foundations.' : '. Replay.')}
+      aria-label={[title, sub, meta].filter(Boolean).join('. ') + (locked ? '. Part of Foundations.' : (go ? '. Play.' : '. Replay.'))}
       style={{
         width: '100%', appearance: 'none', border: 'none', background: 'transparent',
         cursor: 'pointer', textAlign: 'left', minHeight: 44, borderRadius: 10,
-        display: 'grid', gridTemplateColumns: icon ? '24px 1fr auto' : '1fr auto', alignItems: 'center',
+        display: 'grid', gridTemplateColumns: icon ? '20px 1fr auto' : '1fr auto', alignItems: 'center',
         gap: 14, padding: '12px 8px', margin: '0 -8px',
       }}>
       {icon && <span aria-hidden="true" style={{ display: 'grid', placeItems: 'center' }}>{icon}</span>}
@@ -1239,6 +1446,8 @@ function ReplayRow({ icon, title, sub, meta, onClick, locked = false }) {
         )}
         {locked ? (
           <span style={{ display: 'grid', placeItems: 'center', width: 18, color: 'var(--ink-mute)' }}>{window.LockMark ? <window.LockMark size={13} label="Part of Foundations"/> : <IconLock/>}</span>
+        ) : go ? (
+        <window.Chevron/>
         ) : (
         <svg width="18" height="18" viewBox="0 0 20 20" style={{ color: 'var(--ink-mute)', flexShrink: 0 }}>
           <path d="M15.5 6.5 A6 6 0 1 0 16 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
@@ -1438,13 +1647,14 @@ function PathTab({ onLesson, purchaseLocked, onPurchaseTap, brewCompleted, brewA
 
   const header = (
     <React.Fragment>
-      <div className="px-24" style={{ paddingTop: 64, paddingBottom: 8 }}>
+      <div className="px-24" style={{ paddingTop: 24, paddingBottom: 8 }}>
+        {/* right inset reserves the floating Saved/Dictionary cluster — long titles wrap clear of it instead of running under the buttons */}
         <h1 className="ff-display" style={{
           fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em',
-          margin: 0, color: 'var(--ink)',
+          margin: 0, color: 'var(--ink)', paddingRight: 120, textWrap: 'balance',
         }}>Beginner Foundations</h1>
         <div className="ff-mono" style={{
-          fontSize: 'var(--t-label)', color: 'var(--ink-mute)', marginTop: 10,
+          fontSize: 'var(--t-label)', color: 'var(--ink-mute)', marginTop: 8,
           letterSpacing: '0.08em', textTransform: 'uppercase',
         }}>
           {done} of {unlocked} lessons complete
@@ -2352,7 +2562,7 @@ function CardArtLayers() {
   return (
     <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
       {rings.map(([c, r], i) => (
-        <circle key={i} cx="50" cy="48" r={r} fill={c} stroke="rgba(27,22,20,0.24)" strokeWidth="0.7"/>
+        <circle key={i} cx="50" cy="48" r={r} fill={c} stroke="var(--art-hairline)" strokeOpacity="0.24" strokeWidth="0.7"/>
       ))}
       <line x1="50" y1="29" x2="50" y2="67" stroke="var(--art-seed-crease)" strokeWidth="1.6"/>
       <text x="50" y="96" fontSize="5.5" fill="var(--ink-mute)" fontFamily="IBM Plex Mono" textAnchor="middle" letterSpacing="0.4">SKIN · PULP · GEL · SEED</text>
@@ -2508,6 +2718,11 @@ function CollectionCard({ card, index, total, onOpen, stamped, challengeOpen }) 
 
 function CardSheet({ card, open, onClose, brewCompleted, brewActive, onBrewTry, guideSaved, onToggleGuideSave }) {
   const isVisualGuide = !!(card && card.kind === 'visualGuide');
+  // Share is a collectible affordance: earned cards only, never a visual guide
+  // (those are reference, not keepsakes) and never an unearned one.
+  const canShare = !!(card && card.earned !== false && !isVisualGuide);
+  const [shareOpen, setShareOpen] = React.useState(false);
+  React.useEffect(() => { if (!open) setShareOpen(false); }, [open]);
   return (
     <>
       <div className={'sheet-backdrop' + (open ? ' open' : '')} onClick={onClose}/>
@@ -2583,10 +2798,24 @@ function CardSheet({ card, open, onClose, brewCompleted, brewActive, onBrewTry, 
               {window.CardStampSection && (
                 <window.CardStampSection card={card} completed={brewCompleted} active={brewActive} onTry={onBrewTry}/>
               )}
+
+              {canShare && (
+                <div style={{ paddingTop: 4 }}>
+                  <button className="btn btn-ghost" onClick={() => setShareOpen(true)}
+                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 9 }}>
+                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0 }}>
+                      <path d="M10 13V3M10 3L6.5 6.5M10 3l3.5 3.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M5 11v4a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
+                    </svg>
+                    Share this card
+                  </button>
+                </div>
+              )}
             </>
           )}
         </div>
       </div>
+      <ShareCardSheet card={card} open={open && shareOpen} onClose={() => setShareOpen(false)}/>
     </>
   );
 }
@@ -2981,111 +3210,114 @@ const GAME_KINDS = [
 const MINI_GAMES = [
   // ── match ──
   {
-    id: 'g-match', kind: 'match', mod: 'm1', title: 'Match the facts',
+    id: 'g-match', kind: 'match', lesson: 'm1l2', title: 'Match the facts',
     sub: 'ARABICA VS ROBUSTA', meta: '~2 MIN',
     blurb: 'Pair every fact with the right species before the board clears.',
     steps: ['Read a fact on the left', 'Tap the species it belongs to', 'Clear the board with no wrong drops'],
   },
   {
-    id: 'g-match-washed-natural', kind: 'match', mod: 'm2',
+    id: 'g-match-washed-natural', kind: 'match', lesson: 'm2l1',
     title: 'Washed vs Natural', sub: 'PROCESSING', meta: '~2 MIN',
     blurb: 'Pair every cup trait with the process that put it there.',
     steps: ['Read a trait on the left', 'Tap the process it belongs to', 'Clear the board with no wrong drops'],
   },
   // ── quiz ──
   {
-    id: 'g-quiz', kind: 'quiz', mod: 'm1', title: 'True or false',
+    id: 'g-quiz', kind: 'quiz', lesson: 'm1l1', title: 'True or false',
     sub: 'COFFEE BASICS', meta: '~1 MIN',
     blurb: 'Quick-fire statements about coffee. Decide whether each one is true or false.',
     steps: ['Read the statement', 'Choose true or false', 'See why it lands that way'],
   },
   {
-    id: 'g-quiz-roast-basics', kind: 'quiz', mod: 'm3',
+    id: 'g-quiz-roast-basics', kind: 'quiz', lesson: 'm3l1',
     title: 'Roast basics', sub: 'ROASTING', meta: '~1 MIN',
     blurb: 'Quick-fire statements about roasting. Decide whether each one is true or false.',
     steps: ['Read the statement', 'Choose true or false', 'See why it lands that way'],
   },
   // ── flavor ──
   {
-    id: 'g-flavor', kind: 'flavor', mod: 'm5', title: 'Name the flavor notes',
+    id: 'g-flavor', kind: 'flavor', lesson: 'm5l3', title: 'Name the flavor notes',
     sub: 'TASTING NOTES', meta: '~2 MIN',
     blurb: 'Read each tasting clue and name what you taste — pick the note that fits the cup.',
     steps: ['Read the tasting clue', 'Weigh the four notes', 'Pick the one that fits'],
   },
   {
-    id: 'g-flavor-origin-signatures', kind: 'flavor', mod: 'm1',
+    id: 'g-flavor-origin-signatures', kind: 'flavor', lesson: 'm1l3',
     title: 'Name the origin', sub: 'ORIGIN SIGNATURES', meta: '~2 MIN',
     blurb: 'Read the cup and call the place — signatures are tendencies, and one honest answer is “could be almost anywhere”.',
     steps: ['Read the tasting clue', 'Weigh the four origins', 'Pick the one the cup points to'],
   },
   // ── bagpick — stays a single game; uneven groups are the intended look ──
   {
-    id: 'g-bagpick', kind: 'bagpick', mod: 'm2', title: 'Read the green bean',
+    // lesson: the cues appear in m1l7's hands-on card, but the calls it asks
+    // for (washed / honey / natural) are taught in m2l1 — tiered by furthest material.
+    id: 'g-bagpick', kind: 'bagpick', lesson: 'm2l1', title: 'Read the green bean',
     sub: 'WASHED, HONEY OR NATURAL', meta: '~2 MIN',
     blurb: 'Five unlabelled bags. Draw a sample, inspect the beans, and call the process from the look alone.',
     steps: ['Draw a sample from the bag', 'Inspect colour, centre cut and aroma', 'Call it — washed, honey or natural'],
   },
   // ── tastefix ──
   {
-    id: 'g-tastefix', kind: 'tastefix', mod: 'm4', title: 'Fix the cup',
+    id: 'g-tastefix', kind: 'tastefix', lesson: 'm4l3', title: 'Fix the cup',
     sub: 'DIAGNOSE AND DIAL IN', meta: '~2 MIN',
     blurb: 'A cup comes out wrong — read what’s off and pick the one change that pulls it back to balanced.',
     steps: ['Read what the cup tastes like', 'Pick the fix that balances it', 'Watch the cup react'],
   },
   {
-    id: 'g-tastefix-espresso', kind: 'tastefix', mod: 'm5',
+    id: 'g-tastefix-espresso', kind: 'tastefix', lesson: 'm5l7',
     title: 'Fix the shot', sub: 'ESPRESSO DIAL-IN', meta: '~2 MIN',
     blurb: 'A shot comes out wrong — read the stream and the sip, and pick the one change that saves the next one.',
     steps: ['Read what the shot did', 'Pick the fix that saves the next one', 'See why it works'],
   },
   // ── slider / calibrate ──
   {
-    id: 'g-calibrate', kind: 'slider', mod: 'm4', title: 'Dial it in',
+    id: 'g-calibrate', kind: 'slider', lesson: 'm4l3', title: 'Dial it in',
     sub: 'GRIND, RATIO, WATER, TIME', meta: '~2 MIN',
     blurb: 'Grind, ratio, temperature, time — drag each dial to where the answer actually lands.',
     steps: ['Read what you are setting', 'Drag the dial to your answer', 'Check it against the target zone'],
   },
   {
-    id: 'g-calibrate-grind-brewer', kind: 'slider', mod: 'm4',
+    id: 'g-calibrate-grind-brewer', kind: 'slider', lesson: 'm4l5',
     title: 'Set the grind', sub: 'WHICH GRIND, WHICH BREWER', meta: '~2 MIN',
     blurb: 'Every brewer has its grind, set by contact time — drag each dial to where it belongs.',
     steps: ['Read the brewer', 'Drag the dial to its grind or time', 'Check it against the target zone'],
   },
   // ── sequence ──
   {
-    // mod: the bank spans farm→cup but is tiered by its furthest material
-    // (brew order, M5) — keeps it Plus, matching the shipped access tiers.
-    id: 'g-sequence', kind: 'sequence', mod: 'm5', title: 'Put it in order',
+    // lesson: the bank spans farm→cup but is tiered by its furthest material
+    // (brew order, m5l6) — keeps it Plus, matching the shipped access tiers.
+    id: 'g-sequence', kind: 'sequence', lesson: 'm5l6', title: 'Put it in order',
     sub: 'BEAN TO CUP', meta: '~2 MIN',
     blurb: 'Five things, one right order. Farm to cup, skin to seed, first pour to drawdown.',
     steps: ['Read what is being ordered', 'Tap the items in sequence', 'Submit to see the right order'],
   },
   {
-    id: 'g-sequence-v60', kind: 'sequence', mod: 'm5',
+    id: 'g-sequence-v60', kind: 'sequence', lesson: 'm5l6',
     title: 'Pour-over, in order', sub: 'YOUR FIRST V60', meta: '~2 MIN',
     blurb: 'The V60 recipe and what happens inside it — five orderings from rinse to drawdown.',
     steps: ['Read what is being ordered', 'Tap the items in sequence', 'Submit to see the right order'],
   },
 ];
-// Tier derives from topic: a game is free iff its topic's module is unlocked
-// (free tier = Module 1). DERIVED, not hand-kept — today g-match, g-quiz and
-// g-flavor-origin-signatures (the M1-topic games); the free catalog widens
-// only if what's unlocked widens (#175).
+// Each game points at the lesson that teaches its topic (#225); `mod` derives
+// from that pointer, so tier and teaching lesson can never drift apart.
+MINI_GAMES.forEach(g => { g.mod = g.lesson.match(/^m\d+/)[0]; });
+// Tier derives from topic: a game is free iff its teaching lesson's module is
+// unlocked (free tier = Module 1). DERIVED, not hand-kept — today g-match,
+// g-quiz and g-flavor-origin-signatures (the M1-topic games); the free catalog
+// widens only if what's unlocked widens (#175).
 const FREE_GAME_IDS = MINI_GAMES.filter(g => g.mod === 'm1').map(g => g.id);
 
 // First screen of the game flow: what it is, how to play, then Play.
 function GameIntroScreen({ game, onStart, onClose }) {
+  // Transparent over the hero at rest, standard header chrome once anything
+  // moves — otherwise scrolled content runs under the close control and the
+  // status bar (the scroller is full-bleed to y=0).
+  const [scrolled, onScroll, scrollRef] = window.useScrollFlag(8, game && game.id);
   if (!game) return null;
   return (
     <div className="screen slide-in" data-screen-label="Game intro" style={{ background: 'var(--bg)' }}>
-      <div className="lesson-topbar" style={{ borderBottom: 'none', background: 'transparent' }}>
-        <button className="close-btn" onClick={onClose} aria-label="Close">
-          <window.CloseMark/>
-        </button>
-        <div/>
-        <div/>
-      </div>
-      <div className="scroll" style={{ paddingTop: 108, display: 'flex', flexDirection: 'column' }}>
+      <window.FloatTopbar scrolled={scrolled} onBack={onClose}/>
+      <div className="scroll" ref={scrollRef} onScroll={onScroll} style={{ paddingTop: 108, display: 'flex', flexDirection: 'column' }}>
         <div className="px-24" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
           <div className="smallcaps" style={{ marginBottom: 20 }}>MINI-GAME</div>
 

@@ -176,12 +176,13 @@ function PaywallScreen({ onPurchase, onClose, restoreOutcome = 'owned', onRestor
       }}/>
       <window.FloatTopbar scrolled={tbScrolled} onBack={onClose} label="Close"/>
 
-      <div className="scroll" onScroll={onTbScroll} style={{ paddingTop: 64, paddingBottom: 24, display: 'flex', flexDirection: 'column' }}>
+      <div className="scroll" onScroll={onTbScroll} style={{ paddingTop: window.FLOAT_PAD || 96, paddingBottom: 32, display: 'flex', flexDirection: 'column' }}>
         {/* Hero — a dressed-up Roasty. Sized so the pitch AND the price land in
             one screen: a paywall that hides its own CTA below the fold is a
-            worse paywall, whatever the hero gains. */}
+            worse paywall, whatever the hero gains. The scroll starts clear of
+            the floating close button (FLOAT_PAD), so nothing rides under it. */}
         <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 0 }}>
-          <Roasty state="correct" size={112} roast="dark" hat="field" gear="glasses" sprout="flower"/>
+          <Roasty state="correct" size={96} roast="dark" hat="field" gear="glasses" sprout="flower"/>
         </div>
 
         <div className="px-24" style={{ textAlign: 'center', paddingTop: 4 }}>
@@ -194,16 +195,16 @@ function PaywallScreen({ onPurchase, onClose, restoreOutcome = 'owned', onRestor
 
         {/* What the purchase contains — one line per item; the gate sheets and
             Purchases screen carry the longer pitches. */}
-        <div className="px-24" style={{ paddingTop: 18 }}>
+        <div className="px-24" style={{ paddingTop: 14 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {benefits.map(([t, d], i) => (
               <div key={i} style={{ display: 'grid', gridTemplateColumns: '24px 1fr', gap: 14, alignItems: 'center', padding: '10px 0', borderBottom: i < benefits.length - 1 ? '1px solid var(--rule)' : 'none' }}>
                 <span style={{ width: 24, height: 24, borderRadius: 999, background: 'color-mix(in oklab, var(--accent) 14%, var(--surface))', display: 'grid', placeItems: 'center' }}>
                   <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 6.2l2.6 2.6L10 3" fill="none" stroke="var(--accent)" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </span>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, minWidth: 0, flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'baseline', gap: 8, minWidth: 0, flexWrap: 'wrap' }}>
                   <span style={{ fontSize: 'var(--t-body)', fontWeight: 500, color: 'var(--ink)' }}>{t}</span>
-                  <span style={{ fontSize: 'var(--t-support)', color: 'var(--ink-mute)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{d}</span>
+                  <span style={{ fontSize: 'var(--t-support)', color: 'var(--ink-mute)', display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2, overflow: 'hidden' }}>{d}</span>
                 </div>
               </div>
             ))}
@@ -235,23 +236,43 @@ function PaywallScreen({ onPurchase, onClose, restoreOutcome = 'owned', onRestor
             ); })}
           </div>
         )}
-        <div style={{ flex: 1, minHeight: 18 }}/>
+        {/* Air above the CTA. minHeight is low because the bottom block below
+            (note + legal row) needs real separation from “Maybe later” on a
+            screen with no slack, and this spacer is the only unclaimed space
+            left to fund it; the CTA wrapper's own paddingTop 16 keeps the pair
+            from ever touching. Taller phones grow this back automatically. */}
+        <div style={{ flex: 1, minHeight: 6 }}/>
 
         <div className="px-24" style={{ paddingTop: 16 }}>
           <button className="btn btn-primary" onClick={() => onPurchase(plan.id)}>{plan.cta}</button>
           <div style={{ marginTop: 10 }}>
             <a className="btn btn-ghost" href="#" style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }} onClick={(e) => { e.preventDefault(); onClose(); }}>Maybe later</a>
           </div>
-          <p className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.08em', color: 'var(--ink-mute)', textAlign: 'center', margin: '14px 0 0', textTransform: 'uppercase' }}>
+          <p className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.08em', color: 'var(--ink-mute)', textAlign: 'center', margin: '26px 0 0', textTransform: 'uppercase' }}>
             {mon.paywallNote}
           </p>
           {/* Store review requires restore + legal on the purchase screen itself.
-              Micro type, but still real targets: padding carries each link to 44px
-              and the row's negative margin keeps the original 12px optical gap. */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 4, marginTop: 12, marginBottom: -14 }}>
+              Micro type, but still real targets: the 15px padding carries each link
+              to 44px and the negative margins keep it contributing only its line
+              height, which this screen depends on — it has ~6px of vertical slack,
+              so a target that occupies its full 44px pushes the row through the
+              home indicator. Type is --t-label, not --t-micro: at 9.5px these read
+              as the same fine print as the note above. Restore takes --ink (an
+              action people hunt for after a reinstall), the disclosures stay mute.
+              Row marginTop is 15, not 12, so the overhang clears the note's text
+              instead of making its bottom 3px fire Restore.
+              The screen reports a constant 5px scroll overflow: the anchors' -15px
+              overhang is outside flex sizing, so the spacer above cannot absorb it
+              and padBottom 24 less the row's -14 covers only 10 of 15. Pre-existing,
+              invariant to type size and row margin, and no text is clipped by it.
+              Margins here are funded by the flex spacer above (flex:1 1 0%), which
+              shrinks to absorb them — so this block can be given real separation
+              from “Maybe later” without adding scroll. Budget is the spacer's
+              height; past that the screen starts to scroll for real. */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 10, marginTop: 20, marginBottom: -14 }}>
             {[['Restore purchases', runRestore], ['Terms', null], ['Privacy', null]].map(([l, fn]) => (
               <a key={l} href="#" onClick={(e) => { e.preventDefault(); fn && fn(); }} className="ff-mono"
-                 style={{ display: 'inline-block', padding: '15px 8px', margin: '-15px 0', fontSize: 'var(--t-micro)', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-mute)', textDecoration: 'none' }}>{l === 'Restore purchases' && restoring ? 'Restoring…' : l}</a>
+                 style={{ display: 'inline-block', padding: '15px 8px', margin: '-15px 0', fontSize: 'var(--t-label)', letterSpacing: '0.08em', textTransform: 'uppercase', color: fn ? 'var(--ink)' : 'var(--ink-mute)', textDecoration: 'none' }}>{l === 'Restore purchases' && restoring ? 'Restoring…' : l}</a>
             ))}
           </div>
         </div>
