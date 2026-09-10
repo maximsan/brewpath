@@ -145,7 +145,7 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    testWidgets('heads the drawer with this kind\'s own mark', (tester) async {
+    testWidgets("heads the drawer with this kind's own mark", (tester) async {
       await openDrawer(tester);
 
       final well = find.byType(HelpWell);
