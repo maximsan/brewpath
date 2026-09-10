@@ -2,27 +2,12 @@ import 'dart:math' as math;
 
 import 'package:flutter/painting.dart';
 
-/// The illustration palette — **literal coffee, not UI meaning**.
+/// The illustration palette — literal coffee, identical in both moods, and
+/// never a semantic token, so `--warn` keeps meaning exactly one thing.
 ///
-/// These are the colours a drawing needs: the roast of a bean, the layers of a
-/// cherry. They are identical in both moods on purpose — a ripe cherry is the
-/// same colour under any theme — and they are deliberately *not* semantic
-/// tokens: keeping cherry and bean colours out of `--warn` is what lets that
-/// token mean exactly one thing (celebration).
-///
-/// So there is nothing here to reach a mood with. Every token is a
-/// `static const` on a class that cannot be extended, implemented or
-/// instantiated, and there is no `of(context)` accessor — mood-dependence is
-/// unrepresentable rather than merely discouraged. That also makes them free to
-/// use from inside `CustomPainter.paint()`, which has no `BuildContext` to
-/// thread one through.
-///
-/// Values are transcribed 1:1 from the design bundle CSS — its `--art-*` block;
-/// the drift guard in `test/unit/shared/theme/art_colors_test.dart` keeps them
-/// there.
-///
-/// Colours that *do* flip with the mood live on `MoodColors`; overlays that
-/// must stay fixed live on `OverlayColors`.
+/// Transcribed 1:1 from the design bundle's `--art-*` block, and held there by
+/// the drift guard. No `of(context)`: a painter reads these with no context,
+/// and mood-dependence is unrepresentable rather than discouraged.
 abstract final class ArtColors {
   /// Unroasted green coffee — the first stage of the roast ramp.
   static const raw = Color(0xFF9FB088);
@@ -92,6 +77,10 @@ abstract final class ArtColors {
   /// Highlight on illustration fills.
   static const cream = Color(0xFFF0DCB8);
 
+  /// Outline on illustration fills, drawn with a stroke opacity. Cupping ink
+  /// by coincidence: the design keeps it "fixed like the other art tokens".
+  static const hairline = Color(0xFF1B1614);
+
   /// The roast at [progress] along the ramp: 0 is [raw], 1 is [roastDark].
   ///
   /// The meter roasts continuously rather than stepping between the five stops,
@@ -104,21 +93,11 @@ abstract final class ArtColors {
     return Color.lerp(roastRamp[stop], roastRamp[stop + 1], scaled - stop)!;
   }
 
-  /// Every token under the name the **design source** calls it.
+  /// Every token under the name the design source calls it, for content that
+  /// names a colour as `--art-cherry-seed` rather than as a hex literal.
   ///
-  /// Extracted content does not always carry a colour as a hex literal — some
-  /// of it refers to the palette by the custom-property name the design bundle
-  /// declares, because that is what the author wrote. Rendering such content
-  /// means turning `--art-cherry-seed` back into [cherrySeed], and that
-  /// mapping has to exist somewhere a widget can reach.
-  ///
-  /// It lives here, once. It was previously written out inside the palette's
-  /// own drift guard, where it belongs and still belongs — but a second copy
-  /// under `lib/` would be the one thing that guard cannot check, since it
-  /// would not know the copy existed. The guard now reads this map instead of
-  /// restating it, and keeps comparing it against its own separately
-  /// transcribed hex values, so a constant paired with the wrong name still
-  /// fails there.
+  /// Kept here once: the drift guard reads this map and compares it against
+  /// its own transcribed values, so a second copy could never drift unseen.
   static const byTokenName = <String, Color>{
     '--art-raw': raw,
     '--art-roast-light': roastLight,
@@ -135,17 +114,13 @@ abstract final class ArtColors {
     '--art-ripe': ripe,
     '--art-sour': sour,
     '--art-cream': cream,
+    '--art-hairline': hairline,
   };
 
   /// The colour the design source names [token], e.g. `--art-cherry-seed`.
   ///
-  /// **Throws on a name the palette does not carry**, and that is the whole
-  /// reason this is a function rather than a map lookup at each call site. The
-  /// callers are drawing illustrations from authored content, where the
-  /// tempting fallback — a default colour, or a transparent one — renders
-  /// something entirely plausible that is simply wrong, and no reviewer looking
-  /// at it would know. A missing token is a content or palette bug and has to
-  /// arrive as one.
+  /// Throws on a name the palette does not carry: a fallback colour would draw
+  /// something plausible and wrong, and a missing token is a bug to surface.
   static Color ofToken(String token) {
     final colour = byTokenName[token];
     if (colour == null) {

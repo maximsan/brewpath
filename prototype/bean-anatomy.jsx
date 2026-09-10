@@ -47,7 +47,7 @@ function CherrySection() {
         {CHERRY_LAYERS.map((l, i) => (
           <circle key={l.name} cx="100" cy="100" r={l.r}
                   fill={sel === i ? l.fill : `color-mix(in oklab, ${l.fill} 70%, var(--bg))`}
-                  stroke="rgba(27,22,20,0.28)" strokeWidth="0.9"
+                  stroke="var(--art-hairline)" strokeOpacity="0.28" strokeWidth="0.9"
                   onClick={() => setSel(i)} style={{ cursor: 'pointer', transition: 'fill .3s ease' }}/>
         ))}
         {/* the two seeds meet along a flat face */}
@@ -129,18 +129,18 @@ function GreenBean({ bean, size = 60, rot = -16, seed = 0 }) {
     );
   }
   const flecks = b.chaff ? [
-    <ellipse key="f1" cx="11.2" cy="8.2" rx="0.85" ry="0.42" fill="#F3EADA" opacity="0.6" transform="rotate(-14 11.2 8.2)"/>,
-    <ellipse key="f2" cx="12.7" cy="16" rx="0.7" ry="0.38" fill="#F3EADA" opacity="0.5" transform="rotate(12 12.7 16)"/>,
+    <ellipse key="f1" cx="11.2" cy="8.2" rx="0.85" ry="0.42" fill="var(--art-cherry-silverskin)" opacity="0.6" transform="rotate(-14 11.2 8.2)"/>,
+    <ellipse key="f2" cx="12.7" cy="16" rx="0.7" ry="0.38" fill="var(--art-cherry-silverskin)" opacity="0.5" transform="rotate(12 12.7 16)"/>,
   ] : null;
   return (
     <svg width={size} height={size * 1.04} viewBox="0 0 24 24" style={{ display: 'block', flexShrink: 0 }} aria-hidden="true">
       <g transform={`rotate(${rot} 12 12)`}>
-        <ellipse cx="12" cy="12.6" rx="7.5" ry="9.5" fill="rgba(27,22,20,0.18)"/>
+        <ellipse cx="12" cy="12.6" rx="7.5" ry="9.5" fill="var(--art-hairline)" fillOpacity="0.18"/>
         <ellipse cx="12" cy="12" rx="7.5" ry="9.5" fill={b.body || 'var(--art-cherry-seed)'}/>
         {patches}
-        <ellipse cx="12" cy="12" rx="7.5" ry="9.5" fill="none" stroke="rgba(27,22,20,0.35)" strokeWidth="0.7"/>
+        <ellipse cx="12" cy="12" rx="7.5" ry="9.5" fill="none" stroke="var(--art-hairline)" strokeOpacity="0.35" strokeWidth="0.7"/>
         <path d="M12 3.5 C 13.5 7, 10.5 9, 12 12 S 13.5 17, 12 20.5"
-              fill="none" stroke="rgba(27,22,20,0.3)" strokeWidth="2.9" strokeLinecap="round"/>
+              fill="none" stroke="var(--art-hairline)" strokeOpacity="0.3" strokeWidth="2.9" strokeLinecap="round"/>
         <path d="M12 3.5 C 13.5 7, 10.5 9, 12 12 S 13.5 17, 12 20.5"
               fill="none" stroke={b.crease || 'var(--art-cherry-silverskin)'} strokeWidth="2" strokeLinecap="round"/>
         {flecks}

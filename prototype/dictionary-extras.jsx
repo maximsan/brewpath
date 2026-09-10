@@ -14,17 +14,16 @@ function TermOfDayScreen({ pool, full = true, onUnlock, onOpenFull, isFav, onTog
   const cat = term ? (window.DICT_CAT_BY_ID || {})[term.cat] : null;
   const today = new Date(2026, 5, 18);
   const dateStr = today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  // Transparent at rest, header chrome once anything moves — the scroller is
+  // full-bleed to y=0, so a long term would otherwise scroll under the close
+  // control, the bookmark and the status bar.
+  const [scrolled, onScroll, scrollRef] = window.useScrollFlag(8, term && term.id);
   if (!term) return null;
   return (
     <div className="screen" data-screen-label="Term of the Day" style={{ background: 'var(--bg)' }}>
-      <div className="lesson-topbar" style={{ borderBottom: 'none', background: 'transparent' }}>
-        <button className="close-btn" onClick={onClose} aria-label="Close">
-          <window.CloseMark/>
-        </button>
-        <div/>
-        {window.TopBarFav && <window.TopBarFav active={!!isFav} onClick={onToggleFav} label="Save term" style={{ justifySelf: 'end' }}/>}
-      </div>
-      <div className="scroll" style={{ paddingTop: 84, display: 'flex', flexDirection: 'column' }}>
+      <window.FloatTopbar scrolled={scrolled} onBack={onClose}
+        right={window.TopBarFav ? <window.TopBarFav active={!!isFav} onClick={onToggleFav} label="Save term"/> : null}/>
+      <div className="scroll" ref={scrollRef} onScroll={onScroll} style={{ paddingTop: 84, display: 'flex', flexDirection: 'column' }}>
         <div className="px-24" style={{ textAlign: 'center' }}>
           <div className="smallcaps" style={{ color: 'var(--accent)' }}>TERM OF THE DAY</div>
           <div className="ff-mono" style={{ fontSize: 'var(--t-label)', color: 'var(--ink-mute)', letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: 8 }}>{dateStr}</div>

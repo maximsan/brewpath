@@ -20,9 +20,9 @@ abstract class MiniGameFormat with _$MiniGameFormat {
     required String kind,
     required String title,
 
-    /// The module owning the topic this game advertises. The tier line reads
-    /// it: a game is free iff this module is one the free tier carries.
-    @JsonKey(name: 'mod') required String moduleId,
+    /// The lesson teaching the topic this game advertises. The tier line reads
+    /// it: a game is free iff this lesson is free (ADR-0007, #225).
+    @JsonKey(name: 'lesson') required String lessonId,
     @JsonKey(name: 'sub') required String topic,
     @JsonKey(name: 'meta') required String duration,
     required String blurb,

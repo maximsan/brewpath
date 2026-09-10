@@ -12,10 +12,10 @@ const _expectedFreeIds = {
   'g-flavor-origin-signatures',
 };
 
-MiniGameFormat _game(String id, String moduleId) => MiniGameFormat(
+MiniGameFormat _game(String id, String lessonId) => MiniGameFormat(
   id: id,
   kind: 'quiz',
-  moduleId: moduleId,
+  lessonId: lessonId,
   title: id,
   topic: 'TOPIC',
   duration: '~2 MIN',
@@ -30,38 +30,46 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('the rule', () {
-    test('a free-module game opens without the course', () {
-      expect(isMiniGameOpen(_game('g-x', 'm1'), hasCourse: false), isTrue);
+    test('a game taught by a free lesson opens without the course', () {
+      expect(isMiniGameOpen(_game('g-x', 'm1l1'), hasCourse: false), isTrue);
     });
 
-    test('a paid-module game does not', () {
-      expect(isMiniGameOpen(_game('g-x', 'm3'), hasCourse: false), isFalse);
+    test('a game taught by a paid lesson does not', () {
+      expect(isMiniGameOpen(_game('g-x', 'm3l1'), hasCourse: false), isFalse);
+    });
+
+    test('a paid lesson in the free module is still paid', () {
+      expect(isMiniGameOpen(_game('g-x', 'm1l4'), hasCourse: false), isFalse);
     });
 
     test('the course opens everything', () {
-      for (final moduleId in ['m1', 'm2', 'm3', 'm4', 'm5']) {
+      for (final lessonId in ['m1l1', 'm2l1', 'm3l1', 'm4l3', 'm5l6']) {
         expect(
-          isMiniGameOpen(_game('g-x', moduleId), hasCourse: true),
+          isMiniGameOpen(_game('g-x', lessonId), hasCourse: true),
           isTrue,
-          reason: '$moduleId stayed shut for a learner who paid',
+          reason: '$lessonId stayed shut for a learner who paid',
         );
       }
     });
   });
 
   group('the shipped catalog', () {
+    late ContentRepository content;
     late List<MiniGameFormat> catalog;
 
     setUp(() async {
-      catalog = await ContentRepository().getMiniGameFormats();
+      content = ContentRepository();
+      catalog = await content.getMiniGameFormats();
     });
 
-    test('every game declares a module', () {
-      expect(
-        catalog.every((game) => game.moduleId.isNotEmpty),
-        isTrue,
-        reason: 'a game with no module cannot be placed on the tier line',
-      );
+    test('every game names a lesson the lessons bank carries', () async {
+      for (final game in catalog) {
+        expect(
+          await content.getLessonById(game.lessonId),
+          isNotNull,
+          reason: '${game.id} points at ${game.lessonId}, which no lesson is',
+        );
+      }
     });
 
     test('the free set is exactly the three ADR-0007 forces', () {

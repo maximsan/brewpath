@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
+import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/core/widgets/sticky_action_bar.dart';
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
 import 'package:brew_path/features/cards/domain/module_rewards.dart';
@@ -11,7 +12,9 @@ import 'package:brew_path/features/learn/domain/course_completion_providers.dart
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -68,7 +71,6 @@ class _CourseCompletionScreenState
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final mood = context.mood;
 
     final lessons = ref.watch(completedLessonsProvider);
@@ -102,14 +104,14 @@ class _CourseCompletionScreenState
               horizontal: AppSpacing.gutter,
               vertical: AppSpacing.lg,
             ),
-            child: _celebration(theme, mood, stats),
+            child: _celebration(mood, stats),
           ),
         ),
       ),
     );
   }
 
-  Widget _celebration(ThemeData theme, MoodColors mood, _Stats stats) {
+  Widget _celebration(MoodColors mood, _Stats stats) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -119,25 +121,19 @@ class _CourseCompletionScreenState
             reaction: CompanionReaction.courseComplete,
           ),
         ),
-        const SizedBox(height: AppSpacing.lg),
-        Text(
-          'Course complete',
-          textAlign: TextAlign.center,
-          style: theme.textTheme.labelLarge?.copyWith(color: mood.inkMute),
-        ),
-        const SizedBox(height: AppSpacing.xs),
+        const SizedBox(height: AppSpacing.md),
+        // No eyebrow: the design drops it because "the headline carries the
+        // verb, so a COURSE COMPLETE label above it said the same thing twice".
         Semantics(
           header: true,
           child: Text(
-            'You finished Beginner Foundations',
+            'You finished Foundations',
             textAlign: TextAlign.center,
-            style: theme.textTheme.headlineMedium?.copyWith(
-              color: mood.ink,
-            ),
+            style: AppText.display(mood: mood),
           ),
         ),
-        const SizedBox(height: AppSpacing.lg),
-        _statsSummary(stats),
+        SizedBox(height: OffTokens.courseStatsTop.value),
+        _statsSummary(mood, stats),
       ],
     );
   }
@@ -146,21 +142,37 @@ class _CourseCompletionScreenState
   ///
   /// #149 rules the last two off the design's own *Cards collected* and
   /// *Day streak*, so each label says what its number actually is.
-  Widget _statsSummary(_Stats stats) {
+  Widget _statsSummary(MoodColors mood, _Stats stats) {
     return Semantics(
       label:
           'What you did: ${stats.lessons} lessons completed, '
           '${stats.moduleRewards} Module Rewards earned, '
           'a longest streak of ${stats.longestStreak} days.',
-      child: Column(
-        children: [
-          _StatRow(label: 'Lessons completed', value: '${stats.lessons}'),
-          _StatRow(
-            label: 'Module Rewards',
-            value: '${stats.moduleRewards}',
+      child: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: OffTokens.courseStatsWidth.value,
           ),
-          _StatRow(label: 'Longest streak', value: '${stats.longestStreak}'),
-        ],
+          child: Column(
+            children: [
+              _StatRow(
+                label: 'Lessons completed',
+                value: '${stats.lessons}',
+                rule: mood.rule,
+              ),
+              _StatRow(
+                label: 'Module Rewards',
+                value: '${stats.moduleRewards}',
+                rule: mood.rule,
+              ),
+              _StatRow(
+                label: 'Longest streak',
+                value: '${stats.longestStreak}',
+                rule: null,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -169,30 +181,38 @@ class _CourseCompletionScreenState
 /// The three derived completion stats, travelling together.
 typedef _Stats = ({int lessons, int moduleRewards, int longestStreak});
 
+/// One stat: a smallcaps label against a mono figure, on a hairline. The
+/// design sets the row as `gridTemplateColumns: '1fr auto'` on the baseline.
 class _StatRow extends StatelessWidget {
-  const _StatRow({required this.label, required this.value});
+  const _StatRow({
+    required this.label,
+    required this.value,
+    required this.rule,
+  });
 
   final String label;
   final String value;
 
+  /// The hairline under the row, or null on the last one.
+  final Color? rule;
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final mood = context.mood;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.xxs),
+    return Container(
+      padding: OffTokens.courseStatRowPadding.value,
+      decoration: BoxDecoration(
+        border: rule == null ? null : Border(bottom: BorderSide(color: rule!)),
+      ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
         children: [
-          Text(
-            label,
-            style: theme.textTheme.bodyLarge?.copyWith(color: mood.inkMute),
-          ),
+          Expanded(child: SmallcapsLabel(label)),
+          const SizedBox(width: AppSpacing.md),
           Text(
             value,
-            // `titleMedium` is `bodyLarge`'s rung in the control face — the
-            // same size, emphasised the one way the bundle can.
-            style: theme.textTheme.titleMedium?.copyWith(color: mood.ink),
+            style: AppText.lead(mood: mood, face: AppFace.mono),
           ),
         ],
       ),
