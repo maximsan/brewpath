@@ -2,7 +2,7 @@
 library;
 
 import 'package:brew_path/services/payments/payments_provider.dart';
-import 'package:brew_path/services/payments/plus_offering.dart';
+import 'package:brew_path/shared/models/monetization/plus_offering.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'plus_offering_provider.g.dart';

@@ -1,5 +1,5 @@
-import 'package:brew_path/services/payments/plus_offering.dart';
 import 'package:brew_path/services/payments/store_product.dart';
+import 'package:brew_path/shared/models/monetization/plus_offering.dart';
 
 /// Outcome of a purchase or restore flow.
 enum PurchaseStatus {

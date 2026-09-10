@@ -14,17 +14,25 @@ void main() {
   /// being created.
   const monetizationLayer = <String>{
     'lib/features/monetization/domain/course_entitlement.dart',
+    'lib/features/monetization/domain/paywall_view.dart',
+    'lib/features/monetization/domain/paywall_view_provider.dart',
     'lib/features/monetization/domain/plus_offering_provider.dart',
     'lib/features/monetization/domain/plus_purchase_controller.dart',
   };
 
   /// The paywall's own layer: the only thing that may know which arm sold a
-  /// purchase. Derived, so it cannot drift from the list above — the paywall
-  /// is the monetization layer minus the entitlement check, which is the one
-  /// file that must never see an arm. It grows when the paywall does.
-  final paywallLayer = monetizationLayer.difference({
-    'lib/features/monetization/domain/course_entitlement.dart',
-  });
+  /// purchase. Everything else asks whether the learner has Plus, full stop —
+  /// so this list grows when the paywall does, and never otherwise.
+  const paywallLayer = <String>{
+    'lib/features/monetization/config/paywall_config.dart',
+    'lib/features/monetization/domain/paywall_view.dart',
+    'lib/features/monetization/domain/paywall_view_provider.dart',
+    'lib/features/monetization/domain/plus_offering_provider.dart',
+    'lib/features/monetization/domain/plus_purchase_controller.dart',
+    'lib/features/monetization/presentation/paywall_screen.dart',
+    'lib/features/monetization/presentation/plan_picker.dart',
+    'lib/features/monetization/presentation/plus_gate_sheet.dart',
+  };
 
   test('only the monetization layer imports the payments service', () {
     final offenders = dartSourcesUnder('lib/features')
@@ -81,7 +89,7 @@ void main() {
         .where(
           (file) => withoutComments(
             file.readAsStringSync(),
-          ).contains('plus_offering'),
+          ).contains('monetization/plus_offering'),
         )
         .map((file) => file.path)
         .toList();

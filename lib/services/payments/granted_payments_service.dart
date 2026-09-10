@@ -1,6 +1,6 @@
 import 'package:brew_path/services/payments/payments_service.dart';
-import 'package:brew_path/services/payments/plus_offering.dart';
 import 'package:brew_path/services/payments/store_product.dart';
+import 'package:brew_path/shared/models/monetization/plus_offering.dart';
 
 /// A store that says the course is already owned — **development only**.
 ///

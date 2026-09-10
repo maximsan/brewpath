@@ -2,8 +2,8 @@ import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
 import 'package:brew_path/features/monetization/domain/plus_offering_provider.dart';
 import 'package:brew_path/services/payments/payments_provider.dart';
 import 'package:brew_path/services/payments/payments_service.dart';
-import 'package:brew_path/services/payments/plus_offering.dart';
 import 'package:brew_path/services/payments/store_product.dart';
+import 'package:brew_path/shared/models/monetization/plus_offering.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'plus_purchase_controller.g.dart';

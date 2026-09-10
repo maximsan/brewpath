@@ -1,5 +1,5 @@
 import 'package:brew_path/services/payments/noop_payments_service.dart';
-import 'package:brew_path/services/payments/plus_offering.dart';
+import 'package:brew_path/shared/models/monetization/plus_offering.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

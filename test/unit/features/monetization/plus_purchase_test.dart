@@ -2,8 +2,8 @@ import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
 import 'package:brew_path/features/monetization/domain/plus_purchase_controller.dart';
 import 'package:brew_path/services/payments/payments_provider.dart';
 import 'package:brew_path/services/payments/payments_service.dart';
-import 'package:brew_path/services/payments/plus_offering.dart';
 import 'package:brew_path/services/payments/store_product.dart';
+import 'package:brew_path/shared/models/monetization/plus_offering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -70,6 +70,7 @@ class _RecordingPayments implements PaymentsService {
           title: 'BrewPath Plus',
           description: 'The full course',
           price: r'$14.99',
+          amount: 14.99,
           currencyCode: 'USD',
         ),
     ];

@@ -28,6 +28,7 @@ void main() {
           title: 't',
           description: 'd',
           price: r'$1',
+          amount: 1,
           currencyCode: 'USD',
         ),
       ),
