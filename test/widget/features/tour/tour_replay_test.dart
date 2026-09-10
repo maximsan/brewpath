@@ -141,7 +141,7 @@ void main() {
     await pumpWithProviders(tester, const BrewPathApp());
     // End the first run the cleared flag starts, so what follows is the
     // replay path and not the first-run path — then clear what ending wrote.
-    await letTheTourRun(tester);
+    await awaitTheFirstStop(tester);
     await tester.tap(find.text(TourCopy.stopSkip));
     await awaitTourSeenWritten(tester);
 

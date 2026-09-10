@@ -46,16 +46,35 @@ Future<void> letTheTourRun(WidgetTester tester) async {
 
 /// Waits for the write behind an ending to land, watching the disk rather than
 /// counting frames: under a loaded runner Drift takes longer than twenty.
+///
+/// A frame is pumped before every look, so the layer the ending took down is
+/// out of the tree by the time this returns, however fast the write was.
 Future<void> awaitTourSeenWritten(WidgetTester tester) async {
   const attempts = 200;
   for (var attempt = 0; attempt < attempts; attempt++) {
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 20)),
+    );
+    await tester.pump(const Duration(milliseconds: 50));
     if (await tester.runAsync(tourSeenOnDisk) ?? false) return;
+  }
+  fail('tourSeen was never written');
+}
+
+/// Waits until the first stop's card can take a tap, watching the tree rather
+/// than counting frames: under a loaded runner the day resolves later than
+/// twenty, and a Skip tapped before the card is up misses in silence.
+Future<void> awaitTheFirstStop(WidgetTester tester) async {
+  const attempts = 200;
+  final card = find.text(TourCopy.todayTitle).hitTestable();
+  for (var attempt = 0; attempt < attempts; attempt++) {
+    if (card.evaluate().isNotEmpty) return;
     await tester.runAsync(
       () => Future<void>.delayed(const Duration(milliseconds: 20)),
     );
     await tester.pump(const Duration(milliseconds: 50));
   }
-  fail('tourSeen was never written');
+  fail('the Tour never reached its first stop');
 }
 
 /// Boots the app owing the Tour, the way a first launch does, onto the first
@@ -68,6 +87,7 @@ Future<ProviderContainer> bootIntoTheTour(
   await armTheTour();
 
   final container = await pumpWithProviders(tester, const BrewPathApp());
+  await awaitTheFirstStop(tester);
   await letTheTourRun(tester);
   return container;
 }
