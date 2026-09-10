@@ -186,15 +186,15 @@ These are, and each resolves to the running file:
 | `.match-item.matched` | background, colour | sage 10%, `--ink-mute` | sage 12%, `--ink` | Fixed, ADR-0009 |
 | `.collect-card` | `border-radius` | 2px | `var(--r)` | Fixed here |
 | `.collect-card .cc-title` | `font-size`, `line-height` | 19px, 1.1 | `var(--t-lead)`, 1.15 | Open — the app styles this title elsewhere |
-| `.match-item` | `padding` | 14px 16px | 15px 18px | Open — 3–6px, and both are off the spacing scale |
+| `.match-item` | `padding` | 14px 16px | 15px 18px | Fixed, [#566](https://github.com/maximsan/brewpath/issues/566) — the running file's, as `OffTokens.matchTilePadding` |
 | `.brew-slider` | track, thumb, margin | 1px rule track | 3px filled track | Open — the slider is not built (#124, #333) |
 
 `body`'s background differs because the catalogue is a demo page; it is not a
 component.
 
 **The two open rows are recorded, not deferred silently.** Neither is worth a
-ticket of its own: the slider's belongs to whoever builds it, and the other two
-are a few pixels on components already drawn.
+ticket of its own: the slider's belongs to whoever builds it, and the other is
+a few pixels on a component already drawn.
 
 ## Borders & elevation
 - **Hairlines do the work.** 1px `--rule` separates almost everything; shadows are reserved for sheets and floating buttons only.

@@ -342,6 +342,24 @@ abstract final class OffTokens {
     reason: 'the step stack opens at `marginTop: 20`',
   );
 
+  /// The well the how-to-play drawer holds the kind's mark in.
+  static const OffToken<double> helpWellSize = OffToken(
+    44,
+    reason: 'the drawer heads with a `44` square',
+  );
+
+  /// The well's own corner, rounder than the chrome radius beside it.
+  static const OffToken<double> helpWellRadius = OffToken(
+    12,
+    reason: 'the well sets `borderRadius: 12`',
+  );
+
+  /// How big the mark is drawn inside that well.
+  static const OffToken<double> helpWellMark = OffToken(
+    22,
+    reason: 'the well draws its mark at `size={22}`',
+  );
+
   /// The leading a fill slot sets for itself, tighter than the paragraph it
   /// sits in so the rule stays under the word rather than under the line.
   static const OffToken<double> fillSlotLeading = OffToken(
@@ -359,6 +377,37 @@ abstract final class OffTokens {
   static const OffToken<double> fillOptionGap = OffToken(
     10,
     reason: 'the words sit side by side at `gap: 10px`',
+  );
+
+  /// The gutter between a match board's two columns, wide enough for the
+  /// connectors drawn across it to read as lines rather than as joins.
+  static const OffToken<double> matchColumnGap = OffToken(
+    40,
+    reason: 'the two columns sit at `gap: 40`',
+  );
+
+  /// The gap between two tiles in one match column.
+  static const OffToken<double> matchTileGap = OffToken(
+    10,
+    reason: 'a column stacks its tiles at `gap: 10px`',
+  );
+
+  /// A match tile's own padding, taller than it is wide.
+  static const OffToken<EdgeInsets> matchTilePadding = OffToken(
+    EdgeInsets.symmetric(vertical: 15, horizontal: 18),
+    reason: 'a match tile sets `padding: 15px 18px`',
+  );
+
+  /// How far a held answer swells under the trait about to land on it.
+  static const OffToken<double> matchDropHotScale = OffToken(
+    1.03,
+    reason: 'the answer under a held trait takes `transform: scale(1.03)`',
+  );
+
+  /// What is left of a trait once its clone is the thing being dragged.
+  static const OffToken<double> matchDraggingOpacity = OffToken(
+    0.4,
+    reason: 'the tile left behind takes `opacity: 0.4`',
   );
 
   /// The room the course ending keeps between its headline and its stats.
@@ -428,6 +477,14 @@ abstract final class OffTokens {
     tastefixPanelToPrompt,
     helpStepGap,
     helpStepsTop,
+    helpWellSize,
+    helpWellRadius,
+    helpWellMark,
+    matchColumnGap,
+    matchTileGap,
+    matchTilePadding,
+    matchDropHotScale,
+    matchDraggingOpacity,
     fillSlotLeading,
     fillGroupGap,
     fillOptionGap,

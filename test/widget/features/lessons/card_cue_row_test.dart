@@ -1,4 +1,7 @@
 import 'package:brew_path/app/app_theme.dart';
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
+import 'package:brew_path/core/widgets/icon_badge.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_cue.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_cue_row.dart';
@@ -132,6 +135,85 @@ void main() {
 
       expect(find.text('?'), findsNothing);
       expect(find.text('MATCH · DRAG TO PAIR'), findsOneWidget);
+    });
+  });
+
+  group('the well', () {
+    Future<void> openDrawer(WidgetTester tester, {CardKindHelp? entry}) async {
+      await pump(tester, entry: entry ?? _matchHelp);
+      await tester.tap(find.text('?'));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets("heads the drawer with this kind's own mark", (tester) async {
+      await openDrawer(tester);
+
+      final well = find.byType(HelpWell);
+      expect(well, findsOneWidget);
+      expect(tester.widget<HelpWell>(well).mark, AppIcon.match);
+      expect(
+        tester
+            .widget<IconMark>(
+              find.descendant(of: well, matching: find.byType(IconMark)),
+            )
+            .icon,
+        AppIcon.match,
+      );
+    });
+
+    testWidgets('is a 44 square holding a 22 mark', (tester) async {
+      await openDrawer(tester);
+
+      expect(tester.getSize(find.byType(HelpWell)), const Size(44, 44));
+      expect(
+        tester
+            .widget<IconMark>(
+              find.descendant(
+                of: find.byType(HelpWell),
+                matching: find.byType(IconMark),
+              ),
+            )
+            .size,
+        22,
+      );
+      expect(
+        tester.getSize(
+          find.descendant(
+            of: find.byType(HelpWell),
+            matching: find.byType(IconMark),
+          ),
+        ),
+        const Size(22, 22),
+      );
+    });
+
+    testWidgets('is an outlined well, in the rule and the second surface', (
+      tester,
+    ) async {
+      await openDrawer(tester);
+
+      final mood = AppTheme.darkRoast.extension<MoodColors>()!;
+      final badge = tester.widget<IconBadge>(
+        find.descendant(
+          of: find.byType(HelpWell),
+          matching: find.byType(IconBadge),
+        ),
+      );
+
+      expect(badge.background, mood.surface2);
+      expect(badge.borderColor, mood.rule);
+      expect(badge.foreground, mood.ink);
+    });
+
+    testWidgets('sits a 14 gutter from the eyebrow beside it', (tester) async {
+      await openDrawer(tester);
+
+      final wellRight = tester.getTopRight(find.byType(HelpWell)).dx;
+      final eyebrowLeft = tester
+          .getTopLeft(find.text(howToPlayLabel.toUpperCase()))
+          .dx;
+
+      expect(eyebrowLeft - wellRight, 14);
     });
   });
 }
