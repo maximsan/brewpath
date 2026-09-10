@@ -44,6 +44,16 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The intro ends on the offer, and a purchase is celebrated.** After the name
+  step the app makes its case for the full course on a screen of its own — the
+  same one non-consumable every lock already sells, with the same ranked pitch
+  counted from the banks, plus Restore, Terms and Privacy. Buying is never
+  required: *Maybe later* and the close both finish onboarding and open Today.
+  Buying instead lands on a short welcome that offers the Studio it just
+  unlocked. Restoring is not a sale: it recovers what you own and walks on,
+  without the celebration. The intro is finished by this step rather than by
+  the name before it, so a learner still looking at the offer is not treated
+  as done with it.
 - **A card says what it is, and shows you how to play it.** The ten formats
   with instructions — multiple choice, select all, match, calibrate, put in
   order, true or false, tasting, taste fix, blind bag and complete the sentence
@@ -159,6 +169,11 @@ You can always edit this file by hand instead — the helpers just save effort.
   which is what makes a third launch safe.
 
 ### Fixed
+
+- **Restore Purchases no longer looks broken when it finds nothing.** It said
+  nothing at all — on every gate the app draws — so a learner with no purchase
+  on the account tapped a link that appeared dead. It now says what happened
+  and what to try, and is still not treated as a failure: nobody was charged.
 
 - **The course ending matches its design.** The screen was built five days
   before the design drew it, and never compared since. It now reads *You

@@ -1,5 +1,6 @@
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/widgets/celebration_glow.dart';
 import 'package:brew_path/core/widgets/float_topbar.dart';
 import 'package:brew_path/core/widgets/scroll_flag_scope.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
@@ -184,17 +185,12 @@ class ModuleCompleteBack extends StatelessWidget {
                 ? AppLabels.beginNextModule
                 : AppLabels.backToPath,
             onPressed: onContinue,
-            // The module's own Coffee Challenge, offered here and nowhere else
-            // in this flow: the design puts it above the exit CTA on this
-            // face, *"no separate step"* (#464). Continuing past it is the
-            // not-now — the challenge waits on the Path either way.
+            // The module's Coffee Challenge, offered above the exit CTA and
+            // nowhere else in this flow — *"no separate step"* (#464).
             //
-            // ⚠️ The design lets the offer scroll with the content and floats
-            // only the CTA. `StickyActionBar` pins its preface, so here the
-            // two travel together. Order and spacing match; on a face this
-            // short nothing scrolls anyway, and prising the offer out of the
-            // shared footer (#412) for one caller would cost more than it
-            // buys.
+            // ⚠️ The design floats only the CTA and lets the offer scroll;
+            // `StickyActionBar` pins its preface, so the two travel together.
+            // Nothing scrolls on a face this short (#412).
             preface: ModuleChallengeOffer(moduleId: summary.module.id),
             // **The card, and nothing over it** — the same back face the
             // lesson ending turns to. It carried a kicker and a generic

@@ -8,9 +8,8 @@ import 'package:flutter/foundation.dart';
 /// them away from on the way.
 ///
 /// The refusal rides back rather than being written to a holder, so
-/// [redirectFor] stays a function of its arguments. The router is the only
-/// thing that can act on it — a sheet cannot be opened while a location is
-/// still being resolved — and it acts on it the moment it is handed over.
+/// [redirectFor] stays a function of its arguments. Only the router can act on
+/// it — a sheet cannot open while a location is still being resolved.
 @immutable
 class GateDecision {
   /// The location asked for is allowed.
@@ -35,14 +34,9 @@ class GateDecision {
 
 /// The state every gate is decided from, read once at the router's end.
 ///
-/// One value rather than five arguments: they are read together, in one place,
-/// and they travel together into the one function that judges them. A gate
-/// added later is a field here, not a sixth thing every caller has to pass.
-///
-/// **Every unresolved read is the locked answer.** Showing a lock briefly to a
-/// paying learner is recoverable and showing paid content briefly to a free one
-/// is not, so the router resolves each pending provider to `false` — and the
-/// finished-lesson set to empty — before handing it over.
+/// One value rather than five arguments: a gate added later is a field here.
+/// **Every unresolved read is the locked answer** — the router resolves each
+/// pending provider to `false`, and the finished-lesson set to empty, first.
 @immutable
 class GateState {
   /// Creates a [GateState].
@@ -60,19 +54,11 @@ class GateState {
   /// Whether they own the course.
   final bool courseEntitled;
 
-  /// Whether [courseEntitled] and [completedLessonIds] are answers rather than
-  /// placeholders.
+  /// Whether [courseEntitled] and [completedLessonIds] are real answers.
   ///
-  /// The wall closes either way — content stays behind it while the store and
-  /// the progress store are still being read, because that is the direction it
-  /// is safe to be wrong in.
-  ///
-  /// **The offer does not follow the wall here.** A bounce made on an
-  /// unresolved read corrects itself the moment the real answer lands; a Plus
-  /// sheet raised on one does not, because nothing that re-runs the redirect
-  /// can close a modal. On a cold start every read is unresolved, so without
-  /// this a learner who *owns* the course and opens a deep link to a paid
-  /// lesson is sold the thing they have already bought.
+  /// The wall closes either way, the safe direction to be wrong in. **The
+  /// offer does not follow it**: a bounce corrects itself, a Plus sheet does
+  /// not, and on a cold start an owner would be sold what they already bought.
   final bool purchaseStateKnown;
 
   /// Whether the one-off course ending is owed to them.
@@ -84,12 +70,10 @@ class GateState {
 
 /// Every gate→destination decision the app makes, as one pure function.
 ///
-/// Readable and testable without a router: the widget-level version needs the
-/// whole app pumped and onboarding driven for real, which is why the
-/// pending-link rule below had no test until it had a defect.
-///
-/// Its one effect is on [pending], which by its nature outlives a single call
-/// — everything else the gates conclude comes back in the [GateDecision].
+/// Readable and testable without a router — the widget-level version needs the
+/// whole app pumped, which is why the pending-link rule below had no test until
+/// it had a defect. Its one effect is on [pending]; everything else the gates
+/// conclude comes back in the [GateDecision].
 GateDecision redirectFor({
   required Uri location,
   required GateState gates,
@@ -108,6 +92,18 @@ GateDecision redirectFor({
       path == AppRoutes.loading.path ||
       isIntroRoute ||
       path.startsWith(AppRoutes.onboardingPrefix);
+
+  // The celebration is for someone who owns it, and it is allowed on either
+  // side of the onboarding flag — the buy exit writes that flag a moment
+  // before it navigates here, and a learner who has just paid is never sent
+  // back to the intro. Anyone else — a deep link, a stale tab — is turned
+  // away, because "Plus is yours" is a lie told to a learner who owns nothing.
+  if (path == AppRoutes.purchaseWelcome.path) {
+    if (gates.courseEntitled) return const GateDecision.allow();
+    return GateDecision.to(
+      gates.onboardingCompleted ? AppRoutes.learn.path : AppRoutes.welcome.path,
+    );
+  }
 
   if (!gates.onboardingCompleted) {
     if (isOnboardingRoute) return const GateDecision.allow();
@@ -160,19 +156,10 @@ GateDecision redirectFor({
 
 /// Translates the **published** card address into the route that reads a card.
 ///
-/// A shared link says `/card/<id>`; the app reads a card as a sheet over its
-/// collection, at `/cards/<id>`. Forwarding here rather than registering a
-/// route keeps the published address stable without giving a card a second
-/// home in the app — and catches what a route could not, because the AASA
-/// file claims `/card/*` and `*` matches across slashes.
-///
-/// Anything that is not one clean segment lands on the collection: version
-/// skew and mistyped links degrade silently, never onto an error screen.
-/// Returns null when [location] is not a card address at all.
-///
-/// Lives beside the gates but is **not** called by [redirectFor]: go_router
-/// runs no redirect for a location nothing matches, so this has to hang off a
-/// route that matches. The route calls it.
+/// A link says `/card/<id>`; the app reads one at `/cards/<id>`. Forwarding
+/// catches what a route could not — the AASA file claims `/card/*`, and `*`
+/// crosses slashes. Anything else lands on the collection; null means no card
+/// address. **Not** called by [redirectFor] — nothing matches it.
 String? forwardPublicCardAddress(Uri location) {
   const prefix = AppLinks.cardPrefix;
   final path = location.path;
@@ -185,12 +172,10 @@ String? forwardPublicCardAddress(Uri location) {
 
 /// The lesson a location plays, or null when it is not a lesson route at all.
 ///
-/// Reads the URL rather than go_router's path parameters because the gate is a
-/// pure function: it is handed a `Uri` and has no match to ask. Both the run
-/// and the ending it leads to are lesson routes — `/learn/lesson/<id>` and
-/// `/learn/lesson/<id>/complete` — and the wall stands in front of both, so an
-/// ending cannot be linked to as a way of claiming a lesson that was never
-/// played.
+/// Reads the URL rather than go_router's path parameters: the gate is pure and
+/// has no match to ask. The wall stands in front of both the run and its ending
+/// — `/learn/lesson/<id>` and `/learn/lesson/<id>/complete` — so an ending
+/// cannot be linked to as a way of claiming a lesson never played.
 String? lessonIdIn(Uri location) {
   // Assembled from the routes themselves — the tab's path plus the lesson
   // route's own first segment — so renaming either cannot leave a string

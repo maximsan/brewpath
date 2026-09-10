@@ -163,6 +163,11 @@ void main() {
     'flashcards': HeaderTier.immersive,
     'termOfDay': HeaderTier.immersive,
     'onboardingName': HeaderTier.immersive,
+    // The intro's last step, and the beat after a purchase. Both own the
+    // screen and carry their own chrome — the offer a close, the celebration
+    // nothing at all, because it has no way back.
+    'onboardingPaywall': HeaderTier.immersive,
+    'purchaseWelcome': HeaderTier.immersive,
   };
 
   test('every registered route has a decided chrome tier', () {
