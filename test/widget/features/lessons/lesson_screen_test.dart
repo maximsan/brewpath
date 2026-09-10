@@ -184,7 +184,7 @@ void main() {
     );
 
     await advance(tester, 'Skin');
-    await advance(tester, 'Continue');
+    await advance(tester, 'Find out');
     await advance(tester, 'The seed of a cherry');
 
     expect(find.byType(RecallPayoff), findsOneWidget);

@@ -428,6 +428,38 @@ abstract final class OffTokens {
     reason: "a stat row sets `padding: '13px 2px'`",
   );
 
+  /// The gap the predict card keeps under its title, and above its tiles.
+  static const OffToken<double> predictSectionGap = OffToken(
+    18,
+    reason:
+        'the predict body sets `marginTop: 18` and `.pick-tiles` sets '
+        '`margin-top: 18px`',
+  );
+
+  /// The room the predict card leaves before its guess section.
+  static const OffToken<double> predictGuessGap = OffToken(
+    30,
+    reason: "the guess section opens at `margin: '30px 0 0'`",
+  );
+
+  /// The leading of the predict card's reading paragraph.
+  static const OffToken<double> predictReadingLeading = OffToken(
+    1.55,
+    reason: 'the predict body sets `lineHeight: 1.55`',
+  );
+
+  /// The leading of the predict card's question.
+  static const OffToken<double> predictQuestionLeading = OffToken(
+    1.5,
+    reason: 'the predict question sets `lineHeight: 1.5`',
+  );
+
+  /// The gap between the two guess tiles.
+  static const OffToken<double> pickTileGap = OffToken(
+    11,
+    reason: '`.pick-tiles` sets `gap: 11px`',
+  );
+
   /// Every sanctioned exception, so the register can be tested as a whole.
   static const register = <OffToken<Object>>[
     rewardedAdCanvas,
@@ -491,5 +523,10 @@ abstract final class OffTokens {
     courseStatsTop,
     courseStatsWidth,
     courseStatRowPadding,
+    predictSectionGap,
+    predictGuessGap,
+    predictReadingLeading,
+    predictQuestionLeading,
+    pickTileGap,
   ];
 }

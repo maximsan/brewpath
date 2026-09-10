@@ -40,6 +40,7 @@ class CardShell extends StatelessWidget {
     this.label,
     this.title,
     this.commit,
+    this.continueLabel = AppLabels.continueLabel,
     super.key,
   });
 
@@ -67,6 +68,10 @@ class CardShell extends StatelessWidget {
   /// that commits separately from answering. Null for every other kind, which
   /// shows a disabled Continue while it waits.
   final CardCommit? commit;
+
+  /// What the way forward says: Continue, unless the design words this card's
+  /// gate itself — the predict card's *Make a guess*, then *Find out*.
+  final String continueLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +110,7 @@ class CardShell extends StatelessWidget {
           PrimaryButton(label: commit!.label, onPressed: commit!.onCommit)
         else
           PrimaryButton(
-            label: AppLabels.continueLabel,
+            label: continueLabel,
             onPressed: latched ? onContinue : null,
           ),
       ],
