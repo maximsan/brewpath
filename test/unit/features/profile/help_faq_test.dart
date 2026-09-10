@@ -94,15 +94,6 @@ void main() {
   });
 
   group('the Foundations answer is derived, never typed', () {
-    test('counts what Plus adds from the pitch', () {
-      final answer = _answerContaining(_faq(), 'Foundations');
-
-      expect(answer, contains('${_pitch.remainingLessons}'));
-      expect(answer, contains('${_pitch.lockedGames}'));
-      expect(answer, contains('${_pitch.referenceTerms}'));
-      expect(answer, contains('${_pitch.savedFreeCap}'));
-    });
-
     test('counts the free lessons from the free-tier list', () {
       expect(
         _answerContaining(_faq(), 'Foundations'),
@@ -135,25 +126,27 @@ void main() {
           contains(benefit.title.toLowerCase()),
           reason: benefit.title,
         );
-        expect(
-          answer.toLowerCase(),
-          contains(benefit.detail.toLowerCase()),
-          reason: benefit.detail,
-        );
       }
     });
 
-    test('a bank that grows moves the answer with it', () {
-      const grown = PlusPitch(
-        remainingLessons: 41,
-        lockedGames: 9,
-        referenceTerms: 12,
-        savedFreeCap: 5,
-      );
+    test('reads as one sentence, not a list of counts', () {
+      // The design's answer flows; the counted details belong on the paywall,
+      // which is the surface that pitches them.
+      final answer = _answerContaining(_faq(), 'Foundations');
 
+      expect(answer, isNot(contains(';')));
+      expect(answer, isNot(contains('(')));
+      expect(answer, contains('and the Studio.'));
+    });
+
+    test('the free counts move with the banks they are read from', () {
       expect(
-        _answerContaining(_faq(pitch: grown), 'Foundations'),
-        contains('41'),
+        _answerContaining(_faq(freeGames: 3), 'Foundations'),
+        contains('the 3 practice formats'),
+      );
+      expect(
+        _answerContaining(_faq(freeGames: 9), 'Foundations'),
+        contains('the 9 practice formats'),
       );
     });
   });

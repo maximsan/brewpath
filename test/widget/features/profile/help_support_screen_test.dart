@@ -243,20 +243,24 @@ void main() {
     expect(find.text(SettingsCopy.faqCounting), findsOneWidget);
   });
 
-  testWidgets('the answers carry the counts the banks gave', (tester) async {
+  testWidgets('the counted answer arrives once the banks reply', (
+    tester,
+  ) async {
     await pump(tester);
 
     final foundations = tester
         .widgetList<HelpFaqRow>(find.byType(HelpFaqRow))
         .firstWhere((row) => row.entry.question.contains('Foundations'));
+    expect(foundations.entry.answer, isNotNull);
 
     await tester.tap(find.text(foundations.entry.question));
     await tester.pumpAndSettle();
 
+    expect(find.text(SettingsCopy.faqCounting), findsNothing);
     expect(
-      find.textContaining('${_pitch.remainingLessons}'),
+      find.textContaining('the rest of the course'),
       findsOneWidget,
-      reason: 'the count is read off the shipped banks, never typed',
+      reason: "what Plus opens is the offer's own list, never a second copy",
     );
   });
 }

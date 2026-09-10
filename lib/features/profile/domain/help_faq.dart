@@ -70,22 +70,26 @@ List<HelpQuestion> helpFaq({
   ),
 ];
 
-/// What Plus contains, in the paywall's own words and counts.
+/// What Plus contains, named in the offer's own words.
 ///
-/// Read from [paywallBenefitsFor] rather than restated, so a benefit added to
-/// the offer reaches this answer with no edit here.
+/// The benefit titles, not their counted details: the question is what
+/// Foundations includes, and the pitch's numbers belong on the paywall. Read
+/// from [paywallBenefitsFor], so a benefit added to the offer arrives here
+/// with no edit.
 String _foundations(PlusPitch pitch, int freeGames, String tail) {
-  final opens = paywallBenefitsFor(pitch)
-      .map(
-        (benefit) =>
-            '${_openingLower(benefit.title)} '
-            '(${_openingLower(benefit.detail)})',
-      )
-      .join('; ');
+  final opens = paywallBenefitsFor(
+    pitch,
+  ).map((benefit) => _openingLower(benefit.title)).toList();
 
-  return 'Foundations opens $opens. The first ${freeLessonIds.length} lessons '
-      'stay free, and so do the $freeGames practice formats they teach. $tail';
+  return 'Foundations opens ${_sentenceList(opens)}. The first '
+      '${freeLessonIds.length} lessons stay free, and so do the $freeGames '
+      'practice formats they teach. $tail';
 }
+
+/// Joins [parts] the way a sentence does — commas, and *and* before the last.
+String _sentenceList(List<String> parts) => parts.length < 2
+    ? parts.join()
+    : '${parts.sublist(0, parts.length - 1).join(', ')} and ${parts.last}';
 
 /// Drops a phrase into mid-sentence without lowercasing a name inside it.
 String _openingLower(String phrase) =>
