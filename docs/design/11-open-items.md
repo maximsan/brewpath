@@ -3,6 +3,42 @@
 > Part of the [BrewPath v1 design reference](README.md). All source paths are relative to `prototype/`.
 
 
+## Audited 10 September 2026 against the app
+
+Every row of the two "open" tables below was checked against `lib/` and the tracker before this file was removed. None is unowned.
+
+| Row | Outcome |
+|---|---|
+| Tap targets under 44px | done: the light swatches sit in a 44-high box (`light_pill.dart`); no rewarded-ad surface exists |
+| Rewarded ad hardcodes `#E07A4F` | done: no rewarded-ad surface; the colour is a registered off-token |
+| Atlas smallcaps lowercase "and" | done: no Atlas in the app (v2) |
+| `--accent` at 4.23:1 in cupping | ticket #488 |
+| `--berry` at 3.86:1 in dark roast | done: held by the design; token shipped verbatim |
+| Hairlines below 3:1 | done: decoration by the design's own disposition |
+| `intro` and `takeaway` have zero cards | done: neither kind exists in `content_card.dart` |
+| Two frozen "today" dates | done: no literal date in `lib/`; the day comes from `current_day.dart`; residual clock reads are #202 |
+| Price list duplicated | done: the app authors no price, the store supplies it; one product (ADR-0003) |
+| Whether a replay ticks the streak | built (#142); the FAQ copy is #531 |
+| Streak advancement unwired | done: `streak_engine.dart` derives it; rollover on resume |
+| `cq-recent-terms` consumed by nothing | done: the app has no such key |
+| Path expansion in a `window` global | ruled #394: view state, not stored |
+| Three components with unused props | done: prototype-only |
+| Duel has three entry points | done: v2, all three slots empty in the app |
+| All 8 About / Help rows are stubs | tickets #448, #531, #532 |
+| Privacy + Terms in two places | ticket #448 |
+| `brew.saved` dropped on Reset | done: `ClearedByReset` carries it |
+| `freezesSpent` not cleared by Reset | done: derived, never stored (#17) |
+| Reset confirm list incomplete | ticket #570 |
+| Delete Account 30-day restore copy · deletion scope · `ConfirmSheet` paragraphs · delete labels · subscription warning | ruled on #365 (3 Sep): no separate Delete account in v1, the row is drawn inert |
+| `isPlus` is local state | ticket #421 |
+| Help drawer covers 10 kinds | ruled #550: the other five carry their own cue |
+| "Merged nav model" | done: four branches in `app_router.dart`, no merged model |
+| Four future modules promised | ruled #170: the design withdrew the surface |
+| The radius scale was wrong | done: `app_radii.dart` 2 / 14 / 999 |
+| Vocab game biased shuffle | done: seeded Fisher–Yates (`vocab_round.dart`) |
+| Vocab results line says "added" | done: "kept in" / "added to" by deck (#298) |
+| Mini-game round order fixed | done: `shuffledBySeed` (#66) |
+
 ## Verified Aug 2026 (`QA Findings.html`)
 
 `QA Findings.html` was rewritten as **"the state of the build, not its history"**
