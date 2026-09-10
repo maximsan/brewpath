@@ -31,6 +31,11 @@ enum PlusPurchaseState {
   /// The learner backed out. A normal thing to do, and not an error.
   cancelled,
 
+  /// Restore ran and found nothing on this account. Not a failure — nobody
+  /// was charged and nothing broke — but it must be said, or the link reads
+  /// as dead.
+  nothingToRestore,
+
   /// The store refused or failed.
   failed,
 }
@@ -81,7 +86,7 @@ class PlusPurchase extends _$PlusPurchase {
       await ref.read(paymentsServiceProvider).restorePurchases();
       state = await _reReadEntitlement()
           ? PlusPurchaseState.owned
-          : PlusPurchaseState.idle;
+          : PlusPurchaseState.nothingToRestore;
     } on Exception {
       state = PlusPurchaseState.failed;
     }
