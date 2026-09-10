@@ -44,6 +44,12 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Switching pricing models is a config change, not a rewrite.** The store
+  now reports which experiment arm a learner is on and what it sells them, and
+  the arm-to-SKU map is one function. A guard test makes it structurally
+  impossible for any access check to see the arm, so a purchase is honoured by
+  the same entitlement check whichever paywall sold it. Nothing on screen
+  changes: the build still ships the one-time arm ADR-0003 rules.
 - **The intro ends on the offer, and a purchase is celebrated.** After the name
   step the app makes its case for the full course on a screen of its own — the
   same one non-consumable every lock already sells, with the same ranked pitch
@@ -62,7 +68,6 @@ You can always edit this file by hand instead — the helpers just save effort.
   the three steps to play it. The words are the design's own. The five kinds
   that carry an authored eyebrow instead are untouched, and a round in a
   mini-game reads exactly as it does in a lesson.
-
 - **Checks run before code leaves the machine.** `tool/git-hooks/` fails a
   commit on an unformatted Dart file or an over-long comment, and a push on
   anything the metrics, a guard test, the comment check or the changelog

@@ -23,6 +23,9 @@ abstract class PaymentsService {
   /// Returns true if the user currently has an active entitlement.
   Future<bool> hasActiveEntitlement();
 
+  /// Returns which experiment arm this learner is on, and what it sells.
+  Future<PlusOffering> currentOffering();
+
   /// Returns available products from the store.
   Future<List<StoreProduct>> getProducts(List<String> productIds);
 
@@ -174,10 +177,18 @@ subscription SKUs
 ([ADR-0003](adr/0003-one-time-purchase-no-trial.md)). This is the *baseline*
 of a planned post-launch experiment (one-time vs subscription vs hybrid), so
 entitlement, acquisition and paywall UI stay separated
-([#176](https://github.com/maximsan/brewpath/issues/176)) and the SKU list is
-config, not code.
+([#176](https://github.com/maximsan/brewpath/issues/176)).
 
-Define the ID in `lib/core/constants/product_ids.dart` when implementing.
+The IDs and the arm-to-SKU map live in
+`lib/services/payments/plus_offering.dart` — `offeringFor(model)` is the whole
+of "which SKUs does this arm sell", which is what makes switching models a
+config change.
+
+**Only the one-time arm has SKUs.** The subscription and hybrid arms are named
+in `MonetizationModel` because #176 and ADR-0003 name them, but `offeringFor`
+throws for both: nothing is registered in App Store Connect, and choosing IDs,
+prices and which plan a paywall preselects are product decisions nobody has
+made. Register the SKUs first, then fill the arm in.
 
 ---
 
@@ -188,7 +199,12 @@ When payments are ready to go live:
 - [ ] Register products in App Store Connect → In-App Purchases
 - [ ] Enable In-App Purchase capability in Xcode → Runner target → Signing & Capabilities
 - [ ] Replace `NoOpPaymentsService` with `InAppPurchaseService` in `payments_provider.dart`
-- [ ] Implement `InAppPurchaseService` with StoreKit 2 integration via `in_app_purchase` package — `buyNonConsumable` only
+- [ ] Implement `InAppPurchaseService` with StoreKit 2 integration via `in_app_purchase` package — `buyNonConsumable` only:
+  `InAppPurchase.instance.isAvailable()` on init, listen to `purchaseStream`,
+  `queryProductDetails(productIds)`, `buyNonConsumable()`, then deliver the
+  entitlement after `PurchaseStatus.purchased` + `verifyPurchase()`
+- [ ] Return a real `currentOffering()` — RevenueCat's Offerings if the experiment
+  uses it, otherwise the baseline arm; it must be stable per learner
 - [ ] Implement client-side receipt validation (server-side only if the monetization experiment brings subscriptions back)
 - [ ] Add entitlement check at app startup — gate Plus content if `hasActiveEntitlement()` returns false
 - [ ] Build paywall screen at `lib/features/paywall/presentation/paywall_screen.dart`
@@ -209,6 +225,7 @@ non-consumable; the decision belongs to the experiment.
 lib/services/payments/
 ├── payments_service.dart           # Abstract interface
 ├── store_product.dart              # Product model
+├── plus_offering.dart              # Arms, SKUs, and the arm-to-SKU map
 ├── noop_payments_service.dart      # MVP active implementation (no-op)
 ├── in_app_purchase_service.dart    # Future implementation stub
 └── payments_provider.dart          # Riverpod provider
