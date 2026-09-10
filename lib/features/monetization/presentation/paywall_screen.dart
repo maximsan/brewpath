@@ -12,6 +12,7 @@ import 'package:brew_path/features/monetization/domain/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/paywall_view.dart';
 import 'package:brew_path/features/monetization/domain/paywall_view_provider.dart';
 import 'package:brew_path/features/monetization/domain/plus_purchase_controller.dart';
+import 'package:brew_path/features/monetization/presentation/legal_links.dart';
 import 'package:brew_path/features/monetization/presentation/plan_picker.dart';
 import 'package:brew_path/features/monetization/presentation/purchase_outcome_line.dart';
 import 'package:brew_path/shared/models/monetization/plus_offering.dart';
@@ -228,7 +229,7 @@ class _Action extends ConsumerWidget {
 }
 
 /// Restore, Terms and Privacy — which the App Store requires of a purchase
-/// screen. Terms and Privacy stay disabled until #448 gives them a home.
+/// screen.
 class _RequiredLinks extends StatelessWidget {
   const _RequiredLinks({required this.isWorking, required this.onRestore});
 
@@ -236,18 +237,13 @@ class _RequiredLinks extends StatelessWidget {
   final VoidCallback onRestore;
 
   @override
-  Widget build(BuildContext context) => Wrap(
-    alignment: WrapAlignment.center,
-    spacing: AppSpacing.md,
-    runSpacing: AppSpacing.xxs,
-    children: [
-      LinkButton(
-        label: PaywallCopy.restore,
-        onPressed: isWorking ? null : onRestore,
-      ),
-      const LinkButton(label: PaywallCopy.terms, onPressed: null),
-      const LinkButton(label: PaywallCopy.privacy, onPressed: null),
-    ],
+  Widget build(BuildContext context) => LegalLinks(
+    termsLabel: PaywallCopy.terms,
+    privacyLabel: PaywallCopy.privacy,
+    leading: LinkButton(
+      label: PaywallCopy.restore,
+      onPressed: isWorking ? null : onRestore,
+    ),
   );
 }
 

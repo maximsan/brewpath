@@ -9,6 +9,7 @@ import 'package:brew_path/features/monetization/domain/plus_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart';
 import 'package:brew_path/features/monetization/domain/plus_purchase_controller.dart';
+import 'package:brew_path/features/monetization/presentation/legal_links.dart';
 import 'package:brew_path/features/monetization/presentation/plus_pitch_list.dart';
 import 'package:brew_path/features/monetization/presentation/purchase_outcome_line.dart';
 import 'package:brew_path/shared/models/monetization/plus_offering.dart';
@@ -113,27 +114,15 @@ class _GateAction extends ConsumerWidget {
 }
 
 /// Terms and Privacy, which the App Store requires of a non-consumable.
-///
-/// ⚠️ Both are stubs, disabled rather than dead: the real URLs are owed at
-/// [#448](https://github.com/maximsan/brewpath/issues/448). Their absence is a
-/// store-review failure, and a link that looks live and does nothing is worse.
 class _LegalLinks extends StatelessWidget {
   const _LegalLinks();
 
   @override
   Widget build(BuildContext context) => const Padding(
     padding: EdgeInsets.only(top: AppSpacing.xs),
-    // Wrapped, not a Row: two links side by side fit a phone at the default
-    // text size and stop fitting well before the largest one, and a required
-    // legal link is the last thing that may be clipped off the sheet.
-    child: Wrap(
-      alignment: WrapAlignment.center,
-      spacing: AppSpacing.md,
-      runSpacing: AppSpacing.xxs,
-      children: [
-        LinkButton(label: PlusCopy.terms, onPressed: null),
-        LinkButton(label: PlusCopy.privacy, onPressed: null),
-      ],
+    child: LegalLinks(
+      termsLabel: PlusCopy.terms,
+      privacyLabel: PlusCopy.privacy,
     ),
   );
 }

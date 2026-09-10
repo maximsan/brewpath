@@ -25,6 +25,7 @@ void main() {
   /// so this list grows when the paywall does, and never otherwise.
   const paywallLayer = <String>{
     'lib/features/monetization/config/paywall_config.dart',
+    'lib/features/monetization/domain/foundations_faq_tail.dart',
     'lib/features/monetization/domain/paywall_copy.dart',
     'lib/features/monetization/domain/paywall_view.dart',
     'lib/features/monetization/domain/paywall_view_provider.dart',
@@ -90,7 +91,7 @@ void main() {
         .where(
           (file) => withoutComments(
             file.readAsStringSync(),
-          ).contains('monetization/plus_offering'),
+          ).contains('plus_offering'),
         )
         .map((file) => file.path)
         .toList();

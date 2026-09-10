@@ -1,4 +1,6 @@
 import 'package:brew_path/core/constants/app_labels.dart';
+import 'package:brew_path/core/config/support_contact.dart';
+import 'package:brew_path/core/widgets/settings_nav_row.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/core/widgets/sub_header.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
@@ -92,14 +94,27 @@ void main() {
   ) async {
     // About is the one that wants a different opening; the frame it shares
     // with the other three is unchanged.
-    await pump(tester, const HelpSupportScreen());
+    await pump(tester, const AccountSyncScreen());
 
     expect(find.byType(SettingsScreenHeading), findsOneWidget);
     expect(
       tester
           .widget<SettingsScreenHeading>(find.byType(SettingsScreenHeading))
           .title,
-      SettingsCopy.helpTitle,
+      SettingsCopy.accountSyncTitle,
     );
+  });
+
+  testWidgets('draws no legal row while neither page is hosted', (
+    tester,
+  ) async {
+    // #448 owns the two URLs; until they exist the rows are absent rather
+    // than drawn live and inert, and the placeholder still names them.
+    await pump(tester, const AboutScreen());
+
+    expect(termsUrl, isNull, reason: '#448 has not been given URLs yet');
+    expect(privacyUrl, isNull, reason: '#448 has not been given URLs yet');
+    expect(find.byType(SettingsNavRow), findsNothing);
+    expect(find.text(SettingsCopy.aboutComing), findsOneWidget);
   });
 }

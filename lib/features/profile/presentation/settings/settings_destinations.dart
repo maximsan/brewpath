@@ -6,8 +6,8 @@
 /// opened here. Help is already real, and files the App Guide row.
 library;
 
+import 'package:brew_path/core/config/support_contact.dart';
 import 'package:brew_path/core/constants/app_labels.dart';
-import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/settings_nav_row.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
@@ -15,13 +15,12 @@ import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_sub_screen.dart';
-import 'package:brew_path/features/tour/domain/app_guide_copy.dart';
+import 'package:brew_path/services/links/link_provider.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 /// Signing in, and progress across devices.
 class AccountSyncScreen extends StatelessWidget {
@@ -57,35 +56,6 @@ class PurchasesScreen extends StatelessWidget {
   );
 }
 
-/// Help and support — and, in it, the written App Guide.
-class HelpSupportScreen extends StatelessWidget {
-  /// Creates the help screen.
-  const HelpSupportScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) => SettingsSubScreen(
-    title: SettingsCopy.helpTitle,
-    children: [
-      SettingsSection(
-        label: SettingsCopy.learnTheAppSection,
-        children: [
-          Builder(
-            builder: (context) => SettingsNavRow(
-              label: AppGuideCopy.title,
-              sub: AppGuideCopy.settingsRowBody,
-              onTap: () => context.pushNamed(AppRoutes.appGuide.name),
-            ),
-          ),
-        ],
-      ),
-      const SettingsSection(
-        label: SettingsCopy.commonQuestionsSection,
-        children: [SettingsPlaceholder(SettingsCopy.helpComing)],
-      ),
-    ],
-  );
-}
-
 /// The app's own page: what it is, and the fine print.
 class AboutScreen extends ConsumerWidget {
   /// Creates the about screen.
@@ -116,10 +86,46 @@ class AboutScreen extends ConsumerWidget {
         ),
         const SettingsSection(
           label: SettingsCopy.finePrintSection,
-          children: [SettingsPlaceholder(SettingsCopy.aboutComing)],
+          children: [_FinePrintRows()],
         ),
         const SizedBox(height: AppSpacing.lg),
         SettingsVersionLine(version: version.asData?.value),
+      ],
+    );
+  }
+}
+
+/// Terms and Privacy, each drawn only once its page exists (#448).
+///
+/// Acknowledgements and the open-source licenses are #532's, so the
+/// placeholder stays for as long as either of those is unbuilt.
+class _FinePrintRows extends ConsumerWidget {
+  const _FinePrintRows();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final open = ref.read(linkOpenerProvider).open;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (termsUrl case final url?)
+          SettingsNavRow(
+            label: SettingsCopy.termsRow,
+            onTap: () => open(Uri.parse(url)),
+          ),
+        if (privacyUrl case final url?)
+          SettingsNavRow(
+            label: SettingsCopy.privacyRow,
+            onTap: () => open(Uri.parse(url)),
+          ),
+        // Names only what is still missing, so the line does not promise a
+        // row sitting right above it.
+        const SettingsPlaceholder(
+          termsUrl != null && privacyUrl != null
+              ? SettingsCopy.aboutComingWithLegal
+              : SettingsCopy.aboutComing,
+        ),
       ],
     );
   }

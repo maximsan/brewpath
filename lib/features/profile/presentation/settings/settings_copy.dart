@@ -1,10 +1,6 @@
 /// The words Settings and the four screens behind it are **built from** — the
 /// section headings, the row labels, the titles, and About's own copy.
 ///
-/// Held together the way `AppGuideCopy` and `TourCopy` are: the design owns
-/// these strings, and a screen that spelled its own would be a second place to
-/// change them.
-///
 /// Not *every* string on the surface: the two confirmation dialogs keep their
 /// copy beside the action they confirm, where the wording and the consequence
 /// can only be read together.
@@ -98,6 +94,24 @@ abstract final class SettingsCopy {
   /// Section on Help: the FAQ and how to reach a human.
   static const commonQuestionsSection = 'Common questions';
 
+  /// Section on Help: the two ways to reach a human.
+  static const getInTouchSection = 'Get in touch';
+
+  /// What a screen reader says while the answers' counts are being read.
+  static const faqLoadingLabel = 'Loading the answers';
+
+  /// Help's row that opens a blank message to support.
+  static const emailSupportRow = 'Email support';
+
+  /// Help's row that opens a message already naming the build.
+  static const reportProblemRow = 'Report a problem';
+
+  /// About's row opening the hosted Terms of use (#448).
+  static const termsRow = 'Terms of use';
+
+  /// About's row opening the hosted Privacy policy (#448).
+  static const privacyRow = 'Privacy policy';
+
   /// Section on Account and sync.
   static const cloudSyncSection = 'Cloud sync';
 
@@ -119,4 +133,8 @@ abstract final class SettingsCopy {
   /// What the unbuilt half of About will hold.
   static const aboutComing =
       'Privacy policy, terms, acknowledgements and the open-source licenses.';
+
+  /// The same, once the two legal pages exist and are drawn as rows (#448).
+  static const aboutComingWithLegal =
+      'Acknowledgements and the open-source licenses.';
 }

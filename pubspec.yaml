@@ -71,6 +71,7 @@ dependencies:
   # flutter_tts because it is SPM-native and this project has no Podfile
   # (ADR-0012).
   stts: ^1.3.3
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:
