@@ -62,6 +62,7 @@ class _RoastyStudioScreenState extends ConsumerState<RoastyStudioScreen> {
         error: (_, _) => Center(
           child: Semantics(
             label: 'The wardrobe could not be loaded',
+            excludeSemantics: true,
             child: Text(
               'The wardrobe could not be loaded.',
               style: AppText.body(mood: context.mood),
@@ -71,7 +72,7 @@ class _RoastyStudioScreenState extends ConsumerState<RoastyStudioScreen> {
         data: (bank) => _Wardrobe(
           scrollPadding: scrollPadding,
           bank: bank,
-          draft: _draft ??= CompanionDraft.of(bank.worn),
+          draft: _draft ?? CompanionDraft.of(bank.worn),
           onDraft: (next) => setState(() => _draft = next),
           onApply: () => _apply(bank.worn),
         ),

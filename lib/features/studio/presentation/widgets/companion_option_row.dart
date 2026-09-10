@@ -152,7 +152,8 @@ class _OptionPill extends StatelessWidget {
     );
   }
 
-  /// The roast's colour dot; every other axis is shown by its drawing.
+  /// The roast's colour dot. Only that axis authors a swatch; the rest of
+  /// the pills carry their label alone.
   Color? get _swatch {
     final authored = option.swatch;
     return authored == null ? null : swatchColor(authored);

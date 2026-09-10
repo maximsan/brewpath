@@ -21,29 +21,6 @@ class RoastyStudio {
 
   /// What Roasty has on right now — what the confirm is compared against.
   final CompanionConfig worn;
-
-  /// What the Studio door says under its title for [outfit]: the roast, and
-  /// whatever else has actually been put on.
-  ///
-  /// Takes the outfit rather than reading [worn], because the door draws the
-  /// *gated* one. Naming the plain bean's `none`s is skipped: a resting state
-  /// is not a choice, and reading it back as one would say it was.
-  String subtitleFor(CompanionConfig outfit) {
-    final chosen = [
-      _labelOf(options.roasts, outfit.roast),
-      if (outfit.hat != CompanionConfig.initial.hat)
-        _labelOf(options.hats, outfit.hat),
-      if (outfit.gear != CompanionConfig.initial.gear)
-        _labelOf(options.gear, outfit.gear),
-      if (outfit.sprout != CompanionConfig.initial.sprout)
-        _labelOf(options.sprouts, outfit.sprout),
-    ].whereType<String>();
-    return chosen.join(' · ');
-  }
-
-  /// The label the bank gives [id], or null when it ships no such option.
-  static String? _labelOf(List<CompanionOption> axis, String id) =>
-      axis.where((option) => option.id == id).firstOrNull?.label;
 }
 
 /// The wardrobe's data: the four banks and the outfit Roasty has on.

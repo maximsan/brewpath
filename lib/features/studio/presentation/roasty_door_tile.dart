@@ -42,7 +42,7 @@ class RoastyDoorTile extends ConsumerWidget {
       ),
       kicker: 'Studio',
       title: 'Dress up Roasty',
-      support: bank == null || worn == null ? '' : bank.subtitleFor(worn),
+      support: bank == null || worn == null ? '' : bank.options.labelLine(worn),
       locked: !isPlus,
       onTap: () => isPlus
           ? context.goNamed(AppRoutes.roastyStudio.name)

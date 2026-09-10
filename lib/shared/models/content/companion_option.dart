@@ -1,3 +1,4 @@
+import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'companion_option.freezed.dart';
@@ -54,4 +55,21 @@ class CompanionOptions {
     for (final axis in [roasts, hats, gear, sprouts])
       for (final option in axis) option.id,
   };
+
+  /// [outfit] as a line of labels: the roast, then whatever was put on.
+  ///
+  /// Naming the plain bean's `none`s is skipped — a resting state is not a
+  /// choice, and reading it back as one would say it was.
+  String labelLine(CompanionConfig outfit) => [
+    _labelOf(roasts, outfit.roast),
+    if (outfit.hat != CompanionConfig.initial.hat) _labelOf(hats, outfit.hat),
+    if (outfit.gear != CompanionConfig.initial.gear)
+      _labelOf(gear, outfit.gear),
+    if (outfit.sprout != CompanionConfig.initial.sprout)
+      _labelOf(sprouts, outfit.sprout),
+  ].whereType<String>().join(' · ');
+
+  /// The label the bank gives [id], or null when it ships no such option.
+  static String? _labelOf(List<CompanionOption> axis, String id) =>
+      axis.where((option) => option.id == id).firstOrNull?.label;
 }

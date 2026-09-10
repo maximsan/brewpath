@@ -1,9 +1,14 @@
+import 'package:brew_path/app/app.dart';
+import 'package:brew_path/features/companion/application/companion_outfit.dart';
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/companion_outfit_scope.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../../../support/widget_harness.dart';
 
 // What makes the outfit app-wide: a Roasty three hosts deep reads it without
 // anyone threading it through, and a Roasty with no scope over it is the plain
@@ -34,6 +39,33 @@ Future<void> _pump(WidgetTester tester, Widget child) async {
 }
 
 void main() {
+  testWidgets('the app installs the scope over every route', (tester) async {
+    await useInMemoryDatabase();
+    await pumpWithProviders(
+      tester,
+      const BrewPathApp(),
+      container: ProviderContainer(
+        overrides: [
+          companionOutfitProvider.overrideWith((ref) async => _dressed),
+        ],
+      ),
+    );
+
+    final scope = find.byType(CompanionOutfitScope);
+    expect(
+      scope,
+      findsOneWidget,
+      reason:
+          'delete the scope from the app root and every screen goes plain — '
+          'which is the failure mode this feature exists to prevent',
+    );
+    expect(
+      tester.widget<CompanionOutfitScope>(scope).outfit,
+      _dressed,
+      reason: 'the scope is fed by the provider, not by a hard-coded outfit',
+    );
+  });
+
   testWidgets('a mascot under the scope wears what it carries', (tester) async {
     await _pump(
       tester,

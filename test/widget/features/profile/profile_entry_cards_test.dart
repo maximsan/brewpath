@@ -13,6 +13,7 @@ import 'package:brew_path/features/saved/presentation/saved_screen.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/studio/domain/dress_companion.dart';
 import 'package:brew_path/features/studio/presentation/roasty_door_tile.dart';
+import 'package:brew_path/features/studio/presentation/roasty_studio_screen.dart';
 import 'package:brew_path/features/studio/presentation/studio_door_tile.dart';
 import 'package:brew_path/features/studio/presentation/studio_screen.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
@@ -219,5 +220,17 @@ void main() {
 
     expect(find.text(const LockedStudio().header), findsOneWidget);
     expect(find.byType(StudioScreen), findsNothing);
+  });
+
+  testWidgets('the wardrobe door raises the same gate, and opens nothing', (
+    tester,
+  ) async {
+    await openProfile(tester);
+
+    await tester.tap(find.byType(RoastyDoorTile));
+    await settleLoaders(tester);
+
+    expect(find.text(const LockedStudio().header), findsOneWidget);
+    expect(find.byType(RoastyStudioScreen), findsNothing);
   });
 }
