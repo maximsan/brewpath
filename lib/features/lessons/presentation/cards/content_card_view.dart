@@ -3,6 +3,7 @@ import 'package:brew_path/features/lessons/domain/card_seed.dart';
 import 'package:brew_path/features/lessons/domain/held_guess.dart';
 import 'package:brew_path/features/lessons/presentation/cards/bagpick_card_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_cue.dart';
 import 'package:brew_path/features/lessons/presentation/cards/choice_list.dart';
 import 'package:brew_path/features/lessons/presentation/cards/concept_card_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/graded_picker.dart';
@@ -155,6 +156,7 @@ List<ChoiceOption> _quizOptions(QuizCard card) => [
 /// and produced a round nobody could win, caught only because the options half
 /// already had a name to test against. These are the other half.
 PickerCopy _mcqCopy(McqCard card) => PickerCopy(
+  cue: CardCue.mcq,
   prompt: card.prompt,
   explain: ({required wasCorrect}) => card.explanation,
 );
@@ -185,6 +187,7 @@ PickerCopy _decisionCopy(DecisionCard card) => PickerCopy(
 );
 
 PickerCopy _quizCopy(QuizCard card) => PickerCopy(
+  cue: CardCue.quiz,
   prompt: card.statement,
   explain: ({required wasCorrect}) => card.explanation,
 );
@@ -211,6 +214,7 @@ TastefixReaction _cupAfter(PickOutcome outcome) => switch (outcome) {
 /// Only the question and what closes it: the symptoms and the setup are the
 /// cup's, drawn in the panel above rather than in a copy slot.
 PickerCopy _tastefixCopy(TastefixCard card) => PickerCopy(
+  cue: CardCue.tastefix,
   prompt: card.prompt,
   explain: ({required wasCorrect}) => card.explanation,
   // A fix that worked, not an answer that was right.
@@ -220,6 +224,7 @@ PickerCopy _tastefixCopy(TastefixCard card) => PickerCopy(
 /// The tasting clue takes the scenario slot: it is what the learner is reading
 /// *from*, set out before the question rather than being part of it.
 PickerCopy _flavorCopy(FlavorCard card) => PickerCopy(
+  cue: CardCue.flavor,
   scenario: card.clue,
   prompt: card.prompt,
   explain: ({required wasCorrect}) => card.explanation,
