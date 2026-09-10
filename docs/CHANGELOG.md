@@ -151,6 +151,11 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **Two ways past the free day's cap are shut.** A mini-game's intro asked
+  nothing on *Play* and stayed beneath the player, so a back gesture after a
+  finished run could start another; and a lesson's ending could be swiped
+  back to the last card, whose *Continue* recorded the same run twice. The
+  intro now asks the day's allowance, and the ending no longer goes back.
 - **Six more number lines are set at the width the design gives them.** The
   lesson and mini-game position counter, the Coffee Challenges count, a
   dictionary category's term count, the core-lessons count, the tree hero's
