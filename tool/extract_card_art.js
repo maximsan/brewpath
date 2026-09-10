@@ -109,6 +109,7 @@ const SENTINELS = {
   "var(--art-roast-mid)": "#FE0015",
   "var(--art-roast-dark)": "#FE0016",
   "var(--art-seed-crease)": "#FE0017",
+  "var(--art-hairline)": "#FE0018",
   "var(--art-cherry-skin)": "#FE0021",
   "var(--art-cherry-pulp)": "#FE0022",
   "var(--art-cherry-gel)": "#FE0023",

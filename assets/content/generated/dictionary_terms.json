@@ -1963,7 +1963,8 @@
       "lesson": "m5l7",
       "sources": [
         {
-          "label": "Barista Hustle — espresso technique guides"
+          "label": "Barista Hustle — The Importance of Good Puck Prep",
+          "url": "https://www.baristahustle.com/lesson/ae-3-01-the-importance-of-good-puck-prep/"
         }
       ],
       "check": {
@@ -1998,7 +1999,8 @@
       "lesson": "m5l7",
       "sources": [
         {
-          "label": "Barista Hustle — espresso technique guides"
+          "label": "Barista Hustle — Current Practice in Tamping",
+          "url": "https://www.baristahustle.com/lesson/ae-3-05-current-practice-in-tamping/"
         }
       ],
       "check": {
@@ -2380,6 +2382,10 @@
       ],
       "lesson": "m4l5",
       "sources": [
+        {
+          "label": "CHEMEX® official brew steps",
+          "url": "https://chemexcoffeemaker.com/products/six-cup-classic-chemex"
+        },
         {
           "label": "James Hoffmann — Technique Guides"
         }
