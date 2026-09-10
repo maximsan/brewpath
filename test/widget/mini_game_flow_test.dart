@@ -311,13 +311,13 @@ Future<void> _clearBoard(
     final wrong = pairs.firstWhere((pair) => pair.$2 != target).$2;
     await tester.tap(find.text(fact));
     await _settle(tester);
-    await tester.tap(find.widgetWithText(OutlinedButton, wrong));
+    await tester.tap(find.text(wrong));
     await _settle(tester);
   }
   for (final (fact, target) in pairs) {
     await tester.tap(find.text(fact));
     await _settle(tester);
-    await tester.tap(find.widgetWithText(OutlinedButton, target));
+    await tester.tap(find.text(target));
     await _settle(tester);
   }
   await tester.tap(find.text('Continue'));

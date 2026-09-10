@@ -376,6 +376,14 @@
       "label": "Sequence",
       "description": "Three stops and their rules — put the steps in order.",
       "hasActive": false
+    },
+    {
+      "slug": "mcq",
+      "name": "Mcq",
+      "set": "kinds",
+      "label": "Multiple choice",
+      "description": "Stacked options with a check on the first — pick one.",
+      "hasActive": false
     }
   ]
 }

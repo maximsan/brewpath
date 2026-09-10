@@ -368,6 +368,37 @@ abstract final class OffTokens {
     reason: 'the words sit side by side at `gap: 10px`',
   );
 
+  /// The gutter between a match board's two columns, wide enough for the
+  /// connectors drawn across it to read as lines rather than as joins.
+  static const OffToken<double> matchColumnGap = OffToken(
+    40,
+    reason: 'the two columns sit at `gap: 40`',
+  );
+
+  /// The gap between two tiles in one match column.
+  static const OffToken<double> matchTileGap = OffToken(
+    10,
+    reason: 'a column stacks its tiles at `gap: 10px`',
+  );
+
+  /// A match tile's own padding, taller than it is wide.
+  static const OffToken<EdgeInsets> matchTilePadding = OffToken(
+    EdgeInsets.symmetric(vertical: 15, horizontal: 18),
+    reason: 'a match tile sets `padding: 15px 18px`',
+  );
+
+  /// How far a held answer swells under the trait about to land on it.
+  static const OffToken<double> matchDropHotScale = OffToken(
+    1.03,
+    reason: 'the answer under a held trait takes `transform: scale(1.03)`',
+  );
+
+  /// What is left of a trait once its clone is the thing being dragged.
+  static const OffToken<double> matchDraggingOpacity = OffToken(
+    0.4,
+    reason: 'the tile left behind takes `opacity: 0.4`',
+  );
+
   /// Every sanctioned exception, so the register can be tested as a whole.
   static const register = <OffToken<Object>>[
     rewardedAdCanvas,
@@ -418,6 +449,11 @@ abstract final class OffTokens {
     tastefixPanelToPrompt,
     helpStepGap,
     helpStepsTop,
+    matchColumnGap,
+    matchTileGap,
+    matchTilePadding,
+    matchDropHotScale,
+    matchDraggingOpacity,
     fillSlotLeading,
     fillGroupGap,
     fillOptionGap,

@@ -44,6 +44,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The match board is a drag board, and it draws what you paired.** Its cue
+  has said *drag to pair* since the formats got their names, but the board only
+  took taps and drew nothing between its two columns, so a cleared board was
+  two lists with no visible pairing. Traits now drag onto their answer — tap
+  one then the other still works, as the design offers both — and every landed
+  pair draws a sage line that runs itself in with an arrowhead into the answer.
+  A wrong drop draws its line in berry, shakes both tiles and lets go. Several
+  traits can fan into one answer. Reduced motion lands all of it in one frame.
+
 - **A card says what it is, and shows you how to play it.** The ten formats
   with instructions — multiple choice, select all, match, calibrate, put in
   order, true or false, tasting, taste fix, blind bag and complete the sentence

@@ -25,15 +25,10 @@ enum AppIconSet {
 
 /// One mark of the design system's icon family.
 ///
-/// Every value here has a matching `assets/icons/<slug>.svg`, written from the
-/// design source by `tool/extract_icons.js` — nothing in this enum draws
-/// anything, it only names what the design drew. A value with no file, or a
-/// file with no value, fails `test/unit/core/icons/app_icon_test.dart`, which
-/// is what keeps this list and the assets from drifting apart.
-///
-/// Render one with `IconMark`, never with `SvgPicture` directly: the marks
-/// paint in `currentColor` and in sentinel colours that only that widget knows
-/// how to map onto the mood.
+/// Every value has a matching `assets/icons/<slug>.svg`, written by
+/// `tool/extract_icons.js` — this enum names what the design drew, and a value
+/// with no file (or the reverse) fails `app_icon_test.dart`. Render one with
+/// `IconMark`, never `SvgPicture`: only it maps the sentinels onto the mood.
 enum AppIcon {
   // Navigation — the master set.
   /// Today. The everyday drink → the lessons home.
@@ -169,7 +164,10 @@ enum AppIcon {
   slider(AppIconSet.kinds),
 
   /// A put-in-order game.
-  sequence(AppIconSet.kinds);
+  sequence(AppIconSet.kinds),
+
+  /// A pick-one question.
+  mcq(AppIconSet.kinds);
 
   const AppIcon(this.set, {this.hasActive = false});
 
