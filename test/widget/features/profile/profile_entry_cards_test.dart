@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:brew_path/app/app.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/features/monetization/presentation/plus_pill.dart';
 import 'package:brew_path/features/profile/presentation/widgets/profile_entry_card.dart';
@@ -10,7 +11,6 @@ import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/domain/saved_shelf.dart';
 import 'package:brew_path/features/saved/presentation/saved_entry_card.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
-import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/studio/domain/dress_companion.dart';
 import 'package:brew_path/features/studio/presentation/roasty_door_tile.dart';
 import 'package:brew_path/features/studio/presentation/roasty_studio_screen.dart';
