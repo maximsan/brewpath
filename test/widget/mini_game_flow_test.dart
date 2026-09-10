@@ -4,6 +4,8 @@ import 'package:brew_path/core/icons/replay_mark.dart';
 import 'package:brew_path/core/widgets/float_topbar.dart';
 import 'package:brew_path/core/widgets/ghost_button.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_cue.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_cue_row.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_intro_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_player_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_games_catalog_widget.dart';
@@ -674,6 +676,20 @@ void main() {
     expect(find.text('$_trueRounds / ${_rounds.length}'), findsOneWidget);
     expect(find.text('Play again'), findsOneWidget);
     expect(find.text('Done'), findsOneWidget);
+  });
+
+  testWidgets('a round names its kind here too, as the lesson player does', (
+    tester,
+  ) async {
+    await _pump(tester);
+    await tester.tap(find.text('True or false'));
+    await _settle(tester);
+    await tester.tap(find.text('Play'));
+    await _settle(tester);
+
+    // The cue is the shared card shell's, so a game and a lesson cannot drift.
+    expect(find.text(CardCue.quiz.phrase.toUpperCase()), findsOneWidget);
+    expect(find.byType(CardCueRow), findsOneWidget);
   });
 
   testWidgets('continue is gated until the round latches', (tester) async {

@@ -44,6 +44,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **A card says what it is, and shows you how to play it.** The ten formats
+  with instructions — multiple choice, select all, match, calibrate, put in
+  order, true or false, tasting, taste fix, blind bag and complete the sentence
+  — now open on their name in the accent, with a `?` beside it. Tapping it
+  opens the design's how-to-play drawer: what the format is, in a sentence, and
+  the three steps to play it. The words are the design's own. The five kinds
+  that carry an authored eyebrow instead are untouched, and a round in a
+  mini-game reads exactly as it does in a lesson.
+
 - **Checks run before code leaves the machine.** `tool/git-hooks/` fails a
   commit on an unformatted Dart file or an over-long comment, and a push on
   anything the metrics, a guard test, the comment check or the changelog

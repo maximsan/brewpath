@@ -98,6 +98,38 @@ Each feature owns its own data, domain, and presentation layers. Shared code goe
 
 ---
 
+## Sheets — one door, one dressing
+
+Every bottom sheet opens through `showAppSheet` (`lib/core/widgets/app_sheet.dart`),
+and a guard test fails the build on one opened anywhere else. The chrome is
+identical across all nine sheet types the design specifies, which is why one
+function serves them all — callers supply only what is inside.
+
+- **The barrier** is `OverlayColors.dimModal`, the app's one blocking overlay,
+  and the corners are `AppRadii.chrome`, which names bottom sheets among the
+  surfaces it is for. The dim arrives as an `AppOverlay` — colour *and* the
+  design's 5px blur — through `OverlayBarrier`. That is why the route is pushed
+  by hand: the theme and `showModalBottomSheet` can each carry a barrier colour,
+  and neither can carry the blur that goes with it.
+- **`title` is the sheet's only name.** It is the heading every sheet opens on
+  and the accessible name of the sheet as a region; one string feeds both so
+  they cannot drift, which a second label parameter had already allowed.
+- **`eyebrow`** is the kicker the design sets over a sheet's title. The design
+  has two — the how-to-play drawer's *How to play* and the duel's *SHARE TO* —
+  of which the app has built the first.
+
+Two rules the design states are deliberately **not** implemented, because
+Flutter satisfies both for free and porting them would re-solve a DOM problem:
+
+- *Sheets stack.* The design lifts its gate sheet onto a higher z-index pair
+  because the web has no navigator stack. Here the navigator stack **is** the
+  z-order, so a sheet opened from inside a sheet already renders above it.
+- *Root-level sheets are dismissed on navigation.* Flutter does this in all
+  three navigation shapes this app performs — a route change, a shell branch
+  switch, and a push inside a branch.
+
+---
+
 ## The type ladder — `AppText`
 
 `lib/shared/theme/app_text.dart` is the only place a font size exists. Ten

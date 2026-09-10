@@ -141,6 +141,8 @@ disagreement rule by rule, and built at
 
 | Item | Detail |
 |---|---|
+| **The card cue sits taller than the design's** | The design pulls its `?` back onto the cue line with `margin: '-13px -8px'`, so a 44px touch area does not set the height of a one-line eyebrow. CSS hit-tests the padding box whatever the layout size; Flutter rejects a tap outside the parent's own box, so porting the bleed with an `OverflowBox` silently shrinks the target to 28×18 — measured, not assumed. The 44 target wins and the line is taller by that much. **No action:** this is the trade, not a gap |
+| **The help drawer ships without its icon well** | Seven of the ten kinds with help carry a mark; `mcq`, `multi` and `fill` do not, and a well filled on seven rows beside three empty ones is the fault [#436](https://github.com/maximsan/brewpath/issues/436) already ruled out. Owned by [#567](https://github.com/maximsan/brewpath/issues/567), which draws the three marks and adds the well |
 | **`tools/extract-facts.js` reads a dead field** | Line 86 pulls `L[i].xp`, which is `null` for every lesson — per-lesson points live on the module entries. Harmless, but this reference's own tooling still carries the legacy name |
 | ~~**`CLAUDE.md` points at the wrong app path**~~ **RESOLVED** | It documented the Flutter app as living in `coffee_quest/` while `lib/` and `test/` are at the repo root. Both halves are now fixed: the app was renamed to package `brew_path` ([#41](https://github.com/maximsan/brewpath/issues/41)) and the project instructions were corrected to the real root-relative layout ([#35](https://github.com/maximsan/brewpath/issues/35)). The note that project instructions sit outside this reference's remit still holds — recorded here only because this table raised it |
 
