@@ -35,33 +35,25 @@ class _TourLayerHostState extends ConsumerState<TourLayerHost> {
     // ending the Tour writes a provider, which Riverpod refuses mid-build.
     // Nothing is visible in the meantime — the layer is already not built.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _leave();
+      if (mounted) _end();
     });
   }
 
-  /// Ends a run the learner walked away from. Nothing is written: the design
-  /// sets its flag by finishing, so a Tour left at stop one is still owed and
-  /// runs again on the next launch.
-  void _leave() => ref.read(tourRunningProvider.notifier).end();
-
-  /// Ends a run by Skip or Done, which is what spends the first run.
-  void _finish() {
-    final run = ref.read(tourRunningProvider);
-    ref.read(tourRunningProvider.notifier).end();
-    if (run == TourRun.first) unawaited(markTourSeen(ref));
+  /// Ends the run by whichever door — Skip, Done, or leaving the tab — and
+  /// spends the first run, so the Tour does not come back (#537).
+  void _end() {
+    final ended = ref.read(tourRunningProvider.notifier).end();
+    if (ended == TourRun.first) unawaited(markTourSeen(ref));
   }
 
   @override
   Widget build(BuildContext context) {
     final run = ref.watch(tourRunningProvider);
     if (!run.isRunning || !widget.isOnLearn) return const SizedBox.shrink();
-    return TodayTour(onFinish: _finish);
+    return TodayTour(onFinish: _end);
   }
 }
 
-/// Starts [run].
-///
-/// Writes nothing to disk: `tourSeen` is written when a first run finishes,
-/// which is what lets Replay reuse this untouched.
+/// Starts [run]. Writes nothing: the flag is the run's end's business.
 void startTour(WidgetRef ref, TourRun run) =>
     ref.read(tourRunningProvider.notifier).start(run);

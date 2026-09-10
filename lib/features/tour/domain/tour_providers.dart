@@ -4,12 +4,12 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'tour_providers.g.dart';
 
-/// Whether the Tour has finished once on this device.
+/// Whether the Tour has run once on this device.
 ///
 /// The auto-run gate, and nothing else: `false` means the first run is still
-/// owed. It is written when a first run ends by Skip or Done (#537) — never by
-/// leaving the tab, so a Tour walked away from returns on the next launch, as
-/// the design's `tourDone` does. A replay neither reads nor writes it.
+/// owed. Written when a first run ends — by Skip, by Done, or by leaving the
+/// tab — so the Tour runs once and never asks (#537). A replay neither reads
+/// nor writes it.
 @riverpod
 Future<bool> tourSeen(Ref ref) async {
   final settings = await ref.watch(settingsRepositoryProvider).getSettings();
@@ -21,12 +21,10 @@ enum TourRun {
   /// No Tour on screen.
   none,
 
-  /// The once-per-device run Learn starts unasked; finishing it writes
-  /// `tourSeen`.
+  /// The once-per-device run Learn starts unasked; ending it writes `tourSeen`.
   first,
 
-  /// A run asked for from the App Guide, which writes nothing: the learner
-  /// asking for the Tour again is not a learner still owed it.
+  /// A run asked for from the App Guide, which writes nothing.
   replay;
 
   /// Whether a Tour is on screen.
@@ -48,16 +46,19 @@ class TourRunning extends _$TourRunning {
   // ignore: use_setters_to_change_properties
   void start(TourRun run) => state = run;
 
-  /// Takes the Tour off screen.
-  void end() => state = TourRun.none;
+  /// Takes the Tour off screen, and says which run it was.
+  TourRun end() {
+    final ended = state;
+    state = TourRun.none;
+    return ended;
+  }
 }
 
 /// A pending request to replay the Tour, raised from outside the Learn tab.
 ///
 /// Replay is asked for on Profile and happens on Learn, which are two branches
 /// of the shell that cannot call each other — so the ask is state rather than a
-/// callback. Learn consumes it the moment it arrives and runs the stops as a
-/// [TourRun.replay], which writes nothing.
+/// callback. Learn consumes it the moment it arrives.
 @riverpod
 class TourReplayRequest extends _$TourReplayRequest {
   @override
@@ -70,7 +71,7 @@ class TourReplayRequest extends _$TourReplayRequest {
   void consume() => state = false;
 }
 
-/// Records that a first run of the Tour finished, by either door.
+/// Records that the first run of the Tour has ended.
 ///
 /// The write is what matters; the refresh is best effort. By the time the
 /// write lands, the widget that ended the Tour may be gone — a learner who

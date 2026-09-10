@@ -182,9 +182,9 @@ are four.
 The skippable walkthrough of the Learn tab — four stops in the design's own
 words ([#536](https://github.com/maximsan/brewpath/issues/536)). Runs unasked
 when Learn first shows with `tourSeen` unset
-([#537](https://github.com/maximsan/brewpath/issues/537)); finishing it by
-Skip or Done writes the flag, leaving the tab does not, so it returns on the
-next launch. Replayable from the App Guide. Never a qualifying activity.
+([#537](https://github.com/maximsan/brewpath/issues/537)); every ending —
+Skip, Done, or leaving the tab — writes the flag, so it runs once. Replayable
+from the App Guide. Never a qualifying activity.
 _Avoid_: walking tour, walkthrough, coach marks
 
 **Micro-tip**:

@@ -119,9 +119,8 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 - **The Tour runs unasked, and says what the design says.** A first launch
   that reaches Learn no longer asks "Quick tour?" — the four stops start as
-  soon as the Today card is there, as the design draws them (#537). Skip or
-  Done finishes the Tour and it is not run again; leaving the tab mid-run
-  ends it without finishing it, so it returns on the next launch. The four
+  soon as the Today card is there, as the design draws them (#537). Skip,
+  Done or leaving the tab ends the Tour, and it is not run again. The four
   stops now carry the design's own words — *Today starts here*, *Practice
   again, any time*, *Saved and Dictionary*, *Find your way* — in place of the
   set written before the design's tour was found (#536).

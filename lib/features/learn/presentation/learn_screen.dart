@@ -37,10 +37,10 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
 
   /// Whether this screen has already started the first run.
   ///
-  /// `tourSeen` is not enough on its own: it is written when the run finishes,
-  /// so while the Tour is up — and after a run ended by leaving the tab, which
-  /// writes nothing — the provider still reads false, and a rebuild would start
-  /// it again. This is the latch that closes as the run starts.
+  /// `tourSeen` is not enough on its own: it is written when the run ends, so
+  /// while the Tour is up — and for the moment after, while the write lands —
+  /// the provider still reads false, and a rebuild would start it again. This
+  /// is the latch that closes as the run starts.
   bool _started = false;
 
   /// Starts the first run once the tab shows real data and the flag is unset.
