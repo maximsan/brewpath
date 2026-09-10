@@ -8,33 +8,34 @@ part of 'help_faq_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// The FAQ with its counts filled in from the shipped banks.
+/// The FAQ, with the Foundations answer filled in once the banks have answered.
 ///
-/// Joins here so [helpFaq] stays a pure function of three values, and a wrong
-/// count fails in a unit test rather than on the screen.
+/// Synchronous on purpose: the four questions are always drawn, and only the
+/// one answer that is counted waits — in its own row, never in front of the
+/// list.
 
 @ProviderFor(helpQuestions)
 final helpQuestionsProvider = HelpQuestionsProvider._();
 
-/// The FAQ with its counts filled in from the shipped banks.
+/// The FAQ, with the Foundations answer filled in once the banks have answered.
 ///
-/// Joins here so [helpFaq] stays a pure function of three values, and a wrong
-/// count fails in a unit test rather than on the screen.
+/// Synchronous on purpose: the four questions are always drawn, and only the
+/// one answer that is counted waits — in its own row, never in front of the
+/// list.
 
 final class HelpQuestionsProvider
     extends
         $FunctionalProvider<
-          AsyncValue<List<HelpQuestion>>,
           List<HelpQuestion>,
-          FutureOr<List<HelpQuestion>>
+          List<HelpQuestion>,
+          List<HelpQuestion>
         >
-    with
-        $FutureModifier<List<HelpQuestion>>,
-        $FutureProvider<List<HelpQuestion>> {
-  /// The FAQ with its counts filled in from the shipped banks.
+    with $Provider<List<HelpQuestion>> {
+  /// The FAQ, with the Foundations answer filled in once the banks have answered.
   ///
-  /// Joins here so [helpFaq] stays a pure function of three values, and a wrong
-  /// count fails in a unit test rather than on the screen.
+  /// Synchronous on purpose: the four questions are always drawn, and only the
+  /// one answer that is counted waits — in its own row, never in front of the
+  /// list.
   HelpQuestionsProvider._()
     : super(
         from: null,
@@ -51,14 +52,22 @@ final class HelpQuestionsProvider
 
   @$internal
   @override
-  $FutureProviderElement<List<HelpQuestion>> $createElement(
+  $ProviderElement<List<HelpQuestion>> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $ProviderElement(pointer);
 
   @override
-  FutureOr<List<HelpQuestion>> create(Ref ref) {
+  List<HelpQuestion> create(Ref ref) {
     return helpQuestions(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(List<HelpQuestion> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<List<HelpQuestion>>(value),
+    );
   }
 }
 
-String _$helpQuestionsHash() => r'3c7357f60718ceeed7c2f1753130cbf0edcfc43e';
+String _$helpQuestionsHash() => r'5bbdd189fd7cf25ea300a21c3685e14a810c6a8c';

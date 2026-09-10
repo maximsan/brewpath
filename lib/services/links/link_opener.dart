@@ -11,12 +11,3 @@ abstract interface class LinkOpener {
   /// refuses `mailto:`, and the caller says so rather than throwing.
   Future<bool> open(Uri target);
 }
-
-/// An opener that opens nothing, and says so — tests and inactive contexts.
-class NoOpLinkOpener implements LinkOpener {
-  /// Creates a [NoOpLinkOpener].
-  const NoOpLinkOpener();
-
-  @override
-  Future<bool> open(Uri target) async => false;
-}

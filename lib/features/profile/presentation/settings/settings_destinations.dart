@@ -1,12 +1,12 @@
-/// The four screens the design's `ACCOUNT` and `SUPPORT` rows lead to.
+/// Three of the four screens the design's `ACCOUNT` and `SUPPORT` rows lead
+/// to; Help is its own file.
 ///
 /// **They are frames, not features.** Behind each row is the screen's real
 /// sections, with what the app has not built named rather than left blank; the
-/// payments service is a no-op and Firebase is gated off, and neither seam is
-/// opened here. Help is already real, and files the App Guide row.
+/// payments service is a no-op and Firebase is gated off.
 library;
 
-import 'package:brew_path/core/config/support_contact.dart';
+import 'package:brew_path/core/config/support_contact_provider.dart';
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/widgets/settings_nav_row.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
@@ -105,24 +105,26 @@ class _FinePrintRows extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final open = ref.read(linkOpenerProvider).open;
+    final terms = ref.watch(termsPageProvider);
+    final privacy = ref.watch(privacyPageProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (termsUrl case final url?)
+        if (terms case final url?)
           SettingsNavRow(
             label: SettingsCopy.termsRow,
-            onTap: () => open(Uri.parse(url)),
+            onTap: () => open(url),
           ),
-        if (privacyUrl case final url?)
+        if (privacy case final url?)
           SettingsNavRow(
             label: SettingsCopy.privacyRow,
-            onTap: () => open(Uri.parse(url)),
+            onTap: () => open(url),
           ),
         // Names only what is still missing, so the line does not promise a
         // row sitting right above it.
-        const SettingsPlaceholder(
-          termsUrl != null && privacyUrl != null
+        SettingsPlaceholder(
+          terms != null && privacy != null
               ? SettingsCopy.aboutComingWithLegal
               : SettingsCopy.aboutComing,
         ),

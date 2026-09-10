@@ -1,7 +1,9 @@
 import 'package:brew_path/app/app_theme.dart';
-import 'package:brew_path/core/config/support_contact.dart';
+import 'package:brew_path/core/config/support_contact_provider.dart';
 import 'package:brew_path/core/widgets/link_button.dart';
 import 'package:brew_path/features/monetization/presentation/legal_links.dart';
+import 'package:brew_path/services/links/link_opener.dart';
+import 'package:brew_path/services/links/link_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,10 +13,35 @@ LinkButton _link(WidgetTester tester, String label) =>
       find.ancestor(of: find.text(label), matching: find.byType(LinkButton)),
     );
 
+/// Records what a link asked the platform to open.
+class _RecordingOpener implements LinkOpener {
+  final List<Uri> opened = [];
+
+  @override
+  Future<bool> open(Uri target) async {
+    opened.add(target);
+    return true;
+  }
+}
+
 void main() {
-  Future<void> pump(WidgetTester tester, {Widget? leading}) async {
+  late _RecordingOpener opener;
+
+  setUp(() => opener = _RecordingOpener());
+
+  Future<void> pump(
+    WidgetTester tester, {
+    Widget? leading,
+    Uri? terms,
+    Uri? privacy,
+  }) async {
     await tester.pumpWidget(
       ProviderScope(
+        overrides: [
+          termsPageProvider.overrideWithValue(terms),
+          privacyPageProvider.overrideWithValue(privacy),
+          linkOpenerProvider.overrideWithValue(opener),
+        ],
         child: MaterialApp(
           theme: AppTheme.cupping,
           home: Scaffold(
@@ -48,13 +75,19 @@ void main() {
     expect(_link(tester, 'Privacy').onPressed, isNull);
   });
 
-  testWidgets('the constants are still unset, which is what disables them', (
-    tester,
-  ) async {
-    // Falsifies the test above: it would pass on a widget that ignored the
-    // constants entirely, so the reason for the nulls is asserted too.
-    expect(termsUrl, isNull, reason: '#448 has not been given URLs yet');
-    expect(privacyUrl, isNull, reason: '#448 has not been given URLs yet');
+  testWidgets('goes live the moment a page is hosted', (tester) async {
+    // Falsifies the test above: it would pass on a widget that never read the
+    // destinations at all.
+    final page = Uri.parse('https://brewpath.app/terms');
+    await pump(tester, terms: page);
+
+    expect(_link(tester, 'Terms').onPressed, isNotNull);
+    expect(_link(tester, 'Privacy').onPressed, isNull);
+
+    await tester.tap(find.text('Terms'));
+    await tester.pumpAndSettle();
+
+    expect(opener.opened.single, page);
   });
 
   testWidgets('carries a surface its own link first, when it has one', (

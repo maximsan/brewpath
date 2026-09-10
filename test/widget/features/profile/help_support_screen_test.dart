@@ -1,18 +1,16 @@
-import 'dart:async';
-
-import 'package:flutter/semantics.dart';
-
+import 'package:brew_path/core/config/support_contact_provider.dart';
 import 'package:brew_path/core/widgets/settings_nav_row.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
+import 'package:brew_path/features/mini_games/domain/mini_game_providers.dart';
 import 'package:brew_path/features/monetization/domain/foundations_faq_tail.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart';
-import 'package:brew_path/features/profile/domain/help_faq.dart';
-import 'package:brew_path/features/profile/domain/help_faq_provider.dart';
 import 'package:brew_path/features/profile/presentation/settings/help_faq_row.dart';
 import 'package:brew_path/features/profile/presentation/settings/help_support_screen.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
 import 'package:brew_path/features/tour/domain/app_guide_copy.dart';
+import 'package:brew_path/services/links/link_opener.dart';
+import 'package:brew_path/services/links/link_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -25,6 +23,17 @@ Finder _section(String label) => find.byWidgetPredicate(
   (widget) => widget is SmallcapsLabel && widget.text == label,
 );
 
+/// Records what a row asked the platform to open.
+class _RecordingOpener implements LinkOpener {
+  final List<Uri> opened = [];
+
+  @override
+  Future<bool> open(Uri target) async {
+    opened.add(target);
+    return true;
+  }
+}
+
 const _pitch = PlusPitch(
   remainingLessons: 29,
   lockedGames: 4,
@@ -35,7 +44,11 @@ const _pitch = PlusPitch(
 void main() {
   setUp(useInMemoryDatabase);
 
-  Future<void> pump(WidgetTester tester) async {
+  late _RecordingOpener opener;
+
+  setUp(() => opener = _RecordingOpener());
+
+  Future<void> pump(WidgetTester tester, {String? mailbox}) async {
     tester.view.physicalSize = const Size(400, 1600);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
@@ -45,14 +58,29 @@ void main() {
       ProviderScope(
         overrides: [
           plusPitchProvider.overrideWith((ref) async => _pitch),
+          miniGameFormatsProvider.overrideWith((ref) async => []),
           foundationsFaqTailProvider.overrideWith(
             (ref) async => 'Nothing renews.',
           ),
+          supportMailboxProvider.overrideWithValue(mailbox),
+          linkOpenerProvider.overrideWithValue(opener),
         ],
         child: const MaterialApp(home: HelpSupportScreen()),
       ),
     );
     await tester.pumpAndSettle();
+  }
+
+  Future<void> pumpPending(WidgetTester tester) async {
+    tester.view.physicalSize = const Size(400, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      const ProviderScope(child: MaterialApp(home: HelpSupportScreen())),
+    );
+    await tester.pump();
   }
 
   testWidgets('files the App Guide, which is the row it already had', (
@@ -74,12 +102,12 @@ void main() {
     await pump(tester);
 
     final first = tester.widget<HelpFaqRow>(find.byType(HelpFaqRow).first);
-    expect(find.text(first.entry.answer), findsNothing);
+    expect(find.text(first.entry.answer!), findsNothing);
 
     await tester.tap(find.text(first.entry.question));
     await tester.pumpAndSettle();
 
-    expect(find.text(first.entry.answer), findsOneWidget);
+    expect(find.text(first.entry.answer!), findsOneWidget);
   });
 
   testWidgets('holds one answer open at a time', (tester) async {
@@ -94,8 +122,8 @@ void main() {
     await tester.tap(find.text(rows[1].entry.question));
     await tester.pumpAndSettle();
 
-    expect(find.text(rows[0].entry.answer), findsNothing);
-    expect(find.text(rows[1].entry.answer), findsOneWidget);
+    expect(find.text(rows[0].entry.answer!), findsNothing);
+    expect(find.text(rows[1].entry.answer!), findsOneWidget);
   });
 
   testWidgets('a second tap closes the row it opened', (tester) async {
@@ -108,7 +136,7 @@ void main() {
     await tester.tap(find.text(first.entry.question));
     await tester.pumpAndSettle();
 
-    expect(find.text(first.entry.answer), findsNothing);
+    expect(find.text(first.entry.answer!), findsNothing);
   });
 
   testWidgets('every row announces itself as an expander', (tester) async {
@@ -116,8 +144,12 @@ void main() {
 
     final semantics = tester.getSemantics(find.byType(HelpFaqRow).first);
 
-    expect(semantics.hasFlag(SemanticsFlag.isButton), isTrue);
-    expect(semantics.hasFlag(SemanticsFlag.hasExpandedState), isTrue);
+    expect(semantics.flagsCollection.isButton, isTrue);
+    expect(
+      semantics.flagsCollection.isExpanded.toBoolOrNull(),
+      isFalse,
+      reason: 'a closed row still announces that it can open',
+    );
   });
 
   testWidgets('promises no reply time, because nobody can', (tester) async {
@@ -128,8 +160,8 @@ void main() {
   });
 
   testWidgets('draws no contact row while there is no mailbox', (tester) async {
-    // `supportEmail` is null until the owner creates it, and a row that looks
-    // live and does nothing is the failure #531 rules against.
+    // A row that looks live and does nothing is the failure #531 rules
+    // against, so the section is absent rather than inert.
     await pump(tester);
 
     expect(_section(SettingsCopy.getInTouchSection), findsNothing);
@@ -147,6 +179,70 @@ void main() {
     }
   });
 
+  group('once the mailbox exists', () {
+    testWidgets('both rows are drawn, and the address is shown', (
+      tester,
+    ) async {
+      await pump(tester, mailbox: 'hi@brewpath.app');
+
+      expect(_section(SettingsCopy.getInTouchSection), findsOneWidget);
+      expect(find.text('hi@brewpath.app'), findsOneWidget);
+      expect(find.text(SettingsCopy.reportProblemRow), findsOneWidget);
+    });
+
+    testWidgets('Email support opens a composer to it', (tester) async {
+      await pump(tester, mailbox: 'hi@brewpath.app');
+
+      await tester.tap(find.text(SettingsCopy.emailSupportRow));
+      await tester.pumpAndSettle();
+
+      expect(opener.opened.single.scheme, 'mailto');
+      expect(opener.opened.single.path, 'hi@brewpath.app');
+    });
+
+    testWidgets('Report a problem carries the build in its subject', (
+      tester,
+    ) async {
+      await pump(tester, mailbox: 'hi@brewpath.app');
+
+      await tester.tap(find.text(SettingsCopy.reportProblemRow));
+      await tester.pumpAndSettle();
+
+      expect(opener.opened.single.path, 'hi@brewpath.app');
+      expect(
+        opener.opened.single.queryParameters['subject'],
+        isNotEmpty,
+        reason: 'a report that cannot name its build cannot be matched to one',
+      );
+    });
+  });
+
+  testWidgets('draws the questions before their counts arrive', (tester) async {
+    await pumpPending(tester);
+
+    expect(
+      find.byType(HelpFaqRow),
+      findsNWidgets(4),
+      reason: 'only one answer is counted; the questions never wait on it',
+    );
+  });
+
+  testWidgets('the counted answer says so while it is being counted', (
+    tester,
+  ) async {
+    await pumpPending(tester);
+
+    final foundations = tester
+        .widgetList<HelpFaqRow>(find.byType(HelpFaqRow))
+        .firstWhere((row) => row.entry.question.contains('Foundations'));
+    expect(foundations.entry.answer, isNull);
+
+    await tester.tap(find.text(foundations.entry.question));
+    await tester.pump();
+
+    expect(find.text(SettingsCopy.faqCounting), findsOneWidget);
+  });
+
   testWidgets('the answers carry the counts the banks gave', (tester) async {
     await pump(tester);
 
@@ -162,27 +258,5 @@ void main() {
       findsOneWidget,
       reason: 'the count is read off the shipped banks, never typed',
     );
-  });
-
-  testWidgets('shows the questions before their counts arrive', (tester) async {
-    tester.view.physicalSize = const Size(400, 1600);
-    tester.view.devicePixelRatio = 1.0;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          plusPitchProvider.overrideWith(
-            (ref) => Completer<PlusPitch>().future,
-          ),
-        ],
-        child: const MaterialApp(home: HelpSupportScreen()),
-      ),
-    );
-    await tester.pump();
-
-    expect(_section(SettingsCopy.commonQuestionsSection), findsOneWidget);
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
 }

@@ -8,6 +8,7 @@ library;
 
 import 'dart:ui';
 
+import 'package:brew_path/shared/theme/app_motion.dart';
 import 'package:flutter/animation.dart';
 
 /// The design's `strokeWidth="2.5"` on the connector.
@@ -42,7 +43,7 @@ const Duration matchLineRunDuration = Duration(milliseconds: 420);
 const Duration matchTileTransition = Duration(milliseconds: 150);
 
 /// The design's `matchSnap 320ms` on an answer that just locked.
-const Duration matchSnapDuration = Duration(milliseconds: 320);
+const Duration matchSnapDuration = AppMotion.expand;
 
 /// The design's `cubic-bezier(.3,1.3,.5,1)` on that snap. It overshoots, which
 /// is what makes the tile read as caught rather than resized.

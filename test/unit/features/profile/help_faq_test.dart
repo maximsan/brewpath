@@ -1,4 +1,5 @@
 import 'package:brew_path/features/monetization/domain/free_tier.dart';
+import 'package:brew_path/features/monetization/domain/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
 import 'package:brew_path/features/profile/domain/help_faq.dart';
 import 'package:brew_path/features/tour/domain/app_guide_copy.dart';
@@ -24,7 +25,7 @@ String _answerContaining(List<HelpQuestion> faq, String needle) => faq
       (entry) => entry.question.contains(needle),
       orElse: () => throw StateError('no question mentioning "$needle"'),
     )
-    .answer;
+    .answer!;
 
 void main() {
   group('the four questions the design asks', () {
@@ -41,6 +42,18 @@ void main() {
       for (final entry in _faq()) {
         expect(entry.answer, isNotEmpty, reason: entry.question);
       }
+    });
+
+    test('only the counted answer waits, and only for its counts', () {
+      // The three static answers are drawn before the banks reply; a list
+      // that waited on all four would hide questions that never needed it.
+      final pending = helpFaq();
+
+      expect(pending, hasLength(4));
+      expect(
+        pending.where((entry) => entry.answer == null).single.question,
+        'What does Foundations include?',
+      );
     });
   });
 
@@ -109,6 +122,25 @@ void main() {
         _answerContaining(_faq(tail: 'Cancel anytime.'), 'Foundations'),
         endsWith('Cancel anytime.'),
       );
+    });
+
+    test("names what Plus contains in the paywall's own words", () {
+      // Falsifies "derived": the answer must be built from the offer's own
+      // benefit list, so a benefit added there arrives here with no edit.
+      final answer = _answerContaining(_faq(), 'Foundations');
+
+      for (final benefit in paywallBenefitsFor(_pitch)) {
+        expect(
+          answer.toLowerCase(),
+          contains(benefit.title.toLowerCase()),
+          reason: benefit.title,
+        );
+        expect(
+          answer.toLowerCase(),
+          contains(benefit.detail.toLowerCase()),
+          reason: benefit.detail,
+        );
+      }
     });
 
     test('a bank that grows moves the answer with it', () {

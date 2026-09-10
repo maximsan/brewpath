@@ -1,3 +1,4 @@
+import 'package:brew_path/shared/theme/app_motion.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/overlay_colors.dart';
 import 'package:flutter/material.dart';
@@ -76,7 +77,7 @@ class TourFrame extends StatelessWidget {
 
   /// The design's `320ms cubic-bezier(.3,.8,.3,1)` — quick to leave, slow to
   /// arrive, which is what makes the frame read as *placed* rather than slid.
-  static const Duration moveDuration = Duration(milliseconds: 320);
+  static const Duration moveDuration = AppMotion.expand;
 
   /// That cubic, as Flutter spells it.
   static const Curve moveCurve = Cubic(0.3, 0.8, 0.3, 1);

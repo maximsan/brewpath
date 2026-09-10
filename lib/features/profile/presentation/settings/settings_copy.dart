@@ -1,9 +1,9 @@
-/// The words Settings and the four screens behind it are **built from** — the
-/// section headings, the row labels, the titles, and About's own copy.
+/// The words Settings and the screens behind it are **built from**, held
+/// together the way `AppGuideCopy` is: a screen that spelled its own strings
+/// would be a second place to change them.
 ///
-/// Not *every* string on the surface: the two confirmation dialogs keep their
-/// copy beside the action they confirm, where the wording and the consequence
-/// can only be read together.
+/// Not *every* string: the two confirmation dialogs keep their copy beside the
+/// action they confirm, where wording and consequence are read together.
 abstract final class SettingsCopy {
   /// The screen's own name.
   static const title = 'Settings';
@@ -97,8 +97,11 @@ abstract final class SettingsCopy {
   /// Section on Help: the two ways to reach a human.
   static const getInTouchSection = 'Get in touch';
 
-  /// What a screen reader says while the answers' counts are being read.
-  static const faqLoadingLabel = 'Loading the answers';
+  /// What a screen reader says while an answer's counts are being read.
+  static const faqLoadingLabel = 'Counting what Foundations includes';
+
+  /// What that answer shows meanwhile — the counts come from the banks.
+  static const faqCounting = 'Counting…';
 
   /// Help's row that opens a blank message to support.
   static const emailSupportRow = 'Email support';
@@ -125,10 +128,6 @@ abstract final class SettingsCopy {
   /// What the unbuilt half of Purchases will hold.
   static const purchasesComing =
       'What Foundations includes, and restoring a purchase you already made.';
-
-  /// What the unbuilt half of Help will hold.
-  static const helpComing =
-      'Answers to the questions people ask most, and a way to reach us.';
 
   /// What the unbuilt half of About will hold.
   static const aboutComing =

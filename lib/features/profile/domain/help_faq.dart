@@ -2,34 +2,38 @@
 ///
 /// The design's answers describe a different product: a streak kept by lessons
 /// alone, a free tier of a whole module, and a sync that does not exist
-/// (#531). Every quantity is counted from the banks, so authoring content
-/// cannot make an answer lie.
+/// (#531). Nothing here is written twice — the Foundations answer is built
+/// from the pitch the paywall already reads.
 library;
 
 import 'package:brew_path/features/monetization/domain/free_tier.dart';
+import 'package:brew_path/features/monetization/domain/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
 
-/// One question and the answer that opens under it.
+/// One question, with the answer that opens under it.
 class HelpQuestion {
   /// Creates a [HelpQuestion].
-  const HelpQuestion({required this.question, required this.answer});
+  const HelpQuestion({required this.question, this.answer});
 
   /// The row's label, which is what a learner scans.
   final String question;
 
-  /// What opens inline beneath it. Never empty — no row is a dead end.
-  final String answer;
+  /// What opens beneath it, or null while its counts are still being read.
+  ///
+  /// Only the Foundations answer is ever null, and only for as long as the
+  /// banks take: the question is drawn either way, so the list never appears
+  /// half-built.
+  final String? answer;
 }
 
 /// The FAQ, in the order the design lists it.
 ///
-/// [freeGames] is the count of formats a free learner may open, and
-/// [foundationsTail] the selling model's own closing sentence — both passed in
-/// so this stays pure and never learns which pricing arm is live.
+/// [pitch], [freeGames] and [foundationsTail] are null until the banks and the
+/// store have answered; the other three answers do not wait on them.
 List<HelpQuestion> helpFaq({
-  required PlusPitch pitch,
-  required int freeGames,
-  required String foundationsTail,
+  PlusPitch? pitch,
+  int? freeGames,
+  String? foundationsTail,
 }) => [
   const HelpQuestion(
     question: 'How does my streak work?',
@@ -51,7 +55,9 @@ List<HelpQuestion> helpFaq({
   ),
   HelpQuestion(
     question: 'What does Foundations include?',
-    answer: _foundations(pitch, freeGames, foundationsTail),
+    answer: pitch == null || freeGames == null || foundationsTail == null
+        ? null
+        : _foundations(pitch, freeGames, foundationsTail),
   ),
   const HelpQuestion(
     question: 'Can I learn offline?',
@@ -64,10 +70,23 @@ List<HelpQuestion> helpFaq({
   ),
 ];
 
-String _foundations(PlusPitch pitch, int freeGames, String tail) =>
-    'Foundations opens the rest of the course: ${pitch.remainingLessons} more '
-    'lessons, ${pitch.lockedGames} more mini-games, the '
-    '${pitch.referenceTerms} Dictionary terms no lesson teaches, Saved past '
-    'its free shelf of ${pitch.savedFreeCap}, and the Studio. The first '
-    '${freeLessonIds.length} lessons stay free, and so do the $freeGames '
-    'practice formats they teach. $tail';
+/// What Plus contains, in the paywall's own words and counts.
+///
+/// Read from [paywallBenefitsFor] rather than restated, so a benefit added to
+/// the offer reaches this answer with no edit here.
+String _foundations(PlusPitch pitch, int freeGames, String tail) {
+  final opens = paywallBenefitsFor(pitch)
+      .map(
+        (benefit) =>
+            '${_openingLower(benefit.title)} '
+            '(${_openingLower(benefit.detail)})',
+      )
+      .join('; ');
+
+  return 'Foundations opens $opens. The first ${freeLessonIds.length} lessons '
+      'stay free, and so do the $freeGames practice formats they teach. $tail';
+}
+
+/// Drops a phrase into mid-sentence without lowercasing a name inside it.
+String _openingLower(String phrase) =>
+    phrase.isEmpty ? phrase : phrase[0].toLowerCase() + phrase.substring(1);

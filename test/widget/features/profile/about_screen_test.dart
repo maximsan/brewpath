@@ -1,5 +1,5 @@
-import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/config/support_contact.dart';
+import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/widgets/settings_nav_row.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/core/widgets/sub_header.dart';

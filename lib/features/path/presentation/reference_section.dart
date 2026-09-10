@@ -12,6 +12,7 @@ import 'package:brew_path/features/path/domain/visual_guide_providers.dart';
 import 'package:brew_path/features/path/domain/visual_guide_shelf.dart';
 import 'package:brew_path/features/path/presentation/visual_guide_sheet.dart';
 import 'package:brew_path/shared/models/content/visual_guide.dart';
+import 'package:brew_path/shared/theme/app_motion.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -42,18 +43,14 @@ const double _lockSize = 16;
 
 /// How long the section takes to open when motion is allowed. The design
 /// animates the expansion; this is that, in Flutter's terms.
-const _expandDuration = Duration(milliseconds: 320);
+const Duration _expandDuration = AppMotion.expand;
 
 /// The last thing on Path: the illustrated references a learner has earned.
 ///
-/// Styled as a section rather than a boxed card, because Path is editorial and
-/// a boxed shelf reads as another screen's component.
-///
-/// **Locked guides are not drawn** — they never leave
-/// [deriveVisualGuideShelf], so this cannot render one by mistake. What it
-/// shows instead is how many are still to come, which turns the absence into a
-/// promise rather than a wall of grey tiles at the moment a learner owns one
-/// of eight.
+/// A section rather than a boxed card, because Path is editorial. **Locked
+/// guides are not drawn** — they never leave [deriveVisualGuideShelf] — and
+/// what shows instead is how many are still to come, which turns the absence
+/// into a promise rather than a wall of grey tiles.
 class ReferenceSection extends ConsumerStatefulWidget {
   /// Creates a [ReferenceSection].
   const ReferenceSection({super.key});
@@ -122,10 +119,8 @@ class _ReferenceSectionState extends ConsumerState<ReferenceSection> {
 /// The opening and closing itself.
 ///
 /// ⚠️ **Reduced motion drops the animator rather than zeroing it.**
-/// `AnimatedSize` re-dirties itself inside its own `performLayout` when handed
-/// `Duration.zero`, which the framework asserts on — the defect that shipped
-/// once already in the dictionary's self-check, and which a sweep test now
-/// forbids. So "no animation" means no animator.
+/// `AnimatedSize` handed `Duration.zero` re-dirties itself inside its own
+/// `performLayout`, which the framework asserts on — a sweep test forbids it.
 class _Expansion extends StatelessWidget {
   const _Expansion({required this.isOpen, required this.child});
 

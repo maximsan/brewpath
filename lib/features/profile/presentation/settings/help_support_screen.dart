@@ -1,8 +1,6 @@
-import 'package:brew_path/core/config/support_contact.dart';
+import 'package:brew_path/core/config/support_contact_provider.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
-import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/settings_nav_row.dart';
-import 'package:brew_path/features/profile/domain/help_faq.dart';
 import 'package:brew_path/features/profile/domain/help_faq_provider.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:brew_path/features/profile/domain/support_links.dart';
@@ -11,7 +9,6 @@ import 'package:brew_path/features/profile/presentation/settings/settings_copy.d
 import 'package:brew_path/features/profile/presentation/settings/settings_sub_screen.dart';
 import 'package:brew_path/features/tour/domain/app_guide_copy.dart';
 import 'package:brew_path/services/links/link_provider.dart';
-import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -29,11 +26,14 @@ class HelpSupportScreen extends ConsumerStatefulWidget {
 }
 
 class _HelpSupportScreenState extends ConsumerState<HelpSupportScreen> {
-  /// Which answer is showing. One at a time, as the design opens them.
-  int _openIndex = -1;
+  /// Which answer is showing, or null with all four closed — one at a time,
+  /// as the design opens them.
+  int? _openIndex;
 
   @override
   Widget build(BuildContext context) {
+    // The questions never wait: only the Foundations answer is counted from
+    // the banks, and it says so in its own row rather than holding the list.
     final faq = ref.watch(helpQuestionsProvider);
 
     return SettingsSubScreen(
@@ -52,14 +52,12 @@ class _HelpSupportScreenState extends ConsumerState<HelpSupportScreen> {
         SettingsSection(
           label: SettingsCopy.commonQuestionsSection,
           children: [
-            // The counts come from the banks, so the answers arrive a frame
-            // late; the questions are the same either way, and a heading over
-            // nothing reads as a bug.
-            _Questions(
-              faq: faq.asData?.value,
-              openIndex: _openIndex,
-              onOpen: _open,
-            ),
+            for (final (index, entry) in faq.indexed)
+              HelpFaqRow(
+                entry: entry,
+                isOpen: index == _openIndex,
+                onToggle: () => _open(index),
+              ),
           ],
         ),
         const _GetInTouch(),
@@ -68,44 +66,7 @@ class _HelpSupportScreenState extends ConsumerState<HelpSupportScreen> {
   }
 
   void _open(int index) =>
-      setState(() => _openIndex = _openIndex == index ? -1 : index);
-}
-
-class _Questions extends StatelessWidget {
-  const _Questions({
-    required this.faq,
-    required this.openIndex,
-    required this.onOpen,
-  });
-
-  final List<HelpQuestion>? faq;
-  final int openIndex;
-  final ValueChanged<int> onOpen;
-
-  @override
-  Widget build(BuildContext context) {
-    if (faq case final questions?) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          for (final (index, entry) in questions.indexed)
-            HelpFaqRow(
-              entry: entry,
-              isOpen: index == openIndex,
-              onToggle: () => onOpen(index),
-            ),
-        ],
-      );
-    }
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
-      child: Semantics(
-        label: SettingsCopy.faqLoadingLabel,
-        child: const LoadingIndicator(),
-      ),
-    );
-  }
+      setState(() => _openIndex = _openIndex == index ? null : index);
 }
 
 /// The two contact rows, absent while there is no mailbox to open.
@@ -117,26 +78,25 @@ class _GetInTouch extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (supportEmail case final email?) {
-      final version = ref.watch(appVersionProvider).asData?.value;
-      final open = ref.read(linkOpenerProvider).open;
+    final mailbox = ref.watch(supportMailboxProvider);
+    if (mailbox == null) return const SizedBox.shrink();
 
-      return SettingsSection(
-        label: SettingsCopy.getInTouchSection,
-        children: [
-          SettingsNavRow(
-            label: SettingsCopy.emailSupportRow,
-            value: email,
-            onTap: () => open(supportMailto(email)),
-          ),
-          SettingsNavRow(
-            label: SettingsCopy.reportProblemRow,
-            onTap: () => open(problemReportMailto(email, version)),
-          ),
-        ],
-      );
-    }
+    final version = ref.watch(appVersionProvider).asData?.value;
+    final open = ref.read(linkOpenerProvider).open;
 
-    return const SizedBox.shrink();
+    return SettingsSection(
+      label: SettingsCopy.getInTouchSection,
+      children: [
+        SettingsNavRow(
+          label: SettingsCopy.emailSupportRow,
+          value: mailbox,
+          onTap: () => open(supportMailto(mailbox)),
+        ),
+        SettingsNavRow(
+          label: SettingsCopy.reportProblemRow,
+          onTap: () => open(problemReportMailto(mailbox, version)),
+        ),
+      ],
+    );
   }
 }

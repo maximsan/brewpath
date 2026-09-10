@@ -1,4 +1,4 @@
-import 'package:brew_path/core/config/support_contact.dart';
+import 'package:brew_path/core/config/support_contact_provider.dart';
 import 'package:brew_path/core/widgets/link_button.dart';
 import 'package:brew_path/services/links/link_provider.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -31,6 +31,8 @@ class LegalLinks extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final open = ref.read(linkOpenerProvider).open;
+    final terms = ref.watch(termsPageProvider);
+    final privacy = ref.watch(privacyPageProvider);
 
     return Wrap(
       alignment: WrapAlignment.center,
@@ -40,13 +42,11 @@ class LegalLinks extends ConsumerWidget {
         ?leading,
         LinkButton(
           label: termsLabel,
-          onPressed: termsUrl == null ? null : () => open(Uri.parse(termsUrl!)),
+          onPressed: terms == null ? null : () => open(terms),
         ),
         LinkButton(
           label: privacyLabel,
-          onPressed: privacyUrl == null
-              ? null
-              : () => open(Uri.parse(privacyUrl!)),
+          onPressed: privacy == null ? null : () => open(privacy),
         ),
       ],
     );
