@@ -45,15 +45,13 @@ void main() {
     }
   }
 
-  /// Boots the app onto the first stop, the way accepting the offer does, and
+  /// Boots the app onto the first stop, the way a first launch does, and
   /// hands back the container so a test can drive the router.
   Future<ProviderContainer> startTheTour(WidgetTester tester) async {
     useTallViewport(tester);
     await armTheTour();
 
     final container = await pumpWithProviders(tester, const BrewPathApp());
-    await tester.pumpAndSettle();
-    await tester.tap(find.text(TourCopy.introAccept));
     await letTheTourRun(tester);
     return container;
   }
@@ -62,7 +60,7 @@ void main() {
   /// means now: the Tour is an ordinary child of the shell, so a Tour that has
   /// ended is a Tour that is not built.
   bool tourIsRunning(WidgetTester tester, ProviderContainer container) =>
-      container.read(tourRunningProvider) &&
+      container.read(tourRunningProvider).isRunning &&
       find.byType(TodayTour).evaluate().isNotEmpty;
 
   testWidgets('every card carries Skip and Next', (tester) async {

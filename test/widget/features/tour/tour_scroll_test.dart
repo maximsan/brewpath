@@ -51,8 +51,6 @@ void main() {
     await armTheTour();
 
     await pumpWithProviders(tester, const BrewPathApp());
-    await tester.pumpAndSettle();
-    await tester.tap(find.text(TourCopy.introAccept));
     await letTheTourRun(tester);
   }
 

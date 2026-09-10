@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:brew_path/features/tour/domain/tour_providers.dart';
 import 'package:brew_path/features/tour/presentation/today_tour.dart';
 import 'package:flutter/material.dart';
@@ -33,23 +35,33 @@ class _TourLayerHostState extends ConsumerState<TourLayerHost> {
     // ending the Tour writes a provider, which Riverpod refuses mid-build.
     // Nothing is visible in the meantime — the layer is already not built.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _end();
+      if (mounted) _leave();
     });
   }
 
-  void _end() => ref.read(tourRunningProvider.notifier).set(running: false);
+  /// Ends a run the learner walked away from. Nothing is written: the design
+  /// sets its flag by finishing, so a Tour left at stop one is still owed and
+  /// runs again on the next launch.
+  void _leave() => ref.read(tourRunningProvider.notifier).end();
+
+  /// Ends a run by Skip or Done, which is what spends the first run.
+  void _finish() {
+    final run = ref.read(tourRunningProvider);
+    ref.read(tourRunningProvider.notifier).end();
+    if (run == TourRun.first) unawaited(markTourSeen(ref));
+  }
 
   @override
   Widget build(BuildContext context) {
-    final running = ref.watch(tourRunningProvider);
-    if (!running || !widget.isOnLearn) return const SizedBox.shrink();
-    return TodayTour(onFinish: _end);
+    final run = ref.watch(tourRunningProvider);
+    if (!run.isRunning || !widget.isOnLearn) return const SizedBox.shrink();
+    return TodayTour(onFinish: _finish);
   }
 }
 
-/// Starts the Tour.
+/// Starts [run].
 ///
-/// Writes nothing to disk. `tourSeen` is the intro overlay's business, which is
-/// what lets Replay reuse this untouched.
-void startTour(WidgetRef ref) =>
-    ref.read(tourRunningProvider.notifier).set(running: true);
+/// Writes nothing to disk: `tourSeen` is written when a first run finishes,
+/// which is what lets Replay reuse this untouched.
+void startTour(WidgetRef ref, TourRun run) =>
+    ref.read(tourRunningProvider.notifier).start(run);

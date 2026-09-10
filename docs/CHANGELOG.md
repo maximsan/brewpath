@@ -117,6 +117,14 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **The Tour runs unasked, and says what the design says.** A first launch
+  that reaches Learn no longer asks "Quick tour?" — the four stops start as
+  soon as the Today card is there, as the design draws them (#537). Skip or
+  Done finishes the Tour and it is not run again; leaving the tab mid-run
+  ends it without finishing it, so it returns on the next launch. The four
+  stops now carry the design's own words — *Today starts here*, *Practice
+  again, any time*, *Saved and Dictionary*, *Find your way* — in place of the
+  set written before the design's tour was found (#536).
 - **The drawn green bean shades itself with the design's hairline token.** The
   10 Sep prototype drop named the ink-dark outline on illustration fills
   `--art-hairline`, so the seed's outline, shadow and crease shadow read
@@ -253,6 +261,8 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Removed
 
+- **The Tour's intro overlay.** "Quick tour? Show me / Skip" is gone: the
+  design has no such offer, and the Tour's own Skip is already the way out.
 - **The old progress store is gone.** The three normalised tables the app
   opened with — per-lesson completions, the module-XP ledger and collected
   cards — and the points total on the settings row are dropped at schema v13,

@@ -111,7 +111,7 @@ void main() {
     expect(find.byType(ReplayIntroRow), findsNothing);
   });
 
-  testWidgets('replay runs the stops with no intro overlay', (tester) async {
+  testWidgets('replay goes straight to the first stop', (tester) async {
     useTallViewport(tester);
 
     await pumpWithProviders(tester, const BrewPathApp());
@@ -120,9 +120,6 @@ void main() {
     await tester.tap(find.byType(ReplayIntroRow));
     await letTheTourRun(tester);
 
-    // Straight to stop 1 — the question the overlay asks was answered the
-    // first time, and asking it again is what this entry point exists to skip.
-    expect(find.text(TourCopy.introTitle), findsNothing);
     expect(find.text(TourCopy.todayTitle), findsOneWidget);
     expect(find.text(TourCopy.todayBody), findsOneWidget);
   });
@@ -154,11 +151,11 @@ void main() {
     await repo.saveSettings(armed);
 
     await pumpWithProviders(tester, const BrewPathApp());
-    // Dismiss the auto-run offer the cleared flag earns, so what follows is
-    // the replay path and not the offer path.
-    await tester.pumpAndSettle();
-    await tester.tap(find.text(TourCopy.introDecline));
-    await tester.pumpAndSettle();
+    // End the first run the cleared flag starts, so what follows is the
+    // replay path and not the first-run path — then clear what ending wrote.
+    await letTheTourRun(tester);
+    await tester.tap(find.text(TourCopy.stopSkip));
+    await letTheTourRun(tester);
 
     final before = await repo.getSettings();
     await repo.saveSettings(before..tourSeen = false);
@@ -170,7 +167,7 @@ void main() {
     expect(
       (await repo.getSettings()).tourSeen,
       isFalse,
-      reason: 'replay must not touch the flag the intro overlay owns',
+      reason: 'replay must not touch the flag the first run owns',
     );
   });
 }

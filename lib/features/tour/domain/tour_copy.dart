@@ -1,43 +1,23 @@
 /// Every word the Tour says, in one place.
 ///
-/// The copy is locked by the Tour spec (#195): it was reviewed as a set, and
-/// each stop explains a *mechanic* rather than naming the widget it points at,
-/// so editing a string here edits the spec. It lives apart from the widgets
-/// that render it so the whole script reads in order, in one place.
+/// The four stops are the design's own `TOUR_STEPS`, word for word, ruled on
+/// #536 (which reopened #195's set). Editing a stop here edits the design's
+/// script, so a change belongs in a ticket that reopens the ruling. It lives
+/// apart from the widgets that render it so the whole script reads in order.
 abstract final class TourCopy {
-  /// The intro overlay's heading.
-  static const introTitle = 'Quick tour?';
-
-  /// The intro overlay's one line of body copy.
-  static const introBody =
-      'Four stops, thirty seconds — see how BrewPath works.';
-
-  /// The intro overlay's accept button. Answering *either* button writes
-  /// `tourSeen`; only this one runs the stops.
-  static const introAccept = 'Show me';
-
-  /// The intro overlay's decline button.
-  static const introDecline = 'Skip';
-
-  /// Screen-reader label for the intro overlay as a whole.
-  static const introSemanticLabel =
-      'Quick tour. Four stops, thirty seconds — see how BrewPath works.';
-
   /// Stop 1 — the Today card.
-  static const todayTitle = 'One lesson a day.';
+  static const todayTitle = 'Today starts here';
 
   /// Stop 1's body.
-  static const todayBody =
-      'Your next Foundations lesson is always here. Finish any activity today '
-      'and your streak is safe.';
+  static const todayBody = 'Your next lesson always waits in this card.';
 
   /// Stop 2 — the practice area: the replay list and the mini-games together.
-  static const practiceTitle = 'Practice, your way.';
+  static const practiceTitle = 'Practice again, any time';
 
   /// Stop 2's body.
   static const practiceBody =
-      'Replay finished lessons to raise your mastery, or play a mini-game — '
-      'practice protects your streak too.';
+      'Lessons you finish collect here, with quick practice formats beside '
+      'them.';
 
   /// Stop 3 — the header's Saved and Dictionary entries.
   ///
@@ -45,7 +25,7 @@ abstract final class TourCopy {
   /// never the design's — and the course's own "five modules, in order" line is
   /// already stop 4's job, where the Path tab it names is what the learner is
   /// being pointed at.
-  static const headerTitle = 'Saved and Dictionary.';
+  static const headerTitle = 'Saved and Dictionary';
 
   /// Stop 3's body.
   static const headerBody =
@@ -53,17 +33,14 @@ abstract final class TourCopy {
       'meet joins the book beside it.';
 
   /// Stop 4 — the bottom tab bar.
-  static const tabsTitle = 'And beyond.';
+  static const tabsTitle = 'Find your way';
 
   /// Stop 4's body.
   static const tabsBody =
-      'Path grows your coffee tree, Cards keeps your collection, Profile holds '
-      'your streak and settings.';
+      'Path holds the whole course, Collection your earned cards, Profile your '
+      'streak and coffee tree.';
 
-  /// The card's left-hand button, on every stop — the way out the shipped Tour
-  /// had none of. Spelled apart from [introDecline] even though the word is
-  /// the same: one answers the offer, the other abandons a run, and either can
-  /// be re-worded without dragging the other with it.
+  /// The card's left-hand button, on every stop — the way out.
   static const stopSkip = 'Skip';
 
   /// What Skip is announced as — the design's own `aria-label`, which says

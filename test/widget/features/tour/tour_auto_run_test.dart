@@ -1,16 +1,21 @@
 import 'package:brew_path/app/app.dart';
+import 'package:brew_path/app/app_router.dart';
+import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/tour/domain/tour_copy.dart';
+import 'package:brew_path/features/tour/domain/tour_step.dart';
+import 'package:brew_path/features/tour/presentation/today_tour.dart';
 import 'package:brew_path/features/tour/presentation/tour_frame.dart';
 import 'package:brew_path/shared/repositories/settings_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/widget_harness.dart';
 
 // Driven through the whole app rather than `LearnScreen` alone, because the
-// gate is a fact about the shell: the flag lives in the database, the offer is
-// made when the Learn tab shows real data, and the fourth stop is anchored on
-// the tab bar. Pumping Learn on its own would prove none of that.
+// gate is a fact about the shell: the flag lives in the database, the run
+// starts when the Learn tab shows real data, and the fourth stop is anchored
+// on the tab bar. Pumping Learn on its own would prove none of that.
 void main() {
   setUp(useInMemoryDatabase);
 
@@ -48,86 +53,107 @@ void main() {
     }
   }
 
-  testWidgets('offers the Tour when Learn shows with the flag unset', (
-    tester,
-  ) async {
+  /// Boots the app owing the Tour, the way a first launch does, and hands back
+  /// the container so a test can drive the router.
+  Future<ProviderContainer> bootOwingTheTour(WidgetTester tester) async {
     useTallViewport(tester);
     await armTheTour();
 
-    await pumpWithProviders(tester, const BrewPathApp());
-    await tester.pumpAndSettle();
-
-    expect(find.text(TourCopy.introTitle), findsOneWidget);
-    expect(find.text(TourCopy.introBody), findsOneWidget);
-    expect(find.text(TourCopy.introAccept), findsOneWidget);
-    expect(find.text(TourCopy.introDecline), findsOneWidget);
-  });
-
-  testWidgets('does not offer the Tour once the flag is set', (tester) async {
-    // The harness seeds `tourSeen`, which is the already-toured device.
-    useTallViewport(tester);
-
-    await pumpWithProviders(tester, const BrewPathApp());
-    await tester.pumpAndSettle();
-
-    expect(find.text(TourCopy.introTitle), findsNothing);
-  });
-
-  testWidgets('Skip answers the offer and writes the flag', (tester) async {
-    useTallViewport(tester);
-    await armTheTour();
-
-    await pumpWithProviders(tester, const BrewPathApp());
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.text(TourCopy.introDecline));
-    await tester.pumpAndSettle();
-
-    // Declining is an answer, not an absence of one: the write is what stops
-    // the app asking again on the next open.
-    expect(await tourSeenOnDisk(), isTrue);
-    expect(find.text(TourCopy.introTitle), findsNothing);
-    // And it skips: no stop is on screen.
-    expect(find.text(TourCopy.todayTitle), findsNothing);
-  });
-
-  testWidgets('Show me answers the offer, writes the flag and runs the stops', (
-    tester,
-  ) async {
-    useTallViewport(tester);
-    await armTheTour();
-
-    await pumpWithProviders(tester, const BrewPathApp());
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.text(TourCopy.introAccept));
+    final container = await pumpWithProviders(tester, const BrewPathApp());
     await letTheTourRun(tester);
+    return container;
+  }
 
-    expect(await tourSeenOnDisk(), isTrue);
-    // The first stop's locked copy, which only the running Tour renders.
+  Future<void> walkToTheLastStop(WidgetTester tester) async {
+    for (var stop = 0; stop < TourStep.count - 1; stop++) {
+      await tester.tap(find.text(TourCopy.stopNext));
+      await letTheTourRun(tester);
+    }
+  }
+
+  testWidgets('runs the Tour, unasked, when Learn shows with the flag unset', (
+    tester,
+  ) async {
+    await bootOwingTheTour(tester);
+
+    // Straight to the first stop: the design draws the Tour as soon as Today
+    // does, with nothing to answer first (#537).
+    expect(find.byType(TodayTour), findsOneWidget);
     expect(find.text(TourCopy.todayTitle), findsOneWidget);
     expect(find.text(TourCopy.todayBody), findsOneWidget);
   });
 
-  testWidgets('the offer is made once per launch, not once per rebuild', (
-    tester,
-  ) async {
+  testWidgets('does not run the Tour once the flag is set', (tester) async {
+    // The harness seeds `tourSeen`, which is the already-toured device.
     useTallViewport(tester);
-    await armTheTour();
 
     await pumpWithProviders(tester, const BrewPathApp());
-    await tester.pumpAndSettle();
+    await letTheTourRun(tester);
 
-    await tester.tap(find.text(TourCopy.introDecline));
-    await tester.pumpAndSettle();
+    expect(find.byType(TodayTour), findsNothing);
+    expect(find.text(TourCopy.todayTitle), findsNothing);
+  });
 
-    // Learn rebuilds constantly as its providers resolve. The flag is written
-    // asynchronously, so for a moment after the tap it still reads false —
-    // a rebuild in that window must not put the overlay back up.
-    await tester.pump();
-    await tester.pumpAndSettle();
+  testWidgets('a run on screen has not spent the flag yet', (tester) async {
+    await bootOwingTheTour(tester);
 
-    expect(find.text(TourCopy.introTitle), findsNothing);
+    // Written by finishing, as the design's `tourDone` is — not by starting.
+    expect(await tourSeenOnDisk(), isFalse);
+  });
+
+  testWidgets('Skip ends the run and writes the flag', (tester) async {
+    await bootOwingTheTour(tester);
+
+    await tester.tap(find.text(TourCopy.stopSkip));
+    await letTheTourRun(tester);
+
+    // Skipping is finishing early, not walking away: the write is what stops
+    // the app running the Tour again on the next open.
+    expect(find.byType(TodayTour), findsNothing);
+    expect(await tourSeenOnDisk(), isTrue);
+  });
+
+  testWidgets('Done ends the run and writes the flag', (tester) async {
+    await bootOwingTheTour(tester);
+
+    await walkToTheLastStop(tester);
+    await tester.tap(find.text(TourCopy.stopDone));
+    await letTheTourRun(tester);
+
+    expect(find.byType(TodayTour), findsNothing);
+    expect(await tourSeenOnDisk(), isTrue);
+  });
+
+  testWidgets('leaving the tab ends the run without spending it', (
+    tester,
+  ) async {
+    final container = await bootOwingTheTour(tester);
+
+    // Through the router rather than the tab bar, whose taps the Tour's own
+    // shield swallows while a card is up.
+    container.read(appRouterProvider).goNamed(AppRoutes.path.name);
+    await letTheTourRun(tester);
+
+    // Ended, as #338 ruled — but not finished, so the Tour is still owed and
+    // returns on the next launch, which is the design's rule for its flag.
+    expect(find.byType(TodayTour), findsNothing);
+    expect(await tourSeenOnDisk(), isFalse);
+  });
+
+  testWidgets('a run ended by leaving the tab does not restart this launch', (
+    tester,
+  ) async {
+    final container = await bootOwingTheTour(tester);
+    final router = container.read(appRouterProvider);
+
+    router.goNamed(AppRoutes.path.name);
+    await letTheTourRun(tester);
+    router.goNamed(AppRoutes.learn.name);
+    await letTheTourRun(tester);
+
+    // The flag still reads false, and Learn rebuilds on the way back. Once per
+    // launch is a fact the screen remembers, not one the flag can carry.
+    expect(find.byType(TodayTour), findsNothing);
   });
 
   /// How long the frame takes to travel, as the running layer reports it.
@@ -146,13 +172,7 @@ void main() {
     tester.platformDispatcher.accessibilityFeaturesTestValue =
         const FakeAccessibilityFeatures(disableAnimations: true);
     addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
-    useTallViewport(tester);
-    await armTheTour();
-
-    await pumpWithProviders(tester, const BrewPathApp());
-    await tester.pumpAndSettle();
-    await tester.tap(find.text(TourCopy.introAccept));
-    await letTheTourRun(tester);
+    await bootOwingTheTour(tester);
 
     // The move is shortened to nothing rather than dropped: the frame still
     // has to *arrive* at each stop, so what reduced motion removes is the
@@ -163,13 +183,7 @@ void main() {
   testWidgets('the frame travels at the design speed without it', (
     tester,
   ) async {
-    useTallViewport(tester);
-    await armTheTour();
-
-    await pumpWithProviders(tester, const BrewPathApp());
-    await tester.pumpAndSettle();
-    await tester.tap(find.text(TourCopy.introAccept));
-    await letTheTourRun(tester);
+    await bootOwingTheTour(tester);
 
     expect(frameMoveDuration(tester), TourFrame.moveDuration);
   });
