@@ -91,6 +91,10 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **A mini-game is free when the lesson that teaches it is free.** The catalog
+  now names each game's teaching lesson, as the design does, and the tier line
+  reads it instead of standing a module in for it. The three free games are
+  unchanged; a locked game's offer still names the module that teaches it.
 - **A lesson, a mini-game or a drill fills the screen.** All six used to open
   under Flutter's own bar, a strip that took its own space at the top of the
   page and left a hairline of nothing above it on a notched phone. The bar now
