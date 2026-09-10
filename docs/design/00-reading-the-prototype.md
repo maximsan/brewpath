@@ -61,4 +61,4 @@ prototype.
 
 ---
 
-[Contents](README.md) · [Product in one paragraph](01-product.md) →
+[Contents](README.md) · [Scope: what ships in v1](02-scope.md) →

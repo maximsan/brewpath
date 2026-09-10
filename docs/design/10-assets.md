@@ -19,4 +19,4 @@ Everything else — Roasty, all icons, all card art, the cherry cross-section, t
 
 ---
 
-← [Deferred features — v2 detail](09-deferred-v2.md) · [Contents](README.md) · [Known open items](11-open-items.md) →
+← [Deferred features — v2 detail](09-deferred-v2.md) · [Contents](README.md)
