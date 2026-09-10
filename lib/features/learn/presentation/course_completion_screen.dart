@@ -120,12 +120,8 @@ class _CourseCompletionScreenState
           ),
         ),
         const SizedBox(height: AppSpacing.lg),
-        Text(
-          'Course complete',
-          textAlign: TextAlign.center,
-          style: theme.textTheme.labelLarge?.copyWith(color: mood.inkMute),
-        ),
-        const SizedBox(height: AppSpacing.xs),
+        // No eyebrow: the design drops it because "the headline carries the
+        // verb, so a COURSE COMPLETE label above it said the same thing twice".
         Semantics(
           header: true,
           child: Text(

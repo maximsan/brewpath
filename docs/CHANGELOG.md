@@ -160,6 +160,9 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **The course ending no longer says "Course complete" above "You finished
+  Beginner Foundations".** The design drops the eyebrow because the headline
+  already carries it.
 - **Two ways past the free day's cap are shut.** A mini-game's intro asked
   nothing on *Play* and stayed beneath the player, so a back gesture after a
   finished run could start another; and a lesson's ending could be swiped

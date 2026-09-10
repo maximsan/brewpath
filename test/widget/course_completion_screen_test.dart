@@ -120,6 +120,11 @@ void main() {
     await _pump(tester);
 
     expect(find.text('You finished Beginner Foundations'), findsOneWidget);
+    expect(
+      find.text('Course complete'),
+      findsNothing,
+      reason: 'the design has no eyebrow: the headline already says it',
+    );
     expect(find.text('Lessons completed'), findsOneWidget);
     expect(find.text('Module Rewards'), findsOneWidget);
     expect(find.text('Longest streak'), findsOneWidget);
