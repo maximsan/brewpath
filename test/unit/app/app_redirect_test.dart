@@ -119,11 +119,24 @@ void main() {
     test('onboarding routes are left alone while it runs', () {
       expect(redirect('/welcome', onboarded: false), isNull);
       expect(redirect('/onboarding/name', onboarded: false), isNull);
+      expect(
+        redirect(AppRoutes.onboardingPaywall.path, onboarded: false),
+        isNull,
+      );
     });
 
     test('a finished learner is bounced out of the intro', () {
       expect(redirect('/welcome'), AppRoutes.learn.path);
       expect(redirect('/onboarding/name'), AppRoutes.learn.path);
+      expect(redirect(AppRoutes.onboardingPaywall.path), AppRoutes.learn.path);
+    });
+
+    test('the celebration is reachable on either side of the flag', () {
+      expect(
+        redirect(AppRoutes.purchaseWelcome.path, onboarded: false),
+        isNull,
+      );
+      expect(redirect(AppRoutes.purchaseWelcome.path), isNull);
     });
 
     test('the Studio needs the entitlement', () {

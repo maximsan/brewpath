@@ -44,6 +44,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The intro ends on the offer, and a purchase is celebrated.** After the name
+  step the app makes its case for the full course on a screen of its own — the
+  same one non-consumable every lock already sells, with the same ranked pitch
+  counted from the banks, plus Restore, Terms and Privacy. Buying is never
+  required: *Maybe later* and the close both finish onboarding and open Today.
+  Buying instead lands on a short welcome that offers the Studio it just
+  unlocked. The intro is finished by this step rather than by the name before
+  it, so a learner still looking at the offer is not treated as done with it.
+
 - **Checks run before code leaves the machine.** `tool/git-hooks/` fails a
   commit on an unformatted Dart file or an over-long comment, and a push on
   anything the metrics, a guard test, the comment check or the changelog
