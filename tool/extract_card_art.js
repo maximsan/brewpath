@@ -125,11 +125,7 @@ const SENTINELS = {
  * new literal in the design is a question for the owner — a colour with no
  * token cannot follow the mood — not something to wave through.
  */
-const LITERAL_PAINTS = {
-  "rgba(27,22,20,0.24)":
-    "the hairline between the cherry's six layers. Mood-independent, like the " +
-    "--art-* fills it separates, and the design gives it no token.",
-};
+const LITERAL_PAINTS = {};
 
 /** What an art may paint in, before the sentinels are substituted. */
 const ALLOWED_PAINT = new Set([

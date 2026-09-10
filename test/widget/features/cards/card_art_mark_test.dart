@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
@@ -10,6 +11,7 @@ import 'package:brew_path/features/cards/presentation/card_tint.dart';
 import 'package:brew_path/shared/theme/art_colors.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -165,6 +167,110 @@ void main() {
       expect(_mapped(tester, 'var(--art-roast-dark)'), ArtColors.roastDark);
       expect(_mapped(tester, 'var(--art-seed-crease)'), ArtColors.seedCrease);
     });
+
+    testWidgets('a hairline stroke resolves to the palette ink', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        const CardArtMark(
+          kind: 'layers',
+          fallback: AppIcon.beans,
+          fallbackSize: _fallbackSize,
+        ),
+      );
+
+      expect(
+        _mapperOf(tester).substitute(
+          'id',
+          'circle',
+          'stroke',
+          _hex(_sentinels['var(--art-hairline)']!),
+        ),
+        ArtColors.hairline,
+      );
+    });
+
+    testWidgets(
+      "the layers rings draw their hairline at the design's opacity",
+      (
+        tester,
+      ) async {
+        // Rendered at 4x the viewBox, so the outer ring's 0.7 stroke is 2.8px
+        // wide and its centre pixel carries full stroke coverage.
+        const scale = 4.0;
+        const size = 100 * scale;
+        final boundary = GlobalKey();
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.cupping,
+            home: Scaffold(
+              body: Center(
+                child: RepaintBoundary(
+                  key: boundary,
+                  child: const SizedBox(
+                    width: size,
+                    height: size,
+                    child: CardArtMark(
+                      kind: 'layers',
+                      fallback: AppIcon.beans,
+                      fallbackSize: _fallbackSize,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        // The asset decodes off the test clock.
+        await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 300)),
+        );
+        await tester.pump();
+
+        final render =
+            boundary.currentContext!.findRenderObject()!
+                as RenderRepaintBoundary;
+        final image = await tester.runAsync(() => render.toImage());
+        final bytes = await tester.runAsync(
+          () => image!.toByteData(format: ui.ImageByteFormat.rawStraightRgba),
+        );
+        Color at(double x, double y) {
+          final offset = ((y * size) + x).toInt() * 4;
+          return Color.fromARGB(
+            bytes!.getUint8(offset + 3),
+            bytes.getUint8(offset),
+            bytes.getUint8(offset + 1),
+            bytes.getUint8(offset + 2),
+          );
+        }
+
+        // The outer ring: centre (50, 48), r 40 — its stroke sits at x = 90 and
+        // its fill, cherry skin, just inside at x = 88.
+        final fill = at(88 * scale, 48 * scale);
+        // A quarter unit inside the edge: still under the stroke, over the fill.
+        final ring = at(89.75 * scale, 48 * scale);
+        expect(fill, ArtColors.cherrySkin, reason: 'the fill under the ring');
+        expect(ring.a, 1.0, reason: 'the ring pixel is over the fill');
+
+        // Hairline ink at the design's `strokeOpacity="0.24"`, over the fill.
+        final expected = Color.alphaBlend(
+          ArtColors.hairline.withValues(alpha: 0.24),
+          ArtColors.cherrySkin,
+        );
+        for (final (channel, got, want) in [
+          ('r', ring.r, expected.r),
+          ('g', ring.g, expected.g),
+          ('b', ring.b, expected.b),
+        ]) {
+          expect(
+            (got - want).abs(),
+            lessThan(0.06),
+            reason: 'ring $channel is $got, the blended hairline is $want',
+          );
+        }
+      },
+    );
 
     testWidgets('every sentinel the extractor writes is mapped', (
       tester,
