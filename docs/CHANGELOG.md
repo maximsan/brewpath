@@ -160,9 +160,11 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
-- **The course ending no longer says "Course complete" above "You finished
-  Beginner Foundations".** The design drops the eyebrow because the headline
-  already carries it.
+- **The course ending matches its design.** The screen was built five days
+  before the design drew it, and never compared since. It now reads *You
+  finished Foundations* with no eyebrow above it, Roasty says the one line
+  the design wrote, and the three stats sit as small-caps labels against
+  mono figures on hairlines, centred under the headline.
 - **Two ways past the free day's cap are shut.** A mini-game's intro asked
   nothing on *Play* and stayed beneath the player, so a back gesture after a
   finished run could start another; and a lesson's ending could be swiped

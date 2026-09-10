@@ -64,10 +64,10 @@ void main() {
         child: const BrewPathApp(),
       ),
     );
-    await _settleUntil(tester, find.text('You finished Beginner Foundations'));
+    await _settleUntil(tester, find.text('You finished Foundations'));
 
     // The router intercepted /learn with the ending.
-    expect(find.text('You finished Beginner Foundations'), findsOneWidget);
+    expect(find.text('You finished Foundations'), findsOneWidget);
 
     await tester.tap(find.text('Start Keep Sharp'));
     await _settleUntil(tester, find.byType(LearnListView));
@@ -79,7 +79,7 @@ void main() {
 
     // Landed on Learn — and stayed: the ack resolved before navigation, so
     // the redirect no longer fires.
-    expect(find.text('You finished Beginner Foundations'), findsNothing);
+    expect(find.text('You finished Foundations'), findsNothing);
     expect(find.byType(LearnListView), findsOneWidget);
   });
 }
