@@ -134,29 +134,31 @@ with only two options.
 - m3l1 c3 and m3l5 c3 are near-duplicate match cards in different lessons
   (roast level -> taste vs roast level -> flavour family).
 
-## Step 4 — still open
+## Step 4 — DECIDED: glossary-only
 
 The 8 reference-only terms (masl, wet-hulled, tds, cold-brew, cupping,
-gooseneck, sca, origin-boards) have no lesson pointer because no lesson
-covers them. Decide: leave glossary-only, or add pointers if a lesson
-ever covers them.
+gooseneck, sca, origin-boards) stay without lesson pointers. Audited
+data.jsx: their only appearances are incidental (cold brew in grind-match
+pairs and the caffeine guide, cupping as a meta label) — no lesson teaches
+any of them, and a pointer to a lesson that merely name-drops the term
+would misdirect the learner. Revisit only if a lesson gains real coverage.
 
 ## Source gaps left after step 1
 
 Label-only sources (real, verifiable references, no link): cherry, cortado,
 traceability (Hoffmann, World Atlas of Coffee); second-crack, development
-(Scott Rao, The Coffee Roaster's Companion); channeling, tamp (Barista Hustle
-technique guides); chemex (Hoffmann technique guides). aeropress now has the
-official brew-guide link. Worth a search pass for: chemexcoffeemaker.com and
-a citable espresso-puck reference for channeling/tamp.
+(Scott Rao, The Coffee Roaster's Companion). aeropress has the official
+brew-guide link. FILLED: chemex now links chemexcoffeemaker.com official
+brew steps (six-cup classic page, keeps the Hoffmann label as secondary);
+channeling links Barista Hustle Æ 3.01 (Good Puck Prep); tamp links
+Æ 3.05 (Current Practice in Tamping — level-over-hard is its finding).
+dialing-in and fines keep their BH label-only citations (no single lesson
+page covers either claim cleanly).
 
-## Later steps (not started)
+## Later steps
 
-2. `check` for the 17 terms that have deep + example but no self-check.
-3. `sources` backfill on the 39 terms carrying none — only where a claim
-   actually needs backing.
-4. Decide the 8 reference-only terms: leave glossary-only, or give them
-   lesson pointers if a lesson ever covers them.
+All closed: checks written (step 2), sources backfilled where honest
+(step 3), reference-only terms decided glossary-only (step 4).
 
 ## Do not lose
 

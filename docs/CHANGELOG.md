@@ -91,6 +91,10 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **A mini-game is free when the lesson that teaches it is free.** The catalog
+  now names each game's teaching lesson, as the design does, and the tier line
+  reads it instead of standing a module in for it. The three free games are
+  unchanged; a locked game's offer still names the module that teaches it.
 - **A lesson, a mini-game or a drill fills the screen.** All six used to open
   under Flutter's own bar, a strip that took its own space at the top of the
   page and left a hairline of nothing above it on a notched phone. The bar now
@@ -175,6 +179,11 @@ You can always edit this file by hand instead — the helpers just save effort.
   on the account tapped a link that appeared dead. It now says what happened
   and what to try, and is still not treated as a failure: nobody was charged.
 
+- **The course ending matches its design.** The screen was built five days
+  before the design drew it, and never compared since. It now reads *You
+  finished Foundations* with no eyebrow above it, Roasty says the one line
+  the design wrote, and the three stats sit as small-caps labels against
+  mono figures on hairlines, centred under the headline.
 - **Two ways past the free day's cap are shut.** A mini-game's intro asked
   nothing on *Play* and stayed beneath the player, so a back gesture after a
   finished run could start another; and a lesson's ending could be swiped

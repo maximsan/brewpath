@@ -284,8 +284,8 @@ abstract final class OffTokens {
 
   /// The room around the Tour card's Skip.
   static const OffToken<EdgeInsets> tourSkipPadding = OffToken(
-    EdgeInsets.symmetric(horizontal: 6, vertical: AppSpacing.sm),
-    reason: "the design sets Skip to `padding: '12px 6px'`",
+    EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+    reason: "the design sets Skip to `padding: '10px 20px'`",
   );
 
   /// How wide a fill slot stays whatever word lands in it, so a sentence does
@@ -368,6 +368,24 @@ abstract final class OffTokens {
     reason: 'the words sit side by side at `gap: 10px`',
   );
 
+  /// The room the course ending keeps between its headline and its stats.
+  static const OffToken<double> courseStatsTop = OffToken(
+    26,
+    reason: "the ending's stat block opens at `marginTop: 26`",
+  );
+
+  /// How wide the course ending's stat rows run, centred under the headline.
+  static const OffToken<double> courseStatsWidth = OffToken(
+    320,
+    reason: "the ending's stat rows sit in `maxWidth: 320`",
+  );
+
+  /// The room inside one of the course ending's stat rows.
+  static const OffToken<EdgeInsets> courseStatRowPadding = OffToken(
+    EdgeInsets.symmetric(vertical: 13, horizontal: 2),
+    reason: "a stat row sets `padding: '13px 2px'`",
+  );
+
   /// Every sanctioned exception, so the register can be tested as a whole.
   static const register = <OffToken<Object>>[
     rewardedAdCanvas,
@@ -421,5 +439,8 @@ abstract final class OffTokens {
     fillSlotLeading,
     fillGroupGap,
     fillOptionGap,
+    courseStatsTop,
+    courseStatsWidth,
+    courseStatRowPadding,
   ];
 }

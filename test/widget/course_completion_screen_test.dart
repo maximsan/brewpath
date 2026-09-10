@@ -119,10 +119,16 @@ void main() {
   ) async {
     await _pump(tester);
 
-    expect(find.text('You finished Beginner Foundations'), findsOneWidget);
-    expect(find.text('Lessons completed'), findsOneWidget);
-    expect(find.text('Module Rewards'), findsOneWidget);
-    expect(find.text('Longest streak'), findsOneWidget);
+    expect(find.text('You finished Foundations'), findsOneWidget);
+    expect(
+      find.text('Course complete'),
+      findsNothing,
+      reason: 'the design has no eyebrow: the headline already says it',
+    );
+    // Smallcaps labels render uppercase and announce as written.
+    expect(find.text('LESSONS COMPLETED'), findsOneWidget);
+    expect(find.text('MODULE REWARDS'), findsOneWidget);
+    expect(find.text('LONGEST STREAK'), findsOneWidget);
     expect(find.text('$_lessonCount'), findsOneWidget);
     expect(find.text('$_moduleRewardCount'), findsOneWidget);
     expect(find.text('$_longestStreakDays'), findsOneWidget);
@@ -168,7 +174,7 @@ void main() {
   testWidgets('reduced motion renders the moment statically', (tester) async {
     await _pump(tester, disableAnimations: true);
 
-    expect(find.text('You finished Beginner Foundations'), findsOneWidget);
+    expect(find.text('You finished Foundations'), findsOneWidget);
     expect(tester.hasRunningAnimations, isFalse);
   });
 

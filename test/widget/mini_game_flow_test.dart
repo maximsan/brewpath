@@ -15,6 +15,7 @@ import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/models/content/content_reward.dart';
 import 'package:brew_path/shared/models/content/mini_game_format.dart';
+import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/models/module_model.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
@@ -24,6 +25,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../support/content_fixtures.dart';
 import '../support/find_mark.dart';
 import '../support/widget_harness.dart';
 
@@ -32,11 +34,11 @@ MiniGameFormat _format(
   String kind,
   String title, {
   String topic = 'TOPIC',
-  String moduleId = 'm1',
+  String lessonId = 'm1l1',
 }) => MiniGameFormat(
   id: id,
   kind: kind,
-  moduleId: moduleId,
+  lessonId: lessonId,
   title: title,
   topic: topic,
   duration: '~1 MIN',
@@ -50,16 +52,16 @@ MiniGameFormat _format(
 final List<MiniGameFormat> _formats = [
   _format('g-quiz', 'quiz', 'True or false', topic: 'COFFEE BASICS'),
   _format('g-match', 'match', 'Match the facts'),
-  _format('g-flavor', 'flavor', 'Name the flavor notes', moduleId: 'm5'),
-  _format('g-bagpick', 'bagpick', 'Read the green bean', moduleId: 'm2'),
-  _format('g-tastefix', 'tastefix', 'Fix the cup', moduleId: 'm4'),
-  _format('g-calibrate', 'slider', 'Dial it in', moduleId: 'm4'),
-  _format('g-sequence', 'sequence', 'Put it in order', moduleId: 'm5'),
+  _format('g-flavor', 'flavor', 'Name the flavor notes', lessonId: 'm5l3'),
+  _format('g-bagpick', 'bagpick', 'Read the green bean', lessonId: 'm2l1'),
+  _format('g-tastefix', 'tastefix', 'Fix the cup', lessonId: 'm4l3'),
+  _format('g-calibrate', 'slider', 'Dial it in', lessonId: 'm4l3'),
+  _format('g-sequence', 'sequence', 'Put it in order', lessonId: 'm5l6'),
   // A game the playable registry has not ruled on — the shape the intro has to
   // disclose. Every kind draws as of #124, so the state that remains is a
   // catalog entry no one has ruled playable: `mini_game_playable_test` catches
   // that, and this is what a learner meets if it ever slips through.
-  _format('g-not-yet-ruled', 'sequence', 'Not ruled on yet', moduleId: 'm5'),
+  _format('g-not-yet-ruled', 'sequence', 'Not ruled on yet', lessonId: 'm5l6'),
 ];
 
 /// Four of the six answer `true`, so always tapping True scores exactly 4 —
@@ -203,6 +205,10 @@ class _FakeContentRepository extends ContentRepository {
 
   @override
   Future<List<ModuleModel>> getModules() async => _modules;
+
+  @override
+  Future<LessonModel?> getLessonById(String id) async =>
+      testLesson(id: id, moduleId: id.split('l').first);
 
   @override
   Future<List<ContentCard>> getMiniGameRounds(String formatId) async =>

@@ -8,20 +8,20 @@ part of 'teaching_module.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// The module owning [moduleId], or null when the catalog names one the
-/// modules bank does not carry.
+/// The module teaching [lessonId], or null when the catalog names a lesson
+/// the banks do not carry.
 ///
-/// A locked game's offer is a pitch for the module that teaches its topic, so
-/// the sheet needs the module's own words rather than the game's.
+/// A locked game's offer pitches the module that teaches its topic, so the
+/// sheet needs the module's own words rather than the game's.
 
 @ProviderFor(teachingModule)
 final teachingModuleProvider = TeachingModuleFamily._();
 
-/// The module owning [moduleId], or null when the catalog names one the
-/// modules bank does not carry.
+/// The module teaching [lessonId], or null when the catalog names a lesson
+/// the banks do not carry.
 ///
-/// A locked game's offer is a pitch for the module that teaches its topic, so
-/// the sheet needs the module's own words rather than the game's.
+/// A locked game's offer pitches the module that teaches its topic, so the
+/// sheet needs the module's own words rather than the game's.
 
 final class TeachingModuleProvider
     extends
@@ -31,11 +31,11 @@ final class TeachingModuleProvider
           FutureOr<ModuleModel?>
         >
     with $FutureModifier<ModuleModel?>, $FutureProvider<ModuleModel?> {
-  /// The module owning [moduleId], or null when the catalog names one the
-  /// modules bank does not carry.
+  /// The module teaching [lessonId], or null when the catalog names a lesson
+  /// the banks do not carry.
   ///
-  /// A locked game's offer is a pitch for the module that teaches its topic, so
-  /// the sheet needs the module's own words rather than the game's.
+  /// A locked game's offer pitches the module that teaches its topic, so the
+  /// sheet needs the module's own words rather than the game's.
   TeachingModuleProvider._({
     required TeachingModuleFamily super.from,
     required String super.argument,
@@ -80,13 +80,13 @@ final class TeachingModuleProvider
   }
 }
 
-String _$teachingModuleHash() => r'a85a45650ff8a827f203f97384ec6ee2f97f0e02';
+String _$teachingModuleHash() => r'e8eb49cf20a21e76b5f44a4cef7233e3e0101fa5';
 
-/// The module owning [moduleId], or null when the catalog names one the
-/// modules bank does not carry.
+/// The module teaching [lessonId], or null when the catalog names a lesson
+/// the banks do not carry.
 ///
-/// A locked game's offer is a pitch for the module that teaches its topic, so
-/// the sheet needs the module's own words rather than the game's.
+/// A locked game's offer pitches the module that teaches its topic, so the
+/// sheet needs the module's own words rather than the game's.
 
 final class TeachingModuleFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<ModuleModel?>, String> {
@@ -99,14 +99,14 @@ final class TeachingModuleFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// The module owning [moduleId], or null when the catalog names one the
-  /// modules bank does not carry.
+  /// The module teaching [lessonId], or null when the catalog names a lesson
+  /// the banks do not carry.
   ///
-  /// A locked game's offer is a pitch for the module that teaches its topic, so
-  /// the sheet needs the module's own words rather than the game's.
+  /// A locked game's offer pitches the module that teaches its topic, so the
+  /// sheet needs the module's own words rather than the game's.
 
-  TeachingModuleProvider call(String moduleId) =>
-      TeachingModuleProvider._(argument: moduleId, from: this);
+  TeachingModuleProvider call(String lessonId) =>
+      TeachingModuleProvider._(argument: lessonId, from: this);
 
   @override
   String toString() => r'teachingModuleProvider';
