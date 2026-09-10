@@ -50,8 +50,10 @@ You can always edit this file by hand instead — the helpers just save effort.
   counted from the banks, plus Restore, Terms and Privacy. Buying is never
   required: *Maybe later* and the close both finish onboarding and open Today.
   Buying instead lands on a short welcome that offers the Studio it just
-  unlocked. The intro is finished by this step rather than by the name before
-  it, so a learner still looking at the offer is not treated as done with it.
+  unlocked. Restoring is not a sale: it recovers what you own and walks on,
+  without the celebration. The intro is finished by this step rather than by
+  the name before it, so a learner still looking at the offer is not treated
+  as done with it.
 
 - **Checks run before code leaves the machine.** `tool/git-hooks/` fails a
   commit on an unformatted Dart file or an over-long comment, and a push on
@@ -159,6 +161,11 @@ You can always edit this file by hand instead — the helpers just save effort.
   which is what makes a third launch safe.
 
 ### Fixed
+
+- **Restore Purchases no longer looks broken when it finds nothing.** It said
+  nothing at all — on every gate the app draws — so a learner with no purchase
+  on the account tapped a link that appeared dead. It now says what happened
+  and what to try, and is still not treated as a failure: nobody was charged.
 
 - **Six more number lines are set at the width the design gives them.** The
   lesson and mini-game position counter, the Coffee Challenges count, a

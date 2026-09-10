@@ -1,4 +1,5 @@
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/widgets/celebration_glow.dart';
 import 'package:brew_path/core/widgets/float_topbar.dart';
 import 'package:brew_path/core/widgets/ghost_button.dart';
 import 'package:brew_path/core/widgets/link_button.dart';
@@ -24,31 +25,46 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// trial (ADR-0003) — drawn full-screen because the intro ends here rather than
 /// interrupting something (ADR-0010). Buying is never required: [onDeclined]
 /// and [onPurchased] both walk on.
-class PaywallScreen extends ConsumerWidget {
+class PaywallScreen extends ConsumerStatefulWidget {
   /// Creates the offer screen.
   const PaywallScreen({
     required this.onPurchased,
+    required this.onRestored,
     required this.onDeclined,
     super.key,
   });
 
-  /// Run once the store says the learner owns Plus.
+  /// Run once the store says the learner has just bought Plus.
   final VoidCallback onPurchased;
+
+  /// Run once Restore recovers a purchase made earlier.
+  ///
+  /// Apart from [onPurchased] because the two are different events: one is a
+  /// sale to celebrate, the other is a learner getting back what they own.
+  final VoidCallback onRestored;
 
   /// Run when the learner leaves without buying — the close, or *Maybe later*.
   final VoidCallback onDeclined;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<PaywallScreen> createState() => _PaywallScreenState();
+}
+
+class _PaywallScreenState extends ConsumerState<PaywallScreen> {
+  /// Whether the entitlement now on the way was asked for by Restore.
+  ///
+  /// The controller reports only that Plus is owned, so which door to leave by
+  /// is remembered here, at the press that started it.
+  bool _restoring = false;
+
+  @override
+  Widget build(BuildContext context) {
     final mood = context.mood;
     final purchase = ref.watch(plusPurchaseProvider);
-    final working = purchase == PlusPurchaseState.working;
 
-    // Owning it is the one outcome that ends the screen, and it arrives from
-    // the controller rather than from the button: Restore grants the same
-    // thing buying does, so both have to leave by the same door.
     ref.listen(plusPurchaseProvider, (_, next) {
-      if (next == PlusPurchaseState.owned) onPurchased();
+      if (next != PlusPurchaseState.owned) return;
+      _restoring ? widget.onRestored() : widget.onPurchased();
     });
 
     return Semantics(
@@ -57,68 +73,50 @@ class PaywallScreen extends ConsumerWidget {
       label: PlusCopy.screenSemanticLabel,
       child: Scaffold(
         backgroundColor: mood.bg,
-        body: _OfferGlow(
-          child: Stack(
-            children: [
-              _OfferBody(purchase: purchase, onDeclined: onDeclined),
-              FloatTopbar.sealed(
-                icon: AppIcon.close,
-                label: PlusCopy.close,
-                onPressed: working ? _stayPut : onDeclined,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// A press the screen deliberately ignores: leaving mid-call would strand a
-  /// purchase the store is still deciding.
-  static void _stayPut() {}
-}
-
-/// The accent wash behind the offer, warming the hero without lighting a panel.
-class _OfferGlow extends StatelessWidget {
-  const _OfferGlow({required this.child});
-
-  /// The design's `ellipse at 50% 16%`, as an alignment: 16% down the box.
-  static const Alignment centre = Alignment(0, -0.68);
-
-  /// Where it reaches nothing — the design's `transparent 58%`.
-  static const double radius = 0.58;
-
-  /// How much accent it carries at its middle — `var(--accent) 16%`.
-  static const double strength = 0.16;
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final mood = context.mood;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: RadialGradient(
-          center: centre,
-          radius: radius,
-          colors: [
-            mood.accent.withValues(alpha: strength),
-            mood.accent.withValues(alpha: 0),
+        body: Stack(
+          children: [
+            CelebrationGlow.offer,
+            _OfferBody(
+              purchase: purchase,
+              onDeclined: widget.onDeclined,
+              onRestore: _restore,
+            ),
+            // Live even while the store is deciding: the purchase belongs to
+            // the controller, not this screen, so leaving cannot strand it —
+            // and a close that looks pressable must be.
+            FloatTopbar.sealed(
+              icon: AppIcon.close,
+              label: PlusCopy.close,
+              onPressed: widget.onDeclined,
+            ),
           ],
         ),
       ),
-      child: child,
     );
   }
+
+  Future<void> _restore() async {
+    _restoring = true;
+    await ref.read(plusPurchaseProvider.notifier).restore();
+  }
 }
+
+/// How large the dressed mascot is drawn — the design's `size={112}`, sized so
+/// the pitch and the price still land together on one screen.
+const double _heroSize = 112;
 
 /// Hero, pitch, then the actions — one scroller, so the price is reachable at
 /// every text size.
 class _OfferBody extends ConsumerWidget {
-  const _OfferBody({required this.purchase, required this.onDeclined});
+  const _OfferBody({
+    required this.purchase,
+    required this.onDeclined,
+    required this.onRestore,
+  });
 
   final PlusPurchaseState purchase;
   final VoidCallback onDeclined;
+  final VoidCallback onRestore;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -177,38 +175,33 @@ class _OfferBody extends ConsumerWidget {
             style: AppText.micro(mood: mood, face: AppFace.mono),
           ),
           const SizedBox(height: AppSpacing.sm),
-          _StoreLinks(working: working),
+          _StoreLinks(working: working, onRestore: onRestore),
         ],
       ),
     );
   }
 }
 
-/// How large the dressed mascot is drawn — the design's `size={112}`, sized so
-/// the pitch and the price still land together on one screen.
-const double _heroSize = 112;
-
 /// Restore, Terms and Privacy: what the App Store requires of the screen that
 /// sells a non-consumable.
 ///
 /// ⚠️ Terms and Privacy are the same disabled stubs the gate sheet draws, owed
 /// real URLs at [#448](https://github.com/maximsan/brewpath/issues/448).
-class _StoreLinks extends ConsumerWidget {
-  const _StoreLinks({required this.working});
+class _StoreLinks extends StatelessWidget {
+  const _StoreLinks({required this.working, required this.onRestore});
 
   final bool working;
+  final VoidCallback onRestore;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => Wrap(
+  Widget build(BuildContext context) => Wrap(
     alignment: WrapAlignment.center,
     spacing: AppSpacing.md,
     runSpacing: AppSpacing.xxs,
     children: [
       LinkButton(
         label: PlusCopy.restore,
-        onPressed: working
-            ? null
-            : () => ref.read(plusPurchaseProvider.notifier).restore(),
+        onPressed: working ? null : onRestore,
       ),
       const LinkButton(label: PlusCopy.terms, onPressed: null),
       const LinkButton(label: PlusCopy.privacy, onPressed: null),

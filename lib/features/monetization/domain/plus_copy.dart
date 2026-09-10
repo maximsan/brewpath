@@ -58,6 +58,12 @@ abstract final class PlusCopy {
   /// were.
   static const failed = "That didn't go through. Nothing was charged.";
 
+  /// Said when Restore finds nothing. Names the likely cause rather than
+  /// implying the learner is wrong about having bought it.
+  static const nothingToRestore =
+      'No purchase found on this account. If you bought Plus with another '
+      'Apple Account, sign in with that one and try again.';
+
   /// The offer screen's eyebrow: what is sold, and on what terms.
   ///
   /// Two facts and no more, because the slots under it carry the rest — the

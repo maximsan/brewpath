@@ -17,9 +17,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// The one sheet every lock raises.
 ///
 /// Opens with **what was just hit** — the trigger's own header — then the
-/// ranked bullets, then a single action: ADR-0003 sells one non-consumable, so
-/// there is no trial, no plan chooser and no ad path. *Not now* makes declining
-/// a button rather than a swipe the learner has to discover; it writes nothing.
+/// ranked bullets, then one action: ADR-0003 sells a single non-consumable, so
+/// no trial and no plan chooser, and **no ad path** (v1 ships no ads, so the
+/// design's watch-an-ad route is dead). *Not now* writes nothing.
 Future<void> showPlusGate(BuildContext context, PlusGateTrigger trigger) =>
     showAppSheet<void>(
       context: context,

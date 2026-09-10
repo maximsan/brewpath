@@ -1,3 +1,4 @@
+import 'package:brew_path/core/widgets/celebration_glow.dart';
 import 'package:brew_path/core/widgets/ghost_button.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
@@ -26,15 +27,6 @@ class PurchaseWelcomeScreen extends StatelessWidget {
   /// is drawn anywhere, because this screen has nothing else to say.
   static const double _heroSize = 176;
 
-  /// The design's `ellipse at 50% 28%`, lower than the offer's and stronger.
-  static const Alignment _glowCentre = Alignment(0, -0.44);
-
-  /// Where the wash reaches nothing — `transparent 58%`.
-  static const double _glowRadius = 0.58;
-
-  /// How much accent it carries — the design's `var(--accent) 20%`.
-  static const double _glowStrength = 0.20;
-
   /// Opens the Studio, the thing the purchase just unlocked.
   final VoidCallback onOpenStudio;
 
@@ -51,45 +43,38 @@ class PurchaseWelcomeScreen extends StatelessWidget {
       label: PlusCopy.welcomeSemanticLabel,
       child: Scaffold(
         backgroundColor: mood.bg,
-        body: DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: RadialGradient(
-              center: _glowCentre,
-              radius: _glowRadius,
-              colors: [
-                mood.accent.withValues(alpha: _glowStrength),
-                mood.accent.withValues(alpha: 0),
-              ],
-            ),
-          ),
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.gutter,
-                vertical: AppSpacing.lg,
-              ),
-              child: Column(
-                children: [
-                  Expanded(child: _Celebration(mood: mood)),
-                  PrimaryButton(
-                    label: PlusCopy.welcomeOpenStudio,
-                    onPressed: onOpenStudio,
-                  ),
-                  SizedBox(height: OffTokens.ghostUnderPrimaryGap.value),
-                  GhostButton(
-                    label: PlusCopy.welcomeBackToLearning,
-                    onPressed: onContinue,
-                  ),
-                  const SizedBox(height: AppSpacing.base),
-                  Text(
-                    PlusCopy.welcomeNote,
-                    textAlign: TextAlign.center,
-                    style: AppText.micro(mood: mood, face: AppFace.mono),
-                  ),
-                ],
+        body: Stack(
+          children: [
+            CelebrationGlow.purchase,
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.gutter,
+                  vertical: AppSpacing.lg,
+                ),
+                child: Column(
+                  children: [
+                    Expanded(child: _Celebration(mood: mood)),
+                    PrimaryButton(
+                      label: PlusCopy.welcomeOpenStudio,
+                      onPressed: onOpenStudio,
+                    ),
+                    SizedBox(height: OffTokens.ghostUnderPrimaryGap.value),
+                    GhostButton(
+                      label: PlusCopy.welcomeBackToLearning,
+                      onPressed: onContinue,
+                    ),
+                    const SizedBox(height: AppSpacing.base),
+                    Text(
+                      PlusCopy.welcomeNote,
+                      textAlign: TextAlign.center,
+                      style: AppText.micro(mood: mood, face: AppFace.mono),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
+          ],
         ),
       ),
     );

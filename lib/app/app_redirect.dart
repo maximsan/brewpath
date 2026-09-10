@@ -93,11 +93,16 @@ GateDecision redirectFor({
       isIntroRoute ||
       path.startsWith(AppRoutes.onboardingPrefix);
 
-  // Only a purchase reaches the celebration, and a learner who has just paid
-  // is never sent back to the intro — so it is allowed on either side of the
-  // flag, which the buy exit writes a moment before it navigates here.
+  // The celebration is for someone who owns it, and it is allowed on either
+  // side of the onboarding flag — the buy exit writes that flag a moment
+  // before it navigates here, and a learner who has just paid is never sent
+  // back to the intro. Anyone else — a deep link, a stale tab — is turned
+  // away, because "Plus is yours" is a lie told to a learner who owns nothing.
   if (path == AppRoutes.purchaseWelcome.path) {
-    return const GateDecision.allow();
+    if (gates.courseEntitled) return const GateDecision.allow();
+    return GateDecision.to(
+      gates.onboardingCompleted ? AppRoutes.learn.path : AppRoutes.welcome.path,
+    );
   }
 
   if (!gates.onboardingCompleted) {

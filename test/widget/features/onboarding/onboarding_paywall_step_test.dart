@@ -99,14 +99,31 @@ void main() {
     expect(find.text('stub-welcome'), findsOneWidget);
   });
 
-  testWidgets('the intro is finished once, however fast the exits arrive', (
+  testWidgets('restoring finishes the intro without the celebration', (
     tester,
   ) async {
     final container = await pump(tester);
 
-    // Restore can land while a tap on Maybe later is already on its way.
+    await tester.ensureVisible(find.text(PlusCopy.restore));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(PlusCopy.restore));
     container.read(plusPurchaseProvider.notifier).state =
         PlusPurchaseState.owned;
+    await tester.pumpAndSettle();
+
+    expect(fake.completeCalls, hasLength(1));
+    expect(find.text('stub-learn'), findsOneWidget);
+  });
+
+  testWidgets('the intro is finished once, however the exits race', (
+    tester,
+  ) async {
+    final container = await pump(tester);
+
+    // A real race: the store answers while a tap on Maybe later is on its way.
+    await tester.ensureVisible(find.text(PlusCopy.maybeLater));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(PlusCopy.maybeLater));
     container.read(plusPurchaseProvider.notifier).state =
         PlusPurchaseState.owned;
     await tester.pumpAndSettle();

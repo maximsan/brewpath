@@ -50,6 +50,7 @@ void main() {
           theme: AppTheme.cupping,
           home: PaywallScreen(
             onPurchased: () => exits.add('purchased'),
+            onRestored: () => exits.add('restored'),
             onDeclined: () => exits.add('declined'),
           ),
         ),
@@ -125,18 +126,40 @@ void main() {
     expect(exits, ['declined']);
   });
 
-  testWidgets('owning it leaves by the bought door, however it arrived', (
-    tester,
-  ) async {
+  testWidgets('buying leaves by the bought door', (tester) async {
     final container = await pump(tester);
 
-    // Restore grants the same thing buying does, so the screen watches the
-    // controller rather than the button that started it.
     container.read(plusPurchaseProvider.notifier).state =
         PlusPurchaseState.owned;
     await tester.pump();
 
     expect(exits, ['purchased']);
+  });
+
+  testWidgets('restoring leaves by its own door, not the sale', (tester) async {
+    final container = await pump(tester);
+
+    await tapAction(tester, PlusCopy.restore);
+    container.read(plusPurchaseProvider.notifier).state =
+        PlusPurchaseState.owned;
+    await tester.pump();
+
+    expect(
+      exits,
+      ['restored'],
+      reason: 'recovering a purchase is not a sale to celebrate',
+    );
+  });
+
+  testWidgets('a restore that finds nothing says so', (tester) async {
+    final container = await pump(tester);
+
+    container.read(plusPurchaseProvider.notifier).state =
+        PlusPurchaseState.nothingToRestore;
+    await tester.pump();
+
+    expect(find.text(PlusCopy.nothingToRestore), findsOneWidget);
+    expect(exits, isEmpty);
   });
 
   testWidgets('a refusal leaves the learner on the offer, and says so', (
@@ -152,7 +175,7 @@ void main() {
     expect(exits, isEmpty);
   });
 
-  testWidgets('nothing is pressable while the store is deciding', (
+  testWidgets('the store cannot be asked twice while it is deciding', (
     tester,
   ) async {
     final container = await pump(tester);
@@ -169,5 +192,20 @@ void main() {
       tester.widget<GhostButton>(find.byType(GhostButton)).onPressed,
       isNull,
     );
+  });
+
+  testWidgets('the close stays live, so it is never a dead control', (
+    tester,
+  ) async {
+    final container = await pump(tester);
+
+    container.read(plusPurchaseProvider.notifier).state =
+        PlusPurchaseState.working;
+    await tester.pump();
+
+    await tester.tap(find.byTooltip(PlusCopy.close));
+    await tester.pump();
+
+    expect(exits, ['declined']);
   });
 }

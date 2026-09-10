@@ -24,6 +24,10 @@ class PurchaseOutcomeLine extends StatelessWidget {
       PlusPurchaseState.owned => (PlusCopy.owned, mood.accent),
       PlusPurchaseState.pending => (PlusCopy.pending, mood.inkMute),
       PlusPurchaseState.failed => (PlusCopy.failed, mood.berry),
+      PlusPurchaseState.nothingToRestore => (
+        PlusCopy.nothingToRestore,
+        mood.inkMute,
+      ),
       PlusPurchaseState.idle ||
       PlusPurchaseState.working ||
       PlusPurchaseState.cancelled => (null, mood.ink),

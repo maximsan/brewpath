@@ -131,12 +131,27 @@ void main() {
       expect(redirect(AppRoutes.onboardingPaywall.path), AppRoutes.learn.path);
     });
 
-    test('the celebration is reachable on either side of the flag', () {
+    test('an owner reaches the celebration on either side of the flag', () {
       expect(
         redirect(AppRoutes.purchaseWelcome.path, onboarded: false),
         isNull,
       );
       expect(redirect(AppRoutes.purchaseWelcome.path), isNull);
+    });
+
+    test('nobody else does — it would say something untrue', () {
+      expect(
+        redirect(AppRoutes.purchaseWelcome.path, entitled: false),
+        AppRoutes.learn.path,
+      );
+      expect(
+        redirect(
+          AppRoutes.purchaseWelcome.path,
+          entitled: false,
+          onboarded: false,
+        ),
+        AppRoutes.welcome.path,
+      );
     });
 
     test('the Studio needs the entitlement', () {
