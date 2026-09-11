@@ -1,3 +1,4 @@
+import 'package:brew_path/core/config/app_links_provider.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/celebration_glow.dart';
@@ -16,6 +17,7 @@ import 'package:brew_path/features/monetization/domain/paywall_view_provider.dar
 import 'package:brew_path/features/monetization/domain/plus_purchase_controller.dart';
 import 'package:brew_path/features/monetization/presentation/plan_picker.dart';
 import 'package:brew_path/features/monetization/presentation/purchase_outcome_line.dart';
+import 'package:brew_path/services/links/open_link.dart';
 import 'package:brew_path/shared/models/monetization/plus_offering.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -266,15 +268,15 @@ class _Action extends ConsumerWidget {
 
 /// Restore, Terms and Privacy — which the App Store requires of a purchase
 /// screen. Restore takes ink, the two disclosures stay muted; Terms and
-/// Privacy are inert until #448 gives them a home.
-class _RequiredLinks extends StatelessWidget {
+/// Privacy go live the moment #448's pages are hosted.
+class _RequiredLinks extends ConsumerWidget {
   const _RequiredLinks({required this.isWorking, required this.onRestore});
 
   final bool isWorking;
   final VoidCallback onRestore;
 
   @override
-  Widget build(BuildContext context) => Wrap(
+  Widget build(BuildContext context, WidgetRef ref) => Wrap(
     alignment: WrapAlignment.center,
     spacing: OffTokens.paywallLegalRowGap.value,
     children: [
@@ -283,14 +285,14 @@ class _RequiredLinks extends StatelessWidget {
         onPressed: isWorking ? null : onRestore,
         isMuted: false,
       ),
-      const _LegalLink(
+      _LegalLink(
         label: PaywallCopy.terms,
-        onPressed: null,
+        onPressed: openOr(ref, ref.watch(termsPageProvider)),
         isMuted: true,
       ),
-      const _LegalLink(
+      _LegalLink(
         label: PaywallCopy.privacy,
-        onPressed: null,
+        onPressed: openOr(ref, ref.watch(privacyPageProvider)),
         isMuted: true,
       ),
     ],

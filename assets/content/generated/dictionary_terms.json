@@ -23,8 +23,8 @@
           "label": "James Hoffmann — The World Atlas of Coffee"
         },
         {
-          "label": "SCA — Coffee Basics",
-          "url": "https://sca.coffee/research?page=resources"
+          "label": "SCA — Research and resources",
+          "url": "https://sca.coffee/research"
         }
       ],
       "check": {
@@ -974,8 +974,8 @@
       "lesson": "m2l6",
       "sources": [
         {
-          "label": "SCA — Coffee Basics",
-          "url": "https://sca.coffee/research?page=resources"
+          "label": "National Coffee Association — Decaf coffee",
+          "url": "https://www.aboutcoffee.org/beans/decaf-coffee/"
         }
       ],
       "check": {
@@ -1056,8 +1056,8 @@
       "lesson": "m1l7",
       "sources": [
         {
-          "label": "National Coffee Association — Storage and shelf life",
-          "url": "https://www.aboutcoffee.org/beans/storage-and-shelf-life/"
+          "label": "National Coffee Association — Lifecycle of coffee",
+          "url": "https://www.aboutcoffee.org/origins/lifecycle-of-coffee/"
         }
       ],
       "check": {
@@ -1214,7 +1214,7 @@
       "sources": [
         {
           "label": "SCA — Coffee Standards",
-          "url": "https://sca.coffee/research?page=resources"
+          "url": "https://sca.coffee/research/coffee-standards"
         }
       ],
       "check": {
@@ -1417,7 +1417,7 @@
       "sources": [
         {
           "label": "SCA — Coffee Standards",
-          "url": "https://sca.coffee/research?page=resources"
+          "url": "https://sca.coffee/research/coffee-standards"
         }
       ],
       "check": {
@@ -1656,8 +1656,8 @@
       "lesson": "m5l6",
       "sources": [
         {
-          "label": "National Coffee Association — Brewing",
-          "url": "https://www.aboutcoffee.org/brewing/"
+          "label": "National Coffee Association — Pour-over coffee",
+          "url": "https://www.aboutcoffee.org/brewing/pour-over-coffee/"
         }
       ],
       "check": {
@@ -1732,8 +1732,8 @@
       ],
       "sources": [
         {
-          "label": "National Coffee Association — Brewing",
-          "url": "https://www.aboutcoffee.org/brewing/"
+          "label": "National Coffee Association — Cold brew coffee",
+          "url": "https://www.aboutcoffee.org/brewing/cold-brew-coffee/"
         }
       ],
       "check": {
@@ -2225,8 +2225,8 @@
       ],
       "sources": [
         {
-          "label": "SCA — Cupping Protocols",
-          "url": "https://sca.coffee/research?page=resources"
+          "label": "SCA — Coffee Standards",
+          "url": "https://sca.coffee/research/coffee-standards"
         }
       ],
       "check": {
@@ -2343,8 +2343,11 @@
       "lesson": "m4l5",
       "sources": [
         {
-          "label": "AeroPress — official brew guides",
-          "url": "https://aeropress.com/pages/brew-guides"
+          "label": "Perfect Daily Grind — AeroPress: A revisited brew guide",
+          "url": "https://perfectdailygrind.com/2025/02/aeropress-revisited-coffee-brew-guide/"
+        },
+        {
+          "label": "AeroPress — official brew guides"
         },
         {
           "label": "James Hoffmann — Technique Guides"
@@ -2384,7 +2387,7 @@
       "sources": [
         {
           "label": "CHEMEX® official brew steps",
-          "url": "https://chemexcoffeemaker.com/products/six-cup-classic-chemex"
+          "url": "https://chemexcoffeemaker.com/pages/how-to-brew-with-chemex"
         },
         {
           "label": "James Hoffmann — Technique Guides"
@@ -2469,6 +2472,10 @@
       ],
       "lesson": "m4l5",
       "sources": [
+        {
+          "label": "National Coffee Association — French press coffee",
+          "url": "https://www.aboutcoffee.org/brewing/french-press-coffee/"
+        },
         {
           "label": "James Hoffmann — The World Atlas of Coffee"
         }
@@ -2776,8 +2783,8 @@
       ],
       "sources": [
         {
-          "label": "SCA — Standards and research",
-          "url": "https://sca.coffee/research?page=resources"
+          "label": "SCA — Research and resources",
+          "url": "https://sca.coffee/research"
         }
       ],
       "check": {
@@ -2867,8 +2874,8 @@
           "url": "https://sca.coffee/sca-news/read/evolving-the-sca-cupping-protocol-and-form-an-overview-of-the-pilot-testing-process"
         },
         {
-          "label": "SCA — Standards and research",
-          "url": "https://sca.coffee/research?page=resources"
+          "label": "SCA — Research and resources",
+          "url": "https://sca.coffee/research"
         }
       ],
       "check": {

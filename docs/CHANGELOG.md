@@ -44,6 +44,22 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Help answers the four questions, and answers them for this app.** Settings
+  → Help and support now opens each answer on its own row. Three are
+  re-grounded rather than ported: the streak keeps a day with any finished
+  activity, not a lesson (the App Guide already said so, and a test holds the
+  two together); what Foundations includes is counted from the shipped banks
+  and the free-tier rule, so authoring a lesson cannot make it stale; and
+  offline promises what the app does — everything on your phone — instead of a
+  sync that does not exist. The design's *We reply within a day* is not drawn:
+  one developer cannot promise a reply time.
+- **The fine print has somewhere to go, once it exists.** Terms, Privacy and
+  the support mailbox are three constants read by every surface that offers
+  them — the gate sheet, the offer screen, Help and About — so they go live
+  together the moment they are filled in, and there is no second copy to
+  forget. Until then Help's contact rows and About's legal rows are absent
+  rather than drawn dead, and the paywall's two links stay visible but inert,
+  because a purchase surface missing them fails App Review.
 - **Roasty can be dressed, and he stays dressed.** A second Studio door opens
   a wardrobe with four axes — roast, hat, accessory and sprout — over a live
   preview: pick one and the mascot changes under your thumb, confirm and he

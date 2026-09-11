@@ -1,3 +1,4 @@
+import 'package:brew_path/core/config/app_links_provider.dart';
 import 'package:brew_path/core/widgets/app_sheet.dart';
 import 'package:brew_path/core/widgets/ghost_button.dart';
 import 'package:brew_path/core/widgets/link_button.dart';
@@ -11,6 +12,7 @@ import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart'
 import 'package:brew_path/features/monetization/domain/plus_purchase_controller.dart';
 import 'package:brew_path/features/monetization/presentation/plus_pitch_list.dart';
 import 'package:brew_path/features/monetization/presentation/purchase_outcome_line.dart';
+import 'package:brew_path/services/links/open_link.dart';
 import 'package:brew_path/shared/models/monetization/plus_offering.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -115,15 +117,15 @@ class _GateAction extends ConsumerWidget {
 
 /// Terms and Privacy, which the App Store requires of a non-consumable.
 ///
-/// ⚠️ Both are stubs, disabled rather than dead: the real URLs are owed at
-/// [#448](https://github.com/maximsan/brewpath/issues/448). Their absence is a
-/// store-review failure, and a link that looks live and does nothing is worse.
-class _LegalLinks extends StatelessWidget {
+/// Drawn even while unhosted — their absence on a buying surface is a
+/// store-review failure, so an inert link is the lesser of the two (#448).
+/// They go live the moment the pages exist.
+class _LegalLinks extends ConsumerWidget {
   const _LegalLinks();
 
   @override
-  Widget build(BuildContext context) => const Padding(
-    padding: EdgeInsets.only(top: AppSpacing.xs),
+  Widget build(BuildContext context, WidgetRef ref) => Padding(
+    padding: const EdgeInsets.only(top: AppSpacing.xs),
     // Wrapped, not a Row: two links side by side fit a phone at the default
     // text size and stop fitting well before the largest one, and a required
     // legal link is the last thing that may be clipped off the sheet.
@@ -132,8 +134,14 @@ class _LegalLinks extends StatelessWidget {
       spacing: AppSpacing.md,
       runSpacing: AppSpacing.xxs,
       children: [
-        LinkButton(label: PaywallCopy.terms, onPressed: null),
-        LinkButton(label: PaywallCopy.privacy, onPressed: null),
+        LinkButton(
+          label: PaywallCopy.terms,
+          onPressed: openOr(ref, ref.watch(termsPageProvider)),
+        ),
+        LinkButton(
+          label: PaywallCopy.privacy,
+          onPressed: openOr(ref, ref.watch(privacyPageProvider)),
+        ),
       ],
     ),
   );

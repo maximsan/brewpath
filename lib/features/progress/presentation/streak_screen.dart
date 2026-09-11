@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:brew_path/core/constants/app_links.dart';
+import 'package:brew_path/core/config/app_links.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/sub_header.dart';

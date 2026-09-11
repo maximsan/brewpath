@@ -11,6 +11,7 @@ import 'package:brew_path/features/monetization/presentation/plus_gate_sheet.dar
 import 'package:brew_path/features/path/domain/path_density.dart';
 import 'package:brew_path/features/path/domain/path_module_view.dart';
 import 'package:brew_path/features/path/presentation/path_lesson_row.dart';
+import 'package:brew_path/shared/theme/app_motion.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -18,11 +19,9 @@ import 'package:flutter/material.dart';
 
 /// One module on Path, drawn at the density its state earns.
 ///
-/// The heading is the same three parts at every density — glyph, title,
-/// trailing mark — and only what hangs below it changes: the active module's
-/// lessons, a completed module's lessons once opened, and a locked module's
-/// one-line reason. That is why this is one widget rather than three: the
-/// densities are the *same row* saying less.
+/// The heading is the same three parts at every density; only what hangs
+/// below it changes. One widget rather than three, because the densities are
+/// the *same row* saying less.
 class PathModuleSection extends StatelessWidget {
   /// Creates a [PathModuleSection].
   const PathModuleSection({
@@ -51,7 +50,7 @@ class PathModuleSection extends StatelessWidget {
 
   /// The design's `320ms cubic-bezier(.4,0,.2,1)` — one duration, because the
   /// chevron turns *as* the list grows and two constants could drift apart.
-  static const Duration expandDuration = Duration(milliseconds: 320);
+  static const Duration expandDuration = AppMotion.expand;
 
   /// Whether the lessons are showing right now.
   bool get _isOpen =>

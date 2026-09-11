@@ -3,7 +3,7 @@ import 'package:brew_path/app/app_redirect.dart';
 import 'package:brew_path/app/app_shell.dart';
 import 'package:brew_path/app/locked_lesson_offer.dart';
 import 'package:brew_path/app/pending_link.dart';
-import 'package:brew_path/core/constants/app_links.dart';
+import 'package:brew_path/core/config/app_links.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/cards/presentation/card_deep_link.dart';
 import 'package:brew_path/features/cards/presentation/cards_screen.dart';
@@ -30,6 +30,7 @@ import 'package:brew_path/features/onboarding/presentation/paywall/onboarding_pa
 import 'package:brew_path/features/onboarding/presentation/welcome/welcome_screen.dart';
 import 'package:brew_path/features/path/presentation/path_screen.dart';
 import 'package:brew_path/features/profile/presentation/profile_screen.dart';
+import 'package:brew_path/features/profile/presentation/settings/help_support_screen.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_destinations.dart';
 import 'package:brew_path/features/profile/presentation/settings_screen.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';

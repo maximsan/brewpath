@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
-import 'package:brew_path/core/constants/app_links.dart';
+import 'package:brew_path/core/config/app_links.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/progress/domain/freeze_status_line.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
