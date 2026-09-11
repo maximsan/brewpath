@@ -14,14 +14,10 @@ int epochDay(DateTime d) =>
 
 /// [epochDay]'s inverse: the local calendar day [day] indexes.
 ///
-/// Needed wherever a stored day index has to be shown rather than compared —
-/// the snapshot keeps activity as indices, and the Profile's joined line reads
-/// the earliest of them.
-///
-/// **Not a plain division back.** [epochDay] floors a *local* midnight's UTC
-/// milliseconds, so east of UTC that midnight falls on the previous UTC day
-/// and the naive inverse lands a day early. Every offset is under 24 hours, so
-/// checking the candidate against [epochDay] and stepping once is exact.
+/// Not a plain division back: [epochDay] floors a *local* midnight's UTC
+/// milliseconds, so east of UTC the naive inverse lands a day early. Every
+/// offset is under 24 hours, so checking the candidate and stepping once is
+/// exact.
 DateTime dateFromEpochDay(int day) {
   final utc = DateTime.fromMillisecondsSinceEpoch(
     day * Duration.millisecondsPerDay,
@@ -62,7 +58,16 @@ const _monthNames = [
   'December',
 ];
 
-/// [date] as the long form the header shows — `Friday, May 8`.
+/// How many letters a short day or month keeps — `Fri`, `Sep`.
+const int _shortLength = 3;
+
+/// [date] as the short form the Today header shows — `Fri, May 8`, the
+/// design's `weekday: 'short', month: 'short'`.
+String shortDate(DateTime date) =>
+    '${_weekdayNames[date.weekday - 1].substring(0, _shortLength)}, '
+    '${_monthNames[date.month - 1].substring(0, _shortLength)} ${date.day}';
+
+/// [date] as the long form Term of the Day shows — `Friday, May 8`.
 String longDate(DateTime date) =>
     '${_weekdayNames[date.weekday - 1]}, '
     '${_monthNames[date.month - 1]} ${date.day}';

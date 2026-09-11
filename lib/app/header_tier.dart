@@ -130,7 +130,7 @@ TabHeader? tabHeaderFor(
   return switch (location) {
     _ when location == AppRoutes.learn.path => TabHeader(
       eyebrow: 'TODAY',
-      title: longDate(today),
+      title: shortDate(today),
       actions: _sharedActions,
     ),
     _ when location == AppRoutes.path.path => const TabHeader(

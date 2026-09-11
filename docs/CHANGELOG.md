@@ -117,6 +117,10 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **Today's date is shorter.** The Learn header reads *Fri, May 8* rather
+  than *Friday, May 8*, as the design now sets it, so the title takes less
+  of the header. Term of the Day keeps the long form.
+
 - **The paywall follows the design, on every arm.** The pitch is the
   design's five rows — an accent check, the title over its line, a
   hairline between — with every number the design writes counted from the
@@ -234,6 +238,13 @@ You can always edit this file by hand instead — the helpers just save effort.
   which is what makes a third launch safe.
 
 ### Fixed
+
+- **Dictionary sources point at the page that backs the claim.** The 11 Sep
+  drop re-checked every source link: the SCA links go to Research or to
+  Coffee Standards rather than a dead query, decaf and green coffee cite
+  their own pages, pour-over, cold brew and French press each cite theirs,
+  Chemex cites its brew guide rather than a product, and AeroPress carries
+  a verified guide. The bundled bank is regenerated from it.
 
 - **The bookmark in a top bar wears its ring.** On a lesson, a term and Term
   of the Day, the save control is the design's ringed button, muted until

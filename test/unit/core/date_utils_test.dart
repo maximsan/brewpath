@@ -21,6 +21,18 @@ void main() {
     });
   });
 
+  group('shortDate', () {
+    test('shortens the day and the month to three letters', () {
+      expect(shortDate(DateTime(2026, 5, 8)), 'Fri, May 8');
+      expect(shortDate(DateTime(2026, 9, 11)), 'Fri, Sep 11');
+      expect(shortDate(DateTime(2026)), 'Thu, Jan 1');
+    });
+
+    test('the long form is untouched, for Term of the Day', () {
+      expect(longDate(DateTime(2026, 5, 8)), 'Friday, May 8');
+    });
+  });
+
   group('monthYear', () {
     test('names the month in full, beside the year', () {
       expect(monthYear(DateTime(2026, 5, 8)), 'May 2026');

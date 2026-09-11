@@ -90,7 +90,7 @@ void main() {
     test('Learn titles itself with the day it is given', () {
       final tab = tabHeaderFor('/learn', today: today);
       expect(tab?.eyebrow, 'TODAY');
-      expect(tab?.title, 'Friday, May 8');
+      expect(tab?.title, 'Fri, May 8');
     });
 
     test('Profile swaps the entries rather than adding to them', () {
