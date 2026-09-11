@@ -205,6 +205,10 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **Roasty's card face glows the way the design draws it.** The wide halo
+  behind him holds still, and a tight glow in the mood's warn colour breathes
+  around his body every 1.6 seconds, where the app had the halo blinking and
+  no glow on the body.
 - **A card's button sits at the foot of the screen.** Every lesson and
   mini-game card now fills the screen with its Continue at the bottom, the way
   the design lays it out, instead of the button following the text wherever it

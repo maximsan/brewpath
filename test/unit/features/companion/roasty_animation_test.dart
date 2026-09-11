@@ -187,4 +187,19 @@ void main() {
       expect(roastyPointsBurstRise(-0.2).opacity, closeTo(0, 1e-9));
     });
   });
+
+  group('the card shimmer', () {
+    test("breathes from nothing to the design's 12 and back", () {
+      expect(cardShimmerBlur(0), closeTo(0, 1e-9));
+      expect(cardShimmerBlur(0.5), closeTo(12, 1e-9));
+      expect(cardShimmerBlur(1), closeTo(0, 1e-9));
+    });
+
+    test('never runs negative or past its peak', () {
+      for (var step = 0; step <= 20; step++) {
+        final blur = cardShimmerBlur(step / 20);
+        expect(blur, inInclusiveRange(0, 12));
+      }
+    });
+  });
 }
