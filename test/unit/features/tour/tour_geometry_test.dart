@@ -23,6 +23,41 @@ void main() {
     });
   });
 
+  group('the content box it is drawn around', () {
+    const box = Rect.fromLTWH(16, 100, 368, 80);
+
+    test('a target with no padding of its own is framed whole', () {
+      expect(tourContentBox(box, EdgeInsets.zero), box);
+    });
+
+    test('a full-bleed section is framed at its gutter', () {
+      expect(
+        tourContentBox(box, const EdgeInsets.symmetric(horizontal: 8)),
+        const Rect.fromLTWH(24, 100, 352, 80),
+      );
+    });
+
+    test('the bar keeps its tabs and loses the strips above and below', () {
+      expect(
+        tourContentBox(box, const EdgeInsets.only(top: 8, bottom: 34)),
+        const Rect.fromLTWH(16, 108, 368, 38),
+      );
+    });
+
+    test(
+      'padding wider than the box collapses it rather than inverting it',
+      () {
+        final collapsed = tourContentBox(
+          box,
+          const EdgeInsets.symmetric(horizontal: 400, vertical: 100),
+        );
+
+        expect(collapsed.width, 0);
+        expect(collapsed.height, 0);
+      },
+    );
+  });
+
   group('which side the card takes', () {
     const areaHeight = 800.0;
 

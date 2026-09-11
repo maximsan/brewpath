@@ -139,10 +139,12 @@ class _TodayLead extends ConsumerWidget {
           isCompleted: false,
         );
 
-    return TourAnchor(
-      step: TourStep.today,
-      child: Padding(
-        padding: _inGutter,
+    // Anchored inside the gutter rather than around it, so what the Tour
+    // measures is already the content box the design frames.
+    return Padding(
+      padding: _inGutter,
+      child: TourAnchor(
+        step: TourStep.today,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -200,6 +202,9 @@ class _PracticeShelf extends ConsumerWidget {
 
     return TourAnchor(
       step: TourStep.practice,
+      // Same gutter as the day's stop above. The shelf itself is full-bleed so
+      // its rows can bleed into the gutter; the frame leaves that bleed out.
+      inset: _inGutter,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

@@ -114,13 +114,20 @@ class _TodayTourState extends State<TodayTour> {
 
   /// Reads [step]'s target into this layer's own coordinates, waiting a frame
   /// at a time while the feed still has it unmounted.
+  ///
+  /// What lands in `_target` is the anchor's **content** box, so a stop on a
+  /// full-bleed section is not ringed at the screen edges.
   void _measure(TourStep step, {required int attemptsLeft}) {
     if (!mounted || step != _step) return;
-    final measured = _rectOf(TourAnchor.contextFor(step), within: context);
-    if (measured == null && attemptsLeft > 0) {
+    final box = _rectOf(TourAnchor.contextFor(step), within: context);
+    if (box == null && attemptsLeft > 0) {
       _afterFrame(() => _measure(step, attemptsLeft: attemptsLeft - 1));
       return;
     }
+    final measured = switch (box) {
+      final Rect found => tourContentBox(found, TourAnchor.insetFor(step)),
+      null => null,
+    };
     if (measured == _target) return;
     setState(() => _target = measured);
   }
