@@ -8,23 +8,19 @@ import 'package:flutter/material.dart';
 /// Drawn inside the body transform and under the hat, which is the order the
 /// design draws them in — a beanie's brim sits over a headphone band. An id
 /// with no art here draws nothing, which is what `none` is.
-void paintRoastyGear(Canvas canvas, String gear) {
-  switch (gear) {
-    case 'glasses':
-      _paintGlasses(canvas);
-    case 'sunglasses':
-      _paintShades(canvas);
-    case 'scarf':
-      _paintScarf(canvas);
-    case 'headphones':
-      _paintHeadphones(canvas);
-    case _:
-      return;
-  }
-}
+void paintRoastyGear(Canvas canvas, String gear) => _gear[gear]?.call(canvas);
+
+/// Every piece this file draws, by the id the bank ships it under — one table
+/// rather than a switch beside a set of the same ids.
+const _gear = <String, void Function(Canvas)>{
+  'glasses': _paintGlasses,
+  'sunglasses': _paintShades,
+  'scarf': _paintScarf,
+  'headphones': _paintHeadphones,
+};
 
 /// The gear this file can draw, guarded against the bank's ids.
-const roastyGearIds = {'glasses', 'sunglasses', 'scarf', 'headphones'};
+final Set<String> roastyGearIds = _gear.keys.toSet();
 
 Paint get _frame => Paint()
   ..color = RoastyOutfitColors.gearDark

@@ -6,25 +6,24 @@ import 'package:flutter/material.dart';
 /// Drawn inside the body transform, so a hat rides the hop and the shake with
 /// the head it sits on. An id with no art here draws nothing, which is what
 /// `none` is.
-void paintRoastyHat(Canvas canvas, String hat) {
-  switch (hat) {
-    case 'beanie':
-      _paintBeanie(canvas);
-    case 'field':
-      _paintFieldHat(canvas);
-    case 'cap':
-      _paintCap(canvas);
-    case _:
-      return;
-  }
-}
+void paintRoastyHat(Canvas canvas, String hat) => _hats[hat]?.call(canvas);
+
+/// Every hat this file draws, by the id the bank ships it under.
+///
+/// One table rather than a switch beside a set of the same ids: a drawing this
+/// does not list cannot be reached, and an id it lists cannot draw nothing.
+const _hats = <String, void Function(Canvas)>{
+  'beanie': _paintBeanie,
+  'field': _paintFieldHat,
+  'cap': _paintCap,
+};
 
 /// The hats this file can draw, guarded against the bank's ids.
-const roastyHatIds = {'beanie', 'field', 'cap'};
+final Set<String> roastyHatIds = _hats.keys.toSet();
 
 /// Whether [hat] draws anything — which is also whether the sprout has to
 /// grow up through it.
-bool hatIsBare(String hat) => !roastyHatIds.contains(hat);
+bool hatIsBare(String hat) => !_hats.containsKey(hat);
 
 void _paintBeanie(Canvas canvas) {
   canvas

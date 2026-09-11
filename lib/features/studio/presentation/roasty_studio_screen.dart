@@ -5,7 +5,6 @@ import 'package:brew_path/core/widgets/sub_screen_scaffold.dart';
 import 'package:brew_path/features/companion/application/companion_outfit.dart';
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
-import 'package:brew_path/features/studio/domain/companion_draft.dart';
 import 'package:brew_path/features/studio/domain/dress_companion.dart';
 import 'package:brew_path/features/studio/domain/roasty_studio_providers.dart';
 import 'package:brew_path/features/studio/presentation/widgets/companion_option_row.dart';
@@ -48,7 +47,7 @@ class RoastyStudioScreen extends ConsumerStatefulWidget {
 }
 
 class _RoastyStudioScreenState extends ConsumerState<RoastyStudioScreen> {
-  CompanionDraft? _draft;
+  CompanionConfig? _draft;
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +71,7 @@ class _RoastyStudioScreenState extends ConsumerState<RoastyStudioScreen> {
         data: (bank) => _Wardrobe(
           scrollPadding: scrollPadding,
           bank: bank,
-          draft: _draft ?? CompanionDraft.of(bank.worn),
+          draft: _draft ?? bank.worn,
           onDraft: (next) => setState(() => _draft = next),
           onApply: () => _apply(bank.worn),
         ),
@@ -82,11 +81,11 @@ class _RoastyStudioScreenState extends ConsumerState<RoastyStudioScreen> {
 
   Future<void> _apply(CompanionConfig worn) async {
     final draft = _draft;
-    if (draft == null || !draft.isDirtyAgainst(worn)) return;
+    if (draft == null || draft == worn) return;
 
     await dressCompanion(
       ref.read(snapshotRepositoryProvider),
-      outfit: draft.outfit,
+      outfit: draft,
       now: DateTime.now(),
     );
     // Every Roasty in the app reads the scope the app root feeds from this,
@@ -123,14 +122,14 @@ class _Wardrobe extends StatelessWidget {
   final EdgeInsets scrollPadding;
 
   final RoastyStudio bank;
-  final CompanionDraft draft;
-  final ValueChanged<CompanionDraft> onDraft;
+  final CompanionConfig draft;
+  final ValueChanged<CompanionConfig> onDraft;
   final VoidCallback onApply;
 
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
-    final dirty = draft.isDirtyAgainst(bank.worn);
+    final dirty = draft != bank.worn;
 
     return ListView(
       padding: scrollPadding.copyWith(bottom: AppSpacing.xl),
@@ -143,7 +142,7 @@ class _Wardrobe extends StatelessWidget {
               size: _previewSize,
               // The one Roasty in the app that is told what to wear: it shows
               // the draft, which is not what anything else should be drawing.
-              outfit: draft.outfit,
+              outfit: draft,
             ),
           ),
         ),
@@ -156,25 +155,25 @@ class _Wardrobe extends StatelessWidget {
                 label: 'Roast',
                 options: bank.options.roasts,
                 value: draft.roast,
-                onSelect: (id) => onDraft(draft.withRoast(id)),
+                onSelect: (id) => onDraft(draft.copyWith(roast: id)),
               ),
               CompanionOptionRow(
                 label: 'Hat',
                 options: bank.options.hats,
                 value: draft.hat,
-                onSelect: (id) => onDraft(draft.withHat(id)),
+                onSelect: (id) => onDraft(draft.copyWith(hat: id)),
               ),
               CompanionOptionRow(
                 label: 'Accessory',
                 options: bank.options.gear,
                 value: draft.gear,
-                onSelect: (id) => onDraft(draft.withGear(id)),
+                onSelect: (id) => onDraft(draft.copyWith(gear: id)),
               ),
               CompanionOptionRow(
                 label: 'Sprout',
                 options: bank.options.sprouts,
                 value: draft.sprout,
-                onSelect: (id) => onDraft(draft.withSprout(id)),
+                onSelect: (id) => onDraft(draft.copyWith(sprout: id)),
               ),
               const SizedBox(height: AppSpacing.lg),
               PrimaryButton(

@@ -8,24 +8,22 @@ import 'package:flutter/material.dart';
 /// set is internally consistent. `leaf` therefore **drops the mascot design
 /// page's stem `M100 88 Q100 80 100 70` and leaf `M100 72 C 86 58…`**, which
 /// sit 1–2px higher; the running file wins (ADR-0009).
-void paintRoastySproutArt(Canvas canvas, String sprout) {
-  switch (sprout) {
-    case 'leaf':
-      _paintLeaves(canvas);
-    case 'flower':
-      _paintBlossom(canvas);
-    case 'sprig':
-      _paintSprig(canvas);
-    case _:
-      return;
-  }
-}
+void paintRoastySproutArt(Canvas canvas, String sprout) =>
+    _sprouts[sprout]?.call(canvas);
+
+/// Every sprout this file draws, by the id the bank ships it under — one table
+/// rather than a switch beside a set of the same ids.
+const _sprouts = <String, void Function(Canvas)>{
+  'leaf': _paintLeaves,
+  'flower': _paintBlossom,
+  'sprig': _paintSprig,
+};
 
 /// The sprouts this file can draw, guarded against the bank's ids.
-const roastySproutIds = {'leaf', 'flower', 'sprig'};
+final Set<String> roastySproutIds = _sprouts.keys.toSet();
 
 /// Whether [sprout] draws anything at all.
-bool sproutIsBare(String sprout) => !roastySproutIds.contains(sprout);
+bool sproutIsBare(String sprout) => !_sprouts.containsKey(sprout);
 
 const _leafRect = Rect.fromLTWH(60, 55, 80, 30);
 const _leafGradient = RadialGradient(
