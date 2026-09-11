@@ -90,7 +90,7 @@ void main() {
       findsNothing,
       reason: 'the design keeps the bar invisible until the tab scrolls',
     );
-    expect(find.text('Friday, May 8'), findsNothing);
+    expect(find.text('Fri, May 8'), findsNothing);
     expect(
       find.byTooltip(SavedScreen.title),
       findsOneWidget,
@@ -107,7 +107,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('TODAY'), findsOneWidget);
-    expect(find.text('Friday, May 8'), findsOneWidget);
+    expect(find.text('Fri, May 8'), findsOneWidget);
   });
 
   testWidgets('the bar keeps its height either way', (tester) async {
@@ -145,7 +145,7 @@ void main() {
     await tester.pump();
 
     expect(
-      find.text('Friday, May 8'),
+      find.text('Fri, May 8'),
       findsOneWidget,
       reason: 'no transition to wait out when the system asks for none',
     );
@@ -165,13 +165,13 @@ void main() {
     await tester.pump();
 
     expect(
-      find.text('Friday, May 8'),
+      find.text('Fri, May 8'),
       findsNothing,
       reason: 'it has not arrived yet — this is what reduced motion skips',
     );
 
     await tester.pumpAndSettle();
-    expect(find.text('Friday, May 8'), findsOneWidget);
+    expect(find.text('Fri, May 8'), findsOneWidget);
   });
 
   group('the Saved entry', () {
