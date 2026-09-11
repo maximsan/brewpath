@@ -44,6 +44,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Every sale is celebrated, and it puts you back where the lock was.**
+  Buying from the sheet a lock raises used to leave you sitting on the sheet
+  with a line of text; it now closes and opens the same welcome the intro's
+  offer lands on. *Back to learning* returns to the screen the lock was raised
+  on — the Path row, the Today card, the dictionary entry, the Saved shelf,
+  the Studio door — now open, instead of dropping you on Today. Restoring
+  still closes the sheet in place: it recovers what you already own, and is
+  not a sale.
+
 - **Help answers the four questions, and answers them for this app.** Settings
   → Help and support now opens each answer on its own row. Three are
   re-grounded rather than ported: the streak keeps a day with any finished

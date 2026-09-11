@@ -21,6 +21,7 @@ import 'package:brew_path/features/lessons/presentation/lesson_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_intro_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_player_screen.dart';
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
+import 'package:brew_path/features/monetization/domain/purchase_welcome_return.dart';
 import 'package:brew_path/features/monetization/presentation/purchase_welcome_route.dart';
 import 'package:brew_path/features/onboarding/presentation/loading/loading_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/meet_roasty/meet_roasty_screen.dart';
@@ -163,7 +164,8 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: AppRoutes.purchaseWelcome.path,
         name: AppRoutes.purchaseWelcome.name,
-        builder: (context, state) => const PurchaseWelcomeRoute(),
+        builder: (context, state) =>
+            PurchaseWelcomeRoute(returnTo: welcomeReturnIn(state.uri)),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) => AppShell(navigationShell),

@@ -1,4 +1,5 @@
 import 'package:brew_path/core/config/app_links_provider.dart';
+import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/app_sheet.dart';
 import 'package:brew_path/core/widgets/ghost_button.dart';
 import 'package:brew_path/core/widgets/link_button.dart';
@@ -10,6 +11,8 @@ import 'package:brew_path/features/monetization/domain/paywall_view_provider.dar
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart';
 import 'package:brew_path/features/monetization/domain/plus_purchase_controller.dart';
+import 'package:brew_path/features/monetization/domain/purchase_exit.dart';
+import 'package:brew_path/features/monetization/domain/purchase_welcome_return.dart';
 import 'package:brew_path/features/monetization/presentation/plus_pitch_list.dart';
 import 'package:brew_path/features/monetization/presentation/purchase_outcome_line.dart';
 import 'package:brew_path/services/links/open_link.dart';
@@ -19,36 +22,81 @@ import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 /// The one sheet every lock raises.
 ///
 /// Opens with **what was just hit** — the trigger's own header — then the
 /// ranked bullets, then one action: ADR-0003 sells a single non-consumable, so
-/// no trial and no plan chooser, and **no ad path** (v1 ships no ads, so the
-/// design's watch-an-ad route is dead). *Not now* writes nothing.
-Future<void> showPlusGate(BuildContext context, PlusGateTrigger trigger) =>
-    showAppSheet<void>(
-      context: context,
-      title: PaywallCopy.gateTitle,
-      builder: (_) => _PlusGateBody(trigger: trigger),
-    );
+/// no trial and no plan chooser, and **no ad path** (v1 ships no ads). *Not
+/// now* writes nothing; a sale lands on the welcome, which comes back here.
+Future<void> showPlusGate(BuildContext context, PlusGateTrigger trigger) {
+  // Held rather than looked up again on the way out: closing the sheet leaves
+  // its own context behind, and the celebration is navigated to after that.
+  final router = GoRouter.of(context);
+  final raisedAt = router.state.uri.toString();
 
-class _PlusGateBody extends ConsumerWidget {
-  const _PlusGateBody({required this.trigger});
+  return showAppSheet<void>(
+    context: context,
+    title: PaywallCopy.gateTitle,
+    builder: (sheetContext) => _PlusGateBody(
+      trigger: trigger,
+      onPurchased: () {
+        _close(sheetContext);
+        router.goNamed(
+          AppRoutes.purchaseWelcome.name,
+          queryParameters: welcomeReturnTo(raisedAt),
+        );
+      },
+      // A recovery, not a sale: the lock behind the sheet is open now, and
+      // that is the whole of what the learner asked for.
+      onRestored: () => _close(sheetContext),
+    ),
+  );
+}
+
+/// Closes the sheet, unless it is already leaving — dragged away while the
+/// store was still answering, when a pop would take the screen under it.
+void _close(BuildContext sheetContext) {
+  if (ModalRoute.of(sheetContext)?.isCurrent ?? false) {
+    Navigator.of(sheetContext).pop();
+  }
+}
+
+class _PlusGateBody extends ConsumerStatefulWidget {
+  const _PlusGateBody({
+    required this.trigger,
+    required this.onPurchased,
+    required this.onRestored,
+  });
 
   final PlusGateTrigger trigger;
+  final VoidCallback onPurchased;
+  final VoidCallback onRestored;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_PlusGateBody> createState() => _PlusGateBodyState();
+}
+
+class _PlusGateBodyState extends ConsumerState<_PlusGateBody> {
+  late final PurchaseExit _exit = PurchaseExit(
+    onPurchased: () => widget.onPurchased(),
+    onRestored: () => widget.onRestored(),
+  );
+
+  @override
+  Widget build(BuildContext context) {
     final mood = context.mood;
     final pitch = ref.watch(plusPitchProvider);
     final purchase = ref.watch(plusPurchaseProvider);
+
+    ref.listen(plusPurchaseProvider, (_, next) => _exit.settle(next));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(trigger.header, style: AppText.lead(mood: mood)),
+        Text(widget.trigger.header, style: AppText.lead(mood: mood)),
         const SizedBox(height: AppSpacing.md),
         // The pitch waits for its counts rather than showing a number it is
         // about to correct. Nothing here is written down, so there is nothing
@@ -70,7 +118,7 @@ class _PlusGateBody extends ConsumerWidget {
             label: PaywallCopy.restore,
             onPressed: purchase == PlusPurchaseState.working
                 ? null
-                : () => ref.read(plusPurchaseProvider.notifier).restore(),
+                : () => _exit.restore(ref.read(plusPurchaseProvider.notifier)),
           ),
         ),
         const _LegalLinks(),
