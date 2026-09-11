@@ -31,8 +31,6 @@ class TourCardControls extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        // Spelled apart from the intro overlay's decline even though the word
-        // is the same: one answers the offer, the other abandons a run.
         Semantics(
           label: TourCopy.stopSkipSemanticLabel,
           child: TextButton(

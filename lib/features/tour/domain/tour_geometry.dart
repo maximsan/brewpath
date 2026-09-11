@@ -53,9 +53,9 @@ double tourBottomOverflow({
 /// The top edge of a card [cardHeight] tall, on a layer [areaHeight] tall.
 ///
 /// The design picks a side; where that side cannot hold the card clear of
-/// [safeArea] and the other can, the other one takes it. The mock the rule is
-/// drawn against has no status bar, so above a tall target near the top of the
-/// feed the card ran under the clock on a real phone.
+/// [safeArea] and the other can, the other one takes it — ruled by the owner
+/// in PR #558, because the mock has no status bar and above a tall target the
+/// card ran under the clock on a real phone.
 double tourCardTop({
   required Rect? target,
   required double areaHeight,

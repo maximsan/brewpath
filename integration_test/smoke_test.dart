@@ -307,16 +307,16 @@ void main() {
       describe: 'the Plus offer that ends onboarding',
     );
 
-    // The Tour is offered on the first launch that reaches Learn with it
-    // unseen — this one. The offer is a non-dismissible modal, and it is
-    // triggered by the same event that draws the Today card, so a walk that
-    // waits for the card without answering the offer is a race: on a slow
+    // The Tour runs, unasked, on the first launch that reaches Learn with it
+    // unseen — this one. Its shield swallows every tap under it, and it is
+    // started by the same event that draws the Today card, so a walk that
+    // reaches for the card without ending the Tour is a race: on a slow
     // runner the card is found first and the test passes, on a fast machine
-    // the offer covers it and the test fails. Answer it, then look for Learn.
+    // the Tour covers it and the test fails. Skip it, then look for Learn.
     await tapWhenReady(
       tester,
-      find.widgetWithText(TextButton, TourCopy.introDecline),
-      describe: 'the Tour offer on the first launch that reaches Learn',
+      find.widgetWithText(TextButton, TourCopy.stopSkip),
+      describe: 'the Tour on the first launch that reaches Learn',
     );
     await pumpUntil(
       tester,
@@ -343,13 +343,13 @@ void main() {
       describe: 'the Learn tab on a returning launch',
     );
 
-    // The previous launch answered the Tour offer, and that answer was
-    // written to the same on-disk database. A returning launch that offered
+    // The previous launch skipped the Tour, and skipping finishes it: the
+    // write went to the same on-disk database. A returning launch that ran
     // the Tour again would mean the write did not survive the process.
     await pumpUntil(
       tester,
-      find.widgetWithText(TextButton, TourCopy.introDecline),
-      describe: 'no second Tour offer on a returning launch',
+      find.text(TourCopy.todayTitle),
+      describe: 'no second Tour on a returning launch',
       present: false,
     );
     expect(

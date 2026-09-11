@@ -68,7 +68,7 @@ class LearnListView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final challenge = ref.watch(activeChallengeProvider).asData?.value;
-    final tourRunning = ref.watch(tourRunningProvider);
+    final tourRunning = ref.watch(tourRunningProvider).isRunning;
     // Unresolved reads as not owned, the rule `courseEntitlement` states, and
     // it is read once here rather than in each row that needs it.
     final hasCourse =

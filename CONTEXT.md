@@ -179,11 +179,12 @@ are four.
 ## Onboarding
 
 **Tour**:
-The one-time, skippable walkthrough of the Learn tab — four stops, each
-explaining a mechanic. Auto-runs once per device when Learn first shows with
-`tourSeen` unset; replayable from Profile
-([#191](https://github.com/maximsan/brewpath/issues/191)). Never a qualifying
-activity.
+The skippable walkthrough of the Learn tab — four stops in the design's own
+words ([#536](https://github.com/maximsan/brewpath/issues/536)). Runs unasked
+when Learn first shows with `tourSeen` unset
+([#537](https://github.com/maximsan/brewpath/issues/537)); every ending —
+Skip, Done, or leaving the tab — writes the flag, so it runs once. Replayable
+from the App Guide. Never a qualifying activity.
 _Avoid_: walking tour, walkthrough, coach marks
 
 **Micro-tip**:

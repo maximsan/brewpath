@@ -11,13 +11,9 @@ import 'package:flutter/material.dart';
 /// The written guide, reached from Settings → Help & Support → App Guide.
 ///
 /// The Tour's counterpart and its way back in: the Tour is four stops on Learn
-/// and is offered once, this is every part of the app in a line or two and is
-/// always here. [ReplayIntroRow] at the foot is what makes the Tour repeatable
-/// now that it can be skipped.
-///
-/// Wears the design's sub-screen bar over its own large heading, like every
-/// page pushed from a tab. The rest of the guide layer's rebuild is
-/// [#341](https://github.com/maximsan/brewpath/issues/341).
+/// and runs once; this is every part of the app in a line or two, always here,
+/// with [ReplayIntroRow] at the foot. Wears the design's sub-screen bar over
+/// its own large heading, like every page pushed from a tab (#341).
 class AppGuideScreen extends StatelessWidget {
   /// Creates an [AppGuideScreen].
   const AppGuideScreen({super.key});

@@ -1,15 +1,14 @@
-import 'package:brew_path/app/app.dart';
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/features/tour/domain/tour_copy.dart';
 import 'package:brew_path/features/tour/domain/tour_step.dart';
 import 'package:brew_path/features/tour/presentation/today_tour.dart';
 import 'package:brew_path/features/tour/presentation/tour_anchor.dart';
 import 'package:brew_path/features/tour/presentation/tour_frame.dart';
-import 'package:brew_path/shared/repositories/settings_repository.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/tour_harness.dart';
 import '../../../support/widget_harness.dart';
 
 // What the rebuild is for: a frame that finds each target and travels between
@@ -18,41 +17,6 @@ import '../../../support/widget_harness.dart';
 // could not carry a ring, and it never interpolated the highlight (#339).
 void main() {
   setUp(useInMemoryDatabase);
-
-  void useTallViewport(WidgetTester tester) {
-    tester.view.physicalSize = const Size(400, 2400);
-    tester.view.devicePixelRatio = 1.0;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
-  }
-
-  Future<void> armTheTour() async {
-    final repo = SettingsRepository();
-    final settings = await repo.getSettings()
-      ..tourSeen = false;
-    await repo.saveSettings(settings);
-  }
-
-  /// Drives the layer without `pumpAndSettle`, which never returns while
-  /// Roasty idles behind it. Long enough for the frame's own 320ms travel.
-  Future<void> letTheTourRun(WidgetTester tester) async {
-    for (var frame = 0; frame < 20; frame++) {
-      await tester.runAsync(
-        () => Future<void>.delayed(const Duration(milliseconds: 20)),
-      );
-      await tester.pump(const Duration(milliseconds: 50));
-    }
-  }
-
-  Future<void> startTheTour(WidgetTester tester) async {
-    useTallViewport(tester);
-    await armTheTour();
-
-    await pumpWithProviders(tester, const BrewPathApp());
-    await tester.pumpAndSettle();
-    await tester.tap(find.text(TourCopy.introAccept));
-    await letTheTourRun(tester);
-  }
 
   /// The hole the layer is currently painting.
   Rect? paintedFrame(WidgetTester tester) {
@@ -74,7 +38,7 @@ void main() {
   }
 
   testWidgets('the frame surrounds the stop it is on', (tester) async {
-    await startTheTour(tester);
+    await bootIntoTheTour(tester);
 
     expect(
       paintedFrame(tester),
@@ -87,7 +51,7 @@ void main() {
   });
 
   testWidgets('the frame travels to the next stop', (tester) async {
-    await startTheTour(tester);
+    await bootIntoTheTour(tester);
     final first = paintedFrame(tester);
 
     await tester.tap(find.text(TourCopy.stopNext));
@@ -108,11 +72,8 @@ void main() {
   ) async {
     // The stop the old engine could not hold: the bar lives outside every
     // branch, so a layer drawn inside the tab could never frame it.
-    await startTheTour(tester);
-    for (var step = 0; step < TourStep.count - 1; step++) {
-      await tester.tap(find.text(TourCopy.stopNext));
-      await letTheTourRun(tester);
-    }
+    await bootIntoTheTour(tester);
+    await walkToTheLastStop(tester);
 
     expect(find.text(TourCopy.tabsTitle), findsOneWidget);
     expect(
@@ -122,17 +83,14 @@ void main() {
   });
 
   testWidgets('the card takes the side with room on it', (tester) async {
-    await startTheTour(tester);
+    await bootIntoTheTour(tester);
     final layerHeight = tester.getSize(find.byType(TodayTour)).height;
 
     // Stop one sits near the top of a tall feed, so the card goes under it.
     final firstCard = tester.getRect(find.text(TourCopy.todayTitle));
     expect(firstCard.top, greaterThan(paintedFrame(tester)!.bottom));
 
-    for (var step = 0; step < TourStep.count - 1; step++) {
-      await tester.tap(find.text(TourCopy.stopNext));
-      await letTheTourRun(tester);
-    }
+    await walkToTheLastStop(tester);
 
     // The last stop is the bar at the very foot: nothing fits under it, and
     // the card has to go above instead.
@@ -151,7 +109,7 @@ void main() {
   testWidgets('nothing behind the Tour can be tapped, target included', (
     tester,
   ) async {
-    await startTheTour(tester);
+    await bootIntoTheTour(tester);
 
     // The day's own call to action, under the frame that is explaining it.
     // The design freezes the page: the target is being introduced, not offered.
