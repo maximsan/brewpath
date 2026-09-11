@@ -32,8 +32,8 @@ class Disclosure extends StatelessWidget {
     this.trailingGap = defaultTrailingGap,
     super.key,
   }) : assert(
-         label == null || header == null,
-         'a header is a label or a widget of its own, never both',
+         (label == null) != (header == null),
+         'a header is a label or a widget of its own, never both or neither',
        );
 
   /// The design's `padding: 16px 0` on the header button.

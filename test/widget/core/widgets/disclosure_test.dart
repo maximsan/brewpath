@@ -128,6 +128,16 @@ void main() {
     );
   });
 
+  testWidgets('an open panel fills the width it is given', (tester) async {
+    await tester.pumpWidget(const _Harness(disableAnimations: true));
+    await _toggle(tester);
+
+    expect(
+      tester.getTopLeft(find.text('Answer')).dx,
+      tester.getTopLeft(find.byType(Disclosure)).dx,
+    );
+  });
+
   testWidgets('a fixed header is a heading with no glyph', (tester) async {
     await tester.pumpWidget(
       const _Harness(collapsible: false, startOpen: true),

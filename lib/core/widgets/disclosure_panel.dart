@@ -67,7 +67,12 @@ class _DisclosurePanelState extends State<DisclosurePanel>
 
     return AnimatedBuilder(
       animation: _heightFactor,
-      child: Padding(padding: widget.padding, child: widget.child),
+      // Full width by hand: the clip aligns its child, and an aligned child is
+      // laid out loose — rows that fit their content would centre themselves.
+      child: SizedBox(
+        width: double.infinity,
+        child: Padding(padding: widget.padding, child: widget.child),
+      ),
       builder: (context, panel) {
         if (!widget.isOpen && _controller.isDismissed) {
           return const SizedBox.shrink();

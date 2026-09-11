@@ -141,6 +141,16 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **Every section that opens, opens the same way.** The practice groups,
+  Path's modules, Reference, the parked brews and the Help answers were five
+  hand-rolled expanders with four different timings and two different marks.
+  They are now one: a caret turning 180° for a list, a plus turning 45° into a
+  cross for an answer, both over the design's 240ms, and a panel that grows
+  over the same beat. The parked brews collapse for the first time, and start
+  shut with their count beside the header. A shut panel is not drawn at all,
+  so a screen reader never finds what is not on screen and a swipe never lands
+  in it. Reduced motion cuts the move to nothing rather than dropping it.
+
 - **Today's date is shorter.** The Learn header reads *Fri, May 8* rather
   than *Friday, May 8*, as the design now sets it, so the title takes less
   of the header. Term of the Day keeps the long form.
