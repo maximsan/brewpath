@@ -26,17 +26,6 @@ void main() {
   /// guards it against the shipped bank, and fails loudly if the bank moves.
   const firstPaidTitle = 'Why altitude matters';
 
-  /// Advances without settling: the celebration draws the mascot, whose idle
-  /// loop never ends, so `pumpAndSettle` would never return once it is up.
-  Future<void> pumpAlong(WidgetTester tester) async {
-    for (var i = 0; i < 15; i++) {
-      await tester.runAsync(
-        () => Future<void>.delayed(const Duration(milliseconds: 20)),
-      );
-      await tester.pump(const Duration(milliseconds: 60));
-    }
-  }
-
   testWidgets('a sale at a locked Path lesson lands on the welcome, and comes '
       'back to the row with the wall gone', (tester) async {
     tester.view.physicalSize = const Size(400, 2400);
@@ -68,13 +57,13 @@ void main() {
     expect(find.text(PaywallCopy.gateTitle), findsOneWidget);
 
     await tester.tap(find.byType(PrimaryButton));
-    await pumpAlong(tester);
+    await pumpWithoutSettling(tester);
 
     expect(find.byType(PurchaseWelcomeScreen), findsOneWidget);
     expect(find.text(PaywallCopy.gateTitle), findsNothing);
 
     await tester.tap(find.text(PaywallCopy.welcomeBackToLearning));
-    await pumpAlong(tester);
+    await pumpWithoutSettling(tester);
 
     // Back on the Path, where the offer was raised — not on Learn — and the
     // row that raised it is a lesson again.

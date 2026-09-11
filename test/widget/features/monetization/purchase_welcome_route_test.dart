@@ -11,6 +11,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../support/widget_harness.dart';
+
 // The celebration says what was bought, and both its doors lead somewhere: the
 // route reads the term the paywall recorded and the location the sale
 // happened on.
@@ -74,13 +76,9 @@ void main() {
     await tester.pump();
   }
 
-  /// Advances past the route change without settling: the celebration draws
-  /// the mascot, whose idle loop never ends.
   Future<void> leaveBy(WidgetTester tester, String label) async {
     await tester.tap(find.text(label));
-    for (var i = 0; i < 5; i++) {
-      await tester.pump(const Duration(milliseconds: 200));
-    }
+    await pumpWithoutSettling(tester);
   }
 
   testWidgets('celebrates the plan the paywall recorded', (tester) async {

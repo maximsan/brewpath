@@ -5,8 +5,7 @@ import 'package:brew_path/shared/models/monetization/plus_offering.dart';
 /// A store that starts a learner outside the course and lets them in.
 ///
 /// The shipped stub cancels every purchase and the granted one owns the course
-/// before the app boots, so neither can stand a learner at a lock and then take
-/// their money — which is the only way to reach what happens after a sale.
+/// before the app boots, so neither can reach what happens after a sale.
 class SellingPaymentsService implements PaymentsService {
   /// Creates a store on [model] whose Restore recovers a purchase only when
   /// [restorable].

@@ -32,9 +32,10 @@ import 'package:go_router/go_router.dart';
 /// now* writes nothing; a sale lands on the welcome, which comes back here.
 Future<void> showPlusGate(BuildContext context, PlusGateTrigger trigger) {
   // Held rather than looked up again on the way out: closing the sheet leaves
-  // its own context behind, and the celebration is navigated to after that.
-  final router = GoRouter.of(context);
-  final raisedAt = router.state.uri.toString();
+  // its own context behind. Absent only where a single screen is pumped on its
+  // own, which is a test, and where there is nowhere to celebrate anyway.
+  final router = GoRouter.maybeOf(context);
+  final raisedAt = router?.state.uri.toString();
 
   return showAppSheet<void>(
     context: context,
@@ -43,6 +44,7 @@ Future<void> showPlusGate(BuildContext context, PlusGateTrigger trigger) {
       trigger: trigger,
       onPurchased: () {
         _close(sheetContext);
+        if (router == null || raisedAt == null) return;
         router.goNamed(
           AppRoutes.purchaseWelcome.name,
           queryParameters: welcomeReturnTo(raisedAt),

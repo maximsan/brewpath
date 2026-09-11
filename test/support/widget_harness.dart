@@ -104,6 +104,18 @@ Future<void> settleLoaders(WidgetTester tester) async {
   await tester.pumpAndSettle(const Duration(milliseconds: 50));
 }
 
+/// Pumps a bounded run of frames instead of settling, for a screen that never
+/// stops animating: Roasty idles forever, so `pumpAndSettle` does not return
+/// once he is drawn. `runAsync` lets drift and the store answer in between.
+Future<void> pumpWithoutSettling(WidgetTester tester) async {
+  for (var i = 0; i < 15; i++) {
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 20)),
+    );
+    await tester.pump(const Duration(milliseconds: 60));
+  }
+}
+
 /// Pumps [child] under a real container.
 ///
 /// Pass a [container] built with overrides to stand somewhere the app cannot

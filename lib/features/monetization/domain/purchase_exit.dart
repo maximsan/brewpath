@@ -4,9 +4,7 @@ import 'package:flutter/foundation.dart';
 /// Which door an arriving entitlement leaves by.
 ///
 /// [PlusPurchase] reports only that Plus is owned, so the press that asked for
-/// it is remembered here: a buy is a sale to celebrate, a restore is a learner
-/// getting back what they already paid for. Every surface that sells shares
-/// this, so the sheet and the paywall can never draw the line differently.
+/// it is remembered here — and shared by every surface that sells (#576).
 class PurchaseExit {
   /// Creates an exit that runs [onPurchased] after a buy and [onRestored]
   /// after a Restore.

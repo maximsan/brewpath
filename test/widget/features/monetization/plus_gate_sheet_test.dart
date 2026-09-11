@@ -100,14 +100,6 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  /// Advances past the store call and whatever route it started, without
-  /// settling: the celebration draws the mascot, whose idle loop never ends.
-  Future<void> pumpPastTheStore(WidgetTester tester) async {
-    for (var i = 0; i < 5; i++) {
-      await tester.pump(const Duration(milliseconds: 200));
-    }
-  }
-
   testWidgets('it opens on what was just hit', (tester) async {
     await openWith(tester, const SavedShelfFull(cap: 5));
 
@@ -232,14 +224,14 @@ void main() {
     );
 
     await tester.tap(find.byType(PrimaryButton));
-    await pumpPastTheStore(tester);
+    await pumpWithoutSettling(tester);
 
     expect(find.text(PaywallCopy.gateTitle), findsNothing);
     expect(find.text(PaywallCopy.welcomeTitle), findsOneWidget);
 
     // And it comes back to the screen the lock was on, not to Learn.
     await tester.tap(find.text(PaywallCopy.welcomeBackToLearning));
-    await pumpPastTheStore(tester);
+    await pumpWithoutSettling(tester);
 
     expect(router.state.uri.toString(), AppRoutes.path.path);
     expect(find.text('open'), findsOneWidget);
@@ -253,7 +245,7 @@ void main() {
     );
 
     await tester.tap(find.text(PaywallCopy.restore));
-    await pumpPastTheStore(tester);
+    await pumpWithoutSettling(tester);
 
     // A recovery is not a sale: no celebration, and nowhere new to be.
     expect(find.text(PaywallCopy.gateTitle), findsNothing);
@@ -271,7 +263,7 @@ void main() {
     );
 
     await tester.tap(find.text(PaywallCopy.restore));
-    await pumpPastTheStore(tester);
+    await pumpWithoutSettling(tester);
 
     expect(find.text(PaywallCopy.gateTitle), findsOneWidget);
     expect(find.text(PaywallCopy.nothingToRestore), findsOneWidget);
