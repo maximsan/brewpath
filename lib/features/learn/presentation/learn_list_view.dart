@@ -139,13 +139,12 @@ class _TodayLead extends ConsumerWidget {
           isCompleted: false,
         );
 
-    return TourAnchor(
-      step: TourStep.today,
-      // The frame lands at the design's gutter, not out at the list's edge:
-      // this section's own padding is layout, not what the stop points at.
-      inset: _inGutter,
-      child: Padding(
-        padding: _inGutter,
+    // Anchored inside the gutter rather than around it, so what the Tour
+    // measures is already the content box the design frames.
+    return Padding(
+      padding: _inGutter,
+      child: TourAnchor(
+        step: TourStep.today,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

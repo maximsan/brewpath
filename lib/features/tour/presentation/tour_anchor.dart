@@ -32,9 +32,12 @@ class TourAnchor extends StatelessWidget {
   static BuildContext? contextFor(TourStep step) => _keys[step]?.currentContext;
 
   /// What [step]'s anchor calls padding rather than content, or nothing where
-  /// it has none. Read back off the tree, so it cannot go stale.
+  /// it has none.
+  ///
+  /// Read off the same element the layer measures, so the box and the inset it
+  /// is taken off always come from one laid-out frame.
   static EdgeInsets insetFor(TourStep step) {
-    final anchored = _keys[step]?.currentContext?.widget;
+    final anchored = _keys[step]?.currentWidget;
     return anchored is _Anchored ? anchored.inset : EdgeInsets.zero;
   }
 

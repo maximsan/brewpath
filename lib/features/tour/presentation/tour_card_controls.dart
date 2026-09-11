@@ -37,9 +37,20 @@ class TourCardControls extends StatelessWidget {
         Expanded(
           child: Align(
             alignment: Alignment.centerLeft,
+            // Gone on the last stop, where Done is the only way out.
             child: step.isLast
                 ? const SizedBox.shrink()
-                : _SkipPill(mood: mood, onPressed: onSkip),
+                : Semantics(
+                    label: TourCopy.stopSkipSemanticLabel,
+                    child: _TourPill(
+                      label: TourCopy.stopSkip,
+                      fill: mood.surface2,
+                      ink: mood.ink,
+                      padding: OffTokens.tourSkipPadding.value,
+                      edge: mood.rule,
+                      onPressed: onSkip,
+                    ),
+                  ),
           ),
         ),
         const SizedBox(width: AppSpacing.sm),
@@ -48,9 +59,11 @@ class TourCardControls extends StatelessWidget {
         Expanded(
           child: Align(
             alignment: Alignment.centerRight,
-            child: _AdvancePill(
+            child: _TourPill(
               label: step.isLast ? TourCopy.stopDone : TourCopy.stopNext,
-              mood: mood,
+              fill: mood.accent,
+              ink: mood.accentInk,
+              padding: OffTokens.tourAdvancePadding.value,
               onPressed: onAdvance,
             ),
           ),
@@ -60,63 +73,48 @@ class TourCardControls extends StatelessWidget {
   }
 }
 
-/// The way out of a running Tour: the design's quiet pill, in the surface a
-/// step up from the card it sits on.
-class _SkipPill extends StatelessWidget {
-  const _SkipPill({required this.mood, required this.onPressed});
-
-  final MoodColors mood;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) => Semantics(
-    label: TourCopy.stopSkipSemanticLabel,
-    child: FilledButton(
-      onPressed: onPressed,
-      style: FilledButton.styleFrom(
-        backgroundColor: mood.surface2,
-        side: BorderSide(color: mood.rule),
-        padding: OffTokens.tourSkipPadding.value,
-        // The design's `borderRadius: 999`, named for the same reason the
-        // advance pill names it: the app's button theme rounds to the chrome
-        // radius, which would make a stadium a soft rectangle.
-        shape: const StadiumBorder(),
-        minimumSize: Size.zero,
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      ),
-      child: Text(
-        TourCopy.stopSkip,
-        style: AppText.support(color: mood.ink, face: AppFace.control),
-      ),
-    ),
-  );
-}
-
-/// Next, and Done on the stop the Tour ends on.
-class _AdvancePill extends StatelessWidget {
-  const _AdvancePill({
+/// One of the card's two buttons — the quiet Skip, or the accent advance.
+///
+/// The shape is named rather than inherited: the app's button theme rounds to
+/// the chrome radius, which would make the design's `borderRadius: 999` a soft
+/// rectangle.
+class _TourPill extends StatelessWidget {
+  const _TourPill({
     required this.label,
-    required this.mood,
+    required this.fill,
+    required this.ink,
+    required this.padding,
     required this.onPressed,
+    this.edge,
   });
 
   final String label;
-  final MoodColors mood;
+  final Color fill;
+  final Color ink;
+  final EdgeInsets padding;
+
+  /// The border Skip wears and the advance pill does not.
+  final Color? edge;
+
   final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) => FilledButton(
     onPressed: onPressed,
     style: FilledButton.styleFrom(
-      backgroundColor: mood.accent,
-      padding: OffTokens.tourAdvancePadding.value,
+      backgroundColor: fill,
+      side: switch (edge) {
+        final Color color => BorderSide(color: color),
+        null => null,
+      },
+      padding: padding,
       shape: const StadiumBorder(),
       minimumSize: Size.zero,
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
     ),
     child: Text(
       label,
-      style: AppText.support(color: mood.accentInk, face: AppFace.control),
+      style: AppText.support(color: ink, face: AppFace.control),
     ),
   );
 }

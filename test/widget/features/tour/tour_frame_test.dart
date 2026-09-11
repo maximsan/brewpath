@@ -163,6 +163,29 @@ void main() {
     }
   });
 
+  testWidgets('the frame clears the home indicator under the tab bar', (
+    tester,
+  ) async {
+    // The design pads the bar 28 below its tabs for the indicator; the app
+    // leaves out the strip the bar's own `SafeArea` took, which is the inset
+    // the device reports — and is nothing at all on a phone without one.
+    const indicator = 34.0;
+    tester.view.padding = const FakeViewPadding(bottom: indicator);
+    addTearDown(tester.view.resetPadding);
+
+    await bootIntoTheTour(tester);
+    await walkToTheLastStop(tester);
+
+    final bar = tester.getRect(find.byType(NavigationBar));
+    final frame = paintedFrame(tester)!;
+
+    expect(
+      frame.bottom,
+      bar.bottom - indicator + OffTokens.tourFrameInset.value,
+    );
+    expect(frame.bottom, lessThan(bar.bottom));
+  });
+
   testWidgets('nothing behind the Tour can be tapped, target included', (
     tester,
   ) async {

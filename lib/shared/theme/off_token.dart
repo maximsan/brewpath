@@ -234,7 +234,7 @@ abstract final class OffTokens {
   );
 
   /// The room the tab bar keeps above its tabs, which the Tour's frame leaves
-  /// out. The strip below them is the device's own, not the design's 28.
+  /// out.
   static const OffToken<double> tabBarTopPad = OffToken(
     8,
     reason: 'the design sets the bar to `padding: 8px 0 28px`',

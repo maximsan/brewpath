@@ -15,12 +15,10 @@ import 'package:flutter/painting.dart';
 Rect tourFrameRect(Rect target) =>
     target.inflate(OffTokens.tourFrameInset.value);
 
-/// [box] less the [padding] its owner draws inside it.
+/// [box] less the [padding] its owner draws inside it — the content box the
+/// design frames, rather than the whole of a full-bleed section.
 ///
-/// The design frames the content box: a stop whose target is a full-bleed
-/// section would otherwise be ringed at the screen edges, because that
-/// section's gutter is layout rather than anything the stop is pointing at.
-/// A padding wider than the box collapses to nothing rather than inverting.
+/// A padding wider than the box collapses it rather than inverting it.
 Rect tourContentBox(Rect box, EdgeInsets padding) => Rect.fromLTWH(
   box.left + padding.left,
   box.top + padding.top,

@@ -147,12 +147,12 @@ class _AppShellState extends State<AppShell> {
     final mood = context.mood;
     return TourAnchor(
       step: TourStep.tabs,
-      // The Tour frames the row of tabs. The design pads the bar `8px 0 28px`
-      // and rings what is left; the app reads the device's own indicator strip
-      // where the design writes 28, because a phone without one has none.
+      // The design pads the bar `8px 0 28px` and frames what is left. The
+      // strip under the tabs is the inset `NavigationBar`'s own `SafeArea`
+      // takes, which is `padding` rather than `viewPadding`.
       inset: EdgeInsets.only(
         top: OffTokens.tabBarTopPad.value,
-        bottom: MediaQuery.viewPaddingOf(context).bottom,
+        bottom: MediaQuery.paddingOf(context).bottom,
       ),
       child: DecoratedBox(
         position: DecorationPosition.foreground,
