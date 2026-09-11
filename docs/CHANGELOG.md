@@ -212,6 +212,21 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **The bookmark in a top bar wears its ring.** On a lesson, a term and Term
+  of the Day, the save control is the design's ringed button, muted until
+  saved and accent after, matching the ringed back control beside it.
+- **Roasty's card face glows the way the design draws it.** The wide halo
+  behind him holds still, and a tight glow in the mood's warn colour breathes
+  around his body every 1.6 seconds, where the app had the halo blinking and
+  no glow on the body.
+- **A card's button sits at the foot of the screen.** Every lesson and
+  mini-game card now fills the screen with its Continue at the bottom, the way
+  the design lays it out, instead of the button following the text wherever it
+  ended. A card taller than the screen still scrolls, with the button after it.
+- **The predict card matches its design.** It opens on its title with no
+  lesson-number eyebrow, its paragraph and question read at the lead size,
+  a *First guess* line heads the guess, the tiles sit at the design's gap,
+  and the button says *Make a guess* until a guess is taken, then *Find out*.
 - **A sale after a restore that found nothing is still a sale.** Tapping
   *Restore purchases*, being told there was nothing to restore, and then
   buying left the offer by the restore door: no celebration, and in the

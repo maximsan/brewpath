@@ -18,6 +18,11 @@ abstract class AppLabels {
   /// [continueLabel] for this until they are checked.
   static const checkAnswers = 'Check answers';
 
+  /// The predict card's gate, worded the design's way: before a guess is
+  /// taken, and once one is. The smoke walk takes the second as a way on.
+  static const makeAGuess = 'Make a guess';
+  static const findOut = 'Find out';
+
   // The module ending. `MODULE COMPLETE` is the kicker and the module's own
   // name is the headline — the design's way up, which the app had inverted.
   static const moduleCompleteKicker = 'Module complete';

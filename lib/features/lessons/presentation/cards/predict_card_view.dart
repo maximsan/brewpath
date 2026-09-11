@@ -1,3 +1,4 @@
+import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/core/widgets/fill_slot.dart';
 import 'package:brew_path/features/lessons/domain/cloze.dart';
@@ -7,7 +8,13 @@ import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
 import 'package:brew_path/features/lessons/presentation/cards/pick_tile_row.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
+
+/// The eyebrow the guess section opens on.
+const String _guessEyebrow = 'First guess';
 
 /// The opening card: a framing paragraph and one binary guess, ungraded on
 /// purpose — the guess is *held*, and the closing `recall` card resolves it
@@ -54,25 +61,46 @@ class _PredictCardViewState extends State<PredictCardView> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final mood = context.mood;
     final card = widget.card;
     final latched = _selectedIndex != null;
 
+    // No eyebrow and its own title: the design says "the label is the lesson
+    // number, which the top bar and the Path already carry", and opens the
+    // card on `var(--t-display)`.
     return CardShell(
       latched: latched,
       onContinue: widget.onContinue,
-      label: card.label,
-      title: card.title,
+      continueLabel: latched ? AppLabels.findOut : AppLabels.makeAGuess,
       children: [
-        Text(card.body, style: theme.textTheme.bodyLarge),
-        const SizedBox(height: AppSpacing.md),
+        Semantics(
+          header: true,
+          child: Text(card.title, style: AppText.display(mood: mood)),
+        ),
+        SizedBox(height: OffTokens.predictSectionGap.value),
+        Text(
+          card.body,
+          style: AppText.lead(
+            mood: mood,
+          ).copyWith(height: OffTokens.predictReadingLeading.value),
+        ),
+        SizedBox(height: OffTokens.predictGuessGap.value),
+        Semantics(
+          label: _guessEyebrow,
+          excludeSemantics: true,
+          child: Text(
+            _guessEyebrow.toUpperCase(),
+            style: AppText.label(face: AppFace.mono, color: mood.inkMute),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.sm),
         _Question(
           question: card.question,
           guess: _selectedIndex == null
               ? null
               : widget.options[_selectedIndex!],
         ),
-        const SizedBox(height: AppSpacing.md),
+        SizedBox(height: OffTokens.predictSectionGap.value),
         PickTileRow(
           options: widget.options,
           chosenIndex: _selectedIndex,
@@ -108,7 +136,10 @@ class _Question extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final style = Theme.of(context).textTheme.titleMedium;
+    // The design's question sits "in the same sans lead as the description".
+    final style = AppText.lead(
+      mood: context.mood,
+    ).copyWith(height: OffTokens.predictQuestionLeading.value);
     if (!hasCloze(question)) return Text(question, style: style);
 
     final segments = clozeSegments(question);

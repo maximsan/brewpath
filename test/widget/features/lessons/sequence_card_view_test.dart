@@ -230,6 +230,9 @@ void main() {
 
     await _tapSteps(tester, _authoredOrder.reversed.toList());
     await _submit(tester);
+    // The button now keeps the design's room under the content, which puts
+    // it past the test window's foot.
+    await tester.ensureVisible(find.widgetWithText(FilledButton, 'Continue'));
     await tester.tap(find.widgetWithText(FilledButton, 'Continue'));
 
     expect(

@@ -136,6 +136,22 @@ void main() {
     ),
   );
 
+  /// The enabled button that leaves the card: Continue, or the predict card's
+  /// Find out.
+  Finder liveWayOn() => find.ancestor(
+    of: find.byWidgetPredicate(
+      (widget) =>
+          widget is Text &&
+          (widget.data == AppLabels.continueLabel ||
+              widget.data == AppLabels.findOut),
+      description: 'a way on',
+    ),
+    matching: find.byWidgetPredicate(
+      (widget) => widget is FilledButton && widget.onPressed != null,
+      description: 'an enabled way-on button',
+    ),
+  );
+
   /// An option the card on screen will still take.
   ///
   /// Two shapes, because the cards draw two: most answer controls are an
@@ -157,11 +173,11 @@ void main() {
   /// Answers the card at [position] and moves on. How many answers that takes
   /// is the card's business — a concept card wants one per blank — so the walk
   /// answers until a way on comes alive rather than counting. That way on is
-  /// Continue, or Check answers first on the two kinds that grade a whole
-  /// answer. Which option it picks is not the point: this walk is about the
-  /// run being recorded, not about scoring well.
+  /// Continue — Find out on the opening guess — or Check answers first on the
+  /// two kinds that grade a whole answer. Which option it picks is not the
+  /// point: this walk is about the run being recorded, not about scoring well.
   Future<void> answerAndContinue(WidgetTester tester, int position) async {
-    final onward = liveButton(AppLabels.continueLabel);
+    final onward = liveWayOn();
     final commit = liveButton(AppLabels.checkAnswers);
     for (var answer = 0; answer < _answersPerCard; answer++) {
       if (onward.evaluate().isNotEmpty || commit.evaluate().isNotEmpty) break;
@@ -194,7 +210,7 @@ void main() {
     await tapWhenReady(
       tester,
       onward,
-      describe: 'Continue on card $position of the lesson',
+      describe: 'the way on from card $position of the lesson',
     );
   }
 
