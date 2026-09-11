@@ -205,6 +205,10 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **A card's button sits at the foot of the screen.** Every lesson and
+  mini-game card now fills the screen with its Continue at the bottom, the way
+  the design lays it out, instead of the button following the text wherever it
+  ended. A card taller than the screen still scrolls, with the button after it.
 - **The predict card matches its design.** It opens on its title with no
   lesson-number eyebrow, its paragraph and question read at the lead size,
   a *First guess* line heads the guess, the tiles sit at the design's gap,
