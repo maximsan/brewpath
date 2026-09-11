@@ -1,5 +1,6 @@
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
 import 'package:brew_path/features/monetization/domain/plus_offering_provider.dart';
+import 'package:brew_path/features/monetization/domain/purchased_term.dart';
 import 'package:brew_path/services/payments/payments_provider.dart';
 import 'package:brew_path/services/payments/payments_service.dart';
 import 'package:brew_path/services/payments/store_product.dart';
@@ -65,7 +66,13 @@ class PlusPurchase extends _$PlusPurchase {
         state = PlusPurchaseState.failed;
         return;
       }
-      await _settle(await payments.purchase(product));
+      final status = await payments.purchase(product);
+      // Recorded before the state flips, so the welcome that opens on
+      // `owned` already knows which plan to celebrate.
+      if (status == PurchaseStatus.purchased) {
+        ref.read(purchasedTermProvider.notifier).term = wanted.term;
+      }
+      await _settle(status);
     } on Object {
       state = PlusPurchaseState.failed;
     }

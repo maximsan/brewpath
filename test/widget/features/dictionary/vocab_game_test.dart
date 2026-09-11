@@ -13,7 +13,7 @@ import 'package:brew_path/features/dictionary/domain/vocab_setup.dart';
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_copy.dart';
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_game_screen.dart';
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_teaching_view.dart';
-import 'package:brew_path/features/monetization/domain/plus_copy.dart';
+import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/progress/domain/activity_recorder.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
@@ -638,7 +638,7 @@ void main() {
       await tester.tap(find.text(VocabCopy.playAgain));
       await settle(tester);
 
-      expect(find.text(PlusCopy.title), findsOneWidget);
+      expect(find.text(PaywallCopy.gateTitle), findsOneWidget);
       final progress = (await container.read(snapshotRepositoryProvider).read())
           .clearedByReset;
       expect(

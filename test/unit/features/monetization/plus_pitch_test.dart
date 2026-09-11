@@ -1,7 +1,6 @@
 import 'package:brew_path/features/mini_games/domain/mini_game_tier.dart';
+import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/free_tier.dart';
-import 'package:brew_path/features/monetization/domain/paywall_copy.dart';
-import 'package:brew_path/features/monetization/domain/plus_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
 import 'package:brew_path/features/saved/domain/saved_cap.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
@@ -150,7 +149,7 @@ void main() {
 
   group('the bullets', () {
     test('lead with the course and end with the cosmetics', () {
-      final bullets = PlusCopy.bulletsFor(pitch);
+      final bullets = PaywallCopy.bulletsFor(pitch);
       expect(bullets, hasLength(3));
       // The ranking is the product's statement about what is worth most, so
       // it is asserted rather than left to whoever edits the list next.
@@ -159,7 +158,7 @@ void main() {
     });
 
     test('carry every counted quantity', () {
-      final spoken = PlusCopy.bulletsFor(pitch).map((b) => b.body).join(' ');
+      final spoken = PaywallCopy.bulletsFor(pitch).map((b) => b.body).join(' ');
       expect(spoken, contains('${pitch.remainingLessons}'));
       expect(spoken, contains('${pitch.lockedGames}'));
       expect(spoken, contains('${pitch.referenceTerms}'));

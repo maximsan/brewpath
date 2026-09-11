@@ -2,11 +2,10 @@ import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/widgets/ghost_button.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/features/monetization/config/paywall_config.dart';
+import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
-import 'package:brew_path/features/monetization/domain/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/paywall_view.dart';
 import 'package:brew_path/features/monetization/domain/paywall_view_provider.dart';
-import 'package:brew_path/features/monetization/domain/plus_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart';
 import 'package:brew_path/features/monetization/domain/plus_purchase_controller.dart';
@@ -212,7 +211,7 @@ void main() {
     final container = await pump(tester);
 
     await tapAction(tester, PaywallCopy.restore.toUpperCase());
-    expect(find.text(PlusCopy.nothingToRestore), findsOneWidget);
+    expect(find.text(PaywallCopy.nothingToRestore), findsOneWidget);
 
     container.read(plusPurchaseProvider.notifier).state =
         PlusPurchaseState.owned;
@@ -232,7 +231,7 @@ void main() {
         PlusPurchaseState.nothingToRestore;
     await tester.pump();
 
-    expect(find.text(PlusCopy.nothingToRestore), findsOneWidget);
+    expect(find.text(PaywallCopy.nothingToRestore), findsOneWidget);
     expect(exits, isEmpty);
   });
 
@@ -245,7 +244,7 @@ void main() {
         PlusPurchaseState.failed;
     await tester.pump();
 
-    expect(find.text(PlusCopy.failed), findsOneWidget);
+    expect(find.text(PaywallCopy.failed), findsOneWidget);
     expect(exits, isEmpty);
   });
 

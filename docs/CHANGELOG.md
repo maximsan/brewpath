@@ -127,7 +127,11 @@ You can always edit this file by hand instead — the helpers just save effort.
   now draw — their plan rows say what a month costs and preselect yearly,
   and a development build picks an arm with
   `--dart-define=MONETIZATION_MODEL` — unpriced until real SKUs exist.
-  The purchase welcome says *Foundations is yours*.
+  The purchase welcome says *Foundations is yours*, and under it what was
+  actually bought — a subscriber reads *Cancel anytime*, an owner
+  *One-time purchase*. Every word the selling surfaces say now lives in
+  one place, split into what changes with the pricing model and what
+  does not.
 
 - **The Tour's frame lands on what each stop points at, and Skip is a pill.**
   The day's card and the practice shelf run the full width of the page, so

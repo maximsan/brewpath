@@ -3,9 +3,9 @@ import 'package:brew_path/core/widgets/ghost_button.dart';
 import 'package:brew_path/core/widgets/link_button.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/features/monetization/config/paywall_config.dart';
+import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/paywall_view.dart';
 import 'package:brew_path/features/monetization/domain/paywall_view_provider.dart';
-import 'package:brew_path/features/monetization/domain/plus_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart';
 import 'package:brew_path/features/monetization/domain/plus_purchase_controller.dart';
@@ -27,7 +27,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 Future<void> showPlusGate(BuildContext context, PlusGateTrigger trigger) =>
     showAppSheet<void>(
       context: context,
-      title: PlusCopy.title,
+      title: PaywallCopy.gateTitle,
       builder: (_) => _PlusGateBody(trigger: trigger),
     );
 
@@ -57,7 +57,7 @@ class _PlusGateBody extends ConsumerWidget {
         _GateAction(isWorking: purchase == PlusPurchaseState.working),
         const SizedBox(height: AppSpacing.xs),
         GhostButton(
-          label: PlusCopy.notNow,
+          label: PaywallCopy.notNow,
           onPressed: purchase == PlusPurchaseState.working
               ? null
               : () => Navigator.of(context).pop(),
@@ -65,7 +65,7 @@ class _PlusGateBody extends ConsumerWidget {
         const SizedBox(height: AppSpacing.xs),
         Center(
           child: LinkButton(
-            label: PlusCopy.restore,
+            label: PaywallCopy.restore,
             onPressed: purchase == PlusPurchaseState.working
                 ? null
                 : () => ref.read(plusPurchaseProvider.notifier).restore(),
@@ -96,7 +96,7 @@ class _GateAction extends ConsumerWidget {
       children: [
         PrimaryButton(
           label: isWorking
-              ? PlusCopy.working
+              ? PaywallCopy.working
               : withPrice(config.gateCta, price, perMonth: perMonth),
           onPressed: isWorking
               ? null
@@ -132,8 +132,8 @@ class _LegalLinks extends StatelessWidget {
       spacing: AppSpacing.md,
       runSpacing: AppSpacing.xxs,
       children: [
-        LinkButton(label: PlusCopy.terms, onPressed: null),
-        LinkButton(label: PlusCopy.privacy, onPressed: null),
+        LinkButton(label: PaywallCopy.terms, onPressed: null),
+        LinkButton(label: PaywallCopy.privacy, onPressed: null),
       ],
     ),
   );

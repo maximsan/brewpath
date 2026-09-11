@@ -8,32 +8,32 @@ part of 'tour_providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Whether the Tour has finished once on this device.
+/// Whether the Tour has run once on this device.
 ///
 /// The auto-run gate, and nothing else: `false` means the first run is still
-/// owed. It is written when a first run ends by Skip or Done (#537) — never by
-/// leaving the tab, so a Tour walked away from returns on the next launch, as
-/// the design's `tourDone` does. A replay neither reads nor writes it.
+/// owed. Written when a first run ends — by Skip, by Done, or by leaving the
+/// tab — so the Tour runs once and never asks (#537). A replay neither reads
+/// nor writes it.
 
 @ProviderFor(tourSeen)
 final tourSeenProvider = TourSeenProvider._();
 
-/// Whether the Tour has finished once on this device.
+/// Whether the Tour has run once on this device.
 ///
 /// The auto-run gate, and nothing else: `false` means the first run is still
-/// owed. It is written when a first run ends by Skip or Done (#537) — never by
-/// leaving the tab, so a Tour walked away from returns on the next launch, as
-/// the design's `tourDone` does. A replay neither reads nor writes it.
+/// owed. Written when a first run ends — by Skip, by Done, or by leaving the
+/// tab — so the Tour runs once and never asks (#537). A replay neither reads
+/// nor writes it.
 
 final class TourSeenProvider
     extends $FunctionalProvider<AsyncValue<bool>, bool, FutureOr<bool>>
     with $FutureModifier<bool>, $FutureProvider<bool> {
-  /// Whether the Tour has finished once on this device.
+  /// Whether the Tour has run once on this device.
   ///
   /// The auto-run gate, and nothing else: `false` means the first run is still
-  /// owed. It is written when a first run ends by Skip or Done (#537) — never by
-  /// leaving the tab, so a Tour walked away from returns on the next launch, as
-  /// the design's `tourDone` does. A replay neither reads nor writes it.
+  /// owed. Written when a first run ends — by Skip, by Done, or by leaving the
+  /// tab — so the Tour runs once and never asks (#537). A replay neither reads
+  /// nor writes it.
   TourSeenProvider._()
     : super(
         from: null,
@@ -112,7 +112,7 @@ final class TourRunningProvider
   }
 }
 
-String _$tourRunningHash() => r'913a8f557c758b0763fabda31e851762dd583195';
+String _$tourRunningHash() => r'40022253ac21a1b896fa15f294df694bb715c1da';
 
 /// The run on screen.
 ///
@@ -143,8 +143,7 @@ abstract class _$TourRunning extends $Notifier<TourRun> {
 ///
 /// Replay is asked for on Profile and happens on Learn, which are two branches
 /// of the shell that cannot call each other — so the ask is state rather than a
-/// callback. Learn consumes it the moment it arrives and runs the stops as a
-/// [TourRun.replay], which writes nothing.
+/// callback. Learn consumes it the moment it arrives.
 
 @ProviderFor(TourReplayRequest)
 final tourReplayRequestProvider = TourReplayRequestProvider._();
@@ -153,16 +152,14 @@ final tourReplayRequestProvider = TourReplayRequestProvider._();
 ///
 /// Replay is asked for on Profile and happens on Learn, which are two branches
 /// of the shell that cannot call each other — so the ask is state rather than a
-/// callback. Learn consumes it the moment it arrives and runs the stops as a
-/// [TourRun.replay], which writes nothing.
+/// callback. Learn consumes it the moment it arrives.
 final class TourReplayRequestProvider
     extends $NotifierProvider<TourReplayRequest, bool> {
   /// A pending request to replay the Tour, raised from outside the Learn tab.
   ///
   /// Replay is asked for on Profile and happens on Learn, which are two branches
   /// of the shell that cannot call each other — so the ask is state rather than a
-  /// callback. Learn consumes it the moment it arrives and runs the stops as a
-  /// [TourRun.replay], which writes nothing.
+  /// callback. Learn consumes it the moment it arrives.
   TourReplayRequestProvider._()
     : super(
         from: null,
@@ -196,8 +193,7 @@ String _$tourReplayRequestHash() => r'd8e5cec4a675b0086c44238cb25a04c8389db70c';
 ///
 /// Replay is asked for on Profile and happens on Learn, which are two branches
 /// of the shell that cannot call each other — so the ask is state rather than a
-/// callback. Learn consumes it the moment it arrives and runs the stops as a
-/// [TourRun.replay], which writes nothing.
+/// callback. Learn consumes it the moment it arrives.
 
 abstract class _$TourReplayRequest extends $Notifier<bool> {
   bool build();

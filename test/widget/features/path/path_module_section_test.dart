@@ -2,8 +2,8 @@ import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
+import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/locked_row_copy.dart';
-import 'package:brew_path/features/monetization/domain/plus_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart';
 import 'package:brew_path/features/path/domain/path_density.dart';
@@ -113,7 +113,7 @@ void main() {
       await tester.tap(find.text('Processing'));
       await tester.pumpAndSettle();
 
-      expect(find.text(PlusCopy.title), findsNothing);
+      expect(find.text(PaywallCopy.gateTitle), findsNothing);
     });
   });
 
@@ -148,7 +148,7 @@ void main() {
       await tester.tap(find.text('Processing'));
       await tester.pumpAndSettle();
 
-      expect(find.text(PlusCopy.title), findsOneWidget);
+      expect(find.text(PaywallCopy.gateTitle), findsOneWidget);
     });
 
     testWidgets('announces the state and its reason', (tester) async {
