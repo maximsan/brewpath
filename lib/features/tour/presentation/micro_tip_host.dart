@@ -63,8 +63,8 @@ class _MicroTipHostState extends ConsumerState<MicroTipHost> {
     anyOverlayBarrierOpen.addListener(_onOverlayChanged);
     // The Tour finishing counts as "something was just shown", so the first tip
     // after it does not read as a fifth stop.
-    ref.listenManual(tourRunningProvider, (wasRunning, isRunning) {
-      if ((wasRunning ?? false) && !isRunning) {
+    ref.listenManual(tourRunningProvider, (before, now) {
+      if ((before?.isRunning ?? false) && !now.isRunning) {
         _stayQuietFor(MicroTipPacing.afterDismissal);
       }
     });
@@ -149,7 +149,9 @@ class _MicroTipHostState extends ConsumerState<MicroTipHost> {
     final inputs = _TipInputs(
       // Null while the list is still loading; `_layer` reads that as silence.
       seen: ref.watch(microTipsSeenProvider).asData?.value,
-      suppressed: ref.watch(tourRunningProvider) || anyOverlayBarrierOpen.value,
+      suppressed:
+          ref.watch(tourRunningProvider).isRunning ||
+          anyOverlayBarrierOpen.value,
       signals: MicroTipSignals(
         savedJustHappened: ref.watch(saveMadeThisSessionProvider),
         studioUnlocked:

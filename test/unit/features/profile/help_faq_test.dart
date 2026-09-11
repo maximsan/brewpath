@@ -1,5 +1,5 @@
+import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/free_tier.dart';
-import 'package:brew_path/features/monetization/domain/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
 import 'package:brew_path/features/profile/domain/help_faq.dart';
 import 'package:brew_path/features/tour/domain/app_guide_copy.dart';
@@ -8,6 +8,9 @@ import 'package:flutter_test/flutter_test.dart';
 const _pitch = PlusPitch(
   remainingLessons: 29,
   lockedGames: 4,
+  premiumFormats: 5,
+  firstPaidModule: 2,
+  lastPaidModule: 5,
   referenceTerms: 8,
   savedFreeCap: 5,
 );

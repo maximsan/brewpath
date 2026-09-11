@@ -561,9 +561,11 @@ function App() {
   // and its module test; Modules 2–5 are the one-time purchase, and everything
   // derived (dictionary terms, challenges, tree growth) inherits from lesson
   // access. Progress locks (finish X to unlock) still apply on top for owners.
-  const FREE_MODULE_IDS = ['m1'];
+  // Which lessons are free is declared once in data.jsx (window.FREE_LESSON_IDS)
+  // and read by every gate, so the games catalog and this check can never
+  // disagree about the free tier (#175).
   const hasCourse = featureUnlocked('course');
-  const lessonAccessible = (id) => hasCourse || FREE_MODULE_IDS.some(m => id && id.indexOf(m + 'l') === 0);
+  const lessonAccessible = (id) => hasCourse || (!!id && window.FREE_LESSON_IDS.has(id));
 
   const [gateFeature, setGateFeature] = useStateA(_route && _route.gate ? _route.gate : null); // key → PlusGateSheet open
   const [gateGame, setGateGame]       = useStateA(null); // the locked game behind a 'games' gate → module-targeted sheet

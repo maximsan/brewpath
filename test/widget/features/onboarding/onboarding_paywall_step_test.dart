@@ -1,6 +1,7 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
-import 'package:brew_path/features/monetization/domain/paywall_copy.dart';
+import 'package:brew_path/features/monetization/config/paywall_copy.dart';
+import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart';
 import 'package:brew_path/features/monetization/domain/plus_purchase_controller.dart';
@@ -21,13 +22,19 @@ void main() {
   setUp(() => fake = FakeOnboardingRepository());
 
   const pitch = PlusPitch(
+    premiumFormats: 4,
+    firstPaidModule: 2,
+    lastPaidModule: 5,
     remainingLessons: 29,
     lockedGames: 4,
     referenceTerms: 8,
     savedFreeCap: 5,
   );
 
-  Future<ProviderContainer> pump(WidgetTester tester) async {
+  Future<ProviderContainer> pump(
+    WidgetTester tester, {
+    bool owned = false,
+  }) async {
     tester.view.physicalSize = const Size(400, 1600);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
@@ -59,6 +66,7 @@ void main() {
       overrides: [
         onboardingRepositoryProvider.overrideWithValue(fake),
         plusPitchProvider.overrideWith((ref) async => pitch),
+        courseEntitlementProvider.overrideWith((ref) async => owned),
       ],
     );
     addTearDown(container.dispose);
@@ -102,13 +110,11 @@ void main() {
   testWidgets('restoring finishes the intro without the celebration', (
     tester,
   ) async {
-    final container = await pump(tester);
+    await pump(tester, owned: true);
 
-    await tester.ensureVisible(find.text(PaywallCopy.restore));
+    await tester.ensureVisible(find.text(PaywallCopy.restore.toUpperCase()));
     await tester.pumpAndSettle();
-    await tester.tap(find.text(PaywallCopy.restore));
-    container.read(plusPurchaseProvider.notifier).state =
-        PlusPurchaseState.owned;
+    await tester.tap(find.text(PaywallCopy.restore.toUpperCase()));
     await tester.pumpAndSettle();
 
     expect(fake.completeCalls, hasLength(1));

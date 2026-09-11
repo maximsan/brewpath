@@ -8,6 +8,7 @@ import 'package:brew_path/core/widgets/roast_meter.dart';
 import 'package:brew_path/features/lessons/domain/card_seed.dart';
 import 'package:brew_path/features/lessons/domain/held_guess.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_scroll.dart';
 import 'package:brew_path/features/lessons/presentation/cards/content_card_view.dart';
 import 'package:brew_path/features/saved/domain/saved_key.dart';
 import 'package:brew_path/features/saved/presentation/saved_bookmark_button.dart';
@@ -116,6 +117,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
             final lesson? => SavedBookmarkButton(
               savedKey: formatSavedKey(SavedKind.lesson, lesson.id),
               label: lesson.title,
+              ringed: true,
             ),
             null => null,
           },
@@ -188,20 +190,15 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
     // padding starts the card below it while letting it pass underneath.
     return SafeArea(
       top: false,
-      child: SingleChildScrollView(
+      child: CardScroll(
         padding: FloatTopbar.scrollPadding(
           context,
           designScrollPad: FloatTopbar.runDesignScrollPad,
           inset: AppSpacing.lg,
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Keyed by card so each one mounts fresh: a latched card must
-            // never be reused for the next question.
-            KeyedSubtree(key: ValueKey('${_nonce}_$_index'), child: card),
-          ],
-        ),
+        // Keyed by card so each one mounts fresh: a latched card must never
+        // be reused for the next question.
+        child: KeyedSubtree(key: ValueKey('${_nonce}_$_index'), child: card),
       ),
     );
   }

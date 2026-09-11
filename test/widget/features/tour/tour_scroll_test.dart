@@ -1,14 +1,14 @@
-import 'package:brew_path/app/app.dart';
 import 'package:brew_path/features/tour/domain/tour_copy.dart';
+import 'package:brew_path/features/tour/domain/tour_geometry.dart';
 import 'package:brew_path/features/tour/domain/tour_step.dart';
 import 'package:brew_path/features/tour/presentation/today_tour.dart';
 import 'package:brew_path/features/tour/presentation/tour_anchor.dart';
 import 'package:brew_path/features/tour/presentation/tour_frame.dart';
-import 'package:brew_path/shared/repositories/settings_repository.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/tour_harness.dart';
 import '../../../support/widget_harness.dart';
 
 // The Tour on a phone-sized screen, where its targets do not all fit. The
@@ -23,38 +23,7 @@ void main() {
   /// The figure is load-bearing and `theFeedCanScroll` asserts it stays so: at
   /// 800 the tab fits outright since the practice shelf lost its empty Lessons
   /// group, and a test that cannot scroll would pass while proving nothing.
-  void usePhoneViewport(WidgetTester tester) {
-    tester.view.physicalSize = const Size(400, 600);
-    tester.view.devicePixelRatio = 1.0;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
-  }
-
-  Future<void> armTheTour() async {
-    final repo = SettingsRepository();
-    final settings = await repo.getSettings()
-      ..tourSeen = false;
-    await repo.saveSettings(settings);
-  }
-
-  Future<void> letTheTourRun(WidgetTester tester) async {
-    for (var frame = 0; frame < 20; frame++) {
-      await tester.runAsync(
-        () => Future<void>.delayed(const Duration(milliseconds: 20)),
-      );
-      await tester.pump(const Duration(milliseconds: 50));
-    }
-  }
-
-  Future<void> startTheTour(WidgetTester tester) async {
-    usePhoneViewport(tester);
-    await armTheTour();
-
-    await pumpWithProviders(tester, const BrewPathApp());
-    await tester.pumpAndSettle();
-    await tester.tap(find.text(TourCopy.introAccept));
-    await letTheTourRun(tester);
-  }
+  const phoneViewport = Size(400, 600);
 
   Rect? paintedFrame(WidgetTester tester) {
     final paint = tester.widget<CustomPaint>(
@@ -66,12 +35,17 @@ void main() {
     return (paint.painter! as TourFramePainter).frame;
   }
 
+  /// [step]'s whole box, which is what the scroll arithmetic reads.
   Rect anchorRect(WidgetTester tester, TourStep step) {
     final target =
         TourAnchor.contextFor(step)!.findRenderObject()! as RenderBox;
     final layer = tester.renderObject<RenderBox>(find.byType(TodayTour));
     return target.localToGlobal(Offset.zero, ancestor: layer) & target.size;
   }
+
+  /// The part of it the frame is drawn around.
+  Rect contentRect(WidgetTester tester, TourStep step) =>
+      tourContentBox(anchorRect(tester, step), TourAnchor.insetFor(step));
 
   ScrollPosition feedPosition(WidgetTester tester) =>
       Scrollable.of(TourAnchor.contextFor(TourStep.today)!).position;
@@ -97,7 +71,7 @@ void main() {
   testWidgets('a stop below the fold is scrolled to and framed', (
     tester,
   ) async {
-    await startTheTour(tester);
+    await bootIntoTheTour(tester, viewport: phoneViewport);
     theFeedCanScroll(tester);
     // Not necessarily zero: the day's own card is tall enough on a small
     // phone that the rule already nudges the feed to leave the Tour card its
@@ -116,7 +90,7 @@ void main() {
     // a frame apart.
     expect(
       paintedFrame(tester),
-      anchorRect(
+      contentRect(
         tester,
         TourStep.practice,
       ).inflate(OffTokens.tourFrameInset.value),
@@ -126,7 +100,7 @@ void main() {
   testWidgets('a stop that frames chrome returns the feed to the top', (
     tester,
   ) async {
-    await startTheTour(tester);
+    await bootIntoTheTour(tester, viewport: phoneViewport);
     theFeedCanScroll(tester);
     await advance(tester);
     expect(feedOffset(tester), greaterThan(0));
@@ -143,7 +117,7 @@ void main() {
   testWidgets('the scrolled-to target is clear of the header above it', (
     tester,
   ) async {
-    await startTheTour(tester);
+    await bootIntoTheTour(tester, viewport: phoneViewport);
     theFeedCanScroll(tester);
     await advance(tester);
 

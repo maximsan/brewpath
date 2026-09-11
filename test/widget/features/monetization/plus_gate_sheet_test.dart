@@ -1,8 +1,8 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/widgets/ghost_button.dart';
 import 'package:brew_path/features/monetization/config/paywall_config.dart';
+import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/paywall_view.dart';
-import 'package:brew_path/features/monetization/domain/plus_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart';
@@ -21,6 +21,9 @@ void main() {
 
   /// A counted pitch, so the sheet's assertions do not wait on the banks.
   const pitch = PlusPitch(
+    premiumFormats: 4,
+    firstPaidModule: 2,
+    lastPaidModule: 5,
     remainingLessons: 29,
     lockedGames: 4,
     referenceTerms: 8,
@@ -59,7 +62,7 @@ void main() {
     // The header leads, above the pitch — the sheet answers the question the
     // learner asked rather than a generic one.
     expect(find.text('Your free shelf is full at 5.'), findsOneWidget);
-    expect(find.text(PlusCopy.title), findsOneWidget);
+    expect(find.text(PaywallCopy.gateTitle), findsOneWidget);
   });
 
   testWidgets('a locked game names the module that teaches it', (tester) async {
@@ -80,7 +83,7 @@ void main() {
   testWidgets('the pitch is ranked, course first', (tester) async {
     await openWith(tester, const SavedShelfFull(cap: 5));
 
-    final bullets = PlusCopy.bulletsFor(pitch);
+    final bullets = PaywallCopy.bulletsFor(pitch);
     final positions = [
       for (final bullet in bullets)
         tester.getTopLeft(find.text(bullet.title)).dy,
@@ -133,9 +136,9 @@ void main() {
     await openWith(tester, const SavedShelfFull(cap: 5));
 
     // The App Store requires all three of a non-consumable.
-    expect(find.text(PlusCopy.restore), findsOneWidget);
-    expect(find.text(PlusCopy.terms), findsOneWidget);
-    expect(find.text(PlusCopy.privacy), findsOneWidget);
+    expect(find.text(PaywallCopy.restore), findsOneWidget);
+    expect(find.text(PaywallCopy.terms), findsOneWidget);
+    expect(find.text(PaywallCopy.privacy), findsOneWidget);
   });
 
   testWidgets('declining is a button, not a swipe to discover', (tester) async {
@@ -145,14 +148,14 @@ void main() {
     // was always dismissible by the handle or the scrim; what was missing was
     // an exit the learner could see.
     expect(
-      find.widgetWithText(GhostButton, PlusCopy.notNow),
+      find.widgetWithText(GhostButton, PaywallCopy.notNow),
       findsOneWidget,
     );
 
-    await tester.tap(find.text(PlusCopy.notNow));
+    await tester.tap(find.text(PaywallCopy.notNow));
     await tester.pumpAndSettle();
 
-    expect(find.text(PlusCopy.title), findsNothing);
+    expect(find.text(PaywallCopy.gateTitle), findsNothing);
     expect(find.text('open'), findsOneWidget);
   });
 
@@ -162,7 +165,7 @@ void main() {
     await tester.tapAt(const Offset(10, 10));
     await tester.pumpAndSettle();
 
-    expect(find.text(PlusCopy.title), findsNothing);
+    expect(find.text(PaywallCopy.gateTitle), findsNothing);
     // Back where they were, with nothing bought.
     expect(find.text('open'), findsOneWidget);
   });
@@ -171,7 +174,7 @@ void main() {
     final handle = tester.ensureSemantics();
     await openWith(tester, const SavedShelfFull(cap: 5));
 
-    expect(find.bySemanticsLabel(PlusCopy.title), findsWidgets);
+    expect(find.bySemanticsLabel(PaywallCopy.gateTitle), findsWidgets);
     handle.dispose();
   });
 
@@ -181,7 +184,7 @@ void main() {
 
     // Title and body merged: two fragments would lose the ranking that the
     // ordering exists to convey.
-    for (final bullet in PlusCopy.bulletsFor(pitch)) {
+    for (final bullet in PaywallCopy.bulletsFor(pitch)) {
       expect(
         find.bySemanticsLabel('${bullet.title}. ${bullet.body}'),
         findsOneWidget,

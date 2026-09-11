@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty_animation.dart';
+import 'package:brew_path/features/companion/presentation/roasty_body.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/roasty_colors.dart';
@@ -11,10 +12,10 @@ import 'package:flutter/material.dart';
 // the rest; enumerating every no-op state would bloat the switch.
 // ignore_for_file: no_default_cases
 
-/// Particle layer painted behind the bean body (rays / glow).
+/// Particle layer painted behind the bean body (rays / halo).
 ///
 /// The rays are the mood's warn in the design, so the host passes [mood] in;
-/// the glow is palette-fixed.
+/// the card face's halo is palette-fixed and still.
 void paintRoastyParticlesBack(
   Canvas canvas,
   RoastyState state,
@@ -25,20 +26,34 @@ void paintRoastyParticlesBack(
     _paintModuleRays(canvas, progress, mood);
   }
   if (state == RoastyState.card) {
-    _paintCardGlow(canvas, progress);
+    _paintCardHalo(canvas);
   }
 }
 
-/// Particle layer painted in front of the bean body (sparkles, confetti,
-/// wrong badge, points burst, sleep zzz).
+/// The card face's shimmer: the bean's outline blurred in the mood's warn,
+/// painted under the body transform just before the body, so it reads as
+/// the design's breathing `drop-shadow` on the body itself.
+void paintRoastyShimmer(
+  Canvas canvas,
+  RoastyState state,
+  double progress,
+  MoodColors mood,
+) {
+  if (state != RoastyState.card) return;
+  final blur = cardShimmerBlur(progress);
+  if (blur <= 0) return;
+  final paint = Paint()
+    ..color = mood.warn
+    ..maskFilter = MaskFilter.blur(BlurStyle.normal, blur);
+  canvas.drawPath(roastyBeanOutline(), paint);
+}
+
+/// Particle layer painted in front of the bean body: sparkles, confetti, the
+/// wrong badge, the points burst and the sleeping `z`s. All but the confetti
+/// follow the mood in the design, so the host passes [mood] in.
 ///
-/// Two sparkles, the wrong badge, the points burst and the sleeping `z`s
-/// follow the mood in the design (warn, berry, accent and muted ink); the
-/// confetti is palette-fixed.
-///
-/// [pointsAmount] is what the burst says, and only [RoastyState.points] reads
-/// it. With nothing passed the burst has nothing to state and draws nothing;
-/// `Roasty.pointsAmount` carries why, and asserts the pairing.
+/// [pointsAmount] is what the burst says; only [RoastyState.points] reads it,
+/// and with nothing passed the burst draws nothing (`Roasty.pointsAmount`).
 void paintRoastyParticlesFront(
   Canvas canvas,
   RoastyState state,
@@ -88,11 +103,12 @@ void _paintModuleRays(Canvas canvas, double progress, MoodColors mood) {
   canvas.restore();
 }
 
-void _paintCardGlow(Canvas canvas, double progress) {
-  final pulse = math.sin(progress * math.pi * 2) * 0.5 + 0.5;
+/// The design's still halo: `rx="120" ry="110"` filled `stopOpacity="0.6"`
+/// at the centre fading to nothing.
+void _paintCardHalo(Canvas canvas) {
   final gradient = RadialGradient(
     colors: [
-      RoastyColors.cardGlow.withValues(alpha: 0.6 * pulse),
+      RoastyColors.cardGlow.withValues(alpha: _cardHaloOpacity),
       RoastyColors.cardGlow.withValues(alpha: 0),
     ],
   );
@@ -104,6 +120,9 @@ void _paintCardGlow(Canvas canvas, double progress) {
   final paint = Paint()..shader = gradient.createShader(rect);
   canvas.drawOval(rect, paint);
 }
+
+/// The halo's centre opacity, the design's `stopOpacity="0.6"`.
+const double _cardHaloOpacity = 0.6;
 
 // ── Particles in front ─────────────────────────────────────────────────
 void _paintSparkles(Canvas canvas, double progress, MoodColors mood) {
@@ -220,13 +239,10 @@ const _wrongBadgeStroke = 2.0;
 const double _wrongBadgeExtent = _wrongBadgeRadius + _wrongBadgeStroke;
 
 void _paintWrongBadge(Canvas canvas, MoodColors mood) {
-  // The design's `opacity="0.85"` sits on the badge's *group*, and that is not
-  // the same as fading each mark: the stroke and the exclamation are drawn on
-  // the badge's own white disc, so per-mark alpha would let the disc show
-  // through them. `saveLayer` composites the badge first and fades it once.
-  //
-  // Only the layer paint's alpha is read, so this dims `Paint`'s own default
-  // colour rather than naming one the mascot does not have.
+  // The design's `opacity="0.85"` sits on the badge's *group*: per-mark alpha
+  // would let the white disc show through the marks drawn on it, so
+  // `saveLayer` composites the badge first and fades it once. Only the layer
+  // paint's alpha is read, so `Paint`'s default colour is dimmed, not named.
   final fade = Paint();
   fade.color = fade.color.withValues(alpha: _wrongBadgeOpacity);
   canvas.saveLayer(
@@ -265,12 +281,8 @@ const _pointsBurstRadius = Radius.circular(2);
 const double _pointsBurstBaseline = 59;
 
 /// The burst's type size and letter-spacing, in the mascot's own canvas units.
-///
-/// Off the type ladder, for the reason `grinder_dial_view.dart` is: this is
-/// drawn on a canvas grid rather than set on a rung, so the same label reaches
-/// the screen at a different size on every host. 13 here is never 13 logical
-/// pixels, and 1 beside it is a ratio to it rather than a width `AppTracking`
-/// could resolve.
+/// Off the type ladder as `grinder_dial_view.dart` is: drawn on a canvas grid,
+/// so 13 is never 13 logical pixels and 1 is a ratio to it, not a tracking.
 const double _pointsBurstFontSize = 13;
 const double _pointsBurstTracking = 1;
 
@@ -315,13 +327,10 @@ void _paintPointsBurst(
   canvas.save();
   canvas.translate(0, rise.dy);
 
-  // The design's fade sits on the burst's *group*, and that is not the same as
-  // fading each mark: the line is drawn on the plate, so per-mark alpha would
-  // let the accent show through its own lettering. `saveLayer` composites the
-  // burst first and fades it once — the same trick `_paintWrongBadge` uses.
-  //
-  // Only the layer paint's alpha is read, so this dims `Paint`'s own default
-  // colour rather than naming one the mascot does not have.
+  // The design's fade sits on the burst's *group*: per-mark alpha would let
+  // the plate show through its own lettering, so `saveLayer` composites the
+  // burst first and fades it once, as `_paintWrongBadge` does. Only the layer
+  // paint's alpha is read, so `Paint`'s default colour is dimmed, not named.
   final fade = Paint();
   fade.color = fade.color.withValues(alpha: rise.opacity);
   canvas.saveLayer(

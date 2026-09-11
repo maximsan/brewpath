@@ -4,16 +4,18 @@ import 'package:brew_path/shared/models/monetization/plus_offering.dart';
 
 /// Active payments implementation for the MVP — no store, no entitlements.
 class NoOpPaymentsService implements PaymentsService {
-  /// Creates a [NoOpPaymentsService].
-  const NoOpPaymentsService();
+  /// Creates a [NoOpPaymentsService] whose store reports [model].
+  const NoOpPaymentsService({this.model = MonetizationModel.oneTime});
+
+  /// The arm this store puts every learner on — the baseline unless a
+  /// development build asked for another.
+  final MonetizationModel model;
 
   @override
   Future<bool> hasActiveEntitlement() async => false;
 
-  /// The baseline arm, which is the only one v1 sells.
   @override
-  Future<PlusOffering> currentOffering() async =>
-      offeringFor(MonetizationModel.oneTime);
+  Future<PlusOffering> currentOffering() async => offeringFor(model);
 
   @override
   Future<List<StoreProduct>> getProducts(List<String> productIds) async => [];

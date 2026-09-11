@@ -1,8 +1,8 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/widgets/visual_guide_art.dart';
+import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/locked_row_copy.dart';
-import 'package:brew_path/features/monetization/domain/plus_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart';
 import 'package:brew_path/features/path/domain/visual_guide_providers.dart';
@@ -32,6 +32,9 @@ final VisualGuide _variety = _guide('variety', 'The Variety Family Tree');
 final VisualGuide _roast = _guide('roast', 'Roast Levels');
 
 const _pitch = PlusPitch(
+  premiumFormats: 4,
+  firstPaidModule: 2,
+  lastPaidModule: 5,
   remainingLessons: 29,
   lockedGames: 4,
   referenceTerms: 8,
@@ -133,7 +136,7 @@ void main() {
       await tester.tap(find.text('Reference'));
       await tester.pumpAndSettle();
 
-      expect(find.text(PlusCopy.title), findsOneWidget);
+      expect(find.text(PaywallCopy.gateTitle), findsOneWidget);
     });
   });
 

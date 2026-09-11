@@ -14,16 +14,11 @@ const double _fadedOpacity = 0.62;
 /// Off the spacing scale on purpose — see the register entry for why.
 final double _tilePadding = OffTokens.pickTilePadding.value;
 
-/// The two-up guess a `predict` card offers.
+/// The two-up guess a `predict` card offers: two tiles side by side, unlike
+/// every graded picking card, because this one choice is not graded.
 ///
-/// A row list would read as a list of answers. The design gives this moment
-/// two tiles side by side, deliberately unlike every other picking card in the
-/// course: it is the one choice that is **not** graded, and it should not look
-/// like the ones that are.
-///
-/// The guess stays changeable until the learner moves on. Nothing is scored,
-/// so there is nothing to protect by latching — and a first instinct the
-/// learner immediately reconsiders is still the instinct the card wants.
+/// The guess stays changeable until the learner moves on — nothing is scored,
+/// so nothing is protected by latching.
 class PickTileRow extends StatelessWidget {
   /// Creates a [PickTileRow].
   const PickTileRow({
@@ -52,7 +47,7 @@ class PickTileRow extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           for (var index = 0; index < options.length; index++) ...[
-            if (index > 0) const SizedBox(width: AppSpacing.sm),
+            if (index > 0) SizedBox(width: OffTokens.pickTileGap.value),
             Expanded(
               child: _PickTile(
                 text: options[index],

@@ -37,6 +37,9 @@ class _RecordingOpener implements LinkOpener {
 const _pitch = PlusPitch(
   remainingLessons: 29,
   lockedGames: 4,
+  premiumFormats: 5,
+  firstPaidModule: 2,
+  lastPaidModule: 5,
   referenceTerms: 8,
   savedFreeCap: 5,
 );

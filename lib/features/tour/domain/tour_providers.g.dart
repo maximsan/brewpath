@@ -8,32 +8,32 @@ part of 'tour_providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Whether the learner has already answered the Tour's intro overlay.
+/// Whether the Tour has run once on this device.
 ///
-/// The auto-run gate, and nothing else: `false` means the intro is still owed,
-/// not that the Tour was abandoned mid-way. Abandonment deliberately does not
-/// re-arm it — the flag is written when the overlay is *answered*, so someone
-/// who started the Tour and backgrounded the app is not asked again.
+/// The auto-run gate, and nothing else: `false` means the first run is still
+/// owed. Written when a first run ends — by Skip, by Done, or by leaving the
+/// tab — so the Tour runs once and never asks (#537). A replay neither reads
+/// nor writes it.
 
 @ProviderFor(tourSeen)
 final tourSeenProvider = TourSeenProvider._();
 
-/// Whether the learner has already answered the Tour's intro overlay.
+/// Whether the Tour has run once on this device.
 ///
-/// The auto-run gate, and nothing else: `false` means the intro is still owed,
-/// not that the Tour was abandoned mid-way. Abandonment deliberately does not
-/// re-arm it — the flag is written when the overlay is *answered*, so someone
-/// who started the Tour and backgrounded the app is not asked again.
+/// The auto-run gate, and nothing else: `false` means the first run is still
+/// owed. Written when a first run ends — by Skip, by Done, or by leaving the
+/// tab — so the Tour runs once and never asks (#537). A replay neither reads
+/// nor writes it.
 
 final class TourSeenProvider
     extends $FunctionalProvider<AsyncValue<bool>, bool, FutureOr<bool>>
     with $FutureModifier<bool>, $FutureProvider<bool> {
-  /// Whether the learner has already answered the Tour's intro overlay.
+  /// Whether the Tour has run once on this device.
   ///
-  /// The auto-run gate, and nothing else: `false` means the intro is still owed,
-  /// not that the Tour was abandoned mid-way. Abandonment deliberately does not
-  /// re-arm it — the flag is written when the overlay is *answered*, so someone
-  /// who started the Tour and backgrounded the app is not asked again.
+  /// The auto-run gate, and nothing else: `false` means the first run is still
+  /// owed. Written when a first run ends — by Skip, by Done, or by leaving the
+  /// tab — so the Tour runs once and never asks (#537). A replay neither reads
+  /// nor writes it.
   TourSeenProvider._()
     : super(
         from: null,
@@ -61,26 +61,30 @@ final class TourSeenProvider
 
 String _$tourSeenHash() => r'6ca545e8fd5896192b0c7dbae81e5a4f38660f42';
 
-/// Whether the Tour is currently on screen.
+/// The run on screen.
 ///
-/// Exists for one reason: the Learn list mounts every child while it is true,
-/// so the engine can scroll to a stop that would otherwise still be off-screen
-/// and unmounted. See `LearnListView` for why that is the mitigation chosen.
+/// Read by more than the layer: the Learn list mounts every child while a run
+/// is on, so the engine can scroll to a stop that would otherwise still be
+/// off-screen and unmounted. See `LearnListView` for why that is the
+/// mitigation chosen.
 
 @ProviderFor(TourRunning)
 final tourRunningProvider = TourRunningProvider._();
 
-/// Whether the Tour is currently on screen.
+/// The run on screen.
 ///
-/// Exists for one reason: the Learn list mounts every child while it is true,
-/// so the engine can scroll to a stop that would otherwise still be off-screen
-/// and unmounted. See `LearnListView` for why that is the mitigation chosen.
-final class TourRunningProvider extends $NotifierProvider<TourRunning, bool> {
-  /// Whether the Tour is currently on screen.
+/// Read by more than the layer: the Learn list mounts every child while a run
+/// is on, so the engine can scroll to a stop that would otherwise still be
+/// off-screen and unmounted. See `LearnListView` for why that is the
+/// mitigation chosen.
+final class TourRunningProvider
+    extends $NotifierProvider<TourRunning, TourRun> {
+  /// The run on screen.
   ///
-  /// Exists for one reason: the Learn list mounts every child while it is true,
-  /// so the engine can scroll to a stop that would otherwise still be off-screen
-  /// and unmounted. See `LearnListView` for why that is the mitigation chosen.
+  /// Read by more than the layer: the Learn list mounts every child while a run
+  /// is on, so the engine can scroll to a stop that would otherwise still be
+  /// off-screen and unmounted. See `LearnListView` for why that is the
+  /// mitigation chosen.
   TourRunningProvider._()
     : super(
         from: null,
@@ -100,33 +104,34 @@ final class TourRunningProvider extends $NotifierProvider<TourRunning, bool> {
   TourRunning create() => TourRunning();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(bool value) {
+  Override overrideWithValue(TourRun value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<bool>(value),
+      providerOverride: $SyncValueProvider<TourRun>(value),
     );
   }
 }
 
-String _$tourRunningHash() => r'3f73bf1f60bf2a3dfebc4de7471dbecf94a13ae1';
+String _$tourRunningHash() => r'40022253ac21a1b896fa15f294df694bb715c1da';
 
-/// Whether the Tour is currently on screen.
+/// The run on screen.
 ///
-/// Exists for one reason: the Learn list mounts every child while it is true,
-/// so the engine can scroll to a stop that would otherwise still be off-screen
-/// and unmounted. See `LearnListView` for why that is the mitigation chosen.
+/// Read by more than the layer: the Learn list mounts every child while a run
+/// is on, so the engine can scroll to a stop that would otherwise still be
+/// off-screen and unmounted. See `LearnListView` for why that is the
+/// mitigation chosen.
 
-abstract class _$TourRunning extends $Notifier<bool> {
-  bool build();
+abstract class _$TourRunning extends $Notifier<TourRun> {
+  TourRun build();
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
-    final ref = this.ref as $Ref<bool, bool>;
+    final ref = this.ref as $Ref<TourRun, TourRun>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<bool, bool>,
-              bool,
+              AnyNotifier<TourRun, TourRun>,
+              TourRun,
               Object?,
               Object?
             >;
@@ -138,9 +143,7 @@ abstract class _$TourRunning extends $Notifier<bool> {
 ///
 /// Replay is asked for on Profile and happens on Learn, which are two branches
 /// of the shell that cannot call each other — so the ask is state rather than a
-/// callback. Learn consumes it the moment it arrives and runs the stops with no
-/// intro overlay and no write, because the learner asking for the Tour again is
-/// not a learner being offered it.
+/// callback. Learn consumes it the moment it arrives.
 
 @ProviderFor(TourReplayRequest)
 final tourReplayRequestProvider = TourReplayRequestProvider._();
@@ -149,18 +152,14 @@ final tourReplayRequestProvider = TourReplayRequestProvider._();
 ///
 /// Replay is asked for on Profile and happens on Learn, which are two branches
 /// of the shell that cannot call each other — so the ask is state rather than a
-/// callback. Learn consumes it the moment it arrives and runs the stops with no
-/// intro overlay and no write, because the learner asking for the Tour again is
-/// not a learner being offered it.
+/// callback. Learn consumes it the moment it arrives.
 final class TourReplayRequestProvider
     extends $NotifierProvider<TourReplayRequest, bool> {
   /// A pending request to replay the Tour, raised from outside the Learn tab.
   ///
   /// Replay is asked for on Profile and happens on Learn, which are two branches
   /// of the shell that cannot call each other — so the ask is state rather than a
-  /// callback. Learn consumes it the moment it arrives and runs the stops with no
-  /// intro overlay and no write, because the learner asking for the Tour again is
-  /// not a learner being offered it.
+  /// callback. Learn consumes it the moment it arrives.
   TourReplayRequestProvider._()
     : super(
         from: null,
@@ -194,9 +193,7 @@ String _$tourReplayRequestHash() => r'd8e5cec4a675b0086c44238cb25a04c8389db70c';
 ///
 /// Replay is asked for on Profile and happens on Learn, which are two branches
 /// of the shell that cannot call each other — so the ask is state rather than a
-/// callback. Learn consumes it the moment it arrives and runs the stops with no
-/// intro overlay and no write, because the learner asking for the Tour again is
-/// not a learner being offered it.
+/// callback. Learn consumes it the moment it arrives.
 
 abstract class _$TourReplayRequest extends $Notifier<bool> {
   bool build();

@@ -25,15 +25,17 @@ void main() {
   /// so this list grows when the paywall does, and never otherwise.
   const paywallLayer = <String>{
     'lib/features/monetization/config/paywall_config.dart',
+    'lib/features/monetization/config/paywall_copy.dart',
     'lib/features/monetization/domain/foundations_faq_tail.dart',
-    'lib/features/monetization/domain/paywall_copy.dart',
     'lib/features/monetization/domain/paywall_view.dart',
     'lib/features/monetization/domain/paywall_view_provider.dart',
     'lib/features/monetization/domain/plus_offering_provider.dart',
     'lib/features/monetization/domain/plus_purchase_controller.dart',
+    'lib/features/monetization/domain/purchased_term.dart',
     'lib/features/monetization/presentation/paywall_screen.dart',
     'lib/features/monetization/presentation/plan_picker.dart',
     'lib/features/monetization/presentation/plus_gate_sheet.dart',
+    'lib/features/monetization/presentation/purchase_welcome_route.dart',
   };
 
   test('only the monetization layer imports the payments service', () {

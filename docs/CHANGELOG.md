@@ -134,6 +134,36 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **The paywall follows the design, on every arm.** The pitch is the
+  design's five rows — an accent check, the title over its line, a
+  hairline between — with every number the design writes counted from the
+  content: the paid modules' range and the premium formats. The eyebrow
+  leads with *Foundations*, a wash lights the hero, the note under
+  *Maybe later* is the design's one fact in uppercase mono, and the legal
+  row is fine print with Restore in ink. The subscription and hybrid arms
+  now draw — their plan rows say what a month costs and preselect yearly,
+  and a development build picks an arm with
+  `--dart-define=MONETIZATION_MODEL` — unpriced until real SKUs exist.
+  The purchase welcome says *Foundations is yours*, and under it what was
+  actually bought — a subscriber reads *Cancel anytime*, an owner
+  *One-time purchase*. Every word the selling surfaces say now lives in
+  one place, split into what changes with the pricing model and what
+  does not.
+
+- **The Tour's frame lands on what each stop points at, and Skip is a pill.**
+  The day's card and the practice shelf run the full width of the page, so
+  ringing their boxes put the outline off both screen edges; the frame now
+  sits at the design's gutter, and on the tab bar it rings the row of tabs
+  rather than the strip under them. Skip is the design's quiet pill beside
+  Next instead of a bare word, and it leaves the last card, where Done is the
+  only way out. The dots keep the middle of the row either way.
+- **The Tour runs unasked, and says what the design says.** A first launch
+  that reaches Learn no longer asks "Quick tour?" — the four stops start as
+  soon as the Today card is there, as the design draws them (#537). Skip,
+  Done or leaving the tab ends the Tour, and it is not run again. The four
+  stops now carry the design's own words — *Today starts here*, *Practice
+  again, any time*, *Saved and Dictionary*, *Find your way* — in place of the
+  set written before the design's tour was found (#536).
 - **The drawn green bean shades itself with the design's hairline token.** The
   10 Sep prototype drop named the ink-dark outline on illustration fills
   `--art-hairline`, so the seed's outline, shadow and crease shadow read
@@ -222,6 +252,26 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **The bookmark in a top bar wears its ring.** On a lesson, a term and Term
+  of the Day, the save control is the design's ringed button, muted until
+  saved and accent after, matching the ringed back control beside it.
+- **Roasty's card face glows the way the design draws it.** The wide halo
+  behind him holds still, and a tight glow in the mood's warn colour breathes
+  around his body every 1.6 seconds, where the app had the halo blinking and
+  no glow on the body.
+- **A card's button sits at the foot of the screen.** Every lesson and
+  mini-game card now fills the screen with its Continue at the bottom, the way
+  the design lays it out, instead of the button following the text wherever it
+  ended. A card taller than the screen still scrolls, with the button after it.
+- **The predict card matches its design.** It opens on its title with no
+  lesson-number eyebrow, its paragraph and question read at the lead size,
+  a *First guess* line heads the guess, the tiles sit at the design's gap,
+  and the button says *Make a guess* until a guess is taken, then *Find out*.
+- **A sale after a restore that found nothing is still a sale.** Tapping
+  *Restore purchases*, being told there was nothing to restore, and then
+  buying left the offer by the restore door: no celebration, and in the
+  intro the buyer landed on Today. The door is now chosen per press. The
+  offer's eyebrow also leads with *Foundations*, as the design's does.
 - **Restore Purchases no longer looks broken when it finds nothing.** It said
   nothing at all — on every gate the app draws — so a learner with no purchase
   on the account tapped a link that appeared dead. It now says what happened
@@ -270,6 +320,8 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Removed
 
+- **The Tour's intro overlay.** "Quick tour? Show me / Skip" is gone: the
+  design has no such offer, and the Tour's own Skip is already the way out.
 - **The old progress store is gone.** The three normalised tables the app
   opened with — per-lesson completions, the module-XP ledger and collected
   cards — and the points total on the settings row are dropped at schema v13,

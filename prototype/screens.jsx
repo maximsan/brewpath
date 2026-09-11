@@ -859,7 +859,7 @@ function SavedHeaderButton({ onClick, locked = false, count = 0 }) {
 const APP_HEADER_TITLES = {
   learn: (() => {
     const d = new Date(2026, 4, 8); // Fri May 8 — frozen for the prototype
-    return { eyebrow: 'TODAY', title: d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }) };
+    return { eyebrow: 'TODAY', title: d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) };
   })(),
   path:  { eyebrow: 'YOUR PATH', title: 'Beginner Foundations' },
   cards: { eyebrow: 'YOUR DECK', title: 'Collection' },
@@ -921,8 +921,8 @@ function LearnTab({ freezeSaved = false, freezesHeld = 0, nextFreezeIn = 7, onDi
   const lock = isLocked || (() => false);
   const [ksSignal, setKsSignal] = React.useState({}); // Keep Sharp → open a Practice Again group
   const today = new Date(2026, 4, 8); // Friday May 8 (frozen for prototype)
-  const dayName = today.toLocaleDateString('en-US', { weekday: 'long' });
-  const monthDay = today.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+  const dayName = today.toLocaleDateString('en-US', { weekday: 'short' });
+  const monthDay = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
   // Derive the live state from the content model rather than hard-coding.
   let curMod = MODULES[0], curLesson = MODULES[0].lessons[0];
@@ -1162,9 +1162,9 @@ function LearnTab({ freezeSaved = false, freezesHeld = 0, nextFreezeIn = 7, onDi
           // THE GAME CATALOG — one group per kind: kind glyph + kind name on the
           // header (never per row), its games under it. Order and positions are
           // fixed and identical for free and Plus; only the lock marks differ.
-          // A game is free iff its topic's module is unlocked — locked rows are
+          // A game is free iff its teaching lesson is free — locked rows are
           // lock-marked before any tap, and the tap raises the module-targeted
-          // gate sheet ("Taught in Module N").
+          // gate sheet ("Taught in Module N", which reads `mod` for copy only).
           const kindGroups = GAME_KINDS.map(k => ({ ...k, games: MINI_GAMES.filter(m => m.kind === k.kind) })).filter(k => k.games.length);
           return (
             <div className="px-24" data-guide="today-practice" style={{ paddingTop: 32 }}>
@@ -1187,13 +1187,13 @@ function LearnTab({ freezeSaved = false, freezesHeld = 0, nextFreezeIn = 7, onDi
                 ))}
                 {kindGroups.map(k => (
                   <SubGroup key={k.kind} label={k.label} count={k.games.length}
-                            locked={gamesLocked && k.games.every(m => m.mod !== 'm1')}
+                            locked={gamesLocked && k.games.every(m => !gameIsFree(m))}
                             icon={<ReplayIcon kind={k.kind} size={18}/>}>
                     {k.games.map(m => {
-                      const locked = gamesLocked && m.mod !== 'm1';
+                      const locked = gamesLocked && !gameIsFree(m);
                       return (
                         <ReplayRow key={m.id} title={m.title} sub={m.sub} locked={locked} go={true}
-                                   meta={m.placeholder ? 'PLACEHOLDER' : (gamesLocked && !locked ? 'FREE' : m.meta)}
+                                   meta={gamesLocked && !locked ? 'FREE' : m.meta}
                                    onClick={() => onGame(m)}/>
                       );
                     })}
@@ -1227,49 +1227,35 @@ function FormRow({ label, value }) {
 }
 
 function PracticeGroup({ label, count, defaultOpen, openSignal, last = false, children }) {
-  const [open, setOpen] = React.useState(!!defaultOpen);
-  // Keep Sharp's Start opens the matching group from the card above (no scroll APIs).
-  React.useEffect(() => { if (openSignal) setOpen(true); }, [openSignal]);
+  // openSignal: Keep Sharp's Start opens the matching group from the card above.
   return (
-    <div style={{ borderBottom: last ? 'none' : '1px solid var(--rule)' }}>
-      <button onClick={() => setOpen(o => !o)} aria-expanded={open}
-        style={{
-          width: '100%', appearance: 'none', border: 'none', background: 'transparent',
-          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '16px 0',
-        }}>
-        <span style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-          <span style={{ fontSize: 'var(--t-body)', color: 'var(--ink)', fontWeight: 500 }}>{label}</span>
-          <span className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.12em', color: 'var(--ink-mute)' }}>{count}</span>
-        </span>
-        <svg width="18" height="18" viewBox="0 0 20 20" style={{ color: 'var(--ink-mute)', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 240ms cubic-bezier(.4,0,.2,1)' }}>
-          <path d="M5 8 L10 13 L15 8" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      </button>
-      {open && <div style={{ paddingBottom: 6 }}>{children}</div>}
-    </div>
+    <window.Disclosure divider={!last} defaultOpen={defaultOpen} openSignal={openSignal}
+      header={<span style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+        <span style={{ fontSize: 'var(--t-body)', color: 'var(--ink)', fontWeight: 500 }}>{label}</span>
+        <span className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.12em', color: 'var(--ink-mute)' }}>{count}</span>
+      </span>}
+      panelStyle={{ paddingBottom: 6 }}>
+      {children}
+    </window.Disclosure>
   );
 }
 
 function SubGroup({ icon, label, count, defaultOpen = false, locked = false, children }) {
-  const [open, setOpen] = React.useState(!!defaultOpen);
   return (
-    <div>
-      <button onClick={() => setOpen(o => !o)} aria-expanded={open} aria-label={`${label}. ${count} item${count === 1 ? '' : 's'}.${locked ? ' Locked — part of Foundations.' : ''}`}
-        style={{
-          width: '100%', appearance: 'none', border: 'none', background: 'transparent', cursor: 'pointer',
-          minHeight: 44, display: 'flex', alignItems: 'center', gap: 14, padding: '12px 0', textAlign: 'left',
-        }}>
+    <window.Disclosure defaultOpen={defaultOpen} headerPad="12px 0" glyphSize={16} trailingGap={14}
+      ariaLabel={`${label}. ${count} item${count === 1 ? '' : 's'}.${locked ? ' Locked — part of Foundations.' : ''}`}
+      headerStyle={{ minHeight: 44 }}
+      header={<span style={{ display: 'flex', alignItems: 'center', gap: 14, flex: 1, minWidth: 0 }}>
         <span aria-hidden="true" style={{ display: 'grid', placeItems: 'center', width: 20, color: 'var(--ink-mute)' }}>{icon}</span>
         <span className="smallcaps" style={{ flex: 1, opacity: locked ? 0.55 : 1 }}>{label}</span>
+      </span>}
+      trailing={<React.Fragment>
         <span className="ff-mono" aria-hidden="true" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.12em', color: 'var(--ink-mute)' }}>{count}</span>
         {locked && <IconLock/>}
-        <svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true" style={{ color: 'var(--ink-mute)', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 240ms cubic-bezier(.4,0,.2,1)' }}>
-          <path d="M5 8 L10 13 L15 8" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      </button>
-      {open && <div style={{ paddingLeft: 34, paddingBottom: 4 }}>{children}</div>}
-    </div>
+      </React.Fragment>}
+      panelStyle={{ paddingLeft: 34, paddingBottom: 4 }}>
+      {children}
+    </window.Disclosure>
   );
 }
 
@@ -1694,15 +1680,14 @@ function PathTab({ onLesson, purchaseLocked, onPurchaseTap, brewCompleted, brewA
           const open = !canCollapse || !!expandedMods[mod.id];
           return (
           <div key={mod.id} className="px-24" style={{ marginBottom: 20 }}>
-            <button
-              onClick={() => { if (canCollapse) { toggleMod(mod.id); return; } }}
-              disabled={mod.locked || !canCollapse}
-              style={{
-                width: '100%', appearance: 'none', border: 'none', background: 'transparent',
-                cursor: 'default', textAlign: 'left', padding: 0, marginBottom: 0,
-                display: 'block',
-              }}>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
+            <window.Disclosure
+              collapsible={canCollapse}
+              open={open}
+              onToggle={() => toggleMod(mod.id)}
+              headerPad="0"
+              headerAlign="baseline"
+              glyphSize={16}
+              header={<React.Fragment>
                 <span data-mglyph="" style={{ display: 'inline-flex', justifyContent: 'center', width: 32, flexShrink: 0 }}>
                 {window.CatGlyph
                   ? <window.CatGlyph cat={mod.glyph} size={26} color={mod.locked ? 'var(--ink-mute)' : 'var(--accent)'}/>
@@ -1713,21 +1698,12 @@ function PathTab({ onLesson, purchaseLocked, onPurchaseTap, brewCompleted, brewA
                   fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.1, letterSpacing: '-0.01em',
                   margin: 0, color: mod.locked ? 'var(--ink-mute)' : 'var(--ink)',
                 }}>{mod.title}</h2>
-                {mod.locked ? (
-                  <span className="trail"><window.LockMark size={13}/></span>
-                ) : canCollapse ? (
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 9, flexShrink: 0 }}>
-                    <span className="trail"><svg width="11" height="7" viewBox="0 0 12 8" aria-hidden="true" style={{ transition: 'transform 320ms cubic-bezier(0.4, 0, 0.2, 1)', transform: open ? 'rotate(180deg)' : 'none' }}><path d="M1 1l5 5 5-5" fill="none" stroke="var(--ink-mute)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg></span>
-                  </span>
-                ) : null}
-              </div>
-              {mod.locked && prereq && (
+              </React.Fragment>}
+              trailing={mod.locked ? <span className="trail"><window.LockMark size={13}/></span> : null}
+              below={mod.locked && prereq ? (
                 <div className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.1em', color: 'var(--ink-mute)', textTransform: 'uppercase', marginTop: 8, marginLeft: 44 }}>Finish {prereq.title} to unlock</div>
-              )}
-            </button>
-
-            <div style={{ display: 'grid', gridTemplateRows: open ? '1fr' : '0fr', transition: 'grid-template-rows 320ms cubic-bezier(0.4, 0, 0.2, 1)' }}>
-              <div style={{ overflow: 'hidden', minHeight: 0, paddingTop: 8 }}>
+              ) : null}
+              panelStyle={{ paddingTop: 8 }}>
               {mod.lessons.map((lesson) => {
                 const status = lesson.status;
                 const isLocked = status === 'locked' || mod.locked;
@@ -1801,8 +1777,7 @@ function PathTab({ onLesson, purchaseLocked, onPurchaseTap, brewCompleted, brewA
               {moduleChallenge && challengeState !== 'locked' && window.PathChallengeNode && (
                 <window.PathChallengeNode challenge={moduleChallenge} state={challengeState} onAction={onBrewAction}/>
               )}
-              </div>
-            </div>
+            </window.Disclosure>
           </div>
           );
         })}
@@ -1812,22 +1787,20 @@ function PathTab({ onLesson, purchaseLocked, onPurchaseTap, brewCompleted, brewA
            hairline rows), not a boxed card: Path is airy and editorial. */}
         {(() => { const all = window.VISUAL_GUIDE_CARDS || []; const guides = all.filter(g => g.earned); const left = all.length - guides.length; const locked = guides.length === 0; if (all.length === 0) return null; const open = !locked && !!expandedMods.__reference; return (
           <div className="px-24" style={{ marginTop: 12, marginBottom: 20 }}>
-            <button onClick={() => { if (!locked) toggleMod('__reference'); }} disabled={locked} style={{ width: '100%', appearance: 'none', border: 'none', background: 'transparent', cursor: locked ? 'default' : 'pointer', textAlign: 'left', padding: 0, display: 'block' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <window.Disclosure
+              collapsible={!locked}
+              open={open}
+              onToggle={() => toggleMod('__reference')}
+              headerPad="0"
+              glyphSize={16}
+              header={<React.Fragment>
               <span style={{ display: 'inline-flex', justifyContent: 'center', width: 32, flexShrink: 0 }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" style={{ color: locked ? 'var(--ink-mute)' : 'var(--sage)' }}><path d="M12 6.2 C 10 4.8 7 4.6 4.6 5.4 V17.8 C 7 17 10 17.2 12 18.6 C 14 17.2 17 17 19.4 17.8 V5.4 C 17 4.6 14 4.8 12 6.2 Z" stroke="currentColor" strokeWidth={window.GLYPH_STROKE || 1.6} strokeLinejoin="round"/><path d="M12 6.2 V18.6" stroke="currentColor" strokeWidth="1.3"/></svg>
               </span>
               <h2 className="ff-display" style={{ flex: 1, fontSize: 'var(--t-title)', fontWeight: 400, lineHeight: 1.1, letterSpacing: '-0.01em', margin: 0, color: locked ? 'var(--ink-mute)' : 'var(--ink)' }}>Reference</h2>
-                {locked ? (
-                  <span className="trail"><window.LockMark size={13}/></span>
-                ) : (
-                  <span className="trail"><svg width="11" height="7" viewBox="0 0 12 8" aria-hidden="true" style={{ transition: 'transform 320ms cubic-bezier(0.4, 0, 0.2, 1)', transform: open ? 'rotate(180deg)' : 'none' }}><path d="M1 1l5 5 5-5" fill="none" stroke="var(--ink-mute)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg></span>
-                )}
-              </div>
-              <div className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.1em', color: 'var(--ink-mute)', textTransform: 'uppercase', marginLeft: 44, marginTop: 8, marginBottom: 2 }}>{locked ? 'Visual guides unlock as lessons teach them' : 'Visual guides from your lessons'}</div>
-            </button>
-            <div style={{ display: 'grid', gridTemplateRows: open ? '1fr' : '0fr', transition: 'grid-template-rows 320ms cubic-bezier(0.4, 0, 0.2, 1)' }}>
-              <div style={{ overflow: 'hidden', minHeight: 0 }}>
+              </React.Fragment>}
+              trailing={locked ? <span className="trail"><window.LockMark size={13}/></span> : null}
+              below={<div className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.1em', color: 'var(--ink-mute)', textTransform: 'uppercase', marginLeft: 44, marginTop: 8, marginBottom: 2 }}>{locked ? 'Visual guides unlock as lessons teach them' : 'Visual guides from your lessons'}</div>}>
             <div style={{ marginTop: 6 }}>
               {guides.map((g, i) => {
                 const t = (window.VISUAL_GUIDE_CONTENT || {})[g.visualGuide] || {};
@@ -1849,8 +1822,7 @@ function PathTab({ onLesson, purchaseLocked, onPurchaseTap, brewCompleted, brewA
             {left > 0 && (
               <div className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.1em', color: 'var(--ink-mute)', textTransform: 'uppercase', marginTop: 10 }}>{left} more unlock as you learn</div>
             )}
-              </div>
-            </div>
+            </window.Disclosure>
           </div>
         ); })()}
 
@@ -3194,9 +3166,9 @@ window.Icons = {
 // Vocabulary: a KIND is the mechanic; a GAME is one catalog entry — a kind plus
 // exactly one course topic (`mod` names the module that teaches it), with a
 // persistent id. The original seven ids are persisted in stored day-sets and
-// are FROZEN; new ids are topic-slugged (g-<kind>-<topic>). Placeholder
-// siblings are marked `placeholder` — final topics (and slugs) land with
-// authoring; their ids are never stored, so renaming them is safe.
+// are FROZEN; new ids are topic-slugged (g-<kind>-<topic>) and are not stored,
+// so renaming them is safe. Every entry here must have a bank in lesson.jsx's
+// GAME_BANKS — the catalog carries no unauthored entries.
 // The catalog groups by kind, in this fixed order — never re-sorted by tier.
 const GAME_KINDS = [
   { kind: 'match',    label: 'Match' },
@@ -3299,13 +3271,22 @@ const MINI_GAMES = [
   },
 ];
 // Each game points at the lesson that teaches its topic (#225); `mod` derives
-// from that pointer, so tier and teaching lesson can never drift apart.
+// from that pointer and is display-only (grouping, gate-sheet copy). Access is
+// NEVER decided from it — see gameIsFree.
 MINI_GAMES.forEach(g => { g.mod = g.lesson.match(/^m\d+/)[0]; });
-// Tier derives from topic: a game is free iff its teaching lesson's module is
-// unlocked (free tier = Module 1). DERIVED, not hand-kept — today g-match,
-// g-quiz and g-flavor-origin-signatures (the M1-topic games); the free catalog
-// widens only if what's unlocked widens (#175).
-const FREE_GAME_IDS = MINI_GAMES.filter(g => g.mod === 'm1').map(g => g.id);
+// The free tier is a set of free LESSONS, declared once in data.jsx as
+// window.FREE_LESSON_IDS and read by every gate (app.jsx's lessonAccessible
+// asks the same set). No local copy of the rule lives here.
+if (!window.FREE_LESSON_IDS) throw new Error('screens.jsx: window.FREE_LESSON_IDS missing — data.jsx must load first.');
+// A game is free iff the lesson that TEACHES it is free — the same question the
+// app asks before opening that lesson. Asking "is its module Module 1?" instead
+// picks the same three games today only because every M1 lesson is free; the
+// moment the free tier narrows to specific lessons, a Module 1 game taught by a
+// paid lesson would read free here and lock in the app, with nothing to flag it.
+function gameIsFree(g) { return window.FREE_LESSON_IDS.has(g.lesson); }
+// DERIVED, not hand-kept — today g-match, g-quiz and g-flavor-origin-signatures;
+// the free catalog widens only if what's unlocked widens (#175).
+const FREE_GAME_IDS = MINI_GAMES.filter(gameIsFree).map(g => g.id);
 
 // First screen of the game flow: what it is, how to play, then Play.
 function GameIntroScreen({ game, onStart, onClose }) {

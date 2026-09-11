@@ -548,7 +548,6 @@ window.PathChallengeNode = PathChallengeNode;
 // challenge (the current active one moves back into this list).
 // ───────────────────────────────────────────────────────────
 function SavedBrewList({ saved, activeId, completed, onStart, onRemove }) {
-  const [open, setOpen] = React.useState(false);
   const ids = saved ? [...saved].filter(id => id !== activeId && !(completed && completed.has(id))) : [];
   if (ids.length === 0) return null;
   // Only surface a saved challenge once its source lesson has actually been
@@ -568,21 +567,13 @@ function SavedBrewList({ saved, activeId, completed, onStart, onRemove }) {
   const metaInk = 'color-mix(in oklab, var(--ink-mute) 62%, var(--ink))';
   return (
     <div className="px-24" style={{ paddingTop: 24 }}>
-      <button onClick={() => setOpen(o => !o)} aria-expanded={open}
-        aria-label={'For later, ' + items.length + ' challenge' + (items.length === 1 ? '' : 's')} style={{
-        width: '100%', minHeight: 44, appearance: 'none', border: 'none', background: 'transparent',
-        cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        gap: 10, padding: '4px 0',
-      }}>
-        <span className="smallcaps" aria-hidden="true" style={{ color: 'var(--accent-text)', display: 'flex', alignItems: 'center', gap: 8 }}>
+      <window.Disclosure headerPad="4px 0" headerStyle={{ minHeight: 44 }}
+        ariaLabel={'For later, ' + items.length + ' challenge' + (items.length === 1 ? '' : 's')}
+        header={<span className="smallcaps" aria-hidden="true" style={{ color: 'var(--accent-text)', display: 'flex', alignItems: 'center', gap: 8 }}>
           <LaterClock size={15} color="var(--accent)"/> FOR LATER · {items.length}
-        </span>
-        <svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true" style={{ color: 'var(--ink-mute)', flexShrink: 0, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 240ms cubic-bezier(.4,0,.2,1)' }}>
-          <path d="M5 8 L10 13 L15 8" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      </button>
-      {open && (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, paddingTop: 12 }}>
+        </span>}
+        panelStyle={{ paddingTop: 12 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {items.map(ch => (
           // No cup glyph per row — the section header already carries the mark.
           <div key={ch.id} style={{
@@ -606,7 +597,7 @@ function SavedBrewList({ saved, activeId, completed, onStart, onRemove }) {
           </div>
         ))}
       </div>
-      )}
+      </window.Disclosure>
     </div>
   );
 }

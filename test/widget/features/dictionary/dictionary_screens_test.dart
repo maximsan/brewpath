@@ -9,7 +9,7 @@ import 'package:brew_path/features/dictionary/presentation/term_detail_screen.da
 import 'package:brew_path/features/dictionary/presentation/term_entry_copy.dart';
 import 'package:brew_path/features/dictionary/presentation/term_full_entry_gate.dart';
 import 'package:brew_path/features/dictionary/presentation/term_peek_sheet.dart';
-import 'package:brew_path/features/monetization/domain/plus_copy.dart';
+import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart';
@@ -85,6 +85,9 @@ DictionaryView _view({
 
 /// A counted pitch, so the gate's assertions do not wait on the banks.
 const _pitch = PlusPitch(
+  premiumFormats: 4,
+  firstPaidModule: 2,
+  lastPaidModule: 5,
   remainingLessons: 29,
   lockedGames: 4,
   referenceTerms: 8,
@@ -514,7 +517,7 @@ void main() {
       await tester.tap(find.text(TermEntryCopy.readFullEntry));
       await tester.pumpAndSettle();
 
-      expect(find.text(PlusCopy.title), findsOneWidget);
+      expect(find.text(PaywallCopy.gateTitle), findsOneWidget);
       expect(
         find.text(const LockedFullEntry(term: 'Arabica').header),
         findsOneWidget,

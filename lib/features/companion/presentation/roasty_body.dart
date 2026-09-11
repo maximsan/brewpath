@@ -100,6 +100,16 @@ void paintRoastySprout(
   canvas.restore();
 }
 
+/// The bean's outline in the mascot's own units, which the body fills and
+/// the card face's shimmer blurs behind it.
+Path roastyBeanOutline() => Path()
+  ..moveTo(100, 90)
+  ..cubicTo(62, 90, 38, 120, 38, 158)
+  ..cubicTo(38, 200, 64, 226, 100, 226)
+  ..cubicTo(136, 226, 162, 200, 162, 158)
+  ..cubicTo(162, 120, 138, 90, 100, 90)
+  ..close();
+
 /// Paints the bean body (shadow, gradient body, highlight, crease) with the
 /// per-state body transform for [state] at progress [t].
 void paintRoastyBody(Canvas canvas, RoastyState state, double t) {
@@ -128,14 +138,7 @@ void paintRoastyBody(Canvas canvas, RoastyState state, double t) {
     stops: [0.0, 0.55, 1.0],
   );
   final bodyPaint = Paint()..shader = bodyGradient.createShader(bodyRect);
-  final bodyPath = Path()
-    ..moveTo(100, 90)
-    ..cubicTo(62, 90, 38, 120, 38, 158)
-    ..cubicTo(38, 200, 64, 226, 100, 226)
-    ..cubicTo(136, 226, 162, 200, 162, 158)
-    ..cubicTo(162, 120, 138, 90, 100, 90)
-    ..close();
-  canvas.drawPath(bodyPath, bodyPaint);
+  canvas.drawPath(roastyBeanOutline(), bodyPaint);
 
   // top highlight
   final highlight = Paint()

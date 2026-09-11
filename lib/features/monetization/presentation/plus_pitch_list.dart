@@ -1,4 +1,4 @@
-import 'package:brew_path/features/monetization/domain/plus_copy.dart';
+import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -28,7 +28,7 @@ class PlusPitchList extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          for (final bullet in PlusCopy.bulletsFor(counted))
+          for (final bullet in PaywallCopy.bulletsFor(counted))
             _Bullet(bullet: bullet),
         ],
       );

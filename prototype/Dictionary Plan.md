@@ -168,3 +168,41 @@ All closed: checks written (step 2), sources backfilled where honest
   `natural`, fixed by rewording m2l2's concept paragraph).
 - Multi-word aliases must sort before their fragments (GLOSSARY_INDEX already
   sorts by length).
+
+## Source URL audit (Sept 2026)
+
+Every URL in the file re-fetched and checked against the claim it backs.
+
+Verified live and on-claim: WCR Arabica catalog; MDPI Foods 11(13) 1907; PDG
+Processing 101; PDG peaberry; USDA FoodData Central; SCA 25/issue-13 brewing
+chart; SCA flavor-wheel-in-eight-steps; SCA cupping-protocol pilot; NCA storage
+and shelf life; Fairtrade International Standards; Barista Hustle Æ 3.01 (title
+matches exactly — note the lesson body is behind a course signup, only the
+intro is public; Æ 3.05 shares the same live URL scheme).
+
+Fixed:
+- SCA rebuilt their site; `?page=resources` was a meaningless query landing on
+  a generic page for every claim. Re-pointed by claim: standards claims ->
+  /research/coffee-standards, general -> /research. The invented-sounding
+  "SCA — Coffee Basics" label is now "SCA — Research and resources".
+- `decaf` cited generic SCA research -> NCA's dedicated decaf page.
+- `green-coffee` cited NCA "Storage and shelf life", which is about ROASTED
+  coffee — wrong page for a green-coffee claim -> NCA "Lifecycle of coffee".
+- `pour-over` and `cold-brew` cited the NCA /brewing/ section root -> each
+  method's own page. `immersion`, `scale`, `grind-size` keep the section root
+  deliberately (category-level claims).
+- `french-press` was label-only -> gained NCA's French press page.
+- `chemex` pointed at a product listing (products get discontinued) ->
+  /pages/how-to-brew-with-chemex.
+- `aeropress`: aeropress.com/pages/brew-guides would not load and no official
+  AeroPress page surfaces in search. Possibly a bot block rather than a dead
+  page, but an unverifiable URL breaks the no-guessed-URL rule, so the
+  manufacturer reference is now label-only and a verified PDG brew guide
+  (Feb 2025) carries the link.
+
+Not re-fetched, deliberately: the three academic links (ScienceDirect
+S0963996914000337, ACS 10.1021/acs.jafc.7b03310, PMC10848008) are DOI/PMID-
+backed and stable; the two Barista Magazine posts (honey process, Swiss Water)
+are still unchecked — next pass.
+
+Label-only after this pass: 21 terms (was 22). Coverage unchanged at 72/73.

@@ -5,8 +5,8 @@ import 'package:brew_path/features/dictionary/presentation/flashcard_view.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_copy.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_empty_view.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_screen.dart';
+import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
-import 'package:brew_path/features/monetization/domain/plus_copy.dart';
 import 'package:brew_path/features/progress/domain/activity_recorder.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
@@ -336,7 +336,7 @@ void main() {
     // indefinitely so nothing here can settle.
     await _settleWrite(tester);
 
-    expect(find.text(PlusCopy.title), findsOneWidget);
+    expect(find.text(PaywallCopy.gateTitle), findsOneWidget);
     expect(
       _reviews(await _activityToday(container)),
       1,

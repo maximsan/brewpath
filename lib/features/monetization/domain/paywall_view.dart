@@ -5,6 +5,8 @@
 /// nothing is written down at a call site.
 library;
 
+import 'dart:math' as math;
+
 import 'package:brew_path/features/monetization/config/paywall_config.dart';
 import 'package:brew_path/services/payments/store_product.dart';
 import 'package:brew_path/shared/models/monetization/plus_offering.dart';
@@ -66,6 +68,7 @@ class PaywallView {
     required this.note,
     required this.plans,
     required this.defaultTerm,
+    required this.fromPerMonth,
   });
 
   /// Which arm this is, for a surface that needs the config's other slots.
@@ -86,6 +89,10 @@ class PaywallView {
   /// The row selected before the learner touches anything.
   final PlusTerm defaultTerm;
 
+  /// The cheapest month this arm can be had for — `$2` off a `$23.99` year —
+  /// or null when no renewing plan is priced.
+  final String? fromPerMonth;
+
   /// Whether the learner is being asked to choose, rather than just to buy.
   bool get offersAChoice => plans.length > 1;
 
@@ -99,20 +106,39 @@ class PaywallView {
   );
 }
 
-/// Substitutes the store's price into a line of config copy.
+/// Substitutes the store's figures into a line of config copy.
 ///
-/// An unpriced line loses the whole clause rather than showing a placeholder,
-/// because `Unlock Foundations — {price}` on a real screen is worse than
-/// `Unlock Foundations`.
-String withPrice(String template, String? price) {
-  if (price != null) return template.replaceAll(pricePlaceholder, price);
+/// A line whose figure is missing loses the whole clause rather than showing
+/// a placeholder, because `Unlock Foundations — {price}` on a real screen is
+/// worse than `Unlock Foundations`.
+String withPrice(String template, String? price, {String? perMonth}) {
+  var line = template;
+  if (price != null) line = line.replaceAll(pricePlaceholder, price);
+  if (perMonth != null) line = line.replaceAll(perMonthPlaceholder, perMonth);
 
-  return template
-      .split(pricePlaceholder)
-      .first
+  final unfilled = [
+    pricePlaceholder,
+    perMonthPlaceholder,
+  ].map(line.indexOf).where((index) => index >= 0);
+  if (unfilled.isEmpty) return line;
+
+  return line
+      .substring(0, unfilled.reduce(math.min))
       .trimRight()
-      .replaceAll(RegExp(r'[—·\-]$'), '')
+      .replaceAll(RegExp(r'\s*[—·-](\s*from)?$'), '')
       .trimRight();
+}
+
+/// [amount] written the way the store wrote [price]: the currency mark kept
+/// on the side the store put it, in whole units — `$23.99` and 1.999 give
+/// `$2`.
+String formatLikePrice(String price, double amount) {
+  final figure = RegExp(r'[\d.,]+').firstMatch(price);
+  if (figure == null) return '${amount.round()}';
+
+  return '${price.substring(0, figure.start)}'
+      '${amount.round()}'
+      '${price.substring(figure.end)}';
 }
 
 /// Builds the paywall for [offering], priced by whatever [products] carries.
@@ -133,6 +159,7 @@ PaywallView buildPaywallView({
     heroTitle: config.heroTitle,
     note: config.paywallNote,
     defaultTerm: offering.defaultOffer.term,
+    fromPerMonth: _cheapestMonth(offering, priced),
     plans: [
       for (final offer in offering.offers)
         _planView(offer, priced[offer.productId], monthly),
@@ -146,16 +173,51 @@ PaywallPlanView _planView(
   double? monthlyAmount,
 ) {
   final plan = paywallPlans[offer.term]!;
+  final perMonth = _perMonthOf(offer.term, product);
 
   return PaywallPlanView(
     term: offer.term,
     productId: offer.productId,
     name: plan.name,
-    line: plan.line,
+    line: plan.perMonthLine != null && perMonth != null
+        ? withPrice(plan.perMonthLine!, null, perMonth: perMonth.formatted)
+        : plan.line,
     price: product?.price,
     per: plan.per,
     badge: _savingsBadge(offer.term, product?.amount, monthlyAmount),
   );
+}
+
+/// What a month costs on a renewing plan, as a number and as the store would
+/// write it.
+typedef _PerMonth = ({double amount, String formatted});
+
+_PerMonth? _perMonthOf(PlusTerm term, StoreProduct? product) {
+  if (product == null) return null;
+  final amount = switch (term) {
+    PlusTerm.monthly => product.amount,
+    PlusTerm.yearly => product.amount / _monthsPerYear,
+    PlusTerm.lifetime => null,
+  };
+  if (amount == null) return null;
+
+  return (amount: amount, formatted: formatLikePrice(product.price, amount));
+}
+
+String? _cheapestMonth(
+  PlusOffering offering,
+  Map<String, StoreProduct> priced,
+) {
+  _PerMonth? cheapest;
+  for (final offer in offering.offers) {
+    final perMonth = _perMonthOf(offer.term, priced[offer.productId]);
+    if (perMonth == null) continue;
+    if (cheapest == null || perMonth.amount < cheapest.amount) {
+      cheapest = perMonth;
+    }
+  }
+
+  return cheapest?.formatted;
 }
 
 /// What a yearly plan saves against paying monthly for a year.

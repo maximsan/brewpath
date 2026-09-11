@@ -9,15 +9,17 @@ import 'package:brew_path/shared/models/monetization/plus_offering.dart';
 /// `--dart-define=GRANT_COURSE=true` selects it, so a release build without
 /// that flag cannot reach this class at all.
 class GrantedPaymentsService implements PaymentsService {
-  /// Creates a [GrantedPaymentsService].
-  const GrantedPaymentsService();
+  /// Creates a [GrantedPaymentsService] whose store reports [model].
+  const GrantedPaymentsService({this.model = MonetizationModel.oneTime});
+
+  /// The arm this store puts every learner on.
+  final MonetizationModel model;
 
   @override
   Future<bool> hasActiveEntitlement() async => true;
 
   @override
-  Future<PlusOffering> currentOffering() async =>
-      offeringFor(MonetizationModel.oneTime);
+  Future<PlusOffering> currentOffering() async => offeringFor(model);
 
   @override
   Future<List<StoreProduct>> getProducts(List<String> productIds) async => [];

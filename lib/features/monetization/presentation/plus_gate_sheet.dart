@@ -1,17 +1,18 @@
+import 'package:brew_path/core/config/app_links_provider.dart';
 import 'package:brew_path/core/widgets/app_sheet.dart';
 import 'package:brew_path/core/widgets/ghost_button.dart';
 import 'package:brew_path/core/widgets/link_button.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/features/monetization/config/paywall_config.dart';
+import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/paywall_view.dart';
 import 'package:brew_path/features/monetization/domain/paywall_view_provider.dart';
-import 'package:brew_path/features/monetization/domain/plus_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart';
 import 'package:brew_path/features/monetization/domain/plus_purchase_controller.dart';
-import 'package:brew_path/features/monetization/presentation/legal_links.dart';
 import 'package:brew_path/features/monetization/presentation/plus_pitch_list.dart';
 import 'package:brew_path/features/monetization/presentation/purchase_outcome_line.dart';
+import 'package:brew_path/services/links/open_link.dart';
 import 'package:brew_path/shared/models/monetization/plus_offering.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -28,7 +29,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 Future<void> showPlusGate(BuildContext context, PlusGateTrigger trigger) =>
     showAppSheet<void>(
       context: context,
-      title: PlusCopy.title,
+      title: PaywallCopy.gateTitle,
       builder: (_) => _PlusGateBody(trigger: trigger),
     );
 
@@ -58,7 +59,7 @@ class _PlusGateBody extends ConsumerWidget {
         _GateAction(isWorking: purchase == PlusPurchaseState.working),
         const SizedBox(height: AppSpacing.xs),
         GhostButton(
-          label: PlusCopy.notNow,
+          label: PaywallCopy.notNow,
           onPressed: purchase == PlusPurchaseState.working
               ? null
               : () => Navigator.of(context).pop(),
@@ -66,7 +67,7 @@ class _PlusGateBody extends ConsumerWidget {
         const SizedBox(height: AppSpacing.xs),
         Center(
           child: LinkButton(
-            label: PlusCopy.restore,
+            label: PaywallCopy.restore,
             onPressed: purchase == PlusPurchaseState.working
                 ? null
                 : () => ref.read(plusPurchaseProvider.notifier).restore(),
@@ -90,21 +91,22 @@ class _GateAction extends ConsumerWidget {
     final view = ref.watch(paywallViewProvider).asData?.value;
     final config = paywallModels[view?.model ?? MonetizationModel.oneTime]!;
     final price = view?.planFor(null).price;
+    final perMonth = view?.fromPerMonth;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         PrimaryButton(
           label: isWorking
-              ? PlusCopy.working
-              : withPrice(config.gateCta, price),
+              ? PaywallCopy.working
+              : withPrice(config.gateCta, price, perMonth: perMonth),
           onPressed: isWorking
               ? null
               : () => ref.read(plusPurchaseProvider.notifier).buy(),
         ),
         const SizedBox(height: AppSpacing.xs),
         Text(
-          withPrice(config.gateFooter, price),
+          withPrice(config.gateFooter, price, perMonth: perMonth),
           textAlign: TextAlign.center,
           style: AppText.micro(mood: context.mood, face: AppFace.mono),
         ),
@@ -114,15 +116,33 @@ class _GateAction extends ConsumerWidget {
 }
 
 /// Terms and Privacy, which the App Store requires of a non-consumable.
-class _LegalLinks extends StatelessWidget {
+///
+/// Drawn even while unhosted — their absence on a buying surface is a
+/// store-review failure, so an inert link is the lesser of the two (#448).
+/// They go live the moment the pages exist.
+class _LegalLinks extends ConsumerWidget {
   const _LegalLinks();
 
   @override
-  Widget build(BuildContext context) => const Padding(
-    padding: EdgeInsets.only(top: AppSpacing.xs),
-    child: LegalLinks(
-      termsLabel: PlusCopy.terms,
-      privacyLabel: PlusCopy.privacy,
+  Widget build(BuildContext context, WidgetRef ref) => Padding(
+    padding: const EdgeInsets.only(top: AppSpacing.xs),
+    // Wrapped, not a Row: two links side by side fit a phone at the default
+    // text size and stop fitting well before the largest one, and a required
+    // legal link is the last thing that may be clipped off the sheet.
+    child: Wrap(
+      alignment: WrapAlignment.center,
+      spacing: AppSpacing.md,
+      runSpacing: AppSpacing.xxs,
+      children: [
+        LinkButton(
+          label: PaywallCopy.terms,
+          onPressed: openOr(ref, ref.watch(termsPageProvider)),
+        ),
+        LinkButton(
+          label: PaywallCopy.privacy,
+          onPressed: openOr(ref, ref.watch(privacyPageProvider)),
+        ),
+      ],
     ),
   );
 }

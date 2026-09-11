@@ -6,8 +6,8 @@
 /// from the pitch the paywall already reads.
 library;
 
+import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/free_tier.dart';
-import 'package:brew_path/features/monetization/domain/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
 
 /// One question, with the answer that opens under it.

@@ -370,8 +370,8 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
   /// because two devices the same person owns may legitimately differ.
   final String themeMode;
 
-  /// Whether the learner has answered the Tour's intro overlay. Written when
-  /// either button is pressed, so abandoning mid-tour never re-arms it.
+  /// Whether the Tour's first run has ended — by Skip, Done or leaving the
+  /// tab — so it runs once and never asks (#537).
   ///
   /// Fate-shares with [onboardingCompleted]: `AccountWipe.resetProgress`
   /// keeps both, `SettingsRepository.deleteAll` and

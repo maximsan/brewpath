@@ -1,4 +1,5 @@
 import 'package:brew_path/services/payments/noop_payments_service.dart';
+import 'package:brew_path/services/payments/payments_provider.dart';
 import 'package:brew_path/shared/models/monetization/plus_offering.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -33,18 +34,33 @@ void main() {
     expect(offeringFor(MonetizationModel.oneTime).offers, hasLength(1));
   });
 
-  test('an arm with no registered SKU refuses rather than guessing', () {
-    // The alternative is inventing product ids App Store Connect has never
-    // seen, then shipping a paywall that offers them.
-    for (final model in [
+  test('the two experiment arms sell renewing plans and preselect yearly', () {
+    final subscription = offeringFor(MonetizationModel.subscription);
+    final hybrid = offeringFor(MonetizationModel.hybrid);
+
+    expect(
+      subscription.offers.map((offer) => offer.term),
+      [PlusTerm.monthly, PlusTerm.yearly],
+    );
+    expect(
+      hybrid.offers.map((offer) => offer.term),
+      [PlusTerm.monthly, PlusTerm.yearly, PlusTerm.lifetime],
+    );
+    expect(subscription.defaultOffer.term, PlusTerm.yearly);
+    expect(hybrid.defaultOffer.term, PlusTerm.yearly);
+  });
+
+  test('a development build can ask its store for another arm', () async {
+    // Only a `--dart-define` reaches this; a store built without one is on
+    // the baseline, which is what the test above proves.
+    expect(monetizationModelNamed('hybrid'), MonetizationModel.hybrid);
+    expect(monetizationModelNamed(''), MonetizationModel.oneTime);
+    expect(monetizationModelNamed('nonsense'), MonetizationModel.oneTime);
+
+    const store = NoOpPaymentsService(model: MonetizationModel.subscription);
+    expect(
+      (await store.currentOffering()).model,
       MonetizationModel.subscription,
-      MonetizationModel.hybrid,
-    ]) {
-      expect(
-        () => offeringFor(model),
-        throwsUnimplementedError,
-        reason: '${model.name} has no SKUs, so it cannot be offered',
-      );
-    }
+    );
   });
 }

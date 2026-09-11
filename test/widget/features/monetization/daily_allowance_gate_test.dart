@@ -3,9 +3,9 @@ import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/dictionary/domain/flashcard_providers.dart';
 import 'package:brew_path/features/learn/presentation/today_lesson_body.dart';
+import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
 import 'package:brew_path/features/monetization/domain/daily_allowance.dart';
-import 'package:brew_path/features/monetization/domain/plus_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/features/progress/domain/activity_recorder.dart';
 import 'package:brew_path/features/saved/presentation/saved_study_row.dart';
@@ -111,7 +111,7 @@ void main() {
       await settleLoaders(tester);
 
       expect(find.text(lessonMark), findsOneWidget);
-      expect(find.text(PlusCopy.title), findsNothing);
+      expect(find.text(PaywallCopy.gateTitle), findsNothing);
     });
 
     testWidgets('the drill deals', (tester) async {
@@ -121,7 +121,7 @@ void main() {
       await settleLoaders(tester);
 
       expect(find.text(drillMark), findsOneWidget);
-      expect(find.text(PlusCopy.title), findsNothing);
+      expect(find.text(PaywallCopy.gateTitle), findsNothing);
     });
   });
 
@@ -135,7 +135,7 @@ void main() {
       await tester.tap(find.byType(TodayLessonBody));
       await settleLoaders(tester);
 
-      expect(find.text(PlusCopy.title), findsOneWidget);
+      expect(find.text(PaywallCopy.gateTitle), findsOneWidget);
       // The whole point of the AC: the surface is never reached, so there is
       // nothing behind the sheet to find once it is dismissed.
       expect(find.text(lessonMark), findsNothing);
@@ -150,7 +150,7 @@ void main() {
       await tester.tap(find.byType(SavedStudyRow));
       await settleLoaders(tester);
 
-      expect(find.text(PlusCopy.title), findsOneWidget);
+      expect(find.text(PaywallCopy.gateTitle), findsOneWidget);
       expect(find.text(drillMark), findsNothing);
     });
 
@@ -176,6 +176,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(lessonMark), findsOneWidget);
-    expect(find.text(PlusCopy.title), findsNothing);
+    expect(find.text(PaywallCopy.gateTitle), findsNothing);
   });
 }
