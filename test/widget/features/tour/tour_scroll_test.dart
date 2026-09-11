@@ -1,4 +1,5 @@
 import 'package:brew_path/features/tour/domain/tour_copy.dart';
+import 'package:brew_path/features/tour/domain/tour_geometry.dart';
 import 'package:brew_path/features/tour/domain/tour_step.dart';
 import 'package:brew_path/features/tour/presentation/today_tour.dart';
 import 'package:brew_path/features/tour/presentation/tour_anchor.dart';
@@ -34,12 +35,17 @@ void main() {
     return (paint.painter! as TourFramePainter).frame;
   }
 
+  /// [step]'s whole box, which is what the scroll arithmetic reads.
   Rect anchorRect(WidgetTester tester, TourStep step) {
     final target =
         TourAnchor.contextFor(step)!.findRenderObject()! as RenderBox;
     final layer = tester.renderObject<RenderBox>(find.byType(TodayTour));
     return target.localToGlobal(Offset.zero, ancestor: layer) & target.size;
   }
+
+  /// The part of it the frame is drawn around.
+  Rect contentRect(WidgetTester tester, TourStep step) =>
+      tourContentBox(anchorRect(tester, step), TourAnchor.insetFor(step));
 
   ScrollPosition feedPosition(WidgetTester tester) =>
       Scrollable.of(TourAnchor.contextFor(TourStep.today)!).position;
@@ -84,7 +90,7 @@ void main() {
     // a frame apart.
     expect(
       paintedFrame(tester),
-      anchorRect(
+      contentRect(
         tester,
         TourStep.practice,
       ).inflate(OffTokens.tourFrameInset.value),
