@@ -8,8 +8,13 @@ import 'package:flutter/widgets.dart';
 /// of the three; an anchor is a key it measures, and nothing else. The keys
 /// are global because a stop identifies *the* header, not a header.
 class TourAnchor extends StatelessWidget {
-  /// Anchors [step] on [child].
-  const TourAnchor({required this.step, required this.child, super.key});
+  /// Anchors [step] on [child], framing it [inset] inside its own box.
+  const TourAnchor({
+    required this.step,
+    required this.child,
+    this.inset = EdgeInsets.zero,
+    super.key,
+  });
 
   /// The keys, one per stop, created once for the life of the process.
   ///
@@ -26,13 +31,36 @@ class TourAnchor extends StatelessWidget {
   /// has been asked to keep it mounted.
   static BuildContext? contextFor(TourStep step) => _keys[step]?.currentContext;
 
+  /// What [step]'s anchor calls padding rather than content, or nothing where
+  /// it has none. Read back off the tree, so it cannot go stale.
+  static EdgeInsets insetFor(TourStep step) {
+    final anchored = _keys[step]?.currentContext?.widget;
+    return anchored is _Anchored ? anchored.inset : EdgeInsets.zero;
+  }
+
   /// The stop whose frame lands on [child].
   final TourStep step;
+
+  /// The part of this box that is the owner's padding, which the frame leaves
+  /// out — the design frames the content box.
+  final EdgeInsets inset;
 
   /// The widget the stop frames.
   final Widget child;
 
   @override
   Widget build(BuildContext context) =>
-      KeyedSubtree(key: _keys[step], child: child);
+      _Anchored(key: _keys[step], inset: inset, child: child);
+}
+
+/// Carries the key the layer measures and the inset it measures with, so both
+/// are read from one place in the tree rather than from a map beside it.
+class _Anchored extends StatelessWidget {
+  const _Anchored({required this.inset, required this.child, super.key});
+
+  final EdgeInsets inset;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => child;
 }

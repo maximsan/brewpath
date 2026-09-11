@@ -8,6 +8,7 @@ import 'package:brew_path/features/tour/domain/tour_step.dart';
 import 'package:brew_path/features/tour/presentation/tour_anchor.dart';
 import 'package:brew_path/features/tour/presentation/tour_runner.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:go_router/go_router.dart';
@@ -127,7 +128,7 @@ class _AppShellState extends State<AppShell> {
                 ),
             ],
           ),
-          bottomNavigationBar: _tabBar(context.mood),
+          bottomNavigationBar: _tabBar(context),
         ),
         // On the Learn tab's own root and nowhere else, which is both the
         // design's rule and what keeps a card from surviving onto another tab.
@@ -142,42 +143,52 @@ class _AppShellState extends State<AppShell> {
   /// box with an opaque `Material` that would bury a background decoration.
   /// The labels are uppercased here rather than in [AppLabels] because the
   /// case is this bar's type rule, not part of what the tabs are called.
-  Widget _tabBar(MoodColors mood) => TourAnchor(
-    step: TourStep.tabs,
-    child: DecoratedBox(
-      position: DecorationPosition.foreground,
-      decoration: BoxDecoration(
-        border: Border(top: BorderSide(color: mood.rule)),
+  Widget _tabBar(BuildContext context) {
+    final mood = context.mood;
+    return TourAnchor(
+      step: TourStep.tabs,
+      // The Tour frames the row of tabs. The design pads the bar `8px 0 28px`
+      // and rings what is left; the app reads the device's own indicator strip
+      // where the design writes 28, because a phone without one has none.
+      inset: EdgeInsets.only(
+        top: OffTokens.tabBarTopPad.value,
+        bottom: MediaQuery.viewPaddingOf(context).bottom,
       ),
-      child: NavigationBar(
-        selectedIndex: widget.navigationShell.currentIndex,
-        onDestinationSelected: _onDestinationSelected,
-        // Two drawings per tab, not one recoloured: selected fills the shape
-        // with the accent and knocks its interior lines out. Their ink comes
-        // from the theme's `iconTheme`, not from here.
-        destinations: [
-          NavigationDestination(
-            icon: const IconMark(AppIcon.cup),
-            selectedIcon: const IconMark(AppIcon.cup, active: true),
-            label: AppLabels.tabToday.toUpperCase(),
-          ),
-          NavigationDestination(
-            icon: const IconMark(AppIcon.route),
-            selectedIcon: const IconMark(AppIcon.route, active: true),
-            label: AppLabels.tabPath.toUpperCase(),
-          ),
-          NavigationDestination(
-            icon: const IconMark(AppIcon.cards),
-            selectedIcon: const IconMark(AppIcon.cards, active: true),
-            label: AppLabels.tabCards.toUpperCase(),
-          ),
-          NavigationDestination(
-            icon: const IconMark(AppIcon.leaf),
-            selectedIcon: const IconMark(AppIcon.leaf, active: true),
-            label: AppLabels.tabProfile.toUpperCase(),
-          ),
-        ],
+      child: DecoratedBox(
+        position: DecorationPosition.foreground,
+        decoration: BoxDecoration(
+          border: Border(top: BorderSide(color: mood.rule)),
+        ),
+        child: NavigationBar(
+          selectedIndex: widget.navigationShell.currentIndex,
+          onDestinationSelected: _onDestinationSelected,
+          // Two drawings per tab, not one recoloured: selected fills the shape
+          // with the accent and knocks its interior lines out. Their ink comes
+          // from the theme's `iconTheme`, not from here.
+          destinations: [
+            NavigationDestination(
+              icon: const IconMark(AppIcon.cup),
+              selectedIcon: const IconMark(AppIcon.cup, active: true),
+              label: AppLabels.tabToday.toUpperCase(),
+            ),
+            NavigationDestination(
+              icon: const IconMark(AppIcon.route),
+              selectedIcon: const IconMark(AppIcon.route, active: true),
+              label: AppLabels.tabPath.toUpperCase(),
+            ),
+            NavigationDestination(
+              icon: const IconMark(AppIcon.cards),
+              selectedIcon: const IconMark(AppIcon.cards, active: true),
+              label: AppLabels.tabCards.toUpperCase(),
+            ),
+            NavigationDestination(
+              icon: const IconMark(AppIcon.leaf),
+              selectedIcon: const IconMark(AppIcon.leaf, active: true),
+              label: AppLabels.tabProfile.toUpperCase(),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }

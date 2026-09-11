@@ -233,6 +233,13 @@ abstract final class OffTokens {
         '`width: rect.w + 12`)',
   );
 
+  /// The room the tab bar keeps above its tabs, which the Tour's frame leaves
+  /// out. The strip below them is the device's own, not the design's 28.
+  static const OffToken<double> tabBarTopPad = OffToken(
+    8,
+    reason: 'the design sets the bar to `padding: 8px 0 28px`',
+  );
+
   /// Where the Tour's card rests until a target has been measured.
   static const OffToken<double> tourCardRestingBottom = OffToken(
     140,
@@ -460,6 +467,7 @@ abstract final class OffTokens {
     tourCardLineGap,
     tourCardBodyLeading,
     tourFrameInset,
+    tabBarTopPad,
     tourCardRestingBottom,
     tourCardHeadroom,
     tourScrollTopGap,

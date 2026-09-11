@@ -117,6 +117,13 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **The Tour's frame lands on what each stop points at, and Skip is a pill.**
+  The day's card and the practice shelf run the full width of the page, so
+  ringing their boxes put the outline off both screen edges; the frame now
+  sits at the design's gutter, and on the tab bar it rings the row of tabs
+  rather than the strip under them. Skip is the design's quiet pill beside
+  Next instead of a bare word, and it leaves the last card, where Done is the
+  only way out. The dots keep the middle of the row either way.
 - **The Tour runs unasked, and says what the design says.** A first launch
   that reaches Learn no longer asks "Quick tour?" — the four stops start as
   soon as the Today card is there, as the design draws them (#537). Skip,

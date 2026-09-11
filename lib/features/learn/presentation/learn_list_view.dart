@@ -141,6 +141,9 @@ class _TodayLead extends ConsumerWidget {
 
     return TourAnchor(
       step: TourStep.today,
+      // The frame lands at the design's gutter, not out at the list's edge:
+      // this section's own padding is layout, not what the stop points at.
+      inset: _inGutter,
       child: Padding(
         padding: _inGutter,
         child: Column(
@@ -200,6 +203,9 @@ class _PracticeShelf extends ConsumerWidget {
 
     return TourAnchor(
       step: TourStep.practice,
+      // Same gutter as the day's stop above. The shelf itself is full-bleed so
+      // its rows can bleed into the gutter; the frame leaves that bleed out.
+      inset: _inGutter,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
