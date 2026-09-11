@@ -137,9 +137,10 @@ class _Offer extends ConsumerWidget {
                   designScrollPad: PaywallScreen._designScrollPad,
                   inset: AppSpacing.gutter,
                 ).copyWith(
-                  // An explicit padding turns the list's own safe-area inset off,
-                  // so the home indicator's room is added back under the design's
-                  // `paddingBottom: 32`.
+                  // An explicit padding turns the list's own safe-area inset
+                  // off, so the home indicator's room is added back under
+                  // the design's `paddingBottom: 32`, less the legal links'
+                  // overhang.
                   bottom:
                       AppSpacing.xl -
                       OffTokens.paywallLegalOverhang.value +
