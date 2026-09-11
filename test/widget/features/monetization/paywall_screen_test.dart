@@ -3,6 +3,7 @@ import 'package:brew_path/core/widgets/ghost_button.dart';
 import 'package:brew_path/core/widgets/link_button.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/features/monetization/config/paywall_config.dart';
+import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
 import 'package:brew_path/features/monetization/domain/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/paywall_view.dart';
 import 'package:brew_path/features/monetization/domain/paywall_view_provider.dart';
@@ -56,6 +57,7 @@ void main() {
     WidgetTester tester, {
     PlusOffering offering = oneTime,
     List<StoreProduct> products = const [lifetime],
+    bool owned = false,
   }) async {
     // Tall enough to hold the whole offer: the body is a lazy list, so a
     // default-sized surface never builds the note or the store links, and an
@@ -68,6 +70,8 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         plusPitchProvider.overrideWith((ref) async => pitch),
+        // What the store answers when a restore asks whether Plus is owned.
+        courseEntitlementProvider.overrideWith((ref) async => owned),
         paywallViewProvider.overrideWith(
           (ref) async =>
               buildPaywallView(offering: offering, products: products),
@@ -107,7 +111,9 @@ void main() {
     expect(find.text(oneTimeCopy.paywallNote), findsOneWidget);
     // Smallcaps is the eyebrow's type rule, so it renders the copy uppercased.
     expect(
-      find.textContaining(oneTimeCopy.eyebrow.toUpperCase()),
+      find.textContaining(
+        '${PaywallCopy.course} · ${oneTimeCopy.eyebrow}'.toUpperCase(),
+      ),
       findsOneWidget,
     );
   });
@@ -181,17 +187,33 @@ void main() {
   });
 
   testWidgets('restoring leaves by its own door, not the sale', (tester) async {
+    await pump(tester, owned: true);
+
+    await tapAction(tester, PaywallCopy.restore);
+
+    expect(
+      exits,
+      ['restored'],
+      reason: 'recovering a purchase is not a sale to celebrate',
+    );
+  });
+
+  testWidgets('a sale after a restore that found nothing is still a sale', (
+    tester,
+  ) async {
     final container = await pump(tester);
 
     await tapAction(tester, PaywallCopy.restore);
+    expect(find.text(PlusCopy.nothingToRestore), findsOneWidget);
+
     container.read(plusPurchaseProvider.notifier).state =
         PlusPurchaseState.owned;
     await tester.pump();
 
     expect(
       exits,
-      ['restored'],
-      reason: 'recovering a purchase is not a sale to celebrate',
+      ['purchased'],
+      reason: 'the restore is over; the door is chosen per press',
     );
   });
 
