@@ -159,6 +159,11 @@ void main() {
       expect(redirect('/profile/studio'), isNull);
     });
 
+    test('so does the wardrobe behind the second Studio door', () {
+      expect(redirect('/profile/roasty', entitled: false), '/profile');
+      expect(redirect('/profile/roasty'), isNull);
+    });
+
     test('the completion moment intercepts Today only', () {
       expect(redirect('/learn', completionDue: true), '/course-complete');
       expect(redirect('/cards', completionDue: true), isNull);

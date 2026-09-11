@@ -2,13 +2,22 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
+import 'package:brew_path/features/companion/presentation/companion_outfit_scope.dart';
 import 'package:brew_path/features/companion/presentation/roasty_animation.dart';
 import 'package:brew_path/features/companion/presentation/roasty_body.dart';
 import 'package:brew_path/features/companion/presentation/roasty_faces.dart';
+import 'package:brew_path/features/companion/presentation/roasty_gear.dart';
+import 'package:brew_path/features/companion/presentation/roasty_hats.dart';
 import 'package:brew_path/features/companion/presentation/roasty_particles.dart';
+import 'package:brew_path/features/companion/presentation/roasty_sprouts.dart';
+import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/roasty_colors.dart';
 import 'package:flutter/material.dart';
+
+/// How much taller than wide a Roasty is — the design's 200x280 box, which a
+/// host sizing a box around one has to reserve.
+const double roastyAspect = 1.4;
 
 /// Animated Roasty mascot. Reproduces the design's geometry + per-state
 /// animations using Flutter's Canvas + a single [AnimationController]. Public
@@ -26,6 +35,7 @@ class Roasty extends StatefulWidget {
     this.animate = true,
     this.plate = false,
     this.pointsAmount,
+    this.outfit,
     super.key,
   }) : assert(
          (state == RoastyState.points) == (pointsAmount != null),
@@ -65,6 +75,14 @@ class Roasty extends StatefulWidget {
   /// A caller reaching the pose through `roastyStateFor` has no channel for
   /// it, so wiring the pose to a reaction means giving the amount a way too.
   final int? pointsAmount;
+
+  /// The outfit to draw, overriding what the learner has on.
+  ///
+  /// Only the Studio passes one, so it can preview a pick before it is
+  /// confirmed. Everywhere else this is null and the mascot dresses itself
+  /// from the ambient [CompanionOutfitScope] — which is what stops a screen
+  /// showing the wrong Roasty by forgetting to thread it through.
+  final CompanionConfig? outfit;
 
   @override
   State<Roasty> createState() => _RoastyState();
@@ -143,10 +161,11 @@ class _RoastyState extends State<Roasty> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final outfit = widget.outfit ?? CompanionOutfitScope.of(context);
     return RepaintBoundary(
       child: SizedBox(
         width: widget.size,
-        height: widget.size * 1.4,
+        height: widget.size * roastyAspect,
         child: AnimatedBuilder(
           animation: _controller,
           builder: (context, _) => CustomPaint(
@@ -156,6 +175,7 @@ class _RoastyState extends State<Roasty> with SingleTickerProviderStateMixin {
               sproutScale: widget.sproutScale,
               plate: widget.plate,
               pointsAmount: widget.pointsAmount,
+              outfit: outfit,
               mood: context.mood,
             ),
           ),
@@ -175,6 +195,7 @@ class _RoastyPainter extends CustomPainter {
     required this.state,
     required this.progress,
     required this.plate,
+    required this.outfit,
     required this.mood,
     this.sproutScale,
     this.pointsAmount,
@@ -183,6 +204,9 @@ class _RoastyPainter extends CustomPainter {
   final RoastyState state;
   final double progress;
   final bool plate;
+
+  /// What the mascot is wearing, already resolved past the gate.
+  final CompanionConfig outfit;
 
   /// What the points burst says; null for every other state.
   final int? pointsAmount;
@@ -213,13 +237,23 @@ class _RoastyPainter extends CustomPainter {
 
     if (plate) paintRoastyPlate(canvas);
     paintRoastyParticlesBack(canvas, state, progress, mood);
-    paintRoastySprout(canvas, state, progress, sproutScale);
+    // Bare-headed, the sprout nestles on the bean and sways on its own. Under
+    // a hat it moves inside the body group instead, drawn over the crown.
+    if (hatIsBare(outfit.hat)) {
+      paintRoastySprout(
+        canvas,
+        state,
+        progress,
+        sproutScale,
+        sprout: outfit.sprout,
+      );
+    }
     _withBodyTransform(
       canvas,
       () => paintRoastyShimmer(canvas, state, progress, mood),
     );
-    paintRoastyBody(canvas, state, progress);
-    _withBodyTransform(canvas, () => paintRoastyFace(canvas, state, mood));
+    paintRoastyBody(canvas, state, progress, roast: outfit.roast);
+    _withBodyTransform(canvas, () => _paintFaceAndOutfit(canvas));
     paintRoastyParticlesFront(
       canvas,
       state,
@@ -231,8 +265,8 @@ class _RoastyPainter extends CustomPainter {
     canvas.restore();
   }
 
-  /// The face and the shimmer ride along with the body, so [paint] runs
-  /// under the body's own transform.
+  /// The face, the shimmer and everything worn ride along with the body, so
+  /// [paint] runs under the body's own transform.
   void _withBodyTransform(Canvas canvas, void Function() paint) {
     canvas.save();
     final offset = roastyBodyOffset(state, progress);
@@ -244,6 +278,22 @@ class _RoastyPainter extends CustomPainter {
     canvas.restore();
   }
 
+  /// The face and everything worn, in the order the design draws them — run
+  /// inside [_withBodyTransform], which is what makes a hat ride the hop.
+  void _paintFaceAndOutfit(Canvas canvas) {
+    paintRoastyFace(canvas, state, mood);
+    paintRoastyGear(canvas, outfit.gear);
+    paintRoastyHat(canvas, outfit.hat);
+    if (!hatIsBare(outfit.hat)) {
+      // The design lifts it 13 up so it clears the crown it grows through.
+      canvas.translate(0, -_sproutOverHat);
+      paintRoastySproutArt(canvas, outfit.sprout);
+    }
+  }
+
+  /// How far the sprout rises to grow through a hat, in canvas units.
+  static const double _sproutOverHat = 13;
+
   @override
   bool shouldRepaint(covariant _RoastyPainter old) =>
       old.state != state ||
@@ -251,5 +301,6 @@ class _RoastyPainter extends CustomPainter {
       old.sproutScale != sproutScale ||
       old.plate != plate ||
       old.pointsAmount != pointsAmount ||
+      old.outfit != outfit ||
       old.mood != mood;
 }

@@ -2,7 +2,10 @@ import 'package:brew_path/app/app_router.dart';
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/app/day_rollover_watcher.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_expiry_watcher.dart';
+import 'package:brew_path/features/companion/application/companion_outfit.dart';
+import 'package:brew_path/features/companion/presentation/companion_outfit_scope.dart';
 import 'package:brew_path/features/tour/presentation/micro_tip_host.dart';
+import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
 import 'package:brew_path/shared/theme/theme_mode_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,7 +34,15 @@ class BrewPathApp extends ConsumerWidget {
           // The guide layer's micro-tips draw over the whole app: two of the
           // screens they appear on are pushed over the tab bar, so no shell or
           // screen can host them all. See `MicroTipHost`.
-          builder: (context, child) => MicroTipHost(child: child!),
+          //
+          // The outfit is installed here, above every route, because a Roasty
+          // on a pushed screen has no other common ancestor to read it from.
+          builder: (context, child) => CompanionOutfitScope(
+            outfit:
+                ref.watch(companionOutfitProvider).value ??
+                CompanionConfig.initial,
+            child: MicroTipHost(child: child!),
+          ),
         ),
       ),
     );

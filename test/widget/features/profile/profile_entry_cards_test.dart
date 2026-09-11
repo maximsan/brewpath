@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:brew_path/app/app.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/features/monetization/presentation/plus_pill.dart';
 import 'package:brew_path/features/profile/presentation/widgets/profile_entry_card.dart';
@@ -10,9 +11,13 @@ import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/domain/saved_shelf.dart';
 import 'package:brew_path/features/saved/presentation/saved_entry_card.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
+import 'package:brew_path/features/studio/domain/dress_companion.dart';
+import 'package:brew_path/features/studio/presentation/roasty_door_tile.dart';
+import 'package:brew_path/features/studio/presentation/roasty_studio_screen.dart';
 import 'package:brew_path/features/studio/presentation/studio_door_tile.dart';
 import 'package:brew_path/features/studio/presentation/studio_screen.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
+import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -51,16 +56,52 @@ void main() {
     await settleLoaders(tester);
   }
 
-  testWidgets('the two entries close the screen, in the design order', (
+  testWidgets('a free learner meets the plain bean on the wardrobe door', (
+    tester,
+  ) async {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    await dressCompanion(
+      container.read(snapshotRepositoryProvider),
+      outfit: const CompanionConfig(
+        roast: 'espresso',
+        hat: 'beanie',
+        gear: 'headphones',
+        sprout: 'cherry',
+      ),
+      now: DateTime(2026, 9, 11),
+    );
+
+    await openProfile(tester);
+
+    final door = tester.widget<Roasty>(
+      find.descendant(
+        of: find.byType(RoastyDoorTile),
+        matching: find.byType(Roasty),
+      ),
+    );
+    expect(
+      door.outfit,
+      CompanionConfig.initial,
+      reason: 'the gate hides the wardrobe on the door as well as behind it',
+    );
+  });
+
+  testWidgets('the three entries close the screen, in the design order', (
     tester,
   ) async {
     await openProfile(tester);
 
-    expect(find.byType(ProfileEntryCard), findsNWidgets(2));
+    expect(find.byType(ProfileEntryCard), findsNWidgets(3));
     expect(
       tester.getTopLeft(find.byType(StudioDoorTile)).dy,
+      lessThan(tester.getTopLeft(find.byType(RoastyDoorTile)).dy),
+      reason: 'the grove door opens the Studio, and the wardrobe follows it',
+    );
+    expect(
+      tester.getTopLeft(find.byType(RoastyDoorTile)).dy,
       lessThan(tester.getTopLeft(find.byType(SavedEntryCard)).dy),
-      reason: 'the design stacks the Studio door above Saved',
+      reason: 'the design stacks the Studio doors above Saved',
     );
     // Neither is owed for v1: the design gates both off.
     expect(find.text('Challenge a friend'), findsNothing);
@@ -155,9 +196,17 @@ void main() {
   ) async {
     await openProfile(tester);
 
-    // A fresh learner owns nothing, so the Studio is the screen's one gated
-    // entry — and Saved, which is free for everyone, wears no pill beside it.
-    expect(find.byType(PlusPill), findsOneWidget);
+    // A fresh learner owns nothing, so both Studio doors are gated — and
+    // Saved, which is free for everyone, wears no pill beside it.
+    for (final door in [
+      find.byType(StudioDoorTile),
+      find.byType(RoastyDoorTile),
+    ]) {
+      expect(
+        find.descendant(of: door, matching: find.byType(PlusPill)),
+        findsOneWidget,
+      );
+    }
     expect(
       find.descendant(
         of: find.byType(SavedEntryCard),
@@ -171,5 +220,17 @@ void main() {
 
     expect(find.text(const LockedStudio().header), findsOneWidget);
     expect(find.byType(StudioScreen), findsNothing);
+  });
+
+  testWidgets('the wardrobe door raises the same gate, and opens nothing', (
+    tester,
+  ) async {
+    await openProfile(tester);
+
+    await tester.tap(find.byType(RoastyDoorTile));
+    await settleLoaders(tester);
+
+    expect(find.text(const LockedStudio().header), findsOneWidget);
+    expect(find.byType(RoastyStudioScreen), findsNothing);
   });
 }

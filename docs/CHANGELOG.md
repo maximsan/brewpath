@@ -60,6 +60,13 @@ You can always edit this file by hand instead — the helpers just save effort.
   forget. Until then Help's contact rows and About's legal rows are absent
   rather than drawn dead, and the paywall's two links stay visible but inert,
   because a purchase surface missing them fails App Review.
+- **Roasty can be dressed, and he stays dressed.** A second Studio door opens
+  a wardrobe with four axes — roast, hat, accessory and sprout — over a live
+  preview: pick one and the mascot changes under your thumb, confirm and he
+  wears it on every screen in the app, through a restart and across devices.
+  Free learners see the plain bean everywhere and the door asks for Plus, and
+  Reset Progress leaves the outfit alone: it is something the learner chose,
+  not something they did.
 
 - **The match board is a drag board, and it draws what you paired.** Its cue
   has said *drag to pair* since the formats got their names, but the board only

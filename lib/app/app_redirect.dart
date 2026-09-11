@@ -121,11 +121,14 @@ GateDecision redirectFor({
     return GateDecision.to(AppRoutes.learn.path);
   }
 
-  // The Studio is behind the entitlement, and the door is not the only way to
-  // reach it — a deep link is. The gate belongs here for the same reason every
-  // other gate→destination decision does: a screen that guards itself is a
-  // guard one route can be added around.
-  if (path.endsWith('/${AppRoutes.studio.path}') && !gates.courseEntitled) {
+  // Both Studio doors are behind the entitlement, and neither door is the only
+  // way to reach what it opens — a deep link is. The gate belongs here for the
+  // same reason every other gate→destination decision does: a screen that
+  // guards itself is a guard one route can be added around, which is exactly
+  // what the wardrobe did to the grove's.
+  const studioPaths = [AppRoutes.studio, AppRoutes.roastyStudio];
+  if (!gates.courseEntitled &&
+      studioPaths.any((route) => path.endsWith('/${route.path}'))) {
     return GateDecision.to(AppRoutes.profile.path);
   }
 
