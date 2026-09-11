@@ -40,6 +40,10 @@ const _expectedBanks = [
   'mini_game_content.json',
   'grove_varieties.json',
   'grove_lights.json',
+  'companion_roasts.json',
+  'companion_hats.json',
+  'companion_gear.json',
+  'companion_sprouts.json',
 ];
 
 /// The entry whose rounds live in a second source behind a `window` getter —

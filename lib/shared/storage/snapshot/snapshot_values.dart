@@ -2,11 +2,10 @@ import 'package:flutter/foundation.dart';
 
 /// A logged reaction to a brew challenge.
 ///
-/// The reaction is stored as its **text**, never as an index into the
-/// challenge's option list. The design has already rewritten every reaction
-/// string once (`Tasted the difference` → `Preferred 1:15`), and a stored index
-/// silently changes meaning across such a rewrite where a stored string either
-/// still matches or visibly does not.
+/// Stored as its **text**, never as an index into the challenge's options. The
+/// design has rewritten every reaction string once already, and an index
+/// silently changes meaning across such a rewrite where a string either still
+/// matches or visibly does not.
 @immutable
 class ChallengeReaction {
   /// Creates a [ChallengeReaction].
@@ -83,10 +82,8 @@ class ActiveChallenge {
 /// stands in.
 ///
 /// Two axes rather than five fixed skins, so the plant reinforces the course
-/// (`m1l2` teaches Arabica vs Robusta) instead of decorating around it. The
-/// split from a single `tree` field is the snapshot's worked example of a
-/// migration, and both halves are last-writer-wins — the first non-monotonic
-/// fields on the snapshot.
+/// instead of decorating around it. The split from a single `tree` field is
+/// the snapshot's worked migration, and both halves are last-writer-wins.
 @immutable
 class Grove {
   /// Creates a [Grove].
@@ -182,6 +179,19 @@ class CompanionConfig {
     'gear': gear,
     'sprout': sprout,
   };
+
+  /// The same outfit with one axis changed — what the wardrobe edits through.
+  CompanionConfig copyWith({
+    String? roast,
+    String? hat,
+    String? gear,
+    String? sprout,
+  }) => CompanionConfig(
+    roast: roast ?? this.roast,
+    hat: hat ?? this.hat,
+    gear: gear ?? this.gear,
+    sprout: sprout ?? this.sprout,
+  );
 
   @override
   bool operator ==(Object other) =>

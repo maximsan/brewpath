@@ -1,6 +1,7 @@
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:brew_path/shared/models/content/collectible.dart';
+import 'package:brew_path/shared/models/content/companion_option.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/models/content/grove_light.dart';
 import 'package:brew_path/shared/models/content/grove_variety.dart';
@@ -27,6 +28,7 @@ class ContentRepository {
   Map<String, List<ContentCard>>? _miniGameRounds;
   List<GroveVariety>? _groveVarieties;
   List<GroveLight>? _groveLights;
+  CompanionOptions? _companionOptions;
   List<BrewChallenge>? _challenges;
 
   /// Loads and caches the five modules, in course order.
@@ -117,6 +119,25 @@ class ContentRepository {
     );
     return _groveLights!;
   }
+
+  /// Loads and caches Roasty's four outfit axes, in picker order.
+  ///
+  /// One bank each, as the grove splits its two: the axes are co-equal and
+  /// independently chosen, so none is another's auxiliary data.
+  Future<CompanionOptions> getCompanionOptions() async {
+    _companionOptions ??= CompanionOptions(
+      roasts: await _companionBank('companion_roasts'),
+      hats: await _companionBank('companion_hats'),
+      gear: await _companionBank('companion_gear'),
+      sprouts: await _companionBank('companion_sprouts'),
+    );
+    return _companionOptions!;
+  }
+
+  Future<List<CompanionOption>> _companionBank(String name) => loadBank(
+    'assets/content/generated/$name.json',
+    CompanionOption.fromJson,
+  );
 
   /// The rounds authored for [formatId], or empty when the bank has none.
   ///

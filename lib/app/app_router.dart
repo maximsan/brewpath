@@ -37,6 +37,7 @@ import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/presentation/streak_screen.dart';
 import 'package:brew_path/features/progress/presentation/tree_screen.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
+import 'package:brew_path/features/studio/presentation/roasty_studio_screen.dart';
 import 'package:brew_path/features/studio/presentation/studio_screen.dart';
 import 'package:brew_path/features/tour/presentation/app_guide_screen.dart';
 import 'package:brew_path/services/analytics/analytics_provider.dart';
@@ -352,6 +353,12 @@ GoRouter appRouter(Ref ref) {
                     name: AppRoutes.studio.name,
                     parentNavigatorKey: _rootKey,
                     builder: (context, state) => const StudioScreen(),
+                  ),
+                  GoRoute(
+                    path: AppRoutes.roastyStudio.path,
+                    name: AppRoutes.roastyStudio.name,
+                    parentNavigatorKey: _rootKey,
+                    builder: (context, state) => const RoastyStudioScreen(),
                   ),
                   GoRoute(
                     path: AppRoutes.profileSettings.path,
