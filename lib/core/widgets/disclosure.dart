@@ -47,15 +47,18 @@ class Disclosure extends StatelessWidget {
   /// The design's `gap: 12` between the header and its trailing cluster.
   static const double _headerGap = AppSpacing.sm;
 
-  /// Whether the panel is showing. Authoritative even where the header cannot
-  /// toggle it: Path's active module is a fixed heading over an open panel,
-  /// and a locked one a fixed heading over a shut panel.
+  /// Whether the panel is showing, which the header cannot overrule.
+  ///
+  /// The design couples the two — a header that cannot toggle forces its panel
+  /// open — but Path's locked module is a heading over nothing, which
+  /// `PathModuleDensity` has ruled since it was written. So the flag stays
+  /// authoritative and every site says what it means.
   final bool isOpen;
 
-  /// What the panel holds. Built only while the panel is open or closing.
+  /// What the panel holds. Mounted only while the panel is open or closing.
   final Widget child;
 
-  /// The header, when it is a plain line of body text.
+  /// The header, when it is a plain line of body text. Excludes [header].
   final String? label;
 
   /// The header, when it is a widget of its own. Excludes [label].
@@ -105,134 +108,32 @@ class Disclosure extends StatelessWidget {
   /// The gap between [trailing] and the glyph.
   final double trailingGap;
 
+  /// The mark this header actually draws — none at all when it cannot toggle.
+  DisclosureGlyph get _shownGlyph => collapsible ? glyph : DisclosureGlyph.none;
+
   @override
   Widget build(BuildContext context) {
-    final mood = context.mood;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        _Header(
-          label: label,
-          header: header,
-          below: below,
-          trailing: trailing,
-          isOpen: isOpen,
-          onToggle: onToggle,
-          glyph: collapsible ? glyph : DisclosureGlyph.none,
-          glyphSize: glyphSize,
-          collapsible: collapsible,
-          semanticsLabel: semanticsLabel,
-          headerAlign: headerAlign,
-          padding: headerPadding,
-          minHeight: headerMinHeight,
-          trailingGap: trailingGap,
-        ),
-        DisclosurePanel(
-          isOpen: isOpen,
-          padding: panelPadding,
-          child: child,
-        ),
-        if (divider)
-          Padding(
-            // The rule lines up with the header it closes off, not with the
-            // rows between, which are free to bleed past both.
-            padding: EdgeInsets.only(
-              left: headerPadding.left,
-              right: headerPadding.right,
-            ),
-            child: Divider(height: 1, thickness: 1, color: mood.rule),
-          ),
+        _header(context),
+        DisclosurePanel(isOpen: isOpen, padding: panelPadding, child: child),
+        if (divider) _rule(context),
       ],
     );
   }
-}
 
-/// The header row: what it says, what trails it, and whether it is a button.
-class _Header extends StatelessWidget {
-  const _Header({
-    required this.label,
-    required this.header,
-    required this.below,
-    required this.trailing,
-    required this.isOpen,
-    required this.onToggle,
-    required this.glyph,
-    required this.glyphSize,
-    required this.collapsible,
-    required this.semanticsLabel,
-    required this.headerAlign,
-    required this.padding,
-    required this.minHeight,
-    required this.trailingGap,
-  });
-
-  final String? label;
-  final Widget? header;
-  final Widget? below;
-  final Widget? trailing;
-  final bool isOpen;
-  final VoidCallback? onToggle;
-  final DisclosureGlyph glyph;
-  final double? glyphSize;
-  final bool collapsible;
-  final String? semanticsLabel;
-  final CrossAxisAlignment headerAlign;
-  final EdgeInsets padding;
-  final double? minHeight;
-  final double trailingGap;
-
-  @override
-  Widget build(BuildContext context) {
-    final mood = context.mood;
-    final hasGlyph = glyph != DisclosureGlyph.none;
-
-    Widget row = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Row(
-          crossAxisAlignment: headerAlign,
-          textBaseline: TextBaseline.alphabetic,
-          children: [
-            Expanded(
-              child: header ?? Text(label!, style: AppText.body(mood: mood)),
-            ),
-            if (trailing != null || hasGlyph) ...[
-              const SizedBox(width: Disclosure._headerGap),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (trailing case final mark?) ...[
-                    mark,
-                    if (hasGlyph) SizedBox(width: trailingGap),
-                  ],
-                  if (hasGlyph)
-                    DisclosureMark(
-                      glyph: glyph,
-                      open: isOpen,
-                      size: glyphSize,
-                    ),
-                ],
-              ),
-            ],
-          ],
-        ),
-        ?below,
-      ],
-    );
-
-    row = Padding(padding: padding, child: row);
-    if (minHeight case final height?) {
+  /// The header: a button while it has something to do, a heading otherwise —
+  /// a heading in a button would announce an action that does not exist.
+  Widget _header(BuildContext context) {
+    Widget row = Padding(padding: headerPadding, child: _headerRow(context));
+    if (headerMinHeight case final height?) {
       row = ConstrainedBox(
         constraints: BoxConstraints(minHeight: height),
         child: row,
       );
     }
-
-    // A header with nothing to do is a heading, and wrapping it in a button
-    // would announce an action that does not exist.
     if (onToggle == null) return row;
 
     return Semantics(
@@ -243,4 +144,56 @@ class _Header extends StatelessWidget {
       child: InkWell(onTap: onToggle, child: row),
     );
   }
+
+  Widget _headerRow(BuildContext context) {
+    final cluster = _trailingCluster();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          crossAxisAlignment: headerAlign,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            Expanded(
+              child:
+                  header ??
+                  Text(label!, style: AppText.body(mood: context.mood)),
+            ),
+            ?cluster,
+          ],
+        ),
+        ?below,
+      ],
+    );
+  }
+
+  /// The trailing slot and the glyph, or null when the header has neither.
+  Widget? _trailingCluster() {
+    final mark = _shownGlyph;
+    final hasGlyph = mark != DisclosureGlyph.none;
+    if (trailing == null && !hasGlyph) return null;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const SizedBox(width: _headerGap),
+        ?trailing,
+        if (trailing != null && hasGlyph) SizedBox(width: trailingGap),
+        if (hasGlyph)
+          DisclosureMark(glyph: mark, open: isOpen, size: glyphSize),
+      ],
+    );
+  }
+
+  /// The hairline that closes the section off, lined up with the header it
+  /// belongs to rather than with rows that are free to bleed past both.
+  Widget _rule(BuildContext context) => Padding(
+    padding: EdgeInsets.only(
+      left: headerPadding.left,
+      right: headerPadding.right,
+    ),
+    child: Divider(height: 1, thickness: 1, color: context.mood.rule),
+  );
 }

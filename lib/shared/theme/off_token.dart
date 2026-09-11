@@ -524,6 +524,7 @@ abstract final class OffTokens {
     todayLeadGap,
     todayCtaGap,
     practiceInlineGap,
+    referenceShelfHead,
     practiceGroupFoot,
     cardsFooterPadding,
     cardsFooterLineGap,

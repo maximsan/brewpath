@@ -35,10 +35,14 @@ class DisclosureMark extends StatelessWidget {
   });
 
   /// The caret's drawn size — the design's `size || 18`.
-  static const double caretSize = 18;
+  static const double _caretSize = 18;
 
   /// The plus's drawn size — the design's `size || 12`.
-  static const double plusSize = 12;
+  static const double _plusSize = 12;
+
+  /// The caret where a section sets it smaller: the design draws it at 18, or
+  /// 16 where a site says so, which Path's modules and Reference both do.
+  static const double sectionCaretSize = 16;
 
   /// Half a turn: the design's 180° on the caret.
   static const double _caretOpenTurns = 0.5;
@@ -73,9 +77,9 @@ class DisclosureMark extends StatelessWidget {
           : AppMotion.disclosure,
       curve: AppMotion.disclosureGlyph,
       child: isCaret
-          ? IconMark(AppIcon.caret, size: size ?? caretSize, color: ink)
+          ? IconMark(AppIcon.caret, size: size ?? _caretSize, color: ink)
           : CustomPaint(
-              size: Size.square(size ?? plusSize),
+              size: Size.square(size ?? _plusSize),
               painter: _PlusPainter(ink),
             ),
     );

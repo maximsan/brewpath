@@ -8,7 +8,6 @@ import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
-import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -49,14 +48,9 @@ class _SavedChallengesListState extends ConsumerState<SavedChallengesList> {
           isOpen: _isOpen,
           onToggle: () => setState(() => _isOpen = !_isOpen),
           semanticsLabel: _semanticsLabel(saved.length),
-          header: const SectionHeader('Saved challenges'),
-          trailing: Text(
-            '${saved.length}',
-            style: AppText.micro(
-              mood: context.mood,
-              tracking: AppTracking.hint,
-            ),
-          ),
+          // The count rides in the header line, as the design writes it —
+          // a shut list still says how much is parked behind it.
+          header: SectionHeader('Saved challenges · ${saved.length}'),
           // The design's `headerPad: '4px 0'` and `panelStyle.paddingTop: 12`.
           headerPadding: const EdgeInsets.symmetric(vertical: AppSpacing.xxs),
           headerMinHeight: _headerMinHeight,

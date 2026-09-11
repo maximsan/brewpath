@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/disclosure_mark.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/disclosure.dart';
+import 'package:brew_path/core/widgets/module_glyph.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/core/widgets/visual_guide_art.dart';
 import 'package:brew_path/features/monetization/domain/locked_row_copy.dart';
@@ -40,9 +42,6 @@ String _lockedSubtitle({required bool byPurchase, required String? nextTitle}) {
 /// a spacing stop is retuned is a coupling nobody asked for.
 const double _glyphSize = 24;
 const double _lockSize = 16;
-
-/// The design's `glyphSize: 16` on the caret, which a module shares.
-const double _caretSize = 16;
 
 /// The last thing on Path: the illustrated references a learner has earned.
 ///
@@ -96,12 +95,19 @@ class _ReferenceSectionState extends ConsumerState<ReferenceSection> {
         // A locked section will not open onto nothing. If the lock is the
         // purchase, it offers the way past instead.
         onToggle: _headerTap(locked: shelf.isLocked, byPurchase: byPurchase),
-        glyphSize: _caretSize,
+        glyphSize: DisclosureMark.sectionCaretSize,
         headerPadding: EdgeInsets.zero,
         panelPadding: EdgeInsets.only(top: OffTokens.referenceShelfHead.value),
         header: Row(
           children: [
-            IconMark(AppIcon.module, size: _glyphSize, color: ink),
+            // The same 32-px column a module glyph sits in, so Reference's
+            // title and caption line up with every module above it.
+            SizedBox(
+              width: ModuleGlyph.columnWidth,
+              child: Center(
+                child: IconMark(AppIcon.module, size: _glyphSize, color: ink),
+              ),
+            ),
             const SizedBox(width: AppSpacing.sm),
             Expanded(
               child: Text(
@@ -118,8 +124,8 @@ class _ReferenceSectionState extends ConsumerState<ReferenceSection> {
             : null,
         below: Padding(
           padding: const EdgeInsets.only(
-            top: AppSpacing.xxs,
-            left: AppSpacing.xl,
+            top: AppSpacing.xs,
+            left: ModuleGlyph.titleInset,
           ),
           child: SmallcapsLabel(shelf.isLocked ? subtitle : _openSubtitle),
         ),

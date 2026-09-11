@@ -32,12 +32,12 @@ void main() {
 
     // A header over an empty list tells the learner they are missing
     // something rather than that there is nothing to miss.
-    expect(find.text('SAVED CHALLENGES'), findsNothing);
+    expect(find.textContaining('SAVED CHALLENGES'), findsNothing);
     expect(find.byType(SizedBox), findsWidgets);
   });
 
   Future<void> open(WidgetTester tester) async {
-    await tester.tap(find.text('SAVED CHALLENGES'));
+    await tester.tap(find.textContaining('SAVED CHALLENGES'));
     await tester.pumpAndSettle();
   }
 
@@ -47,7 +47,7 @@ void main() {
       testChallenge(id: 'bc-m2', title: 'Blind process test'),
     ]);
 
-    expect(find.text('SAVED CHALLENGES'), findsOneWidget);
+    expect(find.text('SAVED CHALLENGES · 2'), findsOneWidget);
     expect(find.text('Two cups, two ratios'), findsNothing);
 
     await open(tester);

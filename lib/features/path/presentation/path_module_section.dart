@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/disclosure_mark.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/disclosure.dart';
 import 'package:brew_path/core/widgets/module_glyph.dart';
@@ -34,9 +35,6 @@ class PathModuleSection extends StatelessWidget {
 
   /// The design's gap between one module and the next.
   static const double _sectionGap = 20;
-
-  /// The design's `glyphSize: 16` on a module's caret.
-  static const double _caretSize = 16;
 
   /// The lock's `size={13}`, which the design sets apart from the caret.
   static const double _lockSize = 13;
@@ -72,7 +70,7 @@ class PathModuleSection extends StatelessWidget {
         collapsible: canCollapse,
         onToggle: _headerTap(context),
         semanticsLabel: _semanticsLabel(),
-        glyphSize: _caretSize,
+        glyphSize: DisclosureMark.sectionCaretSize,
         headerAlign: CrossAxisAlignment.baseline,
         headerPadding: EdgeInsets.zero,
         panelPadding: const EdgeInsets.only(top: AppSpacing.xs),
@@ -155,10 +153,6 @@ class _LockMark extends StatelessWidget {
 class _SubLine extends StatelessWidget {
   const _SubLine({required this.module, required this.previousTitle});
 
-  /// The design indents the sub-line to the title's left edge: the 32-px glyph
-  /// column plus the gap beside it.
-  static const double _titleInset = 44;
-
   final PathModule module;
   final String? previousTitle;
 
@@ -168,7 +162,10 @@ class _SubLine extends StatelessWidget {
     if (line == null) return const SizedBox.shrink();
 
     return Padding(
-      padding: const EdgeInsets.only(top: AppSpacing.xs, left: _titleInset),
+      padding: const EdgeInsets.only(
+        top: AppSpacing.xs,
+        left: ModuleGlyph.titleInset,
+      ),
       // Uppercase is the type rule, not part of what the line says, so the
       // reader is given it as written — the same split `SmallcapsLabel` makes.
       child: Semantics(
