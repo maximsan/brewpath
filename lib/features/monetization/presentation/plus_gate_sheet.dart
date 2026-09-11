@@ -89,6 +89,7 @@ class _GateAction extends ConsumerWidget {
     final view = ref.watch(paywallViewProvider).asData?.value;
     final config = paywallModels[view?.model ?? MonetizationModel.oneTime]!;
     final price = view?.planFor(null).price;
+    final perMonth = view?.fromPerMonth;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -96,14 +97,14 @@ class _GateAction extends ConsumerWidget {
         PrimaryButton(
           label: isWorking
               ? PlusCopy.working
-              : withPrice(config.gateCta, price),
+              : withPrice(config.gateCta, price, perMonth: perMonth),
           onPressed: isWorking
               ? null
               : () => ref.read(plusPurchaseProvider.notifier).buy(),
         ),
         const SizedBox(height: AppSpacing.xs),
         Text(
-          withPrice(config.gateFooter, price),
+          withPrice(config.gateFooter, price, perMonth: perMonth),
           textAlign: TextAlign.center,
           style: AppText.micro(mood: context.mood, face: AppFace.mono),
         ),

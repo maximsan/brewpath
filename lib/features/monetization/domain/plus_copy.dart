@@ -62,7 +62,7 @@ abstract final class PlusCopy {
       'Apple Account, sign in with that one and try again.';
 
   /// The purchase-welcome screen's heading.
-  static const welcomeTitle = 'Plus is yours.';
+  static const welcomeTitle = 'Foundations is yours.';
 
   /// What the purchase bought, said once, on the screen that celebrates it.
   static const welcomeBody =
@@ -77,10 +77,10 @@ abstract final class PlusCopy {
   static const welcomeBackToLearning = 'Back to learning';
 
   /// The fact under the celebration's actions: what was bought, restated.
-  static const welcomeNote = 'One-time purchase · yours to keep';
+  static const welcomeNote = 'One-time purchase';
 
   /// Screen-reader name for the purchase-welcome screen.
-  static const welcomeSemanticLabel = 'BrewPath Plus is yours';
+  static const welcomeSemanticLabel = 'Foundations is yours';
 
   /// The pitch, ranked, with every quantity counted from [pitch].
   static List<PlusPitchBullet> bulletsFor(PlusPitch pitch) => [

@@ -117,6 +117,18 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **The paywall follows the design, on every arm.** The pitch is the
+  design's five rows — an accent check, the title over its line, a
+  hairline between — with every number the design writes counted from the
+  content: the paid modules' range and the premium formats. The eyebrow
+  leads with *Foundations*, a wash lights the hero, the note under
+  *Maybe later* is the design's one fact in uppercase mono, and the legal
+  row is fine print with Restore in ink. The subscription and hybrid arms
+  now draw — their plan rows say what a month costs and preselect yearly,
+  and a development build picks an arm with
+  `--dart-define=MONETIZATION_MODEL` — unpriced until real SKUs exist.
+  The purchase welcome says *Foundations is yours*.
+
 - **The Tour runs unasked, and says what the design says.** A first launch
   that reaches Learn no longer asks "Quick tour?" — the four stops start as
   soon as the Today card is there, as the design draws them (#537). Skip,

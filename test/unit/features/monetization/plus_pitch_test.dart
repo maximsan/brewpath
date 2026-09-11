@@ -1,5 +1,6 @@
 import 'package:brew_path/features/mini_games/domain/mini_game_tier.dart';
 import 'package:brew_path/features/monetization/domain/free_tier.dart';
+import 'package:brew_path/features/monetization/domain/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
 import 'package:brew_path/features/saved/domain/saved_cap.dart';
@@ -22,6 +23,7 @@ void main() {
 
   setUpAll(() async {
     final content = ContentRepository();
+    final modules = await content.getModules();
     final lessons = await content.getLessons();
     final games = await content.getMiniGameFormats();
     final terms = await DictionaryRepository().getTerms();
@@ -29,7 +31,12 @@ void main() {
     allLessons = lessons.length;
     allGames = games.length;
     allTerms = terms.length;
-    pitch = derivePlusPitch(lessons: lessons, games: games, terms: terms);
+    pitch = derivePlusPitch(
+      modules: modules,
+      lessons: lessons,
+      games: games,
+      terms: terms,
+    );
   });
 
   test('the course splits exactly into free and remaining', () {
@@ -66,6 +73,79 @@ void main() {
 
   test('the shelf cap comes from the shelf, not from the pitch', () {
     expect(pitch.savedFreeCap, savedFreeMax);
+  });
+
+  test('the paid modules are exactly the ones with no free lesson', () async {
+    final modules = await ContentRepository().getModules();
+    final paid = modules
+        .where(
+          (module) => !module.lessons.any((lesson) => isLessonFree(lesson.id)),
+        )
+        .map((module) => module.n)
+        .toList();
+
+    expect(pitch.firstPaidModule, paid.first);
+    expect(pitch.lastPaidModule, paid.last);
+    expect(paidModulesLine(pitch), contains('${paid.first}–${paid.last}'));
+  });
+
+  test('a premium format is a kind with no free game at all', () async {
+    final games = await ContentRepository().getMiniGameFormats();
+    final free = freeMiniGameIds(games).toSet();
+    final freeKinds = {
+      for (final game in games)
+        if (free.contains(game.id)) game.kind,
+    };
+    final allKinds = {for (final game in games) game.kind};
+
+    expect(pitch.premiumFormats, allKinds.length - freeKinds.length);
+    expect(pitch.premiumFormats, greaterThan(0));
+  });
+
+  test(
+    'the formats the pitch names are premium in the shipped banks',
+    () async {
+      // The line writes two examples by name; a free tier that grew to include
+      // one of them would make the line wrong, so the kinds are checked.
+      final games = await ContentRepository().getMiniGameFormats();
+      final free = freeMiniGameIds(games).toSet();
+      final freeKinds = {
+        for (final game in games)
+          if (free.contains(game.id)) game.kind,
+      };
+      final named = paywallBenefitsFor(pitch)[1];
+
+      expect(named.detail, contains('Taste-fix'));
+      expect(named.detail, contains('dial-in'));
+      expect(freeKinds, isNot(contains('tastefix')));
+      expect(freeKinds, isNot(contains('slider')));
+      expect(
+        named.title,
+        'The ${spelledCount(pitch.premiumFormats)} premium formats',
+      );
+    },
+  );
+
+  test('a small count is spelled as the design writes it', () {
+    expect(spelledCount(5), 'five');
+    expect(spelledCount(0), 'zero');
+    expect(spelledCount(11), '11');
+  });
+
+  test('the module line survives every shape of free tier', () {
+    PlusPitch withModules(int first, int last) => PlusPitch(
+      remainingLessons: 1,
+      lockedGames: 1,
+      premiumFormats: 1,
+      firstPaidModule: first,
+      lastPaidModule: last,
+      referenceTerms: 1,
+      savedFreeCap: 1,
+    );
+
+    expect(paidModulesLine(withModules(2, 5)), 'Modules 2–5, every lesson');
+    expect(paidModulesLine(withModules(3, 3)), 'Module 3, every lesson');
+    expect(paidModulesLine(withModules(0, 0)), 'Every lesson');
   });
 
   group('the bullets', () {

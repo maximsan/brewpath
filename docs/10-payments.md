@@ -184,11 +184,12 @@ The IDs and the arm-to-SKU map live in
 of "which SKUs does this arm sell", which is what makes switching models a
 config change.
 
-**Only the one-time arm has SKUs.** The subscription and hybrid arms are named
-in `MonetizationModel` because #176 and ADR-0003 name them, but `offeringFor`
-throws for both: nothing is registered in App Store Connect, and choosing IDs,
-prices and which plan a paywall preselects are product decisions nobody has
-made. Register the SKUs first, then fill the arm in.
+**Only the one-time SKU is registered.** The subscription and hybrid arms
+name `…plus.monthly` and `…plus.yearly` as placeholders so their paywalls can
+be driven (`--dart-define=MONETIZATION_MODEL=<arm>`, README _Run-time flags_),
+but nothing in App Store Connect answers to them: their rows draw unpriced,
+and an unpriced row cannot be bought. Registering them, and the prices, is
+#421's.
 
 ---
 

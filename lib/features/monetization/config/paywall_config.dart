@@ -2,13 +2,17 @@
 ///
 /// Owns how Foundations is sold, never what is unlocked (#176). Prices stay
 /// out: the store formats them for the learner's own storefront, so copy
-/// carries [pricePlaceholder] and the screen substitutes.
+/// carries [pricePlaceholder] and [perMonthPlaceholder] and the screen
+/// substitutes.
 library;
 
 import 'package:brew_path/shared/models/monetization/plus_offering.dart';
 
-/// Where a price is substituted into a line of copy.
+/// Where a plan's own price is substituted into a line of copy.
 const String pricePlaceholder = '{price}';
+
+/// Where a per-month figure — a yearly price over twelve — is substituted.
+const String perMonthPlaceholder = '{perMonth}';
 
 /// How one plan is described, once the store has said what it costs.
 ///
@@ -26,6 +30,7 @@ class PaywallPlan {
     required this.welcomeNote,
     required this.ownedChip,
     required this.ownedFooter,
+    this.perMonthLine,
   });
 
   /// Which term this describes.
@@ -39,6 +44,10 @@ class PaywallPlan {
 
   /// The row's one fact line, under the name.
   final String line;
+
+  /// The fact line once a per-month figure is known, carrying
+  /// [perMonthPlaceholder]; null for a plan that has no such figure.
+  final String? perMonthLine;
 
   /// The buy button, carrying [pricePlaceholder].
   final String cta;
@@ -83,10 +92,10 @@ class PaywallModel {
   /// The hero's promise about permanence.
   final String heroTitle;
 
-  /// The reassurance under the buy button.
+  /// The one fact under the buy button that nothing else on the screen states.
   final String paywallNote;
 
-  /// The gate sheet's action, carrying [pricePlaceholder].
+  /// The gate sheet's action, carrying a placeholder.
   final String gateCta;
 
   /// The mono line under the gate sheet's action.
@@ -110,23 +119,20 @@ const Map<PlusTerm, PaywallPlan> paywallPlans = {
     welcome:
         'The whole course is unlocked — permanently. Time to make Roasty and '
         'your grove your own.',
-    welcomeNote: 'One-time purchase · yours to keep',
+    welcomeNote: 'One-time purchase',
     ownedChip: 'Owned',
-    ownedFooter: [
-      'Purchased through the App Store.',
-      'Nothing renews — it’s yours to keep.',
-    ],
+    ownedFooter: ['Purchased through the App Store.', 'Nothing renews.'],
   ),
   PlusTerm.monthly: PaywallPlan(
     term: PlusTerm.monthly,
     name: 'Monthly',
     per: '/month',
-    line: 'Billed monthly · cancel anytime',
+    line: 'Billed monthly',
     cta: 'Subscribe — $pricePlaceholder/month',
     welcome:
         'The whole course is unlocked for as long as you’re subscribed. Time '
         'to make Roasty and your grove your own.',
-    welcomeNote: 'Subscription · cancel anytime',
+    welcomeNote: 'Cancel anytime',
     ownedChip: 'Active',
     ownedFooter: [
       'Billed through the App Store. Cancel anytime —',
@@ -137,12 +143,13 @@ const Map<PlusTerm, PaywallPlan> paywallPlans = {
     term: PlusTerm.yearly,
     name: 'Yearly',
     per: '/year',
-    line: 'Billed yearly · cancel anytime',
+    line: 'Billed yearly',
+    perMonthLine: '$perMonthPlaceholder/month, billed yearly',
     cta: 'Subscribe — $pricePlaceholder/year',
     welcome:
         'The whole course is unlocked for as long as you’re subscribed. Time '
         'to make Roasty and your grove your own.',
-    welcomeNote: 'Subscription · cancel anytime',
+    welcomeNote: 'Cancel anytime',
     ownedChip: 'Active',
     ownedFooter: [
       'Billed through the App Store. Cancel anytime —',
@@ -158,12 +165,12 @@ const Map<MonetizationModel, PaywallModel> paywallModels = {
     label: 'One-time purchase',
     eyebrow: 'ONE-TIME PURCHASE',
     heroTitle: 'Own the whole course.',
-    paywallNote: 'No subscription · fixes and improvements included',
+    paywallNote: 'Fixes and improvements included',
     gateCta: 'Unlock Foundations — $pricePlaceholder',
     gateFooter: 'One-time purchase · yours to keep',
     purchasesFooter: [
       'Foundations is a one-time purchase',
-      'through the App Store. No subscription.',
+      'through the App Store.',
     ],
     faq:
         'Buy it once and it’s yours for good; there’s no subscription and '
@@ -174,8 +181,8 @@ const Map<MonetizationModel, PaywallModel> paywallModels = {
     label: 'Subscription',
     eyebrow: 'SUBSCRIPTION',
     heroTitle: 'The whole course, for as long as you’re brewing.',
-    paywallNote: 'Cancel anytime · access runs to the end of the paid period',
-    gateCta: 'Unlock Foundations — from $pricePlaceholder',
+    paywallNote: 'Cancel anytime · you keep the time you paid for',
+    gateCta: 'Unlock Foundations — from $perMonthPlaceholder/mo',
     gateFooter: 'Subscription · cancel anytime',
     purchasesFooter: [
       'Foundations is a subscription',
@@ -191,9 +198,9 @@ const Map<MonetizationModel, PaywallModel> paywallModels = {
     label: 'Hybrid',
     eyebrow: 'SUBSCRIBE OR OWN IT',
     heroTitle: 'The whole course, your terms.',
-    paywallNote: 'Cancel anytime — or pay once and keep it forever',
-    gateCta: 'Unlock Foundations — from $pricePlaceholder',
-    gateFooter: 'From $pricePlaceholder · or one payment, yours to keep',
+    paywallNote: 'Fixes and improvements included, whichever you pick',
+    gateCta: 'Unlock Foundations — from $perMonthPlaceholder/mo',
+    gateFooter: 'Or one payment, yours to keep',
     purchasesFooter: [
       'Subscribe monthly or yearly — or buy once',
       'through the App Store and keep it.',

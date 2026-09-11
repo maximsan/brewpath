@@ -21,6 +21,9 @@ import '../../../support/content_fixtures.dart';
 final LessonModel _lesson = testLesson(title: 'Where coffee grows');
 
 const _pitch = PlusPitch(
+  premiumFormats: 4,
+  firstPaidModule: 2,
+  lastPaidModule: 5,
   remainingLessons: 29,
   lockedGames: 4,
   referenceTerms: 8,

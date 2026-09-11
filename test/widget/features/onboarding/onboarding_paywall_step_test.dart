@@ -22,6 +22,9 @@ void main() {
   setUp(() => fake = FakeOnboardingRepository());
 
   const pitch = PlusPitch(
+    premiumFormats: 4,
+    firstPaidModule: 2,
+    lastPaidModule: 5,
     remainingLessons: 29,
     lockedGames: 4,
     referenceTerms: 8,
@@ -109,9 +112,9 @@ void main() {
   ) async {
     await pump(tester, owned: true);
 
-    await tester.ensureVisible(find.text(PaywallCopy.restore));
+    await tester.ensureVisible(find.text(PaywallCopy.restore.toUpperCase()));
     await tester.pumpAndSettle();
-    await tester.tap(find.text(PaywallCopy.restore));
+    await tester.tap(find.text(PaywallCopy.restore.toUpperCase()));
     await tester.pumpAndSettle();
 
     expect(fake.completeCalls, hasLength(1));

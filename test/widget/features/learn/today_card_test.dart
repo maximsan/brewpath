@@ -45,6 +45,9 @@ final ModuleModel _module = testModule(
 final String _wallEyebrow = LockedRowCopy.continuesInFoundations.toUpperCase();
 
 const _pitch = PlusPitch(
+  premiumFormats: 4,
+  firstPaidModule: 2,
+  lastPaidModule: 5,
   remainingLessons: 29,
   lockedGames: 4,
   referenceTerms: 8,

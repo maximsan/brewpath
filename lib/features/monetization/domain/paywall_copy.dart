@@ -2,7 +2,7 @@
 ///
 /// Anything that changes with the pricing model lives in `paywall_config.dart`
 /// instead. What is unlocked never does, so it is written once here — with
-/// every quantity counted from the banks, never typed in.
+/// every quantity the design writes counted from the banks, never typed in.
 library;
 
 import 'package:brew_path/features/monetization/config/paywall_config.dart';
@@ -33,6 +33,9 @@ abstract final class PaywallCopy {
   /// Recovering a purchase made elsewhere.
   static const restore = 'Restore purchases';
 
+  /// The same link while the store is looking.
+  static const restoring = 'Restoring…';
+
   /// Shown in place of the reassurance when no price could be read. A paywall
   /// that cannot name a price must not imply one.
   static const storeUnreachable =
@@ -53,23 +56,24 @@ class PaywallBenefit {
   /// What it is.
   final String title;
 
-  /// The counted detail beside it.
+  /// The line under it.
   final String detail;
 }
 
-/// What Plus contains, counted from the banks.
+/// What Plus contains — the design's five rows, with every number it writes
+/// counted from [pitch].
 List<PaywallBenefit> paywallBenefitsFor(PlusPitch pitch) => [
   PaywallBenefit(
     title: 'The rest of the course',
-    detail: '${pitch.remainingLessons} more lessons, every module',
+    detail: paidModulesLine(pitch),
   ),
   PaywallBenefit(
-    title: 'Practice without limits',
-    detail: '${pitch.lockedGames} more mini-games',
+    title: 'The ${spelledCount(pitch.premiumFormats)} premium formats',
+    detail: 'Taste-fix, dial-in and more',
   ),
-  PaywallBenefit(
+  const PaywallBenefit(
     title: 'The complete Dictionary',
-    detail: '${pitch.referenceTerms} terms no lesson teaches',
+    detail: 'Every term, full entries included',
   ),
   PaywallBenefit(
     title: 'Unlimited Saved',
@@ -77,9 +81,38 @@ List<PaywallBenefit> paywallBenefitsFor(PlusPitch pitch) => [
   ),
   const PaywallBenefit(
     title: 'The Studio',
-    detail: 'Dress Roasty, choose your tree',
+    detail: 'Dress up Roasty, choose your plant',
   ),
 ];
+
+/// `Modules 2–5, every lesson`, from the modules with no free lesson.
+String paidModulesLine(PlusPitch pitch) {
+  if (pitch.firstPaidModule == 0) return 'Every lesson';
+  if (pitch.firstPaidModule == pitch.lastPaidModule) {
+    return 'Module ${pitch.firstPaidModule}, every lesson';
+  }
+  return 'Modules ${pitch.firstPaidModule}–${pitch.lastPaidModule}, '
+      'every lesson';
+}
+
+const List<String> _countWords = [
+  'zero',
+  'one',
+  'two',
+  'three',
+  'four',
+  'five',
+  'six',
+  'seven',
+  'eight',
+  'nine',
+  'ten',
+];
+
+/// [count] as the design writes a small one — `five`, not `5` — and as digits
+/// past ten.
+String spelledCount(int count) =>
+    count >= 0 && count < _countWords.length ? _countWords[count] : '$count';
 
 /// The benefit list, counted from the shipped banks.
 @riverpod

@@ -177,6 +177,10 @@ class _Badge extends StatelessWidget {
     vertical: 1,
   );
 
+  /// How much accent the pill's border carries — the design's
+  /// `color-mix(in oklab, var(--accent) 45%, var(--rule))`.
+  static const double _accentShare = 0.45;
+
   final String text;
   final MoodColors mood;
 
@@ -184,7 +188,12 @@ class _Badge extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     padding: _padding,
     decoration: BoxDecoration(
-      border: Border.all(color: mood.rule),
+      border: Border.all(
+        color: Color.alphaBlend(
+          mood.accent.withValues(alpha: _accentShare),
+          mood.rule,
+        ),
+      ),
       borderRadius: BorderRadius.circular(AppRadii.pill),
     ),
     child: Text(

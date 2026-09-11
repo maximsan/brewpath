@@ -85,6 +85,9 @@ DictionaryView _view({
 
 /// A counted pitch, so the gate's assertions do not wait on the banks.
 const _pitch = PlusPitch(
+  premiumFormats: 4,
+  firstPaidModule: 2,
+  lastPaidModule: 5,
   remainingLessons: 29,
   lockedGames: 4,
   referenceTerms: 8,

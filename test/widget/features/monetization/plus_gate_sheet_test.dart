@@ -21,6 +21,9 @@ void main() {
 
   /// A counted pitch, so the sheet's assertions do not wait on the banks.
   const pitch = PlusPitch(
+    premiumFormats: 4,
+    firstPaidModule: 2,
+    lastPaidModule: 5,
     remainingLessons: 29,
     lockedGames: 4,
     referenceTerms: 8,
