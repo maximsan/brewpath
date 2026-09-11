@@ -114,6 +114,12 @@ abstract final class OffTokens {
     reason: 'the practice shelf pairs a label with its count at `gap: 10`',
   );
 
+  /// The room above the first guide on Reference's open shelf.
+  static const OffToken<double> referenceShelfHead = OffToken(
+    6,
+    reason: 'the guide list opens at `marginTop: 6`',
+  );
+
   /// The room under an open practice group's last row.
   static const OffToken<double> practiceGroupFoot = OffToken(
     6,

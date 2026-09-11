@@ -77,7 +77,8 @@ class _PathScreenState extends ConsumerState<PathScreen> {
                 previousTitle: i == 0 ? null : list[i - 1].item.module.title,
               ),
             // Last on Path: the course's own appendix, at the end of the thing
-            // it summarises.
+            // it summarises, at the design's `marginTop: 12`.
+            const SizedBox(height: AppSpacing.sm),
             const ReferenceSection(),
           ],
         ),

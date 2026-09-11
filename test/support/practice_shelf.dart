@@ -1,4 +1,5 @@
 import 'package:brew_path/features/learn/presentation/practice/practice_group.dart';
+import 'package:brew_path/shared/theme/app_motion.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Opens the practice group named [label] on the Learn tab.
@@ -13,5 +14,5 @@ Future<void> openPracticeGroup(WidgetTester tester, String label) async {
     ),
   );
   await tester.pump();
-  await tester.pump(PracticeGroup.turnDuration);
+  await tester.pump(AppMotion.disclosure);
 }

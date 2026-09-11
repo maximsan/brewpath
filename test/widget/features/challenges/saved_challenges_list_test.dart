@@ -36,6 +36,11 @@ void main() {
     expect(find.byType(SizedBox), findsWidgets);
   });
 
+  Future<void> open(WidgetTester tester) async {
+    await tester.tap(find.text('SAVED CHALLENGES'));
+    await tester.pumpAndSettle();
+  }
+
   testWidgets('lists what is parked', (tester) async {
     await pump(tester, [
       testChallenge(),
@@ -43,6 +48,9 @@ void main() {
     ]);
 
     expect(find.text('SAVED CHALLENGES'), findsOneWidget);
+    expect(find.text('Two cups, two ratios'), findsNothing);
+
+    await open(tester);
     expect(find.text('Two cups, two ratios'), findsOneWidget);
     expect(find.text('Blind process test'), findsOneWidget);
     expect(find.text('Next brews · 5 min'), findsNWidgets(2));
@@ -50,6 +58,7 @@ void main() {
 
   testWidgets('starting one puts it in play', (tester) async {
     await pump(tester, [testChallenge()]);
+    await open(tester);
 
     await tester.tap(find.text('Start'));
     await tester.pump();
@@ -64,6 +73,7 @@ void main() {
 
   testWidgets('removing one is reachable by its own label', (tester) async {
     await pump(tester, [testChallenge()]);
+    await open(tester);
 
     expect(
       find.byTooltip('Remove Two cups, two ratios from saved'),
