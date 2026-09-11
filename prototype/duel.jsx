@@ -538,15 +538,12 @@ function DuelResult({ run, reveal = 'tally', onSend, onClose }) {
 
         {/* Correct answers / review */}
         <div className="px-24" style={{ paddingTop: 18 }}>
-          <button onClick={() => setShowReview(s => !s)} style={{
-            width: '100%', appearance: 'none', cursor: 'pointer', background: 'transparent',
-            border: '1px solid var(--rule)', borderRadius: 12, padding: '13px 15px',
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          }}>
-            <span style={{ fontSize: 'var(--t-support)', color: 'var(--ink)', fontWeight: 500 }}>Review the answers</span>
-            <svg width="18" height="18" viewBox="0 0 20 20" style={{ color: 'var(--ink-mute)', transform: showReview ? 'rotate(180deg)' : 'none', transition: 'transform 220ms' }}><path d="M5 8 L10 13 L15 8" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-          </button>
-          {showReview && <DuelReview type={run.type} answers={run.answers} style={{ marginTop: 12 }}/>}
+          <window.Disclosure open={showReview} onToggle={() => setShowReview(s => !s)}
+            headerPad="13px 15px" headerStyle={{ border: '1px solid var(--rule)', borderRadius: 12 }}
+            header={<span style={{ fontSize: 'var(--t-support)', color: 'var(--ink)', fontWeight: 500 }}>Review the answers</span>}
+            panelStyle={{ paddingTop: 12 }}>
+            <DuelReview type={run.type} answers={run.answers}/>
+          </window.Disclosure>
         </div>
 
         <div style={{ flex: 1, minHeight: 18 }}/>
@@ -881,15 +878,12 @@ function DuelComparison({ youRun, friendRun, friend, onRematch, onClose }) {
 
         {/* missed questions / review */}
         <div className="px-24" style={{ paddingTop: 18 }}>
-          <button onClick={() => setShowReview(s => !s)} style={{
-            width: '100%', appearance: 'none', cursor: 'pointer', background: 'transparent',
-            border: '1px solid var(--rule)', borderRadius: 12, padding: '13px 15px',
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          }}>
-            <span style={{ fontSize: 'var(--t-support)', color: 'var(--ink)', fontWeight: 500 }}>Missed questions &amp; answers</span>
-            <svg width="18" height="18" viewBox="0 0 20 20" style={{ color: 'var(--ink-mute)', transform: showReview ? 'rotate(180deg)' : 'none', transition: 'transform 220ms' }}><path d="M5 8 L10 13 L15 8" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-          </button>
-          {showReview && <DuelReview type={youRun.type} answers={youRun.answers} them={friendRun.answers} style={{ marginTop: 12 }}/>}
+          <window.Disclosure open={showReview} onToggle={() => setShowReview(s => !s)}
+            headerPad="13px 15px" headerStyle={{ border: '1px solid var(--rule)', borderRadius: 12 }}
+            header={<span style={{ fontSize: 'var(--t-support)', color: 'var(--ink)', fontWeight: 500 }}>Missed questions &amp; answers</span>}
+            panelStyle={{ paddingTop: 12 }}>
+            <DuelReview type={youRun.type} answers={youRun.answers} them={friendRun.answers}/>
+          </window.Disclosure>
         </div>
       </div>
 

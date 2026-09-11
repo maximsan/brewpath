@@ -616,27 +616,12 @@ const FAQ_ITEMS = () => [
   { q: 'Can I learn offline?', a: 'Yes — modules you\u2019ve opened are kept on your phone. Progress syncs the next time you\u2019re online.' },
 ];
 
+// Prose disclosure: plus glyph, not caret — an answer, not a list.
 function FaqRow({ q, a, open, onToggle }) {
   return (
-    <div style={{ borderBottom: '1px solid var(--rule)' }}>
-      <div onClick={onToggle} style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
-        padding: '16px 0', cursor: 'pointer',
-      }}>
-        <span style={{ fontSize: 'var(--t-body)', color: 'var(--ink)' }}>{q}</span>
-        <svg width="12" height="12" viewBox="0 0 12 12" style={{ flex: 'none', transform: open ? 'rotate(45deg)' : 'none', transition: 'transform 200ms ease' }}>
-          <path d="M6 1v10M1 6h10" stroke="var(--ink-mute)" strokeOpacity="0.7" strokeWidth="1.4" strokeLinecap="round"/>
-        </svg>
-      </div>
-      <div style={{
-        display: 'grid', gridTemplateRows: open ? '1fr' : '0fr',
-        transition: 'grid-template-rows 240ms cubic-bezier(.2,.8,.2,1)',
-      }}>
-        <div style={{ overflow: 'hidden' }}>
-          <p style={{ margin: '0 0 16px', fontSize: 'var(--t-support)', lineHeight: 1.55, color: 'var(--ink-mute)', textWrap: 'pretty', maxWidth: '92%' }}>{a}</p>
-        </div>
-      </div>
-    </div>
+    <window.Disclosure label={q} open={open} onToggle={onToggle} glyph="plus" divider>
+      <p style={{ margin: '0 0 16px', fontSize: 'var(--t-support)', lineHeight: 1.55, color: 'var(--ink-mute)', textWrap: 'pretty', maxWidth: '92%' }}>{a}</p>
+    </window.Disclosure>
   );
 }
 

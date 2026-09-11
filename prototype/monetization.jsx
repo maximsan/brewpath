@@ -63,7 +63,7 @@ const MONETIZATION_MODELS = {
   subscription: { id: 'subscription', label: 'Subscription', plans: ['monthly', 'yearly'], defaultPlan: 'yearly',
     eyebrow: 'SUBSCRIPTION',
     heroTitle: 'The whole course, for as long as you’re brewing.',
-    paywallNote: 'Cancel anytime · you keep the time you paid for',
+    paywallNote: 'You keep the time you paid for',
     gateCta: 'Unlock Foundations — from $2/mo',
     gateFooter: 'Subscription · cancel anytime',
     offerValue: 'from $2/mo',

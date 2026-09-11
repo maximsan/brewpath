@@ -2922,6 +2922,24 @@ window.findVisualGuideCard = function(guide) {
 };
 
 window.MODULES = MODULES;
+// ── The free tier: the single authority ──────────────────────
+// The free tier is a set of free LESSON ids. It is written here, beside the
+// course data, and read by everything that gates: app.jsx's lessonAccessible
+// (can this lesson open?) and screens.jsx's gameIsFree (is the lesson that
+// teaches this game free?). Never re-derive it from a module id at a call
+// site — that is how the prototype and the app came to disagree (#175).
+// Today it is Module 1 entire; narrowing it to specific lessons is an edit to
+// FREE_MODULE_IDS or to this list, and every gate follows.
+const FREE_MODULE_IDS = ['m1'];
+window.FREE_LESSON_IDS = new Set(
+  MODULES.filter(m => FREE_MODULE_IDS.includes(m.id)).flatMap(m => m.lessons.map(l => l.id))
+);
+if (!window.FREE_LESSON_IDS.size) {
+  // An empty free tier locks every free user out of everything, silently.
+  // Fail loudly instead: it can only mean FREE_MODULE_IDS names a module that
+  // no longer exists, or MODULES changed shape.
+  console.error('[BrewPath] FREE_LESSON_IDS is empty — FREE_MODULE_IDS', FREE_MODULE_IDS, 'matched no module in MODULES. Every game and lesson will read as locked.');
+}
 window.LESSONS = LESSONS;
 window.COLLECTIBLES = COLLECTIBLES;
 window.MODULE_REWARDS = MODULE_REWARDS;
