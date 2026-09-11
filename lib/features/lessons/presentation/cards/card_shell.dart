@@ -40,6 +40,7 @@ class CardShell extends StatelessWidget {
     this.label,
     this.title,
     this.commit,
+    this.continueLabel = AppLabels.continueLabel,
     super.key,
   });
 
@@ -68,46 +69,62 @@ class CardShell extends StatelessWidget {
   /// shows a disabled Continue while it waits.
   final CardCommit? commit;
 
+  /// What the way forward says: Continue, unless the design words this card's
+  /// gate itself — the predict card's *Make a guess*, then *Find out*.
+  final String continueLabel;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final mood = context.mood;
 
+    // Two halves, spread apart: when the host gives the card the viewport's
+    // height the way on sits at the foot, as the design's `flex: 1` spacer
+    // puts it, and a taller card simply runs on with the button after it.
     return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (cue case final cue?) ...[
-          CardCueRow(cue: cue),
-          const SizedBox(height: AppSpacing.sm),
-        ],
-        if (label != null) ...[
-          Text(
-            label!,
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: mood.inkMute,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.xs),
-        ],
-        if (title != null) ...[
-          Text(
-            title!,
-            style: theme.textTheme.titleLarge,
-          ),
-          const SizedBox(height: AppSpacing.md),
-        ],
-        ...children,
-        const SizedBox(height: AppSpacing.lg),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (cue case final cue?) ...[
+              CardCueRow(cue: cue),
+              const SizedBox(height: AppSpacing.sm),
+            ],
+            if (label != null) ...[
+              Text(
+                label!,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: mood.inkMute,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xs),
+            ],
+            if (title != null) ...[
+              Text(
+                title!,
+                style: theme.textTheme.titleLarge,
+              ),
+              const SizedBox(height: AppSpacing.md),
+            ],
+            ...children,
+          ],
+        ),
         // The lesson's own CTA, so it is the design's `.btn-primary` at full
         // width and 52 — not Material's 40, which left the most-pressed button
-        // in the app shorter than the Continue on the screen after it.
-        if (commit != null && !latched)
-          PrimaryButton(label: commit!.label, onPressed: commit!.onCommit)
-        else
-          PrimaryButton(
-            label: AppLabels.continueLabel,
-            onPressed: latched ? onContinue : null,
-          ),
+        // in the app shorter than the Continue on the screen after it. The
+        // design pads it `paddingTop: 32` off the content.
+        Padding(
+          padding: const EdgeInsets.only(top: AppSpacing.xl),
+          child: commit != null && !latched
+              ? PrimaryButton(label: commit!.label, onPressed: commit!.onCommit)
+              : PrimaryButton(
+                  label: continueLabel,
+                  onPressed: latched ? onContinue : null,
+                ),
+        ),
       ],
     );
   }

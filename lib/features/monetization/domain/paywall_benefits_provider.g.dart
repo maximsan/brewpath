@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'paywall_copy.dart';
+part of 'paywall_benefits_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -8,12 +8,12 @@ part of 'paywall_copy.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// The benefit list, counted from the shipped banks.
+/// The paywall's benefit rows, counted from the shipped banks.
 
 @ProviderFor(paywallBenefits)
 final paywallBenefitsProvider = PaywallBenefitsProvider._();
 
-/// The benefit list, counted from the shipped banks.
+/// The paywall's benefit rows, counted from the shipped banks.
 
 final class PaywallBenefitsProvider
     extends
@@ -25,7 +25,7 @@ final class PaywallBenefitsProvider
     with
         $FutureModifier<List<PaywallBenefit>>,
         $FutureProvider<List<PaywallBenefit>> {
-  /// The benefit list, counted from the shipped banks.
+  /// The paywall's benefit rows, counted from the shipped banks.
   PaywallBenefitsProvider._()
     : super(
         from: null,

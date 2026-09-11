@@ -69,12 +69,11 @@ class Roasty extends StatefulWidget {
   /// browns.
   final bool plate;
 
-  /// What the points burst says, for [RoastyState.points] and no other state.
-  ///
-  /// Passed in rather than known here: a lesson pays what it authors and a
-  /// challenge pays its own rule (§5.1, #16). Required with the pose and
-  /// rejected without it — see the assert on the constructor. A caller
-  /// reaching the pose through `roastyStateFor` has no channel for this.
+  /// What the points burst says, for [RoastyState.points] and no other state:
+  /// a lesson pays what it authors and a challenge its own rule (§5.1, #16),
+  /// so the amount is passed in, required with the pose and rejected without.
+  /// A caller reaching the pose through `roastyStateFor` has no channel for
+  /// it, so wiring the pose to a reaction means giving the amount a way too.
   final int? pointsAmount;
 
   /// The outfit to draw, overriding what the learner has on.
@@ -249,8 +248,12 @@ class _RoastyPainter extends CustomPainter {
         sprout: outfit.sprout,
       );
     }
+    _withBodyTransform(
+      canvas,
+      () => paintRoastyShimmer(canvas, state, progress, mood),
+    );
     paintRoastyBody(canvas, state, progress, roast: outfit.roast);
-    _paintFaceAndOutfit(canvas);
+    _withBodyTransform(canvas, () => _paintFaceAndOutfit(canvas));
     paintRoastyParticlesFront(
       canvas,
       state,
@@ -262,15 +265,22 @@ class _RoastyPainter extends CustomPainter {
     canvas.restore();
   }
 
-  /// The face and everything worn ride the body transform, so apply it once
-  /// and draw them all inside it — the order the design draws them in.
-  void _paintFaceAndOutfit(Canvas canvas) {
+  /// The face, the shimmer and everything worn ride along with the body, so
+  /// [paint] runs under the body's own transform.
+  void _withBodyTransform(Canvas canvas, void Function() paint) {
     canvas.save();
     final offset = roastyBodyOffset(state, progress);
     canvas.translate(100 + offset.dx, 158 + offset.dy);
     canvas.rotate(roastyBodyRotation(state, progress));
     canvas.scale(roastyBodyScale(state, progress));
     canvas.translate(-100, -158);
+    paint();
+    canvas.restore();
+  }
+
+  /// The face and everything worn, in the order the design draws them — run
+  /// inside [_withBodyTransform], which is what makes a hat ride the hop.
+  void _paintFaceAndOutfit(Canvas canvas) {
     paintRoastyFace(canvas, state, mood);
     paintRoastyGear(canvas, outfit.gear);
     paintRoastyHat(canvas, outfit.hat);
@@ -279,7 +289,6 @@ class _RoastyPainter extends CustomPainter {
       canvas.translate(0, -_sproutOverHat);
       paintRoastySproutArt(canvas, outfit.sprout);
     }
-    canvas.restore();
   }
 
   /// How far the sprout rises to grow through a hat, in canvas units.

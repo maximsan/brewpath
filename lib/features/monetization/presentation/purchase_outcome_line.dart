@@ -1,4 +1,4 @@
-import 'package:brew_path/features/monetization/domain/plus_copy.dart';
+import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_purchase_controller.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -21,11 +21,11 @@ class PurchaseOutcomeLine extends StatelessWidget {
   Widget build(BuildContext context) {
     final mood = context.mood;
     final (message, tone) = switch (state) {
-      PlusPurchaseState.owned => (PlusCopy.owned, mood.accent),
-      PlusPurchaseState.pending => (PlusCopy.pending, mood.inkMute),
-      PlusPurchaseState.failed => (PlusCopy.failed, mood.berry),
+      PlusPurchaseState.owned => (PaywallCopy.owned, mood.accent),
+      PlusPurchaseState.pending => (PaywallCopy.pending, mood.inkMute),
+      PlusPurchaseState.failed => (PaywallCopy.failed, mood.berry),
       PlusPurchaseState.nothingToRestore => (
-        PlusCopy.nothingToRestore,
+        PaywallCopy.nothingToRestore,
         mood.inkMute,
       ),
       PlusPurchaseState.idle ||

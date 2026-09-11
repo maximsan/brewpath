@@ -31,18 +31,23 @@ Duration roastyDuration(RoastyState state) {
   }
 }
 
-/// Controller value to hold when a [RoastyState] is painted without animation
-/// (`Roasty(animate: false)` or reduced motion). A neutral resting pose: the
-/// body math is at rest at `t = 0`, and the face is state-driven (not
-/// `t`-driven) so the right expression still shows. Pure, so a frame can be
-/// frozen without a ticker.
+/// Controller value to hold when a [RoastyState] is painted without animation:
+/// the resting pose at `t = 0`, where the face is state-driven anyway.
 ///
-/// [RoastyState.points] is the exception, and holds at [pointsBurstFadeIn]
-/// instead. Its payload is the burst, which *is* `t`-driven: at zero the burst
-/// has not faded in yet, so stillness would leave a wink with nothing to wink
-/// about. The fade-in stop is the first instant the burst is fully opaque.
+/// [RoastyState.points] holds at [pointsBurstFadeIn] instead, the first
+/// instant its `t`-driven burst is fully opaque, so stillness has something
+/// to show.
 double roastyStaticFrame(RoastyState state) =>
     state == RoastyState.points ? pointsBurstFadeIn : 0;
+
+/// The blur of the card face's shimmer at controller [progress]: the design's
+/// `drop-shadow(0 0 12px var(--warn))` at its peak, breathing from nothing
+/// and back over one loop. Returned as the Gaussian's deviation.
+double cardShimmerBlur(double progress) =>
+    _cardShimmerPeak * (1 - math.cos(progress * 2 * math.pi)) / 2;
+
+/// The design's `12px` at the shimmer's widest.
+const double _cardShimmerPeak = 12;
 
 /// Whether [state]'s animation repeats (vs. plays once).
 bool roastyLoops(RoastyState state) {

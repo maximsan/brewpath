@@ -62,6 +62,7 @@ class TermOfDayScreen extends ConsumerWidget {
             final resolved? => SavedBookmarkButton(
               savedKey: formatSavedKey(SavedKind.term, resolved.term.id),
               label: resolved.term.term,
+              ringed: true,
             ),
             null => null,
           },

@@ -1,9 +1,9 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/features/monetization/config/paywall_config.dart';
+import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
 import 'package:brew_path/features/monetization/domain/paywall_view.dart';
-import 'package:brew_path/features/monetization/domain/plus_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/features/saved/domain/saved_cap.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
@@ -73,7 +73,7 @@ void main() {
     );
     expect(findMark(AppIcon.bookmark, active: false), findsOneWidget);
     // The refusal is the Plus gate now, not a snackbar.
-    expect(find.text(PlusCopy.title), findsOneWidget);
+    expect(find.text(PaywallCopy.gateTitle), findsOneWidget);
   });
 
   testWidgets('the refusal names the cap and offers Plus', (tester) async {
@@ -103,7 +103,7 @@ void main() {
     await settleLoaders(tester);
 
     expect(await container.read(savedKeysProvider.future), {..._full, _sixth});
-    expect(find.text(PlusCopy.title), findsNothing);
+    expect(find.text(PaywallCopy.gateTitle), findsNothing);
   });
 
   testWidgets('an already-saved item still unsaves at the cap', (tester) async {
@@ -129,6 +129,6 @@ void main() {
       await container.read(savedKeysProvider.future),
       {'t:robusta', 't:cultivar', 't:typica', 't:bloom'},
     );
-    expect(find.text(PlusCopy.title), findsNothing);
+    expect(find.text(PaywallCopy.gateTitle), findsNothing);
   });
 }

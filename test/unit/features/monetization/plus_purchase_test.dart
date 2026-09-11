@@ -1,5 +1,6 @@
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
 import 'package:brew_path/features/monetization/domain/plus_purchase_controller.dart';
+import 'package:brew_path/features/monetization/domain/purchased_term.dart';
 import 'package:brew_path/services/payments/payments_provider.dart';
 import 'package:brew_path/services/payments/payments_service.dart';
 import 'package:brew_path/services/payments/store_product.dart';
@@ -244,6 +245,32 @@ void main() {
         );
 
     expect(payments.bought, 'lifetime.sku');
+  });
+
+  test('a sale records the term bought, so the welcome can say it', () async {
+    final container = _containerWith(_RecordingPayments());
+
+    expect(container.read(purchasedTermProvider), isNull);
+    await container
+        .read(plusPurchaseProvider.notifier)
+        .buy(
+          offer: const PlusOffer(
+            productId: 'yearly.sku',
+            term: PlusTerm.yearly,
+          ),
+        );
+
+    expect(container.read(purchasedTermProvider), PlusTerm.yearly);
+  });
+
+  test('a cancelled sale records nothing', () async {
+    final container = _containerWith(
+      _RecordingPayments(outcome: PurchaseStatus.cancelled),
+    );
+
+    await container.read(plusPurchaseProvider.notifier).buy();
+
+    expect(container.read(purchasedTermProvider), isNull);
   });
 
   test('an arm the store cannot offer fails instead of hanging', () async {

@@ -15,6 +15,17 @@ import 'package:flutter/painting.dart';
 Rect tourFrameRect(Rect target) =>
     target.inflate(OffTokens.tourFrameInset.value);
 
+/// [box] less the [padding] its owner draws inside it — the content box the
+/// design frames, rather than the whole of a full-bleed section.
+///
+/// A padding wider than the box collapses it rather than inverting it.
+Rect tourContentBox(Rect box, EdgeInsets padding) => Rect.fromLTWH(
+  box.left + padding.left,
+  box.top + padding.top,
+  math.max(0, box.width - padding.horizontal),
+  math.max(0, box.height - padding.vertical),
+);
+
 /// Whether the card sits below [target] rather than above it, on a layer
 /// [areaHeight] tall.
 ///
@@ -53,9 +64,9 @@ double tourBottomOverflow({
 /// The top edge of a card [cardHeight] tall, on a layer [areaHeight] tall.
 ///
 /// The design picks a side; where that side cannot hold the card clear of
-/// [safeArea] and the other can, the other one takes it. The mock the rule is
-/// drawn against has no status bar, so above a tall target near the top of the
-/// feed the card ran under the clock on a real phone.
+/// [safeArea] and the other can, the other one takes it — ruled by the owner
+/// in PR #558, because the mock has no status bar and above a tall target the
+/// card ran under the clock on a real phone.
 double tourCardTop({
   required Rect? target,
   required double areaHeight,

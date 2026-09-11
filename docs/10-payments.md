@@ -180,15 +180,16 @@ entitlement, acquisition and paywall UI stay separated
 ([#176](https://github.com/maximsan/brewpath/issues/176)).
 
 The IDs and the arm-to-SKU map live in
-`lib/services/payments/plus_offering.dart` — `offeringFor(model)` is the whole
+`lib/shared/models/monetization/plus_offering.dart` — `offeringFor(model)` is the whole
 of "which SKUs does this arm sell", which is what makes switching models a
 config change.
 
-**Only the one-time arm has SKUs.** The subscription and hybrid arms are named
-in `MonetizationModel` because #176 and ADR-0003 name them, but `offeringFor`
-throws for both: nothing is registered in App Store Connect, and choosing IDs,
-prices and which plan a paywall preselects are product decisions nobody has
-made. Register the SKUs first, then fill the arm in.
+**Only the one-time SKU is registered.** The subscription and hybrid arms
+name `…plus.monthly` and `…plus.yearly` as placeholders so their paywalls can
+be driven (`--dart-define=MONETIZATION_MODEL=<arm>`, README _Run-time flags_),
+but nothing in App Store Connect answers to them: their rows draw unpriced,
+and an unpriced row cannot be bought. Registering them, and the prices, is
+#421's.
 
 ---
 
@@ -206,9 +207,9 @@ When payments are ready to go live:
 - [ ] Return a real `currentOffering()` — RevenueCat's Offerings if the experiment
   uses it, otherwise the baseline arm; it must be stable per learner
 - [ ] Implement client-side receipt validation (server-side only if the monetization experiment brings subscriptions back)
-- [ ] Add entitlement check at app startup — gate Plus content if `hasActiveEntitlement()` returns false
-- [ ] Build paywall screen at `lib/features/paywall/presentation/paywall_screen.dart`
-- [ ] Add a Restore Purchases button to Profile tab
+- [x] Gate Plus content on the entitlement — every gate reads `courseEntitlementProvider`, and the router's redirect is the backstop (#176)
+- [x] The paywall screen — `lib/features/monetization/presentation/paywall_screen.dart`, the intro's last step and every gate's offer (#242)
+- [x] Restore Purchases — on the paywall and the gate sheet; the Profile entry is #421
 - [ ] Test in sandbox environment with a sandbox Apple ID
 - [ ] Handle edge cases: purchase interrupted, StoreKit unavailable, already purchased
 
@@ -225,10 +226,12 @@ non-consumable; the decision belongs to the experiment.
 lib/services/payments/
 ├── payments_service.dart           # Abstract interface
 ├── store_product.dart              # Product model
-├── plus_offering.dart              # Arms, SKUs, and the arm-to-SKU map
 ├── noop_payments_service.dart      # MVP active implementation (no-op)
 ├── in_app_purchase_service.dart    # Future implementation stub
 └── payments_provider.dart          # Riverpod provider
+
+lib/shared/models/monetization/
+└── plus_offering.dart              # Arms, SKUs, and the arm-to-SKU map
 ```
 
 ---

@@ -9,7 +9,7 @@ import 'package:brew_path/features/lessons/presentation/cards/card_cue_row.dart'
 import 'package:brew_path/features/mini_games/presentation/mini_game_intro_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_player_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_games_catalog_widget.dart';
-import 'package:brew_path/features/monetization/domain/plus_copy.dart';
+import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/progress/domain/activity_recorder.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
@@ -770,7 +770,7 @@ void main() {
       await tester.pump();
     }
 
-    expect(find.text(PlusCopy.title), findsOneWidget);
+    expect(find.text(PaywallCopy.gateTitle), findsOneWidget);
     expect(
       find.text('Play again'),
       findsOneWidget,
@@ -815,7 +815,7 @@ void main() {
       await tester.pump();
     }
 
-    expect(find.text(PlusCopy.title), findsOneWidget);
+    expect(find.text(PaywallCopy.gateTitle), findsOneWidget);
     expect(find.text('Continue'), findsNothing, reason: 'no round dealt');
   });
 

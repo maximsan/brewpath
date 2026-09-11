@@ -3,8 +3,8 @@ import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/bean_gauge.dart';
+import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/locked_row_copy.dart';
-import 'package:brew_path/features/monetization/domain/plus_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart';
 import 'package:brew_path/features/path/domain/path_module_view.dart';
@@ -21,6 +21,9 @@ import '../../../support/content_fixtures.dart';
 final LessonModel _lesson = testLesson(title: 'Where coffee grows');
 
 const _pitch = PlusPitch(
+  premiumFormats: 4,
+  firstPaidModule: 2,
+  lastPaidModule: 5,
   remainingLessons: 29,
   lockedGames: 4,
   referenceTerms: 8,
@@ -266,7 +269,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // The sheet, not a route: the row is the visible edge of the purchase.
-      expect(find.text(PlusCopy.title), findsOneWidget);
+      expect(find.text(PaywallCopy.gateTitle), findsOneWidget);
     });
 
     testWidgets('the next lesson in order stops reading as current', (

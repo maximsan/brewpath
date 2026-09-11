@@ -158,6 +158,61 @@ void main() {
     });
   });
 
+  group('the per-month figure is worked out from the store', () {
+    final priced = [
+      _product('yearly.sku', r'$23.99', 23.99),
+      _product('monthly.sku', r'$3.99', 3.99),
+      _product('lifetime.sku', r'$49.99', 49.99),
+    ];
+
+    test('a yearly row says what a month of it costs', () {
+      final view = buildPaywallView(offering: _hybrid, products: priced);
+
+      expect(view.planFor(PlusTerm.yearly).line, r'$2/month, billed yearly');
+      expect(view.planFor(PlusTerm.monthly).line, 'Billed monthly');
+    });
+
+    test('an unpriced yearly row keeps the line with no figure in it', () {
+      final view = buildPaywallView(offering: _hybrid, products: const []);
+
+      expect(view.planFor(PlusTerm.yearly).line, 'Billed yearly');
+    });
+
+    test('the cheapest month is the gate sheet\'s "from"', () {
+      final view = buildPaywallView(offering: _hybrid, products: priced);
+      final gate = paywallModels[MonetizationModel.hybrid]!.gateCta;
+
+      expect(view.fromPerMonth, r'$2');
+      expect(
+        withPrice(gate, null, perMonth: view.fromPerMonth),
+        r'Unlock Foundations — from $2/mo',
+      );
+    });
+
+    test('a gate with no figure drops "from" along with the clause', () {
+      final gate = paywallModels[MonetizationModel.hybrid]!.gateCta;
+
+      expect(withPrice(gate, null), 'Unlock Foundations');
+    });
+
+    test('the figure keeps the currency mark where the store put it', () {
+      expect(formatLikePrice(r'$23.99', 1.999), r'$2');
+      expect(formatLikePrice('23,99 €', 1.999), '2 €');
+      expect(formatLikePrice('CHF 25.00', 2.08), 'CHF 2');
+    });
+  });
+
+  test('an arm preselects the plan it names, wherever it sits', () {
+    final view = buildPaywallView(
+      offering: offeringFor(MonetizationModel.hybrid),
+      products: const [],
+    );
+
+    expect(view.plans.first.term, isNot(PlusTerm.yearly));
+    expect(view.defaultTerm, PlusTerm.yearly);
+    expect(view.planFor(null).term, PlusTerm.yearly);
+  });
+
   test('every plan the config knows has a term of its own', () {
     // A copy-pasted entry that kept the wrong term would draw one plan's
     // words on another plan's row.

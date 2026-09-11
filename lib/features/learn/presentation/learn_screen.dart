@@ -1,7 +1,6 @@
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/learn/presentation/learn_list_view.dart';
 import 'package:brew_path/features/tour/domain/tour_providers.dart';
-import 'package:brew_path/features/tour/presentation/tour_intro_overlay.dart';
 import 'package:brew_path/features/tour/presentation/tour_runner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,8 +8,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Learn tab: today's lesson and the practice sections.
 ///
 /// The course itself is Path's (#394) — this tab is today's work, which is
-/// what the design calls it. Also where the Tour auto-runs, and stateful for
-/// that alone: the offer is made once per launch at most, and only a `State`
+/// what the design calls it. Also where the Tour runs unasked, and stateful for
+/// that alone: the first run starts once per launch at most, and only a `State`
 /// remembers that across the rebuilds the tab's providers cause.
 class LearnScreen extends ConsumerStatefulWidget {
   /// Creates a [LearnScreen].
@@ -32,42 +31,30 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
     ref.listenManual(tourReplayRequestProvider, (_, requested) {
       if (!requested || !mounted) return;
       ref.read(tourReplayRequestProvider.notifier).consume();
-      // No intro overlay and no write: someone asking to see the Tour again
-      // has already answered the question the overlay asks, and the flag
-      // records that answer, not how many times the Tour has run.
-      startTour(ref);
+      startTour(ref, TourRun.replay);
     });
   }
 
-  /// Whether this screen has already put the intro overlay on screen.
+  /// Whether this screen has already started the first run.
   ///
-  /// `tourSeen` is not enough on its own: it is written *asynchronously* when
-  /// the overlay is answered, so between the tap and the write landing the
-  /// provider still reads false and a rebuild would offer the Tour a second
-  /// time. This is the latch that closes immediately.
-  bool _offered = false;
+  /// `tourSeen` is not enough on its own: it is written when the run ends, so
+  /// while the Tour is up — and for the moment after, while the write lands —
+  /// the provider still reads false, and a rebuild would start it again. This
+  /// is the latch that closes as the run starts.
+  bool _started = false;
 
-  /// Offers the Tour once the tab is showing real data and the flag is unset.
+  /// Starts the first run once the tab shows real data and the flag is unset.
   ///
-  /// Gated on the day's lesson having resolved rather than on the screen
-  /// mounting: the first stop is the Today card, and spotlighting a card that
-  /// has not decided what it says explains nothing. A null [seen] is the flag
-  /// still loading, treated as "already seen" so nothing is offered blind.
-  void _offerTourIfDue(bool? seen) {
-    if (_offered || (seen ?? true)) return;
+  /// No offer first: the design draws the Tour as soon as Today does (#537).
+  /// Gated on the day's lesson having resolved, because the first stop is the
+  /// Today card, and framing a card that has not decided what it says explains
+  /// nothing. A null [seen] is the flag still loading, treated as seen.
+  void _runTourIfDue(bool? seen) {
+    if (_started || (seen ?? true)) return;
 
-    _offered = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (!mounted) return;
-      final accepted = await TourIntroOverlay.show(context);
-      if (accepted == null || !mounted) return;
-
-      // Either answer writes the flag: the Tour is offered once, and declining
-      // is an answer. Mid-tour abandonment never re-arms it, because the write
-      // has already happened by then.
-      await markTourSeen(ref);
-      if (!mounted || !accepted) return;
-      startTour(ref);
+    _started = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) startTour(ref, TourRun.first);
     });
   }
 
@@ -80,11 +67,11 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
     // provider is pending, so the day's card can settle last without holding a
     // spinner over a tab that is otherwise ready.
     final today = ref.watch(todayLessonProvider);
-    // Watched, not read: the flag resolves on its own schedule, and the offer
+    // Watched, not read: the flag resolves on its own schedule, and the run
     // has to survive it landing after the lesson.
     final tourSeen = ref.watch(tourSeenProvider);
 
-    if (today.hasValue) _offerTourIfDue(tourSeen.value);
+    if (today.hasValue) _runTourIfDue(tourSeen.value);
 
     return const Scaffold(body: LearnListView());
   }
