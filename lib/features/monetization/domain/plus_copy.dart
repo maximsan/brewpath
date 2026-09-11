@@ -28,9 +28,6 @@ abstract final class PlusCopy {
   /// one-time purchase (ADR-0003), and the tone has to match what is sold.
   static const title = 'Get the full course';
 
-  /// The one action.
-  static const buy = 'Unlock BrewPath Plus';
-
   /// While the store call is in flight.
   static const working = 'Working…';
 
@@ -63,32 +60,6 @@ abstract final class PlusCopy {
   static const nothingToRestore =
       'No purchase found on this account. If you bought Plus with another '
       'Apple Account, sign in with that one and try again.';
-
-  /// The offer screen's eyebrow: what is sold, and on what terms.
-  ///
-  /// Two facts and no more, because the slots under it carry the rest — the
-  /// title promises permanence, the note reassures. ADR-0003 fixes the second
-  /// half: v1 sells one non-consumable, so the model is never in question.
-  static const screenEyebrow = 'BrewPath Plus · One-time purchase';
-
-  /// The offer screen's heading.
-  static const screenTitle = 'Own the whole course.';
-
-  /// The reassurance under the offer screen's actions.
-  static const screenNote = 'No subscription · fixes and improvements included';
-
-  /// The offer screen's way out, under the buy action.
-  ///
-  /// Spelled apart from [notNow]: the sheet interrupts something and this
-  /// screen is a step the learner is walking through, so declining it is
-  /// *later*, not *not now*.
-  static const maybeLater = 'Maybe later';
-
-  /// Screen-reader name for the offer screen as a whole.
-  static const screenSemanticLabel = 'The BrewPath Plus offer';
-
-  /// The way off the offer screen, in its top bar.
-  static const close = 'Close';
 
   /// The purchase-welcome screen's heading.
   static const welcomeTitle = 'Plus is yours.';
