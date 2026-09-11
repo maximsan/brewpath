@@ -1,5 +1,5 @@
 import 'package:brew_path/app/pending_link.dart';
-import 'package:brew_path/core/constants/app_links.dart';
+import 'package:brew_path/core/config/app_links.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/monetization/domain/lesson_access.dart';
 import 'package:flutter/foundation.dart';

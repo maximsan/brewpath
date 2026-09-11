@@ -1,4 +1,4 @@
-import 'package:brew_path/core/config/support_contact.dart';
+import 'package:brew_path/core/config/app_links.dart';
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/widgets/settings_nav_row.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
@@ -112,8 +112,8 @@ void main() {
     // than drawn live and inert, and the placeholder still names them.
     await pump(tester, const AboutScreen());
 
-    expect(termsUrl, isNull, reason: '#448 has not been given URLs yet');
-    expect(privacyUrl, isNull, reason: '#448 has not been given URLs yet');
+    expect(SupportLinks.terms, isNull, reason: '#448 has no URLs yet');
+    expect(SupportLinks.privacy, isNull, reason: '#448 has no URLs yet');
     expect(find.byType(SettingsNavRow), findsNothing);
     expect(find.text(SettingsCopy.aboutComing), findsOneWidget);
   });

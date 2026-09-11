@@ -6,7 +6,7 @@
 /// payments service is a no-op and Firebase is gated off.
 library;
 
-import 'package:brew_path/core/config/support_contact_provider.dart';
+import 'package:brew_path/core/config/app_links_provider.dart';
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/widgets/settings_nav_row.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';

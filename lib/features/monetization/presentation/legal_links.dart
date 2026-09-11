@@ -1,4 +1,4 @@
-import 'package:brew_path/core/config/support_contact_provider.dart';
+import 'package:brew_path/core/config/app_links_provider.dart';
 import 'package:brew_path/core/widgets/link_button.dart';
 import 'package:brew_path/services/links/link_provider.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';

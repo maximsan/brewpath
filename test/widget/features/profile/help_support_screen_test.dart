@@ -1,4 +1,4 @@
-import 'package:brew_path/core/config/support_contact_provider.dart';
+import 'package:brew_path/core/config/app_links_provider.dart';
 import 'package:brew_path/core/widgets/settings_nav_row.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_providers.dart';

@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'support_contact_provider.dart';
+part of 'app_links_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -61,7 +61,7 @@ final class SupportMailboxProvider
   }
 }
 
-String _$supportMailboxHash() => r'01c8e0444cdb960d2b693012baa6436bbc50252b';
+String _$supportMailboxHash() => r'736a93e0458ae5457b7f72202ab93305359c9e90';
 
 /// The hosted Terms of use, parsed once, or null while unhosted (#448).
 
@@ -106,7 +106,7 @@ final class TermsPageProvider extends $FunctionalProvider<Uri?, Uri?, Uri?>
   }
 }
 
-String _$termsPageHash() => r'6dac3eb067aa80962abc31f65d690d197a8551a4';
+String _$termsPageHash() => r'f783d96bd79a3661b80de15a2aea474d61dd944a';
 
 /// The hosted Privacy policy, parsed once, or null while unhosted (#448).
 
@@ -151,4 +151,4 @@ final class PrivacyPageProvider extends $FunctionalProvider<Uri?, Uri?, Uri?>
   }
 }
 
-String _$privacyPageHash() => r'2035982590def34d76ad0140ec1422083bb053d1';
+String _$privacyPageHash() => r'a31844839370a344477826d0b2806a0c5e86ff52';

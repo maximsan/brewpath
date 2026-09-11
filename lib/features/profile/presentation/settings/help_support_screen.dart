@@ -1,4 +1,4 @@
-import 'package:brew_path/core/config/support_contact_provider.dart';
+import 'package:brew_path/core/config/app_links_provider.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/settings_nav_row.dart';
 import 'package:brew_path/features/profile/domain/help_faq_provider.dart';
