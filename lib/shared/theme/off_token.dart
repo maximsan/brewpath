@@ -435,6 +435,43 @@ abstract final class OffTokens {
     reason: "a stat row sets `padding: '13px 2px'`",
   );
 
+  /// The room a paywall pitch row keeps above and below its line.
+  static const OffToken<double> paywallPitchRowPadding = OffToken(
+    10,
+    reason: "a pitch row sets `padding: '10px 0'`",
+  );
+
+  /// The room the paywall keeps between its pitch and the plan picker.
+  static const OffToken<double> paywallPickerGap = OffToken(
+    18,
+    reason: 'the plan picker opens at `paddingTop: 18`',
+  );
+
+  /// The room between *Maybe later* and the note under it.
+  static const OffToken<double> paywallNoteGap = OffToken(
+    26,
+    reason: "the paywall's note sets `margin: '26px 0 0'`",
+  );
+
+  /// The room between the paywall's note and its legal row.
+  static const OffToken<double> paywallLegalTop = OffToken(
+    20,
+    reason: 'the legal row sets `marginTop: 20`',
+  );
+
+  /// The gap between the legal row's links.
+  static const OffToken<double> paywallLegalRowGap = OffToken(
+    10,
+    reason: 'the legal row sets `gap: 10`',
+  );
+
+  /// How far a legal link's 44 target overhangs its own line, above and
+  /// below, so the row costs the screen only its line height.
+  static const OffToken<double> paywallLegalOverhang = OffToken(
+    15,
+    reason: "a legal link sets `padding: '15px 8px'` under `margin: '-15px 0'`",
+  );
+
   /// The gap the predict card keeps under its title, and above its tiles.
   static const OffToken<double> predictSectionGap = OffToken(
     18,
@@ -531,6 +568,12 @@ abstract final class OffTokens {
     courseStatsTop,
     courseStatsWidth,
     courseStatRowPadding,
+    paywallPitchRowPadding,
+    paywallPickerGap,
+    paywallNoteGap,
+    paywallLegalTop,
+    paywallLegalRowGap,
+    paywallLegalOverhang,
     predictSectionGap,
     predictGuessGap,
     predictReadingLeading,

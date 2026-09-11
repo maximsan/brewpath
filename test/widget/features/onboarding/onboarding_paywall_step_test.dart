@@ -1,7 +1,7 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
-import 'package:brew_path/features/monetization/domain/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart';
 import 'package:brew_path/features/monetization/domain/plus_purchase_controller.dart';
@@ -22,6 +22,9 @@ void main() {
   setUp(() => fake = FakeOnboardingRepository());
 
   const pitch = PlusPitch(
+    premiumFormats: 4,
+    firstPaidModule: 2,
+    lastPaidModule: 5,
     remainingLessons: 29,
     lockedGames: 4,
     referenceTerms: 8,
@@ -109,9 +112,9 @@ void main() {
   ) async {
     await pump(tester, owned: true);
 
-    await tester.ensureVisible(find.text(PaywallCopy.restore));
+    await tester.ensureVisible(find.text(PaywallCopy.restore.toUpperCase()));
     await tester.pumpAndSettle();
-    await tester.tap(find.text(PaywallCopy.restore));
+    await tester.tap(find.text(PaywallCopy.restore.toUpperCase()));
     await tester.pumpAndSettle();
 
     expect(fake.completeCalls, hasLength(1));

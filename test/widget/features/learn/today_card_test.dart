@@ -6,8 +6,8 @@ import 'package:brew_path/features/learn/presentation/module_art_banner.dart';
 import 'package:brew_path/features/learn/presentation/today_card_widget.dart';
 import 'package:brew_path/features/learn/presentation/today_lesson_body.dart';
 import 'package:brew_path/features/learn/presentation/today_locked_body.dart';
+import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/locked_row_copy.dart';
-import 'package:brew_path/features/monetization/domain/plus_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
@@ -45,6 +45,9 @@ final ModuleModel _module = testModule(
 final String _wallEyebrow = LockedRowCopy.continuesInFoundations.toUpperCase();
 
 const _pitch = PlusPitch(
+  premiumFormats: 4,
+  firstPaidModule: 2,
+  lastPaidModule: 5,
   remainingLessons: 29,
   lockedGames: 4,
   referenceTerms: 8,
@@ -245,7 +248,7 @@ void main() {
       await tester.tap(find.text(LockedRowCopy.unlockFoundations));
       await tester.pumpAndSettle();
 
-      expect(find.text(PlusCopy.title), findsOneWidget);
+      expect(find.text(PaywallCopy.gateTitle), findsOneWidget);
     });
 
     testWidgets('so does the card itself', (tester) async {
@@ -256,7 +259,7 @@ void main() {
       await tester.tap(find.text(_lesson.title));
       await tester.pumpAndSettle();
 
-      expect(find.text(PlusCopy.title), findsOneWidget);
+      expect(find.text(PaywallCopy.gateTitle), findsOneWidget);
     });
   });
 }

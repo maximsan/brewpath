@@ -53,4 +53,4 @@ final class PaymentsServiceProvider
   }
 }
 
-String _$paymentsServiceHash() => r'abea181fa9b990e28717f47946a6cd337f884984';
+String _$paymentsServiceHash() => r'31b207cc677825665fca458f673f979f7432cd3c';

@@ -11,7 +11,7 @@ part of 'plus_pitch_provider.dart';
 /// The pitch's quantities, read off the shipped banks.
 ///
 /// The joining is here rather than in the sheet so the derivation stays a pure
-/// function over three lists — testable against the real content without
+/// function over four lists — testable against the real content without
 /// pumping a widget, which is the only way a wrong count fails fast.
 
 @ProviderFor(plusPitch)
@@ -20,7 +20,7 @@ final plusPitchProvider = PlusPitchProvider._();
 /// The pitch's quantities, read off the shipped banks.
 ///
 /// The joining is here rather than in the sheet so the derivation stays a pure
-/// function over three lists — testable against the real content without
+/// function over four lists — testable against the real content without
 /// pumping a widget, which is the only way a wrong count fails fast.
 
 final class PlusPitchProvider
@@ -34,7 +34,7 @@ final class PlusPitchProvider
   /// The pitch's quantities, read off the shipped banks.
   ///
   /// The joining is here rather than in the sheet so the derivation stays a pure
-  /// function over three lists — testable against the real content without
+  /// function over four lists — testable against the real content without
   /// pumping a widget, which is the only way a wrong count fails fast.
   PlusPitchProvider._()
     : super(
@@ -61,4 +61,4 @@ final class PlusPitchProvider
   }
 }
 
-String _$plusPitchHash() => r'249a246e9f9d657bd0a315b764b635dd1993a92c';
+String _$plusPitchHash() => r'84378560f1f9ac39abd014bf709c353e75b6d71a';

@@ -6,7 +6,7 @@ import 'package:brew_path/features/lessons/domain/lesson_completion_actions.dart
 import 'package:brew_path/features/lessons/presentation/cards/match_tile.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_screen.dart';
 import 'package:brew_path/features/lessons/presentation/reward_points_line.dart';
-import 'package:brew_path/features/monetization/domain/paywall_copy.dart';
+import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/onboarding/presentation/loading/loading_screen.dart';
 import 'package:brew_path/features/profile/presentation/widgets/profile_progress_line.dart';
 import 'package:brew_path/features/tour/domain/tour_copy.dart';

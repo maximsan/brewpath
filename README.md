@@ -100,6 +100,7 @@ release builds are unaffected.
 | --------------- | ------------------------------------------------------------------ | -------------------------------------------------------------- |
 | `LOOP_LOADING`  | Loops the Roasty wake-up forever; disables auto-advance + tap-skip | `flutter run -d "iPhone 17" --dart-define=LOOP_LOADING=true`  |
 | `GRANT_COURSE`  | Hands the learner the course entitlement, so the paid lessons open | `flutter run -d "iPhone 17" --dart-define=GRANT_COURSE=true`  |
+| `MONETIZATION_MODEL` | Puts the development store on one experiment arm — `subscription` or `hybrid` — so its paywall can be driven; unpriced, since no store has those SKUs | `flutter run -d "iPhone 17" --dart-define=MONETIZATION_MODEL=hybrid` |
 
 > With **Reduce Motion** enabled, `LOOP_LOADING` holds a static "brewing" frame
 > instead of animating the loop.

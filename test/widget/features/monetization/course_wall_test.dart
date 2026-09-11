@@ -6,9 +6,9 @@ import 'package:brew_path/features/learn/presentation/practice_any_lesson_widget
 import 'package:brew_path/features/learn/presentation/today_lesson_body.dart';
 import 'package:brew_path/features/learn/presentation/today_locked_body.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_screen.dart';
+import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/free_tier.dart';
 import 'package:brew_path/features/monetization/domain/locked_row_copy.dart';
-import 'package:brew_path/features/monetization/domain/plus_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/services/payments/granted_payments_service.dart';
 import 'package:brew_path/services/payments/payments_provider.dart';
@@ -108,7 +108,7 @@ void main() {
       await tester.tap(find.text(LockedRowCopy.unlockFoundations));
       await settleLoaders(tester);
 
-      expect(find.text(PlusCopy.title), findsOneWidget);
+      expect(find.text(PaywallCopy.gateTitle), findsOneWidget);
       expect(find.byType(LessonScreen), findsNothing);
     });
 
@@ -155,7 +155,7 @@ void main() {
       await settleLoaders(tester);
 
       expect(find.byType(LessonScreen), findsOneWidget);
-      expect(find.text(PlusCopy.title), findsNothing);
+      expect(find.text(PaywallCopy.gateTitle), findsNothing);
     });
   });
 
@@ -172,7 +172,7 @@ void main() {
       await settleLoaders(tester);
 
       expect(find.byType(LessonScreen), findsNothing);
-      expect(find.text(PlusCopy.title), findsOneWidget);
+      expect(find.text(PaywallCopy.gateTitle), findsOneWidget);
       // And it names the lesson that was asked for, so the pitch answers the
       // question the learner actually asked.
       expect(
@@ -189,7 +189,7 @@ void main() {
       await settleLoaders(tester);
 
       expect(find.byType(LessonScreen), findsOneWidget);
-      expect(find.text(PlusCopy.title), findsNothing);
+      expect(find.text(PaywallCopy.gateTitle), findsNothing);
     });
 
     testWidgets('owning the course opens the locked one too', (tester) async {
@@ -204,7 +204,7 @@ void main() {
       await settleLoaders(tester);
 
       expect(find.byType(LessonScreen), findsOneWidget);
-      expect(find.text(PlusCopy.title), findsNothing);
+      expect(find.text(PaywallCopy.gateTitle), findsNothing);
     });
   });
 }
