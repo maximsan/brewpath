@@ -1,4 +1,4 @@
-import 'package:brew_path/core/icons/caret_mark.dart';
+import 'package:brew_path/core/icons/disclosure_mark.dart';
 import 'package:brew_path/features/profile/domain/help_faq.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
 import 'package:brew_path/shared/theme/app_motion.dart';
@@ -9,8 +9,8 @@ import 'package:flutter/material.dart';
 
 /// One question, with its answer opening inline beneath it.
 ///
-/// The mark is [CaretMark], the design system's one accordion glyph, not the
-/// plus the design's own FAQ screen hand-rolls (#531).
+/// The mark is the design's own plus turning into a cross, which the owner
+/// ruled in for the FAQ.
 class HelpFaqRow extends StatelessWidget {
   /// Creates a row for [entry], open or closed, toggled by [onToggle].
   const HelpFaqRow({
@@ -54,7 +54,7 @@ class HelpFaqRow extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: AppSpacing.sm),
-                    CaretMark(open: isOpen, color: mood.inkMute),
+                    DisclosureMark(open: isOpen, color: mood.inkMute),
                   ],
                 ),
               ),
