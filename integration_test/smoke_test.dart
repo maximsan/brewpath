@@ -331,7 +331,7 @@ void main() {
     // the Tour covers it and the test fails. Skip it, then look for Learn.
     await tapWhenReady(
       tester,
-      find.widgetWithText(TextButton, TourCopy.stopSkip),
+      liveButton(TourCopy.stopSkip),
       describe: 'the Tour on the first launch that reaches Learn',
     );
     await pumpUntil(
