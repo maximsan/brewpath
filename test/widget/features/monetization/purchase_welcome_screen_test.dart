@@ -1,4 +1,5 @@
 import 'package:brew_path/app/app_theme.dart';
+import 'package:brew_path/features/monetization/domain/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_copy.dart';
 import 'package:brew_path/features/monetization/presentation/purchase_welcome_screen.dart';
 import 'package:flutter/material.dart';
@@ -52,7 +53,7 @@ void main() {
     await pump(tester);
 
     expect(find.byType(BackButton), findsNothing);
-    expect(find.text(PlusCopy.buy), findsNothing);
-    expect(find.text(PlusCopy.maybeLater), findsNothing);
+    expect(find.text(PaywallCopy.maybeLater), findsNothing);
+    expect(find.text(PaywallCopy.restore), findsNothing);
   });
 }

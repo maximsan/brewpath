@@ -10,34 +10,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/find_mark.dart';
+import '../../../support/tour_harness.dart';
 import '../../../support/widget_harness.dart';
 
-// The point of this entry point is what replay does *not* do — no intro
-// overlay, and no write — so most of these assertions are negative ones. It
-// reaches the row the way a learner does, through Settings → Support → Help and
-// support → App Guide, because the path is half of what the ticket asks for.
+// The point of this entry point is what replay does *not* do — it writes
+// nothing — so most of these assertions are negative ones. It reaches the row
+// the way a learner does, through Settings → Support → Help and support → App
+// Guide, because the path is half of what the ticket asks for.
 void main() {
   setUp(useInMemoryDatabase);
 
   /// Tall enough for the whole of *Profile* and of Settings, so a tap cannot
   /// land on a widget below the viewport.
-  void useTallViewport(WidgetTester tester) {
-    tester.view.physicalSize = const Size(400, 3600);
-    tester.view.devicePixelRatio = 1.0;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
-  }
+  const profileViewport = Size(400, 3600);
 
-  /// Drives the running Tour without `pumpAndSettle`, which never returns
-  /// while a spotlight's moving animation is repeating on screen.
-  Future<void> letTheTourRun(WidgetTester tester) async {
-    for (var frame = 0; frame < 20; frame++) {
-      await tester.runAsync(
-        () => Future<void>.delayed(const Duration(milliseconds: 20)),
-      );
-      await tester.pump(const Duration(milliseconds: 50));
-    }
-  }
+  void useTallViewport(WidgetTester tester) =>
+      useTourViewport(tester, size: profileViewport);
 
   Future<void> openProfile(WidgetTester tester) async {
     await tester.tap(findMark(AppIcon.leaf, active: false));
@@ -111,7 +99,7 @@ void main() {
     expect(find.byType(ReplayIntroRow), findsNothing);
   });
 
-  testWidgets('replay runs the stops with no intro overlay', (tester) async {
+  testWidgets('replay goes straight to the first stop', (tester) async {
     useTallViewport(tester);
 
     await pumpWithProviders(tester, const BrewPathApp());
@@ -120,9 +108,6 @@ void main() {
     await tester.tap(find.byType(ReplayIntroRow));
     await letTheTourRun(tester);
 
-    // Straight to stop 1 — the question the overlay asks was answered the
-    // first time, and asking it again is what this entry point exists to skip.
-    expect(find.text(TourCopy.introTitle), findsNothing);
     expect(find.text(TourCopy.todayTitle), findsOneWidget);
     expect(find.text(TourCopy.todayBody), findsOneWidget);
   });
@@ -154,11 +139,11 @@ void main() {
     await repo.saveSettings(armed);
 
     await pumpWithProviders(tester, const BrewPathApp());
-    // Dismiss the auto-run offer the cleared flag earns, so what follows is
-    // the replay path and not the offer path.
-    await tester.pumpAndSettle();
-    await tester.tap(find.text(TourCopy.introDecline));
-    await tester.pumpAndSettle();
+    // End the first run the cleared flag starts, so what follows is the
+    // replay path and not the first-run path — then clear what ending wrote.
+    await awaitTheFirstStop(tester);
+    await tester.tap(find.text(TourCopy.stopSkip));
+    await awaitTourSeenWritten(tester);
 
     final before = await repo.getSettings();
     await repo.saveSettings(before..tourSeen = false);
@@ -170,7 +155,7 @@ void main() {
     expect(
       (await repo.getSettings()).tourSeen,
       isFalse,
-      reason: 'replay must not touch the flag the intro overlay owns',
+      reason: 'replay must not touch the flag the first run owns',
     );
   });
 }

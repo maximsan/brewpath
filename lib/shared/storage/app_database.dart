@@ -31,8 +31,8 @@ class UserSettings extends Table {
   /// because two devices the same person owns may legitimately differ.
   TextColumn get themeMode => text().withDefault(const Constant('dark'))();
 
-  /// Whether the learner has answered the Tour's intro overlay. Written when
-  /// either button is pressed, so abandoning mid-tour never re-arms it.
+  /// Whether the Tour's first run has ended — by Skip, Done or leaving the
+  /// tab — so it runs once and never asks (#537).
   ///
   /// Fate-shares with [onboardingCompleted]: `AccountWipe.resetProgress`
   /// keeps both, `SettingsRepository.deleteAll` and

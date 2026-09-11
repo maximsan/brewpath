@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:brew_path/features/tour/domain/tour_providers.dart';
 import 'package:brew_path/features/tour/presentation/today_tour.dart';
 import 'package:flutter/material.dart';
@@ -37,19 +39,21 @@ class _TourLayerHostState extends ConsumerState<TourLayerHost> {
     });
   }
 
-  void _end() => ref.read(tourRunningProvider.notifier).set(running: false);
+  /// Ends the run by whichever door — Skip, Done, or leaving the tab — and
+  /// spends the first run, so the Tour does not come back (#537).
+  void _end() {
+    final ended = ref.read(tourRunningProvider.notifier).end();
+    if (ended == TourRun.first) unawaited(markTourSeen(ref));
+  }
 
   @override
   Widget build(BuildContext context) {
-    final running = ref.watch(tourRunningProvider);
-    if (!running || !widget.isOnLearn) return const SizedBox.shrink();
+    final run = ref.watch(tourRunningProvider);
+    if (!run.isRunning || !widget.isOnLearn) return const SizedBox.shrink();
     return TodayTour(onFinish: _end);
   }
 }
 
-/// Starts the Tour.
-///
-/// Writes nothing to disk. `tourSeen` is the intro overlay's business, which is
-/// what lets Replay reuse this untouched.
-void startTour(WidgetRef ref) =>
-    ref.read(tourRunningProvider.notifier).set(running: true);
+/// Starts [run]. Writes nothing: the flag is the run's end's business.
+void startTour(WidgetRef ref, TourRun run) =>
+    ref.read(tourRunningProvider.notifier).start(run);
