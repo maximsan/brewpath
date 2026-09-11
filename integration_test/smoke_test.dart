@@ -105,17 +105,22 @@ void main() {
     );
   }
 
-  /// Waits for [target] to be tappable, then taps it.
+  /// Waits for [target] to be tappable, scrolling to it if it is off screen,
+  /// then taps it.
   ///
-  /// Acts on the **hit-testable** match, not the raw one. A push transition
-  /// mounts both pages at once, so the raw finder can match the outgoing copy
-  /// as well and `ensureVisible` fails on "too many elements" — a wait and an
-  /// action disagreeing about which widget they meant.
+  /// Acts on the **hit-testable** match: a push transition mounts both pages,
+  /// so the raw finder can match the outgoing copy too. A card taller than the
+  /// phone keeps its button under the fold, which is never hit-testable.
   Future<void> tapWhenReady(
     WidgetTester tester,
     Finder target, {
     required String describe,
   }) async {
+    await pumpUntil(tester, target, describe: describe, tappable: false);
+    if (target.hitTestable().evaluate().isEmpty) {
+      await tester.ensureVisible(target.first);
+      await tester.pump();
+    }
     await pumpUntil(tester, target, describe: describe);
     final live = target.hitTestable().first;
     await tester.ensureVisible(live);
@@ -331,7 +336,7 @@ void main() {
     // the Tour covers it and the test fails. Skip it, then look for Learn.
     await tapWhenReady(
       tester,
-      find.widgetWithText(TextButton, TourCopy.stopSkip),
+      liveButton(TourCopy.stopSkip),
       describe: 'the Tour on the first launch that reaches Learn',
     );
     await pumpUntil(
