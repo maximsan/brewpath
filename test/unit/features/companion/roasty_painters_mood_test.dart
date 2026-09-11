@@ -74,6 +74,19 @@ void main() {
         expect(_uses(canvas.colours, other.warn), isFalse);
       });
 
+      test("the card face's shimmer is the mood's warn", () {
+        final canvas = _RecordingCanvas();
+        paintRoastyShimmer(canvas, RoastyState.card, 0.5, mood);
+        expect(_uses(canvas.colours, mood.warn), isTrue);
+        expect(_uses(canvas.colours, other.warn), isFalse);
+      });
+
+      test('no other face shimmers', () {
+        final canvas = _RecordingCanvas();
+        paintRoastyShimmer(canvas, RoastyState.idle, 0.5, mood);
+        expect(canvas.colours, isEmpty);
+      });
+
       test("the module rays are the mood's warn", () {
         final canvas = _RecordingCanvas();
         paintRoastyParticlesBack(canvas, RoastyState.module, 0, mood);

@@ -208,10 +208,14 @@ Future<void> _tapTextWhileAnimating(WidgetTester tester, String text) async {
   await tester.pump(const Duration(milliseconds: 400));
 }
 
-Finder get _continueButton => find.widgetWithText(FilledButton, 'Continue');
+Finder get _continueButton => _gate('Continue');
 
-bool _continueEnabled(WidgetTester tester) =>
-    tester.widget<FilledButton>(_continueButton).onPressed != null;
+Finder _gate(String label) => find.widgetWithText(FilledButton, label);
+
+bool _continueEnabled(WidgetTester tester) => _gateEnabled(tester, 'Continue');
+
+bool _gateEnabled(WidgetTester tester, String label) =>
+    tester.widget<FilledButton>(_gate(label)).onPressed != null;
 
 /// Whether [verdict] is spoken when it appears, rather than only drawn.
 ///
@@ -247,9 +251,11 @@ void main() {
         final signals = _Signals();
         await tester.pumpWidget(_host(entry.value, signals));
 
-        expect(_continueButton, findsOneWidget);
+        // The predict card words its gate the design's way.
+        final gate = entry.key == 'predict' ? 'Make a guess' : 'Continue';
+        expect(_gate(gate), findsOneWidget);
         expect(
-          _continueEnabled(tester),
+          _gateEnabled(tester, gate),
           isFalse,
           reason: '${entry.key} let the learner past an unanswered card',
         );
@@ -842,7 +848,24 @@ void main() {
       // at the end of the lesson is what resolves it.
       expect(signals.solved, 0);
       expect(find.text('Hold that thought.'), findsOneWidget);
-      expect(_continueEnabled(tester), isTrue);
+      expect(_gateEnabled(tester, 'Find out'), isTrue);
+    });
+
+    testWidgets('predict opens on its title, with the guess section under it', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_host(_predict, _Signals()));
+
+      expect(find.text('What coffee actually is'), findsOneWidget);
+      expect(find.text('LESSON 1'), findsNothing, reason: 'no eyebrow');
+      expect(find.text('FIRST GUESS'), findsOneWidget);
+      expect(_gate('Make a guess'), findsOneWidget);
+      expect(_gate('Find out'), findsNothing);
+
+      await _tapTextWhileAnimating(tester, 'Skin');
+
+      expect(_gate('Find out'), findsOneWidget);
+      expect(_gate('Make a guess'), findsNothing);
     });
 
     testWidgets('predict shows nothing beside the tiles until a guess', (
