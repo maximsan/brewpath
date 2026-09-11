@@ -212,6 +212,9 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **The bookmark in a top bar wears its ring.** On a lesson, a term and Term
+  of the Day, the save control is the design's ringed button, muted until
+  saved and accent after, matching the ringed back control beside it.
 - **Roasty's card face glows the way the design draws it.** The wide halo
   behind him holds still, and a tight glow in the mood's warn colour breathes
   around his body every 1.6 seconds, where the app had the halo blinking and

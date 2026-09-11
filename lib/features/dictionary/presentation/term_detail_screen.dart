@@ -85,6 +85,7 @@ class _TermDetail extends StatelessWidget {
       trailing: SavedBookmarkButton(
         savedKey: formatSavedKey(SavedKind.term, term.id),
         label: term.term,
+        ringed: true,
       ),
       body: (context, scrollPadding) => SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.gutter) + scrollPadding,

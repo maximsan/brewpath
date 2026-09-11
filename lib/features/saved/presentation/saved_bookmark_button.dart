@@ -6,6 +6,7 @@ import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/domain/saved_shelf.dart';
 import 'package:brew_path/features/saved/presentation/saved_gate.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
+import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -23,11 +24,17 @@ class SavedBookmarkButton extends ConsumerWidget {
     required this.savedKey,
     required this.label,
     this.caption,
+    this.ringed = false,
     super.key,
   });
 
   /// The design's mark beside a caption, smaller than the bare bookmark.
   static const double _captionedMark = 16;
+
+  /// The top-bar ring: `borderRadius: 999, width: 32, height: 32` on a
+  /// `1px solid var(--rule)` border, accent once saved, with the mark at 16.
+  static const double _ringSize = 32;
+  static const double _ringedMark = 16;
 
   /// The prefixed key this bookmark writes — see `saved_key.dart`.
   final String savedKey;
@@ -40,6 +47,10 @@ class SavedBookmarkButton extends ConsumerWidget {
   /// guide inside a lesson, where there is room to invite the save and to say
   /// where it went. Every other host draws the mark alone.
   final ({String saved, String unsaved})? caption;
+
+  /// Whether this sits in a top bar, where the design's settled bookmark
+  /// style is a ring: muted ink on a rule-coloured ring, accent once saved.
+  final bool ringed;
 
   Future<void> _toggle(BuildContext context, WidgetRef ref) async {
     // **Awaited, not read for its current value.** Nothing watches the
@@ -90,19 +101,34 @@ class SavedBookmarkButton extends ConsumerWidget {
     // and the toggled state never reaches a screen reader. Letting the button
     // own the flag is the difference between announcing the state and only
     // drawing it.
+    final mood = context.mood;
+    final markSize = ringed ? _ringedMark : null;
     return IconButton(
       isSelected: isSaved,
       // One mark, two states. The design's rule for it is "filled accent when
       // saved" — so the saved state is the same drawing filled, not a second
       // glyph, which is why both slots name the same mark.
-      icon: const IconMark(AppIcon.bookmark),
-      selectedIcon: const IconMark(AppIcon.bookmark, active: true),
+      icon: IconMark(AppIcon.bookmark, size: markSize),
+      selectedIcon: IconMark(AppIcon.bookmark, active: true, size: markSize),
       // One colour source. Setting both `color` and a `styleFrom`
       // foreground silently drops one of them in the button's style merge,
       // which is how the saved and unsaved states ended up the same colour.
-      style: IconButton.styleFrom(
-        foregroundColor: isSaved ? context.mood.accent : context.mood.ink,
-      ),
+      style: ringed
+          ? IconButton.styleFrom(
+              foregroundColor: isSaved ? mood.accent : mood.inkMute,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppRadii.pill),
+                side: BorderSide(color: isSaved ? mood.accent : mood.rule),
+              ),
+              padding: EdgeInsets.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            )
+          : IconButton.styleFrom(
+              foregroundColor: isSaved ? mood.accent : mood.ink,
+            ),
+      constraints: ringed
+          ? const BoxConstraints.tightFor(width: _ringSize, height: _ringSize)
+          : null,
       tooltip: isSaved ? 'Remove $label from Saved' : 'Save $label',
       onPressed: () => _toggle(context, ref),
     );

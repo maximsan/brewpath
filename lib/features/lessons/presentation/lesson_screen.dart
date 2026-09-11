@@ -117,6 +117,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
             final lesson? => SavedBookmarkButton(
               savedKey: formatSavedKey(SavedKind.lesson, lesson.id),
               label: lesson.title,
+              ringed: true,
             ),
             null => null,
           },
