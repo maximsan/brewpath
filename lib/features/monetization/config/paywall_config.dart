@@ -181,7 +181,8 @@ const Map<MonetizationModel, PaywallModel> paywallModels = {
     label: 'Subscription',
     eyebrow: 'SUBSCRIPTION',
     heroTitle: 'The whole course, for as long as you’re brewing.',
-    paywallNote: 'Cancel anytime · you keep the time you paid for',
+    // Owner ruling, 11 Sep 2026 (#581): the note is the second half only.
+    paywallNote: 'You keep the time you paid for',
     gateCta: 'Unlock Foundations — from $perMonthPlaceholder/mo',
     gateFooter: 'Subscription · cancel anytime',
     purchasesFooter: [
