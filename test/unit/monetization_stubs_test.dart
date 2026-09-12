@@ -35,7 +35,7 @@ void main() {
       PurchaseStatus.cancelled,
     );
     await p.restorePurchases();
-    expect(p.purchaseUpdates, emitsDone);
+    expect(p.entitlementChanges, emitsDone);
   });
 
   test('NoOpAdsService never serves an ad', () async {

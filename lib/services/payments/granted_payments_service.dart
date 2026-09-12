@@ -32,7 +32,7 @@ class GrantedPaymentsService implements PaymentsService {
   Future<void> restorePurchases() async {}
 
   @override
-  Stream<PurchaseStatus> get purchaseUpdates => const Stream.empty();
+  Stream<bool> get entitlementChanges => const Stream.empty();
 
   @override
   void dispose() {}

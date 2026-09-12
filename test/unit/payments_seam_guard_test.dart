@@ -36,6 +36,7 @@ void main() {
     'lib/features/monetization/presentation/plan_picker.dart',
     'lib/features/monetization/presentation/plus_gate_sheet.dart',
     'lib/features/monetization/presentation/purchase_welcome_route.dart',
+    'lib/features/monetization/presentation/purchases_panel.dart',
   };
 
   test('only the monetization layer imports the payments service', () {

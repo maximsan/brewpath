@@ -1,13 +1,9 @@
 /// What the learner just hit, and what the sheet says about it.
 ///
 /// **The trigger is data, not a widget.** One sheet serves every gated
-/// surface; a new gate adds a case here rather than a second sheet that can
-/// drift from the first. The header is what makes the pitch answer the
-/// question the learner actually asked — a locked game names the module that
-/// teaches it, which ADR-0005 calls *"a targeted course pitch at peak intent,
-/// not a generic lock."*
-///
-/// Pure, so every header can be asserted without opening a sheet.
+/// surface, and the header makes the pitch answer the question the learner
+/// actually asked — ADR-0005's *"targeted course pitch at peak intent, not a
+/// generic lock."* Pure, so every header is assertable without a sheet.
 library;
 
 import 'package:flutter/foundation.dart';
@@ -116,6 +112,18 @@ class DailyAllowanceSpent extends PlusGateTrigger {
 
   @override
   String get header => "You've done today's $cap free activities.";
+}
+
+/// The learner went looking for the offer, on Purchases.
+///
+/// The one trigger that is not a refusal, so the header invites rather than
+/// explains what was just hit.
+class AskedForTheCourse extends PlusGateTrigger {
+  /// Creates an [AskedForTheCourse].
+  const AskedForTheCourse();
+
+  @override
+  String get header => "The full course, whenever you're ready.";
 }
 
 /// A game whose teaching lesson the free tier does not carry.

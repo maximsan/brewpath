@@ -1,6 +1,6 @@
 # ADR-0003: v1 sells one one-time purchase, with no trial
 
-- **Status:** accepted
+- **Status:** superseded by [ADR-0024](0024-v1-ships-all-three-pricing-arms-and-revenuecat-decides-who-sees-which.md)
 - **Date:** 2026-08-19
 
 ## Context
