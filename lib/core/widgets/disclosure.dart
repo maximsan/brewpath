@@ -25,7 +25,6 @@ class Disclosure extends StatelessWidget {
     this.collapsible = true,
     this.divider = false,
     this.semanticsLabel,
-    this.headerAlign = CrossAxisAlignment.center,
     this.headerPadding = defaultHeaderPadding,
     this.headerMinHeight,
     this.panelPadding = EdgeInsets.zero,
@@ -93,9 +92,6 @@ class Disclosure extends StatelessWidget {
   /// Read out in place of the header's own contents. Null lets them through.
   final String? semanticsLabel;
 
-  /// How the header's row lines its parts up.
-  final CrossAxisAlignment headerAlign;
-
   /// The room inside the header row.
   final EdgeInsets headerPadding;
 
@@ -152,9 +148,10 @@ class Disclosure extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
+        // Centred, never `CrossAxisAlignment.baseline`. The design aligns the
+        // header on a baseline, but a mark reports none, and Flutter pins a
+        // child with no baseline to the top of the row.
         Row(
-          crossAxisAlignment: headerAlign,
-          textBaseline: TextBaseline.alphabetic,
           children: [
             Expanded(
               child:

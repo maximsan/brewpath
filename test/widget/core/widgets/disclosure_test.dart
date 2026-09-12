@@ -138,6 +138,19 @@ void main() {
     );
   });
 
+  testWidgets('the glyph is centred on the header, not pinned to its top', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const _Harness(disableAnimations: true));
+
+    // `CrossAxisAlignment.baseline` puts a mark reporting no baseline — every
+    // mark — at the top of the row, 6px above where the design draws it.
+    expect(
+      tester.getRect(find.byType(DisclosureMark)).center.dy,
+      closeTo(tester.getRect(find.text('Question')).center.dy, 1),
+    );
+  });
+
   testWidgets('a fixed header is a heading with no glyph', (tester) async {
     await tester.pumpWidget(
       const _Harness(collapsible: false, startOpen: true),

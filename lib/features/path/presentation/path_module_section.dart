@@ -70,7 +70,6 @@ class PathModuleSection extends StatelessWidget {
         onToggle: _headerTap(context),
         semanticsLabel: _semanticsLabel(),
         glyphSize: DisclosureMark.sectionCaretSize,
-        headerAlign: CrossAxisAlignment.baseline,
         headerPadding: EdgeInsets.zero,
         panelPadding: const EdgeInsets.only(top: AppSpacing.xs),
         header: Row(
