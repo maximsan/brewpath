@@ -1,17 +1,25 @@
 import 'package:brew_path/app/app_theme.dart';
+import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/ghost_button.dart';
+import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/features/monetization/config/paywall_config.dart';
 import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/paywall_view.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart';
+import 'package:brew_path/features/monetization/domain/purchase_welcome_return.dart';
 import 'package:brew_path/features/monetization/presentation/plus_gate_sheet.dart';
+import 'package:brew_path/features/monetization/presentation/purchase_welcome_route.dart';
+import 'package:brew_path/services/payments/payments_provider.dart';
+import 'package:brew_path/services/payments/payments_service.dart';
 import 'package:brew_path/shared/models/monetization/plus_offering.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../support/selling_payments_service.dart';
 import '../../../support/widget_harness.dart';
 
 // The sheet a lock raises: what it says, the one way to buy, the way to
@@ -30,18 +38,37 @@ void main() {
     savedFreeCap: 5,
   );
 
-  Future<void> openWith(WidgetTester tester, PlusGateTrigger trigger) async {
+  late GoRouter router;
+
+  /// Raises the sheet on the Path tab, over a router carrying the celebration
+  /// a sale lands on — the sheet navigates, so a stub `home:` cannot host it.
+  Future<void> openWith(
+    WidgetTester tester,
+    PlusGateTrigger trigger, {
+    PaymentsService? store,
+  }) async {
+    // Tall enough that the whole sheet is on screen: it scrolls at the default
+    // size, and Restore sits under the fold where a tap cannot reach it.
+    tester.view.physicalSize = const Size(400, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
     final container = ProviderContainer(
-      overrides: [plusPitchProvider.overrideWith((ref) async => pitch)],
+      overrides: [
+        plusPitchProvider.overrideWith((ref) async => pitch),
+        if (store != null) paymentsServiceProvider.overrideWith((ref) => store),
+      ],
     );
     addTearDown(container.dispose);
 
-    await tester.pumpWidget(
-      UncontrolledProviderScope(
-        container: container,
-        child: MaterialApp(
-          theme: AppTheme.cupping,
-          home: Scaffold(
+    router = GoRouter(
+      initialLocation: AppRoutes.path.path,
+      routes: [
+        GoRoute(
+          path: AppRoutes.path.path,
+          name: AppRoutes.path.name,
+          builder: (_, _) => Scaffold(
             body: Builder(
               builder: (context) => TextButton(
                 onPressed: () => showPlusGate(context, trigger),
@@ -49,6 +76,23 @@ void main() {
               ),
             ),
           ),
+        ),
+        GoRoute(
+          path: AppRoutes.purchaseWelcome.path,
+          name: AppRoutes.purchaseWelcome.name,
+          builder: (_, state) =>
+              PurchaseWelcomeRoute(returnTo: welcomeReturnIn(state.uri)),
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
+          theme: AppTheme.cupping,
+          routerConfig: router,
         ),
       ),
     );
@@ -168,6 +212,61 @@ void main() {
     expect(find.text(PaywallCopy.gateTitle), findsNothing);
     // Back where they were, with nothing bought.
     expect(find.text('open'), findsOneWidget);
+  });
+
+  testWidgets('a sale closes the sheet and lands on the welcome', (
+    tester,
+  ) async {
+    await openWith(
+      tester,
+      const SavedShelfFull(cap: 5),
+      store: SellingPaymentsService(),
+    );
+
+    await tester.tap(find.byType(PrimaryButton));
+    await pumpWithoutSettling(tester);
+
+    expect(find.text(PaywallCopy.gateTitle), findsNothing);
+    expect(find.text(PaywallCopy.welcomeTitle), findsOneWidget);
+
+    // And it comes back to the screen the lock was on, not to Learn.
+    await tester.tap(find.text(PaywallCopy.welcomeBackToLearning));
+    await pumpWithoutSettling(tester);
+
+    expect(router.state.uri.toString(), AppRoutes.path.path);
+    expect(find.text('open'), findsOneWidget);
+  });
+
+  testWidgets('a restore closes the sheet where it stands', (tester) async {
+    await openWith(
+      tester,
+      const SavedShelfFull(cap: 5),
+      store: SellingPaymentsService(restorable: true),
+    );
+
+    await tester.tap(find.text(PaywallCopy.restore));
+    await pumpWithoutSettling(tester);
+
+    // A recovery is not a sale: no celebration, and nowhere new to be.
+    expect(find.text(PaywallCopy.gateTitle), findsNothing);
+    expect(find.text(PaywallCopy.welcomeTitle), findsNothing);
+    expect(router.state.uri.toString(), AppRoutes.path.path);
+  });
+
+  testWidgets('a restore that finds nothing leaves the sheet open', (
+    tester,
+  ) async {
+    await openWith(
+      tester,
+      const SavedShelfFull(cap: 5),
+      store: SellingPaymentsService(),
+    );
+
+    await tester.tap(find.text(PaywallCopy.restore));
+    await pumpWithoutSettling(tester);
+
+    expect(find.text(PaywallCopy.gateTitle), findsOneWidget);
+    expect(find.text(PaywallCopy.nothingToRestore), findsOneWidget);
   });
 
   testWidgets('the sheet announces itself by name', (tester) async {

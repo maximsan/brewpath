@@ -14,17 +14,25 @@ import 'package:go_router/go_router.dart';
 /// recorded what was bought. A celebration reached with nothing recorded —
 /// a deep link an owner opens — reads as the one-time purchase v1 sells.
 class PurchaseWelcomeRoute extends ConsumerWidget {
-  /// Creates the route host.
-  const PurchaseWelcomeRoute({super.key});
+  /// Creates the route host, leaving for [returnTo] when the celebration is
+  /// done.
+  const PurchaseWelcomeRoute({this.returnTo, super.key});
+
+  /// Where *Back to learning* goes — the screen the offer was raised on, or
+  /// Learn when the sale happened somewhere with nothing to go back to.
+  final String? returnTo;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final term = ref.watch(purchasedTermProvider) ?? PlusTerm.lifetime;
+    final back = returnTo;
 
     return PurchaseWelcomeScreen(
       plan: paywallPlans[term]!,
       onOpenStudio: () => context.goNamed(AppRoutes.studio.name),
-      onContinue: () => context.goNamed(AppRoutes.learn.name),
+      onContinue: back == null
+          ? () => context.goNamed(AppRoutes.learn.name)
+          : () => context.go(back),
     );
   }
 }

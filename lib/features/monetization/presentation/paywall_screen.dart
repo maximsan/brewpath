@@ -15,6 +15,7 @@ import 'package:brew_path/features/monetization/domain/paywall_benefits_provider
 import 'package:brew_path/features/monetization/domain/paywall_view.dart';
 import 'package:brew_path/features/monetization/domain/paywall_view_provider.dart';
 import 'package:brew_path/features/monetization/domain/plus_purchase_controller.dart';
+import 'package:brew_path/features/monetization/domain/purchase_exit.dart';
 import 'package:brew_path/features/monetization/presentation/plan_picker.dart';
 import 'package:brew_path/features/monetization/presentation/purchase_outcome_line.dart';
 import 'package:brew_path/services/links/open_link.dart';
@@ -67,20 +68,16 @@ class PaywallScreen extends ConsumerStatefulWidget {
 class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   PlusTerm? _picked;
 
-  /// Whether the entitlement now on the way was asked for by Restore.
-  ///
-  /// The controller reports only that Plus is owned, so which door to leave by
-  /// is remembered here, at the press that started it.
-  bool _restoring = false;
+  late final PurchaseExit _exit = PurchaseExit(
+    onPurchased: () => widget.onPurchased(),
+    onRestored: () => widget.onRestored(),
+  );
 
   @override
   Widget build(BuildContext context) {
     final view = ref.watch(paywallViewProvider);
 
-    ref.listen(plusPurchaseProvider, (_, next) {
-      if (next != PlusPurchaseState.owned) return;
-      _restoring ? widget.onRestored() : widget.onPurchased();
-    });
+    ref.listen(plusPurchaseProvider, (_, next) => _exit.settle(next));
 
     return Scaffold(
       backgroundColor: context.mood.bg,
@@ -98,13 +95,8 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     );
   }
 
-  Future<void> _restore() async {
-    _restoring = true;
-    await ref.read(plusPurchaseProvider.notifier).restore();
-    // Cleared once the restore has settled, whatever it found: a sale made
-    // after a restore that recovered nothing is still a sale.
-    _restoring = false;
-  }
+  Future<void> _restore() =>
+      _exit.restore(ref.read(plusPurchaseProvider.notifier));
 }
 
 class _Offer extends ConsumerWidget {
