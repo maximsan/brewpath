@@ -39,23 +39,6 @@ class AccountSyncScreen extends StatelessWidget {
   );
 }
 
-/// What the learner owns, and how to get it back on a new phone.
-class PurchasesScreen extends StatelessWidget {
-  /// Creates the purchases screen.
-  const PurchasesScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) => const SettingsSubScreen(
-    title: SettingsCopy.purchasesTitle,
-    children: [
-      SettingsSection(
-        label: SettingsCopy.purchasesTitle,
-        children: [SettingsPlaceholder(SettingsCopy.purchasesComing)],
-      ),
-    ],
-  );
-}
-
 /// The app's own page: what it is, and the fine print.
 class AboutScreen extends ConsumerWidget {
   /// Creates the about screen.

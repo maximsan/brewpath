@@ -50,7 +50,7 @@ final class PurchasedTermProvider
   }
 }
 
-String _$purchasedTermHash() => r'f532829c72148cb3ea7bcf421875ac821a136a6e';
+String _$purchasedTermHash() => r'6b915dd87afc6f7a99cdd90abeab5c1eeda10cf0';
 
 /// The term of the plan this session just bought, so the welcome can say
 /// what was bought; null until a purchase lands. Kept alive because the

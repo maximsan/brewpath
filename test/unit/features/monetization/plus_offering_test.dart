@@ -5,8 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('the shipping build is on the one-time arm', () async {
-    // ADR-0003: v1 sells a single non-consumable. The no-op is what ships, so
-    // this is the arm a learner is actually on today.
+    // The baseline arm (ADR-0024), and what a build with no RevenueCat key
+    // falls back to — so this is the arm a learner is on today.
     final offering = await const NoOpPaymentsService().currentOffering();
 
     expect(offering.model, MonetizationModel.oneTime);

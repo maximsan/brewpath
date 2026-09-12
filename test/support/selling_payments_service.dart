@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:brew_path/services/payments/payments_service.dart';
 import 'package:brew_path/services/payments/store_product.dart';
 import 'package:brew_path/shared/models/monetization/plus_offering.dart';
@@ -21,6 +23,8 @@ class SellingPaymentsService implements PaymentsService {
   final bool restorable;
 
   bool _owned = false;
+
+  final StreamController<bool> _changes = StreamController<bool>.broadcast();
 
   @override
   Future<bool> hasActiveEntitlement() async => _owned;
@@ -53,8 +57,15 @@ class SellingPaymentsService implements PaymentsService {
   }
 
   @override
-  Stream<PurchaseStatus> get purchaseUpdates => const Stream.empty();
+  Stream<bool> get entitlementChanges => _changes.stream;
+
+  /// Ends the subscription the way a lapse or a refund does — from the store,
+  /// with the app already open.
+  void lapse() {
+    _owned = false;
+    _changes.add(false);
+  }
 
   @override
-  void dispose() {}
+  void dispose() => _changes.close();
 }
