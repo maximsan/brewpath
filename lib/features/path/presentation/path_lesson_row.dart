@@ -19,15 +19,9 @@ import 'package:flutter/material.dart';
 /// A lesson on the path: a bean on the spine, its title, and what the row has
 /// to say about it.
 ///
-/// **The row is not a card.** The design draws `.lesson-row` as a flat row on a
-/// hairline, threaded by a 1px spine that the bean discs punch stops out of —
-/// that continuous line is what makes a list of lessons read as a *path*.
-/// Cards would break it into separate objects, which is what this looked like
-/// until [#435](https://github.com/maximsan/brewpath/issues/435).
-///
-/// It carries the title and one meta word, and deliberately not the lesson's
-/// minutes or points: those belonged to the module screen, where a lesson was
-/// being chosen. Here the course is the subject and the row is a step in it.
+/// **The row is not a card.** The design draws `.lesson-row` flat on a
+/// hairline, threaded by a 1px spine the bean discs punch stops out of — that
+/// line is what makes a list of lessons read as a *path*. See #435.
 class PathLessonRow extends StatelessWidget {
   /// Creates a [PathLessonRow].
   const PathLessonRow({
@@ -99,15 +93,21 @@ class PathLessonRow extends StatelessWidget {
     );
   }
 
-  /// The tappable row itself.
+  /// The row itself, tappable or not.
   ///
-  /// A purchase-locked row stays tappable on purpose. It is where someone
+  /// A purchase-locked row stays tappable on purpose — it is where someone
   /// meets the wall, and a dead row would say no without saying what it costs.
+  /// A row in a module the learner has not reached is dead: the design's
+  /// `disabled={isLocked && !buyLocked}`.
   Widget _row(BuildContext context, String title) {
-    final locked = entry.isPurchaseLocked;
+    final purchaseLocked = entry.isPurchaseLocked;
+    final inert = entry.isLockedByProgress && !purchaseLocked;
+    final locked = purchaseLocked || inert;
 
     final row = InkWell(
-      onTap: locked
+      onTap: inert
+          ? null
+          : purchaseLocked
           ? () => unawaited(showPlusGate(context, LockedLesson(title: title)))
           : () => unawaited(context.goToActivity(lessonRun(entry.lesson.id))),
       child: Opacity(
@@ -127,7 +127,7 @@ class PathLessonRow extends StatelessWidget {
       ),
     );
 
-    if (!locked) return row;
+    if (!purchaseLocked) return row;
 
     // One sentence, not three separate nodes. A locked row never shows the
     // CURRENT label, so `excludeSemantics` loses nothing.
@@ -178,15 +178,12 @@ class _Title extends StatelessWidget {
   }
 }
 
-/// The right-hand slot: the lock on a row the free tier does not carry, a
-/// chevron on the current lesson, the mastery word on one that needs practice,
-/// and nothing at all otherwise.
+/// The right-hand slot: a lock, the chevron on the current lesson, the mastery
+/// word on one that needs practice, and nothing at all otherwise.
 ///
-/// Nothing is the common case, and it is deliberate — a finished lesson that
-/// went well says so by the fill of its bean, not by a second label.
-///
-/// One lock per row, and this is where it goes. The spine beside it carries
-/// no lock of its own, so there is nothing here to double up.
+/// Nothing is the common case and it is deliberate — a finished lesson that
+/// went well says so by the fill of its bean. One lock per row, and this is
+/// where it goes.
 class _Meta extends StatelessWidget {
   const _Meta({required this.entry});
 
@@ -203,15 +200,18 @@ class _Meta extends StatelessWidget {
     final mood = context.mood;
 
     // Before every other arm: locked is locked, whatever the learner scored
-    // before or wherever the course is pointing.
-    if (entry.isPurchaseLocked) {
-      return Semantics(
-        label: LockedRowCopy.partOfFoundations,
-        child: IconMark(
-          AppIcon.lock,
-          size: _lockSize,
-          color: mood.accent,
-        ),
+    // before or wherever the course is pointing. Accent for the purchase,
+    // muted ink for a module still ahead — accent means there is something to
+    // do about it, and only buying is.
+    if (entry.isPurchaseLocked || entry.isLockedByProgress) {
+      final byPurchase = entry.isPurchaseLocked;
+      return IconMark(
+        AppIcon.lock,
+        size: _lockSize,
+        color: byPurchase ? mood.accent : mood.inkMute,
+        semanticLabel: byPurchase
+            ? LockedRowCopy.partOfFoundations
+            : LockedRowCopy.lockedLesson,
       );
     }
 
@@ -240,14 +240,11 @@ class _Meta extends StatelessWidget {
 }
 
 /// The lesson node: a coffee bean on the page canvas, filled to the lesson's
-/// best-score ratio.
+/// best-score ratio, so mastery reads as "how full" rather than as a word.
 ///
-/// The bean *is* the gauge, so mastery reads as "how full" instead of a word in
-/// the margin. Which tone and how full is decided by [lessonNodeGauge]; this
-/// widget only turns that decision into mood colours.
-///
-/// Its disc is painted in the page colour on purpose: that is what masks the
-/// spine behind it into a stop.
+/// Which tone and how full is [lessonNodeGauge]'s decision. The disc is
+/// painted in the page colour on purpose — that is what masks the spine behind
+/// it into a stop.
 class _LessonNode extends StatelessWidget {
   const _LessonNode({required this.entry});
 

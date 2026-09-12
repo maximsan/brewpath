@@ -37,6 +37,7 @@ Future<void> _pump(
   MasteryResult mastery = MasteryResult.unscored,
   bool isLast = false,
   bool isPurchaseLocked = false,
+  bool isLockedByProgress = false,
 }) => tester.pumpWidget(
   ProviderScope(
     // A counted pitch, so tapping the lock does not wait on the banks.
@@ -50,6 +51,7 @@ Future<void> _pump(
             isCompleted: isCompleted,
             isCurrent: isCurrent,
             isPurchaseLocked: isPurchaseLocked,
+            isLockedByProgress: isLockedByProgress,
             mastery: mastery,
           ),
           isLast: isLast,
@@ -299,6 +301,71 @@ void main() {
         ),
         findsNothing,
       );
+    });
+  });
+
+  group('inside a module still ahead', () {
+    testWidgets('the row is drawn and does not open', (tester) async {
+      await _pump(
+        tester,
+        isCompleted: false,
+        isCurrent: false,
+        isLockedByProgress: true,
+      );
+
+      expect(find.text(_lesson.title), findsOneWidget);
+      expect(tester.widget<InkWell>(find.byType(InkWell)).onTap, isNull);
+    });
+
+    testWidgets('it locks in muted ink, not the accent', (tester) async {
+      final handle = tester.ensureSemantics();
+      await _pump(
+        tester,
+        isCompleted: false,
+        isCurrent: false,
+        isLockedByProgress: true,
+      );
+
+      final lock = tester.widget<IconMark>(
+        find.byWidgetPredicate(
+          (widget) => widget is IconMark && widget.icon == AppIcon.lock,
+        ),
+      );
+      expect(lock.color, MoodColors.darkRoast.inkMute);
+      expect(find.bySemanticsLabel(LockedRowCopy.lockedLesson), findsOneWidget);
+      handle.dispose();
+    });
+
+    testWidgets('the purchase wins when a row is locked both ways', (
+      tester,
+    ) async {
+      // Buying is the one thing the learner can act on, so it takes the row.
+      await _pump(
+        tester,
+        isCompleted: false,
+        isCurrent: false,
+        isPurchaseLocked: true,
+        isLockedByProgress: true,
+      );
+
+      final lock = tester.widget<IconMark>(
+        find.byWidgetPredicate(
+          (widget) => widget is IconMark && widget.icon == AppIcon.lock,
+        ),
+      );
+      expect(lock.color, MoodColors.darkRoast.accent);
+      expect(tester.widget<InkWell>(find.byType(InkWell)).onTap, isNotNull);
+    });
+
+    testWidgets('it never reads as the current lesson', (tester) async {
+      await _pump(
+        tester,
+        isCompleted: false,
+        isCurrent: true,
+        isLockedByProgress: true,
+      );
+
+      expect(find.text(AppLabels.currentLesson.toUpperCase()), findsNothing);
     });
   });
 }

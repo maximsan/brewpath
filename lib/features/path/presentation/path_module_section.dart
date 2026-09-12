@@ -52,10 +52,9 @@ class PathModuleSection extends StatelessWidget {
   /// The module before this one, named by a locked row as what opens it.
   final String? previousTitle;
 
-  /// Whether the lessons are showing right now.
-  bool get _isOpen =>
-      module.density.showsLessonsWhenCollapsed ||
-      (module.density.canCollapse && isExpanded);
+  /// Whether the lessons are showing — the design's `open` is `!canCollapse`
+  /// or the module's own expanded flag. Only a finished module is ever shut.
+  bool get _isOpen => !module.density.canCollapse || isExpanded;
 
   @override
   Widget build(BuildContext context) {
@@ -137,13 +136,13 @@ class _LockMark extends StatelessWidget {
 
     // Accent for the purchase, ink-mute for progression. Accent means there is
     // something to do, and buying is the one they can do now.
-    return Semantics(
-      label: module.isPurchaseLocked ? LockedRowCopy.partOfFoundations : null,
-      child: IconMark(
-        AppIcon.lock,
-        size: size,
-        color: module.isPurchaseLocked ? mood.accent : mood.inkMute,
-      ),
+    return IconMark(
+      AppIcon.lock,
+      size: size,
+      color: module.isPurchaseLocked ? mood.accent : mood.inkMute,
+      semanticLabel: module.isPurchaseLocked
+          ? LockedRowCopy.partOfFoundations
+          : null,
     );
   }
 }

@@ -49,10 +49,10 @@ class Disclosure extends StatelessWidget {
 
   /// Whether the panel is showing, which the header cannot overrule.
   ///
-  /// The design couples the two — a header that cannot toggle forces its panel
-  /// open — but Path's locked module is a heading over nothing, which
-  /// `PathModuleDensity` has ruled since it was written. So the flag stays
-  /// authoritative and every site says what it means.
+  /// The design infers this from `collapsible`, and that misfires at its own
+  /// Reference site: it passes shut-while-locked and the component forces it
+  /// open onto a promise the caption above already makes. Stated, not
+  /// inferred, so a site cannot be overruled about its own panel.
   final bool isOpen;
 
   /// What the panel holds. Mounted only while the panel is open or closing.

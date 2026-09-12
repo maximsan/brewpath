@@ -61,12 +61,6 @@ void main() {
       expect(PathModuleDensity.active.canCollapse, isFalse);
       expect(PathModuleDensity.locked.canCollapse, isFalse);
     });
-
-    test('an active module is open and a locked one lists nothing', () {
-      expect(PathModuleDensity.active.showsLessonsWhenCollapsed, isTrue);
-      expect(PathModuleDensity.locked.showsLessonsWhenCollapsed, isFalse);
-      expect(PathModuleDensity.complete.showsLessonsWhenCollapsed, isFalse);
-    });
   });
 
   group('pathCourseSummary', () {

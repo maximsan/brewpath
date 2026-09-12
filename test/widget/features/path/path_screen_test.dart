@@ -48,6 +48,7 @@ List<PathModule> _course() {
             isCompleted: i < done,
             isCurrent: position == 2 && i == done,
             isPurchaseLocked: false,
+            isLockedByProgress: locked,
             mastery: MasteryResult.unscored,
           ),
       ],
@@ -121,18 +122,28 @@ void main() {
     expect(find.text('Lesson 1.1'), findsNothing);
   });
 
-  testWidgets('a locked module lists nothing and does not respond', (
+  testWidgets('a locked module lists its lessons and none of them open', (
     tester,
   ) async {
     await _pumpPath(tester);
 
-    expect(find.text('Lesson 3.1'), findsNothing);
+    expect(find.text('Lesson 3.1'), findsOneWidget);
+
+    // Drawn and dead: the course ahead is shown, not offered.
+    final row = find.ancestor(
+      of: find.text('Lesson 3.1'),
+      matching: find.byType(InkWell),
+    );
+    expect(tester.widget<InkWell>(row.first).onTap, isNull);
+  });
+
+  testWidgets('a locked module does not shut on a tap', (tester) async {
+    await _pumpPath(tester);
 
     await tester.tap(find.text('Module 3'));
     await tester.pumpAndSettle();
 
-    // Still nothing: there is no lesson to open and no sheet to raise.
-    expect(find.text('Lesson 3.1'), findsNothing);
+    expect(find.text('Lesson 3.1'), findsOneWidget);
   });
 
   testWidgets('the active module cannot be collapsed away', (tester) async {
@@ -200,8 +211,8 @@ void main() {
     await tester.tap(find.text('Module 1'));
     await tester.pumpAndSettle();
 
-    // The one open module plus the always-open active one — a locked module
-    // never contributes rows.
-    expect(find.byType(PathLessonRow), findsNWidgets(4));
+    // All three modules showing: the one just opened, the active one and the
+    // locked one, which lists its lessons inert.
+    expect(find.byType(PathLessonRow), findsNWidgets(6));
   });
 }

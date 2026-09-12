@@ -141,6 +141,13 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **Path shows the course ahead instead of hiding it.** A module you have not
+  reached listed nothing — a title, a lock and a count. It now lists its
+  lessons, faded and inert, each with its own lock, which is what the design
+  has drawn all along and what `docs/design/07-components.md` already recorded.
+  Nothing in one can be opened, and a row inside a locked module no longer
+  reads as the lesson you are on.
+
 - **Every section that opens, opens the same way.** The practice groups,
   Path's modules, Reference, the parked brews and the Help answers were five
   hand-rolled expanders with four different timings and two different marks.
