@@ -398,6 +398,12 @@ Only 6 props, but one undocumented behaviour that changes how the screen reads.
 > So a module folds away the moment its last lesson is done, keeping the current
 > module in view. In-progress and locked modules cannot be collapsed.
 >
+> ⚠️ **The app does not follow the last sentence, by ruling.** Every module a
+> learner can reach carries a caret and opens and shuts; only the active one is
+> open on arrival, and a locked one draws no lessons at all —
+> [ADR-0024](../adr/0024-every-module-a-learner-can-reach-opens-and-shuts.md).
+> Do not port the prototype's rule back.
+>
 > ⚠️ **The expanded/collapsed state lives in `window.__pathExpandedMods`,** a
 > global mirrored out of React state — not in `localStorage`, not in a provider.
 > It survives tab switches within a session and is lost on reload. A real
