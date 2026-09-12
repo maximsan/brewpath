@@ -28,18 +28,21 @@ class PathScreen extends ConsumerStatefulWidget {
 }
 
 class _PathScreenState extends ConsumerState<PathScreen> {
-  /// Which finished modules the learner has opened.
+  /// The modules the learner has opened or shut by hand, against the density's
+  /// own default.
   ///
   /// View state, not progress: it is a reading position, it means nothing on
   /// the next launch, and storing it would put a UI preference in the progress
-  /// database. Only completed modules can be in here — the other two densities
-  /// are fixed open or shut and have nothing to remember.
-  final _expanded = <String>{};
+  /// database.
+  final _toggled = <String, bool>{};
 
-  void _toggle(String moduleId) {
-    setState(() {
-      if (!_expanded.remove(moduleId)) _expanded.add(moduleId);
-    });
+  /// Whether [module] is open: what the learner last said, or failing that
+  /// what its density does unasked.
+  bool _isOpen(PathModule module) =>
+      _toggled[module.id] ?? module.density.opensUnasked;
+
+  void _toggle(PathModule module) {
+    setState(() => _toggled[module.id] = !_isOpen(module));
   }
 
   @override
@@ -72,8 +75,8 @@ class _PathScreenState extends ConsumerState<PathScreen> {
             for (var i = 0; i < list.length; i++)
               PathModuleSection(
                 module: list[i],
-                isExpanded: _expanded.contains(list[i].id),
-                onToggle: () => _toggle(list[i].id),
+                isExpanded: _isOpen(list[i]),
+                onToggle: () => _toggle(list[i]),
                 previousTitle: i == 0 ? null : list[i - 1].item.module.title,
               ),
             // Last on Path: the course's own appendix, at the end of the thing

@@ -42,19 +42,15 @@ class PathModuleSection extends StatelessWidget {
   /// The module and its lessons.
   final PathModule module;
 
-  /// Whether a collapsible module is currently open. Ignored at the densities
-  /// that cannot collapse.
+  /// Whether the module is open right now. A locked one never is: it has no
+  /// lessons to show and no caret to ask with.
   final bool isExpanded;
 
-  /// Opens or shuts a collapsible module.
+  /// Opens or shuts the module.
   final VoidCallback onToggle;
 
   /// The module before this one, named by a locked row as what opens it.
   final String? previousTitle;
-
-  /// Whether the lessons are showing — the design's `open` is `!canCollapse`
-  /// or the module's own expanded flag. Only a finished module is ever shut.
-  bool get _isOpen => !module.density.canCollapse || isExpanded;
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +61,7 @@ class PathModuleSection extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: _sectionGap),
       child: Disclosure(
-        isOpen: _isOpen,
+        isOpen: isExpanded && canCollapse,
         collapsible: canCollapse,
         onToggle: _headerTap(context),
         semanticsLabel: _semanticsLabel(),
@@ -116,7 +112,7 @@ class PathModuleSection extends StatelessWidget {
     if (module.isPurchaseLocked) {
       return LockedRowCopy.purchaseLockedSemantics(module.title);
     }
-    return module.density.canCollapse
+    return module.density == PathModuleDensity.complete
         ? AppLabels.moduleCompleteSemantics(module.title)
         : null;
   }

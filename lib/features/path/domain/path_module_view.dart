@@ -20,7 +20,6 @@ class PathLesson {
     required this.isCompleted,
     required this.isCurrent,
     required this.isPurchaseLocked,
-    required this.isLockedByProgress,
     required this.mastery,
   });
 
@@ -41,11 +40,6 @@ class PathLesson {
   /// ADR-0016.
   final bool isPurchaseLocked;
 
-  /// Whether the module holding it is still out of reach, which makes the row
-  /// inert: the design lists the course ahead rather than hiding it, and the
-  /// module's own header says what unlocks it.
-  final bool isLockedByProgress;
-
   /// The best stored result, driving how full the row's bean reads.
   final MasteryResult mastery;
 
@@ -55,8 +49,7 @@ class PathLesson {
   /// A purchase-locked row does not, even when it really is next. The bean is
   /// deliberately left out of this and still fills as current, because it
   /// marks how far the learner has got, which is true either way.
-  bool get readsAsCurrent =>
-      isCurrent && !isPurchaseLocked && !isLockedByProgress;
+  bool get readsAsCurrent => isCurrent && !isPurchaseLocked;
 }
 
 /// One module as Path draws it.
@@ -140,7 +133,6 @@ List<PathModule> buildPathModules({
                   lessonId,
                   isCompleted: completedIds.contains(lessonId),
                 ),
-                isLockedByProgress: item.isLocked,
                 mastery: masteryById[lessonId] ?? MasteryResult.unscored,
               ),
         ],

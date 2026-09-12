@@ -56,10 +56,16 @@ void main() {
       }
     });
 
-    test('only complete collapses; the other two are fixed open or shut', () {
+    test('every reachable density collapses; a locked one has no caret', () {
       expect(PathModuleDensity.complete.canCollapse, isTrue);
-      expect(PathModuleDensity.active.canCollapse, isFalse);
+      expect(PathModuleDensity.active.canCollapse, isTrue);
       expect(PathModuleDensity.locked.canCollapse, isFalse);
+    });
+
+    test('only the active module lists its lessons unasked', () {
+      expect(PathModuleDensity.active.opensUnasked, isTrue);
+      expect(PathModuleDensity.complete.opensUnasked, isFalse);
+      expect(PathModuleDensity.locked.opensUnasked, isFalse);
     });
   });
 

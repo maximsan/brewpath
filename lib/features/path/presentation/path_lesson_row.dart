@@ -93,21 +93,15 @@ class PathLessonRow extends StatelessWidget {
     );
   }
 
-  /// The row itself, tappable or not.
+  /// The tappable row itself.
   ///
-  /// A purchase-locked row stays tappable on purpose — it is where someone
+  /// A purchase-locked row stays tappable on purpose. It is where someone
   /// meets the wall, and a dead row would say no without saying what it costs.
-  /// A row in a module the learner has not reached is dead: the design's
-  /// `disabled={isLocked && !buyLocked}`.
   Widget _row(BuildContext context, String title) {
-    final purchaseLocked = entry.isPurchaseLocked;
-    final inert = entry.isLockedByProgress && !purchaseLocked;
-    final locked = purchaseLocked || inert;
+    final locked = entry.isPurchaseLocked;
 
     final row = InkWell(
-      onTap: inert
-          ? null
-          : purchaseLocked
+      onTap: locked
           ? () => unawaited(showPlusGate(context, LockedLesson(title: title)))
           : () => unawaited(context.goToActivity(lessonRun(entry.lesson.id))),
       child: Opacity(
@@ -127,7 +121,7 @@ class PathLessonRow extends StatelessWidget {
       ),
     );
 
-    if (!purchaseLocked) return row;
+    if (!locked) return row;
 
     // One sentence, not three separate nodes. A locked row never shows the
     // CURRENT label, so `excludeSemantics` loses nothing.
@@ -200,18 +194,13 @@ class _Meta extends StatelessWidget {
     final mood = context.mood;
 
     // Before every other arm: locked is locked, whatever the learner scored
-    // before or wherever the course is pointing. Accent for the purchase,
-    // muted ink for a module still ahead — accent means there is something to
-    // do about it, and only buying is.
-    if (entry.isPurchaseLocked || entry.isLockedByProgress) {
-      final byPurchase = entry.isPurchaseLocked;
+    // before or wherever the course is pointing.
+    if (entry.isPurchaseLocked) {
       return IconMark(
         AppIcon.lock,
         size: _lockSize,
-        color: byPurchase ? mood.accent : mood.inkMute,
-        semanticLabel: byPurchase
-            ? LockedRowCopy.partOfFoundations
-            : LockedRowCopy.lockedLesson,
+        color: mood.accent,
+        semanticLabel: LockedRowCopy.partOfFoundations,
       );
     }
 

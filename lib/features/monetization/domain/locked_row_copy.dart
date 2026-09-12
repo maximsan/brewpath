@@ -14,10 +14,6 @@ abstract final class LockedRowCopy {
   static String purchasedModule(int lessonCount) =>
       '$partOfFoundations · $lessonCount lessons';
 
-  /// A lesson inside a module still ahead. The design's `label="Locked"`, and
-  /// it names no reason because the module's own header above it does.
-  static const lockedLesson = 'Locked';
-
   /// A module waiting on the one before it.
   static String finishToUnlock(String previousTitle) =>
       'Finish $previousTitle to unlock';

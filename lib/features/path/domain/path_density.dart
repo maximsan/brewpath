@@ -9,25 +9,29 @@ import 'package:brew_path/features/learn/domain/learn_providers.dart';
 /// The three densities Path draws a module at.
 ///
 /// The course is one screen, so five modules and thirty-two lessons share it.
-/// Only a finished module folds away; the one the learner is in and the ones
-/// still ahead both stay open, the latter with every row inert.
+/// Every module the learner can reach carries a caret and answers a tap; only
+/// the one they are in lists its lessons before being asked.
 enum PathModuleDensity {
-  /// Reachable and unfinished — the module the learner is in. Always expanded,
-  /// and it cannot be collapsed: hiding the work in front of someone is what
-  /// the whole screen exists to stop.
+  /// Reachable and unfinished — the module the learner is in. Opens itself,
+  /// because the work in front of someone is what the screen exists to show,
+  /// and folds away on a tap like any other.
   active,
 
-  /// Every lesson done. Collapsed to a row that opens on tap, so finished work
-  /// is reviewable and replayable without holding the screen.
+  /// Every lesson done. Shut until asked, so finished work is reviewable and
+  /// replayable without holding the screen.
   complete,
 
-  /// Not yet reached. Its lessons are listed and inert — the design draws the
-  /// course ahead rather than hiding it — and there is nothing to collapse.
+  /// Not yet reached. A compact static row: nothing to list, so no caret and
+  /// nothing a tap could open onto.
   locked;
 
-  /// Whether a tap opens and shuts this module. Only [complete] answers yes;
-  /// the other two list their lessons and stay that way.
-  bool get canCollapse => this == PathModuleDensity.complete;
+  /// Whether the header carries a caret and answers a tap. Everything the
+  /// learner can reach; only [locked] has nothing behind it.
+  bool get canCollapse => this != PathModuleDensity.locked;
+
+  /// Whether the module lists its lessons before anyone asks. Only [active] —
+  /// one module open on arrival, which is the one being worked through.
+  bool get opensUnasked => this == PathModuleDensity.active;
 
   /// Whether the module is out of reach. Asked instead of comparing against
   /// the enum value at a call site, so every question about a density is
@@ -40,7 +44,7 @@ enum PathModuleDensity {
 /// Locked is checked first and wins outright. A locked module's lesson tallies
 /// can read as complete — a content update that adds a lesson to its
 /// prerequisite re-locks it without touching its own progress — and drawing
-/// that as a finished module would offer a tap into rows it cannot open.
+/// that as a finished module would offer a caret over nothing.
 PathModuleDensity pathModuleDensity(ModuleWithProgress item) {
   if (item.isLocked) return PathModuleDensity.locked;
   if (item.isComplete) return PathModuleDensity.complete;
