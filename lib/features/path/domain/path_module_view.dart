@@ -91,14 +91,10 @@ class PathModule {
 
 /// Arranges [modules] into what Path draws.
 ///
-/// [lessonsById] is the lessons bank; a module lesson id with no entry is
-/// dropped rather than rendered as a blank row. **Currency is still decided
-/// over the module's own id list**, not over the rows that survived that drop
-/// — otherwise one missing bank entry would promote a later lesson to
-/// "current" and point the learner past the one they actually owe.
-///
-/// [hasCourse] is the learner's entitlement. Pass `false` while it is still
-/// unresolved, which is what `courseEntitlement` asks of every caller.
+/// A lesson id missing from [lessonsById] is dropped rather than drawn blank,
+/// but **currency is still decided over the module's own id list**: one
+/// missing entry must not promote a later lesson to "current". Pass
+/// [hasCourse] false while the entitlement is unresolved, as every caller does.
 List<PathModule> buildPathModules({
   required List<ModuleWithProgress> modules,
   required Map<String, LessonModel> lessonsById,

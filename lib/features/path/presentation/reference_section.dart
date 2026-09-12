@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:brew_path/core/icons/app_icon.dart';
-import 'package:brew_path/core/icons/caret_mark.dart';
+import 'package:brew_path/core/icons/disclosure_mark.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
+import 'package:brew_path/core/widgets/disclosure.dart';
+import 'package:brew_path/core/widgets/module_glyph.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/core/widgets/visual_guide_art.dart';
 import 'package:brew_path/features/monetization/domain/locked_row_copy.dart';
@@ -12,10 +14,10 @@ import 'package:brew_path/features/path/domain/visual_guide_providers.dart';
 import 'package:brew_path/features/path/domain/visual_guide_shelf.dart';
 import 'package:brew_path/features/path/presentation/visual_guide_sheet.dart';
 import 'package:brew_path/shared/models/content/visual_guide.dart';
-import 'package:brew_path/shared/theme/app_motion.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -40,10 +42,6 @@ String _lockedSubtitle({required bool byPurchase, required String? nextTitle}) {
 /// a spacing stop is retuned is a coupling nobody asked for.
 const double _glyphSize = 24;
 const double _lockSize = 16;
-
-/// How long the section takes to open when motion is allowed. The design
-/// animates the expansion; this is that, in Flutter's terms.
-const Duration _expandDuration = AppMotion.expand;
 
 /// The last thing on Path: the illustrated references a learner has earned.
 ///
@@ -83,125 +81,63 @@ class _ReferenceSectionState extends ConsumerState<ReferenceSection> {
       nextTitle: ref.watch(nextGuideUnlockProvider).asData?.value,
     );
     final isOpen = _isOpen && !shelf.isLocked;
+    final mood = context.mood;
+    final ink = shelf.isLocked ? mood.inkMute : mood.ink;
 
     return Semantics(
       container: true,
       label: shelf.isLocked
           ? '$_title, locked. $subtitle'
           : '$_title, ${shelf.earned.length} guides',
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _Heading(
-            isLocked: shelf.isLocked,
-            isOpen: isOpen,
-            subtitle: shelf.isLocked ? subtitle : _openSubtitle,
-            // A locked section will not open onto nothing. If the lock is
-            // the purchase, it offers the way past instead.
-            onTap: !shelf.isLocked
-                ? () => setState(() => _isOpen = !_isOpen)
-                : byPurchase
-                ? () => unawaited(
-                    showPlusGate(context, const LockedGuides()),
-                  )
-                : null,
-          ),
-          _Expansion(
-            isOpen: isOpen,
-            child: _Guides(shelf: shelf),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// The opening and closing itself.
-///
-/// ⚠️ **Reduced motion drops the animator rather than zeroing it.**
-/// `AnimatedSize` handed `Duration.zero` re-dirties itself inside its own
-/// `performLayout`, which the framework asserts on — a sweep test forbids it.
-class _Expansion extends StatelessWidget {
-  const _Expansion({required this.isOpen, required this.child});
-
-  final bool isOpen;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final shown = isOpen ? child : const SizedBox(width: double.infinity);
-    if (MediaQuery.disableAnimationsOf(context)) return shown;
-
-    return AnimatedSize(
-      duration: _expandDuration,
-      curve: Curves.easeOut,
-      alignment: Alignment.topCenter,
-      child: shown,
-    );
-  }
-}
-
-class _Heading extends StatelessWidget {
-  const _Heading({
-    required this.isLocked,
-    required this.isOpen,
-    required this.subtitle,
-    required this.onTap,
-  });
-
-  final bool isLocked;
-  final bool isOpen;
-
-  /// The line under the title, already chosen for this learner.
-  final String subtitle;
-
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final mood = context.mood;
-    final ink = isLocked ? mood.inkMute : mood.ink;
-
-    return Semantics(
-      button: onTap != null,
-      // Null while there is no expanded state to be in — locked, or locked
-      // behind a purchase, where the tap opens an offer rather than the shelf.
-      expanded: onTap == null || isLocked ? null : isOpen,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  IconMark(AppIcon.module, size: _glyphSize, color: ink),
-                  const SizedBox(width: AppSpacing.sm),
-                  Expanded(
-                    child: Text(
-                      _title,
-                      style: Theme.of(
-                        context,
-                      ).textTheme.titleLarge?.copyWith(color: ink),
-                    ),
-                  ),
-                  if (isLocked)
-                    IconMark(AppIcon.lock, size: _lockSize, color: ink)
-                  else
-                    CaretMark(open: isOpen, color: mood.inkMute),
-                ],
+      child: Disclosure(
+        isOpen: isOpen,
+        collapsible: !shelf.isLocked,
+        // A locked section will not open onto nothing. If the lock is the
+        // purchase, it offers the way past instead.
+        onToggle: _headerTap(locked: shelf.isLocked, byPurchase: byPurchase),
+        glyphSize: DisclosureMark.sectionCaretSize,
+        headerPadding: EdgeInsets.zero,
+        panelPadding: EdgeInsets.only(top: OffTokens.referenceShelfHead.value),
+        header: Row(
+          children: [
+            // The same 32-px column a module glyph sits in, so Reference's
+            // title and caption line up with every module above it.
+            SizedBox(
+              width: ModuleGlyph.columnWidth,
+              child: Center(
+                child: IconMark(AppIcon.module, size: _glyphSize, color: ink),
               ),
-              const SizedBox(height: AppSpacing.xxs),
-              Padding(
-                padding: const EdgeInsets.only(left: AppSpacing.xl),
-                child: SmallcapsLabel(subtitle),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: Text(
+                _title,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(color: ink),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
+        trailing: shelf.isLocked
+            ? IconMark(AppIcon.lock, size: _lockSize, color: ink)
+            : null,
+        below: Padding(
+          padding: const EdgeInsets.only(
+            top: AppSpacing.xs,
+            left: ModuleGlyph.titleInset,
+          ),
+          child: SmallcapsLabel(shelf.isLocked ? subtitle : _openSubtitle),
+        ),
+        child: _Guides(shelf: shelf),
       ),
     );
+  }
+
+  VoidCallback? _headerTap({required bool locked, required bool byPurchase}) {
+    if (!locked) return () => setState(() => _isOpen = !_isOpen);
+    if (!byPurchase) return null;
+    return () => unawaited(showPlusGate(context, const LockedGuides()));
   }
 }
 

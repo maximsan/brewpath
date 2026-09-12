@@ -1,4 +1,5 @@
 import 'package:brew_path/core/constants/app_labels.dart';
+import 'package:brew_path/core/icons/disclosure_mark.dart';
 import 'package:brew_path/features/challenges/presentation/path_challenge_node.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/path/domain/path_density.dart';
@@ -135,13 +136,28 @@ void main() {
     expect(find.text('Lesson 3.1'), findsNothing);
   });
 
-  testWidgets('the active module cannot be collapsed away', (tester) async {
+  testWidgets('the active module opens itself and still folds away', (
+    tester,
+  ) async {
     await _pumpPath(tester);
+    expect(find.text('Lesson 2.1'), findsOneWidget);
 
     await tester.tap(find.text('Module 2'));
     await tester.pumpAndSettle();
+    expect(find.text('Lesson 2.1'), findsNothing);
 
+    await tester.tap(find.text('Module 2'));
+    await tester.pumpAndSettle();
     expect(find.text('Lesson 2.1'), findsOneWidget);
+  });
+
+  testWidgets('every module the learner can reach carries a caret', (
+    tester,
+  ) async {
+    await _pumpPath(tester);
+
+    // Modules 1 and 2 are reachable; module 3 is not and has nothing to open.
+    expect(find.byType(DisclosureMark), findsNWidgets(2));
   });
 
   testWidgets('the header counts lessons and draws no progress bar', (

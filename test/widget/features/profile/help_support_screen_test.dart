@@ -145,7 +145,12 @@ void main() {
   testWidgets('every row announces itself as an expander', (tester) async {
     await pump(tester);
 
-    final semantics = tester.getSemantics(find.byType(HelpFaqRow).first);
+    final semantics = tester.getSemantics(
+      find.descendant(
+        of: find.byType(HelpFaqRow).first,
+        matching: find.byType(InkWell),
+      ),
+    );
 
     expect(semantics.flagsCollection.isButton, isTrue);
     expect(

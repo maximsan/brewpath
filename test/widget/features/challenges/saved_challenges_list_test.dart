@@ -32,9 +32,14 @@ void main() {
 
     // A header over an empty list tells the learner they are missing
     // something rather than that there is nothing to miss.
-    expect(find.text('SAVED CHALLENGES'), findsNothing);
+    expect(find.textContaining('SAVED CHALLENGES'), findsNothing);
     expect(find.byType(SizedBox), findsWidgets);
   });
+
+  Future<void> open(WidgetTester tester) async {
+    await tester.tap(find.textContaining('SAVED CHALLENGES'));
+    await tester.pumpAndSettle();
+  }
 
   testWidgets('lists what is parked', (tester) async {
     await pump(tester, [
@@ -42,7 +47,10 @@ void main() {
       testChallenge(id: 'bc-m2', title: 'Blind process test'),
     ]);
 
-    expect(find.text('SAVED CHALLENGES'), findsOneWidget);
+    expect(find.text('SAVED CHALLENGES · 2'), findsOneWidget);
+    expect(find.text('Two cups, two ratios'), findsNothing);
+
+    await open(tester);
     expect(find.text('Two cups, two ratios'), findsOneWidget);
     expect(find.text('Blind process test'), findsOneWidget);
     expect(find.text('Next brews · 5 min'), findsNWidgets(2));
@@ -50,6 +58,7 @@ void main() {
 
   testWidgets('starting one puts it in play', (tester) async {
     await pump(tester, [testChallenge()]);
+    await open(tester);
 
     await tester.tap(find.text('Start'));
     await tester.pump();
@@ -64,6 +73,7 @@ void main() {
 
   testWidgets('removing one is reachable by its own label', (tester) async {
     await pump(tester, [testChallenge()]);
+    await open(tester);
 
     expect(
       find.byTooltip('Remove Two cups, two ratios from saved'),

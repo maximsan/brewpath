@@ -20,8 +20,7 @@ Future<void> _pump(WidgetTester tester, {bool isLast = false}) =>
 
 Future<void> _toggle(WidgetTester tester) async {
   await tester.tap(find.text('Games'));
-  await tester.pump();
-  await tester.pump(PracticeGroup.turnDuration);
+  await tester.pumpAndSettle();
 }
 
 void main() {
