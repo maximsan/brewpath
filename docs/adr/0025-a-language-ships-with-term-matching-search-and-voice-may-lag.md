@@ -1,4 +1,4 @@
-# ADR-0024: A language ships with term matching; search and the voice may lag
+# ADR-0025: A language ships with term matching; search and the voice may lag
 
 - **Status:** accepted
 - **Date:** 2026-09-13

@@ -8,74 +8,77 @@ part of 'course_entitlement.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// Emits the store's new answer whenever what the learner owns changes.
+///
+/// Watched rather than read, so a subscription that lapses or is refunded
+/// locks the app without a restart (ADR-0024).
+
+@ProviderFor(entitlementChanges)
+final entitlementChangesProvider = EntitlementChangesProvider._();
+
+/// Emits the store's new answer whenever what the learner owns changes.
+///
+/// Watched rather than read, so a subscription that lapses or is refunded
+/// locks the app without a restart (ADR-0024).
+
+final class EntitlementChangesProvider
+    extends $FunctionalProvider<AsyncValue<bool>, bool, Stream<bool>>
+    with $FutureModifier<bool>, $StreamProvider<bool> {
+  /// Emits the store's new answer whenever what the learner owns changes.
+  ///
+  /// Watched rather than read, so a subscription that lapses or is refunded
+  /// locks the app without a restart (ADR-0024).
+  EntitlementChangesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'entitlementChangesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$entitlementChangesHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<bool> $createElement($ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
+
+  @override
+  Stream<bool> create(Ref ref) {
+    return entitlementChanges(ref);
+  }
+}
+
+String _$entitlementChangesHash() =>
+    r'17b432c6a85d1925a92b316a5d6ff0f0a6263b41';
+
 /// Whether the learner currently holds the course entitlement.
 ///
-/// **The one monetization concept feature code may read.** Gates, locked rows
-/// and lock marks ask this and nothing else; nothing outside this folder
-/// imports the payments service. That is what makes swapping the model — a
-/// subscription arm, a hybrid — a change to how a purchase maps to
-/// entitlement, never a change to an access check.
-///
-/// Read through the payments abstraction and never from a store SDK, so
-/// flipping to a real store touches no feature code. The active no-op reports
-/// none, which is what ships today: the app is in the free state by
-/// construction, and the entitled path is exercised by overriding this.
-///
-/// **Unresolved reads as locked.** A caller that draws while the answer is
-/// pending resolves it to `false`, because showing a lock briefly to a paying
-/// learner is recoverable and showing paid content briefly to a free one is
-/// not. A caller that builds one value from it — the Path's modules, the
-/// dictionary's shelf — awaits the answer instead, and shows nothing until it
-/// lands: the same safe direction, without a first emission that a one-shot
-/// reader would keep.
+/// **The one monetization concept feature code may read** (#176) — gates and
+/// locked rows ask this and nothing else. Unresolved reads as locked: draw
+/// a pending answer as `false`, or await it and show nothing until it lands.
 
 @ProviderFor(courseEntitlement)
 final courseEntitlementProvider = CourseEntitlementProvider._();
 
 /// Whether the learner currently holds the course entitlement.
 ///
-/// **The one monetization concept feature code may read.** Gates, locked rows
-/// and lock marks ask this and nothing else; nothing outside this folder
-/// imports the payments service. That is what makes swapping the model — a
-/// subscription arm, a hybrid — a change to how a purchase maps to
-/// entitlement, never a change to an access check.
-///
-/// Read through the payments abstraction and never from a store SDK, so
-/// flipping to a real store touches no feature code. The active no-op reports
-/// none, which is what ships today: the app is in the free state by
-/// construction, and the entitled path is exercised by overriding this.
-///
-/// **Unresolved reads as locked.** A caller that draws while the answer is
-/// pending resolves it to `false`, because showing a lock briefly to a paying
-/// learner is recoverable and showing paid content briefly to a free one is
-/// not. A caller that builds one value from it — the Path's modules, the
-/// dictionary's shelf — awaits the answer instead, and shows nothing until it
-/// lands: the same safe direction, without a first emission that a one-shot
-/// reader would keep.
+/// **The one monetization concept feature code may read** (#176) — gates and
+/// locked rows ask this and nothing else. Unresolved reads as locked: draw
+/// a pending answer as `false`, or await it and show nothing until it lands.
 
 final class CourseEntitlementProvider
     extends $FunctionalProvider<AsyncValue<bool>, bool, FutureOr<bool>>
     with $FutureModifier<bool>, $FutureProvider<bool> {
   /// Whether the learner currently holds the course entitlement.
   ///
-  /// **The one monetization concept feature code may read.** Gates, locked rows
-  /// and lock marks ask this and nothing else; nothing outside this folder
-  /// imports the payments service. That is what makes swapping the model — a
-  /// subscription arm, a hybrid — a change to how a purchase maps to
-  /// entitlement, never a change to an access check.
-  ///
-  /// Read through the payments abstraction and never from a store SDK, so
-  /// flipping to a real store touches no feature code. The active no-op reports
-  /// none, which is what ships today: the app is in the free state by
-  /// construction, and the entitled path is exercised by overriding this.
-  ///
-  /// **Unresolved reads as locked.** A caller that draws while the answer is
-  /// pending resolves it to `false`, because showing a lock briefly to a paying
-  /// learner is recoverable and showing paid content briefly to a free one is
-  /// not. A caller that builds one value from it — the Path's modules, the
-  /// dictionary's shelf — awaits the answer instead, and shows nothing until it
-  /// lands: the same safe direction, without a first emission that a one-shot
-  /// reader would keep.
+  /// **The one monetization concept feature code may read** (#176) — gates and
+  /// locked rows ask this and nothing else. Unresolved reads as locked: draw
+  /// a pending answer as `false`, or await it and show nothing until it lands.
   CourseEntitlementProvider._()
     : super(
         from: null,
@@ -101,4 +104,4 @@ final class CourseEntitlementProvider
   }
 }
 
-String _$courseEntitlementHash() => r'3e361938504837b8a93287aaa4535be97cb553fc';
+String _$courseEntitlementHash() => r'0c5d94dd0adcd998e0366a233ffd51f13c6e5702';

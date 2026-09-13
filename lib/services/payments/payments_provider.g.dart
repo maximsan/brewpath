@@ -8,18 +8,27 @@ part of 'payments_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Provides the active [PaymentsService] — No-Op until payments go live.
+/// Provides the active [PaymentsService].
+///
+/// `GRANT_COURSE` wins over a real store, so a development build that asked
+/// for the owned state gets it even when a key is present.
 
 @ProviderFor(paymentsService)
 final paymentsServiceProvider = PaymentsServiceProvider._();
 
-/// Provides the active [PaymentsService] — No-Op until payments go live.
+/// Provides the active [PaymentsService].
+///
+/// `GRANT_COURSE` wins over a real store, so a development build that asked
+/// for the owned state gets it even when a key is present.
 
 final class PaymentsServiceProvider
     extends
         $FunctionalProvider<PaymentsService, PaymentsService, PaymentsService>
     with $Provider<PaymentsService> {
-  /// Provides the active [PaymentsService] — No-Op until payments go live.
+  /// Provides the active [PaymentsService].
+  ///
+  /// `GRANT_COURSE` wins over a real store, so a development build that asked
+  /// for the owned state gets it even when a key is present.
   PaymentsServiceProvider._()
     : super(
         from: null,
@@ -53,4 +62,4 @@ final class PaymentsServiceProvider
   }
 }
 
-String _$paymentsServiceHash() => r'31b207cc677825665fca458f673f979f7432cd3c';
+String _$paymentsServiceHash() => r'941b5ab49d76ec8a66db12527937f64e37ea69cf';

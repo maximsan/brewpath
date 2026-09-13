@@ -1,7 +1,7 @@
 /// What the store puts in front of one learner: which model, and which SKUs.
 library;
 
-/// One arm of the post-launch pricing experiment (ADR-0003, #176).
+/// One arm of the pricing experiment (ADR-0024, #176).
 enum MonetizationModel {
   /// Buy Foundations once, keep it. The baseline v1 ships.
   oneTime,
@@ -63,21 +63,19 @@ class PlusOffering {
   );
 }
 
-/// The one-time SKU v1 sells (ADR-0003).
+/// The non-consumable, bought once (ADR-0024).
 const String plusLifetimeProductId = 'dev.maximsan.brewPath.plus';
 
-/// The monthly SKU of the two experiment arms. **Not registered** in App
-/// Store Connect — a placeholder so the arm can be drawn (#421).
+/// The monthly subscription of the two renewing arms.
 const String plusMonthlyProductId = 'dev.maximsan.brewPath.plus.monthly';
 
-/// The yearly SKU of the two experiment arms — a placeholder, as above.
+/// The yearly subscription of the two renewing arms.
 const String plusYearlyProductId = 'dev.maximsan.brewPath.plus.yearly';
 
 /// Which SKUs an arm offers — the configuration that switching models is.
 ///
-/// The two experiment arms name placeholder SKUs so their paywalls can be
-/// driven; no store prices them until #421 registers them, and an unpriced
-/// row cannot be bought.
+/// RevenueCat says which arm a learner is on; this stays the one home for
+/// what that arm sells (ADR-0024).
 PlusOffering offeringFor(MonetizationModel model) => switch (model) {
   MonetizationModel.oneTime => const PlusOffering(
     model: MonetizationModel.oneTime,

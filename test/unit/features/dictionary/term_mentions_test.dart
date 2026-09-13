@@ -113,7 +113,7 @@ void main() {
   });
 
   group('a word boundary is a boundary in every script', () {
-    // ADR-0024: term matching ships with the language, so the pool a
+    // ADR-0025: term matching ships with the language, so the pool a
     // translated course offers is the pool its lessons actually mention.
     test('a Cyrillic term buried in a longer word is not a mention', () {
       expect(

@@ -2,7 +2,7 @@
 ///
 /// Pure on purpose, like `bank_envelope.dart` next door: the rules a
 /// translation obeys are testable without staging an asset. ADR-0008 makes
-/// English the master and the fallback; ADR-0026 keeps the fallback for
+/// English the master and the fallback; ADR-0027 keeps the fallback for
 /// *missing* text only.
 library;
 
@@ -11,13 +11,13 @@ import 'package:brew_path/shared/repositories/content_assembly.dart';
 /// Which English text a translated entry was made from, field by field.
 ///
 /// A fingerprint per piece of text, not per entry, so a typo fixed in one
-/// paragraph leaves its neighbours alone (ADR-0025).
+/// paragraph leaves its neighbours alone (ADR-0026).
 const String translatedFromField = 'translatedFrom';
 
 /// Which of a translated entry's fields a native speaker has read.
 ///
 /// A language ships on its draft and review follows, so "live" and "read" are
-/// different facts and need different marks (ADR-0025).
+/// different facts and need different marks (ADR-0026).
 const String nativeReviewedField = 'nativeReviewed';
 
 /// The translation tool's bookkeeping, stripped before a model sees a record.
@@ -32,7 +32,7 @@ const Set<String> bookkeepingFields = {
 /// [master]'s records with [translated]'s text laid over them, by id.
 ///
 /// Per entry and per field: a translated field wins, anything omitted stays
-/// English, and ADR-0026 leaves staleness invisible. An id the master lacks
+/// English, and ADR-0027 leaves staleness invisible. An id the master lacks
 /// throws the way ADR-0018 refuses broken content, while a *missing* id is the
 /// fallback ADR-0008 asks for — so only one direction is fatal.
 List<Map<String, dynamic>> overlayTranslations({

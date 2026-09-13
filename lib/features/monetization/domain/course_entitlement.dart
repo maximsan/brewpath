@@ -6,26 +6,21 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'course_entitlement.g.dart';
 
+/// Emits the store's new answer whenever what the learner owns changes.
+///
+/// Watched rather than read, so a subscription that lapses or is refunded
+/// locks the app without a restart (ADR-0024).
+@riverpod
+Stream<bool> entitlementChanges(Ref ref) =>
+    ref.watch(paymentsServiceProvider).entitlementChanges;
+
 /// Whether the learner currently holds the course entitlement.
 ///
-/// **The one monetization concept feature code may read.** Gates, locked rows
-/// and lock marks ask this and nothing else; nothing outside this folder
-/// imports the payments service. That is what makes swapping the model — a
-/// subscription arm, a hybrid — a change to how a purchase maps to
-/// entitlement, never a change to an access check.
-///
-/// Read through the payments abstraction and never from a store SDK, so
-/// flipping to a real store touches no feature code. The active no-op reports
-/// none, which is what ships today: the app is in the free state by
-/// construction, and the entitled path is exercised by overriding this.
-///
-/// **Unresolved reads as locked.** A caller that draws while the answer is
-/// pending resolves it to `false`, because showing a lock briefly to a paying
-/// learner is recoverable and showing paid content briefly to a free one is
-/// not. A caller that builds one value from it — the Path's modules, the
-/// dictionary's shelf — awaits the answer instead, and shows nothing until it
-/// lands: the same safe direction, without a first emission that a one-shot
-/// reader would keep.
+/// **The one monetization concept feature code may read** (#176) — gates and
+/// locked rows ask this and nothing else. Unresolved reads as locked: draw
+/// a pending answer as `false`, or await it and show nothing until it lands.
 @riverpod
-Future<bool> courseEntitlement(Ref ref) =>
-    ref.watch(paymentsServiceProvider).hasActiveEntitlement();
+Future<bool> courseEntitlement(Ref ref) {
+  ref.watch(entitlementChangesProvider);
+  return ref.watch(paymentsServiceProvider).hasActiveEntitlement();
+}

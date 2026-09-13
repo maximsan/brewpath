@@ -19,13 +19,19 @@ enum PurchaseStatus {
   error,
 }
 
-/// Abstract store layer. No feature code calls StoreKit / `in_app_purchase`
-/// directly — only this interface. NoOp is active in the MVP.
+/// Abstract store layer. No feature code calls a store SDK directly — only
+/// this interface. NoOp is active until a build carries a RevenueCat key.
 abstract class PaymentsService {
   /// True if the user currently has an active entitlement.
   ///
   /// One answer for every arm, whatever bought it (#176).
   Future<bool> hasActiveEntitlement();
+
+  /// The term the learner currently holds, or null when they hold none.
+  ///
+  /// Asked of the store rather than remembered, so it stays true after a
+  /// restart, a refund, or a plan changed outside the app.
+  Future<PlusTerm?> activeTerm();
 
   /// Which arm this learner is on, and what it sells them.
   ///
@@ -42,8 +48,12 @@ abstract class PaymentsService {
   /// Restores previous purchases.
   Future<void> restorePurchases();
 
-  /// Stream of purchase status updates.
-  Stream<PurchaseStatus> get purchaseUpdates;
+  /// Emits the new answer whenever [hasActiveEntitlement] changes underneath
+  /// the app — a renewal, a lapse, a refund, a purchase on another device.
+  ///
+  /// A subscription stops being owned while the app is open, and nothing else
+  /// would notice (ADR-0024).
+  Stream<bool> get entitlementChanges;
 
   /// Dispose listeners when done.
   void dispose();

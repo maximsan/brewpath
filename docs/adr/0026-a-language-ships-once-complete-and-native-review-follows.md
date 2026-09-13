@@ -1,4 +1,4 @@
-# ADR-0025: A language ships once complete, and native review follows
+# ADR-0026: A language ships once complete, and native review follows
 
 - **Status:** accepted
 - **Date:** 2026-09-13
@@ -26,7 +26,7 @@ readers in later updates.
 
 **Complete means every piece of reader-facing prose** — lessons, the dictionary,
 the app's own labels, the companion's lines. The pronunciation hints
-[ADR-0024](0024-a-language-ships-with-term-matching-search-and-voice-may-lag.md)
+[ADR-0025](0025-a-language-ships-with-term-matching-search-and-voice-may-lag.md)
 made optional do not hold a language back, and alias lists are search keys that
 review holds rather than the completeness test.
 

@@ -1,4 +1,4 @@
-// The app must never offer a language it has only half of. ADR-0025 makes
+// The app must never offer a language it has only half of. ADR-0026 makes
 // "complete" the bar for offering one, and the two halves are switched by
 // different machinery — the app's own words by Flutter's locale resolution,
 // the course text by ContentLanguage — so nothing but this stops them drifting

@@ -1,12 +1,10 @@
+import 'package:brew_path/core/config/payments_flags.dart';
 import 'package:brew_path/services/payments/granted_payments_service.dart';
 import 'package:brew_path/services/payments/noop_payments_service.dart';
 import 'package:brew_path/services/payments/payments_service.dart';
+import 'package:brew_path/services/payments/revenue_cat_payments_service.dart';
 import 'package:brew_path/shared/models/monetization/plus_offering.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-
-// Activation: import + return InAppPurchaseService() when payments go live
-// (see docs/10-payments.md future-implementation checklist).
-// import 'package:brew_path/services/payments/in_app_purchase_service.dart';
 
 part 'payments_provider.g.dart';
 
@@ -29,14 +27,21 @@ MonetizationModel monetizationModelNamed(String name) =>
       orElse: () => MonetizationModel.oneTime,
     );
 
-/// Provides the active [PaymentsService] — No-Op until payments go live.
+/// Provides the active [PaymentsService].
+///
+/// `GRANT_COURSE` wins over a real store, so a development build that asked
+/// for the owned state gets it even when a key is present.
 @riverpod
 PaymentsService paymentsService(Ref ref) {
-  final model = monetizationModelNamed(kMonetizationModel);
-
-  return kGrantCourse
-      ? GrantedPaymentsService(model: model)
-      : NoOpPaymentsService(model: model);
+  if (kGrantCourse) {
+    return GrantedPaymentsService(
+      model: monetizationModelNamed(kMonetizationModel),
+    );
+  }
+  if (kUseRevenueCat) {
+    final service = RevenueCatPaymentsService();
+    ref.onDispose(service.dispose);
+    return service;
+  }
+  return NoOpPaymentsService(model: monetizationModelNamed(kMonetizationModel));
 }
-
-// To go live: => InAppPurchaseService();

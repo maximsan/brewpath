@@ -1,4 +1,4 @@
-# ADR-0026: A stale translation stays until it is retranslated
+# ADR-0027: A stale translation stays until it is retranslated
 
 - **Status:** accepted
 - **Date:** 2026-09-13
@@ -23,7 +23,7 @@ sees; the text is replaced when its retranslation ships.
 Staleness is therefore a fact about the repository, not about the app. A piece
 of text is stale when the fingerprint it carries no longer matches the English
 of that id
-([ADR-0025](0025-a-language-ships-once-complete-and-native-review-follows.md)),
+([ADR-0026](0026-a-language-ships-once-complete-and-native-review-follows.md)),
 and the drafting tool queues exactly those.
 
 **English fallback covers what has no translation at all** — which, after a

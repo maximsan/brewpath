@@ -32,7 +32,7 @@ bool _saysWord(String text, String word) {
 
 /// A letter or a digit in any script — the characters a word runs on.
 ///
-/// Any script, because ADR-0024 ships term matching with the language: an
+/// Any script, because ADR-0025 ships term matching with the language: an
 /// ASCII-only test reads every Cyrillic letter as a boundary, which made
 /// *кавамашына* a mention of *кава*.
 final _wordChar = RegExp(r'[\p{L}\p{N}]', unicode: true);

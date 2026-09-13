@@ -1,5 +1,5 @@
 // How a language folder lands on top of the English master: ADR-0008 for the
-// per-entry fallback, ADR-0026 for a stale entry staying put.
+// per-entry fallback, ADR-0027 for a stale entry staying put.
 import 'package:brew_path/shared/repositories/content_assembly.dart';
 import 'package:brew_path/shared/repositories/language_overlay.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -86,7 +86,7 @@ void main() {
     });
 
     test('a stale entry is shown, not skipped', () {
-      // ADR-0026: staleness is a fact about the repository. The loader cannot
+      // ADR-0027: staleness is a fact about the repository. The loader cannot
       // tell a stale entry from a current one, and must not try.
       final records = _overlaid([
         {
@@ -100,7 +100,7 @@ void main() {
     });
 
     test('an unreviewed translation is shown like any other', () {
-      // ADR-0025 ships a language on its draft; review follows afterwards, so
+      // ADR-0026 ships a language on its draft; review follows afterwards, so
       // "nobody has read this" is not a reason to withhold it.
       final records = _overlaid([
         {

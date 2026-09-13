@@ -44,6 +44,19 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The app can take money.** Purchases are made through RevenueCat, which
+  holds what you own, prices the plans in your own storefront's currency, and
+  decides which of the three paywalls you see (ADR-0024 supersedes ADR-0003).
+  A build only reaches a store when it is given a `REVENUECAT_KEY`, so the
+  shipped app is still free by construction.
+
+- **Settings → Purchases is a real screen.** It says what you own and how it
+  is billed, or — if you don't own the course yet — what this paywall sells,
+  a way to buy it, and Restore purchases. A renewing plan gets a link out to
+  Apple's own subscriptions page, the only place a plan can be changed. Which
+  plan you hold is asked of the store rather than remembered, so it is still
+  right after a restart, a refund, or a change made outside the app.
+
 - **The app can be taught a second language without being rewritten.** A
   language is now a folder laid over the English master, entry by entry and
   field by field: what it translates wins, what it leaves out stays English,
@@ -52,10 +65,10 @@ You can always edit this file by hand instead — the helpers just save effort.
   `context.strings`, starting with the onboarding name step. English is still
   the only language that ships, and a test holds the app to offering no
   language it has only half of. Three rulings settle the rest — what a
-  language must bring with it (ADR-0024), that one ships once complete with
-  native review following after (ADR-0025), and that a translation outdated by
+  language must bring with it (ADR-0025), that one ships once complete with
+  native review following after (ADR-0026), and that a translation outdated by
   an English fix stays on screen until it is retranslated, while text added
-  since reads in English (ADR-0026).
+  since reads in English (ADR-0027).
 
 - **Every sale is celebrated, and it puts you back where the lock was.**
   Buying from the sheet a lock raises used to leave you sitting on the sheet
@@ -162,6 +175,11 @@ You can always edit this file by hand instead — the helpers just save effort.
   marked wrong — being wrong there is what the lesson was for.
 
 ### Changed
+
+- **Owning the course can now stop.** What you own used to be settled once
+  when the app opened, which was right for a purchase you keep forever and
+  wrong for a subscription: a plan that lapses, is refunded, or fails to renew
+  now locks the course again while the app is open, with no restart.
 
 - **Every module on Path opens and shuts.** The one you are working through
   was pinned open with no caret, because the design ties *cannot collapse* to
@@ -301,6 +319,14 @@ You can always edit this file by hand instead — the helpers just save effort.
   which is what makes a third launch safe.
 
 ### Fixed
+
+- **Finishing a lesson lands in one write.** The completion, the card it
+  hands over, the Coffee Tree's new stage and — on a module's last lesson —
+  the Module Reward card used to reach the store as three or four separate
+  writes, so an app closed between them could hold a finished lesson whose
+  tree still drew the old stage, or a closed module whose card never arrived.
+  They are one event, and now one write; a test holds the first write to all
+  of them.
 
 - **A coffee term is matched as a word in every alphabet, not just the Latin
   one.** The rule behind the free practice pool counted only `a`–`z` and

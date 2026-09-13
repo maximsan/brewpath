@@ -32,6 +32,7 @@ import 'package:brew_path/features/onboarding/presentation/welcome/welcome_scree
 import 'package:brew_path/features/path/presentation/path_screen.dart';
 import 'package:brew_path/features/profile/presentation/profile_screen.dart';
 import 'package:brew_path/features/profile/presentation/settings/help_support_screen.dart';
+import 'package:brew_path/features/profile/presentation/settings/purchases_screen.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_destinations.dart';
 import 'package:brew_path/features/profile/presentation/settings_screen.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
