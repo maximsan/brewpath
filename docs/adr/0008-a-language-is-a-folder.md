@@ -29,7 +29,11 @@ stay English in every language — [ADR-0019](0019-the-card-art-keeps-its-englis
 Nothing else is exempt.
 
 Adding a language is adding a folder — no code change, no prototype change.
-An English fix marks the sibling entries stale by id (mechanism decided on
-the map). Interface strings move from the constants class into translation
-files when the build starts. Revisit only if a target language needs
+An English fix marks the sibling entries stale by id, and
+[ADR-0026](0026-a-stale-translation-stays-until-it-is-retranslated.md) rules
+what the reader sees meanwhile; [ADR-0024](0024-a-language-ships-with-term-matching-search-and-voice-may-lag.md)
+names what else a language must bring, and
+[ADR-0025](0025-translations-are-drafted-by-tool-reviewed-in-the-repo-approved-per-entry.md)
+the step that makes one. Interface strings move from the constants class into
+translation files as the surfaces they belong to are touched. Revisit only if a target language needs
 right-to-left script, which none of the named ones does.

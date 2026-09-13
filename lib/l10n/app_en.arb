@@ -1,0 +1,23 @@
+{
+  "@@locale": "en",
+
+  "nameTitle": "And you are…?",
+  "@nameTitle": {
+    "description": "Heading of the onboarding step that asks for a first name."
+  },
+
+  "nameSupport": "Just a first name — it’s how Roasty greets you.",
+  "@nameSupport": {
+    "description": "Line under the heading, saying why the app is asking. Roasty is the mascot's name and is not translated."
+  },
+
+  "nameContinue": "Continue",
+  "@nameContinue": {
+    "description": "Button that keeps the entered name and moves on."
+  },
+
+  "nameSkip": "Skip for now",
+  "@nameSkip": {
+    "description": "Button that moves on without a name. Says the question can come back, which Settings makes true."
+  }
+}

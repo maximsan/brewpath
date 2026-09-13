@@ -44,6 +44,17 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The app can be taught a second language without being rewritten.** A
+  language is now a folder laid over the English master, entry by entry and
+  field by field: what it translates wins, what it leaves out stays English,
+  and a bank it fails to carry is refused at load rather than shown half
+  translated. Interface strings have moved to `lib/l10n/app_en.arb`, read as
+  `context.strings`, starting with the onboarding name step. English is still
+  the only language that ships. Three rulings settle the rest — what a
+  language must bring with it (ADR-0024), how one is drafted and approved
+  (ADR-0025), and that a translation outdated by an English fix stays on
+  screen until it is retranslated (ADR-0026).
+
 - **Every sale is celebrated, and it puts you back where the lock was.**
   Buying from the sheet a lock raises used to leave you sitting on the sheet
   with a line of text; it now closes and opens the same welcome the intro's
@@ -288,6 +299,12 @@ You can always edit this file by hand instead — the helpers just save effort.
   which is what makes a third launch safe.
 
 ### Fixed
+
+- **A coffee term is matched as a word in every alphabet, not just the Latin
+  one.** The rule behind the free practice pool counted only `a`–`z` and
+  `0`–`9` as parts of a word, so in an alphabet with none of them every letter
+  read as a word boundary — in Belarusian, *кавамашына* counted as saying
+  *кава*. English is unaffected.
 
 - **Dictionary sources point at the page that backs the claim.** The 11 Sep
   drop re-checked every source link: the SCA links go to Research or to

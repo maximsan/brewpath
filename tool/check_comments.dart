@@ -54,6 +54,7 @@ bool _isHandWritten(String path) =>
     !path.endsWith('.g.dart') &&
     !path.endsWith('.freezed.dart') &&
     !path.contains('test/generated/') &&
+    !path.contains('lib/l10n/generated/') &&
     File(path).existsSync();
 
 bool _isTestFile(String path) =>

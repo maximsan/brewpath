@@ -6,9 +6,9 @@ import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/onboarding/presentation/intro_page.dart';
 import 'package:brew_path/features/onboarding/presentation/name/name_controller.dart';
-import 'package:brew_path/features/onboarding/presentation/name/name_copy.dart';
 import 'package:brew_path/features/onboarding/presentation/onboarding_providers.dart';
 import 'package:brew_path/features/profile/domain/learner_name.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -107,12 +107,12 @@ class _NameScreenState extends ConsumerState<NameScreen> {
               ),
             ),
           ),
-        Text(NameCopy.title, style: AppText.display(mood: mood)),
+        Text(context.strings.nameTitle, style: AppText.display(mood: mood)),
         SizedBox(height: _supportTop),
         ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: introCopyMaxWidth),
           child: Text(
-            NameCopy.support,
+            context.strings.nameSupport,
             style: AppText.body(mood: mood, color: mood.inkMute),
           ),
         ),
@@ -131,12 +131,12 @@ class _NameScreenState extends ConsumerState<NameScreen> {
         ),
         const SizedBox(height: AppSpacing.md),
         PrimaryButton(
-          label: NameCopy.continueLabel,
+          label: context.strings.nameContinue,
           onPressed: _controller.canContinue ? _controller.submit : null,
         ),
         SizedBox(height: _skipGap),
         GhostButton(
-          label: NameCopy.skip,
+          label: context.strings.nameSkip,
           onPressed: _controller.submitting ? null : _controller.skip,
         ),
       ],

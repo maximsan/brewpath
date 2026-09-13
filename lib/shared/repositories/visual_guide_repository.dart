@@ -6,22 +6,17 @@ part 'visual_guide_repository.g.dart';
 
 /// The eight visual guides, loaded off the bundled bank and cached.
 ///
-/// Its own repository rather than another method on `ContentRepository`,
-/// which sits at the method budget the metrics gate enforces — the same
-/// reason the dictionary has one. Loading goes through the same [loadBank]
-/// helper every other bank uses, so nothing about how this content reaches
-/// the app is special.
-///
-/// **Separate from the collectibles accessor on purpose.** "A guide is never
-/// listed beside a collectible" is a rule that only survives if the two lists
-/// never meet in a variable.
+/// Its own repository because `ContentRepository` sits at the method budget
+/// the metrics gate enforces — the same reason the dictionary has one. It is
+/// **separate from the collectibles accessor on purpose**: "a guide is never
+/// listed beside a collectible" only survives if the two never meet.
 class VisualGuideRepository {
   List<VisualGuide>? _guides;
 
   /// Loads and caches every guide, in bank order.
   Future<List<VisualGuide>> getGuides() async {
     _guides ??= await loadBank(
-      'assets/content/generated/visual_guides.json',
+      'visual_guides',
       VisualGuide.fromJson,
     );
     return _guides!;
@@ -30,10 +25,9 @@ class VisualGuideRepository {
   /// The guide covering [subject], or null when the bank carries none.
   ///
   /// **Earned-ness is not consulted here.** A lesson teaching a guide renders
-  /// it *before* the completion that unlocks it, so a lookup that filtered by
-  /// progress would leave the card that teaches roast unable to name the roast
-  /// guide. Whether a learner owns one is the shelf's question, asked where
-  /// the shelf is built.
+  /// it *before* the completion that unlocks it, so filtering by progress
+  /// would leave the card that teaches roast unable to name the roast guide.
+  /// Whether a learner owns one is the shelf's question.
   Future<VisualGuide?> getBySubject(String subject) async {
     final guides = await getGuides();
     return guides.where((guide) => guide.subject == subject).firstOrNull;
