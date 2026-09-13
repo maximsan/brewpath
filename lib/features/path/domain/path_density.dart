@@ -10,7 +10,7 @@ import 'package:brew_path/features/learn/domain/learn_providers.dart';
 ///
 /// The course is one screen, so five modules and thirty-two lessons share it.
 /// Every module the learner can reach carries a caret and answers a tap; only
-/// the one they are in lists its lessons before being asked. ADR-0024, which
+/// the one they are in lists its lessons before being asked. ADR-0028, which
 /// departs from the prototype here on purpose.
 enum PathModuleDensity {
   /// Reachable and unfinished — the module the learner is in. Opens itself,

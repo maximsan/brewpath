@@ -1,4 +1,4 @@
-# ADR-0024: Every module a learner can reach opens and shuts
+# ADR-0028: Every module a learner can reach opens and shuts
 
 - **Status:** accepted
 - **Date:** 2026-09-12
