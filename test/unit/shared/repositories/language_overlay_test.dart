@@ -69,12 +69,19 @@ void main() {
   });
 
   group('bookkeeping never reaches the device', () {
-    test('the approval fingerprint is stripped from the record', () {
+    test('both of the tool’s marks are stripped from the record', () {
       final records = _overlaid([
-        {'id': 'arabica', 'term': 'Arabika', approvedAgainstField: 'abc123'},
+        {
+          'id': 'arabica',
+          'term': 'Arabika',
+          translatedFromField: {'term': 'abc123'},
+          nativeReviewedField: {'term': true},
+        },
       ]);
 
-      expect(records.first.containsKey(approvedAgainstField), isFalse);
+      for (final field in bookkeepingFields) {
+        expect(records.first.containsKey(field), isFalse, reason: field);
+      }
       expect(records.first['term'], 'Arabika');
     });
 
@@ -85,7 +92,21 @@ void main() {
         {
           'id': 'arabica',
           'term': 'Arabika',
-          approvedAgainstField: 'a-digest-nobody-checks',
+          translatedFromField: {'term': 'a-digest-nobody-checks'},
+        },
+      ]);
+
+      expect(records.first['term'], 'Arabika');
+    });
+
+    test('an unreviewed translation is shown like any other', () {
+      // ADR-0025 ships a language on its draft; review follows afterwards, so
+      // "nobody has read this" is not a reason to withhold it.
+      final records = _overlaid([
+        {
+          'id': 'arabica',
+          'term': 'Arabika',
+          nativeReviewedField: <String, bool>{},
         },
       ]);
 

@@ -50,10 +50,12 @@ You can always edit this file by hand instead — the helpers just save effort.
   and a bank it fails to carry is refused at load rather than shown half
   translated. Interface strings have moved to `lib/l10n/app_en.arb`, read as
   `context.strings`, starting with the onboarding name step. English is still
-  the only language that ships. Three rulings settle the rest — what a
-  language must bring with it (ADR-0024), how one is drafted and approved
-  (ADR-0025), and that a translation outdated by an English fix stays on
-  screen until it is retranslated (ADR-0026).
+  the only language that ships, and a test holds the app to offering no
+  language it has only half of. Three rulings settle the rest — what a
+  language must bring with it (ADR-0024), that one ships once complete with
+  native review following after (ADR-0025), and that a translation outdated by
+  an English fix stays on screen until it is retranslated, while text added
+  since reads in English (ADR-0026).
 
 - **Every sale is celebrated, and it puts you back where the lock was.**
   Buying from the sheet a lock raises used to leave you sitting on the sheet

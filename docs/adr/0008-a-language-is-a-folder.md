@@ -19,8 +19,9 @@ language ships as a **folder**: a Flutter translation file for interface
 strings, plus per-language copies of the content banks under the same stable
 ids. The app loads the chosen language's folder and falls back to English per
 entry. A language appears in the app only when its whole folder is translated
-— no mixed-language app. AI drafts the translations; the owner reviews. The
-prototype stays English-only; translation happens after extraction.
+— no mixed-language app. AI drafts the translations, and a reader picks a
+language on their phone or in Settings. The prototype stays English-only;
+translation happens after extraction.
 
 ## Consequences
 
@@ -35,7 +36,9 @@ An English fix marks the sibling entries stale by id, and
 [ADR-0026](0026-a-stale-translation-stays-until-it-is-retranslated.md) rules
 what the reader sees meanwhile; [ADR-0024](0024-a-language-ships-with-term-matching-search-and-voice-may-lag.md)
 names what else a language must bring, and
-[ADR-0025](0025-translations-are-drafted-by-tool-reviewed-in-the-repo-approved-per-entry.md)
-the step that makes one. Interface strings move from the constants class into
-translation files as the surfaces they belong to are touched. Revisit only if a target language needs
+[ADR-0025](0025-a-language-ships-once-complete-and-native-review-follows.md)
+defines *whole*, marks it, and moves review after the ship rather than before
+it — so "the owner reviews" above is the weaker claim it replaced. Interface
+strings move from the constants class into translation files as the surfaces
+they belong to are touched. Revisit only if a target language needs
 right-to-left script, which none of the named ones does.
