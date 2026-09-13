@@ -6,10 +6,10 @@ import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/monetization/config/paywall_config.dart';
 import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
+import 'package:brew_path/features/monetization/domain/owned_term.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/features/monetization/domain/plus_offering_provider.dart';
 import 'package:brew_path/features/monetization/domain/plus_purchase_controller.dart';
-import 'package:brew_path/features/monetization/domain/purchased_term.dart';
 import 'package:brew_path/features/monetization/presentation/plus_gate_sheet.dart';
 import 'package:brew_path/features/monetization/presentation/purchase_outcome_line.dart';
 import 'package:brew_path/services/links/link_provider.dart';
@@ -49,9 +49,14 @@ class _Owned extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Nothing records the term across a restart, so an owner who bought on
-    // another run reads as the one-time purchase — as the celebration does.
-    final term = ref.watch(purchasedTermProvider) ?? PlusTerm.lifetime;
+    // Drawn only once the store has named the plan: a subscriber told they
+    // own a one-time purchase is worse than a beat with nothing here.
+    final owned = ref.watch(ownedTermProvider).asData;
+    if (owned == null) return const SizedBox.shrink();
+
+    // A SKU this build does not know — an old one — reads as bought outright,
+    // which is the reading that offers nothing to cancel.
+    final term = owned.value ?? PlusTerm.lifetime;
     final plan = paywallPlans[term]!;
 
     return Column(

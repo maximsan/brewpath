@@ -27,6 +27,12 @@ abstract class PaymentsService {
   /// One answer for every arm, whatever bought it (#176).
   Future<bool> hasActiveEntitlement();
 
+  /// The term the learner currently holds, or null when they hold none.
+  ///
+  /// Asked of the store rather than remembered, so it stays true after a
+  /// restart, a refund, or a plan changed outside the app.
+  Future<PlusTerm?> activeTerm();
+
   /// Which arm this learner is on, and what it sells them.
   ///
   /// The store assigns it, and must return the same arm to a returning

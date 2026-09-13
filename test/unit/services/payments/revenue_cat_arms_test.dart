@@ -27,4 +27,17 @@ void main() {
     expect(armFor('experiment_47'), MonetizationModel.oneTime);
     expect(armFor(null), MonetizationModel.oneTime);
   });
+
+  test('every term a build sells can be read back off a receipt', () {
+    expect(termsByProductId.values.toSet(), PlusTerm.values.toSet());
+  });
+
+  test('every SKU an arm sells has a term', () {
+    final sold = {
+      for (final model in MonetizationModel.values)
+        ...offeringFor(model).offers.map((offer) => offer.productId),
+    };
+
+    expect(sold.difference(termsByProductId.keys.toSet()), isEmpty);
+  });
 }

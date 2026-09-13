@@ -30,6 +30,10 @@ class SellingPaymentsService implements PaymentsService {
   Future<bool> hasActiveEntitlement() async => _owned;
 
   @override
+  Future<PlusTerm?> activeTerm() async =>
+      _owned ? offeringFor(model).defaultOffer.term : null;
+
+  @override
   Future<PlusOffering> currentOffering() async => offeringFor(model);
 
   @override

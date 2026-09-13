@@ -46,6 +46,15 @@ class RevenueCatPaymentsService implements PaymentsService {
   }
 
   @override
+  Future<PlusTerm?> activeTerm() async {
+    try {
+      return activeTermIn(await rc.Purchases.getCustomerInfo());
+    } on PlatformException {
+      return null;
+    }
+  }
+
+  @override
   Future<PlusOffering> currentOffering() async {
     try {
       final offerings = await rc.Purchases.getOfferings();

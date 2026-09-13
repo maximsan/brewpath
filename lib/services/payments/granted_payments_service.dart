@@ -18,6 +18,10 @@ class GrantedPaymentsService implements PaymentsService {
   @override
   Future<bool> hasActiveEntitlement() async => true;
 
+  /// The arm's own default — what a learner on it would most likely hold.
+  @override
+  Future<PlusTerm?> activeTerm() async => offeringFor(model).defaultOffer.term;
+
   @override
   Future<PlusOffering> currentOffering() async => offeringFor(model);
 

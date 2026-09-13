@@ -53,7 +53,9 @@ You can always edit this file by hand instead — the helpers just save effort.
 - **Settings → Purchases is a real screen.** It says what you own and how it
   is billed, or — if you don't own the course yet — what this paywall sells,
   a way to buy it, and Restore purchases. A renewing plan gets a link out to
-  Apple's own subscriptions page, the only place a plan can be changed.
+  Apple's own subscriptions page, the only place a plan can be changed. Which
+  plan you hold is asked of the store rather than remembered, so it is still
+  right after a restart, a refund, or a change made outside the app.
 
 - **Every sale is celebrated, and it puts you back where the lock was.**
   Buying from the sheet a lock raises used to leave you sitting on the sheet

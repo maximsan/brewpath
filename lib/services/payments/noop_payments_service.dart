@@ -15,6 +15,9 @@ class NoOpPaymentsService implements PaymentsService {
   Future<bool> hasActiveEntitlement() async => false;
 
   @override
+  Future<PlusTerm?> activeTerm() async => null;
+
+  @override
   Future<PlusOffering> currentOffering() async => offeringFor(model);
 
   @override

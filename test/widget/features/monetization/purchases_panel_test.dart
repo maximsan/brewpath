@@ -1,9 +1,11 @@
+import 'dart:async';
+
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/monetization/config/paywall_config.dart';
 import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
+import 'package:brew_path/features/monetization/domain/owned_term.dart';
 import 'package:brew_path/features/monetization/domain/plus_offering_provider.dart';
-import 'package:brew_path/features/monetization/domain/purchased_term.dart';
 import 'package:brew_path/features/monetization/presentation/purchases_panel.dart';
 import 'package:brew_path/shared/models/monetization/plus_offering.dart';
 import 'package:flutter/material.dart';
@@ -27,12 +29,10 @@ void main() {
       overrides: [
         courseEntitlementProvider.overrideWith((ref) async => owned),
         plusOfferingProvider.overrideWith((ref) async => offeringFor(model)),
+        ownedTermProvider.overrideWith((ref) async => term),
       ],
     );
     addTearDown(container.dispose);
-    if (term != null) {
-      container.read(purchasedTermProvider.notifier).term = term;
-    }
 
     await tester.pumpWidget(
       UncontrolledProviderScope(
@@ -93,5 +93,42 @@ void main() {
     await pump(tester, owned: true, term: PlusTerm.lifetime);
 
     expect(find.text(PaywallCopy.manageSubscription), findsNothing);
+  });
+
+  testWidgets('the plan comes from the store, not from this session', (
+    tester,
+  ) async {
+    // A subscriber who restarts bought nothing this run. Reading the session
+    // record would call them a one-time buyer and hide their way to cancel.
+    await pump(tester, owned: true, term: PlusTerm.monthly);
+
+    final plan = paywallPlans[PlusTerm.monthly]!;
+    expect(find.text(plan.ownedChip.toUpperCase()), findsOneWidget);
+    expect(find.text(PaywallCopy.manageSubscription), findsOneWidget);
+  });
+
+  testWidgets('nothing is claimed while the store is still answering', (
+    tester,
+  ) async {
+    final container = ProviderContainer(
+      overrides: [
+        courseEntitlementProvider.overrideWith((ref) async => true),
+        ownedTermProvider.overrideWith((ref) => Completer<PlusTerm?>().future),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp(
+          theme: AppTheme.cupping,
+          home: const Scaffold(body: PurchasesPanel()),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text(paywallPlans[PlusTerm.lifetime]!.ownedChip), findsNothing);
   });
 }

@@ -27,9 +27,24 @@ const Map<String, MonetizationModel> offeringArms = {
 MonetizationModel armFor(String? offeringId) =>
     offeringArms[offeringId] ?? MonetizationModel.oneTime;
 
+/// Which term each SKU grants — the reverse of what an arm sells.
+const Map<String, PlusTerm> termsByProductId = {
+  plusLifetimeProductId: PlusTerm.lifetime,
+  plusMonthlyProductId: PlusTerm.monthly,
+  plusYearlyProductId: PlusTerm.yearly,
+};
+
 /// Whether [info] carries the course.
 bool isEntitled(rc.CustomerInfo info) =>
     info.entitlements.active.containsKey(foundationsEntitlementId);
+
+/// The term [info] currently grants, or null when it grants none this app
+/// knows — an old SKU, or nothing at all.
+PlusTerm? activeTermIn(rc.CustomerInfo info) =>
+    termsByProductId[info
+        .entitlements
+        .active[foundationsEntitlementId]
+        ?.productIdentifier];
 
 /// RevenueCat's product as the paywall's own.
 StoreProduct asStoreProduct(rc.StoreProduct product) => StoreProduct(

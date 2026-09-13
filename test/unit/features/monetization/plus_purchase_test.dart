@@ -54,6 +54,9 @@ class _RecordingPayments implements PaymentsService {
   Future<bool> hasActiveEntitlement() async => granted;
 
   @override
+  Future<PlusTerm?> activeTerm() async => granted ? PlusTerm.lifetime : null;
+
+  @override
   Future<PlusOffering> currentOffering() async {
     if (offeringThrows) throw UnimplementedError('no SKUs registered');
     return offering ?? offeringFor(MonetizationModel.oneTime);

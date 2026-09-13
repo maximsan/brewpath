@@ -14,6 +14,7 @@ void main() {
   /// being created.
   const monetizationLayer = <String>{
     'lib/features/monetization/domain/course_entitlement.dart',
+    'lib/features/monetization/domain/owned_term.dart',
     'lib/features/monetization/domain/paywall_view.dart',
     'lib/features/monetization/domain/paywall_view_provider.dart',
     'lib/features/monetization/domain/plus_offering_provider.dart',
@@ -27,6 +28,7 @@ void main() {
     'lib/features/monetization/config/paywall_config.dart',
     'lib/features/monetization/config/paywall_copy.dart',
     'lib/features/monetization/domain/foundations_faq_tail.dart',
+    'lib/features/monetization/domain/owned_term.dart',
     'lib/features/monetization/domain/paywall_view.dart',
     'lib/features/monetization/domain/paywall_view_provider.dart',
     'lib/features/monetization/domain/plus_offering_provider.dart',
