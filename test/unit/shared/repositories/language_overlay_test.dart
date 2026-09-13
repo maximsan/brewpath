@@ -113,4 +113,116 @@ void main() {
       expect(records.first['term'], 'Arabika');
     });
   });
+
+  group('the fallback reaches the text inside an entry', () {
+    List<Map<String, dynamic>> overlaidHelp(Map<String, dynamic> translated) =>
+        overlayTranslations(
+          master: [
+            {
+              'id': 'mcq',
+              'title': 'Multiple choice',
+              'steps': [
+                'Read the question',
+                'Tap the answer you think is right',
+                'See the explanation, then continue',
+              ],
+              'reward': {'kind': 'card', 'caption': 'A card you keep'},
+            },
+          ],
+          translated: [translated],
+          assetPath: 'assets/content/l10n/pl/card_kind_help.json',
+        );
+
+    test('a step the folder translates replaces only that step', () {
+      final records = overlaidHelp({
+        'id': 'mcq',
+        'steps': [
+          'Przeczytaj pytanie',
+          'Tap the answer you think is right',
+          'See the explanation, then continue',
+        ],
+      });
+
+      expect((records.first['steps']! as List).first, 'Przeczytaj pytanie');
+      expect((records.first['steps']! as List).length, 3);
+    });
+
+    test('a field inside a group the folder omits stays English', () {
+      final records = overlaidHelp({
+        'id': 'mcq',
+        'reward': {'caption': 'Karta, którą zachowasz'},
+      });
+
+      final reward = records.first['reward']! as Map<String, dynamic>;
+      expect(reward['caption'], 'Karta, którą zachowasz');
+      expect(reward['kind'], 'card');
+    });
+
+    test('a list with fewer items than the master is refused', () {
+      expect(
+        () => overlaidHelp({
+          'id': 'mcq',
+          'steps': ['Przeczytaj pytanie'],
+        }),
+        throwsA(
+          isA<ContentFormatException>().having(
+            (it) => it.message,
+            'message',
+            allOf(contains('lists 1'), contains('3')),
+          ),
+        ),
+      );
+    });
+
+    test('a field the master has no slot for is refused', () {
+      expect(
+        () => overlaidHelp({'id': 'mcq', 'titel': 'Wielokrotny wybór'}),
+        throwsA(
+          isA<ContentFormatException>().having(
+            (it) => it.message,
+            'message',
+            contains('titel'),
+          ),
+        ),
+      );
+    });
+
+    test('text where the master keeps a list is refused', () {
+      expect(
+        () => overlaidHelp({'id': 'mcq', 'steps': 'Przeczytaj pytanie'}),
+        throwsA(isA<ContentFormatException>()),
+      );
+    });
+
+    test('a mark inside a group never reaches the record', () {
+      final records = overlaidHelp({
+        'id': 'mcq',
+        'reward': {
+          'caption': 'Karta, którą zachowasz',
+          translatedFromField: {'caption': 'abc123'},
+        },
+      });
+
+      final reward = records.first['reward']! as Map<String, dynamic>;
+      expect(reward.containsKey(translatedFromField), isFalse);
+    });
+  });
+
+  group('a folder cannot say two things about one entry', () {
+    test('the same id translated twice is refused', () {
+      expect(
+        () => _overlaid([
+          {'id': 'arabica', 'term': 'Pierwsza'},
+          {'id': 'arabica', 'term': 'Druga'},
+        ]),
+        throwsA(
+          isA<ContentFormatException>().having(
+            (it) => it.message,
+            'message',
+            contains('arabica'),
+          ),
+        ),
+      );
+    });
+  });
 }
