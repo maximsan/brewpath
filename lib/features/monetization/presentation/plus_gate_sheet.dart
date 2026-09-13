@@ -27,9 +27,9 @@ import 'package:go_router/go_router.dart';
 /// The one sheet every lock raises.
 ///
 /// Opens with **what was just hit** — the trigger's own header — then the
-/// ranked bullets, then one action: ADR-0003 sells a single non-consumable, so
-/// no trial and no plan chooser, and **no ad path** (v1 ships no ads). *Not
-/// now* writes nothing; a sale lands on the welcome, which comes back here.
+/// ranked bullets, then the arm's own action: no trial on any arm (ADR-0024)
+/// and **no ad path** (v1 ships no ads). *Not now* writes nothing; a sale
+/// lands on the welcome, which comes back here.
 Future<void> showPlusGate(BuildContext context, PlusGateTrigger trigger) {
   // Held rather than looked up again on the way out: closing the sheet leaves
   // its own context behind. Absent only where a single screen is pumped on its

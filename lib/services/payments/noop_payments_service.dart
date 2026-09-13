@@ -15,6 +15,9 @@ class NoOpPaymentsService implements PaymentsService {
   Future<bool> hasActiveEntitlement() async => false;
 
   @override
+  Future<PlusTerm?> activeTerm() async => null;
+
+  @override
   Future<PlusOffering> currentOffering() async => offeringFor(model);
 
   @override
@@ -28,7 +31,7 @@ class NoOpPaymentsService implements PaymentsService {
   Future<void> restorePurchases() async {}
 
   @override
-  Stream<PurchaseStatus> get purchaseUpdates => const Stream.empty();
+  Stream<bool> get entitlementChanges => const Stream.empty();
 
   @override
   void dispose() {}

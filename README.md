@@ -101,15 +101,16 @@ release builds are unaffected.
 | `LOOP_LOADING`  | Loops the Roasty wake-up forever; disables auto-advance + tap-skip | `flutter run -d "iPhone 17" --dart-define=LOOP_LOADING=true`  |
 | `GRANT_COURSE`  | Hands the learner the course entitlement, so the paid lessons open | `flutter run -d "iPhone 17" --dart-define=GRANT_COURSE=true`  |
 | `MONETIZATION_MODEL` | Puts the development store on one experiment arm — `subscription` or `hybrid` — so its paywall can be driven; unpriced, since no store has those SKUs | `flutter run -d "iPhone 17" --dart-define=MONETIZATION_MODEL=hybrid` |
+| `REVENUECAT_KEY` | The RevenueCat public SDK key. With one the app talks to the real store; without one it cannot take money at all | `flutter run -d "iPhone 17" --dart-define=REVENUECAT_KEY=appl_…` |
 
 > With **Reduce Motion** enabled, `LOOP_LOADING` holds a static "brewing" frame
 > instead of animating the loop.
 
-> `GRANT_COURSE` is the only way past the course wall until the store is real
-> (#421): the shipped payments stub reports no entitlement, so an ordinary
+> `GRANT_COURSE` is the way past the course wall in a build with no
+> `REVENUECAT_KEY`: the payments stub reports no entitlement, so an ordinary
 > build can open the first three lessons and nothing else. It swaps the stub
 > for `GrantedPaymentsService`, which grants the entitlement and touches no
-> store.
+> store, and it wins over a key when both are passed.
 
 ## Versioning
 

@@ -18,6 +18,10 @@ class GrantedPaymentsService implements PaymentsService {
   @override
   Future<bool> hasActiveEntitlement() async => true;
 
+  /// The arm's own default — what a learner on it would most likely hold.
+  @override
+  Future<PlusTerm?> activeTerm() async => offeringFor(model).defaultOffer.term;
+
   @override
   Future<PlusOffering> currentOffering() async => offeringFor(model);
 
@@ -32,7 +36,7 @@ class GrantedPaymentsService implements PaymentsService {
   Future<void> restorePurchases() async {}
 
   @override
-  Stream<PurchaseStatus> get purchaseUpdates => const Stream.empty();
+  Stream<bool> get entitlementChanges => const Stream.empty();
 
   @override
   void dispose() {}

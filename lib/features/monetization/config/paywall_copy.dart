@@ -28,6 +28,12 @@ abstract final class PaywallCopy {
   /// Recovering a purchase made elsewhere — the paywall's link and the gate's.
   static const restore = 'Restore purchases';
 
+  /// Purchases' row into the offer.
+  static const unlock = 'Unlock Foundations';
+
+  /// Purchases' row out to Apple, where a plan is changed or stopped.
+  static const manageSubscription = 'Manage subscription';
+
   /// The same link while the store is looking.
   static const restoring = 'Restoring…';
 

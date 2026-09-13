@@ -14,6 +14,7 @@ void main() {
   /// being created.
   const monetizationLayer = <String>{
     'lib/features/monetization/domain/course_entitlement.dart',
+    'lib/features/monetization/domain/owned_term.dart',
     'lib/features/monetization/domain/paywall_view.dart',
     'lib/features/monetization/domain/paywall_view_provider.dart',
     'lib/features/monetization/domain/plus_offering_provider.dart',
@@ -27,6 +28,7 @@ void main() {
     'lib/features/monetization/config/paywall_config.dart',
     'lib/features/monetization/config/paywall_copy.dart',
     'lib/features/monetization/domain/foundations_faq_tail.dart',
+    'lib/features/monetization/domain/owned_term.dart',
     'lib/features/monetization/domain/paywall_view.dart',
     'lib/features/monetization/domain/paywall_view_provider.dart',
     'lib/features/monetization/domain/plus_offering_provider.dart',
@@ -36,6 +38,7 @@ void main() {
     'lib/features/monetization/presentation/plan_picker.dart',
     'lib/features/monetization/presentation/plus_gate_sheet.dart',
     'lib/features/monetization/presentation/purchase_welcome_route.dart',
+    'lib/features/monetization/presentation/purchases_panel.dart',
   };
 
   test('only the monetization layer imports the payments service', () {

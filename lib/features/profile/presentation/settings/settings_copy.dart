@@ -125,10 +125,6 @@ abstract final class SettingsCopy {
   static const cloudSyncComing =
       'Signing in, and keeping your progress on more than one device.';
 
-  /// What the unbuilt half of Purchases will hold.
-  static const purchasesComing =
-      'What Foundations includes, and restoring a purchase you already made.';
-
   /// What the unbuilt half of About will hold.
   static const aboutComing =
       'Privacy policy, terms, acknowledgements and the open-source licenses.';

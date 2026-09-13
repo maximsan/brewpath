@@ -1,243 +1,103 @@
 # BrewPath — Payments
 
-## Policy
+## What v1 sells
 
-There is **no real purchase flow in MVP** — the payments layer is a placeholder so monetization can be added later without architectural changes. (The *product* model is decided — a content-gated **BrewPath Plus** tier sold as a single one-time purchase, `docs/decisions.md` §7/§11, [ADR-0003](adr/0003-one-time-purchase-no-trial.md) — this doc covers only the deferred StoreKit implementation.)
+Foundations, through **three arms of a pricing experiment** — one-time,
+subscription, and hybrid ([ADR-0024](adr/0024-v1-ships-all-three-pricing-arms-and-revenuecat-decides-who-sees-which.md),
+which supersedes ADR-0003). The build ships able to sell all three and
+registers all three products; which arms are live, and who is split onto
+which, is a RevenueCat setting rather than a release.
 
-The abstraction is established now so that:
+No arm carries a trial. The free lessons are the trial.
 
-- The codebase has a clear home for payment logic
-- No feature code ever calls StoreKit directly
-- The paywall UI can be dropped into the existing slot when ready
+## How it is wired
 
----
+Three concerns stay separated, and that separation is the whole design
+([#176](https://github.com/maximsan/brewpath/issues/176)):
 
-## PaymentsService Interface
+| Concern | Where it lives |
+| --- | --- |
+| What the learner owns | `courseEntitlement` — the one monetization concept feature code reads |
+| Buying, and which arm they are on | `PaymentsService` and its implementations, in `lib/services/payments/` |
+| What the paywall says | `lib/features/monetization/` |
 
-```dart
-// lib/services/payments/payments_service.dart
+The interface is the source; this doc does not restate it. Four
+implementations of `PaymentsService`:
 
-enum PurchaseStatus { purchased, pending, restored, cancelled, error }
+- `NoOpPaymentsService` — owns nothing, cancels every purchase. Active until
+  the store lands.
+- `GrantedPaymentsService` — owns everything. Development only, behind
+  `--dart-define=GRANT_COURSE=true`.
+- `RevenueCatPaymentsService` — the real one. **Not written yet**
+  ([#421](https://github.com/maximsan/brewpath/issues/421)).
+- `InAppPurchaseService` — an abandoned stub from when v1 was going to talk to
+  StoreKit directly. Delete it when the RevenueCat one lands.
 
-abstract class PaymentsService {
-  /// Returns true if the user currently has an active entitlement.
-  Future<bool> hasActiveEntitlement();
+`paymentsProvider` picks one. Nothing outside `lib/services/payments/` names a
+store SDK.
 
-  /// Returns which experiment arm this learner is on, and what it sells.
-  Future<PlusOffering> currentOffering();
+## Products
 
-  /// Returns available products from the store.
-  Future<List<StoreProduct>> getProducts(List<String> productIds);
+| What | Id | Type |
+| --- | --- | --- |
+| Buy Foundations once | `dev.maximsan.brewPath.plus` | Non-consumable |
+| Monthly | `dev.maximsan.brewPath.plus.monthly` | Auto-renewable |
+| Yearly | `dev.maximsan.brewPath.plus.yearly` | Auto-renewable |
 
-  /// Initiates a purchase for the given product.
-  Future<PurchaseStatus> purchase(StoreProduct product);
+The ids and the arm-to-SKU map live in
+`lib/shared/models/monetization/plus_offering.dart` — `offeringFor(model)` is
+the whole of "which SKUs does this arm sell".
 
-  /// Restores previous purchases.
-  Future<void> restorePurchases();
+**All three are registered in one submission**, even if only one sells at
+first. Apple takes the first in-app purchase *of each type* only in a
+submission carrying an app version, and an auto-renewable subscription is a
+different type from a non-consumable — so leaving the subscription group until
+later costs another release rather than a dashboard change
+([Submit an In-App Purchase](https://developer.apple.com/help/app-store-connect/manage-submissions-to-app-review/submit-an-in-app-purchase/)).
 
-  /// Stream of purchase status updates.
-  Stream<PurchaseStatus> get purchaseUpdates;
+## Going live checklist
 
-  /// Dispose listeners when done.
-  void dispose();
-}
-```
+**Owner's, in App Store Connect and RevenueCat:**
 
----
+- [ ] Create the RevenueCat account and link it to App Store Connect (needs an
+      App Store Connect API key)
+- [ ] Register the non-consumable, and a subscription group holding the monthly
+      and the yearly; price all three
+- [ ] Mirror the three as RevenueCat entitlements and offerings — one offering
+      per arm
+- [ ] Create a sandbox tester account
 
-## StoreProduct Model
+**Code:**
 
-```dart
-// lib/services/payments/store_product.dart
-class StoreProduct {
-  const StoreProduct({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.price,
-    required this.currencyCode,
-  });
+- [ ] Enable the In-App Purchase capability — Xcode → Runner → Signing &
+      Capabilities. `ios/Runner/Runner.entitlements` carries only
+      associated-domains today
+- [ ] Add `purchases_flutter`, and write `RevenueCatPaymentsService`
+- [ ] Return a real `currentOffering()` from RevenueCat's offerings. It must be
+      **stable per learner** — an arm that changes between sessions is not an
+      experiment
+- [ ] Make entitlement expirable. `courseEntitlement` answers once and stays
+      answered, which a subscription that lapses, is refunded or fails to renew
+      makes wrong. Every gate reads it, so this is the careful part
+- [ ] Answer an entitlement check with no network, from the last cached answer
+- [ ] Show the store's own price on the paywall and the gate sheet. Both carry
+      `{price}` placeholders today and nothing fills them
+- [ ] Add the Profile entry into the paywall, and a link out to Apple's
+      manage-subscriptions screen
+- [ ] Sandbox-test each arm: buy, restore on a fresh install, cancel, and let a
+      subscription lapse
+- [ ] Handle the edges: purchase interrupted, store unavailable, already
+      purchased
 
-  final String id;
-  final String title;
-  final String description;
-  final String price;           // formatted string, e.g., "$2.99"
-  final String currencyCode;    // e.g., "USD"
-}
-```
+**Before submission:**
 
----
-
-## No-Op Implementation (MVP Active)
-
-```dart
-// lib/services/payments/noop_payments_service.dart
-
-import 'package:brew_path/services/payments/payments_service.dart';
-import 'package:brew_path/services/payments/store_product.dart';
-
-class NoOpPaymentsService implements PaymentsService {
-  @override
-  Future<bool> hasActiveEntitlement() async => false;
-
-  @override
-  Future<List<StoreProduct>> getProducts(List<String> productIds) async => [];
-
-  @override
-  Future<PurchaseStatus> purchase(StoreProduct product) async =>
-      PurchaseStatus.cancelled;
-
-  @override
-  Future<void> restorePurchases() async {}
-
-  @override
-  Stream<PurchaseStatus> get purchaseUpdates => const Stream.empty();
-
-  @override
-  void dispose() {}
-}
-```
-
----
-
-## in_app_purchase Implementation Stub
-
-```dart
-// lib/services/payments/in_app_purchase_service.dart
-// TODO: Implement using the in_app_purchase package when payments go live.
-//
-// Key implementation steps (for future reference):
-// 1. Call InAppPurchase.instance.isAvailable() on init
-// 2. Listen to InAppPurchase.instance.purchaseStream
-// 3. Call InAppPurchase.instance.queryProductDetails(productIds)
-// 4. Call InAppPurchase.instance.buyNonConsumable()
-// 5. Deliver entitlement after PurchaseStatus.purchased + verifyPurchase()
-//
-// See: https://pub.dev/packages/in_app_purchase
-
-import 'package:brew_path/services/payments/payments_service.dart';
-import 'package:brew_path/services/payments/store_product.dart';
-
-class InAppPurchaseService implements PaymentsService {
-  @override
-  Future<bool> hasActiveEntitlement() {
-    throw UnimplementedError('Implement when payments go live');
-  }
-
-  @override
-  Future<List<StoreProduct>> getProducts(List<String> productIds) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<PurchaseStatus> purchase(StoreProduct product) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> restorePurchases() {
-    throw UnimplementedError();
-  }
-
-  @override
-  Stream<PurchaseStatus> get purchaseUpdates => throw UnimplementedError();
-
-  @override
-  void dispose() {}
-}
-```
-
----
-
-## Riverpod Provider
-
-```dart
-// lib/services/payments/payments_provider.dart
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:brew_path/services/payments/payments_service.dart';
-import 'package:brew_path/services/payments/noop_payments_service.dart';
-
-part 'payments_provider.g.dart';
-
-@riverpod
-PaymentsService paymentsService(Ref ref) => NoOpPaymentsService();
-// Swap to InAppPurchaseService() when payments go live
-```
-
----
-
-## Product IDs Convention
-
-| Product Type                | ID Convention                |
-| --------------------------- | ---------------------------- |
-| One-time purchase (Plus)    | `dev.maximsan.brewPath.plus` |
-
-v1 sells a **single non-consumable** unlocking Plus — no trial, no
-subscription SKUs
-([ADR-0003](adr/0003-one-time-purchase-no-trial.md)). This is the *baseline*
-of a planned post-launch experiment (one-time vs subscription vs hybrid), so
-entitlement, acquisition and paywall UI stay separated
-([#176](https://github.com/maximsan/brewpath/issues/176)).
-
-The IDs and the arm-to-SKU map live in
-`lib/shared/models/monetization/plus_offering.dart` — `offeringFor(model)` is the whole
-of "which SKUs does this arm sell", which is what makes switching models a
-config change.
-
-**Only the one-time SKU is registered.** The subscription and hybrid arms
-name `…plus.monthly` and `…plus.yearly` as placeholders so their paywalls can
-be driven (`--dart-define=MONETIZATION_MODEL=<arm>`, README _Run-time flags_),
-but nothing in App Store Connect answers to them: their rows draw unpriced,
-and an unpriced row cannot be bought. Registering them, and the prices, is
-#421's.
-
----
-
-## Future Implementation Checklist
-
-When payments are ready to go live:
-
-- [ ] Register products in App Store Connect → In-App Purchases
-- [ ] Enable In-App Purchase capability in Xcode → Runner target → Signing & Capabilities
-- [ ] Replace `NoOpPaymentsService` with `InAppPurchaseService` in `payments_provider.dart`
-- [ ] Implement `InAppPurchaseService` with StoreKit 2 integration via `in_app_purchase` package — `buyNonConsumable` only:
-  `InAppPurchase.instance.isAvailable()` on init, listen to `purchaseStream`,
-  `queryProductDetails(productIds)`, `buyNonConsumable()`, then deliver the
-  entitlement after `PurchaseStatus.purchased` + `verifyPurchase()`
-- [ ] Return a real `currentOffering()` — RevenueCat's Offerings if the experiment
-  uses it, otherwise the baseline arm; it must be stable per learner
-- [ ] Implement client-side receipt validation (server-side only if the monetization experiment brings subscriptions back)
-- [x] Gate Plus content on the entitlement — every gate reads `courseEntitlementProvider`, and the router's redirect is the backstop (#176)
-- [x] The paywall screen — `lib/features/monetization/presentation/paywall_screen.dart`, the intro's last step and every gate's offer (#242)
-- [x] Restore Purchases — on the paywall and the gate sheet; the Profile entry is #421
-- [ ] Test in sandbox environment with a sandbox Apple ID
-- [ ] Handle edge cases: purchase interrupted, StoreKit unavailable, already purchased
-
-**RevenueCat** (`purchases_flutter`) is the likely vehicle for the post-launch
-monetization experiment ([#176](https://github.com/maximsan/brewpath/issues/176)
-— model switching, paywall metrics). Don't introduce it for v1's single
-non-consumable; the decision belongs to the experiment.
-
----
-
-## Folder Structure
-
-```
-lib/services/payments/
-├── payments_service.dart           # Abstract interface
-├── store_product.dart              # Product model
-├── noop_payments_service.dart      # MVP active implementation (no-op)
-├── in_app_purchase_service.dart    # Future implementation stub
-└── payments_provider.dart          # Riverpod provider
-
-lib/shared/models/monetization/
-└── plus_offering.dart              # Arms, SKUs, and the arm-to-SKU map
-```
-
----
+- [ ] Privacy policy and App Store privacy labels say that purchase data
+      reaches RevenueCat
+- [ ] On the two subscription arms, the price, the period and what renews are
+      on screen at the buy button
 
 ## Status
 
-All scaffolding above exists in `lib/services/payments/` with
-`NoOpPaymentsService` active. Remaining work is the Future Implementation
-Checklist, done when real StoreKit integration lands.
+Scaffolding and all three paywalls exist and are driven by the no-op store.
+Nothing can take money yet. The remaining work is the checklist above, owned by
+[#421](https://github.com/maximsan/brewpath/issues/421).
