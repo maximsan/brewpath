@@ -16,14 +16,15 @@ which has the argument.
 
 ## Decision
 
-**Every module a learner can reach carries a caret and answers a tap.** Only
-the module still being worked through lists its lessons before it is asked to.
+**Every module a learner can reach folds away on a tap of its caret** — the one
+they are working through included. Whether it *starts* open is a separate
+question, and only that module does.
 
-| Density | Caret | On arrival |
-|---|---|---|
-| `active` — reachable, unfinished | yes | open |
-| `complete` — every lesson done | yes | shut |
-| `locked` — not yet reached | no | shut, and has no lessons to draw |
+| Density | Caret | Folds away on a tap | On arrival |
+|---|---|---|---|
+| `active` — reachable, unfinished | yes | yes | open |
+| `complete` — every lesson done | yes | yes | shut |
+| `locked` — not yet reached | no | no, nothing to fold | shut |
 
 A locked module keeps neither caret nor lesson list: there is nothing behind it
 to open, so a caret would be a control over nothing.
