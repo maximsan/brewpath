@@ -129,4 +129,48 @@ void main() {
       );
     });
   });
+
+  group('a refusal names the file to open', () {
+    test('a record the folder broke names the folder too', () async {
+      await expectLater(
+        () => loadBank(
+          _bank,
+          (record) => record['missing']! as String,
+          language: _polish,
+          bundle: _bundle(
+            polish: [
+              {'id': 'arabica', 'term': 'Arabika'},
+            ],
+          ),
+        ),
+        throwsA(
+          isA<ContentFormatException>().having(
+            (it) => it.message,
+            'message',
+            contains('assets/content/l10n/pl/$_bank.json'),
+          ),
+        ),
+      );
+    });
+
+    test('with no folder over it a refusal names the master alone', () async {
+      await expectLater(
+        () => loadBank(
+          _bank,
+          (record) => record['missing']! as String,
+          bundle: _bundle(),
+        ),
+        throwsA(
+          isA<ContentFormatException>().having(
+            (it) => it.message,
+            'message',
+            allOf(
+              contains('assets/content/generated/$_bank.json'),
+              isNot(contains('l10n')),
+            ),
+          ),
+        ),
+      );
+    });
+  });
 }
