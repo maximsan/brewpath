@@ -112,6 +112,38 @@ void main() {
     });
   });
 
+  group('a word boundary is a boundary in every script', () {
+    // ADR-0025: term matching ships with the language, so the pool a
+    // translated course offers is the pool its lessons actually mention.
+    test('a Cyrillic term buried in a longer word is not a mention', () {
+      expect(
+        _mentions('Кавамашына стаіць на стале.', [_term('k', 'кава')]),
+        isEmpty,
+      );
+    });
+
+    test('a Cyrillic term said plainly is a mention', () {
+      expect(
+        _mentions('Гэта эспрэса сёння.', [_term('e', 'эспрэса')]),
+        contains('e'),
+      );
+    });
+
+    test('a Polish suffix bounds the word it is attached to', () {
+      expect(
+        _mentions('Kilka ekspresów w kawiarni.', [_term('x', 'ekspres')]),
+        isEmpty,
+      );
+    });
+
+    test('a Polish term said plainly is a mention', () {
+      expect(
+        _mentions('Kup nowy ekspres, proszę.', [_term('x', 'ekspres')]),
+        contains('x'),
+      );
+    });
+  });
+
   group('only what a learner can read counts', () {
     test('copy a card renders is searched', () {
       final lesson = _lesson([

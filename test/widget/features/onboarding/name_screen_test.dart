@@ -4,9 +4,10 @@ import 'package:brew_path/core/widgets/ghost_button.dart';
 import 'package:brew_path/core/widgets/link_button.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
-import 'package:brew_path/features/onboarding/presentation/name/name_copy.dart';
 import 'package:brew_path/features/onboarding/presentation/name/name_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/onboarding_providers.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,6 +15,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../support/fake_onboarding_repository.dart';
+
+// The strings the screen renders, read from the same English .arb the app
+// resolves to, so a reworded line moves the test with it.
+final _strings = AppLocalizationsEn();
 
 // The last onboarding step, and since ADR-0010 cut the goal and brewer
 // questions, the only one v1 asks at all — and it is optional.
@@ -44,7 +49,11 @@ void main() {
       ProviderScope(
         // ignore: scoped_providers_should_specify_dependencies — test-only root override
         overrides: [onboardingRepositoryProvider.overrideWithValue(fake)],
-        child: MaterialApp.router(routerConfig: router),
+        child: MaterialApp.router(
+          routerConfig: router,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
       ),
     );
     await tester.pump();
@@ -73,8 +82,8 @@ void main() {
   testWidgets('asks the design question, not a step number', (tester) async {
     await pump(tester);
 
-    expect(find.text(NameCopy.title), findsOneWidget);
-    expect(find.text(NameCopy.support), findsOneWidget);
+    expect(find.text(_strings.nameTitle), findsOneWidget);
+    expect(find.text(_strings.nameSupport), findsOneWidget);
     // The flow is no longer three steps, and the design counts none of them.
     expect(find.textContaining('OF 3'), findsNothing);
     expect(find.textContaining('ONBOARDING'), findsNothing);
@@ -107,7 +116,7 @@ void main() {
 
     await tester.enterText(find.byType(AppTextField), '  Maya  ');
     await tester.pump();
-    await tapAction(tester, NameCopy.continueLabel);
+    await tapAction(tester, _strings.nameContinue);
 
     expect(find.text('stub-paywall'), findsOneWidget);
     expect(draftName(tester), 'Maya');
@@ -121,7 +130,7 @@ void main() {
   testWidgets('skipping hands over to the offer too', (tester) async {
     await pump(tester);
 
-    await tapAction(tester, NameCopy.skip);
+    await tapAction(tester, _strings.nameSkip);
 
     expect(find.text('stub-paywall'), findsOneWidget);
     expect(fake.completeCalls, isEmpty);
@@ -166,8 +175,8 @@ void main() {
     );
     for (final target in [
       find.byType(AppTextField),
-      find.widgetWithText(PrimaryButton, NameCopy.continueLabel),
-      find.widgetWithText(GhostButton, NameCopy.skip),
+      find.widgetWithText(PrimaryButton, _strings.nameContinue),
+      find.widgetWithText(GhostButton, _strings.nameSkip),
     ]) {
       expect(target.hitTestable(), findsOneWidget);
     }
@@ -182,7 +191,7 @@ void main() {
 
     expect(find.byType(Roasty), findsOneWidget);
     expect(
-      find.widgetWithText(PrimaryButton, NameCopy.continueLabel).hitTestable(),
+      find.widgetWithText(PrimaryButton, _strings.nameContinue).hitTestable(),
       findsOneWidget,
       reason: 'the designed screen fits a phone without scrolling',
     );
@@ -193,7 +202,7 @@ void main() {
     // `LinkButton` here would be the documented mistake.
     await pump(tester);
 
-    expect(find.widgetWithText(GhostButton, NameCopy.skip), findsOneWidget);
+    expect(find.widgetWithText(GhostButton, _strings.nameSkip), findsOneWidget);
     expect(find.byType(LinkButton), findsNothing);
   });
 
@@ -204,7 +213,7 @@ void main() {
 
     await tester.enterText(find.byType(AppTextField), 'Maya');
     await tester.pump();
-    await tapAction(tester, NameCopy.skip);
+    await tapAction(tester, _strings.nameSkip);
 
     expect(
       draftName(tester),

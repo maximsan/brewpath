@@ -9,9 +9,8 @@ part 'dictionary_repository.g.dart';
 ///
 /// Its own repository rather than two more methods on `ContentRepository`:
 /// the dictionary is the one content family with derivations of its own, and
-/// the course repository was already at its method budget. Loading goes
-/// through the same [loadBank] helper every other bank uses, so nothing about
-/// how content reaches the app is special here.
+/// the course repository was already at its method budget. It loads through
+/// the same [loadBank] helper as every other bank.
 class DictionaryRepository {
   List<DictionaryTerm>? _terms;
   List<DictionaryCategory>? _categories;
@@ -22,7 +21,7 @@ class DictionaryRepository {
   /// lesson pointer against completed lessons, never stored.
   Future<List<DictionaryTerm>> getTerms() async {
     _terms ??= await loadBank(
-      'assets/content/generated/dictionary_terms.json',
+      'dictionary_terms',
       DictionaryTerm.fromJson,
     );
     return _terms!;
@@ -31,7 +30,7 @@ class DictionaryRepository {
   /// Loads and caches every category, in bank order.
   Future<List<DictionaryCategory>> getCategories() async {
     _categories ??= await loadBank(
-      'assets/content/generated/dictionary_categories.json',
+      'dictionary_categories',
       DictionaryCategory.fromJson,
     );
     return _categories!;

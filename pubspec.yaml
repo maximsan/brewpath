@@ -12,6 +12,14 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # Interface strings — the Flutter half of ADR-0008. Content banks localize
+  # separately, through lib/shared/content/content_language.dart.
+  # `intl: any` rather than a caret, as gen_l10n documents: flutter_localizations
+  # pins intl from the SDK, and a caret here can only disagree with it.
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+
   # State management
   flutter_riverpod: ^3.3.2
   riverpod_annotation: ^4.0.3
@@ -108,6 +116,8 @@ dev_dependencies:
   # Linting
 flutter:
   uses-material-design: true
+  # Runs gen_l10n over lib/l10n/*.arb on every build — config in l10n.yaml.
+  generate: true
   assets:
     - assets/content/
     # Written by tool/extract_content.js from the prototype source. Listed

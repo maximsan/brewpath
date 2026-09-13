@@ -1,0 +1,7 @@
+# Interface strings, the Flutter half of ADR-0008. English is the master;
+# another language is another .arb beside it, and no code changes.
+arb-dir: lib/l10n
+template-arb-file: app_en.arb
+output-dir: lib/l10n/generated
+output-localization-file: app_localizations.dart
+nullable-getter: false

@@ -57,6 +57,19 @@ You can always edit this file by hand instead — the helpers just save effort.
   plan you hold is asked of the store rather than remembered, so it is still
   right after a restart, a refund, or a change made outside the app.
 
+- **The app can be taught a second language without being rewritten.** A
+  language is now a folder laid over the English master, entry by entry and
+  field by field: what it translates wins, what it leaves out stays English,
+  and a bank it fails to carry is refused at load rather than shown half
+  translated. Interface strings have moved to `lib/l10n/app_en.arb`, read as
+  `context.strings`, starting with the onboarding name step. English is still
+  the only language that ships, and a test holds the app to offering no
+  language it has only half of. Three rulings settle the rest — what a
+  language must bring with it (ADR-0025), that one ships once complete with
+  native review following after (ADR-0026), and that a translation outdated by
+  an English fix stays on screen until it is retranslated, while text added
+  since reads in English (ADR-0027).
+
 - **Every sale is celebrated, and it puts you back where the lock was.**
   Buying from the sheet a lock raises used to leave you sitting on the sheet
   with a line of text; it now closes and opens the same welcome the intro's
@@ -314,6 +327,12 @@ You can always edit this file by hand instead — the helpers just save effort.
   tree still drew the old stage, or a closed module whose card never arrived.
   They are one event, and now one write; a test holds the first write to all
   of them.
+
+- **A coffee term is matched as a word in every alphabet, not just the Latin
+  one.** The rule behind the free practice pool counted only `a`–`z` and
+  `0`–`9` as parts of a word, so in an alphabet with none of them every letter
+  read as a word boundary — in Belarusian, *кавамашына* counted as saying
+  *кава*. English is unaffected.
 
 - **Dictionary sources point at the page that backs the claim.** The 11 Sep
   drop re-checked every source link: the SCA links go to Research or to

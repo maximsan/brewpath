@@ -1,32 +1,72 @@
-/// Reading a generated bank off the asset bundle.
+/// Reading a generated bank off the asset bundle, in the language that ships.
 ///
-/// Separated from the repository because this is not knowledge about the
-/// course — it is the envelope the extractor writes and the ways that envelope
-/// can be unusable. What a bank *means* lives next to the models; getting its
-/// records out of the bundle lives here.
-///
-/// This half is only the IO: bytes, then JSON. Whether what came back is a
-/// usable bank — including whether it was written against this build's schema
-/// version — is decided by `bank_envelope.dart`, which is pure and therefore
-/// testable without staging an asset.
+/// What a bank *means* lives next to the models; getting its records out of
+/// the bundle lives here. This half is only the IO — whether what came back is
+/// usable is decided by `bank_envelope.dart`, and how a language folder lands
+/// on the master by `language_overlay.dart`, both pure.
 library;
 
 import 'dart:convert';
 
+import 'package:brew_path/shared/content/content_language.dart';
 import 'package:brew_path/shared/repositories/bank_envelope.dart';
 import 'package:brew_path/shared/repositories/content_assembly.dart';
+import 'package:brew_path/shared/repositories/language_overlay.dart';
 import 'package:flutter/services.dart';
 
-/// The raw records inside a generated bank's envelope.
+/// The raw records inside [bank]'s envelope, in [language].
 ///
 /// A bank that is missing, malformed, empty, or written against a different
-/// schema version throws. The banks are bundled with the app, so any of those
-/// is a build defect — and an empty course that loads cleanly is the one
-/// failure nobody notices until a learner opens a tab with nothing in it.
-Future<List<Map<String, dynamic>>> loadBankRecords(String assetPath) async {
+/// schema version throws — including a language's own copy, because ADR-0008
+/// ships a language only once its folder is whole, so a gap in it is a build
+/// defect rather than something to read around.
+Future<List<Map<String, dynamic>>> loadBankRecords(
+  String bank, {
+  ContentLanguage language = activeContentLanguage,
+  AssetBundle? bundle,
+}) async {
+  final masterPath = masterBankPath(bank);
+  final master = await _readRecords(masterPath, bundle);
+
+  final translatedPath = translatedBankPath(bank, language);
+  if (translatedPath == null) return master;
+
+  return overlayTranslations(
+    master: master,
+    translated: await _readRecords(translatedPath, bundle),
+    assetPath: translatedPath,
+  );
+}
+
+/// Reads a generated bank and parses each of its records.
+Future<List<T>> loadBank<T>(
+  String bank,
+  T Function(Map<String, dynamic>) fromJson, {
+  ContentLanguage language = activeContentLanguage,
+  AssetBundle? bundle,
+}) async {
+  final records = await loadBankRecords(
+    bank,
+    language: language,
+    bundle: bundle,
+  );
+  try {
+    return [for (final record in records) fromJson(record)];
+  } on Object catch (error) {
+    throw ContentFormatException(
+      '${masterBankPath(bank)} holds an unreadable record: $error',
+    );
+  }
+}
+
+/// The records in the bank at [assetPath], or a refusal naming the file.
+Future<List<Map<String, dynamic>>> _readRecords(
+  String assetPath,
+  AssetBundle? bundle,
+) async {
   final String raw;
   try {
-    raw = await rootBundle.loadString(assetPath);
+    raw = await (bundle ?? rootBundle).loadString(assetPath);
   } on Object catch (error) {
     throw ContentFormatException('$assetPath could not be read: $error');
   }
@@ -39,19 +79,4 @@ Future<List<Map<String, dynamic>>> loadBankRecords(String assetPath) async {
   }
 
   return bankRecords(decoded, assetPath: assetPath);
-}
-
-/// Reads a generated bank and parses each of its records.
-Future<List<T>> loadBank<T>(
-  String assetPath,
-  T Function(Map<String, dynamic>) fromJson,
-) async {
-  final records = await loadBankRecords(assetPath);
-  try {
-    return [for (final record in records) fromJson(record)];
-  } on Object catch (error) {
-    throw ContentFormatException(
-      '$assetPath holds an unreadable record: $error',
-    );
-  }
 }

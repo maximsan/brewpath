@@ -16,7 +16,7 @@ class CardKindHelpRepository {
   Future<Map<String, CardKindHelp>> getByKind() async {
     _byKind ??= {
       for (final help in await loadBank(
-        'assets/content/generated/card_kind_help.json',
+        'card_kind_help',
         CardKindHelp.fromJson,
       ))
         help.kind: help,

@@ -1,3 +1,5 @@
+import 'package:brew_path/shared/content/content_language.dart';
+
 /// Speaks a word aloud in the language the content is written in.
 ///
 /// No feature code touches the speech package directly — only this interface,
@@ -21,10 +23,10 @@ abstract class SpeechService {
   Future<void> dispose();
 }
 
-/// The language the content is written in.
+/// The language the content is written in, as the synthesizer's tag.
 ///
-/// English is the master and the only folder that ships today (ADR-0008); when
-/// a language folder arrives it carries its own tag, and this constant becomes
-/// a lookup. The device's own language is deliberately not consulted — a French
-/// phone reading an English course must not pronounce *doppio* in French.
-const String contentLanguageTag = 'en-US';
+/// The course's language, never the device's — a French phone reading an
+/// English course must not pronounce *doppio* in French. A device with no
+/// voice for it says so through `canSpeak`, and ADR-0025 lets the control go
+/// away rather than holding the language back.
+final String contentLanguageTag = activeContentLanguage.speechTag;

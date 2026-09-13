@@ -34,7 +34,7 @@ class ContentRepository {
   /// Loads and caches the five modules, in course order.
   Future<List<ModuleModel>> getModules() async {
     _modules ??= await loadBank(
-      'assets/content/generated/modules.json',
+      'modules',
       ModuleModel.fromJson,
     );
     return _modules!;
@@ -44,7 +44,7 @@ class ContentRepository {
   /// the id of the module that claims it.
   Future<List<LessonModel>> getLessons() async {
     _lessons ??= assembleLessons(
-      await loadBankRecords('assets/content/generated/lessons.json'),
+      await loadBankRecords('lessons'),
       await getModules(),
     );
     return _lessons!;
@@ -55,7 +55,7 @@ class ContentRepository {
   Future<List<CoffeeCardModel>> getCards() async {
     _cards ??= assembleCards(
       collectibles: await loadBank(
-        'assets/content/generated/collectibles.json',
+        'collectibles',
         Collectible.fromJson,
       ),
       lessons: await getLessons(),
@@ -87,7 +87,7 @@ class ContentRepository {
   /// Loads and caches the twelve Coffee Challenges, in bank order.
   Future<List<BrewChallenge>> getBrewChallenges() async {
     _challenges ??= await loadBank(
-      'assets/content/generated/brew_challenges.json',
+      'brew_challenges',
       BrewChallenge.fromJson,
     );
     return _challenges!;
@@ -96,7 +96,7 @@ class ContentRepository {
   /// Loads and caches the mini-game catalog, in the order the bank lists it.
   Future<List<MiniGameFormat>> getMiniGameFormats() async {
     _miniGames ??= await loadBank(
-      'assets/content/generated/mini_games.json',
+      'mini_games',
       MiniGameFormat.fromJson,
     );
     return _miniGames!;
@@ -105,7 +105,7 @@ class ContentRepository {
   /// Loads and caches the grove's species, in the order the chooser lists them.
   Future<List<GroveVariety>> getGroveVarieties() async {
     _groveVarieties ??= await loadBank(
-      'assets/content/generated/grove_varieties.json',
+      'grove_varieties',
       GroveVariety.fromJson,
     );
     return _groveVarieties!;
@@ -114,7 +114,7 @@ class ContentRepository {
   /// Loads and caches the grove's lights, in picker order.
   Future<List<GroveLight>> getGroveLights() async {
     _groveLights ??= await loadBank(
-      'assets/content/generated/grove_lights.json',
+      'grove_lights',
       GroveLight.fromJson,
     );
     return _groveLights!;
@@ -134,10 +134,8 @@ class ContentRepository {
     return _companionOptions!;
   }
 
-  Future<List<CompanionOption>> _companionBank(String name) => loadBank(
-    'assets/content/generated/$name.json',
-    CompanionOption.fromJson,
-  );
+  Future<List<CompanionOption>> _companionBank(String name) =>
+      loadBank(name, CompanionOption.fromJson);
 
   /// The rounds authored for [formatId], or empty when the bank has none.
   ///
@@ -150,7 +148,7 @@ class ContentRepository {
 
   Future<Map<String, List<ContentCard>>> _loadRounds() async {
     final items = await loadBankRecords(
-      'assets/content/generated/mini_game_content.json',
+      'mini_game_content',
     );
     return {
       for (final item in items)
