@@ -29,6 +29,8 @@ stay English in every language — [ADR-0019](0019-the-card-art-keeps-its-englis
 Nothing else is exempt.
 
 Adding a language is adding a folder — no code change, no prototype change.
+The one line it does cost is in `pubspec.yaml`, which bundles a directory's own
+files and not its subdirectories'.
 An English fix marks the sibling entries stale by id, and
 [ADR-0026](0026-a-stale-translation-stays-until-it-is-retranslated.md) rules
 what the reader sees meanwhile; [ADR-0024](0024-a-language-ships-with-term-matching-search-and-voice-may-lag.md)

@@ -25,7 +25,9 @@ Four stages, two owners:
    way every other change is read. There is no second system.
 3. **Approve** — an entry records the fingerprint of the English text it was
    approved against. Approval is per entry, not per file.
-4. **Ship** — the folder goes in the app once every entry is approved.
+4. **Ship** — the folder goes in the app once every entry is approved, and is
+   listed in `pubspec.yaml`, which does not bundle a subdirectory on its
+   parent's entry.
 
 The tool owns steps 1 and 4; the owner owns 2 and 3.
 
@@ -41,6 +43,8 @@ The cost is that review is bounded by how much translated text the owner can
 read, in languages they may not speak — which is the real limit on how fast
 languages ship, and the reason the first wave is two.
 
-Nothing here reaches the device: the fingerprints are the pipeline's, and
-[ADR-0026](0026-a-stale-translation-stays-until-it-is-retranslated.md) keeps the
-app from ever reading them.
+The fingerprints travel in the folder, because the folder is both what the
+owner reviews and what the app ships — there is no separate build step that
+could strip them. They mean nothing on the device: the loader drops the field
+before a record reaches a model, so no screen can render one and no rule can
+branch on one.

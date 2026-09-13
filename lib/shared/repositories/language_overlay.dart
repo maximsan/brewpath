@@ -16,9 +16,10 @@ const String approvedAgainstField = 'approvedAgainst';
 
 /// [master]'s records with [translated]'s text laid over them, by id.
 ///
-/// Per entry and per field: a translated field wins, anything the folder omits
-/// stays English. Staleness is deliberately invisible — ADR-0026 shows the old
-/// translation until its replacement is approved, so there is nothing to check.
+/// Per entry and per field: a translated field wins, anything omitted stays
+/// English, and ADR-0026 leaves staleness invisible. An id the master lacks
+/// throws the way ADR-0018 refuses broken content, while a *missing* id is the
+/// fallback ADR-0008 asks for — so only one direction is fatal.
 List<Map<String, dynamic>> overlayTranslations({
   required List<Map<String, dynamic>> master,
   required List<Map<String, dynamic>> translated,

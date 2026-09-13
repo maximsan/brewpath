@@ -14,6 +14,8 @@ dependencies:
 
   # Interface strings — the Flutter half of ADR-0008. Content banks localize
   # separately, through lib/shared/content/content_language.dart.
+  # `intl: any` rather than a caret, as gen_l10n documents: flutter_localizations
+  # pins intl from the SDK, and a caret here can only disagree with it.
   flutter_localizations:
     sdk: flutter
   intl: any

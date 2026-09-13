@@ -29,4 +29,4 @@ abstract class SpeechService {
 /// English course must not pronounce *doppio* in French. A device with no
 /// voice for it says so through `canSpeak`, and ADR-0024 lets the control go
 /// away rather than holding the language back.
-String get contentLanguageTag => activeContentLanguage.speechTag;
+final String contentLanguageTag = activeContentLanguage.speechTag;

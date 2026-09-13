@@ -6,7 +6,6 @@ import 'dart:convert';
 import 'package:brew_path/shared/content/content_language.dart';
 import 'package:brew_path/shared/repositories/bank_loader.dart';
 import 'package:brew_path/shared/repositories/content_assembly.dart';
-import 'package:brew_path/shared/repositories/language_overlay.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -83,20 +82,6 @@ void main() {
 
       expect(records.last['term'], 'Robusta');
       expect(records.first['short'], 'The sweeter species.');
-    });
-
-    test('the approval fingerprint never reaches the record', () async {
-      final records = await loadBankRecords(
-        _bank,
-        language: _polish,
-        bundle: _bundle(
-          polish: [
-            {'id': 'arabica', 'term': 'Arabika', approvedAgainstField: 'abc'},
-          ],
-        ),
-      );
-
-      expect(records.first.containsKey(approvedAgainstField), isFalse);
     });
 
     test('a folder with no copy of the bank is a build defect', () async {

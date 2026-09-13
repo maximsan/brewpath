@@ -30,8 +30,10 @@ translation at all.
 ## Consequences
 
 The app never mixes languages mid-screen, and the loader stays simple: a
-translated entry wins, an absent one falls back, and no fingerprint is ever
-shipped or read on a device.
+translated entry wins and an absent one falls back, with nothing to compare and
+no reason to care when the entry was written. The fingerprints ride along in
+the folder — it is the shipped artifact as well as the reviewed one — but the
+loader drops them, so nothing on a device can read one.
 
 The cost is real and is accepted: between an English correction and its reviewed
 translation, a Polish reader is told something the course no longer believes.

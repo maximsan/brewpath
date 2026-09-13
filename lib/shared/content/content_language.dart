@@ -31,18 +31,6 @@ class ContentLanguage {
 
   /// Whether this is the master the banks are written in.
   bool get isMaster => code == english.code;
-
-  @override
-  bool operator ==(Object other) =>
-      other is ContentLanguage &&
-      other.code == code &&
-      other.speechTag == speechTag;
-
-  @override
-  int get hashCode => Object.hash(code, speechTag);
-
-  @override
-  String toString() => 'ContentLanguage($code)';
 }
 
 /// The language this build reads.
@@ -56,6 +44,10 @@ const ContentLanguage activeContentLanguage = ContentLanguage.english;
 String masterBankPath(String bank) => 'assets/content/generated/$bank.json';
 
 /// Where [language] keeps its copy of [bank], or null when it is the master.
+///
+/// A new folder needs its own `assets:` line in `pubspec.yaml`: a directory
+/// entry bundles its own files only, not its subdirectories', so an unlisted
+/// folder reads as a missing asset rather than a missing translation.
 String? translatedBankPath(String bank, ContentLanguage language) =>
     language.isMaster
     ? null
