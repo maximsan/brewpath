@@ -10,6 +10,7 @@ import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
+import 'package:brew_path/shared/storage/snapshot/progress_snapshot.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_scopes.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -623,4 +624,69 @@ void main() {
       );
     });
   });
+
+  group('a first completion is one write', () {
+    late List<ClearedByReset> writes;
+    late LessonCompletionService witnessed;
+
+    setUp(() {
+      writes = [];
+      witnessed = LessonCompletionService(
+        contentRepository: content,
+        snapshotRepository: _RecordingSnapshots(writes),
+        analyticsService: const NoOpAnalyticsService(),
+      );
+    });
+
+    test('the completion, its card and the tree stage land together', () async {
+      final lesson = (await content.getLessons()).first;
+      final card = (await content.getCardForLesson(lesson.id))!;
+
+      await witnessed.finishLesson(
+        lesson,
+        mastery: const MasteryResult(correct: 1, total: 1),
+      );
+
+      // The very first write already holds all three: a learner who closed
+      // the app after it has finished a lesson, holds its card and sees the
+      // tree it grew.
+      final first = writes.first;
+      expect(first.completedLessons, contains(lesson.id));
+      expect(first.ownedCollectibles, contains(card.id));
+      expect(first.treeStage, greaterThan(freshTreeStage));
+    });
+
+    test('closing a module hands its card over in that same write', () async {
+      final ids = await _moduleLessonIds(content, 'm1');
+      for (final id in ids.take(ids.length - 1)) {
+        await service.finishLesson(
+          (await content.getLessonById(id))!,
+          mastery: const MasteryResult(correct: 5, total: 5),
+        );
+      }
+      final moduleReward = (await content.getCardForModule('m1'))!;
+
+      await witnessed.finishLesson(
+        (await content.getLessonById(ids.last))!,
+        mastery: const MasteryResult(correct: 5, total: 5),
+      );
+
+      final first = writes.first;
+      expect(first.completedLessons.keys, containsAll(ids));
+      expect(first.ownedCollectibles, contains(moduleReward.id));
+    });
+  });
+}
+
+/// A repository that remembers every progress scope it was asked to write.
+class _RecordingSnapshots extends SnapshotRepository {
+  _RecordingSnapshots(this.writes);
+
+  final List<ClearedByReset> writes;
+
+  @override
+  Future<void> write(ProgressSnapshot snapshot) {
+    writes.add(snapshot.clearedByReset);
+    return super.write(snapshot);
+  }
 }

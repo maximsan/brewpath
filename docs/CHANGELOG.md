@@ -289,6 +289,14 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **Finishing a lesson lands in one write.** The completion, the card it
+  hands over, the Coffee Tree's new stage and — on a module's last lesson —
+  the Module Reward card used to reach the store as three or four separate
+  writes, so an app closed between them could hold a finished lesson whose
+  tree still drew the old stage, or a closed module whose card never arrived.
+  They are one event, and now one write; a test holds the first write to all
+  of them.
+
 - **Dictionary sources point at the page that backs the claim.** The 11 Sep
   drop re-checked every source link: the SCA links go to Research or to
   Coffee Standards rather than a dead query, decaf and green coffee cite
