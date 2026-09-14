@@ -23,6 +23,9 @@
 #   re-download + recompile of the entire dependency tree (minutes), so only
 #   pay that cost when you actually hit the error.
 #
+#   It frees almost no disk — one app's DerivedData folders and this checkout's
+#   build/. For space, run tool/clean_build_caches.sh instead.
+#
 # USAGE
 #   ./tool/reset_ios_spm.sh            # clean only; you run `flutter build ios` after
 #   ./tool/reset_ios_spm.sh --build    # clean, then build iOS (no codesign) in one go

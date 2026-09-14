@@ -16,6 +16,9 @@
 #   It reports and exits by default. Deleting takes --apply, so the first run
 #   can never surprise you.
 #
+#   It does not repair a build. The SwiftPM state behind the iOS "Target
+#   Integrity" error is tool/reset_ios_spm.sh's job, not this script's.
+#
 # USAGE
 #   ./tool/clean_build_caches.sh                     # report only
 #   ./tool/clean_build_caches.sh --apply             # Xcode caches, dead simulators
